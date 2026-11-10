@@ -2,8 +2,9 @@ import Qleisli.RuntimeSparseBlockEncoding
 import Qleisli.CodeSpaceAction
 import Qleisli.RuntimeNamedSourceFlow
 import Qleisli.RawProtectedEvaluation
-import Qleisli.RuntimeCallHistoryPure
+import Qleisli.RuntimeCallPureFold
 import Qleisli.RuntimeLiteralStructuralRefinement
+import Qleisli.RuntimeSelectionSpectators
 
 /-! Lift a checked local code-space map over an ordered block of original
 source owners. Each coefficient keeps the full spectator and reference
@@ -79,6 +80,88 @@ private theorem bindings_unique {roles state} (checked : RuntimeOwnerMap.Checked
   List.Pairwise.of_map (fun binding : Binding => binding.port.token)
     (fun _ _ different same => different (congrArg (fun binding : Binding => binding.port.token) same))
     checked.tokensDistinct
+
+private theorem binding_ordinals {roles state} (checked : RuntimeOwnerMap.Checked roles state) :
+    (checked.bindings.map (fun binding => binding.owner.ordinal)).Nodup := by
+  simpa only [← checked.ordered,List.map_map,Function.comp_def] using checked.ownersDistinct
+
+private theorem owner_complement {allRoles state roles selected}
+    (checked : RuntimeOwnerMap.Checked allRoles state)
+    (contained : selected ⊆ checked.bindings) (order : selected.map Binding.owner = roles) :
+    RuntimeSelectionPartition.complement checked.bindings selected =
+      checked.bindings.filter (fun binding => !roles.contains binding.owner) := by
+  apply List.filter_congr
+  intro binding member
+  have chosen : binding ∈ selected ↔ binding.owner ∈ roles := by
+    rw [← order]
+    refine ⟨fun inside => List.mem_map_of_mem inside,?_⟩
+    intro inside
+    obtain ⟨other,selectedMember,same⟩ := List.mem_map.mp inside
+    have equal := RuntimeOwnerTransitionAction.map_unique (fun value : Binding => value.owner.ordinal)
+      checked.bindings (binding_ordinals checked) other (contained selectedMember)
+      binding member (congrArg (·.ordinal) same)
+    exact equal ▸ selectedMember
+  by_cases inside : binding ∈ selected
+  · simpa [inside] using chosen.mp inside
+  · have absent : binding.owner ∉ roles := fun held => inside (chosen.mpr held)
+    simpa [inside] using absent
+
+private theorem source_partitions {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+    {before after : RuntimeStructuralAction.SourceState}
+    (ownerOrder : Qleisli.RuntimeNamedSourceFlow.OperationOwnerOrder frame before after)
+    {inputRoles outputRoles}
+    (incoming : RuntimeOwnerMap.Checked inputRoles frame.interval.before)
+    (outgoing : RuntimeOwnerMap.Checked outputRoles frame.interval.after)
+    (initial : incoming.bindings = before.bindings) (final : outgoing.bindings = after.bindings)
+    {selected returned : Map}
+    (selectedRead : RuntimeInterval.Computed (RuntimeOwnerMap.order roles incoming.bindings) selected)
+    (returnedRead : RuntimeInterval.Computed (RuntimeOwnerMap.order roles outgoing.bindings) returned)
+    (selectedPorts : frame.selected = selected.map Binding.port)
+    (returnedPorts : frame.returned = returned.map Binding.port) :
+    let spectators := RuntimeSelectionPartition.complement incoming.bindings selected
+    (selected++spectators).Perm incoming.bindings ∧ (returned++spectators).Perm outgoing.bindings := by
+  intro spectators
+  obtain ⟨selectedIn,selectedRoles⟩ := RuntimeSelectionPartition.order_values _ _ _ selectedRead
+  obtain ⟨returnedIn,returnedRoles⟩ := RuntimeSelectionPartition.order_values _ _ _ returnedRead
+  have selectedTokens := RuntimeSelectionPartition.interval_selected_tokens frame
+  rw [selectedPorts,List.map_map] at selectedTokens
+  have selectedUnique : selected.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+    (fun _ _ different same => different (congrArg (fun binding : Binding => binding.port.token) same)) selectedTokens
+  have beforeOrder : (selected++spectators).Perm incoming.bindings :=
+    RuntimeNamedBlockEncoding.partition_perm _ _ (bindings_unique incoming) selectedUnique selectedIn
+  obtain ⟨returnPerm,localValid⟩ := Qleisli.RuntimeCallHistory.fragment_return_ports frame
+  have outputTokens : (frame.returned.map (·.token)).Nodup :=
+    (returnPerm.map (·.token)).nodup_iff.mpr (Raw.Ownership.valid _ localValid).owners
+  rw [returnedPorts,List.map_map] at outputTokens
+  have returnedUnique : returned.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+    (fun _ _ different same => different (congrArg (fun binding : Binding => binding.port.token) same))
+    outputTokens
+  have afterOrder := RuntimeNamedBlockEncoding.partition_perm _ _ (bindings_unique outgoing) returnedUnique returnedIn
+  obtain ⟨_,_,interval,original,transport,originalOrder,transportedOrder,_⟩ := ownerOrder
+  have entryBindings := originalOrder.trans initial.symm
+  have exitBindings := transportedOrder.trans final.symm
+  have originalPartition :
+      (selected++RuntimeSelectionPartition.complement original.bindings selected).Perm original.bindings := by
+    rw [entryBindings]
+    exact beforeOrder
+  have untouched := RuntimeSelectionSpectators.interval_spectators frame interval original transport selected
+    selectedRoles selectedPorts.symm originalPartition
+  have originalRoles : outgoing.bindings.map Binding.owner = incoming.bindings.map Binding.owner :=
+    (congrArg (List.map Binding.owner) exitBindings.symm).trans
+      (transport.after.ordered.trans (congrArg (List.map Binding.owner) entryBindings))
+  have complementOrder : RuntimeSelectionPartition.complement outgoing.bindings returned = spectators := by
+    dsimp only [spectators]
+    rw [owner_complement outgoing returnedIn returnedRoles,owner_complement incoming selectedIn selectedRoles]
+    apply RuntimeOwnerTransitionAction.owner_order_eq
+    · exact (List.filter_sublist.map (fun binding : Binding => binding.owner.ordinal)).nodup (binding_ordinals incoming)
+    · intro binding member
+      obtain ⟨present,outside⟩ := List.mem_filter.mp member
+      have kept := untouched binding (exitBindings.symm ▸ present) (by simpa using outside)
+      exact List.mem_filter.mpr ⟨entryBindings ▸ kept,outside⟩
+    · have retained := congrArg (List.filter (fun owner => !roles.contains owner)) originalRoles
+      simpa only [List.filter_map,Function.comp_def] using retained
+  exact ⟨beforeOrder,complementOrder ▸ afterOrder⟩
 
 private noncomputable def groupedInput {Reference : Type}
     (incoming selected spectators : Map) (joint : Nat → Reference → ℂ) : Nat → Reference → ℂ :=
@@ -197,22 +280,23 @@ theorem original_operation_code_lift {dependencies program block arity start cou
         (RuntimePureInterval.fragment frame.selected frame.operations outputs)) physical)
     (checked : QleisliKernel.CodeSpace.Map inputCode outputCode physical)
     (same : checked.logical = logical) :
-    ∃ selected returned,
+    ∃ selected returned spectators,
       RuntimeInterval.Computed (RuntimeOwnerMap.order roles incoming.bindings) selected ∧
       RuntimeInterval.Computed (RuntimeOwnerMap.order roles outgoing.bindings) returned ∧
       frame.selected = selected.map (·.port) ∧ frame.returned = returned.map (·.port) ∧
+      (selected++spectators).Perm incoming.bindings ∧
+      (returned++spectators).Perm outgoing.bindings ∧
       Qleisli.Semantics.Raw.ProgramMeaning dependencies
         (RuntimePureInterval.fragment frame.selected frame.operations outputs) physical ∧
-      ∀ spectators, (selected++spectators).Perm incoming.bindings →
-        (returned++spectators).Perm outgoing.bindings →
-        BlockCodeLift incoming outgoing input selected returned spectators inputCode physical logical := by
+      BlockCodeLift incoming outgoing input selected returned spectators inputCode physical logical := by
   obtain ⟨inputOrder,outputOrder⟩ := ownerOrder.ordered_ports incoming outgoing initial final
   obtain ⟨selected,selectedRead,_,selectedRoles,selectedPorts⟩ := initial.symm ▸ inputOrder
   obtain ⟨returned,returnedRead,_,returnedRoles,returnedPorts⟩ := final.symm ▸ outputOrder
+  obtain ⟨beforeOrder,afterOrder⟩ := source_partitions frame ownerOrder incoming outgoing initial final
+    selectedRead returnedRead selectedPorts returnedPorts
   obtain ⟨work,left,reconstructed⟩ := physicalRead
-  refine ⟨selected,returned,selectedRead,returnedRead,selectedPorts,returnedPorts,
+  refine ⟨selected,returned,_,selectedRead,returnedRead,selectedPorts,returnedPorts,beforeOrder,afterOrder,
     Qleisli.Raw.ProtectedEvaluation.reconstruct_denotes dependencies _ physical work left reconstructed,?_⟩
-  intro spectators beforeOrder afterOrder
   apply operation_code_lift incoming outgoing input beforeOrder afterOrder _ _ checked same
   · simpa only [carrier_order,selectedRoles,← selectedPorts] using inputRead
   · simpa only [carrier_order,returnedRoles,← returnedPorts] using outputRead

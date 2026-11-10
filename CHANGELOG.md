@@ -118,8 +118,11 @@ development milestones from the scope of their evidence.
   retaining spectator and reference amplitudes. The same pure run retains
   inherited SSA values and observation history. The original caller and
   local fragment reads supply the paired events and finite row bounds.
-  The graph case still needs its source spectator partition and the local
-  event list's matrix action in the written return order.
+  The actual source owner flow supplies the same ordered spectators at both
+  ends, including zero-width owners. The original fragment's final
+  permutation identifies its written return coordinate with the literal
+  local row. The graph case still needs the matrix action of the complete
+  reconstructed fragment.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

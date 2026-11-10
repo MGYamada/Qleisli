@@ -7,7 +7,7 @@ open QleisliKernel QleisliKernel.Finite QleisliKernel.Qirf
 open Semantics.Finite (Dependency)
 open Semantics.Raw (Event Port)
 open Semantics.RawTrace (Interface)
-open RuntimeCallTraceFrames (Partition WireOrder)
+open RuntimeCallTraceFrames (Partition WireOrder native_wires)
 open Qleisli.Semantics.RawAction (events)
 
 /-- Composition keeps the spectator coordinate fixed through both local
@@ -32,6 +32,35 @@ theorem PureAction.append {dependencies : List Dependency}
   simpa only [events,List.foldl_append,midway] using composed
 
 #print axioms PureAction.append
+
+/-- The checked outputs enumerate every local port once in the written
+return order. Empty-wire ports still occur in this permutation. -/
+theorem fragment_return_ports {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles) :
+    frame.returned.Perm frame.pureBody.state.live ∧ Raw.stateValid frame.pureBody.state = true := by
+  obtain ⟨work,left,verified⟩ := frame.pureRead
+  have prepared := (Raw.Pure.verify_conditions _ _ _ work left verified).1
+  obtain ⟨valid,coverage,_,_⟩ := Raw.prepare_safety _ _ _ prepared
+  obtain ⟨_,_,_,_,outputsValid,_,_⟩ := Raw.prepare_conditions _ _ _ prepared
+  simp only [Raw.outputValid,Bool.and_eq_true,RuntimePureInterval.fragment] at outputsValid
+  have outputTokens := Raw.Ownership.unique_nodup outputs outputsValid.1.1.1.1
+  obtain ⟨contained,returnedTokens⟩ := RuntimeNamedFrameAxes.selectedPorts _ _ _ frame.rawExit
+  have liveTokens : (frame.pureBody.state.live.map (·.token)).Nodup :=
+    (Raw.Ownership.valid _ valid).owners
+  have unique (ports : List Port) (tokens : (ports.map Port.token).Nodup) : ports.Nodup :=
+    List.Pairwise.of_map Port.token (fun _ _ different equal => different (congrArg Port.token equal)) tokens
+  refine ⟨(List.perm_ext_iff_of_nodup (unique _ (returnedTokens.symm ▸ outputTokens))
+    (unique _ liveTokens)).mpr ?_,valid⟩
+  intro port
+  refine ⟨fun member => contained member,?_⟩
+  intro member
+  have written : port.token ∈ frame.returned.map (·.token) := by
+    rw [returnedTokens]
+    exact coverage port member
+  obtain ⟨found,returned,same⟩ := List.mem_map.mp written
+  have equal := RuntimeOwnerTransitionAction.map_unique Port.token frame.pureBody.state.live liveTokens
+    found (contained returned) port member same
+  exact equal ▸ returned
 
 private theorem checked_fold (dependencies : List Dependency)
     (recurse : Raw.Observation.State → List Semantics.Observation.Op → WorkM Raw.Observation.State)
@@ -110,15 +139,12 @@ theorem pure_interval_events {dependencies program block arity start count input
     rw [show entry.live = frame.selected from congrArg Interface.live entryRef]
     exact live
   have partition := Partition.of_native _ _ _ frame.interval.history.1 valid nativeLive
-  obtain ⟨pureWork,pureLeft,pureRead⟩ := frame.pureRead
-  have prepared := (Raw.Pure.verify_conditions _ _ _ pureWork pureLeft pureRead).1
-  have exitValid := (Raw.prepare_safety _ _ _ prepared).1
-  have returned := (RuntimeNamedFrameAxes.selectedPorts _ _ _ frame.rawExit).1
+  obtain ⟨returned,exitValid⟩ := fragment_return_ports frame
   have exitWires : WireOrder frame.returned ⊆ frame.pureBody.state.frame := by
     intro wire member
     obtain ⟨port,present,inside⟩ := List.mem_flatMap.mp member
     exact (Raw.Ownership.valid _ exitValid).covered wire
-      (List.mem_flatMap.mpr ⟨port,returned present,inside⟩)
+      (List.mem_flatMap.mpr ⟨port,returned.subset present,inside⟩)
   obtain ⟨work,left,read⟩ := frame.interval.intervalRead
   rw [frame.literal] at read
   cases fuel : block.fuel with
@@ -138,4 +164,88 @@ theorem pure_interval_events {dependencies program block arity start count input
     exact ⟨entry,parentEvents,childEvents,entryRef,parentTrace,childTrace,exitWires,after,bounds,action⟩
 
 #print axioms pure_interval_events
+
+/-- The full reference trace differs from the literal local event list
+only by the written return permutation. -/
+theorem fragment_finish {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+    {entry : Raw.State} {childEvents : List Event}
+    (entryRef : entry.reference = ⟨frame.selected,WireOrder frame.selected⟩)
+    (childTrace : RuntimeLocalEvents.trace entry.reference frame.operations =
+      some ⟨frame.pureBody.state.reference,childEvents,entry.frame.length⟩) :
+    let exit := frame.pureBody.state.reference
+    let axes := Semantics.RawTrace.axes exit (WireOrder frame.returned)
+    Semantics.RawTrace.run (RuntimePureInterval.fragment frame.selected frame.operations outputs) =
+      some ⟨exit,childEvents++[.reorder exit.frame.length axes],entry.frame.length⟩ ∧
+      axes.Perm (List.range exit.frame.length) := by
+  intro exit axes
+  obtain ⟨returned,valid⟩ := fragment_return_ports frame
+  have originalWires := (returned.flatMap_right Port.wires).trans (native_wires _ valid)
+  constructor
+  · have returnedTokens := (RuntimeNamedFrameAxes.selectedPorts _ _ _ frame.rawExit).2
+    let lookup := fun token : Nat =>
+      ((exit.live.find? (fun port => port.token == token)).map Port.wires).getD []
+    have writtenWires : outputs.flatMap lookup = WireOrder frame.returned := by
+      calc
+        _ = (frame.returned.map Port.token).flatMap lookup :=
+          congrArg (fun tokens => tokens.flatMap lookup) returnedTokens.symm
+        _ = _ := by
+          rw [List.flatMap_map]
+          apply List.flatMap_congr
+          intro port member
+          have live : port ∈ exit.live := returned.subset member
+          have read := RuntimeNamedFrameAxes.tokenLookup exit.live port (Raw.Ownership.valid _ valid).owners live
+          simp [lookup,read]
+    have entryBits : entry.frame.length = (WireOrder frame.selected).length :=
+      congrArg (List.length ∘ Interface.frame) entryRef
+    have run := childTrace
+    unfold RuntimeLocalEvents.trace at run
+    rw [entryRef,entryBits] at run
+    unfold Semantics.RawTrace.run RuntimePureInterval.fragment
+    change (do
+      let result ← frame.operations.foldlM Semantics.RawTrace.advance
+        ⟨⟨frame.selected,WireOrder frame.selected⟩,[],(WireOrder frame.selected).length⟩
+      pure (Semantics.RawTrace.finish (RuntimePureInterval.fragment frame.selected frame.operations outputs) result)) = _
+    rw [run]
+    change some (⟨exit,childEvents++[.reorder exit.frame.length (Semantics.RawTrace.axes exit (outputs.flatMap lookup))],
+      (WireOrder frame.selected).length⟩ : Semantics.RawTrace.Prepared) = _
+    rw [writtenWires,entryBits]
+  · exact (originalWires.map exit.frame.idxOf).trans
+      (List.Perm.of_eq (RuntimeNamedCallerAction.self_indices _ (Raw.Ownership.valid _ valid).frame))
+
+#print axioms fragment_finish
+
+/-- Evaluate the complete local fragment at the coordinate in its written
+return order. Its final permutation selects the original literal row. -/
+theorem fragment_prefix_action {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+    {entry : Raw.State} {childEvents : List Event}
+    (entryRef : entry.reference = ⟨frame.selected,WireOrder frame.selected⟩)
+    (childTrace : RuntimeLocalEvents.trace entry.reference frame.operations =
+      some ⟨frame.pureBody.state.reference,childEvents,entry.frame.length⟩)
+    (operator : Nat → ℂ) (row : Nat) (bounded : row < 2^frame.pureBody.state.frame.length) :
+    ∃ trace, Semantics.RawTrace.run (RuntimePureInterval.fragment frame.selected frame.operations outputs) = some trace ∧
+      events dependencies trace.events operator
+        (project frame.pureBody.state.reference (WireOrder frame.returned) row) =
+        events dependencies childEvents operator row := by
+  let exit := frame.pureBody.state.reference
+  let axes := Semantics.RawTrace.axes exit (WireOrder frame.returned)
+  obtain ⟨traceRead,permutation⟩ := fragment_finish frame entryRef childTrace
+  change axes.Perm (List.range exit.frame.length) at permutation
+  refine ⟨_,traceRead,?_⟩
+  let packed := project exit (WireOrder frame.returned) row
+  have width : axes.length = exit.frame.length := permutation.length_eq.trans List.length_range
+  have packedBound : packed < 2^exit.frame.length := by
+    simpa only [packed,project,← width] using RuntimeForestProduct.gather_bound row axes
+  have reordered := Qleisli.RuntimeNamedThreePackedOutput.reorder_gather dependencies
+    exit.frame.length axes permutation (events dependencies childEvents operator) packed packedBound
+  obtain ⟨original,within,coordinate,action⟩ := reordered
+  obtain ⟨projection,bijective,values⟩ :=
+    Qleisli.RuntimeNamedThreePackedOutput.gather_bijective exit.frame.length axes permutation
+  have same : projection ⟨original,within⟩ = projection ⟨row,bounded⟩ :=
+    Fin.ext ((values ⟨original,within⟩).trans (coordinate.trans (values ⟨row,bounded⟩).symm))
+  have equal : original = row := congrArg Fin.val (bijective.1 same)
+  simpa only [events,List.foldl_append,List.foldl_cons,List.foldl_nil,equal] using action
+
+#print axioms fragment_prefix_action
 end Qleisli.RuntimeCallHistory

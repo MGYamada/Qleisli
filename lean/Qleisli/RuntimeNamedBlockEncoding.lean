@@ -116,7 +116,8 @@ theorem append_exists (left right : Map) (all : OwnerCodes (left++right)) :
       rw [same]
       exact ⟨.cons first front,back,rfl⟩
 
-private theorem partition_perm (all selected : Map) (allUnique : all.Nodup)
+/-- The selected bindings and their original-order complement cover the caller. -/
+theorem partition_perm (all selected : Map) (allUnique : all.Nodup)
     (selectedUnique : selected.Nodup) (subset : selected ⊆ all) :
     (selected++RuntimeSelectionPartition.complement all selected).Perm all := by
   let chosen : Binding → Bool := fun binding => decide (binding ∈ selected)

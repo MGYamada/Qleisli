@@ -334,11 +334,17 @@ private theorem operation_aligned {artifact root} (execution : ExecutionMode art
     (data : execution.queries.EventData source (.operation event) position)
     (original : RuntimeBodyQueries.Operation execution.queries event)
     (read : RuntimeInterval.Computed (RuntimeBodyQueries.readOperation execution.queries source event position cursor data) original)
-    (after : RuntimeOwnerMap.Map) (expected : Semantics.Exact.Matrix) (node : Node root.dependencies program block)
-    (initial : RuntimeStructuralAction.SourceState) (receipts : List execution.Receipt)
+    (expected : Semantics.Exact.Matrix) (node : Node root.dependencies program block)
+    (initial : RuntimeStructuralAction.SourceState) {interval : RuntimeInterval.Checked block position.start position.count}
+    (incoming : RuntimeOwnerMap.Checked (initial.bindings.map (·.owner)) interval.before)
+    (initialOrder : incoming.bindings = initial.bindings)
+    (owners : RuntimeOwnerTransition.Checked interval incoming.bindings)
+    (ownerRead : RuntimeInterval.Computed (RuntimeOwnerTransition.read interval incoming.bindings) owners)
+    (receipts : List execution.Receipt)
     (performed : OperationResult execution original expected receipts)
-    (checked : RuntimeInterval.Computed (operationNode block position event.inputOwners initial.bindings after expected) node) :
-    NodeAligned initial {initial with bindings := after} node ∧
+    (checked : RuntimeInterval.Computed
+      (operationNode block position event.inputOwners initial.bindings owners.after.bindings expected) node) :
+    NodeAligned initial {initial with bindings := owners.after.bindings} node ∧
       At position.start (position.start+position.count) (.pure node) ∧ OperationOrigin execution node := by
   have nodeRead := checked
   obtain ⟨work,left,ran⟩ := checked
@@ -354,8 +360,10 @@ private theorem operation_aligned {artifact root} (execution : ExecutionMode art
   split at h
   · have same := (pure_success _ _ _ _ h).1
     subst node
-    exact ⟨⟨rfl,inputs,outputs,⟨work,a,_inputs⟩,⟨a,b,_outputs⟩,rfl,rfl⟩,⟨rfl,rfl⟩,
-      ⟨owner,name,source,event,position,cursor,data,original,initial.bindings,after,receipts,read,nodeRead,performed⟩⟩
+    exact ⟨⟨rfl,⟨inputs,outputs,⟨work,a,_inputs⟩,⟨a,b,_outputs⟩,rfl,rfl⟩,
+      ⟨interval,incoming,owners,initialOrder,rfl,ownerRead⟩⟩,⟨rfl,rfl⟩,
+      ⟨owner,name,source,event,position,cursor,data,original,initial.bindings,owners.after.bindings,
+        receipts,read,nodeRead,performed⟩⟩
   · cases h
 
 private theorem selection_before_transport
@@ -604,7 +612,8 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
           exact planned_operation_result continuation _ ⟨rootOwner,rootName,owner,name,path,.unlocated⟩ _performed
       have original := (show RuntimeInterval.Computed _ node from ⟨i,j,_node⟩)
       obtain ⟨aligned,⟨first,last⟩,authentic⟩ := operation_aligned execution source _ block position
-        sourceCursor data operation ⟨f,g,_operation⟩ _ expected node history performedReceipts resultRead
+        sourceCursor data operation ⟨f,g,_operation⟩ expected node history frame sameBindings owners
+        ⟨d,e,_owners⟩ performedReceipts resultRead
         (by simpa only [sameBindings] using original)
       exact chain.snoc aligned authentic rfl ⟨first.trans atStart.symm,last⟩ True.intro
     case selection =>

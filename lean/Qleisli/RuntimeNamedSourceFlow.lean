@@ -15,10 +15,15 @@ def OperationOwnerOrder {dependencies program block start count arity inputs out
     (_frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
     (before after : SourceState) : Prop :=
   after = {before with bindings := after.bindings} ∧
-  ∃ entry exit,
+  (∃ entry exit,
     RuntimeInterval.Computed (RuntimePureBody.rolePorts roles before.bindings) entry ∧
     RuntimeInterval.Computed (RuntimePureBody.rolePorts roles after.bindings) exit ∧
-    entry.map (·.token) = inputs ∧ exit.map (·.token) = outputs
+    entry.map (·.token) = inputs ∧ exit.map (·.token) = outputs) ∧
+  ∃ (interval : RuntimeInterval.Checked block start count)
+    (incoming : RuntimeOwnerMap.Checked (before.bindings.map (·.owner)) interval.before)
+    (transport : RuntimeOwnerTransition.Checked interval incoming.bindings),
+    incoming.bindings = before.bindings ∧ transport.after.bindings = after.bindings ∧
+    RuntimeInterval.Computed (RuntimeOwnerTransition.read interval incoming.bindings) transport
 
 def NodeAligned {dependencies program block} (before after : RuntimeStructuralAction.SourceState)
     (node : RuntimePureBody.Node dependencies program block) : Prop :=
@@ -70,7 +75,7 @@ theorem OperationOwnerOrder.ordered_ports {dependencies program block start coun
     (output : RuntimeOwnerMap.Checked outputRoles frame.interval.after)
     (initial : input.bindings = before.bindings) (final : output.bindings = after.bindings) :
     OrderedPorts roles before.bindings frame.selected ∧ OrderedPorts roles after.bindings frame.returned := by
-  obtain ⟨_,entry,exit,entryRead,exitRead,entryTokens,exitTokens⟩ := aligned
+  obtain ⟨_,⟨entry,exit,entryRead,exitRead,entryTokens,exitTokens⟩,_⟩ := aligned
   exact ⟨initial ▸ original_ports input frame.interval.history.1 (initial.symm ▸ entryRead)
       (entryTokens.symm ▸ frame.atEntry),
     final ▸ original_ports output frame.interval.history.2.2.1 (final.symm ▸ exitRead)
