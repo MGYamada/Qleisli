@@ -2022,12 +2022,13 @@ pub(super) fn lower_function(
         &module,
         span,
     )?;
-    lower_instance_function(compiler, instance)
+    lower_instance_function(compiler, instance, false)
 }
 
 pub(super) fn lower_instance_function(
     compiler: &mut Compiler<'_>,
     instance: Arc<super::instances::ClosedInstance>,
+    require_qmatch_v5: bool,
 ) -> Result<AcceptedProgram, CompileError> {
     let key = instance.definition;
     let span = compiler.declarations[&key].span;
@@ -2037,7 +2038,7 @@ pub(super) fn lower_instance_function(
     }
     let bindings = instance.operations.clone();
     let frame = compiler.enter_instance(instance, &module, span)?;
-    let result = lower_function_in_context(compiler, &key, bindings);
+    let result = lower_function_in_context(compiler, &key, bindings, require_qmatch_v5);
     compiler.leave_instance(frame);
     result
 }
@@ -2046,6 +2047,7 @@ fn lower_function_in_context(
     compiler: &mut Compiler<'_>,
     key: &Key,
     bindings: super::operations::Bindings,
+    require_qmatch_v5: bool,
 ) -> Result<AcceptedProgram, CompileError> {
     let decl = compiler.declarations[key];
     let key_name = compiler.source.resolution.declaration(*key).name.clone();
@@ -2124,6 +2126,21 @@ fn lower_function_in_context(
         vec![]
     };
     let result = lower.call_user(key, args, None)?;
+    if require_qmatch_v5
+        && !(runtime_inputs.is_some()
+            && lower.uses_qmatch_v5()
+            && lower
+                .source_context
+                .as_ref()
+                .is_some_and(|context| context.contains_selections))
+    {
+        return Err(lower.error(
+            &key_name.0,
+            decl.span,
+            ErrorCode::Unsupported,
+            "selected operation dependencies require independent closure transport",
+        ));
+    }
     lower.compiler.charge(
         &key_name.0,
         decl.span,

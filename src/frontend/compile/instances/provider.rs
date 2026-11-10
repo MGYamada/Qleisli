@@ -116,7 +116,7 @@ impl Compiler<'_> {
             }
             self.instances[record].bodies[profile] = BodyState::Preparing;
         }
-        let result = lower::lower_instance_function(self, Arc::clone(&instance));
+        let result = lower::lower_instance_function(self, Arc::clone(&instance), false);
         if let Some(record) = instance.record {
             match &result {
                 Ok(body) => {

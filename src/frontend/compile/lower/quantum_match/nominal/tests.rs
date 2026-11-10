@@ -434,7 +434,7 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){relay[checked_op(sign,I
         compiler.compile_meaning(&key).unwrap();
     }
     let route = compiler.source.resolution.qualified("main::route").unwrap();
-    // Retain the normal Raw producer; the selected Op-closure gate is unchanged.
+    // Keep the original Raw producer as a baseline for the public typed route.
     compiler.selected_entry = Some(route);
     let program = lower_function(&mut compiler, &route).unwrap();
     let caller = program.source_context().expect("original root body");
@@ -529,5 +529,31 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){relay[checked_op(sign,I
             env!("CARGO_MANIFEST_DIR"),
             "/tests/fixtures/qmatch_v030/general-meaning-request.json"
         ))
+    );
+    let selected = crate::frontend::compile::ParsedProgram::parse(
+        crate::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::route",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&compiler.kernel)
+    .unwrap();
+    let checked = selected.program();
+    assert!(checked.qmatch_source_checked());
+    assert_eq!(checked.artifact(), artifact);
+    assert_eq!(checked.request().unwrap(), bytes);
+    assert!(
+        compiler
+            .kernel
+            .check_program(checked)
+            .unwrap()
+            .native_exact_work()
+            <= 20_000_000
     );
 }

@@ -95,8 +95,7 @@ structure Prepared (artifact : Artifact) (owner name : String) (arguments : Stat
   source : RuntimeBodyDiscovery.PreparedSource artifact owner name arguments
   referenceContexts : RuntimeInterval.Computed (RuntimeReferenceContexts.runtime 129 request) ()
   planned : RuntimeBodyDiscovery.Planned (preparation artifact source.catalogue) (.whole source.body) request
-  relevance : SourceRows.Retained ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
-  imports : RuntimeCatalogueImports.Rows ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
+  imports : RuntimeCatalogueImports.Coverage artifact.sources ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
     (RuntimeCatalogueImports.edges source.catalogue)
 
 def Prepared.discovery {artifact owner name arguments request}
@@ -124,9 +123,9 @@ def prepare (artifact : Artifact) (owner name : String) (arguments : StaticTypes
   let references ← NaturalAffine.witness (RuntimeReferenceContexts.runtime 129 request)
   have unit : references.val = () := by cases references.val; rfl
   let planned ← RuntimeBodyDiscovery.visitPlanned (preparation artifact source.catalogue) (.whole source.body) request
-  let relevance ← SourceRows.read ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
-  let imports ← RuntimeCatalogueImports.read source.catalogue relevance
-  return ⟨source,by with_reducible simpa only [unit] using references.property,planned,relevance,imports⟩
+  let imports ← RuntimeCatalogueImports.read source.catalogue
+    ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
+  return ⟨source,by with_reducible simpa only [unit] using references.property,planned,imports⟩
 
 def initialHistory {artifact owner name arguments request}
     (prepared : Prepared artifact owner name arguments request) {root : Validity.Root}

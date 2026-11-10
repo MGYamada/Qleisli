@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check selected v5 `qmatch` through nested calls with original operation
+  actuals and phase-fixed Meaning duties. Keep exact source rows and every
+  original occurrence while reducing repeated native source-row coverage work.
+  The preserved two-Bit nested composition fits the existing exact-work cap.
 - Add QPTL laws for coherent sums. Per-label unitary and encoding equations
   compose over the original labels, and each output amplitude uses the
   matching input sector of an arbitrary joint state.
