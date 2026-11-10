@@ -99,3 +99,11 @@ end
 module RInfCyclotomicsTests
 include(joinpath(@__DIR__, "test_rinf_cyclotomics.jl"))
 end
+
+module ExactFiniteQuantumTests
+include(joinpath(@__DIR__, "test_exact_finite_quantum.jl"))
+end
+
+module Shor15Tests
+include(joinpath(@__DIR__, "test_shor15.jl"))
+end
