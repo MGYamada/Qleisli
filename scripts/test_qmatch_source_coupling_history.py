@@ -1398,5 +1398,24 @@ class IndependentReferenceAuthoringHistory(unittest.TestCase):
                             for case in checkpoint['operator_observation']['records']))
 
 
+class OriginalBodyHistory(unittest.TestCase):
+    def test_small_original_body_sources_and_diagnostics_are_retained(self):
+        study = history_json(
+            ROOT / "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/original-body-history-study.json"
+        )
+        self.assertEqual(study["format"], "qleisli.informed-original-body-study")
+        self.assertEqual((study["issue"], study["physical_bits"]), (491, 1))
+        sources = study["sources"]
+        self.assertEqual(set(sources), {"h.qli", "phase.qli", "route.qli"})
+        for record in (*sources.values(), study["first_harness"], study["first_diagnostics"],
+                       study["repaired_observation"]):
+            self.assertEqual(hashlib.sha256(record["text"].encode()).hexdigest(), record["sha256"])
+        self.assertIn("error:", study["first_diagnostics"]["text"])
+        observation = study["repaired_observation"]["text"]
+        self.assertTrue(observation.startswith("Except.ok true\n"))
+        self.assertTrue(observation.endswith("Except.error (QleisliKernel.Finite.Error.equation)\n"))
+        self.assertTrue((ROOT / study["current_guard"]).is_file())
+
+
 if __name__ == "__main__":
     unittest.main()
