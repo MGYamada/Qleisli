@@ -129,9 +129,11 @@ development milestones from the scope of their evidence.
   the written source owner order. Each matrix in a direct selection's
   comparison table comes from the staged graph action at the corresponding
   written arm index. The source traversal retains that table and its
-  selector order, including when the written order differs. The direct
-  selection history lift and other primitive lowerings still need local
-  correspondence laws.
+  selector order, including when the written order differs. The same
+  selection witness follows the original prefix through named callees and
+  conditional arms. Its literal operator and inherited SSA and observations
+  agree in the shared history proof. Multi-operation primitive lowerings
+  still need a local correspondence law.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
