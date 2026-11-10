@@ -105,7 +105,9 @@ development milestones from the scope of their evidence.
   traversal law gives the ordered logical results. The named evaluator
   gathers the finite spectator columns and restores the caller invariant,
   preserving order and multiplicity even for identical outcomes. The
-  shared recursion across calls, branches and remaining pure forms is pending.
+  original call receipt retains the enclosing root input domain for each
+  child traversal. The shared recursion across calls, branches and the
+  remaining pure forms is pending.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

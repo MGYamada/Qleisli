@@ -1,5 +1,6 @@
 import Qleisli.RuntimeNamedSourceFlow
 import Qleisli.RuntimeLiteralBody
+import Qleisli.RuntimeBranchInputDomain
 import QleisliKernel.Qirf.RuntimeBodyOperations
 
 /-! Retain actual recursive runs of original named callees and their inputs.
@@ -15,11 +16,14 @@ open RuntimePureBody
 open RuntimeNamedSourceFlow (NodeAligned)
 open RuntimeLiteralBody (At Partition)
 
+abbrev RootInputs := List (Semantics.FiniteCarrier.Basis × RuntimeOrdinarySSA.Expression)
+
 /-- The original callee, its complete real argument binding, visible ordinary
 SSA and actual recursive result determine this named step's stored child.
 The two successful reads share the same remaining-work counter. -/
-inductive ChildRun (artifact : Artifact) (root : Validity.Root)
-    (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution) :
+inductive ChildRunAt (artifact : Artifact) (root : Validity.Root)
+    (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution)
+    (origin : Option RootInputs) :
     {program : Semantics.Observation.Program} →
     {block : RuntimeInterval.Block root.dependencies program} →
     Step root.dependencies program block → Prop where
@@ -47,9 +51,22 @@ inductive ChildRun (artifact : Artifact) (root : Validity.Root)
       (read : (next .runtimeBody .localScope (.whole body) path scope.program request plan
           ⟨initialBindings,body.checked.summary.parameterValues.flatMap SourceTypes.SourceRuntimeValues.valueOwners,
             body.checked.summary.nextOwner⟩
-          scope.visible.ssa scope.prepared.block).run afterInput = (.ok (result,receipts),afterChild)) :
-      ChildRun artifact root execution next
+          scope.visible.ssa scope.prepared.block).run afterInput = (.ok (result,receipts),afterChild))
+      (rootRead : ∀ inputs, origin = some inputs → RuntimeBranchCondition.rootEntries path = inputs := by simp) :
+      ChildRunAt artifact root execution next origin
         (.named event scope body bodyRead boundary result.ordinary (Steps.ofList result.steps))
+
+abbrev ChildRun (artifact : Artifact) (root : Validity.Root)
+    (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution)
+    {program} {block : RuntimeInterval.Block root.dependencies program}
+    (step : Step root.dependencies program block) : Prop :=
+  ChildRunAt artifact root execution next none step
+
+theorem ChildRunAt.forget {artifact root execution next origin program block step}
+    (checked : @ChildRunAt artifact root execution next origin program block step) :
+    ChildRun artifact root execution next step := by
+  cases checked with
+  | named inputRead read => exact .named inputRead read
 
 /-- Both original recursive arm reads and their checked join share the
 remaining-work counters of the original conditional step. -/
@@ -93,6 +110,20 @@ def CheckedStep {artifact root execution} (next : BlockRunner artifact root exec
   | .conditional .. => ConditionalRun artifact root execution next step
   | .pure .. | .gap .. | .observation .. => True
 
+/-- A named step retains the original caller's root ordinary input domain. -/
+def CheckedStepAt {artifact root execution} (next : BlockRunner artifact root execution)
+    (inputs : RootInputs) {program block} (step : Step root.dependencies program block) : Prop :=
+  match step with
+  | .named .. => ChildRunAt artifact root execution next (some inputs) step
+  | _ => CheckedStep next step
+
+private theorem CheckedStepAt.forget {artifact root execution} {next : BlockRunner artifact root execution}
+    {inputs program block step} (checked : @CheckedStepAt artifact root execution next inputs program block step) :
+    CheckedStep next step := by
+  cases step
+  case named => exact ChildRunAt.forget checked
+  all_goals exact checked
+
 /-- The ordinary states belong to the same stored steps as the owner
 states. A pure step leaves the complete table and measurement keys intact. -/
 def OrdinaryAligned {dependencies program block} (before after : RuntimeOrdinaryBody.State)
@@ -121,8 +152,6 @@ theorem OrdinaryRun.snoc {dependencies program block initial middle final steps 
   | nil => exact .cons last (.nil _)
   | cons head _ ih => exact .cons head (ih last)
 
-abbrev RootInputs := List (Semantics.FiniteCarrier.Basis × RuntimeOrdinarySSA.Expression)
-
 def ConditionFrom {dependencies program block} (inputs : RootInputs) :
     Step dependencies program block → Prop
   | .conditional path .. => RuntimeBranchCondition.rootEntries path = inputs
@@ -133,10 +162,16 @@ structure Flow {artifact root execution} (next : BlockRunner artifact root execu
     (steps : List (Step root.dependencies program block)) (final : RuntimeStructuralAction.SourceState)
     (initialOrdinary finalOrdinary : RuntimeOrdinaryBody.State) (cursor : Nat) : Prop where
   source : RuntimeNamedSourceFlow.Run initial steps final
-  calls : ∀ step ∈ steps,CheckedStep next step
+  callsAt : ∀ step ∈ steps, CheckedStepAt next inputs step
   conditions : ∀ step ∈ steps, ConditionFrom inputs step
   ordinary : OrdinaryRun initialOrdinary steps finalOrdinary
   literal : Partition 0 steps cursor
+
+theorem Flow.calls {artifact root execution} {next : BlockRunner artifact root execution}
+    {inputs program block initial steps final ordinary finalOrdinary cursor}
+    (flow : @Flow artifact root execution next inputs program block initial steps final ordinary finalOrdinary cursor) :
+    ∀ step ∈ steps, CheckedStep next step :=
+  fun step present => (flow.callsAt step present).forget
 
 theorem Flow.nil {artifact root execution} (next : BlockRunner artifact root execution) (inputs : RootInputs)
     {program block} (state : RuntimeStructuralAction.SourceState) (ordinary : RuntimeOrdinaryBody.State) :
@@ -147,14 +182,14 @@ theorem Flow.snoc {artifact root execution} {next : BlockRunner artifact root ex
     {inputs program block initial middle final steps step initialOrdinary middleOrdinary finalOrdinary middleCursor finalCursor}
     (flow : @Flow artifact root execution next inputs program block initial steps middle initialOrdinary middleOrdinary
       middleCursor)
-    (source : RuntimeNamedSourceFlow.Aligned middle final step) (call : CheckedStep next step)
+    (source : RuntimeNamedSourceFlow.Aligned middle final step) (call : CheckedStepAt next inputs step)
     (ordinary : OrdinaryAligned middleOrdinary finalOrdinary step) (literal : At middleCursor finalCursor step)
     (origin : ConditionFrom inputs step) :
     Flow next inputs initial (steps ++ [step]) final initialOrdinary finalOrdinary finalCursor := by
   refine ⟨flow.source.snoc source,?_,?_,flow.ordinary.snoc ordinary,flow.literal.snoc literal⟩
   · intro current member
     rcases List.mem_append.mp member with old | last
-    · exact flow.calls current old
+    · exact flow.callsAt current old
     · exact (List.mem_singleton.mp last).symm ▸ call
   · intro current member
     rcases List.mem_append.mp member with old | last
@@ -411,7 +446,8 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
     obtain ⟨named,e,_named,h⟩ := bind_success _ _ _ _ _ h
     obtain ⟨ordered,f,_ordered,h⟩ := bind_success _ _ _ _ _ h
     split at h
-    · obtain ⟨opened,g,_opened,h⟩ := bind_success _ _ _ _ _ h
+    next callerName =>
+      obtain ⟨opened,g,_opened,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨bound,i,_bound,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨childInitial,j,_initial,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨children,k,_children,h⟩ := bind_success _ _ _ _ _ h
@@ -425,8 +461,14 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
         · change history = {history with bindings := frame.bindings}
           rw [sameBindings]
         · rfl
-      · exact .named _initial _children
-    · cases h
+      · refine .named _initial _children ?_
+        intro inputs sameRoot
+        have same := Option.some.inj sameRoot
+        subst inputs
+        rw [Qleisli.RuntimeBranchInputDomain.named_entries]
+        cases callerName
+        rfl
+    next => cases h
   have steps_preserve
       (event : SourceTypes.SourceRuntimeContext.Event artifact.sources owner)
       (position : Position) (origin : RuntimeSourceEvent.Origin event position)

@@ -215,7 +215,7 @@ theorem refineFlowWithWrites {artifact root mode next rootInputs program block s
       some (last.before.quantum.reference,events))
     (executed : run root.dependencies block.fuel events initial = some results)
     (writes : WritesWithin events allowed)
-    (law : StepRefinement steps (CheckedStep next) sourceStep related (some allowed))
+    (law : StepRefinement steps (RuntimeNamedChildRuns.CheckedStepAt next rootInputs) sourceStep related (some allowed))
     (starts : related [] block.entry start initialOrdinary sourceInitial initial) :
     ∃ expected, runSourceHistories sourceStep [] steps [sourceInitial] = some expected ∧
       List.Forall₂ (related steps last.before finish finalOrdinary) expected results := by
@@ -223,7 +223,7 @@ theorem refineFlowWithWrites {artifact root mode next rootInputs program block s
   have same : original = events := congrArg Prod.snd (Option.some.inj (read.symm.trans literal))
   subst original
   exact (trace.executes_singleton executed).ordered_refinement_with_writes flow.source flow.ordinary
-    sourceStep related [] _ flow.calls (allowed := some allowed) writes law (.cons starts .nil)
+    sourceStep related [] _ flow.callsAt (allowed := some allowed) writes law (.cons starts .nil)
 
 /-- Specialize the ordered proof to the real body. The same traversal supplies
 the child receipts, the owner and SSA chains, the input ordering, and the

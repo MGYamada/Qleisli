@@ -12,7 +12,7 @@ open Qleisli.Semantics.ObservingAction (run)
 open Qleisli.RuntimeCallHistory
   (NamedHistoryEntry NamedSourceTraversal actual_named_history_entry actual_named_source_traversal
     callerSourceResult callerSourceResult_congr componentJoint)
-open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun)
+open Qleisli.RuntimeNamedChildRuns (CheckedStepAt ChildRunAt ConditionFrom RootInputs)
 open RuntimePureBody (Step runBlockCore)
 open RuntimeSelectionSteps (Edge)
 open Qleisli.RuntimeSemanticForest (product)
@@ -131,7 +131,7 @@ Each logical component starts with the caller's outcomes and visible bits.
 The shared recursive law is instantiated with this actual history's IDs. -/
 def GeneralNamedRefines {artifact : Artifact} {root : Validity.Root}
     {mode : RuntimePureBody.ExecutionMode artifact root} (fuel : Nat)
-    (inputs : List Nat) (inherited : Option (Nat → Prop))
+    (origin : RootInputs) (inputs : List Nat) (inherited : Option (Nat → Prop))
     (children : ScopedSourceSteps root.dependencies) (sourceScope : List Edge)
     (ordinal : Nat) {program block} : Step root.dependencies program block → Prop
   | step@(.named (start := start) (count := count) (before := before) (ordinary := ordinary)
@@ -144,9 +144,10 @@ def GeneralNamedRefines {artifact : Artifact} {root : Validity.Root}
         some (scope.interval.after.quantum.reference,events) →
       run root.dependencies block.fuel events history = some results →
       TraceWriteBound (inherited.map (fun holds id => ¬ holds id)) events →
-      StepRefinement nested (CheckedStep (runBlockCore artifact root mode fuel)) next
-        (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ history.values.map Prod.fst)) inputs)
-        (some (fun id => id ∉ history.values.map Prod.fst)) →
+      ((∀ first ∈ nested, ConditionFrom origin first) →
+        StepRefinement nested (CheckedStepAt (runBlockCore artifact root mode fuel) origin) next
+          (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ history.values.map Prod.fst)) inputs)
+          (some (fun id => id ∉ history.values.map Prod.fst))) →
       ∃ expected,
         evaluateGeneralNamed children sourceScope ordinal step source = some expected ∧
         List.Forall₂
@@ -156,13 +157,13 @@ def GeneralNamedRefines {artifact : Artifact} {root : Validity.Root}
 
 /-- The local named-call law uses the actual child receipt and the actual
 literal caller event, preserving the ordered result family. -/
-theorem general_named_refines {artifact root mode fuel program block step}
-    (call : @ChildRun artifact root mode (runBlockCore artifact root mode (fuel+1)) program block step)
+theorem general_named_refines {artifact root mode fuel origin program block step}
+    (call : @ChildRunAt artifact root mode (runBlockCore artifact root mode (fuel+1)) (some origin) program block step)
     (inputs : List Nat) (inherited : Option (Nat → Prop))
     (children : ScopedSourceSteps root.dependencies) (sourceScope : List Edge) (ordinal : Nat) :
-    GeneralNamedRefines (artifact := artifact) (mode := mode) fuel inputs inherited children sourceScope ordinal step := by
-  have entry : NamedHistoryEntry step := actual_named_history_entry call
-  have traversal : NamedSourceTraversal (artifact := artifact) (mode := mode) fuel step :=
+    GeneralNamedRefines (artifact := artifact) (mode := mode) fuel origin inputs inherited children sourceScope ordinal step := by
+  have entry : NamedHistoryEntry step := actual_named_history_entry call.forget
+  have traversal : NamedSourceTraversal (artifact := artifact) (mode := mode) fuel origin step :=
     actual_named_source_traversal call
   cases call with
   | @named start count args caller before ordinary event scope body bodyRead
@@ -170,7 +171,7 @@ theorem general_named_refines {artifact root mode fuel program block step}
       beforeInput afterInput afterChild inputRead childRead =>
     intro source history events results agrees read executed writes laws
     obtain ⟨input,assigned,assignedRead,ordered,_,prepared⟩ := entry
-    obtain ⟨_,_,_,_,flow,returned⟩ := traversal input assigned assignedRead ordered
+    obtain ⟨_,flow,returned⟩ := traversal input assigned assignedRead ordered
     obtain ⟨_,hidden,bits,values,_,checked,bindings,frame,represented⟩ := agrees
     let parent : Qleisli.RuntimeSemanticForest.Frame checked.bindings := bindings.symm ▸ frame
     obtain ⟨childFrame,childInput⟩ := prepared checked parent bindings
@@ -182,7 +183,7 @@ theorem general_named_refines {artifact root mode fuel program block step}
       | some holds => exact ran.child_writes_avoid_nested_input holds values.2 writes
     obtain ⟨_,family,_,weights,projection,paired⟩ :=
       ran.refine_weighted_child_sources input childFrame checked.bindings boundary.input.ordered _
-        source history rfl flow returned inputs hidden bits values.1 _ laws avoids
+        source history rfl flow returned inputs hidden bits values.1 _ (laws flow.conditions) avoids
     have returned := ran.caller_history_after_return boundary checked parent bindings inputs inherited
       result.ordinary values.2 weights paired
     have inputOrder := RuntimeNamedPrimitiveInputs.reordered_original
