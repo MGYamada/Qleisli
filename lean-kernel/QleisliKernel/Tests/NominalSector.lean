@@ -33,6 +33,37 @@ theorem fresh_three_state_code :
     (((FiniteCarrier.code tri).run 1000000).1.map (fun value => [value]) == .ok [code]) = true := by
   decide +kernel
 
+private def encodedLabels : List Nat := [6,1,0,3,2,4,5]
+private def paddedCode : Matrix := Semantics.FiniteCarrier.encoding ⟨3,encodedLabels⟩
+
+private def phasedDiagonal (phases : List Nat) : Matrix :=
+  let width := phases.length
+  ⟨width,width,(List.range (width*width)).map fun index =>
+    let row := index / width
+    if row == index % width then Exact.Scalar.phase ((phases[row]?).getD 0 : Nat)
+    else Scalar.zero⟩
+
+private def expectedCodeAction : Matrix := ⟨8,7,(List.range 56).map fun index =>
+  let row := index / 7
+  if encodedLabels[index % 7]? == some row then Exact.Scalar.phase (row : Nat)
+  else Scalar.zero⟩
+
+theorem compact_products_preserve_reordered_rectangular_phases :
+    (((FiniteCarrier.codeProduct .right (phasedDiagonal (List.range 8)) paddedCode).run 775).1.map
+        (fun value => [value]) == .ok [expectedCodeAction]) = true ∧
+    (((FiniteCarrier.codeProduct .left paddedCode (phasedDiagonal encodedLabels)).run 687).1.map
+        (fun value => [value]) == .ok [expectedCodeAction]) = true := by
+  decide +kernel
+
+private def paddingSwap : Matrix := ⟨8,8,(List.range 64).map fun index =>
+  let column := index % 8
+  if index / 8 == (if column == 6 then 7 else if column == 7 then 6 else column)
+    then Scalar.one else Scalar.zero⟩
+
+theorem compact_rectangular_equation_refuses_padding_leakage :
+    (outcome paddedCode paddedCode [paddingSwap] 0 (phasedDiagonal (List.replicate 7 0)) ==
+      .error .equation) = true := by decide +kernel
+
 theorem exact_three_cycle : (outcome code code [cycle4] 0 cycle3 == .ok [cycle3]) = true := by
   decide +kernel
 

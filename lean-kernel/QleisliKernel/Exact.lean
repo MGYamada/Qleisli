@@ -182,7 +182,7 @@ theorem scalar_zero_mul (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ ma
   rw [get_zero]
   exact coefficient_zero_mul (v.get j) (bounded j)
 
-private theorem scalar_mul_zero (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ maxInputExponent) :
+theorem scalar_mul_zero (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ maxInputExponent) :
     Scalar.mul v Scalar.zero = .ok Scalar.zero := by
   apply fold_zero
   intro i j

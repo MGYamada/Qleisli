@@ -1,8 +1,8 @@
 import QleisliKernel.ExactMatrix
 
-/-! Compact rows preserve the exact ordered composition, including arithmetic
-failures. Literal zero terms are omitted only with canonical coefficients on
-the right and a canonical running sum.
+/-! Compact row or column supports preserve the exact ordered composition,
+including arithmetic failures. An omitted term has a literal zero factor,
+bounded coefficients on the opposite side and a canonical running sum.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Exact
 open Semantics.Exact
@@ -59,57 +59,31 @@ private theorem dotStep_valid (total : Scalar) (term : Scalar × Scalar) (next :
     exact scalar_add_valid total result next valid (scalar_mul_valid _ _ _ product)
       (by simpa only [product,bind,Except.bind] using step)
 
-/-- A compact row or column retains the original order of the nonzero
-terms and the first arithmetic failure. The dropped terms must have a
-literal zero operand and bounded exponents. -/
-private theorem sparse_dot (terms : List (Scalar × Scalar)) (keep : Scalar × Scalar → Bool)
-    (total : Scalar) (valid : Scalar.valid total = true)
-    (bounds : ∀ term ∈ terms, Scalar.valid term.2 = true)
-    (drops : ∀ term ∈ terms, keep term = false → term.1 = Scalar.zero) :
-    (terms.filter keep).foldlM dotStep total = terms.foldlM dotStep total := by
-  induction terms generalizing total with
+-- Filtering either operand keeps the original index order, including the
+-- first arithmetic failure. Each omitted product must be exact zero.
+private theorem sparse_dot (indices : List Nat) (term : Nat → Scalar × Scalar)
+    (keep : Nat → Bool) (total : Scalar) (valid : Scalar.valid total = true)
+    (drops : ∀ k ∈ indices, keep k = false → Scalar.mul (term k).1 (term k).2 = .ok Scalar.zero) :
+    (indices.filter keep).foldlM (fun sum k => dotStep sum (term k)) total =
+      indices.foldlM (fun sum k => dotStep sum (term k)) total := by
+  induction indices generalizing total with
   | nil => rfl
-  | cons term rest ih =>
-    have tailBound : ∀ other ∈ rest, Scalar.valid other.2 = true :=
-      fun other inside => bounds other (List.mem_cons_of_mem _ inside)
-    have tailDrops : ∀ other ∈ rest, keep other = false → other.1 = Scalar.zero :=
-      fun other inside => drops other (List.mem_cons_of_mem _ inside)
-    cases kept : keep term with
+  | cons index rest ih =>
+    have tailDrops : ∀ k ∈ rest, keep k = false → Scalar.mul (term k).1 (term k).2 = .ok Scalar.zero :=
+      fun k inside => drops k (List.mem_cons_of_mem _ inside)
+    cases kept : keep index with
     | false =>
-      have safe := bounds term List.mem_cons_self
-      have zeroProduct : Scalar.mul term.1 term.2 = .ok Scalar.zero := by
-        rw [drops term List.mem_cons_self kept]
-        exact scalar_zero_mul term.2 (fun k => scalar_exponent_bound term.2 safe k)
-      have unchanged : dotStep total term = .ok total := by
+      have unchanged : dotStep total (term index) = .ok total := by
         unfold dotStep
-        rw [mulZeroFast_equiv,zeroProduct]
+        rw [mulZeroFast_equiv,drops index List.mem_cons_self kept]
         exact scalar_add_zero total valid
       simp only [List.filter_cons,kept,Bool.false_eq_true,if_false,List.foldlM_cons,unchanged,bind,Except.bind]
-      exact ih total valid tailBound tailDrops
+      exact ih total valid tailDrops
     | true =>
       simp only [List.filter_cons,kept,if_true,List.foldlM_cons,bind,Except.bind]
-      cases stepped : dotStep total term with
+      cases stepped : dotStep total (term index) with
       | error error => rfl
-      | ok next => exact ih next (dotStep_valid total term next valid stepped) tailBound tailDrops
-
-private theorem sparse_indexed_dot (indices : List Nat) (left right : Nat → Scalar) (total : Scalar)
-    (valid : Scalar.valid total = true)
-    (bounds : ∀ index ∈ indices, Scalar.valid (right index) = true) :
-    let product := fun k => (left k,right k)
-    let step := fun sum k => dotStep sum (product k)
-    ((indices.filter (fun k => !(left k == Scalar.zero))).foldlM step total) =
-      indices.foldlM step total := by
-  intro product step
-  have safe : ∀ term ∈ indices.map product, Scalar.valid term.2 = true := by
-    intro term member
-    obtain ⟨index, inside, rfl⟩ := List.mem_map.mp member
-    exact bounds index inside
-  let keep := fun term : Scalar × Scalar => !(term.1 == Scalar.zero)
-  have drops : ∀ term ∈ indices.map product, keep term = false → term.1 = Scalar.zero := by
-    intro term _ omitted
-    simpa [keep] using omitted
-  simpa only [List.filter_map,List.foldlM_map,Function.comp_def,keep,step,product] using
-    sparse_dot (indices.map product) keep total valid safe drops
+      | ok next => exact ih next (dotStep_valid total (term index) next valid stepped) tailDrops
 
 private theorem mapM_equal_on {α β ε : Type} (xs : List α)
     (first second : α → Except ε β) (equal : ∀ a ∈ xs, first a = second a) :
@@ -136,16 +110,28 @@ private def compactRows (rows cols : Nat) (entries : Array Scalar) : Array (List
   ((List.range rows).map fun row =>
     (List.range cols).filter fun k => !(arrayEntry entries cols row k == Scalar.zero)).toArray
 
-private def sparseEntries (x y : Matrix) (left right : Array Scalar)
-    (rows : Array (List Nat)) : Except Error (List Scalar) :=
-  (List.range (x.rows*y.cols)).mapM fun i =>
-    (rows[i/y.cols]?.getD []).foldlM
-      (fun sum k => dotStep sum
-        (arrayEntry left x.cols (i/y.cols) k,arrayEntry right y.cols k (i%y.cols))) Scalar.zero
+private def compactColumns (rows cols : Nat) (entries : Array Scalar) : Array (List Nat) :=
+  ((List.range cols).map fun column =>
+    (List.range rows).filter fun k => !(arrayEntry entries cols k column == Scalar.zero)).toArray
 
-private theorem sparse_entries_equiv (x y : Matrix) (right : Matrix.Admitted y) :
+private def sparseEntries (x y : Matrix) (left right : Array Scalar)
+    (support : Nat → Nat → List Nat) : Except Error (List Scalar) :=
+  (List.range (x.rows*y.cols)).mapM fun i =>
+    let row := i / y.cols
+    let column := i % y.cols
+    (support row column).foldlM
+      (fun sum k => dotStep sum
+        (arrayEntry left x.cols row k,arrayEntry right y.cols k column)) Scalar.zero
+
+private def rowSupport (rows : Array (List Nat)) (row _column : Nat) : List Nat :=
+  rows[row]?.getD []
+
+private def columnSupport (columns : Array (List Nat)) (_row column : Nat) : List Nat :=
+  columns[column]?.getD []
+
+private theorem sparse_rows_equiv (x y : Matrix) (right : Matrix.Admitted y) :
     sparseEntries x y x.entries.toArray y.entries.toArray
-      (compactRows x.rows x.cols x.entries.toArray) = denseEntries x y := by
+      (rowSupport (compactRows x.rows x.cols x.entries.toArray)) = denseEntries x y := by
   unfold sparseEntries denseEntries
   apply mapM_equal_on
   intro index member
@@ -155,14 +141,33 @@ private theorem sparse_entries_equiv (x y : Matrix) (right : Matrix.Admitted y) 
     exact shape.1.2
   have row : index/y.cols < x.rows :=
     (Nat.div_lt_iff_lt_mul positive).mpr (List.mem_range.mp member)
-  have actual : ((compactRows x.rows x.cols x.entries.toArray)[index/y.cols]?).getD [] =
-      (List.range x.cols).filter (fun k => !(x.entry (index/y.cols) k == Scalar.zero)) := by
-    simp only [compactRows,List.getElem?_toArray,List.getElem?_map,List.getElem?_range,row,
-      Option.map_some,Option.getD_some,arrayEntry_eq]
-  simp only [actual,arrayEntry_eq]
-  exact sparse_indexed_dot (List.range x.cols) (x.entry (index/y.cols))
-    (fun k => y.entry k (index%y.cols)) Scalar.zero (by decide)
-    (fun k _ => matrix_entry_valid _ right _ _)
+  simp only [rowSupport,compactRows,List.getElem?_toArray,List.getElem?_map,List.getElem?_range,row,
+    Option.map_some,Option.getD_some,arrayEntry_eq]
+  apply sparse_dot _ _ _ _ (by decide)
+  intro k _ omitted
+  have zero : x.entry (index / y.cols) k = Scalar.zero := by simpa using omitted
+  simp only [zero]
+  exact scalar_zero_mul _ (scalar_exponent_bound _ (matrix_entry_valid _ right _ _))
+
+private theorem sparse_columns_equiv (x y : Matrix) (left : Matrix.Admitted x)
+    (shape : x.cols = y.rows) :
+    sparseEntries x y x.entries.toArray y.entries.toArray
+      (columnSupport (compactColumns y.rows y.cols y.entries.toArray)) = denseEntries x y := by
+  unfold sparseEntries denseEntries
+  apply mapM_equal_on
+  intro index member
+  have positive : 0 < y.cols := by
+    by_cases zero : y.cols = 0
+    · simp [zero] at member
+    · omega
+  have column := Nat.mod_lt index positive
+  simp only [columnSupport,compactColumns,List.getElem?_toArray,List.getElem?_map,List.getElem?_range,column,
+    Option.map_some,Option.getD_some,arrayEntry_eq,← shape]
+  apply sparse_dot _ _ _ _ (by decide)
+  intro k _ omitted
+  have zero : y.entry k (index % y.cols) = Scalar.zero := by simpa using omitted
+  simp only [zero]
+  exact scalar_mul_zero _ (scalar_exponent_bound _ (matrix_entry_valid _ left _ _))
 
 private theorem lift_exact_bind {α β : Type}
     (original : Except Error α) (next : α → Except Error β) :
@@ -186,13 +191,17 @@ private theorem lift_exact_map {α β : Type} (xs : List α) (step : α → Exce
     cases step head <;> cases tail.mapM step <;> rfl
 
 private def finishComposition (x y : Matrix) (left right : Array Scalar)
-    (rows : Array (List Nat)) : Except Error Matrix := do
-  let entries ← sparseEntries x y left right rows
+    (support : Nat → Nat → List Nat) : Except Error Matrix := do
+  let entries ← sparseEntries x y left right support
+  Matrix.make x.rows y.cols entries
+
+private def denseComposition (x y : Matrix) : Except Error Matrix := do
+  let entries ← denseEntries x y
   Matrix.make x.rows y.cols entries
 
 /-- Reserve the conversions, support scan and output visits before doing them.
 The second charge covers both exact operations for every retained dot term. -/
-private def sparseComposeWork (x y : Matrix) : WorkM Matrix := do
+def Matrix.composeSparseLeftWork (x y : Matrix) : WorkM Matrix := do
   if x.cols ≠ y.rows then throw .shapeMismatch
   charge (x.entries.length + y.entries.length + x.rows * (2 * x.cols + 1) + 3 * x.rows * y.cols)
   let left := x.entries.toArray
@@ -200,30 +209,61 @@ private def sparseComposeWork (x y : Matrix) : WorkM Matrix := do
   let rows := compactRows x.rows x.cols left
   let terms := rows.foldl (fun total row => total + row.length) 0
   charge (2 * terms * y.cols)
-  liftExact (finishComposition x y left right rows)
+  liftExact (finishComposition x y left right (rowSupport rows))
 
-private theorem compose_from_sparse_entries (x y : Matrix) (right : Matrix.Admitted y) :
+/-- The symmetric cost strategy builds support from the right operand's
+columns. The multiplication and accumulation order is unchanged. -/
+def Matrix.composeSparseRightWork (x y : Matrix) : WorkM Matrix := do
+  if x.cols ≠ y.rows then throw .shapeMismatch
+  charge (x.entries.length + y.entries.length + y.cols * (2 * y.rows + 1) + 3 * x.rows * y.cols)
+  let left := x.entries.toArray
+  let right := y.entries.toArray
+  let columns := compactColumns y.rows y.cols right
+  let terms := columns.foldl (fun total column => total + column.length) 0
+  charge (2 * terms * x.rows)
+  liftExact (finishComposition x y left right (columnSupport columns))
+
+private theorem compose_from_dense_entries (x y : Matrix) :
     Matrix.composeWork x y = (do
       if x.cols ≠ y.rows then throw .shapeMismatch
       charge (2*x.rows*x.cols*y.cols)
-      liftExact (finishComposition x y x.entries.toArray y.entries.toArray
-        (compactRows x.rows x.cols x.entries.toArray))) := by
-  simp only [Matrix.composeWork_list,finishComposition,sparse_entries_equiv x y right,
-    denseEntries,dotStep,mulZeroFast_equiv,bind_pure,← lift_exact_bind,← lift_exact_fold,← lift_exact_map]
+      liftExact (denseComposition x y)) := by
+  simp only [Matrix.composeWork_list,denseComposition,denseEntries,dotStep,mulZeroFast_equiv,
+    bind_pure,← lift_exact_bind,← lift_exact_fold,← lift_exact_map]
 
-private theorem sparseCompose_success (x y result : Matrix) (right : Matrix.Admitted y)
-    (work left : Nat) (ok : (sparseComposeWork x y).run work = (.ok result,left)) :
+private theorem compose_at_cost (x y result : Matrix) (same : x.cols = y.rows)
+    (value : denseComposition x y = .ok result) :
+    (Matrix.composeWork x y).run (2*x.rows*x.cols*y.cols) = (.ok result,0) := by
+  simp only [compose_from_dense_entries,if_neg (not_not_intro same),pure_bind]
+  rw [charged_run _ _ _ (Nat.le_refl _),Nat.sub_self,value]
+  rfl
+
+theorem Matrix.composeSparseLeft_success (x y result : Matrix) (right : Matrix.Admitted y)
+    (work left : Nat) (ok : (Matrix.composeSparseLeftWork x y).run work = (.ok result,left)) :
     (Matrix.composeWork x y).run (2*x.rows*x.cols*y.cols) = (.ok result,0) := by
   by_cases same : x.cols = y.rows
-  · unfold sparseComposeWork at ok
+  · unfold Matrix.composeSparseLeftWork at ok
     simp only [if_neg (not_not_intro same),pure_bind] at ok
-    obtain ⟨_,middle,_,ok⟩ := work_bind_success _ _ _ _ _ ok
     obtain ⟨_,_,_,ok⟩ := work_bind_success _ _ _ _ _ ok
-    have resultEq := (work_lift_success _ _ _ _ ok).1
-    simp only [compose_from_sparse_entries x y right,if_neg (not_not_intro same),pure_bind]
-    rw [charged_run _ _ _ (Nat.le_refl _),Nat.sub_self,resultEq]
-    rfl
-  · simp [sparseComposeWork,same] at ok
+    obtain ⟨_,_,_,ok⟩ := work_bind_success _ _ _ _ _ ok
+    apply compose_at_cost _ _ _ same
+    simpa only [finishComposition,denseComposition,sparse_rows_equiv _ _ right]
+      using (work_lift_success _ _ _ _ ok).1
+  · simp [Matrix.composeSparseLeftWork,same] at ok
+    cases ok
+
+theorem Matrix.composeSparseRight_success (x y result : Matrix) (admitted : Matrix.Admitted x)
+    (work left : Nat) (ok : (Matrix.composeSparseRightWork x y).run work = (.ok result,left)) :
+    (Matrix.composeWork x y).run (2*x.rows*x.cols*y.cols) = (.ok result,0) := by
+  by_cases same : x.cols = y.rows
+  · unfold Matrix.composeSparseRightWork at ok
+    simp only [if_neg (not_not_intro same),pure_bind] at ok
+    obtain ⟨_,_,_,ok⟩ := work_bind_success _ _ _ _ _ ok
+    obtain ⟨_,_,_,ok⟩ := work_bind_success _ _ _ _ _ ok
+    apply compose_at_cost _ _ _ same
+    simpa only [finishComposition,denseComposition,sparse_columns_equiv _ _ admitted same]
+      using (work_lift_success _ _ _ _ ok).1
+  · simp [Matrix.composeSparseRightWork,same] at ok
     cases ok
 
 -- Index the transposed input from an array. The adjoint still visits and
@@ -244,7 +284,7 @@ def Matrix.sparseIsometryWork (x : Matrix) : WorkM Bool := do
   if x.rows < x.cols then return false
   charge x.entries.length
   let adjoint ← adjointArrayWork x
-  let product ← sparseComposeWork adjoint x
+  let product ← Matrix.composeSparseLeftWork adjoint x
   let identity ← liftExact (Matrix.identity x.cols)
   return product == identity
 
@@ -262,7 +302,7 @@ theorem Matrix.sparseIsometry_success (x : Matrix) (admitted : Matrix.Admitted x
   obtain ⟨adjoint,middle,adjointOk,ok⟩ := work_bind_success _ _ _ _ _ ok
   obtain ⟨product,_,productOk,ok⟩ := work_bind_success _ _ _ _ _ ok
   obtain ⟨identity,_,identityOk,ok⟩ := work_bind_success _ _ _ _ _ ok
-  have dense := sparseCompose_success adjoint x product admitted _ _ productOk
+  have dense := Matrix.composeSparseLeft_success adjoint x product admitted _ _ productOk
   have identityEq := (work_lift_success _ _ _ _ identityOk).1
   have resultEq := (work_pure_success _ _ _ _ ok).1
   let cost := 2*adjoint.rows*adjoint.cols*x.cols
@@ -287,5 +327,7 @@ theorem Matrix.sparseIsometry_success (x : Matrix) (admitted : Matrix.Admitted x
   change (Except.ok (product == identity),0) = _
   rw [resultEq]
 
+#print axioms Matrix.composeSparseLeft_success
+#print axioms Matrix.composeSparseRight_success
 #print axioms Matrix.sparseIsometry_success
 end QleisliKernel.Exact

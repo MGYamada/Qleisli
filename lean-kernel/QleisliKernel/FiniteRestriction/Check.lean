@@ -70,14 +70,9 @@ theorem compactSectorSpace_conditions (matrix : Matrix) (work left : Nat)
   obtain ⟨isometry,w₃,checked,h⟩ := bind_success _ _ _ _ _ h
   have trueCheck := (guard_success _ _ _ _ h).1
   subst isometry
-  obtain ⟨same,valid⟩ := matrixRead_value _ _ _ _ admission
+  have admitted := matrixRead_admitted _ _ _ _ admission
+  have same := (matrixRead_value _ _ _ _ admission).1
   subst read
-  have admitted : QleisliKernel.Exact.Matrix.Admitted matrix := by
-    unfold matrixRead at admission
-    obtain ⟨_,_,dimensions,h⟩ := bind_success _ _ _ _ _ admission
-    obtain ⟨_,_,length,_⟩ := bind_success _ _ _ _ _ h
-    exact ⟨(guard_success _ _ _ _ dimensions).1,beq_iff_eq.mp (guard_success _ _ _ _ length).1,
-      List.all_eq_true.mp valid⟩
   exact ⟨beq_iff_eq.mp (guard_success _ _ _ _ shape).1,
     QleisliKernel.Exact.Matrix.sparseIsometry_success matrix admitted w₂ w₃
       (exactWork_success _ _ _ _ checked)⟩

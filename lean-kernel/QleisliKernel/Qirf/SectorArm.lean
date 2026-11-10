@@ -10,11 +10,11 @@ namespace QleisliKernel.Qirf.SectorArm
 open Semantics.Exact Semantics.Finite Finite
 
 def projectLogical (inputCode outputCode physical : Matrix) : WorkM Matrix := do
-  let actual ← exactWork (Exact.Matrix.composeWork physical inputCode)
+  let actual ← FiniteCarrier.codeProduct .right physical inputCode
   let adjoint ← exactWork (Exact.Matrix.adjointWork outputCode)
-  let logical ← exactWork (Exact.Matrix.composeWork adjoint actual)
+  let logical ← FiniteCarrier.codeProduct .left adjoint actual
   wholeSpace logical
-  let required ← exactWork (Exact.Matrix.composeWork outputCode logical)
+  let required ← FiniteCarrier.codeProduct .left outputCode logical
   exactWork (Exact.charge actual.entries.length)
   guard (actual == required) .equation
   return logical
@@ -43,10 +43,11 @@ theorem projectLogical_bound (inputCode outputCode physical logical : Matrix) (w
   subst logical
   have exactEq := beq_iff_eq.mp (guard_success _ _ _ _ he).1
   rw [← exactEq] at hr
-  exact ⟨⟨actual,adjoint,work,w₁,w₁,w₂,w₂,w₃,exactWork_success _ _ _ _ ha,
-      exactWork_success _ _ _ _ hd,exactWork_success _ _ _ _ hl⟩,
-    ⟨w₃,w₄,hu⟩,⟨actual,work,w₁,w₄,w₅,exactWork_success _ _ _ _ ha,
-      exactWork_success _ _ _ _ hr⟩⟩
+  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ ha
+  obtain ⟨e,f,logicalDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hl
+  obtain ⟨g,i,requiredDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hr
+  exact ⟨⟨actual,adjoint,a,b,w₁,w₂,e,f,actualDense,exactWork_success _ _ _ _ hd,logicalDense⟩,
+    ⟨w₃,w₄,hu⟩,⟨actual,a,b,g,i,actualDense,requiredDense⟩⟩
 
 structure Reference where
   label : Nat

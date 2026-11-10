@@ -13,6 +13,8 @@ development milestones from the scope of their evidence.
   bounds the support. Both paths check every physical sector.
   Identical restricted tapes within one check share a verified matrix,
   with every physical label still bound to its own restriction.
+  Arm and sector code-space equations skip literal zero terms on either
+  side of an exact product and retain the dense equation as their proof.
 - Share coherent sector lowering between `qif` and `qmatch`. Retain both
   selections in original-source v5 bodies and derive the binary tape action
   from the shared QPTL direct-sum theorem.

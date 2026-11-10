@@ -1,5 +1,6 @@
 import QleisliKernel.Semantics.FiniteCarrier
 import QleisliKernel.Finite
+import QleisliKernel.ExactSparse
 
 /-! Bounded finite-carrier reading for #64. Reuse the existing exact arithmetic,
 work accounting and matrix/isometry checks. Qirf.Carrier and Protocol.Carrier
@@ -71,6 +72,51 @@ def code (basis : Basis) : WorkM Matrix := do
   let isometry ← exactWork (Exact.Matrix.isometryWork matrix)
   guard isometry .notIsometric
   return matrix
+
+inductive CodeSide where
+  | left | right
+
+private def compactProductCost (side : CodeSide) (x y : Matrix) : Nat :=
+  let common := x.rows*x.cols + y.rows*y.cols + 3*x.rows*y.cols
+  match side with
+  | .left => common + x.rows*(2*x.cols+1) + 2*(max x.rows x.cols)*y.cols + 4*y.rows*y.cols
+  | .right => common + y.cols*(2*y.rows+1) + 2*(max y.rows y.cols)*x.rows + 4*x.rows*x.cols
+
+/-- The original layout code and its adjoint have at most one term per
+logical column or row. This estimate selects the cost strategy only. The
+support used by the product is read from the literal matrix. -/
+def codeProduct (side : CodeSide) (x y : Matrix) : WorkM Matrix := do
+  if x.cols == y.rows && compactProductCost side x y < 2*x.rows*x.cols*y.cols then
+    match side with
+    | .left =>
+      let admitted ← matrixRead y
+      exactWork (Exact.Matrix.composeSparseLeftWork x admitted)
+    | .right =>
+      let admitted ← matrixRead x
+      exactWork (Exact.Matrix.composeSparseRightWork admitted y)
+  else exactWork (Exact.Matrix.composeWork x y)
+
+theorem codeProduct_dense (side : CodeSide) (x y result : Matrix) (work left : Nat)
+    (ok : (codeProduct side x y).run work = (.ok result,left)) :
+    ∃ before after, Exact.Matrix.compose x y before = (.ok result,after) := by
+  unfold codeProduct at ok
+  split at ok
+  · cases side
+    · obtain ⟨input,middle,read,computed⟩ := bind_success _ _ _ _ _ ok
+      have admitted := matrixRead_admitted _ _ _ _ read
+      have same := (matrixRead_value _ _ _ _ read).1
+      subst input
+      exact ⟨_,0,Exact.Matrix.composeSparseLeft_success x y result admitted middle left
+        (exactWork_success _ _ _ _ computed)⟩
+    · obtain ⟨input,middle,read,computed⟩ := bind_success _ _ _ _ _ ok
+      have admitted := matrixRead_admitted _ _ _ _ read
+      have same := (matrixRead_value _ _ _ _ read).1
+      subst input
+      exact ⟨_,0,Exact.Matrix.composeSparseRight_success x y result admitted middle left
+        (exactWork_success _ _ _ _ computed)⟩
+  · exact ⟨work,left,exactWork_success _ _ _ _ ok⟩
+
+#print axioms codeProduct_dense
 
 theorem read_reference (basis : Basis) (result : Layout) (work left : Nat)
     (ok : (read basis).run work = (.ok result,left)) : layout basis = some result := by
