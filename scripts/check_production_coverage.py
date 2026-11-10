@@ -253,7 +253,9 @@ PATHS = {
             'values: values.to_vec()', 'registers: lower.raw.registers.clone()',
             'ordinary::proposed_rows(&ordinary)?', 'check_runtime_root(proposal.artifact(), &request.encode()?)?']),
         ('src/frontend/compile/lower/mod.rs', ['runtime::inputs(&mut lower, *key, &args)?',
-            'runtime::accept(&mut lower, key, &params, inputs, &result, &raw)']),
+            'runtime::accept(\n                &mut lower,\n                key,\n                &params,\n'
+            '                inputs,\n                &result,\n                &raw,\n'
+            '                qmatch.as_deref(),']),
         ('src/frontend/compile/selected.rs', ['pub struct SelectedRuntimeProgram',
             'prepare_borrowed_originals(originals, SourceLimits::selected())?', 'source: selected.clone()',
             'check::ObligationKind::Provider { provider, .. } => pending.push(provider)']),

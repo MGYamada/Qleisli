@@ -124,6 +124,8 @@ pub(crate) struct ContextSubject {
     // Producer eligibility only; never serialized or trusted by a native gate.
     pub contains_selections: bool,
     pub requires_source_gate: bool,
+    pub contains_basis_lift: bool,
+    pub needs_qmatch_v5: bool,
 }
 
 #[cfg_attr(

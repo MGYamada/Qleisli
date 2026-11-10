@@ -180,20 +180,39 @@ fn selected_qmatch_calls_preserve_interference_and_choose_original_runtime_lower
         pub unitary fn unrelated(q:Q<Bit>)->Q<Bit>{q}";
     let files = SourceRoot::new(source);
     for profile in ["raw", "auto"] {
-        let text = result(
-            selected("run", &files.0.join("main.qli"), "main::route")
-                .arg("--nat=n=1")
-                .arg(format!("--ir-profile={profile}"))
-                .arg(format!("--lean-kernel={}", kernel().display()))
-                .output()
-                .unwrap(),
-            "run",
-            true,
-        );
+        let mut command = selected("run", &files.0.join("main.qli"), "main::route");
+        command
+            .arg("--nat=n=1")
+            .arg(format!("--ir-profile={profile}"));
+        #[cfg(unix)]
+        let log = {
+            let log = LoggedKernel::new();
+            log.attach(&mut command, true);
+            log
+        };
+        #[cfg(not(unix))]
+        command.arg(format!("--lean-kernel={}", kernel().display()));
+        let text = result(command.output().unwrap(), "run", true);
         distribution(&text, &[(&[true, false], 1.0)]);
         assert!(text.contains("\"source_steps_checked\":false"), "{text}");
         assert!(text.contains("\"source_meaning_verified\":false"), "{text}");
         assert!(text.contains("\"ir_profile\":\"raw\""), "{text}");
+        #[cfg(unix)]
+        {
+            let calls = log.calls();
+            assert!(
+                calls.iter().any(|mode| mode == "--qirf-contract"),
+                "{calls:?}"
+            );
+            assert!(
+                calls.iter().any(|mode| mode == "--runtime-root-check"),
+                "{calls:?}"
+            );
+            assert!(
+                calls.iter().all(|mode| mode != "--qmatch-source-v5-check"),
+                "{calls:?}"
+            );
+        }
     }
     let text = result(
         selected("check", &files.0.join("main.qli"), "main::unrelated")

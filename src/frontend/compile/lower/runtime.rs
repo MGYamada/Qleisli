@@ -5,6 +5,7 @@ use super::*;
 use crate::interchange::carrier::{Atom as BasisAtom, Owner};
 use crate::interchange::native::Proposal;
 use crate::interchange::ordinary_root::Selection;
+use crate::interchange::qmatch::ContextSubject;
 use crate::interchange::runtime_root::{Atom, Request, Storage};
 use ordinary::NativeResult;
 
@@ -183,6 +184,7 @@ pub(super) fn accept(
     inputs: Inputs,
     result: &Value,
     raw: &RawProgram,
+    qmatch: Option<&ContextSubject>,
 ) -> NativeResult<AcceptedProgram> {
     let decl = lower.compiler.declarations[key];
     let name = lower
@@ -291,10 +293,6 @@ pub(super) fn accept(
         }
     }
     let input_rows = ordinary::proposed_rows(&ordinary)?;
-    let qmatch = lower
-        .source_context
-        .as_ref()
-        .filter(|context| lower.uses_qmatch_v5() && context.contains_selections);
     let rows = if qmatch.is_some() {
         lower
             .compiler

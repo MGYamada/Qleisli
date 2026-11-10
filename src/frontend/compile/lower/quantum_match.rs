@@ -327,6 +327,10 @@ impl Lowerer<'_, '_> {
         let steps = if requires_sectors {
             // The selected v5 request checks the original arms and each literal
             // sector using separate selector and target widths.
+            self.nominal_qmatch
+                .as_mut()
+                .expect("selected sector checking needs an original context")
+                .require_qmatch_v5();
             steps
         } else {
             let sectors = expectations

@@ -26,6 +26,8 @@ pub(in crate::frontend::compile::lower) struct Frame {
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
     source_gate: bool,
+    contains_basis_lift: bool,
+    needs_qmatch_v5: bool,
 }
 
 struct Selection {
@@ -236,11 +238,21 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate,
+            contains_basis_lift: false,
+            needs_qmatch_v5: false,
         }))
     }
 
     pub(in crate::frontend::compile::lower) fn requires_source_gate(&self) -> bool {
         self.source_gate
+    }
+
+    pub(in crate::frontend::compile::lower) fn record_basis_lift(&mut self) {
+        self.contains_basis_lift = true;
+    }
+
+    pub(super) fn require_qmatch_v5(&mut self) {
+        self.needs_qmatch_v5 = true;
     }
 
     pub(in crate::frontend::compile::lower) fn position_count(&self) -> usize {
@@ -264,6 +276,8 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate: self.source_gate,
+            contains_basis_lift: false,
+            needs_qmatch_v5: false,
         }
     }
 
@@ -310,6 +324,8 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
+            contains_basis_lift: self.contains_basis_lift,
+            needs_qmatch_v5: self.needs_qmatch_v5,
         }))
     }
 
@@ -352,6 +368,8 @@ impl Frame {
                 operation: None,
                 contains_selections: self.contains_selections,
                 requires_source_gate: self.source_gate,
+                contains_basis_lift: self.contains_basis_lift,
+                needs_qmatch_v5: self.needs_qmatch_v5,
             })));
         }
         let span = selections
@@ -499,6 +517,8 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
+            contains_basis_lift: self.contains_basis_lift,
+            needs_qmatch_v5: self.needs_qmatch_v5,
         })))
     }
 }
@@ -615,6 +635,8 @@ pub(in crate::frontend::compile::lower) fn record_named(
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.positions.push(position.clone());
     frame.contains_selections |= body.contains_selections;
+    frame.contains_basis_lift |= body.contains_basis_lift;
+    frame.needs_qmatch_v5 |= body.needs_qmatch_v5;
     frame.calls.push((position, body));
     Ok(())
 }
@@ -706,6 +728,8 @@ pub(in crate::frontend::compile::lower) fn record_branch(
         .expect("original containing context");
     frame.contains_selections |= then_body.contains_selections || else_body.contains_selections;
     frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
+    frame.contains_basis_lift |= then_body.contains_basis_lift || else_body.contains_basis_lift;
+    frame.needs_qmatch_v5 |= then_body.needs_qmatch_v5 || else_body.needs_qmatch_v5;
     frame.positions.push(position.clone());
     frame.branches.push((position, then_body, else_body));
     Ok(())
@@ -839,11 +863,9 @@ pub(super) fn emit(
     {
         return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch requires an original structural function with quantum parameters and at most 128 selections"));
     }
-    lower
-        .nominal_qmatch
-        .as_mut()
-        .expect("original context")
-        .source_gate = true;
+    let frame = lower.nominal_qmatch.as_mut().expect("original context");
+    frame.source_gate = true;
+    frame.require_qmatch_v5();
     let basis = &lower.raw.registers[&selector_slot].basis;
     let count = match &basis.kind {
         Kind::Nominal(nominal) => match &nominal.body {

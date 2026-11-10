@@ -1860,6 +1860,9 @@ impl Lowerer<'_, '_> {
             output_wires: wires.clone(),
             table,
         });
+        if let Some(frame) = &mut self.nominal_qmatch {
+            frame.record_basis_lift();
+        }
         self.raw.registers.insert(
             slot,
             Register {
@@ -2126,14 +2129,18 @@ fn lower_function_in_context(
         vec![]
     };
     let result = lower.call_user(key, args, None)?;
-    if require_qmatch_v5
-        && !(runtime_inputs.is_some()
-            && lower.uses_qmatch_v5()
-            && lower
-                .source_context
-                .as_ref()
-                .is_some_and(|context| context.contains_selections))
-    {
+    let qmatch = lower
+        .source_context
+        .as_ref()
+        .filter(|context| {
+            // v5 has no coherent basis-lift event yet. Whole-circuit checked
+            // selections can use the ordinary runtime root in that case.
+            lower.uses_qmatch_v5()
+                && context.contains_selections
+                && (require_qmatch_v5 || context.needs_qmatch_v5 || !context.contains_basis_lift)
+        })
+        .cloned();
+    if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {
         return Err(lower.error(
             &key_name.0,
             decl.span,
@@ -2198,7 +2205,15 @@ fn lower_function_in_context(
     }
     let accepted = if needs_typed_root {
         if let Some(inputs) = runtime_inputs {
-            runtime::accept(&mut lower, key, &params, inputs, &result, &raw)
+            runtime::accept(
+                &mut lower,
+                key,
+                &params,
+                inputs,
+                &result,
+                &raw,
+                qmatch.as_deref(),
+            )
         } else {
             ordinary::accept(&mut lower, key, &params, input_storage, &result, &raw)
         }
