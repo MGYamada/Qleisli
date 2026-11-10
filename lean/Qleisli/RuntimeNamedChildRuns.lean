@@ -166,18 +166,42 @@ private theorem planned_operation_result {artifact root}
 same ordered roles, body position and expected action. -/
 def OperationOrigin {artifact root} (execution : ExecutionMode artifact root)
     {program block} : Node root.dependencies program block → Prop
-  | node@(.operation _ _ _ _ expected ..) =>
+  | node@(.operation (roles := roles) _ _ _ _ expected ..) =>
     ∃ (owner name : String) (source : SourceTypes.SourceRuntimeScope.Subject artifact.sources owner name)
       (event : SourceTypes.SourceOperationApplication.Event artifact.sources owner)
       (position : Position) (cursor : execution.queries.Cursor)
       (data : execution.queries.EventData source (.operation event) position)
       (original : RuntimeBodyQueries.Operation execution.queries event) (before after : RuntimeOwnerMap.Map)
       (receipts : List execution.Receipt),
+      event.inputOwners = roles ∧
       RuntimeInterval.Computed (RuntimeBodyQueries.readOperation execution.queries source event position cursor data) original ∧
       RuntimeInterval.Computed (operationNode block position event.inputOwners before after expected) node ∧
       OperationResult execution original expected receipts
   | .named .. => False
   | _ => True
+
+/-- In planned execution, the source roles and exact logical matrix of a
+graph node come from the source occurrence and its staged consumption. -/
+theorem OperationOrigin.staged_action {artifact root}
+    {preparation : RuntimeGraphOperation.Preparation artifact}
+    {continuation : RuntimeGraphOperation.StagedConsumption preparation root (Island root.dependencies)}
+    {program block} {node : Node root.dependencies program block}
+    (checked : OperationOrigin (.planned preparation continuation) node) :
+    match node with
+    | .operation (roles := roles) _ _ _ _ expected .. =>
+      ∃ (owner : String) (event : SourceTypes.SourceOperationApplication.Event artifact.sources owner)
+        (receipt : RuntimeGraphOperation.StagedReceipt continuation),
+        event.inputOwners = roles ∧ HEq receipt.request.graph event.operation.graph ∧
+          expected = continuation.action receipt.evidence
+    | _ => True := by
+  cases node
+  case operation =>
+    obtain ⟨owner,_,_,event,_,_,_,original,_,_,_,roles,_,_,performed⟩ := checked
+    obtain ⟨location,evidence,consumed,_,expected⟩ := performed
+    let graph := original.graph.2.2
+    exact ⟨owner,event,⟨plannedOperationRequest original,location,graph.evidence,graph.consumed,evidence,consumed⟩,
+      roles,HEq.rfl,expected⟩
+  all_goals exact True.intro
 
 private def IntrinsicNode {dependencies program block} : Node dependencies program block → Prop
   | .primitive .. | .structural .. | .selection .. => True
@@ -363,7 +387,7 @@ private theorem operation_aligned {artifact root} (execution : ExecutionMode art
     exact ⟨⟨rfl,⟨inputs,outputs,⟨work,a,_inputs⟩,⟨a,b,_outputs⟩,rfl,rfl⟩,
       ⟨interval,incoming,owners,initialOrder,rfl,ownerRead⟩⟩,⟨rfl,rfl⟩,
       ⟨owner,name,source,event,position,cursor,data,original,initial.bindings,owners.after.bindings,
-        receipts,read,nodeRead,performed⟩⟩
+        receipts,rfl,read,nodeRead,performed⟩⟩
   · cases h
 
 private theorem selection_before_transport

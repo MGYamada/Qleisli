@@ -6,6 +6,7 @@ import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection
 import Qleisli.RuntimeOriginalSparsePhi
 import Qleisli.RuntimeLiteralGeneralNamed
+import Qleisli.RuntimeOriginalGraphAction
 
 /-! A conditional uses the original prefix to select an arm, applies the
 shared recursion to its real child receipt, and passes that exact ordered
@@ -837,13 +838,14 @@ theorem original_body_sparse_refinement {artifact owner name arguments request p
     ((original_body_sparse_steps body row scope fallback leaves).of_certifies (fun _ cert => cert.forget)) starts
 
 def NeedsRecursivePure {dependencies program block} : Step dependencies program block → Prop
-  | .pure (.named ..) => False
+  | .pure (.named ..) | .pure (.operation ..) => False
   | step@(.pure _) => NeedsSparseSourceAction step ∧ NeedsNonInline step
   | _ => False
 
 noncomputable def recursiveBodyLeaves {dependencies}
     (pureSteps : ScopedSourceSteps dependencies) : ScopedSourceSteps dependencies :=
-  fun scope => withSparseSteps (withSparseObservation (withSparseInline (pureSteps scope)) scope)
+  fun scope => withSparseSteps
+    (withSparseObservation (withSparseInline (Qleisli.RuntimeOriginalGraphAction.withGraph (pureSteps scope))) scope)
 
 private theorem recursiveBodyLeaves_refine {dependencies program block}
     (pureSteps : ScopedSourceSteps dependencies)
@@ -858,14 +860,16 @@ private theorem recursiveBodyLeaves_refine {dependencies program block}
   apply sourceStep_with_scoped_structure
   apply sourceStep_with_scoped_observation
   apply sourceStep_with_scoped_inline
+  apply Qleisli.RuntimeOriginalGraphAction.sourceStep_with_graph
   apply pureLaws.of_certifies
   intro step checked
-  rcases checked with ⟨⟨⟨⟨known,leaf⟩,structural⟩,observation⟩,inline⟩
+  rcases checked with ⟨⟨⟨⟨⟨known,leaf⟩,structural⟩,observation⟩,inline⟩,graph⟩
   refine ⟨known,?_⟩
   cases step
   case pure node =>
     cases node
     case named => exact leaf
+    case operation => exact graph
     all_goals exact ⟨structural,inline⟩
   case gap => exact structural
   case observation => exact observation

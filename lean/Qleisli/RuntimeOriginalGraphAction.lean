@@ -8,11 +8,63 @@ namespace Qleisli.RuntimeOriginalGraphAction
 open QleisliKernel QleisliKernel.Qirf
 open QleisliKernel.Semantics.Exact (Matrix)
 open Qleisli.Semantics.Exact (action)
-open Qleisli.RuntimeLiteralBody (SourceHistory SemanticHistoryAgreesWithInherited cast_represents)
+open Qleisli.RuntimeLiteralBody (SourceHistory SemanticHistoryAgreesWithInherited cast_represents
+  StepRefinement WithChunkWriteBound)
 open Qleisli.RuntimeSparseOperationAction
 open Qleisli.RuntimeCallHistory (project)
 open RuntimeCallTraceFrames (WireOrder)
-open RuntimeOwnerMap (Binding)
+open RuntimeOwnerMap (Binding Map Owner)
+
+private def returnedBindings (roles : List Owner) (ports : List Semantics.Raw.Port) : Map :=
+  (roles.zip ports).map fun (owner,port) => ⟨owner,port⟩
+
+/-- Reorder the written returns and the untouched bindings in the original
+source owner order. No after-state or physical matrix supplies the action. -/
+noncomputable def sourceGraphHistory (roles : List Owner) (ports : List Semantics.Raw.Port)
+    (logical : Matrix) (source : SourceHistory) : Option (List SourceHistory) := do
+  let incoming := source.owners.bindings
+  let selected ← roles.mapM (RuntimeOwnerMap.byOwner incoming)
+  let returned := returnedBindings roles ports
+  let spectators := RuntimeSelectionPartition.complement incoming selected
+  let outgoing ← (incoming.map Binding.owner).mapM (RuntimeOwnerMap.byOwner (returned++spectators))
+  let operator := applySourceBlock incoming outgoing selected returned spectators logical source.operator
+  return [{source with owners := {source.owners with bindings := outgoing}, operator}]
+
+private theorem binding_zip (bindings : Map) :
+    returnedBindings (bindings.map Binding.owner) (bindings.map Binding.port) = bindings := by
+  induction bindings with
+  | nil => rfl
+  | cons binding rest ih =>
+    rcases binding with ⟨owner,port⟩
+    exact congrArg (List.cons ⟨owner,port⟩) ih
+
+private theorem ordered_lookup {roles state} (checked : RuntimeOwnerMap.Checked roles state)
+    (bindings : Map) (order : bindings.Perm checked.bindings) :
+    (checked.bindings.map Binding.owner).mapM (RuntimeOwnerMap.byOwner bindings) = some checked.bindings := by
+  let ordinal := fun binding : Binding => binding.owner.ordinal
+  have unique : (checked.bindings.map ordinal).Nodup := by
+    simpa only [ordinal,← checked.ordered,List.map_map,Function.comp_def] using checked.ownersDistinct
+  have distinct := (order.map ordinal).nodup_iff.mpr unique
+  have lookup (binding : Binding) (member : binding ∈ checked.bindings) :
+      RuntimeOwnerMap.byOwner bindings binding.owner = some binding := by
+    have present := order.mem_iff.mpr member
+    unfold RuntimeOwnerMap.byOwner
+    cases read : bindings.find? (fun value => value.owner == binding.owner) with
+    | none => exact False.elim (List.find?_eq_none.mp read binding present (by simp))
+    | some found =>
+      have equalOwner : found.owner = binding.owner := beq_iff_eq.mp
+        (List.find?_some (p := fun value : Binding => value.owner == binding.owner) read)
+      have equal := RuntimeOwnerTransitionAction.map_unique ordinal bindings distinct
+        found (List.mem_of_find?_eq_some read) binding present (congrArg (·.ordinal) equalOwner)
+      rw [equal]
+  have walk (remaining : Map) (present : remaining ⊆ checked.bindings) :
+      (remaining.map Binding.owner).mapM (RuntimeOwnerMap.byOwner bindings) = some remaining := by
+    induction remaining with
+    | nil => rfl
+    | cons head tail ih =>
+      simp [List.mapM_cons,lookup head (present List.mem_cons_self),ih (fun b member =>
+        present (List.mem_cons_of_mem _ member))]
+  exact walk checked.bindings (fun _ member => member)
 
 private theorem fragment_action {dependencies program block arity start count inputs outputs roles}
     (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
@@ -62,19 +114,19 @@ theorem original_graph_history {dependencies program block arity start count inp
     (read : Semantics.Observation.readOps block.fuel frame.interval.before.quantum.reference
       ((block.operations.drop start).take count) = some (frame.interval.after.quantum.reference,events))
     (executed : Qleisli.Semantics.ObservingAction.run dependencies block.fuel events actual = some results) :
-    ∃ selected returned spectators,
+    ∃ expected, sourceGraphHistory roles frame.returned logical source = some expected ∧
       List.Forall₂ (SemanticHistoryAgreesWithInherited inherited rootInputs frame.interval.after after ordinary)
-        [{source with owners := after, operator :=
-          applySourceBlock before.bindings after.bindings selected returned spectators logical source.operator}] results := by
+        expected results := by
   have originalAgreement := agrees
-  obtain ⟨_,_,_,_,_,incoming,initial,input,represented⟩ := agrees
+  obtain ⟨sourceOwners,_,_,_,_,incoming,initial,input,represented⟩ := agrees
   have retained := ownerOrder
-  obtain ⟨_,_,originalInterval,_,transport,_,final,_⟩ := retained
+  obtain ⟨afterOwners,_,originalInterval,originalIncoming,transport,originalOrder,final,_⟩ := retained
   let sameExit := Qleisli.RuntimeIntervalStates.same_after originalInterval frame.interval
   let outgoing := Qleisli.RuntimeNamedThreeFrameChain.checkedAt sameExit transport.after
   have outgoingOrder : outgoing.bindings = after.bindings :=
     (Qleisli.RuntimeNamedThreeFrameChain.checkedAt_bindings sameExit transport.after).trans final
-  obtain ⟨selected,returned,spectators,_,_,selectedPorts,returnedPorts,beforeOrder,_,rows,_,lifted⟩ :=
+  obtain ⟨selected,returned,spectators,selectedRead,returnedRead,selectedPorts,returnedPorts,spectatorOrder,
+    beforeOrder,afterOrder,rows,_,lifted⟩ :=
     original_operation_code_lift frame ownerOrder incoming outgoing initial outgoingOrder (initial.symm ▸ input)
       inputRead outputRead physicalRead checked equation
   have live := incoming.complete.symm.trans (beforeOrder.symm.map Binding.port)
@@ -106,8 +158,96 @@ theorem original_graph_history {dependencies program block arity start count inp
         congrArg Semantics.RawTrace.Prepared.events (Option.some.inj (traced.symm.trans parentTrace))
       subst emitted
       exact ⟨output,representedAfter⟩)
-  exact ⟨selected,returned,spectators,
-    by simpa only [node,Qleisli.RuntimeLiteralBody.nodeSpan,operator,initial,outgoingOrder] using refined⟩
+  have chosen := Qleisli.RuntimeLiteralHistory.order_source selectedRead
+  rw [initial] at chosen
+  have returnedRoles := (RuntimeSelectionPartition.order_values _ _ _ returnedRead).2
+  have resultBindings : returnedBindings roles frame.returned = returned := by
+    rw [returnedPorts]
+    exact congrArg (fun order => returnedBindings order (returned.map Binding.port)) returnedRoles.symm |>.trans
+      (binding_zip returned)
+  have ownerOrder : outgoing.bindings.map Binding.owner = before.bindings.map Binding.owner :=
+    (congrArg (List.map Binding.owner)
+      (Qleisli.RuntimeNamedThreeFrameChain.checkedAt_bindings sameExit transport.after)).trans
+      (transport.after.ordered.trans (congrArg (List.map Binding.owner) originalOrder))
+  have rebuilt := ordered_lookup outgoing _ afterOrder
+  rw [ownerOrder,outgoingOrder] at rebuilt
+  have originalSpectators : RuntimeSelectionPartition.complement before.bindings selected = spectators :=
+    initial ▸ spectatorOrder.symm
+  let originalOperator := applySourceBlock before.bindings after.bindings selected returned spectators logical source.operator
+  refine ⟨[{source with owners := after, operator := originalOperator}],?_,?_⟩
+  · simp only [List.mapM_map] at rebuilt
+    simpa [sourceGraphHistory,sourceOwners,chosen,resultBindings,originalSpectators,rebuilt,originalOperator] using
+      afterOwners.symm
+  · simpa only [node,Qleisli.RuntimeLiteralBody.nodeSpan,operator,initial,outgoingOrder,originalOperator] using refined
 
 #print axioms original_graph_history
+
+def NeedsNonGraph {dependencies program block} : @RuntimePureBody.Step dependencies program block → Prop
+  | .pure (.operation ..) => False
+  | _ => True
+
+noncomputable def withGraph {dependencies program block}
+    (fallback : List (@RuntimePureBody.Step dependencies program block) → RuntimePureBody.Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (prior : List (@RuntimePureBody.Step dependencies program block)) (step : RuntimePureBody.Step dependencies program block)
+    (source : SourceHistory) : Option (List SourceHistory) :=
+  match step with
+  | .pure (.operation (roles := roles) frame _ _ _ logical ..) => sourceGraphHistory roles frame.returned logical source
+  | _ => fallback prior step source
+
+/-- In planned execution this evaluator uses the source occurrence's
+ordered roles and the independently consumed action of that same graph. -/
+theorem withGraph_staged {artifact root}
+    {preparation : RuntimeGraphOperation.Preparation artifact}
+    {continuation : RuntimeGraphOperation.StagedConsumption preparation root (RuntimePureBody.Island root.dependencies)}
+    {program block} (node : RuntimePureBody.Node root.dependencies program block)
+    (authentic : Qleisli.RuntimeNamedChildRuns.OperationOrigin (.planned preparation continuation) node)
+    (fallback : List (@RuntimePureBody.Step root.dependencies program block) → RuntimePureBody.Step root.dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (prior : List (@RuntimePureBody.Step root.dependencies program block)) (source : SourceHistory) :
+    match node with
+    | original@(.operation frame ..) =>
+      ∃ (owner : String) (event : SourceTypes.SourceOperationApplication.Event artifact.sources owner)
+        (receipt : RuntimeGraphOperation.StagedReceipt continuation),
+        HEq receipt.request.graph event.operation.graph ∧
+        withGraph fallback prior (.pure original) source =
+          sourceGraphHistory event.inputOwners frame.returned (continuation.action receipt.evidence) source
+    | _ => True := by
+  have staged := authentic.staged_action
+  cases node
+  case operation =>
+    obtain ⟨owner,event,receipt,roles,graph,logical⟩ := staged
+    exact ⟨owner,event,receipt,graph,by simp only [withGraph,roles,logical]⟩
+  all_goals exact True.intro
+
+/-- The original graph branch supplies its own ordered history law in the
+common execution induction, including an inherited ordinary scope. -/
+theorem sourceStep_with_graph {dependencies program block}
+    (steps : List (@RuntimePureBody.Step dependencies program block)) (inputs : List Nat) (inherited : Option (Nat → Prop))
+    (certifies : RuntimePureBody.Step dependencies program block → Prop)
+    (fallback : List (@RuntimePureBody.Step dependencies program block) → RuntimePureBody.Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsNonGraph step)
+      fallback (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id))) :
+    StepRefinement steps certifies (withGraph fallback) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id)) := by
+  intro prior first later position certified ownerBefore ownerAfter ordinaryBefore ordinaryAfter
+    owners ordinary chunk read
+  refine WithChunkWriteBound.of_trace ?_
+  intro writes source history outputs agrees executed
+  cases first
+  case pure node =>
+    cases node
+    case operation =>
+      rename_i inputCode outputCode physical logical checked equation frame inputRead outputRead physicalRead
+      cases ordinary
+      exact original_graph_history frame inputRead outputRead physicalRead checked equation owners
+        inputs inherited agrees read executed
+    all_goals
+      exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
+  all_goals
+    exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
+
+#print axioms sourceStep_with_graph
 end Qleisli.RuntimeOriginalGraphAction

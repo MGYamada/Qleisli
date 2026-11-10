@@ -284,6 +284,7 @@ theorem original_operation_code_lift {dependencies program block arity start cou
       RuntimeInterval.Computed (RuntimeOwnerMap.order roles incoming.bindings) selected ∧
       RuntimeInterval.Computed (RuntimeOwnerMap.order roles outgoing.bindings) returned ∧
       frame.selected = selected.map (·.port) ∧ frame.returned = returned.map (·.port) ∧
+      spectators = RuntimeSelectionPartition.complement incoming.bindings selected ∧
       (selected++spectators).Perm incoming.bindings ∧
       (returned++spectators).Perm outgoing.bindings ∧
       physical.rows = 2^frame.pureBody.state.frame.length ∧
@@ -307,7 +308,7 @@ theorem original_operation_code_lift {dependencies program block arity start cou
     change 2^(product returned).bits = _
     rw [product_width available,wires]
   obtain ⟨work,left,reconstructed⟩ := physicalRead
-  refine ⟨selected,returned,_,selectedRead,returnedRead,selectedPorts,returnedPorts,beforeOrder,afterOrder,rows,
+  refine ⟨selected,returned,_,selectedRead,returnedRead,selectedPorts,returnedPorts,rfl,beforeOrder,afterOrder,rows,
     Qleisli.Raw.ProtectedEvaluation.reconstruct_denotes dependencies _ physical work left reconstructed,?_⟩
   apply operation_code_lift incoming outgoing input beforeOrder afterOrder _ returnedCode checked same
   simpa only [carrier_order,selectedRoles,← selectedPorts] using inputRead
