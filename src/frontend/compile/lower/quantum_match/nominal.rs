@@ -243,6 +243,10 @@ impl Frame {
         self.source_gate
     }
 
+    pub(in crate::frontend::compile::lower) fn position_count(&self) -> usize {
+        self.positions.len()
+    }
+
     /// A branch inherits its original declaration/actuals, while its literal
     /// operation coordinates start at zero in that actual Raw child list.
     pub(in crate::frontend::compile::lower) fn branch_frame(&self) -> Self {
@@ -314,7 +318,7 @@ impl Frame {
         lower: &mut Lowerer<'_, '_>,
         value: &Value,
     ) -> Result<Option<Arc<ContextSubject>>, CompileError> {
-        if !self.source_gate && !self.selections.is_empty() {
+        if lower.uses_qmatch_v5() || !self.source_gate && !self.selections.is_empty() {
             let module = lower
                 .compiler
                 .source
@@ -704,6 +708,51 @@ pub(in crate::frontend::compile::lower) fn record_branch(
     frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
     frame.positions.push(position.clone());
     frame.branches.push((position, then_body, else_body));
+    Ok(())
+}
+
+pub(in crate::frontend::compile::lower) fn record_static(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+    checkpoint: usize,
+) -> Result<(), CompileError> {
+    let frame = lower
+        .nominal_qmatch
+        .as_ref()
+        .expect("original static context");
+    let relative = start.checked_sub(frame.start).ok_or_else(|| {
+        lower.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "static branch precedes its original context",
+        )
+    })?;
+    let count = lower
+        .raw
+        .operations
+        .len()
+        .checked_sub(start)
+        .ok_or_else(|| {
+            lower.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "static branch removed its original operation prefix",
+            )
+        })?;
+    let position = position(lower, module, span, span.start, relative, count)?;
+    lower.compiler.charge(module, span, 4)?;
+    let frame = lower
+        .nominal_qmatch
+        .as_mut()
+        .expect("original static context");
+    // The selected block shares the enclosing Raw list and its site/call
+    // queues. Only the outer event position groups that actual interval.
+    frame.positions.truncate(checkpoint);
+    frame.positions.push(position);
     Ok(())
 }
 

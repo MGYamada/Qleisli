@@ -10,22 +10,30 @@ namespace QleisliKernel.Qirf.RuntimeReferenceContexts
 open QleisliKernel Finite
 abbrev Context := RuntimeContextRequest.Context
 
-/-- The original singleton protocol walker, with the same total fuel and
-work reservation. A nonempty group list refuses even if every group is empty. -/
-def noGroups : Nat → Context → WorkM Unit :=
+private def withoutMeaningGroups (explicitEmpty : Bool) : Nat → Context → WorkM Unit :=
   Nat.rec (fun _ => throw .limit) (fun _ visit context => do
     exactWork (Exact.charge (16*(context.calls.length+context.branches.length+context.bodies.length+1)))
-    guard context.references.isEmpty .request
+    if explicitEmpty then
+      exactWork (Exact.charge (16*(context.references.length+1)))
+      guard (context.references.all List.isEmpty) .request
+    else
+      guard context.references.isEmpty .request
     context.calls.forM fun (_,child) => visit child
     context.branches.forM fun (_,first,second) => do visit first; visit second
     context.bodies.forM fun (_,child) => visit child)
 
+/-- The original singleton protocol walker keeps its strict empty list rule. -/
+def noGroups : Nat → Context → WorkM Unit :=
+  withoutMeaningGroups false
+
 /-- The direct selection's own prefix/arm groups stay available to their
-actual readers. Every implementation and reference leaf has the original
-no-groups obligation through all nested calls, branches and provider bodies. -/
-def selectionLeaves (context : Context) : WorkM Unit := do
+actual readers. A provider in the runtime format may explicitly encode an
+empty group for a nested operation. Its strict body reader must still consume
+each such group at the matching source occurrence. Meaning leaves keep the
+original no-groups rule. -/
+def selectionLeaves (context : Context) (explicitEmpty : Bool := false) : WorkM Unit := do
   exactWork (Exact.charge (16*(context.bodies.length+context.references.length+1)))
-  context.bodies.forM fun (_,body) => noGroups 129 body
+  context.bodies.forM fun (_,body) => withoutMeaningGroups explicitEmpty 129 body
   context.references.forM fun groups => do
     exactWork (Exact.charge (16*(groups.length+1)))
     groups.forM fun leaves => do
@@ -50,12 +58,11 @@ def ordered (context : Context) : WorkM Unit := do
   context.calls.forM fun (_,child) => call child
 
 /-- The common runtime loop consumes each genuine body's own prefix and event
-groups. Named and branch children have their own cursors; provider and Meaning
-reference leaves still use the original strict no-groups contract. This plain
-data walk provides no source, access, Meaning or execution evidence. -/
+groups. Named and branch children have their own cursors. This plain data walk
+provides no source, access, Meaning or execution evidence. -/
 def runtime : Nat → Context → WorkM Unit :=
   Nat.rec (fun _ => throw .limit) (fun _ visit context => do
-    selectionLeaves context
+    selectionLeaves context true
     exactWork (Exact.charge (16*(context.calls.length+context.branches.length+1)))
     context.calls.forM fun (_,child) => visit child
     context.branches.forM fun (_,first,second) => do visit first; visit second)

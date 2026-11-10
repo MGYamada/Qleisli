@@ -448,6 +448,10 @@ impl Lowerer<'_, '_> {
         })
     }
 
+    fn uses_qmatch_v5(&self) -> bool {
+        self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
+    }
+
     fn call_user(
         &mut self,
         key: &Key,

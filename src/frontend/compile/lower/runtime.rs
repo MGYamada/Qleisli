@@ -1,5 +1,5 @@
 //! Propose full source types and actual storage through the common Raw emitter.
-//! Native runtime-root checking alone grants acceptance; this is no body proof.
+//! The native mode checks the original runtime interface and any qmatch context.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 use crate::interchange::carrier::{Atom as BasisAtom, Owner};
@@ -291,10 +291,20 @@ pub(super) fn accept(
         }
     }
     let input_rows = ordinary::proposed_rows(&ordinary)?;
-    let rows = lower
-        .compiler
-        .retained_ordinary_type_sources(*key, &name.0, decl.span)
-        .map_err(failure)?;
+    let qmatch = lower
+        .source_context
+        .as_ref()
+        .filter(|context| lower.uses_qmatch_v5() && context.contains_selections);
+    let rows = if qmatch.is_some() {
+        lower
+            .compiler
+            .qmatch_runtime_sources(*key, &name.0, decl.span, &instance.operations, raw)
+    } else {
+        lower
+            .compiler
+            .retained_ordinary_type_sources(*key, &name.0, decl.span)
+    }
+    .map_err(failure)?;
     lower
         .compiler
         .charge(
@@ -332,18 +342,26 @@ pub(super) fn accept(
             .or(fact.asserted())
             .unwrap_or(fact.inferred()),
     };
-    let bytes = request.encode()?;
-    let proposal = Proposal::from_raw_with_sources(
-        raw,
-        None,
-        crate::interchange::Version::V2,
-        None,
-        &sources,
-    )?;
-    let checked = lower
-        .compiler
-        .kernel
-        .check_runtime_root(proposal.artifact(), &bytes)?;
+    let checked = if let Some(context) = qmatch {
+        let (artifact, request) =
+            crate::interchange::qmatch::v5::proposal(raw, Arc::new(request), context, &sources)?;
+        lower
+            .compiler
+            .kernel
+            .check_qmatch_source_v5(&artifact, &request.encode()?)?
+    } else {
+        let proposal = Proposal::from_raw_with_sources(
+            raw,
+            None,
+            crate::interchange::Version::V2,
+            None,
+            &sources,
+        )?;
+        lower
+            .compiler
+            .kernel
+            .check_runtime_root(proposal.artifact(), &request.encode()?)?
+    };
     lower
         .compiler
         .exact_work

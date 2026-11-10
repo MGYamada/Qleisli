@@ -12,6 +12,7 @@ pub(super) enum Mode {
     OrdinaryRoot,
     RuntimeRoot,
     QmatchSource,
+    QmatchSourceV5,
     Hierarchy,
     HierarchyRequest,
     HierarchyFourier,
@@ -34,6 +35,7 @@ impl Mode {
             Self::OrdinaryRoot => "--ordinary-root-check",
             Self::RuntimeRoot => "--runtime-root-check",
             Self::QmatchSource => "--qmatch-source-check",
+            Self::QmatchSourceV5 => "--qmatch-source-v5-check",
             Self::Hierarchy => "--hierarchy-pending",
             Self::HierarchyRequest => "--hierarchy-request-pending",
             Self::HierarchyFourier => "--hierarchy-fourier-pending",
@@ -56,6 +58,7 @@ impl Mode {
             "--ordinary-root-check" => Ok(Self::OrdinaryRoot),
             "--runtime-root-check" => Ok(Self::RuntimeRoot),
             "--qmatch-source-check" => Ok(Self::QmatchSource),
+            "--qmatch-source-v5-check" => Ok(Self::QmatchSourceV5),
             "--hierarchy-pending" => Ok(Self::Hierarchy),
             "--hierarchy-request-pending" => Ok(Self::HierarchyRequest),
             "--hierarchy-fourier-pending" => Ok(Self::HierarchyFourier),
@@ -78,7 +81,8 @@ impl Mode {
             | Self::CarrierPure
             | Self::OrdinaryRoot
             | Self::RuntimeRoot
-            | Self::QmatchSource => "accepted",
+            | Self::QmatchSource
+            | Self::QmatchSourceV5 => "accepted",
             Self::Hierarchy
             | Self::HierarchyRequest
             | Self::HierarchyFourier
@@ -104,6 +108,7 @@ impl Mode {
             | Self::OrdinaryRoot
             | Self::RuntimeRoot
             | Self::QmatchSource
+            | Self::QmatchSourceV5
             | Self::EngineeringPure
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
@@ -260,6 +265,7 @@ mod tests {
             Mode::OrdinaryRoot,
             Mode::RuntimeRoot,
             Mode::QmatchSource,
+            Mode::QmatchSourceV5,
             Mode::Hierarchy,
             Mode::HierarchyRequest,
             Mode::HierarchyFourier,
@@ -279,6 +285,7 @@ mod tests {
                     | Mode::OrdinaryRoot
                     | Mode::RuntimeRoot
                     | Mode::QmatchSource
+                    | Mode::QmatchSourceV5
                     | Mode::EngineeringPure
                     | Mode::EngineeringPureTensor
                     | Mode::EngineeringInstrument

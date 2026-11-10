@@ -661,30 +661,14 @@ fn selected_qmatch_context_checks_builtin_pairs_with_a_nominal_spectator() {
     assert_eq!(raw.quantum_outputs[0], raw.quantum_inputs[2].token);
     kernel().check_program(accepted.program()).unwrap();
 
-    // A built-in selected pair must not bypass the active original-source
-    // context. Primitive arm operands still need named evidence wrappers.
-    let unsupported = source.replace("0=>idle,1=>turn", "0=>h,1=>h");
-    let parsed = ParsedProgram::parse(
-        Edition::E2026,
-        BTreeMap::from([("main".into(), unsupported)]),
-    )
-    .unwrap();
-    let error = parsed
-        .instantiate_runtime_with_types(
-            "main::keep",
-            Default::default(),
-            Default::default(),
-            Default::default(),
-        )
-        .unwrap()
-        .compile_runtime_with_kernel(&kernel())
-        .unwrap_err();
-    assert_eq!(error.code, "unsupported", "{error:?}");
-    assert!(
-        error.message.contains("complete v5 source gate"),
-        "{error:?}"
-    );
-    assert!(error.message.contains("Wrap the gate"), "{error:?}");
+    // The original v5 request carries primitive arm bodies alongside the
+    // same typed spectator and selected ports.
+    let primitives = source.replace("0=>idle,1=>turn", "0=>h,1=>h");
+    let accepted = selected(&primitives);
+    assert!(accepted.program().qmatch_source_checked());
+    let raw = accepted.program().raw();
+    assert_eq!(raw.quantum_outputs[0], raw.quantum_inputs[2].token);
+    kernel().check_program(accepted.program()).unwrap();
 }
 
 #[test]
@@ -753,6 +737,7 @@ fn selected_qmatch_uses_the_common_original_source_and_named_arm_evidence() {
         .unwrap();
     let kernel = kernel();
     let selected = instance.compile_runtime_with_kernel(&kernel).unwrap();
+    assert!(selected.program().qmatch_source_checked());
     let request = selected.program().runtime_result().unwrap();
     assert_eq!(
         request.parameters,
@@ -770,6 +755,28 @@ fn selected_qmatch_uses_the_common_original_source_and_named_arm_evidence() {
             .runtime_result(),
         Some(request)
     );
+    let root = SourceRoot::new(source);
+    let cli = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args([
+            "check",
+            "--entry=main::keep",
+            "--ir-profile=raw",
+            "--format=json",
+        ])
+        .arg(format!(
+            "--module=main={}",
+            root.0.join("main.qli").display()
+        ))
+        .output()
+        .unwrap();
+    let output = String::from_utf8(cli.stdout).unwrap();
+    assert!(cli.status.success(), "{output}");
+    assert!(
+        output.contains("\"scope\":\"finite-source-qmatch-context-v5\""),
+        "{output}"
+    );
+    assert!(output.contains("\"source_steps_checked\":true"));
+    assert!(output.contains("\"source_preservation_verified\":false"));
 }
 
 #[test]

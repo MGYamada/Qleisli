@@ -3,6 +3,7 @@ import QleisliKernel.Qirf.RuntimeLinkedSubject
 import QleisliKernel.Qirf.RuntimeStructuredRoot
 import QleisliKernel.Qirf.RuntimeOrdinaryHistories
 import QleisliKernel.Qirf.RuntimeReferenceContexts
+import QleisliKernel.Qirf.RuntimeCatalogueImports
 
 /-! Original graph/Meaning continuations of the common mixed body loop.
 The exact graph preparations precede one fresh native root. Every subsequent
@@ -95,6 +96,8 @@ structure Prepared (artifact : Artifact) (owner name : String) (arguments : Stat
   referenceContexts : RuntimeInterval.Computed (RuntimeReferenceContexts.runtime 129 request) ()
   planned : RuntimeBodyDiscovery.Planned (preparation artifact source.catalogue) (.whole source.body) request
   relevance : SourceRows.Retained ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
+  imports : RuntimeCatalogueImports.Rows ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
+    (RuntimeCatalogueImports.edges source.catalogue)
 
 def Prepared.discovery {artifact owner name arguments request}
     (prepared : Prepared artifact owner name arguments request) : RuntimeBodyDiscovery.Discovery :=
@@ -106,7 +109,7 @@ def Prepared.receipts {artifact owner name arguments request}
   prepared.planned.receipts
 
 def Prepared.rows {artifact owner name arguments request}
-    (prepared : Prepared artifact owner name arguments request) : List SourceRows.Row := prepared.relevance.rows
+    (prepared : Prepared artifact owner name arguments request) : List SourceRows.Row := prepared.imports.rows
 
 def Prepared.roots {artifact owner name arguments request}
     (prepared : Prepared artifact owner name arguments request) : List Nat :=
@@ -122,7 +125,8 @@ def prepare (artifact : Artifact) (owner name : String) (arguments : StaticTypes
   have unit : references.val = () := by cases references.val; rfl
   let planned ← RuntimeBodyDiscovery.visitPlanned (preparation artifact source.catalogue) (.whole source.body) request
   let relevance ← SourceRows.read ([(owner,source.signature.original.source)] ++ planned.discovery.rows)
-  return ⟨source,by with_reducible simpa only [unit] using references.property,planned,relevance⟩
+  let imports ← RuntimeCatalogueImports.read source.catalogue relevance
+  return ⟨source,by with_reducible simpa only [unit] using references.property,planned,relevance,imports⟩
 
 def initialHistory {artifact owner name arguments request}
     (prepared : Prepared artifact owner name arguments request) {root : Validity.Root}

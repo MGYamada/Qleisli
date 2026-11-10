@@ -18,9 +18,8 @@ const MAX_CHECKER_PATH_BYTES: usize = 1 << 20;
 /// This snapshot cannot be supplied as acceptance evidence.
 #[derive(Clone, Debug)]
 pub struct NativeDecisionSummary {
-    // Each checker has fixed ordinary/contract/carrier/ordinary-result/qmatch/runtime modes
-    // x request-absent/present counters, without retaining artifacts or requests.
-    checkers: BTreeMap<PathBuf, [[[usize; 2]; 3]; 6]>,
+    // Each checker has fixed mode, scope and request-presence counters.
+    checkers: BTreeMap<PathBuf, [[[usize; 2]; 3]; 7]>,
     path_bytes: usize,
     decisions: usize,
     requests_checked: usize,
@@ -72,6 +71,7 @@ impl NativeDecisionSummary {
             "--ordinary-root-check" => 3,
             "--qmatch-source-check" => 4,
             "--runtime-root-check" => 5,
+            "--qmatch-source-v5-check" => 6,
             _ => {
                 self.complete = false;
                 return;
@@ -87,7 +87,7 @@ impl NativeDecisionSummary {
                 return;
             }
             self.path_bytes += bytes;
-            self.checkers.insert(checker.to_owned(), [[[0; 2]; 3]; 6]);
+            self.checkers.insert(checker.to_owned(), [[[0; 2]; 3]; 7]);
         }
         let count = &mut self
             .checkers

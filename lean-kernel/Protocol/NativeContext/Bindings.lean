@@ -15,6 +15,15 @@ theorem run_qmatch_binding (product : String) (bytes : ByteArray)
   obtain ⟨_,_,_,_,_,checked,_⟩ := run_binding _ _ _ _ _ _ ok
   exact CheckedQmatch.run_binding bytes decision.value work left checked
 
+theorem run_qmatch_v5_binding (product : String) (bytes : ByteArray)
+    (decision : Decision .qmatchSourceV5) (work left : Nat)
+    (ok : (run .qmatchSourceV5 product bytes).run work = (.ok decision,left)) :
+    Packet.read bytes = .ok decision.value.1 ∧ decision.value.1.scope = .execution ∧
+      Nonempty (CheckedQmatchV5.Binding decision.value.1.original decision.value.1.graph
+        decision.value.2 work left) := by
+  obtain ⟨_,_,_,_,_,checked,_⟩ := run_binding _ _ _ _ _ _ ok
+  exact CheckedQmatchV5.run_binding bytes decision.value work left checked
+
 theorem run_typed_ordinary_binding (product : String) (bytes : ByteArray)
     (decision : Decision .ordinaryRoot) (work left : Nat)
     (ok : (run .ordinaryRoot product bytes).run work = (.ok decision,left)) :

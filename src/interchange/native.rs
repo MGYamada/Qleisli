@@ -153,6 +153,7 @@ impl Prepared {
                 source_context: None,
                 ordinary_result: None,
                 runtime_result: None,
+                qmatch_result: None,
             },
             root_interface,
             request_checked: native.request().is_some(),
@@ -274,27 +275,37 @@ impl Kernel {
             ));
         }
         let mode = program.native.mode();
-        if mode != "--qirf-native" && mode != "--runtime-root-check" {
-            return Err(Error::new(
-                "kernel",
-                "rechecking this native mode requires its complete retained typed request view",
-            ));
-        }
-        let subject = self.subject(program.artifact(), program.request())?;
         // Compare the exact immutable graph and metadata the caller will keep
         // using. Decoding the original artifact again would compare a different
         // allocation and could hide a divergent retained execution view.
-        let graph = if mode == "--runtime-root-check" {
-            let request = program.runtime_result().ok_or_else(|| {
-                Error::format("runtime recheck requires the complete retained request")
-            })?;
-            super::execution_view::finite::runtime_root::complete(
-                program.execution_view_graph(),
-                request,
-            )?
-        } else {
-            program.execution_view_description()?
+        let graph = match mode {
+            "--qirf-native" => program.execution_view_description()?,
+            "--runtime-root-check" => {
+                let request = program.runtime_result().ok_or_else(|| {
+                    Error::format("runtime recheck requires the complete retained request")
+                })?;
+                super::execution_view::finite::runtime_root::complete(
+                    program.execution_view_graph(),
+                    request,
+                )?
+            }
+            "--qmatch-source-v5-check" => {
+                let request = program.qmatch_result.as_deref().ok_or_else(|| {
+                    Error::format("qmatch recheck requires the complete retained request")
+                })?;
+                super::execution_view::finite::qmatch_v5::complete(
+                    program.execution_view_graph(),
+                    request,
+                )?
+            }
+            _ => {
+                return Err(Error::new(
+                    "kernel",
+                    "rechecking this native mode requires its complete retained typed request view",
+                ));
+            }
         };
+        let subject = self.subject(program.artifact(), program.request())?;
         let native = Self::submit_subject(
             subject,
             mode,
@@ -582,6 +593,7 @@ pub struct AcceptedProgram {
     // clones and execution. This is not an arbitrary source-meaning contract.
     ordinary_result: Option<Arc<super::ordinary_root::Request>>,
     runtime_result: Option<Arc<super::runtime_root::Request>>,
+    qmatch_result: Option<Arc<super::qmatch::v5::Request>>,
 }
 impl AcceptedProgram {
     pub(crate) fn source_context(&self) -> Option<&Arc<super::qmatch::ContextSubject>> {
@@ -598,7 +610,14 @@ impl AcceptedProgram {
         self.ordinary_result.as_deref()
     }
     pub fn runtime_result(&self) -> Option<&super::runtime_root::Request> {
-        self.runtime_result.as_deref()
+        self.qmatch_result
+            .as_ref()
+            .map(|request| request.runtime.as_ref())
+            .or(self.runtime_result.as_deref())
+    }
+    /// Whether the native decision checked the complete original v5 qmatch context.
+    pub fn qmatch_source_checked(&self) -> bool {
+        self.qmatch_result.is_some()
     }
     pub fn edition(&self) -> Edition {
         self.native.edition()
@@ -609,7 +628,7 @@ impl AcceptedProgram {
     /// Portable artifacts cannot silently drop the internal typed-result frame.
     /// `artifact()` remains inspection of the original untrusted subject bytes.
     pub fn portable_artifact(&self) -> Result<&[u8]> {
-        if self.ordinary_result.is_some() || self.runtime_result.is_some() {
+        if self.ordinary_result.is_some() || self.runtime_result().is_some() {
             return Err(Error::new(
                 "unsupported",
                 "typed result export requires complete typed artifact/request transport",

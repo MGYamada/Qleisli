@@ -159,7 +159,8 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (selected : RuntimeStaticPrimitive.Continuation event)
       (original : RuntimeInterval.Computed (RuntimeStaticPrimitive.readContinuation event) selected)
       (positions : List Position)
-      (originalPositions : RuntimeInterval.Computed (selected.positions position (before.calls.map (·.1))) positions)
+      (originalPositions : RuntimeInterval.Computed
+        (selected.positions position (before.calls.map (·.1)) (before.sites.map (·.position))) positions)
       (positionsCount : positions.length = selected.selected.result.events.length)
       (events : Events preparation source (selected.selected.result.events.zip positions) before after) :
       Event preparation source (.staticConditional event children) position before after

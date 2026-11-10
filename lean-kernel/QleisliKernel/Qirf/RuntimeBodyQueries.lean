@@ -273,7 +273,7 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
         let selected ← RuntimeStaticPrimitive.readSequence event
         pure (RuntimeStaticPrimitive.Continuation.unchanged selected)
       | false => RuntimeStaticPrimitive.readContinuation event
-    let positions ← sequence.positions position (cursor.calls.map (·.1))
+    let positions ← sequence.positions position (cursor.calls.map (·.1)) (cursor.sites.map (·.position))
     if count : positions.length = sequence.selected.result.events.length then
       return ⟨sequence,positions,count,()⟩
     else throw .request

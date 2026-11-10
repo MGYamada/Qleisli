@@ -216,7 +216,23 @@ impl Lowerer<'_, '_> {
             Compare::Ge => left >= right,
         };
         let selected = if truth { then_branch } else { else_branch };
-        self.block(module, selected, env)
+        let position_checkpoint = self
+            .nominal_qmatch
+            .as_ref()
+            .filter(|_| self.uses_qmatch_v5())
+            .map(super::quantum_match::nominal::Frame::position_count);
+        let start = self.raw.operations.len();
+        let result = self.block(module, selected, env)?;
+        if let Some(checkpoint) = position_checkpoint {
+            super::quantum_match::nominal::record_static(
+                self,
+                module,
+                original.span,
+                start,
+                checkpoint,
+            )?;
+        }
+        Ok(result)
     }
 
     fn carry_type(
