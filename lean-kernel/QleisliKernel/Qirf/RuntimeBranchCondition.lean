@@ -81,21 +81,42 @@ def every (inputs : List (List Nat)) (bits : List (List Bool)) (measurements : L
     (required actual : Expression) : Bool :=
   inputs.all fun input => bits.all (sameAt measurements required actual input)
 
+private theorem all_of_checks {α : Type} (test : α → Bool) (read : α → WorkM Unit)
+    (valid : ∀ value work left, (read value).run work = (.ok (),left) → test value = true)
+    (values : List α) {work left}
+    (ran : (values.foldlM (fun _ value => read value) ()).run work = (.ok (),left)) :
+    values.all test = true := by
+  induction values generalizing work with
+  | nil => rfl
+  | cons value rest ih =>
+    simp only [List.foldlM_cons] at ran
+    obtain ⟨checked,middle,head,tail⟩ := bind_success _ _ _ _ _ ran
+    cases checked
+    simp only [List.all_cons,valid value work middle head,ih tail,Bool.and_self]
+
 private def readEvery (inputs : List (List Nat)) (bits : List (List Bool)) (measurements : List Measurement)
     (required actual : Expression) : WorkM {_row : Unit // every inputs bits measurements required actual = true} := do
   let fields := measurementFields measurements
   let cost := 32*(SourceRuntimeValues.expressionSize required+SourceRuntimeValues.expressionFields required+
     SourceRuntimeValues.expressionSize actual+SourceRuntimeValues.expressionFields actual+1)*(fields+1)^2
-  let checked ← inputs.foldlM (fun _ input => do
-    bits.foldlM (fun _ assignment => do
-      exactWork (Exact.charge (cost*(input.length+assignment.length+1)))
-      guard (sameAt measurements required actual input assignment) .equation) ()) ()
-  -- Retain the exact independently executable predicate after the same reads.
-  -- This final pass is also real work, rather than a claimed earlier run.
-  exactWork (Exact.charge (cost*(inputs.length+1)*(bits.length+1)*
-    ((inputs.map List.length).sum+(bits.map List.length).sum+1)))
-  if original : every inputs bits measurements required actual = true then return ⟨checked,original⟩
-  else throw .equation
+  let compare := sameAt measurements required actual
+  let readAssignment (input : List Nat) (assignment : List Bool) : WorkM Unit := do
+    exactWork (Exact.charge (cost*(input.length+assignment.length+1)))
+    guard (compare input assignment) .equation
+  let readInput (input : List Nat) := bits.foldlM (fun _ assignment => readAssignment input assignment) ()
+  let checked ← NaturalAffine.witness (inputs.foldlM (fun _ input => readInput input) ())
+  -- The successful metered fold proves the Boolean conjunction directly.
+  return ⟨(),by
+    obtain ⟨work,left,ran⟩ := checked.property
+    cases checked with
+    | mk result _ =>
+      cases result
+      apply all_of_checks (fun input => bits.all (compare input)) readInput _ inputs ran
+      intro input work left read
+      apply all_of_checks (compare input) (readAssignment input) _ bits read
+      intro assignment work left read
+      obtain ⟨_,_,_,compared⟩ := bind_success _ _ _ _ _ read
+      exact (guard_success _ _ _ _ compared).1⟩
 
 structure Checked {sources rootOwner rootName owner name dependencies program block offset}
     (path : Path sources rootOwner rootName owner name)

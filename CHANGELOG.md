@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Meter nominal type text linearly when matching issued owner histories at
+  ordinary branch merges. Prove condition agreement from the single metered
+  pass over all input and measurement rows. Small original-source v5
+  selections inside ordinary branches retain their quantum and SSA phis.
 - Prove that each original coherent selection uses the independently evaluated
   source graphs at its written selector ordinals. The proof follows named
   calls and conditional branches through the same original body and retains

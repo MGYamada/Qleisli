@@ -163,6 +163,66 @@ fn selected_nominal_qmatch_checks_every_original_selection_in_order() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_nominal_qmatch_retains_branch_phis_after_input_or_measurement() {
+    use qleisli::ir::{Effect, RawOp};
+
+    let source = r#"pub enum Tag { A, B }
+unitary fn keep(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn turn(q: Q<Bit>) -> Q<Bit> { h(phase[1,3](h(q))) }
+unitary fn choose(s: Q<Tag>, q: Q<Bit>) -> (Q<Tag>, Q<Bit>) {
+    qmatch(s,q) { Tag::B => turn, Tag::A => keep }
+}
+pub unitary fn route(s: Q<Tag>, q: Q<Bit>, b: Bit) -> (Q<Tag>, Q<Bit>, Bit) {
+    let (s,q,c) = if b {
+        let (s,q) = choose(s,q);
+        (s,q,1)
+    } else {
+        (s,q,0)
+    };
+    (s,q,c)
+}
+"#;
+    let observed = source
+        .replace("pub unitary fn route", "pub observe fn route")
+        .replace("b: Bit)", "a: Q<Bit>)")
+        .replace(
+            "    let (s,q,c) = if b",
+            "    let b = measure_z(a);\n    let (s,q,c) = if b",
+        );
+    for (source, expected_effect) in [(source, Effect::Unitary), (&observed, Effect::Observe)] {
+        let accepted = selected_at(source, "main::route");
+        assert!(accepted.program().qmatch_source_checked());
+        let raw = accepted.program().raw();
+        assert_eq!(raw.declared_effect, expected_effect);
+        let Some(RawOp::ClassicalBranch {
+            quantum_phis,
+            classical_phis,
+            ..
+        }) = raw
+            .operations
+            .iter()
+            .find(|op| matches!(op, RawOp::ClassicalBranch { .. }))
+        else {
+            panic!("the original ordinary branch must be retained");
+        };
+        assert_eq!(
+            raw.quantum_outputs,
+            quantum_phis
+                .iter()
+                .map(|phi| phi.output)
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(classical_phis.len(), 1);
+        assert_eq!(raw.classical_outputs, [classical_phis[0].output]);
+        kernel().check_program(accepted.program()).unwrap();
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_retains_extra_zero_width_owners_and_original_result_order() {
     for reverse in [false, true] {
         for (effect, expected) in [
