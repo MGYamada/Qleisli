@@ -34,6 +34,16 @@ theorem sparse_sector_keeps_exact_phases_with_less_work :
       ⟨joinedBasis unitBasis [.bits 3],[phasedFlip]⟩).run 1804).1 ==
       .ok [phasedFlipMatrix]) = true := by decide +kernel
 
+private def fullHadamard : Matrix := ⟨8,8,(List.range 64).map fun i =>
+  let common := (i / 8) &&& (i % 8)
+  let parity := (List.range 3).foldl (fun value k => value != common.testBit k) false
+  ⟨.integer 0,⟨if parity then -1 else 1,2⟩,.integer 0,.integer 0⟩⟩
+
+theorem dense_sector_keeps_its_original_gram_budget :
+    (((readSectors [] unitBasis [.bits 3]
+      ⟨joinedBasis unitBasis [.bits 3],[⟨[],.hadamard 0⟩,⟨[],.hadamard 1⟩,⟨[],.hadamard 2⟩]⟩).run
+      2720).1 == .ok [fullHadamard]) = true := by decide +kernel
+
 private def spentUnit (run : Except QleisliKernel.Finite.Error Unit × Nat) (left : Nat) : Bool :=
   match run.1 with
   | .ok _ => run.2 == left
@@ -46,8 +56,8 @@ private def failedUnit (run : Except QleisliKernel.Finite.Error Unit × Nat)
   | .error actual => actual == error
 
 theorem sparse_gram_charges_every_retained_term :
-    spentUnit ((computedSectorSpace phasedFlipMatrix).run 968) 0 = true ∧
-    failedUnit ((computedSectorSpace phasedFlipMatrix).run 967) (.arithmetic .workLimit) = true ∧
+    spentUnit ((compactSectorSpace phasedFlipMatrix).run 968) 0 = true ∧
+    failedUnit ((compactSectorSpace phasedFlipMatrix).run 967) (.arithmetic .workLimit) = true ∧
     failedUnit ((QleisliKernel.Finite.wholeSpace phasedFlipMatrix).run 968) (.arithmetic .workLimit) = true := by
   decide +kernel
 
@@ -56,14 +66,14 @@ private def repeatedColumn : Matrix := ⟨8,8,(List.range 64).map fun i =>
   if i / 8 == (if column == 1 then 0 else column) then Scalar.one else Scalar.zero⟩
 
 theorem sparse_gram_refuses_repeated_columns :
-    failedUnit ((computedSectorSpace repeatedColumn).run 2000) .notIsometric = true := by decide +kernel
+    failedUnit ((compactSectorSpace repeatedColumn).run 2000) .notIsometric = true := by decide +kernel
 
 private def excessiveMagnitude : Matrix := ⟨8,8,(List.range 64).map fun i =>
   if i == 0 then ⟨.integer QleisliKernel.Exact.maxNumerator,.integer 0,.integer 0,.integer 0⟩
   else if i / 8 == i % 8 then Scalar.one else Scalar.zero⟩
 
 theorem sparse_gram_retains_arithmetic_failures :
-    failedUnit ((computedSectorSpace excessiveMagnitude).run 2000) (.arithmetic .arithmeticCapacity) = true ∧
+    failedUnit ((compactSectorSpace excessiveMagnitude).run 2000) (.arithmetic .arithmeticCapacity) = true ∧
     failedUnit ((QleisliKernel.Finite.wholeSpace excessiveMagnitude).run 2000)
       (.arithmetic .arithmeticCapacity) = true := by
   decide +kernel

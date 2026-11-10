@@ -9,8 +9,8 @@ development milestones from the scope of their evidence.
 - Meter selected qmatch sector restriction by its control and axis scans.
   Validate the entire original tape and retain full local validation for
   the instructions active in each sector.
-  Larger computed sectors use sparse exact Gram products. They keep the
-  original arithmetic order and check every physical sector.
+  Computed sectors can use sparse exact Gram products when their tape
+  bounds the support. Both paths check every physical sector.
 - Share coherent sector lowering between `qif` and `qmatch`. Retain both
   selections in original-source v5 bodies and derive the binary tape action
   from the shared QPTL direct-sum theorem.
