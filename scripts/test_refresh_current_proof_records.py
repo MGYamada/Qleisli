@@ -143,6 +143,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-qmatch-selection-proofs",
                 "refs/heads/codex/beta-qmatch-basis-events",
             "refs/heads/codex/beta-qmatch-sparse-gram",
+            "refs/heads/codex/beta-qmatch-code-products",
                 "refs/heads/codex/beta-qmatch-bounded-v5",
                 "refs/heads/codex/beta-quantum-runtime-types",
                 "refs/heads/codex/beta-runtime-static-bindings")
