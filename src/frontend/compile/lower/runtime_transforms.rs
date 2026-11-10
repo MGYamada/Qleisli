@@ -330,6 +330,8 @@ impl Lowerer<'_, '_> {
             self.unpack_runtime_group(module, original.span, packed, &group)?
         };
         self.add_contract_effect(module, original.span, Effect::Unitary);
+        // This direct transform emits no original v5 request position.
+        self.record_unsupported_qmatch_v5_event();
         Ok(Some(output))
     }
 

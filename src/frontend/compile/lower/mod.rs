@@ -452,6 +452,12 @@ impl Lowerer<'_, '_> {
         self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
     }
 
+    fn record_unsupported_qmatch_v5_event(&mut self) {
+        if let Some(frame) = &mut self.nominal_qmatch {
+            frame.record_unsupported_v5_event();
+        }
+    }
+
     fn call_user(
         &mut self,
         key: &Key,
@@ -925,6 +931,7 @@ impl Lowerer<'_, '_> {
         }
         self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
         self.apply_circuit(slot, steps);
+        self.record_unsupported_qmatch_v5_event();
         Ok(value)
     }
 
@@ -1289,6 +1296,17 @@ impl Lowerer<'_, '_> {
                 Ok(value)
             }
             Callee::Primitive(primitive) => {
+                // The staged v5 body walk has no register event plan and no
+                // runtime action for empty_bits.
+                if matches!(
+                    primitive,
+                    PrimitiveId::TakeBit
+                        | PrimitiveId::PutBit
+                        | PrimitiveId::PrependBit
+                        | PrimitiveId::EmptyBits
+                ) {
+                    self.record_unsupported_qmatch_v5_event();
+                }
                 if !static_args.is_empty() {
                     return self.primitive_static_with_source(
                         module, source, callee, primitive, values, args,
@@ -1317,6 +1335,18 @@ impl Lowerer<'_, '_> {
         let result = self.expr_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
+        if matches!(
+            expr.kind,
+            ExprKind::CoherentLift { .. }
+                | ExprKind::Match(_)
+                | ExprKind::WithComputed { .. }
+                | ExprKind::CertifiedComputed { .. }
+                | ExprKind::ApplyContract { .. }
+                | ExprKind::StaticFold { .. }
+                | ExprKind::QuantumIf { .. }
+        ) {
+            self.record_unsupported_qmatch_v5_event();
+        }
         // Nested expressions/callees already supplied more precise positions.
         // Fill only the operations emitted directly by this expression.
         for index in first_operation..self.raw.operations.len() {
@@ -1860,9 +1890,6 @@ impl Lowerer<'_, '_> {
             output_wires: wires.clone(),
             table,
         });
-        if let Some(frame) = &mut self.nominal_qmatch {
-            frame.record_basis_lift();
-        }
         self.raw.registers.insert(
             slot,
             Register {
@@ -2133,11 +2160,13 @@ fn lower_function_in_context(
         .source_context
         .as_ref()
         .filter(|context| {
-            // v5 has no coherent basis-lift event yet. Whole-circuit checked
-            // selections can use the ordinary runtime root in that case.
+            // Whole-circuit checked selections retain the ordinary runtime
+            // mode when the original body needs an event outside v5.
             lower.uses_qmatch_v5()
                 && context.contains_selections
-                && (require_qmatch_v5 || context.needs_qmatch_v5 || !context.contains_basis_lift)
+                && (require_qmatch_v5
+                    || context.needs_qmatch_v5
+                    || !context.contains_unsupported_v5_event)
         })
         .cloned();
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {

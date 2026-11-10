@@ -26,7 +26,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
     source_gate: bool,
-    contains_basis_lift: bool,
+    contains_unsupported_v5_event: bool,
     needs_qmatch_v5: bool,
 }
 
@@ -238,7 +238,7 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate,
-            contains_basis_lift: false,
+            contains_unsupported_v5_event: false,
             needs_qmatch_v5: false,
         }))
     }
@@ -247,8 +247,8 @@ impl Frame {
         self.source_gate
     }
 
-    pub(in crate::frontend::compile::lower) fn record_basis_lift(&mut self) {
-        self.contains_basis_lift = true;
+    pub(in crate::frontend::compile::lower) fn record_unsupported_v5_event(&mut self) {
+        self.contains_unsupported_v5_event = true;
     }
 
     pub(super) fn require_qmatch_v5(&mut self) {
@@ -276,7 +276,7 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate: self.source_gate,
-            contains_basis_lift: false,
+            contains_unsupported_v5_event: false,
             needs_qmatch_v5: false,
         }
     }
@@ -324,7 +324,7 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
-            contains_basis_lift: self.contains_basis_lift,
+            contains_unsupported_v5_event: self.contains_unsupported_v5_event,
             needs_qmatch_v5: self.needs_qmatch_v5,
         }))
     }
@@ -368,7 +368,7 @@ impl Frame {
                 operation: None,
                 contains_selections: self.contains_selections,
                 requires_source_gate: self.source_gate,
-                contains_basis_lift: self.contains_basis_lift,
+                contains_unsupported_v5_event: self.contains_unsupported_v5_event,
                 needs_qmatch_v5: self.needs_qmatch_v5,
             })));
         }
@@ -517,7 +517,7 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
-            contains_basis_lift: self.contains_basis_lift,
+            contains_unsupported_v5_event: self.contains_unsupported_v5_event,
             needs_qmatch_v5: self.needs_qmatch_v5,
         })))
     }
@@ -635,7 +635,7 @@ pub(in crate::frontend::compile::lower) fn record_named(
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.positions.push(position.clone());
     frame.contains_selections |= body.contains_selections;
-    frame.contains_basis_lift |= body.contains_basis_lift;
+    frame.contains_unsupported_v5_event |= body.contains_unsupported_v5_event;
     frame.needs_qmatch_v5 |= body.needs_qmatch_v5;
     frame.calls.push((position, body));
     Ok(())
@@ -728,7 +728,8 @@ pub(in crate::frontend::compile::lower) fn record_branch(
         .expect("original containing context");
     frame.contains_selections |= then_body.contains_selections || else_body.contains_selections;
     frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
-    frame.contains_basis_lift |= then_body.contains_basis_lift || else_body.contains_basis_lift;
+    frame.contains_unsupported_v5_event |=
+        then_body.contains_unsupported_v5_event || else_body.contains_unsupported_v5_event;
     frame.needs_qmatch_v5 |= then_body.needs_qmatch_v5 || else_body.needs_qmatch_v5;
     frame.positions.push(position.clone());
     frame.branches.push((position, then_body, else_body));

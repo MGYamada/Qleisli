@@ -286,6 +286,7 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'ordinary_generic_calls_check_unused_nominal_actuals_and_closed_partial_widths'),
         ('tests/selected_runtime_execution.rs', 'generic_nominal_calls_preserve_the_callees_public_observe_effect'),
         ('tests/selected_runtime_execution.rs', 'ordinary_generic_forwarding_does_not_grant_nominal_control'),
+        ('tests/selected_runtime_execution.rs', 'selected_builtin_qmatch_keeps_the_runtime_root_for_register_primitives'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_uses_the_common_original_source_and_named_arm_evidence'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_keeps_public_arm_effects_and_checks_inactive_arms')]),
     'runtime-result-views': path_rule('checked-view', 'runtime-result', '', [

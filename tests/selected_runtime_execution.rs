@@ -723,6 +723,23 @@ fn selected_qmatch_context_checks_builtin_pairs_with_a_nominal_spectator() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_builtin_qmatch_keeps_the_runtime_root_for_register_primitives() {
+    let accepted = selected(
+        "pub unitary fn keep(s:Q<Bit>,q:Q<Bits<1>>)->(Q<Bit>,Q<Bits<1>>){
+            let (b,r)=take_bit[1,0](q);
+            let (s,b)=qmatch(s,b){0=>h,1=>h};
+            (s,put_bit[1,0](b,r))
+        }",
+    );
+    assert!(!accepted.program().qmatch_source_checked());
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_nominal_qmatch_uses_original_imports_and_public_arm_effects() {
     for effect in ["unitary", "observe", "isometry"] {
         let main = "use facade::Tri; use facade::arm;
