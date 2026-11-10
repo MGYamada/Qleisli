@@ -62,6 +62,13 @@ same-run `check-qptl` release receipt. A skipped, failed or absent selected
 job rejects all stable required contexts and release readiness. These checks
 are regression/proof-build evidence, not constitutional guarantee admissions.
 
+`check-lean` also builds the application proof in `lean/qptl-application`
+when the proof lane builds mathematical models. The application combines
+the original runtime-tape theorem and QPTL's coherent-sum law in a separate
+Lake workspace. It reuses the same pinned Mathlib packages after the
+constitutional proof replay. The canonical proof workspace and native
+checker keep their existing dependency manifests.
+
 Cargo builds and documents without a native checker. Ordinary Rust tests that
 need it use `cfg_attr(not(qleisli_native_tests), ignore = ...)`, with the explicit
 `native-kernel gate: requires QLEISLI_KERNEL` reason. `build.rs` enables only this

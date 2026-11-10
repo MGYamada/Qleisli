@@ -114,8 +114,6 @@ def source_revision(root, recorded):
         if name in recorded["files"]:
             sha256(recorded["files"][name], f"source {name}")
             require(digest(data) == recorded["files"][name], f"stale source identity: {name}")
-    for path in registry.qptl_sources(root, read_file(root, "lean/lakefile.toml")):
-        read_file(root, path.relative_to(root).as_posix())
     current = registry.source_revision(root)
     require(current == recorded, "recorded source closure differs from the current source inventory")
     return current

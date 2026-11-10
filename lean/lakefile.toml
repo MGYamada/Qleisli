@@ -17,7 +17,3 @@ name = "Qleisli"
 [[require]]
 name = "qleisli_kernel"
 path = "../lean-kernel"
-
-[[require]]
-name = "qptl"
-path = "../qptl"

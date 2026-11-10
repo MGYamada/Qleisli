@@ -119,19 +119,6 @@ class RegistryTests(unittest.TestCase):
                     extra.unlink()
                     self.assertEqual(registry.source_revision(root), self.revision)
 
-    def test_qptl_dependency_is_source_bound(self):
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            for name in self.revision["files"]:
-                target = root / name
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes((registry.ROOT / name).read_bytes())
-            self.assertEqual(registry.source_revision(root), self.revision)
-            source = root / "qptl/QPTL/FiniteMatrix.lean"
-            self.assertIn(source.relative_to(root).as_posix(), self.revision["files"])
-            source.write_bytes(source.read_bytes() + b"\n-- mutation\n")
-            self.assertNotEqual(registry.source_revision(root), self.revision)
-
     def test_source_only_cannot_refresh_theorem_types(self):
         with self.assertRaisesRegex(registry.RegistryError, "requires rebuilt types"):
             registry.check(registry.ROOT, write=True, source_only=True)

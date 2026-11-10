@@ -30,8 +30,8 @@ run_cmd do
   for (name, info) in env.constants.toList do
     let owner := (env.getModuleIdxFor? name).map (fun idx => env.header.moduleNames[idx.toNat]!)
     let fromProject := match owner with
-      | some moduleName => (`Qleisli).isPrefixOf moduleName || (`QPTL).isPrefixOf moduleName
-      | none => (`Qleisli).isPrefixOf name || (`QPTL).isPrefixOf name
+      | some moduleName => (`Qleisli).isPrefixOf moduleName
+      | none => (`Qleisli).isPrefixOf name
     if fromProject then projectDeclarations := projectDeclarations.push name
     if let some moduleName := owner then
       if targetModules.contains moduleName then

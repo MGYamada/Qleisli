@@ -434,6 +434,13 @@ jobs:
       - name: Replay every registered guarantee verifier against the built and audited environment
         if: needs.changes.outputs.proof_lane != 'tests'
         run: python3 scripts/check_release_ready.py --record-constitution --output "$RUNNER_TEMP/release-constitution.json"
+      - name: Prove the original runtime tape's coherent sum with QPTL
+        if: needs.changes.outputs.proof_lane != 'tests'
+        run: |
+          mkdir -p lean/qptl-application/.lake
+          ln -s "$GITHUB_WORKSPACE/lean/.lake/packages" lean/qptl-application/.lake/packages
+          cd lean/qptl-application
+          lake build
       - name: Bind and retain successful producer evidence
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
         id: release-receipt

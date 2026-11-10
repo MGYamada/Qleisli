@@ -16,7 +16,6 @@ import Qleisli.RawActionLocality
 import Qleisli.CodeSpaceAction
 import Qleisli.RawActionSector
 import Qleisli.RuntimeTapeAction
-import Qleisli.RuntimeTapeDirectSum
 import Qleisli.NominalSectorAction
 import Qleisli.RawActionComposition
 import Qleisli.RuntimeForestProduct
