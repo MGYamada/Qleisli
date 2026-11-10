@@ -426,7 +426,8 @@ PATHS = {
             'theorem Original.covers ', 'theorem Original.root_safe ', 'theorem run_binding ']),
     ], [('src/interchange/native/qmatch/tests.rs', 'v5_checks_the_original_context_and_refuses_a_divergent_view'),
         ('src/frontend/compile/lower/quantum_match/nominal/tests.rs', 'original_general_nested_meaning_proposal'),
-        ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_wide_interfaces_in_separate_sectors')]),
+        ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_wide_interfaces_in_separate_sectors'),
+        ('tests/selected_runtime_execution.rs', 'selected_qif_and_qmatch_retain_their_original_selection_order')]),
     'qmatch-views': path_rule('checked-view', 'qmatch-component', '', [
         ('src/interchange/native/qmatch.rs', ['pub struct QmatchChecked', 'checked: Checked,', 'request: Arc<Request>',
             'pub fn request_bytes(', 'pub fn native(']),

@@ -331,6 +331,51 @@ fn selected_qmatch_checks_wide_interfaces_in_separate_sectors() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qif_and_qmatch_retain_their_original_selection_order() {
+    let source = r#"#![no_implicit_prelude]
+pub enum Selector { A, B }
+unitary fn mark(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }
+pub unitary fn route(s: Q<Selector>, c: Q<Bit>, q: Q<Bit>) -> (Q<Selector>,Q<Bit>,Q<Bit>) {
+    let (c,q) = qif(c,q) { 0 => h, 1 => mark };
+    let (s,q) = qmatch(s,q) { Selector::B => h, Selector::A => mark };
+    (s,c,q)
+}
+"#;
+    let selected = selected_at(source, "main::route");
+    let program = selected.program();
+    assert!(program.qmatch_source_checked());
+    let mut request =
+        qleisli::interchange::qmatch::v5::Request::decode(program.request().unwrap()).unwrap();
+    let [qif, qmatch] = request.context.sites.as_slice() else {
+        panic!("both original selection sites must be retained");
+    };
+    assert_eq!(
+        qif.position.offset as usize,
+        source.find("qif(c,q)").unwrap()
+    );
+    assert_eq!(
+        qmatch.position.offset as usize,
+        source.find("qmatch(s,q)").unwrap()
+    );
+    assert!(qif.position.start + qif.position.count <= qmatch.position.start);
+    kernel().check_program(program).unwrap();
+
+    request.context.sites[0].arms.swap(0, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(program.artifact(), &request.encode().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_keeps_controlled_permutations_after_evidence_preparation() {
     let source = "unitary fn flip(q:Q<Bit>)->Q<Bit>{h(phase[1,1](h(q)))}
         unitary fn idle(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{q}

@@ -9,7 +9,7 @@ use crate::interchange::qmatch::{
 };
 
 mod arms;
-pub(super) use arms::builtin_arm;
+pub(super) use arms::{BuiltinArmOrigin, builtin_arm};
 #[cfg(test)]
 mod tests;
 
@@ -1041,10 +1041,7 @@ pub(super) fn apply_selection(
         Vec::new()
     };
     let start = lower.raw.operations.len();
-    let joined = lower.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
-    let slot = lower.quantum(module, span, &joined, false)?;
-    lower.apply_circuit(slot, steps);
-    let result = lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
+    let result = apply_selection_steps(lower, module, span, [selector, target], steps)?;
     let Some(frame_start) = frame_start else {
         return Ok(result);
     };
