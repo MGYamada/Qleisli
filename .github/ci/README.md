@@ -118,6 +118,7 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-qmatch-selection-recursion`,
 `codex/beta-qmatch-general-calls`,
 `codex/beta-qmatch-source-call-return`,
+`codex/beta-qmatch-selection-proofs`,
 `codex/beta-quantum-runtime-types` or
 `codex/beta-runtime-static-bindings`.
 The selected branch and workflow source must agree. On pushes, the producer
@@ -534,16 +535,19 @@ each pinned toolchain. The common `rust-producer` action installs the exact tool
 selects fresh native preparation, runs the assigned commands and retains their
 actual source-bound result bytes. Only the remaining partition runs source
 contracts, latest source semantics/quick corpus, lint and research. Each runner
-builds/audits its own native checker; project outputs and passed results are not
-shared or cached. The extracted-source distribution route remains a complete
-separate check in its existing production target.
+builds and audits its own native checker. The latest producers run their
+complete harness partitions offline from isolated extractions of the clean
+candidate's deterministic Git archive. The original Rust commands surrounding
+the harnesses and the MSRV suite still use the checkout. The latest remaining
+producer builds the checkout compiler for source contracts, semantics and corpus.
+Project build outputs and results from other workflow runs remain uncached.
 
 The stable `check-rust` and `check-rust-msrv` jobs independently verify both child
 artifacts against the same commit, tree, run and attempt. Expected producer hashes
 are checked before parsing; canonical plans, every executed command, tool/binary
 identities and corpus coverage must match. Metadata records are bounded to 16 MiB.
-Neither a successful child nor an expected hash completes the pair. The existing
-eight required context names retain their complete nine-dependency gate.
+Neither a successful child nor an expected hash completes the pair. The eight
+required context names depend on selection and all ten suite results.
 
 Rust release receipts retain both original child byte streams and the aggregate
 descriptor. Final readiness checks these payloads again through its source
@@ -613,11 +617,16 @@ The shared `rust-suite` action owns the latest/MSRV source-contract and lint
 sequence. Only latest runs source semantics and the existing quick corpus profile.
 Producer jobs, pinned toolchains, native preparation, dependency archives,
 successful-evidence receipts and stable required contexts remain distinct.
-Distribution uses the same two-worker scheduler and native skip gate against
-the extracted complete source archive, offline in its existing caller-owned
-production target. It retains per-harness records under distribution logs;
-the extracted research suite, package, documentation and installation checks
-remain separate. No checkout test result replaces an extracted-source result.
+The hosted distribution package job runs package, documentation, installation
+and extracted research checks in parallel with the latest Rust producers. Its
+report has partial status. The stable distribution job checks the exact uploaded
+report and archive bytes against producer digests, then validates both latest
+Rust partitions against their same-run aggregate. Each partition binds the
+archive hash, candidate, native checker, pinned toolchain, Cargo inventory and
+complete harness results. The join requires the same archive hash from both
+partitions and the package job. Release readiness checks the binding again
+against the original Rust receipts and source tarball. The local distribution
+command still runs its complete offline source suite directly.
 
 The `ci-preflight` group runs whole-tree Git whitespace checks and the CI
 infrastructure regressions before the changes job can schedule heavy builds.

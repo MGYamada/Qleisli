@@ -207,28 +207,30 @@ theorem sourceStep_with_sparse_observation {dependencies program block}
 
 /-- Refine the observation on its actual source prefix inside a child whose
 literal writes are known to avoid the inherited history. -/
-theorem sourceStep_with_inherited_observation {dependencies program block}
-    (steps : List (@Step dependencies program block)) (inputs : List Nat) (inherited : Nat → Prop)
+theorem sourceStep_with_scoped_observation {dependencies program block}
+    (steps : List (@Step dependencies program block)) (inputs : List Nat) (inherited : Option (Nat → Prop))
     (certifies : Step dependencies program block → Prop)
     (fallback : List (@Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
     (scope : List Edge)
     (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsNonObservation step)
-      fallback (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
-      (some (fun id => ¬ inherited id))) :
+      fallback (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id))) :
     StepRefinement steps certifies (withSparseObservation fallback scope)
-      (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
-      (some (fun id => ¬ inherited id)) := by
+      (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id)) := by
   intro prior first later position certified ownerBefore ownerAfter ordinaryBefore ordinaryAfter
-    owners ordinary chunk read avoids source history outputs agrees executed
+    owners ordinary chunk read
+  refine WithChunkWriteBound.of_trace ?_
+  intro writes source history outputs agrees executed
   cases first
   case observation observation =>
-    exact sparse_observation_refines_with_inherited observation inputs scope prior.length (some inherited)
-      owners ordinary read avoids agrees executed
+    exact sparse_observation_refines_with_inherited observation inputs scope prior.length inherited
+      owners ordinary read writes agrees executed
   all_goals
-    exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read avoids agrees executed
+    exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
 
-#print axioms sourceStep_with_inherited_observation
+#print axioms sourceStep_with_scoped_observation
 #print axioms sparse_observation_refines
 #print axioms sourceStep_with_sparse_observation
 end Qleisli.RuntimeLiteralBody

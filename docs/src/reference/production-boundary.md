@@ -528,9 +528,8 @@ source traversal and retains the selection at its actual global rank. The
 same Raw events drive both the source-action equation and every inherited
 operator column represented in the checked input frame. The law still
 requires that input representation, the supported call shapes, and exact
-adjacency of their Raw slices. The source-action correspondence for general
-observing bodies remains open, along with public v5 and full12/64. The packed
-root law uses explicit whole-slice coverage.
+adjacency of their Raw slices. The packed root law uses explicit whole-slice
+coverage. The original-body theorem below uses the complete checked traversal.
 Native acceptance and work limits remain as specified above.
 
 For a checked original `measure_z` or `discard`,
@@ -556,7 +555,7 @@ represented incoming history. When the post call ends both the original source
 traversal and the Raw operations, the actual suffix is the final permutation.
 The same theorem gives the packed source result in the original return order
 for every outcome and identifies the list of histories returned by the original
-interpreter. General observing-body composition remains open.
+interpreter.
 
 `RuntimeNamedChildRuns.original_body` retains the actual input and output owner
 states for classical gaps and conditionals. For each conditional it keeps both
@@ -602,8 +601,17 @@ and both instructions preserve issued-ID support for the resulting history.
 `original_gap_values` derives agreement in the returned history's own
 valuation. `observation_step_values` gives the same agreement for every
 history of the actual erasure event.
-Arbitrary source arms still need the finite operator representation and SSA
-agreement across their complete bodies.
+
+`RuntimeLiteralBody.original_body_recursive_refinement` composes these laws
+for the complete staged original-body traversal. At each step the source
+operator follows the original primitive meaning, graph receipt, or selection
+table. The same recursion follows actual named child reads and the arm selected
+by the checked ordinary condition. It applies the written return order to
+every result and relates the complete history lists in order. The statement
+starts with a successful checked body and a finite representation of the
+input operator. It retains the visible SSA agreement and hidden outcomes for
+each returned history. Public v5, full12/64 and release validation remain
+separate.
 
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by

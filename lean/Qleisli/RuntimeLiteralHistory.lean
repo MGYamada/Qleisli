@@ -30,10 +30,15 @@ open Qleisli.RuntimeForestOrderedProduct (frame_product_agrees ordered_product_a
 open Qleisli.HierarchicalSemantics (mapM_members)
 open Qleisli.RuntimeLiteralBody (nodeSpan)
 
-def Agrees (inputs : List Nat) (raw : Raw.Observation.State) (ordinary : RuntimeOrdinaryBody.State)
+def AgreesWithInherited (inherited : Option (Nat → Prop))
+    (inputs : List Nat) (raw : Raw.Observation.State) (ordinary : RuntimeOrdinaryBody.State)
     (history : History) : Prop :=
   Agreement (valuation inputs ordinary.measurements history.values) history.values ordinary.table ∧
-    Supports (Issued raw) history
+  Supports (fun id => match inherited with
+    | none => Issued raw id
+    | some holds => holds id ∨ Issued raw id) history
+
+abbrev Agrees := AgreesWithInherited none
 
 private theorem pure_node_operations {dependencies program block}
     (node : RuntimePureBody.Node dependencies program block) :
@@ -48,12 +53,12 @@ private theorem pure_node_operations {dependencies program block}
 
 /-- Every pure node runs its exact Raw trace on all reference columns. Its
 ordinary valuation and hidden outcomes remain those of the incoming history. -/
-theorem pure_history {dependencies program block}
+theorem pure_history_with_inherited {dependencies program block}
     (node : RuntimePureBody.Node dependencies program block)
-    (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State) (history : History)
+    (inherited : Option (Nat → Prop)) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State) (history : History)
     {events : List Event} {results : List History} :
     let span := nodeSpan node
-    Agrees inputs span.checked.before ordinary history →
+    AgreesWithInherited inherited inputs span.checked.before ordinary history →
     readOps block.fuel span.checked.before.quantum.reference span.operations =
       some (span.checked.after.quantum.reference,events) →
     run dependencies block.fuel events history = some results →
@@ -62,7 +67,7 @@ theorem pure_history {dependencies program block}
       RuntimeLocalEvents.trace span.checked.before.quantum.reference operations =
         some ⟨span.checked.after.quantum.reference,rawEvents,span.checked.before.quantum.frame.length⟩ ∧
       results = [pureHistory dependencies rawEvents history] ∧
-      Agrees inputs span.checked.after ordinary (pureHistory dependencies rawEvents history) := by
+      AgreesWithInherited inherited inputs span.checked.after ordinary (pureHistory dependencies rawEvents history) := by
   intro span agrees read executed
   obtain ⟨operations,literal⟩ := pure_node_operations node
   obtain ⟨work,left,checked⟩ := span.checked.intervalRead
@@ -86,7 +91,26 @@ theorem pure_history {dependencies program block}
     have keep := (Raw.Observation.checkOps_history _ _ _ _ _ _ _ checked).2.2
     refine ⟨operations,rawEvents,literal,traced,Option.some.inj (executed.symm.trans exactRun),agrees.1,?_⟩
     intro id member
-    exact issued_mono keep (agrees.2 member)
+    cases inherited with
+    | none => exact issued_mono keep (agrees.2 member)
+    | some _ => exact (agrees.2 member).imp (fun retained => retained) (issued_mono keep)
+
+theorem pure_history {dependencies program block}
+    (node : RuntimePureBody.Node dependencies program block)
+    (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State) (history : History)
+    {events : List Event} {results : List History} :
+    let span := nodeSpan node
+    Agrees inputs span.checked.before ordinary history →
+    readOps block.fuel span.checked.before.quantum.reference span.operations =
+      some (span.checked.after.quantum.reference,events) →
+    run dependencies block.fuel events history = some results →
+    ∃ operations rawEvents,
+      span.operations = operations.map Semantics.Observation.Op.pure ∧
+      RuntimeLocalEvents.trace span.checked.before.quantum.reference operations =
+        some ⟨span.checked.after.quantum.reference,rawEvents,span.checked.before.quantum.frame.length⟩ ∧
+      results = [pureHistory dependencies rawEvents history] ∧
+      Agrees inputs span.checked.after ordinary (pureHistory dependencies rawEvents history) :=
+  pure_history_with_inherited node none inputs ordinary history
 
 private theorem gap_bindings {dependencies program block start count before ssa}
     (gap : @RuntimeOrdinaryBody.Gap dependencies program block start count before ssa) :

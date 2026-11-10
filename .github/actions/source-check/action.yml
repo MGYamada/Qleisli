@@ -26,6 +26,7 @@ runs:
       run: |
         compiler_args=()
         partition_args=()
+        archive_args=()
         output_name="$CHECK_GROUP"
         if [[ -n "$CHECK_COMPILER" ]]; then
           compiler_args=(--compiler "$CHECK_COMPILER")
@@ -33,8 +34,11 @@ runs:
         if [[ -n "$CHECK_PARTITION" ]]; then
           partition_args=(--partition "$CHECK_PARTITION")
           output_name="$CHECK_GROUP-$CHECK_PARTITION"
+          if [[ "$CHECK_GROUP" == rust-latest ]]; then
+            archive_args=(--archive-tests)
+          fi
         fi
-        python3 scripts/ci_profiles.py --checks "$CHECK_GROUP" "${compiler_args[@]}" "${partition_args[@]}" --output "$RUNNER_TEMP/$output_name"
+        python3 scripts/ci_profiles.py --checks "$CHECK_GROUP" "${compiler_args[@]}" "${partition_args[@]}" "${archive_args[@]}" --output "$RUNNER_TEMP/$output_name"
     - name: Retain command results and explicit unexecuted checks
       if: always() && (steps.check.outcome == 'success' || steps.check.outcome == 'failure')
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

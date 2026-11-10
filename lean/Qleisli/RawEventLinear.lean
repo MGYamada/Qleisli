@@ -109,6 +109,19 @@ private theorem protected_run_combination {Index Ref : Type} (indices : List Ind
     rw [protected_use_combination]
     exact ih _
 
+/-- Within a checked diagonal protected block, the same finite weighted
+linearity holds at each source and auxiliary coordinate. -/
+theorem protected_blocks_combination {Index Ref : Type} (indices : List Index) (weight : Index → ℂ)
+    (uses : List Use) (valid : ∀ use ∈ uses, Protected.DiagonalProtected use)
+    (source ancilla : Nat) (values : Index → Nat → Ref → ℂ) :
+    Protected.blocks source ancilla uses
+      (fun target ref => combination indices weight (fun index => values index target ref)) =
+    (fun target ref => combination indices weight (fun index =>
+      Protected.blocks source ancilla uses (values index) target ref)) := by
+  have same := congrArg (fun run : Protected.Physical Ref => run source ancilla)
+    (protected_run_combination indices weight uses (fun index _ _ => values index))
+  simpa only [Protected.run_blocks uses valid] using same
+
 /-- Each original pure event commutes with finite weighted sums in a
 reference column, including the full computed-scope action. -/
 theorem event_combination {Index : Type} (dependencies : List Dependency) (operation : Event)

@@ -10,7 +10,7 @@ open QleisliKernel QleisliKernel.Qirf
 open QleisliKernel.Semantics.Observation (Event readOps)
 open Qleisli.RuntimeObservingWrites (WritesWithin)
 open Qleisli.Semantics.ObservingAction (History run)
-open Qleisli.RuntimeNamedChildRuns (CheckedStep OrdinaryAligned OrdinaryRun)
+open Qleisli.RuntimeNamedChildRuns (CheckedStepAt OrdinaryAligned OrdinaryRun)
 open Qleisli.RuntimeNamedSourceFlow (Aligned)
 open RuntimePureBody (Step)
 
@@ -77,11 +77,17 @@ def WithChunkWriteBound (allowed : Option (Nat → Prop)) (events : List Event) 
   | none => claim
   | some accepts => WritesWithin events accepts → claim
 
-private theorem WithChunkWriteBound.apply {allowed events claim}
+theorem WithChunkWriteBound.apply {allowed events claim}
     (law : WithChunkWriteBound allowed events claim) (writes : TraceWriteBound allowed events) : claim := by
   cases allowed with
   | none => exact law
   | some _ => exact law writes
+
+theorem WithChunkWriteBound.of_trace {allowed events claim}
+    (law : TraceWriteBound allowed events → claim) : WithChunkWriteBound allowed events claim := by
+  cases allowed with
+  | none => exact law trivial
+  | some _ => exact law
 
 /-- A local refinement law may use the checked child execution for the exact
 occurrence. The original list decomposition fixes its position even when two
@@ -105,6 +111,13 @@ def StepRefinement {dependencies program block} {SourceHistory : Type}
       ∃ expectedOutputs, next earlier first expected = some expectedOutputs ∧
         List.Forall₂ (related (earlier ++ [first]) (stepSpan first).checked.after ownerAfter ordinaryAfter)
           expectedOutputs outputs)
+
+theorem StepRefinement.of_certifies {dependencies program block} {SourceHistory : Type}
+    {steps : List (@Step dependencies program block)} {weak strong next related allowed}
+    (law : StepRefinement (SourceHistory := SourceHistory) steps weak next related allowed)
+    (weaken : ∀ step, strong step → weak step) :
+    StepRefinement steps strong next related allowed :=
+  fun earlier first later position checked => law earlier first later position (weaken first checked)
 
 /-- Transport an exact prefix-indexed law along the same checked intervals,
 owner states and ordinary states as the actual execution. The result lists
@@ -190,14 +203,14 @@ theorem refineFlow {artifact root mode next rootInputs program block start finis
     (executed : (do
       let (_,events) ← readOps block.fuel block.entry.quantum.reference block.operations
       run root.dependencies block.fuel events initial) = some results)
-    (law : StepRefinement steps (CheckedStep next) sourceStep related)
+    (law : StepRefinement steps (CheckedStepAt next rootInputs) sourceStep related)
     (starts : related [] block.entry start initialOrdinary sourceInitial initial) :
     ∃ expected, runSourceHistories sourceStep [] steps [sourceInitial] = some expected ∧
       List.Forall₂ (related steps last.before finish finalOrdinary) expected results := by
   obtain ⟨events,trace,read⟩ := flow.literal.original_trace last
   rw [read] at executed
   exact (trace.executes_singleton executed).ordered_refinement flow.source flow.ordinary sourceStep related [] _
-    flow.calls law (.cons starts .nil)
+    flow.callsAt law (.cons starts .nil)
 
 /-- Reuse the same ordered induction on a named child's actual checked body
 and the already-read literal operation list that must avoid inherited IDs. -/
@@ -215,7 +228,7 @@ theorem refineFlowWithWrites {artifact root mode next rootInputs program block s
       some (last.before.quantum.reference,events))
     (executed : run root.dependencies block.fuel events initial = some results)
     (writes : WritesWithin events allowed)
-    (law : StepRefinement steps (CheckedStep next) sourceStep related (some allowed))
+    (law : StepRefinement steps (RuntimeNamedChildRuns.CheckedStepAt next rootInputs) sourceStep related (some allowed))
     (starts : related [] block.entry start initialOrdinary sourceInitial initial) :
     ∃ expected, runSourceHistories sourceStep [] steps [sourceInitial] = some expected ∧
       List.Forall₂ (related steps last.before finish finalOrdinary) expected results := by
@@ -223,7 +236,7 @@ theorem refineFlowWithWrites {artifact root mode next rootInputs program block s
   have same : original = events := congrArg Prod.snd (Option.some.inj (read.symm.trans literal))
   subst original
   exact (trace.executes_singleton executed).ordered_refinement_with_writes flow.source flow.ordinary
-    sourceStep related [] _ flow.calls (allowed := some allowed) writes law (.cons starts .nil)
+    sourceStep related [] _ flow.callsAt (allowed := some allowed) writes law (.cons starts .nil)
 
 /-- Specialize the ordered proof to the real body. The same traversal supplies
 the child receipts, the owner and SSA chains, the input ordering, and the
@@ -247,7 +260,9 @@ theorem original_body_ordered_refinement {artifact owner name arguments request 
       (RuntimeBodyOperations.preparation artifact prepared.source.catalogue)
       (RuntimeBodyOperations.stagedConsumption artifact prepared.source.catalogue body.root)
     let history := RuntimeBodyOperations.initialHistory prepared body.checked.native runtime body.checked.inputs
-    StepRefinement body.checked.result.steps (CheckedStep (RuntimePureBody.runBlockCore artifact body.root mode 127))
+    StepRefinement body.checked.result.steps
+      (CheckedStepAt (RuntimePureBody.runBlockCore artifact body.root mode 127)
+        (RuntimeBranchCondition.rootEntries (.root prepared.source.body)))
       next related →
     (∀ input : RuntimeOwnerMap.Checked source.initialRoles block.entry,
       RuntimeInterval.Computed (RuntimePureBody.reordered source.initialRoles block.entry history.bindings) input →

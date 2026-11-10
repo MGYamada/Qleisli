@@ -1,4 +1,5 @@
 import Qleisli.RuntimeOwnerBindingFacts
+import Qleisli.RuntimeStructuralWires
 import QleisliKernel.Qirf.RuntimePureBody
 
 /-! Alignment of the original traversal's source states. It retains complete
@@ -10,15 +11,75 @@ open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open RuntimeStructuralAction (SourceState)
 open RuntimeOwnerMap (Binding Map)
 
+def OperationOwnerOrder {dependencies program block start count arity inputs outputs roles}
+    (_frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+    (before after : SourceState) : Prop :=
+  after = {before with bindings := after.bindings} ∧
+  (∃ entry exit,
+    RuntimeInterval.Computed (RuntimePureBody.rolePorts roles before.bindings) entry ∧
+    RuntimeInterval.Computed (RuntimePureBody.rolePorts roles after.bindings) exit ∧
+    entry.map (·.token) = inputs ∧ exit.map (·.token) = outputs) ∧
+  ∃ (interval : RuntimeInterval.Checked block start count)
+    (incoming : RuntimeOwnerMap.Checked (before.bindings.map (·.owner)) interval.before)
+    (transport : RuntimeOwnerTransition.Checked interval incoming.bindings),
+    incoming.bindings = before.bindings ∧ transport.after.bindings = after.bindings ∧
+    RuntimeInterval.Computed (RuntimeOwnerTransition.read interval incoming.bindings) transport
+
 def NodeAligned {dependencies program block} (before after : RuntimeStructuralAction.SourceState)
     (node : RuntimePureBody.Node dependencies program block) : Prop :=
   match node with
   | .primitive _ binding => before = binding.history ∧ after = binding.after
   | .structural (before := original) action => before = original ∧ after = action.after
+  | .operation frame .. => OperationOwnerOrder frame before after
   | .selection (codes := codes) .. =>
     before.bindings = codes.owners.before.bindings ∧
       after = {before with bindings := codes.owners.transport.after.bindings}
   | _ => True
+
+/-- A source-ordered selection of complete bindings, including zero-width
+owners, gives exactly the ports read by the native interval. -/
+def OrderedPorts (roles : List RuntimeOwnerMap.Owner) (bindings : Map)
+    (ports : List Semantics.Raw.Port) : Prop :=
+  ∃ selected : Map,
+    RuntimeInterval.Computed (RuntimeOwnerMap.order roles bindings) selected ∧
+    selected ⊆ bindings ∧ selected.map (·.owner) = roles ∧ ports = selected.map (·.port)
+
+private theorem original_ports {roles allRoles state found actual}
+    (frame : RuntimeOwnerMap.Checked allRoles state)
+    (valid : Raw.stateValid state.quantum = true)
+    (read : RuntimeInterval.Computed (RuntimePureBody.rolePorts roles frame.bindings) found)
+    (native : PureInterval.ports state (found.map (·.token)) = some actual) :
+    OrderedPorts roles frame.bindings actual := by
+  obtain ⟨work,left,ran⟩ := read
+  unfold RuntimePureBody.rolePorts RuntimePrimitiveSource.rolePorts at ran
+  obtain ⟨selected,middle,ordered,returned⟩ := bind_success _ _ _ _ _ ran
+  have same := (pure_success _ _ _ _ returned).1
+  subst found
+  have selection : RuntimeInterval.Computed (RuntimeOwnerMap.order roles frame.bindings) selected :=
+    ⟨work,middle,ordered⟩
+  obtain ⟨contained,owners⟩ := RuntimeSelectionPartition.order_values frame.bindings roles selected selection
+  have present : selected.map (·.port) ⊆ state.quantum.live := by
+    intro port member
+    obtain ⟨binding,found,rfl⟩ := List.mem_map.mp member
+    exact frame.complete.mem_iff.mp (List.mem_map_of_mem (contained found))
+  have literal := Qleisli.RuntimeStructuralWires.ports_read state.quantum.reference
+    (selected.map (·.port)) (Raw.Ownership.valid _ valid).owners present
+  exact ⟨selected,selection,contained,owners,Option.some.inj (native.symm.trans literal)⟩
+
+/-- Recover both source-ordered owner selections on the exact entry and exit
+of the original operation interval. -/
+theorem OperationOwnerOrder.ordered_ports {dependencies program block start count arity inputs outputs roles}
+    {frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles}
+    {before after : SourceState} (aligned : OperationOwnerOrder frame before after)
+    {inputRoles outputRoles} (input : RuntimeOwnerMap.Checked inputRoles frame.interval.before)
+    (output : RuntimeOwnerMap.Checked outputRoles frame.interval.after)
+    (initial : input.bindings = before.bindings) (final : output.bindings = after.bindings) :
+    OrderedPorts roles before.bindings frame.selected ∧ OrderedPorts roles after.bindings frame.returned := by
+  obtain ⟨_,⟨entry,exit,entryRead,exitRead,entryTokens,exitTokens⟩,_⟩ := aligned
+  exact ⟨initial ▸ original_ports input frame.interval.history.1 (initial.symm ▸ entryRead)
+      (entryTokens.symm ▸ frame.atEntry),
+    final ▸ original_ports output frame.interval.history.2.2.1 (final.symm ▸ exitRead)
+      (exitTokens.symm ▸ frame.atExit)⟩
 
 def Aligned {dependencies program block} (before after : SourceState)
     (step : @RuntimePureBody.Step dependencies program block) : Prop :=

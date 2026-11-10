@@ -9,7 +9,7 @@ namespace Qleisli.RuntimeCallHistory
 open QleisliKernel QleisliKernel.Qirf
 open RuntimePureBody (Step runBlockCore)
 open RuntimeOwnerMap (Map)
-open Qleisli.RuntimeNamedChildRuns (CheckedStep Flow)
+open Qleisli.RuntimeNamedChildRuns (CheckedStepAt Flow RootInputs ChildRunAt)
 open Qleisli.RuntimeNamedSourceFlow (Returned)
 open Qleisli.RuntimeLiteralBody
   (SourceHistory SemanticHistoryAgreesWithInherited StepRefinement refineFlowWithWrites
@@ -69,7 +69,7 @@ theorem refine_child_runs
     (ordinals : List Nat) (sourceInitial : Nat → SourceHistory)
     (next : List (Step root.dependencies scope.program scope.prepared.block) →
       Step root.dependencies scope.program scope.prepared.block → SourceHistory → Option (List SourceHistory))
-    (laws : StepRefinement steps (CheckedStep (runBlockCore artifact root mode fuel)) next
+    (laws : StepRefinement steps (CheckedStepAt (runBlockCore artifact root mode fuel) rootInputs) next
       (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
       (some (fun id => id ∉ actual.values.map Prod.fst)))
     (avoids : WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst))
@@ -118,7 +118,7 @@ theorem CheckedCallRun.refine_source_slices
     (ordinals : List Nat) (sourceInitial : Nat → SourceHistory)
     (next : List (Step root.dependencies scope.program scope.prepared.block) →
       Step root.dependencies scope.program scope.prepared.block → SourceHistory → Option (List SourceHistory))
-    (laws : StepRefinement steps (CheckedStep (runBlockCore artifact root mode fuel)) next
+    (laws : StepRefinement steps (CheckedStepAt (runBlockCore artifact root mode fuel) rootInputs) next
       (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
       (some (fun id => id ∉ actual.values.map Prod.fst)))
     (avoids : WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst))
@@ -182,7 +182,7 @@ theorem CheckedCallRun.refine_weighted_child_sources
       (RuntimeOrdinaryBody.valuation ordinals ordinary.measurements actual.values) actual.values ordinary.table)
     (next : List (Step root.dependencies scope.program scope.prepared.block) →
       Step root.dependencies scope.program scope.prepared.block → SourceHistory → Option (List SourceHistory))
-    (laws : StepRefinement steps (CheckedStep (runBlockCore artifact root mode fuel)) next
+    (laws : StepRefinement steps (CheckedStepAt (runBlockCore artifact root mode fuel) rootInputs) next
       (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
       (some (fun id => id ∉ actual.values.map Prod.fst)))
     (avoids : WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst)) :
@@ -258,9 +258,9 @@ private theorem stepList_ofList {dependencies program block} (steps : List (@Ste
 /-- The original child receipt retains the complete traversal on the same
 written argument bindings used by the source-derived slice input. -/
 def NamedSourceTraversal {artifact : Artifact} {root : Validity.Root}
-    {mode : RuntimePureBody.ExecutionMode artifact root} (fuel : Nat) {program block} :
+    {mode : RuntimePureBody.ExecutionMode artifact root} (fuel : Nat) (origin : RootInputs) {program block} :
     @Step root.dependencies program block → Prop
-  | .named (childHistory := after) (sources := sources) event scope body _ boundary finalOrdinary steps =>
+  | .named (childHistory := after) _ scope body _ boundary finalOrdinary steps =>
     let subject := SourceTypes.SourceRuntimeScope.Subject.whole body
     ∀ (input : RuntimeOwnerMap.Checked subject.initialRoles scope.prepared.block.entry)
       (assigned : RuntimeOwnerMap.Map),
@@ -268,25 +268,22 @@ def NamedSourceTraversal {artifact : Artifact} {root : Validity.Root}
         ((scope.selected.zip (boundary.input.ordered.map (·.owner))).map fun (port,role) =>
           (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner))) assigned →
       RuntimeInterval.Computed (RuntimePureBody.reordered subject.initialRoles scope.prepared.block.entry assigned) input →
-      ∃ rootOwner rootName,
-      ∃ path : RuntimeOrdinaryBody.CallPath sources rootOwner rootName
-        event.target.resolution.moduleName event.target.resolution.declaration.name,
       ∃ finish,
-        Flow (runBlockCore artifact root mode fuel) (RuntimeBranchCondition.rootEntries path)
+        Flow (runBlockCore artifact root mode fuel) origin
           ⟨input.bindings,subject.initialRoles,body.checked.summary.nextOwner⟩
           (Qleisli.RuntimeLiteralBody.stepList steps) finish scope.visible.ssa finalOrdinary
           scope.prepared.block.operations.length ∧
         Returned scope.prepared.block subject.outputRoles finish after
   | _ => True
 
-theorem actual_named_source_traversal {artifact root mode fuel program block step}
-    (call : @Qleisli.RuntimeNamedChildRuns.ChildRun artifact root mode
-      (runBlockCore artifact root mode (fuel+1)) program block step) :
-    NamedSourceTraversal (artifact := artifact) (mode := mode) fuel step := by
+theorem actual_named_source_traversal {artifact root mode fuel origin program block step}
+    (call : @ChildRunAt artifact root mode
+      (runBlockCore artifact root mode (fuel+1)) (some origin) program block step) :
+    NamedSourceTraversal (artifact := artifact) (mode := mode) fuel origin step := by
   cases call with
   | @named start count inputs caller before ordinary event scope body bodyRead
       rootOwner rootName path request plan originalAssigned result receipts boundary
-      beforeInput afterInput afterChild inputRead childRead =>
+      beforeInput afterInput afterChild inputRead childRead rootRead =>
     intro input assigned assignedRead ordered
     obtain ⟨initial,initialOrdered,finish,flow,returned⟩ :=
       Qleisli.RuntimeNamedChildRuns.core_flow artifact root mode fuel
@@ -302,8 +299,8 @@ theorem actual_named_source_traversal {artifact root mode fuel program block ste
       (RuntimeNamedPrimitiveInputs.bindings_roles assignedRead) input ordered
     have sameInput : input.bindings = initial.bindings :=
       inputMap.trans (sameAssigned.symm.trans initialMap.symm)
-    refine ⟨rootOwner,rootName,path,finish,?_,returned⟩
-    simpa only [sameInput,stepList_ofList] using flow
+    refine ⟨finish,?_,returned⟩
+    simpa only [sameInput,stepList_ofList,rootRead origin rfl] using flow
 
 #print axioms source_input_on_slice
 #print axioms CheckedCallRun.refine_source_slices

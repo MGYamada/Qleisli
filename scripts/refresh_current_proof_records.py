@@ -62,6 +62,7 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-qmatch-selection-recursion",
     "refs/heads/codex/beta-qmatch-general-calls",
     "refs/heads/codex/beta-qmatch-source-call-return",
+    "refs/heads/codex/beta-qmatch-selection-proofs",
     "refs/heads/codex/beta-quantum-runtime-types",
     "refs/heads/codex/beta-runtime-static-bindings"))
 FIXED = (

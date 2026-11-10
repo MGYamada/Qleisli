@@ -35,6 +35,8 @@ import Qleisli.RuntimeFiniteTargetLogical
 import Qleisli.RuntimeFiniteTargetAction
 import Qleisli.RuntimeFiniteTargetGram
 import Qleisli.RuntimeSelectionWitnessAction
+import Qleisli.RuntimeSelectionArmTrace
+import Qleisli.RuntimeSelectionLogicalRead
 import Qleisli.RuntimeSourcePrimitiveAction
 import Qleisli.RuntimeLiteralFrame
 import Qleisli.RuntimeSelectionBoundary
@@ -137,6 +139,8 @@ import Qleisli.RuntimeOriginalSparseObservation
 import Qleisli.RuntimeLiteralSparseObservation
 import Qleisli.RuntimeSparseHeadAction
 import Qleisli.RuntimeSparseBlockEncoding
+import Qleisli.RuntimeSparseOperationAction
+import Qleisli.RuntimeOriginalGraphAction
 import Qleisli.RuntimeSparseSelectionAction
 import Qleisli.RuntimeSparseSelectionOutput
 import Qleisli.RuntimeSparseNamedBoundary
@@ -155,6 +159,7 @@ import Qleisli.RuntimeCallHistoryPure
 import Qleisli.RuntimeCallHistoryFold
 import Qleisli.RuntimeCallHistorySteps
 import Qleisli.RuntimeCallPureStepLaw
+import Qleisli.RuntimeCallPureFold
 import Qleisli.RuntimeCallHistoryPhi
 import Qleisli.RuntimeCallBranchRead
 import Qleisli.RuntimeCallBranchGeometry
@@ -168,6 +173,7 @@ import Qleisli.RuntimeCallHistorySourceState
 import Qleisli.RuntimeCallHistorySourceRefinement
 import Qleisli.RuntimeCallHistoryWeighted
 import Qleisli.RuntimeCallHistorySourceReturn
+import Qleisli.RuntimeLiteralGeneralNamed
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection
@@ -181,6 +187,8 @@ import Qleisli.RawRepresentationTransport
 import Qleisli.RawDenotation
 import Qleisli.RawProtected
 import Qleisli.RawProtectedEvaluation
+import Qleisli.RawReconstructedAction
+import Qleisli.RawProtectedMatrixAction
 import Qleisli.RawProtectedCommutation
 import Qleisli.RawFunction
 import Qleisli.RawPure
