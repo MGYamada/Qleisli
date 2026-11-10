@@ -189,7 +189,19 @@ pub unitary fn route(s: Q<Tag>, q: Q<Bit>, b: Bit) -> (Q<Tag>, Q<Bit>, Bit) {
             "    let (s,q,c) = if b",
             "    let b = measure_z(a);\n    let (s,q,c) = if b",
         );
-    for (source, expected_effect) in [(source, Effect::Unitary), (&observed, Effect::Observe)] {
+    let prepared = observed
+        .replace(", a: Q<Bit>", "")
+        .replace("measure_z(a)", "measure_z(h(init0()))");
+    let explicit_basis = prepared.replace(
+        "    let b = measure_z(h(init0()));",
+        "    let a = basis unit(()) as _ { 0 };\n    let b = measure_z(h(a));",
+    );
+    for (source, expected_effect) in [
+        (source, Effect::Unitary),
+        (&observed, Effect::Observe),
+        (&prepared, Effect::Observe),
+        (&explicit_basis, Effect::Observe),
+    ] {
         let accepted = selected_at(source, "main::route");
         assert!(accepted.program().qmatch_source_checked());
         let raw = accepted.program().raw();
@@ -693,6 +705,21 @@ fn selected_nominal_qmatch_retains_named_basis_preparation_and_hidden_observatio
         ] if unit == input && output == measured && table == &[0] && !rest.is_empty()
     ));
     kernel().check_program(program).unwrap();
+    // Preparing |1> is also a valid Raw isometry. The same original source
+    // still prepares |0>, even when the measurement result stays hidden.
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let original = r#""table":[0],"tag":"lift_basis""#;
+    let changed = r#""table":[1],"tag":"lift_basis""#;
+    assert_eq!(artifact.matches(original).count(), 1);
+    let altered = artifact.replacen(original, changed, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(altered.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
 }
 
 #[test]

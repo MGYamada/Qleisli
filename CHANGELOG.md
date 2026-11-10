@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check coherent basis preparation in selected v5 bodies and relate its
+  original rectangular table to the literal Raw event on the complete owner
+  and reference frame. Ordinary branches after preparation and measurement
+  fit the existing exact-work cap by metering condition lookups and owner
+  permutations according to their actual scans.
 - Meter nominal type text linearly when matching issued owner histories at
   ordinary branch merges. Prove condition agreement from the single metered
   pass over all input and measurement rows. Small original-source v5

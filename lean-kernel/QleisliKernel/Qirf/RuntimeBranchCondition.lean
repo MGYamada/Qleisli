@@ -96,9 +96,11 @@ private theorem all_of_checks {α : Type} (test : α → Bool) (read : α → Wo
 
 private def readEvery (inputs : List (List Nat)) (bits : List (List Bool)) (measurements : List Measurement)
     (required actual : Expression) : WorkM {_row : Unit // every inputs bits measurements required actual = true} := do
+  -- Each measured expression scans the measurement keys once, then looks up
+  -- its output bit. The row also pays for constructing the assignment table.
   let fields := measurementFields measurements
   let cost := 32*(SourceRuntimeValues.expressionSize required+SourceRuntimeValues.expressionFields required+
-    SourceRuntimeValues.expressionSize actual+SourceRuntimeValues.expressionFields actual+1)*(fields+1)^2
+    SourceRuntimeValues.expressionSize actual+SourceRuntimeValues.expressionFields actual+1)*(fields+1)
   let compare := sameAt measurements required actual
   let readAssignment (input : List Nat) (assignment : List Bool) : WorkM Unit := do
     exactWork (Exact.charge (cost*(input.length+assignment.length+1)))

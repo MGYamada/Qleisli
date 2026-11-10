@@ -328,7 +328,7 @@ PATHS = {
         ('src/interchange/qmatch/tests.rs', 'event_positions_share_the_existing_request_allocation_budget'),
         ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_binds_the_actual_complete_call'),
         ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_keeps_structural_moves_and_suspended_callers'),
-        ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_does_not_replace_the_original_body_with_a_site'),
+        ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_retains_named_basis_preparation_and_hidden_observation'),
         ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_uses_original_imports_and_public_arm_effects'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_preserves_nominal_targets_and_original_phases'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_nominal_target_keeps_two_empty_owner_identities'),
