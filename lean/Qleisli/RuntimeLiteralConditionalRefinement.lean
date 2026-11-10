@@ -827,12 +827,12 @@ theorem original_body_sparse_refinement {artifact owner name arguments request p
     ((original_body_sparse_steps body row scope fallback leaves).of_certifies (fun _ cert => cert.forget)) starts
 
 def NeedsRecursivePure {dependencies program block} : Step dependencies program block → Prop
-  | .pure _ => True
+  | step@(.pure _) => NeedsSparseSourceAction step ∧ NeedsNonInline step
   | _ => False
 
 noncomputable def recursiveBodyLeaves {dependencies}
     (pureSteps : ScopedSourceSteps dependencies) : ScopedSourceSteps dependencies :=
-  fun scope => withSparseGaps (withSparseObservation (pureSteps scope) scope)
+  fun scope => withSparseSteps (withSparseObservation (withSparseInline (pureSteps scope)) scope)
 
 private theorem recursiveBodyLeaves_refine {dependencies program block}
     (pureSteps : ScopedSourceSteps dependencies)
@@ -844,15 +844,16 @@ private theorem recursiveBodyLeaves_refine {dependencies program block}
     StepRefinement steps (fun step => certifies step ∧ NeedsRecursiveLeaf step)
       (recursiveBodyLeaves pureSteps scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
       (inherited.map (fun holds id => ¬ holds id)) := by
-  apply sourceStep_with_scoped_gaps
+  apply sourceStep_with_scoped_structure
   apply sourceStep_with_scoped_observation
+  apply sourceStep_with_scoped_inline
   apply pureLaws.of_certifies
   intro step checked
-  rcases checked with ⟨⟨⟨known,leaf⟩,gap⟩,observation⟩
+  rcases checked with ⟨⟨⟨⟨known,leaf⟩,structural⟩,observation⟩,inline⟩
   refine ⟨known,?_⟩
   cases step
-  case pure => trivial
-  case gap => exact gap
+  case pure => exact ⟨structural,inline⟩
+  case gap => exact structural
   case observation => exact observation
   all_goals exact leaf
 

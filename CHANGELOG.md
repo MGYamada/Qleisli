@@ -108,8 +108,10 @@ development milestones from the scope of their evidence.
   original call receipt retains the enclosing root input domain for each
   child traversal. One recursive proof uses the actual child receipts for
   named calls and selected branches and composes the ordinary gaps and
-  observations through the written return. The local laws for the pure
-  operation forms remain to be assembled.
+  observations through the written return. Structural operations and
+  supported inline primitives preserve the inherited SSA history while
+  using their original sparse source actions. Other pure operation forms
+  still require their local correspondence laws.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

@@ -10,7 +10,7 @@ open Semantics.Observation (readOps)
 open Qleisli.Semantics.ObservingAction (History run)
 open Qleisli.RuntimeNamedGateLift (Form)
 open Qleisli.RuntimeLiteralInlinePrimitive (literalForm inline_reference_action inline_caller_geometry)
-open Qleisli.RuntimeLiteralHistory (Agrees applySourceOwner sourcePrimitive sourceInlinePrimitive pure_history lookup_owner)
+open Qleisli.RuntimeLiteralHistory (AgreesWithInherited applySourceOwner sourcePrimitive sourceInlinePrimitive pure_history_with_inherited lookup_owner)
 open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory pureHistory_operator_congr)
 open Qleisli.RuntimeSemanticForest (Frame action)
 open Qleisli.RuntimeStructuralHistory (Represents)
@@ -25,8 +25,8 @@ private theorem sparse_inline_history {dependencies program block start count in
     (checked : RuntimeOwnerMap.Checked roles primitive.interval.interval.before)
     (bindings : checked.bindings = original.frame.bindings)
     (frame : Frame checked.bindings)
-    (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State) (history : History) (joint : Nat → Nat → ℂ)
-    (agrees : Agrees inputs primitive.interval.interval.before ordinary history)
+    (inputs : List Nat) (inherited : Option (Nat → Prop)) (ordinary : RuntimeOrdinaryBody.State) (history : History) (joint : Nat → Nat → ℂ)
+    (agrees : AgreesWithInherited inherited inputs primitive.interval.interval.before ordinary history)
     (represented : Represents frame primitive.interval.interval.before history joint) {events results}
     (read : readOps block.fuel primitive.interval.interval.before.quantum.reference
       ((block.operations.drop start).take count) = some (primitive.interval.interval.after.quantum.reference,events))
@@ -34,7 +34,7 @@ private theorem sparse_inline_history {dependencies program block start count in
     ∃ resultFrame : Frame original.after.bindings, ∃ expected result,
       sourceInlinePrimitive original checked.bindings joint = some expected ∧ results = [result] ∧
       result.values = history.values ∧ result.hidden = history.hidden ∧
-      Agrees inputs primitive.interval.interval.after ordinary result ∧
+      AgreesWithInherited inherited inputs primitive.interval.interval.after ordinary result ∧
       Represents resultFrame primitive.interval.interval.after result expected := by
   obtain ⟨localEntry,rawEvents,localEvents,lifted,_,operand,localLaw⟩ :=
     inline_reference_action primitive original form literal
@@ -54,7 +54,7 @@ private theorem sparse_inline_history {dependencies program block start count in
       rw [port]
       exact localLaw amplitudes base row reference (by rwa [primitive.action.physicalShape.2]))
   obtain ⟨operations,performed,operationsLiteral,performedTrace,resultsEq,agreesAfter⟩ :=
-    pure_history (.primitive primitive original) inputs ordinary history agrees read executed
+    pure_history_with_inherited (.primitive primitive original) inherited inputs ordinary history agrees read executed
   have operationsEq : operations = primitive.interval.operations :=
     (List.map_inj_right (f := Semantics.Observation.Op.pure)
       (fun _ _ equal => Semantics.Observation.Op.pure.inj equal)).mp
@@ -88,22 +88,22 @@ theorem sparse_inline_refines {dependencies program block start count input outp
     (primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind)
     (original : RuntimePrimitiveSource.Checked primitive)
     (form : Form) (literal : primitive.interval.operations = [form.operation input output])
-    (inputs : List Nat) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
+    (inputs : List Nat) (inherited : Option (Nat → Prop)) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
     (owners : Aligned ownerBefore ownerAfter (.pure (.primitive primitive original)))
     (ordinary : OrdinaryAligned ordinaryBefore ordinaryAfter (.pure (.primitive primitive original)))
     {chunk source history outputs}
     (read : readOps block.fuel primitive.interval.interval.before.quantum.reference
       ((block.operations.drop start).take count) = some (primitive.interval.interval.after.quantum.reference,chunk))
-    (agrees : SemanticHistoryAgrees inputs primitive.interval.interval.before ownerBefore ordinaryBefore source history)
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs primitive.interval.interval.before ownerBefore ordinaryBefore source history)
     (executed : run dependencies block.fuel chunk history = some outputs) :
     ∃ expected, sourceInlineHistory original source = some expected ∧
-      List.Forall₂ (SemanticHistoryAgrees inputs primitive.interval.interval.after ownerAfter ordinaryAfter) expected outputs := by
+      List.Forall₂ (SemanticHistoryAgreesWithInherited inherited inputs primitive.interval.interval.after ownerAfter ordinaryAfter) expected outputs := by
   rcases owners with ⟨rfl,rfl⟩
   cases ordinary
   obtain ⟨ownerState,hidden,bits,values,_,checked,bindings,frame,represented⟩ := agrees
   obtain ⟨resultFrame,operator,result,sourceRead,rfl,sameValues,sameHidden,agreesAfter,resultRepresents⟩ :=
     sparse_inline_history primitive original form literal checked (bindings.trans original.sameHistory.symm)
-      (bindings.symm ▸ frame) inputs _ history source.operator values
+      (bindings.symm ▸ frame) inputs inherited _ history source.operator values
       (cast_represents bindings.symm frame represented) read executed
   let stateEq := RuntimeIntervalStates.same_after original.interval primitive.interval.interval
   let outputChecked := RuntimeNamedThreeFrameChain.checkedAt stateEq original.owners.after
@@ -131,16 +131,20 @@ noncomputable def withSparseInline {dependencies program block}
     | some _ => sourceInlineHistory original source
   | _ => fallback prior step source
 
-theorem sourceStep_with_sparse_inline {dependencies program block}
-    (steps : List (@Step dependencies program block)) (inputs : List Nat)
+theorem sourceStep_with_scoped_inline {dependencies program block}
+    (steps : List (@Step dependencies program block)) (inputs : List Nat) (inherited : Option (Nat → Prop))
     (certifies : Step dependencies program block → Prop)
     (fallback : List (@Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
     (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsNonInline step)
-      fallback (fun _ => SemanticHistoryAgrees inputs)) :
-    StepRefinement steps certifies (withSparseInline fallback) (fun _ => SemanticHistoryAgrees inputs) := by
+      fallback (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id))) :
+    StepRefinement steps certifies (withSparseInline fallback) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id)) := by
   intro prior first later position certified ownerBefore ownerAfter ordinaryBefore ordinaryAfter
-    owners ordinary chunk read source history outputs agrees executed
+    owners ordinary chunk read
+  refine WithChunkWriteBound.of_trace ?_
+  intro writes source history outputs agrees executed
   cases first
   case pure node =>
     cases node
@@ -148,17 +152,27 @@ theorem sourceStep_with_sparse_inline {dependencies program block}
       cases found : literalForm primitive with
       | none =>
         obtain ⟨expected,evaluated,related⟩ :=
-          remaining prior (.pure (.primitive primitive original)) later position
-            ⟨certified,by simp [NeedsNonInline,found]⟩ owners ordinary read agrees executed
+          ((remaining prior (.pure (.primitive primitive original)) later position
+            ⟨certified,by simp [NeedsNonInline,found]⟩ owners ordinary read).apply writes) agrees executed
         exact ⟨expected,by simpa only [withSparseInline,found] using evaluated,related⟩
       | some form =>
         obtain ⟨expected,evaluated,related⟩ :=
-          sparse_inline_refines primitive original form.val form.property inputs owners ordinary read agrees executed
+          sparse_inline_refines primitive original form.val form.property inputs inherited owners ordinary read agrees executed
         exact ⟨expected,by simpa only [withSparseInline,found] using evaluated,related⟩
     all_goals
-      exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read agrees executed
+      exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
   all_goals
-    exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read agrees executed
+    exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
+
+theorem sourceStep_with_sparse_inline {dependencies program block}
+    (steps : List (@Step dependencies program block)) (inputs : List Nat)
+    (certifies : Step dependencies program block → Prop)
+    (fallback : List (@Step dependencies program block) → Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsNonInline step)
+      fallback (fun _ => SemanticHistoryAgrees inputs)) :
+    StepRefinement steps certifies (withSparseInline fallback) (fun _ => SemanticHistoryAgrees inputs) :=
+  sourceStep_with_scoped_inline steps inputs none certifies fallback remaining
 
 #print axioms sparse_inline_refines
 #print axioms sourceStep_with_sparse_inline

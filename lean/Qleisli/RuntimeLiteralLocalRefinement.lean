@@ -44,14 +44,7 @@ abbrev ScopedSourceSteps (dependencies : List RuntimeInterval.Dependency) :=
     List RuntimeSelectionSteps.Edge → List (Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory)
 
-def ScopedOrdinaryAgrees (inherited : Option (Nat → Prop))
-    (inputs : List Nat) (state : Raw.Observation.State) (ordinary : RuntimeOrdinaryBody.State)
-    (history : History) : Prop :=
-  RuntimeOrdinarySSA.Agreement (RuntimeOrdinaryBody.valuation inputs ordinary.measurements history.values)
-    history.values ordinary.table ∧
-  Supports (fun id => match inherited with
-    | none => Issued state id
-    | some holds => holds id ∨ Issued state id) history
+abbrev ScopedOrdinaryAgrees := Qleisli.RuntimeLiteralHistory.AgreesWithInherited
 
 /-- The common arm invariant carries ownership, outcome order, ordinary
 values and the representation of the source operator on the same history.

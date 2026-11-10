@@ -79,10 +79,6 @@ def withSparseGaps {dependencies program block}
   | .gap _ => some [source]
   | _ => other prior step source
 
-def NeedsNonGap {dependencies program block} : @Step dependencies program block → Prop
-  | .gap _ => False
-  | _ => True
-
 def withSparseSteps {dependencies program block}
     (other : List (@Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
@@ -98,21 +94,21 @@ def NeedsSparseSourceAction {dependencies program block} : @Step dependencies pr
 
 private theorem structural_refines {dependencies program sources caller block start count event before}
     (action : @RuntimeStructuralAction.Checked dependencies program sources caller block start count event before)
-    (inputs : List Nat) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
+    (inputs : List Nat) (inherited : Option (Nat → Prop)) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
     (owners : Aligned ownerBefore ownerAfter (.pure (.structural action)))
     (ordinary : OrdinaryAligned ordinaryBefore ordinaryAfter (.pure (.structural action)))
     {chunk source history outputs}
     (read : readOps block.fuel action.interval.before.quantum.reference ((block.operations.drop start).take count) =
       some (action.interval.after.quantum.reference,chunk))
-    (agrees : SemanticHistoryAgrees inputs action.interval.before ownerBefore ordinaryBefore source history)
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs action.interval.before ownerBefore ordinaryBefore source history)
     (executed : run dependencies block.fuel chunk history = some outputs) :
     ∃ expected, structuralResult action source = some expected ∧
-      List.Forall₂ (SemanticHistoryAgrees inputs action.interval.after ownerAfter ordinaryAfter) expected outputs := by
+      List.Forall₂ (SemanticHistoryAgreesWithInherited inherited inputs action.interval.after ownerAfter ordinaryAfter) expected outputs := by
   rcases owners with ⟨rfl,rfl⟩
   cases ordinary
   obtain ⟨ownerState,hidden,bits,values,_,_,_,input,represented⟩ := agrees
   obtain ⟨rfl,kept,output,operator,sourceRead,resultRepresents⟩ :=
-    original_history action input inputs _ history source.operator values represented read executed
+    original_history action input inherited inputs _ history source.operator values represented read executed
   refine ⟨[{source with owners := action.after, operator}],?_,.cons
     ⟨rfl,hidden,bits,kept,_,action.afterFrame,action.resultBindings,output,resultRepresents⟩ .nil⟩
   simp only [structuralResult,ownerState,sourceRead,Option.map_some]
@@ -157,18 +153,17 @@ private theorem gap_refines {dependencies program block start count before ssa}
   rw [operatorKept,gap.quantum]
   exact represented column row (by simpa only [gap.quantum] using bound)
 
-/-- Use the checked literal write bound for each original ordinary gap of
-a child's source traversal, sharing the root's prefix-indexed induction. -/
-theorem sourceStep_with_scoped_gaps {dependencies program block}
+/-- Connect all four structural constructors to the same ordered arm
+induction used for the other source steps. -/
+theorem sourceStep_with_scoped_structure {dependencies program block}
     (steps : List (@Step dependencies program block)) (inputs : List Nat) (inherited : Option (Nat → Prop))
     (certifies : Step dependencies program block → Prop)
     (other : List (@Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
-    (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsNonGap step) other
-      (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+    (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsSparseSourceAction step)
+      other (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
       (inherited.map (fun holds id => ¬ holds id))) :
-    StepRefinement steps certifies (withSparseGaps other)
-      (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+    StepRefinement steps certifies (withSparseSteps other) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
       (inherited.map (fun holds id => ¬ holds id)) := by
   intro prior first later position certified ownerBefore ownerAfter ordinaryBefore ordinaryAfter
     owners ordinary chunk read
@@ -177,6 +172,12 @@ theorem sourceStep_with_scoped_gaps {dependencies program block}
   cases first
   case gap gap =>
     exact ⟨[source],rfl,gap_refines gap inputs inherited owners ordinary read writes agrees executed⟩
+  case pure node =>
+    cases node
+    case structural action =>
+      exact structural_refines action inputs inherited owners ordinary read agrees executed
+    all_goals
+      exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
   all_goals
     exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
 
@@ -189,20 +190,8 @@ theorem sourceStep_with_sparse_structure {dependencies program block}
       SourceHistory → Option (List SourceHistory))
     (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsSparseSourceAction step)
       other (fun _ => SemanticHistoryAgrees inputs)) :
-    StepRefinement steps certifies (withSparseSteps other) (fun _ => SemanticHistoryAgrees inputs) := by
-  intro prior first later position certified ownerBefore ownerAfter ordinaryBefore ordinaryAfter
-    owners ordinary chunk read source history outputs agrees executed
-  cases first
-  case gap gap =>
-    exact ⟨[source],rfl,gap_refines gap inputs none owners ordinary read trivial agrees executed⟩
-  case pure node =>
-    cases node
-    case structural action =>
-      exact structural_refines action inputs owners ordinary read agrees executed
-    all_goals
-      exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read agrees executed
-  all_goals
-    exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read agrees executed
+    StepRefinement steps certifies (withSparseSteps other) (fun _ => SemanticHistoryAgrees inputs) :=
+  sourceStep_with_scoped_structure steps inputs none certifies other remaining
 
 /-- Every actual step in a structural sequence or ordinary gap uses the same
 sparse invariant, including after an intermediate structural join. -/
@@ -260,7 +249,7 @@ def sparseArmEncodingLaws (inputs : List Nat) (inherited : Option (Nat → Prop)
     sparse_return_refines inputs (inherited := inherited)⟩
 
 #print axioms HistoryAgrees.toSemantic
-#print axioms sourceStep_with_scoped_gaps
+#print axioms sourceStep_with_scoped_structure
 #print axioms sourceStep_with_sparse_structure
 #print axioms Execution.sparse_structure_refinement
 #print axioms sparse_return_refines
