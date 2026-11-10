@@ -1,4 +1,5 @@
 import QleisliKernel.FiniteRestriction.Circuit
+import QleisliKernel.ExactSparse
 
 /-! Bounded reconstruction of every sector of one original finite circuit.
 Each port retains its existing six-bit profile; no joined dense matrix is built.
@@ -54,6 +55,43 @@ theorem TapeMatch.execution (dependencies : List Dependency) {selector label : N
 
 def joinedBasis (selector target : Basis) : Basis := .pair :: (selector ++ target)
 
+-- At up to four rows the ordinary Gram charge is smaller than reading
+-- and compacting even a permutation matrix. Keep that path for small sectors.
+def computedSectorSpace (matrix : Matrix) : WorkM Unit := do
+  if matrix.cols ≤ 4 then
+    wholeSpace matrix
+  else
+    guard (matrix.rows == matrix.cols)
+    let admitted ← matrixRead matrix
+    let isometry ← exactWork (QleisliKernel.Exact.Matrix.sparseIsometryWork admitted)
+    guard isometry .notIsometric
+
+theorem computedSectorSpace_conditions (matrix : Matrix) (work left : Nat)
+    (ok : (computedSectorSpace matrix).run work = (.ok (),left)) :
+    matrix.rows = matrix.cols ∧ ∃ before after,
+      QleisliKernel.Exact.Matrix.isometry matrix before = (.ok true,after) := by
+  by_cases small : matrix.cols ≤ 4
+  · exact wholeSpace_conditions _ _ _ (by simpa only [computedSectorSpace,if_pos small] using ok)
+  simp only [computedSectorSpace,if_neg small] at ok
+  obtain ⟨_,w₁,shape,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨read,w₂,admission,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨isometry,w₃,checked,h⟩ := bind_success _ _ _ _ _ h
+  have trueCheck := (guard_success _ _ _ _ h).1
+  subst isometry
+  obtain ⟨same,valid⟩ := matrixRead_value _ _ _ _ admission
+  subst read
+  have admitted : QleisliKernel.Exact.Matrix.Admitted matrix := by
+    unfold matrixRead at admission
+    obtain ⟨_,_,dimensions,h⟩ := bind_success _ _ _ _ _ admission
+    obtain ⟨_,_,length,_⟩ := bind_success _ _ _ _ _ h
+    exact ⟨(guard_success _ _ _ _ dimensions).1,beq_iff_eq.mp (guard_success _ _ _ _ length).1,
+      List.all_eq_true.mp valid⟩
+  exact ⟨beq_iff_eq.mp (guard_success _ _ _ _ shape).1,
+    QleisliKernel.Exact.Matrix.sparseIsometry_success matrix admitted w₂ w₃
+      (exactWork_success _ _ _ _ checked)⟩
+
+#print axioms computedSectorSpace_conditions
+
 private def reconstructSector (dependencies : List Dependency) (target : Basis)
     (steps : List Step) : WorkM Matrix := do
   let actual ← circuitMatrix dependencies ⟨target,steps⟩
@@ -106,7 +144,9 @@ def readSector (dependencies : List Dependency) (selector label : Nat)
   -- The local circuit validator inspects only active instructions. Reserve
   -- their full validation cost before it examines the retained payloads.
   exactWork (QleisliKernel.Exact.charge (restrictionFields restricted))
-  reconstructSector dependencies target restricted
+  let actual ← circuitMatrix dependencies ⟨target,restricted⟩
+  computedSectorSpace actual
+  return actual
 
 def readSectors (dependencies : List Dependency) (selector target : Basis)
     (circuit : Circuit) : WorkM (List Matrix) := do
@@ -122,7 +162,7 @@ def SectorEvaluationBinding (dependencies : List Dependency) (selector : Nat)
   label < 2^selector ∧ ∃ restricted before after unitaryAfter,
     restrictSteps selector label steps = some restricted ∧
     (circuitMatrix dependencies ⟨target,restricted⟩).run before = (.ok actual,after) ∧
-    (wholeSpace actual).run after = (.ok (),unitaryAfter) ∧
+    (computedSectorSpace actual).run after = (.ok (),unitaryAfter) ∧
     (∀ values : List Scalar,
       steps.foldlM (fun values step => applyStep dependencies step values)
           (liftVector selector label values) =

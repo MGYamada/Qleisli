@@ -9,6 +9,8 @@ development milestones from the scope of their evidence.
 - Meter selected qmatch sector restriction by its control and axis scans.
   Validate the entire original tape and retain full local validation for
   the instructions active in each sector.
+  Larger computed sectors use sparse exact Gram products. They keep the
+  original arithmetic order and check every physical sector.
 - Check coherent basis preparation in selected v5 bodies and relate its
   original rectangular table to the literal Raw event on the complete owner
   and reference frame. Ordinary branches after preparation and measurement

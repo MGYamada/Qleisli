@@ -21,6 +21,53 @@ theorem active_payload_still_spends_local_validation_work :
     (((readSectors [] bitBasis bitBasis hxCircuit).run 900).1 ==
       .error (.arithmetic .workLimit)) = true := by decide +kernel
 
+private def phasedFlip : Step := ⟨[],.monomial [0] [1,0] [1,3]⟩
+
+private def phasedFlipMatrix : Matrix := ⟨8,8,(List.range 64).map fun i =>
+  let column := i % 8
+  if i / 8 == column ^^^ 1 then
+    QleisliKernel.Exact.Scalar.phase (if column % 2 = 0 then 1 else 3)
+  else Scalar.zero⟩
+
+theorem sparse_sector_keeps_exact_phases_with_less_work :
+    (((readSectors [] unitBasis [.bits 3]
+      ⟨joinedBasis unitBasis [.bits 3],[phasedFlip]⟩).run 1804).1 ==
+      .ok [phasedFlipMatrix]) = true := by decide +kernel
+
+private def spentUnit (run : Except QleisliKernel.Finite.Error Unit × Nat) (left : Nat) : Bool :=
+  match run.1 with
+  | .ok _ => run.2 == left
+  | .error _ => false
+
+private def failedUnit (run : Except QleisliKernel.Finite.Error Unit × Nat)
+    (error : QleisliKernel.Finite.Error) : Bool :=
+  match run.1 with
+  | .ok _ => false
+  | .error actual => actual == error
+
+theorem sparse_gram_charges_every_retained_term :
+    spentUnit ((computedSectorSpace phasedFlipMatrix).run 968) 0 = true ∧
+    failedUnit ((computedSectorSpace phasedFlipMatrix).run 967) (.arithmetic .workLimit) = true ∧
+    failedUnit ((QleisliKernel.Finite.wholeSpace phasedFlipMatrix).run 968) (.arithmetic .workLimit) = true := by
+  decide +kernel
+
+private def repeatedColumn : Matrix := ⟨8,8,(List.range 64).map fun i =>
+  let column := i % 8
+  if i / 8 == (if column == 1 then 0 else column) then Scalar.one else Scalar.zero⟩
+
+theorem sparse_gram_refuses_repeated_columns :
+    failedUnit ((computedSectorSpace repeatedColumn).run 2000) .notIsometric = true := by decide +kernel
+
+private def excessiveMagnitude : Matrix := ⟨8,8,(List.range 64).map fun i =>
+  if i == 0 then ⟨.integer QleisliKernel.Exact.maxNumerator,.integer 0,.integer 0,.integer 0⟩
+  else if i / 8 == i % 8 then Scalar.one else Scalar.zero⟩
+
+theorem sparse_gram_retains_arithmetic_failures :
+    failedUnit ((computedSectorSpace excessiveMagnitude).run 2000) (.arithmetic .arithmeticCapacity) = true ∧
+    failedUnit ((QleisliKernel.Finite.wholeSpace excessiveMagnitude).run 2000)
+      (.arithmetic .arithmeticCapacity) = true := by
+  decide +kernel
+
 theorem scalar_phase : (((readSectors [] bitBasis unitBasis scalarCircuit).run 100000).1 ==
     .ok [scalar negativeOne,scalar imaginaryOne]) = true := by decide +kernel
 
