@@ -141,13 +141,39 @@ private def site (value : Json) : WorkM Site := do
   guard (0 < arms.size && arms.size ≤ 64) .limit
   return ⟨attached,required,position,← adapt (arms.toList.mapM arm)⟩
 
-private def contextFields := ["positions","sites","calls","branches","bodies","references"]
+private def contextFields (value : Json) (leading : List String := []) : Except String Unit :=
+  let names := leading ++ ["positions","sites","calls","branches","bodies","references"]
+  Carrier.fields value (if (field value "static_intervals").isOk then names ++ ["static_intervals"] else names)
+
+private def readStaticIntervals (value : Json) : WorkM (List Qirf.RuntimeContextRequest.StaticInterval) := do
+  match field value "static_intervals" with
+  | .error _ => pure []
+  | .ok value =>
+    let intervals ← adapt value.getArr?
+    guard (!intervals.isEmpty) .request
+    exactWork (Exact.charge (16*(intervals.size+1)))
+    intervals.toList.mapM fun value => do
+      adapt (Carrier.fields value ["parent","children"])
+      let parent ← adapt (position (← adapt (field value "parent")))
+      let children ← adapt ((← adapt (field value "children")).getArr?)
+      guard (2 ≤ children.size) .request
+      exactWork (Exact.charge (16*(children.size+1)))
+      return (parent,← adapt (children.toList.mapM position))
+
+/-- The additional entries must be an ordered subset of literal top-level
+positions. The runtime body reader subsequently consumes them only at their
+actual original static conditionals. -/
+private def anchoredStatics (positions : List Qirf.SourceSequence.Position)
+    (intervals : List Qirf.RuntimeContextRequest.StaticInterval) : Bool :=
+  (positions.foldl (fun pending position => match pending with
+    | (parent,_) :: rest => if parent == position then rest else pending
+    | [] => []) intervals).isEmpty
 
 private def readBody (readChild : Json → WorkM Context) (value : Json) : WorkM (Provider × Context) := do
   adapt (Carrier.fields value ["subject","body"])
   let subject ← adapt (provider (← adapt (field value "subject")))
   let body ← adapt (field value "body")
-  adapt (Carrier.fields body contextFields)
+  adapt (contextFields body)
   return (subject,← readChild body)
 
 private def context : Nat → Json → WorkM Context :=
@@ -166,15 +192,15 @@ private def context : Nat → Json → WorkM Context :=
       adapt (Carrier.fields value ["position","body"])
       let position ← adapt (position (← adapt (field value "position")))
       let body ← adapt (field value "body")
-      adapt (Carrier.fields body contextFields)
+      adapt (contextFields body)
       return (position,← readChild body)
     let branches ← branches.toList.mapM fun value => do
       adapt (Carrier.fields value ["position","then","else"])
       let location ← adapt (position (← adapt (field value "position")))
       let whenTrue ← adapt (field value "then")
       let whenFalse ← adapt (field value "else")
-      adapt (Carrier.fields whenTrue contextFields)
-      adapt (Carrier.fields whenFalse contextFields)
+      adapt (contextFields whenTrue)
+      adapt (contextFields whenFalse)
       return (location,← readChild whenTrue,← readChild whenFalse)
     let bodies ← bodies.toList.mapM (readBody readChild)
     let references ← references.toList.mapM fun operation => do
@@ -184,10 +210,13 @@ private def context : Nat → Json → WorkM Context :=
         let leaves ← adapt group.getArr?
         exactWork (Exact.charge (16*(leaves.size+1)))
         leaves.toList.mapM (readBody readChild)
-    return .withReferences positions sites calls branches bodies references)
+    let staticIntervals ← readStaticIntervals value
+    unless staticIntervals.isEmpty do
+      guard (anchoredStatics positions staticIntervals) .request
+    return .withReferences positions sites calls branches bodies references staticIntervals)
 
 def decode (value : Json) : WorkM Request := do
-  adapt (Carrier.fields value (["format","version","profile","source","runtime"] ++ contextFields))
+  adapt (contextFields value ["format","version","profile","source","runtime"])
   guard (← adapt (do return (← (← field value "format").getStr?) == "qleisli.qmatch-request" &&
     (← number (← field value "version")) == 5 && (← (← field value "profile").getStr?) == profile)) .request
   let source ← adapt (source (← adapt (field value "source")))
@@ -222,8 +251,9 @@ private def noReferenceGroups : Nat → Context → WorkM Unit :=
   Qirf.RuntimeReferenceContexts.noGroups
 
 def Request.checkNamedReferenceContexts (request : Request) : WorkM Unit := do
-  guard request.context.references.isEmpty .request
+  guard (request.context.references.isEmpty && request.context.staticIntervals.isEmpty) .request
   let [(_,child)] := request.context.calls | throw .request
+  guard child.staticIntervals.isEmpty .request
   exactWork (Exact.charge (16*(child.bodies.length+child.references.length+1)))
   child.bodies.forM fun (_,body) => noReferenceGroups 129 body
   child.references.forM fun groups => do

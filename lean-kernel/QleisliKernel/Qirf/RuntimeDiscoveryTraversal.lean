@@ -334,10 +334,11 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
           match event with
           | .staticConditional event children =>
             let source ← NaturalAffine.witness (RuntimeStaticPrimitive.readContinuation event)
+            let partition := before.takeStatic position
             let positions ← NaturalAffine.witness
-              (source.val.positions position (before.calls.map (·.1)) (before.sites.map (·.position)))
+              (source.val.positions position (before.calls.map (·.1)) (before.sites.map (·.position)) partition.1)
             if count : positions.val.length = source.val.selected.result.events.length then
-              let inner ← collectEvents mode scope eventStep (source.val.selected.result.events.zip positions.val) before
+              let inner ← collectEvents mode scope eventStep (source.val.selected.result.events.zip positions.val) partition.2
               let data : scope.EventData mode.preparation (.staticConditional event children) position before inner.after := by
                 cases scope with
                 | supplied => exact ()

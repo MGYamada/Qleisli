@@ -74,6 +74,16 @@ private def failedUnit (run : Except QleisliKernel.Finite.Error Unit × Nat)
   | .ok _ => false
   | .error actual => actual == error
 
+theorem measured_gram_retains_the_dense_budget :
+    spentUnit ((adaptiveWholeSpace fullHadamard).run 1088) 0 = true ∧
+    failedUnit ((adaptiveWholeSpace fullHadamard).run 1087) (.arithmetic .workLimit) = true := by
+  decide +kernel
+
+theorem measured_gram_skips_only_when_it_fits_the_smaller_budget :
+    spentUnit ((adaptiveWholeSpace phasedFlipMatrix).run 1032) 0 = true ∧
+    failedUnit ((adaptiveWholeSpace phasedFlipMatrix).run 1031) (.arithmetic .workLimit) = true := by
+  decide +kernel
+
 theorem sparse_gram_charges_every_retained_term :
     spentUnit ((compactSectorSpace phasedFlipMatrix).run 968) 0 = true ∧
     failedUnit ((compactSectorSpace phasedFlipMatrix).run 967) (.arithmetic .workLimit) = true ∧
@@ -93,6 +103,7 @@ private def excessiveMagnitude : Matrix := ⟨8,8,(List.range 64).map fun i =>
 
 theorem sparse_gram_retains_arithmetic_failures :
     failedUnit ((compactSectorSpace excessiveMagnitude).run 2000) (.arithmetic .arithmeticCapacity) = true ∧
+    failedUnit ((adaptiveWholeSpace excessiveMagnitude).run 2000) (.arithmetic .arithmeticCapacity) = true ∧
     failedUnit ((QleisliKernel.Finite.wholeSpace excessiveMagnitude).run 2000)
       (.arithmetic .arithmeticCapacity) = true := by
   decide +kernel

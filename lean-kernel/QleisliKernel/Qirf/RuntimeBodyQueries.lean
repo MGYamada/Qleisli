@@ -293,6 +293,7 @@ structure Static {artifact : Artifact} (mode : Mode artifact) {owner name}
   positions : List Position
   count : positions.length = sequence.selected.result.events.length
   events : mode.EventsData source (sequence.selected.result.events.zip positions)
+  cursor : mode.Cursor
 
 def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
@@ -308,15 +309,16 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
         let selected ← RuntimeStaticPrimitive.readSequence event
         pure (RuntimeStaticPrimitive.Continuation.unchanged selected)
       | false => RuntimeStaticPrimitive.readContinuation event
-    let positions ← sequence.positions position (cursor.calls.map (·.1)) (cursor.sites.map (·.position))
+    let (claimed,remaining) := cursor.takeStatic position
+    let positions ← sequence.positions position (cursor.calls.map (·.1)) (cursor.sites.map (·.position)) claimed
     if count : positions.length = sequence.selected.result.events.length then
-      return ⟨sequence,positions,count,()⟩
+      return ⟨sequence,positions,count,(),remaining⟩
     else throw .request
   | .planned _ =>
     guard (!pureOnly) .request
     match data with
     | ⟨_,_,.staticConditional selected _ positions _ count events⟩ =>
-      return ⟨selected,positions,count,⟨_,_,events⟩⟩
+      return ⟨selected,positions,count,⟨_,_,events⟩,()⟩
     | ⟨_,_,.unsupported _⟩ => throw .request
 
 open RuntimeSourceEvent (At)

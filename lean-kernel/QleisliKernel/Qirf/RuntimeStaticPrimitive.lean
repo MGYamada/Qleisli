@@ -291,57 +291,62 @@ def Sequence.sourceRows {sources caller event} (source : @Sequence sources calle
 def Continuation.sourceRows {sources caller event} (source : @Continuation sources caller event) : List (String × String) :=
   selectedRows event source.selected
 
-/-- The interval partition is source ordered and contiguous. For compound
-lists each primitive owns one instruction, while every named leaf takes its
-exact next interval from the existing ordered call context. Those contexts
-are consumed independently by discovery and the common named step. Remaining
-calls belong to later enclosing events and are not consumed by this reader. -/
+/-- The interval partition is source ordered and contiguous. Supplied
+coordinates must agree with the named call and selection queues. Each child
+still goes through the independent action check on that exact Raw interval.
+Older requests without child coordinates retain their one-op primitive spans. -/
 private def compoundPositions {sources caller} (events : List (SourceRuntimeContext.Event sources caller))
-    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position) :
-    WorkM (List SourceSequence.Position) := do
+    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position)
+    (claimed : Option (List SourceSequence.Position)) : WorkM (List SourceSequence.Position) := do
   let finish := parent.start+parent.count
-  let (reversed,cursor,_,_) ← events.foldlM (fun (positions,cursor,calls,sites) event => do
-    match event with
-    | .named _ =>
-      let position :: calls := calls | throw .request
-      guard (position.offset == event.offset && position.start == cursor &&
-        position.start+position.count ≤ finish) .request
-      return (position :: positions,position.start+position.count,calls,sites)
-    | .selection .. =>
-      let position :: sites := sites | throw .request
-      guard (position.offset == event.offset && position.start == cursor &&
-        position.start+position.count ≤ finish) .request
-      return (position :: positions,position.start+position.count,calls,sites)
-    | .primitive _ | .phase _ =>
-      guard (cursor+1 ≤ finish) .request
-      return (⟨event.offset,cursor,1⟩ :: positions,cursor+1,calls,sites)
-    | _ => throw .request) (([] : List SourceSequence.Position),parent.start,calls,sites)
-  guard (cursor == finish) .request
+  let (reversed,cursor,_,_,remaining) ← events.foldlM (fun (positions,cursor,calls,sites,remaining) event => do
+    let claim : Option SourceSequence.Position × Option (List SourceSequence.Position) ← match remaining with
+      | none => pure (none,none)
+      | some (head :: tail) => pure (some head,some tail)
+      | some [] => throw .request
+    let (child,remaining) := claim
+    let located : SourceSequence.Position × List SourceSequence.Position × List SourceSequence.Position ← match event with
+      | .named _ =>
+        let position :: calls := calls | throw .request
+        pure (position,calls,sites)
+      | .selection .. =>
+        let position :: sites := sites | throw .request
+        pure (position,calls,sites)
+      | .primitive _ | .phase _ =>
+        pure (child.getD ⟨event.offset,cursor,1⟩,calls,sites)
+      | _ => throw .request
+    let (position,calls,sites) := located
+    guard (child.all (· == position) && position.offset == event.offset &&
+      position.start == cursor && position.start+position.count ≤ finish) .request
+    return (position :: positions,position.start+position.count,calls,sites,remaining))
+    (([] : List SourceSequence.Position),parent.start,calls,sites,claimed)
+  guard (cursor == finish && remaining.all List.isEmpty) .request
   return reversed.reverse
 
-/-- Existing zero/single-event intervals retain their original whole slice.
-Compound source lists use the same literal parent and existing call intervals;
-other equivalent native decompositions are not inferred from widths or counts. -/
+/-- Zero/single-event intervals retain their original whole slice.
+Only compound source lists consume an explicit child partition. -/
 private def selectedPositions {sources caller} (events : List (SourceRuntimeContext.Event sources caller))
-    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position) :
-    WorkM (List SourceSequence.Position) := do
+    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position)
+    (claimed : Option (List SourceSequence.Position)) : WorkM (List SourceSequence.Position) := do
   exactWork (Exact.charge (16*(events.length+calls.length+sites.length+1)))
   match events with
   | [] =>
-    guard (parent.count == 0) .request
+    guard (claimed.isNone && parent.count == 0) .request
     return []
-  | [event] => return [⟨event.offset,parent.start,parent.count⟩]
-  | _ => compoundPositions events parent calls sites
+  | [event] =>
+    guard claimed.isNone .request
+    return [⟨event.offset,parent.start,parent.count⟩]
+  | _ => compoundPositions events parent calls sites claimed
 
 def Sequence.positions {sources caller event} (sequence : @Sequence sources caller event)
     (parent : SourceSequence.Position) (calls : List SourceSequence.Position := []) :
     WorkM (List SourceSequence.Position) :=
-  selectedPositions sequence.selected.result.events parent calls []
+  selectedPositions sequence.selected.result.events parent calls [] none
 
 def Continuation.positions {sources caller event} (source : @Continuation sources caller event)
-    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position := []) :
-    WorkM (List SourceSequence.Position) :=
-  selectedPositions source.selected.result.events parent calls sites
+    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position := [])
+    (claimed : Option (List SourceSequence.Position) := none) : WorkM (List SourceSequence.Position) :=
+  selectedPositions source.selected.result.events parent calls sites claimed
 
 structure Frame (roles : List Owner) (state : Raw.Observation.State) (bindings : RuntimeOwnerMap.Map) where
   checked : RuntimeOwnerMap.Checked roles state

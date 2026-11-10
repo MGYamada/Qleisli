@@ -26,6 +26,7 @@ pub enum ProviderSubject {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 pub struct Context {
     pub positions: Vec<Position>,
+    pub static_intervals: Vec<StaticInterval>,
     pub sites: Vec<ContextSite>,
     pub calls: Vec<Call>,
     pub branches: Vec<Branch>,
@@ -33,6 +34,12 @@ pub struct Context {
     /// For each original arm or operation application, one quantum-body list
     /// per Meaning obligation. Source order and empty groups are significant.
     pub references: Vec<Vec<Vec<BodyRequest>>>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct StaticInterval {
+    pub parent: Position,
+    pub children: Vec<Position>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -60,6 +67,7 @@ impl Context {
             return Err(Error::limit("qmatch source context capacity"));
         }
         positions_storage(self.positions.len(), remaining)?;
+        StaticInterval::storage(&self.static_intervals, remaining)?;
         charge(remaining, self.calls.len().saturating_mul(160))?;
         charge(remaining, self.branches.len().saturating_mul(192))?;
         charge(remaining, self.bodies.len().saturating_mul(64))?;
@@ -97,8 +105,8 @@ impl Context {
         Ok(())
     }
 
-    pub(super) fn fields(&self) -> [(String, Value); 6] {
-        [
+    pub(super) fn fields(&self) -> Vec<(String, Value)> {
+        let mut fields = vec![
             (
                 "positions".into(),
                 Value::Array(self.positions.iter().map(Position::encode).collect()),
@@ -139,7 +147,19 @@ impl Context {
                         .collect(),
                 ),
             ),
-        ]
+        ];
+        if !self.static_intervals.is_empty() {
+            fields.push((
+                "static_intervals".into(),
+                Value::Array(
+                    self.static_intervals
+                        .iter()
+                        .map(StaticInterval::encode)
+                        .collect(),
+                ),
+            ));
+        }
+        fields
     }
 
     pub(super) fn encode(&self) -> Value {
@@ -147,15 +167,25 @@ impl Context {
     }
 
     pub(super) fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
-        value.fields(&[
+        Self::validate_fields(value, &[])?;
+        Self::decode_fields(value, depth, remaining)
+    }
+
+    pub(super) fn validate_fields(value: &Value, prefix: &[&str]) -> Result<()> {
+        let mut fields = prefix.to_vec();
+        fields.extend([
             "positions",
             "sites",
             "calls",
             "branches",
             "bodies",
             "references",
-        ])?;
-        Self::decode_fields(value, depth, remaining)
+        ]);
+        if value.field("static_intervals").is_ok() {
+            fields.push("static_intervals");
+        }
+        value.fields(&fields)?;
+        Ok(())
     }
 
     pub(super) fn decode_fields(
@@ -181,7 +211,22 @@ impl Context {
         charge(remaining, branches.len().saturating_mul(192))?;
         charge(remaining, bodies.len().saturating_mul(64))?;
         charge(remaining, references.len().saturating_mul(32))?;
+        let static_intervals = match value.field("static_intervals") {
+            Ok(value) => {
+                let values = value.array()?;
+                if values.is_empty() {
+                    return Err(Error::format("empty qmatch static intervals"));
+                }
+                positions_storage(values.len(), remaining)?;
+                values
+                    .iter()
+                    .map(|value| StaticInterval::decode(value, remaining))
+                    .collect::<Result<_>>()?
+            }
+            Err(_) => Vec::new(),
+        };
         Ok(Self {
+            static_intervals,
             positions: positions
                 .iter()
                 .map(Position::decode)
@@ -219,6 +264,45 @@ impl Context {
                         })
                         .collect::<Result<_>>()
                 })
+                .collect::<Result<_>>()?,
+        })
+    }
+}
+
+impl StaticInterval {
+    pub(super) fn storage(values: &[Self], remaining: &mut usize) -> Result<()> {
+        positions_storage(values.len(), remaining)?;
+        for value in values {
+            if value.children.len() < 2 {
+                return Err(Error::format("qmatch static interval must be compound"));
+            }
+            positions_storage(value.children.len(), remaining)?;
+        }
+        Ok(())
+    }
+
+    fn encode(&self) -> Value {
+        Value::object([
+            ("parent", self.parent.encode()),
+            (
+                "children",
+                Value::Array(self.children.iter().map(Position::encode).collect()),
+            ),
+        ])
+    }
+
+    fn decode(value: &Value, remaining: &mut usize) -> Result<Self> {
+        value.fields(&["parent", "children"])?;
+        let children = value.field("children")?.array()?;
+        if children.len() < 2 {
+            return Err(Error::format("qmatch static interval must be compound"));
+        }
+        positions_storage(children.len(), remaining)?;
+        Ok(Self {
+            parent: Position::decode(value.field("parent")?)?,
+            children: children
+                .iter()
+                .map(Position::decode)
                 .collect::<Result<_>>()?,
         })
     }

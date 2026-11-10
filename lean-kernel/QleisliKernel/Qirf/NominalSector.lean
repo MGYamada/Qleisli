@@ -32,7 +32,7 @@ def checkLogical (inputCode outputCode : Matrix) (physical : List Matrix)
     (request : Nat × Matrix) : WorkM Matrix := do
   let logical ← matrixRead request.2
   guard (logical.cols == inputCode.cols && logical.rows == outputCode.cols) .request
-  wholeSpace logical
+  FiniteRestriction.adaptiveWholeSpace logical
   let sector ← lift (readOption physical[request.1]?)
   let actual ← FiniteCarrier.codeProduct .right sector inputCode
   let required ← FiniteCarrier.codeProduct .left outputCode logical
@@ -72,7 +72,8 @@ theorem checkLogical_bound (inputCode outputCode : Matrix) (physical : List Matr
   rw [← exactEq] at hr
   obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ ha
   obtain ⟨c,d,requiredDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hr
-  exact ⟨(matrixRead_value _ _ _ _ hm).1,dims.1,dims.2,⟨w₂,w₃,hu⟩,
+  exact ⟨(matrixRead_value _ _ _ _ hm).1,dims.1,dims.2,
+    FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
     sector,actual,a,b,c,d,sectorEq,actualDense,requiredDense⟩
 
 def checkLogicals (inputCode outputCode : Matrix) (physical : List Matrix)

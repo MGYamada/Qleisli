@@ -3,7 +3,7 @@
 use super::{Request, Source};
 use crate::interchange::qmatch::{
     self, ArmBody, BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ContextSubject,
-    OperationSubject, OriginalBody, ProviderSubject,
+    OperationSubject, OriginalBody, ProviderSubject, StaticInterval,
 };
 use crate::interchange::{self, Encoder, Error, Result, Version};
 use crate::ir::RawProgram;
@@ -63,6 +63,7 @@ impl Builder {
             return Err(Error::limit("qmatch source context capacity"));
         }
         qmatch::positions_storage(original.positions.len(), &mut self.remaining)?;
+        StaticInterval::storage(&original.static_intervals, &mut self.remaining)?;
         qmatch::charge(
             &mut self.remaining,
             original.calls.len().saturating_mul(160),
@@ -73,6 +74,7 @@ impl Builder {
         )?;
         let mut result = Context {
             positions: original.positions.clone(),
+            static_intervals: original.static_intervals.clone(),
             ..Context::default()
         };
         for (_, actual) in &original.supplies {

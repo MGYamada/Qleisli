@@ -8,7 +8,9 @@ use super::json::{self, Value};
 use super::{Error, Result};
 
 mod context;
-pub use context::{BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ProviderSubject};
+pub use context::{
+    BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ProviderSubject, StaticInterval,
+};
 mod operations;
 pub use operations::{Description, OperationNode, OperationPrimitive, StaticArguments};
 pub mod v5;
@@ -120,6 +122,7 @@ impl OperationSubject {
 pub(crate) struct ContextSubject {
     pub supplies: Vec<(String, OperationSubject)>,
     pub positions: Vec<Position>,
+    pub static_intervals: Vec<StaticInterval>,
     pub selections: Vec<SelectionBody>,
     pub calls: Vec<(Position, std::sync::Arc<ContextSubject>)>,
     pub branches: Vec<(

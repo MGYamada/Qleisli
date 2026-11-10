@@ -917,6 +917,38 @@ fn selected_builtin_qmatch_keeps_the_runtime_root_for_exclusive_access() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_nominal_qmatch_binds_compound_static_child_intervals() {
+    let accepted = selected(
+        "pub enum Flag { A, B }
+        pub unitary fn keep(s:Q<Flag>,q:Q<Bit>)->(Q<Flag>,Q<Bit>){
+            let q=if static 1==1 {let q=phase[1,3](q);h(q)} else {q};
+            qmatch(s,q){Flag::A=>h,Flag::B=>global_phase_eighth}
+        }",
+    );
+    assert!(accepted.program().qmatch_source_checked());
+    let request =
+        qleisli::interchange::qmatch::v5::Request::decode(accepted.program().request().unwrap())
+            .unwrap();
+    let [interval] = request.context.static_intervals.as_slice() else {
+        panic!("expected the selected original compound interval");
+    };
+    assert_eq!(interval.parent, request.context.positions[0]);
+    assert_eq!(
+        interval
+            .children
+            .iter()
+            .map(|child| (child.start, child.count))
+            .collect::<Vec<_>>(),
+        [(0, 1), (1, 1)]
+    );
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_builtin_qmatch_keeps_the_runtime_root_for_static_continuations() {
     let source = "pub unitary fn keep[const n:Nat](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
         let q=if static n==0 {if static n==0 {h(q)} else {q}} else {q};

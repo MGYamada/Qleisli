@@ -820,7 +820,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
             pureOnly incomingSourceCursor data)
           let selected := actual.val
           let state ← advance state position.start
-          let (history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts) := state
+          let (history,retired,ordinary,actions,steps,obligations,cursor,_,receipts) := state
           let sequence := selected.sequence
           let interval ← RuntimeInterval.check block position.start position.count
           let bindings := (← reordered (history.bindings.map (·.owner)) interval.before history.bindings).bindings
@@ -830,7 +830,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           exactWork (Exact.charge (32*(count+1)*(actions.length+steps.length+obligations.length+count+1)+
             32*(Raw.OwnerFlow.fields retired+1)))
           let initial : QueryState dependencies program block execution.queries.Cursor execution.Receipt :=
-            (before,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts)
+            (before,retired,ordinary,actions,steps,obligations,cursor,selected.cursor,receipts)
           let result ← RuntimeBodyQueries.foldEvents execution.queries source
             (sequence.selected.result.events.zip selected.positions)
             (fun event_ position_ inner data_ state_ =>

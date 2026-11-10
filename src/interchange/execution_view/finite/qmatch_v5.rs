@@ -115,7 +115,8 @@ fn position(view: &mut View<'_>, value: &data::Position) -> Result<()> {
 }
 
 fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
-    view.record("source-context", 6, |w| {
+    let fields = 6 + usize::from(!value.static_intervals.is_empty());
+    view.record("source-context", fields, |w| {
         w.list(&value.positions, position)?;
         w.list(&value.sites, |w, site| {
             w.record("qmatch-site", 4, |w| {
@@ -146,7 +147,16 @@ fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
         w.list(&value.bodies, body)?;
         w.list(&value.references, |w, groups| {
             w.list(groups, |w, leaves| w.list(leaves, body))
-        })
+        })?;
+        if !value.static_intervals.is_empty() {
+            w.list(&value.static_intervals, |w, interval| {
+                w.record("source-static-interval", 2, |w| {
+                    position(w, &interval.parent)?;
+                    w.list(&interval.children, position)
+                })
+            })?;
+        }
+        Ok(())
     })
 }
 

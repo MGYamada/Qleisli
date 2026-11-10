@@ -79,6 +79,119 @@ theorem compactSectorSpace_conditions (matrix : Matrix) (work left : Nat)
 
 #print axioms compactSectorSpace_conditions
 
+private def denseGramCost (matrix : Matrix) : Nat :=
+  matrix.rows * matrix.cols + 2 * matrix.cols * matrix.rows * matrix.cols
+
+private def gramProfile (matrix : Matrix) : Bool :=
+  matrix.rows == matrix.cols && 8 ≤ matrix.cols &&
+    QleisliKernel.Exact.matrixValid matrix.rows matrix.cols &&
+    matrix.entries.length == matrix.rows * matrix.cols
+
+private def preferMeasuredSupport (matrix : Matrix) (inspected : Nat) : Bool :=
+  let terms := matrix.entries.foldl (fun count value =>
+    if value == Scalar.zero then count else count + 1) 0
+  inspected + 9 * matrix.rows * matrix.cols + matrix.cols + 2 * matrix.cols * terms <
+    denseGramCost matrix
+
+/-- Arm matrices can come from several event forms, so inspect their actual
+support. Reserve the scan before reading any coefficient. If the dense path
+wins, reserve its remaining cost before evaluating it under that same total
+allowance. A dense success has the original total charge. -/
+def adaptiveWholeSpace (matrix : Matrix) : WorkM Unit := do
+  if gramProfile matrix then
+    let inspected := 5 * matrix.entries.length
+    exactWork (QleisliKernel.Exact.charge inspected)
+    if preferMeasuredSupport matrix inspected && matrix.entries.all QleisliKernel.Exact.Scalar.valid then
+      let isometry ← exactWork (QleisliKernel.Exact.Matrix.sparseIsometryWork matrix)
+      guard isometry .notIsometric
+    else
+      let full := denseGramCost matrix
+      exactWork (QleisliKernel.Exact.charge (full - inspected))
+      lift ((wholeSpace matrix).run full).1
+  else wholeSpace matrix
+
+private theorem originalSpace_of_isometry (matrix : Matrix) (square : matrix.rows = matrix.cols)
+    (work left : Nat) (ok : QleisliKernel.Exact.Matrix.isometry matrix work = (.ok true,left)) :
+    (wholeSpace matrix).run work = (.ok (),left) := by
+  have wrapped : (exactWork (QleisliKernel.Exact.Matrix.isometryWork matrix)).run work =
+      (.ok true,left) := by
+    change (arithmetic (QleisliKernel.Exact.Matrix.isometry matrix work).1,
+      (QleisliKernel.Exact.Matrix.isometry matrix work).2) = _
+    rw [ok]
+    rfl
+  have shape : (Finite.guard (matrix.rows == matrix.cols)).run work = (.ok (),work) := by
+    rw [square,beq_self_eq_true]
+    rfl
+  unfold wholeSpace
+  rw [bind_run,shape]
+  change ((exactWork (QleisliKernel.Exact.Matrix.isometryWork matrix) >>= fun isometry =>
+    Finite.guard isometry .notIsometric).run work) = _
+  rw [bind_run,wrapped]
+  rfl
+
+theorem adaptiveWholeSpace_bound (matrix : Matrix) (work left : Nat)
+    (ok : (adaptiveWholeSpace matrix).run work = (.ok (),left)) :
+    ∃ before after, (wholeSpace matrix).run before = (.ok (),after) := by
+  unfold adaptiveWholeSpace at ok
+  split at ok
+  · rename_i profile
+    simp only [gramProfile,Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq] at profile
+    obtain ⟨_,afterScan,_,h⟩ := bind_success _ _ _ _ _ ok
+    split at h
+    · rename_i compact
+      simp only [Bool.and_eq_true] at compact
+      have canonical := compact.2
+      have admitted : QleisliKernel.Exact.Matrix.Admitted matrix :=
+        ⟨profile.1.2,profile.2,List.all_eq_true.mp canonical⟩
+      obtain ⟨iso,afterGram,hi,hg⟩ := bind_success _ _ _ _ _ h
+      have accepted := (guard_success _ _ _ _ hg).1
+      subst iso
+      obtain ⟨before,after,original⟩ :=
+        QleisliKernel.Exact.Matrix.sparseIsometry_success matrix admitted afterScan afterGram
+          (exactWork_success _ _ _ _ hi)
+      exact ⟨before,after,originalSpace_of_isometry matrix profile.1.1.1 _ _ original⟩
+    · obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+      have result := (lift_success _ _ _ _ h).1
+      let original := (wholeSpace matrix).run (denseGramCost matrix)
+      exact ⟨denseGramCost matrix,original.2,Prod.ext result rfl⟩
+  · exact ⟨work,left,ok⟩
+
+private theorem charge_left (amount work left : Nat)
+    (ok : (exactWork (QleisliKernel.Exact.charge amount)).run work = (.ok (),left)) :
+    left = work - amount := by
+  have charged := exactWork_success _ _ _ _ ok
+  change QleisliKernel.Exact.charge amount work = (.ok (),left) at charged
+  unfold QleisliKernel.Exact.charge at charged
+  split at charged
+  · cases charged
+  · exact (congrArg Prod.snd charged).symm
+
+/-- The precharged support inspection is included in the original dense
+budget. No additional work is obtained by starting the local dense run. -/
+theorem adaptiveWholeSpace_dense_remaining (matrix : Matrix) (work left : Nat)
+    (profile : gramProfile matrix = true)
+    (dense : (preferMeasuredSupport matrix (5 * matrix.entries.length) &&
+      matrix.entries.all QleisliKernel.Exact.Scalar.valid) = false)
+    (ok : (adaptiveWholeSpace matrix).run work = (.ok (),left)) :
+    left = work - denseGramCost matrix := by
+  simp only [adaptiveWholeSpace,profile,if_true,dense,Bool.false_eq_true,if_false] at ok
+  obtain ⟨_,afterScan,inspection,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,afterReserve,reserve,done⟩ := bind_success _ _ _ _ _ h
+  have inspectionLeft := charge_left _ _ _ inspection
+  have reserveLeft := charge_left _ _ _ reserve
+  have same := (lift_success _ _ _ _ done).2
+  simp only [gramProfile,Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq] at profile
+  have atMost : 5 * matrix.entries.length ≤ denseGramCost matrix := by
+    rw [profile.2]
+    calc
+      5 * (matrix.rows * matrix.cols) ≤ (1+2*matrix.cols) * (matrix.rows*matrix.cols) :=
+        Nat.mul_le_mul_right _ (by have := profile.1.1.2; omega)
+      _ = denseGramCost matrix := by simp [denseGramCost,Nat.add_mul,Nat.mul_assoc]
+  omega
+
+#print axioms adaptiveWholeSpace_bound
+#print axioms adaptiveWholeSpace_dense_remaining
+
 -- Each retained Hadamard at most doubles a column's support. A dependency
 -- can spread it over its own axes, and a monomial can only permute it.
 -- This estimate chooses the work strategy; it grants no semantic evidence.
