@@ -1,5 +1,5 @@
 import Qleisli.ObservingActionLinear
-import Qleisli.RuntimeCallHistoryEntry
+import Qleisli.RuntimeCallHistoryReturn
 
 /-! The exact child input encoding supplies the weights of the literal
 child run. The resulting logical spectator components are shared by every
@@ -10,6 +10,7 @@ open QleisliKernel QleisliKernel.Qirf
 open RuntimeOwnerMap (Map)
 open RuntimeForestCode (embed sparseEntry)
 open Qleisli.RuntimeSemanticForest (Frame action product)
+open Qleisli.RuntimeStructuralHistory (Represents)
 open Qleisli.RuntimeNamedHeadCoefficients (fibre)
 open Qleisli.RuntimeForestRegroup (sourceDimension)
 open Qleisli.MixedRadix (recode)
@@ -38,13 +39,15 @@ noncomputable def spectatorWeight (spectators : Map) (physical logical : Nat) : 
 
 /-- The logical spectator ordinal fixes only the untouched owner labels.
 The child and external reference amplitudes can still be correlated. -/
+noncomputable def componentJoint (incoming selected spectators : Map) (joint : Nat → Nat → ℂ)
+    (logical digit reference : Nat) : ℂ :=
+  joint (recode (selected++spectators) incoming (sourceDimension incoming)
+    (digit+(product selected).labels.length*logical)) reference
+
 noncomputable def componentInput {bindings : Map}
     (frame : Frame bindings) (physical : List Nat) (incoming selected spectators : Map)
     (joint : Nat → Nat → ℂ) (actual : History) (logical : Nat) : History :=
-  let component := fun digit ref => joint
-    (recode (selected++spectators) incoming (sourceDimension incoming)
-      (digit+(product selected).labels.length*logical)) ref
-  {actual with operator := action frame physical component}
+  {actual with operator := action frame physical (componentJoint incoming selected spectators joint logical)}
 
 theorem child_input_weighted {bindings : Map} (frame : Frame bindings) (physical : List Nat)
     (incoming selected spectators : Map) (joint : Nat → Nat → ℂ) (actual : History) (high : Nat) :
@@ -56,10 +59,9 @@ theorem child_input_weighted {bindings : Map} (frame : Frame bindings) (physical
   intro row col
   have exactInput : coordinateFibre incoming selected spectators high joint =
       fun digit ref => combination (List.range (product spectators).labels.length) (spectatorWeight spectators high)
-        (fun index => joint (recode (selected++spectators) incoming (sourceDimension incoming)
-          (digit+(product selected).labels.length*index)) ref) := by
+        (fun index => componentJoint incoming selected spectators joint index digit ref) := by
     funext digit ref
-    unfold coordinateFibre fibre combination spectatorWeight
+    unfold coordinateFibre fibre combination spectatorWeight componentJoint
     apply Qleisli.Exact.sum_map_congr
     intro _ _
     exact mul_comm _ _
@@ -111,6 +113,85 @@ theorem CheckedCallRun.weighted_children
     Option.some.inj ((otherReads logical).symm.trans (reads logical)))
   exact same ▸ paired
 
+/-- Reconstruct one physical child return with the same exact spectator
+coefficients as at entry and the written return encoding of each component. -/
+theorem weighted_return_represents {bindings state} (frame : Frame bindings)
+    (spectators : Map) (high : Nat) {actual : History} {parts : Nat → History} {joint : Nat → Nat → Nat → ℂ}
+    (weighted : WeightedHistory (List.range (product spectators).labels.length)
+      (fun _ => spectatorWeight spectators high) actual parts)
+    (logical : ∀ index, Represents frame state (parts index) (fun digit reference => joint digit index reference)) :
+    Represents frame state actual (returnFibre spectators high joint) := by
+  intro col row bounded
+  have fibreEq : returnFibre spectators high joint =
+      fun digit ref => combination (List.range (product spectators).labels.length) (spectatorWeight spectators high)
+        (fun index => joint digit index ref) := by
+    funext digit ref
+    unfold returnFibre combination spectatorWeight
+    apply Qleisli.Exact.sum_map_congr
+    intro _ _
+    exact mul_comm _ _
+  rw [fibreEq,weighted.operator,encode_combination]
+  unfold combination
+  apply Qleisli.Exact.sum_map_congr
+  intro index _
+  exact congrArg (fun value => value * spectatorWeight spectators high index) (logical index col row bounded)
+
+private theorem return_families {bindings state} (frame : Frame bindings) (spectators : Map)
+    {children family : List (Nat → History)} {joints : List (Nat → Nat → Nat → ℂ)}
+    (mixed : ∀ high, List.Forall₂
+      (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
+      (children.map (fun result => result high)) family)
+    (logical : List.Forall₂ (fun parts joint =>
+      ∀ index, Represents frame state (parts index) (fun digit reference => joint digit index reference)) family joints) :
+    List.Forall₂ (fun actual joint =>
+      ∀ high, Represents frame state (actual high) (returnFibre spectators high joint)) children joints := by
+  induction logical generalizing children with
+  | nil =>
+    cases children with
+    | nil => exact .nil
+    | cons _ _ => cases mixed 0
+  | @cons parts joint family joints represented _ ih =>
+    cases children with
+    | nil => cases mixed 0
+    | cons first rest =>
+      refine .cons ?_ (ih ?_)
+      · intro high
+        have pair := mixed high
+        cases pair with
+        | cons head _ => exact weighted_return_represents frame spectators high head represented
+      · intro high
+        have pair := mixed high
+        cases pair with
+        | cons _ tail => exact tail
+
+/-- Transport every logical result to the caller's written owner order,
+keeping the complete ordered parent histories. -/
+theorem original_weighted_call_returns
+    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    (parent : Frame checked.bindings) (sameBindings : checked.bindings = before.bindings)
+    (returned : Frame child.bindings)
+    {parents : List History} {children family : List (Nat → History)} {joints : List (Nat → Nat → Nat → ℂ)} :
+    let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
+    List.Forall₂ (Agrees scope.interval.after.quantum.reference scope.localAfter.quantum.reference
+      (spectators.map (·.port))) parents children →
+    (∀ high, List.Forall₂
+      (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
+      (children.map (fun result => result high)) family) →
+    List.Forall₂ (fun parts joint =>
+      ∀ index, Represents returned scope.localAfter (parts index) (fun digit reference => joint digit index reference))
+      family joints →
+    ∃ output : Frame boundary.afterFrame.bindings,
+      List.Forall₂ (fun actual joint => Represents output scope.interval.after actual
+        (returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators joint)) parents joints := by
+  intro spectators paired mixed logical
+  exact original_call_returns scope boundary checked parent sameBindings returned paired
+    (return_families returned spectators mixed logical)
+
 #print axioms child_input_weighted
 #print axioms CheckedCallRun.weighted_children
+#print axioms original_weighted_call_returns
 end Qleisli.RuntimeCallHistory

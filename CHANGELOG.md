@@ -95,6 +95,9 @@ development milestones from the scope of their evidence.
   across pure events, erasure, ordinary values and selected branch joins.
   A single ordered family of logical spectator components reconstructs the
   actual child result list on every physical spectator coordinate.
+  Each logical component is refined on the original checked child traversal
+  and in its written return order. The exact weighted reconstruction sends
+  that source operator family back to the original caller owner order.
   The original source return checkpoint
   uses the same complete native state, and its written owner order
   determines a single caller encoding for the ordered result family when
