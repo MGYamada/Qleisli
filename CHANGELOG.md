@@ -98,6 +98,8 @@ development milestones from the scope of their evidence.
   Each logical component is refined on the original checked child traversal
   and in its written return order. The exact weighted reconstruction sends
   that source operator family back to the original caller owner order.
+  The paired caller results carry that operator, the checked caller owner
+  state and the same ordinary valuation and hidden history on one invariant.
   The original source return checkpoint
   uses the same complete native state, and its written owner order
   determines a single caller encoding for the ordered result family when

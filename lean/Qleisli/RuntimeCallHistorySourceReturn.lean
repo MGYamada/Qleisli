@@ -7,6 +7,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace Qleisli.RuntimeCallHistory
 open QleisliKernel QleisliKernel.Qirf
 open Qleisli.RuntimeLiteralBody (SourceHistory SemanticHistoryAgreesWithInherited)
+open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
+open Qleisli.RuntimeObservingValueRetention (Supports)
+open RuntimeOwnerMap (Map)
 open Qleisli.RuntimeSemanticForest (Frame product)
 open Qleisli.RuntimeStructuralHistory (Represents)
 open Qleisli.Semantics.ObservingAction (History WeightedHistory)
@@ -85,5 +88,82 @@ theorem source_returns_in_caller_frame
     rw [List.forall₂_map_right_iff] at operators
     exact operators.imp (fun _ _ represents => ⟨output,represents⟩)
 
+/-- Use the source metadata at the original zero spectator ordinal and the
+operator assembled from all the logical ordinals. The caller retains its
+own checked owner state and return order. -/
+noncomputable def callerSourceResult
+    {dependencies program start count inputs sources caller block before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (spectators : Map) (logical : Nat → SourceHistory) : SourceHistory :=
+  let operator := returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators (jointReturn logical)
+  { (logical 0) with owners := boundary.after, operator }
+
+/-- The paired call transports its original source result back to the
+caller's history, including the same SSA valuation and hidden outcomes.
+The inherited-ID bound uses the actual enclosing interval's issued state. -/
+theorem CheckedCallRun.caller_history_after_return
+    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect}
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    (parent : Frame checked.bindings) (sameBindings : checked.bindings = before.bindings)
+    {actual localHistory parentEvents childEvents parents children}
+    (run : CheckedCallRun scope
+      ((RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered).map (·.port))
+      actual localHistory parentEvents childEvents parents children)
+    (ordinals : List Nat) (inherited : Option (Nat → Prop)) (finalOrdinary : RuntimeOrdinaryBody.State)
+    (incoming : Supports (fun id => match inherited with
+      | none => Issued scope.interval.before id
+      | some held => held id ∨ Issued scope.interval.before id) actual)
+    {nativeFamily : List (Nat → History)} {sourceFamily : List (Nat → SourceHistory)} :
+    let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
+    (∀ high, List.Forall₂
+      (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
+      (children.map (fun result => result high)) nativeFamily) →
+    List.Forall₂ (fun logical native => ∀ index,
+      SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
+        ordinals scope.localAfter child finalOrdinary (logical index) (native index)) sourceFamily nativeFamily →
+    List.Forall₂ (SemanticHistoryAgreesWithInherited inherited ordinals scope.interval.after boundary.after finalOrdinary)
+      (sourceFamily.map (callerSourceResult boundary spectators)) parents := by
+  intro spectators weights returned
+  have reconstructed := source_returns_in_caller_frame scope boundary checked parent sameBindings ordinals
+    (some (fun id => id ∈ actual.values.map Prod.fst)) finalOrdinary run.paired.paired weights returned
+  have indexed := List.forall₂_map_left_iff.mp (weights 0)
+  have preserves : scope.interval.before.classical ⊆ scope.interval.after.classical := by
+    obtain ⟨_,_,receipt⟩ := scope.interval.intervalRead
+    exact (Raw.Observation.checkOps_history _ _ _ _ _ _ _ receipt).2.2
+  rw [List.forall₂_map_left_iff]
+  refine List.forall₂_of_length_eq_of_get reconstructed.length_eq.symm ?_
+  intro index sourceBound parentBound
+  have childBound : index < children.length := by simpa only [← run.paired.paired.length_eq] using parentBound
+  have componentBound : index < nativeFamily.length := by simpa only [← returned.length_eq] using sourceBound
+  have callPair := run.paired.paired.get parentBound childBound
+  have weightPair := indexed.get childBound componentBound
+  have sourceResult := (returned.get sourceBound componentBound) 0
+  have equalValues := (callPair.values 0).trans (weightPair.values 0).symm
+  have equalHidden := (callPair.hidden 0).trans (weightPair.hidden 0).symm
+  obtain ⟨output,represented⟩ := reconstructed.get parentBound sourceBound
+  let parentResult := parents.get ⟨index,parentBound⟩
+  have allowed := (run.parentValues parentResult (List.get_mem _ _)).2
+  refine ⟨rfl,equalHidden.trans sourceResult.2.1,?_,⟨?_,?_⟩,_,boundary.afterFrame,boundary.sameAfter,
+    boundary.sameAfter ▸ output,?_⟩
+  · rw [equalValues]
+    exact sourceResult.2.2.1
+  · rw [equalValues]
+    exact sourceResult.2.2.2.1.1
+  · intro id present
+    rcases allowed present with input | wrote
+    · cases inherited with
+      | none => exact issued_mono preserves (incoming input)
+      | some held => exact (incoming input).imp (fun old => old) (issued_mono preserves)
+    · cases inherited with
+      | none => exact wrote
+      | some held => exact .inr wrote
+  · exact Qleisli.RuntimeLiteralBody.cast_represents boundary.sameAfter output represented
+
 #print axioms source_returns_in_caller_frame
+#print axioms CheckedCallRun.caller_history_after_return
 end Qleisli.RuntimeCallHistory
