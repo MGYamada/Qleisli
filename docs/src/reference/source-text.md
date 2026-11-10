@@ -307,8 +307,11 @@ that component before the separate runtime-root acceptance; general source
 binding and nominal integration remain unfinished. Common enum checks, native acceptance
 of a proposed circuit and conformance tests do not prove original-source
 preservation or complete nominal integration. Ordinary nominal execution uses
-the separate ordinary-v2 route above. `qif` keeps its existing
-fixed `0`, then `1` syntax and access contract.
+the separate ordinary-v2 route above. `qif` keeps its fixed `0`, then `1`
+syntax and access contract. Its lowering uses the same labelled sectors as
+`qmatch`. When the containing function needs original-source v5 checking,
+each `qif` and `qmatch` retains its own source position, ordered arms and
+literal Raw interval.
 
 ## One structured quantum result boundary
 

@@ -145,7 +145,115 @@ fn check_native(
     Ok(())
 }
 
+fn named_selection_steps(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    name: &Ident,
+    basis: &Ty,
+    env: &Env,
+) -> Result<(Vec<CircuitStep>, bool), CompileError> {
+    match lower.operation_steps(module, name, basis, env, Access::Controlled)? {
+        Some(steps) => Ok((steps, true)),
+        None => Ok((lower.static_steps(module, name, basis, env)?, false)),
+    }
+}
+
+fn apply_selection_steps(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    [selector, target]: [Value; 2],
+    steps: Vec<CircuitStep>,
+) -> Result<Value, CompileError> {
+    let joined = lower.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
+    let slot = lower.quantum(module, span, &joined, false)?;
+    lower.apply_circuit(slot, steps);
+    lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])
+}
+
 impl Lowerer<'_, '_> {
+    pub(super) fn quantum_if(
+        &mut self,
+        module: &str,
+        span: Span,
+        control: &Expr,
+        target: &Expr,
+        names: [&Ident; 2],
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        let selector = self.expr(module, control, env)?;
+        self.quantum(module, control.span, &selector, true)?;
+        let value = self.expr(module, target, env)?;
+        let slot = self.quantum(module, target.span, &value, false)?;
+        let basis = self.raw.registers[&slot].basis.clone();
+        let width = self.circuit_width(module, span, &basis)?;
+        let record_source = self.uses_qmatch_v5() && self.nominal_qmatch.is_some();
+        let mut arms = Vec::new();
+        let mut steps = Vec::new();
+        let mut operation_arm = false;
+        let mut expectations = [None, None];
+        for (label, name) in names.into_iter().enumerate() {
+            let (mut arm, already_controlled) =
+                named_selection_steps(self, module, name, &basis, env)?;
+            operation_arm |= already_controlled;
+            if width < MAX_CONTRACT_BITS {
+                expectations[label] = self.target_meaning(module, name, &basis)?;
+            }
+            if record_source {
+                arms.push(nominal::builtin_arm(
+                    self,
+                    module,
+                    nominal::BuiltinArmOrigin::Named(name),
+                    &basis,
+                    &arm,
+                    already_controlled,
+                )?);
+            }
+            self.compiler.charge(
+                module,
+                span,
+                total_size(arm.iter().map(super::super::circuit::size)).saturating_add(arm.len()),
+            )?;
+            lift_arm(&mut arm, 1, width, label, already_controlled)
+                .map_err(|error| self.compiler.op_error(module, name.span, error))?;
+            steps.extend(arm);
+        }
+        if operation_arm && steps.len() > crate::contract::MAX_CONTRACT_STEPS {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "controlled operation circuit exceeds 1024 steps",
+            ));
+        }
+        let [zero, one] = expectations;
+        let expected = zero
+            .zip(one)
+            .map(|(zero, one)| block_meaning(&[zero, one], &mut self.compiler.exact_work))
+            .transpose()
+            .map_err(|error| self.compiler.op_error(module, span, error))?;
+        self.check_transformed(
+            module,
+            span,
+            &Ty::pair(Ty::bit(), basis),
+            &steps,
+            expected.as_ref(),
+        )?;
+        if record_source {
+            nominal::apply_selection(
+                self,
+                module,
+                span,
+                span.start,
+                [selector, value],
+                steps,
+                arms,
+            )
+        } else {
+            apply_selection_steps(self, module, span, [selector, value], steps)
+        }
+    }
+
     pub(super) fn quantum_match(
         &mut self,
         module: &str,
@@ -248,13 +356,8 @@ impl Lowerer<'_, '_> {
             }
             let (mut body, already_controlled, expected, operation) = match &arm.operation.kind {
                 StaticOpKind::Name(name) => {
-                    let operation =
-                        self.operation_steps(module, name, &target_basis, env, Access::Controlled)?;
-                    let controlled = operation.is_some();
-                    let body = match operation {
-                        Some(body) => body,
-                        None => self.static_steps(module, name, &target_basis, env)?,
-                    };
+                    let (body, controlled) =
+                        named_selection_steps(self, module, name, &target_basis, env)?;
                     (
                         body,
                         controlled,
@@ -289,12 +392,25 @@ impl Lowerer<'_, '_> {
                 )
             })?;
             if self.nominal_qmatch.is_some() {
+                let origin = match (&arm.operation.kind, operation.as_ref()) {
+                    (_, Some(operation)) => {
+                        nominal::BuiltinArmOrigin::Constructed(operation, arm.operation.span)
+                    }
+                    (StaticOpKind::Name(name), None) => nominal::BuiltinArmOrigin::Named(name),
+                    _ => {
+                        return Err(self.error(
+                            module,
+                            arm.span,
+                            ErrorCode::InvalidIr,
+                            "missing original qmatch operation",
+                        ));
+                    }
+                };
                 arms.push(nominal::builtin_arm(
                     self,
                     module,
-                    &arm.operation,
+                    origin,
                     &target_basis,
-                    operation.as_ref(),
                     &body,
                     already_controlled,
                 )?);

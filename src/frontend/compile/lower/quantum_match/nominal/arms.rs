@@ -9,22 +9,37 @@ use crate::interchange::qmatch::ArmBody;
 #[cfg(test)]
 mod tests;
 
+pub(in crate::frontend::compile::lower::quantum_match) enum BuiltinArmOrigin<'a> {
+    Named(&'a Ident),
+    Constructed(&'a operations::Operation, Span),
+}
+
 /// Retain each written Bit/Unit/Bits arm before lifting its controls to the
 /// enclosing selector. Even equal provider occurrences keep their own slots.
 pub(in crate::frontend::compile::lower::quantum_match) fn builtin_arm(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
-    expression: &StaticOp,
+    origin: BuiltinArmOrigin<'_>,
     target: &Ty,
-    operation: Option<&operations::Operation>,
     steps: &[CircuitStep],
     already_controlled: bool,
 ) -> Result<ArmSubject, CompileError> {
-    let subject = builtin_origin(lower, module, expression, target, operation)?;
+    let (span, subject) = match origin {
+        BuiltinArmOrigin::Named(name) => (
+            name.span,
+            builtin_named_origin(lower, module, name, target)?,
+        ),
+        BuiltinArmOrigin::Constructed(operation, span) => (
+            span,
+            lower
+                .compiler
+                .qmatch_operation_subject(operation, module, span)?,
+        ),
+    };
     let bits = target.basis_bits().expect("built-in qmatch target");
     lower.compiler.charge(
         module,
-        expression.span,
+        span,
         total_size(steps.iter().map(circuit::size)).saturating_mul(4) + 4 * bits + 24,
     )?;
     let mut forward = steps.to_vec();
@@ -32,7 +47,7 @@ pub(in crate::frontend::compile::lower::quantum_match) fn builtin_arm(
         // Fix the synthetic positive control to one. Uncontrolled scaffolding
         // (including conjugation) and conditional scalar phases remain present.
         lift_arm(&mut forward, 0, bits, 0, true)
-            .map_err(|error| lower.compiler.op_error(module, expression.span, error))?;
+            .map_err(|error| lower.compiler.op_error(module, span, error))?;
     }
     let controlled_steps = if already_controlled {
         steps.to_vec()
@@ -62,33 +77,19 @@ pub(in crate::frontend::compile::lower::quantum_match) fn builtin_arm(
     })
 }
 
-fn builtin_origin(
+fn builtin_named_origin(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
-    expression: &StaticOp,
+    name: &Ident,
     target: &Ty,
-    operation: Option<&operations::Operation>,
 ) -> Result<crate::interchange::qmatch::OperationSubject, CompileError> {
     use crate::interchange::qmatch::{
         Description, OperationNode, OperationPrimitive, OperationSubject,
     };
-    if let Some(operation) = operation {
-        return lower
-            .compiler
-            .qmatch_operation_subject(operation, module, expression.span);
-    }
-    let StaticOpKind::Name(name) = &expression.kind else {
-        return Err(lower.error(
-            module,
-            expression.span,
-            ErrorCode::InvalidIr,
-            "missing original qmatch operation",
-        ));
-    };
     if let Some(operation) = lower.retained_bound_operation(module, name)? {
         return lower
             .compiler
-            .qmatch_operation_subject(&operation, module, expression.span);
+            .qmatch_operation_subject(&operation, module, name.span);
     }
     let (node, bodies) = match lower.compiler.resolve(module, name)? {
         Callee::User(key) => {

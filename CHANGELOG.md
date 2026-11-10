@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Share coherent sector lowering between `qif` and `qmatch`. Retain both
+  selections in original-source v5 bodies and derive the binary tape action
+  from the shared QPTL direct-sum theorem.
 - Check coherent basis preparation in selected v5 bodies and relate its
   original rectangular table to the literal Raw event on the complete owner
   and reference frame. Ordinary branches after preparation and measurement
