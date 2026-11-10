@@ -9,6 +9,8 @@ import Qleisli.FinitePull
 import Qleisli.FiniteCircuitPull
 import Qleisli.FiniteMatrixPull
 import Qleisli.RawActionLinear
+import Qleisli.RawEventLinear
+import Qleisli.ObservingActionLinear
 import Qleisli.FiniteMatrixAction
 import Qleisli.RawActionLocality
 import Qleisli.CodeSpaceAction
@@ -164,6 +166,7 @@ import Qleisli.RuntimeCallHistoryEntry
 import Qleisli.RuntimeCallHistoryReturn
 import Qleisli.RuntimeCallHistorySourceState
 import Qleisli.RuntimeCallHistorySourceRefinement
+import Qleisli.RuntimeCallHistoryWeighted
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection

@@ -91,6 +91,10 @@ development milestones from the scope of their evidence.
   The original named child traversal uses the same source-derived input
   bindings, the actual paired run on each spectator coordinate and the
   checked return order. Its remaining source actions still require local laws.
+  The literal child interpreter preserves finite weighted operator columns
+  across pure events, erasure, ordinary values and selected branch joins.
+  A single ordered family of logical spectator components reconstructs the
+  actual child result list on every physical spectator coordinate.
   The original source return checkpoint
   uses the same complete native state, and its written owner order
   determines a single caller encoding for the ordered result family when
