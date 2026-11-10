@@ -117,7 +117,7 @@ def CheckedStepAt {artifact root execution} (next : BlockRunner artifact root ex
   | .named .. => ChildRunAt artifact root execution next (some inputs) step
   | _ => CheckedStep next step
 
-private theorem CheckedStepAt.forget {artifact root execution} {next : BlockRunner artifact root execution}
+theorem CheckedStepAt.forget {artifact root execution} {next : BlockRunner artifact root execution}
     {inputs program block step} (checked : @CheckedStepAt artifact root execution next inputs program block step) :
     CheckedStep next step := by
   cases step

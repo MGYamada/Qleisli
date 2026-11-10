@@ -106,8 +106,10 @@ development milestones from the scope of their evidence.
   gathers the finite spectator columns and restores the caller invariant,
   preserving order and multiplicity even for identical outcomes. The
   original call receipt retains the enclosing root input domain for each
-  child traversal. The shared recursion across calls, branches and the
-  remaining pure forms is pending.
+  child traversal. One recursive proof uses the actual child receipts for
+  named calls and selected branches and composes the ordinary gaps and
+  observations through the written return. The local laws for the pure
+  operation forms remain to be assembled.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

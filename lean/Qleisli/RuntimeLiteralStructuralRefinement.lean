@@ -159,24 +159,26 @@ private theorem gap_refines {dependencies program block start count before ssa}
 
 /-- Use the checked literal write bound for each original ordinary gap of
 a child's source traversal, sharing the root's prefix-indexed induction. -/
-theorem sourceStep_with_inherited_gaps {dependencies program block}
-    (steps : List (@Step dependencies program block)) (inputs : List Nat) (inherited : Nat → Prop)
+theorem sourceStep_with_scoped_gaps {dependencies program block}
+    (steps : List (@Step dependencies program block)) (inputs : List Nat) (inherited : Option (Nat → Prop))
     (certifies : Step dependencies program block → Prop)
     (other : List (@Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
     (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsNonGap step) other
-      (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
-      (some (fun id => ¬ inherited id))) :
+      (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id))) :
     StepRefinement steps certifies (withSparseGaps other)
-      (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
-      (some (fun id => ¬ inherited id)) := by
+      (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id)) := by
   intro prior first later position certified ownerBefore ownerAfter ordinaryBefore ordinaryAfter
-    owners ordinary chunk read writes source history outputs agrees executed
+    owners ordinary chunk read
+  refine WithChunkWriteBound.of_trace ?_
+  intro writes source history outputs agrees executed
   cases first
   case gap gap =>
-    exact ⟨[source],rfl,gap_refines gap inputs (some inherited) owners ordinary read writes agrees executed⟩
+    exact ⟨[source],rfl,gap_refines gap inputs inherited owners ordinary read writes agrees executed⟩
   all_goals
-    exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read writes agrees executed
+    exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
 
 /-- Connect all four structural constructors to the same ordered arm
 induction used for the other source steps. -/
@@ -258,7 +260,7 @@ def sparseArmEncodingLaws (inputs : List Nat) (inherited : Option (Nat → Prop)
     sparse_return_refines inputs (inherited := inherited)⟩
 
 #print axioms HistoryAgrees.toSemantic
-#print axioms sourceStep_with_inherited_gaps
+#print axioms sourceStep_with_scoped_gaps
 #print axioms sourceStep_with_sparse_structure
 #print axioms Execution.sparse_structure_refinement
 #print axioms sparse_return_refines

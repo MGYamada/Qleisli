@@ -5,6 +5,7 @@ import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection
 import Qleisli.RuntimeOriginalSparsePhi
+import Qleisli.RuntimeLiteralGeneralNamed
 
 /-! A conditional uses the original prefix to select an arm, applies the
 shared recursion to its real child receipt, and passes that exact ordered
@@ -20,7 +21,7 @@ open Qleisli.RuntimeOriginalBranchJoin
   (armChecked armPermutation original_arm_run original_branch_join_with_inherited original_native_phi_history sourcePhiIndex)
 open Qleisli.RuntimeOriginalSparsePhi (original_sparse_phi_history)
 open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory)
-open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun ConditionalRun)
+open Qleisli.RuntimeNamedChildRuns (CheckedStep CheckedStepAt ChildRun ChildRunAt ConditionalRun ConditionFrom RootInputs)
 open Qleisli.RuntimeObservingValueRetention (Supports run_values run_retains_values)
 open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
 open Qleisli.RuntimeObservingWrites (WritesWithin)
@@ -28,11 +29,6 @@ open RuntimePureBody (Step Steps runBlockCore)
 open RuntimeOrdinarySSA (Agreement bitValue)
 open RuntimeSelectionSteps (Edge)
 open RuntimeNamedPrimitiveOccurrence (inspect?)
-
-abbrev ScopedSourceSteps (dependencies : List RuntimeInterval.Dependency) :=
-  ∀ {program} {block : RuntimeInterval.Block dependencies program},
-    List Edge → List (Step dependencies program block) → Step dependencies program block →
-      SourceHistory → Option (List SourceHistory)
 
 private def armScope (scope : List Edge) (ordinal : Nat) (choice : Bool) : List Edge :=
   scope ++ [if choice then .thenBranch ordinal else .elseBranch ordinal]
@@ -144,12 +140,12 @@ private def ChildStepRefinement {dependencies program block offset}
     (left : Steps dependencies program actual.thenBlock) (right : Steps dependencies program actual.elseBlock)
     (certifies : ∀ {program block},Step dependencies program block → Prop)
     (encoding : HistoryEncoding) (inputs : List Nat) (other : ScopedSourceSteps dependencies)
-    (scope : List Edge) (ordinal : Nat) (inherited : Option (Nat → Prop) := none) : Prop :=
-  ((∀ step ∈ stepList left, ConditionInput inputs step) →
+    (scope : List Edge) (ordinal : Nat) (origin : RootInputs) (inherited : Option (Nat → Prop)) : Prop :=
+  ((∀ step ∈ stepList left, ConditionFrom origin step ∧ ConditionInput inputs step) →
     StepRefinement (stepList left) certifies (other (armScope scope ordinal true))
       (fun _ => EncodedHistoryAgreesWithInherited encoding inherited inputs)
       (inherited.map (fun holds id => ¬ holds id))) ∧
-  ((∀ step ∈ stepList right, ConditionInput inputs step) →
+  ((∀ step ∈ stepList right, ConditionFrom origin step ∧ ConditionInput inputs step) →
     StepRefinement (stepList right) certifies (other (armScope scope ordinal false))
       (fun _ => EncodedHistoryAgreesWithInherited encoding inherited inputs)
       (inherited.map (fun holds id => ¬ holds id)))
@@ -176,7 +172,8 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
     (member : inputs ∈ action.condition.inputs.rows) (other : ScopedSourceSteps root.dependencies)
     (scope : List Edge) (ordinal : Nat)
     (remaining : ChildStepRefinement actual thenSteps elseSteps
-      (CheckedStep (runBlockCore artifact root mode fuel)) encoding inputs other scope ordinal inherited)
+      (CheckedStepAt (runBlockCore artifact root mode fuel) (RuntimeBranchCondition.rootEntries path))
+      encoding inputs other scope ordinal (RuntimeBranchCondition.rootEntries path) inherited)
     {source history events results}
     (agrees : EncodedHistoryAgreesWithInherited encoding inherited inputs actual.interval.before before ordinary source history)
     (read : readOps block.fuel actual.interval.before.quantum.reference ((block.operations.drop offset).take 1) =
@@ -238,7 +235,8 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
       obtain ⟨arm⟩ := rightRun
       obtain ⟨expected,evaluated,paired⟩ := arm.refinement_with encoding inputs
         (enterArm scope ordinal false source) history (other (armScope scope ordinal false)) (inherited := inherited)
-        (remaining.2 (child_condition_inputs arm.flow action.condition.inputs member)) laws agrees bodyRead (armWrites false)
+        (remaining.2 (fun step present => ⟨arm.flow.conditions step present,
+          child_condition_inputs arm.flow action.condition.inputs member step present⟩)) laws agrees bodyRead (armWrites false)
       have bindings := congrArg RuntimeStructuralAction.SourceState.bindings arm.returned
       exact ⟨expected,returned,evaluated,bodyRead,arm_results (block := actual.elseBlock) encoding inputs source.measurements inherited
         (same_measurements action.noElseMeasurements).symm agrees.2.2.1 action.elseFrame bindings.symm bodyRead paired⟩
@@ -246,7 +244,8 @@ private theorem source_conditional_refines_with {artifact : Artifact} {root : Va
       obtain ⟨arm⟩ := leftRun
       obtain ⟨expected,evaluated,paired⟩ := arm.refinement_with encoding inputs
         (enterArm scope ordinal true source) history (other (armScope scope ordinal true)) (inherited := inherited)
-        (remaining.1 (child_condition_inputs arm.flow action.condition.inputs member)) laws agrees bodyRead (armWrites true)
+        (remaining.1 (fun step present => ⟨arm.flow.conditions step present,
+          child_condition_inputs arm.flow action.condition.inputs member step present⟩)) laws agrees bodyRead (armWrites true)
       have bindings := congrArg RuntimeStructuralAction.SourceState.bindings arm.returned
       exact ⟨expected,returned,evaluated,bodyRead,arm_results (block := actual.thenBlock) encoding inputs source.measurements inherited
         (same_measurements action.noThenMeasurements).symm agrees.2.2.1 action.thenFrame bindings.symm bodyRead paired⟩
@@ -329,8 +328,10 @@ theorem source_conditional_refines {artifact : Artifact} {root : Validity.Root}
     (inherited := none) (nativeArmEncodingLaws inputs) ?_ member (fun atArm => sourceStep (other atArm) atArm)
     scope ordinal ?_ agrees read executed
   swap
-  · exact ⟨fun rows => sourceStep_refines _ inputs _ _ (remaining _ _ rows),
-      fun rows => sourceStep_refines _ inputs _ _ (remaining _ _ rows)⟩
+  · exact ⟨fun rows => (sourceStep_refines _ inputs _ _ (remaining _ _ (fun step present => (rows step present).2))).of_certifies
+        (fun _ cert => cert.forget),
+      fun rows => (sourceStep_refines _ inputs _ _ (remaining _ _ (fun step present => (rows step present).2))).of_certifies
+        (fun _ cert => cert.forget)⟩
   intro trace choice joint current encoded
   obtain ⟨frame,represented⟩ := NativeHistoryEncoding.represents (history := current) encoded
     (armChecked action.thenFrame action.elseFrame choice) rfl
@@ -352,7 +353,8 @@ theorem sparse_conditional_refines {artifact : Artifact} {root : Validity.Root}
     (inputs : List Nat) (member : inputs ∈ action.condition.inputs.rows) (other : ScopedSourceSteps root.dependencies)
     (scope : List Edge) (ordinal : Nat) {inherited : Option (Nat → Prop)}
     (remaining : ChildStepRefinement actual thenSteps elseSteps
-      (CheckedStep (runBlockCore artifact root mode fuel)) SemanticHistoryEncoding inputs other scope ordinal inherited)
+      (CheckedStepAt (runBlockCore artifact root mode fuel) (RuntimeBranchCondition.rootEntries path))
+      SemanticHistoryEncoding inputs other scope ordinal (RuntimeBranchCondition.rootEntries path) inherited)
     {source history events results}
     (agrees : SemanticHistoryAgreesWithInherited inherited inputs actual.interval.before before ordinary source history)
     (read : readOps block.fuel actual.interval.before.quantum.reference ((block.operations.drop offset).take 1) =
@@ -456,7 +458,9 @@ theorem sourceStep_with_inherited_conditionals {artifact root mode fuel program 
     obtain ⟨choice,expected,choiceRead,sourceRead,paired⟩ :=
       sparse_conditional_refines (fuel := fuel) action thenSteps elseSteps checked inputs row children
         scope prior.length (inherited := some inherited)
-        ⟨childLaws _ _,childLaws _ _⟩ agrees read executed writes
+        ⟨fun rows => (childLaws _ _ (fun step present => (rows step present).2)).of_certifies (fun _ cert => cert.forget),
+          fun rows => (childLaws _ _ (fun step present => (rows step present).2)).of_certifies (fun _ cert => cert.forget)⟩
+        agrees read executed writes
     exact ⟨expected.map (finishArm action choice),
       by simp only [withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
   all_goals
@@ -578,6 +582,106 @@ private theorem named_zero_impossible {artifact root mode program block step}
       (Except.ok (result,receipts),afterChild) at childRead
     cases childRead
 
+private def NeedsRecursiveLeaf {dependencies program block} : Step dependencies program block → Prop
+  | .named .. | .conditional .. => False
+  | _ => True
+
+/-- Recurse through the original checked child list of a named call or the
+original arm selected by a conditional. Both start a fresh local prefix. -/
+noncomputable def recursiveSourceSteps {dependencies}
+    (leaves : ScopedSourceSteps dependencies) (inputs : List Nat) : Nat → ScopedSourceSteps dependencies
+  | 0 => leaves
+  | depth+1 => fun scope =>
+    let children : ScopedSourceSteps dependencies :=
+      fun atChild => recursiveSourceSteps leaves inputs depth atChild
+    withBranchSteps children (fun prior step source =>
+      match step with
+      | .named .. => evaluateGeneralNamed children scope prior.length step source
+      | _ => leaves scope prior step source) inputs scope
+
+/-- The decoded ordinary row belongs to any original condition whose call
+path has the same root input domain. -/
+def RootConditionRow (origin : RootInputs) (inputs : List Nat) : Prop :=
+  ∀ {sources rootOwner rootName owner name}
+    {path : RuntimeOrdinaryBody.CallPath sources rootOwner rootName owner name}
+    (domain : RuntimeBranchCondition.Inputs path),
+    RuntimeBranchCondition.rootEntries path = origin → inputs ∈ domain.rows
+
+theorem rootConditionRow_of_checked {sources owner name signature dependencies program}
+    {body : @SourceRuntimeTrace.Body sources owner name signature}
+    {prepared : RuntimeInterval.Prepared dependencies program} {runtime inputs}
+    {initial : RuntimeOrdinaryInputs.Checked body prepared runtime inputs}
+    {assignment : List Bool} (row : RuntimeOrdinaryInputs.Row initial assignment) :
+    RootConditionRow (RuntimeBranchCondition.rootEntries (.root body)) row.ordinals :=
+  fun domain original => Qleisli.RuntimeBranchInputDomain.original_row_member row domain original
+
+/-- One induction on the original runner's recursion depth handles both
+named and conditional steps. A named child uses the IDs of the incoming
+history. An arm uses the enclosing write bound and the same root row. -/
+theorem recursiveSourceSteps_refine {artifact root mode}
+    (leaves : ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs)
+    (rootRow : RootConditionRow origin inputs)
+    (localLeaves : ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block))
+      (inherited : Option (Nat → Prop)),
+      StepRefinement steps
+        (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧ NeedsRecursiveLeaf step)
+        (leaves scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+        (inherited.map (fun holds id => ¬ holds id))) :
+    ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block))
+      (inherited : Option (Nat → Prop)),
+      (∀ step ∈ steps, ConditionFrom origin step) →
+      StepRefinement steps (CheckedStepAt (runBlockCore artifact root mode depth) origin)
+        (recursiveSourceSteps leaves inputs depth scope)
+        (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+        (inherited.map (fun holds id => ¬ holds id)) := by
+  intro depth
+  induction depth with
+  | zero =>
+    intro program block scope steps inherited origins prior first later position checked
+    cases first
+    case named =>
+      exact False.elim (named_zero_impossible (ChildRunAt.forget checked))
+    case conditional =>
+      exact False.elim (conditional_zero_impossible checked)
+    all_goals
+      exact localLeaves 0 scope steps inherited prior _ later position ⟨checked,trivial⟩
+  | succ depth ih =>
+    intro program block scope steps inherited origins prior first later position checked ownerBefore ownerAfter
+      ordinaryBefore ordinaryAfter owners ordinary chunk read
+    refine WithChunkWriteBound.of_trace ?_
+    intro writes source history outputs agrees executed
+    have rootOfFirst := origins first (by rw [← position]; exact List.mem_append_right _ List.mem_cons_self)
+    cases first with
+    | named event frame body bodyRead boundary finalOrdinary steps =>
+      rcases owners with ⟨rfl,rfl⟩
+      rcases ordinary with ⟨rfl,rfl⟩
+      obtain ⟨expected,evaluated,paired⟩ :=
+        general_named_refines (fuel := depth) checked inputs inherited (recursiveSourceSteps leaves inputs depth)
+          scope prior.length agrees read executed writes (fun rows => ih _ _ _ rows)
+      exact ⟨expected,by simpa only [recursiveSourceSteps,withBranchSteps] using evaluated,paired⟩
+    | conditional path event body actual actualRead action thenSteps elseSteps =>
+      rcases owners with ⟨rfl,rfl⟩
+      rcases ordinary with ⟨rfl,rfl⟩
+      have rootEq : RuntimeBranchCondition.rootEntries path = origin := rootOfFirst
+      obtain ⟨choice,expected,choiceRead,sourceRead,paired⟩ :=
+        sparse_conditional_refines (fuel := depth) action thenSteps elseSteps checked inputs
+          (rootRow action.condition.inputs rootEq) (recursiveSourceSteps leaves inputs depth) scope prior.length
+          (inherited := inherited)
+          ⟨fun rows => by
+            rw [rootEq]
+            exact ih _ _ _ (fun step present => by simpa only [rootEq] using (rows step present).1),
+           fun rows => by
+            rw [rootEq]
+            exact ih _ _ _ (fun step present => by simpa only [rootEq] using (rows step present).1)⟩
+          agrees read executed writes
+      exact ⟨expected.map (finishArm action choice),
+        by simp only [recursiveSourceSteps,withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
+    | pure _ | gap _ | observation _ =>
+      exact ((localLeaves (depth+1) scope steps inherited prior _ later position ⟨checked,trivial⟩
+        owners ordinary read).apply writes) agrees executed
+
+#print axioms recursiveSourceSteps_refine
+
 /-- Compose actual nested conditionals, structural actions, observations,
 ordinary SSA updates and named selections on one invariant. -/
 theorem sparseStepsAt_refine {artifact root mode}
@@ -627,8 +731,10 @@ theorem sparseStepsAt_refine {artifact root mode}
         sparse_conditional_refines (artifact := artifact) (mode := mode) (fuel := depth)
           action thenSteps elseSteps checked.1.1.1 inputs row (sparseStepsAt fallback inputs depth)
           scope prior.length (inherited := none)
-          ⟨ih _ (stepList thenSteps) (by simpa only [ofList_stepList] using leftWitness),
-            ih _ (stepList elseSteps) (by simpa only [ofList_stepList] using rightWitness)⟩ agrees read executed
+          ⟨fun rows => (ih _ (stepList thenSteps) (by simpa only [ofList_stepList] using leftWitness)
+              (fun step present => (rows step present).2)).of_certifies (fun _ cert => cert.forget),
+            fun rows => (ih _ (stepList elseSteps) (by simpa only [ofList_stepList] using rightWitness)
+              (fun step present => (rows step present).2)).of_certifies (fun _ cert => cert.forget)⟩ agrees read executed
       exact ⟨expected.map (finishArm action choice),
         by simp only [withSparseSelection,RuntimeNamedThreeOccurrence.middle?,withSparseNamed,
           withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
@@ -718,8 +824,87 @@ theorem original_body_sparse_refinement {artifact owner name arguments request p
   exact original_body_encoded_refinement body SemanticHistoryEncoding row.ordinals
     (sparseArmEncodingLaws row.ordinals) sourceInitial initial results
     (sparseStepsAt fallback row.ordinals 127 scope) executed
-    (original_body_sparse_steps body row scope fallback leaves) starts
+    ((original_body_sparse_steps body row scope fallback leaves).of_certifies (fun _ cert => cert.forget)) starts
 
+def NeedsRecursivePure {dependencies program block} : Step dependencies program block → Prop
+  | .pure _ => True
+  | _ => False
+
+noncomputable def recursiveBodyLeaves {dependencies}
+    (pureSteps : ScopedSourceSteps dependencies) : ScopedSourceSteps dependencies :=
+  fun scope => withSparseGaps (withSparseObservation (pureSteps scope) scope)
+
+private theorem recursiveBodyLeaves_refine {dependencies program block}
+    (pureSteps : ScopedSourceSteps dependencies)
+    (scope : List Edge) (inputs : List Nat) (inherited : Option (Nat → Prop))
+    (steps : List (Step dependencies program block)) (certifies : Step dependencies program block → Prop)
+    (pureLaws : StepRefinement steps (fun step => certifies step ∧ NeedsRecursivePure step)
+      (pureSteps scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id))) :
+    StepRefinement steps (fun step => certifies step ∧ NeedsRecursiveLeaf step)
+      (recursiveBodyLeaves pureSteps scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id)) := by
+  apply sourceStep_with_scoped_gaps
+  apply sourceStep_with_scoped_observation
+  apply pureLaws.of_certifies
+  intro step checked
+  rcases checked with ⟨⟨⟨known,leaf⟩,gap⟩,observation⟩
+  refine ⟨known,?_⟩
+  cases step
+  case pure => trivial
+  case gap => exact gap
+  case observation => exact observation
+  all_goals exact leaf
+
+/-- Refine the full original body and return on its checked root row,
+using one recursive source evaluator for named calls and selected arms. -/
+theorem original_body_recursive_refinement {artifact owner name arguments request prepared order runtime}
+    (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
+    {assignment : List Bool} (row : RuntimeOrdinaryInputs.Row body.checked.initial assignment)
+    (scope : List Edge) (sourceInitial : SourceHistory) (initial : History)
+    (results : List History)
+    (fallback : ScopedSourceSteps body.root.dependencies)
+    (executed : let block := body.checked.native.block
+      (do
+        let (_,events) ← readOps block.fuel block.entry.quantum.reference block.operations
+        run body.root.dependencies block.fuel events initial) = some results) :
+    let block := body.checked.native.block
+    let source := SourceRuntimeScope.Subject.whole prepared.source.body
+    let mode := RuntimePureBody.ExecutionMode.planned
+      (RuntimeBodyOperations.preparation artifact prepared.source.catalogue)
+      (RuntimeBodyOperations.stagedConsumption artifact prepared.source.catalogue body.root)
+    let history := RuntimeBodyOperations.initialHistory prepared body.checked.native runtime body.checked.inputs
+    let origin := RuntimeBranchCondition.rootEntries (.root prepared.source.body)
+    (∀ depth {program block} (atStep : List Edge) (steps : List (Step body.root.dependencies program block))
+      (inherited : Option (Nat → Prop)),
+      StepRefinement steps
+        (fun step => CheckedStepAt (runBlockCore artifact body.root mode depth) origin step ∧ NeedsRecursivePure step)
+        (fallback atStep) (fun _ => SemanticHistoryAgreesWithInherited inherited row.ordinals)
+        (inherited.map (fun holds id => ¬ holds id))) →
+    (∀ input : RuntimeOwnerMap.Checked source.initialRoles block.entry,
+      RuntimeInterval.Computed (RuntimePureBody.reordered source.initialRoles block.entry history.bindings) input →
+      SemanticHistoryAgrees row.ordinals block.entry {history with bindings := input.bindings} body.checked.initial.ssa sourceInitial initial) →
+    ∃ ownerEnd : RuntimeStructuralAction.SourceState,
+    ∃ last : RuntimeInterval.Checked block block.operations.length 0,
+      RuntimeInterval.Computed (RuntimeInterval.check block block.operations.length 0) last ∧
+      ∃ returned : RuntimeOwnerMap.Checked source.outputRoles last.after,
+        RuntimeInterval.Computed (RuntimePureBody.reordered source.outputRoles last.after ownerEnd.bindings) returned ∧
+        body.checked.result.history = {ownerEnd with bindings := returned.bindings} ∧
+        ∃ expected, runSourceHistories (recursiveSourceSteps (recursiveBodyLeaves fallback) row.ordinals 127 scope) [] body.checked.result.steps [sourceInitial] = some expected ∧
+          List.Forall₂ (SemanticHistoryAgrees row.ordinals last.after body.checked.result.history body.checked.result.ordinary)
+            (expected.map (returnHistory returned.bindings)) results := by
+  intro block source mode history origin leaves starts
+  obtain ⟨_,_,_,flow,_⟩ := RuntimeNamedChildRuns.original_body body
+  exact original_body_encoded_refinement body SemanticHistoryEncoding row.ordinals
+    (sparseArmEncodingLaws row.ordinals) sourceInitial initial results
+    (recursiveSourceSteps (recursiveBodyLeaves fallback) row.ordinals 127 scope) executed
+    (recursiveSourceSteps_refine (recursiveBodyLeaves fallback) row.ordinals origin (rootConditionRow_of_checked row)
+      (fun depth {program block} atStep steps inherited =>
+        recursiveBodyLeaves_refine (program := program) (block := block) fallback atStep row.ordinals inherited steps _
+          (leaves depth atStep steps inherited))
+      127 scope body.checked.result.steps none flow.conditions) starts
+
+#print axioms original_body_recursive_refinement
 #print axioms source_conditional_refines
 #print axioms sparse_conditional_refines
 #print axioms sourceStep_with_inherited_conditionals
