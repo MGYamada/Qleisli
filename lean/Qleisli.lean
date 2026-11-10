@@ -137,6 +137,7 @@ import Qleisli.RuntimeOriginalSparseObservation
 import Qleisli.RuntimeLiteralSparseObservation
 import Qleisli.RuntimeSparseHeadAction
 import Qleisli.RuntimeSparseBlockEncoding
+import Qleisli.RuntimeSparseOperationAction
 import Qleisli.RuntimeSparseSelectionAction
 import Qleisli.RuntimeSparseSelectionOutput
 import Qleisli.RuntimeSparseNamedBoundary
@@ -155,6 +156,7 @@ import Qleisli.RuntimeCallHistoryPure
 import Qleisli.RuntimeCallHistoryFold
 import Qleisli.RuntimeCallHistorySteps
 import Qleisli.RuntimeCallPureStepLaw
+import Qleisli.RuntimeCallPureFold
 import Qleisli.RuntimeCallHistoryPhi
 import Qleisli.RuntimeCallBranchRead
 import Qleisli.RuntimeCallBranchGeometry

@@ -113,7 +113,13 @@ development milestones from the scope of their evidence.
   using their original sparse source actions. Other pure operation forms
   still require their local correspondence laws. A graph application
   retains its actual staged source receipt and the original source-ordered
-  input and output port lookups for the checked literal interval.
+  input and output port lookups for the checked literal interval. Its ordered
+  owner block has an exact sparse matrix lift on paired literal events,
+  retaining spectator and reference amplitudes. The same pure run retains
+  inherited SSA values and observation history. The original caller and
+  local fragment reads supply the paired events and finite row bounds.
+  The graph case still needs its source spectator partition and the local
+  event list's matrix action in the written return order.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

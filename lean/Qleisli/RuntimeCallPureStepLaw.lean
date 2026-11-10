@@ -55,7 +55,8 @@ private theorem init_action {dependencies : List Dependency} {parent child : Raw
   exact RuntimeCallTraceAllocation.allocation_correlated parent.reference child.reference spectators
     partition output wire fresh dependencies joint row bounded
 
-private theorem pure_action {dependencies : List Dependency} {parent child : Raw.State}
+/-- Pair the actual native transitions of a literal pure operation. -/
+theorem pure_step_action {dependencies : List Dependency} {parent child : Raw.State}
     {spectators : List Port} {p c : Raw.Transition} (op : Semantics.Raw.Op)
     (partition : Partition parent.reference child.reference spectators)
     (pRead : Raw.step (dependencies.map (·.signature)) parent op = .ok p)
@@ -139,7 +140,7 @@ theorem pure_step_law (dependencies : List Dependency) (parentDepth childDepth :
   obtain ⟨_,_,pRead⟩ := parentFold
   obtain ⟨_,_,cRead⟩ := childFold
   exact checked_pure dependencies parentDepth childDepth parent child parentAfter childAfter spectators
-    op pRead cRead (fun _ _ => pure_action op partition) actual localHistory agrees
+    op pRead cRead (fun _ _ => pure_step_action op partition) actual localHistory agrees
 
 #print axioms pure_step_law
 end Qleisli.RuntimeCallHistory
