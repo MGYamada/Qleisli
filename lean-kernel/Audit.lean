@@ -79,6 +79,7 @@ import QleisliKernel.Tests.RuntimeMeaningCaller
 import QleisliKernel.Tests.RuntimeSelectionMeaning
 import QleisliKernel.Tests.RuntimeOperationTree
 import QleisliKernel.Tests.RuntimeOrdinaryBranchCalls
+import QleisliKernel.Tests.RuntimeOriginalHistory
 import QleisliKernel.Tests.SourceMeaningPrepared
 import QleisliKernel.Tests.SourceClassicalExecution
 import QleisliKernel.Tests.SourcePendingMeaning

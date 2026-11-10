@@ -847,11 +847,6 @@ theorem original_body_sparse_refinement {artifact owner name arguments request p
     (sparseStepsAt fallback row.ordinals 127 scope) executed
     ((original_body_sparse_steps body row scope fallback leaves).of_certifies (fun _ cert => cert.forget)) starts
 
-def NeedsRecursivePure {dependencies program block} : Step dependencies program block → Prop
-  | .pure (.named ..) | .pure (.operation ..) | .pure (.selection ..) => False
-  | step@(.pure _) => NeedsSparseSourceAction step ∧ NeedsNonInline step
-  | _ => False
-
 private def NeedsNonSelection {dependencies program block} : Step dependencies program block → Prop
   | .pure (.selection ..) => False
   | _ => True
@@ -893,42 +888,39 @@ private theorem sourceStep_with_direct_selection {dependencies program block cou
   all_goals
     exact ((remaining prior _ later position ⟨checked,trivial⟩ owners ordinary read).apply writes) agrees executed
 
-noncomputable def recursiveBodyLeaves {dependencies}
-    (pureSteps : ScopedSourceSteps dependencies) : ScopedSourceSteps dependencies :=
+noncomputable def recursiveBodyLeaves {dependencies} : ScopedSourceSteps dependencies :=
   fun scope => withSparseSteps
-    (withSparseObservation (withSparseInline
-      (Qleisli.RuntimeOriginalGraphAction.withGraph (withDirectSelection (pureSteps scope)))) scope)
+    (withSparseObservation
+      (Qleisli.RuntimeOriginalGraphAction.withGraph
+        (Qleisli.RuntimeOriginalGraphAction.withPrimitive
+          (withDirectSelection fun _ _ _ => none))) scope)
 
 private theorem recursiveBodyLeaves_refine {dependencies program block count}
-    (pureSteps : ScopedSourceSteps dependencies)
     (scope : List Edge) (inputs : List Nat) (inherited : Option (Nat → Prop))
     (steps : List (Step dependencies program block)) (witness : Witness (.steps 0 (Steps.ofList steps)) count)
-    (certifies : Step dependencies program block → Prop)
-    (pureLaws : StepRefinement steps (fun step => certifies step ∧ NeedsRecursivePure step)
-      (pureSteps scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
-      (inherited.map (fun holds id => ¬ holds id))) :
+    (certifies : Step dependencies program block → Prop) :
     StepRefinement steps (fun step => certifies step ∧ NeedsRecursiveLeaf step)
-      (recursiveBodyLeaves pureSteps scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (recursiveBodyLeaves scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
       (inherited.map (fun holds id => ¬ holds id)) := by
   apply sourceStep_with_scoped_structure
   apply sourceStep_with_scoped_observation
-  apply sourceStep_with_scoped_inline
   apply Qleisli.RuntimeOriginalGraphAction.sourceStep_with_graph
+  apply Qleisli.RuntimeOriginalGraphAction.sourceStep_with_primitive
   apply sourceStep_with_direct_selection _ witness
-  apply pureLaws.of_certifies
-  intro step checked
-  rcases checked with ⟨⟨⟨⟨⟨⟨known,leaf⟩,structural⟩,observation⟩,inline⟩,graph⟩,selection⟩
-  refine ⟨known,?_⟩
-  cases step
-  case pure node =>
+  intro prior step later position checked
+  rcases checked with ⟨⟨⟨⟨⟨⟨certified,leaf⟩,structural⟩,observation⟩,graph⟩,primitive⟩,selection⟩
+  cases step with
+  | pure node =>
     cases node
-    case named => exact leaf
-    case operation => exact graph
-    case selection => exact selection
-    all_goals exact ⟨structural,inline⟩
-  case gap => exact structural
-  case observation => exact observation
-  all_goals exact leaf
+    case named => exact False.elim leaf
+    case operation => exact False.elim graph
+    case selection => exact False.elim selection
+    case primitive => exact False.elim primitive
+    case structural => exact False.elim structural
+  | gap _ => exact False.elim structural
+  | observation _ => exact False.elim observation
+  | named _ _ _ _ _ _ _ => exact False.elim leaf
+  | conditional _ _ _ _ _ _ _ _ => exact False.elim leaf
 
 /-- Refine the full original body and return on its checked root row,
 using one recursive source evaluator for named calls and selected arms. -/
@@ -937,24 +929,13 @@ theorem original_body_recursive_refinement {artifact owner name arguments reques
     {assignment : List Bool} (row : RuntimeOrdinaryInputs.Row body.checked.initial assignment)
     (scope : List Edge) (sourceInitial : SourceHistory) (initial : History)
     (results : List History)
-    (fallback : ScopedSourceSteps body.root.dependencies)
     (executed : let block := body.checked.native.block
       (do
         let (_,events) ← readOps block.fuel block.entry.quantum.reference block.operations
         run body.root.dependencies block.fuel events initial) = some results) :
     let block := body.checked.native.block
     let source := SourceRuntimeScope.Subject.whole prepared.source.body
-    let mode := RuntimePureBody.ExecutionMode.planned
-      (RuntimeBodyOperations.preparation artifact prepared.source.catalogue)
-      (RuntimeBodyOperations.stagedConsumption artifact prepared.source.catalogue body.root)
     let history := RuntimeBodyOperations.initialHistory prepared body.checked.native runtime body.checked.inputs
-    let origin := RuntimeBranchCondition.rootEntries (.root prepared.source.body)
-    (∀ depth {program block} (atStep : List Edge) (steps : List (Step body.root.dependencies program block))
-      (inherited : Option (Nat → Prop)),
-      StepRefinement steps
-        (fun step => CheckedStepAt (runBlockCore artifact body.root mode depth) origin step ∧ NeedsRecursivePure step)
-        (fallback atStep) (fun _ => SemanticHistoryAgreesWithInherited inherited row.ordinals)
-        (inherited.map (fun holds id => ¬ holds id))) →
     (∀ input : RuntimeOwnerMap.Checked source.initialRoles block.entry,
       RuntimeInterval.Computed (RuntimePureBody.reordered source.initialRoles block.entry history.bindings) input →
       SemanticHistoryAgrees row.ordinals block.entry {history with bindings := input.bindings} body.checked.initial.ssa sourceInitial initial) →
@@ -964,18 +945,18 @@ theorem original_body_recursive_refinement {artifact owner name arguments reques
       ∃ returned : RuntimeOwnerMap.Checked source.outputRoles last.after,
         RuntimeInterval.Computed (RuntimePureBody.reordered source.outputRoles last.after ownerEnd.bindings) returned ∧
         body.checked.result.history = {ownerEnd with bindings := returned.bindings} ∧
-        ∃ expected, runSourceHistories (recursiveSourceSteps (recursiveBodyLeaves fallback) row.ordinals 127 scope) [] body.checked.result.steps [sourceInitial] = some expected ∧
+        ∃ expected, runSourceHistories (recursiveSourceSteps recursiveBodyLeaves row.ordinals 127 scope) [] body.checked.result.steps [sourceInitial] = some expected ∧
           List.Forall₂ (SemanticHistoryAgrees row.ordinals last.after body.checked.result.history body.checked.result.ordinary)
             (expected.map (returnHistory returned.bindings)) results := by
-  intro block source mode history origin leaves starts
+  intro block source history starts
   obtain ⟨_,_,_,flow,_⟩ := RuntimeNamedChildRuns.original_body body
   exact original_body_encoded_refinement body SemanticHistoryEncoding row.ordinals
     (sparseArmEncodingLaws row.ordinals) sourceInitial initial results
-    (recursiveSourceSteps (recursiveBodyLeaves fallback) row.ordinals 127 scope) executed
-    (recursiveSourceSteps_refine (recursiveBodyLeaves fallback) row.ordinals origin (rootConditionRow_of_checked row)
+    (recursiveSourceSteps recursiveBodyLeaves row.ordinals 127 scope) executed
+    (recursiveSourceSteps_refine recursiveBodyLeaves row.ordinals
+      (RuntimeBranchCondition.rootEntries (.root prepared.source.body)) (rootConditionRow_of_checked row)
       (fun depth {program block} atStep steps _ witness inherited =>
-        recursiveBodyLeaves_refine (program := program) (block := block) fallback atStep row.ordinals inherited steps witness _
-          (leaves depth atStep steps inherited))
+        recursiveBodyLeaves_refine (program := program) (block := block) atStep row.ordinals inherited steps witness _)
       127 scope body.checked.result.steps body.selections.witness none flow.conditions) starts
 
 #print axioms original_body_recursive_refinement

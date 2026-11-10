@@ -132,13 +132,18 @@ development milestones from the scope of their evidence.
   selector order, including when the written order differs. The same
   selection witness follows the original prefix through named callees and
   conditional arms. Its literal operator and inherited SSA and observations
-  agree in the shared history proof. Multi-operation primitive lowerings
-  still need a local correspondence law.
+  agree in the shared history proof. Primitive intervals use their
+  independently specified source matrix and the same code and event
+  composition as graph applications, including multi-operation lowerings.
+  The original-body theorem now derives all local laws for the checked
+  traversal. Small mixed-body tests distinguish operators with identical
+  owner and SSA states and retain the selected branch's ordered measurement
+  histories, including a zero-amplitude outcome.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
   Derive the condition's input row from the actual checked root row and its
-  original call path. The recursive proof requires local laws for child steps.
+  original call path.
 
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.

@@ -423,6 +423,12 @@ retain the phase at byte 384 and H at byte 437, their source owners, native
 tokens, caller axes and the zero-width spectator. The observing controls
 locate the same inner role through their own call offsets.
 
+The [original-body history study](original-body-history-study.json) retains
+three informed one-qubit source examples, the first Lean harness diagnostics,
+and the repaired native observations. The current guards exercise the staged
+body reader, distinguish exact operators at the same owner and SSA boundaries,
+and compare ordered measurement histories after the original named branch.
+
 The [applied-provider study](applied-provider-origins.json) retains the first
 rejected source and the two legal spellings that distinguish the supplying
 argument from the assertion written in the arm. The common reader discharges

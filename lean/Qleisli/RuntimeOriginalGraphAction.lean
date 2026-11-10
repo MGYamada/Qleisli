@@ -10,6 +10,7 @@ open QleisliKernel.Semantics.Exact (Matrix)
 open Qleisli.Semantics.Exact (action)
 open Qleisli.RuntimeLiteralBody (SourceHistory SemanticHistoryAgreesWithInherited cast_represents
   StepRefinement WithChunkWriteBound)
+open Qleisli.RuntimeNamedSourceFlow (OperationOwnerOrder)
 open Qleisli.RuntimeSparseOperationAction
 open Qleisli.RuntimeCallHistory (project)
 open RuntimeCallTraceFrames (WireOrder)
@@ -181,6 +182,108 @@ theorem original_graph_history {dependencies program block arity start count inp
   · simpa only [node,Qleisli.RuntimeLiteralBody.nodeSpan,operator,initial,outgoingOrder,originalOperator] using refined
 
 #print axioms original_graph_history
+
+private theorem primitive_owner_order {dependencies program block start count input output role kind}
+    {primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind}
+    (original : RuntimePrimitiveSource.Checked primitive) :
+    OperationOwnerOrder primitive.interval original.history original.after := by
+  refine ⟨rfl,⟨[original.inputPort.port],[original.outputPort.port],?_,original.outputPort.original,?_,?_⟩,
+    original.interval,original.frame,original.owners,original.sameHistory,rfl,original.ownerRead⟩
+  · simpa only [← original.sameHistory] using original.inputPort.original
+  · exact congrArg List.singleton original.inputToken
+  · exact congrArg List.singleton original.outputToken
+
+private theorem singleton_ports {state token ports}
+    (read : PureInterval.ports state [token] = some ports) : ∃ port, ports = [port] := by
+  unfold PureInterval.ports PureInterval.portsOf at read
+  simp only [List.mapM_cons,List.mapM_nil] at read
+  cases found : state.quantum.live.find? (fun port => port.token == token) <;> simp_all
+  exact ⟨_,read.symm⟩
+
+/-- The source kind and basis determine the matrix before any literal Raw
+operation is evaluated. The primitive and graph proofs share the same lift. -/
+noncomputable def sourcePrimitiveHistory {dependencies program block start count input output role kind}
+    (primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind)
+    (source : SourceHistory) : Option (List SourceHistory) := do
+  let logical ← Semantics.PrimitiveOperator.meaning kind role.basis
+  sourceGraphHistory [role] primitive.interval.returned logical source
+
+/-- Lift the independently specified primitive over its entire checked
+interval. The exact local code equation handles every admitted lowering. -/
+theorem original_primitive_history {dependencies program block start count input output role kind}
+    (primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind)
+    (original : RuntimePrimitiveSource.Checked primitive)
+    (rootInputs : List Nat) (inherited : Option (Nat → Prop))
+    {ordinary : RuntimeOrdinaryBody.State} {source : SourceHistory}
+    {actual : Qleisli.Semantics.ObservingAction.History}
+    (agrees : SemanticHistoryAgreesWithInherited inherited rootInputs primitive.interval.interval.before
+      original.history ordinary source actual)
+    {events results}
+    (read : Semantics.Observation.readOps block.fuel primitive.interval.interval.before.quantum.reference
+      ((block.operations.drop start).take count) = some (primitive.interval.interval.after.quantum.reference,events))
+    (executed : Qleisli.Semantics.ObservingAction.run dependencies block.fuel events actual = some results) :
+    ∃ expected, sourcePrimitiveHistory primitive source = some expected ∧
+      List.Forall₂ (SemanticHistoryAgreesWithInherited inherited rootInputs primitive.interval.interval.after
+        original.after ordinary) expected results := by
+  obtain ⟨_,entry⟩ := singleton_ports primitive.interval.atEntry
+  obtain ⟨_,exit⟩ := singleton_ports primitive.interval.atExit
+  have inputRead : RuntimeInterval.Computed (Carrier.ownerCode
+      ((primitive.interval.selected.zip [role]).map fun (port,owner) => ⟨port,owner.basis⟩))
+      primitive.inputCode := by
+    simpa only [entry] using primitive.inputRead
+  have outputRead : RuntimeInterval.Computed (Carrier.ownerCode
+      ((primitive.interval.returned.zip [role]).map fun (port,owner) => ⟨port,owner.basis⟩))
+      primitive.outputCode := by
+    simpa only [exit] using primitive.outputRead
+  obtain ⟨expected,sourceRead,paired⟩ := original_graph_history primitive.interval inputRead outputRead
+    primitive.physicalRead primitive.action primitive.equation (primitive_owner_order original)
+    rootInputs inherited agrees read executed
+  exact ⟨expected,by simpa only [sourcePrimitiveHistory,primitive.reference,bind,Option.bind] using sourceRead,paired⟩
+
+def NeedsNonPrimitive {dependencies program block} : @RuntimePureBody.Step dependencies program block → Prop
+  | .pure (.primitive ..) => False
+  | _ => True
+
+noncomputable def withPrimitive {dependencies program block}
+    (fallback : List (@RuntimePureBody.Step dependencies program block) → RuntimePureBody.Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (prior : List (@RuntimePureBody.Step dependencies program block)) (step : RuntimePureBody.Step dependencies program block)
+    (source : SourceHistory) : Option (List SourceHistory) :=
+  match step with
+  | .pure (.primitive primitive _) => sourcePrimitiveHistory primitive source
+  | _ => fallback prior step source
+
+/-- The shared history induction uses the primitive's exact matrix law for
+any checked interval, including one with multiple literal operations. -/
+theorem sourceStep_with_primitive {dependencies program block}
+    (steps : List (@RuntimePureBody.Step dependencies program block)) (inputs : List Nat) (inherited : Option (Nat → Prop))
+    (certifies : RuntimePureBody.Step dependencies program block → Prop)
+    (fallback : List (@RuntimePureBody.Step dependencies program block) → RuntimePureBody.Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsNonPrimitive step)
+      fallback (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id))) :
+    StepRefinement steps certifies (withPrimitive fallback) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id)) := by
+  intro prior first later position certified ownerBefore ownerAfter ordinaryBefore ordinaryAfter
+    owners ordinary chunk read
+  refine WithChunkWriteBound.of_trace ?_
+  intro writes source history outputs agrees executed
+  cases first
+  case pure node =>
+    cases node
+    case primitive action original =>
+      change ownerBefore = original.history ∧ ownerAfter = original.after at owners
+      rcases owners with ⟨rfl,rfl⟩
+      cases ordinary
+      exact original_primitive_history action original inputs inherited agrees read executed
+    all_goals
+      exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
+  all_goals
+    exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
+
+#print axioms original_primitive_history
+#print axioms sourceStep_with_primitive
 
 def NeedsNonGraph {dependencies program block} : @RuntimePureBody.Step dependencies program block → Prop
   | .pure (.operation ..) => False
