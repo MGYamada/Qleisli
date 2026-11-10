@@ -126,8 +126,12 @@ development milestones from the scope of their evidence.
   reference columns. The graph interval uses this composition on the same
   caller operator, SSA values and observations. The recursive evaluator
   follows the original graph occurrence's staged action and reconstructs
-  the written source owner order. Direct selection and other primitive
-  lowerings still need their local correspondence laws.
+  the written source owner order. Each matrix in a direct selection's
+  comparison table comes from the staged graph action at the corresponding
+  written arm index. The source traversal retains that table and its
+  selector order, including when the written order differs. The direct
+  selection history lift and other primitive lowerings still need local
+  correspondence laws.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
