@@ -12,6 +12,7 @@ import QleisliKernel.Qirf.RuntimeContextRequest
 import QleisliKernel.Qirf.RuntimeOperationPaths
 import QleisliKernel.Qirf.RuntimeGraphOperation
 import QleisliKernel.Qirf.RuntimeBodyQueries
+import QleisliKernel.Qirf.RuntimeTransformAction
 import QleisliKernel.Qirf.OperationIRMeaning
 import QleisliKernel.Qirf.SectorArm
 import QleisliKernel.SourceTypes.QuantumArms
@@ -135,6 +136,17 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (physicalRead : RuntimeInterval.Computed (Raw.ProtectedEvaluation.reconstruct dependencies
         (RuntimePureInterval.fragment frame.selected frame.operations outputs)) physical)
       (action : CodeSpace.Map inputCode outputCode physical) (equation : action.logical = expected) : Node dependencies program block
+  | transform {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {artifact : Artifact} {caller : String} {event : SourceRuntimeContext.TransformEvent artifact.sources caller}
+      {position : Position} {request : Context} {before : RuntimeStructuralAction.SourceState}
+      {interval : RuntimeInterval.Checked block position.start position.count}
+      (source : RuntimeTransformRequest.Checked event position request)
+      (original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position request) source)
+      (forward : RuntimeTransformAction.Forward artifact dependencies source)
+      (forwardReturned : Map) (logical : RuntimeTransformAction.ForwardMap forward forwardReturned)
+      (owners : RuntimeTransformOwners.Checked interval event before)
+      (action : RuntimeTransformAction.Checked owners logical.code.logical)
+      (children : Nodes dependencies forward.program forward.prepared.block) : Node dependencies program block
   | selection {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count inputs outputs} {selector target : Owner}
       (frame : RuntimePureInterval.Checked block 2 start count inputs outputs [selector,target])
@@ -743,6 +755,21 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let node ← operationNode block position event.inputOwners bindings owners.after.bindings expected
           pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
             obligations ++ children,position.start+position.count,operation.cursor,receipts ++ performed)
+        | .transform event,data,_ =>
+          let transformed ← RuntimeBodyQueries.readTransform execution.queries source event position sourceCursor data
+          let forward ← RuntimeTransformAction.readForward artifact dependencies transformed.request
+          let body := transformed.request.source
+          let initial : RuntimeStructuralAction.SourceState :=
+            ⟨forward.initial,forward.roles,body.checked.summary.nextOwner⟩
+          let (child,performed) ← next .pureBody .rootOrder (.whole body) (.root body) forward.program
+            transformed.request.context transformed.nested initial {} forward.prepared.block
+          let logical ← RuntimeTransformAction.readForwardMap forward child.history.bindings
+          let owners ← RuntimeTransformOwners.read interval event before
+          let action ← RuntimeTransformAction.read owners logical.code.logical
+          let node : Node dependencies program block := .transform transformed.request transformed.original
+            forward child.history.bindings logical owners action (Nodes.ofList child.actions)
+          return (owners.after,retired ++ event.consumed,ordinary,actions ++ [node],steps ++ [.pure node],
+            obligations ++ child.islands,position.start+position.count,transformed.cursor,receipts ++ performed)
         | .selection tokens parsed original selector target scope naturals held remaining,data,_ =>
           let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
           let selected ← RuntimeBodyQueries.readSelection execution.queries source position sourceCursor data

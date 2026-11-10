@@ -3,6 +3,7 @@
 .DS_Store
 *.rs.bk
 /lean/.lake/
+/lean/qptl-application/.lake/
 /lean-kernel/.lake/
 /qptl/.lake/
 /qptl/**/*.olean

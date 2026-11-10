@@ -108,6 +108,63 @@ fn retained_frame_keeps_original_ordinary_input_ids() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn native_v5_compares_the_original_direct_selection_and_retains_its_runtime_request() {
+    use crate::frontend::compile::{lower::lower_function, snapshot_tests::compiler};
+
+    let source = "#![no_implicit_prelude]
+unitary fn keep(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn sign(q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }
+pub unitary fn route(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) {
+    qmatch(s,q) { 0 => keep, 1 => sign }
+}
+";
+    let project = project(source);
+    let mut compiler = compiler(&project);
+    for name in ["main::keep", "main::sign"] {
+        let key = compiler.source.resolution.qualified(name).unwrap();
+        let program = lower_function(&mut compiler, &key).unwrap();
+        compiler.checked.insert(key, program);
+    }
+    let route = compiler.source.resolution.qualified("main::route").unwrap();
+    compiler.force_typed_root = true;
+    compiler.selected_entry = Some(route);
+    let program = lower_function(&mut compiler, &route).unwrap();
+    let (artifact, request) = crate::interchange::qmatch::v5::proposal(
+        program.raw(),
+        Arc::new(program.runtime_result().unwrap().clone()),
+        program.source_context().unwrap(),
+        &[("main".into(), source.into())],
+    )
+    .unwrap();
+    let bytes = request.encode().unwrap();
+    let checked = compiler
+        .kernel
+        .check_qmatch_source_v5(&artifact, &bytes)
+        .unwrap();
+    assert_eq!(checked.artifact(), artifact);
+    assert_eq!(checked.request(), Some(bytes.as_slice()));
+    assert_eq!(
+        checked.program().runtime_result(),
+        Some(request.runtime.as_ref())
+    );
+    let rechecked = compiler.kernel.check_program(checked.program()).unwrap();
+    assert!(std::ptr::eq(
+        rechecked.program().runtime_result().unwrap(),
+        checked.program().runtime_result().unwrap(),
+    ));
+    assert!(
+        compiler
+            .kernel
+            .check_qmatch_source(&artifact, &bytes)
+            .is_err()
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn named_call_keeps_its_literal_qmatch_and_each_supplied_provider() {
     use crate::frontend::compile::{lower::lower_function, snapshot_tests::compiler};
     use crate::interchange::qmatch::{OperationNode as Node, OriginalBody};
@@ -377,7 +434,7 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){relay[checked_op(sign,I
         compiler.compile_meaning(&key).unwrap();
     }
     let route = compiler.source.resolution.qualified("main::route").unwrap();
-    // Retain the normal Raw producer; the selected Op-closure gate is unchanged.
+    // Keep the original Raw producer as a baseline for the public typed route.
     compiler.selected_entry = Some(route);
     let program = lower_function(&mut compiler, &route).unwrap();
     let caller = program.source_context().expect("original root body");
@@ -472,5 +529,31 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){relay[checked_op(sign,I
             env!("CARGO_MANIFEST_DIR"),
             "/tests/fixtures/qmatch_v030/general-meaning-request.json"
         ))
+    );
+    let selected = crate::frontend::compile::ParsedProgram::parse(
+        crate::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::route",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&compiler.kernel)
+    .unwrap();
+    let checked = selected.program();
+    assert!(checked.qmatch_source_checked());
+    assert_eq!(checked.artifact(), artifact);
+    assert_eq!(checked.request().unwrap(), bytes);
+    assert!(
+        compiler
+            .kernel
+            .check_program(checked)
+            .unwrap()
+            .native_exact_work()
+            <= 20_000_000
     );
 }

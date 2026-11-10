@@ -10,8 +10,6 @@ open Finite
 
 abbrev Row := String × String
 
-private def bytes (row : Row) : Nat := row.1.utf8ByteSize + row.2.utf8ByteSize
-
 /-- Distinct module names decide row inequality before either source body is
 compared. Repeated names still require an exact byte-for-byte source match. -/
 def equal (row head : Row) : WorkM Bool := do
@@ -49,8 +47,9 @@ theorem contains_value (row : Row) (seen : List Row) (before after : Nat) (answe
     | false => simpa [List.any_cons,← equal] using ih middle rest
 
 private def add (seen : List Row) (row : Row) : WorkM (List Row) := do
-  -- This reservation covers visiting the row and its eventual output cell.
-  exactWork (Exact.charge (8 * (bytes row + 1)))
+  -- The list retains references to immutable strings. Reserving one row and
+  -- reversing its output cell do not scan or copy the source bytes.
+  exactWork (Exact.charge 8)
   let found ← contains row seen
   return if found then seen else row :: seen
 

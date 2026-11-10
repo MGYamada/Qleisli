@@ -1,0 +1,179 @@
+{
+  "format": "qleisli.informed-wide-qmatch-study",
+  "issues": [
+    64,
+    195
+  ],
+  "scope": "Selected-source CLI checks of seven joined physical bits. Paths are recorded as basenames. The two smaller-target controls use separate sources and sixteen labels.",
+  "edition_manifest": {
+    "text": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n",
+    "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "records": {
+    "builtin": {
+      "first_source": {
+        "text": "#![no_implicit_prelude]\npub unitary fn route(s: Q<Bits<2>>, t: Q<Bits<5>>) -> (Q<Bits<2>>, Q<Bits<5>>) {\n    qmatch(s, t) { 3 => global_phase_eighth, 0 => global_phase_eighth, 2 => global_phase_eighth, 1 => global_phase_eighth }\n}\n",
+        "sha256": "697e6b437c7322b36d7e0d5a476ab805615f69b627b6862cd4b3475c02de304b"
+      },
+      "first_width_diagnostic": {
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "qmatch beyond the existing six-bit whole-circuit equation profile awaits the checked kernel restriction/arm-binding extension",
+            "primary": {
+              "module": null,
+              "path": "builtin-first.qli",
+              "start": 109,
+              "end": 228
+            },
+            "related": []
+          }
+        ],
+        "verification": null
+      },
+      "first_v5_timeout": {
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "limit",
+            "severity": "error",
+            "message": "Lean native checker timed out; no fallback while checking main::route",
+            "primary": {
+              "module": null,
+              "path": "builtin-first.qli",
+              "start": 24,
+              "end": 230
+            },
+            "related": []
+          }
+        ],
+        "verification": null
+      },
+      "separate_smaller_target": {
+        "text": "#![no_implicit_prelude]\npub unitary fn route(s: Q<Bits<4>>, t: Q<Bits<3>>) -> (Q<Bits<4>>, Q<Bits<3>>) {\n    qmatch(s, t) { 15 => global_phase_eighth, 14 => global_phase_eighth, 13 => global_phase_eighth, 12 => global_phase_eighth, 11 => global_phase_eighth, 10 => global_phase_eighth, 9 => global_phase_eighth, 8 => global_phase_eighth, 7 => global_phase_eighth, 6 => global_phase_eighth, 5 => global_phase_eighth, 4 => global_phase_eighth, 3 => global_phase_eighth, 2 => global_phase_eighth, 1 => global_phase_eighth, 0 => global_phase_eighth }\n}\n",
+        "sha256": "9074664c25e8e1ad432249dd85c68d4b1d396a4c79ebadfb68adf83c46ce51d1"
+      },
+      "separate_v5_result": {
+        "outcome": "ok",
+        "diagnostics": [],
+        "verification": {
+          "scope": "finite-source-qmatch-context-v5",
+          "request_origin": "producer",
+          "source_steps_checked": true,
+          "source_meaning_verified": false
+        }
+      },
+      "same_source_after_zero_product_replay": {
+        "outcome": "ok",
+        "verification": {
+          "scope": "finite-source-qmatch-context-v5",
+          "request_origin": "producer",
+          "source_steps_checked": true,
+          "source_meaning_verified": false
+        },
+        "native_exact_work": 6044872
+      }
+    },
+    "nominal": {
+      "first_source": {
+        "text": "#![no_implicit_prelude]\npub enum Route { A, B, C, D }\npub unitary fn route(s: Q<Route>, t: Q<Bits<5>>) -> (Q<Route>, Q<Bits<5>>) {\n    qmatch(s, t) { Route::D => global_phase_eighth, Route::A => global_phase_eighth, Route::C => global_phase_eighth, Route::B => global_phase_eighth }\n}\n",
+        "sha256": "4c42cbf399a0be50035357c6c17f4440d764cb83710b6a7cd30fec21c6ce995c"
+      },
+      "first_width_diagnostic": {
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "limit",
+            "severity": "error",
+            "message": "nominal qmatch currently requires at most six joined bits and 64 labels",
+            "primary": {
+              "module": null,
+              "path": "nominal-first.qli",
+              "start": 135,
+              "end": 282
+            },
+            "related": []
+          }
+        ],
+        "verification": null
+      },
+      "first_v5_timeout": {
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "limit",
+            "severity": "error",
+            "message": "Lean native checker timed out; no fallback while checking main::route",
+            "primary": {
+              "module": null,
+              "path": "nominal-first.qli",
+              "start": 54,
+              "end": 284
+            },
+            "related": []
+          }
+        ],
+        "verification": null
+      },
+      "separate_smaller_target": {
+        "text": "#![no_implicit_prelude]\npub enum Route { L0, L1, L2, L3, L4, L5, L6, L7, L8, L9, L10, L11, L12, L13, L14, L15 }\npub unitary fn route(s: Q<Route>, t: Q<Bits<3>>) -> (Q<Route>, Q<Bits<3>>) {\n    qmatch(s, t) { Route::L15 => global_phase_eighth, Route::L14 => global_phase_eighth, Route::L13 => global_phase_eighth, Route::L12 => global_phase_eighth, Route::L11 => global_phase_eighth, Route::L10 => global_phase_eighth, Route::L9 => global_phase_eighth, Route::L8 => global_phase_eighth, Route::L7 => global_phase_eighth, Route::L6 => global_phase_eighth, Route::L5 => global_phase_eighth, Route::L4 => global_phase_eighth, Route::L3 => global_phase_eighth, Route::L2 => global_phase_eighth, Route::L1 => global_phase_eighth, Route::L0 => global_phase_eighth }\n}\n",
+        "sha256": "95ded04a14578cf329eeb5d9f5650baa03f958fdc15b103b3be1ce6377588be8"
+      },
+      "separate_v5_result": {
+        "outcome": "ok",
+        "diagnostics": [],
+        "verification": {
+          "scope": "finite-source-qmatch-context-v5",
+          "request_origin": "producer",
+          "source_steps_checked": true,
+          "source_meaning_verified": false
+        }
+      },
+      "same_source_after_zero_product_replay": {
+        "outcome": "ok",
+        "verification": {
+          "scope": "finite-source-qmatch-context-v5",
+          "request_origin": "producer",
+          "source_steps_checked": true,
+          "source_meaning_verified": false
+        },
+        "native_exact_work": 6705008
+      }
+    }
+  },
+  "primitive_tape_replay": {
+    "scope": "Local direct-primitive study. Read the written arm table and literal Raw tape, then compare each original label after restriction. No sector matrix or public native handle is produced.",
+    "builtin": {
+      "labels_in_written_order": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "raw_tape_steps": 4,
+      "work": 700704
+    },
+    "nominal": {
+      "labels_in_written_order": [
+        3,
+        0,
+        2,
+        1
+      ],
+      "raw_tape_steps": 4,
+      "work": 1011197
+    },
+    "wrong_phase": {
+      "change": "first original Raw phase changes from 1 to 7",
+      "error": "equation",
+      "work": 697707
+    },
+    "wrong_control": {
+      "change": "first original Raw control polarity is flipped",
+      "error": "equation",
+      "work": 697626
+    }
+  }
+}

@@ -308,16 +308,23 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                   leftRead.discovery.roots ++ rightRead.discovery.roots⟩,leftRead.receipts ++ rightRead.receipts,data⟩
               else throw .request
           | .transform event =>
-            let (callPosition,child) :: remaining := before.calls | throw .request
-            guard (callPosition == position && callPosition.offset == event.call.calleeOffset &&
-              child.positions.isEmpty && child.sites.isEmpty && child.calls.isEmpty && child.branches.isEmpty && child.references.isEmpty) .request
-            let [(subject,body)] := child.bodies | throw .request
-            let roots ← subjectRoots artifact subject
-            let source ← SourceRuntimeTrace.readTransformBody event
-            let checked := source.checked
-            let nested ← next (.supplied checked.signature checked.events checked.summary.staticRows true) body
-            return ⟨{before with calls := remaining},⟨event.target.sourceRows ++ event.counts.flatMap (·.checked.rows) ++
-              nested.discovery.rows,roots ++ nested.discovery.roots⟩,nested.receipts,noEventData scope mode.preparation⟩
+            match calls : before.calls with
+            | [] => throw .request
+            | (callPosition,child) :: remaining =>
+              if located : callPosition = position then
+                let transform ← NaturalAffine.witness (RuntimeTransformRequest.read event position child)
+                let roots ← subjectRoots artifact transform.val.subject
+                let nested ← next (scope.named transform.val.source) transform.val.context
+                let after := {before with calls := remaining}
+                let data : scope.EventData mode.preparation (.transform event) position before after := by
+                  cases scope with
+                  | supplied => exact ()
+                  | original source =>
+                    exact nested.data.map (fun childPlan => .transform child remaining
+                      (located ▸ calls) transform.val (by with_reducible exact transform.property) childPlan)
+                return ⟨after,⟨event.target.sourceRows ++ event.counts.flatMap (·.checked.rows) ++
+                  nested.discovery.rows,roots ++ nested.discovery.roots⟩,nested.receipts,data⟩
+              else throw .request
           | .basis event =>
             let source ← SourceRuntimeTrace.readBasisSource event
             let rows ← ordinaryRows artifact.sources 128 source.events
@@ -328,7 +335,8 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
           match event with
           | .staticConditional event children =>
             let source ← NaturalAffine.witness (RuntimeStaticPrimitive.readContinuation event)
-            let positions ← NaturalAffine.witness (source.val.positions position (before.calls.map (·.1)))
+            let positions ← NaturalAffine.witness
+              (source.val.positions position (before.calls.map (·.1)) (before.sites.map (·.position)))
             if count : positions.val.length = source.val.selected.result.events.length then
               let inner ← collectEvents mode scope eventStep (source.val.selected.result.events.zip positions.val) before
               let data : scope.EventData mode.preparation (.staticConditional event children) position before inner.after := by

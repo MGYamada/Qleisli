@@ -47,13 +47,18 @@ structure Equations (effect : Semantics.Raw.Effect) (inputCode outputCode physic
   specifiedRead : Computed (exactWork (Exact.Matrix.composeWork outputCode action)) specified
   noLeak : actual = specified
 
-/-- Retain concrete values and their actual run equations separately. No
-projection must infer a monadic result type by unfolding the whole checker. -/
-structure Prepared {sources} (provider : StaticOperation.Provider sources)
+/-- Literal provider ownership and purity before any code or matrix reads. -/
+structure VerifiedPorts {sources} (provider : StaticOperation.Provider sources)
     (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program) where
   verified : Raw.Observation.Checked
   verification : Computed (Raw.Observation.verify dependencies program) verified
   ports : Ports provider program verified
+
+/-- Retain concrete values and their actual run equations separately. No
+projection must infer a monadic result type by unfolding the whole checker. -/
+structure Prepared {sources} (provider : StaticOperation.Provider sources)
+    (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)
+    extends VerifiedPorts provider dependencies program where
   inputCode : Matrix
   outputCode : Matrix
   inputCodeRead : Computed (Carrier.ownerCode [⟨ports.input,ports.domain⟩]) inputCode
@@ -88,9 +93,9 @@ def equations (effect : Semantics.Raw.Effect) (inputCode outputCode physical : M
     else throw .equation
   else throw .request
 
-def prepare {sources} (provider : StaticOperation.Provider sources)
-    (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program) :
-    WorkM (Prepared provider dependencies program) := do
+private def withPorts {sources} (provider : StaticOperation.Provider sources)
+    (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program)
+    {α : Type} (consume : VerifiedPorts provider dependencies program → WorkM α) : WorkM α := do
   let verified ← NaturalAffine.witness (Raw.Observation.verify dependencies program)
   match sourceInputs : provider.signature.inputs, sourceOutputs : provider.signature.outputs, inputPort : program.inputs with
   | [domain],[codomain],[input] =>
@@ -104,13 +109,7 @@ def prepare {sources} (provider : StaticOperation.Provider sources)
                 let ports : Ports provider program verified.val :=
                   ⟨domain,codomain,sourceInputs,sourceOutputs,input,output,inputPort,outputPort,live,
                     noClassical,noObservation,publicBoundary,pureExpected⟩
-                let inputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨input,domain⟩])
-                let outputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨output,codomain⟩])
-                let physical ← NaturalAffine.witness (Raw.BranchFunction.reconstruct dependencies program)
-                let equations ← equations provider.expectedEffect inputCode.val outputCode.val physical.val
-                return ⟨verified.val,by with_reducible exact verified.property,ports,inputCode.val,outputCode.val,
-                  by with_reducible exact inputCode.property,by with_reducible exact outputCode.property,
-                  physical.val,by with_reducible exact physical.property,equations⟩
+                consume ⟨verified.val,by with_reducible exact verified.property,ports⟩
               else throw .request
             else throw .request
           else throw .request
@@ -118,6 +117,23 @@ def prepare {sources} (provider : StaticOperation.Provider sources)
       else throw .request
     | _ => throw .request
   | _,_,_ => throw .request
+
+def readPorts {sources} (provider : StaticOperation.Provider sources)
+    (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program) :
+    WorkM (VerifiedPorts provider dependencies program) :=
+  withPorts provider dependencies program pure
+
+def prepare {sources} (provider : StaticOperation.Provider sources)
+    (dependencies : List Semantics.Finite.Dependency) (program : Semantics.Observation.Program) :
+    WorkM (Prepared provider dependencies program) :=
+  withPorts provider dependencies program fun checked => do
+    let ports := checked.ports
+    let inputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨ports.input,ports.domain⟩])
+    let outputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨ports.output,ports.codomain⟩])
+    let physical ← NaturalAffine.witness (Raw.BranchFunction.reconstruct dependencies program)
+    let equations ← equations provider.expectedEffect inputCode.val outputCode.val physical.val
+    return ⟨checked,inputCode.val,outputCode.val,by with_reducible exact inputCode.property,
+      by with_reducible exact outputCode.property,physical.val,by with_reducible exact physical.property,equations⟩
 
 def check (artifact : Artifact) (root : Validity.Root)
     (provider : StaticOperation.Provider artifact.sources) (index : Nat) :

@@ -914,6 +914,7 @@ private theorem recursiveBodyLeaves_refine {dependencies program block count}
     cases node
     case named => exact False.elim leaf
     case operation => exact False.elim graph
+    case transform => exact False.elim graph
     case selection => exact False.elim selection
     case primitive => exact False.elim primitive
     case structural => exact False.elim structural

@@ -1,6 +1,5 @@
 //! Version 5 transport preparation. These readers and writers issue no handle;
-//! production dispatch remains at the prior profile until all body obligations
-//! and the paired fresh native comparison are connected.
+//! an execution decision requires the independent native comparison.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 
@@ -21,19 +20,8 @@ pub struct Request {
     pub context: Context,
 }
 
-#[cfg_attr(
-    not(test),
-    expect(
-        dead_code,
-        reason = "retained v5 source subjects pending production composition"
-    )
-)]
 mod producer;
 mod runtime;
-#[cfg_attr(
-    not(test),
-    expect(unused_imports, reason = "v5 producer awaits production composition")
-)]
 pub(crate) use producer::proposal;
 
 impl Source {

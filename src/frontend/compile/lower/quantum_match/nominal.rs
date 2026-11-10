@@ -26,6 +26,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
     source_gate: bool,
+    needs_qmatch_v5: bool,
 }
 
 struct Selection {
@@ -236,11 +237,24 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate,
+            needs_qmatch_v5: false,
         }))
     }
 
     pub(in crate::frontend::compile::lower) fn requires_source_gate(&self) -> bool {
         self.source_gate
+    }
+
+    pub(super) fn require_qmatch_v5(&mut self) {
+        self.needs_qmatch_v5 = true;
+    }
+
+    fn include_qmatch_profile(&mut self, body: &ContextSubject) {
+        self.needs_qmatch_v5 |= body.needs_qmatch_v5;
+    }
+
+    pub(in crate::frontend::compile::lower) fn position_count(&self) -> usize {
+        self.positions.len()
     }
 
     /// A branch inherits its original declaration/actuals, while its literal
@@ -260,6 +274,7 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate: self.source_gate,
+            needs_qmatch_v5: false,
         }
     }
 
@@ -306,6 +321,7 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
+            needs_qmatch_v5: self.needs_qmatch_v5,
         }))
     }
 
@@ -314,7 +330,7 @@ impl Frame {
         lower: &mut Lowerer<'_, '_>,
         value: &Value,
     ) -> Result<Option<Arc<ContextSubject>>, CompileError> {
-        if !self.source_gate && !self.selections.is_empty() {
+        if lower.uses_qmatch_v5() || !self.source_gate && !self.selections.is_empty() {
             let module = lower
                 .compiler
                 .source
@@ -348,6 +364,7 @@ impl Frame {
                 operation: None,
                 contains_selections: self.contains_selections,
                 requires_source_gate: self.source_gate,
+                needs_qmatch_v5: self.needs_qmatch_v5,
             })));
         }
         let span = selections
@@ -495,6 +512,7 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
+            needs_qmatch_v5: self.needs_qmatch_v5,
         })))
     }
 }
@@ -611,6 +629,7 @@ pub(in crate::frontend::compile::lower) fn record_named(
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.positions.push(position.clone());
     frame.contains_selections |= body.contains_selections;
+    frame.include_qmatch_profile(&body);
     frame.calls.push((position, body));
     Ok(())
 }
@@ -654,14 +673,17 @@ pub(in crate::frontend::compile::lower) fn record_operation(
         .compiler
         .qmatch_operation_application(operation, access, module, span)?;
     lower.compiler.charge(module, span, 12)?;
-    let body = Arc::new(ContextSubject {
-        operation: Some(Arc::new(original)),
-        ..ContextSubject::default()
-    });
     let frame = lower
         .nominal_qmatch
         .as_mut()
         .expect("original operation context");
+    for body in original.original_contexts() {
+        frame.include_qmatch_profile(body);
+    }
+    let body = Arc::new(ContextSubject {
+        operation: Some(Arc::new(original)),
+        ..ContextSubject::default()
+    });
     frame.positions.push(position.clone());
     frame.calls.push((position, body));
     Ok(())
@@ -702,8 +724,55 @@ pub(in crate::frontend::compile::lower) fn record_branch(
         .expect("original containing context");
     frame.contains_selections |= then_body.contains_selections || else_body.contains_selections;
     frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
+    frame.include_qmatch_profile(&then_body);
+    frame.include_qmatch_profile(&else_body);
     frame.positions.push(position.clone());
     frame.branches.push((position, then_body, else_body));
+    Ok(())
+}
+
+pub(in crate::frontend::compile::lower) fn record_static(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+    checkpoint: usize,
+) -> Result<(), CompileError> {
+    let frame = lower
+        .nominal_qmatch
+        .as_ref()
+        .expect("original static context");
+    let relative = start.checked_sub(frame.start).ok_or_else(|| {
+        lower.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "static branch precedes its original context",
+        )
+    })?;
+    let count = lower
+        .raw
+        .operations
+        .len()
+        .checked_sub(start)
+        .ok_or_else(|| {
+            lower.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "static branch removed its original operation prefix",
+            )
+        })?;
+    let position = position(lower, module, span, span.start, relative, count)?;
+    lower.compiler.charge(module, span, 4)?;
+    let frame = lower
+        .nominal_qmatch
+        .as_mut()
+        .expect("original static context");
+    // The selected block shares the enclosing Raw list and its site/call
+    // queues. Only the outer event position groups that actual interval.
+    frame.positions.truncate(checkpoint);
+    frame.positions.push(position);
     Ok(())
 }
 
@@ -790,11 +859,9 @@ pub(super) fn emit(
     {
         return Err(lower.error(module, span, ErrorCode::Unsupported, "nominal qmatch requires an original structural function with quantum parameters and at most 128 selections"));
     }
-    lower
-        .nominal_qmatch
-        .as_mut()
-        .expect("original context")
-        .source_gate = true;
+    let frame = lower.nominal_qmatch.as_mut().expect("original context");
+    frame.source_gate = true;
+    frame.require_qmatch_v5();
     let basis = &lower.raw.registers[&selector_slot].basis;
     let count = match &basis.kind {
         Kind::Nominal(nominal) => match &nominal.body {
@@ -832,12 +899,21 @@ pub(super) fn emit(
     )?;
     let target_basis = lower.raw.registers[&target_slot].basis.clone();
     let target_bits = lower.raw.registers[&target_slot].wires.len();
-    if count == 0 || count > 64 || selector_bits + target_bits > MAX_CONTRACT_BITS {
+    let width_allowed = if lower.uses_qmatch_v5() {
+        selector_bits <= MAX_CONTRACT_BITS && target_bits <= MAX_CONTRACT_BITS
+    } else {
+        selector_bits + target_bits <= MAX_CONTRACT_BITS
+    };
+    if count == 0 || count > 64 || !width_allowed {
         return Err(lower.error(
             module,
             span,
             ErrorCode::Limit,
-            "nominal qmatch currently requires at most six joined bits and 64 labels",
+            if lower.uses_qmatch_v5() {
+                "selected nominal qmatch requires at most six bits per owner and 64 labels"
+            } else {
+                "nominal qmatch currently requires at most six joined bits and 64 labels"
+            },
         ));
     }
     let mut seen = BTreeSet::new();
@@ -952,6 +1028,11 @@ pub(super) fn apply_selection(
         .nominal_qmatch
         .as_mut()
         .expect("checked original frame");
+    for original in arms.iter().filter_map(|arm| arm.operation.as_ref()) {
+        for body in original.original_contexts() {
+            frame.include_qmatch_profile(body);
+        }
+    }
     frame.selections.push(Selection {
         span,
         offset,

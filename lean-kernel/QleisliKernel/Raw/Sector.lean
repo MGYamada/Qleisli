@@ -112,6 +112,37 @@ def ownerInterface (selector target : Basis) (program : Program) (prepared : Qle
         port.bits == targetIn.bits && port.wires == targetIn.wires).getD false
   | _,_ => false
 
+/-- The single-owner shape compares a forward arm without inserting a
+synthetic zero-wire owner. The paired shape preserves the existing sector
+interface, including its two distinct owner tokens. -/
+inductive TapeInterface where
+  | owner (basis : Basis)
+  | pair (selector target : Basis)
+
+def TapeInterface.valid : TapeInterface → Bool
+  | .owner basis => basisValid basis
+  | .pair selector target => basisValid selector && basisValid target
+
+def TapeInterface.arity : TapeInterface → Nat
+  | .owner _ => 1
+  | .pair _ _ => 2
+
+def TapeInterface.bits : TapeInterface → Nat
+  | .owner basis => width basis
+  | .pair selector target => width selector + width target
+
+def TapeInterface.matches (shape : TapeInterface) (program : Program)
+    (prepared : QleisliKernel.Raw.Prepared) : Bool :=
+  match shape with
+  | .pair selector target => ownerInterface selector target program prepared
+  | .owner basis =>
+    match program.inputs,program.outputs with
+    | [input],[output] =>
+      input.bits == width basis &&
+      ((prepared.state.live.find? (·.token == output)).map fun port =>
+        port.bits == input.bits && port.wires == input.wires).getD false
+    | _,_ => false
+
 /-- The Raw reader may traverse complete original fields before the sector
 profile rejects an event. Charge those fields and duplicate/table scans first. -/
 def subjectFields (program : Program) : Nat :=
@@ -125,19 +156,55 @@ def subjectFields (program : Program) : Nat :=
       | .quantumIf _ _ _ _ zero one => zero.length + one.length
       | _ => 0).sum)
 
-private structure Subject where
+structure Tape where
   prepared : QleisliKernel.Raw.Prepared
   steps : List Step
 
-private def readSubject (dependencies : List Dependency) (selector target : Basis)
-    (program : Program) : WorkM Subject := do
-  guard (basisValid selector && basisValid target && program.operations.length ≤ 1024) .limit
-  guard (program.effect == .unitary && program.inputs.length == 2 && program.outputs.length == 2) .request
+/-- Extract the literal ordered tape and owner frame before sector evaluation. -/
+def readForTape (dependencies : List Dependency) (shape : TapeInterface)
+    (program : Program) : WorkM Tape := do
+  guard (shape.valid && program.operations.length ≤ 1024) .limit
+  guard (program.effect == .unitary && program.inputs.length == shape.arity &&
+    program.outputs.length == shape.arity) .request
   exactWork (QleisliKernel.Exact.charge (subjectFields program))
   let prepared ← lift (QleisliKernel.Raw.prepare (dependencies.map (·.signature)) program)
-  guard (ownerInterface selector target program prepared) .request
-  let steps ← lift (readEvents (width selector + width target) prepared.events)
+  guard (shape.matches program prepared) .request
+  let steps ← lift (readEvents shape.bits prepared.events)
   return ⟨prepared,steps⟩
+
+def ForTapeBinding (dependencies : List Dependency) (shape : TapeInterface)
+    (program : Program) (tape : Tape) : Prop :=
+  (shape.valid && program.operations.length ≤ 1024) = true ∧
+  (program.effect == .unitary && program.inputs.length == shape.arity &&
+    program.outputs.length == shape.arity) = true ∧
+  QleisliKernel.Raw.prepare (dependencies.map (·.signature)) program = .ok tape.prepared ∧
+  QleisliKernel.Semantics.RawTrace.run program = some tape.prepared.reference ∧
+  shape.matches program tape.prepared = true ∧
+  ∃ pieces, QleisliKernel.Exact.ListRel (EventPiece shape.bits)
+    tape.prepared.events pieces ∧ tape.steps = pieces.flatten
+
+theorem readForTape_bound (dependencies : List Dependency) (shape : TapeInterface)
+    (program : Program) (tape : Tape) (work left : Nat)
+    (ok : (readForTape dependencies shape program).run work = (.ok tape,left)) :
+    ForTapeBinding dependencies shape program tape := by
+  unfold readForTape at ok
+  obtain ⟨_,w₁,profile,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,w₂,effect,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,w₃,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨prepared,w₄,checked,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,w₅,owners,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨steps,w₆,extracted,returned⟩ := bind_success _ _ _ _ _ rest
+  have same := (pure_success _ _ _ _ returned).1
+  subst tape
+  have preparedEq := (lift_success _ _ _ _ checked).1
+  exact ⟨(guard_success _ _ _ _ profile).1,(guard_success _ _ _ _ effect).1,preparedEq,
+    QleisliKernel.Raw.prepare_reference _ _ _ preparedEq,(guard_success _ _ _ _ owners).1,
+    readEvents_bound _ _ _ (lift_success _ _ _ _ extracted).1⟩
+
+abbrev readTape (dependencies : List Dependency) (selector target : Basis) :=
+  readForTape dependencies (.pair selector target)
+
+#print axioms readForTape_bound
 
 structure Retained where
   prepared : QleisliKernel.Raw.Prepared
@@ -149,7 +216,7 @@ the shared sector gate. Fresh dependency/source/arm binding belongs to the
 enclosing caller; this component itself grants no native accepted handle. -/
 def check (dependencies : List Dependency) (selector target : Basis) (program : Program)
     (required : List Matrix) : WorkM Retained := do
-  let subject ← readSubject dependencies selector target program
+  let subject ← readTape dependencies selector target program
   let sectors ← QleisliKernel.FiniteRestriction.checkSectors dependencies selector target
     ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,subject.steps⟩ required
   return ⟨subject.prepared,subject.steps,sectors⟩
@@ -177,23 +244,16 @@ theorem check_bound (dependencies : List Dependency) (selector target : Basis) (
     (required : List Matrix) (result : Retained) (work left : Nat)
     (ok : (check dependencies selector target program required).run work = (.ok result,left)) :
     Binding dependencies selector target program required result := by
-  simp only [check,readSubject,bind_assoc,pure_bind] at ok
-  obtain ⟨_,w₁,hl,h⟩ := bind_success _ _ _ _ _ ok
-  obtain ⟨_,w₂,he,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨_,w₃,_,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨prepared,w₄,hp,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨_,w₅,ho,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨steps,w₆,hs,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨sectors,w₇,hc,h⟩ := bind_success _ _ _ _ _ h
-  have same := (pure_success _ _ _ _ h).1
+  unfold check at ok
+  obtain ⟨tape,w₆,ht,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨sectors,w₇,hc,returned⟩ := bind_success _ _ _ _ _ rest
+  have same := (pure_success _ _ _ _ returned).1
   subst result
-  have preparedEq := (lift_success _ _ _ _ hp).1
-  have readEq := (lift_success _ _ _ _ hs).1
+  obtain ⟨profile,effect,prepared,trace,owners,extracted⟩ :=
+    readForTape_bound dependencies (.pair selector target) program tape work w₆ ht
   have sectorEq := QleisliKernel.FiniteRestriction.checkSectors_bound dependencies selector target
-    ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,steps⟩ required sectors w₆ w₇ hc
-  exact ⟨(guard_success _ _ _ _ hl).1,(guard_success _ _ _ _ he).1,preparedEq,
-    QleisliKernel.Raw.prepare_reference _ _ _ preparedEq,(guard_success _ _ _ _ ho).1,
-    readEvents_bound _ _ _ readEq,⟨w₆,w₇,hc⟩,sectorEq.2.2.2⟩
+    ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,tape.steps⟩ required sectors w₆ w₇ hc
+  exact ⟨profile,effect,prepared,trace,owners,extracted,⟨w₆,w₇,hc⟩,sectorEq.2.2.2⟩
 
 /-- The discarded reorder events are literally identity on every coordinate
 in their full physical domain, including the zero-bit domain. -/
@@ -225,7 +285,7 @@ theorem flatten_execution (dependencies : List Dependency) (pieces : List (List 
 #print axioms flatten_execution
 def read (dependencies : List Dependency) (selector target : Basis)
     (program : Program) : WorkM Retained := do
-  let subject ← readSubject dependencies selector target program
+  let subject ← readTape dependencies selector target program
   let sectors ← QleisliKernel.FiniteRestriction.readSectors dependencies selector target
     ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,subject.steps⟩
   return ⟨subject.prepared,subject.steps,sectors⟩
@@ -251,23 +311,16 @@ theorem read_bound (dependencies : List Dependency) (selector target : Basis)
     (program : Program) (result : Retained) (work left : Nat)
     (ok : (read dependencies selector target program).run work = (.ok result,left)) :
     ReadBinding dependencies selector target program result := by
-  simp only [read,readSubject,bind_assoc,pure_bind] at ok
-  obtain ⟨_,w₁,hl,h⟩ := bind_success _ _ _ _ _ ok
-  obtain ⟨_,w₂,he,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨_,w₃,_,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨prepared,w₄,hp,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨_,w₅,ho,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨steps,w₆,hs,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨sectors,w₇,hc,h⟩ := bind_success _ _ _ _ _ h
-  have same := (pure_success _ _ _ _ h).1
+  unfold read at ok
+  obtain ⟨tape,w₆,ht,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨sectors,w₇,hc,returned⟩ := bind_success _ _ _ _ _ rest
+  have same := (pure_success _ _ _ _ returned).1
   subst result
-  have preparedEq := (lift_success _ _ _ _ hp).1
-  have readEq := (lift_success _ _ _ _ hs).1
+  obtain ⟨profile,effect,prepared,trace,owners,extracted⟩ :=
+    readForTape_bound dependencies (.pair selector target) program tape work w₆ ht
   have sectorEq := QleisliKernel.FiniteRestriction.readSectors_bound dependencies selector target
-    ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,steps⟩ sectors w₆ w₇ hc
-  exact ⟨(guard_success _ _ _ _ hl).1,(guard_success _ _ _ _ he).1,preparedEq,
-    QleisliKernel.Raw.prepare_reference _ _ _ preparedEq,(guard_success _ _ _ _ ho).1,
-    readEvents_bound _ _ _ readEq,⟨w₆,w₇,hc⟩,sectorEq.2.2.2⟩
+    ⟨QleisliKernel.FiniteRestriction.joinedBasis selector target,tape.steps⟩ sectors w₆ w₇ hc
+  exact ⟨profile,effect,prepared,trace,owners,extracted,⟨w₆,w₇,hc⟩,sectorEq.2.2.2⟩
 
 
 end QleisliKernel.Raw.Sector

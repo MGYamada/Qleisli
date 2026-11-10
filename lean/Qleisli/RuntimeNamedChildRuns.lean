@@ -192,7 +192,7 @@ def OperationOrigin {artifact root} (execution : ExecutionMode artifact root)
       RuntimeInterval.Computed (RuntimeBodyQueries.readOperation execution.queries source event position cursor data) original ∧
       RuntimeInterval.Computed (operationNode block position event.inputOwners before after expected) node ∧
       OperationResult execution original expected receipts
-  | .named .. => False
+  | .named .. | .transform .. => False
   | node@(.selection ..) => SelectionOrigin execution node
   | _ => True
 
@@ -237,13 +237,53 @@ private theorem intrinsic_origin {artifact root} {execution : ExecutionMode arti
     OperationOrigin execution node := by
   cases node <;> first | exact intrinsic | exact False.elim intrinsic
 
+/-- A written transform's stored children and returned owners come from the
+same original forward-body run, with the real query plan and shared meter. -/
+inductive TransformRun (artifact : Artifact) (root : Validity.Root)
+    (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution) :
+    {program : Semantics.Observation.Program} →
+    {block : RuntimeInterval.Block root.dependencies program} →
+    Node root.dependencies program block → Prop where
+  | checked {program : Semantics.Observation.Program}
+      {block : RuntimeInterval.Block root.dependencies program}
+      {caller name : String} {subject : SourceTypes.SourceRuntimeScope.Subject artifact.sources caller name}
+      {event : SourceTypes.SourceRuntimeContext.TransformEvent artifact.sources caller}
+      {position : Position} {cursor : execution.queries.Cursor}
+      {data : execution.queries.EventData subject (.transform event) position}
+      {transformed : RuntimeBodyQueries.Transform execution.queries event position}
+      {forward : RuntimeTransformAction.Forward artifact root.dependencies transformed.request}
+      {child : BlockResult root.dependencies forward.program forward.prepared.block}
+      {receipts : List execution.Receipt}
+      {logical : RuntimeTransformAction.ForwardMap forward child.history.bindings}
+      {interval : RuntimeInterval.Checked block position.start position.count} {before}
+      {owners : RuntimeTransformOwners.Checked interval event before}
+      {action : RuntimeTransformAction.Checked owners logical.code.logical}
+      {initial beforeForward beforeChild afterChild : Nat}
+      (query : (RuntimeBodyQueries.readTransform execution.queries subject event position cursor data).run initial =
+        (.ok transformed,beforeForward))
+      (prepare : (RuntimeTransformAction.readForward artifact root.dependencies transformed.request).run beforeForward =
+        (.ok forward,beforeChild))
+      (run : (next .pureBody .rootOrder (.whole transformed.request.source) (.root transformed.request.source)
+          forward.program transformed.request.context transformed.nested
+          ⟨forward.initial,forward.roles,transformed.request.source.checked.summary.nextOwner⟩
+          {} forward.prepared.block).run beforeChild = (.ok (child,receipts),afterChild)) :
+      TransformRun artifact root execution next (.transform transformed.request transformed.original forward
+        child.history.bindings logical owners action (Nodes.ofList child.actions))
+
 /-- A named step retains the original caller's root ordinary input domain. -/
 def CheckedStepAt {artifact root execution} (next : BlockRunner artifact root execution)
     (inputs : RootInputs) {program block} (step : Step root.dependencies program block) : Prop :=
   match step with
   | .named .. => ChildRunAt artifact root execution next (some inputs) step
+  | .pure node@(.transform ..) => TransformRun artifact root execution next node
   | .pure node => OperationOrigin execution node
   | _ => CheckedStep next step
+
+private theorem CheckedStepAt.of_operationOrigin {artifact root execution}
+    {next : BlockRunner artifact root execution} {inputs program block}
+    {node : Node root.dependencies program block} (origin : OperationOrigin execution node) :
+    CheckedStepAt next inputs (.pure node) := by
+  cases node <;> first | exact origin | exact False.elim origin
 
 theorem CheckedStepAt.forget {artifact root execution} {next : BlockRunner artifact root execution}
     {inputs program block step} (checked : @CheckedStepAt artifact root execution next inputs program block step) :
@@ -642,7 +682,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       subst after
       have chain := entered
       obtain ⟨aligned,⟨first,last⟩,intrinsic⟩ := primitive_aligned interval history ⟨frame,sameBindings⟩ _ _ _ ⟨d,e,_performed⟩
-      exact chain.snoc aligned (intrinsic_origin intrinsic) rfl ⟨first.trans atStart.symm,last⟩ True.intro
+      exact chain.snoc aligned (.of_operationOrigin (intrinsic_origin intrinsic)) rfl ⟨first.trans atStart.symm,last⟩ True.intro
     case operation =>
       obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨_,f,_shape,h⟩ := bind_success _ _ _ _ _ h
@@ -664,7 +704,24 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
         sourceCursor data operation ⟨f,g,_operation⟩ expected node history frame sameBindings owners
         ⟨d,e,_owners⟩ performedReceipts resultRead
         (by simpa only [sameBindings] using original)
-      exact chain.snoc aligned authentic rfl ⟨first.trans atStart.symm,last⟩ True.intro
+      exact chain.snoc aligned (.of_operationOrigin authentic) rfl ⟨first.trans atStart.symm,last⟩ True.intro
+    case transform =>
+      obtain ⟨transformed,e,_transformed,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨forward,f,_forward,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨performed,g,_performed,h⟩ := bind_success _ _ _ _ _ h
+      rcases performed with ⟨child,performedReceipts⟩
+      obtain ⟨logical,i,_logical,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨owners,j,_owners,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨action,k,_action,returned⟩ := bind_success _ _ _ _ _ h
+      have same := (pure_success _ _ _ _ returned).1
+      subst after
+      have chain := entered
+      have startsWithSource : history = {history with bindings := frame.bindings} := by
+        rw [sameBindings]
+      refine chain.snoc ⟨startsWithSource,rfl⟩ (TransformRun.checked _transformed _forward _performed)
+        rfl ⟨?_,?_⟩ True.intro
+      · exact atStart.symm
+      · rfl
     case selection =>
       obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨selected,f,_selected,h⟩ := bind_success _ _ _ _ _ h
@@ -700,7 +757,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       have original : SelectionOrigin execution node :=
         ⟨_,_,source,_,_,_,_,_,selected.table,selected.original,
           exactActions.weaken (fun _ _ ⟨graph,_,_,_,_,_,produced⟩ => ⟨graph,produced⟩)⟩
-      exact chain.snoc (by simpa only [sameBindings] using aligned) (selection_origin original) rfl
+      exact chain.snoc (by simpa only [sameBindings] using aligned) (.of_operationOrigin (selection_origin original)) rfl
         ⟨first.trans atStart.symm,last⟩ True.intro
     case primitive =>
       split at h
@@ -725,7 +782,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
           subst after
           have chain := entered
           obtain ⟨aligned,⟨first,last⟩,intrinsic⟩ := primitive_aligned interval history ⟨frame,sameBindings⟩ _ _ _ ⟨d,e,_performed⟩
-          exact chain.snoc aligned (intrinsic_origin intrinsic) rfl ⟨first.trans atStart.symm,last⟩ True.intro
+          exact chain.snoc aligned (.of_operationOrigin (intrinsic_origin intrinsic)) rfl ⟨first.trans atStart.symm,last⟩ True.intro
     case conditional =>
       obtain ⟨_,e,_count,h⟩ := bind_success _ _ _ _ _ h
       have one : position.count = 1 := beq_iff_eq.mp (guard_success _ _ _ _ _count).1

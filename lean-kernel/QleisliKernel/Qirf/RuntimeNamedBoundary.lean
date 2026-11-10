@@ -81,9 +81,26 @@ def readWithInputs {dependencies program sources caller block start count}
     (event : SourceRuntimeContext.NamedEvent sources caller) (before child : SourceState)
     (childRetired : List Owner) (childValue : SourceRuntimeValues.Value) (input : Inputs interval inputs event before) :
     WorkM (Checked interval inputs event before child childRetired childValue) := do
-  exactWork (Exact.charge (64*(Raw.OwnerFlow.fields (before.issued ++ event.ownerMap ++ child.issued ++ childRetired)+
-    SourceRuntimeValues.valueFields childValue+SourceRuntimeValues.valueFields event.value+
-    before.bindings.length+child.bindings.length+before.nextOrdinal+1)^2))
+  let operands := event.inputOwners
+  let bindings := before.bindings ++ child.bindings
+  let history := before.issued ++ event.ownerMap ++ child.issued ++ childRetired ++
+    event.allocated ++ event.consumed ++ operands ++ bindings.map (·.owner)
+  let expressionNodes := ((ordinary childValue).map fun (_,expression) =>
+    SourceRuntimeValues.expressionSize expression).sum
+  let visits := history.length + bindings.length + childValue.length + event.value.length +
+    event.arguments.length + interval.before.quantum.live.length + interval.after.quantum.live.length +
+    before.nextOrdinal + expressionNodes + 1
+  let fields := Raw.OwnerFlow.fields history + SourceRuntimeValues.valueFields childValue +
+    SourceRuntimeValues.valueFields event.value +
+    (event.arguments.map SourceRuntimeValues.valueFields).sum +
+    (bindings.map (portFields ∘ (·.port))).sum +
+    (interval.before.quantum.live.map portFields).sum +
+    (interval.after.quantum.live.map portFields).sum +
+    SourceRuntimeValues.siteFields ⟨caller,event.target.callerName,event.call.calleeOffset⟩ + 1
+  -- List searches, membership and equality revisit a field at most once per
+  -- lookup or structural position. Payload bytes are compared, not used as
+  -- lookup indices. Charge byte work separately from list/ordinal work.
+  exactWork (Exact.charge (8*fields*visits + 64*visits^2))
   if issued : before.issued.map (·.ordinal) = List.range before.nextOrdinal then
     if liveIssued : before.bindings.all (fun binding => before.issued.contains binding.owner) = true then
       if fresh : event.allocated.map (·.ordinal) = (List.range event.allocated.length).map (before.nextOrdinal+·) then

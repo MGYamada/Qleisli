@@ -147,25 +147,18 @@ fn process(
     // including inactive regions; an unused unsupported sibling is no root.
     let mut pending = vec![entry];
     let mut closure = BTreeSet::new();
+    let mut requires_operation_closure = false;
     while let Some(key) = pending.pop() {
         compiler.charge(&module, span, compiler.declarations.len() + 2)?;
         if !closure.insert(key) {
             continue;
         }
         let original = compiler.declarations[&key];
-        if key != entry
+        requires_operation_closure |= key != entry
             && original
                 .static_params
                 .iter()
-                .any(|formal| matches!(formal.kind, StaticParamKind::Operation { .. }))
-        {
-            return Err(compiler.error(
-                &module,
-                span,
-                ErrorCode::Unsupported,
-                "selected operation dependencies require independent closure transport",
-            ));
-        }
+                .any(|formal| matches!(formal.kind, StaticParamKind::Operation { .. }));
         if original.kind != FnKind::Static {
             if let Err((span, message)) =
                 profile::check(original, &compiler.source.interfaces[&key])
@@ -187,7 +180,8 @@ fn process(
     compiler.prepare_selected_classical_tables(Some(&closure))?;
     prepare_evidence_dependencies(&mut compiler, &closure, &module, span)?;
     let instance = named_instance(&mut compiler, selected, entry, &module, span)?;
-    let program = lower::lower_instance_function(&mut compiler, instance)?;
+    let program =
+        lower::lower_instance_function(&mut compiler, instance, requires_operation_closure)?;
     if compiler.declarations[&entry].static_params.is_empty() {
         compiler.checked.insert(entry, program.clone());
     }

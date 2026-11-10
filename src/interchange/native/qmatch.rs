@@ -1,7 +1,12 @@
 //! One immutable original-source request and compared graph per fresh decision.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
-use crate::interchange::{execution_view::finite::qmatch, native_packet::View, qmatch::Request};
+use crate::interchange::{
+    QmatchSource, decode_subject_with_runtime,
+    execution_view::finite::{qmatch, qmatch_v5},
+    native_packet::View,
+    qmatch::{Request, v5},
+};
 
 #[cfg(test)]
 mod tests;
@@ -47,41 +52,57 @@ fn prepare(subject: Arc<Subject>, request: &Request) -> Result<Prepared> {
     })
 }
 
+fn prepare_context(subject: Arc<Subject>, request: &v5::Request) -> Result<Prepared> {
+    let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+    let decoded = Arc::new(decode_subject_with_runtime(
+        &subject,
+        &mut budget,
+        None,
+        None,
+        Some(QmatchSource::Context(request)),
+        None,
+    )?);
+    let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root])?;
+    Ok(Prepared {
+        subject,
+        decoded,
+        derived_effect,
+        output_ports,
+    })
+}
+
 impl Kernel {
     /// Construct the comparison from the actual decoded graph and complete
     /// original-context request. Execution requires a separate native decision.
-    #[cfg_attr(
-        not(test),
-        expect(
-            dead_code,
-            reason = "retained v5 source subjects pending production composition"
-        )
-    )]
+    #[cfg(test)]
     pub(crate) fn qmatch_context_view(
         &self,
         artifact: &[u8],
         request_bytes: &[u8],
     ) -> Result<Vec<u8>> {
-        use crate::interchange::{QmatchSource, decode_subject_with_runtime, qmatch::v5};
         let subject = self.subject(artifact, Some(request_bytes))?;
         let request = v5::Request::decode(subject.request.as_deref().expect("context request"))?;
-        let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
-        let decoded = Arc::new(decode_subject_with_runtime(
-            &subject,
-            &mut budget,
-            None,
-            None,
-            Some(QmatchSource::Context(&request)),
-            None,
-        )?);
-        let (derived_effect, output_ports) = view::metadata(&decoded.programs[decoded.root])?;
-        let prepared = Prepared {
+        let prepared = prepare_context(subject, &request)?;
+        qmatch_v5::complete(prepared.graph(), &request)
+    }
+
+    /// Check the complete v5 source context and retain its compared runtime interface.
+    pub fn check_qmatch_source_v5(&self, artifact: &[u8], request: &[u8]) -> Result<Checked> {
+        let subject = self.subject(artifact, Some(request))?;
+        let request = v5::Request::decode(subject.request.as_deref().expect("context request"))?;
+        let prepared = prepare_context(Arc::clone(&subject), &request)?;
+        let graph = qmatch_v5::complete(prepared.graph(), &request)?;
+        let native = Self::submit_subject(
             subject,
-            decoded,
-            derived_effect,
-            output_ports,
-        };
-        crate::interchange::execution_view::finite::qmatch_v5::complete(prepared.graph(), &request)
+            "--qmatch-source-v5-check",
+            Some(View {
+                graph: &graph,
+                caller: None,
+            }),
+        )?;
+        let mut checked = prepared.bind(native)?;
+        checked.imported.program.qmatch_result = Some(Arc::new(request));
+        Ok(checked)
     }
 
     /// Fresh execution-only checking of the internal named-arm source profile.

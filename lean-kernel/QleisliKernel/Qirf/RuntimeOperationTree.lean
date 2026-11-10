@@ -249,7 +249,7 @@ def Checked.providerIslands {artifact catalogue context description graph implem
   checked.outcome.records.flatMap fun record =>
     match record.checked.provider with
     | .absent _ => []
-    | .present _ _ provider _ => provider.body.result.islands
+    | .present _ _ provider _ => provider.originalBody.body.result.islands
 
 /-- Read access and operation occurrences in lockstep under one root. Each
 child consumes its original stack position and retains its own path and Meaning duties. -/

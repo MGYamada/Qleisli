@@ -128,6 +128,8 @@ inductive EligibleEvents {sources caller} : List (SourceRuntimeContext.Event sou
   | basisNat {events : List (SourceRuntimeContext.Event sources caller)}
       (call : SourceRuntimeContext.NamedEvent sources caller)
       (single : events = [.named call]) (actuals : BasisNatActuals call) : EligibleEvents events
+  | selection (event : SourceRuntimeContext.Event sources caller)
+      (written : event.qmatchOffset.isSome = true) : EligibleEvents [event]
   | cons {first : SourceRuntimeContext.Event sources caller} {rest : List (SourceRuntimeContext.Event sources caller)}
       (head : EligibleEvents [first]) (tail : EligibleEvents rest) :
       EligibleEvents (first :: rest)
@@ -144,23 +146,29 @@ private def readNamedEligibility {sources caller} (call : SourceRuntimeContext.N
   else
     return .basisNat call rfl (← readBasisNatActuals call)
 
-private def readEventEligibility {sources caller} (event : SourceRuntimeContext.Event sources caller) :
+private def readEventEligibility {sources caller} (coherent : Bool)
+    (event : SourceRuntimeContext.Event sources caller) :
     WorkM (EligibleEvents [event]) := do
   match event with
   | .named call => readNamedEligibility call
+  | .selection tokens parsed original selector target scope naturals held remaining =>
+    if coherent then
+      return .selection (.selection tokens parsed original selector target scope naturals held remaining) rfl
+    else throw .request
   | other =>
     match classified : classifyEvent other with
     | .error _ => throw .request
     | .ok action => return .primitive other action (by first | exact classified | rfl)
 
-private def readEventList {sources caller} (events : List (SourceRuntimeContext.Event sources caller)) :
+private def readEventList {sources caller} (coherent : Bool)
+    (events : List (SourceRuntimeContext.Event sources caller)) :
     WorkM (EligibleEvents events) :=
   let visit : Nat → (events : List (SourceRuntimeContext.Event sources caller)) → WorkM (EligibleEvents events) :=
     Nat.rec (fun _ => throw .limit) (fun _ next events => do
       match events with
       | [] => pure (.primitives [] rfl)
       | first :: rest => do
-        let head ← readEventEligibility first
+        let head ← readEventEligibility coherent first
         let tail ← next rest
         return .cons head tail)
   visit (events.length+1) events
@@ -168,7 +176,8 @@ private def readEventList {sources caller} (events : List (SourceRuntimeContext.
 /-- Keep the existing empty, primitive-only and singleton-call paths. A mixed
 list uses one structural eligibility traversal, followed by the common native
 step for every event; it never retries a failed source or callee reader. -/
-private def readEvents {sources caller} (events : List (SourceRuntimeContext.Event sources caller)) :
+private def readEvents {sources caller} (coherent : Bool)
+    (events : List (SourceRuntimeContext.Event sources caller)) :
     WorkM (EligibleEvents events) := do
   exactWork (Exact.charge (8*(events.length+1)))
   match events with
@@ -178,7 +187,7 @@ private def readEvents {sources caller} (events : List (SourceRuntimeContext.Eve
     | .ok actions => return .primitives actions (by first | exact classified | rfl)
     | .error _ =>
       exactWork (Exact.charge (16*(others.length+1)))
-      readEventList others
+      readEventList coherent others
 
 /-- These are the genuine selected source events. No synthetic body or
 signature is made, and each event is later run by the existing common step. -/
@@ -189,9 +198,10 @@ structure Sequence {sources caller} (event : SourceRuntimeContext.StaticEvent so
   unchanged : selected.result.allocated = [] ∧ selected.result.consumed = [] ∧
     selected.result.nextOrdinal = event.nextOrdinal
 
-private def sequenceWithSelected {sources caller event} (selected : @Selected sources caller event) :
+private def sequenceWithSelected {sources caller event} (selected : @Selected sources caller event)
+    (coherent : Bool := false) :
     WorkM (Sequence event) := do
-  let eligible ← readEvents selected.selected.result.events
+  let eligible ← readEvents coherent selected.selected.result.events
   return ⟨selected.selected,selected.original,eligible,selected.unchanged⟩
 
 def readSequence {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
@@ -242,7 +252,7 @@ def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent 
   let selected ← readOriginalSelection event
   if unchanged : selected.selected.result.allocated = [] ∧ selected.selected.result.consumed = [] ∧
       selected.selected.result.nextOrdinal = event.nextOrdinal then
-    return .unchanged (← sequenceWithSelected ⟨selected.selected,selected.original,unchanged⟩)
+    return .unchanged (← sequenceWithSelected ⟨selected.selected,selected.original,unchanged⟩ true)
   else
     let events := selected.selected.result.events
     let allocated := events.flatMap eventAllocated
@@ -259,7 +269,7 @@ def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent 
     if checked : selected.selected.result.allocated = [] ∧ allocated = [] ∧
         selected.selected.result.consumed = consumed ∧
         selected.selected.result.nextOrdinal = event.nextOrdinal then
-      let eligible ← readEvents events
+      let eligible ← readEvents true events
       return .events ⟨selected.selected,selected.original,eligible,checked.1,
         checked.2.1,checked.2.2.1,checked.2.2.2⟩
     else throw .request
@@ -287,20 +297,25 @@ exact next interval from the existing ordered call context. Those contexts
 are consumed independently by discovery and the common named step. Remaining
 calls belong to later enclosing events and are not consumed by this reader. -/
 private def compoundPositions {sources caller} (events : List (SourceRuntimeContext.Event sources caller))
-    (parent : SourceSequence.Position) (calls : List SourceSequence.Position) :
+    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position) :
     WorkM (List SourceSequence.Position) := do
   let finish := parent.start+parent.count
-  let (reversed,cursor,_) ← events.foldlM (fun (positions,cursor,calls) event => do
+  let (reversed,cursor,_,_) ← events.foldlM (fun (positions,cursor,calls,sites) event => do
     match event with
     | .named _ =>
       let position :: calls := calls | throw .request
       guard (position.offset == event.offset && position.start == cursor &&
         position.start+position.count ≤ finish) .request
-      return (position :: positions,position.start+position.count,calls)
+      return (position :: positions,position.start+position.count,calls,sites)
+    | .selection .. =>
+      let position :: sites := sites | throw .request
+      guard (position.offset == event.offset && position.start == cursor &&
+        position.start+position.count ≤ finish) .request
+      return (position :: positions,position.start+position.count,calls,sites)
     | .primitive _ | .phase _ =>
       guard (cursor+1 ≤ finish) .request
-      return (⟨event.offset,cursor,1⟩ :: positions,cursor+1,calls)
-    | _ => throw .request) (([] : List SourceSequence.Position),parent.start,calls)
+      return (⟨event.offset,cursor,1⟩ :: positions,cursor+1,calls,sites)
+    | _ => throw .request) (([] : List SourceSequence.Position),parent.start,calls,sites)
   guard (cursor == finish) .request
   return reversed.reverse
 
@@ -308,25 +323,25 @@ private def compoundPositions {sources caller} (events : List (SourceRuntimeCont
 Compound source lists use the same literal parent and existing call intervals;
 other equivalent native decompositions are not inferred from widths or counts. -/
 private def selectedPositions {sources caller} (events : List (SourceRuntimeContext.Event sources caller))
-    (parent : SourceSequence.Position) (calls : List SourceSequence.Position) :
+    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position) :
     WorkM (List SourceSequence.Position) := do
-  exactWork (Exact.charge (16*(events.length+calls.length+1)))
+  exactWork (Exact.charge (16*(events.length+calls.length+sites.length+1)))
   match events with
   | [] =>
     guard (parent.count == 0) .request
     return []
   | [event] => return [⟨event.offset,parent.start,parent.count⟩]
-  | _ => compoundPositions events parent calls
+  | _ => compoundPositions events parent calls sites
 
 def Sequence.positions {sources caller event} (sequence : @Sequence sources caller event)
     (parent : SourceSequence.Position) (calls : List SourceSequence.Position := []) :
     WorkM (List SourceSequence.Position) :=
-  selectedPositions sequence.selected.result.events parent calls
+  selectedPositions sequence.selected.result.events parent calls []
 
 def Continuation.positions {sources caller event} (source : @Continuation sources caller event)
-    (parent : SourceSequence.Position) (calls : List SourceSequence.Position := []) :
+    (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position := []) :
     WorkM (List SourceSequence.Position) :=
-  selectedPositions source.selected.result.events parent calls
+  selectedPositions source.selected.result.events parent calls sites
 
 structure Frame (roles : List Owner) (state : Raw.Observation.State) (bindings : RuntimeOwnerMap.Map) where
   checked : RuntimeOwnerMap.Checked roles state

@@ -242,8 +242,11 @@ checking when a closed dependency is materialized by the global dormant pass.
 Selected built-in qmatch and its ordinary callers also use this emitter. Named
 operation arms require their original provider bodies to pass the existing
 finite evidence gates; the actual emitted circuit still passes the separate
-six-bit encoded equation. Original AST occurrences and lexical dependencies
-select CLI routing before compilation. That routing grants no acceptance and
+six-bit encoded equation. The selected entry uses the ordinary runtime check
+when every selection has its own whole-circuit check and the original
+operation closure does not require v5. Nominal source gates, wider selection
+sectors, and original operation closure transport use the bounded v5 request.
+The compiler selects the request before native root checking and
 never retries a failed native decision. Small nominal named-arm qmatch functions
 also submit the complete actual callee fragment to the existing source/arm gate
 below before whole-root runtime acceptance. The fragment retains its original
@@ -604,10 +607,14 @@ history of the actual erasure event.
 
 `RuntimeLiteralBody.original_body_recursive_refinement` composes these laws
 for the complete staged original-body traversal. At each step the source
-operator follows the original primitive meaning, graph receipt, or selection
-table. The same recursion follows actual named child reads and the arm selected
-by the checked ordinary condition. It applies the written return order to
-every result and relates the complete history lists in order. The statement
+operator follows the original primitive meaning, graph receipt, written
+transform, or selection table. A written transform uses the exact logical
+matrix read from its checked forward body and the source-specified power,
+adjoint, or control. Its ordered return replaces the selected owners while
+preserving the spectator bindings, including zero-width owners. The same
+recursion follows actual named child reads and the arm selected by the checked
+ordinary condition. It applies the written return order to every result and
+relates the complete history lists in order. The statement
 starts with a successful checked body and a finite representation of the
 input operator. It retains the visible SSA agreement and hidden outcomes for
 each returned history. Public v5, full12/64 and release validation remain

@@ -5,6 +5,7 @@ import Protocol.ExecutionView.CheckedEngineeringOpenQasm
 import Protocol.ExecutionView.CheckedCarrier
 import Protocol.ExecutionView.CheckedRuntimeRoot
 import Protocol.ExecutionView.CheckedQmatch
+import Protocol.ExecutionView.CheckedQmatchV5
 import Protocol.Product
 
 /-! One pure native dispatch and response projection. Context is validated from
@@ -17,6 +18,7 @@ inductive Mode where
   | ordinary | contract | hierarchy (mode : CheckedHierarchy.Modes.Mode)
   | engineeringPure | engineeringPureTensor | engineeringInstrument | engineeringOpenQasm
   | readout | preparation | carrierPure | ordinaryRoot | runtimeRoot | qmatchSource
+  | qmatchSourceV5
   deriving BEq, DecidableEq, Repr
 
 def Mode.workLimit (_ : Mode) : Nat := QleisliKernel.exactWorkLimit
@@ -39,6 +41,7 @@ def Mode.name : Mode → String
   | .ordinaryRoot => "--ordinary-root-check"
   | .runtimeRoot => "--runtime-root-check"
   | .qmatchSource => "--qmatch-source-check"
+  | .qmatchSourceV5 => "--qmatch-source-v5-check"
 
 def Mode.parse : String → Option Mode
   | "--qirf-native" => some .ordinary
@@ -58,6 +61,7 @@ def Mode.parse : String → Option Mode
   | "--ordinary-root-check" => some .ordinaryRoot
   | "--runtime-root-check" => some .runtimeRoot
   | "--qmatch-source-check" => some .qmatchSource
+  | "--qmatch-source-v5-check" => some .qmatchSourceV5
   | _ => none
 
 theorem Mode.parse_name (mode : Mode) : Mode.parse mode.name = some mode := by
@@ -87,6 +91,7 @@ def Value : Mode → Type
   | .ordinaryRoot => CheckedOrdinaryRoot.Checked
   | .runtimeRoot => CheckedRuntimeRoot.Checked
   | .qmatchSource => CheckedQmatch.Checked
+  | .qmatchSourceV5 => Σ value : Packet.Input, CheckedQmatchV5.Original value.original
 
 def scope : (mode : Mode) → Value mode → Packet.Scope
   | .ordinary, value => value.scope
@@ -94,7 +99,7 @@ def scope : (mode : Mode) → Value mode → Packet.Scope
   | .hierarchy _, value => value.1
   | .engineeringPure, _ | .engineeringPureTensor, _
   | .engineeringInstrument, _ | .engineeringOpenQasm, _ | .carrierPure, _ | .ordinaryRoot, _
-  | .runtimeRoot, _ | .qmatchSource, _ => .execution
+  | .runtimeRoot, _ | .qmatchSource, _ | .qmatchSourceV5, _ => .execution
   | .readout, _ | .preparation, _ => .inspection
 
 private def parseComponent {α : Type} (result : Except Protocol.Error α) : CheckM α :=
@@ -136,6 +141,7 @@ def check : (mode : Mode) → ByteArray → CheckM (Value mode)
   | .ordinaryRoot => CheckedOrdinaryRoot.run
   | .runtimeRoot => CheckedRuntimeRoot.run
   | .qmatchSource => CheckedQmatch.run
+  | .qmatchSourceV5 => CheckedQmatchV5.run
 
 private theorem mapError_original {α ε δ : Type} (input : Except ε α) (mapping : ε → δ)
     (value : α) (ok : input.mapError mapping = .ok value) : input = .ok value := by
@@ -240,7 +246,8 @@ theorem run_edition (mode : Mode) (requestedProduct : String) (bytes : ByteArray
   exact Packet.read_edition bytes input parsed
 
 def Mode.status : Mode → String
-  | .ordinary | .contract | .carrierPure | .ordinaryRoot | .runtimeRoot | .qmatchSource => "accepted"
+  | .ordinary | .contract | .carrierPure | .ordinaryRoot | .runtimeRoot
+  | .qmatchSource | .qmatchSourceV5 => "accepted"
   | .hierarchy _ => "pending"
   | .engineeringPure | .engineeringPureTensor
   | .engineeringInstrument | .engineeringOpenQasm => "engineering-checked"
@@ -262,7 +269,8 @@ def payload : (mode : Mode) → Value mode → Nat → List String
   | .engineeringInstrument, _, work | .engineeringOpenQasm, _, work => [toString work]
   | .readout, value, _ => [toString value.checked.visits]
   | .preparation, value, _ => [toString value.checked.visits]
-  | .carrierPure, _, work | .ordinaryRoot, _, work | .qmatchSource, _, work | .runtimeRoot, _, work => [toString work,"1"]
+  | .carrierPure, _, work | .ordinaryRoot, _, work | .runtimeRoot, _, work
+  | .qmatchSource, _, work | .qmatchSourceV5, _, work => [toString work,"1"]
 
 def successLines (mode : Mode) (decision : Decision mode) (work : Nat) : List String :=
   ["qleisli.native-result 3",mode.status,toString decision.edition.code,productVersion,
@@ -274,7 +282,8 @@ structure Reply where
 
 def Mode.errorCode : Mode → Gate.Error → String
   | .hierarchy _, .native error => Protocol.HierarchicalFinite.errorCode error
-  | .qmatchSource, .native (.arithmetic .workLimit) => "limit"
+  | .qmatchSource, .native (.arithmetic .workLimit)
+  | .qmatchSourceV5, .native (.arithmetic .workLimit) => "limit"
   | _, error => Native.errorCode error
 
 def reply (mode : Mode) (work : Nat) (result : Except Gate.Error (Decision mode)) (left : Nat) : Reply :=

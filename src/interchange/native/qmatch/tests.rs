@@ -244,6 +244,42 @@ fn fresh_native_mode_checks_independent_views_and_all_original_substitutions() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn v5_checks_the_original_context_and_refuses_a_divergent_view() {
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let artifact =
+        include_bytes!("../../../../tests/fixtures/qmatch_v030/general-meaning-artifact.json");
+    let request =
+        include_bytes!("../../../../tests/fixtures/qmatch_v030/general-meaning-request.json");
+    let checked = kernel.check_qmatch_source_v5(artifact, request).unwrap();
+    assert_eq!(checked.program().native.mode(), "--qmatch-source-v5-check");
+    assert!(checked.program().qmatch_source_checked());
+    assert_eq!(checked.request(), Some(request.as_slice()));
+    assert!(kernel.check_qmatch_source(artifact, request).is_err());
+
+    let subject = kernel.subject(artifact, Some(request)).unwrap();
+    let request = v5::Request::decode(request).unwrap();
+    let mut prepared = prepare_context(subject, &request).unwrap();
+    Arc::get_mut(&mut prepared.decoded).unwrap().sources[0]
+        .1
+        .push_str("\n// different retained original bytes\n");
+    let graph = qmatch_v5::complete(prepared.graph(), &request).unwrap();
+    let error = Kernel::submit_subject(
+        prepared.subject,
+        "--qmatch-source-v5-check",
+        Some(View {
+            graph: &graph,
+            caller: None,
+        }),
+    )
+    .unwrap_err();
+    assert_eq!(error.code, "decoded_view", "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn component_retains_the_same_fresh_native_mode_and_original_request() {
     let (kernel, log) = Kernel::selected(Edition::E2026).unwrap().recording();
     let rows = cases();

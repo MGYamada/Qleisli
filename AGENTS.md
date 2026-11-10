@@ -2,10 +2,10 @@
 
 ## Keep this file small
 
-Keep AGENTS.md and CLAUDE.md identical: **100 lines / 6,000 UTF-8 bytes** each.
-`scripts/check_docs.py` checks limits and equality. Keep rules/links here,
-specs in docs, decisions in Issues, fixture results, history
-in Git. No release/publication histories. Shorten rules; only explicit user instruction may raise limits.
+Keep AGENTS.md and CLAUDE.md identical, each within **100 lines / 6,000 UTF-8 bytes**.
+`scripts/check_docs.py` enforces both. Keep rules/links here, specs in docs,
+decisions in Issues, fixture results/history in Git. Omit release/publication
+history. Only the user can explicitly raise limits.
 
 ## Start from the design
 
@@ -42,9 +42,9 @@ meanings independent of acceptance and under specification review.
 New M2 acceptance logic belongs in Mathlib-free `lean-kernel/`; Rust handles
 parsing, diagnostics, transport, evidence generation and simulation. Independently
 check IR at every Rust/Lean boundary; prove actual executable definitions.
-Follow the adopted cutover above:
-Lean alone issues new accepted handles; remove legacy paths after replacement
-checks. Full Soundness remains v0.5.0; external schemas await binding gates.
+Actively reuse applicable [QPTL](qptl/README.md) theorems for general proofs.
+Lean alone issues new accepted handles. Retire legacy paths after replacement
+checks. Full Soundness stays v0.5.0. External schemas await binding gates.
 
 Pin Lean/Mathlib 4.30.0 and development Python 3.11+. Validate locally via
 [shared checks](.github/ci/README.md); CI runs on push, PRs and completion/release.

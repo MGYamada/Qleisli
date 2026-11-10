@@ -40,6 +40,25 @@ impl Compiler<'_> {
         )
     }
 
+    pub(super) fn qmatch_runtime_sources(
+        &mut self,
+        key: Key,
+        module: &str,
+        span: Span,
+        bindings: &operations::Bindings,
+        raw: &RawProgram,
+    ) -> Result<SourceRows, CompileError> {
+        let types = self.retained_ordinary_type_sources(key, module, span)?;
+        self.collect_source_rows(
+            module,
+            span,
+            &[key],
+            bindings,
+            &[raw],
+            Some((&types, false)),
+        )
+    }
+
     fn collect_source_rows(
         &mut self,
         module: &str,

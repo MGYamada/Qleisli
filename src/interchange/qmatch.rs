@@ -98,6 +98,15 @@ pub(crate) struct OperationSubject {
     pub meaning_references: Vec<Vec<OriginalBody>>,
 }
 
+impl OperationSubject {
+    pub(crate) fn original_contexts(&self) -> impl Iterator<Item = &ContextSubject> {
+        self.bodies
+            .iter()
+            .chain(self.meaning_references.iter().flatten())
+            .map(|body| body.context().as_ref())
+    }
+}
+
 /// Original lowering coordinates retained alongside the exact prepared body.
 /// Encoding derives all graph indices afresh from these actual arm subjects.
 #[derive(Default)]
@@ -124,6 +133,7 @@ pub(crate) struct ContextSubject {
     // Producer eligibility only; never serialized or trusted by a native gate.
     pub contains_selections: bool,
     pub requires_source_gate: bool,
+    pub needs_qmatch_v5: bool,
 }
 
 #[cfg_attr(

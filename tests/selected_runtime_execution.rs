@@ -212,6 +212,53 @@ fn selected_qmatch_retains_extra_zero_width_owners_and_original_result_order() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_checks_wide_interfaces_in_separate_sectors() {
+    let variants = (0..16)
+        .map(|ordinal| format!("L{ordinal}"))
+        .collect::<Vec<_>>()
+        .join(", ");
+    for (selector, declaration) in [
+        ("Bits<4>", String::new()),
+        ("Selector", format!("pub enum Selector {{ {variants} }}")),
+    ] {
+        let arms = (0..16)
+            .rev()
+            .map(|ordinal| {
+                let label = if selector == "Selector" {
+                    format!("Selector::L{ordinal}")
+                } else {
+                    ordinal.to_string()
+                };
+                format!("{label} => global_phase_eighth")
+            })
+            .collect::<Vec<_>>()
+            .join(", ");
+        let source = format!(
+            "#![no_implicit_prelude]
+            {declaration}
+            pub unitary fn route(s: Q<{selector}>, q: Q<Bits<3>>) -> (Q<{selector}>, Q<Bits<3>>) {{
+                qmatch(s, q) {{ {arms} }}
+            }}"
+        );
+        let selected = selected_at(&source, "main::route");
+        let program = selected.program();
+        assert!(program.qmatch_source_checked());
+        let widths = program
+            .raw()
+            .quantum_inputs
+            .iter()
+            .map(|port| port.shape.bits)
+            .collect::<Vec<_>>();
+        assert_eq!(widths, [4, 3]);
+        kernel().check_program(program).unwrap();
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_keeps_controlled_permutations_after_evidence_preparation() {
     let source = "unitary fn flip(q:Q<Bit>)->Q<Bit>{h(phase[1,1](h(q)))}
         unitary fn idle(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{q}
@@ -661,30 +708,100 @@ fn selected_qmatch_context_checks_builtin_pairs_with_a_nominal_spectator() {
     assert_eq!(raw.quantum_outputs[0], raw.quantum_inputs[2].token);
     kernel().check_program(accepted.program()).unwrap();
 
-    // A built-in selected pair must not bypass the active original-source
-    // context. Primitive arm operands still need named evidence wrappers.
-    let unsupported = source.replace("0=>idle,1=>turn", "0=>h,1=>h");
+    // The original v5 request carries primitive arm bodies alongside the
+    // same typed spectator and selected ports.
+    let primitives = source.replace("0=>idle,1=>turn", "0=>h,1=>h");
+    let accepted = selected(&primitives);
+    assert!(accepted.program().qmatch_source_checked());
+    let raw = accepted.program().raw();
+    assert_eq!(raw.quantum_outputs[0], raw.quantum_inputs[2].token);
+    kernel().check_program(accepted.program()).unwrap();
+    let root = SourceRoot::new(&primitives);
+    let cli = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args([
+            "check",
+            "--entry=main::keep",
+            "--ir-profile=raw",
+            "--format=json",
+        ])
+        .arg(format!(
+            "--module=main={}",
+            root.0.join("main.qli").display()
+        ))
+        .output()
+        .unwrap();
+    let output = String::from_utf8(cli.stdout).unwrap();
+    assert!(cli.status.success(), "{output}");
+    assert!(
+        output.contains("\"scope\":\"finite-source-qmatch-context-v5\""),
+        "{output}"
+    );
+    assert!(output.contains("\"source_steps_checked\":true"));
+    assert!(output.contains("\"source_preservation_verified\":false"));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_builtin_qmatch_keeps_the_runtime_root_for_register_primitives() {
+    let accepted = selected(
+        "pub unitary fn keep(s:Q<Bit>,q:Q<Bits<1>>)->(Q<Bit>,Q<Bits<1>>){
+            let (b,r)=take_bit[1,0](q);
+            let (s,b)=qmatch(s,b){0=>h,1=>h};
+            (s,put_bit[1,0](b,r))
+        }",
+    );
+    assert!(!accepted.program().qmatch_source_checked());
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_builtin_qmatch_keeps_the_runtime_root_for_exclusive_access() {
+    let accepted = selected(
+        "pub unitary fn keep(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            h(excl q);
+            qmatch(s,q){0=>h,1=>h}
+        }",
+    );
+    assert!(!accepted.program().qmatch_source_checked());
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_builtin_qmatch_keeps_the_runtime_root_for_static_continuations() {
+    let source = "pub unitary fn keep[const n:Nat](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+        let q=if static n==0 {if static n==0 {h(q)} else {q}} else {q};
+        qmatch(s,q){0=>h,1=>h}
+    }";
     let parsed = ParsedProgram::parse(
         Edition::E2026,
-        BTreeMap::from([("main".into(), unsupported)]),
+        BTreeMap::from([("main".into(), source.into())]),
     )
     .unwrap();
-    let error = parsed
-        .instantiate_runtime_with_types(
-            "main::keep",
-            Default::default(),
-            Default::default(),
-            Default::default(),
-        )
-        .unwrap()
-        .compile_runtime_with_kernel(&kernel())
-        .unwrap_err();
-    assert_eq!(error.code, "unsupported", "{error:?}");
-    assert!(
-        error.message.contains("complete v5 source gate"),
-        "{error:?}"
-    );
-    assert!(error.message.contains("Wrap the gate"), "{error:?}");
+    for n in [0, 1] {
+        let kernel = kernel();
+        let instance = parsed
+            .instantiate_runtime_with_types(
+                "main::keep",
+                Default::default(),
+                BTreeMap::from([("n".into(), n)]),
+                Default::default(),
+            )
+            .unwrap();
+        let accepted = instance.compile_runtime_with_kernel(&kernel).unwrap();
+        assert!(!accepted.program().qmatch_source_checked());
+        kernel.check_program(accepted.program()).unwrap();
+    }
 }
 
 #[test]
@@ -753,6 +870,7 @@ fn selected_qmatch_uses_the_common_original_source_and_named_arm_evidence() {
         .unwrap();
     let kernel = kernel();
     let selected = instance.compile_runtime_with_kernel(&kernel).unwrap();
+    assert!(!selected.program().qmatch_source_checked());
     let request = selected.program().runtime_result().unwrap();
     assert_eq!(
         request.parameters,

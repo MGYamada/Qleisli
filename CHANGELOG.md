@@ -6,6 +6,23 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check selected v5 `qmatch` through nested calls with original operation
+  actuals and phase-fixed Meaning duties. Keep exact source rows and every
+  original occurrence while reducing repeated native source-row coverage work.
+  The preserved two-Bit nested composition fits the existing exact-work cap.
+- Add QPTL laws for coherent sums. Per-label unitary and encoding equations
+  compose over the original labels, and each output amplitude uses the
+  matching input sector of an arbitrary joint state.
+
+- Route selected v5 `qmatch` intervals above six joined bits through the
+  original-source sector checker, with a six-bit bound on each owner.
+  Keep exact phase and the original arm and return order. Matrix products
+  use indexed coefficient tables and skip zero products after checking
+  exponent bounds, with the same term order and exact-work charge.
+  Use the ordinary runtime check for existing whole-circuit checked
+  selections. Require the v5 source request for selections that need
+  nominal, wider-sector or original operation closure checking.
+
 - Run the latest Rust test partitions offline from the exact Git source archive.
   Distribution checks share their same-run execution receipts and validate the
   package, installation and extracted research suite in parallel.

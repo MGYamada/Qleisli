@@ -122,6 +122,7 @@ fn invoke_mode(
             | crate::interchange::native_context::Mode::OrdinaryRoot
             | crate::interchange::native_context::Mode::RuntimeRoot
             | crate::interchange::native_context::Mode::QmatchSource
+            | crate::interchange::native_context::Mode::QmatchSourceV5
     ) {
         return Err(Error::format(
             "finite checking requires a finite native mode",
@@ -139,7 +140,7 @@ mod tests {
     #[test]
     fn ordinary_and_qmatch_replies_enforce_the_same_exact_work_limit() {
         use crate::interchange::native_context::Mode;
-        for mode in [Mode::Ordinary, Mode::QmatchSource] {
+        for mode in [Mode::Ordinary, Mode::QmatchSource, Mode::QmatchSourceV5] {
             for (work, allowed) in [(13_000_001, true), (20_000_000, true), (20_000_001, false)] {
                 let reply = format!(
                     "qleisli.native-result 3\naccepted\n2026\n{}\n{}\nexecution\n{work}\n1\n",

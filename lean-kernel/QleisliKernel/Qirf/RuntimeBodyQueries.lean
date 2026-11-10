@@ -156,6 +156,30 @@ def readNamed {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.named _ child _ _ _ _ body original nested⟩ => return ⟨child,body,original,nested,()⟩
     | ⟨_,_,.unsupported _⟩ => throw .request
 
+structure Transform {artifact : Artifact} (mode : Mode artifact) {owner : String}
+    (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position) where
+  child : Context
+  request : RuntimeTransformRequest.Checked event position child
+  original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position child) request
+  nested : mode.BodyData (.whole request.source) request.context
+  cursor : mode.Cursor
+
+def readTransform {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position)
+    (cursor : mode.Cursor) (data : mode.EventData source (.transform event) position) :
+    WorkM (Transform mode event position) := do
+  match mode with
+  | .fresh =>
+    let (callPosition,child) :: remaining := cursor.calls | throw .request
+    guard (callPosition == position) .request
+    let request ← NaturalAffine.witness (RuntimeTransformRequest.read event position child)
+    return ⟨child,request.val,by with_reducible exact request.property,(),{cursor with calls := remaining}⟩
+  | .planned _ =>
+    match data with
+    | ⟨_,_,.transform child _ _ request original nested⟩ => return ⟨child,request,original,nested,()⟩
+    | ⟨_,_,.unsupported _⟩ => throw .request
+
 structure Branch {artifact : Artifact} (mode : Mode artifact) {owner name : String}
     (event : SourceRuntimeContext.BranchEvent artifact.sources owner) where
   callerName : event.callerName = name
@@ -273,7 +297,7 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
         let selected ← RuntimeStaticPrimitive.readSequence event
         pure (RuntimeStaticPrimitive.Continuation.unchanged selected)
       | false => RuntimeStaticPrimitive.readContinuation event
-    let positions ← sequence.positions position (cursor.calls.map (·.1))
+    let positions ← sequence.positions position (cursor.calls.map (·.1)) (cursor.sites.map (·.position))
     if count : positions.length = sequence.selected.result.events.length then
       return ⟨sequence,positions,count,()⟩
     else throw .request

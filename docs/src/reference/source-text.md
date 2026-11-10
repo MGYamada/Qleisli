@@ -212,8 +212,9 @@ function with quantum parameters, a flat quantum-owner result and a structural
 body containing one or more named-arm selections.
 Targets may be built-in bases, fieldless enums or finite records, including
 empty records. Built-in ordinal selectors may also select nominal targets.
-The six-joined-bit and 1024-step producer limits remain. Original names/tuple
-bindings and the complete
+For the selected v5 source route, the producer permits at most six physical
+bits per owner and 1024 circuit steps. The encoded whole-circuit route keeps
+its six-joined-bit limit. Original names, tuple bindings and the complete
 structural return may surround the selections. Each actual call fragment, with
 its original input/output owners and every emitted operation, passes the native
 source/arm gate described below. Each original selection binds a literal,
@@ -235,11 +236,12 @@ prefixes/suffixes and generic/constructed arms remain
 unsupported here. No source text or owner frame is synthesized
 to avoid those refusals.
 
-Exposing the full twelve-joined-bit/64-label boundary
-still requires original source binding and native integration of the restriction
-and arm checks below; the small slice does not replace that requirement. The internal finite restriction
-component now proves correspondence through actual contributions, accumulation,
-steps and complete circuit execution, and checks every ordered local sector.
+On the selected v5 route, a wider literal interval goes through the original
+source and arm checks and separate sector reconstruction. Acceptance uses the
+shared exact-work budget. Validation of the full twelve-joined-bit/64-label
+boundary remains open. The finite restriction component proves correspondence
+through actual contributions, accumulation, steps and complete circuit
+execution, and checks every ordered local sector.
 Its internal Raw component checks the original pure program and independently
 reconstructed trace, retaining every circuit event and proving that omitted
 identity reorders are literal identities. The physical port/wire frame is

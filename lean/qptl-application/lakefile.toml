@@ -1,0 +1,17 @@
+name = "qleisli_qptl_application"
+defaultTargets = ["RuntimeTapeDirectSum"]
+
+[leanOptions]
+autoImplicit = false
+warningAsError = true
+
+[[require]]
+name = "qleisli_proofs"
+path = ".."
+
+[[require]]
+name = "qptl"
+path = "../../qptl"
+
+[[lean_lib]]
+name = "RuntimeTapeDirectSum"

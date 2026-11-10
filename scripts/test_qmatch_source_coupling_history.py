@@ -1417,5 +1417,33 @@ class OriginalBodyHistory(unittest.TestCase):
         self.assertTrue((ROOT / study["current_guard"]).is_file())
 
 
+class WideSelectedHistory(unittest.TestCase):
+    def test_original_sources_and_bounded_replay_records(self):
+        study = history_json(
+            ROOT / "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/wide-selected-study.json"
+        )
+        self.assertEqual(study["format"], "qleisli.informed-wide-qmatch-study")
+        self.assertEqual(study["issues"], [64, 195])
+        self.assertEqual(set(study["records"]), {"builtin", "nominal"})
+        source_records = [study["edition_manifest"]]
+        for name, record in study["records"].items():
+            with self.subTest(name=name):
+                source_records.extend((record["first_source"], record["separate_smaller_target"]))
+                self.assertEqual(record["first_width_diagnostic"]["outcome"], "error")
+                self.assertEqual(record["first_v5_timeout"]["outcome"], "error")
+                replay = record["same_source_after_zero_product_replay"]
+                self.assertGreater(replay["native_exact_work"], 0)
+                self.assertLessEqual(replay["native_exact_work"], 20_000_000)
+                for outcome in (record["separate_v5_result"], replay):
+                    self.assertEqual(outcome["outcome"], "ok")
+                    self.assertEqual(outcome["verification"]["scope"], "finite-source-qmatch-context-v5")
+                    self.assertTrue(outcome["verification"]["source_steps_checked"])
+                    self.assertFalse(outcome["verification"]["source_meaning_verified"])
+        for source in source_records:
+            self.assertEqual(hashlib.sha256(source["text"].encode()).hexdigest(), source["sha256"])
+        for control in ("wrong_phase", "wrong_control"):
+            self.assertEqual(study["primitive_tape_replay"][control]["error"], "equation")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -208,9 +208,19 @@ impl Lowerer<'_, '_> {
                 "qmatch target requires an exact finite basis",
             )
         })?;
-        if selector_bits + target_bits > MAX_CONTRACT_BITS {
-            return Err(self.error(module, span, ErrorCode::Unsupported,
-                "qmatch beyond the existing six-bit whole-circuit equation profile awaits the checked kernel restriction/arm-binding extension"));
+        let requires_sectors = selector_bits + target_bits > MAX_CONTRACT_BITS;
+        let selected_sectors = self.uses_qmatch_v5() && self.nominal_qmatch.is_some();
+        if requires_sectors && (!selected_sectors || target_bits > MAX_CONTRACT_BITS) {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                if selected_sectors {
+                    "selected qmatch requires a target of at most six bits"
+                } else {
+                    "qmatch beyond the existing six-bit whole-circuit equation profile awaits the checked kernel restriction/arm-binding extension"
+                },
+            ));
         }
         self.compiler
             .charge(module, span, target_basis.tree_size().nodes + count)?;
@@ -314,29 +324,40 @@ impl Lowerer<'_, '_> {
             steps.extend(body);
             expectations[label] = Some(expected);
         }
-        let sectors = expectations
-            .into_iter()
-            .map(|value| value.expect("complete ordinal table"))
-            .collect::<Vec<_>>();
-        let expected = block_meaning(&sectors, &mut self.compiler.exact_work)
+        let steps = if requires_sectors {
+            // The selected v5 request checks the original arms and each literal
+            // sector using separate selector and target widths.
+            self.nominal_qmatch
+                .as_mut()
+                .expect("selected sector checking needs an original context")
+                .require_qmatch_v5();
+            steps
+        } else {
+            let sectors = expectations
+                .into_iter()
+                .map(|value| value.expect("complete ordinal table"))
+                .collect::<Vec<_>>();
+            let expected = block_meaning(&sectors, &mut self.compiler.exact_work)
+                .map_err(|error| self.compiler.op_error(module, span, error))?;
+            let joined_basis = Ty::pair(selector_basis, target_basis);
+            let circuit = Circuit::new(
+                super::super::operations::contract_basis(&joined_basis),
+                steps,
+            )
             .map_err(|error| self.compiler.op_error(module, span, error))?;
-        let joined_basis = Ty::pair(selector_basis, target_basis);
-        let circuit = Circuit::new(
-            super::super::operations::contract_basis(&joined_basis),
-            steps,
-        )
-        .map_err(|error| self.compiler.op_error(module, span, error))?;
-        check_native(
-            &self.compiler.kernel,
-            &circuit,
-            expected,
-            &mut self.compiler.exact_work,
-        )
-        .map_err(|error| self.compiler.op_error(module, span, error))?;
+            check_native(
+                &self.compiler.kernel,
+                &circuit,
+                expected,
+                &mut self.compiler.exact_work,
+            )
+            .map_err(|error| self.compiler.op_error(module, span, error))?;
+            circuit.steps().to_vec()
+        };
         self.compiler.charge(
             module,
             span,
-            total_size(circuit.steps().iter().map(super::super::circuit::size)),
+            total_size(steps.iter().map(super::super::circuit::size)),
         )?;
         nominal::apply_selection(
             self,
@@ -344,7 +365,7 @@ impl Lowerer<'_, '_> {
             span,
             selection.keyword.start,
             [selector, target],
-            circuit.steps().to_vec(),
+            steps,
             arms,
         )
     }

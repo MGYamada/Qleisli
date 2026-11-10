@@ -657,7 +657,14 @@ impl<'a> Compiler<'a> {
                     // instance cannot execute; its selected body is already
                     // being checked. Independent closed callees still recurse.
                     if !inactive || !compiler.instance_is_active(&instance, &module, span)? {
-                        compiler.materialize_instance(instance, &module, span)?;
+                        // A closed Op callee is checked here as finite body
+                        // evidence. Its original typed call and all supplies
+                        // are independently checked by the enclosing v5 root.
+                        let selected = compiler.force_typed_root;
+                        compiler.force_typed_root &= instance.operations.is_empty();
+                        let body = compiler.materialize_instance(instance, &module, span);
+                        compiler.force_typed_root = selected;
+                        body?;
                     }
                 }
                 Ok(())
