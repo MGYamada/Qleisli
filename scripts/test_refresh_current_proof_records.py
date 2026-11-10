@@ -139,6 +139,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-qmatch-sparse-history",
                 "refs/heads/codex/beta-qmatch-selection-recursion",
                 "refs/heads/codex/beta-qmatch-general-calls",
+                "refs/heads/codex/beta-qmatch-source-call-return",
                 "refs/heads/codex/beta-quantum-runtime-types",
                 "refs/heads/codex/beta-runtime-static-bindings")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
