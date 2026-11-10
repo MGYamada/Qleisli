@@ -7,7 +7,8 @@ steps. They can distinguish occurrences with identical owner and SSA states.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RuntimeLiteralBody
 open QleisliKernel QleisliKernel.Qirf
-open QleisliKernel.Semantics.Observation (readOps)
+open QleisliKernel.Semantics.Observation (Event readOps)
+open Qleisli.RuntimeObservingWrites (WritesWithin)
 open Qleisli.Semantics.ObservingAction (History run)
 open Qleisli.RuntimeNamedChildRuns (CheckedStep OrdinaryAligned OrdinaryRun)
 open Qleisli.RuntimeNamedSourceFlow (Aligned)
@@ -53,6 +54,35 @@ private theorem relatedGroups {SourceHistory : Type}
         exact ⟨result :: results, by simp [List.mapM_cons, sourceStep, sourceTail],
           .cons relatedStep relatedTail⟩
 
+/-- A body may impose a bound on the IDs written by its original literal
+events. A root without an inherited scope needs no such bound. -/
+def TraceWriteBound (allowed : Option (Nat → Prop)) (events : List Event) : Prop :=
+  match allowed with
+  | none => True
+  | some accepts => WritesWithin events accepts
+
+private theorem TraceWriteBound.split {allowed : Option (Nat → Prop)} {first rest : List Event}
+    (whole : TraceWriteBound allowed (first++rest)) :
+    TraceWriteBound allowed first ∧ TraceWriteBound allowed rest := by
+  cases allowed with
+  | none => exact ⟨trivial,trivial⟩
+  | some accepts =>
+    exact ⟨fun _ present _ wrote => whole (List.mem_append.mpr (.inl present)) wrote,
+      fun _ present _ wrote => whole (List.mem_append.mpr (.inr present)) wrote⟩
+
+/-- Keep the existing step-law shape at a root and pass the exact literal
+chunk's bound to a step checked inside an inherited scope. -/
+def WithChunkWriteBound (allowed : Option (Nat → Prop)) (events : List Event) (claim : Prop) : Prop :=
+  match allowed with
+  | none => claim
+  | some accepts => WritesWithin events accepts → claim
+
+private theorem WithChunkWriteBound.apply {allowed events claim}
+    (law : WithChunkWriteBound allowed events claim) (writes : TraceWriteBound allowed events) : claim := by
+  cases allowed with
+  | none => exact law
+  | some _ => exact law writes
+
 /-- A local refinement law may use the checked child execution for the exact
 occurrence. The original list decomposition fixes its position even when two
 occurrences have the same Raw bounds. -/
@@ -62,22 +92,69 @@ def StepRefinement {dependencies program block} {SourceHistory : Type}
     (next : List (@Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
     (related : List (@Step dependencies program block) → Raw.Observation.State →
-      RuntimeStructuralAction.SourceState → RuntimeOrdinaryBody.State → SourceHistory → History → Prop) : Prop :=
+      RuntimeStructuralAction.SourceState → RuntimeOrdinaryBody.State → SourceHistory → History → Prop)
+    (allowed : Option (Nat → Prop) := none) : Prop :=
   ∀ earlier first later, earlier ++ (first :: later) = steps → certifies first →
     ∀ {ownerBefore ownerAfter ordinaryBefore ordinaryAfter},
     Aligned ownerBefore ownerAfter first → OrdinaryAligned ordinaryBefore ordinaryAfter first →
     ∀ {chunk}, readOps block.fuel (stepSpan first).checked.before.quantum.reference
       (stepSpan first).operations = some ((stepSpan first).checked.after.quantum.reference,chunk) →
-    ∀ {expected actual outputs},
+    WithChunkWriteBound allowed chunk (∀ {expected actual outputs},
       related earlier (stepSpan first).checked.before ownerBefore ordinaryBefore expected actual →
       run dependencies block.fuel chunk actual = some outputs →
       ∃ expectedOutputs, next earlier first expected = some expectedOutputs ∧
         List.Forall₂ (related (earlier ++ [first]) (stepSpan first).checked.after ownerAfter ordinaryAfter)
-          expectedOutputs outputs
+          expectedOutputs outputs)
 
 /-- Transport an exact prefix-indexed law along the same checked intervals,
 owner states and ordinary states as the actual execution. The result lists
 retain both order and multiplicity. -/
+theorem Execution.ordered_refinement_with_writes {dependencies program block initial final steps events incoming results}
+    (execution : @Execution dependencies program block initial steps final events incoming results)
+    {ownerStart ownerEnd : RuntimeStructuralAction.SourceState}
+    {ordinaryStart ordinaryEnd : RuntimeOrdinaryBody.State}
+    (owners : RuntimeNamedSourceFlow.Run ownerStart steps ownerEnd)
+    (ordinary : OrdinaryRun ordinaryStart steps ordinaryEnd)
+    {SourceHistory : Type} {sourceIncoming : List SourceHistory}
+    (next : List (@Step dependencies program block) → Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (related : List (@Step dependencies program block) → Raw.Observation.State →
+      RuntimeStructuralAction.SourceState → RuntimeOrdinaryBody.State → SourceHistory → History → Prop)
+    (prior : List (@Step dependencies program block))
+    (certifies : Step dependencies program block → Prop)
+    (checked : ∀ first ∈ steps, certifies first)
+    {allowed : Option (Nat → Prop)} (writes : TraceWriteBound allowed events)
+    (localLaw : StepRefinement (prior ++ steps) certifies next related allowed)
+    (starts : List.Forall₂ (related prior initial ownerStart ordinaryStart) sourceIncoming incoming) :
+    ∃ expectedResults, runSourceHistories next prior steps sourceIncoming = some expectedResults ∧
+      List.Forall₂ (related (prior ++ steps) final ownerEnd ordinaryEnd) expectedResults results := by
+  induction execution generalizing prior ownerStart ownerEnd ordinaryStart ordinaryEnd sourceIncoming with
+  | nil =>
+    cases owners
+    cases ordinary
+    exact ⟨sourceIncoming, rfl, by simpa using starts⟩
+  | @cons first rest final earlier later incoming groups results read executed tail ih =>
+    cases owners with
+    | cons ownerStep ownerTail =>
+      cases ordinary with
+      | cons ordinaryStep ordinaryTail =>
+        obtain ⟨headWrites,tailWrites⟩ := writes.split
+        obtain ⟨sourceGroups, sourceStep, grouped⟩ :=
+          relatedGroups starts executed
+            ((localLaw prior first rest rfl (checked first List.mem_cons_self) ownerStep ordinaryStep read).apply
+              headWrites)
+        have same : (prior ++ [first]) ++ rest = prior ++ (first :: rest) := by
+          simp [List.append_assoc]
+        obtain ⟨expected, sourceTail, aligned⟩ :=
+          ih ownerTail ordinaryTail (prior ++ [first])
+            (fun current member => checked current (List.mem_cons_of_mem _ member))
+            tailWrites
+            (fun preceding current remaining position =>
+              localLaw preceding current remaining (position.trans same))
+            (List.rel_flatten grouped)
+        exact ⟨expected, by simpa [runSourceHistories, sourceStep] using sourceTail,
+          by simpa only [same] using aligned⟩
+
 theorem Execution.ordered_refinement {dependencies program block initial final steps events incoming results}
     (execution : @Execution dependencies program block initial steps final events incoming results)
     {ownerStart ownerEnd : RuntimeStructuralAction.SourceState}
@@ -95,30 +172,9 @@ theorem Execution.ordered_refinement {dependencies program block initial final s
     (localLaw : StepRefinement (prior ++ steps) certifies next related)
     (starts : List.Forall₂ (related prior initial ownerStart ordinaryStart) sourceIncoming incoming) :
     ∃ expectedResults, runSourceHistories next prior steps sourceIncoming = some expectedResults ∧
-      List.Forall₂ (related (prior ++ steps) final ownerEnd ordinaryEnd) expectedResults results := by
-  induction execution generalizing prior ownerStart ownerEnd ordinaryStart ordinaryEnd sourceIncoming with
-  | nil =>
-    cases owners
-    cases ordinary
-    exact ⟨sourceIncoming, rfl, by simpa using starts⟩
-  | @cons first rest final earlier later incoming groups results read executed tail ih =>
-    cases owners with
-    | cons ownerStep ownerTail =>
-      cases ordinary with
-      | cons ordinaryStep ordinaryTail =>
-        obtain ⟨sourceGroups, sourceStep, grouped⟩ :=
-          relatedGroups starts executed
-            (localLaw prior first rest rfl (checked first List.mem_cons_self) ownerStep ordinaryStep read)
-        have same : (prior ++ [first]) ++ rest = prior ++ (first :: rest) := by
-          simp [List.append_assoc]
-        obtain ⟨expected, sourceTail, aligned⟩ :=
-          ih ownerTail ordinaryTail (prior ++ [first])
-            (fun current member => checked current (List.mem_cons_of_mem _ member))
-            (fun preceding current remaining position =>
-              localLaw preceding current remaining (position.trans same))
-            (List.rel_flatten grouped)
-        exact ⟨expected, by simpa [runSourceHistories, sourceStep] using sourceTail,
-          by simpa only [same] using aligned⟩
+      List.Forall₂ (related (prior ++ steps) final ownerEnd ordinaryEnd) expectedResults results :=
+  execution.ordered_refinement_with_writes owners ordinary next related prior certifies checked
+    (allowed := none) trivial localLaw starts
 
 /-- Reuse the ordered induction on any complete original block traversal.
 The independently read Raw execution uses the actual partition and receipts. -/
@@ -142,6 +198,32 @@ theorem refineFlow {artifact root mode next rootInputs program block start finis
   rw [read] at executed
   exact (trace.executes_singleton executed).ordered_refinement flow.source flow.ordinary sourceStep related [] _
     flow.calls law (.cons starts .nil)
+
+/-- Reuse the same ordered induction on a named child's actual checked body
+and the already-read literal operation list that must avoid inherited IDs. -/
+theorem refineFlowWithWrites {artifact root mode next rootInputs program block start finish steps initialOrdinary finalOrdinary}
+    (flow : @RuntimeNamedChildRuns.Flow artifact root mode next rootInputs program block start steps finish
+      initialOrdinary finalOrdinary block.operations.length)
+    (last : RuntimeInterval.Checked block block.operations.length 0)
+    {SourceHistory : Type} (sourceInitial : SourceHistory) (initial : History) {results : List History}
+    (sourceStep : List (Step root.dependencies program block) → Step root.dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (related : List (Step root.dependencies program block) → Raw.Observation.State →
+      RuntimeStructuralAction.SourceState → RuntimeOrdinaryBody.State → SourceHistory → History → Prop)
+    (allowed : Nat → Prop) {events : List Event}
+    (literal : readOps block.fuel block.entry.quantum.reference block.operations =
+      some (last.before.quantum.reference,events))
+    (executed : run root.dependencies block.fuel events initial = some results)
+    (writes : WritesWithin events allowed)
+    (law : StepRefinement steps (CheckedStep next) sourceStep related (some allowed))
+    (starts : related [] block.entry start initialOrdinary sourceInitial initial) :
+    ∃ expected, runSourceHistories sourceStep [] steps [sourceInitial] = some expected ∧
+      List.Forall₂ (related steps last.before finish finalOrdinary) expected results := by
+  obtain ⟨original,trace,read⟩ := flow.literal.original_trace last
+  have same : original = events := congrArg Prod.snd (Option.some.inj (read.symm.trans literal))
+  subst original
+  exact (trace.executes_singleton executed).ordered_refinement_with_writes flow.source flow.ordinary
+    sourceStep related [] _ flow.calls (allowed := some allowed) writes law (.cons starts .nil)
 
 /-- Specialize the ordered proof to the real body. The same traversal supplies
 the child receipts, the owner and SSA chains, the input ordering, and the
@@ -184,6 +266,8 @@ theorem original_body_ordered_refinement {artifact owner name arguments request 
   exact ⟨ownerEnd,last,lastRead,returned,
     refineFlow flow last sourceInitial initial next related executed localLaw (starts input inputRead)⟩
 
+#print axioms Execution.ordered_refinement_with_writes
 #print axioms Execution.ordered_refinement
+#print axioms refineFlowWithWrites
 #print axioms original_body_ordered_refinement
 end Qleisli.RuntimeLiteralBody

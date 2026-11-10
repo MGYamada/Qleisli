@@ -25,7 +25,84 @@ development milestones from the scope of their evidence.
   regrouping preserves the physical operator, visible values and hidden
   outcomes. The common arm induction carries the independent sparse source
   layout through successive structural operations, ordinary SSA gaps and the
-  written return order.
+  written return order. Carry the sparse source frame through the selected
+  arm's exact quantum phi permutation and the simultaneous classical SSA
+  merge, retaining the original order and multiplicity of results. Apply the
+  same sparse invariant through the actual checked child traversal of nested
+  conditionals and the root's written return. A literal measurement or
+  discard applies the original consumed owner's layout to each surviving
+  sparse row, preserving the ordered outcomes and updated SSA values. A
+  direct gate, literal apply-unitary tape or checked single-primitive named
+  call uses the original singleton code and the unchanged sparse spectator
+  coefficients. At the original source prefix, a named qmatch selection
+  satisfies the same history relation using its retained selector table,
+  checked child return order, literal Raw events and visible SSA. The
+  checked child traversal establishes coverage of the complete call slice.
+  The source evaluator computes the expected action from original owner
+  coordinates and the source arm table; the retained finite code establishes
+  the physical correspondence. The ordered arm proof uses this law at the
+  actual named selection in the root and in each selected conditional child.
+  The general named-call boundary derives the sparse input from the actual
+  argument assignment and the output from the written return order. The same
+  layouts carry arbitrary spectator and reference amplitudes. The local
+  trace preserves inherited values and bounds its writes by the child's
+  issued identities.
+  The named-call trace proof relates the exact parent and child wire frames
+  for allocation, erasure, reset, basis lift and Unit moves. For a branch
+  with paired arm outputs, the complete native phi checks determine the same
+  return wires and require an empty spectator list. Each erasure outcome
+  projects the same original amplitude in the parent and child frames and
+  retains the spectator coordinate after compression. Allocation tests the
+  same new zero bit in both frames. A basis lift uses the original table and
+  ordered input and output wires in both executions. Reindexing the caller's
+  finite sum retains exactly the spectator coordinate of each output row,
+  including for correlated input amplitudes. The original apply-unitary
+  tape, certified compute and protected compute retain the same local action
+  in both fixed frames. The protected target traversal reads and returns
+  the same ordered ports while retaining arbitrary spectator coefficients.
+  Original gates, CNOT, Toffoli and both coherently controlled tapes use
+  the same coefficient law. The paired observing fold retains measurement,
+  discard and reset outcomes in order, with the exact SSA writes from each
+  native check. Consecutive event chunks retain the order and multiplicity
+  of every history through composition. The pure history adapter retains
+  the actual checked events and finite rows on arbitrary reference columns.
+  The original named-call interval follows both native operation folds at
+  their respective depths. It compares the complete ordered histories of
+  every successful caller run and retains both issued-ID bounds. All pure,
+  observing and ordinary straight-line operations supply their local laws.
+  The branch law recurs through both actual native arm checks. The actual
+  condition selects the same arm from equal incoming SSA values. The
+  complete native phi list determines the ordered input wires and the fresh
+  output frame. The selected histories use that permutation and the same
+  simultaneous SSA merge, preserving their order and multiplicity. The
+  source argument assignment now supplies the child's exact input on every
+  physical spectator slice. Its paired execution retains inherited values
+  and bounds result IDs by the actual input history and the checked exit.
+  The original checker establishes that every literal write, including both
+  arms and each phi destination, is fresh at the interval's entry. Both
+  native readers issue the same ordinary IDs for the original operation
+  list, so the enclosing check's freshness carries into the child replay.
+  Classical gaps, measurement results and classical phi merges preserve the
+  checked SSA valuation with inherited IDs when their writes avoid that history.
+  The shared ordered prefix proof now transports this bound along each
+  literal chunk, including original ordinary gaps and observation outcomes.
+  A conditional passes the bound to the selected original arm and uses it
+  at the simultaneous phi merge, retaining ordered source results.
+  The original named child traversal uses the same source-derived input
+  bindings, the actual paired run on each spectator coordinate and the
+  checked return order. Its remaining source actions still require local laws.
+  The literal child interpreter preserves finite weighted operator columns
+  across pure events, erasure, ordinary values and selected branch joins.
+  A single ordered family of logical spectator components reconstructs the
+  actual child result list on every physical spectator coordinate.
+  Each logical component is refined on the original checked child traversal
+  and in its written return order. The exact weighted reconstruction sends
+  that source operator family back to the original caller owner order.
+  The original source return checkpoint
+  uses the same complete native state, and its written owner order
+  determines a single caller encoding for the ordered result family when
+  the child source returns agree on each slice. The recursive source-arm
+  correspondence for these child results remains a proof obligation.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

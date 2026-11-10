@@ -227,13 +227,55 @@ private def retainedData_at {dependencies program block step count ordinal}
         exact ⟨held.literal,held.obtained,parts.a+held.rank,.nextOrdinal (ordinal+1) :: held.path,
           parts.restLift _ _ _ held.original⟩
 
-private def retainedData_in {dependencies program block steps count step}
+/-- Retain a selection in an exact witnessed step list. Each recursive
+caller passes the list for its original body or selected branch. -/
+def actual_steps_selection {dependencies program block steps count step}
     (witness : @Witness dependencies (.steps 0 (Steps.ofList (program := program) (block := block) steps)) count)
     (earlier later : List (Step dependencies program block))
     (occurrence : @Middle dependencies program block step)
     (split : steps = earlier ++ step :: later) : RetainedData witness occurrence := by
   subst steps
   exact retainedData_at earlier later occurrence witness
+
+private theorem stepWitness {dependencies program block step ordinal count}
+    (earlier later : List (Step dependencies program block))
+    (witness : @Witness dependencies (.steps ordinal (Steps.ofList (earlier ++ step :: later))) count) :
+    ∃ atOrdinal selectedCount, Nonempty (Witness (.step atOrdinal step) selectedCount) := by
+  induction earlier generalizing ordinal count with
+  | nil =>
+    let current := consData witness
+    exact ⟨ordinal,current.a,⟨current.head⟩⟩
+  | cons first earlier ih =>
+    let current := consData witness
+    exact ih current.tail
+
+def ConditionalWitnesses {dependencies program block} : Step dependencies program block → Prop
+  | .conditional _ _ _ _ _ _ left right =>
+    (∃ count, Nonempty (Witness (.steps 0 left) count)) ∧
+    (∃ count, Nonempty (Witness (.steps 0 right) count))
+  | _ => True
+
+/-- The same original conditional witness gives the exact retained child
+lists on both sides. This only projects data from the completed traversal. -/
+theorem actual_conditional_steps {dependencies program block steps count step}
+    (witness : @Witness dependencies (.steps 0 (Steps.ofList (program := program) (block := block) steps)) count)
+    (earlier later : List (Step dependencies program block))
+    (split : steps = earlier ++ step :: later) : ConditionalWitnesses step := by
+  subst steps
+  cases step with
+  | conditional path event source branch branchRead action left right =>
+    obtain ⟨_,_,⟨here⟩⟩ := stepWitness earlier later witness
+    cases here with
+    | leaf original => cases original
+    | selection original _ _ => cases original
+    | child original _ => cases original
+    | pair original yes no =>
+      cases original
+      exact ⟨⟨_,⟨yes⟩⟩,⟨_,⟨no⟩⟩⟩
+  | pure _ => trivial
+  | named _ _ _ _ _ _ _ => trivial
+  | gap _ => trivial
+  | observation _ => trivial
 
 /-- Retain the original selection at a specified occurrence, with its actual
 global rank and path. The prefix and suffix may contain other selections. -/
@@ -244,7 +286,7 @@ def actual_body_selection {artifact owner name arguments request prepared order 
     (occurrence : Middle step)
     (split : body.checked.result.steps = earlier ++ step :: later) :
     RetainedData body.selections.witness occurrence :=
-  retainedData_in body.selections.witness earlier later occurrence split
+  actual_steps_selection body.selections.witness earlier later occurrence split
 
 def actual_body_middle {artifact owner name arguments request prepared order runtime}
     (body : @RuntimeBodyOperations.Checked artifact owner name arguments request prepared order runtime)
@@ -259,5 +301,6 @@ def actual_adjacent_middle {artifact owner name arguments request prepared order
 
 #print axioms actual_body_selection
 #print axioms actual_body_middle
+#print axioms actual_conditional_steps
 
 end QleisliKernel.Qirf.RuntimeNamedThreeOccurrence

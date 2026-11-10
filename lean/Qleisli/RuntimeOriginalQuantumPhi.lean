@@ -21,7 +21,7 @@ def outputBindings {dependencies program block offset actual source spectators l
       leftRoles rightRoles outputRoles left right) : Map :=
   bound.phis.map (fun pair => pair.2.binding)
 
-private theorem arm_valid {dependencies program block offset}
+theorem arm_valid {dependencies program block offset}
     (actual : @RuntimeInterval.Branch dependencies program block offset) (choice : Bool) :
     Raw.stateValid (if choice then actual.thenState else actual.elseState).quantum = true := by
   cases choice with
@@ -220,7 +220,7 @@ private def ordered_map {roles state} (checked : RuntimeOwnerMap.Checked roles s
   simpa only [List.map_map,Function.comp_def] using
     (order.map (fun binding => binding.owner.ordinal)).nodup_iff.mpr original
 
-private theorem wire_count {inputs outputs : Map} (paired : List.Forall₂ SameCarrier inputs outputs) :
+theorem wire_count {inputs outputs : Map} (paired : List.Forall₂ SameCarrier inputs outputs) :
     (inputs.flatMap (·.port.wires)).length = (outputs.flatMap (·.port.wires)).length := by
   induction paired with
   | nil => rfl

@@ -20,6 +20,10 @@ theorem issued_mono {before after : State} (keeps : before.classical ⊆ after.c
   obtain ⟨entry,member,rfl⟩ := List.mem_map.mp issued
   exact List.mem_map_of_mem (keeps member)
 
+/-- Every write is issued by the exit and fresh at the original entry. -/
+def FreshWrites (before after : State) (events : List Semantics.Observation.Event) : Prop :=
+  WritesWithin events (fun id => Issued after id ∧ ¬ Issued before id)
+
 private theorem inserted_id {before after : State} {id : Nat}
     (ok : insertClassical before id = .ok after) : Issued after id := by
   unfold Issued
@@ -28,8 +32,11 @@ private theorem inserted_id {before after : State} {id : Nat}
 
 private theorem classical_writes {before after : State} {output : Nat}
     (expression : Semantics.Observation.Expr) (ok : insertClassical before output = .ok after) :
-    WritesWithin [.classical expression output] (Issued after) :=
-  WritesWithin.singleton (by intro id writes; cases writes; exact inserted_id ok)
+    FreshWrites before after [.classical expression output] :=
+  WritesWithin.singleton (by
+    intro id writes
+    cases writes
+    exact ⟨inserted_id ok,(Raw.Observation.classical_fresh _ _ _ ok).1⟩)
 
 private theorem classical_quantum (state next : State) (id : Nat)
     (ok : insertClassical state id = .ok next) : next.quantum = state.quantum := by
@@ -42,7 +49,7 @@ private theorem classical_fold_facts {α : Type} (items : List α) (output : α 
     (state next : State)
     (ok : items.foldlM (fun state item => insertClassical state (output item)) state = .ok next) :
     next.quantum = state.quantum ∧ state.classical ⊆ next.classical ∧
-      ∀ item ∈ items, Issued next (output item) := by
+      ∀ item ∈ items, Issued next (output item) ∧ ¬ Issued state (output item) := by
   induction items generalizing state with
   | nil =>
     have same := Except.ok.inj ok
@@ -52,28 +59,31 @@ private theorem classical_fold_facts {α : Type} (items : List α) (output : α 
     simp only [List.foldlM_cons] at ok
     obtain ⟨middle,hi,rest⟩ := except_bind_success _ _ _ ok
     obtain ⟨quantum,keeps,outputs⟩ := ih middle rest
-    refine ⟨quantum.trans (classical_quantum _ _ _ hi),?_,?_⟩
-    · intro entry member
-      apply keeps
-      rw [(Raw.Observation.classical_fresh _ _ _ hi).2]
+    have insertion := Raw.Observation.classical_fresh _ _ _ hi
+    have entered : state.classical ⊆ middle.classical := by
+      intro entry member
+      rw [insertion.2]
       exact List.mem_append.mpr (Or.inl member)
-    · intro phi member
-      rcases List.mem_cons.mp member with same | inside
-      · subst phi
-        exact issued_mono keeps (inserted_id hi)
-      · exact outputs phi inside
+    refine ⟨quantum.trans (classical_quantum _ _ _ hi),fun _ member => keeps (entered member),?_⟩
+    intro phi member
+    rcases List.mem_cons.mp member with same | inside
+    · subst phi
+      exact ⟨issued_mono keeps (inserted_id hi),insertion.1⟩
+    · obtain ⟨issued,fresh⟩ := outputs phi inside
+      exact ⟨issued,fun old => fresh (issued_mono entered old)⟩
 
 private theorem consume_reference (state next : State) (input : Nat) (port : Semantics.Raw.Port)
     (ok : consume state input = .ok (port,next)) :
     ∃ taken : Semantics.RawTrace.Interface,
       Semantics.RawTrace.take state.quantum.reference input = some (port,taken) ∧
       next.quantum.reference =
-        {taken with frame := Semantics.Observation.remaining state.quantum.reference port.wires} := by
+        {taken with frame := Semantics.Observation.remaining state.quantum.reference port.wires} ∧
+      next.classical = state.classical := by
   obtain ⟨⟨found,after⟩,hf,h⟩ := except_bind_success _ _ _ ok
   have same := Except.ok.inj h
   cases same
   have frame := congrArg Raw.State.frame (Raw.Ownership.take_state _ _ _ _ hf).2
-  refine ⟨after.reference,Raw.take_reference _ _ _ _ hf,?_⟩
+  refine ⟨after.reference,Raw.take_reference _ _ _ _ hf,?_,rfl⟩
   simp only [Raw.State.reference,Semantics.Observation.remaining,frame]
 
 private theorem step_reference (dependencies : List Dependency)
@@ -81,12 +91,12 @@ private theorem step_reference (dependencies : List Dependency)
     (sound : ∀ state ops next work left, (recurse state ops).run work = (.ok next,left) →
       state.classical ⊆ next.classical ∧
       ∃ events, reader state.quantum.reference ops = some (next.quantum.reference,events) ∧
-        WritesWithin events (Issued next))
+        FreshWrites state next events)
     (state next : State) (op : Op) (work left : Nat)
     (ok : (checkStep dependencies recurse state op).run work = (.ok next,left)) :
     state.classical ⊆ next.classical ∧
     ∃ events, readStep reader state.quantum.reference op = some (next.quantum.reference,events) ∧
-      WritesWithin events (Issued next) := by
+      FreshWrites state next events := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨result,_,body,h⟩ := bind_success _ _ _ _ _ h
@@ -113,21 +123,24 @@ private theorem step_reference (dependencies : List Dependency)
     subst result
     have insertion := (lift_success _ _ _ _ hn).1
     have quantum := classical_quantum _ _ _ insertion
-    obtain ⟨taken,read,frame⟩ := consume_reference _ _ _ _ (lift_success _ _ _ _ hc).1
+    obtain ⟨taken,read,frame,classical⟩ := consume_reference _ _ _ _ (lift_success _ _ _ _ hc).1
     refine ⟨[.erase state.quantum.reference.frame.length
       (Semantics.RawTrace.axes state.quantum.reference port.wires) (some output)],?_,?_⟩
     · simp [readStep,read,quantum,frame]
-    · exact WritesWithin.singleton (by
+    · have issued : Issued updated output := inserted_id insertion
+      exact WritesWithin.singleton (by
         intro id writes
         cases writes
-        exact (inserted_id insertion : Issued updated output))
+        have fresh := (Raw.Observation.classical_fresh _ _ _ insertion).1
+        rw [classical] at fresh
+        exact ⟨issued,fresh⟩)
   | reset input output wire =>
     obtain ⟨⟨port,consumed⟩,_,hc,h⟩ := bind_success _ _ _ _ _ body
     obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
     obtain ⟨quantum,_,hq,h⟩ := bind_success _ _ _ _ _ h
     have same := (pure_success _ _ _ _ h).1
     subst result
-    obtain ⟨taken,read,frame⟩ := consume_reference _ _ _ _ (lift_success _ _ _ _ hc).1
+    obtain ⟨taken,read,frame,_⟩ := consume_reference _ _ _ _ (lift_success _ _ _ _ hc).1
     have inputRead := Raw.input_reference _ _ _ (lift_success _ _ _ _ hq).1
     change quantum.reference = ⟨consumed.quantum.reference.live ++ [⟨output,[wire],1⟩],
       consumed.quantum.reference.frame ++ [wire]⟩ at inputRead
@@ -139,7 +152,7 @@ private theorem step_reference (dependencies : List Dependency)
     obtain ⟨⟨port,consumed⟩,_,hc,h⟩ := bind_success _ _ _ _ _ body
     have same := (pure_success _ _ _ _ h).1
     subst result
-    obtain ⟨taken,read,frame⟩ := consume_reference _ _ _ _ (lift_success _ _ _ _ hc).1
+    obtain ⟨taken,read,frame,_⟩ := consume_reference _ _ _ _ (lift_success _ _ _ _ hc).1
     refine ⟨[.erase state.quantum.reference.frame.length
       (Semantics.RawTrace.axes state.quantum.reference port.wires) none],?_,WritesWithin.erase_none _ _ _⟩
     simp [readStep,read,frame]
@@ -171,7 +184,7 @@ private theorem step_reference (dependencies : List Dependency)
     obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
     obtain ⟨merged,_,hm,h⟩ := bind_success _ _ _ _ _ h
     obtain ⟨outputs,joinedKept,phiWrites⟩ := classical_fold_facts classical (·.output) _ _ (lift_success _ _ _ _ h).1
-    obtain ⟨_leftKept,leftEvents,leftRead,leftWrites⟩ := sound _ _ _ _ _ ht
+    obtain ⟨leftKept,leftEvents,leftRead,leftWrites⟩ := sound _ _ _ _ _ ht
     obtain ⟨rightKept,rightEvents,rightRead,rightWrites⟩ := sound _ _ _ _ _ he
     change reader state.quantum.reference thenOps = some (thenState.quantum.reference,leftEvents) at leftRead
     change reader state.quantum.reference elseOps = some (elseState.quantum.reference,rightEvents) at rightRead
@@ -193,10 +206,14 @@ private theorem step_reference (dependencies : List Dependency)
       intro id writes
       cases writes with
       | thenArm member emitted =>
-        exact issued_mono (fun _ member => joinedKept (rightKept member)) (leftAll member emitted)
+        obtain ⟨issued,fresh⟩ := leftAll member emitted
+        exact ⟨issued_mono (fun _ member => joinedKept (rightKept member)) issued,fresh⟩
       | elseArm member emitted =>
-        exact issued_mono joinedKept (rightAll member emitted)
-      | phi member => exact phiWrites _ member
+        obtain ⟨issued,fresh⟩ := rightAll member emitted
+        exact ⟨issued_mono joinedKept issued,fun old => fresh (issued_mono leftKept old)⟩
+      | phi member =>
+        obtain ⟨issued,fresh⟩ := phiWrites _ member
+        exact ⟨issued,fun old => fresh (issued_mono (fun _ member => rightKept (leftKept member)) old)⟩
 
 private def advance (reader : Reader) (before : Result) (op : Op) : Option Result := do
   let (after,events) ← readStep reader before.1 op
@@ -207,12 +224,12 @@ private theorem fold_reference (dependencies : List Dependency)
     (sound : ∀ state ops next work left, (recurse state ops).run work = (.ok next,left) →
       state.classical ⊆ next.classical ∧
       ∃ events, reader state.quantum.reference ops = some (next.quantum.reference,events) ∧
-        WritesWithin events (Issued next))
+        FreshWrites state next events)
     (ops : List Op) (state next : State) (previous : List Semantics.Observation.Event) (work left : Nat)
     (ok : (ops.foldlM (checkStep dependencies recurse) state).run work = (.ok next,left)) :
     state.classical ⊆ next.classical ∧
     ∃ events, ops.foldlM (advance reader) (state.quantum.reference,previous) =
-      some (next.quantum.reference,previous++events) ∧ WritesWithin events (Issued next) := by
+      some (next.quantum.reference,previous++events) ∧ FreshWrites state next events := by
   induction ops generalizing state previous work with
   | nil =>
     have same := (pure_success _ _ _ _ ok).1
@@ -224,18 +241,19 @@ private theorem fold_reference (dependencies : List Dependency)
     obtain ⟨firstKept,first,step,firstWrites⟩ := step_reference _ _ _ sound _ _ _ _ _ head
     obtain ⟨laterKept,later,read,laterWrites⟩ := ih middle (previous++first) b rest
     refine ⟨fun _ member => laterKept (firstKept member),first++later,?_,
-      (firstWrites.mono (by intro id issued; exact issued_mono laterKept issued)).append laterWrites⟩
+      (firstWrites.mono (fun _ written => ⟨issued_mono laterKept written.1,written.2⟩)).append
+        (laterWrites.mono (fun _ written => ⟨written.1,fun old => written.2 (issued_mono firstKept old)⟩))⟩
     simpa only [List.foldlM_cons,advance,step,bind,Option.bind,pure,List.append_assoc] using read
 
 /-- The original observing checker and independent reader agree on the
-quantum interface. Every literal write belongs to the successful check's
-globally issued identities. -/
-theorem checkOps_reference_with_writes (dependencies : List Dependency) (fuel : Nat)
+quantum interface. Every literal write is new relative to the exact
+entry, including writes in either arm and every phi destination. -/
+theorem checkOps_reference_with_fresh_writes (dependencies : List Dependency) (fuel : Nat)
     (state next : State) (ops : List Op) (work left : Nat)
     (ok : (checkOps dependencies fuel state ops).run work = (.ok next,left)) :
     state.classical ⊆ next.classical ∧
     ∃ events, Semantics.Observation.readOps fuel state.quantum.reference ops =
-      some (next.quantum.reference,events) ∧ WritesWithin events (Issued next) := by
+      some (next.quantum.reference,events) ∧ FreshWrites state next events := by
   induction fuel generalizing state next ops work left with
   | zero => cases ok
   | succ fuel ih =>
@@ -249,6 +267,44 @@ theorem checkOps_reference_with_writes (dependencies : List Dependency) (fuel : 
     refine ⟨keeps,events,?_,writes⟩
     rw [Raw.ObservationAgreement.read_succ]
     simpa only [List.nil_append] using read
+
+theorem checkOps_reference_with_writes (dependencies : List Dependency) (fuel : Nat)
+    (state next : State) (ops : List Op) (work left : Nat)
+    (ok : (checkOps dependencies fuel state ops).run work = (.ok next,left)) :
+    state.classical ⊆ next.classical ∧
+    ∃ events, Semantics.Observation.readOps fuel state.quantum.reference ops =
+      some (next.quantum.reference,events) ∧ WritesWithin events (Issued next) := by
+  obtain ⟨keeps,events,read,writes⟩ := checkOps_reference_with_fresh_writes _ _ _ _ _ _ _ ok
+  exact ⟨keeps,events,read,writes.mono (fun _ written => written.1)⟩
+
+/-- The actual check of one original instruction fixes its reader event list
+and its globally issued writes, including writes in the selected arm. -/
+theorem checkStep_reference_with_writes (dependencies : List Dependency) (fuel : Nat)
+    (state next : State) (op : Op) (work left : Nat)
+    (ok : (checkStep dependencies (checkOps dependencies fuel) state op).run work = (.ok next,left)) :
+    state.classical ⊆ next.classical ∧
+    ∃ events, readStep (Semantics.Observation.readOps fuel) state.quantum.reference op =
+      some (next.quantum.reference,events) ∧ WritesWithin events (Issued next) := by
+  obtain ⟨keeps,events,read,writes⟩ :=
+    step_reference dependencies (checkOps dependencies fuel) (Semantics.Observation.readOps fuel)
+      (fun state ops next work left => checkOps_reference_with_fresh_writes dependencies fuel state next ops work left)
+      state next op work left ok
+  exact ⟨keeps,events,read,writes.mono (fun _ written => written.1)⟩
+
+/-- Both exact quantum states of an original successful instruction satisfy
+the native frame invariant. -/
+theorem checkStep_frames_valid {dependencies : List Dependency} {fuel : Nat}
+    {state next : State} {op : Op} {work left : Nat}
+    (ok : (checkStep dependencies (checkOps dependencies fuel) state op).run work = (.ok next,left)) :
+    Raw.stateValid state.quantum = true ∧ Raw.stateValid next.quantum = true := by
+  obtain ⟨_,_,_,afterCharge⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,before,afterGuard⟩ := bind_success _ _ _ _ _ afterCharge
+  obtain ⟨result,_,_,afterAction⟩ := bind_success _ _ _ _ _ afterGuard
+  obtain ⟨_,_,after,done⟩ := bind_success _ _ _ _ _ afterAction
+  have same := (pure_success _ _ _ _ done).1
+  subst next
+  exact ⟨(guard_success _ _ _ _ before).1,
+    (Bool.and_eq_true_iff.mp (guard_success _ _ _ _ after).1).1⟩
 
 theorem checkOps_reference (dependencies : List Dependency) (fuel : Nat)
     (state next : State) (ops : List Op) (work left : Nat)
@@ -295,11 +351,12 @@ theorem verify_reference_with_writes (dependencies : List Dependency) (program :
   have exactEvents : events++[.pure finish] = prepared.events := by
     simp only [Semantics.Observation.read,original,bind,Option.bind,pure] at literal
     exact congrArg Semantics.Observation.Prepared.events (Option.some.inj literal)
-  refine ⟨fun id member => issued_mono keeps (inputs id member),?_⟩
+  refine ⟨fun id member => issued_mono keeps (inputs id member).1,?_⟩
   change WritesWithin prepared.events (Issued state)
   rw [← exactEvents]
   exact writes.append (WritesWithin.pures [finish] _)
 
+#print axioms checkOps_reference_with_fresh_writes
 #print axioms checkOps_reference_with_writes
 #print axioms checkOps_reference
 #print axioms verify_reference_with_writes

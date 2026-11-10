@@ -85,23 +85,19 @@ theorem input_coefficient {roles state checked selected}
 #print axioms carrier_layouts
 #print axioms frame_entries
 #print axioms input_coefficient
-/-- Derive the local Raw frame and selected parent axes from the actual
-named scope. Only the original full-carrier source fact and start-at-zero
-coverage are consumed; frame geometry is not supplied by the caller. -/
-theorem original_selection_input_coefficient
+/-- The original child starts with the exact selected physical frame, in
+the caller's ordered input wires. -/
+theorem original_selection_input_geometry
     {dependencies program block callStart callCount inputs ordinary effect sources caller before returned retired value}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
     (scope : @RuntimeCallScope.Checked dependencies program block callStart callCount inputs ordinary effect)
     (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before returned retired value)
     {first size localInputs outputs selector target}
     (selected : RuntimePureInterval.Checked scope.prepared.block 2 first size localInputs outputs [selector,target])
-    (source : RuntimeOwnerTransition.Selection selected.interval localInputs outputs [selector,target])
-    (starts : first = 0)
-    (same : carrierOwners source.before.bindings = carrierOwners boundary.input.ordered)
-    (child : Frame source.before) (codes : OwnerCodes boundary.input.ordered)
-    (physical logical : Nat) (bound : logical < child.code.dimension) :
-    scalar (child.embedding (gather physical (RuntimeNamedFrameAxes.mixedAxes scope)) logical) =
-      coefficients scope.interval.before.quantum.frame codes physical logical := by
+    (starts : first = 0) :
+    forestAxes scope.interval.before.quantum.frame boundary.input.ordered = RuntimeNamedFrameAxes.mixedAxes scope ∧
+    selected.interval.before.quantum.frame = boundary.input.ordered.flatMap (·.port.wires) ∧
+    selected.interval.before.quantum.frame.Nodup := by
   have axes : forestAxes scope.interval.before.quantum.frame boundary.input.ordered =
       RuntimeNamedFrameAxes.mixedAxes scope := by
     unfold RuntimeNamedFrameAxes.mixedAxes RuntimeForestCode.portAxes
@@ -126,6 +122,26 @@ theorem original_selection_input_coefficient
   have unique : selected.interval.before.quantum.frame.Nodup := by
     rw [localFrame]
     exact wiresUnique
+  exact ⟨axes,localFrame,unique⟩
+
+/-- Derive the local Raw frame and selected parent axes from the actual
+named scope. Only the original full-carrier source fact and start-at-zero
+coverage are consumed; frame geometry is not supplied by the caller. -/
+theorem original_selection_input_coefficient
+    {dependencies program block callStart callCount inputs ordinary effect sources caller before returned retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (scope : @RuntimeCallScope.Checked dependencies program block callStart callCount inputs ordinary effect)
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before returned retired value)
+    {first size localInputs outputs selector target}
+    (selected : RuntimePureInterval.Checked scope.prepared.block 2 first size localInputs outputs [selector,target])
+    (source : RuntimeOwnerTransition.Selection selected.interval localInputs outputs [selector,target])
+    (starts : first = 0)
+    (same : carrierOwners source.before.bindings = carrierOwners boundary.input.ordered)
+    (child : Frame source.before) (codes : OwnerCodes boundary.input.ordered)
+    (physical logical : Nat) (bound : logical < child.code.dimension) :
+    scalar (child.embedding (gather physical (RuntimeNamedFrameAxes.mixedAxes scope)) logical) =
+      coefficients scope.interval.before.quantum.frame codes physical logical := by
+  obtain ⟨axes,localFrame,unique⟩ := original_selection_input_geometry scope boundary selected starts
   have actual := input_coefficient child codes same localFrame unique
     scope.interval.before.quantum.frame physical logical bound
   rw [axes] at actual

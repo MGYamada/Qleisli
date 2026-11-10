@@ -48,17 +48,18 @@ private theorem bindings_exist (choice : Bool) (phis : List Phi) (values : Value
 
 /-- For an actual selected-arm result, every merged SSA expression agrees
 with the original interpreter's appended values. Destinations are fresh by
-the parent Raw check and the selected history's issued identities. -/
-theorem original_merge_agrees {sources rootOwner rootName caller name dependencies program block offset
+the original Raw check and the inherited history's separate write bound. -/
+theorem original_merge_agrees_with_inherited {sources rootOwner rootName caller name dependencies program block offset
     path event source actual before left right ordinary leftOrdinary rightOrdinary}
     (action : @RuntimeBranchAction.Checked sources rootOwner rootName caller name dependencies program block offset
       path event source actual before left right ordinary leftOrdinary rightOrdinary)
-    (reference : Valuation) (choice : Bool) (history : History)
+    (reference : Valuation) (choice : Bool) (history : History) (inherited : Nat → Prop)
     (condition : Semantics.SourceOrdinary.evaluate reference action.condition.required = some (bitValue choice))
     (kept : Agreement reference history.values ordinary.table)
     (selected : Agreement reference history.values (if choice then leftOrdinary.table else rightOrdinary.table))
-    (issued : history.values.map Prod.fst ⊆
-      (if choice then actual.thenState else actual.elseState).classical.map Prod.fst) :
+    (supported : ∀ ⦃id⦄, id ∈ history.values.map Prod.fst → inherited id ∨
+      id ∈ (if choice then actual.thenState else actual.elseState).classical.map Prod.fst)
+    (avoids : ∀ phi ∈ actual.classical, ¬ inherited phi.output) :
     ∃ after : History, merge choice actual.classical history = some after ∧
       after.hidden = history.hidden ∧ after.operator = history.operator ∧
       Agreement reference after.values action.ordinaryAfter.table := by
@@ -98,14 +99,31 @@ theorem original_merge_agrees {sources rootOwner rootName caller name dependenci
       have missing : lookup history.values pair.1.output = none := by
         apply lookup_unissued
         intro present
-        have used := issued present
-        cases choice
-        · exact fresh.2 used
-        · exact fresh.1 used
+        rcases supported present with inheritedId | localId
+        · exact avoids pair.1 rawPhi inheritedId
+        · cases choice
+          · exact fresh.2 localId
+          · exact fresh.1 localId
       refine ⟨bit,?_,pair.2.sound action.condition.required choice bit 0 0 condition selected (lookup_native found)⟩
       change lookup (history.values++added) pair.1.output = some bit
       rw [lookup_append_absent _ _ _ missing,phiBindings_lookup merged action.ordinaryPhis.distinct rawPhi]
       exact found
+
+theorem original_merge_agrees {sources rootOwner rootName caller name dependencies program block offset
+    path event source actual before left right ordinary leftOrdinary rightOrdinary}
+    (action : @RuntimeBranchAction.Checked sources rootOwner rootName caller name dependencies program block offset
+      path event source actual before left right ordinary leftOrdinary rightOrdinary)
+    (reference : Valuation) (choice : Bool) (history : History)
+    (condition : Semantics.SourceOrdinary.evaluate reference action.condition.required = some (bitValue choice))
+    (kept : Agreement reference history.values ordinary.table)
+    (selected : Agreement reference history.values (if choice then leftOrdinary.table else rightOrdinary.table))
+    (issued : history.values.map Prod.fst ⊆
+      (if choice then actual.thenState else actual.elseState).classical.map Prod.fst) :
+    ∃ after : History, merge choice actual.classical history = some after ∧
+      after.hidden = history.hidden ∧ after.operator = history.operator ∧
+      Agreement reference after.values action.ordinaryAfter.table :=
+  original_merge_agrees_with_inherited action reference choice history (fun _ => False) condition kept selected
+    (fun _ present => .inr (issued present)) (fun _ _ impossible => impossible)
 
 theorem merge_paired_family {SourceResult : Type} (choice : Bool) (phis : List Phi)
     {expected : List SourceResult} {histories : List History}
@@ -178,6 +196,7 @@ theorem original_branch_classical_join {sources rootOwner rootName caller name d
   rw [actualStep,ran]
   simpa only [List.map_id] using merged
 
+#print axioms original_merge_agrees_with_inherited
 #print axioms original_merge_agrees
 #print axioms original_branch_classical_join
 end Qleisli.RuntimeOriginalClassicalJoin

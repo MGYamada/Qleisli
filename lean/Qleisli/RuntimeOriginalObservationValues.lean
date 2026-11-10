@@ -97,10 +97,33 @@ theorem agreement_append_values (inputs : List Nat) (before extra : List Measure
 
 
 open QleisliKernel.Finite
-open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
+open Qleisli.RuntimeObservingPrefix (Issued issued_mono checkOps_reference)
+open Qleisli.RuntimeObservingWrites (WritesWithin)
 open Qleisli.RuntimeObservingValueRetention (Supports run_retains_values)
 open Qleisli.Semantics.ObservingAction (History run)
 open RuntimeInterval (Computed)
+
+/-- Extend the original source valuation through a checked gap while
+keeping caller-owned history IDs available to its ordinary expressions. -/
+theorem original_gap_values_with_inherited {dependencies program block start count before ssa}
+    (gap : @RuntimeOrdinaryBody.Gap dependencies program block start count before ssa)
+    (inputs : List Nat) (history : History) (inherited : Nat → Prop)
+    (agrees : Agreement (valuation inputs ssa.measurements history.values) history.values ssa.table)
+    (supported : Supports (fun id => inherited id ∨ Issued gap.checked.interval.before id) history)
+    {events : List Semantics.Observation.Event}
+    (literal : Semantics.Observation.readOps block.fuel gap.checked.interval.before.quantum.reference
+      ((block.operations.drop start).take count) = some (gap.checked.interval.after.quantum.reference,events))
+    (avoids : WritesWithin events (fun id => ¬ inherited id)) :
+    ∃ result, run dependencies block.fuel events history = some [result] ∧
+      result.hidden = history.hidden ∧ result.operator = history.operator ∧
+      Agreement (valuation inputs gap.ssa.measurements result.values) result.values gap.ssa.table ∧
+      Supports (fun id => inherited id ∨ Issued gap.checked.interval.after id) result := by
+  obtain ⟨result,executed,hidden,operator,after,support⟩ :=
+    RuntimeOriginalOrdinaryGap.original_gap_with_inherited gap history _ inherited agrees supported literal avoids
+  have retains := run_retains_values dependencies block.fuel events history executed result List.mem_cons_self
+  refine ⟨result,executed,hidden,operator,?_,support⟩
+  simpa only [List.append_nil,RuntimeOrdinaryBody.Gap.ssa] using
+    agreement_extend_values inputs ssa.measurements [] retains after
 
 /-- The original classical gap agrees with the valuation of its returned
 history, ready for the next checked instruction. -/
@@ -117,12 +140,12 @@ theorem original_gap_values {dependencies program block start count before ssa}
       result.hidden = history.hidden ∧ result.operator = history.operator ∧
       Agreement (valuation inputs gap.ssa.measurements result.values) result.values gap.ssa.table ∧
       Supports (Issued gap.checked.interval.after) result := by
-  obtain ⟨events,result,read,executed,hidden,operator,after,support⟩ :=
-    RuntimeOriginalOrdinaryGap.original_gap gap history _ agrees supported
-  have retains := run_retains_values dependencies block.fuel events history executed result List.mem_cons_self
-  refine ⟨events,result,read,executed,hidden,operator,?_,support⟩
-  simpa only [List.append_nil,RuntimeOrdinaryBody.Gap.ssa] using
-    agreement_extend_values inputs ssa.measurements [] retains after
+  obtain ⟨work,left,checked⟩ := gap.checked.interval.intervalRead
+  obtain ⟨events,literal⟩ := checkOps_reference _ _ _ _ _ work left checked
+  obtain ⟨result,executed,hidden,operator,ordinary,support⟩ :=
+    original_gap_values_with_inherited gap inputs history (fun _ => False) agrees
+      (fun _ member => .inr (supported member)) literal (fun _ _ _ _ impossible => impossible)
+  exact ⟨events,result,literal,executed,hidden,operator,ordinary,fun _ member => (support member).resolve_left id⟩
 
 private theorem measurement_step_ids {dependencies recurse state next input output}
     (checked : Computed (Raw.Observation.checkStep dependencies recurse state (.measure input output)) next) :
@@ -245,6 +268,67 @@ theorem observation_measurement_ids {sources rootOwner rootName caller functionN
 
 /-- The value recorded by the actual erasure history is the value of the
 transported source measurement. Discard keeps the source table and valuation. -/
+theorem observation_agreement_with_inherited {sources rootOwner rootName caller functionName dependencies program
+    path event block position before ssa}
+    (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
+      program path event block position before ssa)
+    (inputs : List Nat) (history : History) (outcome : Nat) (inherited : Nat → Prop)
+    (agrees : Agreement (valuation inputs ssa.measurements history.values) history.values ssa.table)
+    (supported : Supports (fun id => inherited id ∨ Issued observation.checked.interval.before id) history)
+    (avoids : ∀ id, observation.checked.measured = some id → ¬ inherited id) :
+    let values := match observation.checked.measured with
+      | none => history.values
+      | some id => history.values ++ [(id,outcome == 1)]
+    Agreement (valuation inputs observation.ordinary.measurements values) values observation.ordinary.table ∧
+      Supports (fun id => inherited id ∨ Issued observation.checked.interval.after id) {history with values} := by
+  cases measured : observation.checked.measured with
+  | none =>
+    obtain ⟨work,left,read⟩ := observation.ordinaryRead
+    simp only [RuntimeOrdinaryBody.extendObservation,RuntimeObservationAction.Checked.measurement,measured,Option.map] at read
+    rw [(pure_success _ _ work left read).1]
+    refine ⟨agrees,?_⟩
+    obtain ⟨_,_,checked⟩ := observation.checked.interval.intervalRead
+    have keeps := (Raw.Observation.checkOps_history _ _ _ _ _ _ _ checked).2.2
+    intro id member
+    exact (supported member).imp (fun held => held) (issued_mono keeps)
+  | some id =>
+    obtain ⟨binding,rfl,_,newKey,shape⟩ := checked_measurement observation measured
+    let bit : Bool := outcome == 1
+    obtain ⟨fresh,ids⟩ := observation_measurement_ids observation measured
+    have unused : Semantics.OrdinaryValue.lookup history.values binding.output = none :=
+      RuntimeOriginalClassicalJoin.lookup_unissued (fun member => (supported member).elim (avoids _ measured) fresh)
+    have found := Semantics.OrdinaryValue.lookup_append_fresh bit unused
+    have value : evaluate (valuation inputs (ssa.measurements++[binding])
+        (history.values++[(binding.output,bit)])) binding.expression = some (bitValue bit) := by
+      rw [evaluate_unfold]
+      simp only [Measurement.expression,evaluateStep,valuation,List.find?_append,newKey]
+      simp [List.find?,found]
+    have retained := agreement_append_values inputs ssa.measurements [binding] history.values
+      [(binding.output,bit)] agrees
+    change Agreement (valuation inputs observation.ordinary.measurements
+      (history.values++[(binding.output,bit)])) (history.values++[(binding.output,bit)])
+      observation.ordinary.table ∧
+      Supports (fun id => inherited id ∨ Issued observation.checked.interval.after id)
+        {history with values := history.values++[(binding.output,bit)]}
+    constructor
+    · rw [shape]
+      intro id expression member
+      rcases List.mem_append.mp member with earlier | added
+      · exact retained id expression earlier
+      · have same : (id,expression) = (binding.output,binding.expression) := List.mem_singleton.mp added
+        cases same
+        exact ⟨bit,found,value⟩
+    · intro id member
+      change id ∈ (history.values++[(binding.output,bit)]).map Prod.fst at member
+      change inherited id ∨ id ∈ observation.checked.interval.after.classical.map Prod.fst
+      rw [ids]
+      rw [List.map_append] at member
+      rcases List.mem_append.mp member with old | new
+      · exact (supported old).imp (fun held => held) (fun present => List.mem_append.mpr (.inl present))
+      · exact .inr (List.mem_append.mpr (.inr new))
+
+/-- The value recorded by the actual erasure history is the value of the
+transported source measurement. Discard keeps the source table and valuation. -/
 theorem observation_agreement {sources rootOwner rootName caller functionName dependencies program
     path event block position before ssa}
     (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
@@ -257,51 +341,44 @@ theorem observation_agreement {sources rootOwner rootName caller functionName de
       | some id => history.values ++ [(id,outcome == 1)]
     Agreement (valuation inputs observation.ordinary.measurements values) values observation.ordinary.table ∧
       Supports (Issued observation.checked.interval.after) {history with values} := by
-  cases measured : observation.checked.measured with
-  | none =>
-    obtain ⟨work,left,read⟩ := observation.ordinaryRead
-    simp only [RuntimeOrdinaryBody.extendObservation,RuntimeObservationAction.Checked.measurement,measured,Option.map] at read
-    rw [(pure_success _ _ work left read).1]
-    refine ⟨agrees,?_⟩
-    obtain ⟨_,_,checked⟩ := observation.checked.interval.intervalRead
-    have keeps := (Raw.Observation.checkOps_history _ _ _ _ _ _ _ checked).2.2
-    intro id member
-    exact issued_mono keeps (supported member)
-  | some id =>
-    obtain ⟨binding,rfl,_,newKey,shape⟩ := checked_measurement observation measured
-    let bit : Bool := outcome == 1
-    obtain ⟨fresh,ids⟩ := observation_measurement_ids observation measured
-    have unused : Semantics.OrdinaryValue.lookup history.values binding.output = none :=
-      RuntimeOriginalClassicalJoin.lookup_unissued (fun member => fresh (supported member))
-    have found := Semantics.OrdinaryValue.lookup_append_fresh bit unused
-    have value : evaluate (valuation inputs (ssa.measurements++[binding])
-        (history.values++[(binding.output,bit)])) binding.expression = some (bitValue bit) := by
-      rw [evaluate_unfold]
-      simp only [Measurement.expression,evaluateStep,valuation,List.find?_append,newKey]
-      simp [List.find?,found]
-    have retained := agreement_append_values inputs ssa.measurements [binding] history.values
-      [(binding.output,bit)] agrees
-    change Agreement (valuation inputs observation.ordinary.measurements
-      (history.values++[(binding.output,bit)])) (history.values++[(binding.output,bit)])
-      observation.ordinary.table ∧
-      Supports (Issued observation.checked.interval.after)
-        {history with values := history.values++[(binding.output,bit)]}
-    constructor
-    · rw [shape]
-      intro id expression member
-      rcases List.mem_append.mp member with earlier | added
-      · exact retained id expression earlier
-      · have same : (id,expression) = (binding.output,binding.expression) := List.mem_singleton.mp added
-        cases same
-        exact ⟨bit,found,value⟩
-    · intro id member
-      change id ∈ (history.values++[(binding.output,bit)]).map Prod.fst at member
-      change id ∈ observation.checked.interval.after.classical.map Prod.fst
-      rw [ids]
-      rw [List.map_append] at member
-      rcases List.mem_append.mp member with old | new
-      · exact List.mem_append.mpr (Or.inl (supported old))
-      · exact List.mem_append.mpr (Or.inr new)
+  have result := observation_agreement_with_inherited observation inputs history outcome (fun _ => False) agrees
+    (fun _ member => .inr (supported member)) (fun _ _ impossible => impossible)
+  exact ⟨result.1,fun _ member => (result.2 member).resolve_left id⟩
+
+/-- Each result of the actual erasure event has the checked ordinary state. -/
+theorem observation_step_values_with_inherited {sources rootOwner rootName caller functionName dependencies program
+    path event block position before ssa}
+    (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
+      program path event block position before ssa)
+    (inputs : List Nat) (history : History) (inherited : Nat → Prop)
+    (agrees : Agreement (valuation inputs ssa.measurements history.values) history.values ssa.table)
+    (supported : Supports (fun id => inherited id ∨ Issued observation.checked.interval.before id) history)
+    (recurse : List Semantics.Observation.Event → History → Option (List History))
+    (avoids : WritesWithin
+      [.erase observation.checked.interval.before.quantum.reference.frame.length
+        (observation.checked.input.port.wires.map
+          observation.checked.interval.before.quantum.reference.frame.idxOf) observation.checked.measured]
+      (fun id => ¬ inherited id))
+    {results : List History}
+    (executed : Qleisli.Semantics.ObservingAction.step dependencies recurse
+      (.erase observation.checked.interval.before.quantum.reference.frame.length
+        (observation.checked.input.port.wires.map
+          observation.checked.interval.before.quantum.reference.frame.idxOf) observation.checked.measured)
+      history = some results) :
+    ∀ result ∈ results,
+      Agreement (valuation inputs observation.ordinary.measurements result.values) result.values
+        observation.ordinary.table ∧
+      Supports (fun id => inherited id ∨ Issued observation.checked.interval.after id) result := by
+  simp only [Qleisli.Semantics.ObservingAction.step] at executed
+  rw [← Option.some.inj executed]
+  intro result member
+  obtain ⟨outcome,_,rfl⟩ := List.mem_map.mp member
+  have fresh : ∀ id, observation.checked.measured = some id → ¬ inherited id := by
+    intro id measured
+    rw [measured] at avoids
+    exact avoids List.mem_cons_self (.measure _ _ id)
+  have after := observation_agreement_with_inherited observation inputs history outcome inherited agrees supported fresh
+  cases measured : observation.checked.measured <;> simpa only [measured] using after
 
 /-- Each result of the actual erasure event has the checked ordinary state. -/
 theorem observation_step_values {sources rootOwner rootName caller functionName dependencies program
@@ -321,14 +398,15 @@ theorem observation_step_values {sources rootOwner rootName caller functionName 
     ∀ result ∈ results,
       Agreement (valuation inputs observation.ordinary.measurements result.values) result.values
         observation.ordinary.table ∧ Supports (Issued observation.checked.interval.after) result := by
-  simp only [Qleisli.Semantics.ObservingAction.step] at executed
-  rw [← Option.some.inj executed]
   intro result member
-  obtain ⟨outcome,_,rfl⟩ := List.mem_map.mp member
-  have after := observation_agreement observation inputs history outcome agrees supported
-  cases measured : observation.checked.measured <;> simpa only [measured] using after
+  obtain ⟨agreed,support⟩ := observation_step_values_with_inherited observation inputs history
+    (fun _ => False) agrees (fun _ present => .inr (supported present)) recurse
+    (fun _ _ _ _ impossible => impossible) executed result member
+  exact ⟨agreed,fun _ present => (support present).resolve_left id⟩
 
+#print axioms original_gap_values_with_inherited
 #print axioms original_gap_values
+#print axioms observation_step_values_with_inherited
 #print axioms observation_step_values
 
 end Qleisli.RuntimeOriginalObservationValues

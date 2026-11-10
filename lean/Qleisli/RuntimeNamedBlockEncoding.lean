@@ -129,18 +129,16 @@ private theorem partition_perm (all selected : Map) (allUnique : all.Nodup)
 
 /-- Full input-token uniqueness is derived from the real call input gate,
 including empty-wire owners. Wire-axis uniqueness alone is not used for it. -/
-theorem original_named_partition
+theorem original_named_partition_geometry
     {dependencies program block callStart callCount inputs ordinary effect sources caller before returned retired value}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
     (scope : @RuntimeCallScope.Checked dependencies program block callStart callCount inputs ordinary effect)
     (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before returned retired value)
-    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before) (frame : Frame checked)
+    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
     (sameBindings : checked.bindings = before.bindings) :
     let selected := boundary.input.ordered
     let spectators := RuntimeSelectionPartition.complement checked.bindings selected
-    ∃ selectedCodes : OwnerCodes selected, ∃ spectatorCodes : OwnerCodes spectators,
-      reindex frame.owners (selected++spectators) = some (append selectedCodes spectatorCodes) ∧
-      (selected++spectators).Perm checked.bindings := by
+    (selected++spectators).Perm checked.bindings := by
   intro selected spectators
   have opening := RuntimeNamedFrameAxes.initialized scope.entryRead
   have live : scope.localEntry.quantum.live = scope.selected :=
@@ -161,6 +159,23 @@ theorem original_named_partition
     rw [sameBindings]
     exact (RuntimeSelectionPartition.order_values before.bindings event.inputOwners selected boundary.input.orderRead).1
   have permutation := partition_perm checked.bindings selected allUnique unique subset
+  exact permutation
+
+/-- Reindex the original native receipts in the checked call partition. -/
+theorem original_named_partition
+    {dependencies program block callStart callCount inputs ordinary effect sources caller before returned retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (scope : @RuntimeCallScope.Checked dependencies program block callStart callCount inputs ordinary effect)
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before returned retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before) (frame : Frame checked)
+    (sameBindings : checked.bindings = before.bindings) :
+    let selected := boundary.input.ordered
+    let spectators := RuntimeSelectionPartition.complement checked.bindings selected
+    ∃ selectedCodes : OwnerCodes selected, ∃ spectatorCodes : OwnerCodes spectators,
+      reindex frame.owners (selected++spectators) = some (append selectedCodes spectatorCodes) ∧
+      (selected++spectators).Perm checked.bindings := by
+  intro selected spectators
+  have permutation := original_named_partition_geometry scope boundary checked sameBindings
   obtain ⟨all,kept⟩ := reindex_exists frame.owners (selected++spectators) permutation.subset
   obtain ⟨front,back,parts⟩ := append_exists selected spectators all
   rw [parts] at kept

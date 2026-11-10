@@ -16,14 +16,38 @@ open Qleisli.RuntimeStructuralHistory (Represents original_history)
 open Qleisli.RuntimeStructuralSourceAction (sourceRegroup)
 open Qleisli.RuntimeLiteralBranchChoice (measurementBits_retains)
 open Qleisli.RuntimeObservingValueRetention (run_retains_values)
+open Qleisli.RuntimeOriginalObservationValues (original_gap_values_with_inherited)
 
-def SemanticHistoryAgrees :=
-  HistoryAgreesWith fun state bindings history operator =>
-    ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
-      checked.bindings = bindings ∧
-        ∃ frame : RuntimeSemanticForest.Frame bindings, Represents frame state history operator
+def SemanticHistoryEncoding : HistoryEncoding := fun state bindings actual operator =>
+  ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
+    checked.bindings = bindings ∧ ∃ frame : RuntimeSemanticForest.Frame bindings,
+      ∀ column row, row < 2^state.quantum.frame.length →
+        actual row column = RuntimeSemanticForest.action frame state.quantum.frame operator row column
 
-private theorem cast_represents {first second : RuntimeOwnerMap.Map}
+def SemanticHistoryAgreesWithInherited := EncodedHistoryAgreesWithInherited SemanticHistoryEncoding
+
+def SemanticHistoryAgrees := SemanticHistoryAgreesWithInherited none
+
+theorem sparse_history_at_arm_entry {parent child owners ordinary source history}
+    (inputs : List Nat) {inherited : Option (Nat → Prop)}
+    (live : child.quantum.live = parent.quantum.live) (axes : child.quantum.frame = parent.quantum.frame)
+    (issued : parent.classical ⊆ child.classical)
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs parent owners ordinary source history) :
+    SemanticHistoryAgreesWithInherited inherited inputs child owners ordinary source history := by
+  obtain ⟨sourceOwners,hidden,bits,values,roles,checked,bindings,input,represented⟩ := agrees
+  let entry : RuntimeOwnerMap.Checked roles child :=
+    ⟨checked.bindings,checked.ordered,checked.ownersDistinct,checked.tokensDistinct,live.symm ▸ checked.complete⟩
+  refine ⟨sourceOwners,hidden,bits,⟨values.1,?_⟩,roles,entry,bindings,input,?_⟩
+  · intro id member
+    cases inherited with
+    | none => exact Qleisli.RuntimeObservingPrefix.issued_mono issued (values.2 member)
+    | some _ =>
+      exact (values.2 member).imp (fun held => held) (Qleisli.RuntimeObservingPrefix.issued_mono issued)
+  · intro column row bound
+    rw [axes] at bound ⊢
+    exact represented column row bound
+
+theorem cast_represents {first second : RuntimeOwnerMap.Map}
     (same : first = second) (frame : RuntimeSemanticForest.Frame first)
     {state history operator} (represented : Represents frame state history operator) :
     Represents (same ▸ frame) state history operator := by
@@ -44,6 +68,21 @@ private def structuralResult {dependencies program sources caller block start co
     source.owners.bindings source.operator).map fun operator =>
       [{source with owners := action.after, operator}]
 
+/-- An original ordinary gap leaves the source owner/operator state as is.
+Its SSA values are checked against the resulting actual history. -/
+def withSparseGaps {dependencies program block}
+    (other : List (@Step dependencies program block) → Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (prior : List (@Step dependencies program block)) (step : Step dependencies program block)
+    (source : SourceHistory) : Option (List SourceHistory) :=
+  match step with
+  | .gap _ => some [source]
+  | _ => other prior step source
+
+def NeedsNonGap {dependencies program block} : @Step dependencies program block → Prop
+  | .gap _ => False
+  | _ => True
+
 def withSparseSteps {dependencies program block}
     (other : List (@Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
@@ -51,8 +90,7 @@ def withSparseSteps {dependencies program block}
     (source : SourceHistory) : Option (List SourceHistory) :=
   match step with
   | .pure (.structural action) => structuralResult action source
-  | .gap _ => some [source]
-  | _ => other prior step source
+  | _ => withSparseGaps other prior step source
 
 def NeedsSparseSourceAction {dependencies program block} : @Step dependencies program block → Prop
   | .pure (.structural _) | .gap _ => False
@@ -81,31 +119,64 @@ private theorem structural_refines {dependencies program sources caller block st
 
 private theorem gap_refines {dependencies program block start count before ssa}
     (gap : @RuntimeOrdinaryBody.Gap dependencies program block start count before ssa)
-    (inputs : List Nat) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
+    (inputs : List Nat) (inherited : Option (Nat → Prop))
+    {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
     (owners : Aligned ownerBefore ownerAfter (.gap gap))
     (ordinary : OrdinaryAligned ordinaryBefore ordinaryAfter (.gap gap))
     {chunk source history outputs}
     (read : readOps block.fuel gap.checked.interval.before.quantum.reference ((block.operations.drop start).take count) =
       some (gap.checked.interval.after.quantum.reference,chunk))
-    (agrees : SemanticHistoryAgrees inputs gap.checked.interval.before ownerBefore ordinaryBefore source history)
+    (writes : TraceWriteBound (inherited.map (fun holds id => ¬ holds id)) chunk)
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs gap.checked.interval.before
+      ownerBefore ordinaryBefore source history)
     (executed : run dependencies block.fuel chunk history = some outputs) :
-    List.Forall₂ (SemanticHistoryAgrees inputs gap.checked.interval.after ownerAfter ordinaryAfter) [source] outputs := by
+    List.Forall₂ (SemanticHistoryAgreesWithInherited inherited inputs gap.checked.interval.after
+      ownerAfter ordinaryAfter) [source] outputs := by
   rcases owners with ⟨rfl,rfl⟩
   rcases ordinary with ⟨rfl,rfl⟩
   obtain ⟨ownerState,hidden,bits,values,_,_,_,input,represented⟩ := agrees
-  obtain ⟨original,result,literal,ran,hiddenKept,operatorKept,valuesAfter,support⟩ :=
-    RuntimeOriginalObservationValues.original_gap_values gap inputs history values.1 values.2
-  have same : chunk = original := congrArg Prod.snd (Option.some.inj (read.symm.trans literal))
-  subst chunk
+  have gapStep : ∃ result, run dependencies block.fuel chunk history = some [result] ∧
+      result.hidden = history.hidden ∧ result.operator = history.operator ∧
+      ScopedOrdinaryAgrees inherited inputs gap.checked.interval.after gap.ssa result := by
+    cases inherited with
+    | none =>
+      obtain ⟨result,ran,kept,unchanged,ordinary,support⟩ :=
+        original_gap_values_with_inherited gap inputs history (fun _ => False) values.1
+          (fun _ member => .inr (values.2 member)) read (fun _ _ _ _ impossible => impossible)
+      exact ⟨result,ran,kept,unchanged,ordinary,fun _ member => (support member).resolve_left id⟩
+    | some holds =>
+      exact original_gap_values_with_inherited gap inputs history holds values.1 values.2 read writes
+  obtain ⟨result,ran,hiddenKept,operatorKept,valuesAfter⟩ := gapStep
   have results := Option.some.inj (executed.symm.trans ran)
   subst outputs
   have retains := run_retains_values _ _ _ _ ran result List.mem_cons_self
   have bindings := RuntimeBoundaryOwnerEvidence.check_bindings gap.afterFrame gap.afterRead
   refine .cons ⟨ownerState,hiddenKept.trans hidden,measurementBits_retains _ retains bits,
-    ⟨valuesAfter,support⟩,_,gap.afterFrame,bindings,input,?_⟩ .nil
+    valuesAfter,_,gap.afterFrame,bindings,input,?_⟩ .nil
   intro column row bound
   rw [operatorKept,gap.quantum]
   exact represented column row (by simpa only [gap.quantum] using bound)
+
+/-- Use the checked literal write bound for each original ordinary gap of
+a child's source traversal, sharing the root's prefix-indexed induction. -/
+theorem sourceStep_with_inherited_gaps {dependencies program block}
+    (steps : List (@Step dependencies program block)) (inputs : List Nat) (inherited : Nat → Prop)
+    (certifies : Step dependencies program block → Prop)
+    (other : List (@Step dependencies program block) → Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (remaining : StepRefinement steps (fun step => certifies step ∧ NeedsNonGap step) other
+      (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
+      (some (fun id => ¬ inherited id))) :
+    StepRefinement steps certifies (withSparseGaps other)
+      (fun _ => SemanticHistoryAgreesWithInherited (some inherited) inputs)
+      (some (fun id => ¬ inherited id)) := by
+  intro prior first later position certified ownerBefore ownerAfter ordinaryBefore ordinaryAfter
+    owners ordinary chunk read writes source history outputs agrees executed
+  cases first
+  case gap gap =>
+    exact ⟨[source],rfl,gap_refines gap inputs (some inherited) owners ordinary read writes agrees executed⟩
+  all_goals
+    exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read writes agrees executed
 
 /-- Connect all four structural constructors to the same ordered arm
 induction used for the other source steps. -/
@@ -121,7 +192,7 @@ theorem sourceStep_with_sparse_structure {dependencies program block}
     owners ordinary chunk read source history outputs agrees executed
   cases first
   case gap gap =>
-    exact ⟨[source],rfl,gap_refines gap inputs owners ordinary read agrees executed⟩
+    exact ⟨[source],rfl,gap_refines gap inputs none owners ordinary read trivial agrees executed⟩
   case pure node =>
     cases node
     case structural action =>
@@ -156,11 +227,12 @@ theorem Execution.sparse_structure_refinement {dependencies program block initia
 /-- The written return order reindexes the same sparse source operator on
 every finite physical row and retains its original history. -/
 theorem sparse_return_refines {state roles before ordinary}
-    (inputs : List Nat) (returned : RuntimeOwnerMap.Checked roles state)
+    (inputs : List Nat) {inherited : Option (Nat → Prop)}
+    (returned : RuntimeOwnerMap.Checked roles state)
     (read : RuntimeInterval.Computed (RuntimePureBody.reordered roles state before.bindings) returned)
     {source history}
-    (agrees : SemanticHistoryAgrees inputs state before ordinary source history) :
-    SemanticHistoryAgrees inputs state {before with bindings := returned.bindings} ordinary
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs state before ordinary source history) :
+    SemanticHistoryAgreesWithInherited inherited inputs state {before with bindings := returned.bindings} ordinary
       (returnHistory returned.bindings source) history := by
   obtain ⟨owners,hidden,bits,values,_,checked,bindings,input,represented⟩ := agrees
   have readBound : RuntimeInterval.Computed
@@ -180,7 +252,13 @@ theorem sparse_return_refines {state roles before ordinary}
     source.operator row column
   simpa only [returnHistory,owners,RuntimeLiteralHistory.sourceReturn] using original.trans order
 
+def sparseArmEncodingLaws (inputs : List Nat) (inherited : Option (Nat → Prop) := none) :
+    ArmEncodingLaws SemanticHistoryEncoding inputs inherited :=
+  ⟨sparse_history_at_arm_entry inputs (inherited := inherited),
+    sparse_return_refines inputs (inherited := inherited)⟩
+
 #print axioms HistoryAgrees.toSemantic
+#print axioms sourceStep_with_inherited_gaps
 #print axioms sourceStep_with_sparse_structure
 #print axioms Execution.sparse_structure_refinement
 #print axioms sparse_return_refines

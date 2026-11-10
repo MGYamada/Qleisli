@@ -343,7 +343,8 @@ private theorem checked_events (dependencies : List Dependency) (events : List E
     · exact ⟨work,middle,first⟩
     · exact ih middle rest event later
 
-private theorem checked_step (dependencies : List Dependency)
+/-- The actual pure check determines its literal events and finite domains. -/
+theorem checked_step (dependencies : List Dependency)
     (recurse : Raw.Observation.State → List Semantics.Observation.Op → QleisliKernel.Finite.WorkM Raw.Observation.State)
     (before after : Raw.Observation.State) (operation : Op) (work left : Nat)
     (read : (Raw.Observation.checkStep dependencies recurse before (.pure operation)).run work = (.ok after,left)) :

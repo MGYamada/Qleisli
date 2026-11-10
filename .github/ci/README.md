@@ -103,6 +103,10 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-qmatch-arm-refinement`,
 `codex/beta-qmatch-branch-refinement`,
 `codex/beta-qmatch-structural-refinement`,
+`codex/beta-qmatch-sparse-history`,
+`codex/beta-qmatch-selection-recursion`,
+`codex/beta-qmatch-general-calls`,
+`codex/beta-qmatch-source-call-return`,
 `codex/beta-quantum-runtime-types` or
 `codex/beta-runtime-static-bindings`.
 The selected branch and workflow source must agree. On pushes, the producer

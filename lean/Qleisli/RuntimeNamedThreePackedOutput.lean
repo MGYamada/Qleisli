@@ -50,27 +50,21 @@ noncomputable def packedAction {roles state checked} (frame : @Frame roles state
   ((List.range frame.code.dimension).map fun logical =>
     scalar (sparseEntry frame.code row logical) * joint logical ref).sum
 
-/-- The complete return permutation expresses the existing sparse code in the
-packed physical order of its original source owners. -/
-theorem reorder_packed {roles state checked} (frame : @Frame roles state checked)
-    (dependencies : List Semantics.Finite.Dependency)
-    (permutation : (forestAxes state.quantum.frame checked.bindings).Perm
-      (List.range state.quantum.frame.length))
-    {Reference : Type} (joint : Nat → Reference → ℂ) (row : Nat)
-    (bounded : row < 2^state.quantum.frame.length) (ref : Reference) :
-    Qleisli.Semantics.RawAction.event dependencies
-      (.reorder state.quantum.frame.length (forestAxes state.quantum.frame checked.bindings))
-      (fun input => referenceAction frame joint input ref) row = packedAction frame joint row ref := by
-  let bits := state.quantum.frame.length
-  let axes := forestAxes state.quantum.frame checked.bindings
+/-- An original full-width Raw reorder selects one original physical row. -/
+theorem reorder_gather (dependencies : List Semantics.Finite.Dependency)
+    (bits : Nat) (axes : List Nat) (permutation : axes.Perm (List.range bits))
+    (operator : Nat → ℂ) (row : Nat) (bounded : row < 2^bits) :
+    ∃ original : Nat, original < 2^bits ∧ gather original axes = row ∧
+      Qleisli.Semantics.RawAction.event dependencies (.reorder bits axes) operator row = operator original := by
   obtain ⟨projection,bijection,values⟩ := gather_bijective bits axes permutation
   obtain ⟨original,selected⟩ := bijection.2 ⟨row,bounded⟩
   have coordinate : gather original.val axes = row :=
     (values original).symm.trans (congrArg Fin.val selected)
+  refine ⟨original.val,original.isLt,coordinate,?_⟩
   unfold Qleisli.Semantics.RawAction.event
   calc
     _ = ((List.range (2^bits)).map fun input =>
-        if original.val = input then referenceAction frame joint input ref else 0).sum := by
+        if original.val = input then operator input else 0).sum := by
       apply Qleisli.Exact.sum_map_congr
       intro input present
       have bound : input < 2^bits := List.mem_range.mp present
@@ -83,17 +77,31 @@ theorem reorder_packed {roles state checked} (frame : @Frame roles state checked
         · intro same
           rw [← same]
           exact coordinate
-      change (if (gather input axes == row) = true then referenceAction frame joint input ref else 0) = _
+      change (if (gather input axes == row) = true then operator input else 0) = _
       simp only [beq_iff_eq,only]
-    _ = referenceAction frame joint original.val ref :=
+    _ = operator original.val :=
       Qleisli.Exact.range_delta_sum _ _ _ original.isLt
-    _ = _ := by
-      unfold referenceAction packedAction
-      apply Qleisli.Exact.sum_map_congr
-      intro logical _
-      change scalar (sparseEntry frame.code (gather original.val axes) logical) * joint logical ref =
-        scalar (sparseEntry frame.code row logical) * joint logical ref
-      rw [coordinate]
+
+/-- The complete return permutation expresses the existing sparse code in the
+packed physical order of its original source owners. -/
+theorem reorder_packed {roles state checked} (frame : @Frame roles state checked)
+    (dependencies : List Semantics.Finite.Dependency)
+    (permutation : (forestAxes state.quantum.frame checked.bindings).Perm
+      (List.range state.quantum.frame.length))
+    {Reference : Type} (joint : Nat → Reference → ℂ) (row : Nat)
+    (bounded : row < 2^state.quantum.frame.length) (ref : Reference) :
+    Qleisli.Semantics.RawAction.event dependencies
+      (.reorder state.quantum.frame.length (forestAxes state.quantum.frame checked.bindings))
+      (fun input => referenceAction frame joint input ref) row = packedAction frame joint row ref := by
+  obtain ⟨original,_,coordinate,equation⟩ :=
+    reorder_gather dependencies _ _ permutation (fun input => referenceAction frame joint input ref) row bounded
+  rw [equation]
+  unfold referenceAction packedAction
+  apply Qleisli.Exact.sum_map_congr
+  intro logical _
+  change scalar (sparseEntry frame.code (gather original (forestAxes state.quantum.frame checked.bindings)) logical) *
+      joint logical ref = scalar (sparseEntry frame.code row logical) * joint logical ref
+  rw [coordinate]
 
 theorem final_axes {roles state} (checked : RuntimeOwnerMap.Checked roles state)
     (valid : Raw.stateValid state.quantum = true) :

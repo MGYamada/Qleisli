@@ -81,7 +81,7 @@ theorem original_after_bindings {sources caller dependencies program functionNam
 /-- Both original observation boundary reads select from the same owner map.
 The measured or discarded owner is the first coordinate and the original
 survivors retain their complete bindings in order. -/
-private theorem observation_bindings {sources caller dependencies program functionName event block position previous}
+theorem observation_bindings {sources caller dependencies program functionName event block position previous}
     (checked : @RuntimeObservationAction.Checked sources caller dependencies program functionName
       event block position previous) :
     checked.before.bindings = checked.input :: checked.after.bindings := by
@@ -119,7 +119,7 @@ private theorem unpack {low first row second width : Nat}
 /-- The independent erasure branch selects the unique original physical
 coordinate for an outcome and surviving row. The amplitude can be one column
 of any inherited operator, including an entangled reference. -/
-private theorem erase_at (bits : Nat) (axes : List Nat) (outcome row : Nat)
+theorem erase_at (bits : Nat) (axes : List Nat) (outcome row : Nat)
     (values : Nat → ℂ) :
     let kept := (List.range bits).filter (fun axis => !axes.contains axis)
     (axes++kept).Perm (List.range bits) →
@@ -174,7 +174,7 @@ private theorem erase_at (bits : Nat) (axes : List Nat) (outcome row : Nat)
 
 /-- A surviving owner's coordinate is the same before erasure and after
 compressing the exact surviving Raw frame. -/
-private theorem gather_retained (before after wires axes : List Nat)
+theorem gather_retained (before after wires axes : List Nat)
     (kept : after.map before.idxOf = axes) (inside : wires ⊆ after) (physical : Nat) :
     gather (gather physical axes) (wires.map after.idxOf) = gather physical (wires.map before.idxOf) := by
   simp only [gather,List.zipIdx_map,List.map_map,Function.comp_def]
@@ -230,6 +230,26 @@ private theorem axes_partition (bits : Nat) (axes : List Nat) (unique : axes.Nod
     simp only [List.mem_filter,List.contains_iff_mem]
     exact ⟨fun h => ⟨covered h,h⟩,And.right⟩
   exact (selected.append_right _).trans (List.filter_append_perm axes.contains _)
+
+/-- The surviving wires of an erasure are enumerated in the exact compressed
+order. Together with the consumed wires they form a complete coordinate
+permutation of the original frame. -/
+theorem erasure_frame_geometry (frame wires : List Nat) (frameUnique : frame.Nodup)
+    (wireUnique : wires.Nodup) (inside : wires ⊆ frame) :
+    let consumed := wires.map frame.idxOf
+    let surviving := (frame.filter (fun wire => !wires.contains wire)).map frame.idxOf
+    surviving = (List.range frame.length).filter (fun axis => !consumed.contains axis) ∧
+      (consumed ++ surviving).Perm (List.range frame.length) := by
+  intro consumed surviving
+  have kept := kept_indices frame wires frameUnique inside
+  refine ⟨kept,?_⟩
+  change (consumed ++ surviving).Perm _
+  rw [show surviving = _ from kept]
+  apply axes_partition
+  · exact List.Nodup.map_on (fun wire member _ _ equal => (List.idxOf_inj (inside member)).mp equal) wireUnique
+  · intro axis member
+    obtain ⟨wire,present,rfl⟩ := List.mem_map.mp member
+    exact List.mem_range.mpr (List.idxOf_lt_length_of_mem (inside present))
 
 private theorem read_erasure_instruction (fuel : Nat) (before : Semantics.RawTrace.Interface)
     (port : Semantics.Raw.Port) {kind ops output}
@@ -320,21 +340,21 @@ noncomputable def outcomeJoint {Reference : Type} {binding : Binding} (owner : O
     (outcome : Nat) (joint : Nat → Reference → ℂ) : Nat → Reference → ℂ :=
   outcomeJointLayout owner.layout outcome joint
 
-/-- Each actual erasure coefficient is the source owner's basis effect in
-the original input code. The retained owners use their original output code,
-including all zero-width identities and arbitrary reference amplitudes. -/
-theorem original_erasure_action {sources caller dependencies program functionName event block position previous}
+structure ErasureGeometry (before after axes : List Nat) (survivors : Map) : Prop where
+  partition : (axes ++ (List.range before.length).filter (fun axis => !axes.contains axis)).Perm
+    (List.range before.length)
+  keptAxes : after.map before.idxOf = (List.range before.length).filter (fun axis => !axes.contains axis)
+  covered : ∀ binding ∈ survivors, binding.port.wires ⊆ after
+
+/-- The checked erasure fixes a partition of the original frame and the
+ordered surviving coordinates, independently of any carrier encoding. -/
+theorem erasure_geometry {sources caller dependencies program functionName event block position previous}
     (checked : @RuntimeObservationAction.Checked sources caller dependencies program functionName
-      event block position previous) (input : Frame checked.before) :
+      event block position previous) :
     let before := checked.interval.before.quantum.frame
     let after := checked.interval.after.quantum.frame
     let axes := checked.input.port.wires.map before.idxOf
-    ∃ consumed : OwnerCode checked.input, ∃ output : Frame checked.after,
-      ∀ {Reference : Type} (joint : Nat → Reference → ℂ) outcome row,
-        outcome < 2^axes.length → row < 2^after.length → ∀ ref,
-        Qleisli.Semantics.ObservingAction.erase before.length axes outcome
-          (fun physical => referenceAction input joint physical ref) row =
-            referenceAction output (outcomeJoint consumed outcome joint) row ref := by
+    ErasureGeometry before after axes checked.after.bindings := by
   intro before after axes
   let kept := (List.range before.length).filter (fun axis => !axes.contains axis)
   have same := observation_bindings checked
@@ -361,12 +381,33 @@ theorem original_erasure_action {sources caller dependencies program functionNam
   have keptAxes : after.map before.idxOf = kept := by
     rw [remainder]
     exact kept_indices before checked.input.port.wires inputValid.frame operandWires
-  have keptWidth : after.length = kept.length := by
-    simpa only [List.length_map] using congrArg List.length keptAxes
   have outputWires : ∀ binding ∈ checked.after.bindings, binding.port.wires ⊆ after := by
     intro binding member wire belongs
     have live := checked.after.complete.mem_iff.mp (List.mem_map_of_mem member)
     exact outputValid.covered wire (List.mem_flatMap.mpr ⟨binding.port,live,belongs⟩)
+  exact ⟨partition,keptAxes,outputWires⟩
+
+/-- Each actual erasure coefficient is the source owner's basis effect in
+the original input code. The retained owners use their original output code,
+including all zero-width identities and arbitrary reference amplitudes. -/
+theorem original_erasure_action {sources caller dependencies program functionName event block position previous}
+    (checked : @RuntimeObservationAction.Checked sources caller dependencies program functionName
+      event block position previous) (input : Frame checked.before) :
+    let before := checked.interval.before.quantum.frame
+    let after := checked.interval.after.quantum.frame
+    let axes := checked.input.port.wires.map before.idxOf
+    ∃ consumed : OwnerCode checked.input, ∃ output : Frame checked.after,
+      ∀ {Reference : Type} (joint : Nat → Reference → ℂ) outcome row,
+        outcome < 2^axes.length → row < 2^after.length → ∀ ref,
+        Qleisli.Semantics.ObservingAction.erase before.length axes outcome
+          (fun physical => referenceAction input joint physical ref) row =
+            referenceAction output (outcomeJoint consumed outcome joint) row ref := by
+  intro before after axes
+  let kept := (List.range before.length).filter (fun axis => !axes.contains axis)
+  have same := observation_bindings checked
+  obtain ⟨partition,keptAxes,outputWires⟩ := erasure_geometry checked
+  have keptWidth : after.length = kept.length := by
+    simpa only [List.length_map] using congrArg List.length keptAxes
   let moved : OwnerCodes (checked.input :: checked.after.bindings) := same ▸ input.owners
   have beforeFacts := cast_owners same input.owners
   change (sparseProduct input.owners).dimension = (sparseProduct moved).dimension ∧
@@ -413,6 +454,32 @@ theorem original_erasure_action {sources caller dependencies program functionNam
 
 open Qleisli.Semantics.ObservingAction (History)
 
+/-- The literal erasure step enumerates all outcomes in order and retains
+the original visible and hidden history for each result. -/
+theorem erasure_step_histories (dependencies : List Semantics.Finite.Dependency)
+    (bits : Nat) (axes : List Nat) (measured : Option Nat)
+    (recurse : List Semantics.Observation.Event → History → Option (List History)) (history : History) :
+    ∃ branch : Nat → History,
+      Qleisli.Semantics.ObservingAction.step dependencies recurse (.erase bits axes measured) history =
+        some ((List.range (2^axes.length)).map branch) ∧
+      ∀ outcome,
+        (branch outcome).values = (match measured with
+          | none => history.values
+          | some id => history.values++[(id,outcome == 1)]) ∧
+        (branch outcome).hidden = history.hidden++[outcome] ∧
+        ∀ row col, (branch outcome).operator row col =
+          Qleisli.Semantics.ObservingAction.erase bits axes outcome
+            (fun physical => history.operator physical col) row := by
+  let branch (outcome : Nat) : History := {
+    values := match measured with
+      | none => history.values
+      | some id => history.values++[(id,outcome == 1)]
+    hidden := history.hidden++[outcome]
+    operator := fun row col => Qleisli.Semantics.ObservingAction.erase bits axes outcome
+      (fun physical => history.operator physical col) row }
+  refine ⟨branch,?_,fun _ => ⟨rfl,rfl,fun _ _ => rfl⟩⟩
+  · cases measured : measured <;> simp [Qleisli.Semantics.ObservingAction.step,branch,measured]
+
 /-- Every outcome of the actual source observation keeps the original
 visible and hidden histories and has its exact unnormalized operator on the
 remaining coded owners. Input agreement is needed only on finite Raw rows. -/
@@ -446,19 +513,15 @@ theorem original_observation_histories {sources caller dependencies program func
   obtain ⟨consumed,output,action⟩ := original_erasure_action checked input
   refine ⟨(original_erasure checked).1,checked.sourceValue,consumed,output,?_⟩
   intro recurse joint history represented
-  let branch (outcome : Nat) : History := {
-    values := match checked.measured with
-      | none => history.values
-      | some id => history.values++[(id,outcome == 1)]
-    hidden := history.hidden++[outcome]
-    operator := fun row col => Qleisli.Semantics.ObservingAction.erase before.frame.length axes outcome
-      (fun physical => history.operator physical col) row }
-  refine ⟨branch,?_,fun outcome outcomeBound => ⟨rfl,rfl,?_⟩⟩
-  · cases measured : checked.measured <;> simp [Qleisli.Semantics.ObservingAction.step,observation,branch,measured]
+  obtain ⟨branch,performed,facts⟩ := erasure_step_histories dependencies before.frame.length axes
+    checked.measured recurse history
+  refine ⟨branch,performed,?_⟩
+  intro outcome outcomeBound
+  obtain ⟨visible,hidden,operator⟩ := facts outcome
+  refine ⟨visible,hidden,?_⟩
   ·
     intro row rowBound col
-    change Qleisli.Semantics.ObservingAction.erase before.frame.length axes outcome
-      (fun physical => history.operator physical col) row = _
+    rw [operator]
     calc
       _ = Qleisli.Semantics.ObservingAction.erase before.frame.length axes outcome
           (fun physical => referenceAction input joint physical col) row := by
