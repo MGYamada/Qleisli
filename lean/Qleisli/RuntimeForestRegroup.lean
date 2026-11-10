@@ -18,6 +18,23 @@ open QleisliKernel.Qirf.RuntimeOwnerCodeReindex
 open Qleisli.Semantics.Exact Qleisli.RuntimeForestProduct Qleisli.RuntimeForestOrderedProduct
 open Qleisli.MixedRadix
 
+/-- Dimensions of the source owners in their complete original order. -/
+def sourceDimension (bindings : RuntimeOwnerMap.Map) (binding : RuntimeOwnerMap.Binding) : Nat :=
+  if binding ∈ bindings then (Semantics.FiniteCarrier.dimension binding.owner.basis).getD 0 else 0
+
+theorem dimensionAt_source {bindings : RuntimeOwnerMap.Map} (owners : OwnerCodes bindings)
+    (wanted : RuntimeOwnerMap.Binding) : dimensionAt owners wanted = sourceDimension bindings wanted := by
+  induction owners with
+  | nil => simp [dimensionAt, lookup_nil, sourceDimension]
+  | @cons binding bindings first rest ih =>
+    by_cases same : binding = wanted
+    · subst wanted
+      simp [dimensionAt, lookup_cons, sourceDimension, Semantics.FiniteCarrier.dimension, first.reference.1]
+    · simp only [dimensionAt, lookup_cons, dif_neg same]
+      change dimensionAt rest wanted = _
+      rw [ih]
+      simp [sourceDimension, Ne.symm same]
+
 theorem cards_positive {bindings} (original : OwnerCodes bindings) (binding : RuntimeOwnerMap.Binding)
     (member : binding ∈ bindings) : 0 < dimensionAt original binding := by
   obtain ⟨actual,_ran⟩ := lookup_exists original binding member

@@ -78,60 +78,118 @@ private theorem foldl_product (codes : List Layout) :
       codes.foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton :=
   (foldl_tensor codes _).trans (tensor_left _)
 
+/-- Interpret each complete source owner separately in the reference model. -/
+def ownerLayouts (bindings : RuntimeOwnerMap.Map) : Option (List Layout) :=
+  bindings.mapM (fun binding => QleisliKernel.Semantics.FiniteCarrier.layout binding.owner.basis)
+
+theorem ownerLayouts_original {bindings} (owners : OwnerCodes bindings) :
+    ownerLayouts bindings = some (layouts owners) := by
+  induction owners with
+  | nil => rfl
+  | @cons binding bindings first rest ih =>
+    unfold ownerLayouts at ih ⊢
+    simp only [List.mapM_cons,first.reference.1,ih,bind,Option.bind,pure,layouts]
+
+private theorem layout_cons {binding bindings codes}
+    (read : ownerLayouts (binding::bindings) = some codes) :
+    ∃ head tail, QleisliKernel.Semantics.FiniteCarrier.layout binding.owner.basis = some head ∧
+      ownerLayouts bindings = some tail ∧ codes = head::tail := by
+  simp only [ownerLayouts,List.mapM_cons] at read
+  obtain ⟨head,original,rest⟩ := Option.bind_eq_some_iff.mp read
+  obtain ⟨tail,remaining,returned⟩ := Option.bind_eq_some_iff.mp rest
+  exact ⟨head,tail,original,remaining,(Option.some.inj returned).symm⟩
+
+private theorem concat_layouts (bindings : RuntimeOwnerMap.Map) (codes suffix : List Layout)
+    (read : ownerLayouts bindings = some codes) :
+    codes.length = bindings.length ∧
+      (bindings.flatMap (fun binding => binding.owner.basis)).foldr layoutStep (some suffix) =
+        some (codes ++ suffix) := by
+  induction bindings generalizing codes with
+  | nil =>
+    change some [] = some codes at read
+    cases Option.some.inj read
+    exact ⟨rfl,rfl⟩
+  | cons binding bindings ih =>
+    obtain ⟨head,tail,headRead,tailRead,rfl⟩ := layout_cons read
+    obtain ⟨length,stack⟩ := ih tail tailRead
+    refine ⟨congrArg Nat.succ length,?_⟩
+    simp only [List.flatMap_cons,List.foldr_append,List.cons_append,stack]
+    exact layout_continuation binding.owner.basis head headRead (tail ++ suffix)
+
 /-- Each original owner tree pushes its own layout over the unchanged
 continuation. No malformed owner can borrow another owner's source nodes. -/
 theorem concat_original {bindings} (owners : OwnerCodes bindings) (suffix : List Layout) :
     (bindings.flatMap (fun binding => binding.owner.basis)).foldr layoutStep (some suffix) =
-      some (layouts owners ++ suffix) := by
-  induction owners generalizing suffix with
-  | nil => rfl
-  | @cons binding bindings first rest ih =>
-    simp only [List.flatMap_cons,List.foldr_append,layouts]
-    rw [ih]
-    exact layout_continuation binding.owner.basis first.layout first.reference.1 (layouts rest ++ suffix)
+      some (layouts owners ++ suffix) :=
+  (concat_layouts bindings (layouts owners) suffix (ownerLayouts_original owners)).2
 
-/-- The complete original forest interpretation follows from the actual read
-of every ordered owner. Tensor laws are proved above; no forest equality is a
-supplied premise and no physical width identifies a source type. -/
-theorem forest_original {bindings} (owners : OwnerCodes bindings) :
-    QleisliKernel.Semantics.FiniteCarrier.layout (forestBasis bindings) = some (layoutProduct owners) := by
-  cases owners with
-  | nil => rfl
-  | @cons firstBinding firstBindings first rest =>
+/-- Exact low-first forest product from independent source layouts. In
+particular a mathematical join may exceed the per-owner native reader limit. -/
+theorem forest_from_layouts {bindings codes} (read : ownerLayouts bindings = some codes) :
+    QleisliKernel.Semantics.FiniteCarrier.layout (forestBasis bindings) =
+      some (codes.foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton) := by
+  cases bindings with
+  | nil =>
+    cases Option.some.inj read
+    rfl
+  | cons first rest =>
     cases rest with
     | nil =>
+      obtain ⟨head,tail,headRead,tailRead,rfl⟩ := layout_cons read
+      have empty : tail = [] := (Option.some.inj tailRead).symm
+      subst tail
       simpa only [forestBasis,carrierOwners,List.map_cons,List.map_nil,
-        QleisliKernel.Semantics.CarrierInterface.forest,layoutProduct,layouts,List.foldr_cons,List.foldr_nil,tensor_right]
-        using first.reference.1
-    | @cons secondBinding secondBindings second tail =>
+        QleisliKernel.Semantics.CarrierInterface.forest,List.foldr_cons,List.foldr_nil,tensor_right] using headRead
+    | cons second tail =>
       cases tail with
       | nil =>
+        obtain ⟨left,rest,leftRead,restRead,rfl⟩ := layout_cons read
+        obtain ⟨right,tail,rightRead,tailRead,rfl⟩ := layout_cons restRead
+        have empty : tail = [] := (Option.some.inj tailRead).symm
+        subst tail
         simpa only [forestBasis,carrierOwners,List.map_cons,List.map_nil,
-          QleisliKernel.Semantics.CarrierInterface.forest,layoutProduct,layouts,List.foldr_cons,List.foldr_nil,tensor_right]
-          using layout_pair_reference firstBinding.owner.basis secondBinding.owner.basis
-            first.layout second.layout first.reference.1 second.reference.1
-      | @cons thirdBinding bindings third rest =>
-        let all : OwnerCodes (firstBinding::secondBinding::thirdBinding::bindings) :=
-          .cons first (.cons second (.cons third rest))
-        have shape : forestBasis (firstBinding::secondBinding::thirdBinding::bindings) =
-            .tuple (firstBinding::secondBinding::thirdBinding::bindings).length ::
-              (firstBinding::secondBinding::thirdBinding::bindings).flatMap (fun binding => binding.owner.basis) := by
+          QleisliKernel.Semantics.CarrierInterface.forest,List.foldr_cons,List.foldr_nil,tensor_right] using
+          layout_pair_reference first.owner.basis second.owner.basis left right leftRead rightRead
+      | cons third rest =>
+        have shape : forestBasis (first::second::third::rest) =
+            .tuple (first::second::third::rest).length ::
+              (first::second::third::rest).flatMap (fun binding => binding.owner.basis) := by
           simp only [forestBasis,carrierOwners,List.map_cons,QleisliKernel.Semantics.CarrierInterface.forest,
             List.length_cons,List.length_map,List.flatMap_map,List.flatMap_cons]
-        have stackRead :
-            ((firstBinding::secondBinding::thirdBinding::bindings).flatMap (fun binding => binding.owner.basis)).foldr
-              layoutStep (some []) = some (layouts all) := by
-          simpa only [List.append_nil] using concat_original all []
-        have rootRead : layoutStep (.tuple (firstBinding::secondBinding::thirdBinding::bindings).length)
-            (some (layouts all)) =
-              some [(layouts all).foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton] := by
-          rw [← layouts_length all]
+        have ⟨count,stack⟩ := concat_layouts _ codes [] read
+        rw [List.append_nil] at stack
+        have root : layoutStep (.tuple (first::second::third::rest).length) (some codes) =
+            some [codes.foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton] := by
+          rw [← count]
           simp only [layoutStep,children,bind,Option.bind,Nat.lt_irrefl,if_false,
             List.take_length,List.drop_length,foldl_product]
-        change QleisliKernel.Semantics.FiniteCarrier.layout
-          (forestBasis (firstBinding::secondBinding::thirdBinding::bindings)) = some (layoutProduct all)
-        simp only [QleisliKernel.Semantics.FiniteCarrier.layout,shape,List.foldr_cons,stackRead,rootRead,
-          bind,Option.bind,pure,layoutProduct]
+        simp only [QleisliKernel.Semantics.FiniteCarrier.layout,shape,List.foldr_cons,stack,root,
+          bind,Option.bind,pure]
+
+/-- The complete original forest interpretation follows from the actual read
+of every ordered owner, via the same independent layout product. -/
+theorem forest_original {bindings} (owners : OwnerCodes bindings) :
+    QleisliKernel.Semantics.FiniteCarrier.layout (forestBasis bindings) = some (layoutProduct owners) :=
+  forest_from_layouts (ownerLayouts_original owners)
+
+theorem forest_append {first second : RuntimeOwnerMap.Map} {left right : List Layout}
+    (leftRead : ownerLayouts first = some left) (rightRead : ownerLayouts second = some right) :
+    QleisliKernel.Semantics.FiniteCarrier.layout (forestBasis (first ++ second)) =
+      some (tensor (left.foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton)
+        (right.foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton)) := by
+  have combined : ownerLayouts (first ++ second) = some (left ++ right) := by
+    unfold ownerLayouts at *
+    simp [List.mapM_append,leftRead,rightRead]
+  rw [forest_from_layouts combined,List.foldr_append]
+  have fold : ∀ (layouts : List Layout) (suffix : Layout),
+      layouts.foldr tensor suffix =
+        tensor (layouts.foldr tensor QleisliKernel.Semantics.FiniteCarrier.singleton) suffix := by
+    intro layouts suffix
+    induction layouts with
+    | nil => exact (tensor_left _).symm
+    | cons head tail ih =>
+      simp only [List.foldr_cons,ih,tensor_assoc]
+  rw [fold]
 
 /-- This same Frame's original whole-code receipt agrees with the product
 derived from its complete retained ordered owner reads. -/
@@ -143,12 +201,12 @@ theorem frame_product_agrees {roles state checked} (frame : @Frame roles state c
   subst layout
   exact same
 
-private theorem agrees_entry {code : Sparse} {layout : Layout} (same : Agrees code layout)
+theorem agrees_entry {code : Sparse} {layout : Layout} (same : Agrees code layout)
     (physical logical : Nat) : sparseEntry code physical logical = sparseEntry (.ofLayout layout) physical logical := by
   exact congrArg (fun coordinate : Option Nat => if coordinate == some physical then Scalar.one else Scalar.zero)
     (same.labels logical)
 
-private theorem layout_tensor_coefficient (left right : Layout) (valid : LayoutBounds left)
+theorem layout_tensor_coefficient (left right : Layout) (valid : LayoutBounds left)
     (low high logical : Nat) (bound : low < 2^left.bits) :
     scalar (sparseEntry (.ofLayout (tensor left right)) (low+2^left.bits*high) logical) =
       scalar (sparseEntry (.ofLayout left) low (logical % left.labels.length)) *

@@ -135,7 +135,7 @@ theorem gap_history {dependencies program block start count before ssa}
   rw [operator,gap_action]
   exact represented col row (by simpa only [gap.quantum] using bound)
 
-private theorem run_single (dependencies : List Dependency) (fuel : Nat) (event : Event) (history : History) :
+theorem run_single (dependencies : List Dependency) (fuel : Nat) (event : Event) (history : History) :
     run dependencies (fuel+1) [event] history = step dependencies (run dependencies fuel) event history := by
   change [event].foldlM (advance dependencies (run dependencies fuel)) [history] = _
   simp only [List.foldlM_cons,List.foldlM_nil,bind_pure]

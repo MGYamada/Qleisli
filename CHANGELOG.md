@@ -14,8 +14,23 @@ development milestones from the scope of their evidence.
   and update the checked SSA state. A named single-primitive call uses the
   original operand and returned caller owner, retaining visible SSA and
   hidden outcomes. The final checked source return reorders the logical
-  operator of every result. General pure steps, calls and branches remain
+  operator of every result. General pure steps and named calls remain
   separate local proof obligations.
+  Direct single-owner gates and apply-unitary tapes use the same caller
+  input and output proof as named primitives. The shared arm induction uses
+  their original source operator and Raw events, preserving the ordered
+  spectators, visible values, hidden outcomes and arbitrary reference columns.
+- Retain the checked operand and result token order of original joins, splits,
+  Unit introduction and Unit elimination. Prove their source-coordinate
+  regrouping preserves the physical operator, visible values and hidden
+  outcomes. The common arm induction carries the independent sparse source
+  layout through successive structural operations, ordinary SSA gaps and the
+  written return order.
+- Use the source prefix's measurement bits to select the original branch.
+  Apply the shared refinement to its checked child traversal and preserve
+  the selected path, operator and ordered results through the parent phis.
+  Derive the condition's input row from the actual checked root row and its
+  original call path. The recursive proof requires local laws for child steps.
 
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.

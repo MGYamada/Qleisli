@@ -134,6 +134,51 @@ private theorem traced_parent {dependencies program block start count}
   rw [← literal]
   exact interval.intervalRead
 
+private theorem fold_input_bits (signatures : List Basis) (operations : List Semantics.Raw.Op)
+    (initial result : Raw.Prepared)
+    (read : operations.foldlM (Raw.advance signatures) initial = .ok result) :
+    result.inputBits = initial.inputBits := by
+  induction operations generalizing initial with
+  | nil => cases read; rfl
+  | cons operation operations ih =>
+    simp only [List.foldlM_cons] at read
+    obtain ⟨next,first,rest⟩ := except_bind_success _ _ _ read
+    unfold Raw.advance at first
+    obtain ⟨transition,_,after⟩ := except_bind_success _ _ _ first
+    have same := Except.ok.inj after
+    subst next
+    exact ih ⟨transition.state,initial.events ++ transition.events,initial.inputBits⟩ rest
+
+/-- The literal caller interval and its actual checked local fragment supply
+both native folds. The local entry is the one prepared by that fragment. -/
+theorem pure_interval_traces {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles) :
+    Traced (dependencies.map (·.signature)) frame.operations frame.interval.before.quantum frame.interval.after.quantum ∧
+    ∃ entry : Raw.State,
+      entry.reference = ⟨frame.selected,frame.selected.flatMap (·.wires)⟩ ∧
+      Raw.stateValid entry = true ∧
+      Traced (dependencies.map (·.signature)) frame.operations entry frame.pureBody.state := by
+  refine ⟨traced_parent frame.interval frame.operations frame.literal,?_⟩
+  obtain ⟨work,left,read⟩ := frame.pureRead
+  let fragment := RuntimePureInterval.fragment frame.selected frame.operations outputs
+  let signatures := dependencies.map (·.signature)
+  have prepared := (Raw.Pure.verify_conditions dependencies fragment frame.pureBody work left read).1
+  obtain ⟨entry,body,opened,folded,_,same,_⟩ := Raw.prepare_conditions signatures fragment frame.pureBody prepared
+  change frame.selected.foldlM Raw.input {} = .ok entry at opened
+  change frame.operations.foldlM (Raw.advance signatures)
+    ⟨entry,[],entry.frame.length⟩ = .ok body at folded
+  have reference := Raw.inputs_reference frame.selected {} entry opened
+  have valid := Raw.inputs_valid frame.selected {} entry (by decide) opened
+  have bits : body.inputBits = entry.frame.length :=
+    fold_input_bits signatures frame.operations ⟨entry,[],entry.frame.length⟩ body folded
+  refine ⟨entry,by simpa only [List.nil_append] using reference,valid,?_⟩
+  apply traced_result signatures frame.operations entry frame.pureBody.state
+  refine ⟨body.events,?_⟩
+  have data : (⟨frame.pureBody.state,body.events,entry.frame.length⟩ : Raw.Prepared) = body := by
+    rw [same,← bits]
+  rw [data]
+  exact folded
+
 /-- The native named frame checks these very operations twice, once on the
 caller interface with its spectators and once on the ordered local inputs. -/
 theorem named_call_traces {dependencies program block start count inputs}

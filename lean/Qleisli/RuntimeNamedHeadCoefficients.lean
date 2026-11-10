@@ -388,6 +388,36 @@ theorem head_operator_encoding_total {Reference : Type} (code matrix : Matrix) (
   rw [shape,fibre_applyHead matrix spectators coefficient joint digit reference bound]
   rfl
 
+/-- Express the action on the original target fibre in complete logical owner
+order. Both direct and named primitives use the same exact coefficient law. -/
+theorem output_from_target_fibre {Reference : Type} {roles state checked}
+    (frame : @Frame roles state checked) (target : Binding) (member : target ∈ checked.bindings)
+    (actual : OwnerCode target) (spectators : OwnerCodes (checked.bindings.erase target))
+    (kept : reindex frame.owners (target::checked.bindings.erase target) = some (.cons actual spectators))
+    (code operator : Matrix) (inputShape : operator.cols = actual.layout.labels.length)
+    (outputShape : code.cols = operator.rows)
+    (joint : Nat → Reference → Complex) (base row : Nat) (reference : Reference) :
+    action code (fun logical ref => action operator (targetFibre frame target base joint) logical ref)
+      row reference =
+    headEncoding code (sparseProduct spectators).dimension
+      (fun high => coefficients state.quantum.frame spectators base high)
+      (applyHead operator (fun index ref => joint
+        (recode (target::checked.bindings.erase target) checked.bindings
+          (dimensionAt frame.owners) index) ref)) row reference := by
+  rw [head_operator_encoding_total code operator _ _ _ row reference outputShape,inputShape]
+  unfold action
+  apply Qleisli.Exact.sum_map_congr
+  intro logical _member
+  apply congrArg (fun value => entry code row logical * value)
+  apply Qleisli.Exact.sum_map_congr
+  intro digit present
+  have digitBound : digit < actual.layout.labels.length := by
+    rw [← inputShape]
+    exact List.mem_range.mp present
+  rw [target_fibre_canonical frame target member actual spectators kept joint base digit reference digitBound]
+
+#print axioms output_from_target_fibre
+
 def OccurrenceCanonicalInputAction {dependencies program block step}
     (held : @RuntimeNamedPrimitiveOccurrence.Occurrence dependencies program block step)
     (events : List Semantics.Raw.Event) : Prop :=
@@ -452,27 +482,9 @@ theorem actual_occurrence_canonical_input_action
       change primitive.expected.cols = actual.layout.labels.length at inputShape
       have outputShape := primitive.action.logicalShape.2
       rw [primitive.equation] at outputShape
-      rw [head_operator_encoding_total primitive.outputCode primitive.expected _ _ _ row reference outputShape.symm]
-      have law := originalLaw checked frame same joint base row reference small
-      have fibres : (fun logical ref =>
-          action primitive.expected (targetFibre frame bound.binding base joint) logical ref) =
-          (fun logical ref => action primitive.expected
-            (fibre actual.layout.labels.length (sparseProduct spectators).dimension
-              (fun high => coefficients scope.interval.before.quantum.frame spectators base high)
-              (fun index reference => joint
-                (recode (bound.binding::checked.bindings.erase bound.binding) checked.bindings
-                  (dimensionAt frame.owners) index) reference)) logical ref) := by
-        funext logical ref
-        unfold action
-        apply Qleisli.Exact.sum_map_congr
-        intro digit present
-        have digitBound : digit < actual.layout.labels.length := by
-          rw [← inputShape]
-          exact List.mem_range.mp present
-        rw [target_fibre_canonical frame bound.binding member actual spectators kept joint base digit ref digitBound]
-      rw [fibres] at law
-      rw [← inputShape] at law
-      exact law
+      exact (originalLaw checked frame same joint base row reference small).trans
+        (output_from_target_fibre frame bound.binding member actual spectators kept
+          primitive.outputCode primitive.expected inputShape outputShape.symm joint base row reference)
 
 #print axioms actual_occurrence_canonical_input_action
 

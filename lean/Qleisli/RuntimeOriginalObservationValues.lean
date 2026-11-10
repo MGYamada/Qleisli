@@ -211,6 +211,38 @@ private theorem reading_measure {input kind operations output}
   cases reading
   rfl
 
+/-- The original observation retains every preceding measurement key and
+adds only the exact transported key for a visible measurement. -/
+theorem observation_measurement_keys {sources rootOwner rootName caller functionName dependencies program
+    path event block position before ssa}
+    (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
+      program path event block position before ssa) :
+    match observation.checked.measured with
+    | none => observation.ordinary.measurements = ssa.measurements
+    | some id => ∃ key : Measurement, key.output = id ∧ observation.ordinary.measurements = ssa.measurements ++ [key] := by
+  cases measured : observation.checked.measured with
+  | none =>
+    obtain ⟨work,left,read⟩ := observation.ordinaryRead
+    simp only [RuntimeOrdinaryBody.extendObservation,RuntimeObservationAction.Checked.measurement,measured,Option.map] at read
+    rw [(pure_success _ _ work left read).1]
+  | some id =>
+    obtain ⟨key,output,_,_,ordinary⟩ := checked_measurement observation measured
+    exact ⟨key,output,congrArg RuntimeOrdinaryBody.State.measurements ordinary⟩
+
+theorem observation_measurement_ids {sources rootOwner rootName caller functionName dependencies program
+    path event block position before ssa}
+    (observation : @RuntimeOrdinaryBody.Observation sources rootOwner rootName caller functionName dependencies
+      program path event block position before ssa)
+    {output : Nat} (measured : observation.checked.measured = some output) :
+    ¬ Issued observation.checked.interval.before output ∧
+      observation.checked.interval.after.classical.map Prod.fst =
+        observation.checked.interval.before.classical.map Prod.fst ++ [output] := by
+  have instruction := observation.checked.instruction
+  rw [measured] at instruction
+  have interval := observation.checked.interval.intervalRead
+  rw [reading_measure instruction] at interval
+  exact measurement_ids interval
+
 /-- The value recorded by the actual erasure history is the value of the
 transported source measurement. Discard keeps the source table and valuation. -/
 theorem observation_agreement {sources rootOwner rootName caller functionName dependencies program
@@ -238,14 +270,7 @@ theorem observation_agreement {sources rootOwner rootName caller functionName de
   | some id =>
     obtain ⟨binding,rfl,_,newKey,shape⟩ := checked_measurement observation measured
     let bit : Bool := outcome == 1
-    have literal : ((block.operations.drop position.start).take position.count) =
-        [.measure observation.checked.input.port.token binding.output] := by
-      have instruction := observation.checked.instruction
-      rw [measured] at instruction
-      exact reading_measure instruction
-    have interval := observation.checked.interval.intervalRead
-    rw [literal] at interval
-    obtain ⟨fresh,ids⟩ := measurement_ids interval
+    obtain ⟨fresh,ids⟩ := observation_measurement_ids observation measured
     have unused : Semantics.OrdinaryValue.lookup history.values binding.output = none :=
       RuntimeOriginalClassicalJoin.lookup_unissued (fun member => fresh (supported member))
     have found := Semantics.OrdinaryValue.lookup_append_fresh bit unused

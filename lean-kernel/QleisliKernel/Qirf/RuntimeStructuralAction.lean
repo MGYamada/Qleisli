@@ -154,17 +154,46 @@ def sourceShape {sources caller} (event : SourceRuntimeContext.PrimitiveEvent so
   | .finish,[[.owner input]],[.ordinary basis _] => input.basis == [.unit] && basis == [.unit]
   | _,_,_ => false
 
+/-- Source-ordered operands and results of the original structural operation.
+Tokens identify owners even when multiple ports have no wires. -/
+inductive PortOrder : Kind → Semantics.Raw.Op → List Semantics.Raw.Port → List Owner → List Nat → Prop where
+  | join (first second : Semantics.Raw.Port) (result : Owner) (output : Nat) :
+      PortOrder .join (.join first.token second.token output) [first,second] [result] [output]
+  | split (input : Semantics.Raw.Port) (first second : Owner) (left right : Nat) :
+      PortOrder .split (.split input.token left right (basisBits first.basis)) [input] [first,second] [left,right]
+  | unit (result : Owner) (output : Nat) :
+      PortOrder .unit (.packUnit output) [] [result] [output]
+  | finish (input : Semantics.Raw.Port) (empty : input.bits = 0 ∧ input.wires.isEmpty = true) :
+      PortOrder .finish (.unpackUnit input.token) [input] [] []
+
 private def outputTokens (kind : Kind) (operation : Semantics.Raw.Op)
-    (inputs : List Semantics.Raw.Port) (outputs : List Owner) : Except Finite.Error (List Nat) := do
+    (inputs : List Semantics.Raw.Port) (outputs : List Owner) :
+    Except Finite.Error {tokens : List Nat // PortOrder kind operation inputs outputs tokens} :=
   match kind,operation,inputs,outputs with
-  | .join,.join left right output,[first,second],[_] =>
-    if left == first.token && right == second.token then pure [output] else throw .request
-  | .split,.split input left right leftBits,[port],[first,_] =>
-    if input == port.token && leftBits == basisBits first.basis then pure [left,right] else throw .request
-  | .unit,.packUnit output,[],[_] => pure [output]
+  | .join,.join left right output,[first,second],[result] =>
+    if aligned : (left == first.token && right == second.token) = true then
+      let same := Bool.and_eq_true_iff.mp aligned
+      .ok ⟨[output],by
+        rw [beq_iff_eq.mp same.1,beq_iff_eq.mp same.2]
+        exact .join first second result output⟩
+    else .error .request
+  | .split,.split input left right leftBits,[port],[first,second] =>
+    if aligned : (input == port.token && leftBits == basisBits first.basis) = true then
+      let same := Bool.and_eq_true_iff.mp aligned
+      .ok ⟨[left,right],by
+        rw [beq_iff_eq.mp same.1,beq_iff_eq.mp same.2]
+        exact .split port first second left right⟩
+    else .error .request
+  | .unit,.packUnit output,[],[result] => .ok ⟨[output],.unit result output⟩
   | .finish,.unpackUnit input,[port],[] =>
-    if input == port.token && port.bits == 0 && port.wires.isEmpty then pure [] else throw .request
-  | _,_,_,_ => throw .request
+    if aligned : (input == port.token && port.bits == 0 && port.wires.isEmpty) = true then
+      let shape := Bool.and_eq_true_iff.mp aligned
+      let same := Bool.and_eq_true_iff.mp shape.1
+      .ok ⟨[],by
+        rw [beq_iff_eq.mp same.1]
+        exact .finish port ⟨beq_iff_eq.mp same.2,shape.2⟩⟩
+    else .error .request
+  | _,_,_,_ => .error .request
 
 def owners (ports : List Semantics.Raw.Port) (roles : List Owner) : List Semantics.CarrierInterface.Owner :=
   (ports.zip roles).map fun (port,role) => ⟨port,role.basis⟩
@@ -205,12 +234,14 @@ structure Checked {dependencies program sources caller}
   fresh : outputRoles.map (·.ordinal) = (List.range outputRoles.length).map (before.nextOrdinal+·)
   nextOrdinal : event.nextOrdinal = before.nextOrdinal+outputRoles.length
   beforeFrame : RuntimeOwnerMap.Checked (before.bindings.map (·.owner)) interval.before
+  beforeBindings : beforeFrame.bindings = before.bindings
   inputs : List Semantics.Raw.Port
   inputRead : RuntimeInterval.Computed (do
     let bound ← RuntimeOwnerMap.order inputRoles before.bindings
     pure (bound.map (·.port))) inputs
   outputs : List Semantics.Raw.Port
   outputRead : PureInterval.ports interval.after (outputs.map (·.token)) = some outputs
+  portOrder : PortOrder kind operation inputs outputRoles (outputs.map (·.token))
   inputWidths : widths inputs inputRoles = true
   outputWidths : widths outputs outputRoles = true
   coordinates : Semantics.CarrierInterface.forest (owners inputs inputRoles) =
@@ -225,6 +256,7 @@ structure Checked {dependencies program sources caller}
   afterIssued : after.issued = before.issued ++ outputRoles
   afterOrdinal : after.nextOrdinal = event.nextOrdinal
   afterFrame : RuntimeOwnerMap.Checked (after.bindings.map (·.owner)) interval.after
+  resultBindings : afterFrame.bindings = after.bindings
 
 def read {dependencies program sources caller}
     (block : RuntimeInterval.Block dependencies program) (start count : Nat)
@@ -249,17 +281,23 @@ def read {dependencies program sources caller}
             if liveIssued : before.bindings.all (fun binding => before.issued.contains binding.owner) = true then
               if fresh : outputRoles.map (·.ordinal) = (List.range outputRoles.length).map (before.nextOrdinal+·) then
                 if nextOrdinal : event.nextOrdinal = before.nextOrdinal+outputRoles.length then
-                  let beforeFrame ← RuntimeOwnerMap.check (before.bindings.map (·.owner)) interval.before before.bindings
+                  let beforeFrame ← RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) interval.before before.bindings
                   let inputs ← NaturalAffine.witness (do
                     let bound ← RuntimeOwnerMap.order inputRoles before.bindings
                     pure (bound.map (·.port)))
                   let tokens ← lift (outputTokens kind operation inputs.val outputRoles)
-                  match _outputRead : PureInterval.ports interval.after tokens with
+                  match _outputRead : PureInterval.ports interval.after tokens.val with
                   | none => throw .request
                   | some outputs =>
                     -- Ports are retrieved by the actual Raw destinations;
                     -- source identities never come from width/wire matching.
-                    guard (outputs.map (·.token) == tokens) .request
+                    let order ← NaturalAffine.witness (guard (outputs.map (·.token) == tokens.val) .request)
+                    have originalOrder : PortOrder kind operation inputs.val outputRoles (outputs.map (·.token)) := by
+                      obtain ⟨work,left,ran⟩ := order.property
+                      have unit : order.val = () := by cases order.val; rfl
+                      rw [unit] at ran
+                      have same := beq_iff_eq.mp (guard_success _ _ work left ran).1
+                      exact same.symm ▸ tokens.property
                     match returned : PureInterval.ports interval.after (outputs.map (·.token)) with
                     | none => throw .request
                     | some actualOutputs =>
@@ -275,11 +313,11 @@ def read {dependencies program sources caller}
                                   let assigned := before.bindings.filter (fun binding => !inputRoles.contains binding.owner) ++
                                     (outputRoles.zip outputs).map (fun (owner,port) => (⟨owner,port⟩ : Binding))
                                   let after : SourceState := ⟨assigned,before.issued ++ outputRoles,event.nextOrdinal⟩
-                                  let afterFrame ← RuntimeOwnerMap.check (after.bindings.map (·.owner)) interval.after after.bindings
+                                  let afterFrame ← RuntimeOwnerMap.checkBindings (after.bindings.map (·.owner)) interval.after after.bindings
                                   return ⟨kind,source,interval,operation,literal,inputRoles,rfl,outputRoles,rfl,
-                                    allocated,consumed,issued,liveIssued,fresh,nextOrdinal,beforeFrame,inputs.val,
+                                    allocated,consumed,issued,liveIssued,fresh,nextOrdinal,beforeFrame.val,beforeFrame.property,inputs.val,
                                     by with_reducible exact inputs.property,outputs,by simpa only [sameOutputs] using returned,
-                                    inputWidths,outputWidths,coordinates,spectators,reference,after,rfl,rfl,rfl,afterFrame⟩
+                                    originalOrder,inputWidths,outputWidths,coordinates,spectators,reference,after,rfl,rfl,rfl,afterFrame.val,afterFrame.property⟩
                                 else throw .request
                               else throw .request
                             else throw .request

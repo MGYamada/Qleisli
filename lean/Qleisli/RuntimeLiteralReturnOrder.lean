@@ -10,12 +10,58 @@ open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.Semantics.ObservingAction (History)
 open Qleisli.RuntimeForestProduct (referenceAction)
+open Qleisli.RuntimeForestRegroup (sourceDimension dimensionAt_source)
 open Qleisli.RuntimeForestOrderedProduct (ordered_product_action product_agrees frame_product_agrees sparseProduct)
 open RuntimeForestCode (Frame)
 open RuntimeOwnerCodeReindex (dimensionAt reindex_exists)
 open RuntimeOwnerMap (Binding Map)
 
-private theorem return_permutation {state inputRoles outputRoles}
+private theorem owner_lookups (bindings : Map) (roles : List RuntimeOwnerMap.Owner)
+    {ordered : Map} {work left : Nat}
+    (read : ((roles.mapM (fun owner => do
+      let some binding := RuntimeOwnerMap.byOwner bindings owner | throw .request
+      pure binding) : WorkM Map).run work = (.ok ordered,left))) :
+    roles.mapM (RuntimeOwnerMap.byOwner bindings) = some ordered := by
+  induction roles generalizing ordered work left with
+  | nil =>
+    rw [(pure_success _ _ _ _ read).1]
+    rfl
+  | cons owner roles ih =>
+    simp only [List.mapM_cons] at read
+    obtain ⟨first,middle,found,rest⟩ := bind_success _ _ _ _ _ read
+    obtain ⟨tail,last,tailRead,returned⟩ := bind_success _ _ _ _ _ rest
+    rw [(pure_success _ _ _ _ returned).1]
+    cases source : RuntimeOwnerMap.byOwner bindings owner with
+    | none =>
+      have impossible : (Except.error Error.request : Except Error Binding) = .ok first := by
+        simpa only [source] using congrArg Prod.fst found
+      cases impossible
+    | some binding =>
+      have readBinding : (pure binding : WorkM Binding).run work = (.ok first,middle) := by
+        simpa only [source] using found
+      rw [(pure_success _ _ _ _ readBinding).1]
+      simp [List.mapM_cons,source,ih tailRead]
+
+theorem order_source {roles bindings ordered}
+    (read : RuntimeInterval.Computed (RuntimeOwnerMap.order roles bindings) ordered) :
+    roles.mapM (RuntimeOwnerMap.byOwner bindings) = some ordered := by
+  obtain ⟨work,left,order⟩ := read
+  unfold RuntimeOwnerMap.order at order
+  obtain ⟨_,_,_,lookups⟩ := bind_success _ _ _ _ _ order
+  exact owner_lookups bindings roles lookups
+
+/-- The checked order is computed by the original source owner lookups. -/
+theorem reordered_source {state roles bindings}
+    (output : RuntimeOwnerMap.Checked roles state)
+    (read : RuntimeInterval.Computed (RuntimePureBody.reordered roles state bindings) output) :
+    roles.mapM (RuntimeOwnerMap.byOwner bindings) = some output.bindings := by
+  obtain ⟨work,left,ran⟩ := read
+  unfold RuntimePureBody.reordered at ran
+  obtain ⟨ordered,middle,order,checked⟩ := bind_success _ _ _ _ _ ran
+  rw [RuntimeBoundaryOwnerEvidence.check_bindings output ⟨middle,left,checked⟩]
+  exact order_source ⟨work,middle,order⟩
+
+theorem return_permutation {state inputRoles outputRoles}
     (input : RuntimeOwnerMap.Checked inputRoles state) (output : RuntimeOwnerMap.Checked outputRoles state)
     (read : RuntimeInterval.Computed (RuntimePureBody.reordered outputRoles state input.bindings) output) :
     output.bindings.Perm input.bindings := by

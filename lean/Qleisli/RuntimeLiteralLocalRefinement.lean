@@ -1,6 +1,8 @@
 import Qleisli.RuntimeLiteralBodyRefinement
 import Qleisli.RuntimeLiteralNamedPrimitive
 import Qleisli.RuntimeLiteralReturnOrder
+import Qleisli.RuntimeLiteralBranchChoice
+import Qleisli.RuntimeLiteralConditionalArms
 
 /-! Compose the source-local steps with the shared body induction. Each
 outcome carries its original source position, and the source operator is
@@ -14,35 +16,70 @@ open Qleisli.RuntimeForestProduct (referenceAction)
 open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.RuntimeLiteralHistory
   (Agrees gap_history observation_source_history sourceErasure sourcePrimitive named_primitive_history
-    sourceReturn return_order)
+    sourceInlinePrimitive inline_primitive_history sourceReturn return_order reordered_source)
 open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun OrdinaryAligned)
 open Qleisli.RuntimeNamedSourceFlow (Aligned)
+open Qleisli.RuntimeLiteralBranchChoice (measurementBits measurementBits_retains)
+open Qleisli.RuntimeObservingValueRetention (run_retains_values)
+open Qleisli.RuntimeOriginalObservationValues (observation_measurement_keys observation_measurement_ids)
 open RuntimeForestCode (Frame)
 open RuntimeNamedPrimitiveOccurrence (Occurrence inspect?)
 open RuntimeOwnerMap (Map byOwner)
 open RuntimePureBody (Step)
+open Qleisli.RuntimeLiteralInlinePrimitive (literalForm)
 open RuntimeSelectionSteps (Edge)
 
-/-- The logical action and outcome sites of the evaluated source prefix. -/
+/-- The logical action, outcome sites and visible measurement bits of the
+evaluated source prefix. A discard contributes only a hidden outcome. -/
 structure SourceHistory where
   owners : RuntimeStructuralAction.SourceState
   outcomes : List (List Edge × Nat)
+  measurements : List Bool
   operator : Nat → Nat → ℂ
+  branches : List (List Edge × Bool) := []
 
-/-- Keep the complete source owner state, the original outcome order and the
-ordinary SSA interpretation on the same encoded history. -/
-def HistoryAgrees (inputs : List Nat) (state : Raw.Observation.State)
+/-- The common arm invariant carries ownership, outcome order, ordinary
+values and the representation of the source operator on the same history. -/
+def HistoryAgreesWith
+    (represents : Raw.Observation.State → Map → History → (Nat → Nat → ℂ) → Prop)
+    (inputs : List Nat) (state : Raw.Observation.State)
     (owners : RuntimeStructuralAction.SourceState) (ordinary : RuntimeOrdinaryBody.State)
     (source : SourceHistory) (history : History) : Prop :=
   source.owners = owners ∧ history.hidden = source.outcomes.map Prod.snd ∧
-  Agrees inputs state ordinary history ∧
-  ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
-    checked.bindings = owners.bindings ∧ ∃ frame : Frame checked, RepresentsOperator frame history source.operator
+  measurementBits ordinary.measurements history.values = some source.measurements ∧
+  Agrees inputs state ordinary history ∧ represents state owners.bindings history source.operator
 
-private def recordObservation (source : SourceHistory) (site : List Edge) (survivors : Map)
+def HistoryAgrees :=
+  HistoryAgreesWith fun state bindings history operator =>
+    ∃ roles, ∃ checked : RuntimeOwnerMap.Checked roles state,
+      checked.bindings = bindings ∧ ∃ frame : Frame checked, RepresentsOperator frame history operator
+
+/-- Select the actual original branch using the measured bits computed by
+the source prefix. The same literal event runs that child's history list. -/
+theorem source_branch_choice {sources rootOwner rootName owner name dependencies program block offset
+    path event actual owners ordinary}
+    (checked : @RuntimeBranchCondition.Checked sources rootOwner rootName owner name dependencies program
+      block offset path event actual ordinary)
+    (inputs : List Nat) (member : inputs ∈ checked.inputs.rows) {expected history events}
+    (agrees : HistoryAgrees inputs actual.interval.before owners ordinary expected history)
+    (read : readOps block.fuel actual.interval.before.quantum.reference ((block.operations.drop offset).take 1) =
+      some (actual.interval.after.quantum.reference,events)) :
+    ∃ trace : Qleisli.RuntimeOriginalBranch.Trace actual, ∃ choice,
+      Qleisli.RuntimeLiteralBranchChoice.sourceChoice
+        (RuntimeBranchCondition.reference inputs ordinary.measurements expected.measurements) checked.required = some choice ∧
+      run dependencies block.fuel events history = (do
+        let selected ← run dependencies actual.childFuel (trace.armEvents choice) history
+        selected.mapM (Qleisli.Semantics.ObservingAction.merge choice actual.classical)) := by
+  obtain ⟨trace⟩ := Qleisli.RuntimeOriginalBranch.original_branch_events actual
+  exact ⟨trace,Qleisli.RuntimeLiteralBranchChoice.branch_choice checked trace inputs member history
+    agrees.2.2.1 agrees.2.2.2.1.1 read⟩
+
+private def recordObservation (source : SourceHistory) (site : List Edge) (survivors : Map) (measured : Option Nat)
     (result : Nat × (Nat → Nat → ℂ)) : SourceHistory :=
-  { owners := {source.owners with bindings := survivors}
+  { source with
+    owners := {source.owners with bindings := survivors}
     outcomes := source.outcomes ++ [(site,result.1)]
+    measurements := source.measurements ++ (if measured.isSome then [result.1 == 1] else [])
     operator := result.2 }
 
 private noncomputable def sourceNamedPrimitive {dependencies program block step}
@@ -54,6 +91,12 @@ private noncomputable def sourceNamedPrimitive {dependencies program block step}
     let operator ← sourcePrimitive original.event source.owners.bindings boundary.after.bindings
       bound.binding returned source.operator
     return [{source with owners := boundary.after, operator}]
+
+private noncomputable def sourceInlineHistory {dependencies program block start count input output role kind}
+    {primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind}
+    (original : RuntimePrimitiveSource.Checked primitive) (source : SourceHistory) : Option (List SourceHistory) :=
+  (sourceInlinePrimitive original source.owners.bindings source.operator).map fun operator =>
+    [{source with owners := original.after, operator}]
 
 /-- Evaluate the original gap, observation and supported named steps. The
 remaining constructors use their own source action. -/
@@ -68,7 +111,11 @@ noncomputable def sourceStep {dependencies program block}
     let spectators := RuntimeObservationAction.spectators event
     let survivors ← spectators.mapM (byOwner source.owners.bindings)
     let outcomes ← sourceErasure observation.checked.operand spectators source.owners.bindings source.operator
-    return outcomes.map (recordObservation source (scope ++ [.atOrdinal prior.length]) survivors)
+    return outcomes.map (recordObservation source (scope ++ [.atOrdinal prior.length]) survivors observation.checked.measured)
+  | .pure (.primitive action original) =>
+    match literalForm action with
+    | some _ => sourceInlineHistory original source
+    | none => other prior step source
   | .pure _ | .conditional .. => other prior step source
   | .named .. =>
     match inspect? step with
@@ -78,6 +125,7 @@ noncomputable def sourceStep {dependencies program block}
 /-- These constructors supply their own local source action law. -/
 def NeedsSourceAction {dependencies program block} : @Step dependencies program block → Prop
   | .gap _ | .observation _ => False
+  | .pure (.primitive action _) => (literalForm action).isNone
   | .pure _ | .conditional .. => True
   | step => (inspect? step).isNone
 
@@ -93,6 +141,14 @@ private theorem sameFrame_represents {state firstRoles secondRoles}
     RepresentsOperator (sameFrame same frame) history operator := by
   intro col row bound
   simpa only [referenceAction, Frame.embedding, sameFrame, ← same] using represented col row bound
+
+theorem HistoryAgrees.represents {inputs state owners ordinary source history roles}
+    (agrees : HistoryAgrees inputs state owners ordinary source history)
+    (checked : RuntimeOwnerMap.Checked roles state) (bindings : checked.bindings = owners.bindings) :
+    ∃ frame : Frame checked, RepresentsOperator frame history source.operator := by
+  obtain ⟨_,_,_,_,_,actual,actualBindings,frame,represented⟩ := agrees
+  have same := actualBindings.trans bindings.symm
+  exact ⟨sameFrame same frame,sameFrame_represents same frame represented⟩
 
 private theorem sourceNamedPrimitive_refines {artifact root execution fuel program block step}
     (held : @Occurrence root.dependencies program block step)
@@ -112,13 +168,45 @@ private theorem sourceNamedPrimitive_refines {artifact root execution fuel progr
       event scope body bodyRead boundary finalOrdinary primitive original bound =>
     rcases owners with ⟨rfl,rfl⟩
     rcases ordinary with ⟨rfl,rfl⟩
-    obtain ⟨ownerState,hidden,values,_,checked,bindings,input,represented⟩ := agrees
-    obtain ⟨returned,mapped,output,operator,result,sourceRead,rfl,sameValues,sameHidden,resultAgrees,resultRepresents⟩ :=
+    obtain ⟨ownerState,hidden,bits,values,_,checked,bindings,input,represented⟩ := agrees
+    obtain ⟨returned,mapped,output,operator,result,sourceRead,rfl,sameValues,sameHidden,measurements,resultAgrees,resultRepresents⟩ :=
       law checked input bindings inputs history source.operator values represented read executed
     have incoming := congrArg RuntimeStructuralAction.SourceState.bindings ownerState
-    refine ⟨[{source with owners := boundary.after, operator}],?_,
-      .cons ⟨rfl,sameHidden.trans hidden,resultAgrees,_,boundary.afterFrame,boundary.sameAfter,output,resultRepresents⟩ .nil⟩
-    simp only [sourceNamedPrimitive,mapped,incoming,← bindings,← boundary.sameAfter,bind,Option.bind,pure,sourceRead]
+    refine ⟨[{source with owners := boundary.after, operator}],?_,.cons
+      ⟨rfl,sameHidden.trans hidden,?_,resultAgrees,_,boundary.afterFrame,boundary.sameAfter,output,resultRepresents⟩ .nil⟩
+    · simp only [sourceNamedPrimitive,mapped,incoming,← bindings,← boundary.sameAfter,bind,Option.bind,pure,sourceRead]
+    · rw [sameValues,measurements]
+      exact bits
+
+private theorem sourceInlinePrimitive_refines {dependencies program block start count input output role kind}
+    (primitive : @RuntimePrimitiveAction.Checked dependencies program block start count input output role kind)
+    (original : RuntimePrimitiveSource.Checked primitive)
+    (form : Qleisli.RuntimeNamedGateLift.Form)
+    (literal : primitive.interval.operations = [form.operation input output])
+    (inputs : List Nat) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
+    (owners : Aligned ownerBefore ownerAfter (.pure (.primitive primitive original)))
+    (ordinary : OrdinaryAligned ordinaryBefore ordinaryAfter (.pure (.primitive primitive original)))
+    {chunk source history outputs}
+    (read : readOps block.fuel primitive.interval.interval.before.quantum.reference
+      ((block.operations.drop start).take count) = some (primitive.interval.interval.after.quantum.reference,chunk))
+    (agrees : HistoryAgrees inputs primitive.interval.interval.before ownerBefore ordinaryBefore source history)
+    (executed : run dependencies block.fuel chunk history = some outputs) :
+    ∃ expected, sourceInlineHistory original source = some expected ∧
+      List.Forall₂ (HistoryAgrees inputs primitive.interval.interval.after ownerAfter ordinaryAfter) expected outputs := by
+  rcases owners with ⟨rfl,rfl⟩
+  cases ordinary
+  obtain ⟨ownerState,hidden,bits,values,_,checked,bindings,frame,represented⟩ := agrees
+  obtain ⟨output,operator,result,sourceRead,rfl,sameValues,sameHidden,agreesAfter,resultRepresents⟩ :=
+    inline_primitive_history primitive original form literal checked frame (bindings.trans original.sameHistory.symm)
+      inputs _ history source.operator values represented read executed
+  let stateEq := RuntimeIntervalStates.same_after original.interval primitive.interval.interval
+  have incoming := congrArg RuntimeStructuralAction.SourceState.bindings ownerState
+  refine ⟨[{source with owners := original.after, operator}],?_,.cons
+    ⟨rfl,sameHidden.trans hidden,?_,agreesAfter,_,_,?_,output,resultRepresents⟩ .nil⟩
+  · simp only [sourceInlineHistory,incoming,← bindings,sourceRead,Option.map_some]
+  · rw [sameValues]
+    exact bits
+  · exact RuntimeNamedThreeFrameChain.checkedAt_bindings stateEq original.owners.after
 
 theorem sourceStep_refines {artifact root execution fuel program block}
     (steps : List (@Step root.dependencies program block))
@@ -134,7 +222,19 @@ theorem sourceStep_refines {artifact root execution fuel program block}
     owners ordinary chunk read source history outputs agrees executed
   cases first with
   | pure node =>
-    exact remaining prior (.pure node) later position ⟨certified,trivial⟩ owners ordinary read agrees executed
+    cases node
+    case primitive action original =>
+      cases found : literalForm action with
+      | none =>
+        obtain ⟨expected,evaluated,related⟩ :=
+          remaining prior (.pure (.primitive action original)) later position
+            ⟨certified,by simp [NeedsSourceAction,found]⟩ owners ordinary read agrees executed
+        exact ⟨expected,by simpa only [sourceStep,found] using evaluated,related⟩
+      | some form =>
+        obtain ⟨expected,evaluated,related⟩ :=
+          sourceInlinePrimitive_refines action original form.val form.property inputs owners ordinary read agrees executed
+        exact ⟨expected,by simpa only [sourceStep,found] using evaluated,related⟩
+    all_goals exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read agrees executed
   | named event frame body bodyRead boundary finalOrdinary children =>
     cases inspected : inspect? (.named event frame body bodyRead boundary finalOrdinary children) with
     | none =>
@@ -151,40 +251,89 @@ theorem sourceStep_refines {artifact root execution fuel program block}
   | gap gap =>
     rcases owners with ⟨rfl,rfl⟩
     rcases ordinary with ⟨rfl,rfl⟩
-    obtain ⟨ownerState,hidden,values,_,checked,bindings,input,represented⟩ := agrees
+    obtain ⟨ownerState,hidden,bits,values,_,checked,bindings,input,represented⟩ := agrees
     have beforeBindings := RuntimeBoundaryOwnerEvidence.check_bindings gap.beforeFrame gap.beforeRead
     have afterBindings := RuntimeBoundaryOwnerEvidence.check_bindings gap.afterFrame gap.afterRead
     let inputFrame := sameFrame (bindings.trans beforeBindings.symm) input
     obtain ⟨output,paired⟩ := gap_history gap inputFrame inputs history source.operator values
       (sameFrame_represents _ _ represented) read executed
     cases paired with
-    | cons matched tail =>
+    | @cons _ result _ _ matched tail =>
       cases tail
+      have retains := run_retains_values _ _ _ _ executed result List.mem_cons_self
       exact ⟨[source],rfl,.cons
-        ⟨ownerState,matched.1.trans hidden,matched.2.1,_,gap.afterFrame,afterBindings,output,matched.2.2⟩ .nil⟩
+        ⟨ownerState,matched.1.trans hidden,measurementBits_retains _ retains bits,
+          matched.2.1,_,gap.afterFrame,afterBindings,output,matched.2.2⟩ .nil⟩
   | observation observation =>
     rcases owners with ⟨rfl,rfl⟩
     rcases ordinary with ⟨rfl,rfl⟩
-    obtain ⟨ownerState,hidden,values,_,checked,bindings,input,represented⟩ := agrees
+    obtain ⟨ownerState,hidden,bits,values,_,checked,bindings,input,represented⟩ := agrees
     obtain ⟨_,output,expected,erased,paired⟩ :=
       observation_source_history observation bindings input inputs history source.operator values represented read executed
     simp only [bindings] at erased
     have incoming := congrArg RuntimeStructuralAction.SourceState.bindings ownerState
     have survivors := Qleisli.RuntimeOriginalObservation.original_after_bindings observation.checked
-    let record := recordObservation source (scope ++ [.atOrdinal prior.length]) observation.checked.after.bindings
+    let record := recordObservation source (scope ++ [.atOrdinal prior.length])
+      observation.checked.after.bindings observation.checked.measured
     refine ⟨expected.map record,?_,?_⟩
     · simp only [sourceStep, incoming, survivors, erased, bind, Option.bind, pure, record]
     · rw [List.forall₂_map_left_iff]
       apply paired.imp
       intro expectedResult result matched
-      refine ⟨?_,?_,matched.2.2.1,_,observation.checked.after,rfl,output,matched.2.2.2⟩
+      refine ⟨?_,?_,?_,matched.2.2.1,_,observation.checked.after,rfl,output,matched.2.2.2⟩
       · simp [record, recordObservation, RuntimeOrdinaryBody.Observation.after, ownerState]
       · simpa [record, recordObservation, hidden] using matched.2.1
+      · have keys := observation_measurement_keys observation
+        cases measured : observation.checked.measured with
+        | none =>
+          rw [measured] at keys
+          simpa only [keys,matched.1,measured,record,recordObservation,Option.isSome,
+            Bool.false_eq_true,if_false,List.append_nil] using bits
+        | some id =>
+          rw [measured] at keys
+          obtain ⟨key,outputId,keys⟩ := keys
+          have fresh := (observation_measurement_ids observation measured).1
+          have unused := Qleisli.RuntimeOriginalClassicalJoin.lookup_unissued (fun member => fresh (values.2 member))
+          have newBit := Semantics.OrdinaryValue.lookup_append_fresh (expectedResult.1 == 1) unused
+          have oldBits := measurementBits_retains _
+            (Semantics.OrdinaryValue.append_extends history.values [(id,expectedResult.1 == 1)]) bits
+          rw [keys,matched.1,measured]
+          unfold measurementBits at oldBits ⊢
+          simp only [List.mapM_append,oldBits,List.mapM_cons,List.mapM_nil,outputId,newBit,bind,Option.bind,pure,
+            record,recordObservation,measured,Option.isSome,if_true]
 
 noncomputable def returnHistory (returned : Map) (source : SourceHistory) : SourceHistory :=
   { source with
     owners := {source.owners with bindings := returned}
     operator := sourceReturn source.owners.bindings returned source.operator }
+
+private noncomputable def returnByRoles (roles : List RuntimeOwnerMap.Owner) (source : SourceHistory) :
+    Option SourceHistory :=
+  (roles.mapM (byOwner source.owners.bindings)).map (fun bindings => returnHistory bindings source)
+
+/-- Run the original arm in source input order and return its results in
+source output order. Both orders are computed from the original owner roles. -/
+noncomputable def runSourceArm {dependencies program block}
+    (next : List (@Step dependencies program block) → Step dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (inputRoles outputRoles : List RuntimeOwnerMap.Owner) (steps : List (@Step dependencies program block))
+    (source : SourceHistory) : Option (List SourceHistory) := do
+  let input ← returnByRoles inputRoles source
+  let results ← runSourceHistories next [] steps [input]
+  results.mapM (returnByRoles outputRoles)
+
+private theorem return_family (roles : List RuntimeOwnerMap.Owner) (returned : Map) :
+    ∀ sources : List SourceHistory,
+      (∀ source ∈ sources, roles.mapM (byOwner source.owners.bindings) = some returned) →
+      sources.mapM (returnByRoles roles) = some (sources.map (returnHistory returned)) := by
+  intro sources
+  induction sources with
+  | nil => intro _; rfl
+  | cons first rest ih =>
+    intro each
+    have head := each first List.mem_cons_self
+    have tail := ih (fun source member => each source (List.mem_cons_of_mem _ member))
+    simp [List.mapM_cons,returnByRoles,head,tail]
 
 private theorem sourceReturn_refines {state roles before ordinary}
     (inputs : List Nat) (returned : RuntimeOwnerMap.Checked roles state)
@@ -193,11 +342,69 @@ private theorem sourceReturn_refines {state roles before ordinary}
     (agrees : HistoryAgrees inputs state before ordinary source history) :
     HistoryAgrees inputs state {before with bindings := returned.bindings} ordinary
       (returnHistory returned.bindings source) history := by
-  obtain ⟨owners,hidden,values,_,checked,bindings,input,represented⟩ := agrees
+  obtain ⟨owners,hidden,bits,values,_,checked,bindings,input,represented⟩ := agrees
   rw [← bindings] at read
   obtain ⟨output,encoded⟩ := return_order input returned read history source.operator represented
-  refine ⟨by simp [returnHistory,owners],hidden,values,_,returned,rfl,output,?_⟩
+  refine ⟨by simp [returnHistory,owners],hidden,bits,values,_,returned,rfl,output,?_⟩
   simpa only [returnHistory,owners,← bindings] using encoded
+
+private theorem history_at_arm_entry {parent child owners ordinary source history}
+    (inputs : List Nat)
+    (live : child.quantum.live = parent.quantum.live) (axes : child.quantum.frame = parent.quantum.frame)
+    (issued : parent.classical ⊆ child.classical)
+    (agrees : HistoryAgrees inputs parent owners ordinary source history) :
+    HistoryAgrees inputs child owners ordinary source history := by
+  obtain ⟨sourceOwners,hidden,bits,values,roles,checked,bindings,input,represented⟩ := agrees
+  let entry : RuntimeOwnerMap.Checked roles child :=
+    ⟨checked.bindings,checked.ordered,checked.ownersDistinct,checked.tokensDistinct,live.symm ▸ checked.complete⟩
+  let frame : Frame entry := ⟨input.owners,input.code,input.original⟩
+  refine ⟨sourceOwners,hidden,bits,⟨values.1,?_⟩,roles,entry,bindings,frame,?_⟩
+  · intro id member
+    exact Qleisli.RuntimeObservingPrefix.issued_mono issued (values.2 member)
+  · intro col row bound
+    have actual := represented col row (by simpa only [axes] using bound)
+    simpa only [referenceAction,RuntimeForestCode.Frame.embedding,frame,entry,axes] using actual
+
+/-- Use the same concrete source-step induction for an actual recursive arm.
+The inherited history enters in original source order and returns in the
+checked order consumed by the parent's phi merge. -/
+theorem ArmFlow.source_refinement {artifact root mode fuel rootInputs program block inputRoles outputRoles
+    before after ordinary finalOrdinary steps rawExit output events parent}
+    (arm : @ArmFlow artifact root mode (RuntimePureBody.runBlockCore artifact root mode (fuel+1)) rootInputs
+      program block inputRoles outputRoles before after ordinary finalOrdinary steps parent rawExit output events)
+    (inputs : List Nat) (scope : List Edge) (sourceInitial : SourceHistory) (initial : History) {results}
+    (other : List (Step root.dependencies program block) → Step root.dependencies program block →
+      SourceHistory → Option (List SourceHistory))
+    (remaining : StepRefinement steps
+      (fun step => CheckedStep (RuntimePureBody.runBlockCore artifact root mode (fuel+1)) step ∧ NeedsSourceAction step)
+      other (fun _ => HistoryAgrees inputs))
+    (agrees : HistoryAgrees inputs parent before ordinary sourceInitial initial)
+    (executed : run root.dependencies block.fuel events initial = some results) :
+    ∃ expected,
+      runSourceArm (sourceStep other scope) inputRoles outputRoles steps sourceInitial = some expected ∧
+      List.Forall₂ (HistoryAgrees inputs rawExit after finalOrdinary) expected results := by
+  have entry := sourceReturn_refines inputs arm.input arm.inputRead
+    (history_at_arm_entry inputs arm.live arm.axes arm.issued agrees)
+  obtain ⟨expected,sourceRun,paired⟩ := (arm.trace.executes_singleton executed).ordered_refinement
+    arm.flow.source arm.flow.ordinary (sourceStep other scope) (fun _ => HistoryAgrees inputs) [] _
+    arm.flow.calls (sourceStep_refines steps inputs scope other remaining) (.cons entry .nil)
+  refine ⟨expected.map (returnHistory output.bindings),?_,?_⟩
+  · have initialOrder : inputRoles.mapM (byOwner sourceInitial.owners.bindings) = some arm.input.bindings := by
+      rw [agrees.1]
+      exact reordered_source arm.input arm.inputRead
+    have finalOrder := reordered_source output arm.outputRead
+    have ownerPairs : List.Forall₂ (fun source _ => source.owners = arm.beforeReturn ∧ True) expected results :=
+      paired.imp (fun _ _ matched => ⟨matched.1,True.intro⟩)
+    have sourceOwners := (List.forall₂_and_left expected results).mp ownerPairs |>.1
+    have orders := return_family outputRoles output.bindings expected (fun source member =>
+      sourceOwners source member ▸ finalOrder)
+    simp only [runSourceArm,returnByRoles,initialOrder,Option.map,bind,Option.bind,sourceRun,orders]
+  · rw [List.forall₂_map_left_iff,arm.returned]
+    apply paired.imp
+    intro source actual matched
+    apply sourceReturn_refines inputs output arm.outputRead
+    exact Eq.mp (congrArg (fun state => HistoryAgrees inputs state arm.beforeReturn finalOrdinary source actual)
+      arm.sameExit) matched
 
 /-- The same ordered execution proof covers the concrete source actions and
 the literal final source return. Every remaining step must supply its source
@@ -251,5 +458,7 @@ theorem original_body_source_refinement {artifact owner name arguments request p
   exact paired.imp (fun _ _ matched => finish returned returnRead matched)
 
 #print axioms sourceStep_refines
+#print axioms source_branch_choice
+#print axioms ArmFlow.source_refinement
 #print axioms original_body_source_refinement
 end Qleisli.RuntimeLiteralBody

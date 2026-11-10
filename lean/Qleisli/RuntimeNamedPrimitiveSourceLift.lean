@@ -235,7 +235,7 @@ private theorem encoded_pull {Reference : Type} (axes : List Nat) (unique : axes
 
 /-- This private bridge substitutes the source CodeSpace equation into the
 same literal parent event action, under the real local final reorder. -/
-private theorem source_parent_action
+theorem source_parent_action
     {dependencies program block primitiveStart primitiveCount primitiveInput primitiveOutput role kind
       operations before after localBefore localAfter axes port output form parentEvents childEvents}
     (primitive : @RuntimePrimitiveAction.Checked dependencies program block primitiveStart primitiveCount

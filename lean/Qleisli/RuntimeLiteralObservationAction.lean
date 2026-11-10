@@ -11,26 +11,10 @@ open QleisliKernel.Semantics.Observation (Event readOps)
 open Qleisli.Semantics.ObservingAction (History run)
 open RuntimeForestCode (Frame OwnerCodes)
 open RuntimeOwnerMap (Binding Map Owner byOwner)
-open RuntimeOwnerCodeReindex (dimensionAt lookup_cons lookup_nil)
+open RuntimeOwnerCodeReindex (dimensionAt)
+open Qleisli.RuntimeForestRegroup (sourceDimension dimensionAt_source)
 open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.RuntimeOriginalObservation (original_before_bindings outcomeJoint outcomeJointLayout)
-
-/-- Dimensions of the source owners in their complete original order. -/
-def sourceDimension (bindings : Map) (binding : Binding) : Nat :=
-  if binding ∈ bindings then (Semantics.FiniteCarrier.dimension binding.owner.basis).getD 0 else 0
-
-theorem dimensionAt_source {bindings : Map} (owners : OwnerCodes bindings) (wanted : Binding) :
-    dimensionAt owners wanted = sourceDimension bindings wanted := by
-  induction owners with
-  | nil => simp [dimensionAt, lookup_nil, sourceDimension]
-  | @cons binding bindings first rest ih =>
-    by_cases same : binding = wanted
-    · subst wanted
-      simp [dimensionAt, lookup_cons, sourceDimension, Semantics.FiniteCarrier.dimension, first.reference.1]
-    · simp only [dimensionAt, lookup_cons, dif_neg same]
-      change dimensionAt rest wanted = _
-      rw [ih]
-      simp [sourceDimension, Ne.symm same]
 
 /-- Evaluate the source operand's erasure in the ordered source coordinates.
 Each result retains its outcome and its operator on every reference column. -/

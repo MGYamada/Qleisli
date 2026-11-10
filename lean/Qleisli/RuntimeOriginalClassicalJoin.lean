@@ -107,19 +107,31 @@ theorem original_merge_agrees {sources rootOwner rootName caller name dependenci
       rw [lookup_append_absent _ _ _ missing,phiBindings_lookup merged action.ordinaryPhis.distinct rawPhi]
       exact found
 
+theorem merge_paired_family {SourceResult : Type} (choice : Bool) (phis : List Phi)
+    {expected : List SourceResult} {histories : List History}
+    (transport : History → History) {before after : SourceResult → History → Prop}
+    (paired : List.Forall₂ before expected histories)
+    (each : ∀ source actual, actual ∈ histories → before source actual →
+      ∃ merged, merge choice phis (transport actual) = some merged ∧ after source merged) :
+    ∃ results, (histories.map transport).mapM (merge choice phis) = some results ∧ List.Forall₂ after expected results := by
+  induction paired with
+  | nil => exact ⟨[],rfl,.nil⟩
+  | @cons source actual expected histories current rest ih =>
+    obtain ⟨result,merged,related⟩ := each source actual List.mem_cons_self current
+    obtain ⟨results,allMerged,allRelated⟩ := ih (fun item history member => each item history (List.mem_cons_of_mem _ member))
+    refine ⟨result::results,?_,.cons related allRelated⟩
+    rw [List.map_cons,List.mapM_cons,merged,allMerged]
+    rfl
+
 theorem merge_family (choice : Bool) (phis : List Phi) (histories : List History)
     (transport : History → History)
     (relates : History → History → Prop)
     (each : ∀ history ∈ histories, ∃ after, merge choice phis (transport history) = some after ∧ relates history after) :
     ∃ results, (histories.map transport).mapM (merge choice phis) = some results ∧ List.Forall₂ relates histories results := by
-  induction histories with
-  | nil => exact ⟨[],rfl,.nil⟩
-  | cons first rest ih =>
-    obtain ⟨result,merged,related⟩ := each first List.mem_cons_self
-    obtain ⟨results,allMerged,allRelated⟩ := ih (fun item member => each item (List.mem_cons_of_mem _ member))
-    refine ⟨result::results,?_,.cons related allRelated⟩
-    rw [List.map_cons,List.mapM_cons,merged,allMerged]
-    rfl
+  apply merge_paired_family choice phis transport (List.forall₂_same.mpr fun _ _ => rfl)
+  intro source actual member (same : source = actual)
+  subst source
+  exact each actual member
 
 /-- Once the original selected arm has supplied its returned histories and
 SSA agreement, the literal parent branch produces one matching merged

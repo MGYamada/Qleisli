@@ -14,6 +14,7 @@ def NodeAligned {dependencies program block} (before after : RuntimeStructuralAc
     (node : RuntimePureBody.Node dependencies program block) : Prop :=
   match node with
   | .primitive _ binding => before = binding.history ∧ after = binding.after
+  | .structural (before := original) action => before = original ∧ after = action.after
   | .selection (codes := codes) .. =>
     before.bindings = codes.owners.before.bindings ∧
       after = {before with bindings := codes.owners.transport.after.bindings}
