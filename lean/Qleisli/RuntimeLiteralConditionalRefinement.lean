@@ -583,7 +583,7 @@ private theorem named_zero_impossible {artifact root mode program block step}
     cases childRead
 
 private def NeedsRecursiveLeaf {dependencies program block} : Step dependencies program block → Prop
-  | .named .. | .conditional .. => False
+  | .named .. | .conditional .. | .pure (.named ..) => False
   | _ => True
 
 /-- Recurse through the original checked child list of a named call or the
@@ -643,6 +643,10 @@ theorem recursiveSourceSteps_refine {artifact root mode}
       exact False.elim (named_zero_impossible (ChildRunAt.forget checked))
     case conditional =>
       exact False.elim (conditional_zero_impossible checked)
+    case pure node =>
+      cases node
+      case named => exact False.elim checked
+      all_goals exact localLeaves 0 scope steps inherited prior _ later position ⟨checked,trivial⟩
     all_goals
       exact localLeaves 0 scope steps inherited prior _ later position ⟨checked,trivial⟩
   | succ depth ih =>
@@ -676,7 +680,13 @@ theorem recursiveSourceSteps_refine {artifact root mode}
           agrees read executed writes
       exact ⟨expected.map (finishArm action choice),
         by simp only [recursiveSourceSteps,withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
-    | pure _ | gap _ | observation _ =>
+    | pure node =>
+      cases node
+      case named => exact False.elim checked
+      all_goals
+        exact ((localLeaves (depth+1) scope steps inherited prior _ later position ⟨checked,trivial⟩
+          owners ordinary read).apply writes) agrees executed
+    | gap _ | observation _ =>
       exact ((localLeaves (depth+1) scope steps inherited prior _ later position ⟨checked,trivial⟩
         owners ordinary read).apply writes) agrees executed
 
@@ -827,6 +837,7 @@ theorem original_body_sparse_refinement {artifact owner name arguments request p
     ((original_body_sparse_steps body row scope fallback leaves).of_certifies (fun _ cert => cert.forget)) starts
 
 def NeedsRecursivePure {dependencies program block} : Step dependencies program block → Prop
+  | .pure (.named ..) => False
   | step@(.pure _) => NeedsSparseSourceAction step ∧ NeedsNonInline step
   | _ => False
 
@@ -852,7 +863,10 @@ private theorem recursiveBodyLeaves_refine {dependencies program block}
   rcases checked with ⟨⟨⟨⟨known,leaf⟩,structural⟩,observation⟩,inline⟩
   refine ⟨known,?_⟩
   cases step
-  case pure => exact ⟨structural,inline⟩
+  case pure node =>
+    cases node
+    case named => exact leaf
+    all_goals exact ⟨structural,inline⟩
   case gap => exact structural
   case observation => exact observation
   all_goals exact leaf

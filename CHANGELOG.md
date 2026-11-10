@@ -111,7 +111,9 @@ development milestones from the scope of their evidence.
   observations through the written return. Structural operations and
   supported inline primitives preserve the inherited SSA history while
   using their original sparse source actions. Other pure operation forms
-  still require their local correspondence laws.
+  still require their local correspondence laws. A graph application
+  retains its actual staged source receipt and the original source-ordered
+  input and output port lookups for the checked literal interval.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
