@@ -100,11 +100,11 @@ development milestones from the scope of their evidence.
   that source operator family back to the original caller owner order.
   The paired caller results carry that operator, the checked caller owner
   state and the same ordinary valuation and hidden history on one invariant.
-  The original source return checkpoint
-  uses the same complete native state, and its written owner order
-  determines a single caller encoding for the ordered result family when
-  the child source returns agree on each slice. The recursive source-arm
-  correspondence for these child results remains a proof obligation.
+  The general named step derives its child entry from the written roles
+  and selected ports. On the actual child receipt, the smaller source
+  traversal law gives the ordered logical results and the paired caller
+  return restores the shared invariant. A single source evaluator for all
+  named and pure steps remains a proof obligation.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

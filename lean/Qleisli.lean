@@ -168,6 +168,7 @@ import Qleisli.RuntimeCallHistorySourceState
 import Qleisli.RuntimeCallHistorySourceRefinement
 import Qleisli.RuntimeCallHistoryWeighted
 import Qleisli.RuntimeCallHistorySourceReturn
+import Qleisli.RuntimeLiteralGeneralNamed
 import Qleisli.RuntimeLiteralSparseInline
 import Qleisli.RuntimeLiteralSparseNamed
 import Qleisli.RuntimeLiteralSparseSelection
