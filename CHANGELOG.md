@@ -17,6 +17,7 @@ development milestones from the scope of their evidence.
   side of an exact product and retain the dense equation as their proof.
   Arm Gram checks also use measured sparse support, with the original
   total charge preserved when the dense strategy is selected.
+  Carrier encodings use the compact Gram check when its estimated cost is lower.
 - Retain exact child intervals for compound static continuations in
   original-source v5 bodies. Check each original event against its whole
   literal Raw interval, including primitive implementations with several operations.
