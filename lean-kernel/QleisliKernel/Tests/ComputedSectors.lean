@@ -11,6 +11,16 @@ open QleisliKernel.FiniteRestriction QleisliKernel.Tests.FiniteRestriction
 theorem hadamard_and_flip : (((readSectors [] bitBasis bitBasis hxCircuit).run 100000).1 ==
     .ok [hadamard,flip]) = true := by decide +kernel
 
+-- Both active gates are validated, but the flip's payload is not
+-- validated again in the sector that executes only the Hadamard.
+theorem inactive_payload_does_not_spend_local_validation_work :
+    (((readSectors [] bitBasis bitBasis hxCircuit).run 1100).1 ==
+      .ok [hadamard,flip]) = true := by decide +kernel
+
+theorem active_payload_still_spends_local_validation_work :
+    (((readSectors [] bitBasis bitBasis hxCircuit).run 900).1 ==
+      .error (.arithmetic .workLimit)) = true := by decide +kernel
+
 theorem scalar_phase : (((readSectors [] bitBasis unitBasis scalarCircuit).run 100000).1 ==
     .ok [scalar negativeOne,scalar imaginaryOne]) = true := by decide +kernel
 

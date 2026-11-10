@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Meter selected qmatch sector restriction by its control and axis scans.
+  Validate the entire original tape and retain full local validation for
+  the instructions active in each sector.
 - Check coherent basis preparation in selected v5 bodies and relate its
   original rectangular table to the literal Raw event on the complete owner
   and reference frame. Ordinary branches after preparation and measurement

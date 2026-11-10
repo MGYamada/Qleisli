@@ -54,12 +54,16 @@ theorem TapeMatch.execution (dependencies : List Dependency) {selector label : N
 
 def joinedBasis (selector target : Basis) : Basis := .pair :: (selector ++ target)
 
+private def reconstructSector (dependencies : List Dependency) (target : Basis)
+    (steps : List Step) : WorkM Matrix := do
+  let actual ← circuitMatrix dependencies ⟨target,steps⟩
+  wholeSpace actual
+  return actual
+
 private def evaluateSector (dependencies : List Dependency) (selector label : Nat)
     (target : Basis) (steps : List Step) : WorkM Matrix := do
   let restricted ← lift (readOption (restrictSteps selector label steps))
-  let actual ← circuitMatrix dependencies ⟨target,restricted⟩
-  wholeSpace actual
-  return actual
+  reconstructSector dependencies target restricted
 
 /-- Independently reconstruct the restriction of all original steps. A desired
 matrix never substitutes for the actual body or its exact local execution. -/
@@ -85,14 +89,24 @@ def checkSectors (dependencies : List Dependency) (selector target : Basis)
   required.zipIdx.mapM fun (meaning,label) =>
     checkSector dependencies (width selector) label target circuit.steps meaning
 
+/-- Restriction visits controls and axes. A retained monomial shares its
+permutation and phase lists with the original step. -/
+private def scanFields (steps : List Step) : Nat :=
+  steps.foldl (fun total step =>
+    total + 16 * (step.controls.length + (targets step.action).length + 1)) 0
+
 /-- Reconstruct all canonical physical sectors once before an enclosing logical
 code-space check. No producer matrix or sector subset supplies this result. -/
 def readSector (dependencies : List Dependency) (selector label : Nat)
     (target : Basis) (steps : List Step) : WorkM Matrix := do
   guard (selector ≤ 6 && basisValid target && steps.length ≤ 1024) .limit
   guard (label < 2^selector) .request
-  exactWork (QleisliKernel.Exact.charge (restrictionFields steps))
-  evaluateSector dependencies selector label target steps
+  exactWork (QleisliKernel.Exact.charge (scanFields steps))
+  let restricted ← lift (readOption (restrictSteps selector label steps))
+  -- The local circuit validator inspects only active instructions. Reserve
+  -- their full validation cost before it examines the retained payloads.
+  exactWork (QleisliKernel.Exact.charge (restrictionFields restricted))
+  reconstructSector dependencies target restricted
 
 def readSectors (dependencies : List Dependency) (selector target : Basis)
     (circuit : Circuit) : WorkM (List Matrix) := do
@@ -130,29 +144,13 @@ def SectorBinding (dependencies : List Dependency) (selector : Nat) (target : Ba
           (restricted.foldlM (fun values step => applyStep dependencies step values) values).map
             (liftVector selector request.2))
 
-private theorem evaluateSector_bound (dependencies : List Dependency) (selector label : Nat)
-    (target : Basis) (steps : List Step) (actual : Matrix) (work left : Nat)
-    (bound : label < 2^selector)
-    (ok : (evaluateSector dependencies selector label target steps).run work = (.ok actual,left)) :
-    SectorEvaluationBinding dependencies selector target steps label actual := by
-  obtain ⟨restricted,w₁,hs,h⟩ := bind_success _ _ _ _ _ ok
-  have restrictedEq : restrictSteps selector label steps = some restricted := by
-    have got := (lift_success _ _ _ _ hs).1
-    cases found : restrictSteps selector label steps <;> simp_all [readOption]
-  obtain ⟨result,w₂,hc,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨_,w₃,hu,h⟩ := bind_success _ _ _ _ _ h
-  have same := (pure_success _ _ _ _ h).1
-  subst actual
-  exact ⟨bound,restricted,w₁,w₂,w₃,restrictedEq,hc,hu,
-    fun values => foldSteps_lift dependencies steps selector label values restricted bound restrictedEq⟩
-
 /-- Success binds the original complete step list to its local reconstruction
 and every input vector's actual execution, including any arithmetic error. -/
 theorem checkSector_bound (dependencies : List Dependency) (selector label : Nat)
     (target : Basis) (steps : List Step) (required actual : Matrix) (work left : Nat)
     (ok : (checkSector dependencies selector label target steps required).run work = (.ok actual,left)) :
     SectorBinding dependencies selector target steps (required,label) actual := by
-  simp only [checkSector,evaluateSector,bind_assoc,pure_bind] at ok
+  simp only [checkSector,evaluateSector,reconstructSector,bind_assoc,pure_bind] at ok
   obtain ⟨_,w₁,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,hl,h⟩ := bind_success _ _ _ _ _ h
   have bound : label < 2^selector := by simpa using (guard_success _ _ _ _ hl).1
@@ -225,8 +223,18 @@ theorem readSector_bound (dependencies : List Dependency) (selector label : Nat)
   obtain ⟨_,w₁,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,hl,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₃,_,h⟩ := bind_success _ _ _ _ _ h
-  exact evaluateSector_bound dependencies selector label target steps actual w₃ left
-    (by simpa using (guard_success _ _ _ _ hl).1) h
+  have bound : label < 2^selector := by simpa using (guard_success _ _ _ _ hl).1
+  obtain ⟨restricted,w₄,hs,h⟩ := bind_success _ _ _ _ _ h
+  have restrictedEq : restrictSteps selector label steps = some restricted := by
+    have got := (lift_success _ _ _ _ hs).1
+    cases found : restrictSteps selector label steps <;> simp_all [readOption]
+  obtain ⟨_,w₅,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨result,w₆,hc,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,w₇,hu,h⟩ := bind_success _ _ _ _ _ h
+  have same := (pure_success _ _ _ _ h).1
+  subst actual
+  exact ⟨bound,restricted,w₅,w₆,w₇,restrictedEq,hc,hu,
+    fun values => foldSteps_lift dependencies steps selector label values restricted bound restrictedEq⟩
 
 theorem readSectors_bound (dependencies : List Dependency) (selector target : Basis)
     (circuit : Circuit) (actual : List Matrix) (work left : Nat)
