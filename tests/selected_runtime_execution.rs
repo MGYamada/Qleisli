@@ -716,6 +716,28 @@ fn selected_qmatch_context_checks_builtin_pairs_with_a_nominal_spectator() {
     let raw = accepted.program().raw();
     assert_eq!(raw.quantum_outputs[0], raw.quantum_inputs[2].token);
     kernel().check_program(accepted.program()).unwrap();
+    let root = SourceRoot::new(&primitives);
+    let cli = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args([
+            "check",
+            "--entry=main::keep",
+            "--ir-profile=raw",
+            "--format=json",
+        ])
+        .arg(format!(
+            "--module=main={}",
+            root.0.join("main.qli").display()
+        ))
+        .output()
+        .unwrap();
+    let output = String::from_utf8(cli.stdout).unwrap();
+    assert!(cli.status.success(), "{output}");
+    assert!(
+        output.contains("\"scope\":\"finite-source-qmatch-context-v5\""),
+        "{output}"
+    );
+    assert!(output.contains("\"source_steps_checked\":true"));
+    assert!(output.contains("\"source_preservation_verified\":false"));
 }
 
 #[test]
@@ -729,6 +751,22 @@ fn selected_builtin_qmatch_keeps_the_runtime_root_for_register_primitives() {
             let (b,r)=take_bit[1,0](q);
             let (s,b)=qmatch(s,b){0=>h,1=>h};
             (s,put_bit[1,0](b,r))
+        }",
+    );
+    assert!(!accepted.program().qmatch_source_checked());
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_builtin_qmatch_keeps_the_runtime_root_for_exclusive_access() {
+    let accepted = selected(
+        "pub unitary fn keep(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            h(excl q);
+            qmatch(s,q){0=>h,1=>h}
         }",
     );
     assert!(!accepted.program().qmatch_source_checked());
@@ -832,7 +870,7 @@ fn selected_qmatch_uses_the_common_original_source_and_named_arm_evidence() {
         .unwrap();
     let kernel = kernel();
     let selected = instance.compile_runtime_with_kernel(&kernel).unwrap();
-    assert!(selected.program().qmatch_source_checked());
+    assert!(!selected.program().qmatch_source_checked());
     let request = selected.program().runtime_result().unwrap();
     assert_eq!(
         request.parameters,
@@ -850,28 +888,6 @@ fn selected_qmatch_uses_the_common_original_source_and_named_arm_evidence() {
             .runtime_result(),
         Some(request)
     );
-    let root = SourceRoot::new(source);
-    let cli = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .args([
-            "check",
-            "--entry=main::keep",
-            "--ir-profile=raw",
-            "--format=json",
-        ])
-        .arg(format!(
-            "--module=main={}",
-            root.0.join("main.qli").display()
-        ))
-        .output()
-        .unwrap();
-    let output = String::from_utf8(cli.stdout).unwrap();
-    assert!(cli.status.success(), "{output}");
-    assert!(
-        output.contains("\"scope\":\"finite-source-qmatch-context-v5\""),
-        "{output}"
-    );
-    assert!(output.contains("\"source_steps_checked\":true"));
-    assert!(output.contains("\"source_preservation_verified\":false"));
 }
 
 #[test]

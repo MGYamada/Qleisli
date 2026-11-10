@@ -452,12 +452,6 @@ impl Lowerer<'_, '_> {
         self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
     }
 
-    fn prefer_ordinary_qmatch(&mut self) {
-        if let Some(frame) = &mut self.nominal_qmatch {
-            frame.prefer_ordinary_qmatch();
-        }
-    }
-
     fn call_user(
         &mut self,
         key: &Key,
@@ -931,7 +925,6 @@ impl Lowerer<'_, '_> {
         }
         self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
         self.apply_circuit(slot, steps);
-        self.prefer_ordinary_qmatch();
         Ok(value)
     }
 
@@ -1296,17 +1289,6 @@ impl Lowerer<'_, '_> {
                 Ok(value)
             }
             Callee::Primitive(primitive) => {
-                // The staged v5 body walk has no register event plan and no
-                // runtime action for empty_bits.
-                if matches!(
-                    primitive,
-                    PrimitiveId::TakeBit
-                        | PrimitiveId::PutBit
-                        | PrimitiveId::PrependBit
-                        | PrimitiveId::EmptyBits
-                ) {
-                    self.prefer_ordinary_qmatch();
-                }
                 if !static_args.is_empty() {
                     return self.primitive_static_with_source(
                         module, source, callee, primitive, values, args,
@@ -1335,18 +1317,6 @@ impl Lowerer<'_, '_> {
         let result = self.expr_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
-        if matches!(
-            expr.kind,
-            ExprKind::CoherentLift { .. }
-                | ExprKind::Match(_)
-                | ExprKind::WithComputed { .. }
-                | ExprKind::CertifiedComputed { .. }
-                | ExprKind::ApplyContract { .. }
-                | ExprKind::StaticFold { .. }
-                | ExprKind::QuantumIf { .. }
-        ) {
-            self.prefer_ordinary_qmatch();
-        }
         // Nested expressions/callees already supplied more precise positions.
         // Fill only the operations emitted directly by this expression.
         for index in first_operation..self.raw.operations.len() {
@@ -2160,13 +2130,9 @@ fn lower_function_in_context(
         .source_context
         .as_ref()
         .filter(|context| {
-            // Only bodies in the producer's bounded profile are promoted
-            // from whole-circuit checking to optional v5 source checking.
             lower.uses_qmatch_v5()
                 && context.contains_selections
-                && (require_qmatch_v5
-                    || context.needs_qmatch_v5
-                    || !context.prefers_ordinary_qmatch)
+                && (require_qmatch_v5 || context.needs_qmatch_v5)
         })
         .cloned();
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {

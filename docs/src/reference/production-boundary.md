@@ -242,12 +242,10 @@ checking when a closed dependency is materialized by the global dormant pass.
 Selected built-in qmatch and its ordinary callers also use this emitter. Named
 operation arms require their original provider bodies to pass the existing
 finite evidence gates; the actual emitted circuit still passes the separate
-six-bit encoded equation. For bodies with static continuations or events
-outside the bounded v5 profile, such as coherent basis lifts or register
-primitives, the compiler selects the ordinary runtime check if every selection
-has a whole-circuit check and the body does not require original operation
-closure transport.
-Nominal and wider selections that require v5 still use the v5 request.
+six-bit encoded equation. The selected entry uses the ordinary runtime check
+when every selection has its own whole-circuit check and the original
+operation closure does not require v5. Nominal source gates, wider selection
+sectors, and original operation closure transport use the bounded v5 request.
 The compiler selects the request before native root checking and
 never retries a failed native decision. Small nominal named-arm qmatch functions
 also submit the complete actual callee fragment to the existing source/arm gate

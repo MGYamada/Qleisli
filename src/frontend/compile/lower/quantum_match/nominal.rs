@@ -26,7 +26,6 @@ pub(in crate::frontend::compile::lower) struct Frame {
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
     source_gate: bool,
-    prefers_ordinary_qmatch: bool,
     needs_qmatch_v5: bool,
 }
 
@@ -238,7 +237,6 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate,
-            prefers_ordinary_qmatch: false,
             needs_qmatch_v5: false,
         }))
     }
@@ -247,16 +245,11 @@ impl Frame {
         self.source_gate
     }
 
-    pub(in crate::frontend::compile::lower) fn prefer_ordinary_qmatch(&mut self) {
-        self.prefers_ordinary_qmatch = true;
-    }
-
     pub(super) fn require_qmatch_v5(&mut self) {
         self.needs_qmatch_v5 = true;
     }
 
     fn include_qmatch_profile(&mut self, body: &ContextSubject) {
-        self.prefers_ordinary_qmatch |= body.prefers_ordinary_qmatch;
         self.needs_qmatch_v5 |= body.needs_qmatch_v5;
     }
 
@@ -281,7 +274,6 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate: self.source_gate,
-            prefers_ordinary_qmatch: false,
             needs_qmatch_v5: false,
         }
     }
@@ -329,7 +321,6 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
-            prefers_ordinary_qmatch: self.prefers_ordinary_qmatch,
             needs_qmatch_v5: self.needs_qmatch_v5,
         }))
     }
@@ -373,7 +364,6 @@ impl Frame {
                 operation: None,
                 contains_selections: self.contains_selections,
                 requires_source_gate: self.source_gate,
-                prefers_ordinary_qmatch: self.prefers_ordinary_qmatch,
                 needs_qmatch_v5: self.needs_qmatch_v5,
             })));
         }
@@ -522,7 +512,6 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
-            prefers_ordinary_qmatch: self.prefers_ordinary_qmatch,
             needs_qmatch_v5: self.needs_qmatch_v5,
         })))
     }
@@ -605,7 +594,6 @@ pub(in crate::frontend::compile::lower) fn record_named(
                 "qmatch call requires its complete original lowering context",
             ));
         }
-        lower.prefer_ordinary_qmatch();
         return Ok(());
     };
     let relative = start.checked_sub(frame.start).ok_or_else(|| {

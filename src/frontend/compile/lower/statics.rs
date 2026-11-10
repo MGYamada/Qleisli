@@ -216,10 +216,6 @@ impl Lowerer<'_, '_> {
             Compare::Ge => left >= right,
         };
         let selected = if truth { then_branch } else { else_branch };
-        // Leave already checked selections on the ordinary root path.
-        // Required v5 requests still retain the exact static interval and
-        // independently check the continuation's native eligibility.
-        self.prefer_ordinary_qmatch();
         let position_checkpoint = self
             .nominal_qmatch
             .as_ref()
