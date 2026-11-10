@@ -286,6 +286,7 @@ theorem original_operation_code_lift {dependencies program block arity start cou
       frame.selected = selected.map (·.port) ∧ frame.returned = returned.map (·.port) ∧
       (selected++spectators).Perm incoming.bindings ∧
       (returned++spectators).Perm outgoing.bindings ∧
+      physical.rows = 2^frame.pureBody.state.frame.length ∧
       Qleisli.Semantics.Raw.ProgramMeaning dependencies
         (RuntimePureInterval.fragment frame.selected frame.operations outputs) physical ∧
       BlockCodeLift incoming outgoing input selected returned spectators inputCode physical logical := by
@@ -294,12 +295,22 @@ theorem original_operation_code_lift {dependencies program block arity start cou
   obtain ⟨returned,returnedRead,_,returnedRoles,returnedPorts⟩ := final.symm ▸ outputOrder
   obtain ⟨beforeOrder,afterOrder⟩ := source_partitions frame ownerOrder incoming outgoing initial final
     selectedRead returnedRead selectedPorts returnedPorts
+  have returnedCode : RuntimeInterval.Computed (Carrier.ownerCode (carrierOwners returned)) outputCode := by
+    simpa only [carrier_order,returnedRoles,← returnedPorts] using outputRead
+  obtain ⟨available,code⟩ := original_block_code returnedCode
+  obtain ⟨returnOrder,valid⟩ := Qleisli.RuntimeCallHistory.fragment_return_ports frame
+  have wires := ((returnOrder.flatMap_right Semantics.Raw.Port.wires).trans
+    (RuntimeCallTraceFrames.native_wires _ valid)).length_eq
+  rw [returnedPorts,List.flatMap_map] at wires
+  have rows : physical.rows = 2^frame.pureBody.state.frame.length := by
+    rw [checked.physicalShape.2,code]
+    change 2^(product returned).bits = _
+    rw [product_width available,wires]
   obtain ⟨work,left,reconstructed⟩ := physicalRead
-  refine ⟨selected,returned,_,selectedRead,returnedRead,selectedPorts,returnedPorts,beforeOrder,afterOrder,
+  refine ⟨selected,returned,_,selectedRead,returnedRead,selectedPorts,returnedPorts,beforeOrder,afterOrder,rows,
     Qleisli.Raw.ProtectedEvaluation.reconstruct_denotes dependencies _ physical work left reconstructed,?_⟩
-  apply operation_code_lift incoming outgoing input beforeOrder afterOrder _ _ checked same
-  · simpa only [carrier_order,selectedRoles,← selectedPorts] using inputRead
-  · simpa only [carrier_order,returnedRoles,← returnedPorts] using outputRead
+  apply operation_code_lift incoming outgoing input beforeOrder afterOrder _ returnedCode checked same
+  simpa only [carrier_order,selectedRoles,← selectedPorts] using inputRead
 
 private theorem owner_projection (parent : Semantics.RawTrace.Interface) (bindings : Map) (row : Nat) :
     Qleisli.RuntimeCallHistory.project parent (RuntimeCallTraceFrames.WireOrder (bindings.map (·.port))) row =

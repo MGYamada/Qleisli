@@ -121,8 +121,11 @@ development milestones from the scope of their evidence.
   The actual source owner flow supplies the same ordered spectators at both
   ends, including zero-width owners. The original fragment's final
   permutation identifies its written return coordinate with the literal
-  local row. The graph case still needs the matrix action of the complete
-  reconstructed fragment.
+  local row. Every reconstructed physical event, including both
+  compute/use/uncompute forms, has its original literal action on arbitrary
+  reference columns. The graph interval uses this composition on the same
+  caller operator, SSA values and observations. The recursive evaluator
+  still needs the graph branch and the direct selection law.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

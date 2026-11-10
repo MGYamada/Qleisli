@@ -138,6 +138,7 @@ import Qleisli.RuntimeLiteralSparseObservation
 import Qleisli.RuntimeSparseHeadAction
 import Qleisli.RuntimeSparseBlockEncoding
 import Qleisli.RuntimeSparseOperationAction
+import Qleisli.RuntimeOriginalGraphAction
 import Qleisli.RuntimeSparseSelectionAction
 import Qleisli.RuntimeSparseSelectionOutput
 import Qleisli.RuntimeSparseNamedBoundary
@@ -184,6 +185,8 @@ import Qleisli.RawRepresentationTransport
 import Qleisli.RawDenotation
 import Qleisli.RawProtected
 import Qleisli.RawProtectedEvaluation
+import Qleisli.RawReconstructedAction
+import Qleisli.RawProtectedMatrixAction
 import Qleisli.RawProtectedCommutation
 import Qleisli.RawFunction
 import Qleisli.RawPure
