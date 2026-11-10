@@ -19,9 +19,10 @@ development milestones from the scope of their evidence.
   Keep exact phase and the original arm and return order. Matrix products
   use indexed coefficient tables and skip zero products after checking
   exponent bounds, with the same term order and exact-work charge.
-  A selected body with a coherent basis lift or register operations can use
-  the ordinary runtime check when each qmatch has a checked whole-circuit
-  equation and original operation closure transport is unnecessary.
+  Selected bodies with static continuations, coherent basis lifts, or
+  register operations can use the ordinary runtime check when each qmatch
+  has a checked whole-circuit equation and no original operation closure
+  transport is required.
 
 - Run the latest Rust test partitions offline from the exact Git source archive.
   Distribution checks share their same-run execution receipts and validate the

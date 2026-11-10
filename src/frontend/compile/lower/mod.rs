@@ -452,9 +452,9 @@ impl Lowerer<'_, '_> {
         self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
     }
 
-    fn record_unsupported_qmatch_v5_event(&mut self) {
+    fn prefer_ordinary_qmatch(&mut self) {
         if let Some(frame) = &mut self.nominal_qmatch {
-            frame.record_unsupported_v5_event();
+            frame.prefer_ordinary_qmatch();
         }
     }
 
@@ -931,7 +931,7 @@ impl Lowerer<'_, '_> {
         }
         self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
         self.apply_circuit(slot, steps);
-        self.record_unsupported_qmatch_v5_event();
+        self.prefer_ordinary_qmatch();
         Ok(value)
     }
 
@@ -1305,7 +1305,7 @@ impl Lowerer<'_, '_> {
                         | PrimitiveId::PrependBit
                         | PrimitiveId::EmptyBits
                 ) {
-                    self.record_unsupported_qmatch_v5_event();
+                    self.prefer_ordinary_qmatch();
                 }
                 if !static_args.is_empty() {
                     return self.primitive_static_with_source(
@@ -1345,7 +1345,7 @@ impl Lowerer<'_, '_> {
                 | ExprKind::StaticFold { .. }
                 | ExprKind::QuantumIf { .. }
         ) {
-            self.record_unsupported_qmatch_v5_event();
+            self.prefer_ordinary_qmatch();
         }
         // Nested expressions/callees already supplied more precise positions.
         // Fill only the operations emitted directly by this expression.
@@ -2160,13 +2160,13 @@ fn lower_function_in_context(
         .source_context
         .as_ref()
         .filter(|context| {
-            // Whole-circuit checked selections retain the ordinary runtime
-            // mode when the original body needs an event outside v5.
+            // Only bodies in the producer's bounded profile are promoted
+            // from whole-circuit checking to optional v5 source checking.
             lower.uses_qmatch_v5()
                 && context.contains_selections
                 && (require_qmatch_v5
                     || context.needs_qmatch_v5
-                    || !context.contains_unsupported_v5_event)
+                    || !context.prefers_ordinary_qmatch)
         })
         .cloned();
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {

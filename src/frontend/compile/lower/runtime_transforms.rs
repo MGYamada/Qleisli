@@ -331,7 +331,7 @@ impl Lowerer<'_, '_> {
         };
         self.add_contract_effect(module, original.span, Effect::Unitary);
         // This direct transform emits no original v5 request position.
-        self.record_unsupported_qmatch_v5_event();
+        self.prefer_ordinary_qmatch();
         Ok(Some(output))
     }
 

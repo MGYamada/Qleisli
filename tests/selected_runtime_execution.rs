@@ -740,6 +740,37 @@ fn selected_builtin_qmatch_keeps_the_runtime_root_for_register_primitives() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_builtin_qmatch_keeps_the_runtime_root_for_static_continuations() {
+    let source = "pub unitary fn keep[const n:Nat](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+        let q=if static n==0 {if static n==0 {h(q)} else {q}} else {q};
+        qmatch(s,q){0=>h,1=>h}
+    }";
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    for n in [0, 1] {
+        let kernel = kernel();
+        let instance = parsed
+            .instantiate_runtime_with_types(
+                "main::keep",
+                Default::default(),
+                BTreeMap::from([("n".into(), n)]),
+                Default::default(),
+            )
+            .unwrap();
+        let accepted = instance.compile_runtime_with_kernel(&kernel).unwrap();
+        assert!(!accepted.program().qmatch_source_checked());
+        kernel.check_program(accepted.program()).unwrap();
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_nominal_qmatch_uses_original_imports_and_public_arm_effects() {
     for effect in ["unitary", "observe", "isometry"] {
         let main = "use facade::Tri; use facade::arm;

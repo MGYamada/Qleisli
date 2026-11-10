@@ -26,7 +26,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
     source_gate: bool,
-    contains_unsupported_v5_event: bool,
+    prefers_ordinary_qmatch: bool,
     needs_qmatch_v5: bool,
 }
 
@@ -238,7 +238,7 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate,
-            contains_unsupported_v5_event: false,
+            prefers_ordinary_qmatch: false,
             needs_qmatch_v5: false,
         }))
     }
@@ -247,12 +247,17 @@ impl Frame {
         self.source_gate
     }
 
-    pub(in crate::frontend::compile::lower) fn record_unsupported_v5_event(&mut self) {
-        self.contains_unsupported_v5_event = true;
+    pub(in crate::frontend::compile::lower) fn prefer_ordinary_qmatch(&mut self) {
+        self.prefers_ordinary_qmatch = true;
     }
 
     pub(super) fn require_qmatch_v5(&mut self) {
         self.needs_qmatch_v5 = true;
+    }
+
+    fn include_qmatch_profile(&mut self, body: &ContextSubject) {
+        self.prefers_ordinary_qmatch |= body.prefers_ordinary_qmatch;
+        self.needs_qmatch_v5 |= body.needs_qmatch_v5;
     }
 
     pub(in crate::frontend::compile::lower) fn position_count(&self) -> usize {
@@ -276,7 +281,7 @@ impl Frame {
             branches: Vec::new(),
             contains_selections: false,
             source_gate: self.source_gate,
-            contains_unsupported_v5_event: false,
+            prefers_ordinary_qmatch: false,
             needs_qmatch_v5: false,
         }
     }
@@ -324,7 +329,7 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
-            contains_unsupported_v5_event: self.contains_unsupported_v5_event,
+            prefers_ordinary_qmatch: self.prefers_ordinary_qmatch,
             needs_qmatch_v5: self.needs_qmatch_v5,
         }))
     }
@@ -368,7 +373,7 @@ impl Frame {
                 operation: None,
                 contains_selections: self.contains_selections,
                 requires_source_gate: self.source_gate,
-                contains_unsupported_v5_event: self.contains_unsupported_v5_event,
+                prefers_ordinary_qmatch: self.prefers_ordinary_qmatch,
                 needs_qmatch_v5: self.needs_qmatch_v5,
             })));
         }
@@ -517,7 +522,7 @@ impl Frame {
             operation: None,
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
-            contains_unsupported_v5_event: self.contains_unsupported_v5_event,
+            prefers_ordinary_qmatch: self.prefers_ordinary_qmatch,
             needs_qmatch_v5: self.needs_qmatch_v5,
         })))
     }
@@ -600,6 +605,7 @@ pub(in crate::frontend::compile::lower) fn record_named(
                 "qmatch call requires its complete original lowering context",
             ));
         }
+        lower.prefer_ordinary_qmatch();
         return Ok(());
     };
     let relative = start.checked_sub(frame.start).ok_or_else(|| {
@@ -635,8 +641,7 @@ pub(in crate::frontend::compile::lower) fn record_named(
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.positions.push(position.clone());
     frame.contains_selections |= body.contains_selections;
-    frame.contains_unsupported_v5_event |= body.contains_unsupported_v5_event;
-    frame.needs_qmatch_v5 |= body.needs_qmatch_v5;
+    frame.include_qmatch_profile(&body);
     frame.calls.push((position, body));
     Ok(())
 }
@@ -680,14 +685,17 @@ pub(in crate::frontend::compile::lower) fn record_operation(
         .compiler
         .qmatch_operation_application(operation, access, module, span)?;
     lower.compiler.charge(module, span, 12)?;
-    let body = Arc::new(ContextSubject {
-        operation: Some(Arc::new(original)),
-        ..ContextSubject::default()
-    });
     let frame = lower
         .nominal_qmatch
         .as_mut()
         .expect("original operation context");
+    for body in original.original_contexts() {
+        frame.include_qmatch_profile(body);
+    }
+    let body = Arc::new(ContextSubject {
+        operation: Some(Arc::new(original)),
+        ..ContextSubject::default()
+    });
     frame.positions.push(position.clone());
     frame.calls.push((position, body));
     Ok(())
@@ -728,9 +736,8 @@ pub(in crate::frontend::compile::lower) fn record_branch(
         .expect("original containing context");
     frame.contains_selections |= then_body.contains_selections || else_body.contains_selections;
     frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
-    frame.contains_unsupported_v5_event |=
-        then_body.contains_unsupported_v5_event || else_body.contains_unsupported_v5_event;
-    frame.needs_qmatch_v5 |= then_body.needs_qmatch_v5 || else_body.needs_qmatch_v5;
+    frame.include_qmatch_profile(&then_body);
+    frame.include_qmatch_profile(&else_body);
     frame.positions.push(position.clone());
     frame.branches.push((position, then_body, else_body));
     Ok(())
@@ -1033,6 +1040,11 @@ pub(super) fn apply_selection(
         .nominal_qmatch
         .as_mut()
         .expect("checked original frame");
+    for original in arms.iter().filter_map(|arm| arm.operation.as_ref()) {
+        for body in original.original_contexts() {
+            frame.include_qmatch_profile(body);
+        }
+    }
     frame.selections.push(Selection {
         span,
         offset,
