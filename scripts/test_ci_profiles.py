@@ -35,6 +35,7 @@ class CIProfiles(unittest.TestCase):
             "docs/release-milestones.md", "docs/finite-contracts.md", "src/verify.rs",
             "lean/Qleisli/Schema.lean", "lean-kernel/QleisliKernel/Raw.lean",
             "lean/schema-registry.json", "corpus/manifest.json", "corpus/upstream/source/file",
+            "julia/src/CyclotomicExperiments.jl", "julia/test/runtests.jl", "qptl/QPTLTests.lean",
             "tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean",
             "tests/fixtures/hierarchical_prepared_v030/Current.lean",
             "tests/fixtures/releases/v0.2.5/baseline-validation.json", "new/unknown.md",
@@ -81,6 +82,12 @@ class CIProfiles(unittest.TestCase):
         skipped["check-lean-kernel"]["result"] = "skipped"
         with self.assertRaises(ValueError):
             check_needs(skipped, "a" * 40)
+        for job in ("check-julia", "check-qptl"):
+            with self.subTest(job=job):
+                skipped = self.needs("full")
+                skipped[job]["result"] = "skipped"
+                with self.assertRaisesRegex(ValueError, job):
+                    check_needs(skipped, "a" * 40)
 
     def test_summary_is_bounded_without_truncating_selection_evidence(self):
         long_diff = ["corpus/" + "nested/" * 8 + f"source-{i}.qli" for i in range(20000)]

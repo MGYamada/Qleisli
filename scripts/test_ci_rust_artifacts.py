@@ -9,14 +9,21 @@ import io
 import json
 from pathlib import Path
 import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
 
+import ci_archive_rust
+import ci_distribution
 import ci_rust_artifacts as gate
+import check_rust_test_partition as partition_guard
+import run_rust_tests
 import ci_runtime
 import ci_source_checks as checks
 from test_ci_rust_producers import fixture
+from test_rust_test_partition import metadata
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSIONS = {'python': 'Python 3.11.15', 'git': 'git version 2.50.0',
@@ -35,8 +42,9 @@ def prepare_root(root):
 
 class SyntheticRustReceipts:
     """Typed fixture data only; command success and CI provenance are simulated."""
-    def __init__(self, root, context, binding):
+    def __init__(self, root, context, binding, archive_sha256='6' * 64):
         self.root, self.context, self.binding = root, context, binding
+        self.archive_sha256 = archive_sha256
         self.kernel = dict(path=str(root / 'lean-kernel/.lake/build/bin/qleisli-kernel'), sha256='4' * 64)
         self.compiler = dict(path=str(root / 'target/debug/qleisli'), sha256='5' * 64)
         self.manifest = gate.digest((root / '.github/ci/source-checks.json').read_bytes())
@@ -53,6 +61,11 @@ class SyntheticRustReceipts:
             rows.append(dict(argv=argv, id=str(number), status='passed', log=str(directory / 'command.log'),
                              commands=[dict(command=command, executed_command=ci_runtime.launch_command(command),
                                             status='passed', exit_code=0)]))
+            if group == 'rust-latest' and ci_archive_rust.scheduled(argv):
+                work = Path('/synthetic-archive') / partition
+                rows[-1]['archive'] = dict(candidate=dict(commit=self.context['commit'], tree=self.context['tree'],
+                                                          clean=True), sha256=self.archive_sha256,
+                                           source=str(work / 'source'), target=str(work / 'target'), offline=True)
         value = dict(format=1, status='passed', group=group, plan=spec, binding=self.binding,
                      manifest_sha256=self.manifest, commands=rows, kernel=self.kernel, environment=environment,
                      toolchain={name: dict(command=ci_runtime.launch_command(tool['command']), exit_code=0,
@@ -79,13 +92,43 @@ class SyntheticRustReceipts:
                                   typecheck='passed', semantic_mismatch='synthetic', exit_code=1, code=codes.get(value))
                               for value in values] for name, values in ids.items()})
 
+    def archive_execution(self, partition):
+        report = self.report('rust-latest', partition)
+        row = next(row for row in report['commands'] if 'archive' in row)
+        source, target = Path(row['archive']['source']), Path(row['archive']['target'])
+        heavy, remaining = partition_guard.selection('rust-latest', report['plan']['partition']['full_commands'])
+        observed = metadata(source, heavy + remaining) | dict(target_directory=str(target))
+        raw = gate.encoded(observed)
+        cargo = row['argv'][len(partition_guard.WRAPPER + partition_guard.SCHEDULER):]
+        entry, expected = run_rust_tests.selection(cargo, observed, source)
+        by_target = {(item['kind'][0], item['name']): item for item in observed['packages'][0]['targets']}
+        harnesses = []
+        for kind, name in sorted(expected):
+            selector = ['--lib'] if kind == 'lib' else ['--' + kind, name]
+            command = ci_runtime.launch_command(entry + ['test', '--locked'] + selector)
+            isolated = (kind, name) in run_rust_tests.ISOLATED
+            harnesses.append(dict(kind=kind, name=name, package_id='root-id', target=by_target[kind, name],
+                                  executable=str(target / (kind + '-' + name)), sha256='7' * 64,
+                                  passed=1, status='passed', exit_code=0, isolated=isolated, native_skips=False,
+                                  test_threads=1 if isolated else 2, command=command,
+                                  executed_command=command + run_rust_tests.TEST_ARGUMENTS[:-1]
+                                  + ['1' if isolated else '2']))
+        record = dict(format=1, status='passed', command=cargo, metadata_sha256=gate.digest(raw),
+                      workers=2, harness_threads=2, isolated_harness_threads=1,
+                      isolated_harnesses=sorted(run_rust_tests.ISOLATED), expected=sorted(expected),
+                      build_exit_code=0,
+                      build_command=ci_runtime.launch_command(cargo + ['--locked', '--no-run', '--message-format=json']),
+                      harnesses=harnesses)
+        return dict(record=gate.blob(gate.encoded(record)), metadata=gate.blob(raw))
+
     def child(self, profile, partition):
-        return dict(format='qleisli.ci-rust-producer', version=1, context=self.context,
+        return dict(format='qleisli.ci-rust-producer', version=2, context=self.context,
                     job=('check-rust' if profile == 'latest' else 'check-rust-msrv') + '-' + partition,
                     profile=profile, partition=partition, binding=self.binding, manifest_sha256=self.manifest,
                     kernel=self.kernel, compiler=self.compiler if partition == 'remaining' else None,
                     reports={group: gate.blob(gate.encoded(self.report(group, selected)))
                              for group, selected in gate.groups(profile, partition).items()},
+                    archive_execution=self.archive_execution(partition) if profile == 'latest' else None,
                     corpus=gate.blob(gate.encoded(self.corpus())) if profile == 'latest' and partition == 'remaining' else None)
 
 
@@ -101,6 +144,103 @@ class RustArtifacts(unittest.TestCase):
 
     def child(self, profile, partition):
         return self.data.child(profile, partition)
+
+    def test_actual_archive_command_runs_outside_checkout_and_checks_tracked_modes(self):
+        repository = Path(self.temp.name) / 'git'
+        repository.mkdir()
+        def git(*args):
+            return subprocess.check_output(['git', '-C', str(repository), *args]).decode().strip()
+        git('init', '-q')
+        (repository / 'probe').write_text('tracked bytes')
+        (repository / 'probe').chmod(0o755)
+        git('add', 'probe')
+        git('-c', 'user.name=Archive test', '-c', 'user.email=test@example.invalid',
+            'commit', '-qm', 'Exact archive probe')
+        output = Path(self.temp.name) / 'report'
+        output.mkdir()
+        program = """
+import os
+from pathlib import Path
+assert not Path('.git').exists()
+assert Path('probe').read_text() == 'tracked bytes'
+assert Path('probe').stat().st_mode & 0o777 == 0o755
+assert os.environ['CARGO_NET_OFFLINE'] == 'true'
+assert Path(os.environ['CARGO_TARGET_DIR']) == Path.cwd().with_name('target')
+"""
+        task = dict(id='0', commands=[[sys.executable, '-c', program]])
+        row = ci_archive_rust.run(task, repository, output / '0', 30, {}, git('rev-parse', 'HEAD'))
+        self.assertEqual(row['status'], 'passed')
+        archive = subprocess.check_output(ci_archive_rust.distribution.source_archive_command(
+            git('rev-parse', 'HEAD')), cwd=repository)
+        self.assertEqual(row['archive']['sha256'], gate.digest(archive))
+        self.assertFalse(Path(row['archive']['source']).exists())
+        task['commands'][0][-1] += "\nPath('probe').chmod(0o644)"
+        with self.assertRaisesRegex(ValueError, 'extracted tracked file changed'):
+            ci_archive_rust.run(task, repository, output / '1', 30, {}, git('rev-parse', 'HEAD'))
+
+    def test_join_rejects_wrong_attempt_archive_package_or_missing_harness(self):
+        root = Path(self.temp.name)
+        package = root / 'package.json'
+        artifacts = root / 'package-artifacts-test'
+        artifacts.mkdir()
+        crate, archive = artifacts / 'qleisli.crate', artifacts / 'source.tar'
+        crate.write_bytes(b'synthetic crate')
+        archive.write_bytes(b'synthetic source archive')
+        archive_sha = gate.digest(archive.read_bytes())
+        self.data.archive_sha256 = archive_sha
+        rust_directory = root / 'rust'
+        children = {part: gate.encoded(self.child('latest', part)) for part in ('differential', 'remaining')}
+        rust = gate.aggregate_files(self.root, self.context, 'latest', children, binding=self.binding)
+        gate.write_files(rust_directory, rust)
+        report = dict(format='qleisli.distribution-validation', version=2, status='package-passed',
+                      candidate=dict(commit=self.context['commit'], tree=self.context['tree'], clean=True),
+                      artifacts='/producer/' + artifacts.name,
+                      crate=dict(path='/producer/' + artifacts.name + '/' + crate.name,
+                                 sha256=gate.digest(crate.read_bytes())),
+                      source_archive=dict(path='/producer/' + artifacts.name + '/' + archive.name,
+                                          sha256=archive_sha))
+        package.write_bytes(gate.encoded(report))
+        env = dict(GITHUB_JOB='check-distribution', PACKAGE_REPORT_SHA256=gate.digest(package.read_bytes()),
+                   RUST_AGGREGATE_SHA256=gate.digest(rust['aggregate.json']))
+        joined = root / 'joined.json'
+        with (patch.object(ci_distribution, 'capture_context', return_value=self.context),
+              patch.object(checks, 'snapshot', return_value=self.binding)):
+            ci_distribution.join(self.root, package, rust_directory, joined, env)
+            observed = json.loads(joined.read_bytes())
+            self.assertEqual(observed['status'], 'passed')
+            self.assertEqual(observed['archive_rust'], gate.archive_evidence(rust))
+            self.assertEqual(observed['source_archive']['path'], str(archive))
+            with self.assertRaisesRegex(ValueError, 'trusted producer output'):
+                ci_distribution.join(self.root, package, rust_directory, joined, env | dict(PACKAGE_REPORT_SHA256='0'))
+            archive.write_bytes(b'other archive')
+            with self.assertRaisesRegex(ValueError, 'source_archive differs'):
+                ci_distribution.join(self.root, package, rust_directory, joined, env)
+            archive.write_bytes(b'synthetic source archive')
+            report['source_archive']['sha256'] = gate.digest(b'different candidate archive')
+            package.write_bytes(gate.encoded(report))
+            with self.assertRaisesRegex(ValueError, 'source_archive differs'):
+                ci_distribution.join(self.root, package, rust_directory, joined,
+                                     env | dict(PACKAGE_REPORT_SHA256=gate.digest(package.read_bytes())))
+        child = self.child('latest', 'differential')
+        record = json.loads(gate.unblob(child['archive_execution']['record']))
+        record['harnesses'].pop()
+        child['archive_execution']['record'] = gate.blob(gate.encoded(record))
+        with self.assertRaisesRegex(ValueError, 'incomplete archived Rust harnesses'):
+            self.validate(child)
+        child = self.child('latest', 'differential')
+        record = json.loads(gate.unblob(child['archive_execution']['record']))
+        record['harnesses'][0]['native_skips'] = True
+        child['archive_execution']['record'] = gate.blob(gate.encoded(record))
+        with self.assertRaisesRegex(ValueError, 'failed, skipped or different archived Rust harness'):
+            self.validate(child)
+        child = self.child('latest', 'differential')
+        child['context'] = self.context | dict(attempt='1')
+        with self.assertRaisesRegex(ValueError, 'wrong Rust producer identity'):
+            self.validate(child)
+        self.data.archive_sha256 = '0' * 64
+        children['remaining'] = gate.encoded(self.child('latest', 'remaining'))
+        with self.assertRaisesRegex(ValueError, 'different source archives'):
+            gate.aggregate_files(self.root, self.context, 'latest', children, binding=self.binding)
 
     def test_first_wiring_and_release_refusals_keep_every_source_byte_without_execution(self):
         for name, stored_sha, raw_sha, size, count in [
@@ -237,7 +377,16 @@ class RustArtifacts(unittest.TestCase):
                     child = self.child(profile, partition)
                     for group, selected in gate.groups(profile, partition).items():
                         directory = results / (group if selected is None else group + '-' + selected)
-                        directory.mkdir();(directory / 'results.json').write_bytes(gate.unblob(child['reports'][group]))
+                        directory.mkdir()
+                        report_raw = gate.unblob(child['reports'][group])
+                        (directory / 'results.json').write_bytes(report_raw)
+                        if group == 'rust-latest':
+                            row = next(row for row in json.loads(report_raw)['commands'] if 'archive' in row)
+                            files = directory / row['id']
+                            (files / 'rust-harnesses').mkdir(parents=True)
+                            (files / 'record.json').write_bytes(gate.unblob(child['archive_execution']['record']))
+                            (files / 'rust-harnesses/metadata.json').write_bytes(
+                                gate.unblob(child['archive_execution']['metadata']))
                     if child['corpus'] is not None:
                         (results / 'corpus.json').write_bytes(gate.unblob(child['corpus']))
                     output = Path(self.temp.name) / ('record-' + profile + '-' + partition)
@@ -266,7 +415,8 @@ class RustArtifacts(unittest.TestCase):
             directory.mkdir();(directory / 'receipt.json').write_bytes(raw)
             needs['check-rust-' + part]['outputs']['rust_receipt_sha256'] = gate.digest(raw)
         output = Path(self.temp.name) / 'aggregate'
-        env = dict(GITHUB_JOB='check-rust', RUST_NEEDS_JSON=json.dumps(needs))
+        env = dict(GITHUB_JOB='check-rust', RUST_NEEDS_JSON=json.dumps(needs),
+                   GITHUB_OUTPUT=str(Path(self.temp.name) / 'aggregate-outputs'))
         with (patch('check_release_ready.capture_context', return_value=context),
               patch.object(checks, 'snapshot', return_value=self.binding)):
             gate.record_aggregate(self.root, 'latest', evidence, output, env)

@@ -140,6 +140,7 @@ jobs:
       RUST_NEEDS_JSON: ${{ toJSON(needs) }}
     outputs:
       release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      rust_aggregate_sha256: ${{ steps.aggregate.outputs.rust_aggregate_sha256 }}
       dependency-cache: ${{ needs['check-rust-differential'].outputs['dependency-cache'] == needs['check-rust-remaining'].outputs['dependency-cache'] && needs['check-rust-remaining'].outputs['dependency-cache'] || 'mixed' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -149,6 +150,7 @@ jobs:
           pattern: rust-validation-latest-*-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/rust-producer-evidence
       - name: Independently verify both actual artifact byte streams
+        id: aggregate
         run: python3 scripts/ci_rust_artifacts.py --aggregate --profile latest --evidence "$RUNNER_TEMP/rust-producer-evidence" --output "$RUNNER_TEMP/rust-aggregate"
       - name: Retain the complete verified pair
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -344,6 +346,63 @@ jobs:
         with:
           readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
 
+  check-julia:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      JULIA_LOAD_PATH: '@:@stdlib'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: julia-actions/setup-julia@4c0cb0fce8556fdb04a90347310e5db8b1f98fb9 # v2
+        with:
+          version: '1.13.1'
+      - name: Instantiate the isolated Julia reference environment
+        run: julia --startup-file=no --project=julia -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+      - name: Test Julia mathematical reference implementations
+        run: julia --startup-file=no --project=julia julia/test/runtests.jl
+      - name: Bind and retain successful producer evidence
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        uses: ./.github/actions/release-receipt
+        with:
+          readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+
+  check-qptl:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: qptl
+          auto-config: 'false'
+          use-github-cache: 'false'
+          use-mathlib-cache: 'false'
+          build: 'false'
+          test: 'false'
+      - name: Build QPTL proofs and run tactic regressions
+        working-directory: qptl
+        run: |
+          lake exe cache get Mathlib.CategoryTheory.CommSq Mathlib.CategoryTheory.Monoidal.Category \
+            Mathlib.CategoryTheory.Preadditive.Mat Mathlib.Data.Complex.Basic Mathlib.Data.Matrix.Block \
+            Mathlib.Tactic.NormNum
+          lake build
+          lake test
+      - name: Bind and retain successful producer evidence
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        uses: ./.github/actions/release-receipt
+        with:
+          readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+
   check-lean:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
@@ -462,10 +521,54 @@ jobs:
           native: ${{ runner.temp }}/native-distribution
 
   check-distribution:
+    needs: [changes, check-distribution-package, check-rust]
+    if: always() && needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ needs['check-distribution-package'].outputs['dependency-cache'] }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Require both producer jobs to succeed
+        env:
+          PACKAGE_RESULT: ${{ needs['check-distribution-package'].result }}
+          RUST_RESULT: ${{ needs['check-rust'].result }}
+        run: test "$PACKAGE_RESULT" = success && test "$RUST_RESULT" = success
+      - name: Download package, archive and independent command results
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: distribution-package-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/distribution-evidence
+      - name: Download the actual same-run Rust aggregate and child receipts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: rust-aggregate-latest-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/distribution-rust
+      - name: Verify the package and Rust partitions bind the same archive
+        env:
+          PACKAGE_REPORT_SHA256: ${{ needs['check-distribution-package'].outputs.package_sha256 }}
+          RUST_AGGREGATE_SHA256: ${{ needs['check-rust'].outputs.rust_aggregate_sha256 }}
+        run: |
+          python3 scripts/ci_distribution.py --package "$RUNNER_TEMP/distribution-evidence/qleisli-distribution.json" --rust "$RUNNER_TEMP/distribution-rust" --output "$RUNNER_TEMP/distribution-evidence/joined.json"
+      - name: Retain the complete distribution evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: distribution-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/distribution-evidence/joined.json
+          if-no-files-found: error
+      - name: Bind and retain successful producer evidence
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        uses: ./.github/actions/release-receipt
+        with:
+          readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+          distribution: ${{ runner.temp }}/distribution-evidence/joined.json
+
+  check-distribution-package:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
-      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      package_sha256: ${{ steps.package-digest.outputs.package_sha256 }}
       dependency-cache: ${{ steps.cargo-cache.outputs.status }}
     runs-on: ubuntu-latest
     steps:
@@ -485,27 +588,19 @@ jobs:
           set-default: 'true'
       - name: Fetch package dependencies before offline distribution checks
         run: cargo +1.98.1 fetch
-      - name: Verify clean package and complete source archive
+      - name: Verify package, archive, installation and research
         id: distribution
-        run: python3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"
+        run: python3 scripts/check_distribution.py --package-only --report "$RUNNER_TEMP/distribution-evidence/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"
       - name: Retain candidate hashes, archives and command logs
         if: always() && (steps.distribution.outcome == 'success' || steps.distribution.outcome == 'failure')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: distribution-${{ github.sha }}
-          path: |
-            ${{ runner.temp }}/qleisli-distribution.json
-            ${{ runner.temp }}/qleisli-distribution-artifacts-*/logs/
-            ${{ runner.temp }}/qleisli-distribution-artifacts-*/*.crate
-            ${{ runner.temp }}/qleisli-distribution-artifacts-*/*-source.tar
+          name: distribution-package-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/distribution-evidence/
           if-no-files-found: error
-      - name: Bind and retain successful producer evidence
-        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
-        id: release-receipt
-        uses: ./.github/actions/release-receipt
-        with:
-          readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
-          distribution: ${{ runner.temp }}/qleisli-distribution.json
+      - name: Publish the actual partial report digest
+        id: package-digest
+        run: python3 scripts/ci_distribution.py --package "$RUNNER_TEMP/distribution-evidence/qleisli-distribution.json"
 
   check-docs:
     needs: changes
@@ -573,7 +668,7 @@ jobs:
     # Every context fails if selection or ANY required suite fails/is missing.
     name: ${{ matrix.check }}
     if: always()
-    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-lean, check-lean-kernel, check-distribution, check-docs]
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-julia, check-qptl, check-lean, check-lean-kernel, check-distribution, check-docs]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -596,7 +691,7 @@ jobs:
   release-readiness:
     # A later gate: never make a producer depend on its own aggregate result.
     if: always() && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness))
-    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-lean, check-lean-kernel, check-distribution, check-docs]
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-julia, check-qptl, check-lean, check-lean-kernel, check-distribution, check-docs]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

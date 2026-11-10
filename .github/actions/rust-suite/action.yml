@@ -29,6 +29,13 @@ runs:
       with:
         group: rust-${{ inputs.profile }}
         partition: ${{ inputs.partition != 'all' && inputs.partition || '' }}
+    - name: Build the checkout compiler for source checks
+      if: inputs.profile == 'latest' && inputs.partition == 'remaining'
+      shell: bash
+      env:
+        CARGO_PROFILE_DEV_DEBUG: '0'
+        CARGO_INCREMENTAL: '0'
+      run: cargo +1.98.1 build --locked --bin qleisli
     - name: Run source contracts against the same compiler
       if: inputs.partition != 'differential'
       uses: ./.github/actions/source-check

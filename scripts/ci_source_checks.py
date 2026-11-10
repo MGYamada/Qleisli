@@ -117,13 +117,17 @@ def toolchain(spec, environment):
     return observed
 
 
-def execute(group, compiler, output, *, partition=None):
+def execute(group, compiler, output, *, partition=None, archive_tests=False):
     output = output.resolve()
     if output.is_relative_to(ROOT):
         raise ValueError('source-check output must be outside the source checkout')
     output.mkdir(parents=True, exist_ok=False)
     report = dict(format=1, group=group, status='failed', commands=[], python=sys.version)
     try:
+        if archive_tests and (group != 'rust-latest' or partition is None):
+            raise ValueError('archive tests require one latest Rust producer partition')
+        if archive_tests:
+            import ci_archive_rust
         commands = plan(group, compiler, partition=partition)
         spec = describe(group, partition=partition)
         report.update(binding=snapshot(ROOT), manifest_sha256=digest(MANIFEST),
@@ -153,7 +157,11 @@ def execute(group, compiler, output, *, partition=None):
         environment['PYTHONDONTWRITEBYTECODE'] = '1'
         for number, command in enumerate(commands):
             task = dict(id=str(number), commands=[command])
-            result = ci_runtime.run_task(task, ROOT, output / str(number), spec['timeout_seconds'], environment)
+            if archive_tests and ci_archive_rust.scheduled(command):
+                result = ci_archive_rust.run(task, ROOT, output / str(number), spec['timeout_seconds'],
+                                             environment, report['binding']['head'])
+            else:
+                result = ci_runtime.run_task(task, ROOT, output / str(number), spec['timeout_seconds'], environment)
             report['commands'][number] = dict(argv=command, **result)
             label = group if partition is None else f'{group}[{partition}]'
             print(f"{label} {number + 1}/{len(commands)}: {result['status']}", flush=True)

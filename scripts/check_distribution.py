@@ -125,6 +125,10 @@ def tracked_files(root, commit):
     return result
 
 
+def source_archive_command(commit):
+    return ["git", "-c", "tar.umask=0022", "archive", "--format=tar", commit]
+
+
 def read_archive(path, prefix="", expected=None):
     """Read regular files only, rejecting aliases, duplicate entries and links."""
     files, seen = {}, set()
@@ -182,6 +186,15 @@ def extract_checked(files, destination):
         with path.open("xb") as handle:
             handle.write(content.data)
         path.chmod(content.mode)
+
+
+def verify_extracted_source(files, source):
+    # Build tools may create ignored lock/target files; tracked payload stays exact.
+    for name, file in files.items():
+        path = source / name
+        require(path.is_file() and not path.is_symlink(), f"extracted file lost: {name}")
+        require(path.read_bytes() == file.data and path.stat().st_mode & 0o777 == file.mode,
+                f"extracted tracked file changed while building: {name}")
 
 
 def license_inventory(files):
@@ -314,13 +327,13 @@ def retain_crate(source, destination):
     return {"path": str(destination), "sha256": digest(data)}
 
 
-def validate(root, report_path, target_dir=None, *, keep_work=False):
+def validate(root, report_path, target_dir=None, *, keep_work=False, package_only=False):
     require(not report_path.is_relative_to(root), "report must be outside the source tree")
     require(not report_path.exists(), "report already exists; choose a new report path")
     report_path.parent.mkdir(parents=True, exist_ok=True)
     artifacts = Path(tempfile.mkdtemp(prefix=report_path.stem + "-artifacts-",
                                       dir=report_path.parent))
-    report = {"format": "qleisli.distribution-validation", "version": 1,
+    report = {"format": "qleisli.distribution-validation", "version": 2 if package_only else 1,
               "started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "status": "failed", "source_root": str(root), "artifacts": str(artifacts),
               "work": {"path": None, "status": "not-created", "keep_requested": keep_work},
@@ -358,8 +371,7 @@ def validate(root, report_path, target_dir=None, *, keep_work=False):
         report["package"] = {"name": package["name"], "version": package["version"],
                              "license": package["license"]}
         archive_path = artifacts / (prefix + "-source.tar")
-        commands.run(["git", "-c", "tar.umask=0022", "archive", "--format=tar",
-                      candidate["commit"]], root, archive_path)
+        commands.run(source_archive_command(candidate["commit"]), root, archive_path)
         archived = read_archive(archive_path, expected=tracked)
         report["source_archive"] = {"path": str(archive_path),
                                     "sha256": digest(archive_path.read_bytes()),
@@ -438,11 +450,12 @@ def validate(root, report_path, target_dir=None, *, keep_work=False):
         report["installed_quickstart"] = json.loads(commands.run(
             [sys.executable, packaged_source / "scripts/check_installation.py", executable],
             work))
-        commands.run([sys.executable, source / "scripts/run_kernel_tests.py", "--",
-                      sys.executable, source / "scripts/run_rust_tests.py", "--workers", "2",
-                      "--offline", "--target-dir", target / "source-production",
-                      "--record", artifacts / "logs/source-production/record.json", "--",
-                      "cargo", "+1.98.1", "test", "--all-targets"], source)
+        if not package_only:
+            commands.run([sys.executable, source / "scripts/run_kernel_tests.py", "--",
+                          sys.executable, source / "scripts/run_rust_tests.py", "--workers", "2",
+                          "--offline", "--target-dir", target / "source-production",
+                          "--record", artifacts / "logs/source-production/record.json", "--",
+                          "cargo", "+1.98.1", "test", "--all-targets"], source)
         commands.run(["cargo", "test", "--offline", "--all-targets", "--manifest-path",
                       "research/semantic-kernel/Cargo.toml", "--target-dir",
                       target / "source-research"], source)
@@ -458,13 +471,9 @@ def validate(root, report_path, target_dir=None, *, keep_work=False):
                                       "version": research_package["version"],
                                       "license": research_package["license"], "publish": False}
         require(clean_candidate(root) == candidate, "candidate changed during validation")
-        # Build tools may create ignored lock/target files; tracked payload stays exact.
-        for name, file in archived.items():
-            path = source / name
-            require(path.is_file() and not path.is_symlink(), f"extracted file lost: {name}")
-            require(path.read_bytes() == file.data and path.stat().st_mode & 0o777 == file.mode,
-                    f"extracted tracked file changed while building: {name}")
-        report["status"] = "passed"
+        verify_extracted_source(archived, source)
+        # The hosted join must add separately verified archive Rust evidence.
+        report["status"] = "package-passed" if package_only else "passed"
     except (DistributionError, OSError, ValueError, tarfile.TarError, StopIteration) as error:
         report["error"] = str(error)
     finally:
@@ -494,17 +503,19 @@ def main():
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--report", required=True, type=Path)
     parser.add_argument("--target-dir", type=Path)
+    parser.add_argument("--package-only", action="store_true",
+                        help="produce a partial report for the hosted distribution join")
     parser.add_argument("--keep-work", action="store_true",
                         help="retain extracted sources, installation and owned Cargo build work")
     args = parser.parse_args()
     try:
         report = validate(args.root.resolve(), args.report.resolve(), args.target_dir,
-                          keep_work=args.keep_work)
+                          keep_work=args.keep_work, package_only=args.package_only)
     except (DistributionError, OSError) as error:
         print(error, file=sys.stderr)
         return 1
     print(f"Distribution validation {report['status']}; report: {args.report.resolve()}")
-    if report["status"] != "passed":
+    if report["status"] != ("package-passed" if args.package_only else "passed"):
         print(report["error"], file=sys.stderr)
         if report.get("cleanup_error") not in {None, report["error"]}:
             print(report["cleanup_error"], file=sys.stderr)

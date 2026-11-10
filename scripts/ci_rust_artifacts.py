@@ -14,6 +14,7 @@ from pathlib import Path
 import re
 import sys
 
+import ci_archive_rust
 import ci_runtime
 import ci_source_checks as checks
 from ci_rust_producers import RUST_SUITES, SHA, expected_producer_receipts, producer_jobs, require, validate_context
@@ -109,6 +110,28 @@ def check_source_report(root, raw, group, partition, binding, manifest_raw, kern
     require((report.get('compiler') == compiler) if required_compiler else 'compiler' not in report,
             'different or unexpected source compiler')
 
+    archived = [(row, argv) for row, argv in zip(actual, commands) if 'archive' in row]
+    if group != 'rust-latest':
+        require(not archived, 'unexpected archive test claim')
+        return None
+    require(len(archived) == 1 and ci_archive_rust.scheduled(archived[0][1]),
+            'missing archived Rust scheduler execution')
+    row, argv = archived[0]
+    return row['archive'], argv, spec['partition']['full_commands']
+
+
+def check_archive_report(root, context, claim, raw_metadata, record):
+    archive, command, full_commands = claim
+    exact_keys(archive, {'candidate', 'sha256', 'source', 'target', 'offline'}, 'archive execution')
+    require(archive['candidate'] == dict(commit=context['commit'], tree=context['tree'], clean=True)
+            and archive['offline'] is True and type(archive['sha256']) is str and SHA.fullmatch(archive['sha256']),
+            'archive test candidate, digest or offline setting differs')
+    source, target = Path(archive['source']), Path(archive['target'])
+    require(source.is_absolute() and not source.is_relative_to(root) and '..' not in source.parts
+            and source.name == 'source' and target == source.with_name('target'),
+            'archive Rust tests did not use an isolated extracted source and target')
+    ci_archive_rust.verify_execution(command, source, target, full_commands, raw_metadata, record)
+
 
 def check_corpus(root, raw, compiler, read_source):
     from check_input_corpus import representative_entries
@@ -152,11 +175,11 @@ def validate_child(root, context, profile, partition, raw, binding=None, read_so
     require(len(raw) <= LIMIT, 'Rust producer receipt exceeds its size limit')
     receipt = json_object(raw, 'Rust producer receipt')
     fields = {'format', 'version', 'context', 'job', 'profile', 'partition', 'binding',
-              'manifest_sha256', 'kernel', 'compiler', 'reports', 'corpus'}
+              'manifest_sha256', 'kernel', 'compiler', 'reports', 'corpus', 'archive_execution'}
     exact_keys(receipt, fields, 'Rust producer receipt')
     validate_context(context)
     require(receipt['format'] == 'qleisli.ci-rust-producer' and type(receipt['version']) is int
-            and receipt['version'] == 1 and receipt['context'] == context
+            and receipt['version'] == 2 and receipt['context'] == context
             and receipt['profile'] == profile and receipt['partition'] == partition
             and receipt['job'] == producer_jobs(profile)[partition], 'wrong Rust producer identity')
     binding = checks.snapshot(root) if binding is None else binding
@@ -174,8 +197,15 @@ def validate_child(root, context, profile, partition, raw, binding=None, read_so
     require(type(receipt['reports']) is dict and set(receipt['reports']) == set(expected),
             'missing or unexpected Rust source-check group')
     for group, selected in expected.items():
-        check_source_report(root, unblob(receipt['reports'][group]), group, selected, binding,
-                            manifest_raw, receipt['kernel'], receipt['compiler'])
+        archive = check_source_report(root, unblob(receipt['reports'][group]), group, selected, binding,
+                                      manifest_raw, receipt['kernel'], receipt['compiler'])
+        if archive is not None:
+            execution = receipt['archive_execution']
+            exact_keys(execution, {'record', 'metadata'}, 'archive Rust execution bytes')
+            check_archive_report(root, context, archive, unblob(execution['metadata']),
+                                 json_object(unblob(execution['record']), 'archive Rust scheduler'))
+    if profile != 'latest':
+        require(receipt['archive_execution'] is None, 'unexpected MSRV archive evidence')
     if profile == 'latest' and partition == 'remaining':
         check_corpus(root, unblob(receipt['corpus']), receipt['compiler'], read_source)
     else:
@@ -185,6 +215,32 @@ def validate_child(root, context, profile, partition, raw, binding=None, read_so
 
 def encoded(value):
     return (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + '\n').encode()
+
+
+def archive_evidence(files):
+    """Summarize a previously validated latest Rust pair for distribution."""
+    children = {}
+    archive_sha256 = None
+    for part in ('differential', 'remaining'):
+        raw = files[part + '.json']
+        receipt = json_object(raw, 'Rust producer receipt')
+        report = json_object(unblob(receipt['reports']['rust-latest']), 'latest Rust source report')
+        archive = next(row['archive'] for row in report['commands'] if 'archive' in row)
+        require(archive_sha256 in (None, archive['sha256']), 'Rust partitions used different source archives')
+        archive_sha256 = archive['sha256']
+        children[part] = dict(receipt_sha256=digest(raw),
+                              record_sha256=receipt['archive_execution']['record']['sha256'],
+                              kernel_sha256=receipt['kernel']['sha256'])
+    context = json_object(files['aggregate.json'], 'Rust aggregate receipt')['context']
+    return dict(context=context, source_archive_sha256=archive_sha256,
+                children=children, aggregate_sha256=digest(files['aggregate.json']))
+
+
+def verify_archive_evidence(report, rust):
+    expected = archive_evidence(rust)
+    require(report.get('archive_rust') == expected
+            and report['source_archive']['sha256'] == expected['source_archive_sha256'],
+            'distribution did not validate the Rust pair for the exact archive bytes')
 
 
 def aggregate_files(root, context, profile, children, *, needs=None, binding=None, read_source=None):
@@ -202,6 +258,8 @@ def aggregate_files(root, context, profile, children, *, needs=None, binding=Non
         identities[partition] = dict(job=producer_jobs(profile)[partition], sha256=digest(raw))
     files['aggregate.json'] = encoded(dict(format='qleisli.ci-rust-aggregate', version=1,
                                          context=context, profile=profile, children=identities))
+    if profile == 'latest':
+        archive_evidence(files)
     return files
 
 
@@ -234,15 +292,24 @@ def record_producer(root, profile, partition, results, output, env):
     kernel = dict(path=str(root / kernel_path), sha256=digest(read_file(root, kernel_path)))
     compiler = (dict(path=str(root / 'target/debug/qleisli'), sha256=digest(read_file(root, 'target/debug/qleisli')))
                 if partition == 'remaining' else None)
-    reports = {}
+    reports, archive_execution = {}, None
     for group, selected in groups(profile, partition).items():
         directory = group if selected is None else group + '-' + selected
-        reports[group] = blob(read_file(results, directory + '/results.json'))
+        report_raw = read_file(results, directory + '/results.json')
+        reports[group] = blob(report_raw)
+        if group == 'rust-latest':
+            report = json_object(report_raw, group)
+            archived = [row for row in report['commands'] if 'archive' in row]
+            require(len(archived) == 1 and archived[0].get('id', '').isdigit(), 'missing archive scheduler output')
+            artifact = directory + '/' + archived[0]['id']
+            archive_execution = dict(record=blob(read_file(results, artifact + '/record.json')),
+                                     metadata=blob(read_file(results, artifact + '/rust-harnesses/metadata.json')))
     corpus = blob(read_file(results, 'corpus.json')) if profile == 'latest' and partition == 'remaining' else None
-    raw = encoded(dict(format='qleisli.ci-rust-producer', version=1, context=context,
+    raw = encoded(dict(format='qleisli.ci-rust-producer', version=2, context=context,
                        job=env['GITHUB_JOB'], profile=profile, partition=partition, binding=binding,
                        manifest_sha256=digest(read_file(root, '.github/ci/source-checks.json')),
-                       kernel=kernel, compiler=compiler, reports=reports, corpus=corpus))
+                       kernel=kernel, compiler=compiler, reports=reports, corpus=corpus,
+                       archive_execution=archive_execution))
     validate_child(root, context, profile, partition, raw, binding)
     require(capture_context(root, env) == context and checks.snapshot(root) == binding
             and digest(read_file(root, kernel_path)) == kernel['sha256']
@@ -270,6 +337,8 @@ def record_aggregate(root, profile, evidence, output, env):
     require(capture_context(root, env) == context and checks.snapshot(root) == binding,
             'Rust aggregate source changed during artifact verification')
     write_files(output, files)
+    with open(env['GITHUB_OUTPUT'], 'a') as stream:
+        stream.write(f"rust_aggregate_sha256={digest(files['aggregate.json'])}\n")
 
 
 def main():

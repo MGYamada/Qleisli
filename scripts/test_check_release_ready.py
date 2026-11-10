@@ -123,7 +123,10 @@ class SyntheticRelease(unittest.TestCase):
         self.needs = {'changes': dict(result='success', outputs=dict(profile='full', proof_lane='full', head=self.head))}
         self.payloads = {job: {} for job in checker.SUITES}
         self.rust_inputs = {}
-        data = rust_test.SyntheticRustReceipts(self.root, self.context, source_checks.snapshot(self.root))
+        tracked = checker.tracked_files(self.root, self.head)
+        source = archive(tracked)
+        data = rust_test.SyntheticRustReceipts(self.root, self.context, source_checks.snapshot(self.root),
+                                               checker.digest(source))
         for profile, job in [('latest', 'check-rust'), ('msrv', 'check-rust-msrv')]:
             children = {part: rust_artifacts.encoded(data.child(profile, part)) for part in ('differential', 'remaining')}
             pair = rust_artifacts.aggregate_files(self.root, self.context, profile, children,
@@ -133,11 +136,10 @@ class SyntheticRelease(unittest.TestCase):
         proof = dict(format='qleisli.release-constitution', version=1, context=self.context,
                      ledger_sha256=self.ref(checker.LEDGER)['sha256'], result=dict(self.constitution_result(), mode='current-Lean-replay'))
         self.payloads['check-lean']['constitution.json'] = encoded(proof)
-        tracked = checker.tracked_files(self.root, self.head)
-        source = archive(tracked)
         crate = archive({'Cargo.toml': (self.root/'Cargo.toml').read_bytes(),
                          '.cargo_vcs_info.json': encoded({'git': {'sha1': self.head}})}, 'qleisli-0.3.0-alpha/')
-        report = dict(format='qleisli.distribution-validation', version=1, status='passed',
+        report = dict(format='qleisli.distribution-validation', version=2, status='passed',
+                      archive_rust=rust_artifacts.archive_evidence(self.rust_inputs['check-rust']),
                       candidate=dict(commit=self.head, tree=self.context['tree'], clean=True), package=dict(version='0.3.0-alpha'),
                       installed_quickstart=dict(package='qleisli', version='0.3.0-alpha', checks=['Bell check/run/sample in text and JSON', 'embedded qft2', 'reject measured-owner reuse']),
                       commands=[dict(exit_code=0)], crate=dict(sha256=checker.digest(crate)), source_archive=dict(sha256=checker.digest(source)))
@@ -657,7 +659,7 @@ class SyntheticRelease(unittest.TestCase):
             if job in {'check-macos-source','check-lean-kernel'}:
                 self.assertIn('native: ${{ runner.temp }}/native-distribution',receipt)
             if job=='check-distribution':
-                self.assertIn('distribution: ${{ runner.temp }}/qleisli-distribution.json',receipt)
+                self.assertIn('distribution: ${{ runner.temp }}/distribution-evidence/joined.json',receipt)
             if job=='check-lean':
                 self.assertIn('constitution: ${{ runner.temp }}/release-constitution.json',receipt)
         action=(ROOT/'.github/actions/release-receipt/action.yml').read_text()
@@ -670,6 +672,36 @@ class SyntheticRelease(unittest.TestCase):
         self.assertNotIn('run-id:',final)
         self.assertIn('--record-constitution',text)
         self.assertIn('inputs.release_readiness',final)
+
+    def test_julia_and_qptl_release_producers_execute_real_tests(self):
+        workflow=(ROOT/'.github/workflows/ci.yml').read_text()
+        required=workflow.split('  required:\n')[1].split('  release-readiness:\n')[0]
+        final=workflow.split('  release-readiness:\n')[1]
+        expected={
+            'check-julia': ('julia-actions/setup-julia@4c0cb0fce8556fdb04a90347310e5db8b1f98fb9',
+                            "version: '1.13.1'", 'Pkg.instantiate()', 'Pkg.precompile()',
+                            'julia --startup-file=no --project=julia julia/test/runtests.jl'),
+            'check-qptl': ('lake-package-directory: qptl', "use-github-cache: 'false'",
+                           "use-mathlib-cache: 'false'", 'lake build', 'lake test'),
+        }
+        for job, commands in expected.items():
+            with self.subTest(job=job):
+                block=re.split(r'(?m)^  [a-z][a-z-]*:\n', workflow.split(f'  {job}:\n')[1])[0]
+                self.assertIn("if: needs.changes.outputs.profile == 'full'", block)
+                self.assertIn('steps.release-receipt.outputs.release_receipt_sha256', block)
+                for command in commands:
+                    self.assertIn(command, block)
+                self.assertIn(job, required.split('    steps:')[0])
+                self.assertIn(job, final.split('    steps:')[0])
+                # A success in a separate workflow cannot replace the same-run receipt.
+                original=self.needs[job]
+                try:
+                    self.needs[job]=dict(result='skipped', outputs={})
+                    self.env['RELEASE_NEEDS_JSON']=json.dumps(self.needs)
+                    self.reject(job)
+                finally:
+                    self.needs[job]=original
+                    self.env['RELEASE_NEEDS_JSON']=json.dumps(self.needs)
 
     def test_corpus_runs_representative_checks_for_every_ci_profile(self):
         workflow=(ROOT/'.github/workflows/ci.yml').read_text()
