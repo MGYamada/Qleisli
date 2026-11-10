@@ -11,6 +11,8 @@ development milestones from the scope of their evidence.
   the instructions active in each sector.
   Computed sectors can use sparse exact Gram products when their tape
   bounds the support. Both paths check every physical sector.
+  Identical restricted tapes within one check share a verified matrix,
+  with every physical label still bound to its own restriction.
 - Share coherent sector lowering between `qif` and `qmatch`. Retain both
   selections in original-source v5 bodies and derive the binary tape action
   from the shared QPTL direct-sum theorem.

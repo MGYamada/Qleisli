@@ -21,6 +21,25 @@ theorem active_payload_still_spends_local_validation_work :
     (((readSectors [] bitBasis bitBasis hxCircuit).run 900).1 ==
       .error (.arithmetic .workLimit)) = true := by decide +kernel
 
+private def repeatedCircuit : Circuit := ⟨joinedBasis [.bits 2] bitBasis,
+  [⟨[⟨0,false⟩],.hadamard 2⟩,
+   ⟨[⟨0,true⟩],.monomial [2] [1,0] [0,0]⟩]⟩
+
+theorem repeated_tapes_keep_every_physical_ordinal :
+    (((readSectors [] [.bits 2] bitBasis repeatedCircuit).run 1220).1 ==
+      .ok [hadamard,flip,hadamard,flip]) = true ∧
+    (((readSectors [] [.bits 2] bitBasis repeatedCircuit).run 1219).1 ==
+      .error (.arithmetic .workLimit)) = true := by decide +kernel
+
+private def distinctPhases : Circuit := ⟨joinedBasis [.bits 2] bitBasis,
+  [⟨[⟨0,false⟩],.monomial [2] [1,0] [0,0]⟩,
+   ⟨[⟨0,true⟩],.monomial [2] [1,0] [4,4]⟩]⟩
+
+theorem cache_distinguishes_phases_of_the_same_permutation :
+    let negativeFlip : Matrix := ⟨2,2,[Scalar.zero,negativeOne,negativeOne,Scalar.zero]⟩
+    (((readSectors [] [.bits 2] bitBasis distinctPhases).run 10000).1 ==
+      .ok [flip,negativeFlip,flip,negativeFlip]) = true := by decide +kernel
+
 private def phasedFlip : Step := ⟨[],.monomial [0] [1,0] [1,3]⟩
 
 private def phasedFlipMatrix : Matrix := ⟨8,8,(List.range 64).map fun i =>
