@@ -31,6 +31,7 @@ inductive Edge where
   | nextOrdinal (ordinal : Nat)
   | pureStep (ordinal : Nat)
   | named (ordinal : Nat) (callerOwner callerName : String) (offset : Nat) (owner name : String)
+  | transform (ordinal : Nat) (callerOwner callerName : String) (offset : Nat) (owner name : String)
   | thenBranch (ordinal : Nat)
   | elseBranch (ordinal : Nat)
   deriving BEq, Repr
@@ -49,6 +50,10 @@ private inductive View (dependencies : List Semantics.Finite.Dependency) (parent
 private def inspect {dependencies} : (item : Item dependencies) → View dependencies item
   | .node ordinal node@(.selection ..) => .selection ordinal node
   | .node ordinal (.named event _ _ _ _ nested) => .child (namedEdge ordinal event) (.nodes 0 nested) (by simp only [Smaller] <;> decreasing_tactic)
+  | .node ordinal (.transform (caller := caller) (event := event) _ _ _ _ _ _ _ nested) =>
+    .child (.transform ordinal caller event.callerName event.call.calleeOffset
+      event.target.resolution.moduleName event.target.resolution.declaration.name) (.nodes 0 nested)
+      (by simp only [Smaller] <;> decreasing_tactic)
   | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.operation ..) => .leaf
   | .nodes _ .nil => .leaf
   | .nodes ordinal (.cons first rest) => .pair (.atOrdinal ordinal) (.node ordinal first) (.nextOrdinal (ordinal+1)) (.nodes (ordinal+1) rest)

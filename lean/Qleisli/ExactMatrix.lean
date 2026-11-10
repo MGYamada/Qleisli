@@ -98,7 +98,8 @@ theorem compose_meaning (x y z : Matrix) (work left : Nat)
       ∀ row col, row < x.rows → col < y.cols →
         entry z row col = ((List.range x.cols).map
           (fun k => entry x row k * entry y k col)).sum := by
-  unfold Matrix.compose Matrix.composeWork at ok
+  unfold Matrix.compose at ok
+  rw [Matrix.composeWork_list] at ok
   split at ok
   · cases ok
   · rename_i shape

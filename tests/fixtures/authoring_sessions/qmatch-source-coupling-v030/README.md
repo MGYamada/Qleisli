@@ -1,5 +1,11 @@
 # Original qmatch source and evidence coupling
 
+The [wide selected study](wide-selected-study.json) retains two seven-bit
+first sources, their old width refusals, later native timeouts and successful
+replays after the zero-product shortcut. Two separate seven-bit, sixteen-label
+controls check the selected v5 route with three target bits. The full
+twelve-bit, 64-label validation remains open.
+
 The [phase/static first history](phase-static-first.json.xz) retains eight
 source/manifest files and sixteen complete observations. Original valid sources
 change from refusal to success; unused overflow still refuses. The 21-alias

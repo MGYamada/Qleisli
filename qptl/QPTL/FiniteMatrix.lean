@@ -59,5 +59,70 @@ theorem directSum_isometry {L : Type*} [Fintype L] [DecidableEq L] {A B : L → 
   rw [Matrix.blockDiagonal'_conjTranspose, ← Matrix.blockDiagonal'_mul]
   simpa only [h] using (Matrix.blockDiagonal'_one (m' := A) (α := ℂ))
 
+
+/-- The two unitary equations of a coherent sum follow from the equations
+of its original summands, with the input and output labels fixed. -/
+theorem directSum_unitary {L : Type*} [Fintype L] [DecidableEq L] {A B : L → Type*}
+    [∀ b, Fintype (A b)] [∀ b, Fintype (B b)]
+    [∀ b, DecidableEq (A b)] [∀ b, DecidableEq (B b)]
+    (op : ∀ b, Matrix (B b) (A b) ℂ)
+    (h : ∀ b, (op b)ᴴ * op b = 1 ∧ op b * (op b)ᴴ = 1) :
+    (Matrix.blockDiagonal' op)ᴴ * Matrix.blockDiagonal' op = 1 ∧
+      Matrix.blockDiagonal' op * (Matrix.blockDiagonal' op)ᴴ = 1 := by
+  refine ⟨directSum_isometry op (fun b => (h b).1), ?_⟩
+  rw [Matrix.blockDiagonal'_conjTranspose, ← Matrix.blockDiagonal'_mul]
+  simpa only [fun b => (h b).2] using (Matrix.blockDiagonal'_one (m' := B) (α := ℂ))
+
+/-- Exact per-label equations compose into a single commuting square for
+a coherent selection. The source encodings can have different dimensions
+from the physical spaces, including unused physical basis coordinates. -/
+theorem directSum_intertwines {L : Type*} [Fintype L] [DecidableEq L] {A B P Q : L → Type*}
+    [∀ b, Fintype (B b)] [∀ b, Fintype (P b)]
+    (logical : ∀ b, Matrix (B b) (A b) ℂ) (physical : ∀ b, Matrix (Q b) (P b) ℂ)
+    (encodeIn : ∀ b, Matrix (P b) (A b) ℂ) (encodeOut : ∀ b, Matrix (Q b) (B b) ℂ)
+    (square : ∀ b, physical b * encodeIn b = encodeOut b * logical b) :
+    Matrix.blockDiagonal' physical * Matrix.blockDiagonal' encodeIn =
+      Matrix.blockDiagonal' encodeOut * Matrix.blockDiagonal' logical := by
+  rw [← Matrix.blockDiagonal'_mul, ← Matrix.blockDiagonal'_mul]
+  exact congrArg Matrix.blockDiagonal' (funext square)
+
+/-- The original pre- and post-operations transport a coherent selection
+through the encodings in the order in which the caller executes them. -/
+theorem directSum_intertwines_comp {L : Type*} [Fintype L] [DecidableEq L]
+    {A B P Q : L → Type*} [∀ b, Fintype (A b)] [∀ b, Fintype (B b)]
+    [∀ b, Fintype (P b)] [∀ b, Fintype (Q b)]
+    {X Y U V : Type*} [Fintype U] [Fintype Y]
+    (logical : ∀ b, Matrix (B b) (A b) ℂ) (physical : ∀ b, Matrix (Q b) (P b) ℂ)
+    (encodeIn : ∀ b, Matrix (P b) (A b) ℂ) (encodeOut : ∀ b, Matrix (Q b) (B b) ℂ)
+    (preLogical : Matrix (Σ b, A b) X ℂ) (prePhysical : Matrix (Σ b, P b) U ℂ)
+    (postLogical : Matrix Y (Σ b, B b) ℂ) (postPhysical : Matrix V (Σ b, Q b) ℂ)
+    (encodeStart : Matrix U X ℂ) (encodeEnd : Matrix V Y ℂ)
+    (pre : prePhysical * encodeStart = Matrix.blockDiagonal' encodeIn * preLogical)
+    (arms : ∀ b, physical b * encodeIn b = encodeOut b * logical b)
+    (post : postPhysical * Matrix.blockDiagonal' encodeOut = encodeEnd * postLogical) :
+    (postPhysical * Matrix.blockDiagonal' physical * prePhysical) * encodeStart =
+      encodeEnd * (postLogical * Matrix.blockDiagonal' logical * preLogical) := by
+  have selection := directSum_intertwines logical physical encodeIn encodeOut arms
+  simp only [Matrix.mul_assoc]
+  rw [pre, ← Matrix.mul_assoc (Matrix.blockDiagonal' physical), selection]
+  rw [Matrix.mul_assoc (Matrix.blockDiagonal' encodeOut)]
+  rw [← Matrix.mul_assoc postPhysical, post]
+  simp only [Matrix.mul_assoc]
+
+/-- Each output coordinate uses its original label's input amplitudes.
+The joint input can carry arbitrary correlations with a reference. -/
+theorem directSum_action {L : Type*} [Fintype L] [DecidableEq L] {A B : L → Type*}
+    [∀ b, Fintype (A b)] {R : Type*}
+    (op : ∀ b, Matrix (B b) (A b) ℂ) (joint : (Σ b, A b) → R → ℂ)
+    (label : L) (output : B label) (reference : R) :
+    (Matrix.blockDiagonal' op *ᵥ (fun input => joint input reference)) ⟨label, output⟩ =
+      (op label *ᵥ (fun input => joint ⟨label, input⟩ reference)) output := by
+  simp only [Matrix.mulVec, dotProduct, ← Finset.univ_sigma_univ, Finset.sum_sigma]
+  rw [Fintype.sum_eq_single label]
+  · simp
+  · intro other different
+    exact Finset.sum_eq_zero fun input _ => by
+      rw [Matrix.blockDiagonal'_apply_ne op output input different.symm, zero_mul]
+
 end
 end QPTL.FiniteMatrix

@@ -13,6 +13,7 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = "lean/schema-registry.json"
@@ -61,6 +62,19 @@ def read_json(data):
     return json.loads(data, object_pairs_hook=pairs, parse_constant=invalid)
 
 
+def qptl_sources(root, proof_config):
+    """Include the local QPTL proof dependency when the proof project requires it."""
+    config = tomllib.loads(proof_config.decode("utf-8"))
+    dependencies = [item for item in config.get("require", []) if item.get("name") == "qptl"]
+    if not dependencies:
+        return []
+    require(len(dependencies) == 1 and dependencies[0].get("path") == "../qptl",
+            "unexpected QPTL proof dependency")
+    return [*root.glob("qptl/QPTL/**/*.lean"),
+            *(root / "qptl" / name for name in ("QPTL.lean", "lean-toolchain",
+                                                 "lakefile.toml", "lake-manifest.json"))]
+
+
 def source_revision(root):
     paths = [*root.glob("lean/Qleisli/**/*.lean"),
              *root.glob("lean-kernel/QleisliKernel/**/*.lean"),
@@ -73,6 +87,9 @@ def source_revision(root):
         "lean-kernel/Main.lean", "lean-kernel/Protocol.lean", "lean-kernel/lean-toolchain",
         "lean-kernel/lakefile.toml", "lean-kernel/lake-manifest.json",
         "scripts/check_lean_kernel.py", "scripts/check_schema_registry.py")]
+    proof_config = root / "lean/lakefile.toml"
+    require(proof_config.is_file() and not proof_config.is_symlink(), "missing/linked proof Lake config")
+    paths += qptl_sources(root, proof_config.read_bytes())
     files = {}
     for path in sorted(paths):
         require(path.is_file() and not path.is_symlink(), f"missing/linked registry source: {path}")

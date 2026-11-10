@@ -1,5 +1,4 @@
 import QleisliKernel.Qirf.RuntimeDiscoveryScope
-import QleisliKernel.Qirf.RuntimeTransformRequest
 
 /-! One source discovery handler for legacy metadata and indexed body plans.
 Original source queries, complete slots and static eligibility are shared.
@@ -309,14 +308,23 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                   leftRead.discovery.roots ++ rightRead.discovery.roots⟩,leftRead.receipts ++ rightRead.receipts,data⟩
               else throw .request
           | .transform event =>
-            let (callPosition,child) :: remaining := before.calls | throw .request
-            guard (callPosition == position) .request
-            let transform ← RuntimeTransformRequest.read event position child
-            let roots ← subjectRoots artifact transform.subject
-            let checked := transform.source.checked
-            let nested ← next (.supplied checked.signature checked.events checked.summary.staticRows true) transform.context
-            return ⟨{before with calls := remaining},⟨event.target.sourceRows ++ event.counts.flatMap (·.checked.rows) ++
-              nested.discovery.rows,roots ++ nested.discovery.roots⟩,nested.receipts,noEventData scope mode.preparation⟩
+            match calls : before.calls with
+            | [] => throw .request
+            | (callPosition,child) :: remaining =>
+              if located : callPosition = position then
+                let transform ← NaturalAffine.witness (RuntimeTransformRequest.read event position child)
+                let roots ← subjectRoots artifact transform.val.subject
+                let nested ← next (scope.named transform.val.source) transform.val.context
+                let after := {before with calls := remaining}
+                let data : scope.EventData mode.preparation (.transform event) position before after := by
+                  cases scope with
+                  | supplied => exact ()
+                  | original source =>
+                    exact nested.data.map (fun childPlan => .transform child remaining
+                      (located ▸ calls) transform.val (by with_reducible exact transform.property) childPlan)
+                return ⟨after,⟨event.target.sourceRows ++ event.counts.flatMap (·.checked.rows) ++
+                  nested.discovery.rows,roots ++ nested.discovery.roots⟩,nested.receipts,data⟩
+              else throw .request
           | .basis event =>
             let source ← SourceRuntimeTrace.readBasisSource event
             let rows ← ordinaryRows artifact.sources 128 source.events

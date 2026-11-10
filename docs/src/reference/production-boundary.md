@@ -604,10 +604,14 @@ history of the actual erasure event.
 
 `RuntimeLiteralBody.original_body_recursive_refinement` composes these laws
 for the complete staged original-body traversal. At each step the source
-operator follows the original primitive meaning, graph receipt, or selection
-table. The same recursion follows actual named child reads and the arm selected
-by the checked ordinary condition. It applies the written return order to
-every result and relates the complete history lists in order. The statement
+operator follows the original primitive meaning, graph receipt, written
+transform, or selection table. A written transform uses the exact logical
+matrix read from its checked forward body and the source-specified power,
+adjoint, or control. Its ordered return replaces the selected owners while
+preserving the spectator bindings, including zero-width owners. The same
+recursion follows actual named child reads and the arm selected by the checked
+ordinary condition. It applies the written return order to every result and
+relates the complete history lists in order. The statement
 starts with a successful checked body and a finite representation of the
 input operator. It retains the visible SSA agreement and hidden outcomes for
 each returned history. Public v5, full12/64 and release validation remain

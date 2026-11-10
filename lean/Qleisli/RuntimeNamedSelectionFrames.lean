@@ -50,6 +50,7 @@ theorem node_frames {dependencies program block bindings}
   | structural _ => trivial
   | named _ _ _ _ _ _ => trivial
   | operation _ _ _ _ _ _ _ _ _ _ => trivial
+  | transform => trivial
   | selection frame selectorBits targetBits retained restricted inputCode outputCode labels expected logical equations codes layouts =>
     obtain ⟨original⟩ := available
     have actual := carrier_codes input original

@@ -43,6 +43,8 @@ def region {dependencies program block} : Node dependencies program block → Lo
       SourceRuntimeValues.valueOwners event.value,frame.interval,frame.selected,boundary.returned,
       frame.operations,frame.literal,boundary.spectators⟩
   | .operation frame .. => pureLocal frame
+  | .transform (event := event) _ _ _ _ _ owners _ _ =>
+    { (pureLocal owners.literal) with outputRoles := RuntimeTransformOwners.outputs event }
   | .selection frame .. => pureLocal frame
 
 def operations {dependencies program block} (node : Node dependencies program block) : List Semantics.Raw.Op :=

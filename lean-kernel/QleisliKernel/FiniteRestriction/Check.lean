@@ -20,6 +20,38 @@ def restrictionFields (steps : List Step) : Nat :=
       | .monomial _ permutation phases => 16 * (permutation.length+1)^2 + phases.length
       | _ => 0).sum
 
+/-- The actual restriction of an ordered tape equals the expected tape,
+including all control predicates, wire positions, phases and dependency slots. -/
+structure TapeMatch (selector label : Nat) (outer expected : List Step) : Type where
+  bounded : label < 2^selector
+  restriction : restrictSteps selector label outer = some expected
+
+/-- Compare the restricted instructions before any matrix construction. The
+caller still binds both tapes to the same dependency and source subjects. -/
+def checkTape (selector label : Nat) (outer expected : List Step) :
+    WorkM (TapeMatch selector label outer expected) := do
+  guard (selector ≤ 6 && outer.length ≤ 1024 && expected.length ≤ 1024) .limit
+  exactWork (QleisliKernel.Exact.charge (restrictionFields outer))
+  if bounded : label < 2^selector then
+    match read : restrictSteps selector label outer with
+    | none => throw .request
+    | some actual =>
+      exactWork (QleisliKernel.Exact.charge (restrictionFields actual + restrictionFields expected + 1))
+      if same : actual == expected then
+        return ⟨bounded,read.trans (congrArg some (beq_iff_eq.mp same))⟩
+      else throw .equation
+  else throw .request
+
+theorem TapeMatch.execution (dependencies : List Dependency) {selector label : Nat}
+    {outer expected : List Step} (checked : TapeMatch selector label outer expected)
+    (values : List Scalar) :
+    outer.foldlM (fun input step => applyStep dependencies step input) (liftVector selector label values) =
+      (expected.foldlM (fun input step => applyStep dependencies step input) values).map
+        (liftVector selector label) :=
+  foldSteps_lift dependencies outer selector label values expected checked.bounded checked.restriction
+
+#print axioms TapeMatch.execution
+
 def joinedBasis (selector target : Basis) : Basis := .pair :: (selector ++ target)
 
 private def evaluateSector (dependencies : List Dependency) (selector label : Nat)

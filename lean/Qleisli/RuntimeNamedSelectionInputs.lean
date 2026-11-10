@@ -61,6 +61,7 @@ theorem child_source (artifact : Artifact) (root : Validity.Root)
     | structural _ => trivial
     | named _ _ _ _ _ _ => trivial
     | operation _ _ _ _ _ _ _ _ _ _ => trivial
+    | transform => trivial
     | selection frame selectorBits targetBits retained restricted inputCode outputCode labels expected logical equations codes layouts =>
       constructor
       · change RuntimeForestCode.carrierOwners codes.owners.before.bindings = carriers

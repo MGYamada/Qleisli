@@ -881,12 +881,21 @@ pub(super) fn emit(
     )?;
     let target_basis = lower.raw.registers[&target_slot].basis.clone();
     let target_bits = lower.raw.registers[&target_slot].wires.len();
-    if count == 0 || count > 64 || selector_bits + target_bits > MAX_CONTRACT_BITS {
+    let width_allowed = if lower.uses_qmatch_v5() {
+        selector_bits <= MAX_CONTRACT_BITS && target_bits <= MAX_CONTRACT_BITS
+    } else {
+        selector_bits + target_bits <= MAX_CONTRACT_BITS
+    };
+    if count == 0 || count > 64 || !width_allowed {
         return Err(lower.error(
             module,
             span,
             ErrorCode::Limit,
-            "nominal qmatch currently requires at most six joined bits and 64 labels",
+            if lower.uses_qmatch_v5() {
+                "selected nominal qmatch requires at most six bits per owner and 64 labels"
+            } else {
+                "nominal qmatch currently requires at most six joined bits and 64 labels"
+            },
         ));
     }
     let mut seen = BTreeSet::new();

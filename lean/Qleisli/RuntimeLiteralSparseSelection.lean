@@ -142,6 +142,7 @@ noncomputable def sourceNamedSelection {dependencies program block step}
     | structural _ => exact False.elim selected
     | named _ _ _ _ _ _ => exact False.elim selected
     | operation _ _ _ _ _ _ _ _ _ _ => exact False.elim selected
+    | transform => exact False.elim selected
 
 noncomputable def withSparseSelection {dependencies program block}
     (fallback : List (Step dependencies program block) → Step dependencies program block →

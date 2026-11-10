@@ -212,6 +212,53 @@ fn selected_qmatch_retains_extra_zero_width_owners_and_original_result_order() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_checks_wide_interfaces_in_separate_sectors() {
+    let variants = (0..16)
+        .map(|ordinal| format!("L{ordinal}"))
+        .collect::<Vec<_>>()
+        .join(", ");
+    for (selector, declaration) in [
+        ("Bits<4>", String::new()),
+        ("Selector", format!("pub enum Selector {{ {variants} }}")),
+    ] {
+        let arms = (0..16)
+            .rev()
+            .map(|ordinal| {
+                let label = if selector == "Selector" {
+                    format!("Selector::L{ordinal}")
+                } else {
+                    ordinal.to_string()
+                };
+                format!("{label} => global_phase_eighth")
+            })
+            .collect::<Vec<_>>()
+            .join(", ");
+        let source = format!(
+            "#![no_implicit_prelude]
+            {declaration}
+            pub unitary fn route(s: Q<{selector}>, q: Q<Bits<3>>) -> (Q<{selector}>, Q<Bits<3>>) {{
+                qmatch(s, q) {{ {arms} }}
+            }}"
+        );
+        let selected = selected_at(&source, "main::route");
+        let program = selected.program();
+        assert!(program.qmatch_source_checked());
+        let widths = program
+            .raw()
+            .quantum_inputs
+            .iter()
+            .map(|port| port.shape.bits)
+            .collect::<Vec<_>>();
+        assert_eq!(widths, [4, 3]);
+        kernel().check_program(program).unwrap();
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_keeps_controlled_permutations_after_evidence_preparation() {
     let source = "unitary fn flip(q:Q<Bit>)->Q<Bit>{h(phase[1,1](h(q)))}
         unitary fn idle(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{q}

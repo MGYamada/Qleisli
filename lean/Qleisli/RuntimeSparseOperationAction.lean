@@ -163,6 +163,93 @@ private theorem source_partitions {dependencies program block arity start count 
       simpa only [List.filter_map,Function.comp_def] using retained
   exact ⟨beforeOrder,complementOrder ▸ afterOrder⟩
 
+private theorem assigned_ports {sources caller}
+    (event : SourceTypes.SourceRuntimeContext.TransformEvent sources caller) (returned : Map)
+    (length : returned.length = (RuntimeTransformOwners.outputs event).length) :
+    (RuntimeTransformOwners.assigned event returned).map Binding.port = returned.map Binding.port := by
+  have ports := List.map_snd_zip (l₁ := RuntimeTransformOwners.outputs event) (l₂ := returned) length.le
+  simpa only [RuntimeTransformOwners.assigned,List.map_map,Function.comp_def] using
+    congrArg (List.map Binding.port) ports
+
+private theorem transport_outside {dependencies program block arity start count inputs outputs roles beforeRoles bindings}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+    (interval : RuntimeInterval.Checked block start count)
+    (before : RuntimeOwnerMap.Checked beforeRoles interval.before) (same : before.bindings = bindings)
+    (transport : RuntimeOwnerTransition.Checked interval bindings)
+    (chosen : Map) (owners : chosen.map Binding.owner = roles)
+    (ports : chosen.map Binding.port = frame.selected)
+    (partition : (chosen ++ RuntimeSelectionPartition.complement before.bindings chosen).Perm before.bindings) :
+    ∀ binding ∈ transport.after.bindings, binding.owner ∉ roles → binding ∈ before.bindings := by
+  subst bindings
+  exact RuntimeSelectionSpectators.interval_spectators frame interval before transport chosen owners ports partition
+
+/-- A written transform may replace its selected logical owners. Its
+actual input partition and actual output partition still have exactly the
+same spectators, including owners with zero wires. -/
+theorem transform_partitions {dependencies program block start count sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    {event : SourceTypes.SourceRuntimeContext.TransformEvent sources caller}
+    {before : RuntimeStructuralAction.SourceState}
+    (held : RuntimeTransformOwners.Checked interval event before) :
+    let spectators := RuntimeSelectionPartition.complement held.inputFrame.bindings held.selected
+    (held.selected ++ spectators).Perm held.inputFrame.bindings ∧
+    (RuntimeTransformOwners.assigned event held.returned ++ spectators).Perm held.afterFrame.bindings ∧
+    (RuntimeTransformOwners.assigned event held.returned).map Binding.port = held.literal.returned := by
+  intro spectators
+  let roles := RuntimeTransformOwners.inputs event
+  have selectedRead : RuntimeInterval.Computed (RuntimeOwnerMap.order roles held.inputFrame.bindings) held.selected :=
+    held.sameInput.symm ▸ held.selectedRead
+  obtain ⟨selectedIn,selectedRoles⟩ := RuntimeSelectionPartition.order_values _ _ _ selectedRead
+  have selectedTokens := RuntimeSelectionPartition.interval_selected_tokens held.literal
+  rw [held.selectedPorts,List.map_map] at selectedTokens
+  have selectedUnique : held.selected.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+    (fun _ _ different same => different (congrArg (fun binding : Binding => binding.port.token) same)) selectedTokens
+  have beforeOrder : (held.selected ++ spectators).Perm held.inputFrame.bindings :=
+    RuntimeNamedBlockEncoding.partition_perm _ _ (bindings_unique held.inputFrame) selectedUnique selectedIn
+  have untouched := transport_outside held.literal interval held.inputFrame held.sameInput held.native
+    held.selected selectedRoles held.selectedPorts.symm beforeOrder
+  obtain ⟨returnedIn,returnedRoles⟩ := RuntimeSelectionPartition.order_values _ _ _ held.returnedRead
+  obtain ⟨returnPerm,localValid⟩ := Qleisli.RuntimeCallHistory.fragment_return_ports held.literal
+  have returnedTokens : (held.literal.returned.map (·.token)).Nodup :=
+    (returnPerm.map (·.token)).nodup_iff.mpr (Raw.Ownership.valid _ localValid).owners
+  rw [held.returnedPorts,List.map_map] at returnedTokens
+  have returnedUnique : held.returned.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+    (fun _ _ different same => different (congrArg (fun binding : Binding => binding.port.token) same))
+    returnedTokens
+  let kept := held.native.after.bindings.filter (fun binding => !roles.contains binding.owner)
+  have keptEq : kept = spectators := by
+    dsimp only [spectators]
+    rw [owner_complement held.inputFrame selectedIn selectedRoles]
+    apply RuntimeOwnerTransitionAction.owner_order_eq
+    · exact (List.filter_sublist.map (fun binding : Binding => binding.owner.ordinal)).nodup
+        (binding_ordinals held.inputFrame)
+    · intro binding member
+      obtain ⟨present,outside⟩ := List.mem_filter.mp member
+      exact List.mem_filter.mpr ⟨untouched binding present (by simpa using outside),outside⟩
+    · have same := held.native.after.ordered.trans (congrArg (List.map Binding.owner) held.sameInput.symm)
+      simpa only [kept,List.filter_map,Function.comp_def] using
+        congrArg (List.filter (fun owner => !roles.contains owner)) same
+  have returnedOrder : (held.returned ++ kept).Perm held.native.after.bindings := by
+    simpa only [owner_complement held.native.after returnedIn returnedRoles] using
+      RuntimeNamedBlockEncoding.partition_perm _ _ (bindings_unique held.native.after) returnedUnique returnedIn
+  have lengths : held.returned.length = (RuntimeTransformOwners.outputs event).length := by
+    have valid := beq_iff_eq.mp (Bool.and_eq_true_iff.mp held.outputWidths).1
+    simpa only [held.returnedPorts,List.length_map] using valid
+  have assignedPorts := assigned_ports event held.returned lengths
+  have complete : ((RuntimeTransformOwners.assigned event held.returned ++ kept).map Binding.port).Perm
+      interval.after.quantum.live := by
+    simpa only [List.map_append,assignedPorts] using
+      (returnedOrder.map Binding.port).trans held.native.after.complete
+  have reordered : RuntimeInterval.Computed (RuntimePureBody.reordered _ interval.after
+      (kept ++ RuntimeTransformOwners.assigned event held.returned)) held.afterFrame := held.afterRead
+  have subset := Qleisli.RuntimeNamedPrimitiveOutputs.reordered_subset reordered
+  have sameLength : (RuntimeTransformOwners.assigned event held.returned ++ kept).length =
+      held.afterFrame.bindings.length := by
+    simpa only [List.length_map] using complete.length_eq.trans held.afterFrame.complete.length_eq.symm
+  have afterOrder := ((List.subperm_of_subset (bindings_unique held.afterFrame) subset).trans
+    List.perm_append_comm.subperm).perm_of_length_le sameLength.le
+  exact ⟨beforeOrder,keptEq ▸ afterOrder.symm,assignedPorts.trans held.returnedPorts.symm⟩
+
 private noncomputable def groupedInput {Reference : Type}
     (incoming selected spectators : Map) (joint : Nat → Reference → ℂ) : Nat → Reference → ℂ :=
   fun logical reference =>
@@ -414,6 +501,7 @@ theorem pure_step_history_lift {dependencies program block}
     outputOrder ▸ output,Qleisli.RuntimeLiteralBody.cast_represents outputOrder output encoded⟩ .nil
 
 #print axioms original_block_code
+#print axioms transform_partitions
 #print axioms operation_code_lift
 #print axioms original_operation_code_lift
 #print axioms operation_events_lift

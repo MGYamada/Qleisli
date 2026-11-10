@@ -55,7 +55,11 @@ properties. Lean checks the resulting proof.
 - `QPTL.FiniteMatrix.isometry_iff` and `unitary_iff` express the categorical
   conditions as complex matrix equations. `directSum_isometry` proves isometry
   for a finite coherent sum whose summands can have different dimensions.
-  Each summand retains its complex phase.
+  `directSum_unitary` composes both unitary equations from the same labels.
+- `directSum_intertwines` assembles exact logical-to-physical encoding
+  equations for each label. `directSum_action` evaluates one output coordinate
+  from the corresponding sector of an arbitrary joint input and retains that
+  sector's complex phase.
 
-The tests include a rectangular state preparation, a coherent sign change and
-an arbitrary joint input with a reference. [Proof examples](QPTLTests.lean)
+The tests include a rectangular state preparation, a coherent sign change
+through a rectangular encoding, and an arbitrary joint input with a reference. [Proof examples](QPTLTests.lean)

@@ -250,7 +250,7 @@ theorem listRel_all_right {α β : Type} (p : α → β → Prop) (q : β → Pr
 
 theorem compose_admitted (x y z : Matrix) (work left : Nat)
     (ok : (Matrix.composeWork x y).run work = (.ok z, left)) : Matrix.Admitted z := by
-  unfold Matrix.composeWork at ok
+  rw [Matrix.composeWork_list] at ok
   split at ok
   · change (Except.error Error.shapeMismatch, work) = (.ok z, left) at ok
     cases ok

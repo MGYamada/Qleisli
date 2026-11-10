@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeGraphOperation
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
+import QleisliKernel.Qirf.RuntimeTransformRequest
 import QleisliKernel.Qirf.RuntimeBranchAction
 import QleisliKernel.SourceTypes.QuantumArms
 
@@ -123,6 +124,14 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (references : List (List BodyRequest)) (groups : child.references = [references])
       (graph : Graph preparation event.operation.graph OperationAccess.applicable child.bodies references) :
       Event preparation source (.operation event) position before {before with calls := remaining}
+  | transform {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.TransformEvent artifact.sources owner} {position : Position} {before : Queues}
+      (child : Context) (remaining : List (Position × Context))
+      (call : before.calls = (position,child) :: remaining)
+      (request : RuntimeTransformRequest.Checked event position child)
+      (original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position child) request)
+      (nested : Body preparation (.whole request.source) request.context) :
+      Event preparation source (.transform event) position before {before with calls := remaining}
   | selection {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {tokens : List LocatedToken} {parsed : QuantumMatch.Parsed}
       {original : QuantumMatch.parse tokens = .ok (parsed,[])}
@@ -167,7 +176,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
   | unsupported {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before : Queues}
       (unconnected : (match event with
-        | .transform .. | .basis .. | .matching .. | .computed .. | .registerPrimitive .. => true
+        | .basis .. | .matching .. | .computed .. | .registerPrimitive .. => true
         | _ => false) = true) : Event preparation source event position before before
 
 inductive Events {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :

@@ -49,6 +49,7 @@ private theorem pure_node_operations {dependencies program block}
   | structural action => exact ⟨[action.operation],action.literal⟩
   | named _ frame _ _ _ _ => exact ⟨_,frame.literal⟩
   | operation frame _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩
+  | transform _ _ _ _ _ owners _ _ => exact ⟨_,owners.literal.literal⟩
   | selection frame _ _ _ _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩
 
 /-- Every pure node runs its exact Raw trace on all reference columns. Its

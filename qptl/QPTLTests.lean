@@ -59,6 +59,33 @@ example : ¬ IsUnitary prepare := by
 
 private def signed : Bool → Matrix Unit Unit ℂ := fun b _ _ => if b then -1 else 1
 
+example :
+    (Matrix.blockDiagonal' signed)ᴴ * Matrix.blockDiagonal' signed = 1 ∧
+      Matrix.blockDiagonal' signed * (Matrix.blockDiagonal' signed)ᴴ = 1 := by
+  apply directSum_unitary
+  intro label
+  cases label <;> constructor <;> ext i j <;> cases i <;> cases j <;>
+    simp [signed, Matrix.mul_apply, Matrix.conjTranspose_apply]
+
+private def physicalSign : Bool → Matrix Bool Bool ℂ := fun b => if b then -1 else 1
+private def encodeFirst : Bool → Matrix Bool Unit ℂ := fun _ row _ => if row then 0 else 1
+
+example :
+    Matrix.blockDiagonal' physicalSign * Matrix.blockDiagonal' encodeFirst =
+      Matrix.blockDiagonal' encodeFirst * Matrix.blockDiagonal' signed := by
+  apply directSum_intertwines
+  have positive : signed false = 1 := by ext i j; cases i; cases j; simp [signed]
+  have negative : signed true = -1 := by ext i j; cases i; cases j; simp [signed]
+  intro label
+  cases label <;> simp [physicalSign, positive, negative]
+
+/-- The sign applies to each reference column, including joint inputs. -/
+example {R : Type*} (joint : (Σ _ : Bool, Unit) → R → ℂ) (reference : R) :
+    (Matrix.blockDiagonal' signed *ᵥ (fun input => joint input reference)) ⟨true, ()⟩ =
+      -joint ⟨true, ()⟩ reference := by
+  rw [directSum_action]
+  simp [signed, Matrix.mulVec, dotProduct]
+
 /-- The minus on just one coherent summand changes the operator. -/
 example : Matrix.blockDiagonal' signed ≠ 1 := by
   intro same
@@ -70,4 +97,8 @@ end Concrete
 #print axioms QPTL.isometry_of_square
 #print axioms QPTL.tensor_square
 #print axioms QPTL.FiniteMatrix.directSum_isometry
+#print axioms QPTL.FiniteMatrix.directSum_unitary
+#print axioms QPTL.FiniteMatrix.directSum_action
+#print axioms QPTL.FiniteMatrix.directSum_intertwines
+#print axioms QPTL.FiniteMatrix.directSum_intertwines_comp
 end QPTLTests

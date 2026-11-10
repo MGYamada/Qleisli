@@ -167,8 +167,9 @@ private def consume {artifact catalogue record invocation demand view provider p
   let checked ← RuntimeProviderAction.read header.binding.header root view.requested
   have sameProgram : checked.paths.ir.original.program = header.binding.program :=
     Option.some.inj (checked.paths.ir.original.original.symm.trans header.binding.originalProgram)
-  return ⟨checked.paths,checked.pathRead,sameProgram,checked.initial,checked.initialRead,
-    checked.interval,checked.intervalRead,checked.body,checked.consumed⟩
+  let body := checked.originalBody
+  return ⟨checked.paths,checked.pathRead,sameProgram,body.initial,body.initialRead,
+    body.interval,body.intervalRead,body.body,body.consumed⟩
 
 def Result {artifact} (root : Validity.Root) : Contribution artifact → Type
   | .provider source => Checked source root

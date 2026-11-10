@@ -129,15 +129,132 @@ def charge (amount : Nat) : WorkM Unit := fun remaining =>
 def liftExact {α : Type} (result : Except Error α) : WorkM α :=
   match result with | .ok x => pure x | .error e => throw e
 
+private theorem coefficient_make_zero (e : Nat) (bounded : e ≤ maxInputExponent) :
+    Coefficient.make 0 e = .ok (.integer 0) := by
+  unfold Coefficient.make
+  simp only [show checkedInt 0 = .ok 0 from rfl, if_neg (Nat.not_lt.mpr bounded)]
+  rfl
+
+private theorem coefficient_zero_mul (v : Coefficient) (bounded : v.exponent ≤ maxInputExponent) :
+    Coefficient.mul (.integer 0) v = .ok (.integer 0) := by
+  simpa only [Coefficient.mul,Semantics.Exact.Coefficient.integer,Int.zero_mul,Nat.zero_add,
+    show checkedInt 0 = .ok 0 from rfl,bind,Except.bind] using coefficient_make_zero v.exponent bounded
+
+private theorem coefficient_mul_zero (v : Coefficient) (bounded : v.exponent ≤ maxInputExponent) :
+    Coefficient.mul v (.integer 0) = .ok (.integer 0) := by
+  simpa only [Coefficient.mul,Semantics.Exact.Coefficient.integer,Int.mul_zero,Nat.add_zero,
+    show checkedInt 0 = .ok 0 from rfl,bind,Except.bind] using coefficient_make_zero v.exponent bounded
+
+private theorem get_zero (i : Nat) : Scalar.zero.get i = .integer 0 := by
+  unfold Scalar.get
+  split <;> rfl
+
+private theorem set_zero (i : Nat) : Scalar.zero.set i (.integer 0) = Scalar.zero := by
+  unfold Scalar.set
+  split <;> rfl
+
+private theorem zero_term {x y : Scalar} (i j : Nat)
+    (product : Coefficient.mul (x.get i) (y.get j) = .ok (.integer 0)) :
+    multiplyTerm x y Scalar.zero (i,j) = .ok Scalar.zero := by
+  by_cases scale : (decide (i % 2 = 1) && decide (j % 2 = 1)) = true
+  all_goals
+    by_cases sign : (decide (i / 2 = 1) && decide (j / 2 = 1)) = true
+    all_goals
+      simp [multiplyTerm,product,scale,sign,bind,Except.bind,pure,Except.pure,
+        show Coefficient.mul (.integer 0) (.integer 2) = .ok (.integer 0) from rfl,
+        show Coefficient.neg (.integer 0) = .ok (.integer 0) from rfl,
+        get_zero,show Coefficient.add (.integer 0) (.integer 0) = .ok (.integer 0) from rfl,set_zero]
+
+private theorem fold_zero (x y : Scalar) (steps : List (Nat × Nat))
+    (term : ∀ i j, multiplyTerm x y Scalar.zero (i,j) = .ok Scalar.zero) :
+    steps.foldlM (multiplyTerm x y) Scalar.zero = .ok Scalar.zero := by
+  induction steps with
+  | nil => rfl
+  | cons step rest ih =>
+    rcases step with ⟨i,j⟩
+    simp only [List.foldlM_cons,term,bind,Except.bind,ih]
+
+private theorem scalar_zero_mul (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ maxInputExponent) :
+    Scalar.mul Scalar.zero v = .ok Scalar.zero := by
+  apply fold_zero
+  intro i j
+  apply zero_term
+  rw [get_zero]
+  exact coefficient_zero_mul (v.get j) (bounded j)
+
+private theorem scalar_mul_zero (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ maxInputExponent) :
+    Scalar.mul v Scalar.zero = .ok Scalar.zero := by
+  apply fold_zero
+  intro i j
+  apply zero_term
+  rw [get_zero]
+  exact coefficient_mul_zero (v.get i) (bounded i)
+
+private def smallExponents (v : Scalar) : Bool :=
+  v.a.exponent ≤ maxInputExponent && v.b.exponent ≤ maxInputExponent &&
+    v.c.exponent ≤ maxInputExponent && v.d.exponent ≤ maxInputExponent
+
+private theorem smallExponents_bound (v : Scalar) (safe : smallExponents v = true) :
+    ∀ i, (v.get i).exponent ≤ maxInputExponent := by
+  simp only [smallExponents,Bool.and_eq_true,decide_eq_true_eq] at safe
+  intro i
+  unfold Scalar.get
+  split
+  · exact safe.1.1.1
+  · exact safe.1.1.2
+  · exact safe.1.2
+  · exact safe.2
+
+/-- Matrix coefficients are often zero. Check the other coefficient's
+exponents before omitting the zero products, since raw scalars can be malformed. -/
+private def mulZeroFast (a b : Scalar) : Except Error Scalar :=
+  if a == Scalar.zero && smallExponents b then .ok Scalar.zero
+  else if b == Scalar.zero && smallExponents a then .ok Scalar.zero
+  else Scalar.mul a b
+
+private theorem mulZeroFast_equiv (a b : Scalar) : mulZeroFast a b = Scalar.mul a b := by
+  unfold mulZeroFast
+  split
+  · rename_i h
+    obtain ⟨zero,safe⟩ := Bool.and_eq_true_iff.mp h
+    rw [beq_iff_eq.mp zero]
+    exact (scalar_zero_mul b (smallExponents_bound b safe)).symm
+  · split
+    · rename_i h
+      obtain ⟨zero,safe⟩ := Bool.and_eq_true_iff.mp h
+      rw [beq_iff_eq.mp zero]
+      exact (scalar_mul_zero a (smallExponents_bound a safe)).symm
+    · rfl
+
 def Matrix.composeWork (x y : Matrix) : WorkM Matrix := do
   if x.cols ≠ y.rows then throw .shapeMismatch
   charge (2 * x.rows * x.cols * y.cols)
+  let left := x.entries.toArray
+  let right := y.entries.toArray
   let entries ← (List.range (x.rows * y.cols)).mapM fun i => do
+    let row := i / y.cols
+    let col := i % y.cols
     let sum ← (List.range x.cols).foldlM (fun sum k => do
-      let product ← liftExact (Scalar.mul (x.entry (i / y.cols) k) (y.entry k (i % y.cols)))
+      let a := left[row * x.cols + k]?.getD Scalar.zero
+      let b := right[k * y.cols + col]?.getD Scalar.zero
+      let product ← liftExact (mulZeroFast a b)
       liftExact (Scalar.add sum product)) Scalar.zero
     pure sum
   liftExact (Matrix.make x.rows y.cols entries)
+
+/-- The executable table lookup preserves the same coefficients, term order,
+arithmetic failures and remaining work as the original list traversal. -/
+theorem Matrix.composeWork_list (x y : Matrix) :
+    composeWork x y = (do
+      if x.cols ≠ y.rows then throw .shapeMismatch
+      charge (2 * x.rows * x.cols * y.cols)
+      let entries ← (List.range (x.rows * y.cols)).mapM fun i => do
+        let sum ← (List.range x.cols).foldlM (fun sum k => do
+          let product ← liftExact (Scalar.mul (x.entry (i / y.cols) k) (y.entry k (i % y.cols)))
+          liftExact (Scalar.add sum product)) Scalar.zero
+        pure sum
+      liftExact (Matrix.make x.rows y.cols entries)) := by
+  simp only [composeWork,mulZeroFast_equiv,List.getElem?_toArray,Semantics.Exact.Matrix.entry]
 
 def Matrix.compose (x y : Matrix) (work : Nat) : Except Error Matrix × Nat :=
   (Matrix.composeWork x y).run work
