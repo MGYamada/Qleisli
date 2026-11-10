@@ -344,6 +344,63 @@ jobs:
         with:
           readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
 
+  check-julia:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      JULIA_LOAD_PATH: '@:@stdlib'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: julia-actions/setup-julia@4c0cb0fce8556fdb04a90347310e5db8b1f98fb9 # v2
+        with:
+          version: '1.13.1'
+      - name: Instantiate the isolated Julia reference environment
+        run: julia --startup-file=no --project=julia -e 'using Pkg; Pkg.instantiate(); Pkg.precompile()'
+      - name: Test Julia mathematical reference implementations
+        run: julia --startup-file=no --project=julia julia/test/runtests.jl
+      - name: Bind and retain successful producer evidence
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        uses: ./.github/actions/release-receipt
+        with:
+          readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+
+  check-qptl:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: qptl
+          auto-config: 'false'
+          use-github-cache: 'false'
+          use-mathlib-cache: 'false'
+          build: 'false'
+          test: 'false'
+      - name: Build QPTL proofs and run tactic regressions
+        working-directory: qptl
+        run: |
+          lake exe cache get Mathlib.CategoryTheory.CommSq Mathlib.CategoryTheory.Monoidal.Category \
+            Mathlib.CategoryTheory.Preadditive.Mat Mathlib.Data.Complex.Basic Mathlib.Data.Matrix.Block \
+            Mathlib.Tactic.NormNum
+          lake build
+          lake test
+      - name: Bind and retain successful producer evidence
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        uses: ./.github/actions/release-receipt
+        with:
+          readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+
   check-lean:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
@@ -573,7 +630,7 @@ jobs:
     # Every context fails if selection or ANY required suite fails/is missing.
     name: ${{ matrix.check }}
     if: always()
-    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-lean, check-lean-kernel, check-distribution, check-docs]
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-julia, check-qptl, check-lean, check-lean-kernel, check-distribution, check-docs]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -596,7 +653,7 @@ jobs:
   release-readiness:
     # A later gate: never make a producer depend on its own aggregate result.
     if: always() && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness))
-    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-lean, check-lean-kernel, check-distribution, check-docs]
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-julia, check-qptl, check-lean, check-lean-kernel, check-distribution, check-docs]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

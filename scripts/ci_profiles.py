@@ -21,7 +21,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = (
     "check-rust", "check-rust-msrv", "check-macos-source", "check-interop",
-    "check-lean", "check-lean-kernel", "check-distribution", "check-docs",
+    "check-julia", "check-qptl", "check-lean", "check-lean-kernel",
+    "check-distribution", "check-docs",
 )
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 PROTECTED_ROOTS = {

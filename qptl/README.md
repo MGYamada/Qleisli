@@ -59,3 +59,8 @@ properties. Lean checks the resulting proof.
 
 The tests include a rectangular state preparation, a coherent sign change and
 an arbitrary joint input with a reference. [Proof examples](QPTLTests.lean)
+
+The main GitHub CI `check-qptl` job now runs both `lake build` and `lake test`
+on every full-profile validation, including the 0.3.0 release-readiness gate.
+The separate `qptl.yml` workflow remains a focused path-filtered check;
+it does not replace the main workflow's same-run release evidence.

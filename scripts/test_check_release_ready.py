@@ -671,6 +671,36 @@ class SyntheticRelease(unittest.TestCase):
         self.assertIn('--record-constitution',text)
         self.assertIn('inputs.release_readiness',final)
 
+    def test_julia_and_qptl_release_producers_execute_real_tests(self):
+        workflow=(ROOT/'.github/workflows/ci.yml').read_text()
+        required=workflow.split('  required:\n')[1].split('  release-readiness:\n')[0]
+        final=workflow.split('  release-readiness:\n')[1]
+        expected={
+            'check-julia': ('julia-actions/setup-julia@4c0cb0fce8556fdb04a90347310e5db8b1f98fb9',
+                            "version: '1.13.1'", 'Pkg.instantiate()', 'Pkg.precompile()',
+                            'julia --startup-file=no --project=julia julia/test/runtests.jl'),
+            'check-qptl': ('lake-package-directory: qptl', "use-github-cache: 'false'",
+                           "use-mathlib-cache: 'false'", 'lake build', 'lake test'),
+        }
+        for job, commands in expected.items():
+            with self.subTest(job=job):
+                block=re.split(r'(?m)^  [a-z][a-z-]*:\n', workflow.split(f'  {job}:\n')[1])[0]
+                self.assertIn("if: needs.changes.outputs.profile == 'full'", block)
+                self.assertIn('steps.release-receipt.outputs.release_receipt_sha256', block)
+                for command in commands:
+                    self.assertIn(command, block)
+                self.assertIn(job, required.split('    steps:')[0])
+                self.assertIn(job, final.split('    steps:')[0])
+                # A success in a separate workflow cannot replace the same-run receipt.
+                original=self.needs[job]
+                try:
+                    self.needs[job]=dict(result='skipped', outputs={})
+                    self.env['RELEASE_NEEDS_JSON']=json.dumps(self.needs)
+                    self.reject(job)
+                finally:
+                    self.needs[job]=original
+                    self.env['RELEASE_NEEDS_JSON']=json.dumps(self.needs)
+
     def test_corpus_runs_representative_checks_for_every_ci_profile(self):
         workflow=(ROOT/'.github/workflows/ci.yml').read_text()
         for job, profile in [('check-rust','latest'),('check-rust-msrv','msrv')]:

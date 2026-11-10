@@ -11,6 +11,10 @@ The dependency is [Cyclotomics.jl](https://github.com/kalmarek/Cyclotomics.jl),
 not the separate CyclotomicNumbers.jl package. Oscar is not a dependency.
 These are experimental computations, separate from Qleisli production
 acceptance, Lean proofs and the constitutional guarantee ledger.
+The main GitHub CI workflow runs `julia/test/runtests.jl` as the required
+`check-julia` producer on full-profile checks, including 0.3.0 scoped
+release readiness. This is a mathematical reference regression gate, not a
+production runtime dependency or a proof of Qleisli source preservation.
 
 The dependency-free sparse `RInfScalar` reference and its two test suites are
 imported from [RInfScalar at commit
