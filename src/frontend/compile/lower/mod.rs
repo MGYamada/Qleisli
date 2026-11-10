@@ -1854,6 +1854,7 @@ impl Lowerer<'_, '_> {
         let mut wires = reg.wires.clone();
         wires.extend((reg.wires.len()..bits).map(|_| self.wire()));
         let output = self.token();
+        let start = self.raw.operations.len();
         self.raw.operations.push(RawOp::LiftBasis {
             input: reg.token,
             output,
@@ -1868,6 +1869,7 @@ impl Lowerer<'_, '_> {
                 basis: basis.clone(),
             },
         );
+        quantum_match::nominal::record_basis(self, module, span, start)?;
         if bits > reg.wires.len() {
             self.add_effect(module, span, Effect::Isometry);
         }

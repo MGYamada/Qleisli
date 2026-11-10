@@ -573,6 +573,35 @@ pub(in crate::frontend::compile::lower) fn record_primitive(
     Ok(())
 }
 
+/// The coherent basis body supplies the table for one literal Raw operation.
+pub(in crate::frontend::compile::lower) fn record_basis(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        return Ok(());
+    };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| {
+        lower.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "basis lift precedes its original qmatch context",
+        )
+    })?;
+    let position = position(lower, module, span, span.start, relative, 1)?;
+    lower.compiler.charge(module, span, 4)?;
+    lower
+        .nominal_qmatch
+        .as_mut()
+        .expect("original context")
+        .positions
+        .push(position);
+    Ok(())
+}
+
 /// A named event encloses only the callee expansion, after its actual argument
 /// expressions. Its child's offsets remain in that child's original module.
 pub(in crate::frontend::compile::lower) fn record_named(

@@ -138,11 +138,6 @@ private def collectEvents {artifact owner name} (mode : OperationMode artifact) 
             scope.consEvents mode.preparation first.data last.data⟩)
   visit pairs.length pairs before
 
-private def noEventData {artifact owner name} (scope : Scope artifact owner name)
-    (preparation : RuntimeGraphOperation.Preparation artifact) {event position before after} :
-    scope.EventData preparation event position before after :=
-  match scope with | .supplied .. => () | .original _ => none
-
 private def assembleBody {artifact owner name} (mode : OperationMode artifact) (scope : Scope artifact owner name)
     (request : Context) (positionsCount : request.positions.length = scope.events.length)
     (offsets : request.positions.map (·.offset) = scope.events.map SourceRuntimeContext.Event.offset)
@@ -326,9 +321,13 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                   nested.discovery.rows,roots ++ nested.discovery.roots⟩,nested.receipts,data⟩
               else throw .request
           | .basis event =>
-            let source ← SourceRuntimeTrace.readBasisSource event
-            let rows ← ordinaryRows artifact.sources 128 source.events
-            return ⟨before,⟨event.staticRows ++ source.staticRows ++ rows,[]⟩,[],noEventData scope mode.preparation⟩
+            let checked ← RuntimeBasisAction.readSource event
+            let rows ← ordinaryRows artifact.sources 128 checked.body.events
+            let data : scope.EventData mode.preparation (.basis event) position before before := by
+              cases scope with
+              | supplied => exact ()
+              | original => exact some (.basis checked)
+            return ⟨before,⟨event.staticRows ++ checked.body.staticRows ++ rows,[]⟩,[],data⟩
           | .matching .. | .computed .. | .registerPrimitive .. | .staticConditional .. => throw .request
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do

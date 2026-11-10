@@ -9,6 +9,7 @@ import Qleisli.RuntimeOriginalSparsePhi
 import Qleisli.RuntimeLiteralGeneralNamed
 import Qleisli.RuntimeOriginalGraphAction
 import Qleisli.RuntimeLiteralDirectSelection
+import Qleisli.RuntimeLiteralBasisRefinement
 import Qleisli.RuntimeLiteralSelectionWitness
 
 /-! A conditional uses the original prefix to select an arm, applies the
@@ -959,7 +960,7 @@ noncomputable def recursiveBodyLeaves {dependencies} : ScopedSourceSteps depende
     (withSparseObservation
       (Qleisli.RuntimeOriginalGraphAction.withGraph
         (Qleisli.RuntimeOriginalGraphAction.withPrimitive
-          (withDirectSelection fun _ _ _ => none))) scope)
+          (withDirectSelection (withBasis fun _ _ _ => none)))) scope)
 
 private theorem recursiveBodyLeaves_refine {dependencies program block}
     (scope : List Edge) (inputs : List Nat) (inherited : Option (Nat → Prop))
@@ -973,8 +974,9 @@ private theorem recursiveBodyLeaves_refine {dependencies program block}
   apply Qleisli.RuntimeOriginalGraphAction.sourceStep_with_graph
   apply Qleisli.RuntimeOriginalGraphAction.sourceStep_with_primitive
   apply sourceStep_with_direct_selection
+  apply sourceStep_with_basis
   intro prior step later position checked
-  rcases checked with ⟨⟨⟨⟨⟨⟨certified,leaf⟩,structural⟩,observation⟩,graph⟩,primitive⟩,selection⟩
+  rcases checked with ⟨⟨⟨⟨⟨⟨⟨certified,leaf⟩,structural⟩,observation⟩,graph⟩,primitive⟩,selection⟩,basis⟩
   cases step with
   | pure node =>
     cases node
@@ -984,6 +986,7 @@ private theorem recursiveBodyLeaves_refine {dependencies program block}
     case selection => exact False.elim selection
     case primitive => exact False.elim primitive
     case structural => exact False.elim structural
+    case basis => exact False.elim basis
   | gap _ => exact False.elim structural
   | observation _ => exact False.elim observation
   | named _ _ _ _ _ _ _ => exact False.elim leaf

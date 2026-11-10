@@ -32,6 +32,8 @@ def NodeAligned {dependencies program block} (before after : RuntimeStructuralAc
     before = original ∧ after = boundary.after
   | .primitive _ binding => before = binding.history ∧ after = binding.after
   | .structural (before := original) action => before = original ∧ after = action.after
+  | .basis (event := event) (before := original) _ _ _ action =>
+    before = original ∧ after = RuntimeBasisAction.continued event original action.output
   | .operation frame .. => OperationOwnerOrder frame before after
   | .transform (before := original) _ _ _ _ _ owners _ _ =>
     before = original ∧ after = owners.after

@@ -132,6 +132,17 @@ def foldArms {artifact : Artifact} (mode : Mode artifact) {owner name offset sel
             next rest tail checked)
     visit (List.finRange table.arms.length).length (List.finRange table.arms.length) data.2.2 initial
 
+def readBasis {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (event : SourceRuntimeContext.BasisEvent artifact.sources owner) (position : Position)
+    (data : mode.EventData source (.basis event) position) : WorkM (RuntimeBasisAction.Source event) :=
+  match mode with
+  | .fresh => RuntimeBasisAction.readSource event
+  | .planned _ =>
+    match data with
+    | ⟨_,_,.basis body⟩ => pure body
+    | ⟨_,_,.unsupported _⟩ => throw .request
+
 structure Named {artifact : Artifact} (mode : Mode artifact) {owner : String}
     (event : SourceRuntimeContext.NamedEvent artifact.sources owner) where
   context : Context

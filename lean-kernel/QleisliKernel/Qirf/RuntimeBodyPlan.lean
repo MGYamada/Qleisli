@@ -2,6 +2,7 @@ import QleisliKernel.Qirf.RuntimeGraphOperation
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeTransformRequest
 import QleisliKernel.Qirf.RuntimeBranchAction
+import QleisliKernel.Qirf.RuntimeBasisAction
 import QleisliKernel.SourceTypes.QuantumArms
 
 /-! Source-indexed staging data for the common runtime traversal.
@@ -173,10 +174,14 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (positionsCount : positions.length = selected.selected.result.events.length)
       (events : Events preparation source (selected.selected.result.events.zip positions) before after) :
       Event preparation source (.staticConditional event children) position before after
+  | basis {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.BasisEvent artifact.sources owner} {position : Position} {before : Queues}
+      (body : RuntimeBasisAction.Source event) :
+      Event preparation source (.basis event) position before before
   | unsupported {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before : Queues}
       (unconnected : (match event with
-        | .basis .. | .matching .. | .computed .. | .registerPrimitive .. => true
+        | .matching .. | .computed .. | .registerPrimitive .. => true
         | _ => false) = true) : Event preparation source event position before before
 
 inductive Events {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :

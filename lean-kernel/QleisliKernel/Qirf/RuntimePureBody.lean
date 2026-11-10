@@ -117,6 +117,12 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       {start count sources caller event before}
       (action : RuntimeStructuralAction.Checked (sources := sources) (caller := caller) block start count event before) :
       Node dependencies program block
+  | basis {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {start count sources caller} {event : SourceRuntimeContext.BasisEvent sources caller} {before}
+      (interval : RuntimeInterval.Checked block start count)
+      (location : RuntimeSourceEvent.Location (.basis event) start count)
+      (source : RuntimeBasisAction.Source event)
+      (action : RuntimeBasisAction.Checked event interval before) : Node dependencies program block
   | named {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count inputs} {sources : Sources} {caller : String} {before childHistory childRetired}
       (event : SourceRuntimeContext.NamedEvent sources caller)
@@ -661,6 +667,15 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
         | .phase event,data,origin =>
           let (after,node) ← primitiveAt interval history boundFrame (.phase event) (some ⟨position,rfl,rfl,origin⟩)
           return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+            obligations,position.start+position.count,sourceCursor,receipts)
+        | .basis event,data,origin =>
+          let sourceBody ← RuntimeBodyQueries.readBasis execution.queries source event position data
+          let action ← RuntimeBasisAction.read event interval before
+          let node : Node dependencies program block :=
+            .basis interval ⟨position,rfl,rfl,origin⟩ sourceBody action
+          let after := RuntimeBasisAction.continued event before action.output
+          let consumed := if event.input == event.output then [] else [event.input]
+          return (after,retired ++ consumed,ordinary,actions ++ [node],steps ++ [.pure node],
             obligations,position.start+position.count,sourceCursor,receipts)
         | .named event,data,_ =>
           let named ← RuntimeBodyQueries.readNamed execution.queries source event position sourceCursor data

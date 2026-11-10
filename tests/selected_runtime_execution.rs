@@ -664,28 +664,35 @@ fn selected_nominal_qmatch_keeps_structural_moves_and_suspended_callers() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
-fn selected_nominal_qmatch_does_not_replace_the_original_body_with_a_site() {
-    let source = String::from(
+fn selected_nominal_qmatch_retains_named_basis_preparation_and_hidden_observation() {
+    use qleisli::ir::{Effect, RawOp};
+
+    let source =
             "pub enum Tri{A,B,C}
             pub unitary fn idle(q:Q<Unit>)->Q<Unit>{q}
             pub observe fn keep(s:Q<Tri>,q:Q<Unit>)->(Q<Tri>,Q<Unit>){
                 let hidden=measure_z(init0()); qmatch(s,q){Tri::A=>idle,Tri::B=>idle,Tri::C=>idle}}"
-        );
-    let parsed =
-        ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), source)])).unwrap();
-    let instance = parsed
-        .instantiate_runtime_with_types(
-            "main::keep",
-            Default::default(),
-            Default::default(),
-            Default::default(),
-        )
-        .unwrap();
-    let error = instance.compile_runtime_with_kernel(&kernel()).unwrap_err();
-    assert!(
-        error.message.contains("native") || error.message.contains("request"),
-        "{error:?}"
+        ;
+    let accepted = selected(source);
+    let program = accepted.program();
+    assert!(program.qmatch_source_checked());
+    assert_eq!(
+        program.runtime_result().unwrap().public_effect,
+        Effect::Observe
     );
+    let raw = program.raw();
+    assert_eq!(raw.declared_effect, Effect::Observe);
+    assert!(raw.classical_outputs.is_empty());
+    assert!(matches!(
+        raw.operations.as_slice(),
+        [
+            RawOp::PackUnit { output: unit },
+            RawOp::LiftBasis { input, output, table, .. },
+            RawOp::MeasureZ { input: measured, .. },
+            rest @ ..
+        ] if unit == input && output == measured && table == &[0] && !rest.is_empty()
+    ));
+    kernel().check_program(program).unwrap();
 }
 
 #[test]
