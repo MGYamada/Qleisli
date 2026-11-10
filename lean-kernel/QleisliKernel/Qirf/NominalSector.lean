@@ -25,20 +25,32 @@ def forests (attached required : Interface) : List Semantics.FiniteCarrier.Basis
   [attached.inputs,attached.outputs,required.inputs,required.outputs].flatMap fun owners =>
     owners.map (·.basis)
 
-/-- Exact code-space equation for one active physical selector label. The
-physical list comes from complete original-body reconstruction, including
-padding labels; these matrices are never supplied as dependency evidence. -/
-def checkLogical (inputCode outputCode : Matrix) (physical : List Matrix)
-    (request : Nat × Matrix) : WorkM Matrix := do
+private def checkLogicalUsing (inputCode outputCode : Matrix) (physical : List Matrix)
+    (request : Nat × Matrix) (checkGram : WorkM Unit) : WorkM Matrix := do
   let logical ← matrixRead request.2
   guard (logical.cols == inputCode.cols && logical.rows == outputCode.cols) .request
-  FiniteRestriction.adaptiveWholeSpace logical
+  checkGram
   let sector ← lift (readOption physical[request.1]?)
   let actual ← FiniteCarrier.codeProduct .right sector inputCode
   let required ← FiniteCarrier.codeProduct .left outputCode logical
   exactWork (Exact.charge actual.entries.length)
   guard (actual == required) .equation
   return logical
+
+/-- Exact code-space equation for one active physical selector label. The
+physical list comes from complete original-body reconstruction, including
+padding labels; these matrices are never supplied as dependency evidence. -/
+def checkLogical (inputCode outputCode : Matrix) (physical : List Matrix)
+    (request : Nat × Matrix) : WorkM Matrix :=
+  checkLogicalUsing inputCode outputCode physical request
+    (FiniteRestriction.adaptiveWholeSpace request.2)
+
+/-- A native proof for this exact logical matrix allows the control equation
+to reuse its Gram check. The matrix and the code-space equation are checked. -/
+def checkLogicalWithGram (inputCode outputCode : Matrix) (physical : List Matrix)
+    (request : Nat × Matrix) (_ : ∃ a b, (wholeSpace request.2).run a = (.ok (),b)) :
+    WorkM Matrix :=
+  checkLogicalUsing inputCode outputCode physical request (pure ())
 
 def LogicalBinding (inputCode outputCode : Matrix) (physical : List Matrix)
     (request : Nat × Matrix) (logical : Matrix) : Prop :=
@@ -49,9 +61,13 @@ def LogicalBinding (inputCode outputCode : Matrix) (physical : List Matrix)
       Exact.Matrix.compose sector inputCode a = (.ok actual,b) ∧
       Exact.Matrix.compose outputCode logical c = (.ok actual,d)
 
-theorem checkLogical_bound (inputCode outputCode : Matrix) (physical : List Matrix)
-    (request : Nat × Matrix) (logical : Matrix) (work left : Nat)
-    (ok : (checkLogical inputCode outputCode physical request).run work = (.ok logical,left)) :
+private theorem checkLogicalUsing_bound (inputCode outputCode : Matrix) (physical : List Matrix)
+    (request : Nat × Matrix) (checkGram : WorkM Unit)
+    (gram : ∀ a b, checkGram.run a = (.ok (),b) →
+      ∃ c d, (wholeSpace request.2).run c = (.ok (),d))
+    (logical : Matrix) (work left : Nat)
+    (ok : (checkLogicalUsing inputCode outputCode physical request checkGram).run work =
+      (.ok logical,left)) :
     LogicalBinding inputCode outputCode physical request logical := by
   obtain ⟨read,w₁,hm,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,hd,h⟩ := bind_success _ _ _ _ _ h
@@ -72,9 +88,25 @@ theorem checkLogical_bound (inputCode outputCode : Matrix) (physical : List Matr
   rw [← exactEq] at hr
   obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ ha
   obtain ⟨c,d,requiredDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hr
-  exact ⟨(matrixRead_value _ _ _ _ hm).1,dims.1,dims.2,
-    FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
+  have sameMatrix := (matrixRead_value _ _ _ _ hm).1
+  exact ⟨sameMatrix,dims.1,dims.2,sameMatrix.symm ▸ gram _ _ hu,
     sector,actual,a,b,c,d,sectorEq,actualDense,requiredDense⟩
+
+theorem checkLogical_bound (inputCode outputCode : Matrix) (physical : List Matrix)
+    (request : Nat × Matrix) (logical : Matrix) (work left : Nat)
+    (ok : (checkLogical inputCode outputCode physical request).run work = (.ok logical,left)) :
+    LogicalBinding inputCode outputCode physical request logical :=
+  checkLogicalUsing_bound inputCode outputCode physical request _
+    (FiniteRestriction.adaptiveWholeSpace_bound request.2) logical work left ok
+
+theorem checkLogicalWithGram_bound (inputCode outputCode : Matrix) (physical : List Matrix)
+    (request : Nat × Matrix) (gram : ∃ a b, (wholeSpace request.2).run a = (.ok (),b))
+    (logical : Matrix) (work left : Nat)
+    (ok : (checkLogicalWithGram inputCode outputCode physical request gram).run work =
+      (.ok logical,left)) :
+    LogicalBinding inputCode outputCode physical request logical :=
+  checkLogicalUsing_bound inputCode outputCode physical request _ (fun _ _ _ => gram)
+    logical work left ok
 
 def checkLogicals (inputCode outputCode : Matrix) (physical : List Matrix)
     (labels : List Nat) (required : List Matrix) : WorkM (List Matrix) := do
