@@ -152,6 +152,37 @@ private theorem product_entry {original bindings : Map} (available : Available o
     have different : binding ≠ other := fun same => separate.1 (same.symm ▸ member)
     rw [decode_cons,if_neg different]
 
+theorem frame_dimension {bindings : Map} (frame : Frame bindings) :
+    frame.code.dimension = volume bindings (sourceDimension bindings) :=
+  (product_agrees frame).dimension.trans (product_volume frame.available (fun {_} member => member))
+
+/-- A nonzero coefficient fixes the physical label of the exact original
+owner. Its logical digit is independent of the label, including for padding. -/
+theorem owner_support {bindings : Map} (frame : Frame bindings) (unique : bindings.Nodup)
+    (owner : Binding) (member : owner ∈ bindings) (physicalFrame : List Nat)
+    (row logical : Nat) (bound : logical < frame.code.dimension)
+    (nonzero : scalar (embed physicalFrame bindings frame.code row logical) ≠ 0) :
+    let digit := decode bindings (sourceDimension bindings) logical owner
+    digit < (ownerLayout owner).labels.length ∧
+      (ownerLayout owner).labels[digit]? = some (gather row (owner.port.wires.map physicalFrame.idxOf)) := by
+  intro digit
+  have inside : logical < volume bindings (sourceDimension bindings) := frame_dimension frame ▸ bound
+  have small := decode_bound bindings (sourceDimension bindings) logical (cards_positive frame.available)
+    inside owner member
+  rw [card_eq bindings owner member (frame.available owner member)] at small
+  refine ⟨small,?_⟩
+  by_contra missing
+  apply nonzero
+  unfold embed
+  rw [agrees_entry (product_agrees frame),product_entry frame.available (fun {_} h => h) unique
+    physicalFrame row logical inside]
+  have zero : factor physicalFrame row owner digit = 0 := by
+    unfold factor sparseEntry
+    change scalar (if (ownerLayout owner).labels[digit]? == some (gather row (owner.port.wires.map physicalFrame.idxOf))
+      then _ else _) = 0
+    simp [missing,Qleisli.Exact.scalar_zero_meaning]
+  exact List.prod_eq_zero (List.mem_map.mpr ⟨owner,member,zero⟩)
+
 /-- Reorder a complete reference frame in the original owner coordinates. -/
 theorem regroup_action {before after : Map} (input : Frame before) (output : Frame after)
     (permutation : before.Perm after) (unique : before.Nodup) (physicalFrame : List Nat)
@@ -207,5 +238,6 @@ theorem regroup_action {before after : Map} (input : Frame before) (output : Fra
     _ = ((List.range (volume before cards)).map term).sum := by
       simpa only [List.map_map,Function.comp_def] using (indices.map term).sum_eq
 
+#print axioms owner_support
 #print axioms regroup_action
 end Qleisli.RuntimeSemanticForest

@@ -28,6 +28,7 @@ structure TraceEvidence {dependencies program block start count inputs outputs r
   traceResult : Semantics.RawTrace.Prepared
   executed : RuntimeLocalEvents.trace frame.interval.before.quantum.reference frame.operations = some traceResult
   afterState : traceResult.state = frame.interval.after.quantum.reference
+  preservedFrame : frame.interval.after.quantum.frame = frame.interval.before.quantum.frame
   chunks : List (List Step)
   localRead : RuntimeLocalEvents.readChunks (selectorBits+targetBits) retained.prepared.events = .ok chunks
   localSteps : chunks.flatten = retained.steps
@@ -108,7 +109,7 @@ theorem trace_of_source {dependencies program block start count inputs outputs r
       exact (Qleisli.RuntimeFoldLocality.folds_locality (dependencies.map (·.signature)) frame.operations
         frame.interval.before.quantum initial callerBody body spectators ownerBefore ownerAfter pieces
         embedded callerRun localRun ownerFold actualPieces)
-  obtain ⟨chunks,localEvents,callerEventsEquation,flatten,bounded,_remaining,_callerFrame,_localFrame,
+  obtain ⟨chunks,localEvents,callerEventsEquation,flatten,bounded,_remaining,callerFrame,_localFrame,
       _callerBits,_localBits,callerTrace,_localTrace⟩ := locality
   have axes : initial.frame.map frame.interval.before.quantum.frame.idxOf =
       RuntimeForestCode.forestAxes frame.interval.before.quantum.frame selection.selected := by
@@ -131,6 +132,7 @@ theorem trace_of_source {dependencies program block start count inputs outputs r
     traceResult := callerBody.reference
     executed := callerTrace
     afterState := rfl
+    preservedFrame := callerFrame
     chunks := chunks
     localRead := localRead
     localSteps := flatten.trans retainedSteps.symm

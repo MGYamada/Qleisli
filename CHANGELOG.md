@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove that each original coherent selection uses the independently evaluated
+  source graphs at its written selector ordinals. The proof follows named
+  calls and conditional branches through the same original body and retains
+  the return order, visible SSA values, and inherited measurement history.
 - Check selected v5 `qmatch` through nested calls with original operation
   actuals and phase-fixed Meaning duties. Keep exact source rows and every
   original occurrence while reducing repeated native source-row coverage work.
