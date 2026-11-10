@@ -23,9 +23,9 @@ private theorem same_frame {bindings} (first second : Frame bindings) : first = 
       subst other
       rfl
 
-private noncomputable def jointReturn (source : Nat → SourceHistory)
+private noncomputable def jointReturn (spectators : Map) (source : Nat → SourceHistory)
     (digit logical reference : Nat) : ℂ :=
-  (source logical).operator digit reference
+  if logical < (product spectators).labels.length then (source logical).operator digit reference else 0
 
 /-- The original child's checked source returns determine the caller's
 operator in its written owner order for every actual result. The result
@@ -51,7 +51,7 @@ theorem source_returns_in_caller_frame
         (logical index) (native index)) sourceFamily nativeFamily →
     List.Forall₂ (fun actual logical => ∃ output : Frame boundary.afterFrame.bindings,
       Represents output scope.interval.after actual
-        (returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators (jointReturn logical)))
+        (returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators (jointReturn spectators logical)))
       parents sourceFamily := by
   intro spectators paired weights returned
   cases sourceFamily with
@@ -76,13 +76,14 @@ theorem source_returns_in_caller_frame
         exact ⟨frame⟩
     obtain ⟨frame⟩ := existsFrame
     have encodes : List.Forall₂ (fun native joint =>
-        ∀ index, Represents frame scope.localAfter (native index) (fun digit reference => joint digit index reference))
-        nativeFamily ((first::rest).map jointReturn) := by
+        ∀ index < (product spectators).labels.length,
+          Represents frame scope.localAfter (native index) (fun digit reference => joint digit index reference))
+        nativeFamily ((first::rest).map (jointReturn spectators)) := by
       rw [List.forall₂_map_right_iff]
       apply returned.flip.imp
-      intro native logical represented index
+      intro native logical represented index bounded
       obtain ⟨_,_,_,localFrame,encoded⟩ := (represented index).2.2.2.2
-      exact (same_frame localFrame frame) ▸ encoded
+      simpa only [jointReturn,if_pos bounded] using (same_frame localFrame frame ▸ encoded)
     obtain ⟨output,operators⟩ :=
       original_weighted_call_returns scope boundary checked parent sameBindings frame paired weights encodes
     rw [List.forall₂_map_right_iff] at operators
@@ -97,8 +98,26 @@ noncomputable def callerSourceResult
     {interval : @RuntimeInterval.Checked dependencies program block start count}
     (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
     (spectators : Map) (logical : Nat → SourceHistory) : SourceHistory :=
-  let operator := returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators (jointReturn logical)
+  let operator := returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators (jointReturn spectators logical)
   { (logical 0) with owners := boundary.after, operator }
+
+/-- Only the finite spectator columns and the source metadata at ordinal
+zero contribute to the caller result. -/
+theorem callerSourceResult_congr
+    {dependencies program start count inputs sources caller block before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (spectators : Map) {first second : Nat → SourceHistory}
+    (metadata : first 0 = second 0)
+    (columns : ∀ index < (product spectators).labels.length, first index = second index) :
+    callerSourceResult boundary spectators first = callerSourceResult boundary spectators second := by
+  have operators : jointReturn spectators first = jointReturn spectators second := by
+    funext digit index reference
+    by_cases bounded : index < (product spectators).labels.length
+    · simp only [jointReturn,if_pos bounded,columns index bounded]
+    · simp only [jointReturn,if_neg bounded]
+  simp only [callerSourceResult,metadata,operators]
 
 /-- The paired call transports its original source result back to the
 caller's history, including the same SSA valuation and hidden outcomes.

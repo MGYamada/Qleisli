@@ -11,10 +11,11 @@ open QleisliKernel.Semantics.Observation (readOps)
 open Qleisli.Semantics.ObservingAction (run)
 open Qleisli.RuntimeCallHistory
   (NamedHistoryEntry NamedSourceTraversal actual_named_history_entry actual_named_source_traversal
-    callerSourceResult componentJoint)
+    callerSourceResult callerSourceResult_congr componentJoint)
 open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun)
 open RuntimePureBody (Step runBlockCore)
 open RuntimeSelectionSteps (Edge)
+open Qleisli.RuntimeSemanticForest (product)
 
 private def namedScope {sources caller} (scope : List Edge) (ordinal : Nat)
     (event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller) : List Edge :=
@@ -48,6 +49,83 @@ def namedSourceEntry (roles : List RuntimeOwnerMap.Owner) (ports : List RuntimeO
     (nextOwner : Nat) : RuntimeStructuralAction.SourceState :=
   ⟨bindPorts roles ports,roles,nextOwner⟩
 
+private noncomputable def callerFromColumns
+    {dependencies program start count inputs sources caller block before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (spectators : RuntimeOwnerMap.Map) (columns : List (List SourceHistory)) : Option (List SourceHistory) := do
+  let initial ← columns[0]?
+  if columns.all (fun column => column.length == initial.length) then
+    some (initial.mapIdx fun ordinal first =>
+      callerSourceResult boundary spectators fun index =>
+        ((columns[index]?).bind fun column => column[ordinal]?).getD first)
+  else none
+
+private theorem mapM_columns {α : Type} {read : Nat → Option α} {columns : Nat → α}
+    (indices : List Nat) (computed : ∀ index ∈ indices, read index = some (columns index)) :
+    indices.mapM read = some (indices.map columns) := by
+  induction indices with
+  | nil => rfl
+  | cons first rest ih =>
+    have head := computed first List.mem_cons_self
+    have tail := ih (fun index member => computed index (List.mem_cons_of_mem _ member))
+    simp [List.mapM_cons,head,tail]
+
+private theorem caller_from_columns
+    {dependencies program start count inputs sources caller block before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (spectators : RuntimeOwnerMap.Map) (family : List (Nat → SourceHistory))
+    (read : Nat → Option (List SourceHistory))
+    (computed : ∀ index < max 1 (product spectators).labels.length, read index = some (family.map (· index))) :
+    let count := max 1 (product spectators).labels.length
+    ((List.range count).mapM read).bind (callerFromColumns boundary spectators) =
+      some (family.map (callerSourceResult boundary spectators)) := by
+  let count := max 1 (product spectators).labels.length
+  let columns := (List.range count).map (fun index => family.map (· index))
+  change ((List.range count).mapM read).bind (callerFromColumns boundary spectators) = _
+  rw [mapM_columns (List.range count) (fun index member => computed index (List.mem_range.mp member))]
+  have columnAt (index : Nat) (bounded : index < count) : columns[index]? = some (family.map (· index)) := by
+    simp only [columns,List.getElem?_map,List.getElem?_range bounded,Option.map_some]
+  have zero := columnAt 0 (Nat.lt_of_lt_of_le (by decide : 0 < 1) (le_max_left _ _))
+  have shape : columns.all (fun column => column.length == (family.map (· 0)).length) = true := by
+    simp [columns]
+  change callerFromColumns boundary spectators columns = some _
+  simp only [callerFromColumns,zero,bind,Option.bind,shape,if_true,Option.some.injEq]
+  apply List.ext_getElem
+  · simp
+  · intro ordinal left right
+    have bounded : ordinal < family.length := by simpa using right
+    simp only [List.getElem_mapIdx,List.getElem_map]
+    apply callerSourceResult_congr
+    · simp [zero,List.getElem?_eq_getElem bounded]
+    · intro index supported
+      have inColumns : index < count := Nat.lt_of_lt_of_le supported (le_max_right _ _)
+      simp [columnAt index inColumns,List.getElem?_eq_getElem bounded]
+
+/-- Evaluate the actual child prefix on each supported spectator column and
+use column zero for the source history. Child returns retain their order. -/
+noncomputable def evaluateGeneralNamed {dependencies program block}
+    (children : ScopedSourceSteps dependencies) (sourceScope : List Edge) (ordinal : Nat)
+    (step : Step dependencies program block) (source : SourceHistory) : Option (List SourceHistory) :=
+  match step with
+  | .named (before := before) (childHistory := after) event scope body _ boundary _ steps => do
+    let selected := boundary.input.ordered
+    let spectators := RuntimeSelectionPartition.complement before.bindings selected
+    let subject := SourceTypes.SourceRuntimeScope.Subject.whole body
+    let ports := (scope.selected.zip (selected.map (·.owner))).map Prod.fst
+    let initial := namedSourceEntry subject.initialRoles ports body.checked.summary.nextOwner
+    let next := children (namedScope sourceScope ordinal event)
+    let nested := stepList steps
+    let columns ← (List.range (max 1 (product spectators).labels.length)).mapM fun index => do
+      let operator := componentJoint before.bindings selected spectators source.operator index
+      (runSourceHistories next [] nested [{source with owners := initial, operator}]).map
+        (List.map (returnHistory after.bindings))
+    callerFromColumns boundary spectators columns
+  | _ => none
+
 /-- The original child uses its own source scope and exact stored step list.
 Each logical component starts with the caller's outcomes and visible bits.
 The shared recursive law is instantiated with this actual history's IDs. -/
@@ -56,13 +134,8 @@ def GeneralNamedRefines {artifact : Artifact} {root : Validity.Root}
     (inputs : List Nat) (inherited : Option (Nat → Prop))
     (children : ScopedSourceSteps root.dependencies) (sourceScope : List Edge)
     (ordinal : Nat) {program block} : Step root.dependencies program block → Prop
-  | .named (start := start) (count := count) (before := before) (ordinary := ordinary)
-      (childHistory := after) event scope body _ boundary finalOrdinary steps =>
-    let selected := boundary.input.ordered
-    let spectators := RuntimeSelectionPartition.complement before.bindings selected
-    let subject := SourceTypes.SourceRuntimeScope.Subject.whole body
-    let ports := (scope.selected.zip (selected.map (·.owner))).map Prod.fst
-    let initial := namedSourceEntry subject.initialRoles ports body.checked.summary.nextOwner
+  | step@(.named (start := start) (count := count) (before := before) (ordinary := ordinary)
+      event scope _ _ boundary finalOrdinary steps) =>
     let next := children (namedScope sourceScope ordinal event)
     let nested := stepList steps
     ∀ {source history events results},
@@ -74,14 +147,11 @@ def GeneralNamedRefines {artifact : Artifact} {root : Validity.Root}
       StepRefinement nested (CheckedStep (runBlockCore artifact root mode fuel)) next
         (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ history.values.map Prod.fst)) inputs)
         (some (fun id => id ∉ history.values.map Prod.fst)) →
-      ∃ family : List (Nat → SourceHistory),
-        (∀ index, ∃ expected,
-          let operator := componentJoint before.bindings selected spectators source.operator index
-          runSourceHistories next [] nested [{source with owners := initial, operator}] = some expected ∧
-          family.map (fun result => result index) = expected.map (returnHistory after.bindings)) ∧
+      ∃ expected,
+        evaluateGeneralNamed children sourceScope ordinal step source = some expected ∧
         List.Forall₂
           (SemanticHistoryAgreesWithInherited inherited inputs scope.interval.after boundary.after finalOrdinary)
-          (family.map (callerSourceResult boundary spectators)) results
+          expected results
   | _ => True
 
 /-- The local named-call law uses the actual child receipt and the actual
@@ -119,9 +189,14 @@ theorem general_named_refines {artifact root mode fuel program block step}
       (RuntimeNamedPrimitiveInputs.bindings_roles assignedRead) input ordered
     have inputShape := inputOrder.trans (binding_assignment assignedRead)
     simp only [List.map_map,Function.comp_def] at inputShape
-    refine ⟨family,?_,?_⟩
-    · simpa only [bindings,inputShape,namedSourceEntry] using projection
-    · simpa only [bindings] using returned
+    let spectators := RuntimeSelectionPartition.complement before.bindings boundary.input.ordered
+    refine ⟨family.map (callerSourceResult boundary spectators),?_,by simpa only [bindings] using returned⟩
+    change Option.bind ((List.range _).mapM _) (callerFromColumns boundary spectators) = _
+    apply caller_from_columns
+    intro index _
+    obtain ⟨expected,evaluated,ordered⟩ := projection index
+    simp only [bindings,inputShape] at evaluated
+    simp only [namedSourceEntry,evaluated,Option.map_some,ordered]
 
 #print axioms general_named_refines
 end Qleisli.RuntimeLiteralBody

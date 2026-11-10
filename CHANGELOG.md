@@ -102,9 +102,10 @@ development milestones from the scope of their evidence.
   state and the same ordinary valuation and hidden history on one invariant.
   The general named step derives its child entry from the written roles
   and selected ports. On the actual child receipt, the smaller source
-  traversal law gives the ordered logical results and the paired caller
-  return restores the shared invariant. A single source evaluator for all
-  named and pure steps remains a proof obligation.
+  traversal law gives the ordered logical results. The named evaluator
+  gathers the finite spectator columns and restores the caller invariant,
+  preserving order and multiplicity even for identical outcomes. The
+  shared recursion across calls, branches and remaining pure forms is pending.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.

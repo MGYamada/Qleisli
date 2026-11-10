@@ -119,7 +119,8 @@ theorem weighted_return_represents {bindings state} (frame : Frame bindings)
     (spectators : Map) (high : Nat) {actual : History} {parts : Nat → History} {joint : Nat → Nat → Nat → ℂ}
     (weighted : WeightedHistory (List.range (product spectators).labels.length)
       (fun _ => spectatorWeight spectators high) actual parts)
-    (logical : ∀ index, Represents frame state (parts index) (fun digit reference => joint digit index reference)) :
+    (logical : ∀ index < (product spectators).labels.length,
+      Represents frame state (parts index) (fun digit reference => joint digit index reference)) :
     Represents frame state actual (returnFibre spectators high joint) := by
   intro col row bounded
   have fibreEq : returnFibre spectators high joint =
@@ -133,8 +134,9 @@ theorem weighted_return_represents {bindings state} (frame : Frame bindings)
   rw [fibreEq,weighted.operator,encode_combination]
   unfold combination
   apply Qleisli.Exact.sum_map_congr
-  intro index _
-  exact congrArg (fun value => value * spectatorWeight spectators high index) (logical index col row bounded)
+  intro index member
+  exact congrArg (fun value => value * spectatorWeight spectators high index)
+    (logical index (List.mem_range.mp member) col row bounded)
 
 private theorem return_families {bindings state} (frame : Frame bindings) (spectators : Map)
     {children family : List (Nat → History)} {joints : List (Nat → Nat → Nat → ℂ)}
@@ -142,7 +144,8 @@ private theorem return_families {bindings state} (frame : Frame bindings) (spect
       (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
       (children.map (fun result => result high)) family)
     (logical : List.Forall₂ (fun parts joint =>
-      ∀ index, Represents frame state (parts index) (fun digit reference => joint digit index reference)) family joints) :
+      ∀ index < (product spectators).labels.length,
+      Represents frame state (parts index) (fun digit reference => joint digit index reference)) family joints) :
     List.Forall₂ (fun actual joint =>
       ∀ high, Represents frame state (actual high) (returnFibre spectators high joint)) children joints := by
   induction logical generalizing children with
@@ -182,7 +185,8 @@ theorem original_weighted_call_returns
       (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
       (children.map (fun result => result high)) family) →
     List.Forall₂ (fun parts joint =>
-      ∀ index, Represents returned scope.localAfter (parts index) (fun digit reference => joint digit index reference))
+      ∀ index < (product spectators).labels.length,
+        Represents returned scope.localAfter (parts index) (fun digit reference => joint digit index reference))
       family joints →
     ∃ output : Frame boundary.afterFrame.bindings,
       List.Forall₂ (fun actual joint => Represents output scope.interval.after actual
