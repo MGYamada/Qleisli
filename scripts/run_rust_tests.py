@@ -30,14 +30,14 @@ def isolated(row):
     return (row['kind'], row['name']) in ISOLATED
 
 
-def selection(command, metadata):
+def selection(command, metadata, root=ROOT):
     """Keep the pinned Cargo, positive selectors and complete target conventions."""
     entries = (partition.LATEST, partition.MSRV)
     entry = next((entry for entry in entries if command[:len(entry) + 1] == entry + ['test']), None)
     if entry is None:
         raise ValueError('expected the pinned latest or MSRV Cargo test command')
     arguments = command[len(entry) + 1:]
-    inventory = partition.inventory(metadata, ROOT)
+    inventory = partition.inventory(metadata, root)
     known = {row['name'] for row in inventory if row['kind'] == 'test'}
     categories = arguments == ['--all-targets'] or arguments[:len(partition.CATEGORIES)] == partition.CATEGORIES
     tests = sorted(known) if arguments == ['--all-targets'] else partition.names(
@@ -110,8 +110,8 @@ def harness(row, directory):
         if (len(built) != 1 or built[0]['target'] != row['target'] or built[0]['profile'] != row['profile']
                 or Path(built[0]['executable']).resolve() != Path(row['executable']).resolve()):
             raise ValueError('Cargo selected a different harness than the bound build artifact')
-        skipped = any(run_kernel_tests.SKIP_REASON in line and 'ignored' in line for line in lines)
-        if (observed.returncode or len(summaries) != 1 or skipped
+        result['native_skips'] = any(run_kernel_tests.SKIP_REASON in line and 'ignored' in line for line in lines)
+        if (observed.returncode or len(summaries) != 1 or result['native_skips']
                 or digest(row['executable']) != row['sha256']):
             raise ValueError('harness failed, skipped native tests, lacked one summary or changed executable')
         result.update(status='passed', passed=int(summaries[0][1]), exit_code=0)

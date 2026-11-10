@@ -376,7 +376,8 @@ def record_job(root, output, job, env, *, distribution=None, native=None, consti
     elif job == "check-distribution":
         require(distribution is not None, "distribution producer missing report")
         data = json_object(read_file(distribution.parent, distribution.name), "distribution report")
-        require(data.get("status") == "passed", "failed distribution validation")
+        require(data.get("status") == "passed" and data.get("version") == 2 and "archive_rust" in data,
+                "missing completed package and archive Rust validation")
         copy(distribution, "distribution.json")
         for key, name in [("crate", "package.crate"), ("source_archive", "source.tar")]:
             source = Path(data[key]["path"])
@@ -428,7 +429,7 @@ def archive_bytes(data, *, prefix="", expected=None):
 
 
 def artifacts(root, files, context, version, snapshot):
-    from ci_rust_artifacts import validate_aggregate
+    from ci_rust_artifacts import validate_aggregate, verify_archive_evidence
     for profile, job in [('latest', 'check-rust'), ('msrv', 'check-rust-msrv')]:
         require(set(files[job]) == {'rust-aggregate.json', 'rust-differential.json', 'rust-remaining.json'},
                 'missing complete Rust producer pair')
@@ -443,7 +444,7 @@ def artifacts(root, files, context, version, snapshot):
     require(dist.keys() == {"distribution.json", "package.crate", "source.tar"}, "incomplete package/source/install evidence")
     report = json_object(dist["distribution.json"], "distribution report")
     require(report.get("format") == "qleisli.distribution-validation" and type(report.get("version")) is int
-            and report["version"] == 1 and report.get("status") == "passed", "failed/unknown distribution report")
+            and report["version"] == 2 and report.get("status") == "passed", "failed/unknown distribution report")
     require(report.get("candidate") == {"commit": context["commit"], "tree": context["tree"], "clean": True}, "distribution candidate mismatch")
     require(report.get("package", {}).get("version") == version, "distribution product version mismatch")
     require(report.get("installed_quickstart", {}).get("package") == "qleisli"
@@ -452,6 +453,8 @@ def artifacts(root, files, context, version, snapshot):
     require(report.get("commands") and all(type(c.get("exit_code")) is int and c["exit_code"] == 0 for c in report["commands"]), "missing/failed distribution commands")
     for key, name in [("crate", "package.crate"), ("source_archive", "source.tar")]:
         require(report.get(key, {}).get("sha256") == digest(dist[name]), f"{name}: distribution digest mismatch")
+    verify_archive_evidence(report, {name.removeprefix('rust-'): raw
+                                     for name, raw in files['check-rust'].items()})
     archive_bytes(dist["source.tar"], expected=tracked)
     crate = archive_bytes(dist["package.crate"], prefix=f"qleisli-{version}")
     vcs = json_object(crate[".cargo_vcs_info.json"].data, "crate VCS")

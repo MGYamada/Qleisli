@@ -76,6 +76,10 @@ runs:
           msrv) python3 scripts/run_msrv.py clippy --locked --all-targets -- -D warnings ;;
           *) echo 'Unknown Rust producer profile' >&2; exit 1 ;;
         esac
+    - name: Fetch dependencies for offline archive tests
+      if: inputs.profile == 'latest'
+      shell: bash
+      run: cargo +1.98.1 fetch --locked
     - name: Run the complete assigned Rust commands
       uses: ./.github/actions/rust-suite
       with:

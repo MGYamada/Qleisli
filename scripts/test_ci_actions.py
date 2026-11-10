@@ -190,7 +190,7 @@ class CIActions(unittest.TestCase):
             'check-macos-source': ('1.85.0', '', 'x86_64-apple-darwin', 'false'),
             'check-interop': ('1.98.1', '', '', 'false'),
             'check-lean-kernel': ('1.98.1', '', '', 'false'),
-            'check-distribution': ('1.98.1', '', '', 'true'),
+            'check-distribution-package': ('1.98.1', '', '', 'true'),
         }
         workflow = (ROOT / '.github/workflows/ci.yml').read_text()
         self.assertEqual(workflow.count('uses: ./.github/actions/rust-toolchain'), len(expected))
@@ -217,16 +217,29 @@ class CIActions(unittest.TestCase):
                 else:
                     self.assertLess(block.index('uses: ./.github/actions/native-runtime'),
                                     block.index('uses: ./.github/actions/cargo-archives'))
-                if name == 'check-distribution':
+                if name == 'check-distribution-package':
                     self.assertLess(block.index('uses: ./.github/actions/rust-toolchain'),
                                     block.index('cargo +1.98.1 fetch'))
                     self.assertLess(block.index('cargo +1.98.1 fetch'),
                                     block.index('scripts/check_distribution.py'))
-                if name in ('check-lean-kernel', 'check-distribution'):
+                if name in ('check-lean-kernel', 'check-distribution-package'):
                     fetch = [step for step in re.split(r'(?m)^      - ', block)
                              if 'cargo +1.98.1 fetch' in step]
                     self.assertEqual(len(fetch), 1)
                     self.assertNotIn('        if:', fetch[0])
+
+    def test_distribution_joins_current_run_and_keeps_package_checks_parallel(self):
+        package = job('check-distribution-package')
+        self.assertIn('    needs: changes', package)
+        self.assertIn('--package-only', package)
+        stable = job('check-distribution')
+        self.assertIn('needs: [changes, check-distribution-package, check-rust]', stable)
+        self.assertIn('test "$PACKAGE_RESULT" = success && test "$RUST_RESULT" = success', stable)
+        self.assertIn("needs['check-distribution-package'].outputs.package_sha256", stable)
+        self.assertIn("needs['check-rust'].outputs.rust_aggregate_sha256", stable)
+        self.assertEqual(stable.count('github.run_attempt'), 3)
+        self.assertNotIn('run-id:', stable)
+        self.assertNotIn('uses: ./.github/actions/native-runtime', stable)
 
     def test_native_bundle_adapter_binds_both_consumers_and_only_the_child_kernel(self):
         kernel = "/bundle path/$(touch injected); 'quoted'/qleisli-kernel"
@@ -324,7 +337,7 @@ class CIActions(unittest.TestCase):
         self.assertIn("if: inputs.partition != 'differential'", shared)
         self.assertIn("if: inputs.profile == 'latest' && inputs.partition != 'differential'", shared)
         self.assertEqual(re.findall(r'          group: ([\w-]+)', job('check-docs')), ['book', 'repository-integrity'])
-        for name in ('check-macos-source', 'check-interop', 'check-lean-kernel', 'check-distribution'):
+        for name in ('check-macos-source', 'check-interop', 'check-lean-kernel', 'check-distribution-package'):
             block = job(name)
             self.assertEqual(block.count('uses: ./.github/actions/native-runtime'), 1)
             self.assertNotIn('prepare:', block)
@@ -382,7 +395,7 @@ class CIActions(unittest.TestCase):
                                                                    CHECK_PARTITION=partition), code)
                 self.assertEqual(result.returncode, code)
                 self.assertEqual(args, ['scripts/ci_profiles.py', '--checks', 'rust-latest', '--partition', partition,
-                                       '--output', env['RUNNER_TEMP'] + '/rust-latest-' + partition])
+                                       '--archive-tests', '--output', env['RUNNER_TEMP'] + '/rust-latest-' + partition])
 
     def test_invalid_native_preparation_cannot_silently_skip_build(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -394,7 +407,7 @@ class CIActions(unittest.TestCase):
 
     def test_cache_keys_and_status_preserve_all_six_callers(self):
         versions = {'check-macos-source': '1.85.0', 'check-interop': '1.98.1',
-                    'check-lean-kernel': '1.98.1', 'check-distribution': '1.98.1'}
+                    'check-lean-kernel': '1.98.1', 'check-distribution-package': '1.98.1'}
         for name, version in versions.items():
             block = job(name)
             self.assertEqual(block.count('uses: ./.github/actions/cargo-archives'), 1)

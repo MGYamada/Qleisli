@@ -243,6 +243,8 @@ def main() -> int:
     parser.add_argument("--output", type=Path)
     parser.add_argument("--partition", choices=['differential', 'remaining'],
                         help="select a complete Rust producer partition; other work remains uncredited")
+    parser.add_argument("--archive-tests", action="store_true",
+                        help="run the latest Rust partition harnesses from an exact Git archive")
     args = parser.parse_args()
     try:
         if args.checks:
@@ -250,14 +252,17 @@ def main() -> int:
             if args.gate:
                 raise ValueError("--checks and --gate are separate operations")
             if args.plan:
+                if args.archive_tests:
+                    raise ValueError("--archive-tests requires execution")
                 print(json.dumps(dict(status="not-run", group=args.checks,
                                       **{k: v for k, v in ci_source_checks.describe(args.checks, partition=args.partition).items() if k != 'commands'},
                                       commands=ci_source_checks.plan(args.checks, args.compiler, partition=args.partition)), indent=2))
                 return 0
             if args.output is None:
                 raise ValueError("executing --checks requires --output")
-            return ci_source_checks.execute(args.checks, args.compiler, args.output, partition=args.partition)
-        if args.plan or args.compiler is not None or args.output is not None or args.partition is not None:
+            return ci_source_checks.execute(args.checks, args.compiler, args.output, partition=args.partition,
+                                            archive_tests=args.archive_tests)
+        if args.plan or args.compiler is not None or args.output is not None or args.partition is not None or args.archive_tests:
             raise ValueError("source-check options require --checks")
         if args.gate:
             needs = json.loads(os.environ["NEEDS_JSON"])

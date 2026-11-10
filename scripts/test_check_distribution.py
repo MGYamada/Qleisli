@@ -634,6 +634,18 @@ class ScratchTests(unittest.TestCase):
         self.assertEqual(Path(argv[argv.index('--record') + 1]), Path(report['artifacts']) / 'logs/source-production/record.json')
         self.assert_durable_evidence(report)
 
+    def test_hosted_package_report_is_partial_and_keeps_independent_checks(self):
+        report, driver = self.run_validation(package_only=True)
+        self.assertEqual((report['version'], report['status']), (2, 'package-passed'))
+        self.assertEqual(len(driver.target_paths), 4)
+        self.assertNotIn('archive_rust', report)
+        argv = [' '.join(row['argv']) for row in report['commands']]
+        self.assertFalse(any('run_rust_tests.py' in command for command in argv))
+        for command in ('cargo package', 'cargo rustdoc', 'test --offline --locked --doc',
+                        'cargo install', 'check_installation.py', 'research/semantic-kernel/Cargo.toml'):
+            self.assertTrue(any(command in row for row in argv), command)
+        self.assert_durable_evidence(report)
+
     def test_failure_removes_owned_work_preserving_failure_and_evidence(self):
         report, _ = self.run_validation(fail=True)
         self.assertEqual(report["status"], "failed")

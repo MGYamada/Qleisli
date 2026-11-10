@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Run the latest Rust test partitions offline from the exact Git source archive.
+  Distribution checks share their same-run execution receipts and validate the
+  package, installation and extracted research suite in parallel.
+
 - Compose ordered source and Raw result families along the original checked
   body prefix. The shared proof follows the actual owner, SSA and child
   execution receipts and retains the final source return order. The original
