@@ -98,16 +98,52 @@ development milestones from the scope of their evidence.
   Each logical component is refined on the original checked child traversal
   and in its written return order. The exact weighted reconstruction sends
   that source operator family back to the original caller owner order.
-  The original source return checkpoint
-  uses the same complete native state, and its written owner order
-  determines a single caller encoding for the ordered result family when
-  the child source returns agree on each slice. The recursive source-arm
-  correspondence for these child results remains a proof obligation.
+  The paired caller results carry that operator, the checked caller owner
+  state and the same ordinary valuation and hidden history on one invariant.
+  The general named step derives its child entry from the written roles
+  and selected ports. On the actual child receipt, the smaller source
+  traversal law gives the ordered logical results. The named evaluator
+  gathers the finite spectator columns and restores the caller invariant,
+  preserving order and multiplicity even for identical outcomes. The
+  original call receipt retains the enclosing root input domain for each
+  child traversal. One recursive proof uses the actual child receipts for
+  named calls and selected branches and composes the ordinary gaps and
+  observations through the written return. Structural operations and
+  supported inline primitives preserve the inherited SSA history while
+  using their original sparse source actions. Other pure operation forms
+  still require their local correspondence laws. A graph application
+  retains its actual staged source receipt and the original source-ordered
+  input and output port lookups for the checked literal interval. Its ordered
+  owner block has an exact sparse matrix lift on paired literal events,
+  retaining spectator and reference amplitudes. The same pure run retains
+  inherited SSA values and observation history. The original caller and
+  local fragment reads supply the paired events and finite row bounds.
+  The actual source owner flow supplies the same ordered spectators at both
+  ends, including zero-width owners. The original fragment's final
+  permutation identifies its written return coordinate with the literal
+  local row. Every reconstructed physical event, including both
+  compute/use/uncompute forms, has its original literal action on arbitrary
+  reference columns. The graph interval uses this composition on the same
+  caller operator, SSA values and observations. The recursive evaluator
+  follows the original graph occurrence's staged action and reconstructs
+  the written source owner order. Each matrix in a direct selection's
+  comparison table comes from the staged graph action at the corresponding
+  written arm index. The source traversal retains that table and its
+  selector order, including when the written order differs. The same
+  selection witness follows the original prefix through named callees and
+  conditional arms. Its literal operator and inherited SSA and observations
+  agree in the shared history proof. Primitive intervals use their
+  independently specified source matrix and the same code and event
+  composition as graph applications, including multi-operation lowerings.
+  The original-body theorem now derives all local laws for the checked
+  traversal. Small mixed-body tests distinguish operators with identical
+  owner and SSA states and retain the selected branch's ordered measurement
+  histories, including a zero-amplitude outcome.
 - Use the source prefix's measurement bits to select the original branch.
   Apply the shared refinement to its checked child traversal and preserve
   the selected path, operator and ordered results through the parent phis.
   Derive the condition's input row from the actual checked root row and its
-  original call path. The recursive proof requires local laws for child steps.
+  original call path.
 
 - Prove that each original `measure_z` or `discard` outcome follows the same
   source equation as its immediately adjacent pre/choose/post Raw interval.

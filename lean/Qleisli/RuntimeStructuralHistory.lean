@@ -9,7 +9,7 @@ namespace Qleisli.RuntimeStructuralHistory
 open QleisliKernel QleisliKernel.Qirf
 open Semantics.Observation (Event readOps)
 open Qleisli.Semantics.ObservingAction (History run)
-open Qleisli.RuntimeLiteralHistory (Agrees pure_history)
+open Qleisli.RuntimeLiteralHistory (AgreesWithInherited pure_history_with_inherited)
 open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory)
 open Qleisli.RuntimeStructuralSourceAction (sourceRegroup original_reference_action)
 open Qleisli.RuntimeSemanticForest (Frame)
@@ -21,19 +21,19 @@ def Represents {bindings} (frame : Frame bindings) (state : Raw.Observation.Stat
 
 theorem original_history {dependencies program sources caller block start count event before}
     (action : @RuntimeStructuralAction.Checked dependencies program sources caller block start count event before)
-    (input : Frame before.bindings) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State)
+    (input : Frame before.bindings) (inherited : Option (Nat → Prop)) (inputs : List Nat) (ordinary : RuntimeOrdinaryBody.State)
     (history : History) (joint : Nat → Nat → ℂ)
-    (agrees : Agrees inputs action.interval.before ordinary history)
+    (agrees : AgreesWithInherited inherited inputs action.interval.before ordinary history)
     (represented : Represents input action.interval.before history joint) {events : List Event} {results : List History}
     (read : readOps block.fuel action.interval.before.quantum.reference ((block.operations.drop start).take count) =
       some (action.interval.after.quantum.reference,events))
     (executed : run dependencies block.fuel events history = some results) :
-    results = [history] ∧ Agrees inputs action.interval.after ordinary history ∧
+    results = [history] ∧ AgreesWithInherited inherited inputs action.interval.after ordinary history ∧
     ∃ output : Frame action.after.bindings, ∃ expected,
       sourceRegroup (event.arguments.flatMap SourceTypes.SourceRuntimeValues.valueOwners)
         before.bindings joint = some expected ∧ Represents output action.interval.after history expected := by
   obtain ⟨operations,rawEvents,literal,rawTrace,singleton,kept⟩ :=
-    pure_history (.structural action) inputs ordinary history agrees read executed
+    pure_history_with_inherited (.structural action) inherited inputs ordinary history agrees read executed
   have same : operations = [action.operation] :=
     (List.map_inj_right (f := Semantics.Observation.Op.pure)
       (fun _ _ equal => Semantics.Observation.Op.pure.inj equal)).mp

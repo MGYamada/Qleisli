@@ -39,7 +39,7 @@ private theorem drop_absent (state : Interface) (token : Nat) :
   rw [absent]
   rfl
 
-private theorem ports_read (state : Interface) (ports : List Port)
+theorem ports_read (state : Interface) (ports : List Port)
     (unique : (state.live.map (·.token)).Nodup) (present : ports ⊆ state.live) :
     PureInterval.portsOf state.live (ports.map (·.token)) = some ports := by
   induction ports with

@@ -17,7 +17,7 @@ open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.RuntimeLiteralHistory
   (Agrees gap_history observation_source_history sourceErasure sourcePrimitive named_primitive_history
     sourceInlinePrimitive inline_primitive_history sourceReturn return_order reordered_source)
-open Qleisli.RuntimeNamedChildRuns (CheckedStep ChildRun OrdinaryAligned)
+open Qleisli.RuntimeNamedChildRuns (CheckedStep CheckedStepAt ChildRun OrdinaryAligned)
 open Qleisli.RuntimeNamedSourceFlow (Aligned)
 open Qleisli.RuntimeLiteralBranchChoice (measurementBits measurementBits_retains)
 open Qleisli.RuntimeObservingValueRetention (Supports run_retains_values)
@@ -39,14 +39,12 @@ structure SourceHistory where
   operator : Nat → Nat → ℂ
   branches : List (List Edge × Bool) := []
 
-def ScopedOrdinaryAgrees (inherited : Option (Nat → Prop))
-    (inputs : List Nat) (state : Raw.Observation.State) (ordinary : RuntimeOrdinaryBody.State)
-    (history : History) : Prop :=
-  RuntimeOrdinarySSA.Agreement (RuntimeOrdinaryBody.valuation inputs ordinary.measurements history.values)
-    history.values ordinary.table ∧
-  Supports (fun id => match inherited with
-    | none => Issued state id
-    | some holds => holds id ∨ Issued state id) history
+abbrev ScopedSourceSteps (dependencies : List RuntimeInterval.Dependency) :=
+  ∀ {program} {block : RuntimeInterval.Block dependencies program},
+    List RuntimeSelectionSteps.Edge → List (Step dependencies program block) → Step dependencies program block →
+      SourceHistory → Option (List SourceHistory)
+
+abbrev ScopedOrdinaryAgrees := Qleisli.RuntimeLiteralHistory.AgreesWithInherited
 
 /-- The common arm invariant carries ownership, outcome order, ordinary
 values and the representation of the source operator on the same history.
@@ -495,7 +493,7 @@ theorem ArmFlow.refinement_with {artifact root mode fuel rootInputs program bloc
     (next : List (Step root.dependencies program block) → Step root.dependencies program block →
       SourceHistory → Option (List SourceHistory))
     (localLaw : StepRefinement steps
-      (CheckedStep (RuntimePureBody.runBlockCore artifact root mode fuel))
+      (CheckedStepAt (RuntimePureBody.runBlockCore artifact root mode fuel) rootInputs)
       next (fun _ => EncodedHistoryAgreesWithInherited encoding inherited inputs)
       (inherited.map (fun holds id => ¬ holds id)))
     (laws : ArmEncodingLaws encoding inputs inherited)
@@ -509,7 +507,7 @@ theorem ArmFlow.refinement_with {artifact root mode fuel rootInputs program bloc
     (laws.entered arm.live arm.axes arm.issued agrees)
   obtain ⟨expected,sourceRun,paired⟩ := (arm.trace.executes_singleton executed).ordered_refinement_with_writes
     arm.flow.source arm.flow.ordinary next (fun _ => EncodedHistoryAgreesWithInherited encoding inherited inputs) [] _
-    arm.flow.calls writes localLaw (.cons entry .nil)
+    arm.flow.callsAt writes localLaw (.cons entry .nil)
   refine ⟨expected.map (returnHistory output.bindings),?_,?_⟩
   · have initialOrder : inputRoles.mapM (byOwner sourceInitial.owners.bindings) = some arm.input.bindings := by
       rw [agrees.1]
@@ -548,7 +546,7 @@ theorem ArmFlow.source_refinement {artifact root mode fuel rootInputs program bl
       List.Forall₂ (HistoryAgrees inputs rawExit after finalOrdinary) expected results := by
   exact arm.refinement_with NativeHistoryEncoding inputs sourceInitial initial (sourceStep other scope)
     (inherited := none)
-    (sourceStep_refines steps inputs scope other remaining)
+    ((sourceStep_refines steps inputs scope other remaining).of_certifies (fun _ cert => cert.forget))
     (nativeArmEncodingLaws inputs) agrees executed
 
 /-- The same ordered execution proof covers the concrete source actions and
@@ -573,7 +571,8 @@ theorem original_body_encoded_refinement {artifact owner name arguments request 
       (RuntimeBodyOperations.stagedConsumption artifact prepared.source.catalogue body.root)
     let history := RuntimeBodyOperations.initialHistory prepared body.checked.native runtime body.checked.inputs
     StepRefinement body.checked.result.steps
-      (CheckedStep (RuntimePureBody.runBlockCore artifact body.root mode 127))
+      (CheckedStepAt (RuntimePureBody.runBlockCore artifact body.root mode 127)
+        (RuntimeBranchCondition.rootEntries (.root prepared.source.body)))
       next (fun _ => EncodedHistoryAgrees encoding inputs) →
     (∀ input : RuntimeOwnerMap.Checked source.initialRoles block.entry,
       RuntimeInterval.Computed (RuntimePureBody.reordered source.initialRoles block.entry history.bindings) input →
@@ -641,7 +640,8 @@ theorem original_body_source_refinement {artifact owner name arguments request p
   intro block source mode history remaining starts
   exact original_body_encoded_refinement body NativeHistoryEncoding inputs (nativeArmEncodingLaws inputs)
     sourceInitial initial results (sourceStep other scope) executed
-    (sourceStep_refines (fuel := 126) body.checked.result.steps inputs scope other remaining) starts
+    ((sourceStep_refines (fuel := 126) body.checked.result.steps inputs scope other remaining).of_certifies
+      (fun _ cert => cert.forget)) starts
 
 #print axioms sourceStep_refines
 #print axioms source_branch_choice
