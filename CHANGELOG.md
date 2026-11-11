@@ -30,6 +30,11 @@ development milestones from the scope of their evidence.
   A controlled arm reuses the checked logical Gram result of its projection.
   Forward arms with a checked full-width circuit tape reuse the finite
   column evaluator and keep their original body, phase and Gram checks.
+- Reuse an original provider's exact source identity and physical code
+  restriction. Inverse and control preparation share its verified Raw
+  program and physical operator. Square provider actions use the adaptive
+  Gram check, and the controlled active sector consumes its exact logical
+  Gram proof while retaining both literal sector equations.
 - Prefer the v5 source check for supported selected qmatch bodies, including
   named arms over built-in ordinal selectors.
 - Retain exact child intervals for compound static continuations in

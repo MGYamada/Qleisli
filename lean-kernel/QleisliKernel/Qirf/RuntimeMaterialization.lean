@@ -68,12 +68,12 @@ structure Forward (dependencies : List Dependency) (original : Semantics.Observa
   materializedRead : Computed (Raw.ProtectedEvaluation.reconstruct dependencies (program bits steps)) materialized
   sameOperator : materialized = physical
 
-/-- Closed classical branches are selected only after the original Raw reader
-checks both arms. Erasure, workspace insertion, mismatched physical ports and
-unsupported extraction refuse here; they never acquire an inverse fallback. -/
-def readForward (dependencies : List Dependency) (original : Semantics.Observation.Program) :
+private def readForwardUsing {dependencies original}
+    (verified : {value : Raw.Observation.Checked //
+      Computed (Raw.Observation.verify dependencies original) value})
+    (readPhysical : WorkM {value : Matrix //
+      Computed (Raw.BranchFunction.reconstruct dependencies original) value}) :
     WorkM (Forward dependencies original) := do
-  let verified ← SourceTypes.NaturalAffine.witness (Raw.Observation.verify dependencies original)
   if noObservation : verified.val.state.observe = false then
     if noOrdinary : original.classicalInputs = [] ∧ original.classicalOutputs = [] then
       match inputPort : original.inputs with
@@ -90,7 +90,7 @@ def readForward (dependencies : List Dependency) (original : Semantics.Observati
             let steps := (selected.val.map fun event => (Semantics.Function.extracted event).getD []).flatten
             guard (steps.length ≤ 1024) .limit
             let prepared ← SourceTypes.NaturalAffine.witness (Raw.Pure.verify dependencies (program bits steps))
-            let physical ← SourceTypes.NaturalAffine.witness (Raw.BranchFunction.reconstruct dependencies original)
+            let physical ← readPhysical
             let materialized ← SourceTypes.NaturalAffine.witness
               (Raw.ProtectedEvaluation.reconstruct dependencies (program bits steps))
             exactWork (Exact.charge (physical.val.entries.length+materialized.val.entries.length+1))
@@ -106,6 +106,26 @@ def readForward (dependencies : List Dependency) (original : Semantics.Observati
       | _ => throw .request
     else throw .request
   else throw .request
+
+/-- Closed classical branches are selected only after the original Raw reader
+checks both arms. Erasure, workspace insertion, mismatched physical ports and
+unsupported extraction refuse here; they never acquire an inverse fallback. -/
+def readForward (dependencies : List Dependency) (original : Semantics.Observation.Program) :
+    WorkM (Forward dependencies original) := do
+  let verified ← SourceTypes.NaturalAffine.witness (Raw.Observation.verify dependencies original)
+  readForwardUsing verified
+    (SourceTypes.NaturalAffine.witness (Raw.BranchFunction.reconstruct dependencies original))
+
+/-- Reuse verification and reconstruction of the exact original program under
+the same dependency root. The materialized tape is still checked and compared
+with that original operator. -/
+def readForwardWithOriginal {dependencies original}
+    (verified : {value : Raw.Observation.Checked //
+      Computed (Raw.Observation.verify dependencies original) value})
+    (physical : {value : Matrix //
+      Computed (Raw.BranchFunction.reconstruct dependencies original) value}) :
+    WorkM (Forward dependencies original) :=
+  readForwardUsing verified (pure physical)
 
 structure Inverse {dependencies original} (forward : Forward dependencies original)
     (inputCode outputCode logical : Matrix) where
@@ -154,14 +174,34 @@ structure Controlled {dependencies original} (forward : Forward dependencies ori
   identity : Matrix
   identityRead : Exact.Matrix.identity logical.rows = .ok identity
   logicals : List Matrix
-  equations : Computed (NominalSector.checkLogicals inputCode outputCode sectors.sectors [0,1]
-    [identity,logical]) logicals
+  equations : QleisliKernel.Exact.ListRel (NominalSector.LogicalBinding inputCode outputCode sectors.sectors)
+    [(0,identity),(1,logical)] logicals
+
+private def readActiveSector (inputCode outputCode : Matrix) (sectors : List Matrix)
+    (plans : FiniteCarrier.CodePlans inputCode outputCode) (logical : Matrix)
+    (gram : Option (PLift (Computed (Finite.wholeSpace logical) ()))) :
+    WorkM {action : Matrix // NominalSector.LogicalBinding inputCode outputCode sectors (1,logical) action} := do
+  match gram with
+  | some checked =>
+    let result ← SourceTypes.NaturalAffine.witness
+      (NominalSector.checkLogicalWithGramAndPlans inputCode outputCode sectors plans (1,logical) checked.down)
+    return ⟨result.val,by
+      obtain ⟨work,left,ran⟩ := result.property
+      exact NominalSector.checkLogicalWithGramAndPlans_bound _ _ _ _ _ _ _ _ _ ran⟩
+  | none =>
+    let result ← SourceTypes.NaturalAffine.witness
+      (NominalSector.checkLogicalWithPlans inputCode outputCode sectors plans (1,logical))
+    return ⟨result.val,by
+      obtain ⟨work,left,ran⟩ := result.property
+      exact NominalSector.checkLogicalWithPlans_bound _ _ _ _ _ _ _ _ ran⟩
 
 /-- The extra control uses the existing structural restriction checker. A
 six-bit leaf therefore needs two local sectors, never a dense 128-square map.
 Both the inactive identity and active exact-phase code equations are checked. -/
 def readControlled {dependencies original} (forward : Forward dependencies original)
-    (inputCode outputCode logical : Matrix) : WorkM (Controlled forward inputCode outputCode logical) := do
+    (inputCode outputCode logical : Matrix)
+    (activeGram : Option (PLift (Computed (Finite.wholeSpace logical) ())) := none) :
+    WorkM (Controlled forward inputCode outputCode logical) := do
   let prepared ← SourceTypes.NaturalAffine.witness
     (Raw.Pure.verify dependencies (controlledProgram forward.bits forward.steps))
   let sectors ← SourceTypes.NaturalAffine.witness (Raw.Sector.read dependencies [.bit] [.bits forward.bits]
@@ -170,11 +210,17 @@ def readControlled {dependencies original} (forward : Forward dependencies origi
   match identityRead : Exact.Matrix.identity logical.rows with
   | .error _ => throw .limit
   | .ok identity =>
-    let logicals ← SourceTypes.NaturalAffine.witness
-      (NominalSector.checkLogicals inputCode outputCode sectors.val.sectors [0,1] [identity,logical])
+    let plans ← FiniteCarrier.prepareCodes inputCode outputCode
+    let inactive ← SourceTypes.NaturalAffine.witness
+      (NominalSector.checkLogicalWithPlans inputCode outputCode sectors.val.sectors plans (0,identity))
+    let active ← readActiveSector inputCode outputCode sectors.val.sectors plans logical activeGram
+    have inactiveBound : NominalSector.LogicalBinding inputCode outputCode sectors.val.sectors (0,identity)
+        inactive.val := by
+      obtain ⟨work,left,ran⟩ := inactive.property
+      exact NominalSector.checkLogicalWithPlans_bound _ _ _ _ _ _ _ _ ran
     return ⟨prepared.val,by with_reducible exact prepared.property,
       sectors.val,by with_reducible exact sectors.property,identity,identityRead,
-      logicals.val,by with_reducible exact logicals.property⟩
+      [inactive.val,active.val],⟨inactiveBound,active.property,True.intro⟩⟩
 
 theorem Inverse.fullCodeEquation {dependencies original forward inputCode outputCode logical}
     (inverse : @Inverse dependencies original forward inputCode outputCode logical) :

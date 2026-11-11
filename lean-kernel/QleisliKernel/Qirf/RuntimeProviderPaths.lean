@@ -54,7 +54,9 @@ def read {artifact context description graph index request}
       if unitary : source.summary.generic.inferredEffect = .unitary ∧
           source.summary.inferredEffect = .unitary ∧ provider.expectedEffect = .unitary then
         if controlPorts : demand.controllable = true → provider.signature.inputs = provider.signature.outputs then
-          let forward ← RuntimeMaterialization.readForward root.dependencies ir.original.program
+          let prepared := ir.original.prepared
+          let forward ← RuntimeMaterialization.readForwardWithOriginal
+            ⟨prepared.verified,prepared.verification⟩ ⟨prepared.physical,prepared.physicalRead⟩
           let inverseAction : WorkM (Option (RuntimeMaterialization.Inverse forward ir.original.prepared.inputCode
               ir.original.prepared.outputCode ir.original.prepared.equations.action)) :=
             if demand.adjointable then do
@@ -66,8 +68,9 @@ def read {artifact context description graph index request}
           let controlledAction : WorkM (Option (RuntimeMaterialization.Controlled forward ir.original.prepared.inputCode
               ir.original.prepared.outputCode ir.original.prepared.equations.action)) :=
             if demand.controllable then do
-              let value ← RuntimeMaterialization.readControlled forward ir.original.prepared.inputCode
-                ir.original.prepared.outputCode ir.original.prepared.equations.action
+              let value ← RuntimeMaterialization.readControlled forward prepared.inputCode
+                prepared.outputCode prepared.equations.action
+                (some ⟨prepared.equations.wholeSpace unitary.2.2⟩)
               pure (some value)
             else pure none
           let controlled ← controlledAction

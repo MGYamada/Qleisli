@@ -138,27 +138,22 @@ def fromQuantumCore {sources owner name} (core : QuantumSignatureCore.Checked so
   let checked ← runtimeFromCore core supply.catalogue
   let prepared ← fromPreparedWithArguments checked context supply.actuals supply.catalogue
   let signature := prepared.signature
-  Finite.exactWork (Exact.charge (16*(core.original.source.utf8ByteSize+
-    signature.original.source.utf8ByteSize+
-    SourceTrace.Meter.tokenFields core.original.occurrence.header+
-    SourceTrace.Meter.tokenFields core.original.occurrence.body+
+  -- Both readers retain the unique original at this sources/owner/name.
+  -- The prepared signature also retains the exact arguments and supplier.
+  have original : signature.original = core.original :=
+    signature.original.sameSource core.original
+  let arguments := prepared.originalArguments
+  Finite.exactWork (Exact.charge (16*(
     Raw.OwnerFlow.fields (core.inputs.zipIdx.map fun (basis,index) => ⟨index,basis⟩)+
     Raw.OwnerFlow.fields (core.outputs.zipIdx.map fun (basis,index) => ⟨index,basis⟩)+1)))
-  if same : signature.original.source = core.original.source ∧
-      signature.original.declaration = core.original.declaration ∧
-      signature.original.occurrence.header = core.original.occurrence.header ∧
-      signature.original.occurrence.body = core.original.occurrence.body ∧
-      signature.original.occurrence.openBrace = core.original.occurrence.openBrace ∧
-      signature.original.occurrence.closeBrace = core.original.occurrence.closeBrace ∧
-      signature.arguments.bases = core.staticArguments.bases ∧
-      signature.arguments.naturals = core.staticArguments.naturals ∧
-      signature.arguments.operations = core.staticArguments.operations ∧
-      signature.parameters.map (·.tree) = core.inputs.map Semantics.RuntimeType.owner ∧
-      Semantics.RuntimeType.ownerBases signature.result.tree = some core.outputs ∧
-      signature.context = context then
-    let ⟨source,declaration,header,body,opening,closing,bases,naturals,operations,inputTrees,outputOwners,sameContext⟩ := same
-    return ⟨signature,source,declaration,header,body,opening,closing,bases,naturals,operations,
-      inputTrees,outputOwners,sameContext,prepared.originalActuals⟩
+  if inputTrees : signature.parameters.map (·.tree) = core.inputs.map Semantics.RuntimeType.owner then
+    if outputOwners : Semantics.RuntimeType.ownerBases signature.result.tree = some core.outputs then
+      return ⟨signature,congrArg (·.source) original,congrArg (·.declaration) original,
+        congrArg (·.occurrence.header) original,congrArg (·.occurrence.body) original,
+        congrArg (·.occurrence.openBrace) original,congrArg (·.occurrence.closeBrace) original,
+        congrArg (·.bases) arguments,congrArg (·.naturals) arguments,congrArg (·.operations) arguments,
+        inputTrees,outputOwners,prepared.originalContext,prepared.originalActuals⟩
+    else throw .request
   else throw .request
 
 structure Target (sources : Sources) (caller : String) (scope : List String)
