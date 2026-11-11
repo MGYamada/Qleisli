@@ -1,5 +1,7 @@
 import Qleisli.RawFiniteRows
 import Qleisli.RawActionSector
+import Qleisli.FiniteMatrixAction
+import QleisliKernel.Qirf.SectorForward
 
 /-! Interpret the original trace from a successful structural tape read.
 The same event pieces and matching restriction determine each physical
@@ -62,6 +64,40 @@ private theorem eventPieces_action (dependencies : List Dependency) (bits : Nat)
           fun row inside => (reorder_action dependencies bits left row inside).trans (same row inside)
         simpa only [events,List.foldl_cons,List.flatten_cons,List.nil_append] using
           ih rest related.2 tailBounds _ _ inputs
+
+/-- The optimized forward evaluator has the action of every literal event in
+the original checked body. Reference columns and the full scalar are retained. -/
+theorem forward_action (dependencies : List Dependency) (bits : Nat)
+    (program : QleisliKernel.Semantics.Observation.Program)
+    (physical : QleisliKernel.Semantics.Exact.Matrix)
+    (binding : QleisliKernel.Qirf.SectorForward.LiteralBinding dependencies bits program physical) :
+    ∃ prepared operations,
+      QleisliKernel.Semantics.Observation.read program = some prepared ∧
+      prepared.events = operations.map QleisliKernel.Semantics.Observation.Event.pure ∧
+      ∀ {Reference : Type} (joint : Nat → Reference → ℂ) (row : Nat) (reference : Reference),
+        row < physical.rows →
+        Qleisli.Semantics.Exact.action physical joint row reference =
+          events dependencies operations (fun input => joint input reference) row := by
+  obtain ⟨prepared,operations,reader,_,_,_,original,pieces,steps,work,left,related,flat,computed⟩ :=
+    binding.original
+  refine ⟨prepared,operations,reader,original,?_⟩
+  intro Reference joint row reference inside
+  let subject : Circuit := ⟨[.bits bits],steps⟩
+  have valid := (QleisliKernel.Finite.circuitMatrix_columns dependencies subject physical work left computed).1
+  simp only [QleisliKernel.Finite.circuitValid,Bool.and_eq_true] at valid
+  have targets : Targets bits steps := by
+    intro step present axis member
+    have validStep := List.all_eq_true.mp valid.2 step present
+    simp only [QleisliKernel.Finite.stepValid,QleisliKernel.Finite.axesValid,Bool.and_eq_true] at validStep
+    exact of_decide_eq_true (List.all_eq_true.mp validStep.1.2.1.2 axis (List.mem_append_right _ member))
+  have rows := (Qleisli.Finite.circuitMatrix_pull dependencies subject physical work left computed).1
+  have rowBound : row < 2^bits := rows ▸ inside
+  have action := Qleisli.Finite.circuitMatrix_action dependencies subject physical work left computed
+    joint row reference inside
+  change _ = circuit dependencies steps (fun input => joint input reference) row at action
+  rw [flat] at targets action
+  exact action.trans (eventPieces_action dependencies bits operations pieces related targets _ _
+    (fun _ _ => rfl) row rowBound).symm
 
 /-- Successful structural tape extraction binds the executable result to the
 independent original Raw reader and to the exact finite action. -/
@@ -128,6 +164,7 @@ theorem program_ordered {Reference : Type} (dependencies : List Dependency)
     circuit,List.foldl_append] using exactOrder
 
 #print axioms program_tape
+#print axioms forward_action
 #print axioms program_sector
 #print axioms program_ordered
 end Qleisli.RuntimeTapeAction

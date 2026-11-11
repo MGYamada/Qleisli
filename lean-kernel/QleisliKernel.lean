@@ -86,6 +86,7 @@ import QleisliKernel.Qirf.SequenceSector
 import QleisliKernel.Qirf.ContextSector
 import QleisliKernel.Qirf.NominalSector
 import QleisliKernel.Qirf.SectorArm
+import QleisliKernel.Qirf.SectorForward
 import QleisliKernel.Qirf.SectorArms
 import QleisliKernel.Qirf.SourceSector
 import QleisliKernel.Qirf.ContextArmExecution

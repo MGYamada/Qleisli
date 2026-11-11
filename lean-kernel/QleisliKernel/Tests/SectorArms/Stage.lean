@@ -46,4 +46,16 @@ theorem padded_code_leakage_refuses : (cycleOutcome (data := artifact
       [⟨[],.monomial [0,1] [0,1,3,2] [0,0,0,0]⟩])]}
     cycleControl) == .error .notIsometric) = true := by decide +kernel
 
+theorem literal_forward_uses_the_shared_work_allowance :
+    ((Qirf.SectorForward.read [] 3 forwardHadamard).run 1600).1.isOk = true ∧
+    ((Raw.BranchFunction.reconstruct [] forwardHadamard).run 1600).1.isOk = false := by
+  decide +kernel
+
+theorem nonidentity_forward_return_preserves_the_instrument_action :
+    (match ((Raw.BranchFunction.reconstruct [] forwardReordered).run 10000).1,
+        ((Qirf.SectorForward.read [] 2 forwardReordered).run 10000).1 with
+     | .ok original,.ok selected => selected == original
+     | _,_ => false) = true := by
+  decide +kernel
+
 end QleisliKernel.Tests.SectorArms

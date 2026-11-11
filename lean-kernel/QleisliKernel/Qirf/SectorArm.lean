@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.NominalSector
+import QleisliKernel.Qirf.SectorForward
 
 /-! Informed #64/#195 bounded arm study. Actual original implementation and
 control programs are reconstructed with the enclosing fresh graph's dependencies.
@@ -77,7 +78,7 @@ def read (artifact : Artifact) (dependencies : List Dependency)
   guard (reference.basis == target && layout.bits == bits && reference.publicEffect == .unitary) .request
   let original ← lift (readOption artifact.programs[reference.implementation]?)
   guard (Raw.BranchFunction.preflight [.bits bits] original) .request
-  let physical ← Raw.BranchFunction.reconstruct dependencies original
+  let physical ← SectorForward.read dependencies bits original
   FiniteRestriction.adaptiveWholeSpace physical
   let logical ← projectLogical inputCode outputCode physical
   let controlledOriginal ← lift (readOption artifact.programs[reference.controlled]?)
@@ -98,8 +99,7 @@ structure Postcondition (artifact : Artifact) (dependencies : List Dependency)
   layout : ∃ layout, Semantics.FiniteCarrier.layout reference.basis = some layout ∧ layout.bits = bits
   original : artifact.programs[reference.implementation]? = some checked.original
   preflight : Raw.BranchFunction.preflight [.bits bits] checked.original = true
-  reconstruction : ∃ a b, (Raw.BranchFunction.reconstruct dependencies checked.original).run a =
-    (.ok checked.physical,b)
+  reconstruction : SectorForward.Binding dependencies bits checked.original checked.physical
   physicalUnitary : ∃ a b, (wholeSpace checked.physical).run a = (.ok (),b)
   logical : Projection inputCode outputCode checked.physical checked.logical
   controlledOriginal : artifact.programs[reference.controlled]? = some checked.controlledOriginal
@@ -147,7 +147,8 @@ theorem read_bound (artifact : Artifact) (dependencies : List Dependency)
   have pureControl := Sector.project_bound _ _ projectEq
   have identityEq := arithmetic_success _ _ (lift_success _ _ _ _ hi).1
   exact ⟨types.1.1,types.2,⟨layout,FiniteCarrier.read_reference _ _ _ _ hl,types.1.2⟩,
-    originalEq,(guard_success _ _ _ _ hp).1,⟨w₄,w₅,hm⟩,FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
+    originalEq,(guard_success _ _ _ _ hp).1,SectorForward.read_bound _ _ _ _ _ _ hm,
+    FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
     projectLogical_bound _ _ _ _ _ _ hlogical,controlEq,pureControl.1,pureControl.2,
     QleisliKernel.Raw.Sector.read_bound _ _ _ _ _ _ _ hr,identityEq,
     (NominalSector.checkLogicals_bound _ _ _ _ _ _ _ _ hmeanings).2⟩

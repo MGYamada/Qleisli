@@ -242,6 +242,10 @@ shared exact-work budget. Validation of the full twelve-joined-bit/64-label
 boundary remains open. The finite restriction component proves correspondence
 through actual contributions, accumulation, steps and complete circuit
 execution, and checks every ordered local sector.
+For a forward arm with a checked full-width circuit tape, the checker
+reconstructs its exact columns from the original events and checks the
+physical Gram condition. Arms with other original event forms use the
+instrument evaluator.
 Its internal Raw component checks the original pure program and independently
 reconstructed trace, retaining every circuit event and proving that omitted
 identity reorders are literal identities. The physical port/wire frame is
