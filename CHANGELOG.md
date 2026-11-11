@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check dirty-workspace restoration through an exact two-owner function
+  contract and an entangled reference regression. Distinguish unchanged
+  reduced states from preserved correlation phase, without adding general
+  clean/dirty syntax or claiming quantitative resource bounds.
 - Route selected computed scopes through the existing common source emitter
   from their original syntax and dependency closure. Retain structured Raw
   uncomputation, local exact normalization receipts and typed native checks;

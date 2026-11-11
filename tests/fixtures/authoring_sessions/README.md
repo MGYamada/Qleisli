@@ -45,6 +45,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [dirty restoration study](dirty-restoration-v030/session.json) retains
+three first sources and observations: exact restoration, a contract refusal,
+and a Bell-reference phase counterexample. General clean/dirty syntax remains open.
+
 The [small cross-algorithm access study](access-algorithms-v030/context.md)
 retains ten first access/explicit-owner programs, their independent mathematical
 expectations and thirty actual CLI observations. Project success, two selected

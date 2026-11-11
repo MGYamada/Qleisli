@@ -305,6 +305,15 @@ does not discharge either obligation. General clean/dirty source forms remain
 unsupported; existing checked `with_computed` has its own bounded contract.
 See [checked cleanup](#checked-cleanup-is-a-separate-contract).
 
+For example, an implementation on ordered owners `(D,R)` can change `D`
+temporarily and still satisfy the exact contract `I_D ⊗ X_R`. The sequence
+`CNOT(R→D); X(R); CNOT(R→D); X(D)` does so. In contrast, `Z(D); X(R)` leaves
+the marginal of a Bell-entangled `D` unchanged but changes its correlation
+phase with the reference. It therefore fails that identity-restoration
+contract. The small regression checks the complete exact operator through
+the existing function-contract boundary; its separate Bell experiment does
+not replace the all-input equation or implement general workspace syntax.
+
 `borrow` is not reserved and has no builtin quantum-resource semantics.
 Unsupported `borrow q` receives a located syntax diagnostic, without inferring
 whether Rust access or dirty workspace was intended. Ordinary declarations,

@@ -271,6 +271,136 @@ fn selected_zero(source: &str) {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn dirty_restoration_preserves_reference_phase_not_only_its_marginal() {
+    use qleisli::contract::{
+        BasisType,
+        exact::{Exact, Matrix},
+    };
+    use qleisli::interchange::{
+        RootInterface, Version,
+        finite_leaf::{UnitaryBoundary, check_unitary},
+        native::Proposal,
+    };
+    use qleisli::ir::QuantumPort;
+
+    const GOOD: &str = include_str!(
+        "fixtures/authoring_sessions/dirty-restoration-v030/attempt-01/restored-contract/main.qli"
+    );
+    const BAD_CONTRACT: &str = include_str!(
+        "fixtures/authoring_sessions/dirty-restoration-v030/attempt-01/phase-contract-rejected/main.qli"
+    );
+    const BAD_OBSERVATION: &str = include_str!(
+        "fixtures/authoring_sessions/dirty-restoration-v030/attempt-01/phase-reference-observed/main.qli"
+    );
+    // Low-first (D,R): I_D tensor X_R sends column c to row c xor 2,
+    // with coefficient +1 on every input. The other matrix adds Z_D.
+    let expected = |phase: bool| {
+        Matrix::new(
+            4,
+            4,
+            (0..16)
+                .map(|index| {
+                    let (row, col) = (index / 4, index % 4);
+                    if row != col ^ 2 {
+                        Exact::zero()
+                    } else if phase && col & 1 != 0 {
+                        Exact::one().neg().unwrap()
+                    } else {
+                        Exact::one()
+                    }
+                })
+                .collect(),
+        )
+        .unwrap()
+    };
+    for (source, first_bit) in [(GOOD, false), (BAD_OBSERVATION, true)] {
+        let project = compile_project(&SourceRoot::new(source).0).unwrap();
+        let proposal = lower(&elaborate(source)).unwrap();
+        let selected = kernel().accept(proposal.proposal()).unwrap();
+        proposal.validate_source_steps(&selected).unwrap();
+        for accepted in [&project, &selected] {
+            let distribution = run_closed(accepted, SimulationLimits::default()).unwrap();
+            assert_eq!(distribution.len(), 1);
+            assert!((distribution[&vec![first_bit, false, true]] - 1.0).abs() < 1e-12);
+            if source != GOOD {
+                continue;
+            }
+            let evidence = receipts(accepted.raw())
+                .into_iter()
+                .find(|e| e.identity().implementation == "main::implementation")
+                .unwrap();
+            assert!(
+                evidence
+                    .identity()
+                    .sources
+                    .iter()
+                    .any(|(name, text)| name == "main" && text == GOOD)
+            );
+            let raw = evidence.implementation();
+            let [input] = raw.quantum_inputs.as_slice() else {
+                panic!("one dirty/live pair")
+            };
+            let [output] = raw.quantum_outputs.as_slice() else {
+                panic!("one returned pair")
+            };
+            let basis = BasisType::pair(BasisType::Bit, BasisType::Bit);
+            // Require the original input axis order, not a candidate output map.
+            let boundary = UnitaryBoundary::new(
+                basis.clone(),
+                input.clone(),
+                QuantumPort {
+                    token: *output,
+                    wires: input.wires.clone(),
+                    shape: input.shape,
+                },
+            )
+            .unwrap();
+            let actual = Proposal::from_raw(
+                raw,
+                Some(&RootInterface {
+                    input: basis.clone(),
+                    output: basis,
+                }),
+                Version::V2,
+                None,
+            )
+            .unwrap();
+            check_unitary(
+                qleisli::edition::Edition::E2026,
+                actual.artifact(),
+                &boundary,
+                &expected(false),
+                &mut work(),
+            )
+            .unwrap();
+            let error = check_unitary(
+                qleisli::edition::Edition::E2026,
+                actual.artifact(),
+                &boundary,
+                &expected(true),
+                &mut work(),
+            )
+            .unwrap_err();
+            assert_eq!(error.code, "contract", "{error}");
+            assert_eq!(
+                error.message,
+                "Lean native checker rejected the artifact/request; no fallback"
+            );
+        }
+    }
+    let error = compile_project(&SourceRoot::new(BAD_CONTRACT).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Contract);
+    assert!(error.message.contains("exact equation"), "{error}");
+    let error = lower(&elaborate(BAD_CONTRACT)).unwrap_err();
+    assert_eq!(error.code(), "contract");
+    assert!(error.message().contains("exact equation"), "{error}");
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn first_hhh_source_runs_unchanged_through_both_adapters_and_cli() {
     let root = SourceRoot::new(HHH.as_str());
     let ordinary = compile_project(&root.0).unwrap();
