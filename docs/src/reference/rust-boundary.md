@@ -316,7 +316,7 @@ borrowing of compiler data structures.
 
 ## Whole-owner exclusive calls
 
-The [small cross-algorithm study](../../../tests/fixtures/authoring_sessions/access-algorithms-v030/context.md)
+The [small cross-algorithm study](https://github.com/MGYamada/Qleisli/blob/fd0a5e27a634ce490a6e42593b2d08f340545da4/tests/fixtures/authoring_sessions/access-algorithms-v030/context.md)
 retains complete access-call and explicit-owner pairs for fixed arithmetic,
 coherent equality, a Grover iterate, a QPE controlled-power prefix and a walk
 step. These examples use the same access rule; their local helper names are
