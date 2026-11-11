@@ -90,6 +90,33 @@ private def compactProductCost (side : CodeSide) (x y : Matrix) : Nat :=
   | .left => common + x.rows*(2*x.cols+1) + 2*(max x.rows x.cols)*y.cols + 4*y.rows*y.cols
   | .right => common + y.cols*(2*y.rows+1) + 2*(max y.rows y.cols)*x.rows + 4*x.rows*x.cols
 
+/-- Reserve construction and comparison before testing a literal square code.
+Smaller and rectangular codes use the existing compact product directly. -/
+private def codeIdentity (matrix : Matrix) : WorkM Bool := do
+  if 8 ≤ matrix.rows && matrix.rows == matrix.cols &&
+      Exact.matrixValid matrix.rows matrix.cols then
+    exactWork (Exact.charge (4*matrix.rows*matrix.cols + 1))
+    match Exact.Matrix.identity matrix.rows with
+    | .ok identity => return identity == matrix
+    | .error _ => return false
+  else return false
+
+private theorem codeIdentity_bound (matrix : Matrix) (work left : Nat)
+    (ok : (codeIdentity matrix).run work = (.ok true,left)) :
+    matrix.rows = matrix.cols ∧ Exact.Matrix.identity matrix.rows = .ok matrix := by
+  unfold codeIdentity at ok
+  split at ok
+  · rename_i profile
+    simp only [Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq] at profile
+    obtain ⟨_,_,_,checked⟩ := bind_success _ _ _ _ _ ok
+    refine ⟨profile.1.2,?_⟩
+    cases made : Exact.Matrix.identity matrix.rows with
+    | error error => simp only [made] at checked; cases checked
+    | ok identity =>
+      simp only [made] at checked
+      exact congrArg Except.ok (beq_iff_eq.mp (pure_success _ _ _ _ checked).1.symm)
+  · cases ok
+
 /-- The original layout code and its adjoint have at most one term per
 logical column or row. This estimate selects the cost strategy only. The
 support used by the product is read from the literal matrix. -/
@@ -98,10 +125,12 @@ def codeProduct (side : CodeSide) (x y : Matrix) : WorkM Matrix := do
     match side with
     | .left =>
       let admitted ← matrixRead y
-      exactWork (Exact.Matrix.composeSparseLeftWork x admitted)
+      if ← codeIdentity x then pure admitted
+      else exactWork (Exact.Matrix.composeSparseLeftWork x admitted)
     | .right =>
       let admitted ← matrixRead x
-      exactWork (Exact.Matrix.composeSparseRightWork admitted y)
+      if ← codeIdentity y then pure admitted
+      else exactWork (Exact.Matrix.composeSparseRightWork admitted y)
   else exactWork (Exact.Matrix.composeWork x y)
 
 theorem codeProduct_dense (side : CodeSide) (x y result : Matrix) (work left : Nat)
@@ -109,19 +138,35 @@ theorem codeProduct_dense (side : CodeSide) (x y result : Matrix) (work left : N
     ∃ before after, Exact.Matrix.compose x y before = (.ok result,after) := by
   unfold codeProduct at ok
   split at ok
-  · cases side
+  · rename_i compact
+    simp only [Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq] at compact
+    cases side
     · obtain ⟨input,middle,read,computed⟩ := bind_success _ _ _ _ _ ok
       have admitted := matrixRead_admitted _ _ _ _ read
       have same := (matrixRead_value _ _ _ _ read).1
       subst input
-      exact ⟨_,0,Exact.Matrix.composeSparseLeft_success x y result admitted middle left
-        (exactWork_success _ _ _ _ computed)⟩
+      obtain ⟨identity,after,code,computed⟩ := bind_success _ _ _ _ _ computed
+      cases identity
+      · exact ⟨_,0,Exact.Matrix.composeSparseLeft_success x y result admitted after left
+          (exactWork_success _ _ _ _ computed)⟩
+      · have ⟨square,literal⟩ := codeIdentity_bound _ middle after code
+        have returned := (pure_success _ _ _ _ computed).1
+        subst result
+        rw [square,compact.1] at literal
+        exact ⟨_,0,Exact.Matrix.compose_identity_left x y admitted literal⟩
     · obtain ⟨input,middle,read,computed⟩ := bind_success _ _ _ _ _ ok
       have admitted := matrixRead_admitted _ _ _ _ read
       have same := (matrixRead_value _ _ _ _ read).1
       subst input
-      exact ⟨_,0,Exact.Matrix.composeSparseRight_success x y result admitted middle left
-        (exactWork_success _ _ _ _ computed)⟩
+      obtain ⟨identity,after,code,computed⟩ := bind_success _ _ _ _ _ computed
+      cases identity
+      · exact ⟨_,0,Exact.Matrix.composeSparseRight_success x y result admitted after left
+          (exactWork_success _ _ _ _ computed)⟩
+      · have literal := (codeIdentity_bound _ middle after code).2
+        have returned := (pure_success _ _ _ _ computed).1
+        subst result
+        rw [← compact.1] at literal
+        exact ⟨_,0,Exact.Matrix.compose_identity_right x y admitted literal⟩
   · exact ⟨work,left,exactWork_success _ _ _ _ ok⟩
 
 #print axioms codeProduct_dense

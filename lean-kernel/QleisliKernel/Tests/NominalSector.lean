@@ -71,6 +71,28 @@ private def paddingSwap : Matrix := ⟨8,8,(List.range 64).map fun index =>
   if index / 8 == (if column == 6 then 7 else if column == 7 then 6 else column)
     then Scalar.one else Scalar.zero⟩
 
+private def identity8 : Matrix :=
+  Semantics.FiniteCarrier.encoding ⟨3,List.range 8⟩
+
+-- Both exact identity products retain the original phases and charge the
+-- complete admission and identity scan.
+#guard let phased := phasedDiagonal (List.range 8)
+  match (FiniteCarrier.codeProduct .left identity8 phased).run 513,
+      (FiniteCarrier.codeProduct .right phased identity8).run 513 with
+  | (.ok left,0),(.ok right,0) => left == phased && right == phased
+  | _,_ => false
+#guard match ((FiniteCarrier.codeProduct .right (phasedDiagonal (List.range 8)) identity8).run 512).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
+-- Square shape alone supplies no identity evidence. The fallback compares
+-- the exact reordered result and keeps the original nontrivial phases.
+#guard let phased := phasedDiagonal (List.range 8)
+  match ((FiniteCarrier.codeProduct .right phased paddingSwap).run 4096).1,
+      (Exact.Matrix.compose phased paddingSwap 4096).1 with
+  | .ok fast,.ok dense => dense != phased && fast == dense
+  | _,_ => false
+
 theorem compact_rectangular_equation_refuses_padding_leakage :
     (outcome paddedCode paddedCode [paddingSwap] 0 (phasedDiagonal (List.replicate 7 0)) ==
       .error .equation) = true := by decide +kernel

@@ -145,6 +145,110 @@ private theorem coefficient_mul_zero (v : Coefficient) (bounded : v.exponent ≤
   simpa only [Coefficient.mul,Semantics.Exact.Coefficient.integer,Int.mul_zero,Nat.add_zero,
     show checkedInt 0 = .ok 0 from rfl,bind,Except.bind] using coefficient_make_zero v.exponent bounded
 
+private theorem coefficient_valid_parts (c : Coefficient) (valid : Coefficient.valid c = true) :
+    (numeratorValid c.numerator = true ∧ c.exponent ≤ maxExponent) ∧
+      (if c.numerator = 0 then decide (c.exponent = 0)
+        else (decide (c.exponent = 0) || decide (c.numerator % 2 ≠ 0))) = true := by
+  simpa only [Coefficient.valid,Bool.and_eq_true,decide_eq_true_eq] using valid
+
+private theorem coefficient_canonical_zero (c : Coefficient) (valid : Coefficient.valid c = true)
+    (zero : c.numerator = 0) : c = .integer 0 := by
+  have exp : c.exponent = 0 := by
+    simpa only [zero,if_true,decide_eq_true_eq] using (coefficient_valid_parts c valid).2
+  cases c
+  simp_all [Coefficient.integer]
+
+private theorem coefficient_valid_exponent (c : Coefficient) (valid : Coefficient.valid c = true) :
+    c.exponent ≤ maxInputExponent := by
+  exact Nat.le_trans (coefficient_valid_parts c valid).1.2 (by decide)
+
+private theorem normalize_canonical (c : Coefficient) (valid : Coefficient.valid c = true) :
+    normalize 128 c = c := by
+  by_cases zero : c.numerator = 0
+  · rw [coefficient_canonical_zero c valid zero]
+    rfl
+  · have terminal : (decide (c.exponent = 0) || decide (c.numerator % 2 ≠ 0)) = true := by
+      simpa only [zero,if_false] using (coefficient_valid_parts c valid).2
+    change (if c.numerator = 0 then Coefficient.integer 0
+      else if (decide (c.exponent = 0) || decide (c.numerator % 2 ≠ 0)) then c
+      else normalize 127 ⟨c.numerator / 2,c.exponent - 1⟩) = c
+    simp only [zero,if_false,terminal,if_true]
+
+private theorem coefficient_make_canonical (c : Coefficient) (valid : Coefficient.valid c = true) :
+    Coefficient.make c.numerator c.exponent = .ok c := by
+  have n : numeratorValid c.numerator = true := (coefficient_valid_parts c valid).1.1
+  have repr : (⟨c.numerator,c.exponent⟩ : Coefficient) = c := by cases c; rfl
+  simp only [Coefficient.make,checkedInt,n,if_true,Nat.not_lt.mpr (coefficient_valid_exponent c valid),if_false,
+    repr,normalize_canonical c valid,valid]
+
+private theorem coefficient_one_mul (c : Coefficient) (valid : Coefficient.valid c = true) :
+    Coefficient.mul (.integer 1) c = .ok c := by
+  have n : numeratorValid c.numerator = true := (coefficient_valid_parts c valid).1.1
+  simpa only [Coefficient.mul,Coefficient.integer,Int.one_mul,Nat.zero_add,
+    checkedInt,n,if_true,bind,Except.bind] using coefficient_make_canonical c valid
+
+private theorem coefficient_mul_one (c : Coefficient) (valid : Coefficient.valid c = true) :
+    Coefficient.mul c (.integer 1) = .ok c := by
+  have n : numeratorValid c.numerator = true := (coefficient_valid_parts c valid).1.1
+  simpa only [Coefficient.mul,Coefficient.integer,Int.mul_one,Nat.add_zero,
+    checkedInt,n,if_true,bind,Except.bind] using coefficient_make_canonical c valid
+
+private theorem coefficient_add_zero (x : Coefficient) (valid : Coefficient.valid x = true) :
+    Coefficient.add x (.integer 0) = .ok x := by
+  by_cases zero : x.numerator = 0
+  · have exponent : x.exponent = 0 := by
+      simp only [Coefficient.valid, Bool.and_eq_true, zero, ↓reduceIte, decide_eq_true_eq] at valid
+      exact valid.2
+    have canonical : x = .integer 0 := by cases x; simp_all [Semantics.Exact.Coefficient.integer]
+    subst x
+    rfl
+  · simp [Coefficient.add,zero,Semantics.Exact.Coefficient.integer,bind,Except.bind,pure,Except.pure]
+
+theorem scalar_add_zero (x : Scalar) (valid : Scalar.valid x = true) :
+    Scalar.add x Scalar.zero = .ok x := by
+  obtain ⟨⟨⟨a,b⟩,c⟩,d⟩ := by simpa only [Scalar.valid,Bool.and_eq_true] using valid
+  cases x with
+  | mk xa xb xc xd =>
+    change (do
+      let ra ← Coefficient.add xa (.integer 0)
+      let rb ← Coefficient.add xb (.integer 0)
+      let rc ← Coefficient.add xc (.integer 0)
+      let rd ← Coefficient.add xd (.integer 0)
+      pure (⟨ra,rb,rc,rd⟩ : Scalar)) = .ok ⟨xa,xb,xc,xd⟩
+    rw [coefficient_add_zero xa a,coefficient_add_zero xb b,coefficient_add_zero xc c,coefficient_add_zero xd d]
+    rfl
+
+private theorem coefficient_zero_add (c : Coefficient) :
+    Coefficient.add (.integer 0) c = .ok c := rfl
+
+theorem scalar_mul_one (x : Scalar) (valid : Scalar.valid x = true) :
+    Scalar.mul x Scalar.one = .ok x := by
+  obtain ⟨⟨⟨a,b⟩,c⟩,d⟩ := by simpa only [Scalar.valid,Bool.and_eq_true] using valid
+  cases x
+  simp [Scalar.mul,coefficientPairs,show List.range 4 = [0,1,2,3] by decide,multiplyTerm,
+    Scalar.one,Scalar.zero,Scalar.get,Scalar.set,bind,Except.bind,pure,Except.pure,
+    coefficient_mul_zero _ (coefficient_valid_exponent _ a),coefficient_mul_zero _ (coefficient_valid_exponent _ b),coefficient_mul_zero _ (coefficient_valid_exponent _ c),coefficient_mul_zero _ (coefficient_valid_exponent _ d),
+    coefficient_mul_one _ a,coefficient_mul_one _ b,coefficient_mul_one _ c,coefficient_mul_one _ d,
+    coefficient_zero_add,coefficient_add_zero _ a,coefficient_add_zero _ b,coefficient_add_zero _ c,
+    show Coefficient.mul (.integer 0) (.integer 2) = .ok (.integer 0) from rfl,
+    show Coefficient.neg (.integer 0) = .ok (.integer 0) from rfl]
+
+theorem scalar_one_mul (x : Scalar) (valid : Scalar.valid x = true) :
+    Scalar.mul Scalar.one x = .ok x := by
+  obtain ⟨⟨⟨a,b⟩,c⟩,d⟩ := by simpa only [Scalar.valid,Bool.and_eq_true] using valid
+  cases x
+  simp [Scalar.mul,coefficientPairs,show List.range 4 = [0,1,2,3] by decide,multiplyTerm,
+    Scalar.one,Scalar.zero,Scalar.get,Scalar.set,bind,Except.bind,pure,Except.pure,
+    coefficient_zero_mul _ (coefficient_valid_exponent _ a),coefficient_zero_mul _ (coefficient_valid_exponent _ b),coefficient_zero_mul _ (coefficient_valid_exponent _ c),coefficient_zero_mul _ (coefficient_valid_exponent _ d),
+    coefficient_one_mul _ a,coefficient_one_mul _ b,coefficient_one_mul _ c,coefficient_one_mul _ d,
+    coefficient_zero_add,coefficient_add_zero _ a,coefficient_add_zero _ b,coefficient_add_zero _ c,coefficient_add_zero _ d,
+    show Coefficient.mul (.integer 0) (.integer 2) = .ok (.integer 0) from rfl,
+    show Coefficient.neg (.integer 0) = .ok (.integer 0) from rfl]
+
+theorem scalar_zero_add (value : Scalar) : Scalar.add Scalar.zero value = .ok value := by
+  cases value
+  rfl
+
 private theorem get_zero (i : Nat) : Scalar.zero.get i = .integer 0 := by
   unfold Scalar.get
   split <;> rfl

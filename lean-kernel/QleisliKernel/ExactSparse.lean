@@ -20,31 +20,6 @@ private theorem scalar_exponent_bound (x : Scalar) (valid : Scalar.valid x = tru
   · exact bound _ valid.1.2
   · exact bound _ valid.2
 
-private theorem coefficient_add_zero (x : Coefficient) (valid : Coefficient.valid x = true) :
-    Coefficient.add x (.integer 0) = .ok x := by
-  by_cases zero : x.numerator = 0
-  · have exponent : x.exponent = 0 := by
-      simp only [Coefficient.valid, Bool.and_eq_true, zero, ↓reduceIte, decide_eq_true_eq] at valid
-      exact valid.2
-    have canonical : x = .integer 0 := by cases x; simp_all [Semantics.Exact.Coefficient.integer]
-    subst x
-    rfl
-  · simp [Coefficient.add,zero,Semantics.Exact.Coefficient.integer,bind,Except.bind,pure,Except.pure]
-
-private theorem scalar_add_zero (x : Scalar) (valid : Scalar.valid x = true) :
-    Scalar.add x Scalar.zero = .ok x := by
-  obtain ⟨⟨⟨a,b⟩,c⟩,d⟩ := by simpa only [Scalar.valid,Bool.and_eq_true] using valid
-  cases x with
-  | mk xa xb xc xd =>
-    change (do
-      let ra ← Coefficient.add xa (.integer 0)
-      let rb ← Coefficient.add xb (.integer 0)
-      let rc ← Coefficient.add xc (.integer 0)
-      let rd ← Coefficient.add xd (.integer 0)
-      pure (⟨ra,rb,rc,rd⟩ : Scalar)) = .ok ⟨xa,xb,xc,xd⟩
-    rw [coefficient_add_zero xa a,coefficient_add_zero xb b,coefficient_add_zero xc c,coefficient_add_zero xd d]
-    rfl
-
 private def dotStep (total : Scalar) (term : Scalar × Scalar) : Except Error Scalar := do
   let product ← mulZeroFast term.1 term.2
   Scalar.add total product
@@ -237,6 +212,152 @@ private theorem compose_at_cost (x y result : Matrix) (same : x.cols = y.rows)
   simp only [compose_from_dense_entries,if_neg (not_not_intro same),pure_bind]
   rw [charged_run _ _ _ (Nat.le_refl _),Nat.sub_self,value]
   rfl
+
+private theorem filter_single (indices : List Nat) (pick : Nat)
+    (unique : indices.Nodup) (present : pick ∈ indices) :
+    indices.filter (· == pick) = [pick] := by
+  induction indices with
+  | nil => cases present
+  | cons first rest ih =>
+    obtain ⟨missing,distinct⟩ := List.nodup_cons.mp unique
+    by_cases same : first = pick
+    · subst first
+      have empty : rest.filter (· == pick) = [] := by
+        apply List.filter_eq_nil_iff.mpr
+        intro k member
+        simp only [beq_iff_eq]
+        rintro rfl
+        exact missing member
+      simp [empty]
+    · have tail : pick ∈ rest := (List.mem_cons.mp present).resolve_left (Ne.symm same)
+      simp [same,ih distinct tail]
+
+private theorem dot_select (width pick : Nat) (bound : pick < width)
+    (term : Nat → Scalar × Scalar) (value : Scalar)
+    (product : ∀ k < width, Scalar.mul (term k).1 (term k).2 =
+      .ok (if k = pick then value else Scalar.zero)) :
+    (List.range width).foldlM (fun sum k => dotStep sum (term k)) Scalar.zero = .ok value := by
+  have sparse := sparse_dot (List.range width) term (· == pick) Scalar.zero (by decide)
+    (fun k member dropped => by
+      have different : k ≠ pick := by simpa using dropped
+      simpa only [if_neg different] using product k (List.mem_range.mp member))
+  rw [filter_single _ _ List.nodup_range (List.mem_range.mpr bound)] at sparse
+  rw [← sparse]
+  simp only [List.foldlM_cons,dotStep,mulZeroFast_equiv,product pick bound,if_true,bind,Except.bind,
+    scalar_zero_add,List.foldlM_nil,pure,Except.pure]
+
+private def diagonalCode (dim : Nat) : Matrix :=
+  ⟨dim,dim,(List.range (dim*dim)).map fun i =>
+    if i / dim = i % dim then Scalar.one else Scalar.zero⟩
+
+private theorem diagonal_entry (dim row col : Nat) (rowBound : row < dim) (colBound : col < dim) :
+    (diagonalCode dim).entry row col = if row = col then Scalar.one else Scalar.zero := by
+  have positive : 0 < dim := Nat.zero_lt_of_lt colBound
+  have indexBound : row*dim+col < dim*dim := by
+    calc
+      row*dim+col < row*dim+dim := Nat.add_lt_add_left colBound _
+      _ = (row+1)*dim := (Nat.succ_mul _ _).symm
+      _ ≤ dim*dim := Nat.mul_le_mul_right _ rowBound
+  have remainder : (row*dim+col) % dim = col := by
+    simp [Nat.add_mod,Nat.mod_eq_of_lt colBound]
+  have quotient : (row*dim+col) / dim = row := by
+    rw [Nat.mul_comm row dim,Nat.mul_add_div positive,Nat.div_eq_of_lt colBound,Nat.add_zero]
+  simp only [diagonalCode,Matrix.entry,List.getElem?_map,List.getElem?_range indexBound,
+    Option.map_some,Option.getD_some,remainder,quotient]
+
+private theorem identity_is_diagonal (dim : Nat) (code : Matrix)
+    (identity : Matrix.identity dim = .ok code) : code = diagonalCode dim := by
+  unfold Matrix.identity Matrix.make at identity
+  split at identity
+  · cases identity
+  · split at identity
+    · cases identity
+    · exact (Except.ok.inj identity).symm
+
+private theorem reindex_entries (x : Matrix) (length : x.entries.length = x.rows*x.cols) :
+    (List.range (x.rows*x.cols)).map (fun i => x.entry (i / x.cols) (i % x.cols)) =
+      x.entries := by
+  apply List.ext_getElem?
+  intro i
+  by_cases inside : i < x.rows*x.cols
+  · have bound : i < x.entries.length := length ▸ inside
+    have linear : i / x.cols * x.cols + i % x.cols = i := by
+      calc
+        i / x.cols * x.cols + i % x.cols = i % x.cols + x.cols * (i / x.cols) := by
+          rw [Nat.mul_comm (i / x.cols),Nat.add_comm]
+        _ = i := Nat.mod_add_div i x.cols
+    simp only [List.getElem?_map,List.getElem?_range inside,Option.map_some,Matrix.entry,linear,
+      List.getElem?_eq_getElem bound,Option.getD_some]
+  · have absent : x.entries.length ≤ i := length ▸ Nat.le_of_not_gt inside
+    simp only [List.getElem?_map,List.getElem?_eq_none (l := List.range _) (by simpa using Nat.le_of_not_gt inside),
+      Option.map_none,List.getElem?_eq_none absent]
+
+private theorem map_exact {α β : Type} (items : List α) (step : α → Except Error β)
+    (output : α → β) (exactAt : ∀ item ∈ items, step item = .ok (output item)) :
+    items.mapM step = .ok (items.map output) := by
+  induction items with
+  | nil => rfl
+  | cons first rest ih =>
+    have tail := ih (fun item member => exactAt item (List.mem_cons_of_mem _ member))
+    simp only [List.mapM_cons,List.map_cons,exactAt first List.mem_cons_self,tail,bind,
+      Except.bind,pure,Except.pure]
+
+private theorem dense_entries_selected (x y output : Matrix)
+    (rows : output.rows = x.rows) (cols : output.cols = y.cols) (admitted : Matrix.Admitted output)
+    (cells : ∀ i ∈ List.range (x.rows*y.cols),
+      (List.range x.cols).foldlM (fun sum k => dotStep sum (x.entry (i/y.cols) k,y.entry k (i%y.cols)))
+        Scalar.zero = .ok (output.entry (i/y.cols) (i%y.cols))) :
+    denseComposition x y = .ok output := by
+  unfold denseComposition denseEntries
+  rw [map_exact _ _ _ cells,← rows,← cols,reindex_entries _ admitted.2.1]
+  rcases output with ⟨rows,cols,entries⟩
+  simp [bind,Except.bind,Matrix.make,admitted.1,admitted.2.1]
+
+/-- Left multiplication by a literal identity preserves every admitted coefficient. -/
+theorem Matrix.compose_identity_left (code y : Matrix) (admitted : Matrix.Admitted y)
+    (identity : Matrix.identity y.rows = .ok code) :
+    (Matrix.composeWork code y).run (2*code.rows*code.cols*y.cols) = (.ok y,0) := by
+  have same := identity_is_diagonal _ _ identity
+  subst code
+  apply compose_at_cost _ _ _ rfl
+  apply dense_entries_selected (diagonalCode y.rows) y y rfl rfl admitted
+  intro i member
+  have dims := admitted.1
+  simp only [matrixValid,Bool.and_eq_true,decide_eq_true_eq] at dims
+  have row : i / y.cols < y.rows := (Nat.div_lt_iff_lt_mul dims.1.2).mpr (List.mem_range.mp member)
+  apply dot_select y.rows (i / y.cols) row
+  intro k inner
+  change Scalar.mul ((diagonalCode y.rows).entry (i/y.cols) k) (y.entry k (i%y.cols)) = _
+  rw [diagonal_entry y.rows _ _ row inner]
+  by_cases selected : k = i/y.cols
+  · subst k
+    simp only [if_true]
+    exact scalar_one_mul _ (matrix_entry_valid _ admitted _ _)
+  · simp only [if_neg selected,if_neg (Ne.symm selected)]
+    exact scalar_zero_mul _ (scalar_exponent_bound _ (matrix_entry_valid _ admitted _ _))
+
+/-- Right multiplication by a literal identity preserves every admitted coefficient. -/
+theorem Matrix.compose_identity_right (x code : Matrix) (admitted : Matrix.Admitted x)
+    (identity : Matrix.identity x.cols = .ok code) :
+    (Matrix.composeWork x code).run (2*x.rows*x.cols*code.cols) = (.ok x,0) := by
+  have same := identity_is_diagonal _ _ identity
+  subst code
+  apply compose_at_cost _ _ _ rfl
+  apply dense_entries_selected x (diagonalCode x.cols) x rfl rfl admitted
+  intro i _
+  have dims := admitted.1
+  simp only [matrixValid,Bool.and_eq_true,decide_eq_true_eq] at dims
+  have col : i % x.cols < x.cols := Nat.mod_lt _ dims.1.2
+  apply dot_select x.cols (i % x.cols) col
+  intro k inner
+  change Scalar.mul (x.entry (i/x.cols) k) ((diagonalCode x.cols).entry k (i%x.cols)) = _
+  rw [diagonal_entry x.cols _ _ inner col]
+  by_cases selected : k = i%x.cols
+  · subst k
+    simp only [if_true]
+    exact scalar_mul_one _ (matrix_entry_valid _ admitted _ _)
+  · simp only [if_neg selected]
+    exact scalar_mul_zero _ (scalar_exponent_bound _ (matrix_entry_valid _ admitted _ _))
 
 theorem Matrix.composeSparseLeft_success (x y result : Matrix) (right : Matrix.Admitted y)
     (work left : Nat) (ok : (Matrix.composeSparseLeftWork x y).run work = (.ok result,left)) :
