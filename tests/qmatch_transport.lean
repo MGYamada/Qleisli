@@ -205,10 +205,10 @@ abbrev Summary := List Nat × List Nat × List Nat × Nat × Nat × Nat
 
 private def replaceChildPosition (child : Context) (position : Position) : Context :=
   .withReferences [position] (child.sites.map fun site => {site with position := position})
-    child.calls child.branches child.bodies child.references
+    child.calls child.branches child.bodies child.references child.staticIntervals
 
 private def replaceParent (request : Request) (position : Position) (child : Context) : Request :=
-  {request with context := .withReferences [position] [] [(position,child)] [] [] []}
+  {request with context := .mk [position] [] [(position,child)] [] []}
 
 private def originalRoute := "pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){\n    "
 private def heldRoute := "pub unitary fn route(u:Q<Unit>,s:Q<Bit>,q:Q<Bit>)->(Q<Unit>,(Q<Bit>,Q<Bit>)){\n    (u,"
@@ -241,11 +241,14 @@ private def externalSource (artifact : Artifact) (request : Request) (position :
   let entries := artifact.entries.map fun entry => {entry with implementationName := "helper::sign", specificationName := "helper::sign", sources := [1]}
   let artifact := {artifact with programs := programs, entries := entries, sources := #[("main",main),("helper",helper)]}
   let phaseBodies := child.bodies.map fun (subject,body) =>
-    (subject,RuntimeContextRequest.Context.withReferences (body.positions.map fun pos => {pos with offset := pos.offset+4})
-      body.sites body.calls body.branches body.bodies body.references)
+    let shift (pos : Position) := {pos with offset := pos.offset+4}
+    let intervals := body.staticIntervals.map fun (parent,children) => (shift parent,children.map shift)
+    (subject,RuntimeContextRequest.Context.withReferences (body.positions.map shift)
+      body.sites body.calls body.branches body.bodies body.references intervals)
   let childPosition := {position with offset := 310}
   let child := RuntimeContextRequest.Context.withReferences [childPosition]
-    (child.sites.map fun site => {site with position := childPosition}) child.calls child.branches phaseBodies child.references
+    (child.sites.map fun site => {site with position := childPosition}) child.calls child.branches
+    phaseBodies child.references child.staticIntervals
   let position := {position with offset := routePrefix.utf8ByteSize}
   let runtime := {request.runtime with publicEffect := .observe}
   return (artifact,replaceParent {request with runtime := runtime} position child)
@@ -259,7 +262,9 @@ private def mutate (artifact : Artifact) (request : Request) (fault : Fault) : E
   | .staleChild =>
     return (artifact,replaceParent request position (replaceChildPosition child {position with offset := 413}))
   | .missingChild =>
-    return (artifact,replaceParent request position (.withReferences [] child.sites child.calls child.branches child.bodies child.references))
+    let child : Context := .withReferences [] child.sites child.calls child.branches
+      child.bodies child.references child.staticIntervals
+    return (artifact,replaceParent request position child)
   | .wrongArguments =>
     let sources := artifact.sources.map fun (owner,text) => (owner,text.replace "](s,q)" "](q,s)")
     return ({artifact with sources := sources},request)
@@ -284,7 +289,7 @@ private def mutate (artifact : Artifact) (request : Request) (fault : Fault) : E
       (owner,text.replace "Identity:Bit=reference(keep)" "Identity:Bit=reference(sign)")
     let artifact := {artifact with sources, programs := artifact.programs.set! refProgram sign}
     let child : Context := .withReferences child.positions child.sites child.calls child.branches
-      child.bodies [[],[],[[(.pure refProgram,phaseBody)]]]
+      child.bodies [[],[],[[(.pure refProgram,phaseBody)]]] child.staticIntervals
     return (artifact,replaceParent request position child)
   | .changedControlled =>
     let [site] := child.sites | throw "expected one selection"
@@ -298,11 +303,12 @@ private def mutate (artifact : Artifact) (request : Request) (fault : Fault) : E
   | .wrongReferenceSlot =>
     let [supplied,keep,checked] := child.references | throw "expected three original operations"
     let child : Context := .withReferences child.positions child.sites child.calls child.branches
-      child.bodies [checked,keep,supplied]
+      child.bodies [checked,keep,supplied] child.staticIntervals
     return (artifact,replaceParent request position child)
   | .extraProviderReferences =>
     let (subject,body) :: rest := child.bodies | throw "missing first provider"
-    let body : Context := .withReferences body.positions body.sites body.calls body.branches body.bodies [[]]
+    let body : Context := .withReferences body.positions body.sites body.calls body.branches
+      body.bodies [[]] body.staticIntervals
     return (artifact,replaceParent request position (child.withBodies ((subject,body) :: rest)))
 
 private def inspect (artifactBytes requestBytes : ByteArray) (fault : Fault) : WorkM Summary := do
@@ -410,12 +416,15 @@ private def surroundingProposal (artifact : Artifact) (request : Request) (fault
   let site := {site with attached := interface, required := interface}
   let bodies ← if fault == .nestedReferences then do
     let (subject,body) :: rest := child.bodies | throw "missing original provider body"
-    let body := RuntimeContextRequest.Context.withReferences body.positions body.sites body.calls body.branches body.bodies [[]]
+    let body : Context := .withReferences body.positions body.sites body.calls body.branches
+      body.bodies [[]] body.staticIntervals
     pure ((subject,body) :: rest)
   else pure child.bodies
-  let child := RuntimeContextRequest.Context.withReferences child.positions [site] child.calls child.branches bodies child.references
+  let child : Context := .withReferences child.positions [site] child.calls child.branches
+    bodies child.references child.staticIntervals
   let callPosition : Position := ⟨468,if fault == .wrongCallStart then 0 else 1,3⟩
-  let context := RuntimeContextRequest.Context.withReferences [⟨439,0,1⟩,callPosition,⟨511,4,1⟩] [] [(callPosition,child)] [] [] request.context.references
+  let context : Context := .withReferences [⟨439,0,1⟩,callPosition,⟨511,4,1⟩] []
+    [(callPosition,child)] [] [] request.context.references request.context.staticIntervals
   let unitTree := Semantics.RuntimeType.owner [.unit]
   let returned : Semantics.Raw.Port := ⟨if fault == .wrongReturn then 6 else 7,[1],1⟩
   let runtime := {request.runtime with parameters := unitTree :: request.runtime.parameters, inputStorage := [.quantum ⟨unitPort,[.unit]⟩] :: request.runtime.inputStorage, result := Semantics.RuntimeType.tuple 2 [unitTree,request.runtime.result], storage := [.tuple 2,.quantum ⟨unitPort,[.unit]⟩,.tuple 2,.quantum ⟨⟨5,[0],1⟩,[.bit]⟩,.quantum ⟨returned,[.bit]⟩]}
@@ -490,32 +499,33 @@ private def orderedCallProposal (artifact : Artifact) (request : Request) (fault
   let text := before ++ declarations ++ route
   let [(_,selection)] := request.context.calls | throw "missing original selection call"
   let extra := fun (context : Context) => RuntimeContextRequest.Context.withReferences context.positions context.sites
-    context.calls context.branches context.bodies [[]]
+    context.calls context.branches context.bodies [[]] context.staticIntervals
   let selection ← if fault == .providerReferences then do
       let (subject,body) :: rest := selection.bodies | throw "missing original provider"
       pure (selection.withBodies ((subject,extra body) :: rest))
     else if fault == .referenceReferences then do
       let [supplied,first,[[(subject,body)]]] := selection.references | throw "missing original reference"
       pure (RuntimeContextRequest.Context.withReferences selection.positions selection.sites selection.calls selection.branches
-        selection.bodies [supplied,first,[[(subject,extra body)]]])
+        selection.bodies [supplied,first,[[(subject,extra body)]]] selection.staticIntervals)
     else pure selection
   let shift := if nested then 6 else 0
   let prePosition : Position := ⟨531-shift,0,1⟩
   let selectionPosition : Position := ⟨if fault == .wrongOffset then 302 else 553-shift,
     if fault == .wrongCursor then 0 else 1,3⟩
   let postPosition : Position := ⟨596-shift,4,1⟩
-  let pre : Context := .withReferences [⟨if fault == .childOffset then 531 else 384,0,1⟩] [] [] [] [] []
+  let pre : Context := .mk [⟨if fault == .childOffset then 531 else 384,0,1⟩] [] [] [] []
   let pre := if nested then
       let inner : Context := .withReferences [⟨95,0,1⟩] [] [] [] []
-        (if fault == .descendantReferences then [[]] else [])
-      RuntimeContextRequest.Context.withReferences pre.positions pre.sites [(⟨384,0,1⟩,inner)] pre.branches pre.bodies pre.references
+        (if fault == .descendantReferences then [[]] else []) []
+      RuntimeContextRequest.Context.withReferences pre.positions pre.sites
+        [(⟨384,0,1⟩,inner)] pre.branches pre.bodies pre.references pre.staticIntervals
     else if fault == .ordinaryReferences then extra pre else pre
-  let post : Context := .withReferences [⟨437-shift,0,1⟩] [] [] [] [] []
+  let post : Context := .mk [⟨437-shift,0,1⟩] [] [] [] []
   let calls := if fault == .missingCall then [(selectionPosition,selection),(postPosition,post)]
     else if fault == .extraCall then [(prePosition,pre),(selectionPosition,selection),(postPosition,post),(postPosition,post)]
     else if fault == .reorderedCalls then [(selectionPosition,selection),(prePosition,pre),(postPosition,post)]
     else [(prePosition,pre),(selectionPosition,selection),(postPosition,post)]
-  let context : Context := .withReferences [prePosition,selectionPosition,postPosition] [] calls [] [] []
+  let context : Context := .mk [prePosition,selectionPosition,postPosition] [] calls [] []
   return ({artifact with sources := #[(row.1,text)]},{request with context := context})
 
 private def orderedCallInspect (fault : OrderedCallFault) :
@@ -668,9 +678,10 @@ private def observingPayload (composed : Bool) (wrongOwner wrongXor : Bool := fa
   let phaseBody : Context := .mk [⟨phase.span.startByte,0,1⟩] [] [] [] []
   let empty : Context := .mk [] [] [] [] []
   let child : Context := if composed then
-      .withReferences [localSite.position] [localSite] [] [] selection.bodies selection.references
+      .withReferences [localSite.position] [localSite] [] []
+        selection.bodies selection.references selection.staticIntervals
     else .withReferences [localSite.position] [localSite] [] []
-      [(.pure 5,empty),(.function 0,phaseBody)] [[],[]]
+      [(.pure 5,empty),(.function 0,phaseBody)] [[],[]] []
   let leaf : Context := .mk [⟨measure.span.startByte,0,1⟩] [] [] [] []
   let before : Context := .mk [⟨firstRead.span.startByte,0,1⟩] [] [(⟨firstRead.span.startByte,0,1⟩,leaf)] [] []
   let after : Context := .mk [⟨lastRead.span.startByte,0,1⟩] [] [(⟨lastRead.span.startByte,0,1⟩,leaf)] [] []
@@ -1004,7 +1015,7 @@ private def checkForwardedCommonBody (interior : Bool := false) (dormant : Bool 
   let inner : SourceSequence.Position := ⟨465,0,3⟩
   let outer : SourceSequence.Position := ⟨if interior then 554 else 543,0,3⟩
   let signedInputs := selection.bodies.take (if interior then 1 else 2)
-  let relay : Context := .withReferences [inner] [] [(inner,selection)] [] signedInputs [[]]
+  let relay : Context := .withReferences [inner] [] [(inner,selection)] [] signedInputs [[]] []
   let context : Context := .mk [outer] [] [(outer,relay)] [] []
   let source := if interior then
       (forwardedSignedSource.replace "choose[W](s,q)" "choose[then_op(W,W)](s,q)").replace
@@ -1052,8 +1063,8 @@ private def checkFourLevelCommonBody : WorkM Unit := do
   let middle : SourceSequence.Position := ⟨606,0,3⟩
   let outer : SourceSequence.Position := ⟨683,0,3⟩
   let supplied := selection.bodies.take 1
-  let relay : Context := .withReferences [inner] [] [(inner,selection)] [] supplied [[]]
-  let outside : Context := .withReferences [middle] [] [(middle,relay)] [] supplied [[]]
+  let relay : Context := .withReferences [inner] [] [(inner,selection)] [] supplied [[]] []
+  let outside : Context := .withReferences [middle] [] [(middle,relay)] [] supplied [[]] []
   let context : Context := .mk [outer] [] [(outer,outside)] [] []
   let artifact := {seed with sources := #[("main",fourLevelSignedSource)]}
   let body ← RuntimeBodyOperations.prepare artifact "main" "route" {} context
@@ -1118,11 +1129,11 @@ private def observingMutation (p : ObservingPayload) (fault : ObservingFault) : 
       let [(before,first),(choose,child),(after,last)] := p.context.calls | throw .request
       let references := if fault == .extraReference then child.references ++ [[]] else child.references.dropLast
       let child := RuntimeContextRequest.Context.withReferences child.positions child.sites child.calls child.branches
-        child.bodies references
+        child.bodies references child.staticIntervals
       pure [(before,first),(choose,child),(after,last)]
     else pure (if fault == .contextOrder then p.context.calls.reverse else p.context.calls)
   let context := RuntimeContextRequest.Context.withReferences p.context.positions p.context.sites calls
-    p.context.branches p.context.bodies p.context.references
+    p.context.branches p.context.bodies p.context.references p.context.staticIntervals
   let artifact := {p.artifact with programs := p.artifact.programs.set! 0 program}
   let rootArtifact := if fault == .wrongSelectedPhase then
       {p.rootArtifact with programs := #[program], entries := #[]}
@@ -1388,19 +1399,20 @@ private def keepSignPayload (fault : SmallFault) : Artifact × Array Nat × Requ
     ⟨[unitPort,bitPort 0 0,bitPort 1 1],[],[first,.pure (.quantumIf 0 2 5 6 [] one),last],[8,5,7],[],.unitary⟩
   let artifact : Artifact := ⟨#[rootProgram,singleProgram false,controlledProgram false,
     singleProgram true,controlledProgram true],#[],#[("main",keepSignSource)],0,none⟩
-  let empty : Context := .withReferences [] [] [] [] [] []
-  let signBody : Context := .withReferences [⟨95,0,1⟩] [] [] [] [] []
-  let preBody : Context := .withReferences [⟨233,0,1⟩] [] [] [] [] []
-  let postBody : Context := .withReferences [⟨286,0,1⟩] [] [] [] [] []
+  let empty : Context := .mk [] [] [] [] []
+  let signBody : Context := .mk [⟨95,0,1⟩] [] [] [] []
+  let preBody : Context := .mk [⟨233,0,1⟩] [] [] [] []
+  let postBody : Context := .mk [⟨286,0,1⟩] [] [] [] []
   let portsIn : List Semantics.CarrierInterface.Owner := [⟨bitPort 0 0,[.bit]⟩,⟨bitPort 2 1,[.bit]⟩]
   let portsOut : List Semantics.CarrierInterface.Owner := [⟨bitPort 5 0,[.bit]⟩,⟨bitPort 6 1,[.bit]⟩]
   let interface : Semantics.CarrierInterface.Interface := ⟨portsIn,portsOut,.unitary⟩
   let inner : Position := ⟨169,0,1⟩
   let site : RuntimeContextRequest.Site := ⟨interface,interface,inner,[⟨1,2⟩,⟨3,4⟩]⟩
-  let chooseBody : Context := .withReferences [inner] [site] [] [] [(.pure 1,empty),(.pure 3,signBody)] [[],[]]
+  let chooseBody : Context := .withReferences [inner] [site] [] []
+    [(.pure 1,empty),(.pure 3,signBody)] [[],[]] []
   let positions : List Position := [⟨380,0,1⟩,⟨402,1,1⟩,⟨425,2,1⟩]
-  let context : Context := .withReferences positions []
-    [(⟨380,0,1⟩,preBody),(⟨402,1,1⟩,chooseBody),(⟨425,2,1⟩,postBody)] [] [] []
+  let context : Context := .mk positions []
+    [(⟨380,0,1⟩,preBody),(⟨402,1,1⟩,chooseBody),(⟨425,2,1⟩,postBody)] [] []
   let unitTree := Semantics.RuntimeType.owner [.unit]
   let bitTree := Semantics.RuntimeType.owner [.bit]
   let runtime : RuntimeFamily.Request :=
@@ -2080,7 +2092,7 @@ private def readAppliedFixture (source name : String) (callOffset : Nat) (fault 
     else [implementation,keep,implementation]
   let child : Context := .withReferences [s] [site] [] [] bodies
     (if slots then [[],[[inner]],[],[[inner],[outer]]]
-     else if applied then [[],[],[[reference]]] else [[[inner]],[],[[inner],[outer]]])
+     else if applied then [[],[],[[reference]]] else [[[inner]],[],[[inner],[outer]]]) []
   let context : Context := .mk [c] [] [(c,child)] [] []
   let prepared ← RuntimeBodyOperations.prepare artifact "main" name {} context
   let checked ← RuntimeBodyOperations.read prepared #[0,1,2,3,4,5] runtime
