@@ -28,15 +28,18 @@ def forests (attached required : Interface) : List Semantics.FiniteCarrier.Basis
 private def checkLogicalUsing (inputCode outputCode : Matrix) (physical : List Matrix)
     (plans : FiniteCarrier.CodePlans inputCode outputCode)
     (request : Nat × Matrix) (checkGram : WorkM Unit) : WorkM Matrix := do
-  let logical ← matrixRead request.2
-  guard (logical.cols == inputCode.cols && logical.rows == outputCode.cols) .request
+  let logical ← SourceTypes.NaturalAffine.witness (matrixRead request.2)
+  guard (logical.val.cols == inputCode.cols && logical.val.rows == outputCode.cols) .request
   checkGram
   let sector ← lift (readOption physical[request.1]?)
   let actual ← FiniteCarrier.codeProductUsing .right sector inputCode plans.inputPlan
-  let required ← FiniteCarrier.codeProductUsing .left outputCode logical plans.outputPlan
+  let required ← FiniteCarrier.codeProductWithAdmission .left outputCode logical.val plans.outputPlan
+    (.checked (by
+      obtain ⟨before,after,ran⟩ := logical.property
+      exact matrixRead_admitted _ _ before after ran))
   exactWork (Exact.charge actual.entries.length)
   guard (actual == required) .equation
-  return logical
+  return logical.val
 
 /-- Exact code-space equation for one active physical selector label. The
 physical list comes from complete original-body reconstruction, including
@@ -82,7 +85,7 @@ private theorem checkLogicalUsing_bound (inputCode outputCode : Matrix) (physica
     (ok : (checkLogicalUsing inputCode outputCode physical plans request checkGram).run work =
       (.ok logical,left)) :
     LogicalBinding inputCode outputCode physical request logical := by
-  obtain ⟨read,w₁,hm,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨read,w₁,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,hd,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₃,hu,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨sector,w₄,hs,h⟩ := bind_success _ _ _ _ _ h
@@ -100,8 +103,9 @@ private theorem checkLogicalUsing_bound (inputCode outputCode : Matrix) (physica
   have exactEq := beq_iff_eq.mp (guard_success _ _ _ _ he).1
   rw [← exactEq] at hr
   obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ ha
-  obtain ⟨c,d,requiredDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ hr
-  have sameMatrix := (matrixRead_value _ _ _ _ hm).1
+  obtain ⟨c,d,requiredDense⟩ := FiniteCarrier.codeProductWithAdmission_dense _ _ _ _ _ _ _ _ hr
+  obtain ⟨before,after,ran⟩ := read.property
+  have sameMatrix := (matrixRead_value _ _ before after ran).1
   exact ⟨sameMatrix,dims.1,dims.2,sameMatrix.symm ▸ gram _ _ hu,
     sector,actual,a,b,c,d,sectorEq,actualDense,requiredDense⟩
 

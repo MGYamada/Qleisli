@@ -18,6 +18,9 @@ development milestones from the scope of their evidence.
   With a verified identity encoding, the product reuses the admitted
   operand and retains its exact coefficients and original dense equation.
   Arms of the same selection share the checked code decisions and adjoint.
+  Rectangular codes with checked single-entry support copy the original
+  coefficients and write exact zeros for padding. Products reuse canonical
+  admission when the preceding native computation already proves it.
   Arm Gram checks also use measured sparse support, with the original
   total charge preserved when the dense strategy is selected.
   Carrier encodings use the compact Gram check when its estimated cost is lower.

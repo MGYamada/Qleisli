@@ -40,14 +40,18 @@ private def useAdjoint (outputCode : Matrix) : Option (AdjointCode outputCode) �
 
 private def projectLogicalUsing (inputCode outputCode physical : Matrix)
     (codes : Codes inputCode outputCode) : WorkM Matrix := do
-  let actual ← FiniteCarrier.codeProductUsing .right physical inputCode codes.products.inputPlan
+  let actual ← SourceTypes.NaturalAffine.witness
+    (FiniteCarrier.codeProductUsing .right physical inputCode codes.products.inputPlan)
   let adjoint ← useAdjoint outputCode codes.adjoint
-  let logical ← FiniteCarrier.codeProductUsing .left adjoint.matrix actual adjoint.plan
-  FiniteRestriction.adaptiveWholeSpace logical
-  let required ← FiniteCarrier.codeProductUsing .left outputCode logical codes.products.outputPlan
-  exactWork (Exact.charge actual.entries.length)
-  guard (actual == required) .equation
-  return logical
+  let logical ← SourceTypes.NaturalAffine.witness
+    (FiniteCarrier.codeProductWithAdmission .left adjoint.matrix actual.val adjoint.plan
+      (.checked (FiniteCarrier.codeProduct_admitted _ _ _ _ _ .fresh actual.property)))
+  FiniteRestriction.adaptiveWholeSpace logical.val
+  let required ← FiniteCarrier.codeProductWithAdmission .left outputCode logical.val codes.products.outputPlan
+    (.checked (FiniteCarrier.codeProduct_admitted _ _ _ _ _ _ logical.property))
+  exactWork (Exact.charge actual.val.entries.length)
+  guard (actual.val == required) .equation
+  return logical.val
 
 def projectLogical (inputCode outputCode physical : Matrix) : WorkM Matrix :=
   projectLogicalUsing inputCode outputCode physical {}
@@ -66,9 +70,9 @@ private theorem projectLogicalUsing_bound (inputCode outputCode physical logical
     (codes : Codes inputCode outputCode) (work left : Nat)
     (ok : (projectLogicalUsing inputCode outputCode physical codes).run work = (.ok logical,left)) :
     Projection inputCode outputCode physical logical := by
-  obtain ⟨actual,w₁,ha,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨actual,w₁,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨adjoint,w₂,_,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨result,w₃,hl,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨result,w₃,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₄,hu,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨required,w₅,hr,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₆,_,h⟩ := bind_success _ _ _ _ _ h
@@ -77,13 +81,15 @@ private theorem projectLogicalUsing_bound (inputCode outputCode physical logical
   subst logical
   have exactEq := beq_iff_eq.mp (guard_success _ _ _ _ he).1
   rw [← exactEq] at hr
-  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ ha
+  obtain ⟨before,after,actualRead⟩ := actual.property
+  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ before after actualRead
   obtain ⟨c,d,adjointDense⟩ := adjoint.computed
-  obtain ⟨e,f,logicalDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ hl
-  obtain ⟨g,i,requiredDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ hr
-  exact ⟨⟨actual,adjoint.matrix,a,b,c,d,e,f,actualDense,adjointDense,logicalDense⟩,
+  obtain ⟨before,after,logicalRead⟩ := result.property
+  obtain ⟨e,f,logicalDense⟩ := FiniteCarrier.codeProductWithAdmission_dense _ _ _ _ _ _ before after logicalRead
+  obtain ⟨g,i,requiredDense⟩ := FiniteCarrier.codeProductWithAdmission_dense _ _ _ _ _ _ w₄ w₅ hr
+  exact ⟨⟨actual.val,adjoint.matrix,a,b,c,d,e,f,actualDense,adjointDense,logicalDense⟩,
     FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
-    ⟨actual,a,b,g,i,actualDense,requiredDense⟩⟩
+    ⟨actual.val,a,b,g,i,actualDense,requiredDense⟩⟩
 
 theorem projectLogical_bound (inputCode outputCode physical logical : Matrix) (work left : Nat)
     (ok : (projectLogical inputCode outputCode physical).run work = (.ok logical,left)) :

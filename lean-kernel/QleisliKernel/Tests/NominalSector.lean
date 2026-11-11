@@ -95,6 +95,26 @@ private def reusedIdentityProducts (phased : Matrix) : Finite.WorkM Matrix := do
   | (.ok result,0) => result == phased
   | _ => false
 
+private def plannedRectangularProducts : Finite.WorkM (List Matrix) := do
+  let plan ← FiniteCarrier.prepareCode paddedCode
+  let right ← FiniteCarrier.codeProductUsing .right (phasedDiagonal (List.range 8)) paddedCode (some plan)
+  let left ← FiniteCarrier.codeProductUsing .left paddedCode (phasedDiagonal encodedLabels) (some plan)
+  return [right,left]
+
+-- One inspection is charged for both products. The reordered entries and
+-- the zero padding row agree with the independent exact actions.
+#guard match plannedRectangularProducts.run 1522 with
+  | (.ok values,0) => values == [expectedCodeAction,expectedCodeAction]
+  | _ => false
+#guard match (plannedRectangularProducts.run 1521).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
+-- A nonunit coefficient must use the original compact arithmetic.
+#guard match ((FiniteCarrier.prepareCode (phasedDiagonal (List.range 8))).run 4096).1 with
+  | .ok .compact => true
+  | _ => false
+
 -- Square shape alone supplies no identity evidence. The fallback compares
 -- the exact reordered result and keeps the original nontrivial phases.
 #guard let phased := phasedDiagonal (List.range 8)

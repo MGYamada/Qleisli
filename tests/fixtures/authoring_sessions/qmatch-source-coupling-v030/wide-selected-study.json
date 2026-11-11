@@ -9,6 +9,30 @@
     "text": "schema-version = 2\n\n[qrate]\nedition = \"2026\"\n",
     "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
   },
+  "rectangular_target_replay": {
+    "selector_bits": 3,
+    "selector_labels": 8,
+    "target_bits": 4,
+    "target_labels": 15,
+    "first_source": {
+      "text": "#![no_implicit_prelude]\n\npub enum Payload { A, B, C, D, E, F, G, H, I, J, K, L, M, N, O }\n\nunitary fn keep(q: Q<Payload>) -> Q<Payload> { q }\nunitary fn mark(q: Q<Payload>) -> Q<Payload> { global_phase_eighth(q) }\n\npub unitary fn route(s: Q<Bits<3>>, q: Q<Payload>) -> (Q<Bits<3>>, Q<Payload>) {\n    qmatch(s, q) {\n        7 => mark, 6 => keep, 5 => mark, 4 => keep,\n        3 => mark, 2 => keep, 1 => mark, 0 => keep,\n    }\n}\n",
+      "sha256": "231b0a4ba657ecf3ea922c2dcbfb1043a263c66c50d45d7cea1af69864c798f9"
+    },
+    "packet_sha256": "70212cfe016c692e59df21cf37dd3d64c4c542f6e375015fbb428a205fc145ae",
+    "outcome": "ok",
+    "diagnostics": [],
+    "verification": {
+      "scope": "finite-source-qmatch-context-v5",
+      "request_origin": "producer",
+      "source_steps_checked": true,
+      "source_meaning_verified": false
+    },
+    "baseline_source_commit": "549d67ad87bba525bf89c57b5757f9681d0c9fb1",
+    "baseline_native_sha256": "3decd419492dafe7f0534aa9ce023bdaf05d45a73a2a725d90d02a9e95e72808",
+    "baseline_native_response": "qleisli.native-result 3\naccepted\n2026\n0.3.0-beta\n--qmatch-source-v5-check\nexecution\n10366481\n1\n",
+    "replay_native_sha256": "e8f4f11193e3bcfb0dd876867459e666c53b771a950e4d98907ea9ae2b3975cf",
+    "replay_native_response": "qleisli.native-result 3\naccepted\n2026\n0.3.0-beta\n--qmatch-source-v5-check\nexecution\n10243898\n1\n"
+  },
   "records": {
     "builtin": {
       "first_source": {

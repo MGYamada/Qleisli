@@ -302,6 +302,187 @@ private theorem map_exact {α β : Type} (items : List α) (step : α → Except
     simp only [List.mapM_cons,List.map_cons,exactAt first List.mem_cons_self,tail,bind,
       Except.bind,pure,Except.pure]
 
+/-- Every line has either one literal unit coefficient or only zeros.
+The array is indexed in the original row or column order. -/
+structure SingleEntrySupport (outer inner : Nat) (entry : Nat → Nat → Scalar) where
+  indices : Array (Option Nat)
+  bounded : ∀ line < outer, ∀ index, indices[line]?.getD none = some index → index < inner
+  literal : ∀ line < outer, ∀ index < inner,
+    entry line index = if indices[line]?.getD none = some index then Scalar.one else Scalar.zero
+
+private def inspectSingleEntries (outer inner : Nat) (entry : Nat → Nat → Scalar) :
+    Option (SingleEntrySupport outer inner entry) := do
+  let positions := List.range inner
+  let picks := ((List.range outer).map fun line =>
+    positions.find? (fun index => entry line index == Scalar.one)).toArray
+  if verified : (List.range outer).all (fun line => positions.all fun index =>
+      entry line index == (if picks[line]?.getD none == some index then Scalar.one else Scalar.zero)) then
+    return ⟨picks,by
+      intro line lineBound index found
+      simp only [picks,List.getElem?_toArray,List.getElem?_map,List.getElem?_range lineBound,
+        Option.map_some,Option.getD_some] at found
+      exact List.mem_range.mp (List.mem_of_find?_eq_some found),by
+      intro line lineBound index indexBound
+      have row := List.all_eq_true.mp verified line (List.mem_range.mpr lineBound)
+      have cell := beq_iff_eq.mp (List.all_eq_true.mp row index (List.mem_range.mpr indexBound))
+      simpa only [beq_iff_eq] using cell⟩
+  else none
+
+structure Matrix.SingleEntrySupports (matrix : Matrix) where
+  rows : SingleEntrySupport matrix.rows matrix.cols matrix.entry
+  columns : SingleEntrySupport matrix.cols matrix.rows (fun col row => matrix.entry row col)
+
+/-- Precharge both scans before reading the literal coefficients. The decision
+contains only arrays and proof-erased bounds. -/
+def Matrix.readSingleEntrySupports (matrix : Matrix) : WorkM (Option (Matrix.SingleEntrySupports matrix)) := do
+  if !matrixValid matrix.rows matrix.cols then return none
+  charge (10*matrix.rows*matrix.cols + 4*(matrix.rows+matrix.cols) + 1)
+  let entries := (matrix.entries.take (matrix.rows*matrix.cols)).toArray
+  let entry := arrayEntry entries matrix.cols
+  have original (row col : Nat) (rowBound : row < matrix.rows) (colBound : col < matrix.cols) :
+      entry row col = matrix.entry row col := by
+    have cell : row*matrix.cols+col < matrix.rows*matrix.cols := by
+      calc
+        row*matrix.cols+col < row*matrix.cols+matrix.cols := Nat.add_lt_add_left colBound _
+        _ = (row+1)*matrix.cols := (Nat.succ_mul _ _).symm
+        _ ≤ matrix.rows*matrix.cols := Nat.mul_le_mul_right _ rowBound
+    simp only [entry,entries,arrayEntry,Matrix.entry,List.getElem?_toArray,List.getElem?_take_of_lt cell]
+  let supports : Option (Matrix.SingleEntrySupports matrix) := do
+    let rows ← inspectSingleEntries matrix.rows matrix.cols entry
+    let columns ← inspectSingleEntries matrix.cols matrix.rows (fun col row => entry row col)
+    pure ⟨⟨rows.indices,rows.bounded,by
+      intro row rowBound col colBound
+      exact (original row col rowBound colBound).symm.trans (rows.literal row rowBound col colBound)⟩,
+      ⟨columns.indices,columns.bounded,by
+        intro col colBound row rowBound
+        exact (original row col rowBound colBound).symm.trans (columns.literal col colBound row rowBound)⟩⟩
+  return supports
+
+private def selectedValue (pick : Option Nat) (value : Nat → Scalar) : Scalar :=
+  match pick with | none => Scalar.zero | some index => value index
+
+private theorem dot_select_optional (width : Nat) (pick : Option Nat)
+    (bounded : ∀ i, pick = some i → i < width) (term : Nat → Scalar × Scalar) (value : Nat → Scalar)
+    (product : ∀ k < width, Scalar.mul (term k).1 (term k).2 =
+      .ok (if pick = some k then value k else Scalar.zero)) :
+    (List.range width).foldlM (fun sum k => dotStep sum (term k)) Scalar.zero =
+      .ok (selectedValue pick value) := by
+  cases pick with
+  | none =>
+    have sparse := sparse_dot (List.range width) term (fun _ => false) Scalar.zero (by decide)
+      (fun k member _ => by simpa using product k (List.mem_range.mp member))
+    have empty : (List.range width).filter (fun _ => false) = [] := by
+      apply List.filter_eq_nil_iff.mpr
+      simp
+    rw [empty] at sparse
+    exact sparse.symm
+  | some index =>
+    apply dot_select width index (bounded index rfl)
+    intro k inside
+    by_cases same : k = index
+    · subst k
+      simpa using product index inside
+    · simpa [same,Ne.symm same] using product k inside
+
+private def gatherLeft (code y : Matrix) (rows : Array (Option Nat)) : List Scalar :=
+  let entries := y.entries.toArray
+  (List.range (code.rows*y.cols)).map fun index =>
+    match rows[index/y.cols]?.getD none with
+    | none => Scalar.zero
+    | some selected => arrayEntry entries y.cols selected (index%y.cols)
+
+private def gatherRight (x code : Matrix) (columns : Array (Option Nat)) : List Scalar :=
+  let entries := x.entries.toArray
+  (List.range (x.rows*code.cols)).map fun index =>
+    match columns[index%code.cols]?.getD none with
+    | none => Scalar.zero
+    | some selected => arrayEntry entries x.cols (index/code.cols) selected
+
+/-- With certified single-entry support, copy each required coefficient
+or write the padding zero. -/
+def Matrix.composeSingleLeftWork (code y : Matrix)
+    (rows : SingleEntrySupport code.rows code.cols code.entry) : WorkM Matrix := do
+  if code.cols ≠ y.rows then throw .shapeMismatch
+  charge (y.entries.length + 3*code.rows*y.cols)
+  liftExact (Matrix.make code.rows y.cols (gatherLeft code y rows.indices))
+
+def Matrix.composeSingleRightWork (x code : Matrix)
+    (columns : SingleEntrySupport code.cols code.rows (fun col row => code.entry row col)) : WorkM Matrix := do
+  if x.cols ≠ code.rows then throw .shapeMismatch
+  charge (x.entries.length + 3*x.rows*code.cols)
+  liftExact (Matrix.make x.rows code.cols (gatherRight x code columns.indices))
+
+private theorem gather_left_entries (code y : Matrix) (admitted : Matrix.Admitted y)
+    (rows : SingleEntrySupport code.rows code.cols code.entry) :
+    denseEntries code y = .ok (gatherLeft code y rows.indices) := by
+  unfold denseEntries gatherLeft
+  apply map_exact
+  intro index member
+  have dimensions := admitted.1
+  simp only [matrixValid,Bool.and_eq_true,decide_eq_true_eq] at dimensions
+  have rowBound := (Nat.div_lt_iff_lt_mul dimensions.1.2).mpr (List.mem_range.mp member)
+  simp only [arrayEntry_eq]
+  apply dot_select_optional code.cols (rows.indices[index/y.cols]?.getD none)
+    (rows.bounded _ rowBound) (fun k => (code.entry (index/y.cols) k,y.entry k (index%y.cols)))
+    (fun k => y.entry k (index%y.cols))
+  intro k inside
+  change Scalar.mul (code.entry (index/y.cols) k) (y.entry k (index%y.cols)) = _
+  rw [rows.literal _ rowBound _ inside]
+  have valid := matrix_entry_valid y admitted k (index%y.cols)
+  split
+  · exact scalar_one_mul _ valid
+  · exact scalar_zero_mul _ (scalar_exponent_bound _ valid)
+
+private theorem gather_right_entries (x code : Matrix) (admitted : Matrix.Admitted x)
+    (columns : SingleEntrySupport code.cols code.rows (fun col row => code.entry row col))
+    (shape : x.cols = code.rows) : denseEntries x code = .ok (gatherRight x code columns.indices) := by
+  unfold denseEntries gatherRight
+  apply map_exact
+  intro index member
+  have positive : 0 < code.cols := by
+    by_cases zero : code.cols = 0
+    · simp [zero] at member
+    · omega
+  have colBound := Nat.mod_lt index positive
+  simp only [arrayEntry_eq]
+  apply dot_select_optional x.cols (columns.indices[index%code.cols]?.getD none)
+    (fun k found => shape.symm ▸ columns.bounded _ colBound k found)
+    (fun k => (x.entry (index/code.cols) k,code.entry k (index%code.cols)))
+    (fun k => x.entry (index/code.cols) k)
+  intro k inside
+  change Scalar.mul (x.entry (index/code.cols) k) (code.entry k (index%code.cols)) = _
+  rw [columns.literal _ colBound _ (shape ▸ inside)]
+  have valid := matrix_entry_valid x admitted (index/code.cols) k
+  split
+  · exact scalar_mul_one _ valid
+  · exact scalar_mul_zero _ (scalar_exponent_bound _ valid)
+
+theorem Matrix.composeSingleLeft_success (code y result : Matrix) (admitted : Matrix.Admitted y)
+    (rows : SingleEntrySupport code.rows code.cols code.entry)
+    (work left : Nat) (ok : (Matrix.composeSingleLeftWork code y rows).run work = (.ok result,left)) :
+    (Matrix.composeWork code y).run (2*code.rows*code.cols*y.cols) = (.ok result,0) := by
+  by_cases shape : code.cols = y.rows
+  · simp only [Matrix.composeSingleLeftWork,if_neg (not_not_intro shape),pure_bind] at ok
+    obtain ⟨_,_,_,made⟩ := work_bind_success _ _ _ _ _ ok
+    apply compose_at_cost _ _ _ shape
+    simpa only [denseComposition,gather_left_entries _ _ admitted rows,bind,Except.bind]
+      using (work_lift_success _ _ _ _ made).1
+  · simp [Matrix.composeSingleLeftWork,shape] at ok
+    cases ok
+
+theorem Matrix.composeSingleRight_success (x code result : Matrix) (admitted : Matrix.Admitted x)
+    (columns : SingleEntrySupport code.cols code.rows (fun col row => code.entry row col))
+    (work left : Nat) (ok : (Matrix.composeSingleRightWork x code columns).run work = (.ok result,left)) :
+    (Matrix.composeWork x code).run (2*x.rows*x.cols*code.cols) = (.ok result,0) := by
+  by_cases shape : x.cols = code.rows
+  · simp only [Matrix.composeSingleRightWork,if_neg (not_not_intro shape),pure_bind] at ok
+    obtain ⟨_,_,_,made⟩ := work_bind_success _ _ _ _ _ ok
+    apply compose_at_cost _ _ _ shape
+    simpa only [denseComposition,gather_right_entries _ _ admitted columns shape,bind,Except.bind]
+      using (work_lift_success _ _ _ _ made).1
+  · simp [Matrix.composeSingleRightWork,shape] at ok
+    cases ok
+
 private theorem dense_entries_selected (x y output : Matrix)
     (rows : output.rows = x.rows) (cols : output.cols = y.cols) (admitted : Matrix.Admitted output)
     (cells : ∀ i ∈ List.range (x.rows*y.cols),
