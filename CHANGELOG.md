@@ -21,6 +21,9 @@ development milestones from the scope of their evidence.
   Rectangular codes with checked single-entry support copy the original
   coefficients and write exact zeros for padding. Products reuse canonical
   admission when the preceding native computation already proves it.
+  A selection reuses a static operation graph after matching the complete
+  description under the same supply. Each original arm retains its own
+  proposal, source rows and assertion markers.
   Arm Gram checks also use measured sparse support, with the original
   total charge preserved when the dense strategy is selected.
   Carrier encodings use the compact Gram check when its estimated cost is lower.
