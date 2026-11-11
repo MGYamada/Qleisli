@@ -29,6 +29,7 @@ mod value;
 use value::{Binding, Env, Register, Slot, Value, env_size};
 
 use super::*;
+use crate::frontend::core::PrimitiveId;
 use crate::frontend::pattern::{self, BindingContext};
 use crate::frontend::raw_state::RawState;
 use crate::ir::*;
@@ -1289,6 +1290,23 @@ impl Lowerer<'_, '_> {
                 Ok(value)
             }
             Callee::Primitive(primitive) => {
+                if !matches!(
+                    primitive,
+                    PrimitiveId::H | PrimitiveId::Phase | PrimitiveId::GlobalPhaseEighth
+                ) {
+                    if let Some(frame) = &mut self.nominal_qmatch {
+                        frame.record_event_outside_static_profile();
+                    }
+                }
+                if matches!(
+                    primitive,
+                    PrimitiveId::TakeBit
+                        | PrimitiveId::PutBit
+                        | PrimitiveId::EmptyBits
+                        | PrimitiveId::PrependBit
+                ) {
+                    self.prefer_runtime_root();
+                }
                 if !static_args.is_empty() {
                     return self.primitive_static_with_source(
                         module, source, callee, primitive, values, args,
@@ -1332,12 +1350,30 @@ impl Lowerer<'_, '_> {
         Ok(value)
     }
 
+    fn prefer_runtime_root(&mut self) {
+        if let Some(frame) = &mut self.nominal_qmatch {
+            frame.prefer_runtime_root();
+        }
+    }
+
     fn expr_inner(
         &mut self,
         module: &str,
         expr: &Expr,
         env: &mut Env,
     ) -> Result<Value, CompileError> {
+        // These original forms are handled by the typed runtime root.
+        if matches!(
+            expr.kind,
+            ExprKind::Match(_)
+                | ExprKind::AccessCall { .. }
+                | ExprKind::ApplyContract { .. }
+                | ExprKind::StaticFold { .. }
+                | ExprKind::WithComputed { .. }
+                | ExprKind::CertifiedComputed { .. }
+        ) {
+            self.prefer_runtime_root();
+        }
         match &expr.kind {
             ExprKind::Variant(value) => self.variant_value(module, expr.span, value),
             ExprKind::Match(selection) => {
@@ -2065,7 +2101,7 @@ fn lower_function_in_context(
         .filter(|context| {
             lower.uses_qmatch_v5()
                 && context.contains_selections
-                && (require_qmatch_v5 || context.needs_qmatch_v5)
+                && (require_qmatch_v5 || context.needs_qmatch_v5 || !context.prefer_runtime_root)
         })
         .cloned();
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {
