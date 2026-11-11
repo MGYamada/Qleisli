@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain small access-call and explicit-owner algorithm pairs for fixed
+  arithmetic, coherent equality, a Grover iterate, a QPE controlled-power
+  prefix and a quantum-walk step. Keep exact phase/axis comparisons and
+  observed project execution separate from selected-profile limitations and
+  unfinished general source/resource proofs.
 - Distinguish live-binding exchange, structural axis reordering and physical
   SWAP in quantum assignment and retired-import diagnostics. Keep ordinary
   assignment advice separate and retain the explicit two-Bit library interfaces.

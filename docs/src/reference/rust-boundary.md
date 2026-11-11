@@ -316,6 +316,14 @@ borrowing of compiler data structures.
 
 ## Whole-owner exclusive calls
 
+The [small cross-algorithm study](../../../tests/fixtures/authoring_sessions/access-algorithms-v030/context.md)
+retains complete access-call and explicit-owner pairs for fixed arithmetic,
+coherent equality, a Grover iterate, a QPE controlled-power prefix and a walk
+step. These examples use the same access rule; their local helper names are
+not new standard-library APIs. The QPE example has no inverse QFT. Finite
+project execution and selected Raw support are checked separately, and the
+selected Grover computed body still has an explicit profile refusal.
+
 `h(excl q)` temporarily supplies the live lexical owner `q` to the existing
 consuming call and retains its returned quantum value on the same binder.
 The access call itself has ordinary type `Unit`. A joint call such as

@@ -1,0 +1,45 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-access-29-20261111/attempt-01/add_k-access",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-11T14:51:58.031141+00:00",
+  "exit_code": 0,
+  "timeout": false,
+  "seconds": 2.463944832998095,
+  "source_sha256": "0c580cfcb157de6884fce897be0404bfc343d4869bf7ed64c821fc8543de8d35",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"checker_paths\":[\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\"],\"checker_identity\":\"unpinned\",\"native_decisions\":{\"count\":108,\"requests_checked\":2,\"complete\":true},\"entry\":{\"present\":true,\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false},\"concrete_ir_roots\":{\"local\":3,\"bundled\":24},\"source_preservation_verified\":false}}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "checker_paths": [
+        "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "checker_identity": "unpinned",
+      "native_decisions": {
+        "count": 108,
+        "requests_checked": 2,
+        "complete": true
+      },
+      "entry": {
+        "present": true,
+        "request_checked": false,
+        "ordinary_result_checked": false,
+        "runtime_result_checked": false
+      },
+      "concrete_ir_roots": {
+        "local": 3,
+        "bundled": 24
+      },
+      "source_preservation_verified": false
+    }
+  },
+  "original_record_sha256": "648c21fdaf30eb893f8c620e1f5f65d80b3ec94bd5522f1a7595e7dfc9ed7715"
+}

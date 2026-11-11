@@ -1,0 +1,120 @@
+Issue #29: first small algorithm/access sources
+
+STATUS: INFORMED DESIRED SOURCES. NONE HAS BEEN PARSED, CHECKED, COMPILED OR RUN.
+Every outcome below is a mathematical prediction, not an observed result.
+This external packet is not a repository implementation, successful authoring
+benchmark, proof, independent reviewer response or issue-completion record.
+
+Task: define five access/consume-return pairs after the read-only #29 audit.
+Author: Codex child agent /root/audit_29, with inherited conversation context.
+The author read current repository contracts, implementation and tests. This is
+not a blind first-author evaluation. Root is responsible for subsequent actual
+observations; no build, test, CLI invocation or GitHub mutation was performed.
+
+All ten projects are complete one-module edition-2026 source trees. probe is an
+open unitary entry for exact all-column checks. main is a closed observation
+harness for concrete source-to-output checks. Both variants retain identical
+helpers, preparations, observers, source order and exact result trees. Their
+only deliberate difference is access calls versus explicit owner threading.
+Each helper name is defined locally; it is not an assertion that a new std API
+exists. Existing std functions are explicitly imported. Language primitives
+h/split/join/measure_z/controlled/power retain their existing meanings.
+
+Scope and mathematical contract (first leaf has bit weight one):
+
+1. add_k: local fixed-two-bit AddK with K=3, using increment2's existing body
+   and power. The input tree is ((low,high),reference). For x=low+2*high,
+   |x,r> -> |(x+3) mod 4,r>, exact amplitude +1. The reference is untouched.
+   main starts in (|00,0>+|01,1>)/sqrt(2), where the register's integer labels
+   are 0 and 1. Predicted flattened outputs are (1,1,0) and (0,0,1), each 1/2.
+   This is not the generic Bits<N> corpus implementation or its integration.
+
+2. equals: fixed one-bit comparison. Input ((left,right),flag) maps to
+   |left,right,flag xor (1 xor left xor right)>, exact amplitude +1. ctrl
+   roles apply only to the final left/right sector-preserving joint action;
+   they do not promise separability or unchanged reduced states. main prepares
+   left=|+>, right=|0>, flag=|->, then measures left and flag in the X basis.
+   Predicted output is (1,0,1) with probability one. The overall minus sign
+   on this input is retained by the independent full-column request.
+
+3. grover: N=4, mark label 3 (11), then R_s=2|s><s|-I with |s>=H2|00>.
+   G[row,col]=(1/2-delta(row,col)) * (-1 if col=3 else +1).
+   The order is oracle then reflection, with exact scalar phase, not equality
+   modulo global phase. main prepares |s>; predicted output is (1,1) with
+   probability one and final amplitude +1. The existing reflection may use
+   its checked temporary zero-return auxiliary: two data qubits plus one
+   temporary qubit. No resource-certificate completion is inferred.
+
+4. qpe_prefix: two phase bits plus one target. H on both phase bits precedes
+   controlled S and controlled S^2, with phase weights 1 then 2. No QFT,
+   generic QFT, complete phase estimator or QFT integration is included.
+   For input (a,b,t), output (c,d,t) has amplitude
+       (-1)^(a*c+b*d) * i^(t*(c+2*d)) / 2.
+   main uses target |1>; local S-dagger/H and H analyzers predict (0,1,1)
+   with probability one. The analyzers are not an inverse QFT.
+
+5. walk: two-vertex controlled-shift step: coin=0 stays, coin=1 flips
+   position. The coin is H, followed by CNOT(coin,position); reference is
+   untouched. For input (c,p,r), output (d,p xor d,r) has amplitude
+       (-1)^(c*d) / sqrt(2).
+   This explicitly chosen finite walk is not a bidirectional ring algorithm
+   or new general walk library. main entangles position with its reference
+   before the step. Outputs (0,0,0),(0,1,1),(1,1,0),(1,0,1) each have weight 1/4.
+
+expectations.json preserves independent mathematical sparse columns. These
+were generated from the displayed equations without evaluating any .qli,
+proposal, emitted gate list or implementation matrix. Exact amplitude strings
+are mathematical data, not a new native protocol. Successful main probabilities
+alone cannot prove exact phase, all-input/reference behavior or source lowering.
+Full operator equations extend with reference identity mathematically, but no
+Lean source or runtime preservation proof is claimed by this packet.
+
+Suggested future checks (NOT EXECUTED):
+- Check each unchanged first source through project and selected Raw paths;
+  keep exact CLI/checker identities, command arguments and raw stdout/stderr.
+- For probe, compare both independently accepted artifacts to their own exact
+  source tree and the fixed columns, not just to each other. Preserve physical
+  axis/order/source-step provenance; a matching matrix alone is insufficient.
+- Run main and compare raw, unnormalized outcome weights to predictions.
+- Preserve all initial refusals. A repair belongs in a distinct attempt-02;
+  neither this context nor attempt-01 is overwritten after an observation.
+- Keep actual artifact/resource accounting separate from program meaning.
+
+Deliberate semantic counterexamples to prepare later, outside repair attempts:
+- AddK: K=2, carry after low-bit flip, high/low output exchange, extra Z.
+- Equals: omit target X (inequality), omit one CNOT, add a phase on left,
+  exchange the two source roles with the flag, or use H under ctrl.
+- Grover: reflection before mark, mark a different label, negate the reflection
+  globally; a probability-only observer cannot establish the last case.
+- QPE: exchange power-1/power-2 calls between phase owners, omit one H,
+  use the adjoint S provider, exchange ordered outputs, add an extra phase.
+- Walk: shift before coin, put H on position, switch CNOT direction,
+  alter the untouched reference, or add a phase invisible to Z readout.
+No negative source has been executed or fabricated as an observed refusal.
+
+Known integration uncertainty, preserved rather than pre-emptively repaired:
+- Current whole-owner access uses ordinary by-value declarations and returns
+  surface Unit. Runtime mixtures, access-parameter declarations and general
+  source/resource proofs remain out of scope for these probes.
+- Existing sized Qualtran files use historical static/import spellings and
+  their README disclaims current public integration. They informed only
+  semantic scope; no legacy source is silently presented as a current API.
+- Native sector checking of the local equals/controlled_power/shift helpers,
+  generic power instantiation and selected-Raw computed reflection lowering
+  still require actual checks. Any failure is an observation, not permission
+  to bypass acceptance or replace the first source.
+- These pairs exercise whole-owner/joint access. Indexed/sliced footprints
+  already have separate #29 tests and are not claimed completed here.
+- #39/#63 and generic QFT remain excluded; qlippy is not involved. No maximum
+  case, upstream source, stdlib expansion, new acceptance path or release is added.
+
+Provenance and license:
+This is local verification material under corpus/POLICY.md, not a fourth
+external input corpus. No external source was fetched. The increment2 body
+is adapted only in whitespace/visibility from the retained first-party
+examples/order_finding/arithmetic.qli. Other local helpers are short explicit
+finite harnesses using current primitives/stdlib and stated equations.
+Repository inputs actually consulted are SHA-256-pinned in provenance.json.
+First-party LICENSE/NOTICE are copied alongside this packet; historical source
+attributions in repository originals are unchanged. The actual frozen project
+files are listed with SHA-256 in manifest.json. These records precede all checks.

@@ -1,0 +1,10 @@
+{
+  "cli": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+  "cli_sha256": "33ef842963c36e7048958ce4aea5e8f864d832f2bc96aa821b15ae00ebbec0c2",
+  "kernel": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "kernel_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+  "observer_sha256": "1eade05f8cd931aa35dc089f269b949725f7145502ed6c958e09c884da52d73f",
+  "manifest_sha256": "6f156409b26eb57a443ae88e7d845d39fedfa889bc31537ef5b36ee38f14c44e",
+  "git_head": "245fb314af19a216043a850e5fe0a7fd863ff8ac",
+  "dirty_diff_sha256": "16b6fc49ab3a132c878dc30048a9aabbfef162232e8461019d4d35da27ad23f1"
+}

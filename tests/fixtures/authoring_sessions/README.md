@@ -45,6 +45,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [small cross-algorithm access study](access-algorithms-v030/context.md)
+retains ten first access/explicit-owner programs, their independent mathematical
+expectations and thirty actual CLI observations. Project success, two selected
+Raw profile refusals and numerical distributions remain distinct from exact
+artifact regressions and unfinished general source/resource proofs.
+
 The [physical SWAP and structural output study](axis-routing-output-v030/context.md)
 retains six unchanged first sources and eighteen actual CLI observations.
 Usage failures, unchanged refusals, revised explanations and literal QASM/QIR

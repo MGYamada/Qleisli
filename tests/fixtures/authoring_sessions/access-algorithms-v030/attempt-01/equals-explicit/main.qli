@@ -1,0 +1,33 @@
+// Copyright 2026 Qleisli Project Contributors.
+// SPDX-License-Identifier: Apache-2.0
+// Informed first source for issue #29; not yet checked or executed.
+use std::gate::cnot;
+use std::gate::x;
+use std::gate::z;
+use std::state::init0;
+
+// Local one-bit equality harness: flag ^= (left == right), phase +1.
+// This follows the Boolean equation 1 xor left xor right, not a generic API.
+unitary fn equals(left: Q<Bit>, right: Q<Bit>, flag: Q<Bit>)
+    -> (Q<Bit>,Q<Bit>,Q<Bit>) {
+    let flag = x(flag);
+    let (left,flag) = cnot(left,flag);
+    let (right,flag) = cnot(right,flag);
+    (left,right,flag)
+}
+
+pub unitary fn probe(input: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> {
+    let (pair,flag) = split(input);
+    let (left,right) = split(pair);
+    let (left,right,flag) = equals(left,right,flag);
+    join(join(left,right),flag)
+}
+
+// The target starts in |->; equality changes left's coherence by kickback.
+// A ctrl role therefore does not promise an unchanged reduced state.
+pub observe fn main() -> ((Bit,Bit),Bit) {
+    let input = join(join(h(init0()),init0()),z(h(init0())));
+    let (pair,flag) = split(probe(input));
+    let (left,right) = split(pair);
+    ((measure_z(h(left)),measure_z(right)),measure_z(h(flag)))
+}

@@ -1,0 +1,34 @@
+// Copyright 2026 Qleisli Project Contributors.
+// SPDX-License-Identifier: Apache-2.0
+// Informed first source for issue #29; not yet checked or executed.
+use std::gate::cnot;
+use std::gate::x;
+use std::state::init0;
+
+// Body retained from examples/order_finding/arithmetic.qli, with local visibility.
+// The first leaf is the low bit. This is fixed-width arithmetic, not a Bits<N> API.
+unitary fn increment2(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (low,high) = split(q);
+    let (low,high) = cnot(low,high);
+    join(x(low),high)
+}
+
+// Local two-bit AddK harness. K is bounded; no general-width API is claimed.
+unitary fn add_k[const K: Nat](q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)>
+requires K <= 3 {
+    power(increment2,K)(q)
+}
+
+pub unitary fn probe(input: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> {
+    let (data,reference) = split(input);
+    let data = add_k[3](data);
+    join(data,reference)
+}
+
+pub observe fn main() -> ((Bit,Bit),Bit) {
+    let (low,reference) = cnot(h(init0()),init0());
+    let output = probe(join(join(low,init0()),reference));
+    let (data,reference) = split(output);
+    let (low,high) = split(data);
+    ((measure_z(low),measure_z(high)),measure_z(reference))
+}
