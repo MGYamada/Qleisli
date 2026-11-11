@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Route selected computed scopes through the existing common source emitter
+  from their original syntax and dependency closure. Retain structured Raw
+  uncomputation, local exact normalization receipts and typed native checks;
+  check the unchanged small Grover sources against independent exact equations.
 - Retain small access-call and explicit-owner algorithm pairs for fixed
   arithmetic, coherent equality, a Grover iterate, a QPE controlled-power
   prefix and a quantum-walk step. Keep exact phase/axis comparisons and

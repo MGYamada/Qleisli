@@ -1,0 +1,55 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "run",
+    "--entry=main::main",
+    "--module=main=/private/tmp/qleisli-516-provider-followup/tests/fixtures/authoring_sessions/access-algorithms-v030/attempt-01/grover-explicit/main.qli",
+    "--ir-profile=raw",
+    "--format=json",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}],\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":true,\"ordinary_result_checked\":true,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"finite-ordinary-root-v2\",\"request_origin\":\"producer\",\"source_steps_checked\":false,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::main\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+  "raw_stderr": "",
+  "source_sha256": "5327772fd9f5665a4f27174127d6f68738aae53c2cabb042485918c2b2fec36e",
+  "cli_sha256": "4244795cb07474bf2c4e2df061807389dfe4f41e34b998341ae54a70434178d3",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 1
+        }
+      ],
+      "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "checker_identity": "unpinned",
+      "request_checked": true,
+      "ordinary_result_checked": true,
+      "runtime_result_checked": false,
+      "source_preservation_verified": false,
+      "verification": {
+        "scope": "finite-ordinary-root-v2",
+        "request_origin": "producer",
+        "source_steps_checked": false,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "original_record_sha256": "ee8756110837633f6abf5af79d33b66b3f89179ae7599f3c5522bff62c98d3c3",
+  "scope": "Later selected-computed routing repair observation; same original Qleisli source. Binary identity is not a build or runtime correctness attestation.",
+  "recorded_utc": "2026-11-11T16:57:42.612350+00:00",
+  "recording_note": "Time is the original capture JSON file modification time, written immediately after that command returned. The transient Python observer was not retained as a source file. Actual argv and both streams are retained; no historical command was rerun to reconstruct these observations."
+}

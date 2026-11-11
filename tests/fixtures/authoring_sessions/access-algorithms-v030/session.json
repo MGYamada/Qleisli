@@ -64,7 +64,11 @@
         "observations/walk-access-selected-check.json",
         "observations/walk-explicit-project-check.json",
         "observations/walk-explicit-project-run.json",
-        "observations/walk-explicit-selected-check.json"
+        "observations/walk-explicit-selected-check.json",
+        "observations/computed-route-access-check.json",
+        "observations/computed-route-access-run.json",
+        "observations/computed-route-explicit-check.json",
+        "observations/computed-route-explicit-run.json"
       ],
       "reports": [
         "manifest.json",

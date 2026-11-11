@@ -319,3 +319,374 @@ fn access_and_explicit_algorithms_obey_independent_exact_equations() {
         semantic_rejection(error, &format!("{algorithm:?} changed action"));
     }
 }
+
+// Selected roots keep the same original computed scope and fresh native checks.
+mod selected_grover_computed_api {
+    use super::common::SourceRoot;
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
+    use qleisli::edition::Edition;
+    use qleisli::frontend::compile::ParsedProgram;
+    use qleisli::frontend::project::{ModuleOrigin, Project};
+    use qleisli::interchange::carrier::Atom as Basis;
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
+    use qleisli::interchange::native::{Kernel, Proposal};
+    use qleisli::interchange::runtime_root::{Atom, Storage};
+    use qleisli::interchange::{RootInterface, Version};
+    use qleisli::ir::{
+        Effect, ProtectedBit, ProtectedRegion, ProtectedUse, QuantumPort, RawOp, RawProgram,
+        SingleGate,
+    };
+
+    const ACCESS: &str = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/authoring_sessions/access-algorithms-v030/attempt-01/grover-access/main.qli"
+    ));
+    const EXPLICIT: &str = include_str!(concat!(
+        env!("CARGO_MANIFEST_DIR"),
+        "/tests/fixtures/authoring_sessions/access-algorithms-v030/attempt-01/grover-explicit/main.qli"
+    ));
+
+    #[test]
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    fn selected_computed_cli_checks_open_roots_and_runs_closed_roots() {
+        for original in [ACCESS, EXPLICIT] {
+            let root = SourceRoot::new(original);
+            for (action, entry, expected_scope) in [
+                ("check", "probe", "finite-runtime-root-v2"),
+                ("run", "main", "finite-ordinary-root-v2"),
+            ] {
+                let output = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
+                    .args([action, "--format=json", "--ir-profile=raw"])
+                    .arg(format!("--entry=main::{entry}"))
+                    .arg(format!(
+                        "--module=main={}",
+                        root.0.join("main.qli").display()
+                    ))
+                    .arg(format!(
+                        "--lean-kernel={}",
+                        std::path::PathBuf::from(std::env::var_os("QLEISLI_KERNEL").unwrap())
+                            .display()
+                    ))
+                    .output()
+                    .unwrap();
+                assert!(output.status.success(), "{output:?}");
+                assert!(output.stderr.is_empty(), "{output:?}");
+                let text = String::from_utf8(output.stdout).unwrap();
+                for expected in [
+                    format!("\"command\":\"{action}\""),
+                    format!("\"scope\":\"{expected_scope}\""),
+                    "\"outcome\":\"ok\"".into(),
+                    "\"request_checked\":true".into(),
+                    "\"source_preservation_verified\":false".into(),
+                    "\"source_meaning_verified\":false".into(),
+                ] {
+                    assert!(text.contains(&expected), "missing {expected}: {text}");
+                }
+                if action == "run" {
+                    assert!(
+                        text.contains(
+                            "\"distribution\":[{\"bits\":[true,true],\"probability\":1}]"
+                        ),
+                        "{text}"
+                    );
+                }
+            }
+        }
+    }
+
+    // Ordered basis index = a + 2*b. This oracle is fixed independently of
+    // either compiled source: G = (2|s><s| - I) O_marked, |s> = (1,1,1,1)/2.
+    fn grover(marked: usize) -> Matrix {
+        let half = Exact::new([1, 0, 0, 0], 1).unwrap();
+        Matrix::new(
+            4,
+            4,
+            (0..16)
+                .map(|index| {
+                    let (row, col) = (index / 4, index % 4);
+                    if (row == col) != (col == marked) {
+                        half.neg().unwrap()
+                    } else {
+                        half
+                    }
+                })
+                .collect(),
+        )
+        .unwrap()
+    }
+
+    fn exact_request(
+        raw: &RawProgram,
+        basis: BasisType,
+        expected: &Matrix,
+    ) -> Result<(), qleisli::interchange::Error> {
+        let [input] = raw.quantum_inputs.as_slice() else {
+            panic!("one input owner")
+        };
+        let [output] = raw.quantum_outputs.as_slice() else {
+            panic!("one output owner")
+        };
+        // Fix the source's ORIGINAL wire order, never infer a desired map from
+        // the candidate output. The output token alone is an SSA identifier.
+        let boundary = UnitaryBoundary::new(
+            basis.clone(),
+            input.clone(),
+            QuantumPort {
+                token: *output,
+                wires: input.wires.clone(),
+                shape: input.shape,
+            },
+        )
+        .unwrap();
+        let proposal = Proposal::from_raw(
+            raw,
+            Some(&RootInterface {
+                input: basis.clone(),
+                output: basis,
+            }),
+            Version::V2,
+            None,
+        )
+        .unwrap();
+        check_unitary(
+            Edition::E2026,
+            proposal.artifact(),
+            &boundary,
+            expected,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .map(|_| ())
+    }
+
+    fn semantic_refusal(result: Result<(), qleisli::interchange::Error>) {
+        let error = result.expect_err("incorrect exact action must be refused");
+        // A capacity, unsupported, decode, interface or process failure is not
+        // evidence that the independently fixed meaning was compared.
+        assert_eq!(error.code, "contract", "{error:?}");
+        assert_eq!(
+            error.message,
+            "Lean native checker rejected the artifact/request; no fallback"
+        );
+    }
+
+    #[test]
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    fn selected_grover_preserves_computed_scope_and_fixed_exact_action() {
+        let kernel = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").expect("explicit native test gate"),
+            Edition::E2026,
+        );
+        let expected = grover(3);
+        let pair = BasisType::pair(BasisType::Bit, BasisType::Bit);
+        let negative_phase = Matrix::new(
+            4,
+            4,
+            expected
+                .entries()
+                .iter()
+                .map(|x| x.neg().unwrap())
+                .collect(),
+        )
+        .unwrap();
+        let z = Matrix::new(
+            2,
+            2,
+            vec![
+                Exact::one(),
+                Exact::zero(),
+                Exact::zero(),
+                Exact::one().neg().unwrap(),
+            ],
+        )
+        .unwrap();
+
+        for (label, original) in [("access", ACCESS), ("explicit", EXPLICIT)] {
+            // Keep the complete first source, including its observe main, unchanged.
+            // This selected API experiment adds no source wrapper or replacement AST.
+            let root = SourceRoot::new(original);
+            let project =
+                Project::load(&root.0).unwrap_or_else(|error| panic!("{label}: load: {error:?}"));
+            let parsed = ParsedProgram::parse(
+                project.edition(),
+                project
+                    .modules
+                    .iter()
+                    .filter(|(_, module)| module.origin == ModuleOrigin::Local)
+                    .map(|(name, module)| (name.clone(), module.source.clone()))
+                    .collect(),
+            )
+            .unwrap_or_else(|error| panic!("{label}: parse: {error:?}"));
+            // ParsedProgram itself inserts checked bundled modules. Passing those
+            // modules again as local inputs would create duplicate definitions.
+            assert_eq!(parsed.source("main"), Some(original));
+            for entry in [
+                "std::reflection::reflect_uniform2",
+                "main::probe",
+                "main::main",
+            ] {
+                assert!(parsed.requires_typed_runtime_transport(entry).unwrap());
+            }
+            // Dormant computed declarations do not redirect unrelated roots.
+            assert!(
+                !parsed
+                    .requires_typed_runtime_transport("std::gate::x")
+                    .unwrap()
+            );
+            let instance = parsed
+                .instantiate_runtime_with_types(
+                    "main::probe",
+                    Default::default(),
+                    Default::default(),
+                    Default::default(),
+                )
+                .unwrap_or_else(|error| panic!("{label}: instantiate: {error:?}"));
+            let selected = instance
+                .compile_runtime_with_kernel(&kernel)
+                .unwrap_or_else(|error| panic!("{label}: selected runtime: {error:?}"));
+            assert_eq!(selected.source().program().source("main"), Some(original));
+            assert_eq!(selected.runtime_parameters(), 1);
+            let accepted = selected.program();
+            let request = accepted.runtime_result().expect("full typed runtime root");
+            let atoms = vec![
+                Atom::Quantum,
+                Atom::Finite(Basis::Pair),
+                Atom::Finite(Basis::Bit),
+                Atom::Finite(Basis::Bit),
+            ];
+            assert_eq!(request.module, "main");
+            assert_eq!(request.declaration, "probe");
+            assert_eq!(request.parameters, vec![atoms.clone()]);
+            assert_eq!(request.result, atoms);
+            assert_eq!(request.public_effect, Effect::Unitary);
+
+            let raw = accepted.raw();
+            let [input] = raw.quantum_inputs.as_slice() else {
+                panic!("two-bit owner")
+            };
+            let [output] = raw.quantum_outputs.as_slice() else {
+                panic!("returned owner")
+            };
+            assert_eq!(input.shape.bits, 2);
+            assert_eq!(input.wires.len(), 2);
+            assert!(raw.classical_inputs.is_empty() && raw.classical_outputs.is_empty());
+            assert_eq!(raw.declared_effect, Effect::Unitary);
+            let [Storage::Quantum(stored_input)] = request.input_storage[0].as_slice() else {
+                panic!("single input quantum storage")
+            };
+            let [Storage::Quantum(stored_output)] = request.storage.as_slice() else {
+                panic!("single output quantum storage")
+            };
+            assert_eq!(stored_input.port, *input);
+            assert_eq!(stored_output.port.token, *output);
+            assert_eq!(stored_output.port.wires, input.wires);
+            assert_eq!(stored_output.port.shape, input.shape);
+            assert_eq!(
+                stored_input.basis,
+                vec![Basis::Pair, Basis::Bit, Basis::Bit]
+            );
+            assert_eq!(stored_output.basis, stored_input.basis);
+
+            let scopes: Vec<_> = raw
+                .operations
+                .iter()
+                .filter_map(|op| {
+                    if let RawOp::ComputeUseUncompute {
+                        targets,
+                        ancilla_wires,
+                        function,
+                        use_ops,
+                        ..
+                    } = op
+                    {
+                        Some((targets, ancilla_wires, function, use_ops))
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+            assert_eq!(
+                scopes.len(),
+                1,
+                "{label}: actual computed scope must remain"
+            );
+            let (targets, ancilla, function, use_ops) = scopes[0];
+            assert!(targets.is_empty());
+            assert_eq!(ancilla.len(), 1);
+            assert!(!input.wires.contains(&ancilla[0]));
+            assert_eq!(function.as_slice(), [0, 1, 1, 1]); // nonzero2
+            assert_eq!(
+                use_ops.as_slice(),
+                [ProtectedUse::ProtectedGate {
+                    bit: ProtectedBit {
+                        region: ProtectedRegion::Ancilla,
+                        index: 0
+                    },
+                    gate: SingleGate::Z,
+                }]
+            );
+
+            // A local Z normalization receipt is not a proof of whole Grover
+            // lowering, uncomputation or resource preservation. Check its actual
+            // sources and both retained fragment actions separately.
+            let equations: Vec<_> = accepted
+                .source_computed_normalizations()
+                .iter()
+                .filter(|equation| {
+                    equation
+                        .names()
+                        .0
+                        .starts_with("std::reflection::reflect_uniform2::with_computed[")
+                })
+                .collect();
+            assert_eq!(equations.len(), 1, "{label}: local source equation");
+            let equation = equations[0];
+            assert!(equation.names().1.ends_with("::diagonal[0,4]"));
+            for module in ["std::reflection", "std::gate"] {
+                let source = &project.module(module).unwrap().source;
+                assert!(
+                    equation
+                        .sources()
+                        .iter()
+                        .any(|(name, bytes)| name == module && bytes == source)
+                );
+            }
+            for leaf in [equation.implementation(), equation.specification()] {
+                assert_eq!(leaf.boundary().signature(), &BasisType::Bit);
+                assert_eq!(leaf.meaning(), &z);
+                exact_request(leaf.program().raw(), BasisType::Bit, &z).unwrap();
+            }
+            // Recheck the retained typed root, then independently compare the
+            // actual complete two-bit artifact with the fixed mathematical G.
+            let checked_again = kernel.check_program(accepted).unwrap();
+            assert_eq!(checked_again.program().runtime_result(), Some(request));
+            exact_request(raw, pair.clone(), &expected)
+                .unwrap_or_else(|error| panic!("{label}: exact Grover: {error:?}"));
+            semantic_refusal(exact_request(raw, pair.clone(), &negative_phase));
+            semantic_refusal(exact_request(raw, pair.clone(), &grover(0)));
+
+            // Same valid total-table shape, but a wrong computed predicate:
+            // change nonzero2(00) from 0 to 1. No original source is changed.
+            let mut wrong_predicate = raw.clone();
+            let function = wrong_predicate
+                .operations
+                .iter_mut()
+                .find_map(|op| {
+                    if let RawOp::ComputeUseUncompute { function, .. } = op {
+                        Some(function)
+                    } else {
+                        None
+                    }
+                })
+                .unwrap();
+            function[0] = 1;
+            semantic_refusal(exact_request(&wrong_predicate, pair.clone(), &expected));
+        }
+    }
+}

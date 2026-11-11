@@ -321,8 +321,12 @@ retains complete access-call and explicit-owner pairs for fixed arithmetic,
 coherent equality, a Grover iterate, a QPE controlled-power prefix and a walk
 step. These examples use the same access rule; their local helper names are
 not new standard-library APIs. The QPE example has no inverse QFT. Finite
-project execution and selected Raw support are checked separately, and the
-selected Grover computed body still has an explicit profile refusal.
+project execution and selected Raw support are checked separately. The first
+selected Grover profile refusals remain in the study. Supported selected roots
+whose original lexical dependency closure contains `with_computed` now use the
+common source emitter and fresh typed native checks. The computed boundary and
+local normalization receipts remain intact; selecting this route supplies no
+source-preservation theorem, operation-formal closure or new acceptance rule.
 
 `h(excl q)` temporarily supplies the live lexical owner `q` to the existing
 consuming call and retains its returned quantum value on the same binder.

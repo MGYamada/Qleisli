@@ -20,7 +20,7 @@ equality and QPE probe phase kickback. Grover uses the positive reflection
 These are small first-party tests, not new upstream corpus imports or general
 algorithm implementations.
 
-The [session](session.json) links thirty actual CLI observations: ten project
+The [session](session.json) retains thirty first CLI observations: ten project
 checks, ten selected Raw checks and ten project runs. All project checks and
 runs succeeded. Eight selected Raw checks succeeded. Both Grover variants
 refused the `std::reflection` computed body with `unsupported runtime expression`
@@ -53,3 +53,21 @@ historical observations. General source elaboration preservation, static slice
 integration, lifetime/footprint proofs, target correspondence and quantitative
 resource bounds remain open. Ending `excl` restores authority, not a prior
 state, separability, clean release or inverse operation.
+
+## Later selected-computed routing repair
+
+Four separate `computed-route-*` observations retain the unchanged Grover
+sources after routing original `with_computed` occurrences and their lexical
+callers through the existing common emitter. Both open `main::probe` checks
+and both closed `main::main` runs succeed; each run returns `11`. The actual
+reports distinguish typed runtime/ordinary requests and explicitly leave
+source preservation and source meaning unproved. The first refusals above
+remain unchanged. These later observations record their actual argument vectors,
+streams, exit codes, source and observed CLI hashes, not a build attestation.
+
+The separate selected API regression checks the retained original source,
+ordered typed ports, structured `ComputeUseUncompute` and local normalization
+receipts. Fresh native requests compare each actual Grover artifact against
+the fixed complete exact matrix, rejecting wrong full phase, marked column
+and a changed total predicate table. Local normalization proves its fragment
+equation; it does not itself establish whole-source or resource preservation.

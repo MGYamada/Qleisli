@@ -552,8 +552,8 @@ impl ParsedProgram {
     }
 
     /// Select the original-source runtime emitter for nominal declarations or
-    /// a qmatch in this entry's lexical closure. Unsupported syntax still
-    /// refuses at its actual checking boundary; no projection-error retry is used.
+    /// a qmatch or computed scope in this entry's lexical closure. Unsupported
+    /// syntax refuses at its actual checking boundary; no projection-error retry is used.
     pub fn requires_typed_runtime_transport(&self, entry: &str) -> Result<bool> {
         let id = self.checked.resolution.qualified(entry).map_err(|kind| {
             Self::resolution_error(Failure {
