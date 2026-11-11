@@ -146,6 +146,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
             "refs/heads/codex/beta-qmatch-code-products",
                 "refs/heads/codex/beta-qmatch-batch-integration",
                 "refs/heads/codex/beta-qmatch-bounded-v5",
+                "refs/heads/codex/beta-qmatch-gram-routing",
                 "refs/heads/codex/beta-quantum-runtime-types",
                 "refs/heads/codex/beta-runtime-static-bindings")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
