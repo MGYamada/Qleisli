@@ -33,7 +33,11 @@
     "replay_native_sha256": "e8f4f11193e3bcfb0dd876867459e666c53b771a950e4d98907ea9ae2b3975cf",
     "replay_native_response": "qleisli.native-result 3\naccepted\n2026\n0.3.0-beta\n--qmatch-source-v5-check\nexecution\n10243898\n1\n",
     "shared_graph_native_sha256": "85a9e71852bde27ff6e8f072b9a6f0ce517badaa10b1083744e1629be23b4578",
-    "shared_graph_native_response": "qleisli.native-result 3\naccepted\n2026\n0.3.0-beta\n--qmatch-source-v5-check\nexecution\n9645214\n1\n"
+    "shared_graph_native_response": "qleisli.native-result 3\naccepted\n2026\n0.3.0-beta\n--qmatch-source-v5-check\nexecution\n9645214\n1\n",
+    "provider_reuse": {
+      "native_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+      "native_response": "qleisli.native-result 3\naccepted\n2026\n0.3.0-beta\n--qmatch-source-v5-check\nexecution\n9193394\n1\n"
+    }
   },
   "larger_rectangular_control": {
     "selector_bits": 4,
@@ -60,7 +64,40 @@
         },
         "related": []
       }
-    ]
+    ],
+    "provider_reuse": {
+      "native_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+      "native_response": "qleisli.native-result 3\naccepted\n2026\n0.3.0-beta\n--qmatch-source-v5-check\nexecution\n19768026\n1\n",
+      "cli_outcome": "error",
+      "cli_diagnostics": [
+        {
+          "code": "limit",
+          "severity": "error",
+          "message": "exact matrix work budget exhausted while checking main::route",
+          "primary": {
+            "module": null,
+            "path": "nominal-rectangular-sixteen-first.qli",
+            "start": 215,
+            "end": 536
+          },
+          "related": []
+        }
+      ],
+      "cli_native_work": [
+        {
+          "mode": "--runtime-root-check",
+          "work": 629068
+        },
+        {
+          "mode": "--runtime-root-check",
+          "work": 638806
+        },
+        {
+          "mode": "--qmatch-source-v5-check",
+          "work": 19768026
+        }
+      ]
+    }
   },
   "records": {
     "builtin": {

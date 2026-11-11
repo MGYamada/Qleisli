@@ -14,10 +14,21 @@ open Semantics.Exact Semantics.CarrierInterface
 abbrev Computed {α : Type} (action : WorkM α) (value : α) : Prop :=
   ∃ work left, action.run work = (.ok value,left)
 
-def logical (physical inputCode outputCode : Matrix) : WorkM Matrix := do
-  let restricted ← exactWork (Exact.Matrix.composeWork physical inputCode)
+def logical (restricted outputCode : Matrix) : WorkM Matrix := do
   let outputAdjoint ← exactWork (Exact.Matrix.adjointWork outputCode)
-  exactWork (Exact.Matrix.composeWork outputAdjoint restricted)
+  FiniteCarrier.codeProduct .left outputAdjoint restricted
+
+private def readCodeProduct (side : FiniteCarrier.CodeSide) (left right : Matrix) :
+    WorkM {value : Matrix // Computed (exactWork (Exact.Matrix.composeWork left right)) value} := do
+  let checked ← NaturalAffine.witness (FiniteCarrier.codeProduct side left right)
+  return ⟨checked.val,by
+    obtain ⟨work,remaining,ran⟩ := checked.property
+    obtain ⟨before,after,dense⟩ := FiniteCarrier.codeProduct_dense side left right checked.val work remaining ran
+    refine ⟨before,after,?_⟩
+    change (let (result,remaining) := Exact.Matrix.compose left right before
+      (Finite.arithmetic result,remaining)) = _
+    rw [dense]
+    rfl⟩
 
 structure Ports {sources} (provider : StaticOperation.Provider sources)
     (program : Semantics.Observation.Program) (verified : Raw.Observation.Checked) where
@@ -37,15 +48,30 @@ structure Ports {sources} (provider : StaticOperation.Provider sources)
 
 structure Equations (effect : Semantics.Raw.Effect) (inputCode outputCode physical : Matrix) where
   physicalShape : physical.cols = inputCode.rows ∧ physical.rows = outputCode.rows
-  action : Matrix
-  actionRead : Computed (logical physical inputCode outputCode) action
-  isometryRead : Computed (exactWork (Exact.Matrix.isometryWork action)) true
-  unitaryShape : effect = .unitary → action.rows = action.cols
   actual : Matrix
   actualRead : Computed (exactWork (Exact.Matrix.composeWork physical inputCode)) actual
+  action : Matrix
+  actionRead : Computed (logical actual outputCode) action
+  isometryRead : Computed (exactWork (Exact.Matrix.isometryWork action)) true
+  unitaryShape : effect = .unitary → action.rows = action.cols
   specified : Matrix
   specifiedRead : Computed (exactWork (Exact.Matrix.composeWork outputCode action)) specified
   noLeak : actual = specified
+
+theorem Equations.wholeSpace {effect inputCode outputCode physical}
+    (receipt : Equations effect inputCode outputCode physical) (unitary : effect = .unitary) :
+    Computed (Finite.wholeSpace receipt.action) () := by
+  obtain ⟨work,left,ran⟩ := receipt.isometryRead
+  have square : (receipt.action.rows == receipt.action.cols) = true :=
+    beq_iff_eq.mpr (receipt.unitaryShape unitary)
+  refine ⟨work,left,?_⟩
+  unfold Finite.wholeSpace
+  rw [Finite.bind_run]
+  simp only [square]
+  change ((exactWork (Exact.Matrix.isometryWork receipt.action)) >>= fun iso =>
+    Finite.guard iso .notIsometric).run work = _
+  rw [Finite.bind_run,ran]
+  rfl
 
 /-- Literal provider ownership and purity before any code or matrix reads. -/
 structure VerifiedPorts {sources} (provider : StaticOperation.Provider sources)
@@ -73,24 +99,48 @@ structure Checked (artifact : Artifact) (root : Validity.Root)
   original : artifact.programs[index]? = some program
   prepared : Prepared provider root.dependencies program
 
+private def readIsometry (action : Matrix) :
+    WorkM (PLift (Computed (exactWork (Exact.Matrix.isometryWork action)) true)) := do
+  if action.rows == action.cols then
+    let checked ← try
+      NaturalAffine.witness (FiniteRestriction.adaptiveWholeSpace action)
+    catch error =>
+      match error with
+      | .notIsometric => throw .equation
+      | other => throw other
+    return ⟨by
+      obtain ⟨work,left,ran⟩ := checked.property
+      have unit : checked.val = () := by cases checked.val; rfl
+      obtain ⟨before,after,original⟩ :=
+        FiniteRestriction.adaptiveWholeSpace_bound action work left (by simpa only [unit] using ran)
+      obtain ⟨before,after,dense⟩ := (Finite.wholeSpace_conditions _ before after original).2
+      refine ⟨before,after,?_⟩
+      change (let (result,remaining) := Exact.Matrix.isometry action before
+        (Finite.arithmetic result,remaining)) = _
+      rw [dense]
+      rfl⟩
+  else
+    let checked ← NaturalAffine.witness (exactWork (Exact.Matrix.isometryWork action))
+    if accepted : checked.val = true then
+      return ⟨by simpa only [accepted] using checked.property⟩
+    else throw .equation
+
 def equations (effect : Semantics.Raw.Effect) (inputCode outputCode physical : Matrix) :
     WorkM (Equations effect inputCode outputCode physical) := do
   if physicalShape : physical.cols = inputCode.rows ∧ physical.rows = outputCode.rows then
-    let action ← NaturalAffine.witness (logical physical inputCode outputCode)
-    let isometry ← NaturalAffine.witness (exactWork (Exact.Matrix.isometryWork action.val))
-    if gram : isometry.val = true then
-      if unitaryShape : effect = .unitary → action.val.rows = action.val.cols then
-        let actual ← NaturalAffine.witness (exactWork (Exact.Matrix.composeWork physical inputCode))
-        let specified ← NaturalAffine.witness (exactWork (Exact.Matrix.composeWork outputCode action.val))
-        exactWork (Exact.charge (actual.val.entries.length+specified.val.entries.length+1))
-        if noLeak : actual.val = specified.val then
-          return ⟨physicalShape,action.val,by with_reducible exact action.property,
-            by simpa only [gram] using isometry.property,unitaryShape,
-            actual.val,by with_reducible exact actual.property,
-            specified.val,by with_reducible exact specified.property,noLeak⟩
-        else throw .equation
-      else throw .request
-    else throw .equation
+    -- The logical projection and no-leak equation use the same restriction.
+    let actual ← readCodeProduct .right physical inputCode
+    let action ← NaturalAffine.witness (logical actual.val outputCode)
+    let isometry ← readIsometry action.val
+    if unitaryShape : effect = .unitary → action.val.rows = action.val.cols then
+      let specified ← readCodeProduct .left outputCode action.val
+      exactWork (Exact.charge (actual.val.entries.length+specified.val.entries.length+1))
+      if noLeak : actual.val = specified.val then
+        return ⟨physicalShape,actual.val,actual.property,action.val,
+          by with_reducible exact action.property,isometry.down,
+          unitaryShape,specified.val,specified.property,noLeak⟩
+      else throw .equation
+    else throw .request
   else throw .request
 
 private def withPorts {sources} (provider : StaticOperation.Provider sources)

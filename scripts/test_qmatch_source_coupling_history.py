@@ -1468,6 +1468,11 @@ class WideSelectedHistory(unittest.TestCase):
         self.assertLess(int(shared[6]), int(after[6]))
         self.assertLess(int(after[6]), int(before[6]))
         self.assertLessEqual(int(before[6]), 20_000_000)
+        provider = replay["provider_reuse"]
+        self.assertRegex(provider["native_sha256"], r"\A[0-9a-f]{64}\Z")
+        optimized = provider["native_response"].splitlines()
+        self.assertEqual(optimized[:6] + optimized[7:], shared[:6] + shared[7:])
+        self.assertLess(int(optimized[6]), int(shared[6]))
 
         control = study["larger_rectangular_control"]
         source = control["first_source"]
@@ -1478,6 +1483,20 @@ class WideSelectedHistory(unittest.TestCase):
         self.assertEqual(control["first_native_response"], "qleisli.native-result 3\nerror\nlimit\n")
         self.assertEqual(control["first_native_response"], control["shared_graph_native_response"])
         self.assertEqual([diagnostic["code"] for diagnostic in control["first_diagnostics"]], ["limit"])
+        provider = control["provider_reuse"]
+        self.assertEqual(provider["native_sha256"], replay["provider_reuse"]["native_sha256"])
+        optimized = provider["native_response"].splitlines()
+        self.assertEqual(optimized[:6] + optimized[7:], shared[:6] + shared[7:])
+        self.assertLessEqual(int(optimized[6]), 20_000_000)
+        self.assertEqual(provider["cli_outcome"], "error")
+        self.assertEqual([diagnostic["code"] for diagnostic in provider["cli_diagnostics"]], ["limit"])
+        charges = provider["cli_native_work"]
+        self.assertEqual([item["mode"] for item in charges], [
+            "--runtime-root-check", "--runtime-root-check", "--qmatch-source-v5-check",
+        ])
+        self.assertTrue(all(0 < item["work"] <= 20_000_000 for item in charges))
+        self.assertEqual(charges[-1]["work"], int(optimized[6]))
+        self.assertGreater(sum(item["work"] for item in charges), 20_000_000)
 
 
 if __name__ == "__main__":
