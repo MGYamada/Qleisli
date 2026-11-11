@@ -31,6 +31,18 @@ example {A B P Q S R : C} {f : A ⟶ B} {i : A ⟶ P} {o : B ⟶ Q} {g : P ⟶ Q
     joint ≫ ((f ⊗ₘ 𝟙 R) ≫ (o ⊗ₘ 𝟙 R)) = joint ≫ ((i ⊗ₘ 𝟙 R) ≫ (g ⊗ₘ 𝟙 R)) := by
   have idSquare : CommSq (𝟙 R) (𝟙 R) (𝟙 R) (𝟙 R) := ⟨rfl⟩
   exact congrArg (joint ≫ ·) (tensor_square sq idSquare).w
+
+/-- Clean conjugation retains the exact encoding when tensored with an
+untouched reference, including on arbitrary joint inputs. -/
+example {A P S R : C} {logical : A ⟶ A} {encode : A ⟶ P}
+    {compute body : P ⟶ P} (unitary : IsUnitary compute)
+    (useSquare : CommSq logical (encode ≫ compute) (encode ≫ compute) body)
+    (joint : S ⟶ A ⊗ R) :
+    joint ≫ ((logical ⊗ₘ 𝟙 R) ≫ (encode ⊗ₘ 𝟙 R)) =
+      joint ≫ ((encode ⊗ₘ 𝟙 R) ≫ ((compute ≫ body ≫ compute†) ⊗ₘ 𝟙 R)) := by
+  have clean := conjugate_square useSquare unitary
+  have reference : CommSq (𝟙 R) (𝟙 R) (𝟙 R) (𝟙 R) := ⟨rfl⟩
+  exact congrArg (joint ≫ ·) (tensor_square clean reference).w
 end Abstract
 
 section Concrete
@@ -95,6 +107,8 @@ example : Matrix.blockDiagonal' signed ≠ 1 := by
 end Concrete
 
 #print axioms QPTL.isometry_of_square
+#print axioms QPTL.uncompute_square
+#print axioms QPTL.conjugate_square
 #print axioms QPTL.tensor_square
 #print axioms QPTL.FiniteMatrix.directSum_isometry
 #print axioms QPTL.FiniteMatrix.directSum_unitary

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Express exact compute/use/uncompute through reusable QPTL encoding squares
+  and apply the law to the actual protected Raw dispatch on arbitrary
+  correlated amplitudes. Keep source correspondence, general channel cleanup
+  and quantitative resource obligations separate.
 - Consolidate the historical v0.2.7 branch-function validation packet with the
   existing lossless archive format. Preserve its complete original bytes,
   file modes and immutable Git inventory; current executable inputs and

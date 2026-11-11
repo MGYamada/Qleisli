@@ -1,5 +1,5 @@
 name = "qleisli_qptl_application"
-defaultTargets = ["RuntimeTapeDirectSum"]
+defaultTargets = ["RuntimeTapeDirectSum", "ProtectedClean"]
 
 [leanOptions]
 autoImplicit = false
@@ -15,3 +15,6 @@ path = "../../qptl"
 
 [[lean_lib]]
 name = "RuntimeTapeDirectSum"
+
+[[lean_lib]]
+name = "ProtectedClean"

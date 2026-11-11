@@ -49,6 +49,10 @@ properties. Lean checks the resulting proof.
   logical map along two isometric encodings. Its premise is mathlib's
   `CommSq logical encodeIn encodeOut physical`, an exact equality
   `logical ≫ encodeOut = encodeIn ≫ physical`. The encodings may be rectangular.
+- `QPTL.uncompute_square` transports an exact computed-image equation through
+  an explicit inverse; `conjugate_square` specializes it to a unitary and its
+  dagger. The original clean encodings and complete phase remain in the equation.
+  These mathematical laws grant no inverse/control capability or acceptance.
 - `CommSq.horiz_comp` pastes successive squares. `QPTL.tensor_square` tensors
   two squares in the stated factor order. Tensoring with the identity transports
   the equality to an untouched reference, including on joint inputs.
