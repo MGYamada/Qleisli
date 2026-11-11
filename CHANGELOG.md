@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Consolidate the historical v0.2.7 branch-function validation packet with the
+  existing lossless archive format. Preserve its complete original bytes,
+  file modes and immutable Git inventory; current executable inputs and
+  published evidence identities are unchanged.
 - Check dirty-workspace restoration through an exact two-owner function
   contract and an entangled reference regression. Distinguish unchanged
   reduced states from preserved correlation phase, without adding general
