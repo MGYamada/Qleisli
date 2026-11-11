@@ -719,7 +719,7 @@ PATHS = {
         ('src/interop/export/normalization.rs', 'existing_native_equation_refuses_wrong_phase_or_control_subjects'),
         ('src/interop/export/normalization.rs', 'actual_retained_hzh_and_adjoint_preserve_all_columns_controls_and_reference'),
         ('tests/interop.rs', 'ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase'),
-        ('tests/interop.rs', 'ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order')]),
+        ('tests/interop.rs', 'ordinary_swap_and_structural_axes_keep_distinct_export_work_and_readout_order')]),
     'source-configuration': path_rule('configuration', 'source-edition-configuration', '', [
         ('src/frontend/project.rs', ['pub fn load(', 'pub fn load_with_policy(', 'pub fn read_source_file(',
          'pub fn from_modules(', 'pub fn module_manifest(', 'fn validate_edition_context(', 'fn charge_manifest(']),
