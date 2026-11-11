@@ -196,6 +196,45 @@ The surrounding compute/uncompute construction then justifies the auxiliary's
 return to zero. A Unitary annotation or the binders' names do not supply this
 equation.
 
+### Finite automatic-uncomputation rule
+
+The existing scoped forms admit the following bounded rule; they do not add a
+general `clean`/`dirty` declaration or promise inverse synthesis for every
+Unitary body.
+
+| Premise | Required evidence or refusal |
+| --- | --- |
+| Computed value | One owned `Q<A>` and a total predicate `A -> Bit`, with the complete ordered basis tree retained. |
+| Scoped dependencies | The two-argument body receives only its private `Q<Bit>` quantum owner. Capturing an outer quantum owner rejects. Available classical locals remain subject to the actual closed-fragment and effect checks; callable dependencies retain their original source and ordinary checking. |
+| Body effects and owners | The body must be Unitary and return the auxiliary owner. Measurement, reset, discard, lost owners and an incorrectly ordered returned frame cannot supply cleanup evidence. |
+| Two-argument action | The complete auxiliary action must be exactly `diag(zeta_8^a, zeta_8^b)` in the supported profile. Non-diagonal factors are permitted when their complete composition satisfies this equation. Both entries, including their common phase, are checked. |
+| General supported use | The three-argument form supplies an independent logical operation and checks `W E_f = E_f V` for the actual use circuit. Merely adding a logical argument cannot make a failed cleanup equation valid. |
+| Generated cleanup | Retain compute, use and inverse in the ordinary structured Raw representation. The independent checker validates the rule and dependencies; the producer cannot assert successful restoration. |
+| Capacity | Missing evidence or existing source, dependency or exact-work exhaustion rejects. No reset, discard, heuristic equality or alternate acceptance path repairs the failure. |
+
+For example, the following two auxiliary bodies both qualify, with different
+exact live actions when the predicate is the identity on `Bit`:
+
+```qli
+h(x(h(a)))  // H X H = Z: diag(1, -1).
+x(z(x(a)))  // X Z X = -Z: diag(-1, 1).
+```
+
+Their standalone readout probabilities can agree. Their common sign still
+matters under coherent control; replacing either specified operator by the
+other fails its exact request. In contrast, `x(a)` leaves the computed
+auxiliary dirty after the inverse and is rejected. Unitarity of `x` is not
+evidence of clean return.
+
+An unsupported two-argument action reports the missing diagonal contract and
+points to the three-argument form, including its required returned owners and
+cleanup equation. Capture diagnostics identify the captured binding and explain
+how to pass the data through that form. These are restoration/provenance
+conditions, not a claim that `ctrl` means an unchanged state: coherent controls
+retain their basis sectors while phase kickback may change their correlations.
+Dirty restoration continues to require identity on arbitrary, possibly
+reference-entangled input; this clean rule does not infer it.
+
 The underlying clean obligation is exact return to the declared fixed pure
 state for every permitted data input. Under the adopted all-input channel
 premises, this is equivalent to factorization with that same fixed pure state

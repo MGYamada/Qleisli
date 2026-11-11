@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Specify the finite automatic-uncomputation premises and exercise non-diagonal
+  factors whose complete action is diagonal. Preserve the distinct exact phases
+  of H X H and X Z X, and reject a unitary auxiliary flip that leaves it dirty.
 - Distinguish clean auxiliary return from the requested coherent live action
   and quantitative resource accounting; retain first reset/uncompute diagnostics
   and small phase-sensitive source regressions. Connect certified and QPTL

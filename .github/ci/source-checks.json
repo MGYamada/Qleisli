@@ -194,6 +194,10 @@
         [
           "python3",
           "scripts/test_clean_marginal_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_uncompute_boundary_first.py"
         ]
       ],
       "prepare": []
