@@ -210,6 +210,53 @@ cleanup rules remain work in
 [#72](https://github.com/MGYamada/Qleisli/issues/72); this existing scoped
 implementation does not complete those decisions.
 
+## Clean discharge, live action and Resource Safety
+
+Clean discharge is a local semantic Soundness obligation. It does not identify
+which operation remains on the live system. For a specified coherent operation
+`V`, the implementation `W` must separately satisfy the exact clean-subspace
+identity `W (|0>_A tensor |psi>_R) = |0>_A tensor V|psi>_R`, with the specified
+phase and arbitrary external references. Ordinary controlled lifting also
+requires the same distinguished clean state as the inactive branch. A different
+fixed pure workspace state, or standalone channel equality that loses global
+phase, does not establish that controlled contract.
+The equality alone grants no inverse or control access.
+
+For example, compute `CNOT(q,a)` from `|+>_q |0>_a`. A second CNOT restores
+`|+>_q |0>_a`. Explicitly resetting the correlated auxiliary instead produces
+`(I_q / 2) tensor |0><0|_a`. Both auxiliary marginals are exactly `|0><0|`, but an X
+readout of q distinguishes the live actions. Reset is Observe; an observing
+caller cannot make a falsely Unitary reset helper valid. This is consistent
+with the all-input fixed-pure-state equivalence above: it does not require the
+remaining channel to equal an independently requested unitary.
+The [first source study](https://github.com/MGYamada/Qleisli/blob/38d3f670a5e6c6de29a60742936a03ddcc0974ae/tests/fixtures/authoring_sessions/clean-marginal-v030/README.md)
+retains actual diagnostics and numerical observations separately from proofs.
+
+The local [QPTL square laws](https://github.com/MGYamada/Qleisli/blob/38d3f670a5e6c6de29a60742936a03ddcc0974ae/qptl/QPTL/Clean.lean) transport the exact
+computed-image equation through an explicit inverse. Their
+[Raw application](https://github.com/MGYamada/Qleisli/blob/38d3f670a5e6c6de29a60742936a03ddcc0974ae/lean/qptl-application/ProtectedClean.lean) obtains the
+original predicate, protected uses and event from the actual dispatch check,
+and derives the image equation before evaluating the resulting square on
+arbitrary correlated amplitudes. It does not assume the final clean equation.
+The [pure Raw program theorem](https://github.com/MGYamada/Qleisli/blob/38d3f670a5e6c6de29a60742936a03ddcc0974ae/lean/qptl-application/ProtectedProgram.lean)
+also covers every physical row of certified cleanup, including zero amplitude
+on dirty auxiliary rows. It replaces both kinds of clean scope with their
+original logical actions in the checked event order and connects the result to
+fresh graph inspection. These Raw results do not establish general source
+composition, the CPTP marginal equivalence or quantitative resource bounds.
+
+Quantitative Resource Safety remains the separate obligation to produce finite,
+statically computed bounds and preserve them through compilation. Scratch
+qubits count while live, across preparation, use and cleanup. Generated inverse
+operations and physical routing count in the bound for the actual accepted
+artifact. Ending `excl` restores operation rights to the updated live owner;
+it does not restore its input state, prove clean/dirty discharge or end its
+lifetime. A surface Unit result must not erase a still-live owner from resource
+accounting. These requirements do not assert that the corresponding general
+source, realization and resource proofs are complete; see
+[#157](https://github.com/MGYamada/Qleisli/issues/157) and
+[the elaboration obligations](elaboration.md).
+
 ## Conditional teaching diagnostics
 
 The source checker adds an explanation only after its existing unresolved-name
