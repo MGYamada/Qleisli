@@ -45,7 +45,7 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
-The [physical SWAP and structural output study](axis-routing-output-v030/README.md)
+The [physical SWAP and structural output study](axis-routing-output-v030/context.md)
 retains six unchanged first sources and eighteen actual CLI observations.
 Usage failures, unchanged refusals, revised explanations and literal QASM/QIR
 outputs remain separate from the bounded exact routing regression and the
