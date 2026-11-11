@@ -1,0 +1,12 @@
+{
+  "02-both-xor-run": {
+    "support_matches": true,
+    "maximum_probability_error": 1.1102230246251565e-16,
+    "scope": "Numeric comparison of already saved CLI output only; no rerun or exact operator proof."
+  },
+  "04-increment2-run": {
+    "support_matches": true,
+    "maximum_probability_error": 1.1102230246251565e-16,
+    "scope": "Numeric comparison of already saved CLI output only; no rerun or exact operator proof."
+  }
+}

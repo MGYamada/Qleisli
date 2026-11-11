@@ -133,6 +133,7 @@ class SourceChecksTests(unittest.TestCase):
             ['python3', 'scripts/test_qmatch_source_coupling_history.py'],
             ['python3', 'scripts/test_clean_marginal_first.py'],
             ['python3', 'scripts/test_uncompute_boundary_first.py'],
+            ['python3', 'scripts/test_signal_relations_first.py'],
         ])
         later = checks.plan('repository-integrity')
         self.assertIn(['python3', 'scripts/test_check_production_coverage.py'], later)

@@ -102,6 +102,44 @@ a function named `default` that returns ordinary data gains no quantum action
 from its spelling. A name, return-type annotation or generic parameter cannot
 grant allocation, duplicate a quantum result, or excuse an abandoned owner.
 
+## Ordinary relations and live quantum owners
+
+Live `Q<T>` has no ordinary value equality, ordering or hashing inherited from
+`T`. This also applies to `Q<Unit>`, `Q<Bits<0>>` and products containing a
+quantum owner. Owner/provenance IDs used internally by the compiler, physical
+wire IDs and logical wire IDs are distinct bookkeeping data; comparing them
+does not compare quantum states or implement a source operation on `Q<T>`.
+
+Current runtime expression syntax has no `==`, `!=`, `<`, `<=`, `>` or `>=`
+operator, even on ordinary values. These tokens remain available in their
+specified static Nat predicates. Ordinary `Bit` equality can be written with
+the existing Boolean operations:
+
+```qli
+classical fn equal(a: Bit, b: Bit) -> Bit { not(a xor b) }
+```
+
+This compares ordinary values, including explicit measurement results. It does
+not read a quantum owner without observation. Coherent basis comparison instead
+requires an explicit reversible operation with its own ordered input/output,
+effect and phase contract. For example, the existing basis language can express
+`|a,b,t> -> |a,b,t xor [a=b]>`, retaining both input values and accepting either
+initial target value. It is not a test that two arbitrary quantum states are
+equal. State comparison, tomography and testing have separate procedures and
+statistical or operational contracts; no comparison operator selects one.
+
+There is no built-in `hash`, general trait mechanism, or `Eq`/`Ord`/`Hash`
+instance for live owners. A user-defined or imported function named `hash`
+remains an ordinary checked function; the name grants no special semantics.
+Static descriptions, evidence IDs and ordinary values retain the comparisons
+their actual types and APIs support. This rule neither invents missing ordinary
+operators nor changes an internal ID comparison into quantum-state equality.
+
+Comparison diagnostics explain this distinction conditionally, since parsing
+does not establish the operand types. The unresolved `hash` explanation likewise
+does not infer its argument type or intercept a resolved ordinary declaration.
+Neither diagnostic inserts measurement, copies an owner or exposes an ID.
+
 ## Quantum owners require an explicit transition
 
 `Q<A>` is linear, including `Q<Unit>` and `Q<Bits<0>>`. A product containing any
@@ -157,6 +195,44 @@ observe fn reset_then_measure(q: Q<Bit>) -> Bit {
 
 Writing `reset(q);` would instead abandon its fresh quantum result. Changing
 the spelling to `drop(q)` cannot justify any of these different operations.
+
+## Signal registers remain in the interface
+
+The word *ancilla* does not determine a cleanup obligation. Scratch workspace
+has a declared restoration contract: clean workspace must return exactly to
+its specified fixed state, and dirty workspace must restore its arbitrary
+input state and reference correlations. A signal register is instead an
+ordinary linear quantum owner in an operation's semantic interface. It need
+not return to zero unless that interface separately requires it.
+
+For ordered signal and system spaces `S` and `D`, an exact block-encoding
+contract can state
+
+```text
+(<0|_S tensor I_D) U (|0>_S tensor I_D) = A / alpha.
+```
+
+The projection in this mathematical equation does not perform a measurement,
+postselect a successful branch or release `S`. The caller still owns the full
+output of `U`. For example, apply H to a one-bit signal and then CNOT from
+signal to system. Its signal-zero block is exactly `I / sqrt(2)`, but input
+`|0,0>` produces `(|0,0> + |1,1>) / sqrt(2)`. The signal is not clean scratch;
+dropping it changes the remaining channel and requires explicit Observe
+semantics. Returning both owners is a valid Unitary interface.
+
+Signal registers count throughout their live interval, including their width,
+gates, depth, measurement and target/layout costs under the stated resource
+model. Renaming one to *ancilla* or excluding it from a cleanup contract cannot
+remove those costs. A quantitative resource bound remains separately checked;
+the block equation and ordinary ownership rules alone do not prove it.
+
+Future block-encoding, LCU or QSVT contracts can specify signal subspaces and
+normalization using these ordinary owners. This defines no `signal` primitive,
+new ownership kind, general `BlockEncoding` API or automatic block-encoding
+checker. Source workspace (#70), extra backend synthesis workspace (#120) and
+an exposed library signal interface are separate roles with their own
+obligations. EXACT-2026-01 still applies: an approximation error certificate
+cannot replace an applicable exact equation or exact clean-return obligation.
 
 ## Checked cleanup is a separate contract
 
@@ -347,6 +423,7 @@ ordinary user-defined identifier with the same spelling.
 | `mut` | A mutable-binding marker grants no quantum access. `let mut q = ...` rejects for a quantum-containing value; ordinary mutable bindings also remain unsupported, with a separate diagnostic. Gates already change states through consuming calls and explicit returned owners; `excl`/`ctrl` need no marker. The ordinary identifier `mut`, as in `let mut = 0`, retains normal name rules. See [#77](https://github.com/MGYamada/Qleisli/issues/77). |
 | Ordinary `for` / `IntoIterator` over quantum data | No ordinary iterator/trait machinery. Bounded `qfor static ... carry ... yield ...` explicitly threads quantum-containing carry and checks its body even for an empty range. `for static` permits only ordinary carry. Neither has hidden quantum capture or runtime iteration; see [Static language](static-language.md). |
 | `Default` | Unavailable for live quantum-containing types, including `Q<Unit>` and nested owners. Ordinary/static data construction and explicit quantum preparation retain their distinct contracts above; normal user functions named `default` remain checked calls. |
+| `Eq` / `Ord` / `Hash` | No ordinary relation on live quantum owners, including nested and zero-width owners. Internal IDs, ordinary values, explicit coherent comparison and state-testing procedures retain distinct meanings; see [ordinary relations](#ordinary-relations-and-live-quantum-owners). |
 | Wildcard / rest patterns | `_` may ignore only unrestricted data; every quantum-containing matched field remains linear. Ordinary tuple patterns retain exact immediate shape. Rest patterns are absent; their future omission must not hide owners. |
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. See the [checking and execution boundary](source-text.md#checking-failures-and-quantum-execution). |
 | Shared `&` / exclusive `&mut` / `ctrl` | Whole-owner `excl` and finite-project `ctrl` calls have the rules below. Selected Raw checking admits retained concrete control calls after fresh native sector checks, including static indexed/slice arguments; hierarchy and checker-free control emission refuse them. Stored references, escaping views and access parameter declarations remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |

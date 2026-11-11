@@ -1,0 +1,8 @@
+use std::state::init0;
+pub unitary fn coherent_equal(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    basis q as (a,b) { (a,not(a xor b)) }
+}
+pub observe fn main() -> (Bit,Bit) {
+    let (a,b)=split(coherent_equal(join(init0(),init0())));
+    (measure_z(a),measure_z(b))
+}

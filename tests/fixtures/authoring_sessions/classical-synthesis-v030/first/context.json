@@ -1,0 +1,44 @@
+{
+  "issue": "https://github.com/MGYamada/Qleisli/issues/30",
+  "created_at_utc": "2026-11-11T21:58:47.927664+00:00",
+  "status_at_freeze": "unexecuted informed initial proposals; no observed result yet",
+  "author_context": "Existing Qleisli implementation and specifications, prior conversation, #30 body, std::basis/reflection and stage7 access sources were inspected. This is not a blind or independent first-author assessment.",
+  "workspace": "/private/tmp/qleisli-516-provider-followup",
+  "head": "25ef5c0c91b220704c61743a41144a218c732038",
+  "status_porcelain": "",
+  "references": [
+    "docs/src/reference/source-text.md#total-classical-declarations",
+    "docs/src/reference/type-model.md#predicate-domains-and-argument-lists",
+    "src/frontend/compile/basis.rs",
+    "lean-kernel/QleisliKernel/SourceTypes/SourceBasisFunction.lean",
+    "lean-kernel/QleisliKernel/Qirf/RuntimeBasisAction.lean",
+    "lean-kernel/QleisliKernel/Qirf/SourceClassicalTree.lean",
+    "qptl/QPTL/Clean.lean"
+  ],
+  "predictions_unmeasured": {
+    "both-xor": {
+      "operator": "|a,b,t> -> |a,b,t xor (a and b)> with coefficient +1 for every input. Exact type ((Bit,Bit),Bit), first leaf fastest. Equivalent to Toffoli controls 0,1 target 2.",
+      "distribution": {
+        "0001": 0.0,
+        "0010": 0.25,
+        "0110": 0.25,
+        "1010": 0.25,
+        "1101": 0.25
+      },
+      "ordered_output": "a,b,target,both(a,b); expected support 0010, 0110, 1010, 1101 only",
+      "status": "check/run outcome unmeasured; current finite implementation is expected to use full tables, not structural synthesis"
+    },
+    "increment2": {
+      "operator": "Labels 0->1,1->2,2->3,3->0, all coefficients +1; bit0=lo, bit1=hi. CNOT(lo,hi) then X(lo).",
+      "distribution": {
+        "10": 0.5,
+        "01": 0.5
+      },
+      "ordered_output": "lo,hi",
+      "status": "check/run outcome unmeasured; current finite implementation is expected to use full tables"
+    }
+  },
+  "limits": "Only two/three-qubit programs. No maximum-size case, source repair, production edit, build or new public API.",
+  "evidence_boundary": "CLI check/run outcomes are bounded observations of the fixed binaries only. Floating probability output does not prove exact phase, arbitrary-reference preservation, original-source preservation, polynomial checking, resource certificates or issue completion. Wrong-output/phase native mutation checks are proposed future work and are not performed by this packet.",
+  "immutability": "Retain this complete first packet unchanged; actual commands and diagnostics are saved separately."
+}

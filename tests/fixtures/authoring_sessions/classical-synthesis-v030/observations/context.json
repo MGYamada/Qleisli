@@ -1,0 +1,31 @@
+{
+  "observer": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-classical-synthesis-30-observe.py",
+  "observer_sha256": "0809e88f4611b3278442938e1bd2a083cd8641bc6dd1fdd73316d18ff3a6dea1",
+  "python": "3.15.2",
+  "first_packet": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-classical-synthesis-30-first",
+  "created_at_utc": "2026-11-11T21:59:53.958036+00:00",
+  "initial": {
+    "source_hashes": {
+      "SHA256SUMS": "5b25c289c9f0120feb7d7d3ab9728b0c488b6ae0e34e9eb5d672d688d7ca57f6",
+      "attempt-01/both-xor/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/both-xor/main.qli": "2aaf18cb188110555f332fc16b2ec90fe488752174234795bdaaab8e316f2774",
+      "attempt-01/increment2/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/increment2/main.qli": "e5d2cb8ba3fde4a964af7040bda98d441133999de03a731b2a9f5616c6e94cd8",
+      "context.json": "a9cb8cd99f07a8441e3f2c375267df4cd24658009dbb2e2fbb30c656ea832889"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    },
+    "repository_head": "25ef5c0c91b220704c61743a41144a218c732038",
+    "repository_status_porcelain": ""
+  },
+  "scope": "Four serial current CLI check/run calls only, two/three qubits, no repair or build. No native child interception, independent matrix request, artifact/source proof or build attestation is claimed.",
+  "unchanged_predicate": "both is reused for coherent XOR and ordinary values after explicit observation."
+}

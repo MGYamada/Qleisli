@@ -1,0 +1,3 @@
+use std::state::init0;
+use helper::hash;
+pub observe fn main() -> Bit { measure_z(helper::hash(hash(init0()))) }

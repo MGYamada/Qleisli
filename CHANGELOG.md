@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Distinguish live signal registers from scratch restoration obligations and
+  retain their explicit ownership and resource-accounting requirements.
+  Explain why ordinary comparison and hashing cannot compare quantum owners;
+  preserve static comparisons and ordinary functions named `hash`.
 - Specify the finite automatic-uncomputation premises and exercise non-diagonal
   factors whose complete action is diagonal. Preserve the distinct exact phases
   of H X H and X Z X, and reject a unitary auxiliary flip that leaves it dirty.

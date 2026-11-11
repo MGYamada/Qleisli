@@ -1,0 +1,17 @@
+{
+  "kind": "informed source study, no independent/blind authorship claim",
+  "task": "#158 live signal is an ordinary interface owner, not implicit clean scratch",
+  "known_context": [
+    "Issue #158",
+    "current Reference and STDLIB",
+    "existing finite native source and ownership support"
+  ],
+  "expected_equation": "Ordered axes signal low, system high. U|s,d> = sum_t (-1)^(s*t)|t,d xor t>/sqrt(2). Signal-zero block is I/sqrt(2): A=I, alpha=sqrt(2). No approximation; this block condition is not clean return.",
+  "expected_observations": {
+    "returned-signal": "check/run accept; 00 and 11 each 1/2",
+    "lost-signal": "ownership refusal for live signal at scope exit",
+    "explicit-discard": "Observe accept, system X readout 0 and 1 each 1/2; no postselection or clean release"
+  },
+  "resource_expectation": "Two live physical interface axes; H and CNOT act on signal, later signal measurement/discard remains explicit. No quantitative RS certification inferred.",
+  "recorded_before_execution_utc": "2026-11-11T21:58:54.820698+00:00"
+}

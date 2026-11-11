@@ -1,0 +1,84 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "run",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-signal-158-first/attempt-01/lost-signal",
+    "--format=json",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/private/tmp/qleisli-516-provider-followup",
+  "started_utc": "2026-11-11T22:00:33.867665+00:00",
+  "recorded_utc": "2026-11-11T22:00:33.937271+00:00",
+  "elapsed_seconds": 0.06960804099799134,
+  "exit_code": 1,
+  "before": {
+    "sources": {
+      "SHA256SUMS": "cfaaa74af65c3d3e81be6bcc2f11614b535f8f42b5bebb0997b3e4f02919e531",
+      "attempt-01/explicit-discard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/explicit-discard/main.qli": "826fe5319ed4a5423cdadd5df74e52d29a91e116b1cecc14276251ee992cb731",
+      "attempt-01/lost-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/lost-signal/main.qli": "831fca0d8d842794bd1dd59c36cb21227585961f6c596f023aa581aa71900e30",
+      "attempt-01/returned-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/returned-signal/main.qli": "f100b1bf71e457a92de0e49cf8520d6f13bc3d52e61fb7c753f12b7dbdc9ad0c",
+      "context.json": "b575e564dbfea74cdd24dc54b1010d1891dfc0d8ea80c7ee8b043f74f1327a37",
+      "session.json": "f79204fa3a6e2a10fcc2012a9661fa3597845e82b0fa8341954997d0aaad1cd3"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "after": {
+    "sources": {
+      "SHA256SUMS": "cfaaa74af65c3d3e81be6bcc2f11614b535f8f42b5bebb0997b3e4f02919e531",
+      "attempt-01/explicit-discard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/explicit-discard/main.qli": "826fe5319ed4a5423cdadd5df74e52d29a91e116b1cecc14276251ee992cb731",
+      "attempt-01/lost-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/lost-signal/main.qli": "831fca0d8d842794bd1dd59c36cb21227585961f6c596f023aa581aa71900e30",
+      "attempt-01/returned-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/returned-signal/main.qli": "f100b1bf71e457a92de0e49cf8520d6f13bc3d52e61fb7c753f12b7dbdc9ad0c",
+      "context.json": "b575e564dbfea74cdd24dc54b1010d1891dfc0d8ea80c7ee8b043f74f1327a37",
+      "session.json": "f79204fa3a6e2a10fcc2012a9661fa3597845e82b0fa8341954997d0aaad1cd3"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"local quantum ownership `signal` escapes neither through the result nor an explicit discard; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.\",\"primary\":{\"path\":\"main.qli\",\"start\":222,\"end\":228,\"line\":7,\"column\":10},\"related\":[]}],\"result\":null}\n",
+  "stderr_raw": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "local quantum ownership `signal` escapes neither through the result nor an explicit discard; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.",
+        "primary": {
+          "path": "main.qli",
+          "start": 222,
+          "end": 228,
+          "line": 7,
+          "column": 10
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

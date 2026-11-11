@@ -1,0 +1,62 @@
+[
+  {
+    "case": "eq-live",
+    "result": "01-eq-live-check/result.json",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  {
+    "case": "ne-nested",
+    "result": "02-ne-nested-check/result.json",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  {
+    "case": "ord-zero",
+    "result": "03-ord-zero-check/result.json",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  {
+    "case": "hash-live",
+    "result": "04-hash-live-check/result.json",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  {
+    "case": "hash-nested",
+    "result": "05-hash-nested-check/result.json",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  {
+    "case": "hash-zero",
+    "result": "06-hash-zero-check/result.json",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  {
+    "case": "classical-static",
+    "result": "07-classical-static-check/result.json",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "case": "explicit-coherent",
+    "result": "08-explicit-coherent-check/result.json",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "case": "declared-hash",
+    "result": "09-declared-hash-check/result.json",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "case": "imported-qualified-hash",
+    "result": "10-imported-qualified-hash-check/result.json",
+    "exit_code": 0,
+    "timed_out": false
+  }
+]

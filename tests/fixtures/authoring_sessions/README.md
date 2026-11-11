@@ -45,6 +45,24 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [classical synthesis study](classical-synthesis-v030/session.json) preserves
+two small first programs and four actual checks/runs. A noninjective predicate
+works through XOR embedding and is reused after measurement; a separate
+two-bit increment has explicit modulo-four semantics. These finite-table
+observations do not establish scalable synthesis or source preservation.
+
+The [signal-interface study](signal-interface-v030/session.json) preserves
+three first sources and six actual observations. Returning an entangled signal
+is permitted, silently losing it rejects, and explicit discard retains its
+observing effect. Exact small operator tests remain separate from these
+numerical observations and from general resource proofs.
+
+The [quantum-relations study](quantum-relations-v030/session.json) preserves
+ten first projects and their original diagnostics. Unsupported runtime
+comparisons and unresolved `hash` calls are distinct from valid static and
+explicit Boolean/coherent comparisons and ordinary functions named `hash`.
+The first observations remain unchanged when teaching diagnostics improve.
+
 The [dirty restoration study](dirty-restoration-v030/session.json) retains
 three first sources and observations: exact restoration, a contract refusal,
 and a Bell-reference phase counterexample. General clean/dirty syntax remains open.

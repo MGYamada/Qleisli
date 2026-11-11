@@ -1,0 +1,75 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#30 total classical synthesis",
+  "author": "Codex root and delegated agents; exact model identifiers not independently recorded",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "25ef5c0c91b220704c61743a41144a218c732038",
+  "context": "first/context.json",
+  "status": "first-observations-recorded",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged informed first sources; original packets remain verbatim. Current observations do not repair or replace original predictions.",
+      "sha256": {
+        "both-xor/main.qli": "2aaf18cb188110555f332fc16b2ec90fe488752174234795bdaaab8e316f2774",
+        "increment2/main.qli": "e5d2cb8ba3fde4a964af7040bda98d441133999de03a731b2a9f5616c6e94cd8"
+      },
+      "manifest_sha256": {
+        "both-xor/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "increment2/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/01-both-xor-check.json",
+        "observations/02-both-xor-run.json",
+        "observations/03-increment2-check.json",
+        "observations/04-increment2-run.json"
+      ],
+      "reports": []
+    }
+  ],
+  "original_observation_sha256": {
+    "01-both-xor-check/command.json": "3aff11794c79c80c92f5eb6c76c33f9d9a1d10d6ae05557bc3e5b6c7604ff1be",
+    "01-both-xor-check/result.json": "3ce701c95c4414302bebcf411d6bebafca9d2a8ef38938c51ff6c8dd391fc901",
+    "01-both-xor-check/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "01-both-xor-check/stdout.txt": "82d3bf0819acd8764ece7a0f70f28a5663813bc204da1e4544a11362c452f97a",
+    "02-both-xor-run/command.json": "822646e60806351d8134c46f7efb48d65eb3e21a94b774e915f936bb72f0cc78",
+    "02-both-xor-run/result.json": "c3f2d6530c0492c74bc772202c75c2219f073fc00d14d130233f87691b6c83f6",
+    "02-both-xor-run/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "02-both-xor-run/stdout.txt": "cf5446c5a32f7b09bddba9c9741c1109e8b0e56f3fef2c001581601561883605",
+    "03-increment2-check/command.json": "e20eeb2c9ed9d1035decea5e76fbcdd42184d9abb57e8484c089a41d389b6b0d",
+    "03-increment2-check/result.json": "2bef512105c6d1760424952082914d34a9a10b7e96fb3f2f69de471149530898",
+    "03-increment2-check/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "03-increment2-check/stdout.txt": "82d3bf0819acd8764ece7a0f70f28a5663813bc204da1e4544a11362c452f97a",
+    "04-increment2-run/command.json": "4516e0e05d0b6d683b3a3ba9ac84d18bb35c383869dbe3b19ccf9814bbc80df6",
+    "04-increment2-run/result.json": "28bd8789ac71add1fd10d9e8842b0a83252ad38ece1524d9d8897860e693a51b",
+    "04-increment2-run/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "04-increment2-run/stdout.txt": "add5d6778cc46df5ac692fcb808e8fd07a9cc65ae7c14ae385da1b9e269c7d41",
+    "context.json": "0ee3c5928224da50c48e6696316cf3364433efa3c4afee73b5fbf22658ee7ae8",
+    "numeric-comparison.json": "c48402dc709dc836d40f264aab8629ba8d8392bc51252a8e17468197f3042d28",
+    "observations.json": "ea6e95f237a6e8aac13f2a37710a951cda88c88b7a83dbb1909989c766647dd2"
+  },
+  "collector_sha256": "0809e88f4611b3278442938e1bd2a083cd8641bc6dd1fdd73316d18ff3a6dea1",
+  "scope": "Two original programs and four successful CLI observations. These existing finite-table executions do not establish table-free synthesis, exact phase, source preservation or resource bounds. No recorded command is executed; stable binary hashes are not a build attestation.",
+  "retained_sha256": {
+    "README.md": "1df79fba373a04614d62420d4c817e8ce98de70b6a18fc9a990ad3ea4b0d090e",
+    "attempt-01/both-xor/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/both-xor/main.qli": "2aaf18cb188110555f332fc16b2ec90fe488752174234795bdaaab8e316f2774",
+    "attempt-01/increment2/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/increment2/main.qli": "e5d2cb8ba3fde4a964af7040bda98d441133999de03a731b2a9f5616c6e94cd8",
+    "collector.py.txt": "0809e88f4611b3278442938e1bd2a083cd8641bc6dd1fdd73316d18ff3a6dea1",
+    "first/SHA256SUMS": "5b25c289c9f0120feb7d7d3ab9728b0c488b6ae0e34e9eb5d672d688d7ca57f6",
+    "first/attempt-01/both-xor/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/attempt-01/both-xor/main.qli": "2aaf18cb188110555f332fc16b2ec90fe488752174234795bdaaab8e316f2774",
+    "first/attempt-01/increment2/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/attempt-01/increment2/main.qli": "e5d2cb8ba3fde4a964af7040bda98d441133999de03a731b2a9f5616c6e94cd8",
+    "first/context.json": "a9cb8cd99f07a8441e3f2c375267df4cd24658009dbb2e2fbb30c656ea832889",
+    "observations/01-both-xor-check.json": "273596793366f2cb5f91bdd858f06e7e54bf948c2065bf7e1847009e06d91bc1",
+    "observations/02-both-xor-run.json": "bab4f190b6ed58ff36b36f3d6ae8797dfc5322e7694e0a1c79837ed8e08962d1",
+    "observations/03-increment2-check.json": "e76b1a3fcecd21bb9c8ccd083c5fe3f751cd8c133ddefab99869df36c64a7022",
+    "observations/04-increment2-run.json": "363a4d90db8830f6fc6c51d75d760fc3272c6f3a58cdee5ed22631eaa1d46363",
+    "observations/context.json": "0ee3c5928224da50c48e6696316cf3364433efa3c4afee73b5fbf22658ee7ae8",
+    "observations/numeric-comparison.json": "c48402dc709dc836d40f264aab8629ba8d8392bc51252a8e17468197f3042d28",
+    "observations/observations.json": "ea6e95f237a6e8aac13f2a37710a951cda88c88b7a83dbb1909989c766647dd2"
+  }
+}

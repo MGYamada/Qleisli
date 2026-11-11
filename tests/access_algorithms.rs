@@ -167,8 +167,12 @@ fn actual(algorithm: Algorithm, original: &str) -> RawProgram {
     );
     let root = SourceRoot::new(&wrapper);
     root.write("study.qli", original);
+    bound_implementation(&root, original)
+}
+
+fn bound_implementation(root: &SourceRoot, original: &str) -> RawProgram {
     let accepted = compile_project(&root.0)
-        .unwrap_or_else(|error| panic!("{algorithm:?} provider failed before oracle: {error}"));
+        .unwrap_or_else(|error| panic!("provider failed before oracle: {error}"));
     let receipt = accepted
         .raw()
         .operations
@@ -193,12 +197,86 @@ fn actual(algorithm: Algorithm, original: &str) -> RawProgram {
             .sources
             .iter()
             .any(|(name, text)| name == "study" && text == original),
-        "{algorithm:?}: the complete original source must bind the receipt"
+        "the complete original source must bind the receipt"
     );
     let raw = receipt.implementation().clone();
     assert_eq!(raw.declared_effect, Effect::Unitary);
     assert!(raw.classical_inputs.is_empty() && raw.classical_outputs.is_empty());
     raw
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn a_signal_block_is_not_a_clean_return_contract() {
+    // Signal is the low axis. U|s,d> = sum_t (-1)^(s*t)|t,d xor t>/sqrt(2).
+    // Its signal-zero block is I/sqrt(2), but U|0,0> is a Bell state.
+    // All four input columns, including signal=1, are checked independently.
+    let source = "pub unitary fn probe(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+        let (signal,system) = split(q);
+        let (signal,system) = cnot(h(signal),system);
+        join(signal,system)
+    }";
+    let root = SourceRoot::new(
+        "use study::probe;
+         observe fn main() -> (Bit,Bit) {
+            let q=apply_contract(probe,probe,join(init0(),init0()));
+            let(signal,system)=split(q);
+            (measure_z(signal),measure_z(system))
+         }",
+    );
+    root.write("study.qli", source);
+    let raw = bound_implementation(&root, source);
+    assert_eq!(raw.quantum_inputs[0].wires.len(), 2);
+    assert_eq!(raw.quantum_outputs.len(), 1);
+    let coefficient = Exact::new([0, 1, 0, 0], 1).unwrap();
+    let expected = Matrix::new(
+        4,
+        4,
+        (0..16)
+            .map(|index| {
+                let row = index / 4;
+                let col = index % 4;
+                if row >> 1 != (col >> 1) ^ (row & 1) {
+                    Exact::zero()
+                } else if row & col & 1 != 0 {
+                    coefficient.neg().unwrap()
+                } else {
+                    coefficient
+                }
+            })
+            .collect(),
+    )
+    .unwrap();
+    let basis = BasisType::pair(BasisType::Bit, BasisType::Bit);
+    request(&raw, &basis, &expected).unwrap();
+    for wrong in incorrect_requests(&expected) {
+        semantic_rejection(
+            request(&raw, &basis, &wrong).unwrap_err(),
+            "signal phase/axes",
+        );
+    }
+    // A clean-return request on the full interface would be a different
+    // operator, even though the signal-zero block has the specified meaning.
+    let identity = Matrix::identity(4).unwrap();
+    semantic_rejection(
+        request(&raw, &basis, &identity).unwrap_err(),
+        "false cleanup",
+    );
+
+    let lost = SourceRoot::new(
+        "use study::probe;
+         observe fn main() -> Bit {
+            let(signal,system)=split(probe(join(init0(),init0())));
+            measure_z(system)
+         }",
+    );
+    lost.write("study.qli", source);
+    let error = compile_project(&lost.0).unwrap_err();
+    assert_eq!(error.code, qleisli::frontend::compile::ErrorCode::Ownership);
+    assert!(error.message.contains("signal"), "{error}");
 }
 
 fn request(

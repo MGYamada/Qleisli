@@ -1,0 +1,11 @@
+{
+  "events": [
+    "01-returned-signal-check.json",
+    "02-returned-signal-run.json",
+    "03-lost-signal-check.json",
+    "04-lost-signal-run.json",
+    "05-explicit-discard-check.json",
+    "06-explicit-discard-run.json"
+  ],
+  "identity_preserved": true
+}
