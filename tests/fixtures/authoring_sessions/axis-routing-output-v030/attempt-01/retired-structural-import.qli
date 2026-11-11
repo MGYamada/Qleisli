@@ -1,0 +1,2 @@
+use std::gate::permute_axes;
+pub unitary fn client(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{permute_axes(q)}

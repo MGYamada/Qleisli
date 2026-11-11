@@ -1,5 +1,6 @@
 import Qleisli.RuntimeSelectionGraphAction
 import Qleisli.RuntimeLiteralConditionalRefinement
+import Protocol.NativeContext.Bindings
 
 /-! Reuse the original body induction with a source graph action at every
 coherent selection, including selections in named bodies and selected branches.
@@ -101,5 +102,71 @@ theorem original_body_graph_refinement {artifact owner name arguments request pr
       127 scope body.checked.result.steps body.selections.witness none
       (RuntimeNamedChildRuns.original_body_runtime_only body) flow.conditions) starts
 
+/-! The public theorem starts at the actual native dispatcher. The original
+source, checked body and compared execution view all come from that decision.
+Initial encoded amplitudes and successful mathematical execution remain explicit
+premises; this is not a theorem about compiled IO or the Rust simulator. -/
+theorem native_qmatch_body_graph_refinement
+    (product : String) (bytes : ByteArray)
+    (decision : Protocol.NativeContext.Decision .qmatchSourceV5) (work left : Nat)
+    (accepted : (Protocol.NativeContext.run .qmatchSourceV5 product bytes).run work = (.ok decision,left))
+    {assignment : List Bool}
+    (row : RuntimeOrdinaryInputs.Row decision.value.2.checked.checked.initial assignment)
+    (sourceInitial : SourceHistory) (initial : History) (results : List History)
+    (executed : let body := decision.value.2.checked
+      let block := body.checked.native.block
+      (do
+        let (_,events) ← readOps block.fuel block.entry.quantum.reference block.operations
+        run body.root.dependencies block.fuel events initial) = some results) :
+    let original := decision.value.2
+    let body := original.checked
+    let prepared := original.prepared
+    let block := body.checked.native.block
+    let source := SourceRuntimeScope.Subject.whole prepared.source.body
+    let history := RuntimeBodyOperations.initialHistory prepared body.checked.native
+      original.request.combinedRuntime body.checked.inputs
+    (∀ input : RuntimeOwnerMap.Checked source.initialRoles block.entry,
+      RuntimeInterval.Computed (RuntimePureBody.reordered source.initialRoles block.entry history.bindings) input →
+      SemanticHistoryAgrees row.ordinals block.entry {history with bindings := input.bindings}
+        body.checked.initial.ssa sourceInitial initial) →
+    Protocol.ExecutionView.Packet.read bytes = .ok decision.value.1 ∧
+      decision.value.1.scope = .execution ∧
+      Nonempty (Protocol.ExecutionView.CheckedQmatchV5.Binding decision.value.1.original
+        decision.value.1.graph original work left) ∧
+      ∃ ownerEnd : RuntimeStructuralAction.SourceState,
+      ∃ last : RuntimeInterval.Checked block block.operations.length 0,
+        RuntimeInterval.Computed (RuntimeInterval.check block block.operations.length 0) last ∧
+        ∃ returned : RuntimeOwnerMap.Checked source.outputRoles last.after,
+          RuntimeInterval.Computed (RuntimePureBody.reordered source.outputRoles last.after ownerEnd.bindings) returned ∧
+          body.checked.result.history = {ownerEnd with bindings := returned.bindings} ∧
+          ∃ expected, runSourceHistories
+              (recursiveSourceSteps (plannedBodyLeaves prepared.source.catalogue body.root) row.ordinals 127 [])
+              [] body.checked.result.steps [sourceInitial] = some expected ∧
+            List.Forall₂
+              (SemanticHistoryAgrees row.ordinals last.after body.checked.result.history body.checked.result.ordinary)
+              (expected.map (returnHistory returned.bindings)) results := by
+  intro original body prepared block source history starts
+  obtain ⟨packet,scope,binding⟩ :=
+    Protocol.NativeContext.run_qmatch_v5_binding product bytes decision work left accepted
+  exact ⟨packet,scope,binding,
+    original_body_graph_refinement body row [] sourceInitial initial results executed starts⟩
+
+/-- The same decision supplies an original row for every canonical ordinary
+assignment. A caller cannot replace the checked domain with selected examples. -/
+theorem native_qmatch_input_rows
+    (product : String) (bytes : ByteArray)
+    (decision : Protocol.NativeContext.Decision .qmatchSourceV5) (work left : Nat)
+    (accepted : (Protocol.NativeContext.run .qmatchSourceV5 product bytes).run work = (.ok decision,left)) :
+    Protocol.ExecutionView.Packet.read bytes = .ok decision.value.1 ∧
+      ∀ assignment ∈ OrdinaryDomain.assignments decision.value.2.checked.checked.initial.domain,
+        Nonempty (RuntimeOrdinaryInputs.Row decision.value.2.checked.checked.initial assignment) := by
+  refine ⟨(Protocol.NativeContext.run_qmatch_v5_binding product bytes decision work left accepted).1,?_⟩
+  intro assignment member
+  obtain ⟨row⟩ := RuntimeOrdinaryHistories.Rows.every
+    decision.value.2.checked.checked.ordinary.rows assignment member
+  exact ⟨row.input⟩
+
 #print axioms original_body_graph_refinement
+#print axioms native_qmatch_body_graph_refinement
+#print axioms native_qmatch_input_rows
 end Qleisli.RuntimeLiteralBody

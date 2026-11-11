@@ -1,0 +1,6 @@
+use std::state::init0;
+use std::gate::swap;
+pub observe fn main()->(Bit,Bit){
+let (a,b) = swap(init0(),init0());
+(measure_z(a),measure_z(b))
+}

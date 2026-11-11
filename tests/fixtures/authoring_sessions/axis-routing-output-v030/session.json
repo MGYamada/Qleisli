@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Distinguish binding exchange, structural axis order and physical SWAP at diagnostics and literal exports",
+  "author": "Codex root and one implementation agent; informed by current specs, code and issue #76",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "75282f7c445472717bf59c9b57a21e4e40ea4175",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged first sources; first usage errors, corrected baseline diagnostics and current observations are separate.",
+      "sha256": {
+        "live-bit-exchange.qli": "ee964c561ec38a7938df4005b332ed84a525eb6ad8ac9515b437b79254815f9d",
+        "zero-width-exchange.qli": "874a9c6b31633ed517622c0d897fc28303dfa595bd6271428289bc4e40c4e6ee",
+        "ordinary-assignment.qli": "e5220ef7d67b8b8cff11c93ed8e18020ccd99c2b0e065ab394aeb6c82e2ada72",
+        "retired-structural-import.qli": "eba9881c7e50a109754376e028e8caeef05bf3c461fe22826951f8fe202d3a3c",
+        "physical-swap.qli": "5ebced1d629093d2dc37757f9ec1dc52e8f47afd5cf86fba0f6818c66735a998",
+        "structural-axes.qli": "77da05a6069e2be7b20cff5536ffc78b91da274bd55e38a6dca250f798d1a28a"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "observations/live-bit-exchange-first.json",
+        "observations/live-bit-exchange-baseline.json",
+        "observations/zero-width-exchange-first.json",
+        "observations/zero-width-exchange-baseline.json",
+        "observations/ordinary-assignment-first.json",
+        "observations/ordinary-assignment-baseline.json",
+        "observations/retired-structural-import-first.json",
+        "observations/retired-structural-import-baseline.json",
+        "observations/live-bit-exchange-after.json",
+        "observations/ordinary-assignment-after.json",
+        "observations/physical-swap-check-after.json",
+        "observations/physical-swap-emit-qasm-after.json",
+        "observations/physical-swap-emit-qir-after.json",
+        "observations/retired-structural-import-after.json",
+        "observations/structural-axes-check-after.json",
+        "observations/structural-axes-emit-qasm-after.json",
+        "observations/structural-axes-emit-qir-after.json",
+        "observations/zero-width-exchange-after.json"
+      ]
+    }
+  ]
+}

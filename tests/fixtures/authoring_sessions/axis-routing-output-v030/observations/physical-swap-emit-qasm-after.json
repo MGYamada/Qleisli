@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "interop",
+    "emit-qasm",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-axis-routing-76-20261111/export-projects/physical-swap",
+    "--input=qli"
+  ],
+  "recorded_utc": "2026-11-11T14:28:05.712036+00:00",
+  "exit_code": 0,
+  "cli_sha256_before": "33ef842963c36e7048958ce4aea5e8f864d832f2bc96aa821b15ae00ebbec0c2",
+  "cli_sha256_after": "33ef842963c36e7048958ce4aea5e8f864d832f2bc96aa821b15ae00ebbec0c2",
+  "kernel_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+  "source_sha256": "5ebced1d629093d2dc37757f9ec1dc52e8f47afd5cf86fba0f6818c66735a998",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop emit-qasm\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"text\":\"OPENQASM 3.0;\\u000ainclude \\\"stdgates.inc\\\";\\u000aqubit[2] q;\\u000abit[2] c;\\u000areset q;\\u000acx q[0], q[1];\\u000acx q[1], q[0];\\u000acx q[0], q[1];\\u000ac[0] = measure q[0];\\u000ac[1] = measure q[1];\\u000a\"}}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop emit-qasm",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "text": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[2] q;\nbit[2] c;\nreset q;\ncx q[0], q[1];\ncx q[1], q[0];\ncx q[0], q[1];\nc[0] = measure q[0];\nc[1] = measure q[1];\n"
+    }
+  },
+  "stderr": ""
+}

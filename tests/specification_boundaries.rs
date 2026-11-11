@@ -69,7 +69,7 @@ unitary fn collapse_units(q: Q<(Unit,Unit)>) -> Q<Unit> {
         r#"
 
 
-unitary fn swap(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+unitary fn permute_axes(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (a,b) = split(q);
     join(b,a)
 }

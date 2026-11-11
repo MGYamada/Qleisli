@@ -792,7 +792,7 @@ impl Checker<'_, '_> {
                         Some(binding) if binding.ty.linear() => SourceError::new(
                             "ownership",
                             target.span,
-                            "assignment would replace a live quantum owner; Qleisli does not assign to quantum-containing places. Consume the owner explicitly and introduce the result with 'let'",
+                            "assignment would replace a live quantum owner; Qleisli does not assign to quantum-containing places or exchange live bindings. Consume the owner explicitly and introduce the result with 'let'. For two Bit owners, std::gate::swap applies physical SWAP; std::structure::permute_axes explicitly reorders a pair's axes. Neither exchanges bindings",
                         ),
                         Some(_) => SourceError::new(
                             "unsupported",

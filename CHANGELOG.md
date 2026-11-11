@@ -6,6 +6,15 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Distinguish live-binding exchange, structural axis reordering and physical
+  SWAP in quantum assignment and retired-import diagnostics. Keep ordinary
+  assignment advice separate and retain the explicit two-Bit library interfaces.
+  Compare their literal QASM/QIR gate work and ordered readout, with independent
+  exact equations rejecting changed output maps, gate actions and relative phase.
+- Connect native v5 qmatch acceptance to the original-body source-graph
+  refinement theorem, including every canonical ordinary input row and
+  the complete ordered result family. Keep initial encoding and mathematical
+  execution premises explicit.
 - Meter selected qmatch sector restriction by its control and axis scans.
   Validate the entire original tape and retain full local validation for
   the instructions active in each sector.

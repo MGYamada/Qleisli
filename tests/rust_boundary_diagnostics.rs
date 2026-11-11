@@ -533,18 +533,24 @@ fn assignment_classifies_the_original_destination_before_its_rhs() {
         );
         assert!(message.contains("Consume the owner explicitly"));
         assert!(message.contains("'let'"));
-        assert!(!message.contains("mut"));
+        assert!(message.contains("std::gate::swap applies physical SWAP"));
+        assert!(message.contains("std::structure::permute_axes"));
+        assert!(message.contains("Neither exchanges bindings"));
+        assert!(!message.contains("'mut'"));
+        assert!(!message.contains("let mut"));
     }
     for ty in ["Bit", "Unit", "Bits<0>", "(Bit,(Unit,Bit))"] {
         // The name q supplies no quantum evidence; the checked type does.
         let source = format!("pub unitary fn client(q:{ty})->{ty}{{q=missing(0);q}}");
-        shared_rejection(
+        let message = shared_rejection(
             &source,
             "unsupported",
             "unsupported",
             at(&source, "q=", 0, 1),
             "ordinary place assignment is unsupported",
         );
+        assert!(!message.contains("std::gate::swap"));
+        assert!(!message.contains("std::structure::permute_axes"));
     }
     let source = "pub unitary fn client(q:Q<Bit>)->Q<Bit>{q=h(q);q}";
     shared_rejection(

@@ -45,6 +45,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [physical SWAP and structural output study](axis-routing-output-v030/context.md)
+retains six unchanged first sources and eighteen actual CLI observations.
+Usage failures, unchanged refusals, revised explanations and literal QASM/QIR
+outputs remain separate from the bounded exact routing regression and the
+unfinished general source, target and resource obligations.
+
 The [linked std descriptor study](linked-std-descriptor-v030/README.md) preserves
 two one-qubit user versions, actual API absence, old qargo import failures,
 empty-root packaging and generic dependency-table refusal in sixteen first
