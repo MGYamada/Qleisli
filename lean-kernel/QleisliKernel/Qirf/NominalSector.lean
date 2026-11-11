@@ -26,13 +26,14 @@ def forests (attached required : Interface) : List Semantics.FiniteCarrier.Basis
     owners.map (·.basis)
 
 private def checkLogicalUsing (inputCode outputCode : Matrix) (physical : List Matrix)
+    (plans : FiniteCarrier.CodePlans inputCode outputCode)
     (request : Nat × Matrix) (checkGram : WorkM Unit) : WorkM Matrix := do
   let logical ← matrixRead request.2
   guard (logical.cols == inputCode.cols && logical.rows == outputCode.cols) .request
   checkGram
   let sector ← lift (readOption physical[request.1]?)
-  let actual ← FiniteCarrier.codeProduct .right sector inputCode
-  let required ← FiniteCarrier.codeProduct .left outputCode logical
+  let actual ← FiniteCarrier.codeProductUsing .right sector inputCode plans.inputPlan
+  let required ← FiniteCarrier.codeProductUsing .left outputCode logical plans.outputPlan
   exactWork (Exact.charge actual.entries.length)
   guard (actual == required) .equation
   return logical
@@ -40,17 +41,28 @@ private def checkLogicalUsing (inputCode outputCode : Matrix) (physical : List M
 /-- Exact code-space equation for one active physical selector label. The
 physical list comes from complete original-body reconstruction, including
 padding labels; these matrices are never supplied as dependency evidence. -/
+def checkLogicalWithPlans (inputCode outputCode : Matrix) (physical : List Matrix)
+    (plans : FiniteCarrier.CodePlans inputCode outputCode)
+    (request : Nat × Matrix) : WorkM Matrix :=
+  checkLogicalUsing inputCode outputCode physical plans request
+    (FiniteRestriction.adaptiveWholeSpace request.2)
+
 def checkLogical (inputCode outputCode : Matrix) (physical : List Matrix)
     (request : Nat × Matrix) : WorkM Matrix :=
-  checkLogicalUsing inputCode outputCode physical request
-    (FiniteRestriction.adaptiveWholeSpace request.2)
+  checkLogicalWithPlans inputCode outputCode physical {} request
 
 /-- A native proof for this exact logical matrix allows the control equation
 to reuse its Gram check. The matrix and the code-space equation are checked. -/
-def checkLogicalWithGram (inputCode outputCode : Matrix) (physical : List Matrix)
+def checkLogicalWithGramAndPlans (inputCode outputCode : Matrix) (physical : List Matrix)
+    (plans : FiniteCarrier.CodePlans inputCode outputCode)
     (request : Nat × Matrix) (_ : ∃ a b, (wholeSpace request.2).run a = (.ok (),b)) :
     WorkM Matrix :=
-  checkLogicalUsing inputCode outputCode physical request (pure ())
+  checkLogicalUsing inputCode outputCode physical plans request (pure ())
+
+def checkLogicalWithGram (inputCode outputCode : Matrix) (physical : List Matrix)
+    (request : Nat × Matrix) (gram : ∃ a b, (wholeSpace request.2).run a = (.ok (),b)) :
+    WorkM Matrix :=
+  checkLogicalWithGramAndPlans inputCode outputCode physical {} request gram
 
 def LogicalBinding (inputCode outputCode : Matrix) (physical : List Matrix)
     (request : Nat × Matrix) (logical : Matrix) : Prop :=
@@ -62,11 +74,12 @@ def LogicalBinding (inputCode outputCode : Matrix) (physical : List Matrix)
       Exact.Matrix.compose outputCode logical c = (.ok actual,d)
 
 private theorem checkLogicalUsing_bound (inputCode outputCode : Matrix) (physical : List Matrix)
+    (plans : FiniteCarrier.CodePlans inputCode outputCode)
     (request : Nat × Matrix) (checkGram : WorkM Unit)
     (gram : ∀ a b, checkGram.run a = (.ok (),b) →
       ∃ c d, (wholeSpace request.2).run c = (.ok (),d))
     (logical : Matrix) (work left : Nat)
-    (ok : (checkLogicalUsing inputCode outputCode physical request checkGram).run work =
+    (ok : (checkLogicalUsing inputCode outputCode physical plans request checkGram).run work =
       (.ok logical,left)) :
     LogicalBinding inputCode outputCode physical request logical := by
   obtain ⟨read,w₁,hm,h⟩ := bind_success _ _ _ _ _ ok
@@ -86,18 +99,36 @@ private theorem checkLogicalUsing_bound (inputCode outputCode : Matrix) (physica
     cases entry : physical[request.1]? <;> simp_all [readOption]
   have exactEq := beq_iff_eq.mp (guard_success _ _ _ _ he).1
   rw [← exactEq] at hr
-  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ ha
-  obtain ⟨c,d,requiredDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hr
+  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ ha
+  obtain ⟨c,d,requiredDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ hr
   have sameMatrix := (matrixRead_value _ _ _ _ hm).1
   exact ⟨sameMatrix,dims.1,dims.2,sameMatrix.symm ▸ gram _ _ hu,
     sector,actual,a,b,c,d,sectorEq,actualDense,requiredDense⟩
+
+theorem checkLogicalWithPlans_bound (inputCode outputCode : Matrix) (physical : List Matrix)
+    (plans : FiniteCarrier.CodePlans inputCode outputCode)
+    (request : Nat × Matrix) (logical : Matrix) (work left : Nat)
+    (ok : (checkLogicalWithPlans inputCode outputCode physical plans request).run work =
+      (.ok logical,left)) :
+    LogicalBinding inputCode outputCode physical request logical :=
+  checkLogicalUsing_bound inputCode outputCode physical plans request _
+    (FiniteRestriction.adaptiveWholeSpace_bound request.2) logical work left ok
 
 theorem checkLogical_bound (inputCode outputCode : Matrix) (physical : List Matrix)
     (request : Nat × Matrix) (logical : Matrix) (work left : Nat)
     (ok : (checkLogical inputCode outputCode physical request).run work = (.ok logical,left)) :
     LogicalBinding inputCode outputCode physical request logical :=
-  checkLogicalUsing_bound inputCode outputCode physical request _
-    (FiniteRestriction.adaptiveWholeSpace_bound request.2) logical work left ok
+  checkLogicalWithPlans_bound inputCode outputCode physical {} request logical work left ok
+
+theorem checkLogicalWithGramAndPlans_bound (inputCode outputCode : Matrix) (physical : List Matrix)
+    (plans : FiniteCarrier.CodePlans inputCode outputCode)
+    (request : Nat × Matrix) (gram : ∃ a b, (wholeSpace request.2).run a = (.ok (),b))
+    (logical : Matrix) (work left : Nat)
+    (ok : (checkLogicalWithGramAndPlans inputCode outputCode physical plans request gram).run work =
+      (.ok logical,left)) :
+    LogicalBinding inputCode outputCode physical request logical :=
+  checkLogicalUsing_bound inputCode outputCode physical plans request _ (fun _ _ _ => gram)
+    logical work left ok
 
 theorem checkLogicalWithGram_bound (inputCode outputCode : Matrix) (physical : List Matrix)
     (request : Nat × Matrix) (gram : ∃ a b, (wholeSpace request.2).run a = (.ok (),b))
@@ -105,13 +136,19 @@ theorem checkLogicalWithGram_bound (inputCode outputCode : Matrix) (physical : L
     (ok : (checkLogicalWithGram inputCode outputCode physical request gram).run work =
       (.ok logical,left)) :
     LogicalBinding inputCode outputCode physical request logical :=
-  checkLogicalUsing_bound inputCode outputCode physical request _ (fun _ _ _ => gram)
-    logical work left ok
+  checkLogicalWithGramAndPlans_bound inputCode outputCode physical {} request gram logical work left ok
+
+private def prepareLogicalCodes (inputCode outputCode : Matrix) (labels : List Nat) :
+    WorkM (FiniteCarrier.CodePlans inputCode outputCode) :=
+  match labels with
+  | _::_::_ => FiniteCarrier.prepareCodes inputCode outputCode
+  | _ => pure {}
 
 def checkLogicals (inputCode outputCode : Matrix) (physical : List Matrix)
     (labels : List Nat) (required : List Matrix) : WorkM (List Matrix) := do
   guard (required.length == labels.length) .request
-  (labels.zip required).mapM (checkLogical inputCode outputCode physical)
+  let plans ← prepareLogicalCodes inputCode outputCode labels
+  (labels.zip required).mapM (checkLogicalWithPlans inputCode outputCode physical plans)
 
 theorem checkLogicals_bound (inputCode outputCode : Matrix) (physical : List Matrix)
     (labels : List Nat) (required actual : List Matrix) (work left : Nat)
@@ -120,10 +157,11 @@ theorem checkLogicals_bound (inputCode outputCode : Matrix) (physical : List Mat
       QleisliKernel.Exact.ListRel (LogicalBinding inputCode outputCode physical)
         (labels.zip required) actual := by
   obtain ⟨_,w₁,hl,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨plans,w₂,_,h⟩ := bind_success _ _ _ _ _ h
   exact ⟨beq_iff_eq.mp (guard_success _ _ _ _ hl).1,
-    FiniteRestriction.mapM_relation (checkLogical inputCode outputCode physical)
+    FiniteRestriction.mapM_relation (checkLogicalWithPlans inputCode outputCode physical plans)
       (LogicalBinding inputCode outputCode physical)
-      (checkLogical_bound inputCode outputCode physical) (labels.zip required) actual w₁ left h⟩
+      (checkLogicalWithPlans_bound inputCode outputCode physical plans) (labels.zip required) actual w₂ left h⟩
 
 structure Prepared where
   ports : Ports

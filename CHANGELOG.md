@@ -17,6 +17,7 @@ development milestones from the scope of their evidence.
   side of an exact product and retain the dense equation as their proof.
   With a verified identity encoding, the product reuses the admitted
   operand and retains its exact coefficients and original dense equation.
+  Arms of the same selection share the checked code decisions and adjoint.
   Arm Gram checks also use measured sparse support, with the original
   total charge preserved when the dense strategy is selected.
   Carrier encodings use the compact Gram check when its estimated cost is lower.

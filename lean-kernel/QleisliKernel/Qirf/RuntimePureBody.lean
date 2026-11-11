@@ -277,13 +277,17 @@ def selectionNode {α : Type} (artifact : Artifact) {dependencies program block 
   let targetRead ← NaturalAffine.witness (FiniteCarrier.read target.basis)
   let selectorLayout := selectorRead.val
   let targetLayout := targetRead.val
+  let preparedCodes ← match table.arms with
+    | _::_::_ => SectorArm.prepareCodes inputCode.val outputCode.val
+    | _ => pure {}
   let arms := table.arms.mapFinIdx fun index arm valid => ((⟨index,valid⟩ : Fin table.arms.length),arm)
   let (meanings,remaining) ← (arms.zip site.arms).foldlM
     (fun (meanings,current) ((index,arm),subject) => do
       let (logical,next) ← realize index arm current
       let reference : SectorArm.Reference := ⟨arm.label.ordinal,target.basis,.unitary,
         subject.implementation,subject.controlled⟩
-      let actual ← SectorArm.read artifact dependencies target.basis targetLayout.bits inputCode.val outputCode.val reference
+      let actual ← SectorArm.readUsing artifact dependencies target.basis targetLayout.bits
+        inputCode.val outputCode.val preparedCodes reference
       exactWork (Exact.charge (logical.entries.length+actual.logical.entries.length+1))
       guard (actual.logical == logical) .equation
       pure (meanings ++ [(arm.label.ordinal,logical)],next)) ([],initial)

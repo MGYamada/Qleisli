@@ -10,15 +10,47 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf.SectorArm
 open Semantics.Exact Semantics.Finite Finite
 
-def projectLogical (inputCode outputCode physical : Matrix) : WorkM Matrix := do
-  let actual ← FiniteCarrier.codeProduct .right physical inputCode
-  let adjoint ← exactWork (Exact.Matrix.adjointWork outputCode)
-  let logical ← FiniteCarrier.codeProduct .left adjoint actual
+structure AdjointCode (outputCode : Matrix) where
+  matrix : Matrix
+  computed : ∃ before after, Exact.Matrix.adjoint outputCode before = (.ok matrix,after)
+  plan : Option (FiniteCarrier.CodePlan matrix) := none
+
+private def readAdjoint (outputCode : Matrix) : WorkM (AdjointCode outputCode) := do
+  let result ← SourceTypes.NaturalAffine.witness (exactWork (Exact.Matrix.adjointWork outputCode))
+  return ⟨result.val,by
+    obtain ⟨before,after,ran⟩ := result.property
+    exact ⟨before,after,exactWork_success _ _ _ _ ran⟩,none⟩
+
+structure Codes (inputCode outputCode : Matrix) where
+  products : FiniteCarrier.CodePlans inputCode outputCode := {}
+  adjoint : Option (AdjointCode outputCode) := none
+
+/-- Prepare the literal target codes once for the arms of this selection.
+The cached adjoint has the same original bounded arithmetic witness. -/
+def prepareCodes (inputCode outputCode : Matrix) : WorkM (Codes inputCode outputCode) := do
+  let products ← FiniteCarrier.prepareCodes inputCode outputCode
+  let adjoint ← readAdjoint outputCode
+  let plan ← FiniteCarrier.prepareCode adjoint.matrix
+  return ⟨products,some { adjoint with plan := some plan }⟩
+
+private def useAdjoint (outputCode : Matrix) : Option (AdjointCode outputCode) →
+    WorkM (AdjointCode outputCode)
+  | none => readAdjoint outputCode
+  | some adjoint => pure adjoint
+
+private def projectLogicalUsing (inputCode outputCode physical : Matrix)
+    (codes : Codes inputCode outputCode) : WorkM Matrix := do
+  let actual ← FiniteCarrier.codeProductUsing .right physical inputCode codes.products.inputPlan
+  let adjoint ← useAdjoint outputCode codes.adjoint
+  let logical ← FiniteCarrier.codeProductUsing .left adjoint.matrix actual adjoint.plan
   FiniteRestriction.adaptiveWholeSpace logical
-  let required ← FiniteCarrier.codeProduct .left outputCode logical
+  let required ← FiniteCarrier.codeProductUsing .left outputCode logical codes.products.outputPlan
   exactWork (Exact.charge actual.entries.length)
   guard (actual == required) .equation
   return logical
+
+def projectLogical (inputCode outputCode physical : Matrix) : WorkM Matrix :=
+  projectLogicalUsing inputCode outputCode physical {}
 
 structure Projection (inputCode outputCode physical logical : Matrix) : Prop where
   projection : ∃ actual adjoint a b c d e f,
@@ -30,11 +62,12 @@ structure Projection (inputCode outputCode physical logical : Matrix) : Prop whe
     Exact.Matrix.compose physical inputCode a = (.ok actual,b) ∧
     Exact.Matrix.compose outputCode logical c = (.ok actual,d)
 
-theorem projectLogical_bound (inputCode outputCode physical logical : Matrix) (work left : Nat)
-    (ok : (projectLogical inputCode outputCode physical).run work = (.ok logical,left)) :
+private theorem projectLogicalUsing_bound (inputCode outputCode physical logical : Matrix)
+    (codes : Codes inputCode outputCode) (work left : Nat)
+    (ok : (projectLogicalUsing inputCode outputCode physical codes).run work = (.ok logical,left)) :
     Projection inputCode outputCode physical logical := by
   obtain ⟨actual,w₁,ha,h⟩ := bind_success _ _ _ _ _ ok
-  obtain ⟨adjoint,w₂,hd,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨adjoint,w₂,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨result,w₃,hl,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₄,hu,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨required,w₅,hr,h⟩ := bind_success _ _ _ _ _ h
@@ -44,19 +77,26 @@ theorem projectLogical_bound (inputCode outputCode physical logical : Matrix) (w
   subst logical
   have exactEq := beq_iff_eq.mp (guard_success _ _ _ _ he).1
   rw [← exactEq] at hr
-  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ ha
-  obtain ⟨e,f,logicalDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hl
-  obtain ⟨g,i,requiredDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hr
-  exact ⟨⟨actual,adjoint,a,b,w₁,w₂,e,f,actualDense,exactWork_success _ _ _ _ hd,logicalDense⟩,
+  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ ha
+  obtain ⟨c,d,adjointDense⟩ := adjoint.computed
+  obtain ⟨e,f,logicalDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ hl
+  obtain ⟨g,i,requiredDense⟩ := FiniteCarrier.codeProductUsing_dense _ _ _ _ _ _ _ hr
+  exact ⟨⟨actual,adjoint.matrix,a,b,c,d,e,f,actualDense,adjointDense,logicalDense⟩,
     FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
     ⟨actual,a,b,g,i,actualDense,requiredDense⟩⟩
 
+theorem projectLogical_bound (inputCode outputCode physical logical : Matrix) (work left : Nat)
+    (ok : (projectLogical inputCode outputCode physical).run work = (.ok logical,left)) :
+    Projection inputCode outputCode physical logical :=
+  projectLogicalUsing_bound inputCode outputCode physical logical {} work left ok
+
 private theorem witnessedProjection (inputCode outputCode physical : Matrix)
+    (codes : Codes inputCode outputCode)
     (result : {value : Matrix // ∃ work left,
-      (projectLogical inputCode outputCode physical).run work = (.ok value,left)}) :
+      (projectLogicalUsing inputCode outputCode physical codes).run work = (.ok value,left)}) :
     Projection inputCode outputCode physical result.val := by
   obtain ⟨work,left,checked⟩ := result.property
-  exact projectLogical_bound inputCode outputCode physical result.val work left checked
+  exact projectLogicalUsing_bound inputCode outputCode physical result.val codes work left checked
 
 structure Reference where
   label : Nat
@@ -78,8 +118,9 @@ structure Checked where
 /-- Codes are the enclosing freshly checked target owner's codes. Dependency
 matrices must come from that same original artifact's fresh root, not a packet.
 This helper checks concrete subjects and confers no independent acceptance API. -/
-def read (artifact : Artifact) (dependencies : List Dependency)
+def readUsing (artifact : Artifact) (dependencies : List Dependency)
     (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
+    (codes : Codes inputCode outputCode)
     (reference : Reference) : WorkM Checked := do
   let layout ← FiniteCarrier.read reference.basis
   guard (reference.basis == target && layout.bits == bits && reference.publicEffect == .unitary) .request
@@ -87,7 +128,7 @@ def read (artifact : Artifact) (dependencies : List Dependency)
   guard (Raw.BranchFunction.preflight [.bits bits] original) .request
   let physical ← SectorForward.read dependencies bits original
   FiniteRestriction.adaptiveWholeSpace physical
-  let projection ← SourceTypes.NaturalAffine.witness (projectLogical inputCode outputCode physical)
+  let projection ← SourceTypes.NaturalAffine.witness (projectLogicalUsing inputCode outputCode physical codes)
   let logical := projection.val
   let controlledOriginal ← lift (readOption artifact.programs[reference.controlled]?)
   exactWork (Exact.charge (controlledOriginal.operations.length + 1))
@@ -95,10 +136,16 @@ def read (artifact : Artifact) (dependencies : List Dependency)
   let restriction ← QleisliKernel.Raw.Sector.read dependencies [.bit] [.bits bits] controlledProgram
   exactWork (Exact.charge (logical.rows * logical.rows))
   let identity ← lift (arithmetic (Exact.Matrix.identity logical.rows))
-  let inactive ← NominalSector.checkLogical inputCode outputCode restriction.sectors (0,identity)
-  let active ← NominalSector.checkLogicalWithGram inputCode outputCode restriction.sectors
-    (1,logical) (witnessedProjection inputCode outputCode physical projection).unitary
+  let inactive ← NominalSector.checkLogicalWithPlans inputCode outputCode restriction.sectors codes.products
+    (0,identity)
+  let active ← NominalSector.checkLogicalWithGramAndPlans inputCode outputCode restriction.sectors codes.products
+    (1,logical) (witnessedProjection inputCode outputCode physical codes projection).unitary
   return ⟨original,physical,logical,controlledOriginal,controlledProgram,restriction,identity,[inactive,active]⟩
+
+def read (artifact : Artifact) (dependencies : List Dependency)
+    (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
+    (reference : Reference) : WorkM Checked :=
+  readUsing artifact dependencies target bits inputCode outputCode {} reference
 
 structure Postcondition (artifact : Artifact) (dependencies : List Dependency)
     (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
@@ -121,10 +168,12 @@ structure Postcondition (artifact : Artifact) (dependencies : List Dependency)
     (NominalSector.LogicalBinding inputCode outputCode checked.restriction.sectors)
     ([0,1].zip [checked.identity,checked.logical]) checked.controlMeanings
 
-theorem read_bound (artifact : Artifact) (dependencies : List Dependency)
+theorem readUsing_bound (artifact : Artifact) (dependencies : List Dependency)
     (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
+    (codes : Codes inputCode outputCode)
     (reference : Reference) (checked : Checked) (work left : Nat)
-    (ok : (read artifact dependencies target bits inputCode outputCode reference).run work = (.ok checked,left)) :
+    (ok : (readUsing artifact dependencies target bits inputCode outputCode codes reference).run work =
+      (.ok checked,left)) :
     Postcondition artifact dependencies target bits inputCode outputCode reference checked := by
   obtain ⟨layout,w₁,hl,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,ht,h⟩ := bind_success _ _ _ _ _ h
@@ -159,9 +208,16 @@ theorem read_bound (artifact : Artifact) (dependencies : List Dependency)
   exact ⟨types.1.1,types.2,⟨layout,FiniteCarrier.read_reference _ _ _ _ hl,types.1.2⟩,
     originalEq,(guard_success _ _ _ _ hp).1,SectorForward.read_bound _ _ _ _ _ _ hm,
     FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
-    witnessedProjection _ _ _ projection,controlEq,pureControl.1,pureControl.2,
+    witnessedProjection _ _ _ codes projection,controlEq,pureControl.1,pureControl.2,
     QleisliKernel.Raw.Sector.read_bound _ _ _ _ _ _ _ hr,identityEq,
-    ⟨NominalSector.checkLogical_bound _ _ _ _ inactive _ _ hinactive,
-      NominalSector.checkLogicalWithGram_bound _ _ _ _ _ active _ _ hactive,trivial⟩⟩
+    ⟨NominalSector.checkLogicalWithPlans_bound _ _ _ _ _ inactive _ _ hinactive,
+      NominalSector.checkLogicalWithGramAndPlans_bound _ _ _ _ _ _ active _ _ hactive,trivial⟩⟩
+
+theorem read_bound (artifact : Artifact) (dependencies : List Dependency)
+    (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
+    (reference : Reference) (checked : Checked) (work left : Nat)
+    (ok : (read artifact dependencies target bits inputCode outputCode reference).run work = (.ok checked,left)) :
+    Postcondition artifact dependencies target bits inputCode outputCode reference checked :=
+  readUsing_bound artifact dependencies target bits inputCode outputCode {} reference checked work left ok
 
 end QleisliKernel.Qirf.SectorArm

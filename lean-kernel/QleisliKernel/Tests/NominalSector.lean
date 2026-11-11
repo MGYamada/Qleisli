@@ -85,6 +85,16 @@ private def identity8 : Matrix :=
   | .error (.arithmetic .workLimit) => true
   | _ => false
 
+private def reusedIdentityProducts (phased : Matrix) : Finite.WorkM Matrix := do
+  let plan ← FiniteCarrier.prepareCode identity8
+  let first ← FiniteCarrier.codeProductUsing .right phased identity8 (some plan)
+  FiniteCarrier.codeProductUsing .left identity8 first (some plan)
+
+#guard let phased := phasedDiagonal (List.range 8)
+  match (reusedIdentityProducts phased).run 769 with
+  | (.ok result,0) => result == phased
+  | _ => false
+
 -- Square shape alone supplies no identity evidence. The fallback compares
 -- the exact reordered result and keeps the original nontrivial phases.
 #guard let phased := phasedDiagonal (List.range 8)
