@@ -541,6 +541,7 @@ private theorem selection_aligned {α : Type} (artifact : Artifact)
   obtain ⟨outputCode,f,_output,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨selectorRead,g,_selector,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨targetRead,i,_target,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨walk,j,_walk,h⟩ := bind_success _ _ _ _ _ h
   rcases walk with ⟨meanings,remaining⟩
   obtain ⟨expected,k,_expected,h⟩ := bind_success _ _ _ _ _ h

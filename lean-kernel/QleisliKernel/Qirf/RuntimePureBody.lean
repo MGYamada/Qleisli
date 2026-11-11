@@ -249,6 +249,12 @@ def primitiveAt {sources caller dependencies program block start count}
     return (source.after,.primitive action.val source)
   | _,_ => throw .request
 
+private def prepareSelectionCodes {α : Type} (input output : Semantics.Exact.Matrix)
+    (arms : List α) : WorkM (SectorArm.Codes input output) :=
+  match arms with
+  | _::_::_ => SectorArm.prepareCodes input output
+  | _ => pure {}
+
 /-- Verify every literal arm and the complete selector partition with the
 actual ordered source owners and their encodings. The enclosing traversal
 supplies a source realization at each index of this exact arm table. -/
@@ -277,9 +283,7 @@ def selectionNode {α : Type} (artifact : Artifact) {dependencies program block 
   let targetRead ← NaturalAffine.witness (FiniteCarrier.read target.basis)
   let selectorLayout := selectorRead.val
   let targetLayout := targetRead.val
-  let preparedCodes ← match table.arms with
-    | _::_::_ => SectorArm.prepareCodes inputCode.val outputCode.val
-    | _ => pure {}
+  let preparedCodes ← prepareSelectionCodes inputCode.val outputCode.val table.arms
   let arms := table.arms.mapFinIdx fun index arm valid => ((⟨index,valid⟩ : Fin table.arms.length),arm)
   let (meanings,remaining) ← (arms.zip site.arms).foldlM
     (fun (meanings,current) ((index,arm),subject) => do

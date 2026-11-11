@@ -150,6 +150,7 @@ theorem selectionNode_from_arms {α : Type} (artifact : Artifact)
   obtain ⟨outputCode,f,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨selectorRead,g,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨targetRead,i,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨walk,j,walked,h⟩ := bind_success _ _ _ _ _ h
   rcases walk with ⟨meanings,remaining⟩
   obtain ⟨expected,k,ordered,h⟩ := bind_success _ _ _ _ _ h
