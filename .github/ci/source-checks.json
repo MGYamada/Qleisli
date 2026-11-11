@@ -190,6 +190,10 @@
         [
           "python3",
           "scripts/test_qmatch_source_coupling_history.py"
+        ],
+        [
+          "python3",
+          "scripts/test_clean_marginal_first.py"
         ]
       ],
       "prepare": []
