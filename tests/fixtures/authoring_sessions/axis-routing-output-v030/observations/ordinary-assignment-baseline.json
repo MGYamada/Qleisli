@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-axis-routing-76-20261111/diagnostics-first/ordinary-assignment",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-11T14:23:24.039725+00:00",
+  "exit_code": 1,
+  "cli_sha256": "360bc5da8d65d6d4228397468e40369c8a27da872a3d9a71ff65e0fcbbc0e578",
+  "kernel_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+  "source_sha256": "e5220ef7d67b8b8cff11c93ed8e18020ccd99c2b0e065ab394aeb6c82e2ada72",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"ordinary place assignment is unsupported in this profile; use a new let binding\",\"primary\":{\"path\":\"main.qli\",\"start\":48,\"end\":49,\"line\":1,\"column\":49},\"related\":[]}],\"result\":null}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "ordinary place assignment is unsupported in this profile; use a new let binding",
+        "primary": {
+          "path": "main.qli",
+          "start": 48,
+          "end": 49,
+          "line": 1,
+          "column": 49
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

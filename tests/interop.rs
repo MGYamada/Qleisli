@@ -638,6 +638,35 @@ fn exact_target_matrix(
     text: &str,
     meaning: qleisli::contract::exact::Matrix,
 ) -> Result<(), qleisli::contract::ContractError> {
+    exact_target_matrix_with_output_axes(text, meaning, None)
+}
+
+fn literal_output_axes(text: &str) -> Vec<usize> {
+    let mut axes = vec![];
+    for line in text.lines() {
+        if let Some(output) = line.strip_prefix("c[") {
+            let (index, wire) = output.split_once("] = measure q[").unwrap();
+            assert_eq!(index.parse::<usize>().unwrap(), axes.len());
+            axes.push(wire.strip_suffix("];").unwrap().parse().unwrap());
+        }
+    }
+    axes
+}
+
+// The actual literal readout supplies the output encoding, separately from
+// the independently requested logical operator. No producer wire map is used.
+fn exact_routed_target_matrix(
+    text: &str,
+    meaning: qleisli::contract::exact::Matrix,
+) -> Result<(), qleisli::contract::ContractError> {
+    exact_target_matrix_with_output_axes(text, meaning, Some(&literal_output_axes(text)))
+}
+
+fn exact_target_matrix_with_output_axes(
+    text: &str,
+    meaning: qleisli::contract::exact::Matrix,
+    output_axes: Option<&[usize]>,
+) -> Result<(), qleisli::contract::ContractError> {
     use qleisli::contract::exact::{Budget, Exact, Matrix};
     use qleisli::contract::{
         BasisType, CheckedContract, Circuit, Contract, DEFAULT_EXACT_WORK, Encoding,
@@ -662,8 +691,34 @@ fn exact_target_matrix(
             })
             .collect(),
     )?;
-    let encoding = Encoding::new(logical, physical.clone(), embedding, &mut budget)?;
-    let contract = Contract::new(encoding.clone(), encoding, meaning, &mut budget)?;
+    let encoding = Encoding::new(logical.clone(), physical.clone(), embedding, &mut budget)?;
+    let output_encoding = if let Some(axes) = output_axes {
+        assert_eq!(logical_dim, 1 << width, "this probe has no workspace");
+        let mut ordered = axes.to_vec();
+        ordered.sort_unstable();
+        assert_eq!(ordered, (0..width).collect::<Vec<_>>());
+        let output = Matrix::new(
+            logical_dim,
+            logical_dim,
+            (0..logical_dim * logical_dim)
+                .map(|entry| {
+                    let column = entry % logical_dim;
+                    let physical_row = axes.iter().enumerate().fold(0, |bits, (logical, &axis)| {
+                        bits | (((column >> logical) & 1) << axis)
+                    });
+                    if entry / logical_dim == physical_row {
+                        Exact::one()
+                    } else {
+                        Exact::zero()
+                    }
+                })
+                .collect(),
+        )?;
+        Encoding::new(logical, physical.clone(), output, &mut budget)?
+    } else {
+        encoding.clone()
+    };
+    let contract = Contract::new(encoding, output_encoding, meaning, &mut budget)?;
     CheckedContract::check(
         qleisli::edition::Edition::E2026,
         Circuit::new(physical, steps)?,
@@ -1028,33 +1083,19 @@ fn ordinary_hzh_words_export_existing_x_cx_ccx_with_full_phase() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order() {
+fn ordinary_swap_and_structural_axes_keep_distinct_export_work_and_readout_order() {
+    use qleisli::contract::ContractError;
     use qleisli::contract::exact::{Exact, Matrix};
-    let program = ordinary_terminal(
-        "let(a,b)=swap(init0(),init0());(measure_z(b),measure_z(a))",
-        "use std::gate::swap;",
-        "(Bit,Bit)",
-    );
-    assert!(has_contract(&program));
-    let text = export_openqasm3(&program).unwrap();
-    assert!(
-        text.contains("cx q[0], q[1];\ncx q[1], q[0];\ncx q[0], q[1];"),
-        "{text}"
-    );
-    assert!(
-        text.contains("c[0] = measure q[1];\nc[1] = measure q[0];"),
-        "{text}"
-    );
-    assert_eq!(literal_target(&text).0, 2);
-    assert_eq!(literal_target(&text).1.len(), 3);
-    assert_eq!(
-        export_qir_base(&program)
-            .unwrap()
-            .matches("call void @__quantum__qis__cnot__body(")
-            .count(),
-        3
-    );
-    import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
+    let swap_words = ["cx q[0], q[1];", "cx q[1], q[0];", "cx q[0], q[1];"];
+    let swap_qir = [
+        "call void @__quantum__qis__cnot__body(ptr null, ptr inttoptr (i64 1 to ptr))",
+        "call void @__quantum__qis__cnot__body(ptr inttoptr (i64 1 to ptr), ptr null)",
+        "call void @__quantum__qis__cnot__body(ptr null, ptr inttoptr (i64 1 to ptr))",
+    ];
+    let forward_readout = "c[0] = measure q[0];\nc[1] = measure q[1];";
+    let reverse_readout = "c[0] = measure q[1];\nc[1] = measure q[0];";
+    // Independently fixed little-endian |a,b> -> |b,a>, coefficient +1.
+    // All columns are checked, rather than only the clients' zero input.
     let permutation = [0, 2, 1, 3];
     let expected = Matrix::new(
         4,
@@ -1070,11 +1111,97 @@ fn ordinary_swap_keeps_three_normalized_cnot_windows_and_readout_order() {
             .collect(),
     )
     .unwrap();
-    exact_target_matrix(&text, expected.clone()).unwrap();
-    assert!(
-        exact_target_matrix(&text.replace("cx q[1], q[0];\n", ""), expected).is_err(),
-        "all three original windows matter"
-    );
+    for (physical, import, body) in [
+        (
+            true,
+            "use std::gate::swap;",
+            "let (a,b) = swap(init0(),init0());",
+        ),
+        (
+            false,
+            "use std::structure::permute_axes;",
+            "let (a,b) = split(permute_axes(join(init0(),init0())));",
+        ),
+    ] {
+        let source = format!(
+            "use std::state::init0;\n{import}\npub observe fn main()->(Bit,Bit){{\n{body}\n(measure_z(a),measure_z(b))\n}}\n"
+        );
+        let program =
+            qleisli::frontend::compile::compile_project(&common::SourceRoot::new(&source).0)
+                .unwrap();
+        if physical {
+            assert!(has_contract(&program));
+        }
+        let text = export_openqasm3(&program).unwrap();
+        let (width, emitted) = literal_target(&text);
+        assert_eq!(width, 2, "no synthesis workspace");
+        assert_eq!(emitted.len(), if physical { 3 } else { 0 }, "{text}");
+        let gate_words: Vec<_> = text
+            .lines()
+            .filter(|line| line.starts_with("cx "))
+            .collect();
+        let required_words: &[&str] = if physical { &swap_words } else { &[] };
+        assert_eq!(gate_words.as_slice(), required_words, "{text}");
+        let (readout, wrong_readout, axes) = if physical {
+            (forward_readout, reverse_readout, [0, 1])
+        } else {
+            (reverse_readout, forward_readout, [1, 0])
+        };
+        assert!(text.contains(readout), "{text}");
+        assert_eq!(literal_output_axes(&text), axes);
+
+        let qir = export_qir_base(&program).unwrap();
+        let qis: Vec<_> = qir
+            .lines()
+            .map(str::trim)
+            .filter(|line| line.starts_with("call void @__quantum__qis__"))
+            .collect();
+        let required_gates: &[&str] = if physical { &swap_qir } else { &[] };
+        let required_readout = if physical {
+            [
+                "call void @__quantum__qis__mz__body(ptr null, ptr null)",
+                "call void @__quantum__qis__mz__body(ptr inttoptr (i64 1 to ptr), ptr inttoptr (i64 1 to ptr))",
+            ]
+        } else {
+            [
+                "call void @__quantum__qis__mz__body(ptr inttoptr (i64 1 to ptr), ptr null)",
+                "call void @__quantum__qis__mz__body(ptr null, ptr inttoptr (i64 1 to ptr))",
+            ]
+        };
+        let required_qis = [required_gates, &required_readout].concat();
+        assert_eq!(qis, required_qis, "{qir}");
+        import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
+        exact_routed_target_matrix(&text, expected.clone()).unwrap();
+
+        // Gate action and output coordinates are independent obligations. The
+        // shared equation alone does not certify the distinct source work or
+        // authorize an optimizer to exchange these two implementations.
+        let wrong_map = text.replace(readout, wrong_readout);
+        let wrong_work = if physical {
+            text.replace("cx q[1], q[0];\n", "")
+        } else {
+            text.replace(
+                "reset q;\n",
+                &format!("reset q;\n{}\n", swap_words.join("\n")),
+            )
+        };
+        let wrong_phase = text.replace("reset q;\n", "reset q;\nz q[0];\n");
+        for (fault, changed) in [
+            ("readout map", wrong_map),
+            ("physical gate work", wrong_work),
+            ("relative phase", wrong_phase),
+        ] {
+            assert_ne!(changed, text, "{fault}");
+            // Each mutation is still a valid target program. The independent
+            // exact request must reject its altered ordered operator.
+            import_openqasm3(qleisli::edition::Edition::E2026, &changed).unwrap();
+            assert_eq!(
+                exact_routed_target_matrix(&changed, expected.clone()).unwrap_err(),
+                ContractError::EquationMismatch,
+                "{fault}: {changed}"
+            );
+        }
+    }
 }
 
 #[cfg_attr(

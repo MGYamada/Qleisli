@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-axis-routing-76-20261111/diagnostics-first/zero-width-exchange",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-11T14:23:24.032807+00:00",
+  "exit_code": 1,
+  "cli_sha256": "360bc5da8d65d6d4228397468e40369c8a27da872a3d9a71ff65e0fcbbc0e578",
+  "kernel_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+  "source_sha256": "874a9c6b31633ed517622c0d897fc28303dfa595bd6271428289bc4e40c4e6ee",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"assignment would replace a live quantum owner; Qleisli does not assign to quantum-containing places. Consume the owner explicitly and introduce the result with 'let'\",\"primary\":{\"path\":\"main.qli\",\"start\":64,\"end\":65,\"line\":1,\"column\":65},\"related\":[]}],\"result\":null}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "assignment would replace a live quantum owner; Qleisli does not assign to quantum-containing places. Consume the owner explicitly and introduce the result with 'let'",
+        "primary": {
+          "path": "main.qli",
+          "start": 64,
+          "end": 65,
+          "line": 1,
+          "column": 65
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

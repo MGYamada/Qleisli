@@ -106,7 +106,7 @@ pub(super) struct Failure {
 pub(super) fn retired_public_name_hint(module: &str, name: &str) -> Option<&'static str> {
     match (module, name) {
         ("std::gate", "permute_axes") => Some(
-            "; help: import `std::structure::permute_axes`; physical SWAP remains `std::gate::swap`",
+            "; help: import `std::structure::permute_axes` for explicit axis reordering; physical SWAP remains `std::gate::swap`. Neither operation exchanges live bindings",
         ),
         _ => super::primitive::retired_name_hint(module, name),
     }

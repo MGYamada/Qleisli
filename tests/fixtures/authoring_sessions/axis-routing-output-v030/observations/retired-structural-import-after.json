@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-axis-routing-76-20261111/diagnostics-first/retired-structural-import",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-11T14:28:03.571088+00:00",
+  "exit_code": 1,
+  "cli_sha256_before": "33ef842963c36e7048958ce4aea5e8f864d832f2bc96aa821b15ae00ebbec0c2",
+  "cli_sha256_after": "33ef842963c36e7048958ce4aea5e8f864d832f2bc96aa821b15ae00ebbec0c2",
+  "kernel_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+  "source_sha256": "eba9881c7e50a109754376e028e8caeef05bf3c461fe22826951f8fe202d3a3c",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"module `std::gate` has no name `permute_axes`; help: import `std::structure::permute_axes` for explicit axis reordering; physical SWAP remains `std::gate::swap`. Neither operation exchanges live bindings\",\"primary\":{\"path\":\"main.qli\",\"start\":15,\"end\":27,\"line\":1,\"column\":16},\"related\":[]}],\"result\":null}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "project",
+        "severity": "error",
+        "message": "module `std::gate` has no name `permute_axes`; help: import `std::structure::permute_axes` for explicit axis reordering; physical SWAP remains `std::gate::swap`. Neither operation exchanges live bindings",
+        "primary": {
+          "path": "main.qli",
+          "start": 15,
+          "end": 27,
+          "line": 1,
+          "column": 16
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "interop",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-axis-routing-76-20261111/export-projects/structural-axes",
+    "--input=qli"
+  ],
+  "recorded_utc": "2026-11-11T14:28:09.610835+00:00",
+  "exit_code": 0,
+  "cli_sha256_before": "33ef842963c36e7048958ce4aea5e8f864d832f2bc96aa821b15ae00ebbec0c2",
+  "cli_sha256_after": "33ef842963c36e7048958ce4aea5e8f864d832f2bc96aa821b15ae00ebbec0c2",
+  "kernel_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+  "source_sha256": "77da05a6069e2be7b20cff5536ffc78b91da274bd55e38a6dca250f798d1a28a",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false}}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "checker_identity": "unpinned",
+      "request_checked": false,
+      "ordinary_result_checked": false,
+      "runtime_result_checked": false,
+      "source_preservation_verified": false
+    }
+  },
+  "stderr": ""
+}

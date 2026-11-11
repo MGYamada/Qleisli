@@ -390,6 +390,16 @@ fn structural_axis_import_has_a_concrete_migration_without_a_gate_alias() {
         "{failure}"
     );
     assert!(failure.message.contains("std::gate::swap"), "{failure}");
+    assert!(
+        failure.message.contains("explicit axis reordering"),
+        "{failure}"
+    );
+    assert!(
+        failure
+            .message
+            .contains("Neither operation exchanges live bindings"),
+        "{failure}"
+    );
     root.write(
         "main.qli",
         "use std::structure::permute_axes;use std::gate::swap;",
