@@ -65,7 +65,9 @@ are regression/proof-build evidence, not constitutional guarantee admissions.
 `check-lean` also builds the application proofs in `lean/qptl-application`
 when the proof lane builds mathematical models. They combine the original
 runtime-tape theorem with QPTL's coherent-sum law, and actual protected Raw
-dispatch with its exact compute/use/uncompute square, in a separate Lake
+dispatch with its exact compute/use/uncompute square. The original pure Raw
+program proof then replaces both certified and protected clean scopes with
+their logical actions in the checked event order. These live in a separate Lake
 workspace. It reuses the same pinned Mathlib packages after the
 constitutional proof replay. The canonical proof workspace and native
 checker keep their existing dependency manifests.

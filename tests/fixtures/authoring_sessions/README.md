@@ -49,6 +49,12 @@ The [dirty restoration study](dirty-restoration-v030/session.json) retains
 three first sources and observations: exact restoration, a contract refusal,
 and a Bell-reference phase counterexample. General clean/dirty syntax remains open.
 
+The [clean-marginal study](clean-marginal-v030/README.md) preserves three first
+sources and six actual observations. Coherent uncompute and explicit reset
+return the same zero auxiliary but different live distributions; falsely
+Unitary reset rejects with its actual effect diagnostic. These bounded
+observations do not prove the general channel, source or resource obligations.
+
 The [small cross-algorithm access study](access-algorithms-v030/context.md)
 retains ten first access/explicit-owner programs, their independent mathematical
 expectations and thirty actual CLI observations. Project success, two selected

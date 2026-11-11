@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Distinguish clean auxiliary return from the requested coherent live action
+  and quantitative resource accounting; retain first reset/uncompute diagnostics
+  and small phase-sensitive source regressions. Connect certified and QPTL
+  protected cleanup to the actual ordered pure Raw program and fresh inspection.
 - Add an isolated, pinned doc-gen4 workspace for QPTL API documentation.
   Keep documentation dependencies separate from the library and verifier builds.
 - Express exact compute/use/uncompute through reusable QPTL encoding squares
