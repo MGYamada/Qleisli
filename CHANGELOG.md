@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Connect native v5 qmatch acceptance to the original-body source-graph
+  refinement theorem, including every canonical ordinary input row and
+  the complete ordered result family. Keep initial encoding and mathematical
+  execution premises explicit.
 - Meter selected qmatch sector restriction by its control and axis scans.
   Validate the entire original tape and retain full local validation for
   the instructions active in each sector.

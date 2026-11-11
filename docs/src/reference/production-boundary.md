@@ -620,6 +620,19 @@ input operator. It retains the visible SSA agreement and hidden outcomes for
 each returned history. Public v5, full12/64 and release validation remain
 separate.
 
+`original_body_graph_refinement` additionally derives each coherent selection's
+coefficients from the original written arm graphs. Its expected action follows
+the source prefix and selected path, including named calls and ordinary branches.
+`native_qmatch_body_graph_refinement` connects this theorem to successful
+`Protocol.NativeContext.run .qmatchSourceV5` on the original packet. The same
+decision supplies the body and compared execution view. The result preserves
+the complete ordered history family with `List.Forall₂`, the literal return
+order, visible SSA values and hidden outcomes. `native_qmatch_input_rows`
+supplies the original row for every canonical ordinary input assignment.
+The initial source/Raw encoding relation and successful independent mathematical
+execution are explicit premises. These theorems do not prove native compilation,
+IO, Rust simulation or target preservation, and admit no new guarantee.
+
 The retained two-qubit general-composition development regression has an
 explicit preparation-work exception tracked by
 [#472](https://github.com/MGYamada/Qleisli/issues/472). It runs nonaccepting
