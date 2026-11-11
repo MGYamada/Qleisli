@@ -82,8 +82,7 @@ def depth (before : List Receipt) (input : Input) : Nat :=
   1 + ((references 65 input.implementation.operations ++ references 65 input.specification.operations).map
     (fun index => (before[index]?.map (·.depth)).getD 0)).foldl max 0
 
-def reconstruct (dependencies : List Dependency) (program : Program) : WorkM Matrix := do
-  let checked ← Observation.verify dependencies program
+def reconstructChecked (dependencies : List Dependency) (checked : Observation.Checked) : WorkM Matrix := do
   guard (checked.prepared.inputBits ≤ 6 && checked.state.quantum.frame.length ≤ 6) .limit
   let initial ← lift (arithmetic (Exact.Matrix.identity (2^checked.prepared.inputBits)))
   let histories ← Instrument.runEvents dependencies 65 checked.prepared.events ⟨[],[],initial⟩
@@ -92,6 +91,10 @@ def reconstruct (dependencies : List Dependency) (program : Program) : WorkM Mat
     history.operator.rows == 2^checked.state.quantum.frame.length &&
     history.operator.cols == 2^checked.prepared.inputBits)
   return history.operator
+
+def reconstruct (dependencies : List Dependency) (program : Program) : WorkM Matrix := do
+  let checked ← Observation.verify dependencies program
+  reconstructChecked dependencies checked
 
 def checkEntry (before : List Receipt) (input : Input) (binding : Binding) : WorkM Receipt := do
   guard (same input binding) .request

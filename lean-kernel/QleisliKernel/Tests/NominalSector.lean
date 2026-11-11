@@ -33,6 +33,17 @@ theorem fresh_three_state_code :
     (((FiniteCarrier.code tri).run 1000000).1.map (fun value => [value]) == .ok [code]) = true := by
   decide +kernel
 
+private def seven : Semantics.FiniteCarrier.Basis :=
+  [.enumeration ⟨"labels","Seven","pub enum Seven { A, B, C, D, E, F, G }"⟩
+    ["A","B","C","D","E","F","G"]]
+
+-- The 8×7 code keeps its padding row and uses the compact budget.
+#guard (((FiniteCarrier.code seven).run 1390).1.map (fun value => [value])) ==
+  .ok [Semantics.FiniteCarrier.encoding ⟨3,List.range 7⟩]
+#guard match ((FiniteCarrier.code seven).run 1389).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
 private def encodedLabels : List Nat := [6,1,0,3,2,4,5]
 private def paddedCode : Matrix := Semantics.FiniteCarrier.encoding ⟨3,encodedLabels⟩
 
@@ -59,6 +70,58 @@ private def paddingSwap : Matrix := ⟨8,8,(List.range 64).map fun index =>
   let column := index % 8
   if index / 8 == (if column == 6 then 7 else if column == 7 then 6 else column)
     then Scalar.one else Scalar.zero⟩
+
+private def identity8 : Matrix :=
+  Semantics.FiniteCarrier.encoding ⟨3,List.range 8⟩
+
+-- Both exact identity products retain the original phases and charge the
+-- complete admission and identity scan.
+#guard let phased := phasedDiagonal (List.range 8)
+  match (FiniteCarrier.codeProduct .left identity8 phased).run 513,
+      (FiniteCarrier.codeProduct .right phased identity8).run 513 with
+  | (.ok left,0),(.ok right,0) => left == phased && right == phased
+  | _,_ => false
+#guard match ((FiniteCarrier.codeProduct .right (phasedDiagonal (List.range 8)) identity8).run 512).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
+private def reusedIdentityProducts (phased : Matrix) : Finite.WorkM Matrix := do
+  let plan ← FiniteCarrier.prepareCode identity8
+  let first ← FiniteCarrier.codeProductUsing .right phased identity8 (some plan)
+  FiniteCarrier.codeProductUsing .left identity8 first (some plan)
+
+#guard let phased := phasedDiagonal (List.range 8)
+  match (reusedIdentityProducts phased).run 769 with
+  | (.ok result,0) => result == phased
+  | _ => false
+
+private def plannedRectangularProducts : Finite.WorkM (List Matrix) := do
+  let plan ← FiniteCarrier.prepareCode paddedCode
+  let right ← FiniteCarrier.codeProductUsing .right (phasedDiagonal (List.range 8)) paddedCode (some plan)
+  let left ← FiniteCarrier.codeProductUsing .left paddedCode (phasedDiagonal encodedLabels) (some plan)
+  return [right,left]
+
+-- One inspection is charged for both products. The reordered entries and
+-- the zero padding row agree with the independent exact actions.
+#guard match plannedRectangularProducts.run 1522 with
+  | (.ok values,0) => values == [expectedCodeAction,expectedCodeAction]
+  | _ => false
+#guard match (plannedRectangularProducts.run 1521).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
+-- A nonunit coefficient must use the original compact arithmetic.
+#guard match ((FiniteCarrier.prepareCode (phasedDiagonal (List.range 8))).run 4096).1 with
+  | .ok .compact => true
+  | _ => false
+
+-- Square shape alone supplies no identity evidence. The fallback compares
+-- the exact reordered result and keeps the original nontrivial phases.
+#guard let phased := phasedDiagonal (List.range 8)
+  match ((FiniteCarrier.codeProduct .right phased paddingSwap).run 4096).1,
+      (Exact.Matrix.compose phased paddingSwap 4096).1 with
+  | .ok fast,.ok dense => dense != phased && fast == dense
+  | _,_ => false
 
 theorem compact_rectangular_equation_refuses_padding_leakage :
     (outcome paddedCode paddedCode [paddingSwap] 0 (phasedDiagonal (List.replicate 7 0)) ==

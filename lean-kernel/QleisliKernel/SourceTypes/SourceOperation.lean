@@ -351,15 +351,11 @@ structure Proposal {sources caller callerName original}
     (proposalWithInstantiation instantiation entries environment scope genericState target tokens).run before =
       (.ok description,after)
 
-/-- Only proposal construction is shared. The supplying context, complete
-graph, capabilities, original rows and all assertion markers are checked now. -/
-def readFromProposal {sources caller callerName original instantiation entries environment scope genericState target tokens}
+private def bindProvenance {sources caller callerName original instantiation entries environment scope genericState target tokens}
     (proposal : @Proposal sources caller callerName original instantiation entries environment scope genericState target tokens)
-    (supply : Option (StaticOperation.Supply instantiation) := none) :
+    (supply : Option (StaticOperation.Supply instantiation))
+    (graph : StaticOperation.CheckedGraph sources (.source caller) proposal.description) :
     WorkM (CheckedWithInstantiation instantiation entries environment scope tokens) := do
-  let graph ← match supply with
-    | none => StaticOperation.check sources (.source caller) proposal.description
-    | some supply => StaticOperation.checkWithSupply supply proposal.description
   let provenance ← NaturalAffine.witness
     (proposalProvenanceWithInstantiation instantiation entries environment scope genericState target tokens)
   have provenanceRead : ∃ before after,
@@ -368,6 +364,17 @@ def readFromProposal {sources caller callerName original instantiation entries e
     with_reducible exact provenance.property
   pure ⟨proposal.description,genericState,target,supply,proposal.original,graph,provenance.val.rows,
     provenance_rows provenanceRead,⟨provenance.val,provenanceRead⟩,rfl⟩
+
+/-- Read the complete graph and bind the rows and assertion markers of the
+original operation expression. -/
+def readFromProposal {sources caller callerName original instantiation entries environment scope genericState target tokens}
+    (proposal : @Proposal sources caller callerName original instantiation entries environment scope genericState target tokens)
+    (supply : Option (StaticOperation.Supply instantiation) := none) :
+    WorkM (CheckedWithInstantiation instantiation entries environment scope tokens) := do
+  let graph ← match supply with
+    | none => StaticOperation.check sources (.source caller) proposal.description
+    | some supply => StaticOperation.checkWithSupply supply proposal.description
+  bindProvenance proposal supply graph
 
 def readWithInstantiation {sources caller callerName original}
     (instantiation : @StaticInstantiation.Checked sources caller callerName original)
@@ -381,6 +388,22 @@ def readWithInstantiation {sources caller callerName original}
   let proposal : Proposal instantiation entries environment scope genericState target tokens :=
     ⟨description.val,by with_reducible exact description.property⟩
   readFromProposal proposal supply
+
+def readWithSharedGraphs {sources caller callerName original}
+    (instantiation : @StaticInstantiation.Checked sources caller callerName original)
+    (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)
+    (scope : List String) (tokens : List LocatedToken)
+    (genericState : Option (GenericLexicalNatural.SomeEnvironment sources))
+    (supply : StaticOperation.Supply instantiation)
+    (previous : List (StaticOperation.SuppliedGraphEntry supply)) :
+    WorkM (CheckedWithInstantiation instantiation entries environment scope tokens ×
+      List (StaticOperation.SuppliedGraphEntry supply)) := do
+  let description ← NaturalAffine.witness (proposalWithInstantiation instantiation entries environment scope genericState none tokens)
+  let proposal : Proposal instantiation entries environment scope genericState none tokens :=
+    ⟨description.val,by with_reducible exact description.property⟩
+  let (checked,retained) ← StaticOperation.checkSharedSupply supply proposal.description previous
+  let source ← bindProvenance proposal (some supply) checked.graph
+  return (source,retained)
 
 abbrev Checked {sources caller callerName} (signature : QuantumSignatureCore.Checked sources caller callerName)
     (entries : List NaturalHelpers.Entry) (environment : LexicalNatural.Environment entries)

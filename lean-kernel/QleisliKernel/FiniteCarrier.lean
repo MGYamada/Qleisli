@@ -66,10 +66,18 @@ def read (basis : Basis) : WorkM Layout := do
   let _ ← basis.foldlM nodeRead (0,0)
   lift (readOption (layout basis))
 
+/-- A layout encoding has at most one nonzero entry per column. Its adjoint
+has at most one term per Gram row. The estimate only selects the strategy;
+both checks read the same admitted matrix and charge their actual work. -/
+private def preferSparseCodeGram (matrix : Matrix) : Bool :=
+  let area := matrix.rows * matrix.cols
+  6*area + matrix.cols + 5*matrix.cols*matrix.cols < area + 2*area*matrix.cols
+
 def code (basis : Basis) : WorkM Matrix := do
   let result ← read basis
   let matrix ← matrixRead (encoding result)
-  let isometry ← exactWork (Exact.Matrix.isometryWork matrix)
+  let isometry ← exactWork (if preferSparseCodeGram matrix then
+    Exact.Matrix.sparseIsometryWork matrix else Exact.Matrix.isometryWork matrix)
   guard isometry .notIsometric
   return matrix
 
@@ -82,41 +90,168 @@ private def compactProductCost (side : CodeSide) (x y : Matrix) : Nat :=
   | .left => common + x.rows*(2*x.cols+1) + 2*(max x.rows x.cols)*y.cols + 4*y.rows*y.cols
   | .right => common + y.cols*(2*y.rows+1) + 2*(max y.rows y.cols)*x.rows + 4*x.rows*x.cols
 
-/-- The original layout code and its adjoint have at most one term per
-logical column or row. This estimate selects the cost strategy only. The
-support used by the product is read from the literal matrix. -/
-def codeProduct (side : CodeSide) (x y : Matrix) : WorkM Matrix := do
+/-- A decision about one actual code matrix, retained across all products
+that use that operand. -/
+inductive CodePlan (matrix : Matrix) where
+  | compact
+  | identity (square : matrix.rows = matrix.cols)
+      (exactIdentity : Exact.Matrix.identity matrix.rows = .ok matrix)
+  | select (support : Exact.Matrix.SingleEntrySupports matrix)
+
+private def inspectIdentity (matrix : Matrix) : WorkM (CodePlan matrix) := do
+  if square : matrix.rows = matrix.cols then
+    if 8 ≤ matrix.rows && Exact.matrixValid matrix.rows matrix.cols then
+      exactWork (Exact.charge (4*matrix.rows*matrix.cols + 1))
+      match made : Exact.Matrix.identity matrix.rows with
+      | .ok identity =>
+        if same : identity = matrix then
+          return .identity square (made.trans (congrArg Except.ok same))
+        else return .compact
+      | .error _ => return .compact
+    else return .compact
+  else return .compact
+
+/-- Check reusable row and column selections against the literal operand.
+Each candidate is bounded before inspecting any coefficients. -/
+def prepareCode (matrix : Matrix) : WorkM (CodePlan matrix) := do
+  match ← inspectIdentity matrix with
+  | .compact =>
+    if 8 ≤ max matrix.rows matrix.cols then
+      let supports ← exactWork (Exact.Matrix.readSingleEntrySupports matrix)
+      return (supports.map CodePlan.select).getD .compact
+    else return .compact
+  | plan => return plan
+
+structure CodePlans (input output : Matrix) where
+  inputPlan : Option (CodePlan input) := none
+  outputPlan : Option (CodePlan output) := none
+
+def prepareCodes (input output : Matrix) : WorkM (CodePlans input output) := do
+  let inputPlan ← prepareCode input
+  let outputPlan ← prepareCode output
+  return ⟨some inputPlan,some outputPlan⟩
+
+def CodeSide.operand (side : CodeSide) (x y : Matrix) : Matrix :=
+  match side with | .left => x | .right => y
+
+def CodeSide.otherOperand (side : CodeSide) (x y : Matrix) : Matrix :=
+  match side with | .left => y | .right => x
+
+inductive OperandAdmission (matrix : Matrix) where
+  | fresh
+  | checked (admitted : Exact.Matrix.Admitted matrix)
+
+private def readOperand (matrix : Matrix) : OperandAdmission matrix → WorkM Matrix
+  | .fresh => matrixRead matrix
+  | .checked _ => pure matrix
+
+private theorem readOperand_bound (matrix result : Matrix) (admission : OperandAdmission matrix)
+    (work left : Nat) (ran : (readOperand matrix admission).run work = (.ok result,left)) :
+    result = matrix ∧ Exact.Matrix.Admitted result := by
+  cases admission with
+  | fresh => exact ⟨(matrixRead_value _ _ _ _ ran).1,matrixRead_admitted _ _ _ _ ran⟩
+  | checked admitted =>
+    have same := (pure_success _ _ _ _ ran).1
+    subst result
+    exact ⟨rfl,admitted⟩
+
+private def usePlan {matrix : Matrix} : Option (CodePlan matrix) → WorkM (CodePlan matrix)
+  | none => inspectIdentity matrix
+  | some plan => pure plan
+
+/-- The estimate selects the cost strategy only. A retained plan refers to
+the literal operand used here. Compact support still comes from that matrix. -/
+def codeProductWithAdmission (side : CodeSide) (x y : Matrix)
+    (plan : Option (CodePlan (side.operand x y)))
+    (admission : OperandAdmission (side.otherOperand x y)) : WorkM Matrix := do
   if x.cols == y.rows && compactProductCost side x y < 2*x.rows*x.cols*y.cols then
-    match side with
-    | .left =>
-      let admitted ← matrixRead y
-      exactWork (Exact.Matrix.composeSparseLeftWork x admitted)
-    | .right =>
-      let admitted ← matrixRead x
-      exactWork (Exact.Matrix.composeSparseRightWork admitted y)
+    match side,plan,admission with
+    | .left,plan,admission =>
+      let admitted ← readOperand y admission
+      match ← usePlan plan with
+      | .identity .. => pure admitted
+      | .select support => exactWork (Exact.Matrix.composeSingleLeftWork x admitted support.rows)
+      | .compact => exactWork (Exact.Matrix.composeSparseLeftWork x admitted)
+    | .right,plan,admission =>
+      let admitted ← readOperand x admission
+      match ← usePlan plan with
+      | .identity .. => pure admitted
+      | .select support => exactWork (Exact.Matrix.composeSingleRightWork admitted y support.columns)
+      | .compact => exactWork (Exact.Matrix.composeSparseRightWork admitted y)
   else exactWork (Exact.Matrix.composeWork x y)
+
+def codeProductUsing (side : CodeSide) (x y : Matrix)
+    (plan : Option (CodePlan (side.operand x y))) : WorkM Matrix :=
+  codeProductWithAdmission side x y plan .fresh
+
+def codeProduct (side : CodeSide) (x y : Matrix) : WorkM Matrix :=
+  codeProductUsing side x y none
+
+theorem codeProductWithAdmission_dense (side : CodeSide) (x y result : Matrix)
+    (plan : Option (CodePlan (side.operand x y)))
+    (admission : OperandAdmission (side.otherOperand x y)) (work left : Nat)
+    (ok : (codeProductWithAdmission side x y plan admission).run work = (.ok result,left)) :
+    ∃ before after, Exact.Matrix.compose x y before = (.ok result,after) := by
+  unfold codeProductWithAdmission at ok
+  split at ok
+  · rename_i compact
+    simp only [Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq] at compact
+    cases side
+    · obtain ⟨input,middle,read,computed⟩ := bind_success _ _ _ _ _ ok
+      obtain ⟨same,admitted⟩ := readOperand_bound _ _ admission _ _ read
+      subst input
+      obtain ⟨decision,after,_,computed⟩ := bind_success _ _ _ _ _ computed
+      cases decision with
+      | compact => exact ⟨_,0,Exact.Matrix.composeSparseLeft_success x y result admitted after left
+          (exactWork_success _ _ _ _ computed)⟩
+      | select support => exact ⟨_,0,Exact.Matrix.composeSingleLeft_success x y result admitted
+          support.rows after left (exactWork_success _ _ _ _ computed)⟩
+      | identity square literal =>
+        have returned := (pure_success _ _ _ _ computed).1
+        subst result
+        change x.rows = x.cols at square
+        change Exact.Matrix.identity x.rows = .ok x at literal
+        rw [square,compact.1] at literal
+        exact ⟨_,0,Exact.Matrix.compose_identity_left x y admitted literal⟩
+    · obtain ⟨input,middle,read,computed⟩ := bind_success _ _ _ _ _ ok
+      obtain ⟨same,admitted⟩ := readOperand_bound _ _ admission _ _ read
+      subst input
+      obtain ⟨decision,after,_,computed⟩ := bind_success _ _ _ _ _ computed
+      cases decision with
+      | compact => exact ⟨_,0,Exact.Matrix.composeSparseRight_success x y result admitted after left
+          (exactWork_success _ _ _ _ computed)⟩
+      | select support => exact ⟨_,0,Exact.Matrix.composeSingleRight_success x y result admitted
+          support.columns after left (exactWork_success _ _ _ _ computed)⟩
+      | identity _ literal =>
+        have returned := (pure_success _ _ _ _ computed).1
+        subst result
+        change Exact.Matrix.identity y.rows = .ok y at literal
+        rw [← compact.1] at literal
+        exact ⟨_,0,Exact.Matrix.compose_identity_right x y admitted literal⟩
+  · exact ⟨work,left,exactWork_success _ _ _ _ ok⟩
+
+theorem codeProductUsing_dense (side : CodeSide) (x y result : Matrix)
+    (plan : Option (CodePlan (side.operand x y))) (work left : Nat)
+    (ok : (codeProductUsing side x y plan).run work = (.ok result,left)) :
+    ∃ before after, Exact.Matrix.compose x y before = (.ok result,after) :=
+  codeProductWithAdmission_dense side x y result plan .fresh work left ok
+
+theorem codeProduct_admitted (side : CodeSide) (x y result : Matrix)
+    (plan : Option (CodePlan (side.operand x y)))
+    (admission : OperandAdmission (side.otherOperand x y))
+    (ran : ∃ work left, (codeProductWithAdmission side x y plan admission).run work = (.ok result,left)) :
+    Exact.Matrix.Admitted result := by
+  obtain ⟨work,left,ran⟩ := ran
+  obtain ⟨before,after,checked⟩ := codeProductWithAdmission_dense side x y result plan admission work left ran
+  exact Exact.compose_admitted _ _ _ before after checked
 
 theorem codeProduct_dense (side : CodeSide) (x y result : Matrix) (work left : Nat)
     (ok : (codeProduct side x y).run work = (.ok result,left)) :
-    ∃ before after, Exact.Matrix.compose x y before = (.ok result,after) := by
-  unfold codeProduct at ok
-  split at ok
-  · cases side
-    · obtain ⟨input,middle,read,computed⟩ := bind_success _ _ _ _ _ ok
-      have admitted := matrixRead_admitted _ _ _ _ read
-      have same := (matrixRead_value _ _ _ _ read).1
-      subst input
-      exact ⟨_,0,Exact.Matrix.composeSparseLeft_success x y result admitted middle left
-        (exactWork_success _ _ _ _ computed)⟩
-    · obtain ⟨input,middle,read,computed⟩ := bind_success _ _ _ _ _ ok
-      have admitted := matrixRead_admitted _ _ _ _ read
-      have same := (matrixRead_value _ _ _ _ read).1
-      subst input
-      exact ⟨_,0,Exact.Matrix.composeSparseRight_success x y result admitted middle left
-        (exactWork_success _ _ _ _ computed)⟩
-  · exact ⟨work,left,exactWork_success _ _ _ _ ok⟩
+    ∃ before after, Exact.Matrix.compose x y before = (.ok result,after) :=
+  codeProductUsing_dense side x y result none work left ok
 
-#print axioms codeProduct_dense
+#print axioms codeProductWithAdmission_dense
+#print axioms codeProduct_admitted
 
 theorem read_reference (basis : Basis) (result : Layout) (work left : Nat)
     (ok : (read basis).run work = (.ok result,left)) : layout basis = some result := by
@@ -142,6 +277,15 @@ theorem code_conditions (basis : Basis) (matrix : Matrix) (work left : Nat)
   subst iso
   have same := (pure_success _ _ _ _ h).1
   subst matrix
-  exact ⟨result,w₂,w₃,read_reference _ _ _ _ hr,rfl,exactWork_success _ _ _ _ hi⟩
+  have checked : ∃ before after,
+      Exact.Matrix.isometry (encoding result) before = (.ok true,after) := by
+    by_cases sparse : preferSparseCodeGram (encoding result) = true
+    · rw [if_pos sparse] at hi
+      exact Exact.Matrix.sparseIsometry_success _ (matrixRead_admitted _ _ _ _ hm) _ _
+        (exactWork_success _ _ _ _ hi)
+    · rw [if_neg sparse] at hi
+      exact ⟨w₂,w₃,exactWork_success _ _ _ _ hi⟩
+  obtain ⟨before,after,gram⟩ := checked
+  exact ⟨result,before,after,read_reference _ _ _ _ hr,rfl,gram⟩
 
 end QleisliKernel.FiniteCarrier

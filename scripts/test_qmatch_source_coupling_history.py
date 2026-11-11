@@ -1444,6 +1444,41 @@ class WideSelectedHistory(unittest.TestCase):
         for control in ("wrong_phase", "wrong_control"):
             self.assertEqual(study["primitive_tape_replay"][control]["error"], "equation")
 
+    def test_rectangular_target_replay_preserves_the_native_response(self):
+        study = history_json(
+            ROOT / "tests/fixtures/authoring_sessions/qmatch-source-coupling-v030/wide-selected-study.json"
+        )
+        replay = study["rectangular_target_replay"]
+        source = replay["first_source"]
+        self.assertEqual(hashlib.sha256(source["text"].encode()).hexdigest(), source["sha256"])
+        self.assertEqual((replay["selector_bits"], replay["target_bits"]), (3, 4))
+        self.assertEqual((replay["selector_labels"], replay["target_labels"]), (8, 15))
+        for name in ("packet_sha256", "baseline_native_sha256", "replay_native_sha256",
+                     "shared_graph_native_sha256"):
+            self.assertRegex(replay[name], r"\A[0-9a-f]{64}\Z")
+        self.assertEqual((replay["outcome"], replay["diagnostics"]), ("ok", []))
+        self.assertEqual(replay["verification"]["scope"], "finite-source-qmatch-context-v5")
+        self.assertTrue(replay["verification"]["source_steps_checked"])
+        before = replay["baseline_native_response"].splitlines()
+        after = replay["replay_native_response"].splitlines()
+        shared = replay["shared_graph_native_response"].splitlines()
+        self.assertEqual(before[1], "accepted")
+        self.assertEqual(before[:6] + before[7:], after[:6] + after[7:])
+        self.assertEqual(after[:6] + after[7:], shared[:6] + shared[7:])
+        self.assertLess(int(shared[6]), int(after[6]))
+        self.assertLess(int(after[6]), int(before[6]))
+        self.assertLessEqual(int(before[6]), 20_000_000)
+
+        control = study["larger_rectangular_control"]
+        source = control["first_source"]
+        self.assertEqual(hashlib.sha256(source["text"].encode()).hexdigest(), source["sha256"])
+        self.assertRegex(control["packet_sha256"], r"\A[0-9a-f]{64}\Z")
+        self.assertEqual((control["selector_bits"], control["target_bits"]), (4, 4))
+        self.assertEqual((control["selector_labels"], control["target_labels"]), (16, 15))
+        self.assertEqual(control["first_native_response"], "qleisli.native-result 3\nerror\nlimit\n")
+        self.assertEqual(control["first_native_response"], control["shared_graph_native_response"])
+        self.assertEqual([diagnostic["code"] for diagnostic in control["first_diagnostics"]], ["limit"])
+
 
 if __name__ == "__main__":
     unittest.main()

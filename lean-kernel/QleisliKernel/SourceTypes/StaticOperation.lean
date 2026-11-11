@@ -787,6 +787,45 @@ def checkWithSupply {sources owner name original instantiation}
     pure (same ▸ checked)
   else throw .request
 
+/-- A successful graph read is indexed by the exact original supply and the
+independently reconstructed operation description. -/
+structure SuppliedGraph {sources owner name original instantiation}
+    (supply : @Supply sources owner name original instantiation) (description : Description) where
+  graph : CheckedGraph sources (.source owner) description
+  checked : ∃ before after, (checkWithSupply supply description).run before = (.ok graph,after)
+
+structure SuppliedGraphEntry {sources owner name original instantiation}
+    (supply : @Supply sources owner name original instantiation) where
+  description : Description
+  fields : Nat
+  exactFields : fields = descriptionFields description
+  graph : SuppliedGraph supply description
+
+private def findSuppliedGraph {sources owner name original instantiation}
+    {supply : @Supply sources owner name original instantiation}
+    (description : Description) (fields : Nat) (previous : List (SuppliedGraphEntry supply)) :
+    WorkM (Option (SuppliedGraph supply description)) :=
+  previous.findSomeM? fun first => do
+    exactWork (Exact.charge (16*(fields+first.fields+1)))
+    if same : first.description = description then
+      pure (some (same ▸ first.graph))
+    else pure none
+
+/-- Reuse only the static graph. Each caller still reads its own original
+expression, including provider actuals, source rows and assertion markers. -/
+def checkSharedSupply {sources owner name original instantiation}
+    (supply : @Supply sources owner name original instantiation) (description : Description)
+    (previous : List (SuppliedGraphEntry supply)) :
+    WorkM (SuppliedGraph supply description × List (SuppliedGraphEntry supply)) := do
+  let fields := descriptionFields description
+  exactWork (Exact.charge (4*(fields+1)))
+  match ← findSuppliedGraph description fields previous with
+  | some graph => return (graph,previous)
+  | none =>
+    let read ← NaturalAffine.witness (checkWithSupply supply description)
+    let graph : SuppliedGraph supply description := ⟨read.val,by with_reducible exact read.property⟩
+    return (graph,⟨description,fields,rfl,graph⟩::previous)
+
 structure ProviderInstance {sources siteContext description}
     (graph : CheckedGraph sources siteContext description) (index : Nat) where
   result : Result sources

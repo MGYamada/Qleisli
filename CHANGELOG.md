@@ -15,8 +15,23 @@ development milestones from the scope of their evidence.
   with every physical label still bound to its own restriction.
   Arm and sector code-space equations skip literal zero terms on either
   side of an exact product and retain the dense equation as their proof.
+  With a verified identity encoding, the product reuses the admitted
+  operand and retains its exact coefficients and original dense equation.
+  Arms of the same selection share the checked code decisions and adjoint.
+  Rectangular codes with checked single-entry support copy the original
+  coefficients and write exact zeros for padding. Products reuse canonical
+  admission when the preceding native computation already proves it.
+  A selection reuses a static operation graph after matching the complete
+  description under the same supply. Each original arm retains its own
+  proposal, source rows and assertion markers.
   Arm Gram checks also use measured sparse support, with the original
   total charge preserved when the dense strategy is selected.
+  Carrier encodings use the compact Gram check when its estimated cost is lower.
+  A controlled arm reuses the checked logical Gram result of its projection.
+  Forward arms with a checked full-width circuit tape reuse the finite
+  column evaluator and keep their original body, phase and Gram checks.
+- Prefer the v5 source check for supported selected qmatch bodies, including
+  named arms over built-in ordinal selectors.
 - Retain exact child intervals for compound static continuations in
   original-source v5 bodies. Check each original event against its whole
   literal Raw interval, including primitive implementations with several operations.

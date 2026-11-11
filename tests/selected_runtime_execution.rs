@@ -902,9 +902,33 @@ fn selected_builtin_qmatch_keeps_the_runtime_root_for_register_primitives() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn selected_builtin_qmatch_keeps_the_runtime_root_for_exclusive_access() {
-    let accepted = selected(
+    for source in [
         "pub unitary fn keep(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
             h(excl q);
+            qmatch(s,q){0=>h,1=>h}
+        }",
+        "unitary fn apply(q:Q<Bit>)->Q<Bit>{h(excl q);q}
+        pub unitary fn keep(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            qmatch(s,apply(q)){0=>h,1=>h}
+        }",
+    ] {
+        let accepted = selected(source);
+        assert!(!accepted.program().qmatch_source_checked());
+        kernel().check_program(accepted.program()).unwrap();
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_builtin_qmatch_keeps_the_runtime_root_for_function_contracts() {
+    let accepted = selected(
+        "unitary fn implementation(q:Q<Bit>)->Q<Bit>{h(q)}
+        unitary fn specification(q:Q<Bit>)->Q<Bit>{h(q)}
+        pub unitary fn keep(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            let q=apply_contract(implementation,specification,q);
             qmatch(s,q){0=>h,1=>h}
         }",
     );
@@ -970,8 +994,24 @@ fn selected_builtin_qmatch_keeps_the_runtime_root_for_static_continuations() {
             )
             .unwrap();
         let accepted = instance.compile_runtime_with_kernel(&kernel).unwrap();
-        assert!(!accepted.program().qmatch_source_checked());
+        assert_eq!(accepted.program().qmatch_source_checked(), n == 1);
         kernel.check_program(accepted.program()).unwrap();
+    }
+    for source in [
+        "use std::state::init0;
+        pub isometry fn keep(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>,Q<Bit>){
+            let fresh=if static 0==0 {init0()} else {init0()};
+            let (s,q)=qmatch(s,q){0=>h,1=>h};
+            (s,q,fresh)
+        }",
+        "pub unitary fn keep(s:Q<Bit>,q:Q<Bit>,b:Bit)->(Q<Bit>,Q<Bit>){
+            let q=if static 0==0 {if b {h(q)} else {q}} else {q};
+            qmatch(s,q){0=>h,1=>h}
+        }",
+    ] {
+        let accepted = selected(source);
+        assert!(!accepted.program().qmatch_source_checked());
+        kernel().check_program(accepted.program()).unwrap();
     }
 }
 
@@ -1041,7 +1081,7 @@ fn selected_qmatch_uses_the_common_original_source_and_named_arm_evidence() {
         .unwrap();
     let kernel = kernel();
     let selected = instance.compile_runtime_with_kernel(&kernel).unwrap();
-    assert!(!selected.program().qmatch_source_checked());
+    assert!(selected.program().qmatch_source_checked());
     let request = selected.program().runtime_result().unwrap();
     assert_eq!(
         request.parameters,

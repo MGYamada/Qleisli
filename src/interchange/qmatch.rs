@@ -137,6 +137,7 @@ pub(crate) struct ContextSubject {
     pub contains_selections: bool,
     pub requires_source_gate: bool,
     pub needs_qmatch_v5: bool,
+    pub prefer_runtime_root: bool,
 }
 
 #[cfg_attr(

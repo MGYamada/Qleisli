@@ -77,4 +77,18 @@ def unrelated : Qirf.Artifact := {whole with programs := whole.programs.push (im
 
 def unusedSource : Qirf.Artifact := {whole with sources := #[("unrelated","pub fn unused(){}")]}
 
+def forwardHadamard : Semantics.Observation.Program := Semantics.Ownership.pureProgram {
+  inputs := [⟨10,[7,91,22],3⟩]
+  operations := [.applyUnitary 10 11 [⟨[],.hadamard 1⟩]]
+  outputs := [11]
+  effect := .unitary
+}
+
+def forwardReordered : Semantics.Observation.Program := Semantics.Ownership.pureProgram {
+  inputs := [⟨10,[7,91],2⟩]
+  operations := [.split 10 11 12 1,.join 12 11 13]
+  outputs := [13]
+  effect := .unitary
+}
+
 end QleisliKernel.Tests.SectorArms

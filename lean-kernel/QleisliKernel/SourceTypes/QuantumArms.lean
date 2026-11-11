@@ -163,41 +163,54 @@ def readArmWithSignature {sources owner name}
     else throw .request
   else throw .request
 
-/-- The same operation/body contract for an original ordinary or mixed caller.
-Its exact instantiation and argument receipts replace no source signature. -/
-def readArmWithInstantiation {sources owner name}
+private def readArmUsing {sources owner name} {State : Type}
     (original : OrdinarySignature.Original sources owner name) (instantiation : StaticInstantiation.Checked original)
     (supply : StaticOperation.Supply instantiation)
     (naturals : PhaseApplication.Naturals sources) (scope : List String)
-    (selector target : Basis) (written : QuantumMatch.Arm) :
-    WorkM (BoundArm sources owner selector target) := do
+    (selector target : Basis) (written : QuantumMatch.Arm)
+    (readSource : (tokens : List LocatedToken) → State →
+      WorkM (SourceOperation.CheckedWithInstantiation instantiation naturals.helpers.val
+        naturals.environment scope tokens × State)) (state : State) :
+    WorkM (BoundArm sources owner selector target × State) := do
   let label ← NaturalAffine.witness (readLabel sources owner selector written.label)
-  let operation : Operation sources owner written.operation ←
-    match CallName.readName written.operation with
+  let named : WorkM (Operation sources owner written.operation × State) := do
+    let (source,next) ← readSource written.operation state
+    let operation ← retainOperation source.graph (.instantiated name original instantiation supply naturals scope source rfl HEq.rfl)
+    return (operation,next)
+  let (operation,next) ← match CallName.readName written.operation with
     | .ok _ => do
       let candidate ← CallName.read sources owner scope written.operation
       match selected : primitiveKind candidate with
       | some kind =>
         let description : OperationDescription.Description := ⟨[.primitive kind target],0⟩
         let graph ← StaticOperation.check sources (.source owner) description
-        retainOperation graph (.primitive scope candidate kind selected target rfl)
-      | none => do
-        let source ← SourceOperation.readWithInstantiation instantiation naturals.helpers.val naturals.environment
-          scope written.operation naturals.generic none (some supply)
-        retainOperation source.graph (.instantiated name original instantiation supply naturals scope source rfl HEq.rfl)
-    | .error _ => do
-      let source ← SourceOperation.readWithInstantiation instantiation naturals.helpers.val naturals.environment
-        scope written.operation naturals.generic none (some supply)
-      retainOperation source.graph (.instantiated name original instantiation supply naturals scope source rfl HEq.rfl)
+        let operation ← retainOperation graph (.primitive scope candidate kind selected target rfl)
+        pure (operation,state)
+      | none => named
+    | .error _ => named
   if input : operation.graph.root.input = target then
     if output : operation.graph.root.output = target then
       if effect : operation.graph.root.effect = .unitary then
         if controlled : operation.graph.root.paths.controllable = true then
-          pure ⟨written,label.val,by with_reducible exact label.property,operation,input,output,effect,controlled⟩
+          return (⟨written,label.val,by with_reducible exact label.property,operation,input,output,effect,controlled⟩,next)
         else throw .request
       else throw .request
     else throw .request
   else throw .request
+
+/-- Resolve an original arm under its exact instantiated caller. -/
+def readArmWithInstantiation {sources owner name}
+    (original : OrdinarySignature.Original sources owner name) (instantiation : StaticInstantiation.Checked original)
+    (supply : StaticOperation.Supply instantiation)
+    (naturals : PhaseApplication.Naturals sources) (scope : List String)
+    (selector target : Basis) (written : QuantumMatch.Arm) :
+    WorkM (BoundArm sources owner selector target) := do
+  let (arm,_) ← readArmUsing original instantiation supply naturals scope selector target written
+    (fun tokens (_ : Unit) => do
+      let source ← SourceOperation.readWithInstantiation instantiation naturals.helpers.val naturals.environment
+        scope tokens naturals.generic none (some supply)
+      return (source,())) ()
+  return arm
 
 def BoundArm.sourceRows {sources owner selector target} (arm : BoundArm sources owner selector target) :
     List (String × String) :=
@@ -300,8 +313,12 @@ def readArmsWithInstantiation {sources owner name}
     | some naturals => pure naturals
     | none => PhaseApplication.prepareWithInstantiation instantiation
   let scope := instantiation.names ++ eventScope
-  let arms ← site.parsed.arms.mapM
-    (readArmWithInstantiation originalCaller instantiation supply naturals scope selector target)
+  let readArm (written : QuantumMatch.Arm) :
+      StateT (List (StaticOperation.SuppliedGraphEntry supply)) WorkM (BoundArm sources owner selector target) :=
+    fun previous => readArmUsing originalCaller instantiation supply naturals scope selector target written
+      (fun tokens => SourceOperation.readWithSharedGraphs instantiation naturals.helpers.val
+        naturals.environment scope tokens naturals.generic supply) previous
+  let (arms,_) ← (site.parsed.arms.mapM readArm).run []
   exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
   if same : arms.map (·.written) = site.parsed.arms then
     if complete : partition layout.val.labels.length arms = true then

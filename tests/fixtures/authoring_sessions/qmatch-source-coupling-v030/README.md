@@ -3,8 +3,11 @@
 The [wide selected study](wide-selected-study.json) retains two seven-bit
 first sources, their old width refusals, later native timeouts and successful
 replays after the zero-product shortcut. Two separate seven-bit, sixteen-label
-controls check the selected v5 route with three target bits. The full
-twelve-bit, 64-label validation remains open.
+controls check the selected v5 route with three target bits. A separate
+eight-label source uses a fifteen-state target. Its before and after
+responses retain the same native result with a lower work count. The full
+twelve-bit, 64-label validation remains open. A separate sixteen-label
+control retains its original native work-limit refusal after graph reuse.
 
 The [phase/static first history](phase-static-first.json.xz) retains eight
 source/manifest files and sixteen complete observations. Original valid sources
