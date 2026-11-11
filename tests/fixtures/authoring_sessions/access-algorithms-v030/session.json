@@ -74,5 +74,10 @@
         "distribution-comparison.json"
       ]
     }
-  ]
+  ],
+  "retained_observer": {
+    "path": "observe-first.py",
+    "sha256": "1eade05f8cd931aa35dc089f269b949725f7145502ed6c958e09c884da52d73f",
+    "role": "Inert original observer source for review of the recorded argument vectors, stable-source windows and stream capture; not executed by retention checks."
+  }
 }
