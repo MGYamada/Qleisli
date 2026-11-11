@@ -236,6 +236,15 @@ prefixes/suffixes and generic/constructed arms remain
 unsupported here. No source text or owner frame is synthesized
 to avoid those refusals.
 
+The selected CLI and Rust API prefer the v5 source check for supported coherent
+selections, including built-in ordinal selectors. Register primitives, access
+calls, function contracts, ordinary matches, static folds, and computed bodies
+retain the typed runtime-root check when v5 is optional. Optional v5 checks
+cover selected static blocks with Hadamard, phase, global phase and coherent
+selection events. The compiler chooses the route from the original lowered
+body before submitting a request. A selection that requires v5 still goes
+through the source check.
+
 On the selected v5 route, a wider literal interval goes through the original
 source and arm checks and separate sector reconstruction. Acceptance uses the
 shared exact-work budget. Validation of the full twelve-joined-bit/64-label

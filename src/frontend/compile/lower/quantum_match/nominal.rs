@@ -22,6 +22,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     start: usize,
     positions: Vec<Position>,
     static_intervals: Vec<StaticInterval>,
+    events_outside_static_profile: usize,
     primitive_prelude: bool,
     selections: Vec<Selection>,
     calls: Vec<(Position, Arc<ContextSubject>)>,
@@ -29,6 +30,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     contains_selections: bool,
     source_gate: bool,
     needs_qmatch_v5: bool,
+    prefer_runtime_root: bool,
 }
 
 struct Selection {
@@ -234,6 +236,7 @@ impl Frame {
             start: lower.raw.operations.len(),
             positions: Vec::new(),
             static_intervals: Vec::new(),
+            events_outside_static_profile: 0,
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
@@ -241,6 +244,7 @@ impl Frame {
             contains_selections: false,
             source_gate,
             needs_qmatch_v5: false,
+            prefer_runtime_root: false,
         }))
     }
 
@@ -252,12 +256,25 @@ impl Frame {
         self.needs_qmatch_v5 = true;
     }
 
-    fn include_qmatch_profile(&mut self, body: &ContextSubject) {
-        self.needs_qmatch_v5 |= body.needs_qmatch_v5;
+    pub(in crate::frontend::compile::lower) fn prefer_runtime_root(&mut self) {
+        self.prefer_runtime_root = true;
     }
 
-    pub(in crate::frontend::compile::lower) fn static_checkpoint(&self) -> (usize, usize) {
-        (self.positions.len(), self.static_intervals.len())
+    pub(in crate::frontend::compile::lower) fn record_event_outside_static_profile(&mut self) {
+        self.events_outside_static_profile += 1;
+    }
+
+    fn include_qmatch_profile(&mut self, body: &ContextSubject) {
+        self.needs_qmatch_v5 |= body.needs_qmatch_v5;
+        self.prefer_runtime_root |= body.prefer_runtime_root;
+    }
+
+    pub(in crate::frontend::compile::lower) fn static_checkpoint(&self) -> (usize, usize, usize) {
+        (
+            self.positions.len(),
+            self.static_intervals.len(),
+            self.events_outside_static_profile,
+        )
     }
 
     /// A branch inherits its original declaration/actuals, while its literal
@@ -272,6 +289,7 @@ impl Frame {
             start: 0,
             positions: Vec::new(),
             static_intervals: Vec::new(),
+            events_outside_static_profile: 0,
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
@@ -279,6 +297,7 @@ impl Frame {
             contains_selections: false,
             source_gate: self.source_gate,
             needs_qmatch_v5: false,
+            prefer_runtime_root: false,
         }
     }
 
@@ -327,6 +346,7 @@ impl Frame {
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
             needs_qmatch_v5: self.needs_qmatch_v5,
+            prefer_runtime_root: self.prefer_runtime_root,
         }))
     }
 
@@ -371,6 +391,7 @@ impl Frame {
                 contains_selections: self.contains_selections,
                 requires_source_gate: self.source_gate,
                 needs_qmatch_v5: self.needs_qmatch_v5,
+                prefer_runtime_root: self.prefer_runtime_root,
             })));
         }
         let span = selections
@@ -520,6 +541,7 @@ impl Frame {
             contains_selections: self.contains_selections,
             requires_source_gate: self.source_gate,
             needs_qmatch_v5: self.needs_qmatch_v5,
+            prefer_runtime_root: self.prefer_runtime_root,
         })))
     }
 }
@@ -600,12 +622,9 @@ pub(in crate::frontend::compile::lower) fn record_basis(
     })?;
     let position = position(lower, module, span, span.start, relative, 1)?;
     lower.compiler.charge(module, span, 4)?;
-    lower
-        .nominal_qmatch
-        .as_mut()
-        .expect("original context")
-        .positions
-        .push(position);
+    let frame = lower.nominal_qmatch.as_mut().expect("original context");
+    frame.record_event_outside_static_profile();
+    frame.positions.push(position);
     Ok(())
 }
 
@@ -663,6 +682,7 @@ pub(in crate::frontend::compile::lower) fn record_named(
     )?;
     lower.compiler.charge(module, callee.span, 8)?;
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
+    frame.record_event_outside_static_profile();
     frame.positions.push(position.clone());
     frame.contains_selections |= body.contains_selections;
     frame.include_qmatch_profile(&body);
@@ -713,6 +733,7 @@ pub(in crate::frontend::compile::lower) fn record_operation(
         .nominal_qmatch
         .as_mut()
         .expect("original operation context");
+    frame.record_event_outside_static_profile();
     for body in original.original_contexts() {
         frame.include_qmatch_profile(body);
     }
@@ -762,6 +783,7 @@ pub(in crate::frontend::compile::lower) fn record_branch(
     frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
     frame.include_qmatch_profile(&then_body);
     frame.include_qmatch_profile(&else_body);
+    frame.record_event_outside_static_profile();
     frame.positions.push(position.clone());
     frame.branches.push((position, then_body, else_body));
     Ok(())
@@ -772,7 +794,7 @@ pub(in crate::frontend::compile::lower) fn record_static(
     module: &str,
     span: Span,
     start: usize,
-    (checkpoint, interval_checkpoint): (usize, usize),
+    (checkpoint, interval_checkpoint, static_checkpoint): (usize, usize, usize),
 ) -> Result<(), CompileError> {
     let frame = lower
         .nominal_qmatch
@@ -817,6 +839,12 @@ pub(in crate::frontend::compile::lower) fn record_static(
         .nominal_qmatch
         .as_mut()
         .expect("original static context");
+    // Prefer v5 for the literal primitive and selection continuation profile.
+    // Required v5 checks still cover their additional named continuation forms.
+    if frame.events_outside_static_profile != static_checkpoint {
+        frame.prefer_runtime_root();
+    }
+    frame.record_event_outside_static_profile();
     frame.static_intervals.truncate(interval_checkpoint);
     // Keep the exact child spans of a compound selected block, in the
     // same coordinates as the parent and the original call/site queues.

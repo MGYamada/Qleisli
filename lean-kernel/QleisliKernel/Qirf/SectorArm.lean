@@ -51,6 +51,13 @@ theorem projectLogical_bound (inputCode outputCode physical logical : Matrix) (w
     FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
     ⟨actual,a,b,g,i,actualDense,requiredDense⟩⟩
 
+private theorem witnessedProjection (inputCode outputCode physical : Matrix)
+    (result : {value : Matrix // ∃ work left,
+      (projectLogical inputCode outputCode physical).run work = (.ok value,left)}) :
+    Projection inputCode outputCode physical result.val := by
+  obtain ⟨work,left,checked⟩ := result.property
+  exact projectLogical_bound inputCode outputCode physical result.val work left checked
+
 structure Reference where
   label : Nat
   basis : Semantics.FiniteCarrier.Basis
@@ -80,16 +87,18 @@ def read (artifact : Artifact) (dependencies : List Dependency)
   guard (Raw.BranchFunction.preflight [.bits bits] original) .request
   let physical ← SectorForward.read dependencies bits original
   FiniteRestriction.adaptiveWholeSpace physical
-  let logical ← projectLogical inputCode outputCode physical
+  let projection ← SourceTypes.NaturalAffine.witness (projectLogical inputCode outputCode physical)
+  let logical := projection.val
   let controlledOriginal ← lift (readOption artifact.programs[reference.controlled]?)
   exactWork (Exact.charge (controlledOriginal.operations.length + 1))
   let controlledProgram ← lift (readOption (Sector.project controlledOriginal))
   let restriction ← QleisliKernel.Raw.Sector.read dependencies [.bit] [.bits bits] controlledProgram
   exactWork (Exact.charge (logical.rows * logical.rows))
   let identity ← lift (arithmetic (Exact.Matrix.identity logical.rows))
-  let controlMeanings ← NominalSector.checkLogicals inputCode outputCode restriction.sectors
-    [0,1] [identity,logical]
-  return ⟨original,physical,logical,controlledOriginal,controlledProgram,restriction,identity,controlMeanings⟩
+  let inactive ← NominalSector.checkLogical inputCode outputCode restriction.sectors (0,identity)
+  let active ← NominalSector.checkLogicalWithGram inputCode outputCode restriction.sectors
+    (1,logical) (witnessedProjection inputCode outputCode physical projection).unitary
+  return ⟨original,physical,logical,controlledOriginal,controlledProgram,restriction,identity,[inactive,active]⟩
 
 structure Postcondition (artifact : Artifact) (dependencies : List Dependency)
     (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
@@ -123,14 +132,15 @@ theorem read_bound (artifact : Artifact) (dependencies : List Dependency)
   obtain ⟨_,w₄,hp,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨physical,w₅,hm,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₆,hu,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨logical,w₇,hlogical,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨projection,w₇,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨control,w₈,hcontrol,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₉,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨program,w₁₀,hproject,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨restriction,w₁₁,hr,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,w₁₂,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨identity,w₁₃,hi,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨meanings,w₁₄,hmeanings,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨inactive,w₁₄,hinactive,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨active,w₁₅,hactive,h⟩ := bind_success _ _ _ _ _ h
   have same := (pure_success _ _ _ _ h).1
   subst checked
   have types := (guard_success _ _ _ _ ht).1
@@ -149,8 +159,9 @@ theorem read_bound (artifact : Artifact) (dependencies : List Dependency)
   exact ⟨types.1.1,types.2,⟨layout,FiniteCarrier.read_reference _ _ _ _ hl,types.1.2⟩,
     originalEq,(guard_success _ _ _ _ hp).1,SectorForward.read_bound _ _ _ _ _ _ hm,
     FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
-    projectLogical_bound _ _ _ _ _ _ hlogical,controlEq,pureControl.1,pureControl.2,
+    witnessedProjection _ _ _ projection,controlEq,pureControl.1,pureControl.2,
     QleisliKernel.Raw.Sector.read_bound _ _ _ _ _ _ _ hr,identityEq,
-    (NominalSector.checkLogicals_bound _ _ _ _ _ _ _ _ hmeanings).2⟩
+    ⟨NominalSector.checkLogical_bound _ _ _ _ inactive _ _ hinactive,
+      NominalSector.checkLogicalWithGram_bound _ _ _ _ _ active _ _ hactive,trivial⟩⟩
 
 end QleisliKernel.Qirf.SectorArm

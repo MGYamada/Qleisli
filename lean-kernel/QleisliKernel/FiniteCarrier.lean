@@ -66,10 +66,18 @@ def read (basis : Basis) : WorkM Layout := do
   let _ ← basis.foldlM nodeRead (0,0)
   lift (readOption (layout basis))
 
+/-- A layout encoding has at most one nonzero entry per column. Its adjoint
+has at most one term per Gram row. The estimate only selects the strategy;
+both checks read the same admitted matrix and charge their actual work. -/
+private def preferSparseCodeGram (matrix : Matrix) : Bool :=
+  let area := matrix.rows * matrix.cols
+  6*area + matrix.cols + 5*matrix.cols*matrix.cols < area + 2*area*matrix.cols
+
 def code (basis : Basis) : WorkM Matrix := do
   let result ← read basis
   let matrix ← matrixRead (encoding result)
-  let isometry ← exactWork (Exact.Matrix.isometryWork matrix)
+  let isometry ← exactWork (if preferSparseCodeGram matrix then
+    Exact.Matrix.sparseIsometryWork matrix else Exact.Matrix.isometryWork matrix)
   guard isometry .notIsometric
   return matrix
 
@@ -142,6 +150,15 @@ theorem code_conditions (basis : Basis) (matrix : Matrix) (work left : Nat)
   subst iso
   have same := (pure_success _ _ _ _ h).1
   subst matrix
-  exact ⟨result,w₂,w₃,read_reference _ _ _ _ hr,rfl,exactWork_success _ _ _ _ hi⟩
+  have checked : ∃ before after,
+      Exact.Matrix.isometry (encoding result) before = (.ok true,after) := by
+    by_cases sparse : preferSparseCodeGram (encoding result) = true
+    · rw [if_pos sparse] at hi
+      exact Exact.Matrix.sparseIsometry_success _ (matrixRead_admitted _ _ _ _ hm) _ _
+        (exactWork_success _ _ _ _ hi)
+    · rw [if_neg sparse] at hi
+      exact ⟨w₂,w₃,exactWork_success _ _ _ _ hi⟩
+  obtain ⟨before,after,gram⟩ := checked
+  exact ⟨result,before,after,read_reference _ _ _ _ hr,rfl,gram⟩
 
 end QleisliKernel.FiniteCarrier

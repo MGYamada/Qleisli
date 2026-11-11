@@ -194,7 +194,11 @@ fn selected_qmatch_calls_preserve_interference_and_choose_original_runtime_lower
         command.arg(format!("--lean-kernel={}", kernel().display()));
         let text = result(command.output().unwrap(), "run", true);
         distribution(&text, &[(&[true, false], 1.0)]);
-        assert!(text.contains("\"source_steps_checked\":false"), "{text}");
+        assert!(
+            text.contains("\"scope\":\"finite-source-qmatch-context-v5\""),
+            "{text}"
+        );
+        assert!(text.contains("\"source_steps_checked\":true"), "{text}");
         assert!(text.contains("\"source_meaning_verified\":false"), "{text}");
         assert!(text.contains("\"ir_profile\":\"raw\""), "{text}");
         #[cfg(unix)]
@@ -205,11 +209,11 @@ fn selected_qmatch_calls_preserve_interference_and_choose_original_runtime_lower
                 "{calls:?}"
             );
             assert!(
-                calls.iter().any(|mode| mode == "--runtime-root-check"),
+                calls.iter().any(|mode| mode == "--qmatch-source-v5-check"),
                 "{calls:?}"
             );
             assert!(
-                calls.iter().all(|mode| mode != "--qmatch-source-v5-check"),
+                calls.iter().all(|mode| mode != "--runtime-root-check"),
                 "{calls:?}"
             );
         }

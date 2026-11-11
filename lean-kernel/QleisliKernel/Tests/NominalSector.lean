@@ -33,6 +33,17 @@ theorem fresh_three_state_code :
     (((FiniteCarrier.code tri).run 1000000).1.map (fun value => [value]) == .ok [code]) = true := by
   decide +kernel
 
+private def seven : Semantics.FiniteCarrier.Basis :=
+  [.enumeration ⟨"labels","Seven","pub enum Seven { A, B, C, D, E, F, G }"⟩
+    ["A","B","C","D","E","F","G"]]
+
+-- The 8×7 code keeps its padding row and uses the compact budget.
+#guard (((FiniteCarrier.code seven).run 1390).1.map (fun value => [value])) ==
+  .ok [Semantics.FiniteCarrier.encoding ⟨3,List.range 7⟩]
+#guard match ((FiniteCarrier.code seven).run 1389).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
 private def encodedLabels : List Nat := [6,1,0,3,2,4,5]
 private def paddedCode : Matrix := Semantics.FiniteCarrier.encoding ⟨3,encodedLabels⟩
 
