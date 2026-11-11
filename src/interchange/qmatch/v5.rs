@@ -155,19 +155,10 @@ impl Request {
     }
     pub fn decode(bytes: &[u8]) -> Result<Self> {
         let value = json::parse(bytes)?;
-        value.fields(&[
-            "format",
-            "version",
-            "profile",
-            "source",
-            "runtime",
-            "positions",
-            "sites",
-            "calls",
-            "branches",
-            "bodies",
-            "references",
-        ])?;
+        Context::validate_fields(
+            &value,
+            &["format", "version", "profile", "source", "runtime"],
+        )?;
         if value.field("format")?.text()? != "qleisli.qmatch-request"
             || value.field("version")?.number()? != 5
             || value.field("profile")?.text()? != PROFILE

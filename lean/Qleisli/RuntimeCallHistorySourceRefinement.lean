@@ -22,6 +22,35 @@ open Qleisli.RuntimeSemanticForest (Frame product)
 open Qleisli.RuntimeStructuralHistory (Represents)
 open Qleisli.Semantics.ObservingAction (History run WeightedHistory)
 
+/-- Child proofs may restrict the incoming ordinary frame to what the actual
+caller supplied. The unrestricted case has the original relation. -/
+def InOrdinaryDomain : Option (RuntimeOrdinaryBody.State → Prop) → RuntimeOrdinaryBody.State → Prop
+  | none,_ => True
+  | some admit,ordinary => admit ordinary
+
+def SourceAgreementWithin (domain : Option (RuntimeOrdinaryBody.State → Prop))
+    (inherited : Option (Nat → Prop)) (inputs : List Nat) (native : Raw.Observation.State)
+    (owners : RuntimeStructuralAction.SourceState) (ordinary : RuntimeOrdinaryBody.State)
+    (source : SourceHistory) (history : History) : Prop :=
+  match domain with
+  | none => SemanticHistoryAgreesWithInherited inherited inputs native owners ordinary source history
+  | some admit => admit ordinary ∧ SemanticHistoryAgreesWithInherited inherited inputs native owners ordinary source history
+
+private theorem within_intro {domain inherited inputs native owners ordinary source history}
+    (admitted : InOrdinaryDomain domain ordinary)
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs native owners ordinary source history) :
+    SourceAgreementWithin domain inherited inputs native owners ordinary source history := by
+  cases domain
+  · exact agrees
+  · exact ⟨admitted,agrees⟩
+
+private theorem within_agrees {domain inherited inputs native owners ordinary source history}
+    (agrees : SourceAgreementWithin domain inherited inputs native owners ordinary source history) :
+    SemanticHistoryAgreesWithInherited inherited inputs native owners ordinary source history := by
+  cases domain
+  · exact agrees
+  · exact agrees.2
+
 /-- The callee's ordinary inputs use its actual visible table while its
 source prefix retains the caller's measurement keys and hidden outcomes. -/
 theorem source_input_on_slice {dependencies program block start count inputs ordinary effect roles}
@@ -69,8 +98,10 @@ theorem refine_child_runs
     (ordinals : List Nat) (sourceInitial : Nat → SourceHistory)
     (next : List (Step root.dependencies scope.program scope.prepared.block) →
       Step root.dependencies scope.program scope.prepared.block → SourceHistory → Option (List SourceHistory))
+    (domain : Option (RuntimeOrdinaryBody.State → Prop) := none)
+    (admitted : InOrdinaryDomain domain scope.visible.ssa := by trivial)
     (laws : StepRefinement steps (CheckedStepAt (runBlockCore artifact root mode fuel) rootInputs) next
-      (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
+      (fun _ => SourceAgreementWithin domain (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
       (some (fun id => id ∉ actual.values.map Prod.fst)))
     (avoids : WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst))
     (starts : ∀ high, SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
@@ -92,15 +123,15 @@ theorem refine_child_runs
   have literal := read
   rw [← beforeExit] at literal
   obtain ⟨expected,evaluated,paired⟩ := refineFlowWithWrites flow native (sourceInitial high) (localHistory high)
-    next (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
-    (fun id => id ∉ actual.values.map Prod.fst) literal (runs high) avoids laws (starts high)
+    next (fun _ => SourceAgreementWithin domain (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
+    (fun id => id ∉ actual.values.map Prod.fst) literal (runs high) avoids laws (within_intro admitted (starts high))
   refine ⟨expected,evaluated,?_⟩
   rw [List.forall₂_map_left_iff]
   apply paired.imp
   intro source nativeHistory agrees
   rw [afterOrder]
   exact sparse_return_refines ordinals (inherited := some (fun id => id ∈ actual.values.map Prod.fst))
-    owners order (beforeExit ▸ agrees)
+    owners order (beforeExit ▸ within_agrees agrees)
 
 /-- Refine the actual child's source prefix and written return on each
 literal result list paired by the successful caller run. The local laws
@@ -134,7 +165,7 @@ theorem CheckedCallRun.refine_source_slices
             ordinals scope.localAfter after finalOrdinary)
           (expected.map (returnHistory owners.bindings)) (children.map (fun history => history high)) :=
   refine_child_runs actual localHistory children checked.childRead checked.paired.childRun flow returned
-    ordinals sourceInitial next laws avoids starts
+    ordinals sourceInitial next none True.intro laws avoids starts
 
 private theorem indexed_source_family {A B : Type} (rel : Nat → A → B → Prop)
     (sources : Nat → List A) {native : List (Nat → B)}
@@ -182,8 +213,10 @@ theorem CheckedCallRun.refine_weighted_child_sources
       (RuntimeOrdinaryBody.valuation ordinals ordinary.measurements actual.values) actual.values ordinary.table)
     (next : List (Step root.dependencies scope.program scope.prepared.block) →
       Step root.dependencies scope.program scope.prepared.block → SourceHistory → Option (List SourceHistory))
+    (domain : Option (RuntimeOrdinaryBody.State → Prop) := none)
+    (admitted : InOrdinaryDomain domain scope.visible.ssa := by trivial)
     (laws : StepRefinement steps (CheckedStepAt (runBlockCore artifact root mode fuel) rootInputs) next
-      (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
+      (fun _ => SourceAgreementWithin domain (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
       (some (fun id => id ∉ actual.values.map Prod.fst)))
     (avoids : WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst)) :
     let localHistory := componentInput frame scope.prepared.block.entry.quantum.frame incoming selected spectators
@@ -208,7 +241,8 @@ theorem CheckedCallRun.refine_weighted_child_sources
     (componentJoint incoming selected spectators source.operator) (fun _ => rfl) (fun _ => rfl)
     hidden measured ordinaryAgrees (fun _ _ _ _ => rfl)
   obtain ⟨owners,_,afterOrder,refined⟩ :=
-    refine_child_runs actual localHistory nativeFamily checked.childRead runs flow returned ordinals initial next laws avoids starts
+    refine_child_runs actual localHistory nativeFamily checked.childRead runs flow returned ordinals initial next
+      (domain := domain) (admitted := admitted) laws avoids starts
   have ownerOrder : owners.bindings = after.bindings :=
     (congrArg RuntimeStructuralAction.SourceState.bindings afterOrder).symm
   simp only [ownerOrder] at refined
@@ -276,6 +310,49 @@ def NamedSourceTraversal {artifact : Artifact} {root : Validity.Root}
         Returned scope.prepared.block subject.outputRoles finish after
   | _ => True
 
+/-- Consume the actual recursive source flow with the same original bindings
+that supply the sparse call entry. The child mode is already in its receipt. -/
+theorem named_source_traversal_of_flow {artifact root mode fuel origin program block start count inputs
+    ordinary sources caller before retired}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {scope : @RuntimeCallScope.Checked root.dependencies program block start count inputs ordinary event.effect}
+    {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
+    {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+    {child finish : RuntimeStructuralAction.SourceState}
+    {boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired body.checked.summary.value}
+    {finalOrdinary} {steps : List (Step root.dependencies scope.program scope.prepared.block)}
+    {originalAssigned : Map}
+    (initial : RuntimeOwnerMap.Checked (SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles
+      scope.prepared.block.entry)
+    (sourceRead : RuntimeInterval.Computed (RuntimeSourceBoundary.bindings
+      (SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles
+      ((scope.selected.zip event.inputOwners).map fun (port,role) =>
+        (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner))) originalAssigned)
+    (initialOrdered : RuntimeInterval.Computed
+      (RuntimePureBody.reordered (SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles
+        scope.prepared.block.entry originalAssigned) initial)
+    (flow : @Flow artifact root mode (runBlockCore artifact root mode fuel) origin
+      scope.program scope.prepared.block
+      ⟨initial.bindings,(SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles,
+        body.checked.summary.nextOwner⟩ steps finish scope.visible.ssa finalOrdinary
+      scope.prepared.block.operations.length)
+    (returned : Returned scope.prepared.block (SourceTypes.SourceRuntimeScope.Subject.whole body).outputRoles finish child) :
+    NamedSourceTraversal (artifact := artifact) (mode := mode) fuel origin
+      (.named event scope body bodyRead boundary finalOrdinary (RuntimePureBody.Steps.ofList steps)) := by
+  intro input assigned assignedRead ordered
+  have roles := (RuntimeNamedFrameAxes.mixed_bound_axes scope boundary).1
+  have sameAssigned : originalAssigned = assigned :=
+    assigned_unique sourceRead (by simpa only [roles] using assignedRead)
+  have initialMap := RuntimeNamedPrimitiveInputs.reordered_original
+    (RuntimeNamedPrimitiveInputs.bindings_roles sourceRead) initial initialOrdered
+  have inputMap := RuntimeNamedPrimitiveInputs.reordered_original
+    (RuntimeNamedPrimitiveInputs.bindings_roles assignedRead) input ordered
+  have sameInput : input.bindings = initial.bindings :=
+    inputMap.trans (sameAssigned.symm.trans initialMap.symm)
+  refine ⟨finish,?_,returned⟩
+  simpa only [sameInput,stepList_ofList] using flow
+
+
 theorem actual_named_source_traversal {artifact root mode fuel origin program block step}
     (call : @ChildRunAt artifact root mode
       (runBlockCore artifact root mode (fuel+1)) (some origin) program block step) :
@@ -284,23 +361,13 @@ theorem actual_named_source_traversal {artifact root mode fuel origin program bl
   | @named start count inputs caller before ordinary event scope body bodyRead
       rootOwner rootName path request plan originalAssigned result receipts boundary
       beforeInput afterInput afterChild inputRead childRead rootRead =>
-    intro input assigned assignedRead ordered
     obtain ⟨initial,initialOrdered,finish,flow,returned⟩ :=
       Qleisli.RuntimeNamedChildRuns.core_flow artifact root mode fuel
         .localScope (.whole body) path scope.program request plan _ scope.visible.ssa
         scope.prepared.block (result,receipts) ⟨afterInput,afterChild,childRead⟩
     have sourceRead : RuntimeInterval.Computed _ originalAssigned := ⟨beforeInput,afterInput,inputRead⟩
-    have roles := (RuntimeNamedFrameAxes.mixed_bound_axes scope boundary).1
-    have sameAssigned : originalAssigned = assigned :=
-      assigned_unique sourceRead (by simpa only [roles] using assignedRead)
-    have initialMap := RuntimeNamedPrimitiveInputs.reordered_original
-      (RuntimeNamedPrimitiveInputs.bindings_roles sourceRead) initial initialOrdered
-    have inputMap := RuntimeNamedPrimitiveInputs.reordered_original
-      (RuntimeNamedPrimitiveInputs.bindings_roles assignedRead) input ordered
-    have sameInput : input.bindings = initial.bindings :=
-      inputMap.trans (sameAssigned.symm.trans initialMap.symm)
-    refine ⟨finish,?_,returned⟩
-    simpa only [sameInput,stepList_ofList,rootRead origin rfl] using flow
+    apply named_source_traversal_of_flow initial sourceRead initialOrdered _ returned
+    simpa only [rootRead origin rfl] using flow
 
 #print axioms source_input_on_slice
 #print axioms CheckedCallRun.refine_source_slices

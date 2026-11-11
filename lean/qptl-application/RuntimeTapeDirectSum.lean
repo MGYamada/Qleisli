@@ -83,5 +83,43 @@ theorem program_directSum {Reference : Type} (dependencies : List Dependency) (s
   exact (tapeMatrix_mulVec dependencies (width target) (arms label) (armBounds label)
     (fun input => joint (pack (width selector) label.val input) reference) row).symm
 
+/-- The original Bit selector fixes the two arm labels. The same native
+tape and exact phase-sensitive direct sum used for qmatch also govern qif. -/
+theorem program_qif_directSum {Reference : Type} (dependencies : List Dependency) (target : Basis)
+    (program : Semantics.Raw.Program) (tape : Raw.Sector.Tape)
+    (binding : Raw.Sector.ForTapeBinding dependencies (.pair [.bit] target) program tape)
+    (bounded : ∀ step ∈ tape.steps, ∀ axis ∈ QleisliKernel.Finite.targets step.action,
+      axis < 1 + width target)
+    (zero one : List Step)
+    (checkedZero : TapeMatch 1 0 tape.steps zero) (checkedOne : TapeMatch 1 1 tape.steps one)
+    (armBounds : ∀ arm ∈ [zero,one], ∀ step ∈ arm, ∀ axis ∈ QleisliKernel.Finite.targets step.action,
+      axis < width target)
+    (joint : Nat → Reference → ℂ) (reference : Reference) :
+    let arms := fun label : Fin 2 => if label.val = 0 then zero else one
+    ∃ actual, Qleisli.Semantics.RawAction.program dependencies program (fun row => joint row reference) = some actual ∧
+      ∀ (label : Fin 2) (row : Fin (2^width target)),
+        actual (pack 1 label.val row.val) =
+          (Matrix.blockDiagonal' (fun label => tapeMatrix dependencies (width target) (arms label)) *ᵥ
+            (fun input => joint (pack 1 input.1.val input.2.val) reference)) ⟨label,row⟩ := by
+  intro arms
+  apply program_directSum dependencies [.bit] target program tape binding bounded arms _ _ joint reference
+  · intro label
+    change TapeMatch 1 label.val tape.steps (arms label)
+    by_cases low : label.val = 0
+    · simpa only [arms,low,if_true] using checkedZero
+    · have high : label.val = 1 := by
+        have small : label.val < 2 := label.isLt
+        omega
+      simpa only [arms,low,high,if_false] using checkedOne
+  · intro label
+    apply armBounds
+    change (if label.val = 0 then zero else one) ∈ [zero,one]
+    by_cases low : label.val = 0
+    · rw [if_pos low]
+      exact List.mem_cons_self
+    · rw [if_neg low]
+      exact List.mem_cons_of_mem _ List.mem_cons_self
+
 #print axioms program_directSum
+#print axioms program_qif_directSum
 end Qleisli.RuntimeTapeAction

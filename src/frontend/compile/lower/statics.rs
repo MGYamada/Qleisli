@@ -220,7 +220,7 @@ impl Lowerer<'_, '_> {
             .nominal_qmatch
             .as_ref()
             .filter(|_| self.uses_qmatch_v5())
-            .map(super::quantum_match::nominal::Frame::position_count);
+            .map(super::quantum_match::nominal::Frame::static_checkpoint);
         let start = self.raw.operations.len();
         let result = self.block(module, selected, env)?;
         if let Some(checkpoint) = position_checkpoint {

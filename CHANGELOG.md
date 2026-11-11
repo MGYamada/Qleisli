@@ -6,6 +6,36 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Meter selected qmatch sector restriction by its control and axis scans.
+  Validate the entire original tape and retain full local validation for
+  the instructions active in each sector.
+  Computed sectors can use sparse exact Gram products when their tape
+  bounds the support. Both paths check every physical sector.
+  Identical restricted tapes within one check share a verified matrix,
+  with every physical label still bound to its own restriction.
+  Arm and sector code-space equations skip literal zero terms on either
+  side of an exact product and retain the dense equation as their proof.
+  Arm Gram checks also use measured sparse support, with the original
+  total charge preserved when the dense strategy is selected.
+- Retain exact child intervals for compound static continuations in
+  original-source v5 bodies. Check each original event against its whole
+  literal Raw interval, including primitive implementations with several operations.
+- Share coherent sector lowering between `qif` and `qmatch`. Retain both
+  selections in original-source v5 bodies and derive the binary tape action
+  from the shared QPTL direct-sum theorem.
+- Check coherent basis preparation in selected v5 bodies and relate its
+  original rectangular table to the literal Raw event on the complete owner
+  and reference frame. Ordinary branches after preparation and measurement
+  fit the existing exact-work cap by metering condition lookups and owner
+  permutations according to their actual scans.
+- Meter nominal type text linearly when matching issued owner histories at
+  ordinary branch merges. Prove condition agreement from the single metered
+  pass over all input and measurement rows. Small original-source v5
+  selections inside ordinary branches retain their quantum and SSA phis.
+- Prove that each original coherent selection uses the independently evaluated
+  source graphs at its written selector ordinals. The proof follows named
+  calls and conditional branches through the same original body and retains
+  the return order, visible SSA values, and inherited measurement history.
 - Check selected v5 `qmatch` through nested calls with original operation
   actuals and phase-fixed Meaning duties. Keep exact source rows and every
   original occurrence while reducing repeated native source-row coverage work.

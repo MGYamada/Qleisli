@@ -59,6 +59,60 @@ def NamedEntry {dependencies program block} : Step dependencies program block �
               (gather row (RuntimeNamedFrameAxes.mixedAxes scope)) ref
   | _ => True
 
+/-- The original argument assignment and entry read determine the sparse
+input, including dimension-one owners and arbitrary reference columns. -/
+theorem named_entry_of_bindings {dependencies program block start count inputs ordinary sources caller before child retired}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary event.effect}
+    {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
+    {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+    {boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired body.checked.summary.value}
+    {finalOrdinary} {steps : RuntimePureBody.Steps dependencies scope.program scope.prepared.block}
+    {assigned : Map}
+    (input : RuntimeOwnerMap.Checked (SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles
+      scope.prepared.block.entry)
+    (read : RuntimeInterval.Computed (RuntimeSourceBoundary.bindings
+      (SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles
+      ((scope.selected.zip event.inputOwners).map fun (port,role) =>
+        (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner))) assigned)
+    (inputOrdered : RuntimeInterval.Computed
+      (RuntimePureBody.reordered (SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles
+        scope.prepared.block.entry assigned) input) :
+    NamedEntry (.named event scope body bodyRead boundary finalOrdinary steps) := by
+  have aliases := RuntimeBoundaryOwnerEvidence.bindings_carriers read
+  have ordered := reordered_original (bindings_roles read) input inputOrdered
+  have same : carrierOwners input.bindings = carrierOwners boundary.input.ordered := by
+    rw [ordered,aliases,named_input_carriers scope boundary]
+  have framePorts := congrArg Semantics.RawTrace.Interface.frame
+    (RuntimeNamedFrameAxes.mixedAxes_input scope).2.2.1
+  have localFrame : scope.prepared.block.entry.quantum.frame =
+      boundary.input.ordered.flatMap (·.port.wires) := by
+    have wires := congrArg (List.flatMap (fun port : Semantics.Raw.Port => port.wires))
+      (RuntimeNamedFrameAxes.mixed_bound_ports scope boundary)
+    exact framePorts.trans (by simpa only [List.flatMap_map] using wires)
+  have axes := (RuntimeNamedFrameAxes.mixed_bound_axes scope boundary).2.2
+  have unique : scope.prepared.block.entry.quantum.frame.Nodup := by
+    have distinct := (RuntimeNamedFrameAxes.mixedAxes_bounds scope).1
+    rw [axes] at distinct
+    rw [localFrame]
+    exact List.Pairwise.of_map scope.interval.before.quantum.frame.idxOf
+      (fun _ _ different equal => different (congrArg scope.interval.before.quantum.frame.idxOf equal)) distinct
+  have originalRoles := (RuntimeNamedFrameAxes.mixed_bound_axes scope boundary).1
+  refine ⟨input,assigned,?_,inputOrdered,same,?_⟩
+  · simpa only [originalRoles] using read
+  intro roles checked parent sameBindings
+  have partition := RuntimeNamedBlockEncoding.original_named_partition_geometry scope boundary checked sameBindings
+  have selectedAvailable : Qleisli.RuntimeSemanticForest.Available boundary.input.ordered :=
+    fun binding member => parent.available binding (partition.subset (List.mem_append_left _ member))
+  obtain ⟨frame⟩ := frame_exists (available_carriers same selectedAvailable)
+  refine ⟨frame,?_⟩
+  intro Reference joint row ref
+  have law := sparse_caller_input checked parent scope.interval.history.1 partition
+    frame same _ localFrame unique joint row ref
+  rw [← axes] at law
+  exact law
+
+
 /-- The actual child receipt supplies the argument assignment and reordering.
 Its full carriers determine the sparse frame, including dimension-one owners.
 The input correspondence holds for any correlated caller state. -/
@@ -74,38 +128,7 @@ theorem actual_named_entry {artifact root execution fuel program block step}
       .localScope (.whole body) path scope.program request plan _ scope.visible.ssa
       scope.prepared.block (result,receipts) ⟨afterInput,afterChild,childRead⟩
     have read : RuntimeInterval.Computed _ assigned := ⟨beforeInput,afterInput,inputRead⟩
-    have aliases := RuntimeBoundaryOwnerEvidence.bindings_carriers read
-    have ordered := reordered_original (bindings_roles read) input inputOrdered
-    have same : carrierOwners input.bindings = carrierOwners boundary.input.ordered := by
-      rw [ordered,aliases,named_input_carriers scope boundary]
-    have framePorts := congrArg Semantics.RawTrace.Interface.frame
-      (RuntimeNamedFrameAxes.mixedAxes_input scope).2.2.1
-    have localFrame : scope.prepared.block.entry.quantum.frame =
-        boundary.input.ordered.flatMap (·.port.wires) := by
-      have wires := congrArg (List.flatMap (fun port : Semantics.Raw.Port => port.wires))
-        (RuntimeNamedFrameAxes.mixed_bound_ports scope boundary)
-      exact framePorts.trans (by simpa only [List.flatMap_map] using wires)
-    have axes := (RuntimeNamedFrameAxes.mixed_bound_axes scope boundary).2.2
-    have unique : scope.prepared.block.entry.quantum.frame.Nodup := by
-      have distinct := (RuntimeNamedFrameAxes.mixedAxes_bounds scope).1
-      rw [axes] at distinct
-      rw [localFrame]
-      exact List.Pairwise.of_map scope.interval.before.quantum.frame.idxOf
-        (fun _ _ different equal => different (congrArg scope.interval.before.quantum.frame.idxOf equal)) distinct
-    have originalRoles := (RuntimeNamedFrameAxes.mixed_bound_axes scope boundary).1
-    refine ⟨input,assigned,?_,inputOrdered,same,?_⟩
-    · simpa only [originalRoles] using read
-    intro roles checked parent sameBindings
-    have partition := RuntimeNamedBlockEncoding.original_named_partition_geometry scope boundary checked sameBindings
-    have selectedAvailable : Qleisli.RuntimeSemanticForest.Available boundary.input.ordered :=
-      fun binding member => parent.available binding (partition.subset (List.mem_append_left _ member))
-    obtain ⟨frame⟩ := frame_exists (available_carriers same selectedAvailable)
-    refine ⟨frame,?_⟩
-    intro Reference joint row ref
-    have law := sparse_caller_input checked parent scope.interval.history.1 partition
-      frame same _ localFrame unique joint row ref
-    rw [← axes] at law
-    exact law
+    exact named_entry_of_bindings input read inputOrdered
 
 /-- Visible child expressions use the caller's existing measurement keys and
 values, including earlier values needed by a visible phi expression. -/

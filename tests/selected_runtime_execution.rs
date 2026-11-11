@@ -163,6 +163,78 @@ fn selected_nominal_qmatch_checks_every_original_selection_in_order() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_nominal_qmatch_retains_branch_phis_after_input_or_measurement() {
+    use qleisli::ir::{Effect, RawOp};
+
+    let source = r#"pub enum Tag { A, B }
+unitary fn keep(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn turn(q: Q<Bit>) -> Q<Bit> { h(phase[1,3](h(q))) }
+unitary fn choose(s: Q<Tag>, q: Q<Bit>) -> (Q<Tag>, Q<Bit>) {
+    qmatch(s,q) { Tag::B => turn, Tag::A => keep }
+}
+pub unitary fn route(s: Q<Tag>, q: Q<Bit>, b: Bit) -> (Q<Tag>, Q<Bit>, Bit) {
+    let (s,q,c) = if b {
+        let (s,q) = choose(s,q);
+        (s,q,1)
+    } else {
+        (s,q,0)
+    };
+    (s,q,c)
+}
+"#;
+    let observed = source
+        .replace("pub unitary fn route", "pub observe fn route")
+        .replace("b: Bit)", "a: Q<Bit>)")
+        .replace(
+            "    let (s,q,c) = if b",
+            "    let b = measure_z(a);\n    let (s,q,c) = if b",
+        );
+    let prepared = observed
+        .replace(", a: Q<Bit>", "")
+        .replace("measure_z(a)", "measure_z(h(init0()))");
+    let explicit_basis = prepared.replace(
+        "    let b = measure_z(h(init0()));",
+        "    let a = basis unit(()) as _ { 0 };\n    let b = measure_z(h(a));",
+    );
+    for (source, expected_effect) in [
+        (source, Effect::Unitary),
+        (&observed, Effect::Observe),
+        (&prepared, Effect::Observe),
+        (&explicit_basis, Effect::Observe),
+    ] {
+        let accepted = selected_at(source, "main::route");
+        assert!(accepted.program().qmatch_source_checked());
+        let raw = accepted.program().raw();
+        assert_eq!(raw.declared_effect, expected_effect);
+        let Some(RawOp::ClassicalBranch {
+            quantum_phis,
+            classical_phis,
+            ..
+        }) = raw
+            .operations
+            .iter()
+            .find(|op| matches!(op, RawOp::ClassicalBranch { .. }))
+        else {
+            panic!("the original ordinary branch must be retained");
+        };
+        assert_eq!(
+            raw.quantum_outputs,
+            quantum_phis
+                .iter()
+                .map(|phi| phi.output)
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(classical_phis.len(), 1);
+        assert_eq!(raw.classical_outputs, [classical_phis[0].output]);
+        kernel().check_program(accepted.program()).unwrap();
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_retains_extra_zero_width_owners_and_original_result_order() {
     for reverse in [false, true] {
         for (effect, expected) in [
@@ -252,6 +324,51 @@ fn selected_qmatch_checks_wide_interfaces_in_separate_sectors() {
         assert_eq!(widths, [4, 3]);
         kernel().check_program(program).unwrap();
     }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qif_and_qmatch_retain_their_original_selection_order() {
+    let source = r#"#![no_implicit_prelude]
+pub enum Selector { A, B }
+unitary fn mark(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }
+pub unitary fn route(s: Q<Selector>, c: Q<Bit>, q: Q<Bit>) -> (Q<Selector>,Q<Bit>,Q<Bit>) {
+    let (c,q) = qif(c,q) { 0 => h, 1 => mark };
+    let (s,q) = qmatch(s,q) { Selector::B => h, Selector::A => mark };
+    (s,c,q)
+}
+"#;
+    let selected = selected_at(source, "main::route");
+    let program = selected.program();
+    assert!(program.qmatch_source_checked());
+    let mut request =
+        qleisli::interchange::qmatch::v5::Request::decode(program.request().unwrap()).unwrap();
+    let [qif, qmatch] = request.context.sites.as_slice() else {
+        panic!("both original selection sites must be retained");
+    };
+    assert_eq!(
+        qif.position.offset as usize,
+        source.find("qif(c,q)").unwrap()
+    );
+    assert_eq!(
+        qmatch.position.offset as usize,
+        source.find("qmatch(s,q)").unwrap()
+    );
+    assert!(qif.position.start + qif.position.count <= qmatch.position.start);
+    kernel().check_program(program).unwrap();
+
+    request.context.sites[0].arms.swap(0, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(program.artifact(), &request.encode().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
 }
 
 #[test]
@@ -604,27 +721,49 @@ fn selected_nominal_qmatch_keeps_structural_moves_and_suspended_callers() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
-fn selected_nominal_qmatch_does_not_replace_the_original_body_with_a_site() {
-    let source = String::from(
+fn selected_nominal_qmatch_retains_named_basis_preparation_and_hidden_observation() {
+    use qleisli::ir::{Effect, RawOp};
+
+    let source =
             "pub enum Tri{A,B,C}
             pub unitary fn idle(q:Q<Unit>)->Q<Unit>{q}
             pub observe fn keep(s:Q<Tri>,q:Q<Unit>)->(Q<Tri>,Q<Unit>){
                 let hidden=measure_z(init0()); qmatch(s,q){Tri::A=>idle,Tri::B=>idle,Tri::C=>idle}}"
-        );
-    let parsed =
-        ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), source)])).unwrap();
-    let instance = parsed
-        .instantiate_runtime_with_types(
-            "main::keep",
-            Default::default(),
-            Default::default(),
-            Default::default(),
-        )
-        .unwrap();
-    let error = instance.compile_runtime_with_kernel(&kernel()).unwrap_err();
+        ;
+    let accepted = selected(source);
+    let program = accepted.program();
+    assert!(program.qmatch_source_checked());
+    assert_eq!(
+        program.runtime_result().unwrap().public_effect,
+        Effect::Observe
+    );
+    let raw = program.raw();
+    assert_eq!(raw.declared_effect, Effect::Observe);
+    assert!(raw.classical_outputs.is_empty());
+    assert!(matches!(
+        raw.operations.as_slice(),
+        [
+            RawOp::PackUnit { output: unit },
+            RawOp::LiftBasis { input, output, table, .. },
+            RawOp::MeasureZ { input: measured, .. },
+            rest @ ..
+        ] if unit == input && output == measured && table == &[0] && !rest.is_empty()
+    ));
+    kernel().check_program(program).unwrap();
+    // Preparing |1> is also a valid Raw isometry. The same original source
+    // still prepares |0>, even when the measurement result stays hidden.
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let original = r#""table":[0],"tag":"lift_basis""#;
+    let changed = r#""table":[1],"tag":"lift_basis""#;
+    assert_eq!(artifact.matches(original).count(), 1);
+    let altered = artifact.replacen(original, changed, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(altered.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
     assert!(
-        error.message.contains("native") || error.message.contains("request"),
-        "{error:?}"
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
     );
 }
 
@@ -770,6 +909,38 @@ fn selected_builtin_qmatch_keeps_the_runtime_root_for_exclusive_access() {
         }",
     );
     assert!(!accepted.program().qmatch_source_checked());
+    kernel().check_program(accepted.program()).unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_nominal_qmatch_binds_compound_static_child_intervals() {
+    let accepted = selected(
+        "pub enum Flag { A, B }
+        pub unitary fn keep(s:Q<Flag>,q:Q<Bit>)->(Q<Flag>,Q<Bit>){
+            let q=if static 1==1 {let q=phase[1,3](q);h(q)} else {q};
+            qmatch(s,q){Flag::A=>h,Flag::B=>global_phase_eighth}
+        }",
+    );
+    assert!(accepted.program().qmatch_source_checked());
+    let request =
+        qleisli::interchange::qmatch::v5::Request::decode(accepted.program().request().unwrap())
+            .unwrap();
+    let [interval] = request.context.static_intervals.as_slice() else {
+        panic!("expected the selected original compound interval");
+    };
+    assert_eq!(interval.parent, request.context.positions[0]);
+    assert_eq!(
+        interval
+            .children
+            .iter()
+            .map(|child| (child.start, child.count))
+            .collect::<Vec<_>>(),
+        [(0, 1), (1, 1)]
+    );
     kernel().check_program(accepted.program()).unwrap();
 }
 

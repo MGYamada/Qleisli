@@ -328,7 +328,7 @@ PATHS = {
         ('src/interchange/qmatch/tests.rs', 'event_positions_share_the_existing_request_allocation_budget'),
         ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_binds_the_actual_complete_call'),
         ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_keeps_structural_moves_and_suspended_callers'),
-        ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_does_not_replace_the_original_body_with_a_site'),
+        ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_retains_named_basis_preparation_and_hidden_observation'),
         ('tests/selected_runtime_execution.rs', 'selected_nominal_qmatch_uses_original_imports_and_public_arm_effects'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_preserves_nominal_targets_and_original_phases'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_nominal_target_keeps_two_empty_owner_identities'),
@@ -426,7 +426,8 @@ PATHS = {
             'theorem Original.covers ', 'theorem Original.root_safe ', 'theorem run_binding ']),
     ], [('src/interchange/native/qmatch/tests.rs', 'v5_checks_the_original_context_and_refuses_a_divergent_view'),
         ('src/frontend/compile/lower/quantum_match/nominal/tests.rs', 'original_general_nested_meaning_proposal'),
-        ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_wide_interfaces_in_separate_sectors')]),
+        ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_wide_interfaces_in_separate_sectors'),
+        ('tests/selected_runtime_execution.rs', 'selected_qif_and_qmatch_retain_their_original_selection_order')]),
     'qmatch-views': path_rule('checked-view', 'qmatch-component', '', [
         ('src/interchange/native/qmatch.rs', ['pub struct QmatchChecked', 'checked: Checked,', 'request: Arc<Request>',
             'pub fn request_bytes(', 'pub fn native(']),

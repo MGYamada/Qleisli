@@ -111,6 +111,46 @@ private theorem lift_sum (parent child spectators after localAfter inputWires ou
         simpa only [environment,List.length_map] using gather_bound row (spectators.map after.idxOf)
       exact Qleisli.Exact.range_delta_sum _ _ _ environmentBound
 
+/-- The literal basis table writes the whole returned operand while keeping
+the actual spectator coordinate. The joint input may be correlated. -/
+theorem basis_event_fibre (dependencies : List Semantics.Finite.Dependency)
+    (parent child spectators after localAfter extra table : List Nat)
+    (partition : parent.Perm (child++spectators))
+    (afterPartition : after.Perm (localAfter++spectators))
+    (parentUnique : parent.Nodup) (afterUnique : after.Nodup)
+    (parentGrowth : after = parent++extra) (childGrowth : localAfter = child++extra)
+    (boundedTable : ∀ code : Nat, table[code]?.getD 0 < 2^localAfter.length)
+    (joint : Nat → Nat → ℂ) (row : Nat) (bounded : row < 2^after.length) :
+    event dependencies (.liftBasis parent.length after.length
+      (child.map parent.idxOf) (localAfter.map after.idxOf) table)
+      (fun input => joint (gather input (child.map parent.idxOf)) (gather input (spectators.map parent.idxOf))) row =
+    ((List.range (2^child.length)).map fun input =>
+      if table[input]?.getD 0 = gather row (localAfter.map after.idxOf) then
+        joint input (gather row (spectators.map after.idxOf))
+      else 0).sum := by
+  have childUnique : child.Nodup := (List.nodup_append.mp (partition.nodup parentUnique)).1
+  have localUnique : localAfter.Nodup := (List.nodup_append.mp (afterPartition.nodup afterUnique)).1
+  simp only [event,beq_iff_eq]
+  rw [lift_sum parent child spectators after localAfter child localAfter extra table partition afterPartition
+    parentUnique afterUnique parentGrowth childGrowth (fun {_} h => h) (fun {_} h => h) joint row bounded]
+  apply Qleisli.Exact.sum_map_congr
+  intro input member
+  have small := List.mem_range.mp member
+  have read : gather input (child.map child.idxOf) = input := by
+    rw [RuntimeNamedCallerAction.self_indices _ childUnique,Raw.Sector.gather_range,Nat.mod_eq_of_lt small]
+  rw [read,RuntimeNamedCallerAction.self_indices _ localUnique]
+  have writes : scatter input (List.range localAfter.length) (table[input]?.getD 0) =
+      table[input]?.getD 0 := by
+    have larger : child.length ≤ localAfter.length := by simp [childGrowth]
+    have inputBound := Nat.lt_of_lt_of_le small (Nat.pow_le_pow_right (by decide) larger)
+    have scatterBound := Qleisli.Finite.Pull.scatter_bound input localAfter.length (table[input]?.getD 0)
+      (List.range localAfter.length) inputBound (fun _ h => List.mem_range.mp h)
+    have gathered := Qleisli.RuntimeFiniteTargetScatter.gather_scatter input (table[input]?.getD 0)
+      (List.range localAfter.length) List.nodup_range (by simpa only [List.length_range] using boundedTable input)
+    rw [Raw.Sector.gather_range,Nat.mod_eq_of_lt scatterBound] at gathered
+    exact gathered
+  rw [writes]
+
 /-- The two successful reads of the same original basis lift induce the
 same action on the selected block in the actual caller's spectator slice. -/
 theorem basis_lift_correlated (dependencies : List Semantics.Finite.Dependency)
@@ -140,5 +180,6 @@ theorem basis_lift_correlated (dependencies : List Semantics.Finite.Dependency)
     (Raw.Ownership.valid _ parentValid).frame (Raw.Ownership.valid _ afterValid).frame
     parentGrowth childGrowth inputInside outputInside joint row bounded
 
+#print axioms basis_event_fibre
 #print axioms basis_lift_correlated
 end Qleisli.RuntimeCallTraceBasis

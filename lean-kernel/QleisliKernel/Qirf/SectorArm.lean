@@ -10,11 +10,11 @@ namespace QleisliKernel.Qirf.SectorArm
 open Semantics.Exact Semantics.Finite Finite
 
 def projectLogical (inputCode outputCode physical : Matrix) : WorkM Matrix := do
-  let actual ← exactWork (Exact.Matrix.composeWork physical inputCode)
+  let actual ← FiniteCarrier.codeProduct .right physical inputCode
   let adjoint ← exactWork (Exact.Matrix.adjointWork outputCode)
-  let logical ← exactWork (Exact.Matrix.composeWork adjoint actual)
-  wholeSpace logical
-  let required ← exactWork (Exact.Matrix.composeWork outputCode logical)
+  let logical ← FiniteCarrier.codeProduct .left adjoint actual
+  FiniteRestriction.adaptiveWholeSpace logical
+  let required ← FiniteCarrier.codeProduct .left outputCode logical
   exactWork (Exact.charge actual.entries.length)
   guard (actual == required) .equation
   return logical
@@ -43,10 +43,12 @@ theorem projectLogical_bound (inputCode outputCode physical logical : Matrix) (w
   subst logical
   have exactEq := beq_iff_eq.mp (guard_success _ _ _ _ he).1
   rw [← exactEq] at hr
-  exact ⟨⟨actual,adjoint,work,w₁,w₁,w₂,w₂,w₃,exactWork_success _ _ _ _ ha,
-      exactWork_success _ _ _ _ hd,exactWork_success _ _ _ _ hl⟩,
-    ⟨w₃,w₄,hu⟩,⟨actual,work,w₁,w₄,w₅,exactWork_success _ _ _ _ ha,
-      exactWork_success _ _ _ _ hr⟩⟩
+  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ ha
+  obtain ⟨e,f,logicalDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hl
+  obtain ⟨g,i,requiredDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hr
+  exact ⟨⟨actual,adjoint,a,b,w₁,w₂,e,f,actualDense,exactWork_success _ _ _ _ hd,logicalDense⟩,
+    FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
+    ⟨actual,a,b,g,i,actualDense,requiredDense⟩⟩
 
 structure Reference where
   label : Nat
@@ -76,7 +78,7 @@ def read (artifact : Artifact) (dependencies : List Dependency)
   let original ← lift (readOption artifact.programs[reference.implementation]?)
   guard (Raw.BranchFunction.preflight [.bits bits] original) .request
   let physical ← Raw.BranchFunction.reconstruct dependencies original
-  wholeSpace physical
+  FiniteRestriction.adaptiveWholeSpace physical
   let logical ← projectLogical inputCode outputCode physical
   let controlledOriginal ← lift (readOption artifact.programs[reference.controlled]?)
   exactWork (Exact.charge (controlledOriginal.operations.length + 1))
@@ -145,7 +147,7 @@ theorem read_bound (artifact : Artifact) (dependencies : List Dependency)
   have pureControl := Sector.project_bound _ _ projectEq
   have identityEq := arithmetic_success _ _ (lift_success _ _ _ _ hi).1
   exact ⟨types.1.1,types.2,⟨layout,FiniteCarrier.read_reference _ _ _ _ hl,types.1.2⟩,
-    originalEq,(guard_success _ _ _ _ hp).1,⟨w₄,w₅,hm⟩,⟨w₅,w₆,hu⟩,
+    originalEq,(guard_success _ _ _ _ hp).1,⟨w₄,w₅,hm⟩,FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
     projectLogical_bound _ _ _ _ _ _ hlogical,controlEq,pureControl.1,pureControl.2,
     QleisliKernel.Raw.Sector.read_bound _ _ _ _ _ _ _ hr,identityEq,
     (NominalSector.checkLogicals_bound _ _ _ _ _ _ _ _ hmeanings).2⟩

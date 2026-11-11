@@ -103,7 +103,7 @@ def Prepared.siteContext {artifact catalogue owner name signature bodies referen
     (prepared : @Prepared artifact catalogue owner name signature bodies references)
     (original : RuntimeContextRequest.Context) : RuntimeContextRequest.Context :=
   .withReferences original.positions original.sites original.calls original.branches
-    prepared.collection.bodies prepared.collection.references
+    prepared.collection.bodies prepared.collection.references original.staticIntervals
 
 theorem Prepared.siteContext_bodies {artifact catalogue owner name signature bodies references}
     (prepared : @Prepared artifact catalogue owner name signature bodies references)

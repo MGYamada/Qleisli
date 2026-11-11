@@ -6,10 +6,11 @@ use crate::frontend::types::nominal::Body;
 use crate::interchange::carrier::{Interface, Owner};
 use crate::interchange::qmatch::{
     ArmSubject, ContextSubject, Position, SelectionBody, SelectionSubject, SourceSite,
+    StaticInterval,
 };
 
 mod arms;
-pub(super) use arms::builtin_arm;
+pub(super) use arms::{BuiltinArmOrigin, builtin_arm};
 #[cfg(test)]
 mod tests;
 
@@ -20,6 +21,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     classical_inputs: Vec<ClassicalId>,
     start: usize,
     positions: Vec<Position>,
+    static_intervals: Vec<StaticInterval>,
     primitive_prelude: bool,
     selections: Vec<Selection>,
     calls: Vec<(Position, Arc<ContextSubject>)>,
@@ -231,6 +233,7 @@ impl Frame {
             classical_inputs,
             start: lower.raw.operations.len(),
             positions: Vec::new(),
+            static_intervals: Vec::new(),
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
@@ -253,8 +256,8 @@ impl Frame {
         self.needs_qmatch_v5 |= body.needs_qmatch_v5;
     }
 
-    pub(in crate::frontend::compile::lower) fn position_count(&self) -> usize {
-        self.positions.len()
+    pub(in crate::frontend::compile::lower) fn static_checkpoint(&self) -> (usize, usize) {
+        (self.positions.len(), self.static_intervals.len())
     }
 
     /// A branch inherits its original declaration/actuals, while its literal
@@ -268,6 +271,7 @@ impl Frame {
             classical_inputs: Vec::new(),
             start: 0,
             positions: Vec::new(),
+            static_intervals: Vec::new(),
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
@@ -315,6 +319,7 @@ impl Frame {
         Ok(Arc::new(ContextSubject {
             supplies: self.supplies,
             positions: self.positions,
+            static_intervals: self.static_intervals,
             selections,
             calls: self.calls,
             branches: self.branches,
@@ -358,6 +363,7 @@ impl Frame {
             return Ok(Some(Arc::new(ContextSubject {
                 supplies: self.supplies,
                 positions: self.positions,
+                static_intervals: self.static_intervals,
                 selections: Vec::new(),
                 calls: self.calls,
                 branches: self.branches,
@@ -506,6 +512,7 @@ impl Frame {
         Ok(Some(Arc::new(ContextSubject {
             supplies: self.supplies,
             positions: self.positions,
+            static_intervals: self.static_intervals,
             selections,
             calls: self.calls,
             branches: self.branches,
@@ -570,6 +577,35 @@ pub(in crate::frontend::compile::lower) fn record_primitive(
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.positions.push(position);
     frame.primitive_prelude |= prelude;
+    Ok(())
+}
+
+/// The coherent basis body supplies the table for one literal Raw operation.
+pub(in crate::frontend::compile::lower) fn record_basis(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+) -> Result<(), CompileError> {
+    let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        return Ok(());
+    };
+    let relative = start.checked_sub(frame.start).ok_or_else(|| {
+        lower.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "basis lift precedes its original qmatch context",
+        )
+    })?;
+    let position = position(lower, module, span, span.start, relative, 1)?;
+    lower.compiler.charge(module, span, 4)?;
+    lower
+        .nominal_qmatch
+        .as_mut()
+        .expect("original context")
+        .positions
+        .push(position);
     Ok(())
 }
 
@@ -736,7 +772,7 @@ pub(in crate::frontend::compile::lower) fn record_static(
     module: &str,
     span: Span,
     start: usize,
-    checkpoint: usize,
+    (checkpoint, interval_checkpoint): (usize, usize),
 ) -> Result<(), CompileError> {
     let frame = lower
         .nominal_qmatch
@@ -764,14 +800,34 @@ pub(in crate::frontend::compile::lower) fn record_static(
             )
         })?;
     let position = position(lower, module, span, span.start, relative, count)?;
-    lower.compiler.charge(module, span, 4)?;
+    let children = frame
+        .positions
+        .len()
+        .checked_sub(checkpoint)
+        .ok_or_else(|| {
+            lower.error(
+                module,
+                span,
+                ErrorCode::InvalidIr,
+                "static branch removed its original position prefix",
+            )
+        })?;
+    lower.compiler.charge(module, span, 4 + 4 * children)?;
     let frame = lower
         .nominal_qmatch
         .as_mut()
         .expect("original static context");
-    // The selected block shares the enclosing Raw list and its site/call
-    // queues. Only the outer event position groups that actual interval.
-    frame.positions.truncate(checkpoint);
+    frame.static_intervals.truncate(interval_checkpoint);
+    // Keep the exact child spans of a compound selected block, in the
+    // same coordinates as the parent and the original call/site queues.
+    if children > 1 {
+        frame.static_intervals.push(StaticInterval {
+            parent: position.clone(),
+            children: frame.positions.split_off(checkpoint),
+        });
+    } else {
+        frame.positions.truncate(checkpoint);
+    }
     frame.positions.push(position);
     Ok(())
 }
@@ -1012,10 +1068,7 @@ pub(super) fn apply_selection(
         Vec::new()
     };
     let start = lower.raw.operations.len();
-    let joined = lower.primitive_call(module, span, PrimitiveId::Join, vec![selector, target])?;
-    let slot = lower.quantum(module, span, &joined, false)?;
-    lower.apply_circuit(slot, steps);
-    let result = lower.primitive_call(module, span, PrimitiveId::Split, vec![joined])?;
+    let result = apply_selection_steps(lower, module, span, [selector, target], steps)?;
     let Some(frame_start) = frame_start else {
         return Ok(result);
     };

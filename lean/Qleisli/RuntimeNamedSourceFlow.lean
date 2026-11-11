@@ -28,15 +28,18 @@ def OperationOwnerOrder {dependencies program block start count arity inputs out
 def NodeAligned {dependencies program block} (before after : RuntimeStructuralAction.SourceState)
     (node : RuntimePureBody.Node dependencies program block) : Prop :=
   match node with
+  | .named (before := original) _ _ _ _ boundary _ =>
+    before = original ∧ after = boundary.after
   | .primitive _ binding => before = binding.history ∧ after = binding.after
   | .structural (before := original) action => before = original ∧ after = action.after
+  | .basis (event := event) (before := original) _ _ _ action =>
+    before = original ∧ after = RuntimeBasisAction.continued event original action.output
   | .operation frame .. => OperationOwnerOrder frame before after
   | .transform (before := original) _ _ _ _ _ owners _ _ =>
     before = original ∧ after = owners.after
   | .selection (codes := codes) .. =>
     before.bindings = codes.owners.before.bindings ∧
       after = {before with bindings := codes.owners.transport.after.bindings}
-  | _ => True
 
 /-- A source-ordered selection of complete bindings, including zero-width
 owners, gives exactly the ports read by the native interval. -/

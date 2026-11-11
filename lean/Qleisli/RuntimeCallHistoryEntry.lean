@@ -143,26 +143,34 @@ def NamedHistoryEntry {dependencies program block} : Step dependencies program b
               parentEvents childEvents parents children
   | _ => True
 
+theorem named_history_entry_of_entry {dependencies program block start count args ordinary sources caller before child retired}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {scope : @RuntimeCallScope.Checked dependencies program block start count args ordinary event.effect}
+    {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
+    {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+    {boundary : RuntimeNamedBoundary.Checked scope.interval args event before child retired body.checked.summary.value}
+    {finalOrdinary} {steps : RuntimePureBody.Steps dependencies scope.program scope.prepared.block}
+    (entry : Qleisli.RuntimeSparseNamedBoundary.NamedEntry (.named event scope body bodyRead boundary finalOrdinary steps)) :
+    NamedHistoryEntry (.named event scope body bodyRead boundary finalOrdinary steps) := by
+  obtain ⟨input,assigned,assignedRead,ordered,aliases,source⟩ := entry
+  refine ⟨input,assigned,assignedRead,ordered,aliases,?_⟩
+  intro roles checked parent same
+  obtain ⟨frame,law⟩ := source checked parent same
+  refine ⟨frame,?_⟩
+  intro joint actual represented
+  have paired := original_child_history scope boundary checked same parent frame actual joint represented (law joint)
+  refine ⟨paired,fun _ _ _ _ => rfl,fun ordinals agrees => visible_child_input scope ordinals actual _
+    paired.values agrees,?_⟩
+  intro parentEvents parents read executed
+  exact original_call_run scope boundary checked same actual _ paired read executed
+
 theorem actual_named_history_entry {artifact root execution fuel program block step}
     (call : @ChildRun artifact root execution
       (runBlockCore artifact root execution (fuel+1)) program block step) :
     NamedHistoryEntry step := by
   have entry := actual_named_entry call
-  cases call with
-  | @named start count inputs caller before ordinary event scope body bodyRead
-      rootOwner rootName path request plan assigned result receipts boundary
-      beforeInput afterInput afterChild inputRead childRead =>
-    obtain ⟨input,assigned,assignedRead,ordered,aliases,source⟩ := entry
-    refine ⟨input,assigned,assignedRead,ordered,aliases,?_⟩
-    intro roles checked parent same
-    obtain ⟨frame,law⟩ := source checked parent same
-    refine ⟨frame,?_⟩
-    intro joint actual represented
-    have paired := original_child_history scope boundary checked same parent frame actual joint represented (law joint)
-    refine ⟨paired,fun _ _ _ _ => rfl,fun ordinals agrees => visible_child_input scope ordinals actual _
-      paired.values agrees,?_⟩
-    intro parentEvents parents read executed
-    exact original_call_run scope boundary checked same actual _ paired read executed
+  cases call
+  exact named_history_entry_of_entry entry
 
 #print axioms inputFibre_coordinate
 #print axioms actual_named_history_entry

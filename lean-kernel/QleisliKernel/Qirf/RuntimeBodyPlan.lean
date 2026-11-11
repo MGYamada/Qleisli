@@ -2,6 +2,7 @@ import QleisliKernel.Qirf.RuntimeGraphOperation
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeTransformRequest
 import QleisliKernel.Qirf.RuntimeBranchAction
+import QleisliKernel.Qirf.RuntimeBasisAction
 import QleisliKernel.SourceTypes.QuantumArms
 
 /-! Source-indexed staging data for the common runtime traversal.
@@ -23,13 +24,22 @@ structure Queues where
   branches : List (Position × Context × Context)
   bodies : List BodyRequest
   references : List (List (List BodyRequest))
+  staticIntervals : List RuntimeContextRequest.StaticInterval
 
 def Queues.ofContext (request : Context) : Queues :=
-  ⟨request.calls,request.sites,request.branches,request.bodies,request.references⟩
+  ⟨request.calls,request.sites,request.branches,request.bodies,request.references,request.staticIntervals⟩
 
 def Queues.isEmpty (queues : Queues) : Bool :=
   queues.calls.isEmpty && queues.sites.isEmpty && queues.branches.isEmpty &&
-    queues.bodies.isEmpty && queues.references.isEmpty
+    queues.bodies.isEmpty && queues.references.isEmpty && queues.staticIntervals.isEmpty
+
+/-- A compound interval belongs to its exact parent occurrence. The remaining
+queue is still required to be exhausted by the original body traversal. -/
+def Queues.takeStatic (queues : Queues) (parent : Position) : Option (List Position) × Queues :=
+  match queues.staticIntervals with
+  | (position,children) :: rest =>
+    if position == parent then (some children,{queues with staticIntervals := rest}) else (none,queues)
+  | [] => (none,queues)
 
 /-- One original graph consumes its own exact provider prefix and one reference
 group. Graph.providers below separately binds the provider prefix's full count. -/
@@ -169,14 +179,20 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (original : RuntimeInterval.Computed (RuntimeStaticPrimitive.readContinuation event) selected)
       (positions : List Position)
       (originalPositions : RuntimeInterval.Computed
-        (selected.positions position (before.calls.map (·.1)) (before.sites.map (·.position))) positions)
+        (selected.positions position (before.calls.map (·.1)) (before.sites.map (·.position))
+          (before.takeStatic position).1) positions)
       (positionsCount : positions.length = selected.selected.result.events.length)
-      (events : Events preparation source (selected.selected.result.events.zip positions) before after) :
+      (events : Events preparation source (selected.selected.result.events.zip positions)
+        (before.takeStatic position).2 after) :
       Event preparation source (.staticConditional event children) position before after
+  | basis {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.BasisEvent artifact.sources owner} {position : Position} {before : Queues}
+      (body : RuntimeBasisAction.Source event) :
+      Event preparation source (.basis event) position before before
   | unsupported {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before : Queues}
       (unconnected : (match event with
-        | .basis .. | .matching .. | .computed .. | .registerPrimitive .. => true
+        | .matching .. | .computed .. | .registerPrimitive .. => true
         | _ => false) = true) : Event preparation source event position before before
 
 inductive Events {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :

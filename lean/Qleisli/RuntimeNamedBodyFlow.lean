@@ -15,6 +15,7 @@ state invariant includes actual primitive and selection maps but asserts no
 physical action for any step constructor. -/
 theorem step_flow (artifact : Artifact) (root : Validity.Root)
     (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution) (outputBoundary : OutputBoundary)
+    (pureNext : RuntimeNamedChildRuns.PurePreservesOrdinary next)
     {rootOwner rootName owner name : String}
     (source : SourceTypes.SourceRuntimeScope.Subject artifact.sources owner name)
     (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
@@ -31,7 +32,7 @@ theorem step_flow (artifact : Artifact) (root : Validity.Root)
       ∃ last, Run {initialHistory with bindings := initial.bindings} result.1.steps last ∧
         Returned block source.outputRoles last result.1.history := by
   obtain ⟨initial,initialRead,last,flow,returned⟩ :=
-    RuntimeNamedChildRuns.step_flow artifact root execution next outputBoundary source path program request
+    RuntimeNamedChildRuns.step_flow artifact root execution next outputBoundary pureNext source path program request
       sourcePlan initialHistory ordinary block result checked
   exact ⟨initial,initialRead,last,flow.source,returned⟩
 
@@ -61,7 +62,7 @@ theorem core_flow (artifact : Artifact) (root : Validity.Root)
     cases ran
   | succ fuel =>
     exact step_flow artifact root execution (runBlockCore artifact root execution fuel) outputBoundary
-      source path program request sourcePlan initialHistory ordinary block result checked
+      (RuntimeNamedChildRuns.core_pure_preserves_ordinary artifact root execution fuel) source path program request sourcePlan initialHistory ordinary block result checked
 
 /-- The retained successful traversal of this original project body supplies
 its own entry/return reads and state chain. A producer-supplied success or an

@@ -1469,76 +1469,7 @@ impl Lowerer<'_, '_> {
                 target,
                 zero,
                 one,
-            } => {
-                let c = self.expr(module, control, env)?;
-                self.quantum(module, control.span, &c, true)?;
-                let q = self.expr(module, target, env)?;
-                let slot = self.quantum(module, target.span, &q, false)?;
-                let basis = self.raw.registers[&slot].basis.clone();
-                let width = self.circuit_width(module, expr.span, &basis)?;
-                let axes: Vec<_> = (1..=width).collect();
-                let mut steps = Vec::new();
-                let mut operation_arm = false;
-                let mut expectations = Vec::new();
-                for (name, when_one) in [(zero, false), (one, true)] {
-                    let operation =
-                        self.operation_steps(module, name, &basis, env, Access::Controlled)?;
-                    let is_operation = operation.is_some();
-                    operation_arm |= is_operation;
-                    let mut arm = match operation {
-                        Some(steps) => steps,
-                        None => self.static_steps(module, name, &basis, env)?,
-                    };
-                    expectations.push(if width < crate::contract::MAX_CONTRACT_BITS {
-                        self.target_meaning(module, name, &basis)?
-                    } else {
-                        None
-                    });
-                    self.compiler.charge(
-                        module,
-                        expr.span,
-                        total_size(arm.iter().map(super::circuit::size)).saturating_add(arm.len()),
-                    )?;
-                    for step in &mut arm {
-                        if is_operation {
-                            // The outer predicate is on axis zero. Nested controls
-                            // retain their own polarity and shifted axes.
-                            for control in &mut step.controls {
-                                if control.index == 0 {
-                                    control.when_one = when_one;
-                                }
-                            }
-                        } else {
-                            super::circuit::remap(step, &axes);
-                            step.controls.push(BitControl { index: 0, when_one });
-                        }
-                    }
-                    steps.extend(arm);
-                }
-                if operation_arm && steps.len() > crate::contract::MAX_CONTRACT_STEPS {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::Limit,
-                        "controlled operation circuit exceeds 1024 steps",
-                    ));
-                }
-                let one_meaning = expectations.pop().expect("one arm");
-                let zero_meaning = expectations.pop().expect("zero arm");
-                let expected = self.qif_meaning(module, expr.span, zero_meaning, one_meaning)?;
-                self.check_transformed(
-                    module,
-                    expr.span,
-                    &Ty::pair(Ty::bit(), basis),
-                    &steps,
-                    expected.as_ref(),
-                )?;
-                let joined =
-                    self.primitive_call(module, expr.span, PrimitiveId::Join, vec![c, q])?;
-                let slot = self.quantum(module, expr.span, &joined, false)?;
-                self.apply_circuit(slot, steps);
-                self.primitive_call(module, expr.span, PrimitiveId::Split, vec![joined])
-            }
+            } => self.quantum_if(module, expr.span, control, target, [zero, one], env),
             ExprKind::Unit => Ok(Value::Unit),
             ExprKind::Bit(_) | ExprKind::Not(_) | ExprKind::And(..) | ExprKind::Xor(..) => {
                 use crate::frontend::ordinary::Boolean;
@@ -1854,6 +1785,7 @@ impl Lowerer<'_, '_> {
         let mut wires = reg.wires.clone();
         wires.extend((reg.wires.len()..bits).map(|_| self.wire()));
         let output = self.token();
+        let start = self.raw.operations.len();
         self.raw.operations.push(RawOp::LiftBasis {
             input: reg.token,
             output,
@@ -1868,6 +1800,7 @@ impl Lowerer<'_, '_> {
                 basis: basis.clone(),
             },
         );
+        quantum_match::nominal::record_basis(self, module, span, start)?;
         if bits > reg.wires.len() {
             self.add_effect(module, span, Effect::Isometry);
         }

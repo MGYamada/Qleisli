@@ -114,6 +114,7 @@ import Qleisli.RuntimeBranchInputDomain
 import Qleisli.RuntimeLiteralConditionalArms
 import Qleisli.RuntimeLiteralLocalRefinement
 import Qleisli.RuntimeLiteralConditionalRefinement
+import Qleisli.RuntimeOriginalBodyGraphRefinement
 import Qleisli.RuntimeOriginalBranchJoin
 import Qleisli.RuntimeNamedObservationEntry
 import Qleisli.RuntimeSectorPrefix

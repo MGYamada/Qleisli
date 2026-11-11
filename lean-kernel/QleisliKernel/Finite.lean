@@ -391,6 +391,15 @@ theorem matrixRead_value (input result : Matrix) (work left : Nat)
   have result_eq := Exact.matrix_make_value _ _ _ _ made
   exact ⟨by cases input; simpa using result_eq.1, canonical⟩
 
+theorem matrixRead_admitted (input result : Matrix) (work left : Nat)
+    (ok : (matrixRead input).run work = (.ok result,left)) : Exact.Matrix.Admitted result := by
+  obtain ⟨same,canonical⟩ := matrixRead_value _ _ _ _ ok
+  subst result
+  obtain ⟨_,_,dimensions,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,length,_⟩ := bind_success _ _ _ _ _ h
+  exact ⟨(guard_success _ _ _ _ dimensions).1,beq_iff_eq.mp (guard_success _ _ _ _ length).1,
+    List.all_eq_true.mp canonical⟩
+
 theorem encodingRead_conditions (input result : Encoding) (work left : Nat)
     (ok : (encodingRead input).run work = (.ok result,left)) :
     result = input ∧ basisValid input.logical = true ∧ basisValid input.physical = true ∧

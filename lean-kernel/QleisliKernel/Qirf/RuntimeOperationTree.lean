@@ -275,13 +275,23 @@ def read {artifact catalogue context description graph implementations reference
     else throw .request
   else throw .request
 
+/-- Stack boundaries are tied to the successful original traversal, so
+repeated description indices cannot select a different child occurrence. -/
+inductive StackTrace {artifact catalogue context description graph order} {root : Validity.Root} :
+    List Value → List (@Record artifact catalogue context description graph order root) → List Value → Prop
+  | nil (before : List Value) : StackTrace before [] before
+  | cons (record : @Record artifact catalogue context description graph order root) {rest final}
+      (tail : StackTrace record.checked.after rest final) :
+      StackTrace record.before (record :: rest) final
+
 private theorem walk_occurrences {artifact catalogue context description graph order}
     (root : Validity.Root)
     (occurrences : List (@RuntimePreparedOperation.Occurrence artifact catalogue context description graph order))
     (demands : List (Nat × StaticOperation.Paths)) (before : List Value)
     (outcome : @Outcome artifact catalogue context description graph order root)
     (computed : RuntimeInterval.Computed (walk root occurrences demands before) outcome) :
-    outcome.records.map (·.occurrence) = occurrences := by
+    outcome.records.map (·.occurrence) = occurrences ∧
+      StackTrace before outcome.records outcome.stack := by
   induction occurrences generalizing demands before outcome with
   | nil =>
     obtain ⟨work,left,ran⟩ := computed
@@ -290,7 +300,7 @@ private theorem walk_occurrences {artifact catalogue context description graph o
     | nil =>
       have same : outcome = ⟨before,[]⟩ := (pure_success _ _ _ _ ran).1
       rw [same]
-      rfl
+      exact ⟨rfl,.nil _⟩
     | cons first rest => cases ran
   | cons occurrence rest ih =>
     obtain ⟨work,left,ran⟩ := computed
@@ -308,8 +318,10 @@ private theorem walk_occurrences {artifact catalogue context description graph o
         have original := ih demands checked.val.after tailOutcome ⟨middle,last,tailRead⟩
         have sameOutcome := (pure_success _ _ _ _ returned).1
         rw [sameOutcome]
-        change occurrence :: tailOutcome.records.map (·.occurrence) = occurrence :: rest
-        exact congrArg (List.cons occurrence) original
+        refine ⟨congrArg (List.cons occurrence) original.1,?_⟩
+        let record : @Record artifact catalogue context description graph order root :=
+          ⟨occurrence,index,demand,same,before,checked.val,by with_reducible exact checked.property⟩
+        exact .cons record original.2
       · rw [dif_neg same] at ran
         cases ran
 
@@ -320,7 +332,16 @@ assumed membership/order relation. The native reader is unchanged. -/
 theorem Checked.occurrences {artifact catalogue context description graph implementations references prepared root requested}
     (checked : @Checked artifact catalogue context description graph implementations references prepared root requested) :
     checked.outcome.records.map (·.occurrence) = prepared.occurrences :=
-  walk_occurrences root prepared.occurrences checked.access.demands [] checked.outcome checked.traversed
+  (walk_occurrences root prepared.occurrences checked.access.demands [] checked.outcome checked.traversed).1
+
+/-- The actual checked graph consumes consecutive original stack states. -/
+theorem Checked.stack_trace {artifact catalogue context description graph implementations references prepared root requested}
+    (checked : @Checked artifact catalogue context description graph implementations references prepared root requested) :
+    StackTrace [] checked.outcome.records [checked.value] := by
+  rw [← checked.complete]
+  exact (walk_occurrences root prepared.occurrences checked.access.demands [] checked.outcome checked.traversed).2
+
+#print axioms Checked.stack_trace
 
 #print axioms Checked.occurrences
 

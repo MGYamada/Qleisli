@@ -88,8 +88,13 @@ structure Checked {sources rootOwner rootName caller name dependencies program b
 
 private def readFrame (roles : List Owner) (state : Raw.Observation.State) (bindings : RuntimeOwnerMap.Map) :
     WorkM {checked : RuntimeOwnerMap.Checked roles state // checked.bindings.Perm bindings} := do
-  exactWork (Exact.charge (32*(Raw.OwnerFlow.fields roles+Raw.OwnerFlow.fields (bindings.map (·.owner))+1)*
-    (bindings.length+1)^2))
+  -- The permutation compares pairs of entries. Each side's fields are
+  -- scanned at most once per entry on the other side, up to a constant
+  -- for the membership and erase passes. Order and check meter their own work.
+  let bindingFields := Raw.OwnerFlow.fields (bindings.map (·.owner)) +
+    (bindings.map fun binding => binding.port.wires.length+3).sum
+  exactWork (Exact.charge (32*((Raw.OwnerFlow.fields roles+1)*(bindings.length+1)+
+    (bindingFields+1)*(roles.length+1))))
   let ordered ← RuntimeOwnerMap.order roles bindings
   let checked ← RuntimeOwnerMap.check roles state ordered
   if same : checked.bindings.Perm bindings then return ⟨checked,same⟩ else throw .request
@@ -103,9 +108,14 @@ def read {sources rootOwner rootName caller name dependencies program block offs
     (actual : @RuntimeInterval.Branch dependencies program block offset)
     (before left right : SourceState) (ordinary leftOrdinary rightOrdinary : Ordinary) :
     WorkM (Checked path event source actual before left right ordinary leftOrdinary rightOrdinary) := do
-  exactWork (Exact.charge (64*(Raw.OwnerFlow.fields (before.issued ++ left.issued ++ right.issued ++
-    event.phis.map (·.output))+before.nextOrdinal+event.nextOrdinal+ordinary.measurements.length+
-    leftOrdinary.measurements.length+rightOrdinary.measurements.length+1)^2))
+  let issuedOwners := before.issued ++ left.issued ++ right.issued ++ event.phis.map (·.output)
+  let ownerCount := issuedOwners.length
+  let historySize := ownerCount+before.nextOrdinal+event.nextOrdinal+ordinary.measurements.length+
+    leftOrdinary.measurements.length+rightOrdinary.measurements.length+1
+  -- Issued owners are compared positionally. Basis fields, including nominal
+  -- source text, add a linear scan to the bound for the history entries.
+  let basisFields := Raw.OwnerFlow.fields issuedOwners-ownerCount
+  exactWork (Exact.charge (64*(historySize^2+basisFields)))
   guard (before.nextOrdinal == event.nextOrdinal && left.nextOrdinal == before.nextOrdinal &&
     right.nextOrdinal == before.nextOrdinal && left.issued == before.issued && right.issued == before.issued &&
     event.phis.map (fun phi => phi.output.ordinal) == (List.range event.phis.length).map (before.nextOrdinal+·)) .request

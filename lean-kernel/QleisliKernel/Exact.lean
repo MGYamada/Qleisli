@@ -174,7 +174,7 @@ private theorem fold_zero (x y : Scalar) (steps : List (Nat × Nat))
     rcases step with ⟨i,j⟩
     simp only [List.foldlM_cons,term,bind,Except.bind,ih]
 
-private theorem scalar_zero_mul (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ maxInputExponent) :
+theorem scalar_zero_mul (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ maxInputExponent) :
     Scalar.mul Scalar.zero v = .ok Scalar.zero := by
   apply fold_zero
   intro i j
@@ -182,7 +182,7 @@ private theorem scalar_zero_mul (v : Scalar) (bounded : ∀ i, (v.get i).exponen
   rw [get_zero]
   exact coefficient_zero_mul (v.get j) (bounded j)
 
-private theorem scalar_mul_zero (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ maxInputExponent) :
+theorem scalar_mul_zero (v : Scalar) (bounded : ∀ i, (v.get i).exponent ≤ maxInputExponent) :
     Scalar.mul v Scalar.zero = .ok Scalar.zero := by
   apply fold_zero
   intro i j
@@ -207,12 +207,12 @@ private theorem smallExponents_bound (v : Scalar) (safe : smallExponents v = tru
 
 /-- Matrix coefficients are often zero. Check the other coefficient's
 exponents before omitting the zero products, since raw scalars can be malformed. -/
-private def mulZeroFast (a b : Scalar) : Except Error Scalar :=
+def mulZeroFast (a b : Scalar) : Except Error Scalar :=
   if a == Scalar.zero && smallExponents b then .ok Scalar.zero
   else if b == Scalar.zero && smallExponents a then .ok Scalar.zero
   else Scalar.mul a b
 
-private theorem mulZeroFast_equiv (a b : Scalar) : mulZeroFast a b = Scalar.mul a b := by
+theorem mulZeroFast_equiv (a b : Scalar) : mulZeroFast a b = Scalar.mul a b := by
   unfold mulZeroFast
   split
   · rename_i h

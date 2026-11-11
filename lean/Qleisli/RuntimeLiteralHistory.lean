@@ -47,6 +47,7 @@ private theorem pure_node_operations {dependencies program block}
   cases node with
   | primitive action _ => exact ⟨_,action.interval.literal⟩
   | structural action => exact ⟨[action.operation],action.literal⟩
+  | basis _ _ _ action => exact ⟨[_],action.literal⟩
   | named _ frame _ _ _ _ => exact ⟨_,frame.literal⟩
   | operation frame _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩
   | transform _ _ _ _ _ owners _ _ => exact ⟨_,owners.literal.literal⟩

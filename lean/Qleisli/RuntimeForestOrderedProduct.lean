@@ -44,7 +44,7 @@ private theorem tensor_left (code : Layout) : tensor QleisliKernel.Semantics.Fin
   cases code
   simp [QleisliKernel.Semantics.FiniteCarrier.tensor,QleisliKernel.Semantics.FiniteCarrier.singleton]
 
-private theorem tensor_right (code : Layout) : tensor code QleisliKernel.Semantics.FiniteCarrier.singleton = code := by
+theorem tensor_right (code : Layout) : tensor code QleisliKernel.Semantics.FiniteCarrier.singleton = code := by
   cases code
   simp [QleisliKernel.Semantics.FiniteCarrier.tensor,QleisliKernel.Semantics.FiniteCarrier.singleton]
 

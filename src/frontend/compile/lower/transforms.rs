@@ -181,35 +181,6 @@ impl Lowerer<'_, '_> {
         );
         result.map_err(|e| self.compiler.op_error(module, span, e))
     }
-
-    pub(super) fn qif_meaning(
-        &mut self,
-        module: &str,
-        span: Span,
-        zero: Option<Matrix>,
-        one: Option<Matrix>,
-    ) -> Result<Option<Matrix>, CompileError> {
-        let Some((zero, one)) = zero.zip(one) else {
-            return Ok(None);
-        };
-        let d = zero.rows();
-        self.compiler
-            .exact_work
-            .charge(4 * d * d)
-            .map_err(|e| self.compiler.op_error(module, span, e.into()))?;
-        let mut entries = vec![Exact::zero(); 4 * d * d];
-        for (bit, sector) in [&zero, &one].into_iter().enumerate() {
-            for y in 0..d {
-                for x in 0..d {
-                    entries[(2 * y + bit) * 2 * d + 2 * x + bit] =
-                        sector.get(y, x).expect("square sector");
-                }
-            }
-        }
-        Matrix::new(2 * d, 2 * d, entries)
-            .map(Some)
-            .map_err(|e| self.compiler.op_error(module, span, e.into()))
-    }
 }
 
 #[cfg(test)]

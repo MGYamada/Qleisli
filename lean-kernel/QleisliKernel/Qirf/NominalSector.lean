@@ -32,10 +32,10 @@ def checkLogical (inputCode outputCode : Matrix) (physical : List Matrix)
     (request : Nat × Matrix) : WorkM Matrix := do
   let logical ← matrixRead request.2
   guard (logical.cols == inputCode.cols && logical.rows == outputCode.cols) .request
-  wholeSpace logical
+  FiniteRestriction.adaptiveWholeSpace logical
   let sector ← lift (readOption physical[request.1]?)
-  let actual ← exactWork (Exact.Matrix.composeWork sector inputCode)
-  let required ← exactWork (Exact.Matrix.composeWork outputCode logical)
+  let actual ← FiniteCarrier.codeProduct .right sector inputCode
+  let required ← FiniteCarrier.codeProduct .left outputCode logical
   exactWork (Exact.charge actual.entries.length)
   guard (actual == required) .equation
   return logical
@@ -70,9 +70,11 @@ theorem checkLogical_bound (inputCode outputCode : Matrix) (physical : List Matr
     cases entry : physical[request.1]? <;> simp_all [readOption]
   have exactEq := beq_iff_eq.mp (guard_success _ _ _ _ he).1
   rw [← exactEq] at hr
-  exact ⟨(matrixRead_value _ _ _ _ hm).1,dims.1,dims.2,⟨w₂,w₃,hu⟩,
-    sector,actual,w₄,w₅,w₅,w₆,sectorEq,exactWork_success _ _ _ _ ha,
-    exactWork_success _ _ _ _ hr⟩
+  obtain ⟨a,b,actualDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ ha
+  obtain ⟨c,d,requiredDense⟩ := FiniteCarrier.codeProduct_dense _ _ _ _ _ _ hr
+  exact ⟨(matrixRead_value _ _ _ _ hm).1,dims.1,dims.2,
+    FiniteRestriction.adaptiveWholeSpace_bound _ _ _ hu,
+    sector,actual,a,b,c,d,sectorEq,actualDense,requiredDense⟩
 
 def checkLogicals (inputCode outputCode : Matrix) (physical : List Matrix)
     (labels : List Nat) (required : List Matrix) : WorkM (List Matrix) := do
