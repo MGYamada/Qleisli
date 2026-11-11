@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add an isolated, pinned doc-gen4 workspace for QPTL API documentation.
+  Keep documentation dependencies separate from the library and verifier builds.
 - Express exact compute/use/uncompute through reusable QPTL encoding squares
   and apply the law to the actual protected Raw dispatch on arbitrary
   correlated amplitudes. Keep source correspondence, general channel cleanup

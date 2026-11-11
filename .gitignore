@@ -6,6 +6,10 @@
 /lean/qptl-application/.lake/
 /lean-kernel/.lake/
 /qptl/.lake/
+/qptl/docbuild/*
+!/qptl/docbuild/lakefile.toml
+!/qptl/docbuild/lake-manifest.json
+!/qptl/docbuild/lean-toolchain
 /qptl/**/*.olean
 /qptl/**/*.olean.*
 /qptl/**/*.ilean
