@@ -5,7 +5,7 @@ use super::*;
 use crate::frontend::resolve::locals::OriginalNode;
 
 impl Compiler<'_> {
-    pub(in crate::frontend::compile) fn plan_nominal_basis(
+    pub(in crate::frontend::compile) fn plan_original_tables(
         &mut self,
         selected: Option<&BTreeSet<Key>>,
     ) -> Result<(), CompileError> {
@@ -15,6 +15,7 @@ impl Compiler<'_> {
         let mut work = self.work;
         let planned = (|| {
             let mut roots = BTreeSet::new();
+            let mut meanings = BTreeSet::new();
             let locals = self.locals();
             for obligation in &self.source.obligations {
                 let key = obligation.definition;
@@ -60,18 +61,24 @@ impl Compiler<'_> {
                     self.declarations[key].span,
                     uses.len() + 1,
                 )?;
-                if uses.iter().any(|usage| {
-                    matches!(usage.target,
-                        ResolvedUse::Global(Target::Declaration(callee)) if roots.contains(&callee)
-                    )
-                }) {
-                    roots.insert(*key);
+                let meaning_leaf = matches!(self.declarations[key].body, FnBody::Meaning { .. });
+                for usage in uses {
+                    if let ResolvedUse::Global(Target::Declaration(callee)) = usage.target {
+                        if roots.contains(&callee) {
+                            roots.insert(*key);
+                        }
+                        if meanings.contains(&callee)
+                            || meaning_leaf && self.deferred_nominal_tables.contains(&callee)
+                        {
+                            meanings.insert(*key);
+                        }
+                    }
                 }
             }
-            Ok::<_, CompileError>(roots)
+            Ok::<_, CompileError>((roots, meanings))
         })();
         self.work = work;
-        self.nominal_basis_roots = planned?;
+        (self.nominal_basis_roots, self.nominal_meaning_roots) = planned?;
         Ok(())
     }
 

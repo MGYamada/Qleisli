@@ -132,7 +132,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (childEmpty : child.positions.isEmpty = true ∧ child.sites.isEmpty = true ∧
         child.calls.isEmpty = true ∧ child.branches.isEmpty = true)
       (references : List (List BodyRequest)) (groups : child.references = [references])
-      (graph : Graph preparation event.operation.graph OperationAccess.applicable child.bodies references) :
+      (graph : Graph preparation event.operation.graph OperationAccess.applicable child.bodies references (.application event)) :
       Event preparation source (.operation event) position before {before with calls := remaining}
   | transform {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.TransformEvent artifact.sources owner} {position : Position} {before : Queues}

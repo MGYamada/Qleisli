@@ -45,6 +45,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [standalone nominal Meaning study](standalone-nominal-meaning-v030/session.json)
+retains the first selected source, a project extension and actual checks.
+The selected and project invocations use the native application equation.
+
 The [nominal Meaning arm study](nominal-meaning-arm-v030/session.json)
 retains the original classical helper and coherent arm, the first preparation
 refusal and the later native source check of the unchanged program.

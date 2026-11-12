@@ -302,16 +302,6 @@ impl Compiler<'_> {
         self.error(module, span, code, message)
     }
     pub(super) fn compile_meaning(&mut self, key: &Key) -> Result<(), CompileError> {
-        self.compile_meaning_prepared(key, None).map(|_| ())
-    }
-
-    /// A selected producer can reuse an untrusted prepared table. Its caller
-    /// must require the original body gate before returning an execution root.
-    pub(super) fn compile_meaning_prepared(
-        &mut self,
-        key: &Key,
-        selected: Option<&ParsedProgram>,
-    ) -> Result<bool, CompileError> {
         let decl = self.declarations[key];
         let key_name = self.source.resolution.declaration(*key).name.clone();
         let (_, codomain) = self.signature(key)?;
@@ -355,9 +345,7 @@ impl Compiler<'_> {
                 reference,
             )
             .map_err(|e| self.op_error(&key_name.0, function.span, e))?;
-            return self
-                .finish_meaning(key, basis, codomain, target)
-                .map(|_| false);
+            return self.finish_meaning(key, basis, codomain, target);
         }
         if let FnBody::MeaningCompose { first, second }
         | FnBody::MeaningTensor {
@@ -380,9 +368,7 @@ impl Compiler<'_> {
                 left.compose(right)
             }
             .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
-            return self
-                .finish_meaning(key, basis, codomain, target)
-                .map(|_| false);
+            return self.finish_meaning(key, basis, codomain, target);
         }
         let FnBody::Meaning {
             permutation,
@@ -400,38 +386,20 @@ impl Compiler<'_> {
             ));
         };
         self.prepare_required_classical_table(fkey, &key_name.0, function.span)?;
-        if let Some(selected) = selected.filter(|_| self.deferred_nominal_tables.contains(&fkey)) {
-            let signature = contract_basis(&basis);
-            let width = signature
-                .bits()
-                .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
-            self.charge(&key_name.0, decl.span, (2 << width) + 1)?;
-            let finite = selected
-                .finite_meaning_target(&self.source.resolution.path(*key))
-                .map_err(|e| {
-                    self.error(&key_name.0, function.span, ErrorCode::Contract, e.message)
-                })?;
-            if finite.signature() != &signature || basis != codomain {
-                return Err(self.error(
+        let nominal;
+        let f = if self.deferred_nominal_tables.contains(&fkey) {
+            nominal = self.nominal_meaning_table(fkey)?;
+            &nominal
+        } else {
+            self.basis.get(&fkey).ok_or_else(|| {
+                self.missing_basis_error(
                     &key_name.0,
                     function.span,
-                    ErrorCode::InvalidIr,
-                    "prepared Meaning differs from its original exact basis signature",
-                ));
-            }
-            let target = crate::frontend::meaning::Target::monomial(finite);
-            return self
-                .finish_meaning(key, basis, codomain, target)
-                .map(|_| true);
-        }
-        let f = self.basis.get(&fkey).ok_or_else(|| {
-            self.missing_basis_error(
-                &key_name.0,
-                function.span,
-                &fkey,
-                "meaning requires an ordinary total classical function",
-            )
-        })?;
+                    &fkey,
+                    "meaning requires an ordinary total classical function",
+                )
+            })?
+        };
         let result = if *permutation {
             basis.clone()
         } else {
@@ -465,7 +433,6 @@ impl Compiler<'_> {
             basis,
             crate::frontend::meaning::Target::monomial(target),
         )
-        .map(|_| false)
     }
     fn finish_meaning(
         &mut self,

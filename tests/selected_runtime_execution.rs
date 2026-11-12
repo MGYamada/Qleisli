@@ -259,28 +259,57 @@ fn selected_arm_compares_the_original_nominal_meaning_to_the_applied_operator() 
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
-fn selected_nominal_meaning_requires_original_equations() {
-    let text =
-        include_str!("fixtures/authoring_sessions/nominal-meaning-arm-v030/attempt-01/main.qli");
-    let source = text.replace(
-        "qmatch(s,q) { 0 => checked_op(implementation, Flip) }",
-        "(s, adjoint(checked_op(implementation, Flip))(q))",
-    );
-    let prepared = ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), source)]))
-        .unwrap()
+fn standalone_nominal_meaning_checks_the_actual_call_interval_and_scope() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join(
+            "tests/fixtures/authoring_sessions/standalone-nominal-meaning-v030/attempt-01/selected",
+        )
+        .join("main.qli");
+    let source = ParsedProgram::load(BTreeMap::from([("main".into(), path)])).unwrap();
+    let selected = source
         .instantiate_runtime_with_types(
-            "main::select",
+            "main::undo",
             Default::default(),
             Default::default(),
             Default::default(),
         )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
         .unwrap();
-    let error = prepared.compile_runtime_with_kernel(&kernel()).unwrap_err();
-    assert_eq!(error.code, "unsupported", "{error:?}");
-    assert!(
-        error.message.contains("independent closure transport"),
-        "{error:?}"
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
     );
+    assert!(!program.qmatch_source_checked());
+    kernel().check_program(program).unwrap();
+
+    let request = program.request().unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    for (before, after) in [
+        ("Label::Mark => b", "Label::Mark => 0"),
+        (r#""adjoint":true"#, r#""adjoint":false"#),
+    ] {
+        assert_eq!(artifact.matches(before).count(), 1);
+        let stale = artifact.replacen(before, after, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(stale.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+        assert!(
+            error.message.contains("Lean native checker rejected"),
+            "{error}"
+        );
+    }
+
+    let wrong_scope = std::str::from_utf8(request).unwrap().replace(
+        "finite-source-meaning-context-v5",
+        "finite-source-basis-context-v5",
+    );
+    let error = kernel()
+        .check_qmatch_source_v5(program.artifact(), wrong_scope.as_bytes())
+        .unwrap_err();
+    assert_eq!(error.code, "format", "{error}");
 }
 
 #[test]

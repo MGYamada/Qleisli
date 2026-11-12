@@ -204,7 +204,7 @@ abbrev AtRoot.Written {artifact owner name arguments request prepared root runti
   RuntimeWrittenDuty.Binding receipt.location.site receipt.prepared receipt.evidence.checked
     receipt.evidence.source markerIndex prepared.source.pending.entries[queueIndex] receipt.location.path
 
-structure ArmLink {artifact owner name arguments request prepared root runtime}
+structure WrittenLink {artifact owner name arguments request prepared root runtime}
     (body : @AtRoot artifact owner name arguments request prepared root runtime) where
   receiptIndex : Fin body.receipts.length
   markerIndex : Nat
@@ -217,11 +217,11 @@ structure ArmLink {artifact owner name arguments request prepared root runtime}
     RuntimeInterval.Computed (RuntimeLinkedSubject.read receipt.location.site receipt.prepared
       receipt.evidence.checked receipt.evidence.source markerIndex binding.instanceBinding) subject
 
-/-- Associate each retained written arm assertion with its own invocation and
+/-- Associate each retained written assertion with its own invocation and
 queue entry. The transported generic subject and native action are retained
 for the separate semantic discharge, including inactive and unused duties. -/
-def readArmLinks {artifact owner name arguments request prepared root runtime}
-    (body : @AtRoot artifact owner name arguments request prepared root runtime) : WorkM (List (ArmLink body)) := do
+def readWrittenLinks {artifact owner name arguments request prepared root runtime}
+    (body : @AtRoot artifact owner name arguments request prepared root runtime) : WorkM (List (WrittenLink body)) := do
   exactWork (Exact.charge (16*(body.receipts.length+1)^2))
   let links ← (List.finRange body.receipts.length).mapM fun ri => do
     let receipt := body.receipts[ri]
@@ -239,7 +239,7 @@ def readArmLinks {artifact owner name arguments request prepared root runtime}
         prepared.source.pending.entries[qi] receipt.location.path
       let subject ← NaturalAffine.witness (RuntimeLinkedSubject.read receipt.location.site receipt.prepared
         receipt.evidence.checked source mi binding.instanceBinding)
-      return (⟨ri,mi,qi,binding,subject.val,by with_reducible exact subject.property⟩ : ArmLink body)
+      return (⟨ri,mi,qi,binding,subject.val,by with_reducible exact subject.property⟩ : WrittenLink body)
   return links.flatten
 
 structure Traversed {artifact owner name arguments request}
@@ -248,8 +248,8 @@ structure Traversed {artifact owner name arguments request}
   fresh : RuntimeInterval.Computed (Validity.checkRootFromRoots artifact order prepared.rows prepared.roots .qmatch) root
   checked : AtRoot prepared root runtime
   consumed : RuntimeInterval.Computed (readAt prepared root runtime) checked
-  writtenArms : List (ArmLink checked)
-  writtenArmsRead : RuntimeInterval.Computed (readArmLinks checked) writtenArms
+  writtenLinks : List (WrittenLink checked)
+  writtenLinksRead : RuntimeInterval.Computed (readWrittenLinks checked) writtenLinks
 
 /-- Exactly one fresh full graph follows discovery. The typed original body,
 all local graph receipts and ordinary histories consume that same root. -/
@@ -261,7 +261,7 @@ def traverse {artifact owner name arguments request}
     16*(prepared.roots.length+1)^2))
   let root ← NaturalAffine.witness (Validity.checkRootFromRoots artifact order prepared.rows prepared.roots .qmatch)
   let checked ← NaturalAffine.witness (readAt prepared root.val runtime)
-  let written ← NaturalAffine.witness (readArmLinks checked.val)
+  let written ← NaturalAffine.witness (readWrittenLinks checked.val)
   return ⟨root.val,by with_reducible exact root.property,checked.val,by with_reducible exact checked.property,
     written.val,by with_reducible exact written.property⟩
 

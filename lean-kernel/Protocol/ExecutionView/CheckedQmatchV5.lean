@@ -8,6 +8,91 @@ namespace QleisliKernel.Protocol.ExecutionView.CheckedQmatchV5
 open Gate
 open QleisliKernel.Qirf QleisliKernel.SourceTypes
 
+private def outsideRoot {sources catalogue queue} (root : Nat)
+    (entry : @SourcePendingMeaning.Entry sources catalogue queue) : Bool :=
+  match entry.subject with
+  | .demand invocation _ => invocation.id.root != root
+  | _ => false
+
+private def meterResiduals {artifact owner name arguments context order runtime}
+    {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
+    (checked : RuntimeBodyOperations.Checked prepared order runtime) : Finite.WorkM Unit := do
+  Finite.exactWork (Exact.charge (16*(prepared.source.pending.entries.length+1)*
+    (checked.coverage.residual.length+1)))
+  for position in checked.coverage.residual do
+    match prepared.source.pending.entries[position.val].subject with
+    | .demand invocation _ => Finite.exactWork (Exact.charge (16*(invocation.depth+1)^2))
+    | _ => pure ()
+
+/-- The application profile keeps the entire catalogue and queue. It covers
+the selected function's original invocation and its callees. Other roots
+retain their pending positions for separate checks. -/
+inductive CheckedScope {artifact owner name arguments context order runtime}
+    {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
+    (checked : RuntimeBodyOperations.Checked prepared order runtime) where
+  | selection (present : 0 < checked.selections.count) (complete : checked.coverage.residual = [])
+  | basis (noSelections : checked.selections.count = 0)
+      (found : ∃ before after,(RuntimeSelectionSteps.readBasisResult checked.checked.result).run before = (.ok true,after))
+      (complete : checked.coverage.residual = [])
+  | meaning (noSelections : checked.selections.count = 0)
+      (found : ∃ before after,checked.coverage.hasApplication.run before = (.ok true,after))
+      (root : RuntimeDutyInvocation.Identified prepared.source.pending.queue (.root prepared.source.body))
+      (rootRead : RuntimeInterval.Computed
+        (RuntimeDutyInvocation.identify prepared.source.pending.queue (.root prepared.source.body)) root)
+      (otherRoots : ∀ position ∈ checked.coverage.residual,
+        outsideRoot root.record.val prepared.source.pending.entries[position.val] = true)
+
+def CheckedScope.includes {artifact owner name arguments context order runtime}
+    {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
+    {checked : RuntimeBodyOperations.Checked prepared order runtime}
+    (scope : CheckedScope checked) (position : RuntimeArmDutyCoverage.Position prepared) : Prop :=
+  match scope with
+  | .selection .. | .basis .. => True
+  | .meaning _ _ root _ _ =>
+    outsideRoot root.record.val prepared.source.pending.entries[position.val] = false
+
+theorem CheckedScope.residual_excluded {artifact owner name arguments context order runtime}
+    {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
+    {checked : RuntimeBodyOperations.Checked prepared order runtime}
+    (scope : CheckedScope checked) (position : RuntimeArmDutyCoverage.Position prepared)
+    (within : scope.includes position) : position ∉ checked.coverage.residual := by
+  cases scope with
+  | selection _ complete | basis _ _ complete =>
+    rw [complete]
+    exact List.not_mem_nil
+  | meaning _ _ root _ otherRoots =>
+    intro remaining
+    exact Bool.noConfusion (within.symm.trans (otherRoots position remaining))
+
+private def readScope {artifact owner name arguments context order runtime}
+    {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
+    (checked : RuntimeBodyOperations.Checked prepared order runtime) : Finite.WorkM (CheckedScope checked) := do
+  let selected ← Protocol.QmatchV5.usesSelection 129 context
+  Finite.guard (selected == (0 < checked.selections.count)) .request
+  if selection : 0 < checked.selections.count then
+    if complete : checked.coverage.residual = [] then return .selection selection complete
+    else throw .request
+  else
+    let noSelections := Nat.eq_zero_of_not_pos selection
+    if ← Protocol.QmatchV5.hasMeaningGroup 129 context then
+      let application ← NaturalAffine.witness checked.coverage.hasApplication
+      if found : application.val = true then
+        let root ← NaturalAffine.witness
+          (RuntimeDutyInvocation.identify prepared.source.pending.queue (.root prepared.source.body))
+        meterResiduals checked
+        if otherRoots : checked.coverage.residual.all
+            (fun position => outsideRoot root.val.record.val prepared.source.pending.entries[position.val]) = true then
+          return .meaning noSelections (found ▸ application.property) root.val
+            (by with_reducible exact root.property) (List.all_eq_true.mp otherRoots)
+        else throw .request
+      else throw .request
+    else
+      if complete : checked.coverage.residual = [] then
+        let basis ← NaturalAffine.witness (RuntimeSelectionSteps.readBasisResult checked.checked.result)
+        if found : basis.val = true then return .basis noSelections (found ▸ basis.property) complete
+        else throw .request
+      else throw .request
+
 structure Original (bytes : ByteArray) where
   body : ByteArray
   requestBytes : ByteArray
@@ -24,9 +109,8 @@ structure Original (bytes : ByteArray) where
     request.source.functionName request.source.arguments request.context) prepared
   checked : RuntimeBodyOperations.Checked prepared order request.combinedRuntime
   bodyRead : RuntimeInterval.Computed (RuntimeBodyOperations.read prepared order request.combinedRuntime) checked
-  sourceScope : (0 < checked.selections.count) ∨ (checked.selections.count = 0 ∧ ∃ before after,
-    (RuntimeSelectionSteps.readBasisResult checked.checked.result).run before = (.ok true,after))
-  complete : checked.coverage.residual = []
+  sourceScope : CheckedScope checked
+  scopeRead : RuntimeInterval.Computed (readScope checked) sourceScope
 
 def readOriginal (bytes : ByteArray) : Finite.WorkM (Original bytes) := do
   match packet : Protocol.Validity.packet bytes with
@@ -39,22 +123,13 @@ def readOriginal (bytes : ByteArray) : Finite.WorkM (Original bytes) := do
       let prepared ← NaturalAffine.witness (RuntimeBodyOperations.prepare artifact.val.1
         request.val.source.moduleName request.val.source.functionName request.val.source.arguments request.val.context)
       let checked ← NaturalAffine.witness (RuntimeBodyOperations.read prepared.val artifact.val.2 request.val.combinedRuntime)
-      let selected ← Protocol.QmatchV5.usesSelection 129 request.val.context
-      Finite.guard (selected == (0 < checked.val.selections.count)) .request
-      if complete : checked.val.coverage.residual = [] then
-        let scope ← if selection : 0 < checked.val.selections.count then
-            pure (⟨Or.inl selection⟩ : PLift (_ ∨ _))
-          else do
-            let basis ← NaturalAffine.witness (RuntimeSelectionSteps.readBasisResult checked.val.checked.result)
-            if found : basis.val = true then
-              pure (⟨Or.inr ⟨Nat.eq_zero_of_not_pos selection,found ▸ basis.property⟩⟩ : PLift (_ ∨ _))
-            else throw .request
-        return ⟨body,requestBytes,packet,artifact.val.1,artifact.val.2,
-          by with_reducible exact artifact.property,
-          request.val,by with_reducible exact request.property,compatible,
-          prepared.val,by with_reducible exact prepared.property,
-          checked.val,by with_reducible exact checked.property,scope.down,complete⟩
-      else throw .request
+      let scope ← NaturalAffine.witness (readScope checked.val)
+      return ⟨body,requestBytes,packet,artifact.val.1,artifact.val.2,
+        by with_reducible exact artifact.property,
+        request.val,by with_reducible exact request.property,compatible,
+        prepared.val,by with_reducible exact prepared.property,
+        checked.val,by with_reducible exact checked.property,
+        scope.val,by with_reducible exact scope.property⟩
     else throw .request
 
 def description {bytes : ByteArray} (original : Original bytes) : Finite.WorkM Value :=
@@ -100,10 +175,11 @@ theorem check_binding (bytes supplied : ByteArray) (checked : Original bytes) (w
   subst a; subst d; subst c
   exact ⟨⟨b,view,frame.1,native_success _ _ _ _ hc,native_success _ _ _ _ hv,encoding⟩⟩
 
-/-- Every pending position of the original source queue has its own
-unambiguous discharge in the checked report. -/
+/-- Every pending position in the reported scope has its own unambiguous
+discharge in the original queue. -/
 theorem Original.covers {bytes : ByteArray} (original : Original bytes)
     (position : RuntimeArmDutyCoverage.Position original.prepared)
+    (within : original.sourceScope.includes position)
     (pending : original.prepared.source.pending.entries[position.val].unconsumed = true) :
     ∃ discharge : RuntimeArmDutyCoverage.Discharge original.checked.coverage.candidates position,
       ⟨position,discharge⟩ ∈ original.checked.coverage.consumed := by
@@ -117,9 +193,7 @@ theorem Original.covers {bytes : ByteArray} (original : Original bytes)
         change position ∈ coverage.result.residual
         rw [coverage.result.exactResidual]
         exact List.mem_filter.mpr ⟨all,by simp [RuntimeArmDutyCoverage.remaining,pending,found]⟩
-      have empty : coverage.residual = [] := original.complete
-      rw [empty] at residual
-      exact False.elim (List.not_mem_nil residual)
+      exact False.elim (original.sourceScope.residual_excluded position within residual)
   have mapped : position ∈ coverage.result.consumed.map (·.1) := by
     rw [coverage.result.exactConsumed]
     exact List.mem_filter.mpr ⟨all,by simp [pending,covered]⟩

@@ -22,6 +22,7 @@ def markerCount {artifact catalogue owner name context description graph origin 
   cases site with
   | unlocated => exact 0
   | arm _ _ => exact source.entries.length
+  | application _ _ => exact source.entries.length
 
 /-- Select an entry from the association already returned by native arm
 consumption. Both source and native positions come from this same entry. -/
@@ -33,10 +34,11 @@ def locate {artifact catalogue owner name context description graph origin imple
     WorkM (Located artifact.sources owner) := by
   cases site with
   | unlocated => exact throw .request
-  | arm table armIndex => exact do
-    exactWork (Exact.charge (16*(source.entries.length+source.markers.length+1)))
-    let some entry := source.entries[index]? | throw .request
-    return ⟨source.scope,source.markers[entry.index],entry.assertion.binding.index.val⟩
+  | arm | application =>
+    exact do
+      exactWork (Exact.charge (16*(source.entries.length+source.markers.length+1)))
+      let some entry := source.entries[index]? | throw .request
+      return ⟨source.scope,source.markers[entry.index],entry.assertion.binding.index.val⟩
 
 structure Written {sources owner scope} (name : String)
     (marker : SourceOperation.Marker sources owner scope) (duty : GenericOperation.Duty sources) where

@@ -261,7 +261,7 @@ def Mode.OperationData {artifact owner} (mode : Mode artifact)
   | .fresh => Unit
   | .planned preparation => Sigma fun references : List (List RuntimeProviderHeader.Request) =>
       PLift (child.references = [references]) ×
-        RuntimeBodyPlan.Graph preparation event.operation.graph OperationAccess.applicable child.bodies references
+        RuntimeBodyPlan.Graph preparation event.operation.graph OperationAccess.applicable child.bodies references (.application event)
 
 structure Operation {artifact : Artifact} (mode : Mode artifact) {owner}
     (event : SourceOperationApplication.Event artifact.sources owner) where

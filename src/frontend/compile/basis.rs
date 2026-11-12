@@ -218,7 +218,7 @@ impl Compiler<'_> {
                 self.deferred_nominal_tables.insert(key);
                 continue;
             }
-            let function = self.compile_basis_with_signature(&key, params, result)?;
+            let function = self.compile_basis_with_signature(&key, params, result, false)?;
             self.basis.insert(key, function);
         }
         Ok(())
@@ -253,7 +253,32 @@ impl Compiler<'_> {
     #[cfg(test)]
     pub(super) fn compile_basis(&mut self, key: &Key) -> Result<BasisFunction, CompileError> {
         let (params, result) = self.signature(key)?;
-        self.compile_basis_with_signature(key, params, result)
+        self.compile_basis_with_signature(key, params, result, false)
+    }
+
+    /// Evaluate a deferred classical helper for an original Meaning.
+    /// The caller must bind this proposal to the original native equation.
+    pub(super) fn nominal_meaning_table(
+        &mut self,
+        key: Key,
+    ) -> Result<BasisFunction, CompileError> {
+        let span = self.declarations[&key].span;
+        let module = self.dormant_module(key, span)?;
+        let instance = self.prepare_instance(
+            key,
+            BTreeMap::new(),
+            BTreeMap::new(),
+            BTreeMap::new(),
+            &module,
+            span,
+        )?;
+        let frame = self.enter_instance(instance, &module, span)?;
+        let result = (|| {
+            let (params, result) = self.signature(&key)?;
+            self.compile_basis_with_signature(&key, params, result, true)
+        })();
+        self.leave_instance(frame);
+        result
     }
 
     fn compile_basis_with_signature(
@@ -261,6 +286,7 @@ impl Compiler<'_> {
         key: &Key,
         params: Vec<Ty>,
         result: Ty,
+        nominal: bool,
     ) -> Result<BasisFunction, CompileError> {
         let decl = self.declarations[key];
         let key_name = self.source.resolution.declaration(*key).name.clone();
@@ -292,6 +318,7 @@ impl Compiler<'_> {
             unreachable!("basis declaration")
         };
         let mut table = Vec::new();
+        let mut nominal_used = false;
         for label in 0..(1u16 << bits) {
             let mut env = BTreeMap::new();
             let mut offset = 0;
@@ -313,7 +340,11 @@ impl Compiler<'_> {
                 }
                 offset += width;
             }
-            let value = self.eval_basis(&key_name.0, body, &env, 0)?;
+            let value = if nominal {
+                self.eval_typed_basis(&key_name.0, body, &env, &mut nominal_used)?
+            } else {
+                self.eval_basis(&key_name.0, body, &env, 0)?
+            };
             if value.ty != result {
                 return Err(self.error(
                     &key_name.0,

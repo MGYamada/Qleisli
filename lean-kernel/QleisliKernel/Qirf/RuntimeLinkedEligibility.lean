@@ -15,9 +15,9 @@ private def writtenName (description : GenericOperation.Description) : Bool :=
     | _ => false
 
 section
-variable {artifact catalogue owner tokens implementations references operation prepared root requested checked
+variable {artifact catalogue owner description graph implementations references originals prepared root requested checked
     queue rootOwner rootName name entry path}
-    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked}
+    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked}
     {index : Nat}
     {invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path}
     {closed : GenericOperation.Closed invoked.demand.transported.subject.description}
@@ -46,7 +46,7 @@ private def closedVerdict (link : ClosedAt source index invoked closed) : Verdic
   else ⟨Fulfilled link,false,by intro impossible; cases impossible⟩
 
 private def statusVerdict
-    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked)
     (index : Nat)
     (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path) :
     (status : SourcePendingMeaning.DemandStatus invoked.demand) → ForStatus source index invoked status → Verdict
@@ -68,7 +68,7 @@ variable {artifact catalogue queue context description graph origin implementati
 private def verdict : Verdict := by
   cases site with
   | unlocated => exact evidence.elim
-  | arm => exact statusVerdict source index invoked (assessment invoked) evidence
+  | arm | application => exact statusVerdict source index invoked (assessment invoked) evidence
 
 def Positive : Prop := (verdict site prepared checked source index invoked evidence).claim
 

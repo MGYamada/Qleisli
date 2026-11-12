@@ -16,6 +16,7 @@ open Lean Finite Semantics.CarrierInterface SourceTypes
 
 def profile := "finite-source-qmatch-context-v5"
 def basisProfile := "finite-source-basis-context-v5"
+def meaningProfile := "finite-source-meaning-context-v5"
 
 private def adapt {α : Type} (value : Except String α) : WorkM α := lift (value.mapError fun _ => .invalid)
 private def field (value : Json) (key : String) := value.getObjVal? key
@@ -228,6 +229,19 @@ def usesSelection : Nat → Context → WorkM Bool :=
       if (← next yes) || (← next no) then return true
     return false)
 
+/-- Detect application reference groups in the runtime context. This only
+classifies the request. Native admission also requires a discharged original
+application from the checked traversal. -/
+def hasMeaningGroup : Nat → Context → WorkM Bool :=
+  Nat.rec (fun _ => throw .limit) (fun _ next context => do
+    exactWork (Exact.charge (context.references.length+context.calls.length+context.branches.length+1))
+    if context.references.any (! ·.isEmpty) then return true
+    for (_,body) in context.calls do
+      if ← next body then return true
+    for (_,yes,no) in context.branches do
+      if (← next yes) || (← next no) then return true
+    return false)
+
 def decode (value : Json) : WorkM Request := do
   adapt (contextFields value ["format","version","profile","source","runtime"])
   guard (← adapt (do return (← (← field value "format").getStr?) == "qleisli.qmatch-request" &&
@@ -243,7 +257,9 @@ def decode (value : Json) : WorkM Request := do
     ((source.arguments.bases ++ runtime.staticArguments.bases).map fun (_,basis) => ⟨0,basis⟩)+1)))
   let body ← context 129 value
   let hasSelection ← usesSelection 129 body
-  guard (claimed == (if hasSelection then profile else basisProfile)) .request
+  let scope ← if hasSelection then pure profile else do
+    pure (if ← hasMeaningGroup 129 body then meaningProfile else basisProfile)
+  guard (claimed == scope) .request
   let request : Request := ⟨source,runtime,body⟩
   guard request.compatible .request
   return request

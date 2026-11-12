@@ -279,8 +279,12 @@ Nonstructural bodies and the full twelve-bit profile remain pending.
 A selected coherent arm can use an original classical Meaning helper with
 nominal intermediate values when the Meaning's ports are supported built-in
 types. Lean checks the helper against the original canonical inputs and
-compares the exact Meaning with the applied arm. Operation-formal closure,
-nominal Meaning ports, standalone nominal Meaning and wider qmatch remain pending. Independent
+compares the exact Meaning with the applied arm. Standalone applications can
+use the same equation check. The report names `finite-source-meaning-context-v5`
+after the native traversal binds an actual application interval and discharges
+the selected invocation's original Meaning duties. Other roots retain their
+pending positions for separate checks. Operation-formal closure, nominal
+Meaning ports and wider qmatch remain pending. Independent
 host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 

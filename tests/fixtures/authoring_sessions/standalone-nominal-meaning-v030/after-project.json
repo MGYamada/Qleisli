@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/private/tmp/qleisli-516-provider-followup/target/debug/qleisli",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/issue-64-standalone-meaning-first-aQjFJ8QM/project",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-11-12T03:28:30.603647+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "checker_paths": [
+        "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "checker_identity": "unpinned",
+      "native_decisions": {
+        "count": 85,
+        "requests_checked": 4,
+        "complete": true
+      },
+      "entry": {
+        "present": true,
+        "request_checked": true,
+        "ordinary_result_checked": false,
+        "runtime_result_checked": true,
+        "source_body_scope": "finite-source-meaning-context-v5"
+      },
+      "concrete_ir_roots": {
+        "local": 3,
+        "bundled": 24
+      },
+      "source_preservation_verified": false
+    }
+  },
+  "stderr": ""
+}

@@ -2103,8 +2103,11 @@ fn lower_function_in_context(
     let key_name = compiler.source.resolution.declaration(*key).name.clone();
     let (params, return_type) = compiler.signature(key)?;
     let planned_basis = compiler.nominal_basis_roots.contains(key);
-    let typed_basis =
-        planned_basis || compiler.force_typed_root && compiler.selected_entry.is_some();
+    let planned_meaning = compiler.nominal_meaning_roots.contains(key);
+    let require_qmatch_v5 = require_qmatch_v5 || planned_meaning;
+    let typed_basis = planned_basis
+        || planned_meaning
+        || compiler.force_typed_root && compiler.selected_entry.is_some();
     let mut lower = Lowerer {
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         nominal_basis_used: typed_basis.then_some(false),
@@ -2145,7 +2148,7 @@ fn lower_function_in_context(
         .collect::<Result<Vec<_>, _>>()?;
     let runtime_interface =
         return_type.linear() || params.iter().any(Ty::linear) || !decl.static_params.is_empty();
-    let runtime_inputs = if runtime_interface || planned_basis {
+    let runtime_inputs = if runtime_interface || planned_basis || require_qmatch_v5 {
         Some(runtime::inputs(&mut lower, *key, &args)?)
     } else {
         None
@@ -2185,6 +2188,7 @@ fn lower_function_in_context(
         .filter(|context| {
             lower.uses_qmatch_v5()
                 && (lower.nominal_basis_used == Some(true)
+                    || require_qmatch_v5 && context.contains_meaning_applications
                     || context.contains_selections
                         && (planned_basis
                             || require_qmatch_v5
@@ -2205,7 +2209,11 @@ fn lower_function_in_context(
             &key_name.0,
             decl.span,
             ErrorCode::Unsupported,
-            "selected operation dependencies require independent closure transport",
+            if planned_meaning {
+                "a nominal Meaning use needs an original application or selection equation"
+            } else {
+                "selected operation dependencies require independent closure transport"
+            },
         ));
     }
     lower.compiler.charge(
