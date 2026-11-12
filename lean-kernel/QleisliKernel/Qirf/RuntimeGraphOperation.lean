@@ -2,6 +2,7 @@ import QleisliKernel.Qirf.RuntimeProviderHeaders
 import QleisliKernel.Qirf.RuntimeOrdinaryBody
 import QleisliKernel.SourceTypes.OperationAccess
 import QleisliKernel.SourceTypes.QuantumArms
+import QleisliKernel.SourceTypes.SourceOperationApplication
 
 /-! Typed continuations for the common original runtime traversal.
 Every request retains its actual graph, demanded paths and ordered provider and
@@ -13,14 +14,20 @@ namespace QleisliKernel.Qirf.RuntimeGraphOperation
 open QleisliKernel Finite SourceTypes
 abbrev BodyRequest := RuntimeProviderHeader.Request
 
-/-- An arm origin retains the actual original operation, indexed by its exact
-graph. Unlocated graph requests make no original-assertion coverage claim;
-prefix/body-operation provenance still requires its separate association. -/
+/-- Arms and operation applications retain their original source and exact
+graph. Unlocated requests supply no original assertion coverage. -/
 inductive Origin {sources : Sources} : {context : StaticOperation.Context} →
     {description : OperationDescription.Description} →
     StaticOperation.CheckedGraph sources context description → Type where
   | unlocated {context description} {graph : StaticOperation.CheckedGraph sources context description} : Origin graph
   | arm {owner tokens} (operation : QuantumArms.Operation sources owner tokens) : Origin operation.graph
+  | application {owner} (event : SourceOperationApplication.Event sources owner) : Origin event.operation.graph
+
+def Origin.isApplication {sources context description graph}
+    (origin : @Origin sources context description graph) : Bool :=
+  match origin with
+  | .application _ => true
+  | _ => false
 
 structure Request (artifact : Artifact) where
   context : StaticOperation.Context
@@ -40,6 +47,8 @@ inductive Site {sources : Sources} (owner name : String) :
       Site owner name (.unlocated (graph := graph))
   | arm {offset selector target} (table : QuantumArms.Table sources owner name offset selector target)
       (index : Fin table.arms.length) : Site owner name (.arm (table.arms[index]).operation)
+  | application (event : SourceOperationApplication.Event sources owner) (caller : event.callerName = name) :
+      Site owner name (.application event)
 
 /-- Capture the actual source call chain at graph consumption. Every named
 edge retains its event, supplied arguments and successful callee body read. -/

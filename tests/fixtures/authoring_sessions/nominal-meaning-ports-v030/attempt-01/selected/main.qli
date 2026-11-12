@@ -1,0 +1,12 @@
+#![no_implicit_prelude]
+pub enum Mode { A, B, C }
+classical fn next(value: Mode) -> Mode {
+    match value { Mode::A => Mode::B, Mode::B => Mode::C, Mode::C => Mode::A }
+}
+meaning Cycle: Mode = permutation_by(next);
+unitary fn implementation(q: Q<Mode>) -> Q<Mode> {
+    basis q as value { next(value) }
+}
+pub unitary fn undo(q: Q<Mode>) -> Q<Mode> {
+    adjoint(checked_op(implementation, Cycle))(q)
+}

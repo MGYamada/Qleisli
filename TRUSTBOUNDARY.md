@@ -217,8 +217,11 @@ with the actual Raw interval. When the checked root has no coherent selection,
 Lean requires an original basis event and the report names the basis scope.
 In selected coherent arms, a classical Meaning helper with built-in ports
 may use nominal intermediate values. Its original value and actual applied
-operator are compared by the same v5 gate. Operation-formal closure, wider
-qmatch, nominal Meaning ports and standalone nominal Meaning remain pending. Exact computation
+operator are compared by the same v5 gate. Standalone Meaning applications
+use the same equation reader and require every pending duty of the selected
+original invocation to be discharged. Other roots' pending positions are
+retained. Operation-formal closure, wider qmatch and nominal Meaning ports
+remain pending. Exact computation
 witnesses supply no source-body,
 complex-denotation or numerical-runtime preservation theorem, inverse/control
 capability, new guarantee admission or broader QS/PR/RS/EXACT discharge.

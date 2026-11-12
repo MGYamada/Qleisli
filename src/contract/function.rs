@@ -745,6 +745,21 @@ pub(crate) fn verified_meaning(
 /// Untrusted rectangular matrix proposal from an already structurally checked
 /// body. This grants no equation, isometry receipt or inverse capability: the
 /// original body and this entire proposal must still pass fresh Lean checking.
+/// Read only the physical coordinate operator for an untrusted proposal.
+pub(crate) fn propose_pure_coordinates(
+    program: &crate::AcceptedProgram,
+    input_bits: usize,
+    output_bits: usize,
+    budget: &mut Budget,
+) -> Result<Matrix, ContractError> {
+    propose_pure_meaning(
+        program,
+        &BasisType::register(input_bits)?,
+        &BasisType::register(output_bits)?,
+        budget,
+    )
+}
+
 pub(crate) fn propose_pure_meaning(
     program: &crate::AcceptedProgram,
     domain: &BasisType,

@@ -45,6 +45,19 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [nominal Meaning composition study](nominal-meaning-composition-v030/session.json)
+retains the enum attempts, the first refusal for a record intermediate, a closed
+composition project, and a tensor phase on the bit axis of a nominal product.
+
+The [nominal Meaning ports study](nominal-meaning-ports-v030/session.json)
+retains the first three-label cycle, its initial refusal, and a closed project
+using the checked inverse. The native mutation tests retain the original
+Meaning while changing the applied inverse, padding transition or phase.
+
+The [standalone nominal Meaning study](standalone-nominal-meaning-v030/session.json)
+retains the first selected source, a project extension and actual checks.
+The selected and project invocations use the native application equation.
+
 The [nominal Meaning arm study](nominal-meaning-arm-v030/session.json)
 retains the original classical helper and coherent arm, the first preparation
 refusal and the later native source check of the unchanged program.

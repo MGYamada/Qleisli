@@ -80,7 +80,7 @@ inductive Checked {artifact catalogue owner name offset selector target table in
       (original : RuntimeInterval.Computed
         (RuntimeOperationTree.read prepared.graph root OperationAccess.controllable) actual)
       (markers : RuntimeSourceOperationMarkers.Checked
-        (table.arms[index.val]'index.isLt).operation prepared.graph actual)
+        (RuntimeSourceOperationMarkers.originalMarkers (table.arms[index.val]'index.isLt).operation) prepared.graph actual)
       (markersRead : RuntimeInterval.Computed
         (RuntimeSourceOperationMarkers.read (table.arms[index.val]'index.isLt).operation prepared.graph actual) markers)
 

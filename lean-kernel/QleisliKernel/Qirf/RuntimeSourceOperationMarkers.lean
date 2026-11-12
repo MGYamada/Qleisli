@@ -183,13 +183,13 @@ private def readEntry {artifact catalogue context description graph implementati
 /-- All original markers of this exact operation are associated, in order.
 This covers neither a different supplying invocation nor every original queue
 duty. In particular, it must not reduce SourcePendingMeaning's pending count. -/
-structure Checked {artifact catalogue owner tokens implementations references}
-    (operation : QuantumArms.Operation artifact.sources owner tokens)
-    (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue operation.graph implementations references)
+structure Checked {artifact catalogue owner description graph implementations references}
+    (originals : Option (Σ scope, List (SourceOperation.Marker artifact.sources owner scope)))
+    (prepared : @RuntimePreparedOperation.GraphPrepared artifact catalogue (.source owner) description graph implementations references)
     {root requested} (checked : RuntimeOperationTree.Checked prepared root requested) where
   scope : List String
   markers : List (SourceOperation.Marker artifact.sources owner scope)
-  original : originalMarkers operation = some ⟨scope,markers⟩
+  original : originals = some ⟨scope,markers⟩
   tree : RuntimeOperationOccurrenceTree.Checked prepared
   traversed : RuntimeInterval.Computed (RuntimeOperationOccurrenceTree.read prepared) tree
   entries : List (Entry checked tree markers)
@@ -197,37 +197,45 @@ structure Checked {artifact catalogue owner tokens implementations references}
 
 /-- Use the same native result and original source operation. No provider,
 body, catalogue or Meaning query is repeated to manufacture this association. -/
+def readMarkers {artifact catalogue owner description graph implementations references}
+    (originals : Option (Σ scope, List (SourceOperation.Marker artifact.sources owner scope)))
+    (prepared : @RuntimePreparedOperation.GraphPrepared artifact catalogue (.source owner) description graph implementations references)
+    {root requested} (checked : RuntimeOperationTree.Checked prepared root requested) :
+    WorkM (Checked originals prepared checked) := do
+  match originals with
+  | none => throw .request
+  | some ⟨scope,markers⟩ =>
+    exactWork (Exact.charge (16*(markers.length+prepared.occurrences.length+description.nodes.length+1)^2))
+    let tree ← NaturalAffine.witness (RuntimeOperationOccurrenceTree.read prepared)
+    let entries ← (List.finRange markers.length).mapM (readEntry checked tree.val markers)
+    if every : entries.map (·.index) = List.finRange markers.length then
+      return ⟨scope,markers,rfl,tree.val,by with_reducible exact tree.property,entries,every⟩
+    else throw .request
+
 def read {artifact catalogue owner tokens implementations references}
     (operation : QuantumArms.Operation artifact.sources owner tokens)
     (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue operation.graph implementations references)
     {root requested} (checked : RuntimeOperationTree.Checked prepared root requested) :
-    WorkM (Checked operation prepared checked) := do
-  match original : originalMarkers operation with
-  | none => throw .request
-  | some ⟨scope,markers⟩ =>
-    -- Includes ordinal construction, all marker linked-list selections and
-    -- final coverage comparison. Path and source comparison work is separate.
-    exactWork (Exact.charge (16*(markers.length+prepared.occurrences.length+operation.description.nodes.length+1)^2))
-    let tree ← NaturalAffine.witness (RuntimeOperationOccurrenceTree.read prepared)
-    let entries ← (List.finRange markers.length).mapM (readEntry checked tree.val markers)
-    if every : entries.map (·.index) = List.finRange markers.length then
-      return ⟨scope,markers,original,tree.val,by with_reducible exact tree.property,entries,every⟩
-    else throw .request
+    WorkM (Checked (originalMarkers operation) prepared checked) :=
+  readMarkers (originalMarkers operation) prepared checked
 
-/-- The common graph path distinguishes a retained original arm from a graph
-whose source-origin association is still pending. An unlocated receipt is
-only Unit; it supplies no marker coverage and cannot inhabit the arm case. -/
+def applicationMarkers {sources owner} (event : SourceOperationApplication.Event sources owner) :
+    Option (Σ scope, List (SourceOperation.Marker sources owner scope)) :=
+  some ⟨event.scope,event.operation.provenance.markers⟩
+
+/-- The retained source origin selects the exact marker list.
+An unlocated graph has no original assertion coverage. -/
 def OriginChecked {artifact catalogue context description graph implementations references}
     (origin : @RuntimeGraphOperation.Origin artifact.sources context description graph)
     (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue graph implementations references)
     {root requested} (checked : RuntimeOperationTree.Checked prepared root requested) : Type :=
   match origin with
   | .unlocated => Unit
-  | .arm operation => Checked operation prepared checked
+  | .arm operation => Checked (originalMarkers operation) prepared checked
+  | .application event => Checked (applicationMarkers event) prepared checked
 
 /-- Consume the actual source origin carried by this same graph request.
-The arm branch executes the association; there is no retry without provenance
-after a failed association and no change to the all-original duty queue. -/
+An arm or application supplies its own original marker association. -/
 def readOrigin {artifact catalogue context description graph implementations references}
     (origin : @RuntimeGraphOperation.Origin artifact.sources context description graph)
     (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue graph implementations references)
@@ -240,5 +248,8 @@ def readOrigin {artifact catalogue context description graph implementations ref
   | arm operation => exact do
     exactWork (Exact.charge 1)
     read operation prepared checked
+  | application event => exact do
+    exactWork (Exact.charge 1)
+    readMarkers (applicationMarkers event) prepared checked
 
 end QleisliKernel.Qirf.RuntimeSourceOperationMarkers

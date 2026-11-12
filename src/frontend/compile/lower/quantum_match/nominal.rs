@@ -28,6 +28,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     calls: Vec<(Position, Arc<ContextSubject>)>,
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
+    contains_meaning_applications: bool,
     source_gate: bool,
     needs_qmatch_v5: bool,
     prefer_runtime_root: bool,
@@ -242,6 +243,7 @@ impl Frame {
             calls: Vec::new(),
             branches: Vec::new(),
             contains_selections: false,
+            contains_meaning_applications: false,
             source_gate,
             needs_qmatch_v5: false,
             prefer_runtime_root: false,
@@ -295,6 +297,7 @@ impl Frame {
             calls: Vec::new(),
             branches: Vec::new(),
             contains_selections: false,
+            contains_meaning_applications: false,
             source_gate: self.source_gate,
             needs_qmatch_v5: false,
             prefer_runtime_root: false,
@@ -344,6 +347,7 @@ impl Frame {
             branches: self.branches,
             operation: None,
             contains_selections: self.contains_selections,
+            contains_meaning_applications: self.contains_meaning_applications,
             requires_source_gate: self.source_gate,
             needs_qmatch_v5: self.needs_qmatch_v5,
             prefer_runtime_root: self.prefer_runtime_root,
@@ -389,6 +393,7 @@ impl Frame {
                 branches: self.branches,
                 operation: None,
                 contains_selections: self.contains_selections,
+                contains_meaning_applications: self.contains_meaning_applications,
                 requires_source_gate: self.source_gate,
                 needs_qmatch_v5: self.needs_qmatch_v5,
                 prefer_runtime_root: self.prefer_runtime_root,
@@ -539,6 +544,7 @@ impl Frame {
             branches: self.branches,
             operation: None,
             contains_selections: self.contains_selections,
+            contains_meaning_applications: self.contains_meaning_applications,
             requires_source_gate: self.source_gate,
             needs_qmatch_v5: self.needs_qmatch_v5,
             prefer_runtime_root: self.prefer_runtime_root,
@@ -685,6 +691,7 @@ pub(in crate::frontend::compile::lower) fn record_named(
     frame.record_event_outside_static_profile();
     frame.positions.push(position.clone());
     frame.contains_selections |= body.contains_selections;
+    frame.contains_meaning_applications |= body.contains_meaning_applications;
     frame.include_qmatch_profile(&body);
     frame.calls.push((position, body));
     Ok(())
@@ -701,6 +708,14 @@ pub(in crate::frontend::compile::lower) fn record_operation(
     access: Access,
 ) -> Result<(), CompileError> {
     let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        if operation.uses_carrier() {
+            return Err(lower.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "typed Meaning application needs its original source context",
+            ));
+        }
         return Ok(());
     };
     let relative = start.checked_sub(frame.start).ok_or_else(|| {
@@ -734,6 +749,7 @@ pub(in crate::frontend::compile::lower) fn record_operation(
         .as_mut()
         .expect("original operation context");
     frame.record_event_outside_static_profile();
+    frame.contains_meaning_applications |= !original.meaning_references.is_empty();
     for body in original.original_contexts() {
         frame.include_qmatch_profile(body);
     }
@@ -780,6 +796,8 @@ pub(in crate::frontend::compile::lower) fn record_branch(
         .as_mut()
         .expect("original containing context");
     frame.contains_selections |= then_body.contains_selections || else_body.contains_selections;
+    frame.contains_meaning_applications |=
+        then_body.contains_meaning_applications || else_body.contains_meaning_applications;
     frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
     frame.include_qmatch_profile(&then_body);
     frame.include_qmatch_profile(&else_body);

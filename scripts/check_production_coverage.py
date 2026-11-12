@@ -221,7 +221,7 @@ QMATCH_V5_PROOF = {
         'and the exact QDV comparison. CheckedQmatchV5.check_binding binds the actual source-context '
         'read and description to the complete compared execution view. Original.covers and '
         'Original.root_safe retain the original duty queue and fresh Raw root in the bounded checker. '
-        'The sourceScope field requires checked selection sites or a checked basis event. '
+        'The sourceScope field requires checked selections, a basis event, or a discharged application. '
         'Rust retains the compared runtime request and uses it for recheck.'),
     'gaps': (
         'The bounded v5 route does not establish complete original source or numerical runtime '
@@ -424,8 +424,10 @@ PATHS = {
         ('lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean', ['Protocol.Qirf.readAll body',
             'Protocol.QmatchV5.readRequest requestBytes', 'RuntimeBodyOperations.prepare artifact.val.1',
             'RuntimeBodyOperations.read prepared.val artifact.val.2 request.val.combinedRuntime',
-            '0 < checked.val.selections.count', 'checked.val.coverage.residual = []',
-            'RuntimeSelectionSteps.readBasisResult checked.val.checked.result',
+            '0 < checked.selections.count', 'checked.coverage.residual = []',
+            'RuntimeSelectionSteps.readBasisResult checked.checked.result',
+            'RuntimeDutyInvocation.identify prepared.source.pending.queue (.root prepared.source.body)',
+            'scope.val,by with_reducible exact scope.property',
             'guard (supplied.data == expected.data) .decodedView', 'theorem check_binding ',
             'theorem Original.covers ', 'theorem Original.root_safe ', 'theorem run_binding ']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeDiscoveryData.lean', ['def ordinaryRows ',
@@ -435,10 +437,13 @@ PATHS = {
             'rowsMatch input.val event.function.outputLayout event.function.rows table = true',
             '.pure (.liftBasis input.port.token output.token output.wires table)']),
         ('lean-kernel/Protocol/QmatchV5.lean', ['def usesSelection ',
-            'if hasSelection then profile else basisProfile']),
-        ('src/frontend/compile/selected.rs', ['requires_operation_closure || requires_original_meaning']),
+            'if ← hasMeaningGroup 129 body then meaningProfile else basisProfile']),
+        ('src/frontend/compile/lower/mod.rs', ['let require_qmatch_v5 = require_qmatch_v5 || planned_meaning']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeArmDutyCoverage.lean', ['def Report.hasApplication',
+            'body.checked.receipts[entry.2.link.receiptIndex].request.origin.isApplication']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeOriginalMeaning.lean',
-            ['SourceMeaningAction.prepare artifact catalogue request.meaning native.requests',
+            ['SourceMeaningAction.prepare artifact catalogue request.meaning held.requests',
+             'graphKey request.meaning.graph = graphKey native.request.meaning.graph',
              'asserted.child.action = specification.val.action']),
         ('src/frontend/compile/lower/mod.rs', ['if lower.nominal_basis_used == Some(true) && (qmatch.is_none() || runtime_inputs.is_none())',
             'eval_typed_basis(module, basis, &env, &mut nominal)?']),
@@ -448,7 +453,12 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_nominal_basis_rows_and_rejects_padding_leaks'),
         ('tests/selected_runtime_execution.rs', 'standalone_basis_checks_the_original_nominal_output_and_scope'),
         ('tests/selected_runtime_execution.rs', 'selected_arm_compares_the_original_nominal_meaning_to_the_applied_operator'),
-        ('tests/selected_runtime_execution.rs', 'selected_nominal_meaning_requires_original_equations'),
+        ('tests/selected_runtime_execution.rs', 'standalone_nominal_meaning_checks_the_actual_call_interval_and_scope'),
+        ('tests/selected_runtime_execution.rs', 'nominal_meaning_checks_the_original_cycle_and_inverse_on_three_labels'),
+        ('tests/selected_runtime_execution.rs', 'project_executes_the_checked_nominal_meaning_interval'),
+        ('tests/selected_runtime_execution.rs', 'composed_meaning_keeps_the_nominal_intermediate_reference'),
+        ('tests/selected_runtime_execution.rs', 'tensor_meaning_checks_the_phase_on_the_original_nominal_product_axis'),
+        ('tests/ordinary_nominal_execution.rs', 'project_checks_each_original_invocation_of_a_nominal_meaning'),
         ('tests/ordinary_nominal_execution.rs', 'project_runs_standalone_nominal_basis_with_the_original_body_scope'),
         ('tests/selected_runtime_execution.rs', 'selected_qif_and_qmatch_retain_their_original_selection_order')]),
     'qmatch-views': path_rule('checked-view', 'qmatch-component', '', [
@@ -475,7 +485,7 @@ PATHS = {
         ('src/frontend/compile/selected.rs', ['pub struct SelectedRuntimeProgram',
             'prepare_borrowed_originals(originals, SourceLimits::selected())?',
             'let uses = compiler.source.lexical[&key].resolved_uses();',
-            'let program = lower::lower_instance_function(', 'requires_operation_closure || requires_original_meaning', 'compiler.check_dormant_operations()?',
+            'lower::lower_instance_function(&mut compiler, instance, requires_operation_closure)?', 'compiler.check_dormant_operations()?',
             'ClosedSubstitution::named_budgeted(', 'named_instance(&mut compiler, selected, entry,',
             'compiler.check_dormant_controls()?', 'source: selected.clone()', 'pub fn runtime_parameters(']),
         ('src/frontend/compile/selected.rs', ['selected_entry: Some(entry)',

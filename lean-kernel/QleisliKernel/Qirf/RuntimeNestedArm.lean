@@ -9,10 +9,10 @@ open QleisliKernel Finite SourceTypes
 open RuntimeNestedDuty (Role Supplement)
 
 section
-variable {artifact catalogue owner tokens implementations references operation prepared root requested checked
+variable {artifact catalogue owner description graph implementations references originals prepared root requested checked
     rootOwner rootName name path}
     (pending : @SourcePendingMeaning.Prepared artifact.sources catalogue) (position : Fin pending.entries.length)
-    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked)
     (index : Nat)
     (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue pending.queue rootOwner rootName owner name
       pending.entries[position] path)
@@ -42,19 +42,20 @@ variable {artifact catalogue context description graph origin implementations re
 private def SiteRole :
     RuntimeLinkedSubject.Evidence site prepared checked source index invoked → Role pending.entries.length → Type := by
   cases site with
-  | unlocated => exact fun _ _ => Empty
+  | unlocated | application => exact fun _ _ => Empty
   | arm => exact StatusRole pending position source index invoked (RuntimeLinkedSubject.assessment invoked)
 
 private def readSite : (evidence : RuntimeLinkedSubject.Evidence site prepared checked source index invoked) →
     WorkM (Option (Supplement (SiteRole pending position site prepared checked source index invoked evidence))) := by
   cases site with
   | unlocated => exact fun impossible => nomatch impossible
+  | application => exact fun _ => pure none
   | arm => exact readStatus pending position source index invoked (RuntimeLinkedSubject.assessment invoked)
 end
 
 variable {artifact owner name arguments request prepared root runtime}
     (body : @RuntimeBodyOperations.AtRoot artifact owner name arguments request prepared root runtime)
-    (link : RuntimeBodyOperations.ArmLink body)
+    (link : RuntimeBodyOperations.WrittenLink body)
 
 def Evidence : Role prepared.source.pending.entries.length → Type :=
   let receipt := body.receipts[link.receiptIndex]

@@ -249,6 +249,14 @@ impl Circuit {
         Ok(Self { basis, steps })
     }
 
+    /// Coordinate-only geometry for an untrusted operator proposal.
+    pub(crate) fn for_coordinates(
+        bits: usize,
+        steps: Vec<CircuitStep>,
+    ) -> Result<Self, ContractError> {
+        Self::new(BasisType::register(bits)?, steps)
+    }
+
     fn validate(basis: &BasisType, steps: &[CircuitStep]) -> Result<(), ContractError> {
         let bits = basis.bits()?;
         if steps.len() > MAX_CONTRACT_STEPS {

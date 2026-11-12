@@ -468,8 +468,13 @@ impl<'a> Collector<'a, '_> {
         if let Some(program) = self.compiler.checked.get(&key) {
             self.raw(program.raw())?;
         }
-        if let Some(meaning) = self.compiler.meanings.get(&key) {
-            self.raw(&meaning.raw)?;
+        if let Some(raw) = self
+            .compiler
+            .meanings
+            .get(&key)
+            .and_then(|meaning| meaning.raw.as_ref())
+        {
+            self.raw(raw)?;
         }
         Ok(())
     }
@@ -560,6 +565,17 @@ impl<'a> Collector<'a, '_> {
             self.charge(4)?;
             match operation.node.as_ref() {
                 Node::Provider(receipt) => self.receipt(receipt)?,
+                Node::Carrier(_) => {
+                    let Some(origin) = &operation.source_origin else {
+                        return self
+                            .refusal("carrier operation has no original source association");
+                    };
+                    self.root(origin.definition, Some(&origin.table))?;
+                    if let Some(meaning) = origin.meaning {
+                        self.root(meaning, None)?;
+                    }
+                    self.raw(origin.body.program())?;
+                }
                 Node::Pure(pure) => {
                     let Some(origin) = &pure.origin else {
                         return self.refusal("pure operation has no original source association");

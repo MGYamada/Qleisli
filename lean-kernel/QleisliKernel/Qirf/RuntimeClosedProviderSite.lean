@@ -142,8 +142,10 @@ def readIdentity {artifact catalogue context description graph implementations r
     else return .error .context
   else return .error .target
 
+-- RuntimeProviderAction checks the original canonical lift rows and the actual
+-- interval before a basis event can participate in this bare provider check.
 private def directEvent {sources caller} : SourceRuntimeContext.Event sources caller → Bool
-  | .phase _ | .primitive _ => true
+  | .phase _ | .primitive _ | .basis _ => true
   | _ => false
 
 def BareHeader {artifact catalogue context description graph implementations references prepared root requested checked cursor}

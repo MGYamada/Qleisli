@@ -91,10 +91,11 @@ arguments are still checked; ordinary forwarding grants no operation capability.
 Selected and ordinary project roots can use coherent basis lifts over
 canonical nominal codes. The v5 check binds the original finite expression
 to the actual Raw interval, with or without a coherent selection. A selected
-coherent arm can use a Meaning with a built-in signature and a classical
-helper containing nominal values. The native check compares the original
-Meaning and actual arm operator. Operation-formal closure and wider nominal
-Meaning consumers remain pending. The exact computation witnesses are separate from complex denotation,
+coherent arm or standalone checked application can use a Meaning with a
+built-in signature and a classical helper containing nominal values. The
+native check compares the original Meaning with the actual applied operator.
+Operation-formal closure and nominal Meaning ports remain pending. The exact
+computation witnesses have a separate scope from complex denotation,
 original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed
 common lexical/effect facts. A projection restriction is recorded per declaration;
@@ -894,7 +895,7 @@ this gate. Existing simulation APIs still require closed roots; parameter
 checking grants no unchecked arbitrary-input runtime. Mixed nominal quantum
 interfaces and selected Basis/Nat roots use the runtime-root gate described
 earlier, including ordinary generic dependencies. Operation-formal closure,
-wider qmatch and nominal Meaning consumers remain pending.
+wider qmatch and nominal Meaning ports remain pending.
 Nominal constructor visits in nested calls and branches also select a typed
 route when the final result is a built-in type. The ordinary-v2, runtime-v2
 and v5 qmatch routes can retain imported nominal dependencies used only in
@@ -1033,11 +1034,10 @@ eager. When a selected dormant operation reaches a concrete table consumer,
 preparation follows only that original classical function and its classical
 callees; unrelated declarations do not become table roots. Coherent basis
 lifts evaluate these deferred bodies on canonical source values and use the
-v5 source interval check described above. Selected coherent arms can also
-use the original Meaning equation check for nominal intermediate values.
-Other Meaning consumers and predicate tables still refuse deferred nominal
-tables. Eligible closed ordinary roots use the native input/result/history
-gate above.
+v5 source interval check described above. Coherent arms and standalone
+applications use the original Meaning equation check for nominal intermediate
+values. Nominal Meaning ports and predicate table consumers remain pending.
+Eligible closed ordinary roots use the native input/result/history gate above.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

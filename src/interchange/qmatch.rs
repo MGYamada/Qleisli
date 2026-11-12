@@ -135,6 +135,7 @@ pub(crate) struct ContextSubject {
     pub operation: Option<std::sync::Arc<OperationSubject>>,
     // Producer eligibility only; never serialized or trusted by a native gate.
     pub contains_selections: bool,
+    pub contains_meaning_applications: bool,
     pub requires_source_gate: bool,
     pub needs_qmatch_v5: bool,
     pub prefer_runtime_root: bool,

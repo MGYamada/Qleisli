@@ -1,0 +1,17 @@
+#![no_implicit_prelude]
+enum Label { Keep, Mark, Spare }
+classical fn exponent(b: Bit) -> (Bit, (Bit, Bit)) {
+    (match Label::Mark { Label::Keep => 0, Label::Mark => b, Label::Spare => 0 }, (0, 0))
+}
+meaning Turn: Bit = phase_by(exponent);
+unitary fn implementation(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }
+pub unitary fn undo(q: Q<Bit>) -> Q<Bit> {
+    let q = h(q);
+    let q = adjoint(checked_op(implementation, Turn))(q);
+    h(q)
+}
+
+pub observe fn main() -> Bit {
+    let q = basis unit(()) as _ { 0 };
+    measure_z(undo(q))
+}

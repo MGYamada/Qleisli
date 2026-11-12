@@ -444,7 +444,7 @@ transport chooses staged evidence. -/
 private def consumeOperationChild {artifact : Artifact} {root : Validity.Root} {owner : String}
     (execution : ExecutionMode artifact root) (event : SourceOperationApplication.Event artifact.sources owner)
     (consume : (cursor : execution.queries.Cursor) →
-      execution.queries.GraphData event.operation.graph OperationAccess.applicable → Bool →
+      execution.queries.GraphData event.operation.graph OperationAccess.applicable (.application event) → Bool →
       WorkM (Semantics.Exact.Matrix × List (Island root.dependencies) × execution.queries.Cursor × List execution.Receipt))
     (operation : RuntimeBodyQueries.Operation execution.queries event) :
     WorkM (Semantics.Exact.Matrix × List (Island root.dependencies) × List execution.Receipt) := do
@@ -773,11 +773,14 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           guard (event.operation.graph.root.input == event.operation.graph.root.output &&
             event.allocated.isEmpty && event.consumed.isEmpty) .request
           let operation ← RuntimeBodyQueries.readOperation execution.queries source event position sourceCursor data
-          let (expected,children,performed) ← consumeOperationChild execution event
-            (consumeGraph event.operation.graph OperationAccess.applicable .unlocated .unlocated) operation
-          let node ← operationNode block position event.inputOwners bindings owners.after.bindings expected
-          pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
-            obligations ++ children,position.start+position.count,operation.cursor,receipts ++ performed)
+          if caller : event.callerName = name then
+            let (expected,children,performed) ← consumeOperationChild execution event
+              (consumeGraph event.operation.graph OperationAccess.applicable
+                (.application event) (.application event caller)) operation
+            let node ← operationNode block position event.inputOwners bindings owners.after.bindings expected
+            pure (continuation owners,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              obligations ++ children,position.start+position.count,operation.cursor,receipts ++ performed)
+          else throw .request
         | .transform event,data,_ =>
           let transformed ← RuntimeBodyQueries.readTransform execution.queries source event position sourceCursor data
           let forward ← RuntimeTransformAction.readForward artifact dependencies transformed.request

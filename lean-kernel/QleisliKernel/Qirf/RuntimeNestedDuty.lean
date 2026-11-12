@@ -226,11 +226,11 @@ def possible {sources catalogue queue} (entry : @SourcePendingMeaning.Entry sour
   | _ => false
 
 section
-variable {artifact catalogue owner tokens implementations references operation prepared root requested checked
+variable {artifact catalogue owner description graph implementations references originals prepared root requested checked
     rootOwner rootName name path}
     (pending : @SourcePendingMeaning.Prepared artifact.sources catalogue)
     (position : Fin pending.entries.length)
-    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation
+    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals
       prepared root requested checked} {index : Nat}
     {invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue pending.queue rootOwner rootName owner
       name pending.entries[position] path}

@@ -1,0 +1,6 @@
+#![no_implicit_prelude]
+enum M{A,B,C}
+classical fn n(x:M)->M{match x{M::A=>M::B,M::B=>M::C,M::C=>M::A}}
+meaning N:M=permutation_by(n);
+unitary fn f(q:Q<M>)->Q<M>{basis q as x{n(x)}}
+pub observe fn main()->Unit{let q=basis unit(()) as _{M::A};discard(adjoint(checked_op(f,N))(q));()}

@@ -74,11 +74,12 @@ impl Compiler<'_> {
                 "missing original Meaning declaration",
             )
         })?;
-        self.charge(module, span, declared.target.cells().saturating_mul(2) + 1)?;
-        let leaves: Vec<_> = self.meanings[&meaning]
-            .target
-            .reference_occurrences()
-            .collect();
+        self.charge(
+            module,
+            span,
+            declared.references.len().saturating_mul(2) + 1,
+        )?;
+        let leaves = self.meanings[&meaning].references.clone();
         leaves
             .into_iter()
             .map(|key| self.original_pure_body(key, module, span))
@@ -361,7 +362,7 @@ impl Compiler<'_> {
                         continue;
                     }
                     match operation.node.as_ref() {
-                        Node::Provider(_) | Node::Pure(_) => {
+                        Node::Provider(_) | Node::Pure(_) | Node::Carrier(_) => {
                             let origin = operation.source_origin.as_ref().ok_or_else(|| {
                                 self.error(
                                     module,
@@ -468,7 +469,7 @@ impl Compiler<'_> {
                                     evidence: Arc::clone(evidence),
                                     context,
                                 },
-                                Node::Pure(_) => OriginalBody::Pure {
+                                Node::Pure(_) | Node::Carrier(_) => OriginalBody::Pure {
                                     program: origin.body.clone(),
                                     context,
                                 },

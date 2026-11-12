@@ -242,7 +242,8 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                 if childEmpty : child.positions.isEmpty = true ∧ child.sites.isEmpty = true ∧
                     child.calls.isEmpty = true ∧ child.branches.isEmpty = true then
                   let childQueues := Queues.ofContext child
-                  let graph ← graphRead mode next event.operation.graph OperationAccess.applicable childQueues (!child.references.isEmpty)
+                  let graph ← graphRead mode next event.operation.graph OperationAccess.applicable childQueues
+                    (!child.references.isEmpty) (.application event)
                   if consumed : graph.after.bodies.isEmpty = true ∧ graph.after.references.isEmpty = true then
                     let after := {before with calls := remaining}
                     let data : scope.EventData mode.preparation (.operation event) position before after := by
@@ -272,7 +273,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                           have groups : child.references = [planned.cut.references] := by
                             simpa only [childQueues,Queues.ofContext,refsEmpty] using planned.cut.groups
                           have ownGraph : RuntimeBodyPlan.Graph mode.preparation event.operation.graph OperationAccess.applicable
-                              child.bodies planned.cut.references := by
+                              child.bodies planned.cut.references (.application event) := by
                             rw [← bodies]
                             exact planned.graphPlan
                           exact some (.operation callPosition child remaining calls located childEmpty

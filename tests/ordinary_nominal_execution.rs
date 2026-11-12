@@ -106,6 +106,28 @@ fn project_runs_standalone_nominal_basis_with_the_original_body_scope() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn project_checks_each_original_invocation_of_a_nominal_meaning() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/standalone-nominal-meaning-v030/attempt-01/project",
+    );
+    check_project(&root).unwrap();
+    let program = compile_project(&root).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let probabilities = run_closed(&program, SimulationLimits::default()).unwrap();
+    let expected = (1.0 + std::f64::consts::FRAC_1_SQRT_2) / 2.0;
+    assert_eq!(probabilities.len(), 2);
+    assert!((probabilities[&vec![false]] - expected).abs() < 1e-12);
+    assert!((probabilities[&vec![true]] - (1.0 - expected)).abs() < 1e-12);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn called_and_unused_private_nominal_helpers_are_checked_without_exporting_them() {
     for (source, expected) in [
         (
