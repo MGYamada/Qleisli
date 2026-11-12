@@ -256,22 +256,26 @@ pub(super) fn accept(
     let registers = lower.raw.registers.clone();
     let stored = storage(lower, *key, result, &registers)?;
     let mut ordinary = Vec::new();
-    let mut names = BTreeSet::from([name.0.clone()]);
-    for atom in parameters.iter().flatten().chain(&result_type) {
-        if let Atom::Finite(BasisAtom::Enum(origin, _) | BasisAtom::Record(origin, _)) = atom {
-            names.insert(origin.module.clone());
+    if qmatch.is_none() {
+        // Runtime-v2 has only signature type provenance. The v5 source reader
+        // independently recovers body type paths from the original sources.
+        let mut names = BTreeSet::from([name.0.clone()]);
+        for atom in parameters.iter().flatten().chain(&result_type) {
+            if let Atom::Finite(BasisAtom::Enum(origin, _) | BasisAtom::Record(origin, _)) = atom {
+                names.insert(origin.module.clone());
+            }
         }
-    }
-    for atom in static_bases.iter().flat_map(|(_, basis)| basis) {
-        if let BasisAtom::Enum(origin, _) | BasisAtom::Record(origin, _) = atom {
-            names.insert(origin.module.clone());
+        for atom in static_bases.iter().flat_map(|(_, basis)| basis) {
+            if let BasisAtom::Enum(origin, _) | BasisAtom::Record(origin, _) = atom {
+                names.insert(origin.module.clone());
+            }
         }
-    }
-    if !lower.nominal_modules.borrow().is_subset(&names) {
-        return Err(crate::interchange::Error::new(
-            "unsupported",
-            "intermediate nominal source modules require complete typed dependency transport",
-        ));
+        if !lower.nominal_modules.borrow().is_subset(&names) {
+            return Err(crate::interchange::Error::new(
+                "unsupported",
+                "intermediate nominal source modules require complete typed dependency transport",
+            ));
+        }
     }
     lower
         .compiler

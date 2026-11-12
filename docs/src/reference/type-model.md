@@ -39,8 +39,8 @@ The selected producer retains eight-bit words, 1024 function expansions,
 depth 16, 10000 Raw instructions and
 a conservative 100000-unit producer-work ceiling. Existing source, metadata and
 native caps remain separate. Small quantum temporaries use the same Raw emitter
-and all-history checks. Generic selected roots/dependencies and portable nominal
-export still refuse explicitly. Unselected
+and all-history checks. The generic Basis/Nat cases below use the same typed
+emitter. Portable nominal export still refuses explicitly. Unselected
 valid quantum declarations remain source checked without being execution roots.
 Public `classical fn` roots with the same ordinary interface use their original
 classical header and body through this same route; no ordinary wrapper is invented.
@@ -101,10 +101,9 @@ still have their own checks after that common judgment.
 ## One finite type universe
 
 The initial ordinary finite types are `Unit`, `Bit`, `Bits<n>` and ordered
-tuples of finite types. `n` is a checked static natural. `Basis` is the static
-kind of such finite type trees; it is not a second copy of ordinary values.
-Finite ADTs join this universe when their own specified constructors and
-checking rules are implemented.
+tuples of finite types, plus nonempty fieldless enums and records with finite
+ordinary fields. `n` is a checked static natural. `Basis` is the static kind
+of these finite type trees.
 
 `Q<A>` is linear quantum ownership over the finite value space `A`. A basis
 argument to `Q` cannot itself contain a quantum owner. Ordinary tuples may mix
@@ -891,11 +890,11 @@ checking grants no unchecked arbitrary-input runtime. Mixed nominal quantum
 interfaces and selected Basis/Nat roots use the runtime-root gate described
 earlier, including ordinary generic dependencies. Operation-formal closure,
 full qmatch and nominal finite-table consumers remain pending.
-Nominal constructor visits in nested calls and branches also select this typed
-route when the final result is a built-in type. Body-only nominal modules must
-already be retained by the selected original or parameter/result origins; other intermediate
-nominal dependencies refuse explicitly until their full typed transport exists.
-They cannot fall back to ordinary untyped Raw acceptance.
+Nominal constructor visits in nested calls and branches also select a typed
+route when the final result is a built-in type. The v5 qmatch route derives
+body-only nominal dependencies from the original body. The ordinary-v2 and
+runtime-v2 routes require these modules to be covered by the selected original
+or the checked interface types, and refuse uncovered dependencies.
 
 The explicit Rust `Instantiation::check_carrier(kernel, logical, budget)` API
 has a separate bounded, check-only route. It uses the same common judgment,

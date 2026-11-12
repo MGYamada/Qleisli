@@ -247,7 +247,9 @@ when every selection has its own whole-circuit check and the original
 operation closure does not require v5. Nominal source gates, wider selection
 sectors, and original operation closure transport use the bounded v5 request.
 The compiler selects the request before native root checking and
-never retries a failed native decision. Small nominal named-arm qmatch functions
+never retries a failed native decision. V5 checks original nominal declarations
+and import paths used by constructors and field projections in the body, even
+when the types do not occur in the selected interface. Small nominal named-arm qmatch functions
 also submit the complete actual callee fragment to the existing source/arm gate
 below before whole-root runtime acceptance. The fragment retains its original
 complete quantum argument/result order, structural body and named-arm

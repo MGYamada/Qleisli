@@ -114,6 +114,52 @@ fn selected_nominal_qmatch_binds_the_actual_complete_call() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_binds_nominal_sources_used_only_in_the_body() {
+    let entry = include_str!(
+        "fixtures/authoring_sessions/nominal-body-provenance-v030/attempt-01/main.qli"
+    );
+    let labels = include_str!(
+        "fixtures/authoring_sessions/nominal-body-provenance-v030/attempt-01/labels.qli"
+    );
+    let selected = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), entry.into()),
+            ("labels".into(), labels.into()),
+        ]),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::keep",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel())
+    .unwrap();
+    let program = selected.program();
+    kernel().check_program(program).unwrap();
+
+    // The physical circuit and all public port types remain unchanged. The
+    // original body may no longer construct or project this private field.
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    assert_eq!(artifact.matches("pub bit: Bit").count(), 1);
+    let private = artifact.replacen("pub bit: Bit", "bit: Bit", 1);
+    let error = kernel()
+        .check_qmatch_source_v5(private.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_nominal_qmatch_checks_every_original_selection_in_order() {
     // The unchanged first authoring attempt: repeated H/Z sectors cancel as a
     // whole, so checking only the final identity would miss incorrect intervals.

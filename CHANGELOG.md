@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Retain imported nominal types used only inside a selected qmatch body.
+  The native v5 source check validates their original declarations and
+  visibility even when no public port names those types.
 - Distinguish live signal registers from scratch restoration obligations and
   retain their explicit ownership and resource-accounting requirements.
   Explain why ordinary comparison and hashing cannot compare quantum owners;

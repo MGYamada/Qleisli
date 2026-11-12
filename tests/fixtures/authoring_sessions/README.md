@@ -45,6 +45,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [nominal body provenance study](nominal-body-provenance-v030/session.json)
+retains the original two-qubit selection and imported record source, the first
+missing-manifest diagnostic and the typed dependency refusal. A selected
+runtime regression reuses those sources and checks that privatizing the field
+in the retained original artifact is rejected.
+
 The [classical synthesis study](classical-synthesis-v030/session.json) preserves
 two small first programs and four actual checks/runs. A noninjective predicate
 works through XOR embedding and is reused after measurement; a separate
