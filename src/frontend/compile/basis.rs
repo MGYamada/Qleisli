@@ -3,6 +3,7 @@ use crate::frontend::ordinary::finite;
 use crate::frontend::types::nominal::Body;
 
 mod nominal;
+mod planning;
 
 #[derive(Clone, Debug)]
 pub(super) struct BasisValue {

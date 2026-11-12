@@ -146,28 +146,73 @@ fn selected_qmatch_checks_nominal_basis_rows_and_rejects_padding_leaks() {
         "qmatch(s, q) { Tri::C => phase, Tri::B => idle, Tri::A => idle }",
         "(s, q)",
     );
-    let instance = ParsedProgram::parse(
-        Edition::E2026,
-        BTreeMap::from([("main".into(), standalone)]),
-    )
-    .unwrap()
-    .instantiate_runtime_with_types(
-        "main::keep",
-        Default::default(),
-        Default::default(),
-        Default::default(),
-    )
-    .unwrap();
-    let error = instance
-        .compile_runtime_with_kernel(&kernel())
-        .err()
-        .unwrap();
-    assert!(
-        error
-            .message
-            .contains("needs the original source-body gate"),
-        "{error:?}"
+    let selected = self::selected(&standalone);
+    assert_eq!(
+        selected.program().source_body_scope(),
+        Some("finite-source-basis-context-v5")
     );
+    assert!(!selected.program().qmatch_source_checked());
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn standalone_basis_checks_the_original_nominal_output_and_scope() {
+    use qleisli::ir::RawOp;
+
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/standalone-nominal-basis-v030/attempt-01/output");
+    let selected = ParsedProgram::load(BTreeMap::from([("main".into(), root.join("main.qli"))]))
+        .unwrap()
+        .instantiate_runtime_with_types(
+            "main::prepare",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap();
+    let program = selected.program();
+    let request = program.request().unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(!program.qmatch_source_checked());
+    assert!(
+        program
+            .raw()
+            .operations
+            .iter()
+            .any(|op| matches!(op, RawOp::LiftBasis { table, .. } if table == &[2]))
+    );
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let table = r#""table":[2],"tag":"lift_basis""#;
+    assert_eq!(artifact.matches(table).count(), 1);
+    let forged = artifact.replacen(table, r#""table":[3],"tag":"lift_basis""#, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), request)
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+
+    let encoded = std::str::from_utf8(request).unwrap();
+    let wrong_scope = encoded.replace(
+        "finite-source-basis-context-v5",
+        "finite-source-qmatch-context-v5",
+    );
+    let error = kernel()
+        .check_qmatch_source_v5(program.artifact(), wrong_scope.as_bytes())
+        .unwrap_err();
+    assert_eq!(error.code, "format", "{error}");
 }
 
 #[test]

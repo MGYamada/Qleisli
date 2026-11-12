@@ -749,3 +749,10 @@ retains eleven original generated Main bodies and the first refactor,
 compilation, partial-comparison and policy refusals. Its bounded readers do not
 execute history; later compilation and small-system shadow checks remain
 separate from full coverage, default adoption and proof claims.
+
+The [standalone nominal basis study](standalone-nominal-basis-v030/session.json)
+retains two first projects and their actual refusals. The original
+[project manifest](standalone-nominal-basis-v030/attempt-01/project/Qargo.toml)
+and [selected manifest](standalone-nominal-basis-v030/attempt-01/output/Qargo.toml)
+are retained. The unchanged project now returns Bit 1 and the selected
+preparation verifies its canonical three-state output.

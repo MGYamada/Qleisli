@@ -452,7 +452,8 @@ impl Lowerer<'_, '_> {
     }
 
     fn uses_qmatch_v5(&self) -> bool {
-        self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
+        self.nominal_basis_used.is_some()
+            || self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
     }
 
     fn call_user(
@@ -2101,7 +2102,9 @@ fn lower_function_in_context(
     let decl = compiler.declarations[key];
     let key_name = compiler.source.resolution.declaration(*key).name.clone();
     let (params, return_type) = compiler.signature(key)?;
-    let typed_basis = compiler.force_typed_root && compiler.selected_entry.is_some();
+    let planned_basis = compiler.nominal_basis_roots.contains(key);
+    let typed_basis =
+        planned_basis || compiler.force_typed_root && compiler.selected_entry.is_some();
     let mut lower = Lowerer {
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         nominal_basis_used: typed_basis.then_some(false),
@@ -2140,10 +2143,9 @@ fn lower_function_in_context(
             )
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let runtime_inputs = if return_type.linear()
-        || params.iter().any(Ty::linear)
-        || !decl.static_params.is_empty()
-    {
+    let runtime_interface =
+        return_type.linear() || params.iter().any(Ty::linear) || !decl.static_params.is_empty();
+    let runtime_inputs = if runtime_interface || planned_basis {
         Some(runtime::inputs(&mut lower, *key, &args)?)
     } else {
         None
@@ -2182,14 +2184,15 @@ fn lower_function_in_context(
         .as_ref()
         .filter(|context| {
             lower.uses_qmatch_v5()
-                && context.contains_selections
-                && (require_qmatch_v5
-                    || lower.nominal_basis_used == Some(true)
-                    || context.needs_qmatch_v5
-                    || !context.prefer_runtime_root)
+                && (lower.nominal_basis_used == Some(true)
+                    || context.contains_selections
+                        && (planned_basis
+                            || require_qmatch_v5
+                            || context.needs_qmatch_v5
+                            || !context.prefer_runtime_root))
         })
         .cloned();
-    if lower.nominal_basis_used == Some(true) && qmatch.is_none() {
+    if lower.nominal_basis_used == Some(true) && (qmatch.is_none() || runtime_inputs.is_none()) {
         return Err(lower.error(
             &key_name.0,
             decl.span,
@@ -2253,6 +2256,7 @@ fn lower_function_in_context(
         .as_ref()
         .is_some_and(|instance| instance.interface.bases.values().any(ordinary::has_nominal));
     let needs_typed_root = lower.compiler.force_typed_root
+        || qmatch.is_some()
         || nominal_actuals
         || !lower.nominal_modules.borrow().is_empty()
         || ordinary::has_nominal(&result.ty())
@@ -2261,7 +2265,7 @@ fn lower_function_in_context(
         super::selected::check_raw_capacity(lower.compiler, &key_name.0, decl.span, &raw)?;
     }
     let accepted = if needs_typed_root {
-        if let Some(inputs) = runtime_inputs {
+        if let Some(inputs) = runtime_inputs.filter(|_| runtime_interface || qmatch.is_some()) {
             runtime::accept(
                 &mut lower,
                 key,

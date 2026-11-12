@@ -1,0 +1,3 @@
+#![no_implicit_prelude]
+pub enum Tri { A, B, C }
+pub isometry fn prepare() -> Q<Tri> { basis unit(()) as _ { Tri::C } }

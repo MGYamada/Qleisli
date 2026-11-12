@@ -88,9 +88,10 @@ Ordinary Basis/Nat dependencies may forward those same nominal trees, including
 concrete `type(T)` arguments and nested tuples. Original caller/callee binders,
 numeric premises and module-public effects remain distinct. Closed unused
 arguments are still checked; ordinary forwarding grants no operation capability.
-Selected v5 qmatch bodies can use coherent basis lifts over canonical nominal
-codes. Operation-formal closure, standalone nominal tables and nominal Meaning
-consumers remain pending; this profile grants no external schema or inverse/control API.
+Selected and ordinary project roots can use coherent basis lifts over
+canonical nominal codes. The v5 check binds the original finite expression
+to the actual Raw interval, with or without a coherent selection. Operation-formal
+closure and nominal Meaning consumers remain pending.
 Its exact computation witnesses are separate from complex denotation,
 original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed
@@ -891,7 +892,7 @@ this gate. Existing simulation APIs still require closed roots; parameter
 checking grants no unchecked arbitrary-input runtime. Mixed nominal quantum
 interfaces and selected Basis/Nat roots use the runtime-root gate described
 earlier, including ordinary generic dependencies. Operation-formal closure,
-full qmatch and nominal finite-table consumers remain pending.
+wider qmatch and nominal Meaning consumers remain pending.
 Nominal constructor visits in nested calls and branches also select a typed
 route when the final result is a built-in type. The ordinary-v2, runtime-v2
 and v5 qmatch routes can retain imported nominal dependencies used only in
@@ -1028,11 +1029,11 @@ or whose original resolved bodies use nominal values, including through
 classical callees. Project preparation keeps supported built-in-only tables
 eager. When a selected dormant operation reaches a concrete table consumer,
 preparation follows only that original classical function and its classical
-callees; unrelated declarations do not become table roots. Actual coherent
-basis, Meaning and predicate table consumers retain an explicit unsupported
-result for these deferred tables. This preparation change alone supplies no
-accepted value transport or source-to-Raw preservation. Eligible closed ordinary
-roots additionally use the native input/result/history gate above.
+callees; unrelated declarations do not become table roots. Coherent basis
+lifts evaluate these deferred bodies on canonical source values and use the
+v5 source interval check described above. Meaning and predicate table
+consumers still refuse deferred nominal tables. Eligible closed ordinary
+roots use the native input/result/history gate above.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

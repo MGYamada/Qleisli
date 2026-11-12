@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check standalone nominal basis lifts in selected execution and closed projects.
+  Report the original basis context that Lean checked against the Raw interval.
 - Check coherent nominal basis rows in selected v5 qmatch bodies. Generate
   only original logical rows and bind their physical table to the native
   source interval, including pure ordinary enum matches in helpers.

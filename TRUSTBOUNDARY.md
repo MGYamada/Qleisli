@@ -212,8 +212,10 @@ binder identities and public effects. Concrete and unused nominal actuals use
 typed root checks even during global dormant validation; partial calls still
 check their closed siblings. This Rust preparation supplies no operation
 capability, and provider/inverse/control preparation retains its separate
-finite constraints. Operation-formal closure, full qmatch and nominal
-finite-table/Meaning consumers remain pending. Exact computation
+finite constraints. The v5 source check compares original nominal basis rows
+with the actual Raw interval. When the checked root has no coherent selection,
+Lean requires an original basis event and the report names the basis scope.
+Operation-formal closure, wider qmatch and nominal Meaning remain pending. Exact computation
 witnesses supply no source-body,
 complex-denotation or numerical-runtime preservation theorem, inverse/control
 capability, new guarantee admission or broader QS/PR/RS/EXACT discharge.

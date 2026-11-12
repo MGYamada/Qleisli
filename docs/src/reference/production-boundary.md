@@ -266,17 +266,18 @@ Nominal enum/record targets, including empty records, retain their full original
 types with enum or built-in ordinal selectors. Their physical arm entries and
 controls are untrusted proposals: the same native source/sector gate binds the
 full target type, actual body and code equations. It issues no provider capability.
-Selected v5 bodies may also include coherent basis lifts with nominal values.
+Selected and project v5 bodies may include coherent basis lifts with nominal values.
 The producer evaluates only the original logical rows and completes unused
 physical inputs injectively. The native checker independently derives the
 logical table from the original finite expression and pure helper bodies,
 checks every ordinary match arm's dependencies, and binds the canonical rows
-to the actual Raw lift interval. Standalone nominal table and Meaning
-consumers still require their own connection to this check.
+to the actual Raw lift interval. If the checked body has no selection sites,
+Lean requires an original basis event and the report names
+`finite-source-basis-context-v5`. Checked selections use
+`finite-source-qmatch-context-v5`.
 Nonstructural bodies and the full twelve-bit profile remain pending.
-This does not grant operation/provider access: those preparations retain their
-separate finite constraints and evidence. Operation-formal closure, nominal
-coherent-table/Meaning and wider qmatch integration remain pending. Independent
+Operation/provider preparation retains its own finite constraints and evidence.
+Operation-formal closure, nominal Meaning and wider qmatch integration remain pending. Independent
 host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 

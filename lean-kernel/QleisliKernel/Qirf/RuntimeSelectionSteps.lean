@@ -112,6 +112,27 @@ def readResult {dependencies program block} (result : BlockResult dependencies p
   let held ← SourceTypes.NaturalAffine.witness (read (.steps 0 (Steps.ofList result.steps)))
   return ⟨held.val.1,held.val.2,by with_reducible exact held.property⟩
 
+/-- Locate an actual checked basis interval using the same ordered mixed-body
+tree. Merely supplying a position or a physical lift does not satisfy this. -/
+private def hasBasis {dependencies} (item : Item dependencies) : WorkM Bool :=
+  WellFounded.fix (smallerWF (dependencies := dependencies))
+    (C := fun _ => WorkM Bool)
+    (fun current next => do
+      exactWork (Exact.charge 8)
+      match inspect current with
+      | .leaf =>
+        match current with
+        | .node _ (.basis ..) => return true
+        | _ => return false
+      | .selection .. => return false
+      | .child _ one smaller => next one smaller
+      | .pair _ first _ rest smallerFirst smallerRest =>
+        if ← next first smallerFirst then return true else next rest smallerRest) item
+
+def readBasisResult {dependencies program block} (result : BlockResult dependencies program block) : WorkM Bool := do
+  exactWork (Exact.charge (8*(result.steps.length+1)))
+  hasBasis (.steps 0 (Steps.ofList result.steps))
+
 /-- The selected node retains the same program, block and complete literal
 receipt. Its ordinal is local to its original enclosing body or branch. -/
 structure Selection (dependencies : List Semantics.Finite.Dependency) where

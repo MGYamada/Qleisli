@@ -12,6 +12,7 @@ pub struct ProjectCheckReport {
     entry_request_checked: Option<bool>,
     entry_ordinary_result_checked: bool,
     entry_runtime_result_checked: bool,
+    entry_source_body_scope: Option<&'static str>,
     concrete_local_roots: usize,
     concrete_bundled_roots: usize,
 }
@@ -22,6 +23,10 @@ impl ProjectCheckReport {
         native_decisions: NativeDecisionSummary,
     ) -> Self {
         Self {
+            entry_source_body_scope: result
+                .entry
+                .as_ref()
+                .and_then(|entry| entry.source_body_scope()),
             entry_runtime_result_checked: result
                 .entry
                 .as_ref()
@@ -56,6 +61,11 @@ impl ProjectCheckReport {
     /// and all hidden histories. This is not an external algorithm specification.
     pub fn entry_ordinary_result_checked(&self) -> bool {
         self.entry_ordinary_result_checked
+    }
+
+    /// The original body profile checked by the entry's actual native decision.
+    pub fn entry_source_body_scope(&self) -> Option<&'static str> {
+        self.entry_source_body_scope
     }
 
     /// Full runtime types, actual storage and ordered quantum code spaces were

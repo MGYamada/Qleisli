@@ -74,18 +74,31 @@ fn nominal_table_deferral_preserves_actual_consumers_and_unused_body_checks() {
         std::collections::BTreeMap::from([(vec![false], 1.0)])
     );
     let root = SourceRoot::new(
-        "enum Tri { A, B, C } classical fn flag() -> Bit { match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 } } isometry fn prepare() -> Q<Bit> { basis unit(()) as _ { flag() } } observe fn main() -> Bit { measure_z(prepare()) }",
-    );
-    let error = compile_project(&root.0).unwrap_err();
-    assert_eq!(error.code, ErrorCode::Unsupported);
-    assert!(error.message.contains("no nominal intermediate values"));
-
-    let root = SourceRoot::new(
         "enum Tri { A, B, C } classical fn unused() -> Bit { match Tri::A { Tri::A => 0 } } fn main() -> Bit { 0 }",
     );
     let error = compile_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);
     assert!(error.message.contains("non-exhaustive match"));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_runs_standalone_nominal_basis_with_the_original_body_scope() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/standalone-nominal-basis-v030/attempt-01/project");
+    let program = compile_project(&root).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(!program.qmatch_source_checked());
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![true], 1.0)])
+    );
 }
 
 #[test]

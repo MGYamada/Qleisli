@@ -533,18 +533,17 @@ fn runtime_execute(options: &Options, source: &SelectedRuntimeProgram) -> Result
         result,
         &super::check_report::ArtifactReport::new(checked).json_fields()?,
     );
-    let qmatch = checked.qmatch_source_checked();
-    let scope = if qmatch {
-        qleisli::interchange::qmatch::v5::PROFILE
-    } else if checked.runtime_result().is_some() {
+    let source_body = checked.source_body_scope();
+    let scope = source_body.unwrap_or(if checked.runtime_result().is_some() {
         "finite-runtime-root-v2"
     } else {
         "finite-ordinary-root-v2"
-    };
+    });
+    let source_steps = source_body.is_some();
     Ok(fields(
         result,
         &format!(
-            "\"verification\":{{\"scope\":\"{scope}\",\"request_origin\":\"producer\",\"source_steps_checked\":{qmatch},\"source_meaning_verified\":false}},\"execution_authority\":\"checked-produced-ir\""
+            "\"verification\":{{\"scope\":\"{scope}\",\"request_origin\":\"producer\",\"source_steps_checked\":{source_steps},\"source_meaning_verified\":false}},\"execution_authority\":\"checked-produced-ir\""
         ),
     ))
 }

@@ -62,6 +62,7 @@ fn compiler_from_prepared<'p>(
         selected_calls: 0,
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
+        nominal_basis_roots: BTreeSet::new(),
         checked: BTreeMap::new(),
         runtime_signatures: BTreeMap::new(),
         carrier_descriptions: Vec::new(),

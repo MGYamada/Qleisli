@@ -221,6 +221,7 @@ QMATCH_V5_PROOF = {
         'and the exact QDV comparison. CheckedQmatchV5.check_binding binds the actual source-context '
         'read and description to the complete compared execution view. Original.covers and '
         'Original.root_safe retain the original duty queue and fresh Raw root in the bounded checker. '
+        'The sourceScope field requires checked selection sites or a checked basis event. '
         'Rust retains the compared runtime request and uses it for recheck.'),
     'gaps': (
         'The bounded v5 route does not establish complete original source or numerical runtime '
@@ -424,6 +425,7 @@ PATHS = {
             'Protocol.QmatchV5.readRequest requestBytes', 'RuntimeBodyOperations.prepare artifact.val.1',
             'RuntimeBodyOperations.read prepared.val artifact.val.2 request.val.combinedRuntime',
             '0 < checked.val.selections.count', 'checked.val.coverage.residual = []',
+            'RuntimeSelectionSteps.readBasisResult checked.val.checked.result',
             'guard (supplied.data == expected.data) .decodedView', 'theorem check_binding ',
             'theorem Original.covers ', 'theorem Original.root_safe ', 'theorem run_binding ']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeDiscoveryData.lean', ['def ordinaryRows ',
@@ -432,12 +434,16 @@ PATHS = {
         ('lean-kernel/QleisliKernel/Qirf/RuntimeBasisAction.lean', ['def readTable ',
             'rowsMatch input.val event.function.outputLayout event.function.rows table = true',
             '.pure (.liftBasis input.port.token output.token output.wires table)']),
-        ('src/frontend/compile/lower/mod.rs', ['if lower.nominal_basis_used == Some(true) && qmatch.is_none()',
+        ('lean-kernel/Protocol/QmatchV5.lean', ['def usesSelection ',
+            'if hasSelection then profile else basisProfile']),
+        ('src/frontend/compile/lower/mod.rs', ['if lower.nominal_basis_used == Some(true) && (qmatch.is_none() || runtime_inputs.is_none())',
             'eval_typed_basis(module, basis, &env, &mut nominal)?']),
     ], [('src/interchange/native/qmatch/tests.rs', 'v5_checks_the_original_context_and_refuses_a_divergent_view'),
         ('src/frontend/compile/lower/quantum_match/nominal/tests.rs', 'original_general_nested_meaning_proposal'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_wide_interfaces_in_separate_sectors'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_nominal_basis_rows_and_rejects_padding_leaks'),
+        ('tests/selected_runtime_execution.rs', 'standalone_basis_checks_the_original_nominal_output_and_scope'),
+        ('tests/ordinary_nominal_execution.rs', 'project_runs_standalone_nominal_basis_with_the_original_body_scope'),
         ('tests/selected_runtime_execution.rs', 'selected_qif_and_qmatch_retain_their_original_selection_order')]),
     'qmatch-views': path_rule('checked-view', 'qmatch-component', '', [
         ('src/interchange/native/qmatch.rs', ['pub struct QmatchChecked', 'checked: Checked,', 'request: Arc<Request>',
