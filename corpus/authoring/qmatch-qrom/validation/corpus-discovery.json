@@ -1,0 +1,8 @@
+{
+  "format": "qleisli.observed-command-output",
+  "version": 1,
+  "exit_code": 0,
+  "output_streams": "stdout and stderr captured together",
+  "combined_output": "   Compiling qleisli v0.3.0-beta (/workspace/scratch/732d143ac341/Qleisli)\n    Finished `test` profile [unoptimized] target(s) in 6.82s\n     Running tests/native_roundtrip.rs (target/debug/deps/native_roundtrip-dbf65d76f4aafbe3)\n\nrunning 1 test\ntest compiled_project_discovery_selects_current_sources has been running for over 60 seconds\ntest compiled_project_discovery_selects_current_sources ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 66.40s\n\n",
+  "raw_output_sha256": "9b3623cdeac65f26f22529855b58f1d11c74d8e5b5f5ee99875e68085ee166bd"
+}

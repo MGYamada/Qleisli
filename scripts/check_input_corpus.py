@@ -161,6 +161,16 @@ def migrated_sources(corpus, paths, expected, *, source_paths=None):
     return current
 
 
+def semantic_fault_cases(corpus=CORPUS):
+    """Append new cases without rewriting manifests bound by past migrations."""
+    baseline = migration_json(corpus / "semantic_faults/manifest.json")
+    require(baseline["format"] == 1, "unsupported semantic fault format")
+    manifest = migration_json(corpus / "manifest.json")
+    cases = baseline["cases"] + manifest.get("additional_semantic_faults", [])
+    require(len({case["id"] for case in cases}) == len(cases), "duplicate semantic fault ID")
+    return cases
+
+
 def check_manifest(corpus=CORPUS):
     manifest = json.loads((corpus / "manifest.json").read_text())
     require(manifest["format"] == 1, "unsupported corpus format")
@@ -301,10 +311,8 @@ def check_manifest(corpus=CORPUS):
     for rel, digest in current_sources.items():
         require(sha256(source_paths[rel]) == digest,
                 f"current source differs from latest attempt/migration: {rel}")
-    faults = json.loads((corpus / "semantic_faults/manifest.json").read_text())
-    require(faults["format"] == 1, "unsupported semantic fault format")
     fault_projects = set()
-    for fault in faults["cases"]:
+    for fault in semantic_fault_cases(corpus):
         require(fault["reference"] in ids and bool(fault["reason"]), "unregistered semantic fault reference")
         project = local(corpus, fault["project"])
         require(project.is_relative_to((corpus / "semantic_faults").resolve()) and
@@ -576,7 +584,7 @@ def reference_column(case, column):
         return permute(state, lambda i: 3 - i)
     if name == "less_than2":
         return permute(state, lambda i: i ^ (16 if (i & 3) < ((i >> 2) & 3) else 0))
-    if name == "qrom2":
+    if name in ("qrom2", "qrom2_qmatch"):
         return permute(state, lambda i: i ^ ([1, 2, 3, 0][i & 3] << 2))
     if name == "qrom1":
         return permute(state, lambda i: i ^ ([2, 1][i & 1] << 1))
@@ -1143,7 +1151,8 @@ def semantic_probe_count(case, exhaustive):
     return sum(1 + 2 * len({0, x, dim - 1}) for x in range(dim))
 
 
-QUICK_FAULT_IDS = {"rx_missing_scalar", "swapped_bell_labels", "missing_add_two", "incomplete_swap"}
+QUICK_FAULT_IDS = {"rx_missing_scalar", "swapped_bell_labels", "missing_add_two", "incomplete_swap",
+                   "qrom2_qmatch_wrong_arm", "qrom2_qmatch_arm_phase"}
 
 
 def representative_entries(cases):
@@ -1172,7 +1181,7 @@ def main(argv=None):
     parser.add_argument("--case", help="single source/case ID")
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--exhaustive", action="store_true", help="check every complex matrix entry via X/Y interference")
-    modes.add_argument("--quick", action="store_true", help="all shipped entries, 20 representative X/Y entry pairs and four semantic faults")
+    modes.add_argument("--quick", action="store_true", help="all shipped entries, 20 representative X/Y entry pairs and selected semantic faults")
     parser.add_argument("--report", type=Path)
     args = parser.parse_args(argv)
     if args.quick and not args.binary:
@@ -1192,11 +1201,11 @@ def main(argv=None):
         cases = [c for c in manifest["cases"] if not args.case or c["id"] == args.case]
         require(bool(cases), "unknown corpus case")
         ids = {case["id"] for case in cases}
-        faults = [f for f in json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"] if f["reference"] in ids]
+        faults = [f for f in semantic_fault_cases() if f["reference"] in ids]
         negatives = current_negatives()
         quick_probes = None
         if args.quick:
-            all_faults = json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"]
+            all_faults = semantic_fault_cases()
             require(QUICK_FAULT_IDS <= {fault["id"] for fault in all_faults}, "quick semantic fault inventory changed")
             faults = [fault for fault in faults if fault["id"] in QUICK_FAULT_IDS]
             quick_probes = {identifier: entry for identifier, entry in representative_entries(manifest["cases"]).items()

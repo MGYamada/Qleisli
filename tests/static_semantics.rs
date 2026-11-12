@@ -2,6 +2,9 @@
 
 mod common;
 
+#[path = "static_semantics/qmatch_qrom.rs"]
+mod qmatch_qrom;
+
 use std::collections::BTreeMap;
 use std::ops::{Add, Mul, Neg};
 
@@ -164,7 +167,7 @@ fn raw_operator(raw: &RawProgram, depth: usize) -> Vec<Vec<Exact>> {
     let port = &raw.quantum_inputs[0];
     let width = port.wires.len();
     assert!(
-        width <= 3,
+        width <= 4,
         "this exact checker covers small implementations"
     );
     assert_eq!(usize::from(port.shape.bits), width);
@@ -581,7 +584,7 @@ fn apply_steps(amplitudes: &mut Vec<Exact>, steps: &[CircuitStep], axes: &[usize
 
 fn operator(width: usize, steps: &[CircuitStep]) -> Vec<Vec<Exact>> {
     assert!(
-        width <= 3,
+        width <= 4,
         "this exact checker intentionally covers small examples"
     );
     let dimension = 1 << width;

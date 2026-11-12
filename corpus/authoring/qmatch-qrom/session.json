@@ -1,0 +1,23 @@
+{
+  "format": 1,
+  "task": "Issue #521 actual qmatch QROM",
+  "kind": "informed_first_attempt",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "7e5ab1d2db56f52a39aea37eb069813f3ad24771",
+  "author": "Codex",
+  "context": "Read issue #521, its #195 audit, current Reference and existing corpus oracle/tests. No upstream framework execution, no blind benchmark; reuse the frozen Qualtran QROM pin. Previous external-only source bytes were not available.",
+  "created_utc": "2026-11-12T00:31:58.684079+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete first source preserved before checking",
+      "sha256": {
+        "qualtran/qrom2_qmatch/main.qli": "6e3cdfdcf39c73986671094e813c3ed47be009d0d1678bb4808b2e3f44df419a",
+        "qualtran/qrom2_qmatch/kernel.qli": "a177e416572465cd324124e16c158a26db06a78b8edf0671d2f4c0c19d5da879"
+      },
+      "observations": [
+        "check-initial.json"
+      ]
+    }
+  ]
+}

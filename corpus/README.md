@@ -251,7 +251,7 @@ not passed checks or proved theorems.
 
 | Finite examples | Unitary examples | Observing examples | Semantic faults |
 | --- | --- | --- | --- |
-| 87 | 82 | 5 | 63 |
+| 88 | 83 | 5 | 65 |
 
 <!-- corpus-inventory:end -->
 

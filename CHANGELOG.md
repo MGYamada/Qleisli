@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add an actual four-qubit qmatch QROM corpus case with noncanonical arm order,
+  valid wrong-arm/phase counterexamples and an independent exact full-matrix
+  oracle. Compare both qmatch and CNOT/X implementations against the oracle;
+  retain all-input, scalar-phase, superposition and reference correlations.
+  Native semantic rejection remains distinct from source-preservation proof.
 - Distinguish live-binding exchange, structural axis reordering and physical
   SWAP in quantum assignment and retired-import diagnostics. Keep ordinary
   assignment advice separate and retain the explicit two-Bit library interfaces.
