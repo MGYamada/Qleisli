@@ -1,4 +1,8 @@
 use super::*;
+use crate::frontend::ordinary::finite;
+use crate::frontend::types::nominal::Body;
+
+mod nominal;
 
 #[derive(Clone, Debug)]
 pub(super) struct BasisValue {
@@ -50,12 +54,12 @@ impl Compiler<'_> {
         ty: &Ty,
         label: u16,
     ) -> Result<BTreeMap<BinderKey, BasisValue>, CompileError> {
-        if ty.basis_bits().is_none() {
+        if ty.basis_width().is_none_or(|width| width > MAX_BITS as u32) {
             return Err(self.error(
                 module,
                 pattern.span,
                 ErrorCode::Unsupported,
-                "finite label patterns require a closed built-in basis type",
+                "finite label patterns require a bounded closed basis type",
             ));
         }
         let mut env = BTreeMap::new();
@@ -99,7 +103,7 @@ impl Compiler<'_> {
                     let mut offset = 0;
                     let mut children = Vec::with_capacity(fields.len());
                     for (pattern, field) in patterns.iter().zip(fields) {
-                        let bits = field.basis_bits().expect("basis pattern type");
+                        let bits = field.basis_width().expect("bounded basis pattern type");
                         children.push((pattern, field, (label >> offset) & ((1u16 << bits) - 1)));
                         offset += bits;
                     }
@@ -338,14 +342,34 @@ impl Compiler<'_> {
         env: &BTreeMap<BinderKey, BasisValue>,
         depth: usize,
     ) -> Result<BasisValue, CompileError> {
-        super::super::ordinary::finite::evaluate(
+        finite::evaluate(
             &mut LabelContext {
                 compiler: self,
                 module,
+                nominal_used: None,
             },
             expr,
             env,
             depth,
+        )
+    }
+
+    pub(super) fn eval_typed_basis(
+        &mut self,
+        module: &str,
+        expr: &BasisExpr,
+        env: &BTreeMap<BinderKey, BasisValue>,
+        nominal_used: &mut bool,
+    ) -> Result<BasisValue, CompileError> {
+        finite::evaluate(
+            &mut LabelContext {
+                compiler: self,
+                module,
+                nominal_used: Some(nominal_used),
+            },
+            expr,
+            env,
+            0,
         )
     }
 }
@@ -353,13 +377,14 @@ impl Compiler<'_> {
 struct LabelContext<'context, 'source> {
     compiler: &'context mut Compiler<'source>,
     module: &'context str,
+    nominal_used: Option<&'context mut bool>,
 }
 struct LabelTuple {
     types: Vec<Ty>,
     bits: usize,
     label: u16,
 }
-impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
+impl finite::Context for LabelContext<'_, '_> {
     type Value = BasisValue;
     type Environment = BTreeMap<BinderKey, BasisValue>;
     type Tuple = LabelTuple;
@@ -372,6 +397,19 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
             ErrorCode::Unsupported,
             "ordinary nominal values require their typed native transport",
         )
+    }
+
+    fn nominal(
+        &mut self,
+        expr: &BasisExpr,
+        env: &Self::Environment,
+        depth: usize,
+    ) -> Result<BasisValue, CompileError> {
+        let Some(used) = self.nominal_used.as_deref_mut() else {
+            return Err(self.nominal_unavailable(expr.span));
+        };
+        *used = true;
+        self.nominal_expression(expr, env, depth)
     }
 
     fn enter(&mut self, span: Span, depth: usize) -> Result<(), CompileError> {
@@ -429,7 +467,7 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
         tuple: &mut LabelTuple,
         value: BasisValue,
     ) -> Result<(), CompileError> {
-        let width = value.ty.basis_bits().expect("basis value");
+        let width = self.width(span, &value.ty)?;
         if tuple.bits + width > MAX_BITS {
             return Err(self.compiler.error(
                 self.module,
@@ -527,6 +565,9 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
         };
         self.compiler
             .prepare_required_classical_table(key, self.module, callee.span)?;
+        if self.nominal_used.is_some() && self.compiler.deferred_nominal_tables.contains(&key) {
+            return self.nominal_call(key, span, args, env, depth);
+        }
         let function = self.compiler.basis.get(&key).ok_or_else(|| {
             self.compiler.missing_basis_error(
                 self.module,
@@ -551,7 +592,7 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
         let mut label = 0;
         let mut offset = 0;
         for (arg, ty) in args.iter().zip(&params) {
-            let value = self.compiler.eval_basis(self.module, arg, env, depth + 1)?;
+            let value = finite::evaluate(self, arg, env, depth + 1)?;
             if value.ty != *ty {
                 return Err(self.compiler.error(
                     self.module,

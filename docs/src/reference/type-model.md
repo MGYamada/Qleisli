@@ -88,8 +88,9 @@ Ordinary Basis/Nat dependencies may forward those same nominal trees, including
 concrete `type(T)` arguments and nested tuples. Original caller/callee binders,
 numeric premises and module-public effects remain distinct. Closed unused
 arguments are still checked; ordinary forwarding grants no operation capability.
-Operation-formal closure, nominal coherent-table/Meaning
-consumers and wider qmatch integration remain pending; no external schema or inverse/control API is admitted.
+Selected v5 qmatch bodies can use coherent basis lifts over canonical nominal
+codes. Operation-formal closure, standalone nominal tables and nominal Meaning
+consumers remain pending; this profile grants no external schema or inverse/control API.
 Its exact computation witnesses are separate from complex denotation,
 original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed

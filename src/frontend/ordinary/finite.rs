@@ -12,6 +12,14 @@ pub(in crate::frontend) trait Context {
     type Error;
     fn enter(&mut self, span: Span, depth: usize) -> Result<(), Self::Error>;
     fn nominal_unavailable(&mut self, span: Span) -> Self::Error;
+    fn nominal(
+        &mut self,
+        expression: &BasisExpr,
+        _env: &Self::Environment,
+        _depth: usize,
+    ) -> Result<Self::Value, Self::Error> {
+        Err(self.nominal_unavailable(expression.span))
+    }
     fn name(&mut self, name: &Ident, env: &Self::Environment) -> Result<Self::Value, Self::Error>;
     fn unit(&mut self) -> Self::Value;
     fn bit(&mut self, value: bool) -> Self::Value;
@@ -55,9 +63,7 @@ pub(in crate::frontend) fn evaluate<C: Context>(
         BasisExprKind::Variant(_)
         | BasisExprKind::Record(_)
         | BasisExprKind::Field { .. }
-        | BasisExprKind::Match(_) => {
-            return Err(context.nominal_unavailable(expr.span));
-        }
+        | BasisExprKind::Match(_) => context.nominal(expr, env, depth)?,
         BasisExprKind::Name(name) => context.name(name, env)?,
         BasisExprKind::Unit => context.unit(),
         BasisExprKind::Bit(value) => context.bit(*value),

@@ -114,6 +114,97 @@ fn selected_nominal_qmatch_binds_the_actual_complete_call() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_checks_nominal_basis_rows_and_rejects_padding_leaks() {
+    use qleisli::ir::RawOp;
+
+    let source =
+        include_str!("fixtures/authoring_sessions/nominal-basis-rows-v030/attempt-01/main.qli");
+    let selected = selected(source);
+    let program = selected.program();
+    assert!(program.qmatch_source_checked());
+    assert!(matches!(
+        program.raw().operations.first(),
+        Some(RawOp::LiftBasis { table, .. }) if table == &[1, 2, 0, 3]
+    ));
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let original = r#""table":[1,2,0,3],"tag":"lift_basis""#;
+    assert_eq!(artifact.matches(original).count(), 1);
+    for table in ["[2,0,1,3]", "[1,2,3,0]"] {
+        let changed = format!(r#""table":{table},"tag":"lift_basis""#);
+        let artifact = artifact.replacen(original, &changed, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(artifact.as_bytes(), program.request().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+        assert!(
+            error.message.contains("Lean native checker rejected"),
+            "{error}"
+        );
+    }
+
+    let standalone = source.replace(
+        "qmatch(s, q) { Tri::C => phase, Tri::B => idle, Tri::A => idle }",
+        "(s, q)",
+    );
+    let instance = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), standalone)]),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::keep",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap();
+    let error = instance
+        .compile_runtime_with_kernel(&kernel())
+        .err()
+        .unwrap();
+    assert!(
+        error
+            .message
+            .contains("needs the original source-body gate"),
+        "{error:?}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_nominal_basis_lift_uses_logical_dimensions() {
+    use qleisli::ir::{Effect, RawOp};
+
+    let source = r#"#![no_implicit_prelude]
+pub enum Tri { A, B, C }
+unitary fn idle(q: Q<Bit>) -> Q<Bit> { q }
+pub isometry fn keep(s: Q<Unit>, q: Q<Bit>, r: Q<Tri>) -> (Q<Unit>, Q<Bit>, Q<(Bit, Bit)>) {
+    let r = basis r as tag { match tag { Tri::B => (1,0), Tri::A => (0,0), Tri::C => (0,1) } };
+    let (s,q) = qmatch(s,q) { 0 => idle };
+    (s,q,r)
+}
+"#;
+    let accepted = selected(source);
+    let program = accepted.program();
+    assert!(program.qmatch_source_checked());
+    assert_eq!(
+        program.runtime_result().unwrap().public_effect,
+        Effect::Isometry
+    );
+    assert!(matches!(
+        program.raw().operations.first(),
+        Some(RawOp::LiftBasis { table, .. }) if table == &[0, 1, 2, 3]
+    ));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_binds_nominal_sources_used_only_in_the_body() {
     let entry = include_str!(
         "fixtures/authoring_sessions/nominal-body-provenance-v030/attempt-01/main.qli"

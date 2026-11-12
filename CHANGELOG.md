@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check coherent nominal basis rows in selected v5 qmatch bodies. Generate
+  only original logical rows and bind their physical table to the native
+  source interval, including pure ordinary enum matches in helpers.
 - Bind imported nominal types used only inside ordinary and mixed runtime
   bodies to their original type paths before checking the typed Raw root.
 - Retain imported nominal types used only inside a selected qmatch body.

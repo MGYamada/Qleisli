@@ -45,6 +45,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [nominal basis row study](nominal-basis-rows-v030/session.json) preserves
+the first three-label coherent cycle, the old producer refusal and the
+independent source discovery refusal. The unchanged source later passes the
+v5 gate, and the regression rejects reordered rows and padding leakage.
+
 The [ordinary nominal dependency study](ordinary-body-provenance-v030/session.json)
 retains a classical helper's first use of a reexported enum and the original
 typed dependency refusal. The runtime regression uses the unchanged project

@@ -139,6 +139,7 @@ fn check_body_budget_refusal(warm_signature: bool) {
         compiler.work = started;
         let mut lower = Lowerer {
             nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
+            nominal_basis_used: None,
             compiler: &mut compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),

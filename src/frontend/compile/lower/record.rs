@@ -3,100 +3,9 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use super::*;
 use crate::frontend::ast::RecordValue;
-use crate::frontend::types::nominal::{Body, Field, Nominal};
+use crate::frontend::types::nominal::Body;
 
 impl Lowerer<'_, '_> {
-    fn record_type(&mut self, module: &str, name: &Ident) -> Result<Ty, CompileError> {
-        self.compiler.tick(module, name.span)?;
-        let ResolvedUse::Global(Target::Type(id)) = self.compiler.locals().usage(name).target
-        else {
-            return Err(self.error(
-                module,
-                name.span,
-                ErrorCode::TypeMismatch,
-                "record constructor requires its original concrete type occurrence",
-            ));
-        };
-        let nominals = Arc::clone(&self.compiler.source.nominals);
-        let original = nominals.get(&id).ok_or_else(|| {
-            self.error(
-                module,
-                name.span,
-                ErrorCode::TypeMismatch,
-                "record constructor lost its original nominal declaration",
-            )
-        })?;
-        let owner = self.compiler.current_instance_owner().ok_or_else(|| {
-            self.error(
-                module,
-                name.span,
-                ErrorCode::TypeMismatch,
-                "record constructor lacks its active original function",
-            )
-        })?;
-        self.compiler.close_body_type(owner, original, name.span)
-    }
-
-    fn record_index(
-        &mut self,
-        module: &str,
-        nominal: &Nominal<u32>,
-        fields: &[Field<u32>],
-        name: &Ident,
-    ) -> Result<usize, CompileError> {
-        self.compiler.charge(
-            module,
-            name.span,
-            total_size(fields.iter().map(|field| {
-                field
-                    .name
-                    .len()
-                    .saturating_add(name.text.len())
-                    .saturating_add(1)
-            })),
-        )?;
-        let index = fields
-            .iter()
-            .position(|field| field.name == name.text)
-            .ok_or_else(|| {
-                self.error(
-                    module,
-                    name.span,
-                    ErrorCode::TypeMismatch,
-                    "field is absent from its original record declaration",
-                )
-            })?;
-        let owner = self.compiler.current_instance_owner().ok_or_else(|| {
-            self.error(
-                module,
-                name.span,
-                ErrorCode::TypeMismatch,
-                "field access lacks its active original function",
-            )
-        })?;
-        let caller = self.compiler.source.resolution.declaration(owner).module;
-        let cost = self
-            .compiler
-            .source
-            .resolution
-            .module_name(caller)
-            .len()
-            .saturating_add(nominal.origin.module.len())
-            .saturating_add(1);
-        self.compiler.charge(module, name.span, cost)?;
-        if !fields[index].public
-            && self.compiler.source.resolution.module_name(caller) != nominal.origin.module
-        {
-            return Err(self.error(
-                module,
-                name.span,
-                ErrorCode::Capability,
-                "field is private to its original declaring module",
-            ));
-        }
-        Ok(index)
-    }
-
     fn record_child(
         &mut self,
         module: &str,
@@ -216,7 +125,9 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
         evaluate: fn(&mut Self, &str, &E, &mut Env) -> Result<Value, CompileError>,
     ) -> Result<Value, CompileError> {
-        let ty = self.record_type(module, &record.type_name)?;
+        let ty = self
+            .compiler
+            .nominal_value_type(module, &record.type_name)?;
         self.note_nominal(&ty, module, span)?;
         let Kind::Nominal(nominal) = &ty.kind else {
             return Err(self.error(
@@ -248,7 +159,9 @@ impl Lowerer<'_, '_> {
         // Effects and owners follow the original written order. Only completed
         // values are placed in declaration order; no initializer is reordered.
         for written in &record.fields {
-            let index = self.record_index(module, nominal, fields, &written.name)?;
+            let index = self
+                .compiler
+                .record_index(module, nominal, fields, &written.name)?;
             if slots[index].is_some() {
                 return Err(self.error(
                     module,
@@ -297,7 +210,7 @@ impl Lowerer<'_, '_> {
         let Body::Record(fields) = &nominal.body else {
             unreachable!("validated record declaration")
         };
-        let index = self.record_index(module, nominal, fields, field)?;
+        let index = self.compiler.record_index(module, nominal, fields, field)?;
         // The receiver has already been evaluated exactly once. All remaining
         // children are ordinary, so projection cannot silently discard an owner.
         Ok(values
