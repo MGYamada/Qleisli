@@ -92,9 +92,9 @@ private def protectedInterval (sourceText : String) (table : List Nat) (uses : L
   let issued := [event.input,spectatorOwner] ++ (if staleAuxiliary then [event.initial.auxiliary] else [])
   let before : Qirf.RuntimeStructuralAction.SourceState :=
     ⟨[⟨event.input,input⟩,⟨spectatorOwner,spectator⟩],issued,event.nextOrdinal⟩
-  let checked ← Qirf.RuntimeComputedPredicate.readProtectedInterval event interval before
-  let _ ← Qirf.RuntimeComputedUse.read checked
-  return (checked.output.wires,checked.after.bindings.map (·.port.token))
+  let original ← Qirf.RuntimeComputedUse.prepare event
+  let checked ← Qirf.RuntimeComputedUse.read original interval before
+  return (checked.literal.output.wires,checked.literal.after.bindings.map (·.port.token))
 
 private def auxiliaryZ : Semantics.Raw.Use := .protectedGate ⟨.ancilla,0⟩ .z
 

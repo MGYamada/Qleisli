@@ -61,7 +61,7 @@ def continued {sources caller} (event : SourceRuntimeContext.ComputedEvent sourc
     before.issued ++ [event.initial.auxiliary],event.initial.nextOrdinal⟩
 
 structure ProtectedInterval {sources caller dependencies program block start count}
-    (event : SourceRuntimeContext.ComputedEvent sources caller)
+    (event : SourceRuntimeContext.ComputedEvent sources caller) (source : Source event)
     (interval : @RuntimeInterval.Checked dependencies program block start count) (before : SourceState) where
   protectedScope : event.written.parts.logical = none
   sourceOwner : event.returned.data = event.input ∧ event.nextOrdinal = before.nextOrdinal ∧
@@ -77,7 +77,6 @@ structure ProtectedInterval {sources caller dependencies program block start cou
     [.pure (.computeUseUncompute input.port.token output.token [] [auxiliary] table uses)]
   outputRead : PureInterval.ports interval.after [output.token] = some [output]
   wires : output.wires = input.port.wires
-  source : Source event
   exactTable : table = source.table
   width : input.port.bits = source.layout.bits
   spectators : PureInterval.spectators interval.before [input.port.token] =
@@ -88,9 +87,9 @@ structure ProtectedInterval {sources caller dependencies program block start cou
 /-- Bind the original predicate and data owner to one actual protected Raw
 instruction. The original use-body equation remains a separate obligation. -/
 def readProtectedInterval {sources caller dependencies program block start count}
-    (event : SourceRuntimeContext.ComputedEvent sources caller)
+    (event : SourceRuntimeContext.ComputedEvent sources caller) (source : Source event)
     (interval : @RuntimeInterval.Checked dependencies program block start count) (before : SourceState) :
-    WorkM (ProtectedInterval event interval before) := do
+    WorkM (ProtectedInterval event source interval before) := do
   exactWork (Exact.charge (64*(Raw.OwnerFlow.fields (event.input :: event.initial.auxiliary ::
     event.returned.data :: before.issued) + block.operations.length+before.bindings.length+1)))
   if protectedScope : event.written.parts.logical = none then
@@ -103,7 +102,6 @@ def readProtectedInterval {sources caller dependencies program block start count
         match returned : PureInterval.ports interval.after [outputToken] with
         | some [output] =>
           if ports : inputToken = input.port.token ∧ outputToken = output.token ∧ output.wires = input.port.wires then
-            let source ← readSource event
             let tableRead ← checkTable source table
             if width : input.port.bits = source.layout.bits then
               if spectators : PureInterval.spectators interval.before [input.port.token] =
@@ -112,7 +110,7 @@ def readProtectedInterval {sources caller dependencies program block start count
                 let after ← RuntimeOwnerMap.checkBindings (next.bindings.map (·.owner)) interval.after next.bindings
                 return ⟨protectedScope,sourceOwner,frame.val,frame.property,input,output,auxiliary,table,uses,
                   by simpa only [ports.1,ports.2.1] using literal,
-                  by simpa only [ports.2.1] using returned,ports.2.2,source,tableRead.down,width,spectators,
+                  by simpa only [ports.2.1] using returned,ports.2.2,tableRead.down,width,spectators,
                   after.val,after.property⟩
               else throw .request
             else throw .request

@@ -87,27 +87,44 @@ private def rawAction (uses : List Semantics.Raw.Use) : WorkM Matrix := do
   let one ← Raw.ProtectedEvaluation.run 0 1 uses initial 0
   return ⟨2,2,[zero,Scalar.zero,Scalar.zero,one]⟩
 
-structure Checked {sources caller dependencies program block start count}
-    {event : ComputedEvent sources caller} {interval : @RuntimeInterval.Checked dependencies program block start count}
-    {before} (checkedInterval : RuntimeComputedPredicate.ProtectedInterval event interval before) where
+structure Prepared {sources caller} (event : ComputedEvent sources caller) where
+  predicate : RuntimeComputedPredicate.Source event
   body : SourceRuntimeTrace.ComputedBody event
   originalBody : RuntimeInterval.Computed (SourceRuntimeTrace.readComputedSource event) body
   action : Action
   originalAction : RuntimeInterval.Computed (sourceBody body) action
-  emitted : Matrix
-  literalAction : RuntimeInterval.Computed (rawAction checkedInterval.uses) emitted
-  equation : emitted = action.matrix
 
-def read {sources caller dependencies program block start count}
-    {event : ComputedEvent sources caller} {interval : @RuntimeInterval.Checked dependencies program block start count}
-    {before} (checkedInterval : RuntimeComputedPredicate.ProtectedInterval event interval before) : WorkM (Checked checkedInterval) := do
+def Prepared.rows {sources caller} {event : ComputedEvent sources caller} (prepared : Prepared event) : Rows :=
+  event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
+    prepared.predicate.body.checked.summary.staticRows ++ prepared.action.rows
+
+/-- Read the original predicate and use once, before the final checked Raw
+graph is available. Their exact identities remain available for that check. -/
+def prepare {sources caller} (event : ComputedEvent sources caller) : WorkM (Prepared event) := do
+  guard (event.written.parts.logical.isNone) .request
+  let predicate ← RuntimeComputedPredicate.readSource event
   let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedSource event)
   let action ← NaturalAffine.witness (sourceBody body.val)
-  let emitted ← NaturalAffine.witness (rawAction checkedInterval.uses)
-  exactWork (Exact.charge (action.val.matrix.entries.length+emitted.val.entries.length+1))
-  if equation : emitted.val = action.val.matrix then
-    return ⟨body.val,by with_reducible exact body.property,action.val,by with_reducible exact action.property,
-      emitted.val,by with_reducible exact emitted.property,equation⟩
+  return ⟨predicate,body.val,by with_reducible exact body.property,action.val,by with_reducible exact action.property⟩
+
+structure Checked {sources caller dependencies program block start count}
+    {event : ComputedEvent sources caller} (prepared : Prepared event)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before : RuntimeStructuralAction.SourceState) where
+  literal : RuntimeComputedPredicate.ProtectedInterval event prepared.predicate interval before
+  emitted : Matrix
+  literalAction : RuntimeInterval.Computed (rawAction literal.uses) emitted
+  equation : emitted = prepared.action.matrix
+
+def read {sources caller dependencies program block start count}
+    {event : ComputedEvent sources caller} (prepared : Prepared event)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before : RuntimeStructuralAction.SourceState) : WorkM (Checked prepared interval before) := do
+  let literal ← RuntimeComputedPredicate.readProtectedInterval event prepared.predicate interval before
+  let emitted ← NaturalAffine.witness (rawAction literal.uses)
+  exactWork (Exact.charge (prepared.action.matrix.entries.length+emitted.val.entries.length+1))
+  if equation : emitted.val = prepared.action.matrix then
+    return ⟨literal,emitted.val,by with_reducible exact emitted.property,equation⟩
   else throw .equation
 
 end QleisliKernel.Qirf.RuntimeComputedUse
