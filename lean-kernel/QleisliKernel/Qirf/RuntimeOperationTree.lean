@@ -44,22 +44,28 @@ private def readProvider {artifact catalogue context description graph order}
     let checked ← NaturalAffine.witness (RuntimeProviderAction.read provider.header root demand)
     return .present provider original checked.val (by with_reducible exact checked.property)
 
-/-- Compare the complete child action with the Meaning at its original request. -/
-structure Equation {artifact catalogue result}
-    (child : Value) (requirement : RuntimePreparedOperation.Requirement artifact catalogue result)
-    {root} (specification : SourceMeaningAction.Checked requirement.meaning root) : Prop where
-  input : child.input = requirement.request.meaning.graph.input
-  output : child.output = requirement.request.meaning.graph.output
+/-- Compare the complete action with the Meaning at its original request. -/
+structure MeaningEquation {artifact catalogue caller owner name}
+    (child : Value) {meaning : SourceMeaning.Checked artifact.sources caller owner name}
+    {prepared : SourceMeaningAction.Prepared artifact catalogue meaning} {root}
+    (specification : SourceMeaningAction.Checked prepared root) : Prop where
+  input : child.input = meaning.graph.input
+  output : child.output = meaning.graph.output
   action : child.action = specification.action
 
-private def compare {artifact catalogue result}
+abbrev Equation {artifact catalogue result}
     (child : Value) (requirement : RuntimePreparedOperation.Requirement artifact catalogue result)
-    {root} (specification : SourceMeaningAction.Checked requirement.meaning root) :
-    WorkM (PLift (Equation child requirement specification)) := do
+    {root} (specification : SourceMeaningAction.Checked requirement.meaning root) : Prop :=
+  MeaningEquation child specification
+
+private def compare {artifact catalogue caller owner name}
+    (child : Value) {meaning : SourceMeaning.Checked artifact.sources caller owner name}
+    {prepared : SourceMeaningAction.Prepared artifact catalogue meaning} {root}
+    (specification : SourceMeaningAction.Checked prepared root) :
+    WorkM (PLift (MeaningEquation child specification)) := do
   exactWork (Exact.charge (8*(Raw.OwnerFlow.fields [⟨0,child.input⟩,⟨0,child.output⟩,
-    ⟨0,requirement.request.meaning.graph.input⟩,⟨0,requirement.request.meaning.graph.output⟩]+1)))
-  if ports : child.input = requirement.request.meaning.graph.input ∧
-      child.output = requirement.request.meaning.graph.output then
+    ⟨0,meaning.graph.input⟩,⟨0,meaning.graph.output⟩]+1)))
+  if ports : child.input = meaning.graph.input ∧ child.output = meaning.graph.output then
     exactWork (Exact.charge (child.action.entries.length+specification.action.entries.length+1))
     if action : child.action = specification.action then
       return ⟨⟨ports.1,ports.2,action⟩⟩
@@ -72,13 +78,13 @@ structure Meaning {artifact catalogue result}
   specification : SourceMeaningAction.Checked requirement.meaning root
   original : RuntimeInterval.Computed (SourceMeaningAction.read requirement.meaning root) specification
   equation : Equation child requirement specification
-  compared : RuntimeInterval.Computed (compare child requirement specification) (⟨equation⟩ : PLift _)
+  compared : RuntimeInterval.Computed (compare child specification) (⟨equation⟩ : PLift _)
 
 private def readMeaning {artifact catalogue result}
     (child : Value) (requirement : RuntimePreparedOperation.Requirement artifact catalogue result)
     (root : Validity.Root) : WorkM (Meaning child requirement root) := do
   let specification ← NaturalAffine.witness (SourceMeaningAction.read requirement.meaning root)
-  let equation ← NaturalAffine.witness (compare child requirement specification.val)
+  let equation ← NaturalAffine.witness (compare child specification.val)
   return ⟨specification.val,by with_reducible exact specification.property,equation.val.down,
     by with_reducible exact equation.property⟩
 
@@ -262,6 +268,26 @@ private def walk {artifact catalogue context description graph order} (root : Va
           return ⟨tail.stack,record :: tail.records⟩
         else throw .request) occurrences
 
+inductive Formal {artifact catalogue} (value : Value) (root : Validity.Root) :
+    Option (RuntimePreparedOperation.FormalMeaning artifact catalogue) → Type where
+  | none : Formal value root none
+  | bound (prepared : RuntimePreparedOperation.FormalMeaning artifact catalogue)
+      (meaning : SourceMeaningAction.Checked prepared.meaning root)
+      (original : RuntimeInterval.Computed (SourceMeaningAction.read prepared.meaning root) meaning)
+      (equation : MeaningEquation value meaning)
+      (compared : RuntimeInterval.Computed (compare value meaning) (⟨equation⟩ : PLift _)) :
+      Formal value root (some prepared)
+
+private def readFormal {artifact catalogue} (value : Value) (root : Validity.Root) :
+    (prepared : Option (RuntimePreparedOperation.FormalMeaning artifact catalogue)) →
+    WorkM (Formal value root prepared)
+  | none => pure .none
+  | some prepared => do
+    let meaning ← NaturalAffine.witness (SourceMeaningAction.read prepared.meaning root)
+    let equation ← NaturalAffine.witness (compare value meaning.val)
+    return .bound prepared meaning.val (by with_reducible exact meaning.property) equation.val.down
+      (by with_reducible exact equation.property)
+
 structure Checked {artifact catalogue context description graph implementations references}
     (prepared : @RuntimePreparedOperation.GraphPrepared artifact catalogue context description graph implementations references)
     (root : Validity.Root) (requested : StaticOperation.Paths) where
@@ -277,6 +303,8 @@ structure Checked {artifact catalogue context description graph implementations 
   atRoot : value.index = description.root
   input : value.input = graph.root.input
   output : value.output = graph.root.output
+  formal : Formal value root prepared.formal
+  formalRead : RuntimeInterval.Computed (readFormal value root prepared.formal) formal
 
 def Checked.action {artifact catalogue context description graph implementations references prepared root requested}
     (checked : @Checked artifact catalogue context description graph implementations references prepared root requested) : Matrix :=
@@ -307,8 +335,10 @@ def read {artifact catalogue context description graph implementations reference
         | [value] =>
           if atRoot : value.index = description.root then
             if ports : value.input = graph.root.input ∧ value.output = graph.root.output then
+              let formal ← NaturalAffine.witness (readFormal value root prepared.formal)
               return ⟨access.val,by with_reducible exact access.property,sameOrder,outcome.val,
-                by with_reducible exact outcome.property,every,demands,value,complete,atRoot,ports.1,ports.2⟩
+                by with_reducible exact outcome.property,every,demands,value,complete,atRoot,ports.1,ports.2,
+                formal.val,by with_reducible exact formal.property⟩
             else throw .request
           else throw .request
         | _ => throw .request

@@ -125,34 +125,63 @@ private def collect (artifact : Artifact) (catalogue : GenericCatalogue.Checked 
   guard (implementations.isEmpty && references.isEmpty) .request
   return rev.reverse
 
+structure FormalMeaning (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources) where
+  request : SourceMeaning.Request artifact.sources
+  references : List Request
+  meaning : SourceMeaningAction.Prepared artifact catalogue request.meaning
+  prepared : RuntimeInterval.Computed (SourceMeaningAction.prepare artifact catalogue request.meaning references) meaning
+
 /-- Graph-only preparation is shared by a genuine runtime operation and an
 indexed original coherent arm. The graph itself carries its source/supplier
 receipts; this value does not invent an enclosing source occurrence. -/
 structure GraphPrepared (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
     {context description} (graph : StaticOperation.CheckedGraph artifact.sources context description)
     (implementations : List Request) (references : List (List Request)) where
+  treeReferences : List (List Request)
+  formal : Option (FormalMeaning artifact catalogue)
+  referencesSplit : references = treeReferences ++ formal.toList.map (·.references)
   order : List Nat
   ordered : RuntimeInterval.Computed (StaticOperation.readOccurrences description) order
   occurrences : List (Occurrence artifact catalogue graph order)
-  collected : RuntimeInterval.Computed (collect artifact catalogue graph order implementations references) occurrences
+  collected : RuntimeInterval.Computed (collect artifact catalogue graph order implementations treeReferences) occurrences
   every : occurrences.map (·.ordinal) = List.finRange order.length
 
 def GraphPrepared.rows {artifact catalogue context description graph implementations references}
     (prepared : @GraphPrepared artifact catalogue context description graph implementations references) : List SourceRows.Row :=
-  graph.sourceRows ++ prepared.occurrences.flatMap Occurrence.rows
+  graph.sourceRows ++ prepared.occurrences.flatMap Occurrence.rows ++
+    prepared.formal.toList.flatMap (·.meaning.rows)
 
 def GraphPrepared.roots {artifact catalogue context description graph implementations references}
     (prepared : @GraphPrepared artifact catalogue context description graph implementations references) : List Nat :=
-  prepared.occurrences.flatMap Occurrence.roots
+  prepared.occurrences.flatMap Occurrence.roots ++ prepared.formal.toList.flatMap (·.meaning.roots)
+
+private def splitReferences (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
+    (references : List (List Request)) (formal : Option (SourceMeaning.Request artifact.sources)) :
+    WorkM (Σ tree : List (List Request), Σ outer : Option (FormalMeaning artifact catalogue),
+      PLift (references = tree ++ outer.toList.map (·.references))) := do
+  match formal with
+  | none => return ⟨references,none,⟨(List.append_nil references).symm⟩⟩
+  | some request =>
+    exactWork (Exact.charge (8*(references.length+1)))
+    match reversed : references.reverse with
+    | [] => throw .request
+    | last :: tree =>
+      let meaning ← NaturalAffine.witness (SourceMeaningAction.prepare artifact catalogue request.meaning last)
+      let outer : FormalMeaning artifact catalogue := ⟨request,last,meaning.val,by with_reducible exact meaning.property⟩
+      have split : references = tree.reverse ++ [last] := by
+        simpa only [List.reverse_reverse,List.reverse_cons] using congrArg List.reverse reversed
+      return ⟨tree.reverse,some outer,⟨split⟩⟩
 
 def prepareGraph (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
     {context description} (graph : StaticOperation.CheckedGraph artifact.sources context description)
-    (implementations : List Request) (references : List (List Request)) :
+    (implementations : List Request) (references : List (List Request))
+    (formal : Option (SourceMeaning.Request artifact.sources) := none) :
     WorkM (GraphPrepared artifact catalogue graph implementations references) := do
+  let ⟨tree,outer,split⟩ ← splitReferences artifact catalogue references formal
   let order ← NaturalAffine.witness (StaticOperation.readOccurrences description)
-  let occurrences ← NaturalAffine.witness (collect artifact catalogue graph order.val implementations references)
+  let occurrences ← NaturalAffine.witness (collect artifact catalogue graph order.val implementations tree)
   if every : occurrences.val.map (·.ordinal) = List.finRange order.val.length then
-    return ⟨order.val,by with_reducible exact order.property,occurrences.val,
+    return ⟨tree,outer,split.down,order.val,by with_reducible exact order.property,occurrences.val,
       by with_reducible exact occurrences.property,every⟩
   else throw .request
 
@@ -236,7 +265,8 @@ source body, occurrence or Meaning graph. This projection changes no work. -/
 def Prepared.asGraph {artifact owner name arguments source request references}
     (prepared : @Prepared artifact owner name arguments source request references) :
     GraphPrepared artifact source.catalogue prepared.event.operation.graph prepared.implementation.bodies references :=
-  ⟨prepared.order,prepared.ordered,prepared.occurrences,prepared.collected,prepared.every⟩
+  ⟨references,none,(List.append_nil references).symm,
+    prepared.order,prepared.ordered,prepared.occurrences,prepared.collected,prepared.every⟩
 
 private def directShape (description : OperationDescription.Description) : Bool :=
   description.root == 1 && match description.nodes with

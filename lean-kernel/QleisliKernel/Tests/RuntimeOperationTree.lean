@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimePreparedArm
 import QleisliKernel.Qirf.RuntimeOperationOccurrenceTree
+import QleisliKernel.Qirf.RuntimeBodyOperationTraversal
 
 /-! The original caller supplies then_op(sign,sign). Its complete action is
 identity and each leaf realizes Z. The indexed arm requires an actual
@@ -167,5 +168,41 @@ private def productionRun (fault : Fault) := ((inspect fault).run 20000000).1
 #guard (match productionRun .wrongFormalArgument with | .error .equation => true | _ => false)
 #guard (productionRun .dormantTrue).toOption.map (fun (order,providers,subjects,identity) =>
   (order.length,providers.length,subjects.length,identity)) == some (6,2,1,true)
+
+private def inspectFormalPrefix (wrong : Bool) (slot : Nat) (includeReference : Bool) : WorkM Bool := do
+  let text := formalSource (if wrong then "Sign" else "Identity")
+  let programs := if wrong then #[selected,z] else #[selected,z,identity]
+  let artifact : Artifact := ⟨programs,#[],#[("main",text)],0,none⟩
+  let original ← RuntimeBodyDiscovery.prepareSource artifact "main" "route" {}
+  let [.named call] := original.body.checked.events | throw .request
+  if found : slot < call.target.operationActuals.sourceActuals.length then
+    let index := ⟨slot,found⟩
+    let actual := RuntimeGraphOperation.suppliedActual call index
+    let some sign := original.catalogue.records.find? (fun body => body.name == "sign") | throw .request
+    let some token := sign.definition.original.envelope.occurrence.body.head? | throw .request
+    let empty : RuntimeContextRequest.Context := .mk [] [] [] [] []
+    let phase : RuntimeContextRequest.Context := .mk [⟨token.span.startByte,0,1⟩] [] [] [] []
+    let provider : RuntimeProviderHeader.Request := (.pure 1,phase)
+    let reference : RuntimeProviderHeader.Request := if wrong then provider else (.pure 2,empty)
+    let request : RuntimeGraphOperation.Request artifact :=
+      ⟨.source "main",actual.1.2,actual.2.graph,OperationAccess.applicable,
+        if slot == 0 then [provider] else [provider,provider],
+        if includeReference then [[reference]] else [],.supplying call index⟩
+    let prepared ← RuntimeBodyOperations.prepareOperationGraph artifact original.catalogue request
+    let root ← Validity.checkRootFromRoots artifact (if wrong then #[0,1] else #[0,1,2])
+      (original.signature.sourceRows ++ call.target.sourceRows ++ prepared.rows)
+      (artifact.root :: prepared.roots).eraseDups
+    let checked ← RuntimeOperationTree.read prepared root request.requested
+    match prepared.formal,checked.formal with
+    | none,.none => return false
+    | some _,.bound prepared _ _ _ _ => return prepared.request.declarationName == "Identity"
+  else throw .request
+
+#guard ((inspectFormalPrefix false 1 true).run 20000000).1.toOption == some true
+#guard (match ((inspectFormalPrefix true 1 true).run 20000000).1 with
+  | .error .equation => true | _ => false)
+#guard [(0,true),(1,false)].all fun (slot,includeReference) =>
+  match ((inspectFormalPrefix false slot includeReference).run 20000000).1 with
+  | .error .request => true | _ => false
 
 end QleisliKernel.Tests.RuntimeOperationTree

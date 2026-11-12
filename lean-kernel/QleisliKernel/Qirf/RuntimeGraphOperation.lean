@@ -42,6 +42,23 @@ def Origin.isSupplying {sources context description graph}
   | .supplying .. => true
   | _ => false
 
+/-- A declaration requirement belongs to this exact original supplying slot.
+The source header, rather than the encoded reference group, decides its presence. -/
+def Origin.formalRequirement {sources context description graph}
+    (origin : @Origin sources context description graph) : WorkM (Option (SourceMeaning.Request sources)) := do
+  match origin with
+  | .supplying event index =>
+    let required := event.target.signature.operations.rootRequirements
+    if required.isEmpty then return none
+    let name := event.target.operationActuals.sourceActuals[index].name
+    let fields := (required.map fun (formal,_) => formal.utf8ByteSize+1).sum
+    exactWork (Exact.charge (8*(fields+(name.utf8ByteSize+1)*(required.length+1)+index.val+1)))
+    match required.filter (fun (formal,_) => formal == name) with
+    | [] => return none
+    | [(_,request)] => return some request
+    | _ => throw .request
+  | _ => return none
+
 inductive Incoming (sources : Sources) : {owner name : String} →
     SourceRuntimeContext.Signature sources owner name → Type where
   | named {caller} (event : SourceRuntimeContext.NamedEvent sources caller)

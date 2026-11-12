@@ -18,11 +18,17 @@ namespace QleisliKernel.Qirf.RuntimeBodyOperations
 open QleisliKernel Finite SourceTypes
 abbrev Context := RuntimeContextRequest.Context
 
+def prepareOperationGraph (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
+    (call : RuntimeGraphOperation.Request artifact) :
+    WorkM (RuntimePreparedOperation.GraphPrepared artifact catalogue call.graph call.implementations call.references) := do
+  let formal ← call.origin.formalRequirement
+  RuntimePreparedOperation.prepareGraph artifact catalogue call.graph call.implementations call.references formal
+
 def preparation (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources) :
     RuntimeGraphOperation.Preparation artifact where
   Evidence call := RuntimePreparedOperation.GraphPrepared artifact catalogue call.graph
     call.implementations call.references
-  read call := RuntimePreparedOperation.prepareGraph artifact catalogue call.graph call.implementations call.references
+  read := prepareOperationGraph artifact catalogue
   rows checked := checked.rows
   roots checked := checked.roots
 
@@ -33,7 +39,7 @@ structure Operation (artifact : Artifact) (catalogue : GenericCatalogue.Checked 
     (root : Validity.Root) (call : RuntimeGraphOperation.Request artifact) where
   prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue call.graph call.implementations call.references
   preparationRead : RuntimeInterval.Computed
-    (RuntimePreparedOperation.prepareGraph artifact catalogue call.graph call.implementations call.references) prepared
+    (prepareOperationGraph artifact catalogue call) prepared
   checked : RuntimeOperationTree.Checked prepared root call.requested
   checkedRead : RuntimeInterval.Computed (RuntimeOperationTree.read prepared root call.requested) checked
   source : RuntimeSourceOperationMarkers.OriginChecked call.origin prepared checked
@@ -42,8 +48,7 @@ structure Operation (artifact : Artifact) (catalogue : GenericCatalogue.Checked 
 
 def readOperation (artifact : Artifact) (catalogue : GenericCatalogue.Checked artifact.sources)
     (root : Validity.Root) (call : RuntimeGraphOperation.Request artifact) : WorkM (Operation artifact catalogue root call) := do
-  let prepared ← NaturalAffine.witness
-    (RuntimePreparedOperation.prepareGraph artifact catalogue call.graph call.implementations call.references)
+  let prepared ← NaturalAffine.witness (prepareOperationGraph artifact catalogue call)
   let checked ← NaturalAffine.witness (RuntimeOperationTree.read prepared.val root call.requested)
   let source ← NaturalAffine.witness
     (RuntimeSourceOperationMarkers.readOrigin call.origin prepared.val checked.val)
