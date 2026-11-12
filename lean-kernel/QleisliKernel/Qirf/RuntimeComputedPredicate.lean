@@ -62,8 +62,8 @@ open RuntimePrimitiveSource (PortAt readPort)
 
 def continued {sources caller} (event : SourceRuntimeContext.ComputedEvent sources caller)
     (before : SourceState) (output : Semantics.Raw.Port) : SourceState :=
-  ⟨before.bindings.map (fun binding => if binding.owner == event.input then ⟨event.input,output⟩ else binding),
-    before.issued ++ [event.initial.auxiliary],event.initial.nextOrdinal⟩
+  ⟨before.bindings.map (fun binding => if binding.owner == event.input then ⟨event.returned.data,output⟩ else binding),
+    before.issued ++ [event.initial.auxiliary] ++ event.body.allocated,event.body.nextOrdinal⟩
 
 structure ProtectedInterval {sources caller dependencies program block start count}
     (event : SourceRuntimeContext.ComputedEvent sources caller) (source : Source event)

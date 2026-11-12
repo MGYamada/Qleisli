@@ -32,7 +32,7 @@ theorem original_reference_action {sources caller dependencies program block sta
   have geometry := RuntimeComputedGeometry.certified_geometry checked.literal
   obtain ⟨output,rebound⟩ := RuntimeComputedForest.rebound_encoding_of_ports checked.literal.input
     checked.literal.output checked.literal.frame checked.literal.after checked.literal.afterBindings
-    checked.literal.wires geometry.1 interval.history.2.2.1 input
+    event.returned.dataType checked.literal.wires geometry.1 interval.history.2.2.1 input
   refine ⟨output,?_⟩
   intro R joint row reference
   let axes := operand.port.wires.map frame.idxOf

@@ -8,7 +8,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf.RuntimeCertifiedComputed
 open QleisliKernel Finite SourceTypes SourceRuntimeContext SourceRuntimeValues
 open Semantics.Exact
-open RuntimeComputedUse (Action ownerOnly sourceAction)
+open RuntimeComputedUse (Action sourceAction)
 abbrev Owner := Semantics.SourceOwners.Owner
 
 private def identity (dimension : Nat) : WorkM Matrix := do
@@ -34,9 +34,10 @@ private def logicalAction {sources caller} (event : ComputedEvent sources caller
       let body ← SourceRuntimeTrace.readBodyWithSignature signature
       let summary := body.checked.summary
       let [[.owner operand]] := summary.parameterValues | throw .request
-      guard (operand.basis == event.input.basis && ownerOnly operand summary.value &&
-        summary.allocated.isEmpty && summary.consumed.isEmpty && summary.inferredEffect == .unitary) .request
-      let action ← sourceAction sources (SourceTrace.sourceFuel sources) [operand] (← identity dimension)
+      let [.owner returned] := summary.value | throw .request
+      guard (operand.basis == event.input.basis && returned.basis == operand.basis &&
+        summary.inferredEffect == .unitary) .request
+      let action ← sourceAction sources (SourceTrace.sourceFuel sources) [operand] [returned] (← identity dimension)
         body.checked.events
       return {action with rows := operation.rows ++ signature.sourceRows ++ summary.staticRows ++ action.rows}
     | _ => throw .request
@@ -47,11 +48,10 @@ private def useAction {sources caller} {event : ComputedEvent sources caller}
   let data := event.input
   exactWork (Exact.charge (32*(valueFields body.result.value + Raw.OwnerFlow.fields [data,auxiliary]+1)))
   guard (event.written.parts.logical.isSome && auxiliary.basis == [.bit] &&
-    body.result.value == [.tuple 2,.owner data,.owner auxiliary] &&
-    body.result.allocated.isEmpty && body.result.consumed.isEmpty &&
+    body.result.value == [.tuple 2,.owner event.returned.data,.owner event.returned.auxiliary] &&
     inferredEffect body.result.events == .unitary) .request
-  let action ← sourceAction sources (SourceTrace.sourceFuel sources) [data,auxiliary] (← identity (2*dimension))
-    body.result.events
+  let action ← sourceAction sources (SourceTrace.sourceFuel sources) [data,auxiliary]
+    [event.returned.data,event.returned.auxiliary] (← identity (2*dimension)) body.result.events
   return {action with rows := body.result.staticRows ++ action.rows}
 
 structure Prepared {sources caller} (event : ComputedEvent sources caller) where
@@ -85,7 +85,7 @@ structure Literal {sources caller dependencies program block start count}
     (event : ComputedEvent sources caller) (source : RuntimeComputedPredicate.Source event)
     (interval : @RuntimeInterval.Checked dependencies program block start count) (before : SourceState) where
   certifiedScope : event.written.parts.logical.isSome = true
-  sourceOwner : event.returned.data = event.input ∧ event.nextOrdinal = before.nextOrdinal ∧
+  sourceOwner : event.nextOrdinal = before.nextOrdinal ∧
     event.initial.auxiliary ∉ before.issued
   frame : RuntimeOwnerMap.Checked (before.bindings.map (·.owner)) interval.before
   sameFrame : frame.bindings = before.bindings
@@ -113,7 +113,7 @@ private def readLiteral {sources caller dependencies program block start count}
   exactWork (Exact.charge (64*(Raw.OwnerFlow.fields (event.input :: event.initial.auxiliary ::
     event.returned.data :: before.issued) + block.operations.length+before.bindings.length+1)))
   if certifiedScope : event.written.parts.logical.isSome = true then
-    if sourceOwner : event.returned.data = event.input ∧ event.nextOrdinal = before.nextOrdinal ∧
+    if sourceOwner : event.nextOrdinal = before.nextOrdinal ∧
         event.initial.auxiliary ∉ before.issued then
       let frame ← RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) interval.before before.bindings
       let input ← readPort event.input before.bindings

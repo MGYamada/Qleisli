@@ -713,7 +713,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let prepared ← RuntimeBodyQueries.readComputed execution.queries source event children position data
           let finish output node :=
             let after := RuntimeComputedPredicate.continued event before output
-            pure (after,retired ++ [event.initial.auxiliary],ordinary,actions ++ [node],steps ++ [.pure node],
+            pure (after,retired ++ event.body.consumed ++ [event.returned.auxiliary],ordinary,actions ++ [node],steps ++ [.pure node],
               obligations,position.start+position.count,sourceCursor,receipts)
           match prepared with
           | .inl prepared =>

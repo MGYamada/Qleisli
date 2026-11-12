@@ -471,6 +471,7 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'standalone_basis_checks_the_original_nominal_output_and_scope'),
         ('tests/selected_runtime_execution.rs', 'protected_nominal_predicate_checks_the_original_body_and_literal_table'),
         ('tests/selected_runtime_execution.rs', 'certified_nominal_predicate_binds_both_original_actions'),
+        ('tests/selected_runtime_execution.rs', 'certified_nominal_predicate_preserves_split_join_axes'),
         ('tests/selected_runtime_execution.rs', 'nominal_predicate_leaves_padding_between_product_rows'),
         ('tests/selected_runtime_execution.rs', 'project_checks_a_nominal_predicate_with_its_original_callee'),
         ('tests/selected_runtime_execution.rs', 'selected_arm_compares_the_original_nominal_meaning_to_the_applied_operator'),

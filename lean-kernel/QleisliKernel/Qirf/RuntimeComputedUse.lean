@@ -33,56 +33,105 @@ private def ownerAction (owners : List Owner) (operand : Owner) (action : Action
     exactWork (Exact.Matrix.tensorWork before next)
   return {action with matrix := result}
 
+private def rearrange (before after : List Owner) (matrix : Matrix) : WorkM Matrix := do
+  if before == after then return matrix
+  exactWork (Exact.charge (SourceTrace.Meter.permutationWork before after))
+  guard (decide (before.Perm after) && decide ((before.map (·.ordinal)).Nodup)) .request
+  let fields ← before.mapM fun owner => do
+    let layout ← FiniteCarrier.read owner.basis
+    pure (owner,layout.labels.length)
+  let dimension := fields.foldl (fun size field => size*field.2) 1
+  guard (dimension == matrix.rows) .request
+  exactWork (Exact.charge (16*(fields.length+1)^2*(dimension+1) + matrix.rows*matrix.cols))
+  let ordered ← after.mapM fun owner => lift (readOption (fields.lookup owner))
+  let entries := matrix.entries.toArray
+  let rows ← (List.range dimension).flatMapM fun row => do
+    let (_,digits) := (after.zip ordered).foldl (fun (remaining,digits) (owner,card) =>
+      (remaining/card,(owner,remaining%card)::digits)) (row,[])
+    let original ← fields.foldrM (fun (owner,card) rest => do
+      let digit ← lift (readOption (digits.lookup owner))
+      pure (digit + card*rest)) 0
+    (List.range matrix.cols).mapM fun column => lift (readOption entries[original*matrix.cols+column]?)
+  lift (arithmetic (Exact.Matrix.make matrix.rows matrix.cols rows))
+
+private def unary (owners : List Owner) (operand : Owner) (localAction before : Action) : WorkM Action := do
+  let whole ← ownerAction owners operand localAction
+  let matrix ← exactWork (Exact.Matrix.composeWork whole.matrix before.matrix)
+  exactWork (Exact.charge (8*(before.rows.length+whole.rows.length+1)))
+  return ⟨matrix,before.rows ++ whole.rows⟩
+
+/-- Evaluate original gates and explicit pair regrouping. A split keeps the
+components adjacent and first-fast. A join first orders its written inputs. -/
 def sourceAction (sources : Sources) :
-    Nat → {caller : String} → List Owner → Matrix → List (Event sources caller) → WorkM Action :=
-  Nat.rec (fun {_} _ _ _ => throw .limit) (fun _ next {_} owners identity events => do
+    Nat → {caller : String} → List Owner → List Owner → Matrix → List (Event sources caller) → WorkM Action :=
+  Nat.rec (fun {_} _ _ _ _ => throw .limit) (fun _ next {_} initial output identity events => do
     exactWork (Exact.charge (16*(events.length+1)))
-    events.foldlM (init := ⟨identity,[]⟩) fun before event => do
-      let action ← match event with
-        | .phase phase => do
-          guard (owners.contains phase.operand) .request
-          let action ← primitive (.phase phase.application.coefficient.exponent) phase.operand.basis
-            (CallName.sourceRows phase.application.candidate ++ phase.naturals.sourceRows)
-          ownerAction owners phase.operand action
-        | .primitive call => do
-          let [[.owner operand]] := call.arguments | throw .request
-          guard (owners.contains operand && ownerOnly operand call.value &&
+    let (owners,action) ← events.foldlM (init := (initial,⟨identity,[]⟩)) fun (owners,before) event => do
+      exactWork (Exact.charge (8*(Raw.OwnerFlow.fields owners+1)))
+      match event with
+      | .phase phase => do
+        guard (owners.contains phase.operand) .request
+        let action ← primitive (.phase phase.application.coefficient.exponent) phase.operand.basis
+          (CallName.sourceRows phase.application.candidate ++ phase.naturals.sourceRows)
+        return (owners,← unary owners phase.operand action before)
+      | .primitive call => do
+        let rows := CallName.sourceRows call.candidate
+        exactWork (Exact.charge (8*(before.rows.length+rows.length+1)))
+        match call.kind,call.arguments,call.value with
+        | .split,[[.owner operand]],[.tuple 2,.owner left,.owner right] =>
+          guard (owners.contains operand && RuntimeStructuralAction.sourceShape call .split &&
+            !owners.contains left && !owners.contains right && left != right) .request
+          return (owners.flatMap (fun owner => if owner == operand then [left,right] else [owner]),
+            {before with rows := before.rows ++ rows})
+        | .join,[[.owner left],[.owner right]],[.owner joined] =>
+          guard (owners.contains left && owners.contains right && RuntimeStructuralAction.sourceShape call .join &&
+            !owners.contains joined) .request
+          let rest := owners.filter (fun owner => owner != left && owner != right)
+          let matrix ← rearrange owners (left::right::rest) before.matrix
+          return (joined::rest,⟨matrix,before.rows ++ rows⟩)
+        | _,[[.owner operand]],[.owner returned] =>
+          guard (owners.contains operand && returned == operand &&
             call.allocated.isEmpty && call.consumed.isEmpty) .request
           let kind ← RuntimePrimitiveSource.readKind call.kind
-          let action ← primitive kind.val operand.basis (CallName.sourceRows call.candidate)
-          ownerAction owners operand action
-        | .named call => do
-          let [[.owner operand]] := call.arguments | throw .request
-          guard (owners.contains operand && ownerOnly operand call.value &&
-            call.allocated.isEmpty && call.consumed.isEmpty && call.effect == .unitary &&
-            call.target.signature.arguments.operations.isEmpty &&
-            !call.target.signature.operations.hasMeaningRequirements) .request
-          let child ← SourceRuntimeTrace.readNamedSource call
-          let [[.owner childOwner]] := child.summary.parameterValues | throw .request
-          guard (childOwner.basis == operand.basis && ownerOnly childOwner child.summary.value &&
-            child.summary.allocated.isEmpty && child.summary.consumed.isEmpty &&
-            child.summary.inferredEffect == .unitary) .request
-          let layout ← FiniteCarrier.read operand.basis
-          exactWork (Exact.charge ((layout.labels.length+1)^2))
-          let localIdentity ← lift (arithmetic (Exact.Matrix.identity layout.labels.length))
-          let action ← next [childOwner] localIdentity child.events
-          ownerAction owners operand {action with rows := call.target.sourceRows ++ child.summary.staticRows ++ action.rows}
-        | .staticConditional conditional _ => do
-          let selected ← SourceRuntimeTrace.readStaticSource conditional
-          guard (selected.result.allocated.isEmpty && selected.result.consumed.isEmpty &&
-            inferredEffect selected.result.events == .unitary) .request
-          let action ← next owners identity selected.result.events
-          return {action with rows := conditional.selection.naturals.sourceRows ++ selected.result.staticRows ++ action.rows}
-        | _ => throw .request
-      exactWork (Exact.charge (8*(before.rows.length+action.rows.length+1)))
-      return ⟨← exactWork (Exact.Matrix.composeWork action.matrix before.matrix),before.rows ++ action.rows⟩)
+          let action ← primitive kind.val operand.basis rows
+          return (owners,← unary owners operand action before)
+        | _,_,_ => throw .request
+      | .named call => do
+        let [[.owner operand]] := call.arguments | throw .request
+        let [.owner returned] := call.value | throw .request
+        guard (owners.contains operand && returned.basis == operand.basis &&
+          (returned == operand || !owners.contains returned) && call.effect == .unitary &&
+          call.target.signature.arguments.operations.isEmpty &&
+          !call.target.signature.operations.hasMeaningRequirements) .request
+        let child ← SourceRuntimeTrace.readNamedSource call
+        let [[.owner childOwner]] := child.summary.parameterValues | throw .request
+        let [.owner childReturned] := child.summary.value | throw .request
+        guard (childOwner.basis == operand.basis && childReturned.basis == returned.basis &&
+          child.summary.inferredEffect == .unitary) .request
+        let layout ← FiniteCarrier.read operand.basis
+        exactWork (Exact.charge ((layout.labels.length+1)^2))
+        let localIdentity ← lift (arithmetic (Exact.Matrix.identity layout.labels.length))
+        let action ← next [childOwner] [childReturned] localIdentity child.events
+        let action ← unary owners operand
+          {action with rows := call.target.sourceRows ++ child.summary.staticRows ++ action.rows} before
+        return (owners.map (fun owner => if owner == operand then returned else owner),action)
+      | .staticConditional conditional _ => do
+        let selected ← SourceRuntimeTrace.readStaticSource conditional
+        guard (selected.result.allocated.isEmpty && selected.result.consumed.isEmpty &&
+          inferredEffect selected.result.events == .unitary) .request
+        let action ← next owners owners before.matrix selected.result.events
+        return (owners,{action with rows := before.rows ++ conditional.selection.naturals.sourceRows ++
+          selected.result.staticRows ++ action.rows})
+      | _ => throw .request
+    let matrix ← rearrange owners output action.matrix
+    return {action with matrix})
 
 private def sourceBody {sources caller} {event : ComputedEvent sources caller}
     (body : SourceRuntimeTrace.ComputedBody event) : WorkM Action := do
   let owner := event.initial.auxiliary
   guard (owner.basis == [.bit] && ownerOnly owner body.result.value && body.result.allocated.isEmpty &&
     body.result.consumed.isEmpty && inferredEffect body.result.events == .unitary) .request
-  let action ← sourceAction sources (SourceTrace.sourceFuel sources) [owner]
+  let action ← sourceAction sources (SourceTrace.sourceFuel sources) [owner] [owner]
     ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,Scalar.one]⟩ body.result.events
   return {action with rows := body.result.staticRows ++ action.rows}
 
