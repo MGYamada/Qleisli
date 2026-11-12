@@ -2,13 +2,21 @@
 //! This checks every declared target, including unused ones. Tables are
 //! untrusted mathematical requests, not provider equality or native evidence.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
-use crate::frontend::ast::{BasisExpr, Decl, FnBody, FnKind, Ident, Pattern, PatternKind, Span};
-use crate::frontend::check::{self, Budget, Interface, Result, SourceError};
-use crate::frontend::ordinary::{Boolean, finite};
+use crate::frontend::ast::{
+    BasisExpr, Decl, FnBody, FnKind, Ident, Pattern, PatternKind, Span, VariantValue,
+};
+use crate::frontend::check::{self, Budget, Interface, NominalTypes, Result, SourceError};
+use crate::frontend::ordinary::{
+    Boolean,
+    finite::{self, Label as Value, NominalContext},
+};
 use crate::frontend::resolve::locals::{BinderKey, Index, ResolvedUse};
 use crate::frontend::resolve::{DefId, Resolution, Target};
 use crate::frontend::source::SourceCollection;
-use crate::frontend::types::{Kind, Type};
+use crate::frontend::types::{
+    Kind, Type,
+    nominal::{Body, Field, Nominal},
+};
 use std::collections::BTreeMap;
 
 type Ty = Type<u32>;
@@ -318,10 +326,6 @@ impl TargetTable {
         }
     }
 }
-struct Value {
-    ty: Ty,
-    label: u16,
-}
 struct Product {
     fields: Vec<Ty>,
     width: usize,
@@ -333,6 +337,7 @@ struct Context<'a, 'ast> {
     interfaces: &'a BTreeMap<DefId, Interface>,
     indices: &'a BTreeMap<DefId, Index<'ast>>,
     budget: &'a Budget,
+    nominals: &'a NominalTypes,
     definition: DefId,
 }
 
@@ -343,6 +348,7 @@ pub(super) fn validate(
     indices: &BTreeMap<DefId, Index<'_>>,
     order: &[DefId],
     budget: &Budget,
+    nominals: &NominalTypes,
 ) -> Result<BTreeMap<DefId, TargetTable>> {
     let mut targets = BTreeMap::new();
     let mut composites = std::collections::BTreeSet::new();
@@ -357,6 +363,7 @@ pub(super) fn validate(
             interfaces,
             indices,
             budget,
+            nominals,
             definition: id,
         };
         if matches!(
@@ -385,6 +392,7 @@ pub(super) fn validate(
                 interfaces,
                 indices,
                 budget,
+                nominals,
                 definition: id,
             };
             let target = context
@@ -437,7 +445,7 @@ impl<'a> Context<'a, '_> {
         self.budget.charge(span, size.nodes)?;
         Ok(ty.clone())
     }
-    fn width(&self, ty: &Ty, span: Span) -> Result<usize> {
+    fn width(&self, ty: &Ty, span: Span, nominal_values: bool) -> Result<usize> {
         self.budget.charge(span, 1)?;
         let mut pending = vec![ty];
         let mut width = 0usize;
@@ -453,6 +461,19 @@ impl<'a> Context<'a, '_> {
                     pending.extend(fields);
                     0
                 }
+                Kind::Nominal(nominal) if nominal_values => match &nominal.body {
+                    Body::Enum(variants) => {
+                        self.budget.charge(span, variants.len() + 1)?;
+                        node.basis_width()
+                            .ok_or_else(|| self.invalid_nominal(span))?
+                            as usize
+                    }
+                    Body::Record(fields) => {
+                        self.budget.charge(span, fields.len())?;
+                        pending.extend(fields.iter().map(|field| &field.ty));
+                        0
+                    }
+                },
                 _ => return Err(self.error(span, "Meaning requires a closed ordinary basis")),
             };
             width = width.checked_add(bits).ok_or_else(|| {
@@ -490,7 +511,7 @@ impl<'a> Context<'a, '_> {
                 })?;
                 let mut offset = 0;
                 for (pattern, field) in patterns.iter().zip(fields) {
-                    let width = self.width(field, pattern.span)?;
+                    let width = self.width(field, pattern.span, true)?;
                     self.bind(pattern, field, (label >> offset) & ((1 << width) - 1), env)?;
                     offset += width;
                 }
@@ -508,7 +529,7 @@ impl<'a> Context<'a, '_> {
         let interface = &self.interfaces[&self.definition];
         let basis = self.closed(interface.meaning_input(), declaration.span)?;
         let codomain = self.closed(&interface.result, declaration.span)?;
-        let width = self.width(&basis, declaration.span)?;
+        let width = self.width(&basis, declaration.span, false)?;
         if width > crate::contract::MAX_CONTRACT_BITS {
             return Err(SourceError::new(
                 "limit",
@@ -611,7 +632,7 @@ impl<'a> Context<'a, '_> {
         let interface = &self.interfaces[&self.definition];
         let basis = self.closed(interface.meaning_input(), declaration.span)?;
         let codomain = self.closed(&interface.result, declaration.span)?;
-        let width = self.width(&basis, declaration.span)?;
+        let width = self.width(&basis, declaration.span, false)?;
         if width > crate::contract::MAX_CONTRACT_BITS {
             return Err(SourceError::new(
                 "limit",
@@ -712,6 +733,14 @@ impl finite::Context for Context<'_, '_> {
             "ordinary nominal values require their typed native transport",
         )
     }
+    fn nominal(
+        &mut self,
+        expression: &BasisExpr,
+        env: &Environment,
+        depth: usize,
+    ) -> Result<Value> {
+        finite::nominal(self, expression, env, depth)
+    }
     fn enter(&mut self, span: Span, depth: usize) -> Result<()> {
         self.budget.charge(span, 1)?;
         if depth >= 64 {
@@ -756,7 +785,7 @@ impl finite::Context for Context<'_, '_> {
         }
     }
     fn push(&mut self, span: Span, tuple: &mut Product, value: Value) -> Result<()> {
-        let width = self.width(&value.ty, span)?;
+        let width = self.width(span, &value.ty)?;
         if tuple.width + width > 12 {
             return Err(SourceError::new(
                 "limit",
@@ -848,7 +877,96 @@ impl finite::Context for Context<'_, '_> {
         check::type_size_budgeted(&value.ty, 4096, 64, true, span, &mut |span, cells| {
             self.budget.charge(span, cells)
         })?;
-        self.width(&value.ty, span)?;
+        self.width(span, &value.ty)?;
         Ok(value)
+    }
+}
+
+impl finite::NominalContext for Context<'_, '_> {
+    fn enum_label(&mut self, value: &VariantValue) -> Result<(Ty, usize)> {
+        let ty = self.nominal_type(&value.type_name)?;
+        let Kind::Nominal(nominal) = &ty.kind else {
+            return Err(self.invalid_nominal(value.type_name.span));
+        };
+        let Body::Enum(labels) = &nominal.body else {
+            return Err(self.invalid_nominal(value.type_name.span));
+        };
+        for (ordinal, label) in labels.iter().enumerate() {
+            self.budget.charge(
+                value.variant.span,
+                label.len() + value.variant.text.len() + 1,
+            )?;
+            if *label == value.variant.text {
+                return Ok((ty, ordinal));
+            }
+        }
+        Err(self.invalid_nominal(value.variant.span))
+    }
+
+    fn nominal_type(&mut self, name: &Ident) -> Result<Ty> {
+        self.budget.charge(name.span, 1)?;
+        let index = &self.indices[&self.definition];
+        let ResolvedUse::Global(Target::Type(id)) = index.table.usage(index.usage(name)).target
+        else {
+            return Err(self.invalid_nominal(name.span));
+        };
+        self.closed(&self.nominals[&id], name.span)
+    }
+
+    fn record_index(
+        &mut self,
+        nominal: &Nominal<u32>,
+        fields: &[Field<u32>],
+        name: &Ident,
+    ) -> Result<usize> {
+        let module = &self.resolution.declaration(self.definition).name.0;
+        for (index, field) in fields.iter().enumerate() {
+            self.budget
+                .charge(name.span, field.name.len() + name.text.len() + 1)?;
+            if field.name == name.text {
+                self.budget
+                    .charge(name.span, module.len() + nominal.origin.module.len() + 1)?;
+                if !field.public && *module != nominal.origin.module {
+                    return Err(self.error(
+                        name.span,
+                        "field is private to its original declaring module",
+                    ));
+                }
+                return Ok(index);
+            }
+        }
+        Err(self.invalid_nominal(name.span))
+    }
+
+    fn charge(&mut self, span: Span, cells: usize) -> Result<()> {
+        self.budget.charge(span, cells)
+    }
+
+    fn copy_type(&mut self, span: Span, ty: &Ty) -> Result<Ty> {
+        self.copy(ty, span)
+    }
+
+    fn width(&mut self, span: Span, ty: &Ty) -> Result<usize> {
+        Context::width(self, ty, span, true)
+    }
+
+    fn same_type(&mut self, span: Span, actual: &Ty, expected: &Ty) -> Result<()> {
+        for ty in [actual, expected] {
+            check::type_size_budgeted(ty, 4096, 64, true, span, &mut |span, cells| {
+                self.budget.charge(span, cells)
+            })?;
+        }
+        if actual == expected {
+            Ok(())
+        } else {
+            Err(self.error(
+                span,
+                "finite label type differs from its original declared type",
+            ))
+        }
+    }
+
+    fn invalid_nominal(&self, span: Span) -> SourceError {
+        self.error(span, "invalid original nominal finite label")
     }
 }

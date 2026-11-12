@@ -220,6 +220,74 @@ fn standalone_basis_checks_the_original_nominal_output_and_scope() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_arm_compares_the_original_nominal_meaning_to_the_applied_operator() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/nominal-meaning-arm-v030/attempt-01/main.qli");
+    let source = ParsedProgram::load(BTreeMap::from([("main".into(), path)])).unwrap();
+    let finite = source.finite_meaning_target("main::Flip").unwrap();
+    assert_eq!(finite.permutation_table(), [1, 0]);
+    let selected = source
+        .instantiate_runtime_with_types(
+            "main::select",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap();
+    let program = selected.program();
+    assert!(program.qmatch_source_checked());
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let original = "Flag::Flip => not bit";
+    assert_eq!(artifact.matches(original).count(), 1);
+    let stale = artifact.replacen(original, "Flag::Flip => bit", 1);
+    let error = kernel()
+        .check_qmatch_source_v5(stale.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_nominal_meaning_requires_original_equations() {
+    let text =
+        include_str!("fixtures/authoring_sessions/nominal-meaning-arm-v030/attempt-01/main.qli");
+    let source = text.replace(
+        "qmatch(s,q) { 0 => checked_op(implementation, Flip) }",
+        "(s, adjoint(checked_op(implementation, Flip))(q))",
+    );
+    let prepared = ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), source)]))
+        .unwrap()
+        .instantiate_runtime_with_types(
+            "main::select",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap();
+    let error = prepared.compile_runtime_with_kernel(&kernel()).unwrap_err();
+    assert_eq!(error.code, "unsupported", "{error:?}");
+    assert!(
+        error.message.contains("independent closure transport"),
+        "{error:?}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_nominal_basis_lift_uses_logical_dimensions() {
     use qleisli::ir::{Effect, RawOp};
 

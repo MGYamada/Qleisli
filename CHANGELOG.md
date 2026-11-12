@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Evaluate nominal intermediate values in classical Meaning helpers for
+  selected coherent arms and compare the original Meaning with the applied
+  operator in the native source check.
 - Check standalone nominal basis lifts in selected execution and closed projects.
   Report the original basis context that Lean checked against the Raw interval.
 - Check coherent nominal basis rows in selected v5 qmatch bodies. Generate

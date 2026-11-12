@@ -284,7 +284,7 @@ impl ParsedProgram {
                 super::check::SourceLimits::selected(),
                 |resolution, interfaces, helpers, _, order, indices, budget, nominals| {
                     let meaning_targets = meaning::validate(
-                        &sources, resolution, interfaces, indices, order, budget,
+                        &sources, resolution, interfaces, indices, order, budget, nominals,
                     )?;
                     let mut projections = BTreeMap::new();
                     for (id, declaration) in resolution.declarations() {

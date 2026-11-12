@@ -180,10 +180,19 @@ fn process(
     }
     compiler.prepare_selected_classical_tables(Some(&closure))?;
     compiler.plan_nominal_basis(Some(&closure))?;
-    prepare_evidence_dependencies(&mut compiler, &closure, &module, span)?;
+    let requires_original_meaning = prepare_evidence_dependencies(
+        &mut compiler,
+        &closure,
+        &module,
+        span,
+        Some(selected.program()),
+    )?;
     let instance = named_instance(&mut compiler, selected, entry, &module, span)?;
-    let program =
-        lower::lower_instance_function(&mut compiler, instance, requires_operation_closure)?;
+    let program = lower::lower_instance_function(
+        &mut compiler,
+        instance,
+        requires_operation_closure || requires_original_meaning,
+    )?;
     if compiler.declarations[&entry].static_params.is_empty() {
         compiler.checked.insert(entry, program.clone());
     }
@@ -330,7 +339,7 @@ fn prepare_dormant_dependencies(
     // Root tables already passed their stricter selected limits. Do not
     // replace them with a second preparation under the dormant profile.
     needed.retain(|key| !root_closure.contains(key));
-    prepare_evidence_dependencies(compiler, &needed, module, span)
+    prepare_evidence_dependencies(compiler, &needed, module, span, None).map(|_| ())
 }
 
 /// Prepare actual closed bodies demanded by Meaning references and fixed
@@ -342,7 +351,8 @@ fn prepare_evidence_dependencies(
     needed: &BTreeSet<Key>,
     module: &str,
     span: Span,
-) -> Result<(), CompileError> {
+    selected_program: Option<&ParsedProgram>,
+) -> Result<bool, CompileError> {
     compiler.charge(
         module,
         span,
@@ -420,13 +430,15 @@ fn prepare_evidence_dependencies(
             })
             .collect();
         compiler.prepare_selected_classical_tables(Some(&tables))?;
+        let mut requires_original_meaning = false;
         for ordinal in 0..compiler.source.dependency_order.len() {
             let key = compiler.source.dependency_order[ordinal];
             compiler.checking = Some(key);
             let declaration = compiler.declarations[&key];
             if declaration.kind == FnKind::Meaning {
                 if evidence.contains(&key) && !compiler.meanings.contains_key(&key) {
-                    compiler.compile_meaning(&key)?;
+                    requires_original_meaning |=
+                        compiler.compile_meaning_prepared(&key, selected_program)?;
                 }
             } else if evidence.contains(&key)
                 && declaration.static_params.is_empty()
@@ -437,7 +449,7 @@ fn prepare_evidence_dependencies(
                 compiler.checked.insert(key, actual);
             }
         }
-        Ok(())
+        Ok(requires_original_meaning)
     })();
     compiler.force_typed_root = selected;
     compiler.checking = checking;

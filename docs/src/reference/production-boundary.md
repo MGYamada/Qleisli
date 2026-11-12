@@ -276,8 +276,11 @@ Lean requires an original basis event and the report names
 `finite-source-basis-context-v5`. Checked selections use
 `finite-source-qmatch-context-v5`.
 Nonstructural bodies and the full twelve-bit profile remain pending.
-Operation/provider preparation retains its own finite constraints and evidence.
-Operation-formal closure, nominal Meaning and wider qmatch integration remain pending. Independent
+A selected coherent arm can use an original classical Meaning helper with
+nominal intermediate values when the Meaning's ports are supported built-in
+types. Lean checks the helper against the original canonical inputs and
+compares the exact Meaning with the applied arm. Operation-formal closure,
+nominal Meaning ports, standalone nominal Meaning and wider qmatch remain pending. Independent
 host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 

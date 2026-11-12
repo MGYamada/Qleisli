@@ -45,6 +45,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [nominal Meaning arm study](nominal-meaning-arm-v030/session.json)
+retains the original classical helper and coherent arm, the first preparation
+refusal and the later native source check of the unchanged program.
+
 The [nominal basis row study](nominal-basis-rows-v030/session.json) preserves
 the first three-label coherent cycle, the old producer refusal and the
 independent source discovery refusal. The unchanged source later passes the

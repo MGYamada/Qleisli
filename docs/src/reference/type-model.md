@@ -90,9 +90,11 @@ numeric premises and module-public effects remain distinct. Closed unused
 arguments are still checked; ordinary forwarding grants no operation capability.
 Selected and ordinary project roots can use coherent basis lifts over
 canonical nominal codes. The v5 check binds the original finite expression
-to the actual Raw interval, with or without a coherent selection. Operation-formal
-closure and nominal Meaning consumers remain pending.
-Its exact computation witnesses are separate from complex denotation,
+to the actual Raw interval, with or without a coherent selection. A selected
+coherent arm can use a Meaning with a built-in signature and a classical
+helper containing nominal values. The native check compares the original
+Meaning and actual arm operator. Operation-formal closure and wider nominal
+Meaning consumers remain pending. The exact computation witnesses are separate from complex denotation,
 original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed
 common lexical/effect facts. A projection restriction is recorded per declaration;
@@ -1031,9 +1033,11 @@ eager. When a selected dormant operation reaches a concrete table consumer,
 preparation follows only that original classical function and its classical
 callees; unrelated declarations do not become table roots. Coherent basis
 lifts evaluate these deferred bodies on canonical source values and use the
-v5 source interval check described above. Meaning and predicate table
-consumers still refuse deferred nominal tables. Eligible closed ordinary
-roots use the native input/result/history gate above.
+v5 source interval check described above. Selected coherent arms can also
+use the original Meaning equation check for nominal intermediate values.
+Other Meaning consumers and predicate tables still refuse deferred nominal
+tables. Eligible closed ordinary roots use the native input/result/history
+gate above.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

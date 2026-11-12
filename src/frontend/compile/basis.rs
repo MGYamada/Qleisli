@@ -1,15 +1,10 @@
 use super::*;
-use crate::frontend::ordinary::finite;
-use crate::frontend::types::nominal::Body;
+use crate::frontend::ordinary::finite::{self, NominalContext};
 
 mod nominal;
 mod planning;
 
-#[derive(Clone, Debug)]
-pub(super) struct BasisValue {
-    pub ty: Ty,
-    pub label: u16,
-}
+pub(super) use finite::Label as BasisValue;
 
 impl Compiler<'_> {
     /// A predicate over one register has one explicit domain parameter. Ordinary
@@ -410,7 +405,7 @@ impl finite::Context for LabelContext<'_, '_> {
             return Err(self.nominal_unavailable(expr.span));
         };
         *used = true;
-        self.nominal_expression(expr, env, depth)
+        finite::nominal(self, expr, env, depth)
     }
 
     fn enter(&mut self, span: Span, depth: usize) -> Result<(), CompileError> {
