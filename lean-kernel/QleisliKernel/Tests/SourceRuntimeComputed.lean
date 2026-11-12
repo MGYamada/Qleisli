@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
+import QleisliKernel.Qirf.RuntimeComputedPredicate
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Actual original computed scope typing, owner histories and source bodies.
@@ -55,6 +56,24 @@ private def recovered : Finite.WorkM (List Nat × Bool) := do
   let predicate ← SourceRuntimeTrace.readComputedPredicateBody event
   return ((valueOwners body.result.value).map (·.ordinal),predicate.checked.summary.generic.quantumUse)
 #guard (recovered.run 2000000000).1.toOption = some ([1],false)
+
+private def nominal := "#![no_implicit_prelude]\n" ++
+  "pub enum Tri{A,B,C}\n" ++
+  "classical fn is_b(tag:Tri)->Bit{match tag{Tri::A=>0,Tri::B=>1,Tri::C=>0}}\n" ++
+  "pub unitary fn route(q:Q<Tri>)->Q<Tri>{with_computed(q,is_b){|flag|phase[1,1](flag)}}"
+
+private def predicateTable (table : List Nat) : Finite.WorkM (List Nat) := do
+  let checked ← SourceRuntimeTrace.read #[("main",nominal)] "main" "route"
+  let [Event.computed event _] := checked.events | throw Finite.Error.request
+  let original ← Qirf.RuntimeComputedPredicate.readSource event
+  let _ ← Qirf.RuntimeComputedPredicate.checkTable original table
+  return original.layout.labels
+
+#guard ((predicateTable [0,1,0,0]).run 20000000).1.toOption = some [0,1,2]
+#guard [[1,0,0,0],[0,1,0,1],[0,1,0]].all fun table =>
+  match ((predicateTable table).run 20000000).1 with
+  | .error .equation => true
+  | _ => false
 
 #print axioms QleisliKernel.SourceTypes.SourceComputedBindings.originalMember
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.readComputedSource
