@@ -864,10 +864,11 @@ Internalv1 requests refuse without fallback.
 Original parameter/result type reads retain every actual import and public
 reexport lookup, including type references inside record fields. The same
 independent reader reconstructs the nominal tree and these original source rows;
-aliases keep the terminal declaration's identity. Row projection and both
-source-coverage scans are charged before allocation/comparison. Checking every
-unused Nat helper does not justify its source row. Unrelated modules and
-body-only foreign nominal dependencies retain their explicit refusal.
+aliases keep the terminal declaration's identity. When a supplied source row
+needs body provenance, the same native root check uses the original body and
+callee reader to justify the extra type paths. Row projection and coverage
+comparisons are charged. Unused Nat helpers and unrelated modules cannot
+justify their own source rows.
 
 The ordinary project frontend may therefore construct enum/record values,
 project fields and execute exhaustive ordinary `match` inside an eligible closed
@@ -891,10 +892,9 @@ interfaces and selected Basis/Nat roots use the runtime-root gate described
 earlier, including ordinary generic dependencies. Operation-formal closure,
 full qmatch and nominal finite-table consumers remain pending.
 Nominal constructor visits in nested calls and branches also select a typed
-route when the final result is a built-in type. The v5 qmatch route derives
-body-only nominal dependencies from the original body. The ordinary-v2 and
-runtime-v2 routes require these modules to be covered by the selected original
-or the checked interface types, and refuse uncovered dependencies.
+route when the final result is a built-in type. The ordinary-v2, runtime-v2
+and v5 qmatch routes can retain imported nominal dependencies used only in
+the original body. The coverage check requires a resolved original use.
 
 The explicit Rust `Instantiation::check_carrier(kernel, logical, budget)` API
 has a separate bounded, check-only route. It uses the same common judgment,

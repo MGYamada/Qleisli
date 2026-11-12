@@ -160,6 +160,51 @@ fn selected_qmatch_binds_nominal_sources_used_only_in_the_body() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_mixed_runtime_binds_foreign_nominal_body_dependencies() {
+    let main = "#![no_implicit_prelude] use labels::Packet;
+        pub unitary fn keep(q:Q<Bit>)->(Q<Bit>,Bit){
+            let packet=Packet{bit:1}; (q,packet.bit)
+        }";
+    let labels = "pub struct Packet{pub bit:Bit}";
+    let selected = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), main.into()),
+            ("labels".into(), labels.into()),
+        ]),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::keep",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel())
+    .unwrap();
+    let program = selected.program();
+    assert!(program.runtime_result().is_some());
+    assert!(!program.qmatch_source_checked());
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    assert_eq!(artifact.matches("pub bit:Bit").count(), 1);
+    let private = artifact.replacen("pub bit:Bit", "bit:Bit", 1);
+    let error = kernel()
+        .check_runtime_root(private.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_nominal_qmatch_checks_every_original_selection_in_order() {
     // The unchanged first authoring attempt: repeated H/Z sectors cancel as a
     // whole, so checking only the final identity would miss incorrect intervals.

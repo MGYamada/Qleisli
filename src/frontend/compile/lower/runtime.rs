@@ -256,9 +256,7 @@ pub(super) fn accept(
     let registers = lower.raw.registers.clone();
     let stored = storage(lower, *key, result, &registers)?;
     let mut ordinary = Vec::new();
-    if qmatch.is_none() {
-        // Runtime-v2 has only signature type provenance. The v5 source reader
-        // independently recovers body type paths from the original sources.
+    let needs_body_sources = if qmatch.is_none() {
         let mut names = BTreeSet::from([name.0.clone()]);
         for atom in parameters.iter().flatten().chain(&result_type) {
             if let Atom::Finite(BasisAtom::Enum(origin, _) | BasisAtom::Record(origin, _)) = atom {
@@ -270,13 +268,10 @@ pub(super) fn accept(
                 names.insert(origin.module.clone());
             }
         }
-        if !lower.nominal_modules.borrow().is_subset(&names) {
-            return Err(crate::interchange::Error::new(
-                "unsupported",
-                "intermediate nominal source modules require complete typed dependency transport",
-            ));
-        }
-    }
+        !lower.nominal_modules.borrow().is_subset(&names)
+    } else {
+        false
+    };
     lower
         .compiler
         .charge(
@@ -301,6 +296,10 @@ pub(super) fn accept(
         lower
             .compiler
             .qmatch_runtime_sources(*key, &name.0, decl.span, &instance.operations, raw)
+    } else if needs_body_sources {
+        lower
+            .compiler
+            .retained_runtime_body_sources(*key, &name.0, decl.span, raw)
     } else {
         lower
             .compiler

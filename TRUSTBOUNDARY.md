@@ -176,9 +176,10 @@ input rows, storage and effect with
 the retained Rust objects. No sampled or normalized history subset supplies
 acceptance. The program retains the typed result; untyped rechecking refuses.
 Actual original parameter/result type queries and recursive record field types
-also retain their exact import/reexport paths. These independently checked
-paths justify their source rows; global unused-helper checking and arbitrary
-module names do not. The private Rust proposal accounts for complete source
+retain their exact import/reexport paths. When the typed ordinary or mixed
+runtime gate needs additional coverage, the existing native body reader
+derives original type paths from the body and called declarations. Those
+resolved paths justify the additional source rows. The private Rust proposal accounts for complete source
 path/text bytes and obtains no handle until native relevance and full QDV
 comparison succeed. Existing source/work limits remain in force.
 This does not prove source-body lowering or numerical runtime correspondence,

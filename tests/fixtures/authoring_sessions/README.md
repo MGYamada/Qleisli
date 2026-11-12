@@ -45,6 +45,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [ordinary nominal dependency study](ordinary-body-provenance-v030/session.json)
+retains a classical helper's first use of a reexported enum and the original
+typed dependency refusal. The runtime regression uses the unchanged project
+and checks rejection after privatizing the reexport.
+
 The [nominal body provenance study](nominal-body-provenance-v030/session.json)
 retains the original two-qubit selection and imported record source, the first
 missing-manifest diagnostic and the typed dependency refusal. A selected

@@ -168,11 +168,17 @@ enum code, changed nominal identity, reordered field/axis or hidden Observe unde
 a pure label refuses. A declared public Observe bound is retained even for a
 pure implementation. Source rows require the actual selected original, exact
 checked nominal origins or actual original type-resolution paths from the
-selected parameter/result types and recursive record fields. The shared
+selected parameter/result types and recursive record fields. The ordinary
+and mixed runtime gates use the existing original body reader when signature
+and graph evidence leave source rows uncovered. This binds body-only type
+paths, including paths through called helpers, before the shared Raw root check.
+The shared
 independent resolver retains its exact query, original lookup bytes, visibility
 and import/reexport edges. An arbitrary row or a validated unused Nat helper
 cannot supply type-path coverage. Projection and both coverage scans are
-precharged within the existing work limit.
+precharged within the existing work limit. Coverage binds source relevance
+to the checked artifact. Source-to-Raw correspondence remains a separate
+obligation.
 
 Rust's private ordinary proposal decoder accounts for every proposed source's
 path and text under the existing aggregate identity limit, then defers relevance
