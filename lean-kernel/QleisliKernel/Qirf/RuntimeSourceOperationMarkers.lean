@@ -129,7 +129,7 @@ def readBoundAssertion {artifact catalogue context description graph implementat
     (binding : RecordAt checked target.2.located) :
     WorkM (Assertion checked marker target) := do
   match native : binding.record.checked.requirements with
-  | .none .. => throw .request
+  | .none .. | .arguments .. => throw .request
   | .requested child owner name written children requirement original subject equation =>
     exactWork (Exact.charge (16*(owner.utf8ByteSize+name.utf8ByteSize+
       marker.selected.resolution.moduleName.utf8ByteSize+marker.selected.resolution.declaration.name.utf8ByteSize+1)))

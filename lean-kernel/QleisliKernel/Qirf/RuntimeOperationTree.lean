@@ -5,9 +5,9 @@ import QleisliKernel.Qirf.OperationIRMeaning
 Every provider consumes its own original header/body and derived access demand.
 A written requested node compares the actual child action, including a formal
 whose supplied actual is constructed, with its complete original Meaning.
-Zero powers still visit every child and assertion. Formal/provider refinements
-with local requirements are rejected until their exact child association is
-available. The enclosing caller supplies the root and checks its own interval.
+Zero powers still visit every child and assertion. Declaration requirements
+compare the child at the original operation-argument position. The enclosing
+caller supplies the root and checks its own interval.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeOperationTree
 open QleisliKernel Finite SourceTypes
@@ -86,9 +86,39 @@ private def isRequested : Node → Bool
   | .requested .. => true
   | _ => false
 
-/-- The currently supported local assertion is the source requested node's
-one exact child. Other local refinements are retained in preparation and refuse;
-their request indices must not select the first equal-index DAG occurrence. -/
+private def hasArgumentRequirements : Node → Bool
+  | .provider .. | .formal .. => true
+  | _ => false
+
+structure ArgumentMeaning {artifact catalogue result}
+    (requirements : List (RuntimePreparedOperation.Requirement artifact catalogue result))
+    (children : List Value) (root : Validity.Root) where
+  index : Fin requirements.length
+  slot : Nat
+  child : Value
+  originalSlot : requirements[index].argument = some slot
+  atSlot : children[slot]? = some child
+  subject : requirements[index].subject = child.index
+  checked : Meaning child requirements[index] root
+
+private def readArgumentMeaning {artifact catalogue result}
+    (requirements : List (RuntimePreparedOperation.Requirement artifact catalogue result))
+    (children : List Value) (root : Validity.Root) (index : Fin requirements.length) :
+    WorkM (ArgumentMeaning requirements children root) := do
+  let requirement := requirements[index]
+  exactWork (Exact.charge (8*(children.length+requirements.length+1)))
+  match original : requirement.argument with
+  | none => throw .request
+  | some slot =>
+    match atSlot : children[slot]? with
+    | none => throw .request
+    | some child =>
+      if subject : requirement.subject = child.index then
+        return ⟨index,slot,child,original,atSlot,subject,← readMeaning child requirement root⟩
+      else throw .request
+
+/-- Written assertions and declaration contracts consume every original
+request. Argument positions distinguish repeated edges to one DAG index. -/
 inductive Requirements {artifact catalogue context description graph order}
     (occurrence : @RuntimePreparedOperation.Occurrence artifact catalogue context description graph order)
     (node : Node) (children : List Value) (root : Validity.Root) : Type where
@@ -100,6 +130,9 @@ inductive Requirements {artifact catalogue context description graph order}
       (original : occurrence.requirements = [requirement])
       (subject : requirement.subject = child.index)
       (checked : Meaning child requirement root)
+  | arguments (fromArguments : hasArgumentRequirements node = true)
+      (meanings : List (ArgumentMeaning occurrence.requirements children root))
+      (every : meanings.map (·.index) = List.finRange occurrence.requirements.length)
 
 private def readRequirements {artifact catalogue context description graph order}
     (occurrence : @RuntimePreparedOperation.Occurrence artifact catalogue context description graph order)
@@ -113,6 +146,7 @@ private def readRequirements {artifact catalogue context description graph order
       | [requirement] =>
         if childIndexRead : child.index = childIndex then
           if subject : requirement.subject = child.index then
+            guard requirement.argument.isNone .request
             let checked ← readMeaning child requirement root
             return .requested child owner name (by rw [childIndexRead])
               rfl requirement original subject checked
@@ -124,7 +158,14 @@ private def readRequirements {artifact catalogue context description graph order
     if plain : isRequested other = false then
       match empty : occurrence.requirements with
       | [] => return .none plain empty
-      | _ => throw .request
+      | _ =>
+        if fromArguments : hasArgumentRequirements other = true then
+          let meanings ← (List.finRange occurrence.requirements.length).mapM
+            (readArgumentMeaning occurrence.requirements children root)
+          if every : meanings.map (·.index) = List.finRange occurrence.requirements.length then
+            return .arguments fromArguments meanings every
+          else throw .request
+        else throw .request
     else throw .request
 
 structure Step {artifact catalogue context description graph order}

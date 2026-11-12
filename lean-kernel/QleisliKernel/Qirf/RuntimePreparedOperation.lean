@@ -49,8 +49,9 @@ structure Requirement (artifact : Artifact) (catalogue : GenericCatalogue.Checke
     (result : StaticOperation.Result artifact.sources) where
   index : Fin result.requirements.length
   subject : Nat
+  argument : Option Nat
   request : SourceMeaning.Request artifact.sources
-  original : result.requirements[index.val]'index.isLt = (subject,request)
+  original : result.requirements[index.val]'index.isLt = ⟨subject,argument,request⟩
   references : List Request
   meaning : SourceMeaningAction.Prepared artifact catalogue request.meaning
   prepared : RuntimeInterval.Computed
@@ -63,11 +64,11 @@ private def readRequirements (artifact : Artifact) (catalogue : GenericCatalogue
   let (rev,remaining) ← (List.finRange result.requirements.length).foldlM (fun (rev,remaining) index => do
     let requests :: remaining := remaining | throw .request
     let original := result.requirements[index.val]'index.isLt
-    let subject := original.1
-    let request := original.2
+    let request := original.request
     let meaning ← NaturalAffine.witness (SourceMeaningAction.prepare artifact catalogue request.meaning requests)
     let entry : Requirement artifact catalogue result :=
-      ⟨index,subject,request,rfl,requests,meaning.val,by with_reducible exact meaning.property⟩
+      ⟨index,original.subject,original.argument,request,rfl,requests,meaning.val,
+        by with_reducible exact meaning.property⟩
     pure (entry::rev,remaining)) ([],references)
   return (rev.reverse,remaining)
 

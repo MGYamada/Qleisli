@@ -28,6 +28,9 @@ private def dormantSource := source.replace "checked_op(U,Identity)" "power(chec
 private def dormantCorrectSource := source.replace "checked_op(U,Identity)" "power(checked_op(U,Identity),0)"
 private def pairSource (first second : String) := source.replace "checked_op(U,Identity)"
   ("then_op(checked_op(U," ++ first ++ "),checked_op(U," ++ second ++ "))")
+private def formalSource (meaning : String) :=
+  let withFormals := source.replace "const U:Op<Bit>" ("const V:Op<Bit>,const U:Op<Bit," ++ meaning ++ ">")
+  withFormals.replace "choose[then_op(sign,sign)]" "choose[sign,then_op(sign,sign)]"
 private def z : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[.pure (.gate .z 0 1)],[1],[],.unitary⟩
 private def identity : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[],[0],[],.unitary⟩
 private def erased : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[.pure (.applyUnitary 0 1 [])],[1],[],.unitary⟩
@@ -37,6 +40,7 @@ private def selected : Semantics.Observation.Program :=
 private inductive Fault where
   | none | falseMeaning | dormantFalse | dormantTrue | omittedFirst | omittedSecond | missing | extra
   | pair | pairWrongFirst | pairWrongSecond
+  | formalArgument | wrongFormalArgument
   deriving BEq
 
 private def controlPresent {artifact context description graph index request header root demand}
@@ -49,7 +53,9 @@ private abbrev Summary := List Nat × List (Nat × Bool × Bool) × List Nat × 
 
 private def inspect (fault : Fault) : WorkM Summary := do
   let pair := fault == .pair || fault == .pairWrongFirst || fault == .pairWrongSecond
-  let text := if pair then
+  let formal := fault == .formalArgument || fault == .wrongFormalArgument
+  let text := if formal then formalSource (if fault == .wrongFormalArgument then "Sign" else "Identity")
+    else if pair then
       pairSource (if fault == .pairWrongFirst then "Sign" else "Identity")
         (if fault == .pairWrongSecond then "Sign" else "Identity")
     else if fault == .falseMeaning then falseSource else if fault == .dormantFalse then dormantSource
@@ -77,7 +83,10 @@ private def inspect (fault : Fault) : WorkM Summary := do
      (.pure (if fault == .omittedSecond then 3 else 1),phase)]
   let providers := if fault == .missing then providers.take 1 else if fault == .extra then providers ++ [(.pure 1,phase)] else providers
   let providers := if pair then providers ++ providers else providers
-  let references := if pair then
+  let providers := if formal then (.pure 1,phase) :: providers else providers
+  let references := if formal then
+      [[if fault == .wrongFormalArgument then (.pure 1,phase) else (.pure 2,empty)],[reference]]
+    else if pair then
       [[if fault == .pairWrongFirst then (.pure 1,phase) else (.pure 2,empty)],
        [if fault == .pairWrongSecond then (.pure 1,phase) else (.pure 2,empty)]]
     else [[reference]]
@@ -119,13 +128,19 @@ private def inspect (fault : Fault) : WorkM Summary := do
       guard (marker.path == [.child 0] &&
         marker.tokens.head?.map (·.span.startByte) == some 331) .request
       guard (entry.target.2.located.position.val == 4 && entry.assertion.binding.index.val == 4) .request
+    if formal then
+      let slots := actual.outcome.records.flatMap fun record =>
+        match record.checked.requirements with
+        | .arguments _ meanings _ => meanings.map (·.slot)
+        | _ => []
+      guard (slots == [1]) .request
     let providers := actual.outcome.records.filterMap fun record =>
       match record.checked.provider with
       | .absent _ => none
       | .present _ _ checked _ => some (record.occurrence.index,record.demand.controllable,controlPresent checked.paths)
     let subjects := actual.outcome.records.filterMap fun record =>
       match record.checked.requirements with
-      | .none .. => none
+      | .none .. | .arguments .. => none
       | .requested child .. => some child.index
     let identity ← lift (arithmetic (Exact.Matrix.identity 2))
     return (actual.outcome.records.map (·.occurrence.index),providers,subjects,decide (actual.action = identity))
@@ -148,6 +163,8 @@ private def productionRun (fault : Fault) := ((inspect fault).run 20000000).1
   (order.length,providers.length,subjects.length,identity)) == some (11,4,2,true)
 #guard [Fault.pairWrongFirst,.pairWrongSecond].all fun fault =>
   match productionRun fault with | .error .equation => true | _ => false
+#guard (productionRun .formalArgument).toOption.map (fun (_,_,_,identity) => identity) == some true
+#guard (match productionRun .wrongFormalArgument with | .error .equation => true | _ => false)
 #guard (productionRun .dormantTrue).toOption.map (fun (order,providers,subjects,identity) =>
   (order.length,providers.length,subjects.length,identity)) == some (6,2,1,true)
 
