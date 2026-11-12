@@ -132,8 +132,9 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-qmatch-basis-events`,
 `codex/beta-qmatch-gram-routing`,
 `codex/beta-qmatch-forward-tape`,
-`codex/beta-quantum-runtime-types` or
-`codex/beta-runtime-static-bindings`.
+`codex/beta-quantum-runtime-types`,
+`codex/beta-runtime-static-bindings` or
+`codex/beta-64-rectangular-nominal-meaning`.
 The selected branch and workflow source must agree. On pushes, the producer
 first records the schema and scoped-guarantee source identity checks. Matching
 records finish this bootstrap workflow at that point. Stale records and manual
