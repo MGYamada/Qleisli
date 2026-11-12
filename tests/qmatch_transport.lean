@@ -708,18 +708,22 @@ private def observingTypedRoot (p : ObservingPayload) : WorkM Nat := do
   let checked ← RuntimeFamily.check p.rootArtifact p.rootOrder p.runtime
   return (OrdinaryDomain.assignments checked.domain).length
 
-/-- Inspect the SAME common-loop receipt, including its source association.
-An unlocated graph supplies no arm coverage; no independent arm is reread. -/
+private def markerRows {artifact catalogue owner description graph implementations references originals prepared root requested checked}
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references
+      originals prepared root requested checked) : List (Nat × Nat × String) :=
+  source.entries.map fun entry =>
+    ((source.markers[entry.index].tokens.head?.map (·.span.startByte)).getD 0,
+      entry.assertion.binding.index.val,entry.assertion.requirement.request.declarationName)
+
+/-- Inspect the original arm association on the same common-loop receipt. -/
 private def originalMarkerSummary {artifact catalogue context description graph implementations references}
     (origin : @RuntimeGraphOperation.Origin artifact.sources context description graph) :
     (prepared : RuntimePreparedOperation.GraphPrepared artifact catalogue graph implementations references) →
     {root requested : _} → (checked : RuntimeOperationTree.Checked prepared root requested) →
     RuntimeSourceOperationMarkers.OriginChecked origin prepared checked → Nat × List (Nat × Nat × String) := by
   cases origin with
-  | unlocated => exact fun _ {_ _} _ _ => (0,[])
-  | arm operation => exact fun _ {_ _} _ association => (1,association.entries.map fun entry =>
-      ((association.markers[entry.index.val]'entry.index.isLt).tokens.head?.map (·.span.startByte) |>.getD 0,
-       entry.assertion.binding.index.val,entry.assertion.requirement.request.declarationName))
+  | unlocated | application => exact fun _ {_ _} _ _ => (0,[])
+  | arm => exact fun _ {_ _} _ association => (1,markerRows association)
 
 private def rootedInRoute {sources rootOwner rootName owner name} :
     RuntimeOrdinaryBody.CallPath sources rootOwner rootName owner name → Bool
@@ -737,7 +741,7 @@ private def directChooseOffset {sources rootOwner rootName owner name} :
 
 private def originalArmSite {sources owner name context description graph origin} :
     @RuntimeGraphOperation.Site sources owner name context description graph origin → Option (Nat × Nat × Nat)
-  | .unlocated => none
+  | .unlocated | .application .. => none
   | .arm table index => some (index.val,(table.arms[index]).label.ordinal,table.site.parsed.keyword.span.startByte)
 
 private abbrev SupplyHopSummary := String × String × Nat × String × Nat × Nat × Option Nat
@@ -853,9 +857,10 @@ private structure AppliedOffer (sources : Sources) where
 private abbrev LinkedArmSummary (sources : Sources) :=
   (List SupplyHopSummary × Option InteriorView × OperationDescription.Node) × Option (AppliedOffer sources)
 
-private def linkedForStatus {artifact catalogue owner tokens implementations references operation prepared root requested checked
+private def linkedForStatus {artifact catalogue owner description graph implementations references originals prepared root requested checked
     queue rootOwner rootName name entry path}
-    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references
+      originals prepared root requested checked)
     (index : Nat)
     (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path) :
     (status : SourcePendingMeaning.DemandStatus invoked.demand) →
@@ -879,11 +884,11 @@ private def linkedArmSummary {artifact catalogue queue context description graph
     RuntimeLinkedSubject.Evidence site prepared checked source index invoked → Option (LinkedArmSummary artifact.sources) := by
   cases site with
   | unlocated => exact fun impossible => nomatch impossible
-  | arm => exact linkedForStatus source index invoked (RuntimeLinkedSubject.assessment invoked)
+  | arm | application => exact linkedForStatus source index invoked (RuntimeLinkedSubject.assessment invoked)
 
 private def summarizeLink {artifact owner name arguments request prepared root runtime}
     (body : @RuntimeBodyOperations.AtRoot artifact owner name arguments request prepared root runtime)
-    (link : RuntimeBodyOperations.ArmLink body) : Option (LinkedArmSummary artifact.sources) :=
+    (link : RuntimeBodyOperations.WrittenLink body) : Option (LinkedArmSummary artifact.sources) :=
   let receipt := body.receipts[link.receiptIndex]
   @linkedArmSummary artifact prepared.source.catalogue prepared.source.pending.queue
     receipt.request.context receipt.request.description receipt.request.graph receipt.request.origin
@@ -976,10 +981,10 @@ private def observingRuntime (p : ObservingPayload) (composed : Bool) : WorkM Ob
   let keyword := if composed then 302 else 169
   let offset := if composed then 666 else 515
   guard (sites == [(0,0,keyword,offset),(1,1,keyword,offset)]) .request
-  let bindings := checked.writtenArms.map fun link =>
+  let bindings := checked.writtenLinks.map fun link =>
     (link.binding.located.record,link.binding.instanceBinding.demand.source.original.origin.offset)
   guard (bindings == (if composed then [(4,325)] else [])) .request
-  let linked := checked.writtenArms.map fun link =>
+  let linked := checked.writtenLinks.map fun link =>
     (summarizeLink checked.checked link).bind oneHopLinkedSummary
   guard (linked == (if composed then [some (0,0,"U",0,1)] else [])) .request
   let result := checked.checked.result
@@ -1027,7 +1032,7 @@ private def checkForwardedCommonBody (interior : Bool := false) (dormant : Bool 
   let artifact := {seed with sources := #[("main",source)]}
   let body ← RuntimeBodyOperations.prepare artifact "main" "route" {} context
   let checked ← RuntimeBodyOperations.read body order request.runtime
-  let [some ((hops,inside,_),_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
+  let [some ((hops,inside,_),_)] := checked.writtenLinks.map (summarizeLink checked.checked) | throw .invalid
   guard (body.source.pending.entries.countP (·.unconsumed) == (if dormant then 2 else 1)) .invalid
   let [⟨index,witness⟩] := checked.coverage.consumed | throw .invalid
   guard (witness.link.binding.instanceBinding.demand.source.original.origin.offset == 325) .invalid
@@ -1073,13 +1078,13 @@ private def checkFourLevelCommonBody : WorkM Unit := do
   let [⟨_,witness⟩] := checked.coverage.consumed | throw .invalid
   guard (checked.coverage.residual.isEmpty && witness.link.binding.located.record == 8 &&
     witness.link.binding.instanceBinding.invocation.depth == 3) .invalid
-  let bindings := checked.writtenArms.map fun link =>
+  let bindings := checked.writtenLinks.map fun link =>
     (link.binding.instanceBinding.invocation.depth,link.binding.located.record,
       link.binding.instanceBinding.demand.source.original.origin.offset)
   guard (bindings == [(3,8,325)]) .invalid
   let sites := checked.checked.receipts.filterMap fun receipt => originalArmSite receipt.location.site
   guard (sites == [(0,0,302),(1,1,302)]) .invalid
-  let [some ((hops,some inside,_),_)] := checked.writtenArms.map (summarizeLink checked.checked) | throw .invalid
+  let [some ((hops,some inside,_),_)] := checked.writtenLinks.map (summarizeLink checked.checked) | throw .invalid
   guard (hops == [("main","choose",0,"U",0,0,some 472)] &&
     inside.rows == [([0],0,2,"W",0,some 480,some 612),([1],1,5,"W",0,some 482,some 612)] &&
     inside.observed == inside.expected) .invalid
@@ -2009,7 +2014,7 @@ private def crossedMeaning {artifact catalogue context description graph origin 
     (source : RuntimeSourceOperationMarkers.OriginChecked origin prepared checked) (index : Nat) :
     WorkM Unit := by
   cases site with
-  | unlocated => exact throw Finite.Error.invalid
+  | unlocated | application => exact throw Finite.Error.invalid
   | arm => exact do
     let some entry := source.entries[index]? | throw Finite.Error.invalid
     let outerMarker := source.markers[entry.index]
@@ -2097,11 +2102,11 @@ private def readAppliedFixture (source name : String) (callOffset : Nat) (fault 
   let prepared ← RuntimeBodyOperations.prepare artifact "main" name {} context
   let checked ← RuntimeBodyOperations.read prepared #[0,1,2,3,4,5] runtime
   if fault == .nested then checkNestedOriginals checked (if slots then [8,16] else [6,12])
-  let offer := match checked.writtenArms with
+  let offer := match checked.writtenLinks with
     | [link] => (summarizeLink checked.checked link).bind (·.2)
     | _ => none
   return ((checked.coverage.consumed.map (·.1.val),checked.coverage.residual.map Fin.val,
-    checked.writtenArms.map fun link => (link.queueIndex.val,link.binding.instanceBinding.demand.source.original.origin.offset)),offer)
+    checked.writtenLinks.map fun link => (link.queueIndex.val,link.binding.instanceBinding.demand.source.original.origin.offset)),offer)
 
 private def compareAppliedRoots : WorkM (Bool × List (String × Nat) × List (String × Nat) × List Bool) := do
   let source := appliedSource ++
