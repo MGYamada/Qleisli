@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check protected `with_computed` predicates on finite nominal carriers in
+  selected execution and projects. Bind the original use body, complete
+  physical table, owner order and exact auxiliary cleanup to the Raw interval.
+
 - Check Meaning refinements declared in operation formals against the actual
   original argument and exact ports, including unused nominal arguments.
 - Check rectangular nominal Meaning applications through original named

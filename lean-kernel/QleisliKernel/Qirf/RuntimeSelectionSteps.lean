@@ -54,7 +54,8 @@ private def inspect {dependencies} : (item : Item dependencies) → View depende
     .child (.transform ordinal caller event.callerName event.call.calleeOffset
       event.target.resolution.moduleName event.target.resolution.declaration.name) (.nodes 0 nested)
       (by simp only [Smaller] <;> decreasing_tactic)
-  | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.basis ..) | .node _ (.operation ..) => .leaf
+  | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.basis ..)
+  | .node _ (.computed ..) | .node _ (.operation ..) => .leaf
   | .node _ (.rectangularOperation _) => .leaf
   | .nodes _ .nil => .leaf
   | .nodes ordinal (.cons first rest) => .pair (.atOrdinal ordinal) (.node ordinal first) (.nextOrdinal (ordinal+1)) (.nodes (ordinal+1) rest)
@@ -113,7 +114,7 @@ def readResult {dependencies program block} (result : BlockResult dependencies p
   let held ← SourceTypes.NaturalAffine.witness (read (.steps 0 (Steps.ofList result.steps)))
   return ⟨held.val.1,held.val.2,by with_reducible exact held.property⟩
 
-/-- Locate an actual checked basis interval using the same ordered mixed-body
+/-- Locate an actual checked coherent-table interval using the same ordered mixed-body
 tree. Merely supplying a position or a physical lift does not satisfy this. -/
 private def hasBasis {dependencies} (item : Item dependencies) : WorkM Bool :=
   WellFounded.fix (smallerWF (dependencies := dependencies))
@@ -123,7 +124,7 @@ private def hasBasis {dependencies} (item : Item dependencies) : WorkM Bool :=
       match inspect current with
       | .leaf =>
         match current with
-        | .node _ (.basis ..) => return true
+        | .node _ (.basis ..) | .node _ (.computed ..) => return true
         | _ => return false
       | .selection .. => return false
       | .child _ one smaller => next one smaller

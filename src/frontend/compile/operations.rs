@@ -449,7 +449,7 @@ impl Compiler<'_> {
         };
         self.prepare_required_classical_table(fkey, &key_name.0, function.span)?;
         let nominal = if self.deferred_nominal_tables.contains(&fkey) {
-            Some(self.nominal_meaning_table(fkey)?)
+            Some(self.original_classical_table(fkey)?)
         } else {
             None
         };

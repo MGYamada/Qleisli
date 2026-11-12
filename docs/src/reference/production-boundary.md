@@ -271,8 +271,13 @@ The producer evaluates only the original logical rows and completes unused
 physical inputs injectively. The native checker independently derives the
 logical table from the original finite expression and pure helper bodies,
 checks every ordinary match arm's dependencies, and binds the canonical rows
-to the actual Raw lift interval. If the checked body has no selection sites,
-Lean requires an original basis event and the report names
+to the actual Raw lift interval. A protected two-argument `with_computed` with
+an original nominal predicate also uses this check. Lean evaluates the total
+classical predicate on the exact logical codes, requires zero in the padding
+rows, and checks the original one-Bit use body against both exact diagonal
+entries of the literal Raw use. The same interval retains the original data
+owner and its spectators. When no selection or Meaning context is present,
+an actual checked basis lift or protected computed interval earns the report
 `finite-source-basis-context-v5`. It discharges the selected invocation's
 original duties and retains pending positions belonging to other invocations.
 Checked selections use

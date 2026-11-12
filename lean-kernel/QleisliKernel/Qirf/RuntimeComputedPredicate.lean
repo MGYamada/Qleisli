@@ -12,14 +12,19 @@ private def readTable {sources caller} (event : SourceRuntimeContext.ComputedEve
     (body : SourceRuntimeTrace.Body event.predicate.target.signature)
     (layout : Semantics.FiniteCarrier.Layout) : WorkM (List Nat) := do
   let [parameter] := body.checked.summary.parameterValues | throw .request
-  let [(basis,.input 0)] := SourceRuntimeValues.ordinary parameter | throw .request
-  exactWork (Exact.charge (32*(Raw.OwnerFlow.fields [⟨0,basis⟩,⟨0,event.input.basis⟩]+1)))
-  guard (basis == event.input.basis) .request
+  exactWork (Exact.charge (32*(SourceRuntimeValues.valueFields parameter+event.input.basis.length+1)))
+  guard (SourceRuntimeValues.typeOf parameter == Semantics.RuntimeType.ordinary event.input.basis) .request
+  let fields ← (SourceRuntimeValues.ordinary parameter).mapM SourceMeaningOrdinary.readField
+  let fieldCode ← SourceMeaningOrdinary.readFieldCode fields
+  exactWork (Exact.charge (16*(fields.length+fieldCode.labels.length+layout.labels.length+1)))
+  guard (fields.map (·.ordinal) == List.range body.checked.summary.nextOrdinary && fieldCode == layout) .request
   let length := 2^layout.bits
   let value := body.checked.summary.value
-  exactWork (Exact.charge (32*(length+layout.labels.length*(SourceRuntimeValues.valueFields value+1)+1)))
-  let entries ← layout.labels.zipIdx.foldlM (init := Array.replicate length 0) fun entries (label,ordinal) => do
-    let assigned := SourceMeaningOrdinary.valuation [(0,ordinal)]
+  exactWork (Exact.charge (32*(length+layout.labels.length*(SourceRuntimeValues.valueFields value+
+    fields.length^2+(fields.map fun field => field.code.labels.length).sum+1)+1)))
+  let entries ← layout.labels.foldlM (init := Array.replicate length 0) fun entries label => do
+    let arguments ← lift ((SourceMeaningOrdinary.decode fields label).mapError fun _ => .request)
+    let assigned := SourceMeaningOrdinary.valuation arguments
     let result ← lift ((SourceRuntimeOrdinary.extract assigned value).mapError fun _ => .request)
     let [.ordinary [.bit] result] := result | throw .request
     if valid : label < entries.size then
