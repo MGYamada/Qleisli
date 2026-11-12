@@ -72,6 +72,11 @@ def prepare {sources caller} (event : ComputedEvent sources caller) : WorkM (Pre
   return ⟨predicate,body.val,by with_reducible exact body.property,used.val,by with_reducible exact used.property,
     logical.val,by with_reducible exact logical.property⟩
 
+def Prepared.rows {sources caller} {event : ComputedEvent sources caller} (prepared : Prepared event) :
+    List (String × String) :=
+  event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
+    prepared.predicate.body.checked.summary.staticRows ++ prepared.used.rows ++ prepared.logical.rows
+
 
 open RuntimeStructuralAction (SourceState)
 open RuntimePrimitiveSource (PortAt readPort)
@@ -135,21 +140,24 @@ private def readLiteral {sources caller dependencies program block start count}
     else throw .request
   else throw .request
 
-structure Equation (dependencies : List Semantics.Finite.Dependency)
-    (basis : Semantics.FiniteCarrier.Basis) (bits : Nat)
-    (steps : List Semantics.Finite.Step) (expected : Matrix) where
+def Literal.operation {sources caller dependencies program block start count event source interval before}
+    (literal : @Literal sources caller dependencies program block start count event source interval before) :
+    Semantics.Raw.Op :=
+  .certifiedCompute literal.input.port.token literal.output.token [literal.auxiliary] literal.table
+    literal.useSteps literal.logicalSteps
+
+structure Equation (basis : Semantics.FiniteCarrier.Basis) (readPhysical : WorkM Matrix) (expected : Matrix) where
   code : Matrix
   codeRead : RuntimeInterval.Computed (FiniteCarrier.code basis) code
   emitted : Matrix
-  emittedRead : RuntimeInterval.Computed (circuitMatrix dependencies (Raw.circuit bits steps)) emitted
+  emittedRead : RuntimeInterval.Computed readPhysical emitted
   action : CodeSpace.Map code code emitted
   equation : action.logical = expected
 
-private def readEquation (dependencies : List Semantics.Finite.Dependency)
-    (basis : Semantics.FiniteCarrier.Basis) (bits : Nat) (steps : List Semantics.Finite.Step) (expected : Matrix) :
-    WorkM (Equation dependencies basis bits steps expected) := do
+private def readEquation (basis : Semantics.FiniteCarrier.Basis) (readPhysical : WorkM Matrix) (expected : Matrix) :
+    WorkM (Equation basis readPhysical expected) := do
   let code ← NaturalAffine.witness (FiniteCarrier.code basis)
-  let emitted ← NaturalAffine.witness (circuitMatrix dependencies (Raw.circuit bits steps))
+  let emitted ← NaturalAffine.witness readPhysical
   let action ← CodeSpace.readMap code.val code.val emitted.val
   exactWork (Exact.charge (8*(action.logical.entries.length+expected.entries.length+1)))
   if equation : action.logical = expected then
@@ -160,17 +168,21 @@ structure Checked {sources caller dependencies program block start count}
     {event : ComputedEvent sources caller} (prepared : Prepared event)
     (interval : @RuntimeInterval.Checked dependencies program block start count) (before : SourceState) where
   literal : Literal event prepared.predicate interval before
-  used : Equation dependencies (.pair :: event.input.basis ++ [.bit]) (literal.input.port.bits+1)
-    literal.useSteps prepared.used.matrix
-  logical : Equation dependencies event.input.basis literal.input.port.bits literal.logicalSteps prepared.logical.matrix
+  used : Equation (.pair :: event.input.basis ++ [.bit])
+    (circuitMatrix dependencies (Raw.circuit (literal.input.port.bits+1) literal.useSteps)) prepared.used.matrix
+  logical : Equation event.input.basis
+    (Raw.clean dependencies literal.input.port.bits literal.input.port.bits 1 literal.table
+      literal.useSteps literal.logicalSteps) prepared.logical.matrix
 
 def read {sources caller dependencies program block start count} {event : ComputedEvent sources caller}
     (prepared : Prepared event) (interval : @RuntimeInterval.Checked dependencies program block start count)
     (before : SourceState) : WorkM (Checked prepared interval before) := do
   let literal ← readLiteral event prepared.predicate interval before
-  let used ← readEquation dependencies (.pair :: event.input.basis ++ [.bit]) (literal.input.port.bits+1)
-    literal.useSteps prepared.used.matrix
-  let logical ← readEquation dependencies event.input.basis literal.input.port.bits literal.logicalSteps prepared.logical.matrix
+  let bits := literal.input.port.bits
+  let used ← readEquation (.pair :: event.input.basis ++ [.bit])
+    (circuitMatrix dependencies (Raw.circuit (bits+1) literal.useSteps)) prepared.used.matrix
+  let logical ← readEquation event.input.basis
+    (Raw.clean dependencies bits bits 1 literal.table literal.useSteps literal.logicalSteps) prepared.logical.matrix
   return ⟨literal,used,logical⟩
 
 end QleisliKernel.Qirf.RuntimeCertifiedComputed

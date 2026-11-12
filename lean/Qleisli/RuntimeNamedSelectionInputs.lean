@@ -59,7 +59,7 @@ theorem child_source (artifact : Artifact) (root : Validity.Root)
     cases node with
     | primitive _ _ => trivial
     | structural _ => trivial
-    | basis | computed => trivial
+    | basis | computed | certifiedComputed => trivial
     | named _ _ _ _ _ _ => trivial
     | operation _ _ _ _ _ _ _ _ _ _ => trivial
     | rectangularOperation _ => trivial

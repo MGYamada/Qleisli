@@ -1,5 +1,7 @@
 import Qleisli.RuntimeLiteralBasisRefinement
 import Qleisli.RuntimeComputedCallerAction
+import Qleisli.RuntimeCertifiedComputedAction
+import Qleisli.RawFiniteRows
 
 /-! The original protected scope contributes its logical phase to the same
 literal history. It preserves the ordinary SSA table and hidden outcomes.
@@ -23,6 +25,16 @@ private noncomputable def computedResult {sources caller dependencies program bl
     owners := RuntimeComputedPredicate.continued event before checked.literal.output
     operator := RuntimeComputedCallerAction.sourceOperator prepared before.bindings operand source.operator}]
 
+
+private noncomputable def certifiedResult {sources caller dependencies program block start count event prepared interval before}
+    (checked : @RuntimeCertifiedComputed.Checked sources caller dependencies program block start count event prepared interval before)
+    (source : SourceHistory) : List SourceHistory :=
+  let operand : Binding := ⟨event.input,checked.literal.input.port⟩
+  [{source with
+    owners := RuntimeComputedPredicate.continued event before checked.literal.output
+    operator := RuntimeLiteralHistory.applySourceOwner before.bindings before.bindings operand operand
+      prepared.logical.matrix source.operator}]
+
 noncomputable def withComputed {dependencies program block}
     (other : List (Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
@@ -30,10 +42,11 @@ noncomputable def withComputed {dependencies program block}
     (source : SourceHistory) : Option (List SourceHistory) :=
   match step with
   | .pure (.computed _ _ _ checked) => some (computedResult checked source)
+  | .pure (.certifiedComputed _ _ _ checked) => some (certifiedResult checked source)
   | _ => other prior step source
 
 def NeedsNonComputed {dependencies program block} : Step dependencies program block → Prop
-  | .pure (.computed ..) => False
+  | .pure (.computed ..) | .pure (.certifiedComputed ..) => False
   | _ => True
 
 private theorem computed_refines {sources caller dependencies program block start count event children prepared before}
@@ -84,6 +97,66 @@ private theorem computed_refines {sources caller dependencies program block star
   exact .cons ⟨rfl,hidden,bits,kept,_,checked.literal.after,checked.literal.afterBindings,
     checked.literal.afterBindings ▸ output,cast_represents checked.literal.afterBindings output representedAfter⟩ .nil
 
+private theorem certified_refines {sources caller dependencies program block start count event children prepared before}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (location : RuntimeSourceEvent.Location (.computed event children) start count)
+    (checked : @RuntimeCertifiedComputed.Checked sources caller dependencies program block start count event prepared interval before)
+    (inputs : List Nat) (inherited : Option (Nat → Prop)) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
+    (owners : Aligned ownerBefore ownerAfter (.pure (.certifiedComputed interval location prepared checked)))
+    (ordinary : OrdinaryAligned ordinaryBefore ordinaryAfter (.pure (.certifiedComputed interval location prepared checked)))
+    {chunk source history outputs}
+    (read : readOps block.fuel interval.before.quantum.reference ((block.operations.drop start).take count) =
+      some (interval.after.quantum.reference,chunk))
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs interval.before ownerBefore ordinaryBefore source history)
+    (executed : run dependencies block.fuel chunk history = some outputs) :
+    List.Forall₂ (SemanticHistoryAgreesWithInherited inherited inputs interval.after ownerAfter ordinaryAfter)
+      (certifiedResult checked source) outputs := by
+  have beforeAligned : ownerBefore = before := owners.1
+  have afterAligned : ownerAfter = RuntimeComputedPredicate.continued event before checked.literal.output := owners.2
+  subst ownerBefore
+  subst ownerAfter
+  cases ordinary
+  obtain ⟨_,hidden,bits,values,_,frame,bindings,input,represented⟩ := agrees
+  let operand : Binding := ⟨event.input,checked.literal.input.port⟩
+  let rawEvent := Semantics.Raw.Event.computed interval.before.quantum.frame.length
+    (operand.port.wires.map interval.before.quantum.frame.idxOf) operand.port.bits 1 checked.literal.table
+    checked.literal.useSteps checked.literal.logicalSteps
+  obtain ⟨operations,events,literal,trace,results,kept⟩ := pure_history_with_inherited
+    (.certifiedComputed interval location prepared checked) inherited inputs ordinaryBefore history values read executed
+  have operationsMatch : operations = [checked.literal.operation] :=
+    (List.map_inj_right (f := Semantics.Observation.Op.pure)
+      (fun _ _ equal => Semantics.Observation.Op.pure.inj equal)).mp (literal.symm.trans checked.literal.original)
+  subst operations
+  have geometry := RuntimeComputedGeometry.certified_geometry checked.literal
+  have sameEvents : events = [rawEvent] := congrArg Semantics.RawTrace.Prepared.events
+    (Option.some.inj (trace.symm.trans geometry.2))
+  subst events
+  subst outputs
+  obtain ⟨output,action⟩ := RuntimeCertifiedComputedAction.original_reference_action checked input
+  let operator := RuntimeLiteralHistory.applySourceOwner before.bindings before.bindings operand operand
+    prepared.logical.matrix source.operator
+  have representedAfter : Qleisli.RuntimeStructuralHistory.Represents output interval.after
+      (pureHistory dependencies [rawEvent] history) operator := by
+    intro column physical bounded
+    rw [geometry.1] at bounded
+    have correspondence := action source.operator physical column
+    change Qleisli.Semantics.RawAction.event dependencies rawEvent (fun row => history.operator row column) physical = _
+    have held : operand ∈ checked.literal.frame.bindings :=
+      checked.literal.sameFrame.symm ▸ RuntimeBasisOwnerGeometry.selected_binding checked.literal.input
+    have live := checked.literal.frame.complete.mem_iff.mp (List.mem_map.mpr ⟨operand,held,rfl⟩)
+    have valid := Raw.Ownership.valid _ interval.history.1
+    have axesBound : ∀ axis ∈ operand.port.wires.map interval.before.quantum.frame.idxOf,
+        axis < interval.before.quantum.frame.length := by
+      intro axis member
+      obtain ⟨wire,wireMember,rfl⟩ := List.mem_map.mp member
+      exact List.idxOf_lt_length_iff.mpr (valid.covered wire (List.mem_flatMap.mpr ⟨_,live,wireMember⟩))
+    have localEvent : Qleisli.RawFiniteRows.BoundedEvent interval.before.quantum.frame.length rawEvent
+        interval.before.quantum.frame.length :=
+      .computed _ _ _ _ _ _ _ axesBound
+    exact (localEvent.congr dependencies _ _ (represented column) physical bounded).trans correspondence
+  exact .cons ⟨rfl,hidden,bits,kept,_,checked.literal.after,checked.literal.afterBindings,
+    checked.literal.afterBindings ▸ output,cast_represents checked.literal.afterBindings output representedAfter⟩ .nil
+
 theorem sourceStep_with_computed {dependencies program block}
     (steps : List (Step dependencies program block)) (inputs : List Nat) (inherited : Option (Nat → Prop))
     (certifies : Step dependencies program block → Prop)
@@ -103,6 +176,8 @@ theorem sourceStep_with_computed {dependencies program block}
     cases node
     case computed =>
       exact ⟨_,rfl,computed_refines _ _ inputs inherited owners ordinary read agrees executed⟩
+    case certifiedComputed =>
+      exact ⟨_,rfl,certified_refines _ _ inputs inherited owners ordinary read agrees executed⟩
     all_goals
       exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
   all_goals

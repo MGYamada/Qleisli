@@ -3,7 +3,7 @@ import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeTransformRequest
 import QleisliKernel.Qirf.RuntimeBranchAction
 import QleisliKernel.Qirf.RuntimeBasisAction
-import QleisliKernel.Qirf.RuntimeComputedUse
+import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import QleisliKernel.SourceTypes.QuantumArms
 
 /-! Source-indexed staging data for the common runtime traversal.
@@ -195,6 +195,11 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}
       {position : Position} {before : Queues}
       (prepared : RuntimeComputedUse.Prepared event) :
+      Event preparation source (.computed event children) position before before
+  | certifiedComputed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}
+      {position : Position} {before : Queues}
+      (prepared : RuntimeCertifiedComputed.Prepared event) :
       Event preparation source (.computed event children) position before before
   | unsupported {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before : Queues}

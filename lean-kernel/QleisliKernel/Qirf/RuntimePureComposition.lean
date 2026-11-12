@@ -46,6 +46,10 @@ def region {dependencies program block} : Node dependencies program block → Lo
     let literal := action.literal
     ⟨start,count,[literal.input.port.token],[literal.output.token],[event.input],[event.input],
       interval,[literal.input.port],[literal.output],[literal.operation],literal.literal,literal.spectators⟩
+  | .certifiedComputed (start := start) (count := count) (event := event) interval _ _ action =>
+    let literal := action.literal
+    ⟨start,count,[literal.input.port.token],[literal.output.token],[event.input],[event.input],
+      interval,[literal.input.port],[literal.output],[literal.operation],literal.original,literal.spectators⟩
   | .named (start := start) (count := count) (inputs := inputs) event frame _ _ boundary _ =>
     ⟨start,count,inputs,boundary.returned.map (·.token),event.inputOwners,
       SourceRuntimeValues.valueOwners event.value,frame.interval,frame.selected,boundary.returned,

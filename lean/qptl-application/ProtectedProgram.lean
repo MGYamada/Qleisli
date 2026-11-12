@@ -2,6 +2,7 @@ import ProtectedClean
 import Qleisli.RawPure
 import Qleisli.FiniteMatrixAction
 import Qleisli.RuntimeComputedProtectedAction
+import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import Qleisli.RuntimeForestProduct
 
 /-! Exact cleanup in the actual ordered pure Raw program. Certified scopes
@@ -160,6 +161,27 @@ theorem certified_clean_square {R : Type} (dependencies : List Dependency)
         zeroImage dataBits ancillaBits joint ⟨col,inside⟩ reference else 0) row.val
   rw [padding]
   exact (certified_clean_action _ _ _ _ _ _ _ _ _ _ accepted joint row.val reference row.isLt).symm
+
+
+/-- Bind the certified square to the same physical result that was checked
+against the original logical supplier on the exact data code. -/
+theorem original_certified_clean_square
+    {sources caller dependencies program block start count event prepared interval before}
+    (checked : @Qirf.RuntimeCertifiedComputed.Checked sources caller dependencies program block start count
+      event prepared interval before) {R : Type} :
+    let bits := checked.literal.input.port.bits
+    CommSq (TypeCat.ofHom (action checked.logical.emitted (R := R)))
+      (TypeCat.ofHom (zeroImage bits 1))
+      (TypeCat.ofHom (zeroImage bits 1))
+      (TypeCat.ofHom (finiteCircuit dependencies (bits+1)
+        ([Raw.computeStep bits bits 1 checked.literal.table] ++ checked.literal.useSteps ++
+          [Raw.computeStep bits bits 1 checked.literal.table]))) := by
+  intro bits
+  obtain ⟨work,left,read⟩ := checked.logical.emittedRead
+  exact certified_clean_square dependencies bits bits 1 checked.literal.table checked.literal.useSteps
+    checked.literal.logicalSteps checked.logical.emitted work left read
+
+#print axioms original_certified_clean_square
 
 /-- The actual protected event check supplies the structured square; the
 inverse is the literal XOR involution, not an assumed final clean equation. -/

@@ -34,9 +34,8 @@ private def ownerAction (owners : List Owner) (operand : Owner) (action : Action
   return {action with matrix := result}
 
 def sourceAction (sources : Sources) :
-    Nat → {caller : String} → List Owner → Matrix → List (Event sources caller) → WorkM Action
-  | 0,_,_,_,_ => throw .limit
-  | fuel+1,_,owners,identity,events => do
+    Nat → {caller : String} → List Owner → Matrix → List (Event sources caller) → WorkM Action :=
+  Nat.rec (fun {_} _ _ _ => throw .limit) (fun _ next {_} owners identity events => do
     exactWork (Exact.charge (16*(events.length+1)))
     events.foldlM (init := ⟨identity,[]⟩) fun before event => do
       let action ← match event with
@@ -66,17 +65,17 @@ def sourceAction (sources : Sources) :
           let layout ← FiniteCarrier.read operand.basis
           exactWork (Exact.charge ((layout.labels.length+1)^2))
           let localIdentity ← lift (arithmetic (Exact.Matrix.identity layout.labels.length))
-          let action ← sourceAction sources fuel [childOwner] localIdentity child.events
+          let action ← next [childOwner] localIdentity child.events
           ownerAction owners operand {action with rows := call.target.sourceRows ++ child.summary.staticRows ++ action.rows}
         | .staticConditional conditional _ => do
           let selected ← SourceRuntimeTrace.readStaticSource conditional
           guard (selected.result.allocated.isEmpty && selected.result.consumed.isEmpty &&
             inferredEffect selected.result.events == .unitary) .request
-          let action ← sourceAction sources fuel owners identity selected.result.events
+          let action ← next owners identity selected.result.events
           return {action with rows := conditional.selection.naturals.sourceRows ++ selected.result.staticRows ++ action.rows}
         | _ => throw .request
       exactWork (Exact.charge (8*(before.rows.length+action.rows.length+1)))
-      return ⟨← exactWork (Exact.Matrix.composeWork action.matrix before.matrix),before.rows ++ action.rows⟩
+      return ⟨← exactWork (Exact.Matrix.composeWork action.matrix before.matrix),before.rows ++ action.rows⟩)
 
 private def sourceBody {sources caller} {event : ComputedEvent sources caller}
     (body : SourceRuntimeTrace.ComputedBody event) : WorkM Action := do

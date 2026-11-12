@@ -26,6 +26,7 @@ impl Compiler<'_> {
                     obligation.kind,
                     check::ObligationKind::Injectivity { .. }
                         | check::ObligationKind::ProtectedClean
+                        | check::ObligationKind::CertifiedClean { .. }
                 ) {
                     continue;
                 }
@@ -46,9 +47,12 @@ impl Compiler<'_> {
                         })),
                     ) => *typed_ports || self.basis_uses_nominal(basis, module, &mut work)?,
                     (
-                        check::ObligationKind::ProtectedClean,
+                        check::ObligationKind::ProtectedClean
+                        | check::ObligationKind::CertifiedClean { .. },
                         Some(OriginalNode::Expression(Expr {
-                            kind: ExprKind::WithComputed { function, .. },
+                            kind:
+                                ExprKind::WithComputed { function, .. }
+                                | ExprKind::CertifiedComputed { function, .. },
                             ..
                         })),
                     ) => matches!(locals.usage(function).target,

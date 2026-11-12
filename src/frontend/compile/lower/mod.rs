@@ -1928,28 +1928,13 @@ impl Lowerer<'_, '_> {
         self.compiler.basis_codes(module, span, ty)
     }
 
-    #[allow(clippy::too_many_arguments)]
-    fn computed(
+    fn computed_table(
         &mut self,
         module: &str,
-        span: Span,
-        source: Value,
         function: &Ident,
-        binder: &Ident,
-        body: &Block,
-        env: &Env,
-        original: &Expr,
-    ) -> Result<Value, CompileError> {
-        let owner = self.original_computed_body(module, original, function, binder, body)?;
-        let source_slot = self.quantum(module, span, &source, false)?;
-        let Callee::User(key) = self.compiler.resolve(module, function)? else {
-            return Err(self.computed_refusal(
-                module,
-                function.span,
-                ErrorCode::TypeMismatch,
-                "predicate must be a classical function",
-            )?);
-        };
+        key: Key,
+        basis: &Ty,
+    ) -> Result<(Vec<u16>, bool), CompileError> {
         self.compiler
             .prepare_required_classical_table(key, module, function.span)?;
         let requires_source = self.compiler.deferred_nominal_tables.contains(&key);
@@ -1976,14 +1961,10 @@ impl Lowerer<'_, '_> {
             self.compiler.charge(module, function.span, size)?;
             self.compiler.basis[&key].clone()
         };
-        let basis = &self.raw.registers[&source_slot].basis;
         self.compiler
             .check_predicate_domain(module, function.span, &predicate, basis)?;
         let table = if requires_source {
-            self.compiler
-                .charge(module, function.span, basis.tree_size().nodes)?;
-            let basis = basis.clone();
-            let (bits, codes) = self.basis_codes(module, function.span, &basis)?;
+            let (bits, codes) = self.basis_codes(module, function.span, basis)?;
             if codes.len() != predicate.table.len() {
                 return Err(self.computed_refusal(
                     module,
@@ -2003,6 +1984,38 @@ impl Lowerer<'_, '_> {
         } else {
             predicate.table
         };
+        Ok((table, requires_source))
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn computed(
+        &mut self,
+        module: &str,
+        span: Span,
+        source: Value,
+        function: &Ident,
+        binder: &Ident,
+        body: &Block,
+        env: &Env,
+        original: &Expr,
+    ) -> Result<Value, CompileError> {
+        let owner = self.original_computed_body(module, original, function, binder, body)?;
+        let source_slot = self.quantum(module, span, &source, false)?;
+        let Callee::User(key) = self.compiler.resolve(module, function)? else {
+            return Err(self.computed_refusal(
+                module,
+                function.span,
+                ErrorCode::TypeMismatch,
+                "predicate must be a classical function",
+            )?);
+        };
+        self.compiler.charge(
+            module,
+            function.span,
+            self.raw.registers[&source_slot].basis.tree_size().nodes,
+        )?;
+        let basis = self.raw.registers[&source_slot].basis.clone();
+        let (table, requires_source) = self.computed_table(module, function, key, &basis)?;
         self.compiler.charge(module, span, 5)?;
         let wire = self.wire();
         let ancilla = self.register(Ty::bit(), vec![wire]);

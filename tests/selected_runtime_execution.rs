@@ -304,6 +304,53 @@ fn project_checks_a_nominal_predicate_with_its_original_callee() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn certified_nominal_predicate_binds_both_original_actions() {
+    use qleisli::ir::RawOp;
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn is_b(tag:Tri)->Bit{match tag{Tri::A=>0,Tri::B=>1,Tri::C=>0}}
+        unitary fn logical(q:Q<Tri>)->Q<Tri>{global_phase_eighth(q)}
+        pub unitary fn keep(q:Q<Tri>)->Q<Tri>{
+            with_computed(q,is_b,logical){|data,flag|(global_phase_eighth(data),flag)}}";
+    let selected = selected(source);
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(matches!(
+        program.raw().operations.as_slice(),
+        [RawOp::CertifiedCompute { function, use_steps, logical_steps, .. }]
+            if function == &[0, 1, 0, 0] && use_steps == logical_steps
+    ));
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let request = program.request().unwrap();
+    let phases = r#""phases":[1]"#;
+    assert_eq!(artifact.matches(phases).count(), 2);
+    let forged = artifact.replace(phases, r#""phases":[2]"#);
+    assert_eq!(
+        kernel()
+            .check_qmatch_source_v5(forged.as_bytes(), request)
+            .unwrap_err()
+            .code,
+        "contract"
+    );
+
+    let closed =
+        format!("{source} fn main()->Unit{{discard(keep(basis unit(()) as _{{Tri::B}}))}}");
+    let project = compile_project(&SourceRoot::new(&closed).0).unwrap();
+    assert_eq!(
+        project.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_arm_compares_the_original_nominal_meaning_to_the_applied_operator() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/nominal-meaning-arm-v030/attempt-01/main.qli");

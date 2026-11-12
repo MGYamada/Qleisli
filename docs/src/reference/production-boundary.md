@@ -276,8 +276,11 @@ an original nominal predicate also uses this check. Lean evaluates the total
 classical predicate on the exact logical codes, requires zero in the padding
 rows, and checks the original one-Bit use body against both exact diagonal
 entries of the literal Raw use. The same interval retains the original data
-owner and its spectators. When no selection or Meaning context is present,
-an actual checked basis lift or protected computed interval earns the report
+owner and its spectators. The three-argument certified form binds the
+original use body and logical supplier independently to their literal
+circuits on the exact data and auxiliary codes. The native cleanup equation
+covers the complete physical domain. When no selection or Meaning context is
+present, an actual checked basis lift or computed interval earns the report
 `finite-source-basis-context-v5`. It discharges the selected invocation's
 original duties and retains pending positions belonging to other invocations.
 Checked selections use
