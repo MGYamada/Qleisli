@@ -1,5 +1,5 @@
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
-import QleisliKernel.Qirf.RuntimeComputedUse
+import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Actual original computed scope typing, owner histories and source bodies.
@@ -116,6 +116,41 @@ private def nominalNamed := (nominal.replace "pub unitary fn route" "unitary fn 
   "phase[1,1](flag)" "mark(flag)"
 #guard ((protectedInterval nominalNamed [0,1,0,0] [auxiliaryZ]).run 20000000).1.toOption.isSome
 #guard ((protectedInterval (nominalNamed.replace "phase[1,1](b)" "b") [0,1,0,0] [auxiliaryZ]).run 20000000).1.toOption.isNone
+
+
+private def certifiedNominal := (nominal.replace "pub unitary fn route"
+  "unitary fn logical(q:Q<Tri>)->Q<Tri>{global_phase_eighth(q)} pub unitary fn route").replace
+  "with_computed(q,is_b){|flag|phase[1,1](flag)}"
+  "with_computed(q,is_b,logical){|data,flag|(global_phase_eighth(data),flag)}"
+
+private def certifiedInterval (sourceText : String) (table : List Nat) (useExponent logicalExponent : Nat) :
+    Finite.WorkM (Nat × Nat) := do
+  let source ← SourceRuntimeTrace.read #[("main",sourceText)] "main" "route"
+  let [Event.computed event _] := source.events | throw Finite.Error.request
+  let input : Semantics.Raw.Port := ⟨10,[6,2],2⟩
+  let spectator : Semantics.Raw.Port := ⟨11,[],0⟩
+  let spectatorOwner : Semantics.SourceOwners.Owner := ⟨4,[.unit]⟩
+  let useSteps : List Semantics.Finite.Step := [⟨[],.monomial [] [0] [useExponent]⟩]
+  let logicalSteps : List Semantics.Finite.Step := [⟨[],.monomial [] [0] [logicalExponent]⟩]
+  let program : Semantics.Observation.Program := ⟨[input,spectator],[],
+    [.pure (.certifiedCompute 10 12 [8] table useSteps logicalSteps)],[12,11],[],.unitary⟩
+  let block ← Qirf.RuntimeInterval.prepare [] program
+  let interval ← Qirf.RuntimeInterval.check block.block 0 1
+  let before : Qirf.RuntimeStructuralAction.SourceState :=
+    ⟨[⟨event.input,input⟩,⟨spectatorOwner,spectator⟩],[event.input,spectatorOwner],event.nextOrdinal⟩
+  let prepared ← Qirf.RuntimeCertifiedComputed.prepare event
+  let checked ← Qirf.RuntimeCertifiedComputed.read prepared interval before
+  return (checked.used.action.logical.rows,checked.logical.action.logical.rows)
+
+#guard ((certifiedInterval certifiedNominal [0,1,0,0] 1 1).run 20000000).1.toOption = some (6,3)
+-- Raw cleanup still holds for both substituted phases. The original
+-- contracts independently refuse the identical change to both Raw circuits.
+#guard (match ((certifiedInterval certifiedNominal [0,1,0,0] 2 2).run 20000000).1 with
+  | .error .equation => true
+  | _ => false)
+#guard ((certifiedInterval certifiedNominal [0,1,0,1] 1 1).run 20000000).1.toOption.isNone
+#guard ((certifiedInterval (certifiedNominal.replace "{global_phase_eighth(q)}" "{q}")
+  [0,1,0,0] 1 1).run 20000000).1.toOption.isNone
 
 #print axioms QleisliKernel.SourceTypes.SourceComputedBindings.originalMember
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.readComputedSource

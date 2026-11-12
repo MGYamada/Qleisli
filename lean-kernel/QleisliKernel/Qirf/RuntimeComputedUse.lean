@@ -13,49 +13,67 @@ structure Action where
   matrix : Matrix
   rows : Rows
 
-private def identity : Matrix := ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,Scalar.one]⟩
-
-private def primitive (kind : Semantics.PrimitiveOperator.Kind) (basis : Semantics.FiniteCarrier.Basis)
+def primitive (kind : Semantics.PrimitiveOperator.Kind) (basis : Semantics.FiniteCarrier.Basis)
     (rows : Rows) : WorkM Action := do
+  let layout ← FiniteCarrier.read basis
+  exactWork (Exact.charge ((layout.labels.length+1)^2))
   let some matrix := Semantics.PrimitiveOperator.meaning kind basis | throw .request
   return ⟨matrix,rows⟩
 
-private def ownerOnly (owner : Owner) (value : Value) : Bool := value == [.owner owner]
+def ownerOnly (owner : Owner) (value : Value) : Bool := value == [.owner owner]
 
-private def sourceAction (sources : Sources) :
-    Nat → {caller : String} → Owner → List (Event sources caller) → WorkM Action
-  | 0,_,_,_ => throw .limit
-  | fuel+1,_,owner,events => do
+private def ownerAction (owners : List Owner) (operand : Owner) (action : Action) : WorkM Action := do
+  if owners == [operand] then return action
+  let matrices ← owners.mapM fun owner => do
+    if owner == operand then return action.matrix
+    let layout ← FiniteCarrier.read owner.basis
+    exactWork (Exact.charge ((layout.labels.length+1)^2))
+    lift (arithmetic (Exact.Matrix.identity layout.labels.length))
+  let result ← matrices.foldlM (init := ⟨1,1,[Scalar.one]⟩) fun before next =>
+    exactWork (Exact.Matrix.tensorWork before next)
+  return {action with matrix := result}
+
+def sourceAction (sources : Sources) :
+    Nat → {caller : String} → List Owner → Matrix → List (Event sources caller) → WorkM Action
+  | 0,_,_,_,_ => throw .limit
+  | fuel+1,_,owners,identity,events => do
     exactWork (Exact.charge (16*(events.length+1)))
     events.foldlM (init := ⟨identity,[]⟩) fun before event => do
       let action ← match event with
         | .phase phase => do
-          guard (phase.operand == owner) .request
-          primitive (.phase phase.application.coefficient.exponent) owner.basis
+          guard (owners.contains phase.operand) .request
+          let action ← primitive (.phase phase.application.coefficient.exponent) phase.operand.basis
             (CallName.sourceRows phase.application.candidate ++ phase.naturals.sourceRows)
+          ownerAction owners phase.operand action
         | .primitive call => do
-          guard (call.arguments == [[.owner owner]] && ownerOnly owner call.value &&
+          let [[.owner operand]] := call.arguments | throw .request
+          guard (owners.contains operand && ownerOnly operand call.value &&
             call.allocated.isEmpty && call.consumed.isEmpty) .request
           let kind ← RuntimePrimitiveSource.readKind call.kind
-          primitive kind.val owner.basis (CallName.sourceRows call.candidate)
+          let action ← primitive kind.val operand.basis (CallName.sourceRows call.candidate)
+          ownerAction owners operand action
         | .named call => do
-          guard (call.arguments == [[.owner owner]] && ownerOnly owner call.value &&
+          let [[.owner operand]] := call.arguments | throw .request
+          guard (owners.contains operand && ownerOnly operand call.value &&
             call.allocated.isEmpty && call.consumed.isEmpty && call.effect == .unitary &&
             call.target.signature.arguments.operations.isEmpty &&
             !call.target.signature.operations.hasMeaningRequirements) .request
           let child ← SourceRuntimeTrace.readNamedSource call
           let [[.owner childOwner]] := child.summary.parameterValues | throw .request
-          guard (childOwner.basis == owner.basis && ownerOnly childOwner child.summary.value &&
+          guard (childOwner.basis == operand.basis && ownerOnly childOwner child.summary.value &&
             child.summary.allocated.isEmpty && child.summary.consumed.isEmpty &&
             child.summary.inferredEffect == .unitary) .request
-          let action ← sourceAction sources fuel childOwner child.events
-          return {action with rows := call.target.sourceRows ++ child.summary.staticRows ++ action.rows}
+          let layout ← FiniteCarrier.read operand.basis
+          exactWork (Exact.charge ((layout.labels.length+1)^2))
+          let localIdentity ← lift (arithmetic (Exact.Matrix.identity layout.labels.length))
+          let action ← sourceAction sources fuel [childOwner] localIdentity child.events
+          ownerAction owners operand {action with rows := call.target.sourceRows ++ child.summary.staticRows ++ action.rows}
         | .staticConditional conditional _ => do
           let selected ← SourceRuntimeTrace.readStaticSource conditional
           guard (selected.result.allocated.isEmpty && selected.result.consumed.isEmpty &&
             inferredEffect selected.result.events == .unitary) .request
-          let action ← sourceAction sources fuel owner selected.result.events
-          return {action with rows := conditional.naturals.sourceRows ++ selected.result.staticRows ++ action.rows}
+          let action ← sourceAction sources fuel owners identity selected.result.events
+          return {action with rows := conditional.selection.naturals.sourceRows ++ selected.result.staticRows ++ action.rows}
         | _ => throw .request
       exactWork (Exact.charge (8*(before.rows.length+action.rows.length+1)))
       return ⟨← exactWork (Exact.Matrix.composeWork action.matrix before.matrix),before.rows ++ action.rows⟩
@@ -65,7 +83,8 @@ private def sourceBody {sources caller} {event : ComputedEvent sources caller}
   let owner := event.initial.auxiliary
   guard (owner.basis == [.bit] && ownerOnly owner body.result.value && body.result.allocated.isEmpty &&
     body.result.consumed.isEmpty && inferredEffect body.result.events == .unitary) .request
-  let action ← sourceAction sources (SourceTrace.sourceFuel sources) owner body.result.events
+  let action ← sourceAction sources (SourceTrace.sourceFuel sources) [owner]
+    ⟨2,2,[Scalar.one,Scalar.zero,Scalar.zero,Scalar.one]⟩ body.result.events
   return {action with rows := body.result.staticRows ++ action.rows}
 
 private def auxiliaryBit : Semantics.Raw.ProtectedBit := ⟨.ancilla,0⟩
