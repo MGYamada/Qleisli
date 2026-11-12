@@ -1,0 +1,9 @@
+#![no_implicit_prelude]
+pub enum M{A,B,C}
+classical fn id(x:M)->M{x}
+classical fn p(b:Bit)->(Bit,(Bit,Bit)){(b,(0,0))}
+meaning I:M=permutation_by(id);
+meaning P:Bit=phase_by(p);
+meaning T:(M,Bit)=tensor(I,P);
+unitary fn f(q:Q<(M,Bit)>)->Q<(M,Bit)>{let(m,b)=split(q);join(m,phase[1,3](b))}
+pub unitary fn undo(q:Q<(M,Bit)>)->Q<(M,Bit)>{adjoint(checked_op(f,T))(q)}

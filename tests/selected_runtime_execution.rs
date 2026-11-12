@@ -382,6 +382,103 @@ fn project_executes_the_checked_nominal_meaning_interval() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn composed_meaning_keeps_the_nominal_intermediate_reference() {
+    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/nominal-meaning-composition-v030/attempt-03/selected",
+    );
+    let source = ParsedProgram::load(BTreeMap::from([(
+        "main".into(),
+        directory.join("main.qli"),
+    )]))
+    .unwrap();
+    let old_target = source.finite_meaning_target("main::Flip").unwrap_err();
+    assert!(
+        old_target
+            .message()
+            .contains("original typed runtime transport"),
+        "{old_target}"
+    );
+    let selected = source
+        .instantiate_runtime_with_types(
+            "main::undo",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap();
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let applied = r#""permutation":[1,0]"#;
+    assert_eq!(artifact.matches(applied).count(), 1);
+    let forged = artifact.replacen(applied, r#""permutation":[0,1]"#, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+
+    let project = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/nominal-meaning-composition-v030/attempt-03/project",
+    );
+    let program = compile_project(&project).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![true], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn tensor_meaning_checks_the_phase_on_the_original_nominal_product_axis() {
+    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/nominal-meaning-composition-v030/attempt-03/tensor",
+    );
+    let selected = ParsedProgram::load(BTreeMap::from([(
+        "main".into(),
+        directory.join("main.qli"),
+    )]))
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::undo",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel())
+    .unwrap();
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let axis = r#""indices":[2]"#;
+    assert!(artifact.contains(axis));
+    let forged = artifact.replacen(axis, r#""indices":[0]"#, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_nominal_basis_lift_uses_logical_dimensions() {
     use qleisli::ir::{Effect, RawOp};
 

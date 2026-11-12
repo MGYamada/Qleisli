@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeSourceOperationMarkers
+import QleisliKernel.Qirf.RuntimeStructuredRoot
 import QleisliKernel.SourceTypes.GenericOperation
 
 /-! Check the Meaning from the original queue duty using the reference bodies
@@ -7,58 +8,95 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf.RuntimeOriginalMeaning
 open QleisliKernel Finite SourceTypes
 
-/-- The complete original inputs to the ordinary leaf interpreter. Both
-graphs come from Lean's source reader over the same immutable module table. -/
-structure OrdinaryLeaf where
-  source : String
+abbrev Basis := Semantics.FiniteCarrier.Basis
+
+structure ReferenceKey where
+  caller : String
   owner : String
-  declaration : Declaration
-  input : Semantics.FiniteCarrier.Basis
-  output : Semantics.FiniteCarrier.Basis
-  kind : SourceMeaningOrdinary.Kind
-  functionCaller : String
-  functionOwner : String
-  functionSource : String
-  functionOccurrence : BodyOccurrence
-  functionTokens : List LocatedToken
-  functionInputs : List Semantics.FiniteCarrier.Basis
-  functionOutput : Semantics.FiniteCarrier.Basis
+  source : String
+  occurrence : BodyOccurrence
+  tokens : List LocatedToken
+  inputs : List Basis
+  outputs : List Basis
   deriving DecidableEq
 
-def ordinaryLeaf {sources} (graph : SourceMeaning.Graph sources) : Option OrdinaryLeaf := do
-  let [node] := graph.nodes | none
-  let reference := fun kind (function : SourceMeaning.ClassicalReference sources) =>
-    if graph.root != 0 || graph.input != node.input.basis || graph.output != node.output.basis then none else
-      some ⟨node.original.source,node.owner,node.original.declaration,graph.input,graph.output,kind,
-        function.caller,function.resolution.result.moduleName,function.signature.original.source,
-        function.signature.original.occurrence,function.tokens,function.signature.inputs,function.signature.basis⟩
-  match node.action with
-  | .permutation function => reference .permutation function
-  | .phase function => reference .phase function
-  | _ => none
+inductive ActionKey where
+  | reference (function : ReferenceKey) (arguments : StaticTypes.Arguments)
+      (effect : Semantics.Raw.Effect) (internal : Bool)
+  | permutation (function : ReferenceKey)
+  | phase (function : ReferenceKey)
+  | compose (left right : Nat)
+  | tensor (left right : Nat)
+  deriving DecidableEq
 
-private def leafWork {sources} (graph : SourceMeaning.Graph sources) : Nat :=
-  let reference := fun (node : SourceMeaning.Node sources) (function : SourceMeaning.ClassicalReference sources) =>
-    let occurrence := function.signature.original.occurrence
-    16*(node.original.source.utf8ByteSize+function.signature.original.source.utf8ByteSize+
-      SourceTrace.Meter.tokenFields (function.tokens ++ occurrence.header ++ occurrence.body)+
-      Raw.OwnerFlow.fields (([graph.input,graph.output,node.input.basis,node.output.basis,
-        function.signature.basis] ++ function.signature.inputs).map (fun basis => ⟨0,basis⟩))+1)
-  match graph.nodes with
-  | [node] => match node.action with
-    | .permutation function | .phase function => reference node function
-    | _ => 8
-  | _ => 8
+structure NodeKey where
+  owner : String
+  name : String
+  source : String
+  declaration : Declaration
+  tokens : List LocatedToken
+  input : Basis
+  output : Basis
+  action : ActionKey
+  deriving DecidableEq
 
-/-- Reuse is limited to the identical singleton ordinary interpretation.
-Every other graph keeps the complete original reference-body read. -/
+structure GraphKey where
+  nodes : List NodeKey
+  root : Nat
+  input : Basis
+  output : Basis
+  rows : List SourceRows.Row
+  deriving DecidableEq
+
+private def classicalKey {sources} (function : SourceMeaning.ClassicalReference sources) : ReferenceKey :=
+  ⟨function.caller,function.resolution.result.moduleName,function.signature.original.source,
+    function.signature.original.occurrence,function.tokens,function.signature.inputs,[function.signature.basis]⟩
+
+private def nodeKey {sources} (node : SourceMeaning.Node sources) : NodeKey :=
+  let action := match node.action with
+    | .reference function => ActionKey.reference
+        ⟨function.caller,function.resolution.result.moduleName,function.signature.original.source,
+          function.signature.original.occurrence,function.tokens,function.signature.inputs,function.signature.outputs⟩
+        function.signature.staticArguments function.expectedEffect function.internalInference
+    | .permutation function => .permutation (classicalKey function)
+    | .phase function => .phase (classicalKey function)
+    | .compose left right => .compose left right
+    | .tensor left right => .tensor left right
+  ⟨node.owner,node.name,node.original.source,node.original.declaration,node.original.tokens,
+    node.input.basis,node.output.basis,action⟩
+
+/-- Keep declaration and reference occurrences, exact ports, ordered edges,
+and dependency rows from both original Lean reads over the same source table. -/
+def graphKey {sources} (graph : SourceMeaning.Graph sources) : GraphKey :=
+  ⟨graph.nodes.map nodeKey,graph.root,graph.input,graph.output,graph.sourceRows⟩
+
+private def rowBytes (values : List SourceRows.Row) : Nat :=
+  values.foldl (fun n row => n+row.1.utf8ByteSize+row.2.utf8ByteSize+1) 0
+
+private def portWork (ports : List Basis) : Nat :=
+  Raw.OwnerFlow.fields (ports.map (fun basis => ⟨0,basis⟩))
+
+private def referenceWork (function : ReferenceKey) : Nat :=
+  function.caller.utf8ByteSize+function.owner.utf8ByteSize+function.source.utf8ByteSize+
+    SourceTrace.Meter.tokenFields (function.tokens ++ function.occurrence.header ++ function.occurrence.body)+
+    portWork (function.inputs ++ function.outputs)+1
+
+private def graphWork (graph : GraphKey) : Nat :=
+  16*(portWork [graph.input,graph.output]+rowBytes graph.rows+
+    graph.nodes.foldl (fun total node => total+node.owner.utf8ByteSize+node.name.utf8ByteSize+
+      node.source.utf8ByteSize+SourceTrace.Meter.tokenFields node.tokens+portWork [node.input,node.output]+
+      match node.action with
+      | .reference function arguments .. => referenceWork function+RuntimeStructuredRoot.argumentFields arguments
+      | .permutation function | .phase function => referenceWork function
+      | .compose .. | .tensor .. => 1) 0+1)
+
+/-- Equal original graphs share the already evaluated specification and its
+actual reference bodies on the same independently validated native root. -/
 inductive Specification {artifact catalogue result} {root : Validity.Root} {child : RuntimeOperationTree.Value}
     {native : RuntimePreparedOperation.Requirement artifact catalogue result}
     (equation : RuntimeOperationTree.Meaning child native root)
     (request : SourceMeaning.Request artifact.sources) where
-  | ordinary (leaf : OrdinaryLeaf)
-      (original : ordinaryLeaf request.meaning.graph = some leaf)
-      (retained : ordinaryLeaf native.request.meaning.graph = some leaf)
+  | shared (original : graphKey request.meaning.graph = graphKey native.request.meaning.graph)
   | fresh (meaning : SourceMeaningAction.Prepared artifact catalogue request.meaning)
       (preparedRead : RuntimeInterval.Computed
         (SourceMeaningAction.prepare artifact catalogue request.meaning native.meaning.requests) meaning)
@@ -70,20 +108,17 @@ def Specification.action {artifact catalogue result root child native equation r
     (specification : @Specification artifact catalogue result root child native equation request) :
     Semantics.Exact.Matrix :=
   match specification with
-  | .ordinary .. => equation.specification.action
+  | .shared _ => equation.specification.action
   | .fresh _ _ _ _ specification _ => specification.action
 
 private def readSpecification {artifact catalogue result root child native}
     (equation : @RuntimeOperationTree.Meaning artifact catalogue result child native root)
     (request : SourceMeaning.Request artifact.sources) : WorkM (Specification equation request) := do
   let held := native.meaning
-  let rowBytes (values : List SourceRows.Row) := values.foldl (fun n row => n+row.1.utf8ByteSize+row.2.utf8ByteSize+1) 0
-  exactWork (Exact.charge (leafWork request.meaning.graph+leafWork native.request.meaning.graph))
-  match original : ordinaryLeaf request.meaning.graph with
-  | some leaf =>
-    if retained : ordinaryLeaf native.request.meaning.graph = some leaf then
-      return .ordinary leaf original retained
-  | none => pure ()
+  let original := graphKey request.meaning.graph
+  let retained := graphKey native.request.meaning.graph
+  exactWork (Exact.charge (graphWork original+graphWork retained))
+  if same : original = retained then return .shared same
   let meaning ← NaturalAffine.witness (SourceMeaningAction.prepare artifact catalogue request.meaning held.requests)
   let rows := meaning.val.rows
   let roots := meaning.val.roots

@@ -1,0 +1,9 @@
+#![no_implicit_prelude]
+pub struct Flag { pub value: Bit }
+isometry fn encode(q: Q<Bit>) -> Q<Flag> { basis q as b { Flag { value: b } } }
+isometry fn decode(q: Q<Flag>) -> Q<Bit> { basis q as flag { not flag.value } }
+meaning Encode: Bit -> Flag = reference(encode);
+meaning Decode: Flag -> Bit = reference(decode);
+meaning Flip: Bit = compose(Encode, Decode);
+unitary fn flip(q: Q<Bit>) -> Q<Bit> { basis q as b { not b } }
+pub unitary fn undo(q: Q<Bit>) -> Q<Bit> { adjoint(checked_op(flip, Flip))(q) }

@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check standalone composed Meanings with nominal intermediate types and
+  tensor Meanings with nominal components. Retain exact reference bodies,
+  type trees, axis order and phase in the native equation.
 - Check standalone endomorphic Meaning applications on finite nominal codes,
   including a three-label permutation and its inverse. Reuse the checked
   ordinary interpretation when both original queries identify the same leaf.
