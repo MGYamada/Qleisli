@@ -175,6 +175,31 @@ structure Target (sources : Sources) (caller : String) (scope : List String)
     signature.original.declaration = resolution.declaration
   originalActuals : actuals.target.envelope.source = signature.original.source ∧
     actuals.target.envelope.declaration = signature.original.declaration
+  supplierContext : signature.context = .source caller
+  supplierActuals : HEq signature.operations.actuals operationActuals.actuals
+
+/-- The graphs bound in the named callee are the same graphs read from the
+caller's ordered argument slices. Each retained source slice carries its own
+original formal ordinal and checked assertion markers. -/
+theorem Target.originalOperationActuals {sources caller scope tokens}
+    (target : Target sources caller scope tokens) :
+    HEq target.signature.operations.actuals
+      (target.operationActuals.sourceActuals.map SourceOperation.ActualSource.native) :=
+  target.supplierActuals.trans (heq_of_eq target.operationActuals.sameActuals)
+
+private theorem operationSlot {α β : Type} (type : α = β) {left : List α} {right : List β}
+    (same : HEq left right) (index : Nat) : HEq left[index]? right[index]? := by
+  subst β
+  cases eq_of_heq same
+  rfl
+
+theorem Target.originalOperationAt {sources caller scope tokens}
+    (target : Target sources caller scope tokens) (index : Fin target.operationActuals.sourceActuals.length) :
+    HEq target.signature.operations.actuals[index.val]?
+      (some (target.operationActuals.sourceActuals[index].native)) := by
+  have type := congrArg (fun ctx => Sigma (StaticOperation.Actual sources ctx)) target.supplierContext
+  have same := operationSlot type target.originalOperationActuals index.val
+  simpa only [List.getElem?_map,List.getElem?_eq_getElem index.isLt,Option.map_some] using same
 
 structure WithWritten {sources caller scope tokens} (written : StaticApplication.Syntax tokens) where
   target : Target sources caller scope tokens
@@ -209,7 +234,8 @@ def readTargetWithWritten {sources caller callerName scope tokens}
         if originalActuals : actuals.target.envelope.source = signature.original.source ∧
             actuals.target.envelope.declaration = signature.original.declaration then
           return ⟨⟨callerName,callerSignature,naturals,written,candidate,resolution,selected,
-            operationReader,actuals,operationActuals,signature,arguments,original,originalActuals⟩,rfl⟩
+            operationReader,actuals,operationActuals,signature,arguments,original,originalActuals,
+            prepared.originalContext,prepared.originalActuals⟩,rfl⟩
         else throw .request
       else throw .request
     else throw .request

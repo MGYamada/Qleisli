@@ -26,6 +26,36 @@ impl Lowerer<'_, '_> {
             ));
         }
         let start = self.raw.operations.len();
+        if let Some(body) = op.carrier_body() {
+            op.require(module, span, access, self.compiler)?;
+            let original = &self.raw.registers[&slot];
+            let input = QuantumPort {
+                token: original.token,
+                shape: BasisShape {
+                    bits: original.wires.len() as u8,
+                },
+                wires: original.wires.clone(),
+            };
+            let output = crate::frontend::raw_splice::append(
+                &mut self.raw,
+                body,
+                &input,
+                &mut self.compiler.exact_work,
+            )
+            .map_err(|e| self.compiler.op_error(module, span, e))?;
+            self.add_effect(module, span, body.raw().declared_effect);
+            self.add_contract_effect(module, span, op.effect);
+            self.raw.registers.insert(
+                slot,
+                Register {
+                    token: output.token,
+                    wires: output.wires,
+                    basis: codomain.clone(),
+                },
+            );
+            quantum_match::nominal::record_operation(self, module, span, start, op, access)?;
+            return Ok(Value::Quantum(slot, Ty::quantum(codomain.clone())));
+        }
         if !op.needs_raw() {
             let steps = op.steps(module, span, access, self.compiler)?;
             self.apply_circuit(slot, steps);

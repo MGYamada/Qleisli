@@ -122,6 +122,9 @@ def Evidence {artifact catalogue queue context description graph origin implemen
   cases site with
   | unlocated => exact Empty
   | arm | application => exact ForStatus source index invoked (assessment invoked)
+  | supplying event slot caller =>
+    exact ForStatus source index invoked (assessment invoked) ×
+      RuntimeDutyInvocation.Supplying event slot (caller.symm ▸ path) invoked.demand.source.original
 
 def read {artifact catalogue queue context description graph origin implementations references root requested owner name rootOwner rootName}
     (site : @RuntimeGraphOperation.Site artifact.sources owner name context description graph origin)
@@ -135,5 +138,10 @@ def read {artifact catalogue queue context description graph origin implementati
   cases site with
   | unlocated => exact throw .request
   | arm | application => exact readStatus source index invoked (assessment invoked)
+  | supplying event slot caller =>
+    exact do
+      let original ← RuntimeDutyInvocation.readSupplying event slot (caller.symm ▸ path) invoked.demand.source.original
+      let subject ← readStatus source index invoked (assessment invoked)
+      pure ⟨subject,original⟩
 
 end QleisliKernel.Qirf.RuntimeLinkedSubject

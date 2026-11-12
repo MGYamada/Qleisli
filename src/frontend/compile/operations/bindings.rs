@@ -64,7 +64,11 @@ impl Compiler<'_> {
         self.charge(module, span, 3)?;
         for access in [Access::Apply, Access::Adjoint, Access::Controlled] {
             if requested[access_index(access)] {
-                if operation.needs_raw() {
+                if operation.carrier_body().is_some() {
+                    // The original typed body is retained for the native source
+                    // graph and caller-interval checks.
+                    operation.require(module, span, access, self)?;
+                } else if operation.needs_raw() {
                     operation.raw(module, span, access, self)?;
                 } else {
                     operation.steps(module, span, access, self)?;

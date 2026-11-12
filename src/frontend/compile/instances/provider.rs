@@ -209,10 +209,10 @@ impl Compiler<'_> {
                 ));
             }
         }
-        // Generic providers keep the full ordinary actual contract/body gate.
-        let reuse_basis_body = meaning.is_some_and(|id| self.meanings[&id].target.is_none())
-            && basis == codomain
-            && instance.source_effect == Effect::Unitary;
+        // Both original port types were checked above. A nominal Meaning
+        // checks this same retained basis body again in the caller's graph.
+        // Generic providers keep the full actual contract/body gate.
+        let reuse_basis_body = meaning.is_some_and(|id| self.meanings[&id].target.is_none());
         let body = self.materialize_instance_with_basis_body(
             Arc::clone(&instance),
             module,

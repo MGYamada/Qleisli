@@ -149,6 +149,13 @@ def readCandidates (body : Traversed prepared order runtime) : WorkM (List (Cand
   let values := entries.toArray
   let receipts := body.checked.receipts.toArray
   let writtenArray := written.toArray
+  -- The old enclosing proof can derive the same supplying duty. Once its
+  -- original prefix is present, use that direct occurrence. Multiple direct
+  -- occurrences still reach the uniqueness check below.
+  let supplied := (List.finRange written.length).foldl (init := Vector.replicate entries.length false) fun seen index =>
+    let link := writtenArray[index.val]'(by simpa only [writtenArray,List.size_toArray] using index.isLt)
+    let receipt := receipts[link.receiptIndex.val]'(by simpa only [receipts,List.size_toArray] using link.receiptIndex.isLt)
+    if receipt.request.origin.isSupplying then seen.set link.queueIndex.val true link.queueIndex.isLt else seen
   let rows ← (List.finRange written.length).mapM fun (ordinal : Fin written.length) => do
     let i := ordinal.val
     let chosen := writtenArray[i]'(by simpa only [writtenArray,List.size_toArray] using ordinal.isLt)
@@ -170,7 +177,7 @@ def readCandidates (body : Traversed prepared order runtime) : WorkM (List (Cand
       let parent : Candidate body := match nested.enclosing with
         | some proof => ⟨i,chosen,selected,chosen.queueIndex,.enclosing proof⟩
         | none => direct
-      return [parent,caller]
+      if supplied[nested.position.val] then return [parent] else return [parent,caller]
   return rows.flatten
 
 /-- All candidate positions, including unresolved enclosing links. Two
@@ -266,13 +273,13 @@ structure Report (body : Traversed prepared order runtime) (indices : List (Posi
 def Report.residual {body : Traversed prepared order runtime} {indices} (report : Report body indices) := report.result.residual
 def Report.consumed {body : Traversed prepared order runtime} {indices} (report : Report body indices) := report.result.consumed
 
-/-- A discharged application comes from the same checked runtime traversal.
-Its operation receipt was retained only after comparing the literal interval. -/
-def Report.hasApplication {body : Traversed prepared order runtime} {indices} (report : Report body indices) :
+/-- A discharged standalone Meaning comes from the same checked traversal,
+either at a literal application or at the original argument binding. -/
+def Report.hasStandaloneMeaning {body : Traversed prepared order runtime} {indices} (report : Report body indices) :
     WorkM Bool := do
   exactWork (Exact.charge (16*(report.consumed.length+body.checked.receipts.length+1)^2))
   return report.consumed.any fun entry =>
-    body.checked.receipts[entry.2.link.receiptIndex].request.origin.isApplication
+    body.checked.receipts[entry.2.link.receiptIndex].request.origin.isStandaloneMeaning
 
 def read (body : Traversed prepared order runtime) :
     WorkM (Report body (List.finRange prepared.source.pending.entries.length)) := do

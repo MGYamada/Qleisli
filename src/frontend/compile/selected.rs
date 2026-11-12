@@ -120,6 +120,7 @@ fn process(
         force_typed_root: true,
         selected_entry: Some(entry),
         selected_calls: 0,
+        checked_static_calls: BTreeMap::new(),
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
         nominal_basis_roots: BTreeSet::new(),

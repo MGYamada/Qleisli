@@ -1286,10 +1286,18 @@ impl Lowerer<'_, '_> {
                     span,
                 )?;
                 let start = self.raw.operations.len();
+                let static_record = instance.record.filter(|_| !instance.operations.is_empty());
                 self.source_context = None;
                 let value = self.call_instance(&key, values, Some(site), instance)?;
                 let context = self.source_context.take();
-                quantum_match::nominal::record_named(self, module, callee, start, context)?;
+                quantum_match::nominal::record_named(
+                    self,
+                    module,
+                    callee,
+                    start,
+                    context,
+                    static_record,
+                )?;
                 Ok(value)
             }
             Callee::Primitive(primitive) => {
@@ -2288,21 +2296,29 @@ fn lower_function_in_context(
             .kernel
             .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
     };
-    accepted
-        .map(|program| {
-            program
-                .retain_source_context(lower.source_context)
-                .retain_instrument_calls(lower.instrument_calls)
-        })
-        .map_err(|failure| {
-            let limit = failure.code == "limit";
-            verification_error(
-                lower.compiler,
-                &lower.operation_sources,
-                &key_name.0,
-                decl.span,
-                failure,
-                limit,
-            )
-        })
+    let program = accepted.map_err(|failure| {
+        let limit = failure.code == "limit";
+        verification_error(
+            lower.compiler,
+            &lower.operation_sources,
+            &key_name.0,
+            decl.span,
+            failure,
+            limit,
+        )
+    })?;
+    if let Some(context) = qmatch
+        .as_deref()
+        .filter(|_| program.source_body_scope().is_some())
+    {
+        quantum_match::nominal::retain_checked_calls(
+            lower.compiler,
+            &key_name.0,
+            decl.span,
+            context,
+        )?;
+    }
+    Ok(program
+        .retain_source_context(lower.source_context)
+        .retain_instrument_calls(lower.instrument_calls))
 }

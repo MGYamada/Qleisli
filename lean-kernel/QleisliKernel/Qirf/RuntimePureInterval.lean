@@ -10,26 +10,37 @@ namespace QleisliKernel.Qirf.RuntimePureInterval
 open QleisliKernel QleisliKernel.Finite
 open RuntimeInterval (Block Computed)
 
+def fragmentWithEffect (inputs : List Semantics.Raw.Port) (operations : List Semantics.Raw.Op)
+    (outputs : List Nat) (effect : Semantics.Raw.Effect) : Semantics.Raw.Program :=
+  ⟨inputs,operations,outputs,effect⟩
+
 def fragment (inputs : List Semantics.Raw.Port) (operations : List Semantics.Raw.Op)
     (outputs : List Nat) : Semantics.Raw.Program :=
   ⟨inputs,operations,outputs,.unitary⟩
 
-structure Checked {dependencies program} (block : Block dependencies program)
-    (arity start count : Nat) (inputs outputs : List Nat)
-    (roles : List Semantics.SourceOwners.Owner) where
-  arities : inputs.length = arity ∧ outputs.length = arity ∧ roles.length = arity
+/-- An actual pure fragment with independently read entry and return ports.
+Source owner correspondence is established by the enclosing source event. -/
+structure Literal {dependencies program} (block : Block dependencies program)
+    (start count : Nat) (inputs outputs : List Nat) (effect : Semantics.Raw.Effect) where
   interval : RuntimeInterval.Checked block start count
   operations : List Semantics.Raw.Op
   literal : (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure
   selected : List Semantics.Raw.Port
   atEntry : PureInterval.ports interval.before inputs = some selected
   pureBody : Raw.Prepared
-  pureRead : Computed (Raw.Pure.verify dependencies (fragment selected operations outputs)) pureBody
-  ownerReturn : Semantics.RawOwnerFlow.Returns roles (fragment selected operations outputs) roles
+  pureRead : Computed (Raw.Pure.verify dependencies
+    (fragmentWithEffect selected operations outputs effect)) pureBody
   returned : List Semantics.Raw.Port
   rawExit : PureInterval.portsOf pureBody.state.live outputs = some returned
   atExit : PureInterval.ports interval.after outputs = some returned
   spectators : PureInterval.spectators interval.before inputs = PureInterval.spectators interval.after outputs
+
+structure Checked {dependencies program} (block : Block dependencies program)
+    (arity start count : Nat) (inputs outputs : List Nat)
+    (roles : List Semantics.SourceOwners.Owner)
+    extends Literal block start count inputs outputs .unitary where
+  arities : inputs.length = arity ∧ outputs.length = arity ∧ roles.length = arity
+  ownerReturn : Semantics.RawOwnerFlow.Returns roles (fragment selected operations outputs) roles
 
 private def checkArity (arity : Nat) (inputs outputs : List Nat)
     (roles : List Semantics.SourceOwners.Owner) :
@@ -39,11 +50,14 @@ private def checkArity (arity : Nat) (inputs outputs : List Nat)
   if h : inputs.length = arity ∧ outputs.length = arity ∧ roles.length = arity then return ⟨h⟩
   else throw .request
 
-private def readPorts {dependencies program} {block : Block dependencies program}
-    {arity start count} {inputs outputs : List Nat} {roles : List Semantics.SourceOwners.Owner}
+/-- Reuse the caller's literal interval and the exact ordered ports for any
+pure effect. The same proof retains the complete spectator frame. -/
+def readLiteral {dependencies program} {block : Block dependencies program}
+    {start count}
     (interval : RuntimeInterval.Checked block start count)
-    (arities : inputs.length = arity ∧ outputs.length = arity ∧ roles.length = arity) :
-    WorkM {frame : Checked block arity start count inputs outputs roles // frame.interval = interval} := do
+    (inputs outputs : List Nat) (effect : Semantics.Raw.Effect) :
+    WorkM {frame : Literal block start count inputs outputs effect // frame.interval = interval} := do
+  guard (effect != .observe) .request
   match parsed : Sector.pureOps ((block.operations.drop start).take count) with
   | none => throw .request
   | some operations =>
@@ -52,19 +66,28 @@ private def readPorts {dependencies program} {block : Block dependencies program
     | none => throw .request
     | some selected =>
       let pureBody ← SourceTypes.NaturalAffine.witness
-        (Raw.Pure.verify dependencies (fragment selected operations outputs))
-      let ownerReturn ← Raw.OwnerFlow.check roles roles (fragment selected operations outputs)
+        (Raw.Pure.verify dependencies (fragmentWithEffect selected operations outputs effect))
       match rawExit : PureInterval.portsOf pureBody.val.state.live outputs with
       | none => throw .request
       | some returned =>
         if atExit : PureInterval.ports interval.after outputs = some returned then
           if spectators : PureInterval.spectators interval.before inputs =
               PureInterval.spectators interval.after outputs then
-            return ⟨⟨arities,interval,operations,Sector.pureOps_bound _ _ parsed,selected,atEntry,
-              pureBody.val,by with_reducible exact pureBody.property,ownerReturn.down,
+            return ⟨⟨interval,operations,Sector.pureOps_bound _ _ parsed,selected,atEntry,
+              pureBody.val,by with_reducible exact pureBody.property,
               returned,rawExit,atExit,spectators⟩,rfl⟩
           else throw .request
         else throw .request
+
+private def readPorts {dependencies program} {block : Block dependencies program}
+    {arity start count} {inputs outputs : List Nat} {roles : List Semantics.SourceOwners.Owner}
+    (interval : RuntimeInterval.Checked block start count)
+    (arities : inputs.length = arity ∧ outputs.length = arity ∧ roles.length = arity) :
+    WorkM {frame : Checked block arity start count inputs outputs roles // frame.interval = interval} := do
+  let frame ← readLiteral interval inputs outputs .unitary
+  let ownerReturn ← Raw.OwnerFlow.check roles roles
+    (fragment frame.val.selected frame.val.operations outputs)
+  return ⟨⟨frame.val,arities,ownerReturn.down⟩,frame.property⟩
 
 /-- Read the local computation in the caller's already checked interval. The
 result carries that same interval for the source-owner transition. -/

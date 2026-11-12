@@ -72,8 +72,9 @@ inductive Prefixes {artifact : Artifact} (preparation : RuntimeGraphOperation.Pr
   | cons {actual : Sigma (StaticOperation.Actual artifact.sources signature.context)}
       {rest : List (Sigma (StaticOperation.Actual artifact.sources signature.context))} {before after : Queues}
       (cut : Cut before)
+      (origin : RuntimeGraphOperation.Origin actual.2.graph)
       (graph : Graph preparation actual.2.graph (RuntimeGraphOperation.required signature actual.1.1)
-        cut.implementations cut.references)
+        cut.implementations cut.references origin)
       (tail : Prefixes preparation signature rest cut.after after) :
       Prefixes preparation signature (actual :: rest) before after
 
@@ -96,11 +97,12 @@ inductive Body {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepar
       (noRootRequirements : source.signature.operations.rootRequirements.isEmpty = true)
       (positionsCount : request.positions.length = source.events.length)
       (offsets : request.positions.map (·.offset) = source.events.map SourceRuntimeContext.Event.offset)
-      (actuals : List (Sigma (StaticOperation.Actual artifact.sources source.signature.context)))
+      (actuals : List {actual : Sigma (StaticOperation.Actual artifact.sources source.signature.context) //
+        actual ∈ source.signature.operations.actuals})
       (originalActuals : RuntimeInterval.Computed
-        (if source.prefixRequired then RuntimeProviderHeaders.originalActuals source.signature.operations else pure []) actuals)
+        (if source.prefixRequired then RuntimeProviderHeaders.originalActualSlots source.signature.operations else pure []) actuals)
       (afterPrefix : Queues)
-      (prefixPlans : Prefixes preparation source.signature actuals (Queues.ofContext request) afterPrefix)
+      (prefixPlans : Prefixes preparation source.signature (actuals.map Subtype.val) (Queues.ofContext request) afterPrefix)
       (afterEvents : Queues)
       (events : Events preparation source (source.events.zip request.positions) afterPrefix afterEvents)
       (exhausted : afterEvents.isEmpty = true) : Body preparation source request

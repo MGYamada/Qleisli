@@ -223,6 +223,11 @@ def applicationMarkers {sources owner} (event : SourceOperationApplication.Event
     Option (Σ scope, List (SourceOperation.Marker sources owner scope)) :=
   some ⟨event.scope,event.operation.provenance.markers⟩
 
+def supplyingMarkers {sources caller} (event : SourceRuntimeContext.NamedEvent sources caller)
+    (index : Fin event.target.operationActuals.sourceActuals.length) :
+    Option (Σ scope, List (SourceOperation.Marker sources caller scope)) :=
+  some ⟨event.scope,event.target.operationActuals.sourceActuals[index].checked.provenance.markers⟩
+
 /-- The retained source origin selects the exact marker list.
 An unlocated graph has no original assertion coverage. -/
 def OriginChecked {artifact catalogue context description graph implementations references}
@@ -233,6 +238,7 @@ def OriginChecked {artifact catalogue context description graph implementations 
   | .unlocated => Unit
   | .arm operation => Checked (originalMarkers operation) prepared checked
   | .application event => Checked (applicationMarkers event) prepared checked
+  | .supplying event index => Checked (supplyingMarkers event index) prepared checked
 
 /-- Consume the actual source origin carried by this same graph request.
 An arm or application supplies its own original marker association. -/
@@ -251,5 +257,8 @@ def readOrigin {artifact catalogue context description graph implementations ref
   | application event => exact do
     exactWork (Exact.charge 1)
     readMarkers (applicationMarkers event) prepared checked
+  | supplying event index => exact do
+    exactWork (Exact.charge (index.val+1))
+    readMarkers (supplyingMarkers event index) prepared checked
 
 end QleisliKernel.Qirf.RuntimeSourceOperationMarkers

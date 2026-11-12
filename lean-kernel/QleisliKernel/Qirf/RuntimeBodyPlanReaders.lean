@@ -72,7 +72,7 @@ def readPrefixes {artifact : Artifact} (preparation : RuntimeGraphOperation.Prep
         let first ← readGraph preparation actual.2.graph (RuntimeGraphOperation.required signature actual.1.1) before
         let tail ← next _ first.cut.after
         exactWork (Exact.charge 1)
-        return ⟨tail.after,.cons first.cut first.graphPlan tail.plans,first.receipt :: tail.receipts⟩)
+        return ⟨tail.after,.cons first.cut .unlocated first.graphPlan tail.plans,first.receipt :: tail.receipts⟩)
     actuals.length actuals
 
 structure ArmsResult {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact)

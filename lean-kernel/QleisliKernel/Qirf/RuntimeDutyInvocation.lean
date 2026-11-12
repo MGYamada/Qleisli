@@ -42,27 +42,26 @@ The lexical call-name reader tests membership, including consumed names.
 The two full scopes induce the same shadowing relation at this occurrence.
 The selected declarations and the caller's actual supply context are bound
 separately; scope membership alone cannot identify a supplying invocation. -/
-structure Edge {sources catalogue record rootOwner rootName caller}
+structure CallMatch {sources rootOwner rootName caller}
     (event : SourceRuntimeContext.NamedEvent sources caller)
     (parent : CallPath sources rootOwner rootName caller event.target.callerName)
-    (application : @ApplicationAt sources catalogue record) : Type where
-  tokens : application.original.tokens = event.call.call.callee
-  scope : ∀ name, name ∈ application.original.scope ↔ name ∈ event.scope
-  written : application.original.written.arguments = event.target.written.arguments
+    (source : GenericOperation.ApplicationSource sources) : Type where
+  tokens : source.tokens = event.call.call.callee
+  scope : ∀ name, name ∈ source.scope ↔ name ∈ event.scope
+  written : source.written.arguments = event.target.written.arguments
   actuals : (signature parent).arguments = event.target.callerSignature.arguments
   context : (signature parent).context = event.target.callerSignature.context
-  callerOwner : application.original.state.owner = caller
-  callerName : application.original.state.name = event.target.callerName
-  calleeOwner : application.original.owner = event.target.resolution.moduleName
-  calleeName : application.original.name = event.target.resolution.declaration.name
-  callerOriginal : HEq application.original.state.prepared.original.envelope event.target.callerSignature.original
-  calleeOriginal : HEq application.original.target.envelope event.target.signature.original
+  callerOwner : source.state.owner = caller
+  callerName : source.state.name = event.target.callerName
+  calleeOwner : source.owner = event.target.resolution.moduleName
+  calleeName : source.name = event.target.resolution.declaration.name
+  callerOriginal : HEq source.state.prepared.original.envelope event.target.callerSignature.original
+  calleeOriginal : HEq source.target.envelope event.target.signature.original
 
-private def matchEdge {sources catalogue record rootOwner rootName caller}
+private def matchCall {sources rootOwner rootName caller}
     (event : SourceRuntimeContext.NamedEvent sources caller)
     (parent : CallPath sources rootOwner rootName caller event.target.callerName)
-    (application : @ApplicationAt sources catalogue record) : WorkM (Option (Edge event parent application)) := do
-  let source := application.original
+    (source : GenericOperation.ApplicationSource sources) : WorkM (Option (CallMatch event parent source)) := do
   let scopeWork := (SourceTrace.Meter.nameFields source.scope+SourceTrace.Meter.nameFields event.scope+1)*
     (source.scope.length+event.scope.length+1)
   exactWork (Exact.charge (16*(scopeWork+SourceTrace.Meter.tokenFields source.tokens+
@@ -83,6 +82,74 @@ private def matchEdge {sources catalogue record rootOwner rootName caller}
         sameOriginal _ _ names.1 names.2.1,sameOriginal _ _ names.2.2.1 names.2.2.2⟩
     else return none
   else return none
+
+abbrev Edge {sources catalogue record rootOwner rootName caller}
+    (event : SourceRuntimeContext.NamedEvent sources caller)
+    (parent : CallPath sources rootOwner rootName caller event.target.callerName)
+    (application : @ApplicationAt sources catalogue record) :=
+  CallMatch event parent application.original
+
+private def matchEdge {sources catalogue record rootOwner rootName caller}
+    (event : SourceRuntimeContext.NamedEvent sources caller)
+    (parent : CallPath sources rootOwner rootName caller event.target.callerName)
+    (application : @ApplicationAt sources catalogue record) : WorkM (Option (Edge event parent application)) :=
+  matchCall event parent application.original
+
+structure Supplying {sources rootOwner rootName caller}
+    (event : SourceRuntimeContext.NamedEvent sources caller)
+    (index : Fin event.target.operationActuals.sourceActuals.length)
+    (parent : CallPath sources rootOwner rootName caller event.target.callerName)
+    (duty : GenericOperation.Duty sources) where
+  binding : GenericOperation.Binding sources
+  original : duty.bindings = [binding]
+  application : GenericOperation.ApplicationSource sources
+  retained : binding.application = some application
+  call : CallMatch event parent application
+  actual : binding.formal = event.target.operationActuals.sourceActuals[index].actual.formal ∧
+    binding.actual.tokens = event.target.operationActuals.sourceActuals[index].actual.argument.tokens
+  scope : ∀ name, name ∈ binding.actual.scope ↔ name ∈ event.scope
+  callerOriginal : HEq binding.actual.state.prepared.original.envelope event.target.callerSignature.original
+  calleeOriginal : HEq binding.original.envelope event.target.signature.original
+
+/-- Associate the written duty with its exact original mixed argument. The
+marker inside that argument is checked independently against the native graph. -/
+def readSupplying {sources rootOwner rootName caller}
+    (event : SourceRuntimeContext.NamedEvent sources caller)
+    (index : Fin event.target.operationActuals.sourceActuals.length)
+    (parent : CallPath sources rootOwner rootName caller event.target.callerName)
+    (duty : GenericOperation.Duty sources) : WorkM (Supplying event index parent duty) := do
+  match original : duty.bindings with
+  | [binding] =>
+    match retained : binding.application with
+    | some application =>
+      let some call ← matchCall event parent application | throw .request
+      let actual := event.target.operationActuals.sourceActuals[index].actual
+      let callerOriginal := binding.actual.state.prepared.original.envelope
+      let formalWork := fun (formal : StaticHeaders.Formal) =>
+        formal.name.utf8ByteSize+1+match formal.kind with
+          | .operation tokens => SourceTrace.Meter.nameFields tokens
+          | _ => 0
+      let scopeWork := (SourceTrace.Meter.nameFields binding.actual.scope+SourceTrace.Meter.nameFields event.scope+1)*
+        (binding.actual.scope.length+event.scope.length+1)
+      exactWork (Exact.charge (16*(scopeWork+index.val+SourceTrace.Meter.tokenFields
+        (binding.actual.tokens ++ actual.argument.tokens)+
+        formalWork binding.formal+formalWork actual.formal+
+        binding.owner.utf8ByteSize+binding.name.utf8ByteSize+
+        binding.actual.state.owner.utf8ByteSize+binding.actual.state.name.utf8ByteSize+
+        caller.utf8ByteSize+event.target.callerName.utf8ByteSize+
+        event.target.resolution.moduleName.utf8ByteSize+event.target.resolution.declaration.name.utf8ByteSize+1)))
+      if exactActual : binding.formal = actual.formal ∧ binding.actual.tokens = actual.argument.tokens then
+        if scope : sameScope binding.actual.scope event.scope = true then
+          if names : binding.actual.state.owner = caller ∧ binding.actual.state.name = event.target.callerName ∧
+              binding.owner = event.target.resolution.moduleName ∧ binding.name = event.target.resolution.declaration.name then
+            return ⟨binding,original,application,retained,call,exactActual,sameScope_members scope,
+              sameOriginal callerOriginal _ names.1 names.2.1,
+              sameOriginal binding.original.envelope _ names.2.2.1 names.2.2.2⟩
+          else throw .request
+        else throw .request
+      else throw .request
+    | none => throw .request
+  | _ => throw .request
 
 private def readEdge {sources catalogue record rootOwner rootName caller}
     (event : SourceRuntimeContext.NamedEvent sources caller)

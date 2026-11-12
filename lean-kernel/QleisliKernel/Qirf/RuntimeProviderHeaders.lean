@@ -10,25 +10,50 @@ namespace QleisliKernel.Qirf.RuntimeProviderHeaders
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes
 open RuntimeProviderHeader (Request)
 
+private def bindingAt {α : Type} (bindings : List (String × α)) (name : String) :
+    Except Finite.Error {value : α // (name,value) ∈ bindings} := do
+  match read : bindings.filter (·.1 == name) with
+  | [(selected,value)] =>
+    have kept : (selected,value) ∈ bindings.filter (·.1 == name) := by rw [read]; simp
+    have origin := List.mem_filter.mp kept
+    have same : selected = name := beq_iff_eq.mp origin.2
+    return ⟨value,same ▸ origin.1⟩
+  | _ => throw .request
+
+private def readOriginalBindings {α : Type} (names : List String) (bindings : List (String × α)) :
+    Except Finite.Error (List {value : α // value ∈ bindings.map Prod.snd}) := do
+  if names.length != bindings.length || names.eraseDups.length != names.length then throw .request
+  names.mapM fun name => do
+    let bound ← bindingAt bindings name
+    return ⟨bound.val,List.mem_map_of_mem bound.property⟩
+
 /-- Named wire bindings do not choose the containing function's body order.
 Each original formal selects exactly one retained value; equal values under
 different formal names remain separate occurrences. -/
 def originalBindings {α : Type} (names : List String) (bindings : List (String × α)) :
-    Except Finite.Error (List α) := do
-  if names.length != bindings.length || names.eraseDups.length != names.length then throw .request
-  names.mapM fun name => do
-    let [(_,value)] := bindings.filter (·.1 == name) | throw .request
-    pure value
+    Except Finite.Error (List α) :=
+  (readOriginalBindings names bindings).map (List.map Subtype.val)
+
+def originalActualSlots {sources owner name original}
+    {instantiation : @StaticInstantiation.Checked sources owner name original} {context}
+    (arguments : StaticOperation.ArgumentsCheckedWithInstantiation instantiation context) :
+    WorkM (List {actual : Sigma (StaticOperation.Actual sources context) // actual ∈ arguments.actuals}) := do
+  let names := instantiation.operationNames
+  exactWork (Exact.charge (16*(names.length+arguments.actuals.length+1)^2+
+    (names.map String.utf8ByteSize).sum+
+    (arguments.actuals.map fun actual => actual.1.1.utf8ByteSize).sum))
+  let selected ← lift (readOriginalBindings names (arguments.actuals.map fun actual => (actual.1.1,actual)))
+  return selected.map fun slot =>
+    ⟨slot.val,by
+      obtain ⟨entry,present,same⟩ := List.mem_map.mp slot.property
+      obtain ⟨actual,original,rfl⟩ := List.mem_map.mp present
+      exact same ▸ original⟩
 
 def originalActuals {sources owner name original}
     {instantiation : @StaticInstantiation.Checked sources owner name original} {context}
     (arguments : StaticOperation.ArgumentsCheckedWithInstantiation instantiation context) :
     WorkM (List (Sigma (StaticOperation.Actual sources context))) := do
-  let names := instantiation.operationNames
-  exactWork (Exact.charge (16*(names.length+arguments.actuals.length+1)^2+
-    (names.map String.utf8ByteSize).sum+
-    (arguments.actuals.map fun actual => actual.1.1.utf8ByteSize).sum))
-  lift (originalBindings names (arguments.actuals.map fun actual => (actual.1.1,actual)))
+  return (← originalActualSlots arguments).map Subtype.val
 
 def providerIndices (description : OperationDescription.Description) (occurrences : List Nat) : List Nat :=
   occurrences.filter fun index => match description.nodes[index]? with

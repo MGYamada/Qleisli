@@ -42,14 +42,14 @@ variable {artifact catalogue context description graph origin implementations re
 private def SiteRole :
     RuntimeLinkedSubject.Evidence site prepared checked source index invoked → Role pending.entries.length → Type := by
   cases site with
-  | unlocated | application => exact fun _ _ => Empty
+  | unlocated | application | supplying => exact fun _ _ => Empty
   | arm => exact StatusRole pending position source index invoked (RuntimeLinkedSubject.assessment invoked)
 
 private def readSite : (evidence : RuntimeLinkedSubject.Evidence site prepared checked source index invoked) →
     WorkM (Option (Supplement (SiteRole pending position site prepared checked source index invoked evidence))) := by
   cases site with
   | unlocated => exact fun impossible => nomatch impossible
-  | application => exact fun _ => pure none
+  | application | supplying => exact fun _ => pure none
   | arm => exact readStatus pending position source index invoked (RuntimeLinkedSubject.assessment invoked)
 end
 

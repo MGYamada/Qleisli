@@ -151,8 +151,8 @@ private theorem fold_input_bits (signatures : List Basis) (operations : List Sem
 
 /-- The literal caller interval and its actual checked local fragment supply
 both native folds. The local entry is the one prepared by that fragment. -/
-theorem pure_interval_traces {dependencies program block arity start count inputs outputs roles}
-    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles) :
+theorem literal_interval_traces {dependencies program block start count inputs outputs effect}
+    (frame : @RuntimePureInterval.Literal dependencies program block start count inputs outputs effect) :
     Traced (dependencies.map (·.signature)) frame.operations frame.interval.before.quantum frame.interval.after.quantum ∧
     ∃ entry : Raw.State,
       entry.reference = ⟨frame.selected,frame.selected.flatMap (·.wires)⟩ ∧
@@ -160,7 +160,7 @@ theorem pure_interval_traces {dependencies program block arity start count input
       Traced (dependencies.map (·.signature)) frame.operations entry frame.pureBody.state := by
   refine ⟨traced_parent frame.interval frame.operations frame.literal,?_⟩
   obtain ⟨work,left,read⟩ := frame.pureRead
-  let fragment := RuntimePureInterval.fragment frame.selected frame.operations outputs
+  let fragment := RuntimePureInterval.fragmentWithEffect frame.selected frame.operations outputs effect
   let signatures := dependencies.map (·.signature)
   have prepared := (Raw.Pure.verify_conditions dependencies fragment frame.pureBody work left read).1
   obtain ⟨entry,body,opened,folded,_,same,_⟩ := Raw.prepare_conditions signatures fragment frame.pureBody prepared
@@ -178,6 +178,15 @@ theorem pure_interval_traces {dependencies program block arity start count input
     rw [same,← bits]
   rw [data]
   exact folded
+
+theorem pure_interval_traces {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles) :
+    Traced (dependencies.map (·.signature)) frame.operations frame.interval.before.quantum frame.interval.after.quantum ∧
+    ∃ entry : Raw.State,
+      entry.reference = ⟨frame.selected,frame.selected.flatMap (·.wires)⟩ ∧
+      Raw.stateValid entry = true ∧
+      Traced (dependencies.map (·.signature)) frame.operations entry frame.pureBody.state :=
+  literal_interval_traces frame.toLiteral
 
 /-- The native named frame checks these very operations twice, once on the
 caller interface with its spectators and once on the ordered local inputs. -/

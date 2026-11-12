@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check rectangular nominal Meaning applications through original named
+  calls. Check a written `checked_op` at its supplying argument, including
+  unused arguments, and retain the exact input and output carrier codes.
 - Check standalone composed Meanings with nominal intermediate types and
   tensor Meanings with nominal components. Retain exact reference bodies,
   type trees, axis order and phase in the native equation.

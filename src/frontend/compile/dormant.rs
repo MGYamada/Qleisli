@@ -652,6 +652,28 @@ impl<'a> Compiler<'a> {
             let environment = Arc::clone(&self.source.static_calls[&site].environment);
             self.visit_dormant_environment(&environment, &module, span, |compiler, inactive| {
                 if let Some(instance) = compiler.closed_call_instance(site, &module, span)? {
+                    if let Some(record) = instance
+                        .record
+                        .filter(|_| !inactive && !compiler.checked_static_calls.is_empty())
+                    {
+                        let offset = compiler.source.lexical[&owner].usage(site).span.start;
+                        compiler.charge(
+                            &module,
+                            span,
+                            (module.len() + 3)
+                                .saturating_mul(compiler.checked_static_calls.len() + 1),
+                        )?;
+                        if compiler
+                            .checked_static_calls
+                            .get(&(module.clone(), offset))
+                            .is_some_and(|records| records.contains(&record))
+                        {
+                            // The active invocation checked the callee's dormant
+                            // obligations and the original body was accepted in
+                            // this exact context by Lean.
+                            return Ok(());
+                        }
+                    }
                     // All actuals and their formal contracts were checked by
                     // the binder. An inactive edge back to this exact active
                     // instance cannot execute; its selected body is already
