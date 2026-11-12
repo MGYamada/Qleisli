@@ -1,0 +1,34 @@
+// Copyright 2026 Qleisli Project Contributors.
+// SPDX-License-Identifier: Apache-2.0
+// Informed first source for issue #29; not yet checked or executed.
+use std::gate::s;
+use std::gate::sdg;
+use std::gate::x;
+use std::state::init0;
+
+// Local wrapper around existing controlled/power forms, preserving both owners.
+unitary fn controlled_power[const K: Nat](phase: Q<Bit>, target: Q<Bit>)
+    -> (Q<Bit>,Q<Bit>) requires K <= 2 {
+    controlled(power(s,K))(phase,target)
+}
+
+// Only the two-phase-bit controlled-power prefix. No QFT or full QPE is claimed.
+// Output axes retain (weight-1 phase, weight-2 phase, target) order.
+pub unitary fn probe(input: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> {
+    let (phase,target) = split(input);
+    let (low,high) = split(phase);
+    let low = h(low);
+    let high = h(high);
+    let (low,target) = controlled_power[1](low,target);
+    let (high,target) = controlled_power[2](high,target);
+    join(join(low,high),target)
+}
+
+// For target |1>, the prefix phases are i and -1. These local analyzers
+// make both visible; this is not an inverse Fourier transform.
+pub observe fn main() -> ((Bit,Bit),Bit) {
+    let input = join(join(init0(),init0()),x(init0()));
+    let (phase,target) = split(probe(input));
+    let (low,high) = split(phase);
+    ((measure_z(h(sdg(low))),measure_z(h(high))),measure_z(target))
+}

@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#157 coherent cleanup versus reset of a correlated auxiliary",
+  "author": "Codex delegated agent /root/review_access_29; model identifier not independently recorded",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "fa2e0a6d4eddf9dd3a99d4935286627151380efe",
+  "context": "first/context.json",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged original three sources, observed once with check/run; no source repairs.",
+      "sha256": {
+        "coherent-uncompute/main.qli": "bad0cda2027d5b1409bae32b756bdc53e369915ca3346893583dfdda4fc630c6",
+        "explicit-reset/main.qli": "ca60038b81fc1440b2878437f1e3522fd4fe9b395bb022e7ab0d4b67d8432b59",
+        "false-unitary-reset/main.qli": "bc375eca2490858517e66bb3a6f308eb9568315610c14c62705af84063d04066"
+      },
+      "manifest_sha256": {
+        "coherent-uncompute/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "explicit-reset/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "false-unitary-reset/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/01-coherent-uncompute-check/event.json",
+        "observations/02-coherent-uncompute-run/event.json",
+        "observations/03-explicit-reset-check/event.json",
+        "observations/04-explicit-reset-run/event.json",
+        "observations/05-false-unitary-reset-check/event.json",
+        "observations/06-false-unitary-reset-run/event.json"
+      ],
+      "reports": [
+        "observations/context.json"
+      ]
+    }
+  ],
+  "status": "first-observations-recorded",
+  "expectations": "first/expected.md",
+  "checksums": "SHA256SUMS",
+  "observer": "observations/observer.py",
+  "original_packet": "first/session.json",
+  "note": "The complete first packet, including its unexecuted status, is preserved verbatim under first/. This new index appends actual observations. Canonical attempt-01 copies exactly the original sources for the existing inert-history reader."
+}

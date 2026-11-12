@@ -29,3 +29,15 @@ is immutable; publication evidence and status updates are committed afterward.
 No PyPI/custom binaries or new maximum-size cases were generated. Existing CI
 capacity regressions were retained. General theorem and authority-transfer gates
 remain open.
+
+The historical branch-function packet is retained in
+[native-ci/lean-branch-function.tar.gz](native-ci/lean-branch-function.tar.gz),
+with the complete original inventory and hashes in
+[its archive manifest](native-ci/lean-branch-function.archive.json).
+The four original paths, bytes and modes are recoverable from that archive
+or [the immutable Git snapshot](https://github.com/MGYamada/Qleisli/tree/b76fbc6702648fd5612af0814bbd6f13034a4d61/tests/fixtures/releases/v0.2.7/native-ci/lean-branch-function).
+Existing publication records retain their original path/hash identities.
+The archive checker compares every member against that snapshot; it does not
+execute historical commands or supply a new successful validation result.
+Current branch-function tests generate their own inputs and do not consume
+this historical packet.

@@ -1,0 +1,10 @@
+pub unitary fn probe(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (signal,system) = split(q);
+    let (signal,system) = cnot(h(signal),system);
+    join(signal,system)
+}
+observe fn main() -> Bit {
+    let (signal,system) = split(probe(join(init0(),init0())));
+    discard(signal);
+    measure_z(h(system))
+}

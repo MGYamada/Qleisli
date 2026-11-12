@@ -1,0 +1,92 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#72/#352: exact generic ancilla normalization and failed clean return",
+  "author": "Codex delegated agent /root/review_access_29; exact model identifier not independently recorded",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "428496d8c22478383171f3656ab8a5f659195bad",
+  "context": "first/context.json",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "All three original sources checked and run serially without repair; complete first packet and source/manifest copies are unchanged.",
+      "sha256": {
+        "hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+        "xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+        "dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779"
+      },
+      "manifest_sha256": {
+        "hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/01-hxh-check.json",
+        "observations/02-hxh-run.json",
+        "observations/03-xzx-check.json",
+        "observations/04-xzx-run.json",
+        "observations/05-dirty-x-check.json",
+        "observations/06-dirty-x-run.json"
+      ],
+      "reports": []
+    }
+  ],
+  "status": "first-observations-recorded",
+  "expectations": "first/context.json",
+  "original_packet": "first/session.json",
+  "observation_context": {
+    "kind": "new-first-observer",
+    "recorded_before_invocations_utc": "2026-11-11T21:39:16.933872+00:00",
+    "worktree_head": "428496d8c22478383171f3656ab8a5f659195bad",
+    "worktree_status": " M CHANGELOG.md\n M docs/src/reference/rust-boundary.md\n M tests/computed_derived_source.rs\n",
+    "source_hashes": {
+      "SHA256SUMS": "82cb64141cbab1cc04b3fd3c8db41ccff52de4e732081c9cf6cbe6f3c6c8a10e",
+      "attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+      "attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+      "attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+      "context.json": "af99af5e16c1404cfd6bf981e134aa042ffa11b46afe9b592a500cb42702bf28",
+      "session.json": "ad46e5d29d9e2e12da09f6aa22db9e4e2786ca76f3c1e7076978f99f33ae9d40"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    },
+    "build_attestation": "Existing executables identified by bytes; current repository HEAD is not an attestation of their build source.",
+    "collector_sha256": "0152ad3e2675bde4c7e846d9e325b6759b3cd0ed51dc24465c749ad088d9f560",
+    "command_provenance": "Six new explicit check/run invocations constructed here; no command or observer is loaded from a retained history.",
+    "native_invocation_note": "The explicit native path is supplied; no child-start or native-process counter attestation is installed."
+  },
+  "retained_sha256": {
+    "attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+    "attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+    "attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+    "first/SHA256SUMS": "82cb64141cbab1cc04b3fd3c8db41ccff52de4e732081c9cf6cbe6f3c6c8a10e",
+    "first/attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+    "first/attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+    "first/attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+    "first/context.json": "af99af5e16c1404cfd6bf981e134aa042ffa11b46afe9b592a500cb42702bf28",
+    "first/session.json": "ad46e5d29d9e2e12da09f6aa22db9e4e2786ca76f3c1e7076978f99f33ae9d40",
+    "observations/01-hxh-check.json": "ff3120981f4bd6c0204db95820b68885072b146df50ff839d1f2e28c963c49cb",
+    "observations/02-hxh-run.json": "56b6af0d5ec5b77459005a3d953c8f097ca9e6288b21bced329e044468fd83a6",
+    "observations/03-xzx-check.json": "eda7018ef09cd2607c73d60595fb95e6ecd9402d2b6b61975bda36118115daa9",
+    "observations/04-xzx-run.json": "53152e68e3356aa8160fd9a06af828fac580d156cbe87eafa97dea7903eca199",
+    "observations/05-dirty-x-check.json": "7ad3c48a9e24c122fef3f9216db7f0ec19707fb0dba21fa898f2b9c83eaa4fad",
+    "observations/06-dirty-x-run.json": "f47a7cb33e2728e87989c4efccc1d48b5e478cd9764bb2b6b7e6050825770968"
+  },
+  "scope": "The first packet remains verbatim, including its pre-execution status. Historical commands are inert. Four successes and two ordinary unsupported refusals are bounded observations, not general source/CPTP/resource proof or a binary build attestation."
+}

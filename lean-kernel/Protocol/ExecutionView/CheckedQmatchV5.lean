@@ -24,7 +24,8 @@ structure Original (bytes : ByteArray) where
     request.source.functionName request.source.arguments request.context) prepared
   checked : RuntimeBodyOperations.Checked prepared order request.combinedRuntime
   bodyRead : RuntimeInterval.Computed (RuntimeBodyOperations.read prepared order request.combinedRuntime) checked
-  selection : 0 < checked.selections.count
+  sourceScope : (0 < checked.selections.count) ∨ (checked.selections.count = 0 ∧ ∃ before after,
+    (RuntimeSelectionSteps.readBasisResult checked.checked.result).run before = (.ok true,after))
   complete : checked.coverage.residual = []
 
 def readOriginal (bytes : ByteArray) : Finite.WorkM (Original bytes) := do
@@ -38,14 +39,21 @@ def readOriginal (bytes : ByteArray) : Finite.WorkM (Original bytes) := do
       let prepared ← NaturalAffine.witness (RuntimeBodyOperations.prepare artifact.val.1
         request.val.source.moduleName request.val.source.functionName request.val.source.arguments request.val.context)
       let checked ← NaturalAffine.witness (RuntimeBodyOperations.read prepared.val artifact.val.2 request.val.combinedRuntime)
-      if selection : 0 < checked.val.selections.count then
-        if complete : checked.val.coverage.residual = [] then
-          return ⟨body,requestBytes,packet,artifact.val.1,artifact.val.2,
-            by with_reducible exact artifact.property,
-            request.val,by with_reducible exact request.property,compatible,
-            prepared.val,by with_reducible exact prepared.property,
-            checked.val,by with_reducible exact checked.property,selection,complete⟩
-        else throw .request
+      let selected ← Protocol.QmatchV5.usesSelection 129 request.val.context
+      Finite.guard (selected == (0 < checked.val.selections.count)) .request
+      if complete : checked.val.coverage.residual = [] then
+        let scope ← if selection : 0 < checked.val.selections.count then
+            pure (⟨Or.inl selection⟩ : PLift (_ ∨ _))
+          else do
+            let basis ← NaturalAffine.witness (RuntimeSelectionSteps.readBasisResult checked.val.checked.result)
+            if found : basis.val = true then
+              pure (⟨Or.inr ⟨Nat.eq_zero_of_not_pos selection,found ▸ basis.property⟩⟩ : PLift (_ ∨ _))
+            else throw .request
+        return ⟨body,requestBytes,packet,artifact.val.1,artifact.val.2,
+          by with_reducible exact artifact.property,
+          request.val,by with_reducible exact request.property,compatible,
+          prepared.val,by with_reducible exact prepared.property,
+          checked.val,by with_reducible exact checked.property,scope.down,complete⟩
       else throw .request
     else throw .request
 

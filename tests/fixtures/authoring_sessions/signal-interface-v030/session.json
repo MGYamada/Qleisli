@@ -1,0 +1,74 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#158 live signal ownership",
+  "author": "Codex root and delegated agents; exact model identifiers not independently recorded",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "25ef5c0c91b220704c61743a41144a218c732038",
+  "context": "first/context.json",
+  "status": "first-observations-recorded",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged informed first sources; original packets remain verbatim. Current observations do not repair or replace original predictions.",
+      "sha256": {
+        "explicit-discard/main.qli": "826fe5319ed4a5423cdadd5df74e52d29a91e116b1cecc14276251ee992cb731",
+        "lost-signal/main.qli": "831fca0d8d842794bd1dd59c36cb21227585961f6c596f023aa581aa71900e30",
+        "returned-signal/main.qli": "f100b1bf71e457a92de0e49cf8520d6f13bc3d52e61fb7c753f12b7dbdc9ad0c"
+      },
+      "manifest_sha256": {
+        "explicit-discard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "lost-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "returned-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/01-returned-signal-check.json",
+        "observations/02-returned-signal-run.json",
+        "observations/03-lost-signal-check.json",
+        "observations/04-lost-signal-run.json",
+        "observations/05-explicit-discard-check.json",
+        "observations/06-explicit-discard-run.json"
+      ],
+      "reports": []
+    }
+  ],
+  "original_observation_sha256": {
+    "01-returned-signal-check.json": "4b6a58e5379805e88473a7157471d61ea2973ec2912afc8c679b285a88c60c6d",
+    "02-returned-signal-run.json": "935dabf4440384a6c22bb589c16b2f309ceffd755cb4d26d5f30622aa68238c6",
+    "03-lost-signal-check.json": "05ea8f1ff6e02a6e9cd3a14af922764a9d07f109558393f43a24f04808649326",
+    "04-lost-signal-run.json": "0b0524f770af5e6b62c56a7398ebdd61146b1988d45c5ceb4656915b32c47944",
+    "05-explicit-discard-check.json": "2efcc61fd1c018044033385e39047fe4253dc08d5ce8f9d59db4aae5562fd264",
+    "06-explicit-discard-run.json": "f0e02adc7446fe5939b87a7529eba767b77bc1869695064b8d1bd71d5377e677",
+    "context.json": "171377cac61645a5e26d46d73d396f6fd4f1bab97b73678c5afc07be41feceb9",
+    "summary.json": "ea77665879ea551791b79f514025594e7f339ddaaa805abd07a5b3f84a042246"
+  },
+  "collector_sha256": "8fdeaa0f724442125987ae9afaae9448dce305225f2a8b22aef1ef24bf6bbd04",
+  "scope": "Three original programs and six CLI observations: returning the signal and explicit discard succeed; losing the live signal refuses ownership. A block condition does not establish clean return, postselection or a resource certificate. No recorded command is executed; stable binary hashes are not a build attestation.",
+  "retained_sha256": {
+    "README.md": "e069044df68a7a9360763c060beff6bd87268f22d2b87db2332d5e27175de8a1",
+    "attempt-01/explicit-discard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/explicit-discard/main.qli": "826fe5319ed4a5423cdadd5df74e52d29a91e116b1cecc14276251ee992cb731",
+    "attempt-01/lost-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/lost-signal/main.qli": "831fca0d8d842794bd1dd59c36cb21227585961f6c596f023aa581aa71900e30",
+    "attempt-01/returned-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/returned-signal/main.qli": "f100b1bf71e457a92de0e49cf8520d6f13bc3d52e61fb7c753f12b7dbdc9ad0c",
+    "collector.py.txt": "8fdeaa0f724442125987ae9afaae9448dce305225f2a8b22aef1ef24bf6bbd04",
+    "first/SHA256SUMS": "cfaaa74af65c3d3e81be6bcc2f11614b535f8f42b5bebb0997b3e4f02919e531",
+    "first/attempt-01/explicit-discard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/attempt-01/explicit-discard/main.qli": "826fe5319ed4a5423cdadd5df74e52d29a91e116b1cecc14276251ee992cb731",
+    "first/attempt-01/lost-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/attempt-01/lost-signal/main.qli": "831fca0d8d842794bd1dd59c36cb21227585961f6c596f023aa581aa71900e30",
+    "first/attempt-01/returned-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "first/attempt-01/returned-signal/main.qli": "f100b1bf71e457a92de0e49cf8520d6f13bc3d52e61fb7c753f12b7dbdc9ad0c",
+    "first/context.json": "b575e564dbfea74cdd24dc54b1010d1891dfc0d8ea80c7ee8b043f74f1327a37",
+    "first/session.json": "f79204fa3a6e2a10fcc2012a9661fa3597845e82b0fa8341954997d0aaad1cd3",
+    "observations/01-returned-signal-check.json": "4b6a58e5379805e88473a7157471d61ea2973ec2912afc8c679b285a88c60c6d",
+    "observations/02-returned-signal-run.json": "935dabf4440384a6c22bb589c16b2f309ceffd755cb4d26d5f30622aa68238c6",
+    "observations/03-lost-signal-check.json": "05ea8f1ff6e02a6e9cd3a14af922764a9d07f109558393f43a24f04808649326",
+    "observations/04-lost-signal-run.json": "0b0524f770af5e6b62c56a7398ebdd61146b1988d45c5ceb4656915b32c47944",
+    "observations/05-explicit-discard-check.json": "2efcc61fd1c018044033385e39047fe4253dc08d5ce8f9d59db4aae5562fd264",
+    "observations/06-explicit-discard-run.json": "f0e02adc7446fe5939b87a7529eba767b77bc1869695064b8d1bd71d5377e677",
+    "observations/context.json": "171377cac61645a5e26d46d73d396f6fd4f1bab97b73678c5afc07be41feceb9",
+    "observations/summary.json": "ea77665879ea551791b79f514025594e7f339ddaaa805abd07a5b3f84a042246"
+  }
+}

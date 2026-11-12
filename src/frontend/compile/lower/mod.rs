@@ -123,6 +123,8 @@ struct Lowerer<'c, 'p> {
     // Producer eligibility only, never native evidence. Constructor visits in
     // either branch/callee prevent nominal intermediates using untyped Raw.
     nominal_modules: std::rc::Rc<std::cell::RefCell<BTreeSet<String>>>,
+    // Enabled only for a complete root that can require independent body checking.
+    nominal_basis_used: Option<bool>,
     raw: RawState<u32>,
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
@@ -450,7 +452,8 @@ impl Lowerer<'_, '_> {
     }
 
     fn uses_qmatch_v5(&self) -> bool {
-        self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
+        self.nominal_basis_used.is_some()
+            || self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
     }
 
     fn call_user(
@@ -1710,6 +1713,7 @@ impl Lowerer<'_, '_> {
             .charge(module, name.span, ty.tree_size().nodes.saturating_mul(3))?;
         let mut inner = Lowerer {
             nominal_modules: std::rc::Rc::clone(&self.nominal_modules),
+            nominal_basis_used: None,
             compiler: self.compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
@@ -1778,25 +1782,62 @@ impl Lowerer<'_, '_> {
         self.compiler
             .charge(module, span, self.raw.registers[&slot].size())?;
         let reg = self.raw.registers[&slot].clone();
-        self.circuit_width(module, span, &reg.basis)?;
-        let mut result_ty = None;
-        let mut table = Vec::new();
-        let mut seen = BTreeSet::new();
-        for label in 0..(1u16 << reg.wires.len()) {
-            let env = self
-                .compiler
-                .bind_basis_pattern(module, binder, &reg.basis, label)?;
-            let value = self.compiler.eval_basis(module, basis, &env, 0)?;
-            if result_ty.as_ref().is_some_and(|ty| *ty != value.ty) {
+        let typed = self.nominal_basis_used.is_some();
+        let mut nominal = ordinary::has_nominal(&reg.basis);
+        let width = reg.wires.len();
+        if width > MAX_BITS {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "basis lift input exceeds the finite width limit",
+            ));
+        }
+        let physical_inputs = 1usize << width;
+        self.compiler
+            .charge(module, span, physical_inputs.saturating_mul(2))?;
+        let input_codes = if typed && nominal {
+            let (encoded_width, codes) = self.basis_codes(module, span, &reg.basis)?;
+            if encoded_width != width {
                 return Err(self.error(
                     module,
                     span,
-                    ErrorCode::TypeMismatch,
-                    "basis lift result type varies",
+                    ErrorCode::InvalidIr,
+                    "basis lift owner differs from its nominal code width",
                 ));
             }
+            codes
+        } else {
+            self.circuit_width(module, span, &reg.basis)?;
+            (0..physical_inputs).collect()
+        };
+        let mut result_ty = None;
+        let mut table = vec![None; physical_inputs];
+        let mut seen = BTreeSet::new();
+        for &label in &input_codes {
+            let env = self
+                .compiler
+                .bind_basis_pattern(module, binder, &reg.basis, label as u16)?;
+            let value = if typed {
+                self.compiler
+                    .eval_typed_basis(module, basis, &env, &mut nominal)?
+            } else {
+                self.compiler.eval_basis(module, basis, &env, 0)?
+            };
+            if let Some(ty) = &result_ty {
+                if !super::operations::same_port_budgeted(ty, &value.ty, &mut |cells| {
+                    self.compiler.charge(module, span, cells)
+                })? {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "basis lift result type varies",
+                    ));
+                }
+            }
             result_ty = Some(value.ty);
-            if !seen.insert(value.label) {
+            if !seen.insert(usize::from(value.label)) {
                 return Err(self.error(
                     module,
                     span,
@@ -1804,19 +1845,46 @@ impl Lowerer<'_, '_> {
                     "coherent basis lift is not injective",
                 ));
             }
-            table.push(value.label);
+            table[label] = Some(value.label);
         }
         let basis = result_ty.expect("nonempty domain");
         self.compiler
             .charge(module, span, basis.tree_size().nodes)?;
-        let bits = self.circuit_width(module, span, &basis)?;
-        if bits < reg.wires.len() {
+        nominal |= ordinary::has_nominal(&basis);
+        let (bits, output_cardinality) = if typed && ordinary::has_nominal(&basis) {
+            let (bits, codes) = self.basis_codes(module, span, &basis)?;
+            if seen.iter().any(|code| codes.binary_search(code).is_err()) {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "basis lift emits a padding code",
+                ));
+            }
+            (bits, codes.len())
+        } else {
+            let bits = self.circuit_width(module, span, &basis)?;
+            (bits, 1usize << bits)
+        };
+        if bits < width {
             return Err(self.error(
                 module,
                 span,
                 ErrorCode::TypeMismatch,
                 "basis lift cannot shrink its domain",
             ));
+        }
+        // Raw has a complete physical domain. Only canonical rows come from
+        // the source. Extend the remaining rows injectively in physical order.
+        let mut free = (0..(1usize << bits)).filter(|code| !seen.contains(code));
+        let table = table
+            .into_iter()
+            .map(|code| {
+                code.unwrap_or_else(|| free.next().expect("physical output capacity") as u16)
+            })
+            .collect();
+        if nominal {
+            self.nominal_basis_used = Some(true);
         }
         let mut wires = reg.wires.clone();
         wires.extend((reg.wires.len()..bits).map(|_| self.wire()));
@@ -1837,10 +1905,23 @@ impl Lowerer<'_, '_> {
             },
         );
         quantum_match::nominal::record_basis(self, module, span, start)?;
-        if bits > reg.wires.len() {
+        if output_cardinality != input_codes.len() {
             self.add_effect(module, span, Effect::Isometry);
         }
         Ok(Value::quantum(slot, basis))
+    }
+
+    fn basis_codes(
+        &mut self,
+        module: &str,
+        span: Span,
+        ty: &Ty,
+    ) -> Result<(usize, Vec<usize>), CompileError> {
+        let basis = self.compiler.carrier_description(module, span, ty)?;
+        let (width, codes) = ordinary::proposed_codes(&[basis])
+            .map_err(|error| self.error(module, span, ErrorCode::Unsupported, error.to_string()))?;
+        self.compiler.charge(module, span, codes.len() + 1)?;
+        Ok((width, codes))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -2021,8 +2102,12 @@ fn lower_function_in_context(
     let decl = compiler.declarations[key];
     let key_name = compiler.source.resolution.declaration(*key).name.clone();
     let (params, return_type) = compiler.signature(key)?;
+    let planned_basis = compiler.nominal_basis_roots.contains(key);
+    let typed_basis =
+        planned_basis || compiler.force_typed_root && compiler.selected_entry.is_some();
     let mut lower = Lowerer {
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
+        nominal_basis_used: typed_basis.then_some(false),
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
@@ -2058,10 +2143,9 @@ fn lower_function_in_context(
             )
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let runtime_inputs = if return_type.linear()
-        || params.iter().any(Ty::linear)
-        || !decl.static_params.is_empty()
-    {
+    let runtime_interface =
+        return_type.linear() || params.iter().any(Ty::linear) || !decl.static_params.is_empty();
+    let runtime_inputs = if runtime_interface || planned_basis {
         Some(runtime::inputs(&mut lower, *key, &args)?)
     } else {
         None
@@ -2100,10 +2184,22 @@ fn lower_function_in_context(
         .as_ref()
         .filter(|context| {
             lower.uses_qmatch_v5()
-                && context.contains_selections
-                && (require_qmatch_v5 || context.needs_qmatch_v5 || !context.prefer_runtime_root)
+                && (lower.nominal_basis_used == Some(true)
+                    || context.contains_selections
+                        && (planned_basis
+                            || require_qmatch_v5
+                            || context.needs_qmatch_v5
+                            || !context.prefer_runtime_root))
         })
         .cloned();
+    if lower.nominal_basis_used == Some(true) && (qmatch.is_none() || runtime_inputs.is_none()) {
+        return Err(lower.error(
+            &key_name.0,
+            decl.span,
+            ErrorCode::Unsupported,
+            "this finite basis table needs the original source-body gate",
+        ));
+    }
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {
         return Err(lower.error(
             &key_name.0,
@@ -2160,6 +2256,7 @@ fn lower_function_in_context(
         .as_ref()
         .is_some_and(|instance| instance.interface.bases.values().any(ordinary::has_nominal));
     let needs_typed_root = lower.compiler.force_typed_root
+        || qmatch.is_some()
         || nominal_actuals
         || !lower.nominal_modules.borrow().is_empty()
         || ordinary::has_nominal(&result.ty())
@@ -2168,7 +2265,7 @@ fn lower_function_in_context(
         super::selected::check_raw_capacity(lower.compiler, &key_name.0, decl.span, &raw)?;
     }
     let accepted = if needs_typed_root {
-        if let Some(inputs) = runtime_inputs {
+        if let Some(inputs) = runtime_inputs.filter(|_| runtime_interface || qmatch.is_some()) {
             runtime::accept(
                 &mut lower,
                 key,

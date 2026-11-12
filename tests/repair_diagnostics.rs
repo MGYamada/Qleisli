@@ -335,3 +335,151 @@ fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
     assert_eq!(error.code, "invalid_ir");
     assert!(error.message.contains("U E_in = E_out u"), "{error:?}");
 }
+
+#[test]
+fn ordinary_comparison_refusals_explain_quantum_relations_at_the_operator() {
+    use qleisli::frontend::parser::parse_module;
+
+    for ty in [
+        "Q<Bit>",
+        "Q<Unit>",
+        "Q<Bits<0>>",
+        "(Bit,(Q<Unit>,Unit))",
+        "Bit",
+    ] {
+        for operator in ["==", "!=", "<", "<=", ">", ">="] {
+            let source =
+                format!("// 日本語\r\npub fn compare(a:{ty},b:{ty})->Bit{{a {operator} b}}");
+            let parsed = parse_module(&source).unwrap_err();
+            let start = source.rfind(&format!(" {operator} ")).unwrap() + 1;
+            assert_eq!(
+                (parsed.span.start, parsed.span.end),
+                (start, start + operator.len())
+            );
+            assert!(
+                parsed
+                    .message
+                    .starts_with(&format!("ordinary runtime comparison `{operator}`"))
+            );
+            for distinction in [
+                "ordinary Bits",
+                "Static Nat",
+                "If an operand contains live Q<T>",
+                "nested and zero-width",
+                "Owner/provenance identity",
+                "wire identity",
+                "explicit reversible operation",
+                "tomography",
+            ] {
+                assert!(parsed.message.contains(distinction), "{parsed:?}");
+            }
+            let finite = check_project_diagnostic(&SourceRoot::new(&source).0).unwrap_err();
+            assert!(finite.message.contains(&parsed.message), "{finite:?}");
+            assert_eq!(finite.primary.unwrap().span, parsed.span);
+        }
+    }
+}
+
+#[test]
+fn unresolved_hash_teaching_does_not_inspect_arguments_or_mask_resolution() {
+    use qleisli::frontend::compile::ParsedProgram;
+    use std::collections::BTreeMap;
+
+    for ty in [
+        "Bit",
+        "Q<Bit>",
+        "Q<Unit>",
+        "Q<Bits<0>>",
+        "(Bit,(Q<Unit>,Unit))",
+    ] {
+        // Even an invalid argument expression must not replace the original
+        // unresolved-callee failure with a guessed type/ownership judgment.
+        for argument in ["q", "not q"] {
+            let source = format!("pub fn client(q:{ty})->Bit{{hash({argument})}}");
+            let common = ParsedProgram::parse(
+                qleisli::edition::Edition::E2026,
+                BTreeMap::from([("main".into(), source.clone())]),
+            )
+            .unwrap_err();
+            assert_eq!(common.code(), "name");
+            assert!(common.message().starts_with("unresolved function hash;"));
+            assert!(common.message().contains("If a value contains live Q<T>"));
+            assert!(common.message().contains("tomography"));
+            let finite = check_project_diagnostic(&SourceRoot::new(&source).0).unwrap_err();
+            assert_eq!(finite.code, "unknown_name");
+            assert_eq!(finite.message, common.message());
+            let span = finite.primary.unwrap().span;
+            assert_eq!(&source[span.start..span.end], "hash");
+        }
+    }
+    for (source, expected) in [
+        (
+            "pub fn client(q:Bit)->Bit{missing(q)}",
+            "unresolved function missing",
+        ),
+        (
+            "fn hash(q:Bit)->Bit{q} pub fn client()->Bit{let hash=0;hash()}",
+            "a local value is not callable",
+        ),
+    ] {
+        let error = check_project_diagnostic(&SourceRoot::new(source).0).unwrap_err();
+        assert_eq!(error.message, expected);
+        assert!(!error.message.contains("built-in ordinary hash"));
+    }
+}
+
+#[test]
+fn comparison_teaching_preserves_static_predicates_and_exact_type_delimiters() {
+    use qleisli::frontend::compile::ParsedProgram;
+    use std::collections::BTreeMap;
+
+    for operator in ["==", "!=", "<", "<=", ">", ">="] {
+        let source = format!(
+            "pub unitary fn guarded[const N:Nat](q:Q<(Bit,(Unit,Bit))>)->Q<(Bit,(Unit,Bit))> \
+             requires N {operator} 1 {{if static N {operator} 1 {{q}} else {{q}}}}"
+        );
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        )
+        .unwrap();
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn explicit_comparisons_and_resolved_hash_functions_keep_their_checked_actions() {
+    for source in [
+        "classical fn equal(a:Bit,b:Bit)->Bit{not(a xor b)} \
+         pub fn main()->Bit{if static 1<2 {equal(0,0)} else {equal(0,1)}}",
+        "use std::state::init0; unitary fn hash(q:Q<Bit>)->Q<Bit>{q} \
+         pub observe fn main()->Bit{measure_z(hash(init0()))}",
+        "classical fn hash(b:Bit)->Bit{b} pub fn main()->Bit{hash(1)}",
+    ] {
+        check_project(&SourceRoot::new(source).0).unwrap();
+    }
+    let imported = SourceRoot::new(
+        "use std::state::init0; use helper::hash; \
+         pub observe fn main()->Bit{measure_z(helper::hash(hash(init0())))}",
+    );
+    imported.write("helper.qli", "pub unitary fn hash(q:Q<Bit>)->Q<Bit>{q}");
+    check_project(&imported.0).unwrap();
+
+    // This reversible operation computes equality of basis labels into its
+    // second output. It neither compares unknown states nor exposes owner IDs.
+    let root = SourceRoot::new(
+        "use std::state::init0; \
+         unitary fn coherent_equal(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{ \
+             basis q as (a,b){(a,not(a xor b))} } \
+         pub observe fn main()->(Bit,Bit){ \
+             let(a,b)=split(coherent_equal(join(init0(),init0()))); \
+             (measure_z(a),measure_z(b))}",
+    );
+    let program = compile_project(&root.0).unwrap();
+    let output = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert_eq!(output.len(), 1);
+    assert!((output[&vec![false, true]] - 1.0).abs() < 1e-12);
+}

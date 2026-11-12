@@ -1,0 +1,87 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "run",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-uncompute-72-first/attempt-01/xzx",
+    "--format=json",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/private/tmp/qleisli-516-provider-followup",
+  "started_utc": "2026-11-11T21:39:23.535925+00:00",
+  "recorded_utc": "2026-11-11T21:39:25.351878+00:00",
+  "elapsed_seconds": 1.8157420000061393,
+  "exit_code": 0,
+  "timed_out": false,
+  "before": {
+    "source_hashes": {
+      "SHA256SUMS": "82cb64141cbab1cc04b3fd3c8db41ccff52de4e732081c9cf6cbe6f3c6c8a10e",
+      "attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+      "attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+      "attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+      "context.json": "af99af5e16c1404cfd6bf981e134aa042ffa11b46afe9b592a500cb42702bf28",
+      "session.json": "ad46e5d29d9e2e12da09f6aa22db9e4e2786ca76f3c1e7076978f99f33ae9d40"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "after": {
+    "source_hashes": {
+      "SHA256SUMS": "82cb64141cbab1cc04b3fd3c8db41ccff52de4e732081c9cf6cbe6f3c6c8a10e",
+      "attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+      "attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+      "attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+      "context.json": "af99af5e16c1404cfd6bf981e134aa042ffa11b46afe9b592a500cb42702bf28",
+      "session.json": "ad46e5d29d9e2e12da09f6aa22db9e4e2786ca76f3c1e7076978f99f33ae9d40"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            true
+          ],
+          "probability": 1
+        }
+      ]
+    }
+  },
+  "stderr": "",
+  "stdout_sha256": "88da417ab0c55e5101c49f9ce77c3398067b75231bdffa3bbd3da168772c7f34",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_record_sha256": {
+    "command.json": "03c75e35e47dad55f395f91def9a499290de23f454df6ccb2cde81bc6c3edd11",
+    "result.json": "aa9128139119433306823e8f70e76b0a7c7a32afc9df97fb510fc20568aa062e"
+  },
+  "scope": "Historical bytes and numerical observation only; no whole-source, CPTP, exact phase or quantitative resource guarantee. Recorded commands remain inert."
+}

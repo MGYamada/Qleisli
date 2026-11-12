@@ -26,7 +26,8 @@ pub(super) fn roots(
         budget.charge(Default::default(), nodes.len() + uses.len() + 2)?;
         let direct = nodes.iter().any(|node| {
             matches!(node,
-            OriginalNode::Expression(expr) if matches!(expr.kind, ExprKind::QuantumMatch(_)))
+            OriginalNode::Expression(expr) if matches!(expr.kind,
+                ExprKind::QuantumMatch(_) | ExprKind::WithComputed { .. }))
         });
         let dependency = uses.iter().any(|usage| {
             matches!(usage.target,

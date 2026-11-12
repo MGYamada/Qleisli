@@ -1,0 +1,110 @@
+{
+  "kind": "informed-first-source-study",
+  "author": "Codex child /root/audit_29; model override not selected",
+  "repository": "/private/tmp/qleisli-516-provider-followup",
+  "head": "245fb314af19a216043a850e5fe0a7fd863ff8ac",
+  "working_diff_sha256": "16b6fc49ab3a132c878dc30048a9aabbfef162232e8461019d4d35da27ad23f1",
+  "dirty_source_context": true,
+  "created_at_utc": "2026-11-11T14:49:52.688469+00:00",
+  "observation_count": 0,
+  "sources_checked": false,
+  "root_task": "#29 algorithm access examples; external freeze only",
+  "consulted_inputs": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "a1b3c8c5c510291ad5d7f487883addc5a8b745c59ecd69b1717dcd3d981ba975"
+    },
+    {
+      "path": "README.md",
+      "sha256": "347a88d16f1ec9b269819e1162bbc313d01868ae6cebca2c367c5eed6401be5d"
+    },
+    {
+      "path": "ROADMAP.md",
+      "sha256": "6a40681bcc41db80c0fd0531e8abc8151ea59a05dd7a3e4270854d497912c979"
+    },
+    {
+      "path": "TRUSTBOUNDARY.md",
+      "sha256": "df67416bd1b0e6fce233758ee368875e384019e1e523628182a2b935437a9b43"
+    },
+    {
+      "path": "STDLIB.md",
+      "sha256": "243157fbed88b80d146294794e67d46b345eb8d073a73a2ba28616b5ac27a319"
+    },
+    {
+      "path": "corpus/POLICY.md",
+      "sha256": "b5cbf303be1b3fa4a6a47325b10fdee65ffa7351d74dc6bfb07c2e5b3a89d288"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/README.md",
+      "sha256": "e12cf3eebdba8518c328048dd4d306904f04e6ea898d8667fa14ae363a30ee53"
+    },
+    {
+      "path": "docs/src/reference/elaboration.md",
+      "sha256": "8af1b0ef7b6df1df2b7a0132edcedf76430a193cdbcce7412a16f24289b87cbe"
+    },
+    {
+      "path": "docs/src/reference/rust-boundary.md",
+      "sha256": "8f5d4b508a3703d344310988a43de8b28f2b36ecb1bb4950c1005f0e1e17bc15"
+    },
+    {
+      "path": "stdlib/src/gate.qli",
+      "sha256": "921627f5ca702889134ef72bf827dac42b3ba35c6752a402fc1102f5bd9b4795"
+    },
+    {
+      "path": "stdlib/src/state.qli",
+      "sha256": "5863d7cb0f495b601b44110225a8c3139106dbdda632373ecc5de6527824be27"
+    },
+    {
+      "path": "stdlib/src/reflection.qli",
+      "sha256": "c010a9377edc24ce836738aa008fe7cfd20492a73a5c1e85399e147b40d573bf"
+    },
+    {
+      "path": "stdlib/src/transform.qli",
+      "sha256": "bb7cc068e01d6f3ba26421b26b51058e4f4d4f6f99c52d1e85e23effdf377ad5"
+    },
+    {
+      "path": "examples/order_finding/arithmetic.qli",
+      "sha256": "cd8b3c7e2072f71956556cef2a52610b0a9620b1e35a4f9b97b2c7e6a9c4f42d"
+    },
+    {
+      "path": "examples/operation_algorithms/estimation.qli",
+      "sha256": "8103357683d85bb529d6287ea317f01f80d9c5a8db2d067105b08dfe7c4f1344"
+    },
+    {
+      "path": "examples/grover/oracle.qli",
+      "sha256": "7fc7f9b8d4cdb3f5fcbc8c8e61e53431fd6dfa9cc62a998857761cec9a20f3e5"
+    },
+    {
+      "path": "examples/grover/search.qli",
+      "sha256": "a55242f13efcf3a891b507b1b702376cce966742c786f72119e9ac6a37484b0e"
+    },
+    {
+      "path": "corpus/sized/qualtran_arithmetic/README.md",
+      "sha256": "da507b8e7ffbd52206f4805fdc258158d21f93a4fee71a502162cf48ff656b69"
+    },
+    {
+      "path": "corpus/sized/qualtran_arithmetic/addition.qli",
+      "sha256": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6"
+    },
+    {
+      "path": "corpus/sized/qualtran_arithmetic/comparison.qli",
+      "sha256": "2578fb5c72d36fa056979ff4f40bc0e5ecd6f509c51cb6652883f08555b51729"
+    },
+    {
+      "path": "corpus/sized/qualtran_qpe/evolution.qli",
+      "sha256": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f"
+    },
+    {
+      "path": "corpus/sized/qualtran_qpe/estimation.qli",
+      "sha256": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852"
+    },
+    {
+      "path": "tests/general_static_runtime.rs",
+      "sha256": "7723abd8a94a503b8fe00290db32c590290791f9d830dfc4ba1152bba1d2756e"
+    },
+    {
+      "path": "tests/exclusive_access.rs",
+      "sha256": "4249bd4be1a356c07dd08431775a5393d09e04537f6faf717940144bd5ff6a6e"
+    }
+  ]
+}

@@ -116,7 +116,17 @@ input and reference. Approximation of the data operation never excuses dirty
 scratch. Observing procedures list every outcome, residual state and explicit
 discard; a success branch alone is not a complete instrument.
 
-Resource accounts state units, model, scope and evidence: live data and scratch,
+Signal registers in block encodings, LCU and QSVT remain ordinary linear
+interface owners. State their distinguished subspace, ordered interface and
+normalization separately from scratch restoration. A block equation such as
+`(<0|_S tensor I) U (|0>_S tensor I) = A / alpha` does not require the full
+output signal to be zero or authorize its disposal. The word "ancilla" alone
+never selects cleanup semantics. Source scratch, backend synthesis workspace
+and exposed signal registers retain their separate contracts; no special
+signal ownership kind or general block-encoding API is implied. See the
+[signal-interface rule](docs/src/reference/rust-boundary.md#signal-registers-remain-in-the-interface).
+
+Resource accounts state units, model, scope and evidence: live data, signals and scratch,
 gate counts, depth, measurements and any host/search work claimed. Distinguish
 logical operations, routed physical gates, representation sharing and repeated
 execution. An unknown cost is recorded as pending with a reason. Current

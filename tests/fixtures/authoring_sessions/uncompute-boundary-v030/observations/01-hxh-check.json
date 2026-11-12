@@ -1,0 +1,99 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-uncompute-72-first/attempt-01/hxh",
+    "--format=json",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/private/tmp/qleisli-516-provider-followup",
+  "started_utc": "2026-11-11T21:39:17.234849+00:00",
+  "recorded_utc": "2026-11-11T21:39:19.597469+00:00",
+  "elapsed_seconds": 2.36241216599592,
+  "exit_code": 0,
+  "timed_out": false,
+  "before": {
+    "source_hashes": {
+      "SHA256SUMS": "82cb64141cbab1cc04b3fd3c8db41ccff52de4e732081c9cf6cbe6f3c6c8a10e",
+      "attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+      "attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+      "attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+      "context.json": "af99af5e16c1404cfd6bf981e134aa042ffa11b46afe9b592a500cb42702bf28",
+      "session.json": "ad46e5d29d9e2e12da09f6aa22db9e4e2786ca76f3c1e7076978f99f33ae9d40"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "after": {
+    "source_hashes": {
+      "SHA256SUMS": "82cb64141cbab1cc04b3fd3c8db41ccff52de4e732081c9cf6cbe6f3c6c8a10e",
+      "attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+      "attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+      "attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+      "context.json": "af99af5e16c1404cfd6bf981e134aa042ffa11b46afe9b592a500cb42702bf28",
+      "session.json": "ad46e5d29d9e2e12da09f6aa22db9e4e2786ca76f3c1e7076978f99f33ae9d40"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"checker_paths\":[\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\"],\"checker_identity\":\"unpinned\",\"native_decisions\":{\"count\":83,\"requests_checked\":6,\"complete\":true},\"entry\":{\"present\":true,\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false},\"concrete_ir_roots\":{\"local\":2,\"bundled\":24},\"source_preservation_verified\":false}}\n",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "checker_paths": [
+        "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "checker_identity": "unpinned",
+      "native_decisions": {
+        "count": 83,
+        "requests_checked": 6,
+        "complete": true
+      },
+      "entry": {
+        "present": true,
+        "request_checked": false,
+        "ordinary_result_checked": false,
+        "runtime_result_checked": false
+      },
+      "concrete_ir_roots": {
+        "local": 2,
+        "bundled": 24
+      },
+      "source_preservation_verified": false
+    }
+  },
+  "stderr": "",
+  "stdout_sha256": "4813d099fc2385b0971ced2eccdabdc557bca5933216fe42b41e0055d9f11988",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_record_sha256": {
+    "command.json": "0a92188b7e4e8314a8b1c5b7605bb800e36b9711fb6989a10d9477c97598840e",
+    "result.json": "b6f4f3b3e92b2c643d6bd9bd13c61fef7781999ce92ee44254284d7f6864aa02"
+  },
+  "scope": "Historical bytes and numerical observation only; no whole-source, CPTP, exact phase or quantitative resource guarantee. Recorded commands remain inert."
+}

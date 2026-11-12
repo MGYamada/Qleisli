@@ -1,0 +1,27 @@
+// Copyright 2026 Qleisli Project Contributors.
+// SPDX-License-Identifier: Apache-2.0
+// Informed first source for issue #29; not yet checked or executed.
+use std::gate::cnot;
+use std::state::init0;
+
+// Local two-vertex controlled-shift walk: coin 0 stays; coin 1 flips position.
+// This is not a bidirectional cycle-walk API or a copied external algorithm.
+unitary fn shift(coin: Q<Bit>, position: Q<Bit>) -> (Q<Bit>,Q<Bit>) {
+    cnot(coin,position)
+}
+
+pub unitary fn probe(input: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> {
+    let (walk,reference) = split(input);
+    let (coin,position) = split(walk);
+    h(excl coin);
+    shift(ctrl coin,excl position);
+    join(join(coin,position),reference)
+}
+
+pub observe fn main() -> ((Bit,Bit),Bit) {
+    let (position,reference) = cnot(h(init0()),init0());
+    let input = join(join(init0(),position),reference);
+    let (walk,reference) = split(probe(input));
+    let (coin,position) = split(walk);
+    ((measure_z(coin),measure_z(position)),measure_z(reference))
+}

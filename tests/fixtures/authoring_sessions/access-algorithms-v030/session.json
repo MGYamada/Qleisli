@@ -1,0 +1,87 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Cross-algorithm ctrl/excl calls compared with explicit ownership threading on small interfaces",
+  "author": "One informed implementation agent with current repository context; root records first checks. Not a blind authoring benchmark.",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "245fb314af19a216043a850e5fe0a7fd863ff8ac",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged first complete sources; finite project checking/execution and selected Raw checking observed separately.",
+      "sha256": {
+        "add_k-access/main.qli": "0c580cfcb157de6884fce897be0404bfc343d4869bf7ed64c821fc8543de8d35",
+        "add_k-explicit/main.qli": "2f48772d95aab5f3011e5bb971ff0be0ada1b871570e2c138563736d9d2a648f",
+        "equals-access/main.qli": "bbe68a38d685060afe0789b01876d2ed4c620257aa0f06224f6e0ffe63e9b351",
+        "equals-explicit/main.qli": "b86c073613a8136c81cb78433e1ece4af04e15b9ffb9b8de901311f01bdc4d19",
+        "grover-access/main.qli": "53d40498ccb243d1195831533a45d6141752119ab630008b9d4a2aee4604d36e",
+        "grover-explicit/main.qli": "5327772fd9f5665a4f27174127d6f68738aae53c2cabb042485918c2b2fec36e",
+        "qpe_prefix-access/main.qli": "4a52bf175c0e8e8eb822fe7687a1586b73a1a220baad173edbae3a71c358bf9a",
+        "qpe_prefix-explicit/main.qli": "590a4907cf54c0f34acea43f2e96b201a4e6c9674c2b6379a8a0e3adb4bac9a0",
+        "walk-access/main.qli": "68fe9a64dec5bdc3f7f6e85e4f580971b1fd02e7d7a575eefc0871e5b0a2d64a",
+        "walk-explicit/main.qli": "4fe898733e29018268ed2b397727caa1c297d8dac13dfbc6cd12353988ec3962"
+      },
+      "manifest_sha256": {
+        "add_k-access/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "add_k-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "equals-access/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "equals-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "grover-access/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "grover-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qpe_prefix-access/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qpe_prefix-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "walk-access/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "walk-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/add_k-access-project-check.json",
+        "observations/add_k-access-project-run.json",
+        "observations/add_k-access-selected-check.json",
+        "observations/add_k-explicit-project-check.json",
+        "observations/add_k-explicit-project-run.json",
+        "observations/add_k-explicit-selected-check.json",
+        "observations/equals-access-project-check.json",
+        "observations/equals-access-project-run.json",
+        "observations/equals-access-selected-check.json",
+        "observations/equals-explicit-project-check.json",
+        "observations/equals-explicit-project-run.json",
+        "observations/equals-explicit-selected-check.json",
+        "observations/grover-access-project-check.json",
+        "observations/grover-access-project-run.json",
+        "observations/grover-access-selected-check.json",
+        "observations/grover-explicit-project-check.json",
+        "observations/grover-explicit-project-run.json",
+        "observations/grover-explicit-selected-check.json",
+        "observations/qpe_prefix-access-project-check.json",
+        "observations/qpe_prefix-access-project-run.json",
+        "observations/qpe_prefix-access-selected-check.json",
+        "observations/qpe_prefix-explicit-project-check.json",
+        "observations/qpe_prefix-explicit-project-run.json",
+        "observations/qpe_prefix-explicit-selected-check.json",
+        "observations/walk-access-project-check.json",
+        "observations/walk-access-project-run.json",
+        "observations/walk-access-selected-check.json",
+        "observations/walk-explicit-project-check.json",
+        "observations/walk-explicit-project-run.json",
+        "observations/walk-explicit-selected-check.json",
+        "observations/computed-route-access-check.json",
+        "observations/computed-route-access-run.json",
+        "observations/computed-route-explicit-check.json",
+        "observations/computed-route-explicit-run.json"
+      ],
+      "reports": [
+        "manifest.json",
+        "provenance.json",
+        "expectations.json",
+        "observation-identity.json",
+        "distribution-comparison.json"
+      ]
+    }
+  ],
+  "retained_observer": {
+    "path": "observe-first.py",
+    "sha256": "1eade05f8cd931aa35dc089f269b949725f7145502ed6c958e09c884da52d73f",
+    "role": "Inert original observer source for review of the recorded argument vectors, stable-source windows and stream capture; not executed by retention checks."
+  }
+}

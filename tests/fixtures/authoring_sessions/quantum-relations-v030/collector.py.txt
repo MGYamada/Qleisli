@@ -1,0 +1,144 @@
+"""Freeze new #198 sources, then observe freshly authored check commands."""
+from datetime import datetime, timezone
+import hashlib
+import json
+from pathlib import Path
+import subprocess
+import time
+
+B = Path(__file__).resolve().parent
+FIRST = B / 'stage7-quantum-relations-198-first'
+OBSERVED = B / 'stage7-quantum-relations-198-observations'
+REPO = Path('/private/tmp/qleisli-516-provider-followup')
+CLI = Path('/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli')
+KERNEL = REPO / 'lean-kernel/.lake/build/bin/qleisli-kernel'
+SOURCES = {
+    'eq-live': {'main.qli': 'pub unitary fn compare(a: Q<Bit>, b: Q<Bit>) -> Bit { a == b }\n'},
+    'ne-nested': {'main.qli': 'pub unitary fn compare(a: (Bit,(Q<Unit>,Unit)), b: (Bit,(Q<Unit>,Unit))) -> Bit { a != b }\n'},
+    'ord-zero': {'main.qli': 'pub unitary fn compare(a: Q<Bits<0>>, b: Q<Bits<0>>) -> Bit { a < b }\n'},
+    'hash-live': {'main.qli': 'pub unitary fn client(q: Q<Bit>) -> Bit { hash(q) }\n'},
+    'hash-nested': {'main.qli': 'pub unitary fn client(q: (Bit,(Q<Unit>,Unit))) -> Bit { hash(q) }\n'},
+    'hash-zero': {'main.qli': 'pub unitary fn client(q: Q<Unit>) -> Bit { hash(q) }\n'},
+    'classical-static': {'main.qli': 'classical fn equal(a: Bit, b: Bit) -> Bit { not (a xor b) }\npub fn main() -> Bit { if static 1 < 2 { equal(0,0) } else { equal(0,1) } }\n'},
+    'explicit-coherent': {'main.qli': 'use std::state::init0;\npub unitary fn coherent_equal(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {\n    basis q as (a,b) { (a,not(a xor b)) }\n}\npub observe fn main() -> (Bit,Bit) {\n    let (a,b)=split(coherent_equal(join(init0(),init0())));\n    (measure_z(a),measure_z(b))\n}\n'},
+    'declared-hash': {'main.qli': 'use std::state::init0;\nunitary fn hash(q: Q<Bit>) -> Q<Bit> { q }\npub observe fn main() -> Bit { measure_z(hash(init0())) }\n'},
+    'imported-qualified-hash': {
+        'main.qli': 'use std::state::init0;\nuse helper::hash;\npub observe fn main() -> Bit { measure_z(helper::hash(hash(init0()))) }\n',
+        'helper.qli': 'pub unitary fn hash(q: Q<Bit>) -> Q<Bit> { q }\n',
+    },
+}
+
+
+def now():
+    return datetime.now(timezone.utc).isoformat()
+
+
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def save(path, value):
+    with path.open('x', encoding='utf-8') as stream:
+        json.dump(value, stream, ensure_ascii=False, indent=2)
+        stream.write('\n')
+
+
+FIRST.mkdir()
+frozen = now()
+head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()
+for case, sources in SOURCES.items():
+    target = FIRST / 'attempt-01' / case
+    target.mkdir(parents=True)
+    for name, text in {**sources, 'Qargo.toml': 'schema-version = 2\n\n[qrate]\nedition = "2026"\n'}.items():
+        with (target / name).open('x', encoding='utf-8') as output:
+            output.write(text)
+refs = ['docs/src/reference/type-model.md', 'docs/src/reference/rust-boundary.md',
+        'docs/src/reference/coherent-basis.md', 'src/frontend/parser.rs',
+        'src/frontend/check/body.rs', 'tests/repair_diagnostics.rs']
+context = {
+    'kind': 'informed_first_attempt', 'frozen_before_execution_utc': frozen,
+    'baseline_source_commit': head,
+    'context': 'Informed by current Reference and parser/common-checker inspection; not a blind authoring evaluation.',
+    'references_sha256': {name: sha(REPO / name) for name in refs},
+    'bounded_scope': 'At most two semantic quantum wires in executable positives; no maximum-size case or physical-resource claim.',
+    'predictions': {
+        'eq-live': 'Reject ordinary live-owner equality; current parser is expected to report a generic delimiter error at ==.',
+        'ne-nested': 'Reject ordinary equality of quantum-containing products, including a zero-width owner; expected generic parse failure at !=.',
+        'ord-zero': 'Reject ordering on Q<Bits<0>>; zero width does not grant ordinary value relations. Expected generic parse failure at <.',
+        'hash-live': 'Reject unresolved hash with a name diagnostic; no built-in hash or implicit measurement exists.',
+        'hash-nested': 'Reject unresolved hash identically without guessing argument types or owner identity.',
+        'hash-zero': 'Reject unresolved hash; zero-width owners retain their ordinary linear restrictions.',
+        'classical-static': 'Accept explicit total classical Bit equality not(a xor b), plus existing static Nat comparison 1 < 2. Ordinary runtime == is not proposed as new syntax.',
+        'explicit-coherent': 'Accept the explicit reversible basis map (a,b)->(a,not(a xor b)). Its independent table is 00->01, 01->00, 10->10, 11->11, all coefficients +1. This compares basis labels coherently; it is not quantum-state equality or tomography.',
+        'declared-hash': 'Accept the resolved ordinary quantum function named hash; it is explicitly the identity Q<Bit>->Q<Bit>, not an ordinary hash interface.',
+        'imported-qualified-hash': 'Accept both imported hash and helper::hash with normal resolution and ownership/effect checking.',
+    },
+    'scope': 'Source predictions and bounded historical diagnostics are not source-preservation, quantum-state-comparison, tomography, exact operator proof or resource evidence. Owner/provenance and wire identities are not quantum-state equality.',
+    'execution': 'No parser/compiler/native/simulator command has yet run on these first sources; the separate observation directory appends actual outcomes without changing this packet.',
+}
+save(FIRST / 'context.json', context)
+attempt = {
+    'id': 'attempt-01', 'reason': 'First unchanged desired sources before diagnostic implementation; no source repair.',
+    'sha256': {str(p.relative_to(FIRST / 'attempt-01')): sha(p) for p in sorted((FIRST / 'attempt-01').rglob('*.qli'))},
+    'manifest_sha256': {str(p.relative_to(FIRST / 'attempt-01')): sha(p) for p in sorted((FIRST / 'attempt-01').rglob('Qargo.toml'))},
+    'observations': [], 'reports': [],
+}
+save(FIRST / 'session.json', {'format': 1, 'kind': 'informed_first_attempt',
+    'task': '#198 ordinary Eq/Ord/Hash versus live quantum ownership',
+    'author': 'Codex delegated agent /root/review_access_29; model identifier not independently recorded',
+    'project_version': '0.3.0-beta', 'baseline_commit': head, 'context': 'context.json',
+    'attempts': [attempt], 'status': 'frozen-awaiting-first-observation', 'checksums': 'SHA256SUMS'})
+paths = sorted(p for p in FIRST.rglob('*') if p.is_file())
+with (FIRST / 'SHA256SUMS').open('x', encoding='utf-8') as output:
+    output.write(''.join(sha(p) + '  ' + str(p.relative_to(FIRST)) + '\n' for p in paths))
+
+
+def snapshot():
+    return {'source_hashes': {str(p.relative_to(FIRST)): sha(p) for p in sorted(FIRST.rglob('*')) if p.is_file()},
+            'binaries': {name: {'path': str(p), 'sha256': sha(p)} for name, p in [('cli', CLI), ('kernel', KERNEL)]}}
+
+
+OBSERVED.mkdir()
+initial = snapshot()
+save(OBSERVED / 'context.json', {
+    'recorded_before_invocations_utc': now(), 'worktree_head': head,
+    'worktree_status': subprocess.check_output(['git', 'status', '--porcelain=v1'], cwd=REPO, text=True),
+    **initial, 'collector_sha256': sha(Path(__file__)),
+    'build_attestation': 'Existing executable bytes only; repository HEAD does not attest their build source.',
+    'command_provenance': 'Fresh check argv constructed from the new fixed case list, not replayed from any historical command.',
+    'native_invocation_note': 'Explicit native path supplied; child invocation counts are not attested.',
+})
+summary = []
+for index, case in enumerate(SOURCES, 1):
+    directory = OBSERVED / f'{index:02}-{case}-check'
+    directory.mkdir()
+    before = snapshot()
+    assert before == initial
+    argv = [str(CLI), 'check', str(FIRST / 'attempt-01' / case), '--format=json', '--lean-kernel=' + str(KERNEL)]
+    command = {'argv': argv, 'cwd': str(REPO), 'started_at_utc': now(), 'before': before}
+    save(directory / 'command.json', command)
+    started = time.monotonic()
+    try:
+        result = subprocess.run(argv, cwd=REPO, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60, check=False)
+        stdout, stderr, code, timeout = result.stdout, result.stderr, result.returncode, False
+    except subprocess.TimeoutExpired as error:
+        stdout, stderr, code, timeout = error.stdout or b'', error.stderr or b'', None, True
+    elapsed, ended = time.monotonic() - started, now()
+    after = snapshot()
+    for stream, data in [('stdout', stdout), ('stderr', stderr)]:
+        with (directory / (stream + '.txt')).open('xb') as output:
+            output.write(data)
+    try:
+        parsed = json.loads(stdout)
+    except (ValueError, UnicodeDecodeError):
+        parsed = None
+    observed = {**command, 'ended_at_utc': ended, 'elapsed_seconds': elapsed,
+                'exit_code': code, 'timed_out': timeout, 'after': after,
+                'stdout_sha256': hashlib.sha256(stdout).hexdigest(),
+                'stderr_sha256': hashlib.sha256(stderr).hexdigest(), 'stdout_json': parsed}
+    save(directory / 'result.json', observed)
+    summary.append({'case': case, 'result': str(directory.relative_to(OBSERVED) / 'result.json'), 'exit_code': code, 'timed_out': timeout})
+    print(json.dumps({'case': case, 'exit_code': code, 'seconds': elapsed,
+                      'stable': before == after, 'diagnostics': (parsed or {}).get('diagnostics')}), flush=True)
+    assert after == initial
+save(OBSERVED / 'observations.json', summary)

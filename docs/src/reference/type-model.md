@@ -39,8 +39,8 @@ The selected producer retains eight-bit words, 1024 function expansions,
 depth 16, 10000 Raw instructions and
 a conservative 100000-unit producer-work ceiling. Existing source, metadata and
 native caps remain separate. Small quantum temporaries use the same Raw emitter
-and all-history checks. Generic selected roots/dependencies and portable nominal
-export still refuse explicitly. Unselected
+and all-history checks. The generic Basis/Nat cases below use the same typed
+emitter. Portable nominal export still refuses explicitly. Unselected
 valid quantum declarations remain source checked without being execution roots.
 Public `classical fn` roots with the same ordinary interface use their original
 classical header and body through this same route; no ordinary wrapper is invented.
@@ -88,9 +88,13 @@ Ordinary Basis/Nat dependencies may forward those same nominal trees, including
 concrete `type(T)` arguments and nested tuples. Original caller/callee binders,
 numeric premises and module-public effects remain distinct. Closed unused
 arguments are still checked; ordinary forwarding grants no operation capability.
-Operation-formal closure, nominal coherent-table/Meaning
-consumers and wider qmatch integration remain pending; no external schema or inverse/control API is admitted.
-Its exact computation witnesses are separate from complex denotation,
+Selected and ordinary project roots can use coherent basis lifts over
+canonical nominal codes. The v5 check binds the original finite expression
+to the actual Raw interval, with or without a coherent selection. A selected
+coherent arm can use a Meaning with a built-in signature and a classical
+helper containing nominal values. The native check compares the original
+Meaning and actual arm operator. Operation-formal closure and wider nominal
+Meaning consumers remain pending. The exact computation witnesses are separate from complex denotation,
 original source-body preservation and numerical-runtime correspondence.
 Internal body projection consumes original resolved identities and the completed
 common lexical/effect facts. A projection restriction is recorded per declaration;
@@ -101,10 +105,9 @@ still have their own checks after that common judgment.
 ## One finite type universe
 
 The initial ordinary finite types are `Unit`, `Bit`, `Bits<n>` and ordered
-tuples of finite types. `n` is a checked static natural. `Basis` is the static
-kind of such finite type trees; it is not a second copy of ordinary values.
-Finite ADTs join this universe when their own specified constructors and
-checking rules are implemented.
+tuples of finite types, plus nonempty fieldless enums and records with finite
+ordinary fields. `n` is a checked static natural. `Basis` is the static kind
+of these finite type trees.
 
 `Q<A>` is linear quantum ownership over the finite value space `A`. A basis
 argument to `Q` cannot itself contain a quantum owner. Ordinary tuples may mix
@@ -865,10 +868,11 @@ Internalv1 requests refuse without fallback.
 Original parameter/result type reads retain every actual import and public
 reexport lookup, including type references inside record fields. The same
 independent reader reconstructs the nominal tree and these original source rows;
-aliases keep the terminal declaration's identity. Row projection and both
-source-coverage scans are charged before allocation/comparison. Checking every
-unused Nat helper does not justify its source row. Unrelated modules and
-body-only foreign nominal dependencies retain their explicit refusal.
+aliases keep the terminal declaration's identity. When a supplied source row
+needs body provenance, the same native root check uses the original body and
+callee reader to justify the extra type paths. Row projection and coverage
+comparisons are charged. Unused Nat helpers and unrelated modules cannot
+justify their own source rows.
 
 The ordinary project frontend may therefore construct enum/record values,
 project fields and execute exhaustive ordinary `match` inside an eligible closed
@@ -890,12 +894,11 @@ this gate. Existing simulation APIs still require closed roots; parameter
 checking grants no unchecked arbitrary-input runtime. Mixed nominal quantum
 interfaces and selected Basis/Nat roots use the runtime-root gate described
 earlier, including ordinary generic dependencies. Operation-formal closure,
-full qmatch and nominal finite-table consumers remain pending.
-Nominal constructor visits in nested calls and branches also select this typed
-route when the final result is a built-in type. Body-only nominal modules must
-already be retained by the selected original or parameter/result origins; other intermediate
-nominal dependencies refuse explicitly until their full typed transport exists.
-They cannot fall back to ordinary untyped Raw acceptance.
+wider qmatch and nominal Meaning consumers remain pending.
+Nominal constructor visits in nested calls and branches also select a typed
+route when the final result is a built-in type. The ordinary-v2, runtime-v2
+and v5 qmatch routes can retain imported nominal dependencies used only in
+the original body. The coverage check requires a resolved original use.
 
 The explicit Rust `Instantiation::check_carrier(kernel, logical, budget)` API
 has a separate bounded, check-only route. It uses the same common judgment,
@@ -1028,11 +1031,13 @@ or whose original resolved bodies use nominal values, including through
 classical callees. Project preparation keeps supported built-in-only tables
 eager. When a selected dormant operation reaches a concrete table consumer,
 preparation follows only that original classical function and its classical
-callees; unrelated declarations do not become table roots. Actual coherent
-basis, Meaning and predicate table consumers retain an explicit unsupported
-result for these deferred tables. This preparation change alone supplies no
-accepted value transport or source-to-Raw preservation. Eligible closed ordinary
-roots additionally use the native input/result/history gate above.
+callees; unrelated declarations do not become table roots. Coherent basis
+lifts evaluate these deferred bodies on canonical source values and use the
+v5 source interval check described above. Selected coherent arms can also
+use the original Meaning equation check for nominal intermediate values.
+Other Meaning consumers and predicate tables still refuse deferred nominal
+tables. Eligible closed ordinary roots use the native input/result/history
+gate above.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
 with charges before source visits, copied/allocated type and lexical cells,

@@ -1,0 +1,218 @@
+{
+  "format": 1,
+  "scope": "Numerical observed distributions only; no exact matrix or source-preservation claim. No probability renormalization. Absolute tolerance 1e-12.",
+  "comparisons": [
+    {
+      "case": "add_k-access-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            0,
+            0,
+            1
+          ],
+          "weight": 0.5000000000000002
+        },
+        {
+          "bits": [
+            1,
+            1,
+            0
+          ],
+          "weight": 0.5000000000000002
+        }
+      ],
+      "max_absolute_error": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "case": "add_k-explicit-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            0,
+            0,
+            1
+          ],
+          "weight": 0.5000000000000002
+        },
+        {
+          "bits": [
+            1,
+            1,
+            0
+          ],
+          "weight": 0.5000000000000002
+        }
+      ],
+      "max_absolute_error": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "case": "equals-access-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            1,
+            0,
+            1
+          ],
+          "weight": 1
+        }
+      ],
+      "max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "case": "equals-explicit-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            1,
+            0,
+            1
+          ],
+          "weight": 1
+        }
+      ],
+      "max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "case": "grover-access-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            1,
+            1
+          ],
+          "weight": 1
+        }
+      ],
+      "max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "case": "grover-explicit-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            1,
+            1
+          ],
+          "weight": 1
+        }
+      ],
+      "max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "case": "qpe_prefix-access-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            0,
+            1,
+            1
+          ],
+          "weight": 1
+        }
+      ],
+      "max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "case": "qpe_prefix-explicit-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            0,
+            1,
+            1
+          ],
+          "weight": 1
+        }
+      ],
+      "max_absolute_error": 0.0,
+      "passed": true
+    },
+    {
+      "case": "walk-access-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            0,
+            0,
+            0
+          ],
+          "weight": 0.2500000000000001
+        },
+        {
+          "bits": [
+            0,
+            1,
+            1
+          ],
+          "weight": 0.2500000000000001
+        },
+        {
+          "bits": [
+            1,
+            0,
+            1
+          ],
+          "weight": 0.2500000000000001
+        },
+        {
+          "bits": [
+            1,
+            1,
+            0
+          ],
+          "weight": 0.2500000000000001
+        }
+      ],
+      "max_absolute_error": 1.1102230246251565e-16,
+      "passed": true
+    },
+    {
+      "case": "walk-explicit-project-run",
+      "actual_without_renormalization": [
+        {
+          "bits": [
+            0,
+            0,
+            0
+          ],
+          "weight": 0.2500000000000001
+        },
+        {
+          "bits": [
+            0,
+            1,
+            1
+          ],
+          "weight": 0.2500000000000001
+        },
+        {
+          "bits": [
+            1,
+            0,
+            1
+          ],
+          "weight": 0.2500000000000001
+        },
+        {
+          "bits": [
+            1,
+            1,
+            0
+          ],
+          "weight": 0.2500000000000001
+        }
+      ],
+      "max_absolute_error": 1.1102230246251565e-16,
+      "passed": true
+    }
+  ]
+}

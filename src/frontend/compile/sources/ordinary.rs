@@ -22,7 +22,7 @@ impl Compiler<'_> {
                 types: BTreeSet::new(),
                 modules: BTreeSet::new(),
                 receipts: BTreeSet::new(),
-                qmatch: false,
+                runtime_lookup: false,
             };
             collector.ordinary_signature(key)?;
             if let Some(instance) = self

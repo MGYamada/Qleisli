@@ -1,0 +1,67 @@
+{
+  "argv": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "run",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-clean-157-marginal-first/attempt-01/explicit-reset",
+    "--format=json",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/private/tmp/qleisli-516-provider-followup",
+  "started_at_utc": "2026-11-11T20:49:29.195712+00:00",
+  "before": {
+    "source_hashes": {
+      "README.md": "fe9ba8668db078a81634ec768e669c6c549158d9661e678dc93901a052cb3a0b",
+      "SHA256SUMS": "fd9f3a93c0d49a3af1f0de51ec0e59910a97fc3d54dc3e8383913f4461441237",
+      "attempt-01/coherent-uncompute/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/coherent-uncompute/main.qli": "bad0cda2027d5b1409bae32b756bdc53e369915ca3346893583dfdda4fc630c6",
+      "attempt-01/explicit-reset/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/explicit-reset/main.qli": "ca60038b81fc1440b2878437f1e3522fd4fe9b395bb022e7ab0d4b67d8432b59",
+      "attempt-01/false-unitary-reset/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/false-unitary-reset/main.qli": "bc375eca2490858517e66bb3a6f308eb9568315610c14c62705af84063d04066",
+      "context.json": "b924520862f2053c3a8fb84159645e13d7bee543186c8f9090ef2e5553dfdb47",
+      "expected.md": "9f9c616b8a25c876b6b504de664035d62286915cfa2327b3982087d8ca00d453",
+      "session.json": "f916af460b79b1e94bb6fd2e62526d86a9bd93c657396083d3c21cc88262f39e"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "e1b3fe5ab6f95d505ad8b467e735ba4eeb29414140b38ca4a793d3471e321c33"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_seconds": 2.757657832989935,
+  "ended_at_utc": "2026-11-11T20:49:31.953403+00:00",
+  "after": {
+    "source_hashes": {
+      "README.md": "fe9ba8668db078a81634ec768e669c6c549158d9661e678dc93901a052cb3a0b",
+      "SHA256SUMS": "fd9f3a93c0d49a3af1f0de51ec0e59910a97fc3d54dc3e8383913f4461441237",
+      "attempt-01/coherent-uncompute/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/coherent-uncompute/main.qli": "bad0cda2027d5b1409bae32b756bdc53e369915ca3346893583dfdda4fc630c6",
+      "attempt-01/explicit-reset/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/explicit-reset/main.qli": "ca60038b81fc1440b2878437f1e3522fd4fe9b395bb022e7ab0d4b67d8432b59",
+      "attempt-01/false-unitary-reset/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/false-unitary-reset/main.qli": "bc375eca2490858517e66bb3a6f308eb9568315610c14c62705af84063d04066",
+      "context.json": "b924520862f2053c3a8fb84159645e13d7bee543186c8f9090ef2e5553dfdb47",
+      "expected.md": "9f9c616b8a25c876b6b504de664035d62286915cfa2327b3982087d8ca00d453",
+      "session.json": "f916af460b79b1e94bb6fd2e62526d86a9bd93c657396083d3c21cc88262f39e"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "e1b3fe5ab6f95d505ad8b467e735ba4eeb29414140b38ca4a793d3471e321c33"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "stdout_sha256": "3adb536a804a7177b9342c01ae0ab3568db1b47bfe30bed7b86b5a0b8754d281",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

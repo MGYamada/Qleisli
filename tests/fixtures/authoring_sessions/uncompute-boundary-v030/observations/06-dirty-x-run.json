@@ -1,0 +1,92 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "run",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-uncompute-72-first/attempt-01/dirty-x",
+    "--format=json",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/private/tmp/qleisli-516-provider-followup",
+  "started_utc": "2026-11-11T21:39:25.885512+00:00",
+  "recorded_utc": "2026-11-11T21:39:26.188153+00:00",
+  "elapsed_seconds": 0.3024154169979738,
+  "exit_code": 1,
+  "timed_out": false,
+  "before": {
+    "source_hashes": {
+      "SHA256SUMS": "82cb64141cbab1cc04b3fd3c8db41ccff52de4e732081c9cf6cbe6f3c6c8a10e",
+      "attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+      "attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+      "attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+      "context.json": "af99af5e16c1404cfd6bf981e134aa042ffa11b46afe9b592a500cb42702bf28",
+      "session.json": "ad46e5d29d9e2e12da09f6aa22db9e4e2786ca76f3c1e7076978f99f33ae9d40"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "after": {
+    "source_hashes": {
+      "SHA256SUMS": "82cb64141cbab1cc04b3fd3c8db41ccff52de4e732081c9cf6cbe6f3c6c8a10e",
+      "attempt-01/dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+      "attempt-01/hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+      "attempt-01/xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "attempt-01/xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+      "context.json": "af99af5e16c1404cfd6bf981e134aa042ffa11b46afe9b592a500cb42702bf28",
+      "session.json": "ad46e5d29d9e2e12da09f6aa22db9e4e2786ca76f3c1e7076978f99f33ae9d40"
+    },
+    "binaries": {
+      "cli": {
+        "path": "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+        "sha256": "ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1"
+      },
+      "kernel": {
+        "path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae"
+      }
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"with_computed requires an exact eighth-root diagonal ancilla action; non-diagonal and unrepresentable phases have no protected normalization. For other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking\",\"primary\":{\"path\":\"main.qli\",\"start\":135,\"end\":174,\"line\":7,\"column\":5},\"related\":[]}],\"result\":null}\n",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "with_computed requires an exact eighth-root diagonal ancilla action; non-diagonal and unrepresentable phases have no protected normalization. For other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking",
+        "primary": {
+          "path": "main.qli",
+          "start": 135,
+          "end": 174,
+          "line": 7,
+          "column": 5
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "stdout_sha256": "91bcfbe47a5c296e87f9821ffa4c7ed18b54a87da9678c451c73831e46b3de94",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "original_record_sha256": {
+    "command.json": "8d2b62fa56de7e728e8f3b102816e7cde880ecb8a20a4089c2d60de9dd91e60c",
+    "result.json": "e795a80459b755b36014efa9d1cd8a21fcb2d9bbb3e663a23fde0714d33a5f04"
+  },
+  "scope": "Historical bytes and numerical observation only; no whole-source, CPTP, exact phase or quantitative resource guarantee. Recorded commands remain inert."
+}

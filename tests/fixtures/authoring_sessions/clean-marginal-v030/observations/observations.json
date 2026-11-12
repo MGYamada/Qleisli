@@ -1,0 +1,38 @@
+[
+  {
+    "name": "01-coherent-uncompute-check",
+    "result": "01-coherent-uncompute-check/result.json",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "name": "02-coherent-uncompute-run",
+    "result": "02-coherent-uncompute-run/result.json",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "name": "03-explicit-reset-check",
+    "result": "03-explicit-reset-check/result.json",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "name": "04-explicit-reset-run",
+    "result": "04-explicit-reset-run/result.json",
+    "exit_code": 0,
+    "timed_out": false
+  },
+  {
+    "name": "05-false-unitary-reset-check",
+    "result": "05-false-unitary-reset-check/result.json",
+    "exit_code": 1,
+    "timed_out": false
+  },
+  {
+    "name": "06-false-unitary-reset-run",
+    "result": "06-false-unitary-reset-run/result.json",
+    "exit_code": 1,
+    "timed_out": false
+  }
+]

@@ -19,6 +19,7 @@ mod instances;
 mod interfaces;
 mod lower;
 mod naturals;
+mod nominal_values;
 mod operations;
 mod originals;
 mod profile;
@@ -235,6 +236,7 @@ struct Compiler<'a> {
     basis: BTreeMap<Key, BasisFunction>,
     // Ordinary nominal calls use bodies; physical label tables stay unavailable.
     deferred_nominal_tables: BTreeSet<Key>,
+    nominal_basis_roots: BTreeSet<Key>,
     checked: BTreeMap<Key, AcceptedProgram>,
     // Closed nongeneric type copies within this immutable source judgment.
     // The producer profile is part of the key; effects/evidence are not cached.
@@ -1153,6 +1155,7 @@ fn process_loaded_project_details(
         locals,
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
+        nominal_basis_roots: BTreeSet::new(),
         checked: BTreeMap::new(),
         runtime_signatures: BTreeMap::new(),
         carrier_descriptions: Vec::new(),
@@ -1209,6 +1212,7 @@ fn process_loaded_project_details(
     // Retain eager built-in tables and explicit refusals at their consumers.
     // Ordinary nominal calls instead lower their checked original bodies.
     compiler.prepare_classical_tables()?;
+    compiler.plan_nominal_basis(None)?;
     let mut main = None;
     for ordinal in 0..compiler.source.dependency_order.len() {
         let key = compiler.source.dependency_order[ordinal];
@@ -1452,6 +1456,7 @@ mod snapshot_tests {
             locals: Forest::from_occurrences(occurrences),
             basis: BTreeMap::new(),
             deferred_nominal_tables: BTreeSet::new(),
+            nominal_basis_roots: BTreeSet::new(),
             checked: BTreeMap::new(),
             runtime_signatures: BTreeMap::new(),
             carrier_descriptions: Vec::new(),

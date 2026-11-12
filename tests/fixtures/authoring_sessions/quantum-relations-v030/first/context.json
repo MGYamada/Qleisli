@@ -1,0 +1,29 @@
+{
+  "kind": "informed_first_attempt",
+  "frozen_before_execution_utc": "2026-11-11T21:58:46.677599+00:00",
+  "baseline_source_commit": "25ef5c0c91b220704c61743a41144a218c732038",
+  "context": "Informed by current Reference and parser/common-checker inspection; not a blind authoring evaluation.",
+  "references_sha256": {
+    "docs/src/reference/type-model.md": "ee7a390330a5bdf29412169398a473ec9dc187fdc25542311b5e4624c826072b",
+    "docs/src/reference/rust-boundary.md": "e14aad88c08224fadf45b92893186df7893884456afa3e1f5555ff7fcefcd152",
+    "docs/src/reference/coherent-basis.md": "89bfc9600e68c03e7fcb3005ef45c7818607aaa78776455903fb02e57719dd95",
+    "src/frontend/parser.rs": "0806913f60494a620ca60d1f20c0a4403ecffd68ca6a3095e53cf52d210ec32d",
+    "src/frontend/check/body.rs": "c0118b5e57e6519650b59521ad5b40553d2393d259a2d4df8216521667bde018",
+    "tests/repair_diagnostics.rs": "a11d48406253f61f5ba57e873bdbbe67fa549c40aefe908c84d439afac43d37e"
+  },
+  "bounded_scope": "At most two semantic quantum wires in executable positives; no maximum-size case or physical-resource claim.",
+  "predictions": {
+    "eq-live": "Reject ordinary live-owner equality; current parser is expected to report a generic delimiter error at ==.",
+    "ne-nested": "Reject ordinary equality of quantum-containing products, including a zero-width owner; expected generic parse failure at !=.",
+    "ord-zero": "Reject ordering on Q<Bits<0>>; zero width does not grant ordinary value relations. Expected generic parse failure at <.",
+    "hash-live": "Reject unresolved hash with a name diagnostic; no built-in hash or implicit measurement exists.",
+    "hash-nested": "Reject unresolved hash identically without guessing argument types or owner identity.",
+    "hash-zero": "Reject unresolved hash; zero-width owners retain their ordinary linear restrictions.",
+    "classical-static": "Accept explicit total classical Bit equality not(a xor b), plus existing static Nat comparison 1 < 2. Ordinary runtime == is not proposed as new syntax.",
+    "explicit-coherent": "Accept the explicit reversible basis map (a,b)->(a,not(a xor b)). Its independent table is 00->01, 01->00, 10->10, 11->11, all coefficients +1. This compares basis labels coherently; it is not quantum-state equality or tomography.",
+    "declared-hash": "Accept the resolved ordinary quantum function named hash; it is explicitly the identity Q<Bit>->Q<Bit>, not an ordinary hash interface.",
+    "imported-qualified-hash": "Accept both imported hash and helper::hash with normal resolution and ownership/effect checking."
+  },
+  "scope": "Source predictions and bounded historical diagnostics are not source-preservation, quantum-state-comparison, tomography, exact operator proof or resource evidence. Owner/provenance and wire identities are not quantum-state equality.",
+  "execution": "No parser/compiler/native/simulator command has yet run on these first sources; the separate observation directory appends actual outcomes without changing this packet."
+}

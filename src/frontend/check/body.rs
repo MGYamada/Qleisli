@@ -36,6 +36,9 @@ fn unresolved_function_message(name: &str) -> String {
         "default" => {
             "; there is no built-in Rust Default operation. Ordinary Bit/Unit can be constructed explicitly; quantum preparation is explicit and cannot be inferred from Default. This includes Q<Unit> and products containing quantum owners; zero physical width does not grant Default."
         }
+        "hash" => {
+            "; there is no built-in ordinary hash operation. Ordinary values may use explicitly defined classical functions. If a value contains live Q<T>, it has no ordinary Eq/Ord/Hash, including nested and zero-width owners. Owner/provenance identity and wire identity are not quantum-state equality. Coherent basis comparison needs an explicit reversible operation; quantum-state testing or tomography needs its own protocol with declared effects. A resolved function named hash retains its ordinary type, ownership and effect checks."
+        }
         _ => return message,
     };
     message.push_str(explanation);

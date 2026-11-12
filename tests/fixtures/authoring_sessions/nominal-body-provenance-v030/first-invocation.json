@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "--entry=main::keep",
+    "--module=main=/private/tmp/qleisli-64-first.nxRaFJ/main.qli",
+    "--module=labels=/private/tmp/qleisli-64-first.nxRaFJ/labels.qli",
+    "--ir-profile=raw",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-11-12T00:16:42.101913+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "project",
+        "severity": "error",
+        "message": "missing Qargo.toml: add schema-version = 2 and [qrate] edition = \"2026\" to the source tree's top-level directory",
+        "primary": {
+          "module": "labels",
+          "path": "/private/tmp/qleisli-64-first.nxRaFJ/labels.qli",
+          "start": 0,
+          "end": 0
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

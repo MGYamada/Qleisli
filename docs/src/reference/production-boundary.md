@@ -168,11 +168,17 @@ enum code, changed nominal identity, reordered field/axis or hidden Observe unde
 a pure label refuses. A declared public Observe bound is retained even for a
 pure implementation. Source rows require the actual selected original, exact
 checked nominal origins or actual original type-resolution paths from the
-selected parameter/result types and recursive record fields. The shared
+selected parameter/result types and recursive record fields. The ordinary
+and mixed runtime gates use the existing original body reader when signature
+and graph evidence leave source rows uncovered. This binds body-only type
+paths, including paths through called helpers, before the shared Raw root check.
+The shared
 independent resolver retains its exact query, original lookup bytes, visibility
 and import/reexport edges. An arbitrary row or a validated unused Nat helper
 cannot supply type-path coverage. Projection and both coverage scans are
-precharged within the existing work limit.
+precharged within the existing work limit. Coverage binds source relevance
+to the checked artifact. Source-to-Raw correspondence remains a separate
+obligation.
 
 Rust's private ordinary proposal decoder accounts for every proposed source's
 path and text under the existing aggregate identity limit, then defers relevance
@@ -247,7 +253,9 @@ when every selection has its own whole-circuit check and the original
 operation closure does not require v5. Nominal source gates, wider selection
 sectors, and original operation closure transport use the bounded v5 request.
 The compiler selects the request before native root checking and
-never retries a failed native decision. Small nominal named-arm qmatch functions
+never retries a failed native decision. V5 checks original nominal declarations
+and import paths used by constructors and field projections in the body, even
+when the types do not occur in the selected interface. Small nominal named-arm qmatch functions
 also submit the complete actual callee fragment to the existing source/arm gate
 below before whole-root runtime acceptance. The fragment retains its original
 complete quantum argument/result order, structural body and named-arm
@@ -258,10 +266,21 @@ Nominal enum/record targets, including empty records, retain their full original
 types with enum or built-in ordinal selectors. Their physical arm entries and
 controls are untrusted proposals: the same native source/sector gate binds the
 full target type, actual body and code equations. It issues no provider capability.
+Selected and project v5 bodies may include coherent basis lifts with nominal values.
+The producer evaluates only the original logical rows and completes unused
+physical inputs injectively. The native checker independently derives the
+logical table from the original finite expression and pure helper bodies,
+checks every ordinary match arm's dependencies, and binds the canonical rows
+to the actual Raw lift interval. If the checked body has no selection sites,
+Lean requires an original basis event and the report names
+`finite-source-basis-context-v5`. Checked selections use
+`finite-source-qmatch-context-v5`.
 Nonstructural bodies and the full twelve-bit profile remain pending.
-This does not grant operation/provider access: those preparations retain their
-separate finite constraints and evidence. Operation-formal closure, nominal
-coherent-table/Meaning and wider qmatch integration remain pending. Independent
+A selected coherent arm can use an original classical Meaning helper with
+nominal intermediate values when the Meaning's ports are supported built-in
+types. Lean checks the helper against the original canonical inputs and
+compares the exact Meaning with the applied arm. Operation-formal closure,
+nominal Meaning ports, standalone nominal Meaning and wider qmatch remain pending. Independent
 host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 

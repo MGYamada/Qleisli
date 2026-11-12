@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#157 coherent cleanup versus reset of a correlated auxiliary",
+  "author": "Codex delegated agent /root/review_access_29; model identifier not independently recorded",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "678ada992383a5ea1194bdd198d97d5baae95342",
+  "context": "context.json",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "First authored sources frozen before any command or execution; deliberate coherent/reset/effect contrast.",
+      "sha256": {
+        "coherent-uncompute/main.qli": "bad0cda2027d5b1409bae32b756bdc53e369915ca3346893583dfdda4fc630c6",
+        "explicit-reset/main.qli": "ca60038b81fc1440b2878437f1e3522fd4fe9b395bb022e7ab0d4b67d8432b59",
+        "false-unitary-reset/main.qli": "bc375eca2490858517e66bb3a6f308eb9568315610c14c62705af84063d04066"
+      },
+      "manifest_sha256": {
+        "coherent-uncompute/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "explicit-reset/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "false-unitary-reset/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [],
+      "reports": []
+    }
+  ],
+  "status": "frozen-awaiting-first-observation",
+  "expectations": "expected.md",
+  "checksums": "SHA256SUMS"
+}

@@ -1,0 +1,25 @@
+// Copyright 2026 Qleisli Project Contributors.
+// SPDX-License-Identifier: Apache-2.0
+// Informed first source for issue #29; not yet checked or executed.
+use std::gate::controlled_phase;
+use std::reflection::reflect_uniform2;
+use std::transform::hadamard2;
+use std::state::init0;
+
+// Local exact oracle: negate |11>, with +1 on the other three basis labels.
+// The standard reflection below retains the + sign in 2|s><s| - I.
+unitary fn mark(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b) = split(q);
+    let (a,b) = controlled_phase[1,1](a,b);
+    join(a,b)
+}
+
+pub unitary fn probe(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let q = mark(q);
+    reflect_uniform2(q)
+}
+
+pub observe fn main() -> (Bit,Bit) {
+    let (a,b) = split(probe(hadamard2(join(init0(),init0()))));
+    (measure_z(a),measure_z(b))
+}

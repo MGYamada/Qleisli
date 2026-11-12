@@ -1,0 +1,2 @@
+pub enum Tag { A, B, C }
+pub struct Packet { pub bit: Bit }

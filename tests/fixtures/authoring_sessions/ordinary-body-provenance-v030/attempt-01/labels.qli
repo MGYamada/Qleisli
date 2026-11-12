@@ -1,0 +1,1 @@
+pub enum Tri { A, B, C }

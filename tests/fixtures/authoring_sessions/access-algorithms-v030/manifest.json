@@ -1,0 +1,151 @@
+{
+  "format": "qleisli.external-first-source-packet",
+  "status": "frozen-before-first-check; unexecuted",
+  "head": "245fb314af19a216043a850e5fe0a7fd863ff8ac",
+  "created_at_utc": "2026-11-11T14:49:52.688469+00:00",
+  "first_sources": 10,
+  "project_manifests": 10,
+  "observations": [],
+  "files": [
+    {
+      "path": "attempt-01/add_k-access/main.qli",
+      "sha256": "0c580cfcb157de6884fce897be0404bfc343d4869bf7ed64c821fc8543de8d35",
+      "case": "add_k",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/add_k-access/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "add_k",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/add_k-explicit/main.qli",
+      "sha256": "2f48772d95aab5f3011e5bb971ff0be0ada1b871570e2c138563736d9d2a648f",
+      "case": "add_k",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/add_k-explicit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "add_k",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/equals-access/main.qli",
+      "sha256": "bbe68a38d685060afe0789b01876d2ed4c620257aa0f06224f6e0ffe63e9b351",
+      "case": "equals",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/equals-access/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "equals",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/equals-explicit/main.qli",
+      "sha256": "b86c073613a8136c81cb78433e1ece4af04e15b9ffb9b8de901311f01bdc4d19",
+      "case": "equals",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/equals-explicit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "equals",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/grover-access/main.qli",
+      "sha256": "53d40498ccb243d1195831533a45d6141752119ab630008b9d4a2aee4604d36e",
+      "case": "grover",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/grover-access/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "grover",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/grover-explicit/main.qli",
+      "sha256": "5327772fd9f5665a4f27174127d6f68738aae53c2cabb042485918c2b2fec36e",
+      "case": "grover",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/grover-explicit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "grover",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/qpe_prefix-access/main.qli",
+      "sha256": "4a52bf175c0e8e8eb822fe7687a1586b73a1a220baad173edbae3a71c358bf9a",
+      "case": "qpe_prefix",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/qpe_prefix-access/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "qpe_prefix",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/qpe_prefix-explicit/main.qli",
+      "sha256": "590a4907cf54c0f34acea43f2e96b201a4e6c9674c2b6379a8a0e3adb4bac9a0",
+      "case": "qpe_prefix",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/qpe_prefix-explicit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "qpe_prefix",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/walk-access/main.qli",
+      "sha256": "68fe9a64dec5bdc3f7f6e85e4f580971b1fd02e7d7a575eefc0871e5b0a2d64a",
+      "case": "walk",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/walk-access/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "walk",
+      "variant": "access"
+    },
+    {
+      "path": "attempt-01/walk-explicit/main.qli",
+      "sha256": "4fe898733e29018268ed2b397727caa1c297d8dac13dfbc6cd12353988ec3962",
+      "case": "walk",
+      "variant": "explicit"
+    },
+    {
+      "path": "attempt-01/walk-explicit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "case": "walk",
+      "variant": "explicit"
+    },
+    {
+      "path": "context.txt",
+      "sha256": "98b5b26ae1f7792ffb8be3c1759a00cd59b391ed1da039a0042d1451698c6e23"
+    },
+    {
+      "path": "expectations.json",
+      "sha256": "f2c4d8fb4bef162fd8c40f8e9f50f40a15a44d517819a3fdd75d561687ef9c0a"
+    },
+    {
+      "path": "provenance.json",
+      "sha256": "ff834649548a7c9ea8141d23224d1404ce1ff354eebfbb2c91531d437c90a286"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "8757120074c78d8b784c6c29847c10d8119d99ce5e2c2f94ad8270465278fbf4"
+    },
+    {
+      "path": "NOTICE",
+      "sha256": "3510aad69edf24cb2c7c51993a94e11657268e2f9ba9dc944928fcb6eb6f3046"
+    }
+  ]
+}

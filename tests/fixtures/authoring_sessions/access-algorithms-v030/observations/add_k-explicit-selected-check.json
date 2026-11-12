@@ -1,0 +1,45 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "--entry=main::probe",
+    "--module=main=/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-access-29-20261111/attempt-01/add_k-explicit/main.qli",
+    "--ir-profile=raw",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-11T14:52:05.442100+00:00",
+  "exit_code": 0,
+  "timeout": false,
+  "seconds": 0.03535800000827294,
+  "source_sha256": "2f48772d95aab5f3011e5bb971ff0be0ada1b871570e2c138563736d9d2a648f",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::probe\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "checker_identity": "unpinned",
+      "request_checked": false,
+      "ordinary_result_checked": false,
+      "runtime_result_checked": false,
+      "source_preservation_verified": false,
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::probe",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "original_record_sha256": "02588997ce133fb86573c8164d4e324e9701ddaebaaa51450723bf62976fdf49"
+}

@@ -647,6 +647,47 @@ fn use_that_changes_source_or_ancilla_basis_is_rejected() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn basis_permuting_x_cannot_modify_a_protected_compute_dependency() {
+    let candidate = |gate| {
+        program(
+            vec![bit_port(0, 0)],
+            vec![],
+            vec![RawOp::ComputeUseUncompute {
+                source: t(0),
+                source_out: t(1),
+                targets: vec![],
+                ancilla_wires: vec![w(1)],
+                function: vec![0, 1],
+                use_ops: vec![ProtectedUse::ProtectedGate {
+                    bit: ProtectedBit {
+                        region: ProtectedRegion::Source,
+                        index: 0,
+                    },
+                    gate,
+                }],
+            }],
+            vec![t(1)],
+            vec![],
+            Effect::Unitary,
+        )
+    };
+    accept(candidate(SingleGate::Z)).expect("phase on the preserved source is admissible");
+    // X preserves computational-basis states but changes the dependency label
+    // used to uncompute f(x). Its gate class alone cannot justify clean return.
+    let error = accept(candidate(SingleGate::X))
+        .expect_err("a protected dependency must retain its basis label");
+    assert_eq!(error.code, "invalid_ir", "{error:?}");
+    assert_eq!(
+        error.message,
+        "Lean native checker rejected the artifact/request; no fallback"
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn compute_scope_rejects_partial_function_and_ancilla_wire_reuse() {
     for (function, ancilla, phrase) in [
         (vec![0], w(1), "not total"),

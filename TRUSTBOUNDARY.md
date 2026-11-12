@@ -176,9 +176,10 @@ input rows, storage and effect with
 the retained Rust objects. No sampled or normalized history subset supplies
 acceptance. The program retains the typed result; untyped rechecking refuses.
 Actual original parameter/result type queries and recursive record field types
-also retain their exact import/reexport paths. These independently checked
-paths justify their source rows; global unused-helper checking and arbitrary
-module names do not. The private Rust proposal accounts for complete source
+retain their exact import/reexport paths. When the typed ordinary or mixed
+runtime gate needs additional coverage, the existing native body reader
+derives original type paths from the body and called declarations. Those
+resolved paths justify the additional source rows. The private Rust proposal accounts for complete source
 path/text bytes and obtains no handle until native relevance and full QDV
 comparison succeed. Existing source/work limits remain in force.
 This does not prove source-body lowering or numerical runtime correspondence,
@@ -211,8 +212,13 @@ binder identities and public effects. Concrete and unused nominal actuals use
 typed root checks even during global dormant validation; partial calls still
 check their closed siblings. This Rust preparation supplies no operation
 capability, and provider/inverse/control preparation retains its separate
-finite constraints. Operation-formal closure, full qmatch and nominal
-finite-table/Meaning consumers remain pending. Exact computation
+finite constraints. The v5 source check compares original nominal basis rows
+with the actual Raw interval. When the checked root has no coherent selection,
+Lean requires an original basis event and the report names the basis scope.
+In selected coherent arms, a classical Meaning helper with built-in ports
+may use nominal intermediate values. Its original value and actual applied
+operator are compared by the same v5 gate. Operation-formal closure, wider
+qmatch, nominal Meaning ports and standalone nominal Meaning remain pending. Exact computation
 witnesses supply no source-body,
 complex-denotation or numerical-runtime preservation theorem, inverse/control
 capability, new guarantee admission or broader QS/PR/RS/EXACT discharge.

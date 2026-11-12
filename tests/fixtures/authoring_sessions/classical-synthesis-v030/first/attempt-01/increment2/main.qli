@@ -1,0 +1,20 @@
+// Copyright 2026 Qleisli Project Contributors.
+// SPDX-License-Identifier: Apache-2.0
+// Informed first source for issue #30; not yet checked or executed.
+use std::state::init0;
+
+// First field is the low bit. This is explicit addition by one modulo four,
+// written with existing Bit operations; it does not introduce an integer API.
+classical fn inc2((lo,hi): (Bit,Bit)) -> (Bit,Bit) {
+    (not lo,hi xor lo)
+}
+
+pub unitary fn increment(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    basis q as bits { inc2(bits) }
+}
+
+// Inputs 00 and 01 become labels 01 and 10 with the same positive amplitude.
+pub observe fn main() -> (Bit,Bit) {
+    let (lo,hi) = split(increment(join(h(init0()),init0())));
+    (measure_z(lo),measure_z(hi))
+}

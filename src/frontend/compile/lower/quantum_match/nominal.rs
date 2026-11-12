@@ -1005,7 +1005,9 @@ pub(super) fn emit(
     let mut arms = Vec::new();
     for arm in &selection.arms {
         let (label_basis, ordinal) = match (&basis.kind, &arm.label) {
-            (Kind::Nominal(_), QuantumLabel::Variant(label)) => lower.enum_label(module, label)?,
+            (Kind::Nominal(_), QuantumLabel::Variant(label)) => {
+                lower.compiler.enum_label(module, label)?
+            }
             (Kind::Unit | Kind::Bit | Kind::Bits(_), QuantumLabel::Ordinal(label)) => {
                 (basis.clone(), *label as usize)
             }

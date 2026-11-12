@@ -1,0 +1,28 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#158 scratch and signal ownership",
+  "author": "Codex root; exact model identifier not independently recorded",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "25ef5c0c91b220704c61743a41144a218c732038",
+  "context": "context.json",
+  "status": "frozen-awaiting-first-observation",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Three desired sources frozen before any check; no repairs",
+      "sha256": {
+        "returned-signal/main.qli": "f100b1bf71e457a92de0e49cf8520d6f13bc3d52e61fb7c753f12b7dbdc9ad0c",
+        "lost-signal/main.qli": "831fca0d8d842794bd1dd59c36cb21227585961f6c596f023aa581aa71900e30",
+        "explicit-discard/main.qli": "826fe5319ed4a5423cdadd5df74e52d29a91e116b1cecc14276251ee992cb731"
+      },
+      "manifest_sha256": {
+        "returned-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "lost-signal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "explicit-discard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [],
+      "reports": []
+    }
+  ]
+}

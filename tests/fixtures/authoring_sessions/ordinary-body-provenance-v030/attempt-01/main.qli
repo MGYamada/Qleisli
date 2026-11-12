@@ -1,0 +1,7 @@
+#![no_implicit_prelude]
+use facade::Tri;
+
+classical fn flag() -> Bit {
+    match Tri::C { Tri::B => 0, Tri::C => 1, Tri::A => 0 }
+}
+fn main() -> Bit { flag() }

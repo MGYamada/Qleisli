@@ -1,0 +1,1 @@
+pub unitary fn compare(a: (Bit,(Q<Unit>,Unit)), b: (Bit,(Q<Unit>,Unit))) -> Bit { a != b }

@@ -18,6 +18,14 @@ fn limit(message: impl Into<String>) -> crate::interchange::Error {
 // Untrusted preparation only: native Lean independently enumerates the original
 // finite code and rejects any different/subset/permuted proposed rows.
 pub(super) fn proposed_rows(parameters: &[Vec<Atom>]) -> NativeResult<Vec<Vec<bool>>> {
+    let (width, labels) = proposed_codes(parameters)?;
+    Ok(labels
+        .into_iter()
+        .map(|label| (0..width).map(|axis| ((label >> axis) & 1) != 0).collect())
+        .collect())
+}
+
+pub(super) fn proposed_codes(parameters: &[Vec<Atom>]) -> NativeResult<(usize, Vec<usize>)> {
     type Layout = (usize, Vec<usize>);
     fn tensor((low_bits, low): Layout, (high_bits, high): Layout) -> NativeResult<Layout> {
         if low_bits + high_bits > 6 || low.len() * high.len() > 64 {
@@ -70,11 +78,7 @@ pub(super) fn proposed_rows(parameters: &[Vec<Atom>]) -> NativeResult<Vec<Vec<bo
         }
         domain = tensor(domain, stack.pop().unwrap())?;
     }
-    let (width, labels) = domain;
-    Ok(labels
-        .into_iter()
-        .map(|label| (0..width).map(|axis| ((label >> axis) & 1) != 0).collect())
-        .collect())
+    Ok(domain)
 }
 
 pub(super) fn has_nominal(ty: &Ty) -> bool {
@@ -208,16 +212,16 @@ pub(super) fn accept(
             names.insert(origin.module.clone());
         }
     }
-    if !lower.nominal_modules.borrow().is_subset(&names) {
-        return Err(Error::new(
-            "unsupported",
-            "intermediate nominal source modules require complete typed dependency transport",
-        ));
+    let rows = if lower.nominal_modules.borrow().is_subset(&names) {
+        lower
+            .compiler
+            .retained_ordinary_type_sources(*key, &name.0, decl.span)
+    } else {
+        lower
+            .compiler
+            .retained_runtime_body_sources(*key, &name.0, decl.span, raw)
     }
-    let rows = lower
-        .compiler
-        .retained_ordinary_type_sources(*key, &name.0, decl.span)
-        .map_err(|e| Error::new("limit", e.to_string()))?;
+    .map_err(|e| Error::new(e.code.as_str(), e.to_string()))?;
     let bytes = rows.iter().map(|r| r.0.len() + r.1.len()).sum::<usize>();
     lower
         .compiler

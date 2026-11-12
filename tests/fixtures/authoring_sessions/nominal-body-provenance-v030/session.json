@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#64 original body-only nominal provenance in qmatch",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "a0eea04de4678ca92ed4df48d3e59b6d494d17d4",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged first sources; missing manifest and then the actual dependency refusal.",
+      "sha256": {
+        "main.qli": "bcfa35aab477e135a16f7b0bb57f244497f80b705b34cad98aebf15be5639682",
+        "labels.qli": "f8d522da0239be7fe042221ff5317870ad4f7e4aea6423a683f79c6dbcb35b40"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "first-invocation.json",
+        "first-refusal.json"
+      ]
+    }
+  ]
+}

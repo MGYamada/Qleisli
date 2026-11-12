@@ -1,0 +1,69 @@
+{
+  "format": "qleisli.external-first-source-packet",
+  "issue": 70,
+  "classification": "Informed bounded implementation study; not an independent first-authoring evaluation.",
+  "created_at_utc": "2026-11-11T19:20:22.069403+00:00",
+  "source_context": {
+    "repository": "/private/tmp/qleisli-516-provider-followup",
+    "head": "1dddbbec00700d31429e193da4d77794d3431956",
+    "status": "",
+    "head_is_not_binary_build_attestation": true
+  },
+  "status": "Frozen before any compilation/check/run of these first sources; unexecuted.",
+  "scope": "Existing consume/return operations and apply_contract only. No clean/dirty grammar, new stdlib API, accepted handle, or quantitative-resource claim.",
+  "history": "Never rewrite attempt-01 after a failure. Keep actual diagnostics separately; any repair needs a later attempt. These expectations are predictions, not observations.",
+  "independent_expectations": {
+    "wire_order": "The contract interface is Q<(Bit,Bit)> ordered (D,R), with label d+2*r. Observation order is (E,D,R).",
+    "positive_equation": "CNOT(R->D); X(R); CNOT(R->D); X(D) = I_D tensor X_R exactly, with coefficient +1. (d,r)->(d xor r,r)->(d xor r,r xor 1)->(d xor 1,r xor 1)->(d,r xor 1).",
+    "positive_matrix": "For every col in 0..4, M[row,col] = 1 iff row = col xor 2; otherwise 0. This is an all-input operator identity, not a known-input simulation claim.",
+    "negative_matrix": "For Z(D); X(R), M_bad[row,col] = (-1)^(col mod 2) iff row = col xor 2; otherwise 0. It differs from the specified matrix in columns 1 and 3.",
+    "reference_equation": "Starting (|0_E 0_D>+|1_E 1_D>)/sqrt(2) tensor |0_R>, the positive circuit gives the same Bell state tensor |1_R>. The negative gives (|0_E 0_D>-|1_E 1_D>)/sqrt(2) tensor |1_R>. D has marginal I/2 in both; the reference correlation phase differs.",
+    "restored-contract": {
+      "check": "accept the exact function contract",
+      "run": "after inverse Bell preparation, P[(E,D,R)=(0,0,1)] = 1"
+    },
+    "phase-contract-rejected": {
+      "check": "reject the exact function contract; do not run the rejected contracted program",
+      "diagnostic": "expect a contract/equation mismatch; actual code/span/message must be captured, not assumed"
+    },
+    "phase-reference-observed": {
+      "check": "accept the uncontracted declared observing program",
+      "run": "after inverse Bell preparation, P[(E,D,R)=(1,0,1)] = 1; acceptance makes no dirty-restoration claim"
+    },
+    "bounds": "Two-qubit operator contract; at most three physical qubits in the Bell experiment. No maximum-size cases.",
+    "limits": "Numerical Bell observations do not prove arbitrary-reference restoration. Fresh exact native contract evidence and existing semantic lemmas have separate scopes."
+  },
+  "observations": [],
+  "files": [
+    {
+      "path": "attempt-01/restored-contract/main.qli",
+      "bytes": 667,
+      "sha256": "2d8817d5b947b44afa227e5d1c54c95df4b99a001e6c7d6a321360c091a4ec34"
+    },
+    {
+      "path": "attempt-01/restored-contract/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "attempt-01/phase-contract-rejected/main.qli",
+      "bytes": 616,
+      "sha256": "2b4140204a9308e5b19d62a237e374aa961b0c6b44f037e1137f620f2ca10ee9"
+    },
+    {
+      "path": "attempt-01/phase-contract-rejected/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "attempt-01/phase-reference-observed/main.qli",
+      "bytes": 490,
+      "sha256": "9df43846106706baf8d9d2af4c9283fe820ea2667c3c069716584a4adc0912a3"
+    },
+    {
+      "path": "attempt-01/phase-reference-observed/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    }
+  ]
+}

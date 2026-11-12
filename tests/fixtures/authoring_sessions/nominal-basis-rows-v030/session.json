@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#64 exact coherent nominal finite rows with original qmatch",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "b0db6c1e31dfb064bae57d49351b3a343ed31a2e",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged original nominal table and actual producer/native checks.",
+      "sha256": {
+        "main.qli": "b917eb03c9eea9e689add51bd2609e159626d2254852aadccc66e0a1bb2b8a68"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "first-check.json",
+        "typed-check.json",
+        "fixed-check.json"
+      ]
+    }
+  ]
+}

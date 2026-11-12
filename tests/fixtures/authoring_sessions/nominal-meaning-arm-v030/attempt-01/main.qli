@@ -1,0 +1,10 @@
+#![no_implicit_prelude]
+enum Flag { Keep, Flip, Spare }
+classical fn logical_flip(bit: Bit) -> Bit {
+    match Flag::Flip { Flag::Keep => bit, Flag::Flip => not bit, Flag::Spare => bit }
+}
+meaning Flip: Bit = permutation_by(logical_flip);
+unitary fn implementation(q: Q<Bit>) -> Q<Bit> { h(phase[1,1](h(q))) }
+pub unitary fn select(s: Q<Unit>, q: Q<Bit>) -> (Q<Unit>, Q<Bit>) {
+    qmatch(s,q) { 0 => checked_op(implementation, Flip) }
+}
