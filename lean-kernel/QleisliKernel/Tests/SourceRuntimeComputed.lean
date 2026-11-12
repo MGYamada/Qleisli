@@ -1,5 +1,5 @@
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
-import QleisliKernel.Qirf.RuntimeComputedPredicate
+import QleisliKernel.Qirf.RuntimeComputedUse
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Actual original computed scope typing, owner histories and source bodies.
@@ -74,6 +74,48 @@ private def predicateTable (table : List Nat) : Finite.WorkM (List Nat) := do
   match ((predicateTable table).run 20000000).1 with
   | .error .equation => true
   | _ => false
+
+
+private def protectedInterval (sourceText : String) (table : List Nat) (uses : List Semantics.Raw.Use)
+    (staleAuxiliary : Bool := false) :
+    Finite.WorkM (List Nat × List Nat) := do
+  let source ← SourceRuntimeTrace.read #[("main",sourceText)] "main" "route"
+  let [Event.computed event _] := source.events | throw Finite.Error.request
+  let input : Semantics.Raw.Port := ⟨10,[6,2],2⟩
+  let spectator : Semantics.Raw.Port := ⟨11,[],0⟩
+  let spectatorOwner : Semantics.SourceOwners.Owner := ⟨4,[.unit]⟩
+  let program : Semantics.Observation.Program := ⟨[input,spectator],[],
+    [.pure (.computeUseUncompute 10 12 [] [8] table uses)],
+    [12,11],[],.unitary⟩
+  let prepared ← Qirf.RuntimeInterval.prepare [] program
+  let interval ← Qirf.RuntimeInterval.check prepared.block 0 1
+  let issued := [event.input,spectatorOwner] ++ (if staleAuxiliary then [event.initial.auxiliary] else [])
+  let before : Qirf.RuntimeStructuralAction.SourceState :=
+    ⟨[⟨event.input,input⟩,⟨spectatorOwner,spectator⟩],issued,event.nextOrdinal⟩
+  let checked ← Qirf.RuntimeComputedPredicate.readProtectedInterval event interval before
+  let _ ← Qirf.RuntimeComputedUse.read checked
+  return (checked.output.wires,checked.after.bindings.map (·.port.token))
+
+private def auxiliaryZ : Semantics.Raw.Use := .protectedGate ⟨.ancilla,0⟩ .z
+
+#guard ((protectedInterval nominal [0,1,0,0] [auxiliaryZ]).run 20000000).1.toOption = some ([6,2],[12,11])
+#guard (match ((protectedInterval nominal [0,0,1,0] [auxiliaryZ]).run 20000000).1 with
+  | .error .equation => true
+  | _ => false)
+#guard ((protectedInterval nominal [0,1,0,0] [auxiliaryZ] true).run 20000000).1.toOption.isNone
+
+-- A relative phase match alone would accept the negated matrix.
+#guard (match ((protectedInterval nominal [0,1,0,0] [.phase [] .minusOne,auxiliaryZ]).run 20000000).1 with
+  | .error .equation => true
+  | _ => false)
+#guard ((protectedInterval nominal [0,1,0,0] [.protectedGate ⟨.source,0⟩ .z]).run 20000000).1.toOption.isNone
+#guard ((protectedInterval (nominal.replace "phase[1,1](flag)" "h(flag)") [0,1,0,0] []).run 20000000).1.toOption.isNone
+#guard ((protectedInterval (nominal.replace "phase[1,1](flag)" "h(h(flag))") [0,1,0,0] []).run 20000000).1.toOption.isSome
+
+private def nominalNamed := (nominal.replace "pub unitary fn route" "unitary fn mark(b:Q<Bit>)->Q<Bit>{phase[1,1](b)}\npub unitary fn route").replace
+  "phase[1,1](flag)" "mark(flag)"
+#guard ((protectedInterval nominalNamed [0,1,0,0] [auxiliaryZ]).run 20000000).1.toOption.isSome
+#guard ((protectedInterval (nominalNamed.replace "phase[1,1](b)" "b") [0,1,0,0] [auxiliaryZ]).run 20000000).1.toOption.isNone
 
 #print axioms QleisliKernel.SourceTypes.SourceComputedBindings.originalMember
 #print axioms QleisliKernel.SourceTypes.SourceRuntimeTrace.readComputedSource

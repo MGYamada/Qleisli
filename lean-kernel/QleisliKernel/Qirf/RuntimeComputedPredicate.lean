@@ -1,5 +1,5 @@
 import QleisliKernel.Qirf.SourceMeaningOrdinary
-import QleisliKernel.Qirf.RuntimeInterval
+import QleisliKernel.Qirf.RuntimePrimitiveSource
 
 /-! Reconstruct the physical predicate table from the original total
 ordinary body and the exact nominal carrier. The separate use-body and
@@ -50,5 +50,76 @@ def checkTable {sources caller} {event : SourceRuntimeContext.ComputedEvent sour
   exactWork (Exact.charge (8*(table.length+original.table.length+1)))
   if same : table = original.table then return ⟨same⟩
   else throw .equation
+
+
+open RuntimeStructuralAction (SourceState)
+open RuntimePrimitiveSource (PortAt readPort)
+
+def continued {sources caller} (event : SourceRuntimeContext.ComputedEvent sources caller)
+    (before : SourceState) (output : Semantics.Raw.Port) : SourceState :=
+  ⟨before.bindings.map (fun binding => if binding.owner == event.input then ⟨event.input,output⟩ else binding),
+    before.issued ++ [event.initial.auxiliary],event.initial.nextOrdinal⟩
+
+structure ProtectedInterval {sources caller dependencies program block start count}
+    (event : SourceRuntimeContext.ComputedEvent sources caller)
+    (interval : @RuntimeInterval.Checked dependencies program block start count) (before : SourceState) where
+  protectedScope : event.written.parts.logical = none
+  sourceOwner : event.returned.data = event.input ∧ event.nextOrdinal = before.nextOrdinal ∧
+    event.initial.auxiliary ∉ before.issued
+  frame : RuntimeOwnerMap.Checked (before.bindings.map (·.owner)) interval.before
+  sameFrame : frame.bindings = before.bindings
+  input : PortAt event.input before.bindings
+  output : Semantics.Raw.Port
+  auxiliary : Nat
+  table : List Nat
+  uses : List Semantics.Raw.Use
+  literal : (block.operations.drop start).take count =
+    [.pure (.computeUseUncompute input.port.token output.token [] [auxiliary] table uses)]
+  outputRead : PureInterval.ports interval.after [output.token] = some [output]
+  wires : output.wires = input.port.wires
+  source : Source event
+  exactTable : table = source.table
+  width : input.port.bits = source.layout.bits
+  spectators : PureInterval.spectators interval.before [input.port.token] =
+    PureInterval.spectators interval.after [output.token]
+  after : RuntimeOwnerMap.Checked ((continued event before output).bindings.map (·.owner)) interval.after
+  afterBindings : after.bindings = (continued event before output).bindings
+
+/-- Bind the original predicate and data owner to one actual protected Raw
+instruction. The original use-body equation remains a separate obligation. -/
+def readProtectedInterval {sources caller dependencies program block start count}
+    (event : SourceRuntimeContext.ComputedEvent sources caller)
+    (interval : @RuntimeInterval.Checked dependencies program block start count) (before : SourceState) :
+    WorkM (ProtectedInterval event interval before) := do
+  exactWork (Exact.charge (64*(Raw.OwnerFlow.fields (event.input :: event.initial.auxiliary ::
+    event.returned.data :: before.issued) + block.operations.length+before.bindings.length+1)))
+  if protectedScope : event.written.parts.logical = none then
+    if sourceOwner : event.returned.data = event.input ∧ event.nextOrdinal = before.nextOrdinal ∧
+        event.initial.auxiliary ∉ before.issued then
+      let frame ← RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) interval.before before.bindings
+      let input ← readPort event.input before.bindings
+      match literal : (block.operations.drop start).take count with
+      | [.pure (.computeUseUncompute inputToken outputToken [] [auxiliary] table uses)] =>
+        match returned : PureInterval.ports interval.after [outputToken] with
+        | some [output] =>
+          if ports : inputToken = input.port.token ∧ outputToken = output.token ∧ output.wires = input.port.wires then
+            let source ← readSource event
+            let tableRead ← checkTable source table
+            if width : input.port.bits = source.layout.bits then
+              if spectators : PureInterval.spectators interval.before [input.port.token] =
+                  PureInterval.spectators interval.after [output.token] then
+                let next := continued event before output
+                let after ← RuntimeOwnerMap.checkBindings (next.bindings.map (·.owner)) interval.after next.bindings
+                return ⟨protectedScope,sourceOwner,frame.val,frame.property,input,output,auxiliary,table,uses,
+                  by simpa only [ports.1,ports.2.1] using literal,
+                  by simpa only [ports.2.1] using returned,ports.2.2,source,tableRead.down,width,spectators,
+                  after.val,after.property⟩
+              else throw .request
+            else throw .request
+          else throw .request
+        | _ => throw .request
+      | _ => throw .request
+    else throw .request
+  else throw .request
 
 end QleisliKernel.Qirf.RuntimeComputedPredicate
