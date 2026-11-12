@@ -154,7 +154,7 @@ def CheckedStep {artifact root execution} (next : BlockRunner artifact root exec
 private def plannedOperationRequest {artifact} {preparation : RuntimeGraphOperation.Preparation artifact}
     {owner} {event : SourceTypes.SourceOperationApplication.Event artifact.sources owner}
     (original : RuntimeBodyQueries.Operation (.planned preparation) event) : RuntimeGraphOperation.Request artifact :=
-  ⟨_,_,event.operation.graph,SourceTypes.OperationAccess.applicable,original.child.bodies,original.graph.1,.unlocated⟩
+  ⟨_,_,event.operation.graph,SourceTypes.OperationAccess.applicable,original.child.bodies,original.graph.1,.application event⟩
 
 /-- Planned source execution uses the exact receipt from consuming this
 occurrence's checked graph, including its original preparation and location. -/
@@ -946,6 +946,10 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
       obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨_,f,_shape,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨operation,g,_operation,h⟩ := bind_success _ _ _ _ _ h
+      split at h
+      swap
+      · cases h
+      rename_i caller
       obtain ⟨performed,i,_performed,h⟩ := bind_success _ _ _ _ _ h
       rcases performed with ⟨expected,children,performedReceipts⟩
       obtain ⟨node,j,_node,returned⟩ := bind_success _ _ _ _ _ h
@@ -957,7 +961,7 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
         | fresh _ => trivial
         | planned preparation continuation =>
           rcases operation with ⟨child,⟨references,afterPlan,graph⟩,queryCursor⟩
-          exact planned_operation_result continuation _ ⟨rootOwner,rootName,owner,name,path,.unlocated⟩ _performed
+          exact planned_operation_result continuation _ ⟨rootOwner,rootName,owner,name,path,.application _ caller⟩ _performed
       have original := (show RuntimeInterval.Computed _ node from ⟨i,j,_node⟩)
       obtain ⟨aligned,⟨first,last⟩,authentic⟩ := operation_aligned execution source _ block position
         sourceCursor data operation ⟨f,g,_operation⟩ expected node history frame sameBindings owners
