@@ -35,14 +35,14 @@ theorem PureAction.append {dependencies : List Dependency}
 
 /-- The checked outputs enumerate every local port once in the written
 return order. Empty-wire ports still occur in this permutation. -/
-theorem fragment_return_ports {dependencies program block arity start count inputs outputs roles}
-    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles) :
+theorem literal_return_ports {dependencies program block start count inputs outputs effect}
+    (frame : @RuntimePureInterval.Literal dependencies program block start count inputs outputs effect) :
     frame.returned.Perm frame.pureBody.state.live ∧ Raw.stateValid frame.pureBody.state = true := by
   obtain ⟨work,left,verified⟩ := frame.pureRead
   have prepared := (Raw.Pure.verify_conditions _ _ _ work left verified).1
   obtain ⟨valid,coverage,_,_⟩ := Raw.prepare_safety _ _ _ prepared
   obtain ⟨_,_,_,_,outputsValid,_,_⟩ := Raw.prepare_conditions _ _ _ prepared
-  simp only [Raw.outputValid,Bool.and_eq_true,RuntimePureInterval.fragment] at outputsValid
+  simp only [Raw.outputValid,Bool.and_eq_true] at outputsValid
   have outputTokens := Raw.Ownership.unique_nodup outputs outputsValid.1.1.1.1
   obtain ⟨contained,returnedTokens⟩ := RuntimeNamedFrameAxes.selectedPorts _ _ _ frame.rawExit
   have liveTokens : (frame.pureBody.state.live.map (·.token)).Nodup :=
@@ -61,6 +61,11 @@ theorem fragment_return_ports {dependencies program block arity start count inpu
   have equal := RuntimeOwnerTransitionAction.map_unique Port.token frame.pureBody.state.live liveTokens
     found (contained returned) port member same
   exact equal ▸ returned
+
+theorem fragment_return_ports {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles) :
+    frame.returned.Perm frame.pureBody.state.live ∧ Raw.stateValid frame.pureBody.state = true :=
+  literal_return_ports frame.toLiteral
 
 private theorem checked_fold (dependencies : List Dependency)
     (recurse : Raw.Observation.State → List Semantics.Observation.Op → WorkM Raw.Observation.State)
@@ -117,8 +122,8 @@ private theorem checked_fold (dependencies : List Dependency)
 
 /-- Both folds come from the successful checked interval. The child trace
 stops before the synthetic finish permutation of the local fragment. -/
-theorem pure_interval_events {dependencies program block arity start count inputs outputs roles}
-    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+theorem literal_interval_events {dependencies program block start count inputs outputs effect}
+    (frame : @RuntimePureInterval.Literal dependencies program block start count inputs outputs effect)
     (spectators : List Port)
     (live : frame.interval.before.quantum.live.Perm (frame.selected++spectators)) :
     ∃ entry : Raw.State, ∃ parentEvents childEvents,
@@ -134,12 +139,12 @@ theorem pure_interval_events {dependencies program block arity start count input
       PureAction dependencies frame.interval.before.quantum.reference entry.reference
         frame.interval.after.quantum.reference frame.pureBody.state.reference spectators parentEvents childEvents := by
   obtain ⟨_,entry,entryRef,valid,childEvents,childFold,childTrace⟩ :=
-    RuntimeIntervalRawFold.pure_interval_traces frame
+    RuntimeIntervalRawFold.literal_interval_traces frame
   have nativeLive : frame.interval.before.quantum.live.Perm (entry.live++spectators) := by
     rw [show entry.live = frame.selected from congrArg Interface.live entryRef]
     exact live
   have partition := Partition.of_native _ _ _ frame.interval.history.1 valid nativeLive
-  obtain ⟨returned,exitValid⟩ := fragment_return_ports frame
+  obtain ⟨returned,exitValid⟩ := literal_return_ports frame
   have exitWires : WireOrder frame.returned ⊆ frame.pureBody.state.frame := by
     intro wire member
     obtain ⟨port,present,inside⟩ := List.mem_flatMap.mp member
@@ -163,23 +168,41 @@ theorem pure_interval_events {dependencies program block arity start count input
     rw [← same] at parentTrace after bounds action
     exact ⟨entry,parentEvents,childEvents,entryRef,parentTrace,childTrace,exitWires,after,bounds,action⟩
 
+theorem pure_interval_events {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+    (spectators : List Port)
+    (live : frame.interval.before.quantum.live.Perm (frame.selected++spectators)) :
+    ∃ entry : Raw.State, ∃ parentEvents childEvents,
+      entry.reference = ⟨frame.selected,WireOrder frame.selected⟩ ∧
+      RuntimeLocalEvents.trace frame.interval.before.quantum.reference frame.operations =
+        some ⟨frame.interval.after.quantum.reference,parentEvents,frame.interval.before.quantum.frame.length⟩ ∧
+      RuntimeLocalEvents.trace entry.reference frame.operations =
+        some ⟨frame.pureBody.state.reference,childEvents,entry.frame.length⟩ ∧
+      WireOrder frame.returned ⊆ frame.pureBody.state.frame ∧
+      Partition frame.interval.after.quantum.reference frame.pureBody.state.reference spectators ∧
+      RawFiniteRows.BoundedEvents frame.interval.before.quantum.frame.length parentEvents
+        frame.interval.after.quantum.frame.length ∧
+      PureAction dependencies frame.interval.before.quantum.reference entry.reference
+        frame.interval.after.quantum.reference frame.pureBody.state.reference spectators parentEvents childEvents :=
+  literal_interval_events frame.toLiteral spectators live
+
 #print axioms pure_interval_events
 
 /-- The full reference trace differs from the literal local event list
 only by the written return permutation. -/
-theorem fragment_finish {dependencies program block arity start count inputs outputs roles}
-    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+theorem fragment_finish {dependencies program block start count inputs outputs effect}
+    (frame : @RuntimePureInterval.Literal dependencies program block start count inputs outputs effect)
     {entry : Raw.State} {childEvents : List Event}
     (entryRef : entry.reference = ⟨frame.selected,WireOrder frame.selected⟩)
     (childTrace : RuntimeLocalEvents.trace entry.reference frame.operations =
       some ⟨frame.pureBody.state.reference,childEvents,entry.frame.length⟩) :
     let exit := frame.pureBody.state.reference
     let axes := Semantics.RawTrace.axes exit (WireOrder frame.returned)
-    Semantics.RawTrace.run (RuntimePureInterval.fragment frame.selected frame.operations outputs) =
+    Semantics.RawTrace.run (RuntimePureInterval.fragmentWithEffect frame.selected frame.operations outputs effect) =
       some ⟨exit,childEvents++[.reorder exit.frame.length axes],entry.frame.length⟩ ∧
       axes.Perm (List.range exit.frame.length) := by
   intro exit axes
-  obtain ⟨returned,valid⟩ := fragment_return_ports frame
+  obtain ⟨returned,valid⟩ := literal_return_ports frame
   have originalWires := (returned.flatMap_right Port.wires).trans (native_wires _ valid)
   constructor
   · have returnedTokens := (RuntimeNamedFrameAxes.selectedPorts _ _ _ frame.rawExit).2
@@ -201,11 +224,11 @@ theorem fragment_finish {dependencies program block arity start count inputs out
     have run := childTrace
     unfold RuntimeLocalEvents.trace at run
     rw [entryRef,entryBits] at run
-    unfold Semantics.RawTrace.run RuntimePureInterval.fragment
+    unfold Semantics.RawTrace.run RuntimePureInterval.fragmentWithEffect
     change (do
       let result ← frame.operations.foldlM Semantics.RawTrace.advance
         ⟨⟨frame.selected,WireOrder frame.selected⟩,[],(WireOrder frame.selected).length⟩
-      pure (Semantics.RawTrace.finish (RuntimePureInterval.fragment frame.selected frame.operations outputs) result)) = _
+      pure (Semantics.RawTrace.finish (RuntimePureInterval.fragmentWithEffect frame.selected frame.operations outputs effect) result)) = _
     rw [run]
     change some (⟨exit,childEvents++[.reorder exit.frame.length (Semantics.RawTrace.axes exit (outputs.flatMap lookup))],
       (WireOrder frame.selected).length⟩ : Semantics.RawTrace.Prepared) = _
@@ -217,14 +240,14 @@ theorem fragment_finish {dependencies program block arity start count inputs out
 
 /-- Evaluate the complete local fragment at the coordinate in its written
 return order. Its final permutation selects the original literal row. -/
-theorem fragment_prefix_action {dependencies program block arity start count inputs outputs roles}
-    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+theorem fragment_prefix_action {dependencies program block start count inputs outputs effect}
+    (frame : @RuntimePureInterval.Literal dependencies program block start count inputs outputs effect)
     {entry : Raw.State} {childEvents : List Event}
     (entryRef : entry.reference = ⟨frame.selected,WireOrder frame.selected⟩)
     (childTrace : RuntimeLocalEvents.trace entry.reference frame.operations =
       some ⟨frame.pureBody.state.reference,childEvents,entry.frame.length⟩)
     (operator : Nat → ℂ) (row : Nat) (bounded : row < 2^frame.pureBody.state.frame.length) :
-    ∃ trace, Semantics.RawTrace.run (RuntimePureInterval.fragment frame.selected frame.operations outputs) = some trace ∧
+    ∃ trace, Semantics.RawTrace.run (RuntimePureInterval.fragmentWithEffect frame.selected frame.operations outputs effect) = some trace ∧
       events dependencies trace.events operator
         (project frame.pureBody.state.reference (WireOrder frame.returned) row) =
         events dependencies childEvents operator row := by

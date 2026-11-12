@@ -10,8 +10,7 @@ struct Instance<'a> {
     function: String,
     bases: Vec<(String, Vec<crate::interchange::carrier::Atom>)>,
     naturals: Vec<(String, u32)>,
-    operations: Vec<(String, &'a Operation)>,
-    meanings: Vec<Key>,
+    operations: Vec<(String, &'a Operation, Option<Key>)>,
 }
 
 enum Finish<'a> {
@@ -126,7 +125,6 @@ impl Compiler<'_> {
             bases: Vec::new(),
             naturals: Vec::new(),
             operations: Vec::new(),
-            meanings: Vec::new(),
         };
         for (ordinal, parameter) in declaration.static_params.iter().enumerate() {
             let formal = &self.source.interfaces[&definition].statics[ordinal];
@@ -195,13 +193,11 @@ impl Compiler<'_> {
                     result.naturals.push((parameter.name.text.clone(), value));
                 }
                 StaticParamKind::Operation { .. } => {
-                    if let StaticKind::Operation {
-                        meaning: Some(meaning),
-                        ..
-                    } = self.source.interfaces[&definition].statics[ordinal].kind
-                    {
-                        result.meanings.push(meaning);
-                    }
+                    let StaticKind::Operation { meaning, .. } =
+                        self.source.interfaces[&definition].statics[ordinal].kind
+                    else {
+                        unreachable!("source operation formal retains its checked category")
+                    };
                     let operation = instance.operations.get(&key).ok_or_else(|| {
                         self.error(
                             module,
@@ -212,7 +208,7 @@ impl Compiler<'_> {
                     })?;
                     result
                         .operations
-                        .push((parameter.name.text.clone(), operation));
+                        .push((parameter.name.text.clone(), operation, meaning));
                 }
             }
         }
@@ -253,7 +249,15 @@ impl Compiler<'_> {
         self.source_description_instance(key, Some(&current), &table, module, span)?
             .operations
             .into_iter()
-            .map(|(name, actual)| Ok((name, self.qmatch_operation_subject(actual, module, span)?)))
+            .map(|(name, actual, meaning)| {
+                let mut subject = self.qmatch_operation_subject(actual, module, span)?;
+                if let Some(meaning) = meaning {
+                    subject
+                        .meaning_references
+                        .push(self.original_meaning_references(meaning, module, span)?);
+                }
+                Ok((name, subject))
+            })
             .collect()
     }
 
@@ -350,7 +354,7 @@ impl Compiler<'_> {
                         let children = shape
                             .operations
                             .iter()
-                            .map(|(_, operation)| *operation)
+                            .map(|(_, operation, _)| *operation)
                             .collect::<Vec<_>>();
                         pending.push(Task::Leave(
                             Finish::Formal(shape, formal.ordinal as u32),
@@ -382,7 +386,7 @@ impl Compiler<'_> {
                             let children = shape
                                 .operations
                                 .iter()
-                                .map(|(_, operation)| *operation)
+                                .map(|(_, operation, _)| *operation)
                                 .collect::<Vec<_>>();
                             pending.push(Task::Leave(
                                 Finish::Provider(shape, operation, origin),
@@ -423,7 +427,11 @@ impl Compiler<'_> {
                 Task::Leave(finish, count) => {
                     match &finish {
                         Finish::Provider(shape, ..) | Finish::Formal(shape, _) => {
-                            for &meaning in &shape.meanings {
+                            for meaning in shape
+                                .operations
+                                .iter()
+                                .filter_map(|(_, _, meaning)| *meaning)
+                            {
                                 meaning_references
                                     .push(self.original_meaning_references(meaning, module, span)?);
                             }
@@ -484,7 +492,7 @@ impl Compiler<'_> {
                                 operations: shape
                                     .operations
                                     .into_iter()
-                                    .map(|(name, _)| name)
+                                    .map(|(name, _, _)| name)
                                     .zip(children)
                                     .collect(),
                             }
@@ -497,7 +505,7 @@ impl Compiler<'_> {
                             operations: shape
                                 .operations
                                 .into_iter()
-                                .map(|(name, _)| name)
+                                .map(|(name, _, _)| name)
                                 .zip(children)
                                 .collect(),
                             ordinal,

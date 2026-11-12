@@ -722,7 +722,7 @@ private def originalMarkerSummary {artifact catalogue context description graph 
     {root requested : _} → (checked : RuntimeOperationTree.Checked prepared root requested) →
     RuntimeSourceOperationMarkers.OriginChecked origin prepared checked → Nat × List (Nat × Nat × String) := by
   cases origin with
-  | unlocated | application => exact fun _ {_ _} _ _ => (0,[])
+  | unlocated | application | supplying => exact fun _ {_ _} _ _ => (0,[])
   | arm => exact fun _ {_ _} _ association => (1,markerRows association)
 
 private def rootedInRoute {sources rootOwner rootName owner name} :
@@ -741,7 +741,7 @@ private def directChooseOffset {sources rootOwner rootName owner name} :
 
 private def originalArmSite {sources owner name context description graph origin} :
     @RuntimeGraphOperation.Site sources owner name context description graph origin → Option (Nat × Nat × Nat)
-  | .unlocated | .application .. => none
+  | .unlocated | .application .. | .supplying .. => none
   | .arm table index => some (index.val,(table.arms[index]).label.ordinal,table.site.parsed.keyword.span.startByte)
 
 private abbrev SupplyHopSummary := String × String × Nat × String × Nat × Nat × Option Nat
@@ -885,6 +885,7 @@ private def linkedArmSummary {artifact catalogue queue context description graph
   cases site with
   | unlocated => exact fun impossible => nomatch impossible
   | arm | application => exact linkedForStatus source index invoked (RuntimeLinkedSubject.assessment invoked)
+  | supplying => exact fun evidence => linkedForStatus source index invoked (RuntimeLinkedSubject.assessment invoked) evidence.1
 
 private def summarizeLink {artifact owner name arguments request prepared root runtime}
     (body : @RuntimeBodyOperations.AtRoot artifact owner name arguments request prepared root runtime)
@@ -1035,7 +1036,8 @@ private def checkForwardedCommonBody (interior : Bool := false) (dormant : Bool 
   let [some ((hops,inside,_),_)] := checked.writtenLinks.map (summarizeLink checked.checked) | throw .invalid
   guard (body.source.pending.entries.countP (·.unconsumed) == (if dormant then 2 else 1)) .invalid
   let [⟨index,witness⟩] := checked.coverage.consumed | throw .invalid
-  guard (witness.link.binding.instanceBinding.demand.source.original.origin.offset == 325) .invalid
+  let some written := witness.writtenLink | throw .invalid
+  guard (written.binding.instanceBinding.demand.source.original.origin.offset == 325) .invalid
   if dormant then
     let [other] := checked.coverage.residual | throw .invalid
     let .demand _ remaining := body.source.pending.entries[other].subject | throw .invalid
@@ -1076,8 +1078,9 @@ private def checkFourLevelCommonBody : WorkM Unit := do
   let checked ← RuntimeBodyOperations.read body order request.runtime
   guard (body.source.pending.entries.countP (·.unconsumed) == 1) .invalid
   let [⟨_,witness⟩] := checked.coverage.consumed | throw .invalid
-  guard (checked.coverage.residual.isEmpty && witness.link.binding.located.record == 8 &&
-    witness.link.binding.instanceBinding.invocation.depth == 3) .invalid
+  let some written := witness.writtenLink | throw .invalid
+  guard (checked.coverage.residual.isEmpty && written.binding.located.record == 8 &&
+    written.binding.instanceBinding.invocation.depth == 3) .invalid
   let bindings := checked.writtenLinks.map fun link =>
     (link.binding.instanceBinding.invocation.depth,link.binding.located.record,
       link.binding.instanceBinding.demand.source.original.origin.offset)
@@ -2014,7 +2017,7 @@ private def crossedMeaning {artifact catalogue context description graph origin 
     (source : RuntimeSourceOperationMarkers.OriginChecked origin prepared checked) (index : Nat) :
     WorkM Unit := by
   cases site with
-  | unlocated | application => exact throw Finite.Error.invalid
+  | unlocated | application | supplying => exact throw Finite.Error.invalid
   | arm => exact do
     let some entry := source.entries[index]? | throw Finite.Error.invalid
     let outerMarker := source.markers[entry.index]
@@ -2046,17 +2049,21 @@ private def checkNestedOriginals {artifact owner name arguments request prepared
   guard ([inner.val,outer.val] == expected) .invalid
   let observed := report.consumed.map fun item => item.1.val
   guard (observed == expected && report.residual.isEmpty) .invalid
-  let [first,second] := report.candidates | throw .invalid
-  guard (nestedOriginTag first.origin == 1 && first.queueIndex == outer &&
-    nestedOriginTag second.origin == 2 && second.queueIndex == inner &&
-    first.link.queueIndex == outer && second.link.queueIndex == outer) .invalid
-  let receipt := body.checked.receipts[first.link.receiptIndex]
+  let [.written supplying,.written enclosing] := report.candidates | throw .invalid
+  guard (nestedOriginTag supplying.origin == 0 && supplying.queueIndex == inner &&
+    nestedOriginTag enclosing.origin == 1 && enclosing.queueIndex == outer &&
+    supplying.link.queueIndex == inner && enclosing.link.queueIndex == outer) .invalid
+  let supply := body.checked.receipts[supplying.link.receiptIndex]
+  guard supply.request.origin.isSupplying .invalid
+  let receipt := body.checked.receipts[enclosing.link.receiptIndex]
   crossedMeaning prepared.source.pending inner receipt.location.site receipt.prepared receipt.evidence.checked
-    receipt.evidence.source first.link.markerIndex
+    receipt.evidence.source enclosing.link.markerIndex
   let status := fun (candidates : List (RuntimeArmDutyCoverage.Candidate body.toTraversed)) =>
     (RuntimeArmDutyCoverage.covered candidates inner,RuntimeArmDutyCoverage.covered candidates outer)
-  guard ([status [],status [first],status [second],status [first,second],
-      status [first,second,second],status [first,first,second]] ==
+  let supplying := RuntimeArmDutyCoverage.Candidate.written supplying
+  let enclosing := RuntimeArmDutyCoverage.Candidate.written enclosing
+  guard ([status [],status [enclosing],status [supplying],status [enclosing,supplying],
+      status [enclosing,supplying,supplying],status [enclosing,enclosing,supplying]] ==
     [(false,false),(false,true),(true,false),(true,true),(false,true),(true,false)]) .invalid
 
 private abbrev AppliedCoverage := List Nat × List Nat × List (Nat × Nat)
@@ -2152,7 +2159,7 @@ private def slottedControls : IO Unit := do
     let (observed,left) := (readAppliedFixture source "route" 442 fault true).run WorkProfile.qmatch.limit
     let result := observed.map Prod.fst
     let expected : Except Finite.Error AppliedCoverage :=
-      if fault == .nested then .ok ([8,16],[],[(16,363)]) else .error .equation
+      if fault == .nested then .ok ([8,16],[],[(8,454),(16,363)]) else .error .equation
     let matched := match result,expected with
       | .ok actual,.ok wanted => actual == wanted
       | .error actual,.error wanted => actual == wanted
@@ -2177,7 +2184,7 @@ private def appliedControls : IO Unit := do
     let observed := ((readAppliedFixture (writtenSource fault) "route" offset fault).run WorkProfile.qmatch.limit).1.map Prod.fst
     let expected : Except Finite.Error (List Nat × List Nat × List (Nat × Nat)) := match fault with
       | .correct => .ok ([11],[],[(11,345)])
-      | .nested => .ok ([6,12],[],[(12,317)])
+      | .nested => .ok ([6,12],[],[(6,403),(12,317)])
       | .staleProviderOffset => .error .request
       | .wrongInnerMeaning | .wrongOuterMeaning => .error .equation
     let matched := match observed,expected with

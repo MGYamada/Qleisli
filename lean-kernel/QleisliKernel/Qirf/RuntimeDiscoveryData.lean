@@ -89,10 +89,10 @@ def OperationMode.takeReferences {artifact} (mode : OperationMode artifact) (exp
     return (group,remaining)
 
 def OperationMode.checkSignature {artifact} (mode : OperationMode artifact) {owner name}
-    (signature : SourceRuntimeContext.Signature artifact.sources owner name) : WorkM Unit :=
+    (signature : SourceRuntimeContext.Signature artifact.sources owner name) (hasOriginalCaller : Bool) : WorkM Unit :=
   match mode with
   | .strict => guard (!signature.operations.hasMeaningRequirements) .request
-  | .extended _ => guard signature.operations.rootRequirements.isEmpty .request
+  | .extended _ => guard (hasOriginalCaller || signature.operations.rootRequirements.isEmpty) .request
 
 
 end QleisliKernel.Qirf.RuntimeBodyDiscovery

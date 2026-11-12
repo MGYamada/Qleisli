@@ -37,7 +37,8 @@ private theorem pure_guard_shape (artifact : Artifact) (root : Validity.Root)
     (SourceRuntimeValues.ordinary value).all fun (basis,_) =>
       Semantics.FiniteCarrier.dimension basis == some 1
   let guardPure : WorkM Unit := do
-    guard (source.effect == .unitary && singleton source.value &&
+    guard (program.effect != .observe && SourceTypes.SourceEffect.permits (some program.effect) source.effect &&
+      singleton source.value &&
       source.parameterValues.all singleton &&
       program.classicalInputs.isEmpty && program.classicalOutputs.isEmpty) .request
     let _ ← lift (readOption (Sector.pureOps block.operations))

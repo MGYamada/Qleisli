@@ -83,29 +83,31 @@ def openBody {artifact : Artifact} (mode : Mode artifact) {owner name}
     return ⟨actuals,(),(),Queues.ofContext request⟩
   | .planned _ =>
     match data with
-    | .mk _ _ _ actuals _ _ prefixes _ events _ => return ⟨actuals,⟨_,_,prefixes⟩,⟨_,_,events⟩,()⟩
+    | .mk _ _ actuals _ _ prefixes _ events _ =>
+      return ⟨actuals.map Subtype.val,⟨_,_,prefixes⟩,⟨_,_,events⟩,()⟩
 
 /-- The full original formal list, including unused and zero-power actuals,
 drives prefix consumption. Prepared evidence is never found by graph search. -/
 def foldPrefixes {artifact : Artifact} (mode : Mode artifact) {owner name}
     (signature : SourceRuntimeContext.Signature artifact.sources owner name) {State : Type}
     (step : (actual : Sigma (StaticOperation.Actual artifact.sources signature.context)) →
-      mode.GraphData actual.2.graph (RuntimeGraphOperation.required signature actual.1.1) → State → WorkM State)
+      (origin : RuntimeGraphOperation.Origin actual.2.graph) →
+      mode.GraphData actual.2.graph (RuntimeGraphOperation.required signature actual.1.1) origin → State → WorkM State)
     (actuals : List (Sigma (StaticOperation.Actual artifact.sources signature.context)))
     (data : mode.PrefixData signature actuals) (initial : State) : WorkM State :=
   match mode with
-  | .fresh => actuals.foldlM (fun state actual => step actual () state) initial
+  | .fresh => actuals.foldlM (fun state actual => step actual .unlocated () state) initial
   | .planned preparation =>
     let visit : Nat → (remaining : List (Sigma (StaticOperation.Actual artifact.sources signature.context))) →
         {before after : Queues} → RuntimeBodyPlan.Prefixes preparation signature remaining before after →
         State → WorkM State :=
       Nat.rec (fun remaining {_ _} plans state => match remaining,plans with
         | [],.nil _ => pure state
-        | _ :: _,.cons _ _ _ => throw .limit)
+        | _ :: _,.cons _ _ _ _ => throw .limit)
         (fun _ next remaining {_ _} plans state => match remaining,plans with
           | [],.nil _ => pure state
-          | actual :: rest,.cons cut graph tail => do
-            let checked ← step actual ⟨cut.implementations,cut.references,graph⟩ state
+          | actual :: rest,.cons cut origin graph tail => do
+            let checked ← step actual origin ⟨cut.implementations,cut.references,graph⟩ state
             next rest tail checked)
     visit actuals.length actuals data.2.2 initial
 

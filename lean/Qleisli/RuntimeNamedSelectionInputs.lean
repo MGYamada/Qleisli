@@ -62,6 +62,7 @@ theorem child_source (artifact : Artifact) (root : Validity.Root)
     | basis => trivial
     | named _ _ _ _ _ _ => trivial
     | operation _ _ _ _ _ _ _ _ _ _ => trivial
+    | rectangularOperation _ => trivial
     | transform => trivial
     | selection frame selectorBits targetBits retained restricted inputCode outputCode labels expected logical equations codes layouts =>
       constructor

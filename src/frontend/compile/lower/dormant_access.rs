@@ -318,7 +318,8 @@ fn check_action(
                     StaticCategory::Natural,
                     [false; 3],
                     &bindings,
-                    &module
+                    &module,
+                    false
                 )?,
                 instances::StaticValue::Deferred
             );

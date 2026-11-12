@@ -168,44 +168,54 @@ impl Compiler<'_> {
         span: Span,
         key: Key,
         meaning: Option<Key>,
+        inside_formal_meaning: bool,
         effect: Effect,
         basis: Ty,
         codomain: Ty,
         program: &AcceptedProgram,
     ) -> Result<Operation, CompileError> {
-        let Some(meaning) = meaning else {
+        if meaning.is_none() && !inside_formal_meaning {
             return Err(self.error(
                 module,
                 span,
                 ErrorCode::Unsupported,
                 "typed provider requires an original checked Meaning occurrence",
             ));
-        };
-        if effect != Effect::Unitary || basis != codomain {
+        }
+        if effect > Effect::Isometry {
             return Err(self.error(
                 module,
                 span,
-                ErrorCode::Unsupported,
-                "typed Meaning application needs an original endomorphism",
+                ErrorCode::Effect,
+                "typed Meaning provider requires an available pure effect",
             ));
         }
-        let steps = circuit::flatten(self, module, span, program)?;
-        self.charge(module, span, total_size(steps.iter().map(circuit::size)))?;
-        let matrix = self.carrier_circuit_action(module, span, &basis, steps.clone())?;
-        let source_origin = self.provider_origin(key, Some(meaning), program, module, span)?;
+        let invertible = effect == Effect::Unitary && basis == codomain;
+        let (steps, matrix) = if invertible {
+            let steps = circuit::flatten(self, module, span, program)?;
+            self.charge(module, span, total_size(steps.iter().map(circuit::size)))?;
+            let matrix = self.carrier_circuit_action(module, span, &basis, steps.clone())?;
+            (Some(steps), matrix)
+        } else {
+            let matrix = self.carrier_program_action(module, span, &basis, &codomain, program)?;
+            (None, matrix)
+        };
+        let source_origin = self.provider_origin(key, meaning, program, module, span)?;
         let operation = Operation {
             basis,
             codomain,
             effect,
             meaning: Some(matrix),
-            access: [true; 3],
+            access: [true, invertible, invertible],
             node: Arc::new(Node::Carrier(steps)),
             source_origin: Some(source_origin),
             source_formal: None,
             depth: 1,
             nodes: 1,
         };
-        self.validate_operation_meaning(&operation, meaning, module, span)?;
+        if let Some(meaning) = meaning {
+            self.validate_operation_meaning(&operation, meaning, module, span)?;
+        }
         Ok(operation)
     }
 }

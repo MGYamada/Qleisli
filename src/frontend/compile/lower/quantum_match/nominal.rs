@@ -26,6 +26,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     primitive_prelude: bool,
     selections: Vec<Selection>,
     calls: Vec<(Position, Arc<ContextSubject>)>,
+    retained_static_calls: Vec<(String, usize, usize)>,
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
     contains_meaning_applications: bool,
@@ -229,9 +230,13 @@ impl Frame {
                 )
             })
         });
+        let supplies = lower.compiler.qmatch_supplies(key, &name.0, span)?;
+        let contains_meaning_applications = supplies
+            .iter()
+            .any(|(_, operation)| !operation.meaning_references.is_empty());
         Ok(Some(Self {
             key,
-            supplies: lower.compiler.qmatch_supplies(key, &name.0, span)?,
+            supplies,
             inputs,
             classical_inputs,
             start: lower.raw.operations.len(),
@@ -241,9 +246,10 @@ impl Frame {
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
+            retained_static_calls: Vec::new(),
             branches: Vec::new(),
             contains_selections: false,
-            contains_meaning_applications: false,
+            contains_meaning_applications,
             source_gate,
             needs_qmatch_v5: false,
             prefer_runtime_root: false,
@@ -295,6 +301,7 @@ impl Frame {
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
+            retained_static_calls: Vec::new(),
             branches: Vec::new(),
             contains_selections: false,
             contains_meaning_applications: false,
@@ -346,6 +353,7 @@ impl Frame {
             calls: self.calls,
             branches: self.branches,
             operation: None,
+            retained_static_calls: self.retained_static_calls,
             contains_selections: self.contains_selections,
             contains_meaning_applications: self.contains_meaning_applications,
             requires_source_gate: self.source_gate,
@@ -392,6 +400,7 @@ impl Frame {
                 calls: self.calls,
                 branches: self.branches,
                 operation: None,
+                retained_static_calls: self.retained_static_calls,
                 contains_selections: self.contains_selections,
                 contains_meaning_applications: self.contains_meaning_applications,
                 requires_source_gate: self.source_gate,
@@ -543,6 +552,7 @@ impl Frame {
             calls: self.calls,
             branches: self.branches,
             operation: None,
+            retained_static_calls: self.retained_static_calls,
             contains_selections: self.contains_selections,
             contains_meaning_applications: self.contains_meaning_applications,
             requires_source_gate: self.source_gate,
@@ -642,6 +652,7 @@ pub(in crate::frontend::compile::lower) fn record_named(
     callee: &Ident,
     start: usize,
     body: Option<Arc<ContextSubject>>,
+    static_record: Option<usize>,
 ) -> Result<(), CompileError> {
     let Some(frame) = lower.nominal_qmatch.as_ref() else {
         return Ok(());
@@ -686,7 +697,11 @@ pub(in crate::frontend::compile::lower) fn record_named(
         relative,
         count,
     )?;
-    lower.compiler.charge(module, callee.span, 8)?;
+    lower.compiler.charge(
+        module,
+        callee.span,
+        8 + static_record.map_or(0, |_| module.len() + 3),
+    )?;
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.record_event_outside_static_profile();
     frame.positions.push(position.clone());
@@ -694,6 +709,44 @@ pub(in crate::frontend::compile::lower) fn record_named(
     frame.contains_meaning_applications |= body.contains_meaning_applications;
     frame.include_qmatch_profile(&body);
     frame.calls.push((position, body));
+    if let Some(record) = static_record {
+        frame
+            .retained_static_calls
+            .push((module.to_owned(), callee.span.start, record));
+    }
+    Ok(())
+}
+
+pub(in crate::frontend::compile::lower) fn retain_checked_calls(
+    compiler: &mut Compiler<'_>,
+    module: &str,
+    span: Span,
+    context: &ContextSubject,
+) -> Result<(), CompileError> {
+    let mut pending = vec![context];
+    while let Some(context) = pending.pop() {
+        compiler.charge(
+            module,
+            span,
+            context.calls.len() + 2 * context.branches.len() + 1,
+        )?;
+        for (owner, offset, record) in &context.retained_static_calls {
+            compiler.charge(
+                module,
+                span,
+                (owner.len() + 3).saturating_mul(compiler.checked_static_calls.len() + 1),
+            )?;
+            compiler
+                .checked_static_calls
+                .entry((owner.clone(), *offset))
+                .or_default()
+                .insert(*record);
+        }
+        pending.extend(context.calls.iter().map(|(_, child)| child.as_ref()));
+        for (_, then_body, else_body) in &context.branches {
+            pending.extend([then_body.as_ref(), else_body.as_ref()]);
+        }
+    }
     Ok(())
 }
 

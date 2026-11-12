@@ -15,29 +15,38 @@ inductive Scope (artifact : Artifact) (owner name : String) where
       (events : List (SourceRuntimeContext.Event artifact.sources owner))
       (staticRows : List SourceRows.Row) (prefixRequired : Bool)
   | original (subject : SourceRuntimeScope.Subject artifact.sources owner name)
+      (incoming : Option (RuntimeGraphOperation.Incoming artifact.sources subject.signature) := none)
 
 def Scope.signature {artifact owner name} : Scope artifact owner name → SourceRuntimeContext.Signature artifact.sources owner name
   | .supplied signature _ _ _ => signature
-  | .original source => source.signature
+  | .original source _ => source.signature
 
 def Scope.events {artifact owner name} : Scope artifact owner name → List (SourceRuntimeContext.Event artifact.sources owner)
   | .supplied _ events _ _ => events
-  | .original source => source.events
+  | .original source _ => source.events
 
 def Scope.staticRows {artifact owner name} : Scope artifact owner name → List SourceRows.Row
   | .supplied _ _ rows _ => rows
-  | .original (.whole body) => body.checked.summary.staticRows
-  | .original (.arm _ _ bodies _ choice) => if choice then bodies.thenResult.staticRows else bodies.elseResult.staticRows
+  | .original (.whole body) _ => body.checked.summary.staticRows
+  | .original (.arm _ _ bodies _ choice) _ => if choice then bodies.thenResult.staticRows else bodies.elseResult.staticRows
 
 def Scope.prefixRequired {artifact owner name} : Scope artifact owner name → Bool
   | .supplied _ _ _ required => required
-  | .original source => source.prefixRequired
+  | .original source _ => source.prefixRequired
+
+def Scope.incoming {artifact owner name} (scope : Scope artifact owner name) :
+    Option (RuntimeGraphOperation.Incoming artifact.sources scope.signature) :=
+  match scope with
+  | .supplied .. => none
+  | .original _ incoming => incoming
 
 def Scope.named {artifact owner name} (scope : Scope artifact owner name) {caller callee signature}
-    (body : @SourceRuntimeTrace.Body artifact.sources caller callee signature) : Scope artifact caller callee :=
+    (body : @SourceRuntimeTrace.Body artifact.sources caller callee signature)
+    (incoming : Option (RuntimeGraphOperation.Incoming artifact.sources body.checked.signature) := none) :
+    Scope artifact caller callee :=
   match scope with
   | .supplied .. => .supplied body.checked.signature body.checked.events body.checked.summary.staticRows true
-  | .original _ => .original (.whole body)
+  | .original _ _ => .original (.whole body) incoming
 
 private def emptyPreparation (artifact : Artifact) : RuntimeGraphOperation.Preparation artifact where
   Evidence _ := Empty
@@ -53,7 +62,7 @@ def Scope.BodyData {artifact owner name} (scope : Scope artifact owner name)
     (preparation : RuntimeGraphOperation.Preparation artifact) (request : Context) : Type :=
   match scope with
   | .supplied .. => Unit
-  | .original source => Option (RuntimeBodyPlan.Body preparation source request)
+  | .original source _ => Option (RuntimeBodyPlan.Body preparation source request)
 
 def Scope.EventData {artifact owner name} (scope : Scope artifact owner name)
     (preparation : RuntimeGraphOperation.Preparation artifact)
@@ -61,7 +70,7 @@ def Scope.EventData {artifact owner name} (scope : Scope artifact owner name)
     (before after : Queues) : Type :=
   match scope with
   | .supplied .. => Unit
-  | .original source => Option (RuntimeBodyPlan.Event preparation source event position before after)
+  | .original source _ => Option (RuntimeBodyPlan.Event preparation source event position before after)
 
 def Scope.EventsData {artifact owner name} (scope : Scope artifact owner name)
     (preparation : RuntimeGraphOperation.Preparation artifact)
@@ -69,14 +78,14 @@ def Scope.EventsData {artifact owner name} (scope : Scope artifact owner name)
     (before after : Queues) : Type :=
   match scope with
   | .supplied .. => Unit
-  | .original source => Option (RuntimeBodyPlan.Events preparation source pairs before after)
+  | .original source _ => Option (RuntimeBodyPlan.Events preparation source pairs before after)
 
 def Scope.emptyEvents {artifact owner name} (scope : Scope artifact owner name)
     (preparation : RuntimeGraphOperation.Preparation artifact) (queues : Queues) :
     scope.EventsData preparation [] queues queues :=
   match scope with
   | .supplied .. => ()
-  | .original _ => some (.nil queues)
+  | .original _ _ => some (.nil queues)
 
 def Scope.consEvents {artifact owner name} (scope : Scope artifact owner name)
     (preparation : RuntimeGraphOperation.Preparation artifact) {event position rest before middle after}
@@ -85,7 +94,7 @@ def Scope.consEvents {artifact owner name} (scope : Scope artifact owner name)
     scope.EventsData preparation ((event,position) :: rest) before after :=
   match scope with
   | .supplied .. => ()
-  | .original _ => match head,tail with | some head,some tail => some (.cons head tail) | _,_ => none
+  | .original _ _ => match head,tail with | some head,some tail => some (.cons head tail) | _,_ => none
 
 structure EventResult {artifact owner name} (mode : OperationMode artifact) (scope : Scope artifact owner name)
     (event : SourceRuntimeContext.Event artifact.sources owner) (position : SourceSequence.Position) (before : Queues) where
@@ -122,7 +131,7 @@ def Scope.BranchData {artifact owner name} (scope : Scope artifact owner name)
     (event : SourceRuntimeContext.BranchEvent artifact.sources owner) : Type :=
   match scope with
   | .supplied .. => BranchOriginal event
-  | .original _ => BranchPlanned (name := name) event
+  | .original _ _ => BranchPlanned (name := name) event
 
 def Scope.readBranch {artifact owner name} (scope : Scope artifact owner name)
     (event : SourceRuntimeContext.BranchEvent artifact.sources owner) : WorkM (scope.BranchData event) := do
@@ -130,7 +139,7 @@ def Scope.readBranch {artifact owner name} (scope : Scope artifact owner name)
   | .supplied .. =>
     let bodies ← NaturalAffine.witness (SourceRuntimeTrace.readBranchSource event)
     return ⟨bodies.val,by with_reducible exact bodies.property⟩
-  | .original _ =>
+  | .original _ _ =>
     if callerName : event.callerName = name then
       let source ← NaturalAffine.witness (RuntimeBranchAction.readSource event)
       return ⟨callerName,source.val,by with_reducible exact source.property⟩
@@ -140,12 +149,12 @@ def Scope.branchLeft {artifact owner name} (scope : Scope artifact owner name)
     {event : SourceRuntimeContext.BranchEvent artifact.sources owner} (read : scope.BranchData event) : Scope artifact owner name :=
   match scope with
   | .supplied signature _ _ _ => .supplied signature read.bodies.thenResult.events read.bodies.thenResult.staticRows false
-  | .original _ => .original (.arm event read.callerName read.source.bodies read.source.original true)
+  | .original _ _ => .original (.arm event read.callerName read.source.bodies read.source.original true)
 
 def Scope.branchRight {artifact owner name} (scope : Scope artifact owner name)
     {event : SourceRuntimeContext.BranchEvent artifact.sources owner} (read : scope.BranchData event) : Scope artifact owner name :=
   match scope with
   | .supplied signature _ _ _ => .supplied signature read.bodies.elseResult.events read.bodies.elseResult.staticRows false
-  | .original _ => .original (.arm event read.callerName read.source.bodies read.source.original false)
+  | .original _ _ => .original (.arm event read.callerName read.source.bodies read.source.original false)
 
 end QleisliKernel.Qirf.RuntimeBodyDiscovery

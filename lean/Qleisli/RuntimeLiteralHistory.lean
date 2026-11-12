@@ -50,6 +50,7 @@ private theorem pure_node_operations {dependencies program block}
   | basis _ _ _ action => exact ⟨[_],action.literal⟩
   | named _ frame _ _ _ _ => exact ⟨_,frame.literal⟩
   | operation frame _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩
+  | rectangularOperation checked => exact ⟨_,checked.frame.literal⟩
   | transform _ _ _ _ _ owners _ _ => exact ⟨_,owners.literal.literal⟩
   | selection frame _ _ _ _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩
 

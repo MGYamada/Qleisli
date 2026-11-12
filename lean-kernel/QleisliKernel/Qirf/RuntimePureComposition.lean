@@ -47,6 +47,10 @@ def region {dependencies program block} : Node dependencies program block → Lo
       SourceRuntimeValues.valueOwners event.value,frame.interval,frame.selected,boundary.returned,
       frame.operations,frame.literal,boundary.spectators⟩
   | .operation frame .. => pureLocal frame
+  | .rectangularOperation (start := start) (count := count) checked =>
+    ⟨start,count,[checked.entry.port.token],[checked.returned.token],
+      [checked.source.input],[checked.source.output],checked.frame.interval,checked.frame.selected,
+      checked.frame.returned,checked.frame.operations,checked.frame.literal,checked.frame.spectators⟩
   | .transform (event := event) _ _ _ _ _ owners _ _ =>
     { (pureLocal owners.literal) with outputRoles := RuntimeTransformOwners.outputs event }
   | .selection frame .. => pureLocal frame

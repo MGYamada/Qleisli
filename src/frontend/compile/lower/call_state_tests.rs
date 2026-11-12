@@ -60,6 +60,7 @@ fn compiler_from_prepared<'p>(
         force_typed_root: false,
         selected_entry: None,
         selected_calls: 0,
+        checked_static_calls: BTreeMap::new(),
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
         nominal_basis_roots: BTreeSet::new(),

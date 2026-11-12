@@ -26,6 +26,7 @@ def nodeSpan {dependencies program block} : Node dependencies program block → 
   | .basis interval .. => ⟨_,_,interval⟩
   | .named _ frame _ _ _ _ => ⟨_,_,frame.interval⟩
   | .operation frame .. => ⟨_,_,frame.interval⟩
+  | .rectangularOperation checked => ⟨_,_,checked.frame.interval⟩
   | .transform _ _ _ _ _ owners _ _ => ⟨_,_,owners.literal.interval⟩
   | .selection frame .. => ⟨_,_,frame.interval⟩
 

@@ -55,7 +55,7 @@ inductive CheckedScope {artifact owner name arguments context order runtime}
       (found : ∃ before after,(RuntimeSelectionSteps.readBasisResult checked.checked.result).run before = (.ok true,after))
       (coverage : RootCoverage checked)
   | meaning (noSelections : checked.selections.count = 0)
-      (found : ∃ before after,checked.coverage.hasApplication.run before = (.ok true,after))
+      (found : ∃ before after,checked.coverage.hasStandaloneMeaning.run before = (.ok true,after))
       (coverage : RootCoverage checked)
 
 def CheckedScope.includes {artifact owner name arguments context order runtime}
@@ -91,9 +91,9 @@ private def readScope {artifact owner name arguments context order runtime}
   else
     let noSelections := Nat.eq_zero_of_not_pos selection
     if ← Protocol.QmatchV5.hasMeaningGroup 129 context then
-      let application ← NaturalAffine.witness checked.coverage.hasApplication
-      if found : application.val = true then
-        return .meaning noSelections (found ▸ application.property) (← readRootCoverage checked)
+      let meaning ← NaturalAffine.witness checked.coverage.hasStandaloneMeaning
+      if found : meaning.val = true then
+        return .meaning noSelections (found ▸ meaning.property) (← readRootCoverage checked)
       else throw .request
     else
       let basis ← NaturalAffine.witness (RuntimeSelectionSteps.readBasisResult checked.checked.result)

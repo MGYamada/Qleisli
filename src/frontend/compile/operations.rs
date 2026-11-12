@@ -106,7 +106,7 @@ impl ProviderRoot {
 #[derive(Debug)]
 pub(super) enum Node {
     Provider(Arc<FunctionEvidence>),
-    Carrier(Vec<CircuitStep>),
+    Carrier(Option<Vec<CircuitStep>>),
     Pure(PureProvider),
     Inverse(Operation),
     Then(Operation, Operation),
@@ -666,20 +666,18 @@ impl Compiler<'_> {
             );
             self.work = work;
             let codomain = codomain?;
-            if basis.basis_bits().is_none() || codomain.basis_bits().is_none() {
-                return Err(self.error(
-                    &module,
-                    parameter.name.span,
-                    ErrorCode::Unsupported,
-                    "typed operation formals need independent original closure transport",
-                ));
+            for (port, span) in [
+                (&basis, original_basis.span),
+                (&codomain, parameter.name.span),
+            ] {
+                if port.basis_bits().is_none() {
+                    self.basis_codes(&module, span, port)?;
+                } else {
+                    contract_basis(port)
+                        .bits()
+                        .map_err(|e| self.op_error(&module, span, e))?;
+                }
             }
-            contract_basis(&codomain)
-                .bits()
-                .map_err(|e| self.op_error(&module, parameter.name.span, e))?;
-            contract_basis(&basis)
-                .bits()
-                .map_err(|error| self.op_error(&module, original_basis.span, error))?;
             let meaning = if let Some(meaning_key) = meaning_key {
                 let original_meaning = original_meaning
                     .as_ref()
@@ -794,6 +792,14 @@ impl Compiler<'_> {
             unreachable!("quantum unary interface")
         };
         let mkey = meaning.map(|m| self.meaning_key(module, m)).transpose()?;
+        if mkey.is_none() && (basis.basis_bits().is_none() || codomain.basis_bits().is_none()) {
+            return Err(self.error(
+                module,
+                name.span,
+                ErrorCode::Unsupported,
+                "typed provider requires an original checked Meaning occurrence",
+            ));
+        }
         if let Some(mkey) = &mkey {
             if self.meanings[mkey].basis != **basis || self.meanings[mkey].codomain != **codomain {
                 return Err(self.error(
@@ -858,6 +864,7 @@ impl Compiler<'_> {
             name.span,
             key,
             mkey,
+            false,
             effect,
             (**basis).clone(),
             (**codomain).clone(),
@@ -882,6 +889,7 @@ impl Compiler<'_> {
         span: Span,
         key: Key,
         meaning: Option<Key>,
+        inside_formal_meaning: bool,
         effect: Effect,
         basis: Ty,
         codomain: Ty,
@@ -893,7 +901,15 @@ impl Compiler<'_> {
             || meaning.is_some_and(|key| self.meanings[&key].target.is_none())
         {
             return self.carrier_provider_program(
-                module, span, key, meaning, effect, basis, codomain, program,
+                module,
+                span,
+                key,
+                meaning,
+                inside_formal_meaning,
+                effect,
+                basis,
+                codomain,
+                program,
             );
         }
         contract_basis(&basis)
@@ -1414,10 +1430,11 @@ impl Operation {
                 charge(1)?;
                 a == b // FunctionEvidence compares issued proof identity only.
             }
-            (Node::Carrier(a), Node::Carrier(b)) => {
+            (Node::Carrier(Some(a)), Node::Carrier(Some(b))) => {
                 charge(total_size(a.iter().chain(b).map(circuit::size)))?;
                 a == b
             }
+            (Node::Carrier(None), Node::Carrier(None)) => true,
             (Node::Pure(a), Node::Pure(b)) => {
                 charge(3)?;
                 Arc::ptr_eq(&a.leaf, &b.leaf)
@@ -1551,7 +1568,12 @@ impl Operation {
                     "rectangular preparation requires its original Raw body",
                 ));
             }
-            Node::Carrier(steps) => match access {
+            Node::Carrier(None) => {
+                return Err(ContractError::Type(
+                    "typed preparation requires its original Raw body",
+                ));
+            }
+            Node::Carrier(Some(steps)) => match access {
                 Access::Apply => steps.clone(),
                 Access::Adjoint => inverse(steps.clone()),
                 Access::Controlled => controlled(steps.clone(), bits),

@@ -317,6 +317,127 @@ fn standalone_nominal_meaning_checks_the_actual_call_interval_and_scope() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn rectangular_nominal_meaning_checks_the_written_supplier_and_return_code() {
+    let source = r#"#![no_implicit_prelude]
+        pub enum Mode { A, B, C }
+        isometry fn specification(q: Q<Unit>) -> Q<Mode> { basis q as _ { Mode::B } }
+        isometry fn implementation(q: Q<Unit>) -> Q<Mode> { basis q as _ { Mode::B } }
+        meaning Prepare: Unit -> Mode = reference(specification);
+        isometry fn invoke[const U: Op<Unit -> Mode>](q: Q<Unit>) -> Q<Mode>
+            requires Applicable(U) { U(q) }
+        pub isometry fn prepare(q: Q<Unit>) -> Q<Mode> {
+            invoke[checked_op(implementation, Prepare)](q)
+        }"#;
+    let selected = selected_at(source, "main::prepare");
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    assert!(artifact.contains(r#""root":0"#));
+    let programs = artifact.find(r#""programs":[{"#).unwrap();
+    let first_table = r#""table":[1]"#;
+    let offset = programs + artifact[programs..].find(first_table).unwrap();
+    for code in [0, 3] {
+        let mut mutated = artifact.to_owned();
+        mutated.replace_range(
+            offset..offset + first_table.len(),
+            &format!(r#""table":[{code}]"#),
+        );
+        let error = kernel()
+            .check_qmatch_source_v5(mutated.as_bytes(), program.request().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+
+    let unused = source.replace("{ U(q) }", "{ basis q as _ { Mode::A } }");
+    let selected = selected_at(&unused, "main::prepare");
+    assert_eq!(
+        selected.program().source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let mismatched = unused.replace(
+        "implementation(q: Q<Unit>) -> Q<Mode> { basis q as _ { Mode::B } }",
+        "implementation(q: Q<Unit>) -> Q<Mode> { basis q as _ { Mode::C } }",
+    );
+    assert_ne!(unused, mismatched);
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), mismatched)]),
+    )
+    .unwrap();
+    let error = parsed
+        .instantiate_runtime_with_types(
+            "main::prepare",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn declared_rectangular_nominal_meaning_checks_used_and_unused_supplies() {
+    let source = "#![no_implicit_prelude]
+pub enum M{A,B,C}
+isometry fn r(q:Q<Unit>)->Q<M>{basis q as _{M::B}}
+isometry fn a(q:Q<Unit>)->Q<M>{basis q as _{M::B}}
+meaning P:Unit->M=reference(r);
+isometry fn f[const U:Op<Unit->M,P>](q:Q<Unit>)->Q<M> requires Applicable(U){U(q)}
+pub isometry fn g(q:Q<Unit>)->Q<M>{f[a](q)}";
+    let unused = source.replace("{U(q)}", "{basis q as _{M::A}}");
+    let written = source.replace("f[a]", "f[checked_op(a,P)]");
+    for original in [source, unused.as_str(), written.as_str()] {
+        let selected = selected_at(original, "main::g");
+        assert_eq!(
+            selected.program().source_body_scope(),
+            Some("finite-source-meaning-context-v5")
+        );
+    }
+    let closed = source.replace(
+        "pub isometry fn g(q:Q<Unit>)->Q<M>{f[a](q)}",
+        "pub observe fn main()->Unit{discard(f[a](unit(())));()}",
+    );
+    let project = SourceRoot::new(&closed);
+    let checked = compile_project(&project.0).unwrap();
+    assert_eq!(
+        checked.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+
+    let wrong = unused.replace(
+        "fn a(q:Q<Unit>)->Q<M>{basis q as _{M::B}}",
+        "fn a(q:Q<Unit>)->Q<M>{basis q as _{M::C}}",
+    );
+    assert_ne!(unused, wrong);
+    let parsed =
+        ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), wrong)])).unwrap();
+    let error = parsed
+        .instantiate_runtime_with_types(
+            "main::g",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn nominal_meaning_checks_the_original_cycle_and_inverse_on_three_labels() {
     let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/nominal-meaning-ports-v030/attempt-01/selected");
