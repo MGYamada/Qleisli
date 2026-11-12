@@ -75,17 +75,78 @@ private def auxiliaryOnly : Semantics.Raw.Use → Bool
   | .phase controls _ => controls.all (·.bit == auxiliaryBit)
   | .targetGate .. => false
 
+private theorem controls_independent (source ancilla : Nat) (controls : List Semantics.Raw.ProtectedControl)
+    (only : controls.all (·.bit == auxiliaryBit) = true) :
+    Semantics.Protected.enabled source ancilla controls = Semantics.Protected.enabled 0 ancilla controls := by
+  induction controls with
+  | nil => rfl
+  | cons control rest tail =>
+    have tested := Bool.and_eq_true_iff.mp only
+    have same := beq_iff_eq.mp tested.1
+    change (Semantics.Protected.value source ancilla control.bit == control.whenOne &&
+        Semantics.Protected.enabled source ancilla rest) =
+      (Semantics.Protected.value 0 ancilla control.bit == control.whenOne &&
+        Semantics.Protected.enabled 0 ancilla rest)
+    rw [same,tail tested.2]
+    rfl
+
+private theorem use_independent (source ancilla : Nat) (operation : Semantics.Raw.Use)
+    (only : auxiliaryOnly operation = true) :
+    Raw.ProtectedEvaluation.use source ancilla operation = Raw.ProtectedEvaluation.use 0 ancilla operation := by
+  cases operation with
+  | protectedGate bit gate =>
+    have tested := Bool.and_eq_true_iff.mp only
+    have same := beq_iff_eq.mp tested.1
+    subst bit
+    rfl
+  | targetGate controls target gate => contradiction
+  | phase controls phase =>
+    funext state label
+    simp only [Raw.ProtectedEvaluation.use,controls_independent source ancilla controls only]
+
+theorem run_independent (source ancilla : Nat) (uses : List Semantics.Raw.Use)
+    (only : uses.all auxiliaryOnly = true) (initial : Raw.ProtectedEvaluation.State) :
+    Raw.ProtectedEvaluation.run source ancilla uses initial = Raw.ProtectedEvaluation.run 0 ancilla uses initial := by
+  induction uses generalizing initial with
+  | nil => simp only [Raw.ProtectedEvaluation.run,List.foldl_nil]
+  | cons first rest tail =>
+    have tested := Bool.and_eq_true_iff.mp only
+    change Raw.ProtectedEvaluation.run source ancilla rest (Raw.ProtectedEvaluation.use source ancilla first initial) =
+      Raw.ProtectedEvaluation.run 0 ancilla rest (Raw.ProtectedEvaluation.use 0 ancilla first initial)
+    rw [use_independent source ancilla first tested.1]
+    exact tail tested.2 _
+
+private def factor (source ancilla : Nat) (uses : List Semantics.Raw.Use) : WorkM Scalar :=
+  Raw.ProtectedEvaluation.run source ancilla uses (fun _ => pure Scalar.one) 0
+
+structure RawAction (uses : List Semantics.Raw.Use) where
+  auxiliary : uses.all auxiliaryOnly = true
+  zero : Scalar
+  one : Scalar
+  zeroRead : RuntimeInterval.Computed (factor 0 0 uses) zero
+  oneRead : RuntimeInterval.Computed (factor 0 1 uses) one
+
+def RawAction.matrix {uses} (action : RawAction uses) : Matrix :=
+  ⟨2,2,[action.zero,Scalar.zero,Scalar.zero,action.one]⟩
+
+theorem RawAction.factors {uses} (action : RawAction uses) (source : Nat) :
+    RuntimeInterval.Computed (factor source 0 uses) action.zero ∧
+    RuntimeInterval.Computed (factor source 1 uses) action.one := by
+  unfold factor
+  rw [run_independent source 0 uses action.auxiliary,run_independent source 1 uses action.auxiliary]
+  exact ⟨action.zeroRead,action.oneRead⟩
+
 /-- Compare the actual Raw uses on both possible auxiliary values. The
 source label is irrelevant because these uses can only inspect the auxiliary. -/
-private def rawAction (uses : List Semantics.Raw.Use) : WorkM Matrix := do
+private def rawAction (uses : List Semantics.Raw.Use) : WorkM (RawAction uses) := do
   exactWork (Exact.charge (16*((uses.map fun use => match use with
     | .protectedGate .. => 1
     | .phase controls _ | .targetGate controls .. => controls.length+1).sum+1)))
-  guard (uses.all auxiliaryOnly) .request
-  let initial := fun _ => pure Scalar.one
-  let zero ← Raw.ProtectedEvaluation.run 0 0 uses initial 0
-  let one ← Raw.ProtectedEvaluation.run 0 1 uses initial 0
-  return ⟨2,2,[zero,Scalar.zero,Scalar.zero,one]⟩
+  if only : uses.all auxiliaryOnly = true then
+    let zero ← NaturalAffine.witness (factor 0 0 uses)
+    let one ← NaturalAffine.witness (factor 0 1 uses)
+    return ⟨only,zero.val,one.val,by with_reducible exact zero.property,by with_reducible exact one.property⟩
+  else throw .request
 
 structure Prepared {sources caller} (event : ComputedEvent sources caller) where
   predicate : RuntimeComputedPredicate.Source event
@@ -112,9 +173,9 @@ structure Checked {sources caller dependencies program block start count}
     (interval : @RuntimeInterval.Checked dependencies program block start count)
     (before : RuntimeStructuralAction.SourceState) where
   literal : RuntimeComputedPredicate.ProtectedInterval event prepared.predicate interval before
-  emitted : Matrix
+  emitted : RawAction literal.uses
   literalAction : RuntimeInterval.Computed (rawAction literal.uses) emitted
-  equation : emitted = prepared.action.matrix
+  equation : emitted.matrix = prepared.action.matrix
 
 def read {sources caller dependencies program block start count}
     {event : ComputedEvent sources caller} (prepared : Prepared event)
@@ -122,9 +183,10 @@ def read {sources caller dependencies program block start count}
     (before : RuntimeStructuralAction.SourceState) : WorkM (Checked prepared interval before) := do
   let literal ← RuntimeComputedPredicate.readProtectedInterval event prepared.predicate interval before
   let emitted ← NaturalAffine.witness (rawAction literal.uses)
-  exactWork (Exact.charge (prepared.action.matrix.entries.length+emitted.val.entries.length+1))
-  if equation : emitted.val = prepared.action.matrix then
+  exactWork (Exact.charge (prepared.action.matrix.entries.length+emitted.val.matrix.entries.length+1))
+  if equation : emitted.val.matrix = prepared.action.matrix then
     return ⟨literal,emitted.val,by with_reducible exact emitted.property,equation⟩
   else throw .equation
 
+#print axioms RawAction.factors
 end QleisliKernel.Qirf.RuntimeComputedUse
