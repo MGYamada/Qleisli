@@ -290,11 +290,11 @@ impl Compiler<'_> {
     ) -> Result<BasisFunction, CompileError> {
         let decl = self.declarations[key];
         let key_name = self.source.resolution.declaration(*key).name.clone();
-        if params
+        let typed_port = params
             .iter()
             .chain(std::iter::once(&result))
-            .any(|ty| ty.basis_bits().is_none())
-        {
+            .any(|ty| ty.basis_bits().is_none());
+        if typed_port && !nominal {
             return Err(self.error(
                 &key_name.0,
                 decl.span,
@@ -302,10 +302,20 @@ impl Compiler<'_> {
                 "finite tables require closed built-in basis types",
             ));
         }
-        let bits: usize = params
+        let widths = params
             .iter()
-            .map(|ty| ty.basis_bits().expect("basis parameter"))
-            .sum();
+            .map(|ty| {
+                ty.basis_width().map(|bits| bits as usize).ok_or_else(|| {
+                    self.error(
+                        &key_name.0,
+                        decl.span,
+                        ErrorCode::Unsupported,
+                        "finite table requires an original closed basis parameter",
+                    )
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let bits = widths.iter().sum::<usize>();
         if bits > MAX_BITS {
             return Err(self.error(
                 &key_name.0,
@@ -317,13 +327,34 @@ impl Compiler<'_> {
         let FnBody::Basis(body) = &decl.body else {
             unreachable!("basis declaration")
         };
+        let canonical = if typed_port {
+            let [input] = params.as_slice() else {
+                return Err(self.error(
+                    &key_name.0,
+                    decl.span,
+                    ErrorCode::Arity,
+                    "typed finite table requires one exact basis parameter",
+                ));
+            };
+            Some(self.basis_codes(&key_name.0, decl.span, input)?.1)
+        } else {
+            None
+        };
+        let labels = canonical.iter().flatten().copied().chain(
+            0..if canonical.is_none() {
+                1usize << bits
+            } else {
+                0
+            },
+        );
         let mut table = Vec::new();
         let mut nominal_used = false;
-        for label in 0..(1u16 << bits) {
+        for label in labels {
+            let label = label as u16;
             let mut env = BTreeMap::new();
             let mut offset = 0;
-            for (param, ty) in decl.params.iter().zip(&params) {
-                let width = ty.basis_bits().expect("basis type");
+            for ((param, ty), width) in decl.params.iter().zip(&params).zip(&widths) {
+                let width = *width;
                 let label = (label >> offset) & ((1 << width) - 1);
                 if let PatternKind::Name(name) = &param.pattern.kind {
                     // Retain the existing work accounting for legacy binders.

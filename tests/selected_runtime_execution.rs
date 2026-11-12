@@ -317,6 +317,71 @@ fn standalone_nominal_meaning_checks_the_actual_call_interval_and_scope() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn nominal_meaning_checks_the_original_cycle_and_inverse_on_three_labels() {
+    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/nominal-meaning-ports-v030/attempt-01/selected");
+    let selected = ParsedProgram::load(BTreeMap::from([(
+        "main".into(),
+        directory.join("main.qli"),
+    )]))
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::undo",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel())
+    .unwrap();
+    let program = selected.program();
+    let request = program.request().unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let inverse = r#""permutation":[2,0,1,3]"#;
+    let phases = r#""phases":[0,0,0,0]"#;
+    for (before, after) in [
+        (inverse, r#""permutation":[1,2,0,3]"#),
+        (inverse, r#""permutation":[3,0,1,2]"#),
+        (phases, r#""phases":[0,4,0,0]"#),
+    ] {
+        assert_eq!(artifact.matches(before).count(), 1);
+        let forged = artifact.replacen(before, after, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(forged.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_executes_the_checked_nominal_meaning_interval() {
+    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/nominal-meaning-ports-v030/attempt-01/project");
+    let program = compile_project(&directory).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_nominal_basis_lift_uses_logical_dimensions() {
     use qleisli::ir::{Effect, RawOp};
 

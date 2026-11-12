@@ -708,6 +708,14 @@ pub(in crate::frontend::compile::lower) fn record_operation(
     access: Access,
 ) -> Result<(), CompileError> {
     let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        if operation.uses_carrier() {
+            return Err(lower.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "typed Meaning application needs its original source context",
+            ));
+        }
         return Ok(());
     };
     let relative = start.checked_sub(frame.start).ok_or_else(|| {

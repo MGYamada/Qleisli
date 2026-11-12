@@ -25,61 +25,7 @@ pub(super) fn proposed_rows(parameters: &[Vec<Atom>]) -> NativeResult<Vec<Vec<bo
         .collect())
 }
 
-pub(super) fn proposed_codes(parameters: &[Vec<Atom>]) -> NativeResult<(usize, Vec<usize>)> {
-    type Layout = (usize, Vec<usize>);
-    fn tensor((low_bits, low): Layout, (high_bits, high): Layout) -> NativeResult<Layout> {
-        if low_bits + high_bits > 6 || low.len() * high.len() > 64 {
-            return Err(limit("ordinary input domain exceeds six bits or 64 rows"));
-        }
-        let rows = high
-            .into_iter()
-            .flat_map(|high| low.iter().map(move |low| low + (high << low_bits)))
-            .collect();
-        Ok((low_bits + high_bits, rows))
-    }
-    if parameters.len() > 64 || parameters.iter().map(Vec::len).sum::<usize>() > 128 {
-        return Err(limit("ordinary parameter forest exceeds capacity"));
-    }
-    let mut domain = (0, vec![0]);
-    for basis in parameters {
-        let mut stack: Vec<Layout> = Vec::new();
-        for atom in basis.iter().rev() {
-            let arity = match atom {
-                Atom::Pair => Some(2),
-                Atom::Tuple(arity) => Some(*arity as usize),
-                Atom::Record(_, fields) => Some(fields.len()),
-                _ => None,
-            };
-            if let Some(arity) = arity {
-                if arity > stack.len() {
-                    return Err(invalid("incomplete parameter type tree"));
-                }
-                let mut combined = (0, vec![0]);
-                for _ in 0..arity {
-                    combined = tensor(combined, stack.pop().unwrap())?;
-                }
-                stack.push(combined);
-            } else {
-                let (bits, count) = match atom {
-                    Atom::Unit => (0, 1),
-                    Atom::Bit => (1, 2),
-                    Atom::Bits(width) if *width <= 6 => (*width as usize, 1usize << width),
-                    Atom::Enum(_, labels) if !labels.is_empty() && labels.len() <= 64 => (
-                        usize::BITS as usize - (labels.len() - 1).leading_zeros() as usize,
-                        labels.len(),
-                    ),
-                    _ => return Err(limit("unsupported ordinary parameter code")),
-                };
-                stack.push((bits, (0..count).collect()));
-            }
-        }
-        if stack.len() != 1 {
-            return Err(invalid("incomplete parameter type forest"));
-        }
-        domain = tensor(domain, stack.pop().unwrap())?;
-    }
-    Ok(domain)
-}
+pub(super) use crate::frontend::ordinary::proposed_codes;
 
 pub(super) fn has_nominal(ty: &Ty) -> bool {
     match &ty.kind {

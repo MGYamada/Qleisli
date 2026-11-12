@@ -273,7 +273,9 @@ logical table from the original finite expression and pure helper bodies,
 checks every ordinary match arm's dependencies, and binds the canonical rows
 to the actual Raw lift interval. If the checked body has no selection sites,
 Lean requires an original basis event and the report names
-`finite-source-basis-context-v5`. Checked selections use
+`finite-source-basis-context-v5`. It discharges the selected invocation's
+original duties and retains pending positions belonging to other invocations.
+Checked selections use
 `finite-source-qmatch-context-v5`.
 Nonstructural bodies and the full twelve-bit profile remain pending.
 A selected coherent arm can use an original classical Meaning helper with
@@ -283,8 +285,15 @@ compares the exact Meaning with the applied arm. Standalone applications can
 use the same equation check. The report names `finite-source-meaning-context-v5`
 after the native traversal binds an actual application interval and discharges
 the selected invocation's original Meaning duties. Other roots retain their
-pending positions for separate checks. Operation-formal closure, nominal
-Meaning ports and wider qmatch remain pending. Independent
+pending positions for separate checks.
+Standalone applications also check endomorphic `permutation_by` and
+`phase_by` Meanings with finite nominal ports through the same native path.
+Lean checks the original provider body, the exact logical action on its
+canonical codes and the literal application. A reused ordinary Meaning
+evaluation must match the original declaration, helper occurrence, operator
+kind and exact type trees in both source queries.
+Operation-formal closure, rectangular nominal Meaning applications and wider
+qmatch remain pending. Independent
 host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 

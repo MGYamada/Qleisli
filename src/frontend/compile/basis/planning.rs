@@ -61,7 +61,24 @@ impl Compiler<'_> {
                     self.declarations[key].span,
                     uses.len() + 1,
                 )?;
-                let meaning_leaf = matches!(self.declarations[key].body, FnBody::Meaning { .. });
+                let declaration = self.declarations[key];
+                let interface = &self.source.interfaces[key];
+                if interface.kind == FnKind::Meaning
+                    && (self.has_nominal_port(
+                        interface.meaning_input(),
+                        module,
+                        declaration.span,
+                        &mut work,
+                    )? || self.has_nominal_port(
+                        &interface.result,
+                        module,
+                        declaration.span,
+                        &mut work,
+                    )?)
+                {
+                    meanings.insert(*key);
+                }
+                let meaning_leaf = matches!(declaration.body, FnBody::Meaning { .. });
                 for usage in uses {
                     if let ResolvedUse::Global(Target::Declaration(callee)) = usage.target {
                         if roots.contains(&callee) {
@@ -80,6 +97,28 @@ impl Compiler<'_> {
         self.work = work;
         (self.nominal_basis_roots, self.nominal_meaning_roots) = planned?;
         Ok(())
+    }
+
+    fn has_nominal_port(
+        &self,
+        ty: &check::Ty,
+        module: &str,
+        span: Span,
+        work: &mut usize,
+    ) -> Result<bool, CompileError> {
+        let mut pending = vec![ty];
+        while let Some(ty) = pending.pop() {
+            self.charge_at(work, module, span, 1)?;
+            match &ty.kind {
+                Kind::Nominal(_) => return Ok(true),
+                Kind::Tuple(fields) => {
+                    self.charge_at(work, module, span, fields.len())?;
+                    pending.extend(fields);
+                }
+                _ => (),
+            }
+        }
+        Ok(false)
     }
 
     fn basis_uses_nominal(

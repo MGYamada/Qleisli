@@ -75,7 +75,8 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-64-nominal-body-provenance",
     "refs/heads/codex/beta-64-nominal-basis",
     "refs/heads/codex/beta-64-standalone-basis",
-    "refs/heads/codex/beta-64-standalone-meaning"))
+    "refs/heads/codex/beta-64-standalone-meaning",
+    "refs/heads/codex/beta-64-nominal-meaning-ports"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),

@@ -632,7 +632,7 @@ impl<'a> Context<'a, '_> {
         let interface = &self.interfaces[&self.definition];
         let basis = self.closed(interface.meaning_input(), declaration.span)?;
         let codomain = self.closed(&interface.result, declaration.span)?;
-        let width = self.width(&basis, declaration.span, false)?;
+        let width = self.width(&basis, declaration.span, true)?;
         if width > crate::contract::MAX_CONTRACT_BITS {
             return Err(SourceError::new(
                 "limit",
@@ -669,12 +669,19 @@ impl<'a> Context<'a, '_> {
         let FnBody::Basis(body) = &target.body else {
             return Err(self.error(function.span, "Meaning requires a classical function body"));
         };
-        let dimension = 1usize << width;
+        let atoms = crate::frontend::specialize::carrier_description_budgeted(
+            &basis,
+            &mut |span, cells| self.budget.charge(span, cells).map_err(super::Error::from),
+        )
+        .map_err(SourceError::from)?;
+        let (_, codes) = crate::frontend::ordinary::proposed_codes(&[atoms])
+            .map_err(|error| self.error(declaration.span, error.to_string()))?;
         // Reserve all table/collision cells before enumerating the first row.
+        let dimension = codes.len();
         self.budget.charge(declaration.span, dimension * 2)?;
         let mut table = Vec::with_capacity(dimension);
         let mut seen = vec![None; dimension];
-        for input in 0..dimension {
+        for &input in &codes {
             let mut env = Environment::new();
             child
                 .bind(
@@ -696,9 +703,13 @@ impl<'a> Context<'a, '_> {
         for (input, &output) in table.iter().enumerate() {
             self.budget.charge(declaration.span, 1)?;
             if *permutation {
-                let previous = seen.get_mut(usize::from(output)).ok_or_else(|| {
-                    self.error(declaration.span, "permutation output is outside its basis")
+                let ordinal = codes.binary_search(&usize::from(output)).map_err(|_| {
+                    self.error(
+                        declaration.span,
+                        "permutation output is outside its exact basis",
+                    )
                 })?;
+                let previous = &mut seen[ordinal];
                 if let Some(first) = previous.replace(input) {
                     return Err(self.error(
                         declaration.span,

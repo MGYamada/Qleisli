@@ -455,6 +455,14 @@ impl Compiler<'_> {
         {
             return Err(self.error(module, span, ErrorCode::TypeMismatch, "contract implementation must be a closed exact quantum endomorphism with an available Unitary source effect"));
         }
+        if basis.basis_bits().is_none() {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "this contract needs the original typed Meaning application check",
+            ));
+        }
         let declared_meaning = self
             .meanings
             .contains_key(&specification_key)
@@ -533,7 +541,14 @@ impl Compiler<'_> {
             let implementation = raw(&implementation_key)?;
             let signature = contract_basis(basis);
             let specification = if let Some(key) = declared_meaning {
-                self.meanings[&key].raw.clone()
+                self.meanings[&key].raw.clone().ok_or_else(|| {
+                    self.error(
+                        module,
+                        span,
+                        ErrorCode::Unsupported,
+                        "this contract needs the original typed Meaning application check",
+                    )
+                })?
             } else {
                 raw(&specification_key)?
             };

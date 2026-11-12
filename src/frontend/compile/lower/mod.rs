@@ -1917,11 +1917,7 @@ impl Lowerer<'_, '_> {
         span: Span,
         ty: &Ty,
     ) -> Result<(usize, Vec<usize>), CompileError> {
-        let basis = self.compiler.carrier_description(module, span, ty)?;
-        let (width, codes) = ordinary::proposed_codes(&[basis])
-            .map_err(|error| self.error(module, span, ErrorCode::Unsupported, error.to_string()))?;
-        self.compiler.charge(module, span, codes.len() + 1)?;
-        Ok((width, codes))
+        self.compiler.basis_codes(module, span, ty)
     }
 
     #[allow(clippy::too_many_arguments)]

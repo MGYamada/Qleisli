@@ -24,8 +24,28 @@ private def meterResiduals {artifact owner name arguments context order runtime}
     | .demand invocation _ => Finite.exactWork (Exact.charge (16*(invocation.depth+1)^2))
     | _ => pure ()
 
-/-- The application profile keeps the entire catalogue and queue. It covers
-the selected function's original invocation and its callees. Other roots
+structure RootCoverage {artifact owner name arguments context order runtime}
+    {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
+    (checked : RuntimeBodyOperations.Checked prepared order runtime) where
+  root : RuntimeDutyInvocation.Identified prepared.source.pending.queue (.root prepared.source.body)
+  rootRead : RuntimeInterval.Computed
+    (RuntimeDutyInvocation.identify prepared.source.pending.queue (.root prepared.source.body)) root
+  otherRoots : ∀ position ∈ checked.coverage.residual,
+    outsideRoot root.record.val prepared.source.pending.entries[position.val] = true
+
+private def readRootCoverage {artifact owner name arguments context order runtime}
+    {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
+    (checked : RuntimeBodyOperations.Checked prepared order runtime) : Finite.WorkM (RootCoverage checked) := do
+  let root ← NaturalAffine.witness
+    (RuntimeDutyInvocation.identify prepared.source.pending.queue (.root prepared.source.body))
+  meterResiduals checked
+  if otherRoots : checked.coverage.residual.all
+      (fun position => outsideRoot root.val.record.val prepared.source.pending.entries[position.val]) = true then
+    return ⟨root.val,by with_reducible exact root.property,List.all_eq_true.mp otherRoots⟩
+  else throw .request
+
+/-- Standalone basis and Meaning checks retain the full catalogue and queue.
+They cover the selected original invocation and its callees. Other roots
 retain their pending positions for separate checks. -/
 inductive CheckedScope {artifact owner name arguments context order runtime}
     {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
@@ -33,23 +53,19 @@ inductive CheckedScope {artifact owner name arguments context order runtime}
   | selection (present : 0 < checked.selections.count) (complete : checked.coverage.residual = [])
   | basis (noSelections : checked.selections.count = 0)
       (found : ∃ before after,(RuntimeSelectionSteps.readBasisResult checked.checked.result).run before = (.ok true,after))
-      (complete : checked.coverage.residual = [])
+      (coverage : RootCoverage checked)
   | meaning (noSelections : checked.selections.count = 0)
       (found : ∃ before after,checked.coverage.hasApplication.run before = (.ok true,after))
-      (root : RuntimeDutyInvocation.Identified prepared.source.pending.queue (.root prepared.source.body))
-      (rootRead : RuntimeInterval.Computed
-        (RuntimeDutyInvocation.identify prepared.source.pending.queue (.root prepared.source.body)) root)
-      (otherRoots : ∀ position ∈ checked.coverage.residual,
-        outsideRoot root.record.val prepared.source.pending.entries[position.val] = true)
+      (coverage : RootCoverage checked)
 
 def CheckedScope.includes {artifact owner name arguments context order runtime}
     {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
     {checked : RuntimeBodyOperations.Checked prepared order runtime}
     (scope : CheckedScope checked) (position : RuntimeArmDutyCoverage.Position prepared) : Prop :=
   match scope with
-  | .selection .. | .basis .. => True
-  | .meaning _ _ root _ _ =>
-    outsideRoot root.record.val prepared.source.pending.entries[position.val] = false
+  | .selection .. => True
+  | .basis _ _ coverage | .meaning _ _ coverage =>
+    outsideRoot coverage.root.record.val prepared.source.pending.entries[position.val] = false
 
 theorem CheckedScope.residual_excluded {artifact owner name arguments context order runtime}
     {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
@@ -57,12 +73,12 @@ theorem CheckedScope.residual_excluded {artifact owner name arguments context or
     (scope : CheckedScope checked) (position : RuntimeArmDutyCoverage.Position prepared)
     (within : scope.includes position) : position ∉ checked.coverage.residual := by
   cases scope with
-  | selection _ complete | basis _ _ complete =>
+  | selection _ complete =>
     rw [complete]
     exact List.not_mem_nil
-  | meaning _ _ root _ otherRoots =>
+  | basis _ _ coverage | meaning _ _ coverage =>
     intro remaining
-    exact Bool.noConfusion (within.symm.trans (otherRoots position remaining))
+    exact Bool.noConfusion (within.symm.trans (coverage.otherRoots position remaining))
 
 private def readScope {artifact owner name arguments context order runtime}
     {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
@@ -77,20 +93,12 @@ private def readScope {artifact owner name arguments context order runtime}
     if ← Protocol.QmatchV5.hasMeaningGroup 129 context then
       let application ← NaturalAffine.witness checked.coverage.hasApplication
       if found : application.val = true then
-        let root ← NaturalAffine.witness
-          (RuntimeDutyInvocation.identify prepared.source.pending.queue (.root prepared.source.body))
-        meterResiduals checked
-        if otherRoots : checked.coverage.residual.all
-            (fun position => outsideRoot root.val.record.val prepared.source.pending.entries[position.val]) = true then
-          return .meaning noSelections (found ▸ application.property) root.val
-            (by with_reducible exact root.property) (List.all_eq_true.mp otherRoots)
-        else throw .request
+        return .meaning noSelections (found ▸ application.property) (← readRootCoverage checked)
       else throw .request
     else
-      if complete : checked.coverage.residual = [] then
-        let basis ← NaturalAffine.witness (RuntimeSelectionSteps.readBasisResult checked.checked.result)
-        if found : basis.val = true then return .basis noSelections (found ▸ basis.property) complete
-        else throw .request
+      let basis ← NaturalAffine.witness (RuntimeSelectionSteps.readBasisResult checked.checked.result)
+      if found : basis.val = true then
+        return .basis noSelections (found ▸ basis.property) (← readRootCoverage checked)
       else throw .request
 
 structure Original (bytes : ByteArray) where

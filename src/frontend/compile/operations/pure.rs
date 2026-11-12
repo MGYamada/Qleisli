@@ -120,7 +120,7 @@ impl Operation {
             Node::Inverse(a) | Node::Controlled(a) | Node::Repeat(_, a) | Node::Requested(_, a) => {
                 a.needs_raw()
             }
-            Node::Provider(_) => false,
+            Node::Provider(_) | Node::Carrier(_) => false,
         }
     }
     pub(in crate::frontend::compile) fn raw(
@@ -142,6 +142,14 @@ impl Operation {
                 Ty::pair(Ty::bit(), self.codomain.clone()),
             ),
         };
+        if basis.basis_bits().is_none() || codomain.basis_bits().is_none() {
+            return Err(compiler.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "typed operations need the original source-body interval check",
+            ));
+        }
         let expected = self.meaning.as_ref().expect("concrete provider meaning");
         let expected = match access {
             Access::Apply => expected.clone(),
