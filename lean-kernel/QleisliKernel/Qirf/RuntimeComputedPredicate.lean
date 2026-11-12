@@ -120,4 +120,46 @@ def readProtectedInterval {sources caller dependencies program block start count
     else throw .request
   else throw .request
 
+
+def ProtectedInterval.operation {sources caller dependencies program block start count event source interval before}
+    (checked : @ProtectedInterval sources caller dependencies program block start count event source interval before) :
+    Semantics.Raw.Op :=
+  .computeUseUncompute checked.input.port.token checked.output.token [] [checked.auxiliary] checked.table checked.uses
+
+/-- The dispatch premise for the protected clean square comes from the
+already-checked literal interval. -/
+theorem ProtectedInterval.dispatch {sources caller dependencies program block start count event source interval before}
+    (checked : @ProtectedInterval sources caller dependencies program block start count event source interval before) :
+    ∃ next, Raw.dispatch (dependencies.map (·.signature)) interval.before.quantum checked.operation = .ok next := by
+  obtain ⟨work,left,read⟩ := interval.intervalRead
+  rw [checked.literal] at read
+  change (Raw.Observation.checkOps dependencies block.fuel interval.before [.pure checked.operation]).run work =
+    (.ok interval.after,left) at read
+  cases fuel : block.fuel with
+  | zero =>
+    rw [fuel] at read
+    change ((Except.error Error.limit : Except Error RuntimeInterval.State),work) = (.ok interval.after,left) at read
+    cases read
+  | succ depth =>
+    rw [fuel] at read
+    change ((do
+      let next ← [Semantics.Observation.Op.pure checked.operation].foldlM
+        (Raw.Observation.checkStep dependencies (Raw.Observation.checkOps dependencies depth)) interval.before
+      guard (Raw.stateValid next.quantum && Raw.Observation.history interval.before next)
+      return next : WorkM RuntimeInterval.State).run work) = (.ok interval.after,left) at read
+    obtain ⟨_,_,step,_⟩ := Finite.bind_success _ _ _ _ _ read
+    simp only [List.foldlM_cons,List.foldlM_nil,bind_pure] at step
+    unfold Raw.Observation.checkStep at step
+    obtain ⟨_,_,_,rest⟩ := Finite.bind_success _ _ _ _ _ step
+    obtain ⟨_,_,_,rest⟩ := Finite.bind_success _ _ _ _ _ rest
+    obtain ⟨_,_,pureStep,_⟩ := Finite.bind_success _ _ _ _ _ rest
+    unfold Raw.Observation.checkAction at pureStep
+    obtain ⟨_,_,_,rest⟩ := Finite.bind_success _ _ _ _ _ pureStep
+    obtain ⟨_,_,lifted,_⟩ := Finite.bind_success _ _ _ _ _ rest
+    have native := (Finite.lift_success _ _ _ _ lifted).1
+    unfold Raw.step at native
+    obtain ⟨_,_,rest⟩ := Finite.except_bind_success _ _ _ native
+    obtain ⟨dispatched,dispatch,_⟩ := Finite.except_bind_success _ _ _ rest
+    exact ⟨dispatched,dispatch⟩
+
 end QleisliKernel.Qirf.RuntimeComputedPredicate

@@ -116,7 +116,7 @@ theorem run_independent (source ancilla : Nat) (uses : List Semantics.Raw.Use)
     rw [use_independent source ancilla first tested.1]
     exact tail tested.2 _
 
-private def factor (source ancilla : Nat) (uses : List Semantics.Raw.Use) : WorkM Scalar :=
+def factor (source ancilla : Nat) (uses : List Semantics.Raw.Use) : WorkM Scalar :=
   Raw.ProtectedEvaluation.run source ancilla uses (fun _ => pure Scalar.one) 0
 
 structure RawAction (uses : List Semantics.Raw.Use) where
@@ -135,6 +135,14 @@ theorem RawAction.factors {uses} (action : RawAction uses) (source : Nat) :
   unfold factor
   rw [run_independent source 0 uses action.auxiliary,run_independent source 1 uses action.auxiliary]
   exact ⟨action.zeroRead,action.oneRead⟩
+
+
+theorem RawAction.noTarget {uses} (action : RawAction uses)
+    (controls : List Semantics.Raw.ProtectedControl) (target : Nat) (gate : Semantics.Raw.Gate) :
+    Semantics.Raw.Use.targetGate controls target gate ∉ uses := by
+  intro present
+  have checked := List.all_eq_true.mp action.auxiliary _ present
+  contradiction
 
 /-- Compare the actual Raw uses on both possible auxiliary values. The
 source label is irrelevant because these uses can only inspect the auxiliary. -/
