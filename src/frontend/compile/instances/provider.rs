@@ -162,6 +162,17 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<operations::Operation, CompileError> {
+        self.provider_instance_with_formal(instance, meaning, false, module, span)
+    }
+
+    pub(super) fn provider_instance_with_formal(
+        &mut self,
+        instance: Arc<ClosedInstance>,
+        meaning: Option<Key>,
+        inside_formal_meaning: bool,
+        module: &str,
+        span: Span,
+    ) -> Result<operations::Operation, CompileError> {
         let profile = usize::from(self.force_typed_root);
         if instance.source_effect > Effect::Isometry
             || self.effect_in_module(module, instance.definition) != Some(instance.source_effect)
@@ -192,6 +203,17 @@ impl Compiler<'_> {
                 "provider requires exact Q<A> -> Q<B> ports",
             ));
         };
+        if !inside_formal_meaning
+            && meaning.is_none()
+            && (basis.basis_bits().is_none() || codomain.basis_bits().is_none())
+        {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "typed provider requires an original checked Meaning occurrence",
+            ));
+        }
         if let Some(meaning) = meaning {
             let expected = &self.meanings[&meaning];
             let cost = operations::port_nodes(&expected.basis)
@@ -212,7 +234,8 @@ impl Compiler<'_> {
         // Both original port types were checked above. A nominal Meaning
         // checks this same retained basis body again in the caller's graph.
         // Generic providers keep the full actual contract/body gate.
-        let reuse_basis_body = meaning.is_some_and(|id| self.meanings[&id].target.is_none());
+        let reuse_basis_body =
+            inside_formal_meaning || meaning.is_some_and(|id| self.meanings[&id].target.is_none());
         let body = self.materialize_instance_with_basis_body(
             Arc::clone(&instance),
             module,
@@ -304,6 +327,7 @@ impl Compiler<'_> {
             span,
             instance.definition,
             meaning,
+            inside_formal_meaning,
             instance.source_effect,
             basis.clone(),
             codomain.clone(),

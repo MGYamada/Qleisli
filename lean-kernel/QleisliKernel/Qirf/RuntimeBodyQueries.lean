@@ -83,7 +83,7 @@ def openBody {artifact : Artifact} (mode : Mode artifact) {owner name}
     return ⟨actuals,(),(),Queues.ofContext request⟩
   | .planned _ =>
     match data with
-    | .mk _ _ _ actuals _ _ prefixes _ events _ =>
+    | .mk _ _ actuals _ _ prefixes _ events _ =>
       return ⟨actuals.map Subtype.val,⟨_,_,prefixes⟩,⟨_,_,events⟩,()⟩
 
 /-- The full original formal list, including unused and zero-power actuals,

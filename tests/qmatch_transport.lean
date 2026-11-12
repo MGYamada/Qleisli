@@ -1036,7 +1036,8 @@ private def checkForwardedCommonBody (interior : Bool := false) (dormant : Bool 
   let [some ((hops,inside,_),_)] := checked.writtenLinks.map (summarizeLink checked.checked) | throw .invalid
   guard (body.source.pending.entries.countP (·.unconsumed) == (if dormant then 2 else 1)) .invalid
   let [⟨index,witness⟩] := checked.coverage.consumed | throw .invalid
-  guard (witness.link.binding.instanceBinding.demand.source.original.origin.offset == 325) .invalid
+  let some written := witness.writtenLink | throw .invalid
+  guard (written.binding.instanceBinding.demand.source.original.origin.offset == 325) .invalid
   if dormant then
     let [other] := checked.coverage.residual | throw .invalid
     let .demand _ remaining := body.source.pending.entries[other].subject | throw .invalid
@@ -1077,8 +1078,9 @@ private def checkFourLevelCommonBody : WorkM Unit := do
   let checked ← RuntimeBodyOperations.read body order request.runtime
   guard (body.source.pending.entries.countP (·.unconsumed) == 1) .invalid
   let [⟨_,witness⟩] := checked.coverage.consumed | throw .invalid
-  guard (checked.coverage.residual.isEmpty && witness.link.binding.located.record == 8 &&
-    witness.link.binding.instanceBinding.invocation.depth == 3) .invalid
+  let some written := witness.writtenLink | throw .invalid
+  guard (checked.coverage.residual.isEmpty && written.binding.located.record == 8 &&
+    written.binding.instanceBinding.invocation.depth == 3) .invalid
   let bindings := checked.writtenLinks.map fun link =>
     (link.binding.instanceBinding.invocation.depth,link.binding.located.record,
       link.binding.instanceBinding.demand.source.original.origin.offset)
@@ -2047,7 +2049,7 @@ private def checkNestedOriginals {artifact owner name arguments request prepared
   guard ([inner.val,outer.val] == expected) .invalid
   let observed := report.consumed.map fun item => item.1.val
   guard (observed == expected && report.residual.isEmpty) .invalid
-  let [supplying,enclosing] := report.candidates | throw .invalid
+  let [.written supplying,.written enclosing] := report.candidates | throw .invalid
   guard (nestedOriginTag supplying.origin == 0 && supplying.queueIndex == inner &&
     nestedOriginTag enclosing.origin == 1 && enclosing.queueIndex == outer &&
     supplying.link.queueIndex == inner && enclosing.link.queueIndex == outer) .invalid
@@ -2058,6 +2060,8 @@ private def checkNestedOriginals {artifact owner name arguments request prepared
     receipt.evidence.source enclosing.link.markerIndex
   let status := fun (candidates : List (RuntimeArmDutyCoverage.Candidate body.toTraversed)) =>
     (RuntimeArmDutyCoverage.covered candidates inner,RuntimeArmDutyCoverage.covered candidates outer)
+  let supplying := RuntimeArmDutyCoverage.Candidate.written supplying
+  let enclosing := RuntimeArmDutyCoverage.Candidate.written enclosing
   guard ([status [],status [enclosing],status [supplying],status [enclosing,supplying],
       status [enclosing,supplying,supplying],status [enclosing,enclosing,supplying]] ==
     [(false,false),(false,true),(true,false),(true,true),(false,true),(true,false)]) .invalid

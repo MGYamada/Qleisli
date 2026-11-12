@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeNestedArm
 import QleisliKernel.Qirf.RuntimeLinkedEligibility
+import QleisliKernel.Qirf.RuntimeFormalMeaningDuty
 
 /-! Residual original Meaning duties after checking one common body.
 Coverage requires a unique written occurrence with positive semantic evidence.
@@ -133,12 +134,41 @@ theorem Origin.sound {body : Traversed prepared order runtime} {link q} (origin 
   | enclosing proof => exact ⟨proof⟩
   | supplying _ proof => exact ⟨proof⟩
 
-structure Candidate (body : Traversed prepared order runtime) where
+structure WrittenCandidate (body : Traversed prepared order runtime) where
   writtenIndex : Nat
   link : WrittenLink body.checked
   atWritten : body.writtenLinks[writtenIndex]? = some link
   queueIndex : Position prepared
   origin : Origin body link queueIndex
+
+inductive Candidate (body : Traversed prepared order runtime) where
+  | written (witness : WrittenCandidate body)
+  | formal (receiptIndex : Fin body.checked.receipts.length) (position : Position prepared)
+      (proof : RuntimeFormalMeaningDuty.AtReceipt body body.checked.receipts[receiptIndex] position)
+
+def Candidate.queueIndex {body : Traversed prepared order runtime} : Candidate body → Position prepared
+  | .written witness => witness.queueIndex
+  | .formal _ position _ => position
+
+def Candidate.receiptIndex {body : Traversed prepared order runtime} :
+    Candidate body → Fin body.checked.receipts.length
+  | .written witness => witness.link.receiptIndex
+  | .formal index .. => index
+
+def Candidate.accepted {body : Traversed prepared order runtime} : Candidate body → Bool
+  | .written witness => witness.origin.accepted
+  | .formal .. => true
+
+def Candidate.Contract {body : Traversed prepared order runtime} : Candidate body → Prop
+  | .written witness => witness.origin.Contract
+  | .formal index position _ => Nonempty
+      (RuntimeFormalMeaningDuty.AtReceipt body body.checked.receipts[index] position)
+
+theorem Candidate.sound {body : Traversed prepared order runtime} (candidate : Candidate body)
+    (accepted : candidate.accepted = true) : candidate.Contract := by
+  cases candidate with
+  | written witness => exact witness.origin.sound accepted
+  | formal _ _ proof => exact ⟨proof⟩
 
 /-- Keep one enclosing candidate per written link, including a negative
 one, and add the original supplying position only with its own evidence. -/
@@ -168,17 +198,22 @@ def readCandidates (body : Traversed prepared order runtime) : WorkM (List (Cand
       entry
       (by simp only [receipts,List.getElem_toArray,Fin.getElem_fin])
       (by simp only [entry,values,entries,List.getElem_toArray,Fin.getElem_fin])
-    let direct : Candidate body := ⟨i,chosen,selected,chosen.queueIndex,.direct original⟩
+    let direct : WrittenCandidate body := ⟨i,chosen,selected,chosen.queueIndex,.direct original⟩
     if !RuntimeNestedDuty.possible entry then return [direct]
     match ← RuntimeNestedArm.read body.checked chosen with
     | none => return [direct]
     | some nested =>
-      let caller : Candidate body := ⟨i,chosen,selected,nested.position,.supplying nested.position nested.supplying⟩
-      let parent : Candidate body := match nested.enclosing with
+      let caller : WrittenCandidate body := ⟨i,chosen,selected,nested.position,.supplying nested.position nested.supplying⟩
+      let parent : WrittenCandidate body := match nested.enclosing with
         | some proof => ⟨i,chosen,selected,chosen.queueIndex,.enclosing proof⟩
         | none => direct
       if supplied[nested.position.val] then return [parent] else return [parent,caller]
-  return rows.flatten
+  let formal ← (List.finRange body.checked.receipts.length).filterMapM fun index => do
+    let receipt := receipts[index.val]'(by simpa only [receipts,List.size_toArray] using index.isLt)
+    let some ⟨position,proof⟩ ← RuntimeFormalMeaningDuty.read body receipt | return none
+    return some (.formal index position (by
+      simpa only [receipt,receipts,List.getElem_toArray,Fin.getElem_fin] using proof))
+  return rows.flatten.map .written ++ formal
 
 /-- All candidate positions, including unresolved enclosing links. Two
 references to one original position stay ambiguous even if one is positive. -/
@@ -190,7 +225,7 @@ private def single {body : Traversed prepared order runtime} (q : Position prepa
     (lookup : Nat → Option (Candidate body)) : List Nat → Bool
   | [index] => match lookup index with
     | none => false
-    | some found => decide (found.queueIndex = q ∧ found.origin.accepted = true)
+    | some found => decide (found.queueIndex = q ∧ found.accepted = true)
   | _ => false
 
 def covered {body : Traversed prepared order runtime} (candidates : List (Candidate body))
@@ -208,12 +243,15 @@ structure Discharge {body : Traversed prepared order runtime} (candidates : List
   queue : candidate.queueIndex = q
   required : prepared.source.pending.entries[q.val].unconsumed = true
   unique : occurrences candidates q = [index]
-  proved : candidate.origin.Contract
+  proved : candidate.Contract
 
 /-- The written link locates the common traversal. For a supplying
 credit, candidate.origin carries its separately indexed caller obligation. -/
-def Discharge.link {body : Traversed prepared order runtime} {candidates : List (Candidate body)} {q}
-    (witness : Discharge candidates q) := witness.candidate.link
+def Discharge.writtenLink {body : Traversed prepared order runtime} {candidates : List (Candidate body)} {q}
+    (witness : Discharge candidates q) : Option (WrittenLink body.checked) :=
+  match witness.candidate with
+  | .written original => some original.link
+  | .formal .. => none
 
 private inductive Decision {body : Traversed prepared order runtime} (candidates : List (Candidate body)) (q : Position prepared) where
   | skipped (already : prepared.source.pending.entries[q.val].unconsumed = false)
@@ -238,8 +276,8 @@ private def classify {body : Traversed prepared order runtime} (candidates : Lis
         | none => exact .residual need.symm (by simp [covered,same,single,(original i).trans atIndex])
         | some found =>
           have selected := (original i).trans atIndex
-          if yes : found.queueIndex = q ∧ found.origin.accepted = true then
-            exact .consumed ⟨i,found,selected,yes.1,need.symm,same,found.origin.sound yes.2⟩
+          if yes : found.queueIndex = q ∧ found.accepted = true then
+            exact .consumed ⟨i,found,selected,yes.1,need.symm,same,found.sound yes.2⟩
               (by simp [covered,same,single,selected,yes])
           else exact .residual need.symm (by simp [covered,same,single,selected,yes])
 
@@ -279,7 +317,7 @@ def Report.hasStandaloneMeaning {body : Traversed prepared order runtime} {indic
     WorkM Bool := do
   exactWork (Exact.charge (16*(report.consumed.length+body.checked.receipts.length+1)^2))
   return report.consumed.any fun entry =>
-    body.checked.receipts[entry.2.link.receiptIndex].request.origin.isStandaloneMeaning
+    body.checked.receipts[entry.2.candidate.receiptIndex].request.origin.isStandaloneMeaning
 
 def read (body : Traversed prepared order runtime) :
     WorkM (Report body (List.finRange prepared.source.pending.entries.length)) := do

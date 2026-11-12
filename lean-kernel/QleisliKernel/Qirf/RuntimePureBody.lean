@@ -426,10 +426,10 @@ def ExecutionMode.Receipt {artifact root} : ExecutionMode artifact root → Type
   | .planned _ continuation => RuntimeGraphOperation.StagedReceipt continuation
 
 def ExecutionMode.checkSignature {artifact root} (mode : ExecutionMode artifact root) {owner name}
-    (signature : SourceRuntimeContext.Signature artifact.sources owner name) : WorkM Unit :=
+    (signature : SourceRuntimeContext.Signature artifact.sources owner name) (hasOriginalCaller : Bool) : WorkM Unit :=
   match mode with
   | .fresh operations => operations.checkSignature signature
-  | .planned _ _ => guard signature.operations.rootRequirements.isEmpty .request
+  | .planned _ _ => guard (hasOriginalCaller || signature.operations.rootRequirements.isEmpty) .request
 
 def ExecutionMode.referenceCount {artifact root} (mode : ExecutionMode artifact root)
     (cursor : mode.queries.Cursor) : Nat :=
@@ -540,7 +540,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
     (next : BlockRunner artifact root execution) : BlockRunner artifact root execution :=
   fun mode outputBoundary {rootOwner rootName owner name} source path program request sourcePlan initialHistory initialOrdinary block => do
     let dependencies := root.dependencies
-    execution.checkSignature source.signature
+    execution.checkSignature source.signature (match path with | .root _ => false | .named .. => true)
     match mode with
     | .pureBody =>
       guard (program.effect != .observe && SourceEffect.permits (some program.effect) source.effect &&

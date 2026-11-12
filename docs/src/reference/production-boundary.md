@@ -298,8 +298,10 @@ Rectangular applications through a named call retain the written
 `checked_op` at its supplying argument, even when the callee leaves the
 argument unused. A rectangular application checks the distinct input and
 output codes against the actual Raw interval and preserves the spectator
-frame. Declared Meaning requirements in operation formals and wider
-qmatch remain pending. Independent
+frame. A Meaning declared on an operation formal checks the exact supplied
+argument, including unused actuals. The original header duty and any
+`checked_op` written at the call site each retain their own source occurrence.
+Wider qmatch remains pending. Independent
 host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 

@@ -168,19 +168,20 @@ impl Compiler<'_> {
         span: Span,
         key: Key,
         meaning: Option<Key>,
+        inside_formal_meaning: bool,
         effect: Effect,
         basis: Ty,
         codomain: Ty,
         program: &AcceptedProgram,
     ) -> Result<Operation, CompileError> {
-        let Some(meaning) = meaning else {
+        if meaning.is_none() && !inside_formal_meaning {
             return Err(self.error(
                 module,
                 span,
                 ErrorCode::Unsupported,
                 "typed provider requires an original checked Meaning occurrence",
             ));
-        };
+        }
         if effect > Effect::Isometry {
             return Err(self.error(
                 module,
@@ -199,7 +200,7 @@ impl Compiler<'_> {
             let matrix = self.carrier_program_action(module, span, &basis, &codomain, program)?;
             (None, matrix)
         };
-        let source_origin = self.provider_origin(key, Some(meaning), program, module, span)?;
+        let source_origin = self.provider_origin(key, meaning, program, module, span)?;
         let operation = Operation {
             basis,
             codomain,
@@ -212,7 +213,9 @@ impl Compiler<'_> {
             depth: 1,
             nodes: 1,
         };
-        self.validate_operation_meaning(&operation, meaning, module, span)?;
+        if let Some(meaning) = meaning {
+            self.validate_operation_meaning(&operation, meaning, module, span)?;
+        }
         Ok(operation)
     }
 }

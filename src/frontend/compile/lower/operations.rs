@@ -273,6 +273,7 @@ impl Lowerer<'_, '_> {
             [false; 3],
             &self.bindings,
             module,
+            false,
         )? {
             super::super::instances::StaticValue::Operation(operation) => Ok(operation),
             _ => Err(self.error(

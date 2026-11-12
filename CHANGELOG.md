@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check Meaning refinements declared in operation formals against the actual
+  original argument and exact ports, including unused nominal arguments.
 - Check rectangular nominal Meaning applications through original named
   calls. Check a written `checked_op` at its supplying argument, including
   unused arguments, and retain the exact input and output carrier codes.

@@ -283,6 +283,30 @@ structure Identified {sources catalogue rootOwner rootName owner name}
   binding : Binding queue path invocation
   source : FromPrepared queue.prepared invocation
 
+structure IdentifiedChild {sources catalogue rootOwner rootName caller}
+    (queue : @GenericDutyQueue.Checked sources catalogue)
+    (event : SourceRuntimeContext.NamedEvent sources caller)
+    (path : CallPath sources rootOwner rootName caller event.target.callerName)
+    (prior : Identified queue path) where
+  row : RowAt queue.prepared prior.record
+  call : PreparedApplication catalogue prior.record
+  member : call ∈ row.value.calls
+  edge : Edge event path call.application
+
+def IdentifiedChild.invocation {sources catalogue rootOwner rootName caller queue event path prior}
+    (child : @IdentifiedChild sources catalogue rootOwner rootName caller queue event path prior) :
+    Invocation catalogue child.call.target.entry.index :=
+  .call prior.invocation child.call.application child.call.target
+
+def identifyChild {sources catalogue rootOwner rootName caller}
+    (queue : @GenericDutyQueue.Checked sources catalogue)
+    (event : SourceRuntimeContext.NamedEvent sources caller)
+    (path : CallPath sources rootOwner rootName caller event.target.callerName)
+    (prior : Identified queue path) : WorkM (IdentifiedChild queue event path prior) := do
+  let row ← locateRow queue.prepared prior.record
+  let choice ← selectCall event path row.value
+  return ⟨row,choice.call,choice.member,choice.edge⟩
+
 /-- Derive the record/activity instance ID without taking a proposed ordinal.
 The root selection uses immutable original-source identity. Each named step
 resolves exactly one original prepared call within the derived parent record.
@@ -299,10 +323,9 @@ def identify {sources catalogue} (queue : @GenericDutyQueue.Checked sources cata
           .root body record selected.val (by with_reducible exact selected.property) rfl,.root record⟩
       | ⟨_,_,.named event _ _ parent⟩ => fun visit => do
         let prior ← visit ⟨_,_,parent⟩ (by decreasing_tactic)
-        let row ← locateRow queue.prepared prior.record
-        let choice ← selectCall event parent row.value
-        return ⟨choice.call.target.entry.index,.call prior.invocation choice.call.application choice.call.target,
-          .named prior.binding choice.edge,.named prior.source row choice.call choice.member⟩)
+        let child ← identifyChild queue event parent prior
+        return ⟨child.call.target.entry.index,.call prior.invocation child.call.application child.call.target,
+          .named prior.binding child.edge,.named prior.source child.row child.call child.member⟩)
     ⟨owner,name,path⟩
 
 end QleisliKernel.Qirf.RuntimeDutyInvocation

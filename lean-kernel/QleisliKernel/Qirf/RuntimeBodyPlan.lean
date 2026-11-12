@@ -94,7 +94,6 @@ mutual
 inductive Body {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :
     {owner name : String} → SourceRuntimeScope.Subject artifact.sources owner name → Context → Type where
   | mk {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name} {request : Context}
-      (noRootRequirements : source.signature.operations.rootRequirements.isEmpty = true)
       (positionsCount : request.positions.length = source.events.length)
       (offsets : request.positions.map (·.offset) = source.events.map SourceRuntimeContext.Event.offset)
       (actuals : List {actual : Sigma (StaticOperation.Actual artifact.sources source.signature.context) //

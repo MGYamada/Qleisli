@@ -90,6 +90,28 @@ private def graphWork (graph : GraphKey) : Nat :=
       | .permutation function | .phase function => referenceWork function
       | .compose .. | .tensor .. => 1) 0+1)
 
+structure RequestMatch {sources} (first second : SourceMeaning.Request sources) : Prop where
+  caller : first.caller = second.caller
+  moduleName : first.moduleName = second.moduleName
+  declarationName : first.declarationName = second.declarationName
+  queryRows : first.queryRows = second.queryRows
+  graph : graphKey first.meaning.graph = graphKey second.meaning.graph
+
+def readRequestMatch {sources} (first second : SourceMeaning.Request sources) :
+    WorkM (PLift (RequestMatch first second)) := do
+  let left := graphKey first.meaning.graph
+  let right := graphKey second.meaning.graph
+  let fields := fun (request : SourceMeaning.Request sources) =>
+    (request.caller.map String.utf8ByteSize).getD 0 + request.moduleName.utf8ByteSize +
+      request.declarationName.utf8ByteSize + rowBytes request.queryRows
+  exactWork (Exact.charge (16*(fields first+fields second+1)+graphWork left+graphWork right))
+  if names : first.caller = second.caller ∧ first.moduleName = second.moduleName ∧
+      first.declarationName = second.declarationName ∧ first.queryRows = second.queryRows then
+    if graph : left = right then
+      return ⟨⟨names.1,names.2.1,names.2.2.1,names.2.2.2,graph⟩⟩
+    else throw .request
+  else throw .request
+
 /-- Equal original graphs share the already evaluated specification and its
 actual reference bodies on the same independently validated native root. -/
 inductive Specification {artifact catalogue result} {root : Validity.Root} {child : RuntimeOperationTree.Value}

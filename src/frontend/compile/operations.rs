@@ -792,6 +792,14 @@ impl Compiler<'_> {
             unreachable!("quantum unary interface")
         };
         let mkey = meaning.map(|m| self.meaning_key(module, m)).transpose()?;
+        if mkey.is_none() && (basis.basis_bits().is_none() || codomain.basis_bits().is_none()) {
+            return Err(self.error(
+                module,
+                name.span,
+                ErrorCode::Unsupported,
+                "typed provider requires an original checked Meaning occurrence",
+            ));
+        }
         if let Some(mkey) = &mkey {
             if self.meanings[mkey].basis != **basis || self.meanings[mkey].codomain != **codomain {
                 return Err(self.error(
@@ -856,6 +864,7 @@ impl Compiler<'_> {
             name.span,
             key,
             mkey,
+            false,
             effect,
             (**basis).clone(),
             (**codomain).clone(),
@@ -880,6 +889,7 @@ impl Compiler<'_> {
         span: Span,
         key: Key,
         meaning: Option<Key>,
+        inside_formal_meaning: bool,
         effect: Effect,
         basis: Ty,
         codomain: Ty,
@@ -891,7 +901,15 @@ impl Compiler<'_> {
             || meaning.is_some_and(|key| self.meanings[&key].target.is_none())
         {
             return self.carrier_provider_program(
-                module, span, key, meaning, effect, basis, codomain, program,
+                module,
+                span,
+                key,
+                meaning,
+                inside_formal_meaning,
+                effect,
+                basis,
+                codomain,
+                program,
             );
         }
         contract_basis(&basis)

@@ -157,14 +157,12 @@ private def assembleBody {artifact owner name} (mode : OperationMode artifact) (
     (exhausted : events.after.isEmpty = true) : scope.BodyData mode.preparation request :=
   match scope with
   | .supplied .. => ()
-  | .original source _ =>
-    if root : source.signature.operations.rootRequirements.isEmpty = true then
-      match prefixResult.planned,events.data with
-      | some prefixPlans,some eventPlans =>
-        some (.mk root positionsCount offsets actuals originalActuals prefixResult.after prefixPlans
-          events.after eventPlans exhausted)
-      | _,_ => none
-    else none
+  | .original _ _ =>
+    match prefixResult.planned,events.data with
+    | some prefixPlans,some eventPlans =>
+      some (.mk positionsCount offsets actuals originalActuals prefixResult.after prefixPlans
+        events.after eventPlans exhausted)
+    | _,_ => none
 
 def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {owner name : String} →
     (scope : Scope artifact owner name) → (request : Context) → WorkM (BodyResult mode scope request) :=
@@ -177,7 +175,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
       exactWork (Exact.charge (32*(events.length+request.positions.length+request.sites.length+
         request.calls.length+request.branches.length+request.bodies.length+request.references.length+1)^2))
       if offsets : request.positions.map (·.offset) = events.map SourceRuntimeContext.Event.offset then
-        let _ ← if scope.prefixRequired then mode.checkSignature signature else pure ()
+        let _ ← if scope.prefixRequired then mode.checkSignature signature scope.incoming.isSome else pure ()
         let originals ← NaturalAffine.witness
           (if scope.prefixRequired then RuntimeProviderHeaders.originalActualSlots signature.operations else pure [])
         let prefixResult ← prefixRead mode next signature originals.val scope.incoming (Queues.ofContext request) (!request.references.isEmpty)

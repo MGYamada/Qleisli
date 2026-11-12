@@ -156,7 +156,8 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-64-standalone-meaning",
                 "refs/heads/codex/beta-64-nominal-meaning-ports",
                 "refs/heads/codex/beta-64-nominal-meaning-composition",
-                "refs/heads/codex/beta-64-rectangular-nominal-meaning")
+                "refs/heads/codex/beta-64-rectangular-nominal-meaning",
+                "refs/heads/codex/beta-64-declared-meaning")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:
