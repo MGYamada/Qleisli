@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import QleisliKernel.Qirf.RuntimeWorkspace
+import QleisliKernel.Target.CanonicalOpenQasmWorkspace
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Actual original computed scope typing, owner histories and source bodies.
@@ -71,7 +72,8 @@ private def cleanControlled :=
 #guard ((readWorkspaceAction cleanControlled).run 20000000).1.toOption == some 4
 
 private def workspaceInterval (sourceText : String) (operations : List Semantics.Observation.Op)
-    (fresh : Bool) : Finite.WorkM (List Nat × List Nat × Raw.WorkspaceResources.Counts × Nat) := do
+    (fresh : Bool) (targetTest : Option (String × List Nat × Nat × Nat) := none) :
+    Finite.WorkM (List Nat × List Nat × Raw.WorkspaceResources.Counts × Nat) := do
   let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ sourceText)] "main" "route"
   let [.workspace event children] := source.events | throw .request
   let data : Semantics.Raw.Port := ⟨10,[6],1⟩
@@ -90,6 +92,9 @@ private def workspaceInterval (sourceText : String) (operations : List Semantics
   let original ← Qirf.RuntimeWorkspace.readOriginal event children
   let checked ← Qirf.RuntimeWorkspace.readLiteral original interval before
   let map ← Qirf.RuntimeWorkspace.readCallerMap checked #[]
+  if let some (text,layout,start,count) := targetTest then
+    let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
+    let _ ← Target.CanonicalOpenQasmWorkspace.checkLifetime map target layout start count
   return (checked.continuation.bindings.map (·.port.token),checked.continuation.issued.map (·.ordinal),
     map.resources.counts,map.resources.expandedBodySteps)
 
@@ -109,6 +114,22 @@ private def dirtyOps (steps : List Semantics.Finite.Step) (data : Nat := 10) (sc
 #guard ((workspaceInterval cleanScope (cleanOps [hData] [hData] [1,1]) true).run 20000000).1.toOption.isNone
 #guard ((workspaceInterval dirtyScope (dirtyOps [hData,zScratch]) false).run 20000000).1.toOption.isNone
 #guard ((workspaceInterval dirtyScope (dirtyOps [hData] 11 10) false).run 20000000).1.toOption.isNone
+
+private def targetWorkspace (width : Nat) (gates : String) : String :=
+  s!"OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[{width}] q;\nreset q;\n{gates}"
+
+private def targetWorkspaceAccepted (fresh : Bool) (text : String) (layout : List Nat) (start count : Nat) : Bool :=
+  let (source,operations) := if fresh then (cleanScope,cleanOps [hData] [hData]) else (dirtyScope,dirtyOps [hData])
+  ((workspaceInterval source operations fresh (some (text,layout,start,count))).run 20000000).1.isOk
+
+#guard targetWorkspaceAccepted true (targetWorkspace 3 "h q[2];\n") [2,0] 0 1
+#guard targetWorkspaceAccepted false (targetWorkspace 3 "x q[0];\nh q[2];\nz q[0];\n") [2,0] 1 1
+#guard !targetWorkspaceAccepted false (targetWorkspace 3 "h q[2];\n") [0,2] 0 1
+#guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[2];\nz q[0];\n") [2,0] 0 2
+#guard !targetWorkspaceAccepted true (targetWorkspace 3 "x q[0];\nh q[2];\n") [2,0] 1 1
+#guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[2];\nz q[0];\n") [2,0] 0 1
+#guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[1];\n") [2,0] 0 1
+#guard !targetWorkspaceAccepted true (targetWorkspace 1 "h q[0];\n") [0,0] 0 1
 
 private def expandedWorkspaceBody : Finite.WorkM Nat := do
   let gate : Semantics.Raw.Op := .gate .h 0 1

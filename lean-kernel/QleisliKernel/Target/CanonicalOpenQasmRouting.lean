@@ -8,12 +8,12 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Target.CanonicalOpenQasmRouting
 open Finite
 
-private def ascii (text : String) : List UInt8 := text.toUTF8.data.toList
+def ascii (text : String) : List UInt8 := text.toUTF8.data.toList
 
 private def digit (byte : UInt8) : Option Nat :=
   if 48 ≤ byte.toNat && byte.toNat ≤ 57 then some (byte.toNat - 48) else none
 
-private def index : List UInt8 → Option (Nat × List UInt8)
+def index : List UInt8 → Option (Nat × List UInt8)
   | 49 :: 48 :: 93 :: rest => some (10,rest)
   | 49 :: 49 :: 93 :: rest => some (11,rest)
   | 49 :: 50 :: 93 :: rest => some (12,rest)
@@ -22,7 +22,7 @@ private def index : List UInt8 → Option (Nat × List UInt8)
 
 /-- Canonical OpenQASM wire operands have no leading zero. The terminal
 exporter only uses physical locations 0 through 11. -/
-private def operand : List UInt8 → Option (Nat × List UInt8)
+def operand : List UInt8 → Option (Nat × List UInt8)
   | 113 :: 91 :: digits => do
     let (axis,rest) ← index digits
     if axis < 12 then some (axis,rest) else none
@@ -42,13 +42,14 @@ private def word (bytes : List UInt8) : Option (List Semantics.Finite.Step) := d
     if line.length >= 19 then none else return (byte :: line,gates)) ([],[])
   if line.isEmpty then some gates.reverse else none
 
-private def header : List UInt8 := ascii "OPENQASM 3.0;\ninclude \"stdgates.inc\";\n"
+def header : List UInt8 := ascii "OPENQASM 3.0;\ninclude \"stdgates.inc\";\n"
 
 def declaration (bytes : ByteArray) : Option (Nat × Nat) := do
   let line := ((bytes.extract header.length (header.length+13)).data.toList).takeWhile (· != 10)
   let 113 :: 117 :: 98 :: 105 :: 116 :: 91 :: digits := line | none
   let (qubits,[32,113,59]) ← index digits | none
-  if qubits == 0 then none else some (qubits,header.length+line.length+1)
+  let endOfLine := header.length+line.length
+  if qubits == 0 || bytes.data[endOfLine]? != some 10 then none else some (qubits,endOfLine+1)
 
 def decode (bytes : ByteArray) (start stop : Nat) : Option (List Semantics.Finite.Step) := do
   if !(bytes.size ≤ 1048576 && header.length ≤ start && start ≤ stop && stop ≤ bytes.size &&

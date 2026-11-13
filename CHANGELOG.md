@@ -9,6 +9,8 @@ development milestones from the scope of their evidence.
 - Prove exact ordered placement transport and count literal gates for a
   fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
   declared target connectivity.
+- Read complete canonical OpenQASM terminal resources and check a designated
+  target gate interval against the original clean/dirty workspace operator.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.

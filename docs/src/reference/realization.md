@@ -497,6 +497,19 @@ A complete certificate still establishes that the interval is used for
 routing and that its entry placement is correct. It also checks the other
 target operations, allocation, release and reuse.
 
+The canonical terminal profile reserves all declared physical locations
+and resets them before its first gate. It retains the reservation through
+terminal measurement. The independent complete-artifact reader counts
+reserved and reset wires, gates, literal SWAPs, T/TDG and measurements from
+the output bytes. An exact finite workspace check can also compare a
+designated gate interval with the independently checked original clean or
+dirty body. The comparison uses the declared ordered data/scratch placement
+and requires the physical register to cover the checked Raw peak. For a fresh
+scratch wire, the checker can verify that nothing touches it between the
+initial reset and workspace entry, or after exact restoration. This profile
+keeps the physical reservation throughout. The surrounding circuit must
+establish the placement of live owners and any reuse across intervals.
+
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
 Compiler memory, checker work limits, static termination, ownership safety
