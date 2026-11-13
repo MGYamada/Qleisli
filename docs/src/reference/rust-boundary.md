@@ -426,7 +426,7 @@ ordinary user-defined identifier with the same spelling.
 | `Eq` / `Ord` / `Hash` | No ordinary relation on live quantum owners, including nested and zero-width owners. Internal IDs, ordinary values, explicit coherent comparison and state-testing procedures retain distinct meanings; see [ordinary relations](#ordinary-relations-and-live-quantum-owners). |
 | Wildcard / rest patterns | `_` may ignore only unrestricted data; every quantum-containing matched field remains linear. Ordinary tuple patterns retain exact immediate shape. Rest patterns are absent; their future omission must not hide owners. |
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. See the [checking and execution boundary](source-text.md#checking-failures-and-quantum-execution). |
-| Shared `&` / exclusive `&mut` / `ctrl` | Finite projects and selected Raw support whole owners and static indexed/slice arguments, with fresh native sector checks for `ctrl`. Hierarchical selected-place lowering and checker-free control emission remain unsupported. Stored references, escaping views and access parameter declarations remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
+| Shared `&` / exclusive `&mut` / `ctrl` | Finite projects and selected Raw support whole owners and static indexed/slice arguments, with fresh native sector checks for `ctrl`. Hierarchy supports bounded `excl` selections. Checker-free control emission remains unsupported. Stored references, escaping views and access parameter declarations remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
 | `borrow` versus clean/dirty workspace | `borrow` has no builtin quantum-resource semantics. `excl`/`ctrl` express access; clean/dirty express independent workspace restoration obligations. See the [access vocabulary](#access-vocabulary-and-workspace-contracts). |
 
 ## Explicit calls and receiver access
@@ -539,8 +539,9 @@ The current call form requires every runtime argument to use an access marker;
 mixed ordinary/access arguments, escaping handles and access-parameter
 declarations remain unimplemented. Indexed selections have a common AST and
 static bounds/disjointness judgment. The finite project compiler and selected
-Raw lowering partition and reassemble their updated owners. Explicit
-hierarchical lowering still refuses selected places. See [static places](elaboration.md#static-ordered-axis-places).
+Raw lowering partition and reassemble their updated owners. Hierarchy supports
+`excl` on up to eight axes per selected owner and replays the structural
+interval against the original places. See [static places](elaboration.md#static-ordered-axis-places).
 Selected-source preparation
 retains `ctrl` roles as obligations with original source identities and spans.
 `ElaboratedProgram::lower_raw_with_kernel` and selected CLI Raw checking require

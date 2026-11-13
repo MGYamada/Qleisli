@@ -45,16 +45,15 @@ pub(super) fn classify(step: &SourceStep) -> Option<Kind> {
     }
 }
 
-pub(super) fn needs_replay(proposal: &HierarchyProposal) -> bool {
-    proposal
-        .source
+pub(super) fn needs_replay(source: &ElaboratedProgram) -> bool {
+    source
         .definitions()
         .iter()
         .flat_map(|definition| definition.steps())
-        .any(|step| step.basis_table().is_some())
+        .any(|step| step.basis_table().is_some() || step.partition().is_some())
 }
 
-pub(super) fn operation_uses_table(
+pub(super) fn operation_needs_replay(
     source: &ElaboratedProgram,
     operation: &SourceOperation,
 ) -> Result<bool> {
@@ -85,7 +84,7 @@ pub(super) fn operation_uses_table(
             p::invalid("source operation references an absent original definition")
         })?;
         for step in definition.steps() {
-            if step.basis_table().is_some() {
+            if step.basis_table().is_some() || step.partition().is_some() {
                 return Ok(true);
             }
             if let Some(id) = step.called_definition() {
@@ -225,7 +224,7 @@ pub(super) fn validate_operation_event(
     let Some(operation) = step.operation() else {
         return Ok(());
     };
-    if !operation_uses_table(&proposal.source, operation)? {
+    if !operation_needs_replay(&proposal.source, operation)? {
         return Ok(());
     }
     if !operation_has_structural_tables(&proposal.source, operation)? {
@@ -469,7 +468,7 @@ fn identity(defs: &[Value], id: usize, before: &[Port], after: &[Port]) -> Resul
 }
 
 pub(super) fn validate(proposal: &HierarchyProposal) -> Result<()> {
-    if !needs_replay(proposal) {
+    if !needs_replay(&proposal.source) {
         return if proposal.zero_basis.is_empty()
             && proposal.pure_traces.is_empty()
             && proposal.native_sources.is_empty()

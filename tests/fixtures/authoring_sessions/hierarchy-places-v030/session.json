@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#29 lower an original indexed access through the hierarchy",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "e501e41a7645490ce9dabc1302c28b3a4ffc5a99",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Compare the same index with explicit owner flow in both profiles.",
+      "sha256": {
+        "main.qli": "13efc3e93dcf826384c1fdc4a5c75e825c7a338a35ab3af507f9b623579ee2dc"
+      },
+      "observations": [
+        "current-observation.json"
+      ],
+      "reports": [
+        "indexed-hierarchy-first.json",
+        "explicit-hierarchy-control.json",
+        "indexed-raw-control.json",
+        "indexed-hierarchy-current.json"
+      ]
+    }
+  ]
+}

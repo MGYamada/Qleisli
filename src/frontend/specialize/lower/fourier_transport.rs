@@ -337,7 +337,7 @@ fn rewrite(original: &HierarchyProposal, work: &mut usize) -> Result<Option<Rewr
         zero_basis: vec![],
         pure_traces: vec![],
         native_sources: vec![],
-        trace_zero_basis: false,
+        trace_structural_source: false,
         pure_trace_cells: 0,
     };
     let mut wrappers = BTreeMap::<usize, Vec<usize>>::new();
@@ -383,7 +383,7 @@ fn rewrite(original: &HierarchyProposal, work: &mut usize) -> Result<Option<Rewr
                 let Some(definition) = operation.definition() else {
                     continue;
                 };
-                if zero_basis::operation_uses_table(&original.source, operation)? {
+                if zero_basis::operation_needs_replay(&original.source, operation)? {
                     continue;
                 }
                 // Keep the full caller-visible effect and exact selected instance.
@@ -462,7 +462,7 @@ fn rewrite(original: &HierarchyProposal, work: &mut usize) -> Result<Option<Rewr
 }
 
 pub(super) fn propose(original: HierarchyProposal) -> Result<HierarchyProposal> {
-    if !original.instrument || !zero_basis::needs_replay(&original) {
+    if !original.instrument || !zero_basis::needs_replay(&original.source) {
         return Ok(original);
     }
     let mut work = REPLAY_WORK;
@@ -736,7 +736,7 @@ mod tests {
             zero_basis: vec![],
             pure_traces: vec![],
             native_sources: vec![],
-            trace_zero_basis: false,
+            trace_structural_source: false,
             pure_trace_cells: 0,
         };
         let node = &actual.nodes[leaf];

@@ -1632,6 +1632,64 @@ fn selected_slices_apply_nontrivial_actions_in_half_open_axis_order() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn hierarchy_selected_places_preserve_slice_order_phase_and_reference() {
+    use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
+    let kernel = Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+        qleisli::edition::Edition::E2026,
+    );
+    let text = "
+        use std::gate::x;
+        use std::gate::z;
+        unitary fn update(q:Q<Bits<2>>)->Q<Bits<2>>{x(excl q[0]);z(excl q[1]);q}
+        pub unitary fn main(input:Q<(Bits<3>,Bit)>)->Q<(Bits<3>,Bit)>{
+            let(q,r)=split(input);
+            update(excl q[1..3]);
+            global_phase_eighth(excl q[2..2]);
+            join(q,r)
+        }";
+    let proposal = selected(text)
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap();
+    let checked = kernel
+        .check_against_native(proposal.payload(), proposal.comparison_request())
+        .unwrap();
+    proposal.validate_pure_source_steps(&checked).unwrap();
+    let input: Vec<_> = (0..32)
+        .map(|i| [i as f64 + 0.5, 0.125 - i as f64 / 16.0])
+        .collect();
+    let expected: Vec<_> = (0..32)
+        .map(|i| {
+            let [re, im] = input[i ^ 2];
+            let sign = if i & 4 == 0 { 1.0 } else { -1.0 };
+            [
+                sign * (re - im) * std::f64::consts::FRAC_1_SQRT_2,
+                sign * (re + im) * std::f64::consts::FRAC_1_SQRT_2,
+            ]
+        })
+        .collect();
+    let output = checked
+        .execute_pure(
+            &input,
+            2,
+            ExecutionLimits {
+                max_amplitudes: 64,
+                max_steps: 10_000,
+            },
+        )
+        .unwrap();
+    assert_runtime_amplitudes(&output.amplitudes, &expected);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn selected_place_control_rechecks_bound_provider_and_shared_work() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     let text = "use std::gate::z;fn provider(q:Q<Bit>)->Q<Bit>{z(q)}unitary fn apply[const U:Op<Bit>](q:Q<Bits<3>>)->Q<Bits<3>> requires Applicable(U){U(ctrl q[1]);q}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{apply[provider](q)}";

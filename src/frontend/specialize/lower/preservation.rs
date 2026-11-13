@@ -889,11 +889,15 @@ impl Replay<'_> {
                 ));
             }
         }
+        if let Some(partition) = step.partition() {
+            super::places::validate_partition(self.definitions, e, partition)?;
+        }
         self.event_contract(
             e,
             step.primitive_kind(),
             step.effect(),
-            super::zero_basis::classify(step) == Some(super::zero_basis::Kind::Structural),
+            step.partition().is_some()
+                || super::zero_basis::classify(step) == Some(super::zero_basis::Kind::Structural),
         )
     }
     // Overrides originate only in replay of the retained constructor tree,
@@ -1374,7 +1378,7 @@ pub(super) fn validate_pure_definition(
         proposal,
         definitions,
         events: &trace.events,
-        zero_basis_replay: super::zero_basis::needs_replay(proposal),
+        zero_basis_replay: super::zero_basis::needs_replay(&proposal.source),
         next: 0,
         calls: 0,
         current: trace.inputs.clone(),
@@ -1439,7 +1443,7 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValida
         proposal,
         definitions: defs,
         events: &proposal.events,
-        zero_basis_replay: super::zero_basis::needs_replay(proposal),
+        zero_basis_replay: super::zero_basis::needs_replay(&proposal.source),
         next: 0,
         calls: 0,
         current: initial.clone(),

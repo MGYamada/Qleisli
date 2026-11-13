@@ -163,9 +163,10 @@ unproved bounds/disjointness, overflow and budget exhaustion fail at compile
 time; there is no runtime bounds panic.
 
 The finite project compiler and selected Raw lowering support concrete places
-within their bounded profiles. Each partitions each parent into ordered selected and remainder owners,
-calls the callee once with all selected arguments, then reconstructs each
-parent in reverse extraction order using the updated returned values. Empty
+within their bounded profiles. Each partitions the parent into ordered
+selected and remainder owners, calls the callee once with all selected
+arguments, then reconstructs the parent in reverse extraction order using the
+updated returned values. Empty
 selected and remainder owners retain their logical identities and scalar phase.
 Existing Split/Join instructions perform these partitions without physical
 SWAPs, preparation, measurement or cleanup. The project compiler submits its
@@ -176,10 +177,13 @@ A dormant action with closed ports can be checked without evaluating an
 inactive branch's register extraction. Checker-free control emission remains
 unsupported.
 
-Auto profile selection chooses Raw for partition steps before native checking.
-Explicit hierarchical lowering still refuses these steps. General source
-preservation, reference behavior and quantitative resource correspondence
-remain proof obligations.
+The hierarchy supports `excl` indices and slices on owners of up to eight axes
+using its existing bit extraction, reinsertion, and empty-owner operations.
+Source replay checks each partition's original ordered ports and the actual
+phase-free graph interval. Automatic profile selection can choose hierarchy
+for these calls. Selected `ctrl` continues to require native-checked Raw.
+General source preservation and quantitative resource correspondence remain
+proof obligations.
 
 ### Ordinary expressions and classical functions
 
