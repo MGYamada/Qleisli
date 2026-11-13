@@ -1,6 +1,7 @@
 import Qleisli.RawBranchFunction
 import Qleisli.RawPureInstrumentAction
 import Qleisli.RoutedControlCommutation
+import Qleisli.RuntimeAdjacentInterval
 import Qleisli.RuntimeForestProduct
 import Qleisli.RuntimeNamedThreePackedOutput
 import QleisliKernel.Qirf.RuntimeNamedFrameAxes
@@ -496,5 +497,33 @@ theorem first_promotion_preserves_second_axes
   · exact (promoted_preserves_coordinates sectors _ _ actual work left read row col nonzero).1 axis firstUses
 
 #print axioms first_promotion_preserves_second_axes
+
+/-- The source-bound extracts, calls and restores are consecutive reads of
+one Raw block. The matched boundaries retain the complete observing state. -/
+theorem checked_pair_boundaries
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs) :
+    first.owners.preamble.after = first.call.interval.frame.interval.before ∧
+    first.call.interval.frame.interval.after = first.owners.routing.before ∧
+    first.owners.routing.after = second.owners.preamble.before ∧
+    second.owners.preamble.after = second.call.frame.interval.before ∧
+    second.call.frame.interval.after = second.owners.routing.before := by
+  have adjacentAt {deps program} {body : RuntimeInterval.Block deps program} {begin count offset length : Nat}
+      (route : RuntimeInterval.Checked body begin count)
+      (call : RuntimeInterval.Checked body offset length) (stop : begin+count = offset) :
+      route.after = call.before := by
+    subst offset
+    exact RuntimeAdjacentSlices.adjacent route call
+  exact ⟨adjacentAt first.owners.preamble first.call.interval.frame.interval (by simp),
+    RuntimeAdjacentSlices.adjacent first.call.interval.frame.interval first.owners.routing,
+    RuntimeAdjacentSlices.adjacent first.owners.routing second.owners.preamble,
+    adjacentAt second.owners.preamble second.call.frame.interval (Nat.add_sub_of_le second.owners.bounded),
+    RuntimeAdjacentSlices.adjacent second.call.frame.interval second.owners.routing⟩
+
+#print axioms checked_pair_boundaries
 
 end Qleisli.Raw.AccessCommutation
