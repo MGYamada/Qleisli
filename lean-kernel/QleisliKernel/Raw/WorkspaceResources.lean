@@ -64,23 +64,68 @@ theorem peak_bounds_event (events : List RawEvent) (initial : Counts) (event : R
     readCounts entryWidth [.circuit entryWidth body] = ⟨entryWidth,0,0,0,body.length,0⟩ := by
   simp [readCounts,Counts.then_,eventCounts]
 
-def physicalSteps : RawEvent → List Semantics.Finite.Step
+private def physicalSteps : RawEvent → List Semantics.Finite.Step
   | .computed _ _ _ _ _ body _ | .circuit _ body => body
   | _ => []
 
-def bodyExpansion (receipts : List Semantics.ObservingFunction.Receipt) (events : List RawEvent) : WorkM Nat := do
-  let steps := events.flatMap physicalSteps
-  exactWork (Exact.charge (16*(steps.length+1)*(receipts.length+1)))
-  lift (readOption (steps.foldlM (Semantics.Function.countStep (receipts.map (·.expandedSteps))) 0))
+private abbrev Receipts := Array Semantics.ObservingFunction.Receipt
+private abbrev Costs := Array (Option Nat)
 
-theorem bodyExpansion_value (receipts : List Semantics.ObservingFunction.Receipt) (events : List RawEvent)
-    (count work left : Nat) (ok : (bodyExpansion receipts events).run work = (.ok count,left)) :
-    (events.flatMap physicalSteps).foldlM (Semantics.Function.countStep (receipts.map (·.expandedSteps))) 0 =
-      some count := by
-  obtain ⟨_,paid,_,ran⟩ := bind_success _ _ work left count ok
-  have read := (lift_success _ _ paid left ran).1
-  cases found : (events.flatMap physicalSteps).foldlM
-      (Semantics.Function.countStep (receipts.map (·.expandedSteps))) 0 <;> simp_all [readOption]
+private def receiptFields : Nat → List Semantics.Observation.Op → Nat :=
+  Nat.rec (fun _ => 0) (fun _ recurse ops =>
+    (ops.length+1)^2 + (ops.map fun op => match op with
+      | .pure operation => Raw.rawFields ⟨[],[operation],[],.unitary⟩
+      | .branch _ left right quantum classical =>
+        1 + recurse left + recurse right + classical.length +
+          (quantum.map fun phi => 1+phi.wires.length).sum
+      | _ => 1).sum)
+
+private def localWork : RawEvent → Nat
+  | .computed .. => 2
+  | .protectedComputed _ _ _ _ _ uses => 2+uses.length
+  | .circuit .. => 0
+  | .reorder bits axes => if axes == List.range bits then 0 else 1
+  | .init0 .. | .liftBasis .. => 1
+
+private def countSteps
+    (resolve : Nat → Costs → WorkM (Nat × Costs)) (steps : List Semantics.Finite.Step)
+    (initial : Nat × Costs) : WorkM (Nat × Costs) :=
+  steps.foldlM (fun (sum,costs) step => do
+    exactWork (Exact.charge 8)
+    match step.action with
+    | .contract _ index _ =>
+      let (expanded,costs) ← resolve index costs
+      pure (sum+expanded,costs)
+    | _ => pure (sum+1,costs)) initial
+
+/-- Count a dependency's literal, selected implementation. The stored logical
+expansion may omit the computed auxiliary and is used by other callers.
+Cache counts at original artifact indices. A call charges the same physical
+integer count in either direction. -/
+private def countReceipt (receipts : Receipts) :
+    Nat → Nat → Costs → WorkM (Nat × Costs) :=
+  Nat.rec (fun _ _ => throw .limit) (fun _ recurse index costs => do
+    exactWork (Exact.charge 8)
+    if let some cost := costs[index]?.join then return (cost,costs)
+    else
+      let receipt ← lift (readOption receipts[index]?)
+      guard (receipt.depth != 0) .request
+      let program := receipt.input.implementation
+      let fields := receiptFields 65 program.operations
+      exactWork (Exact.charge (16*(fields+1)))
+      let prepared ← lift (readOption (Semantics.Observation.read program))
+      let (_,events) ← Raw.BranchFunction.selected 65 prepared.events []
+      let (expanded,costs) ← events.foldlM (fun (sum,costs) event =>
+        countSteps recurse (physicalSteps event) (sum+localWork event,costs)) (0,costs)
+      return (expanded,costs.set! index (some expanded)))
+
+/-- Top-level predicate passes are reported by Counts. Nested physical
+expansion additionally includes the preparation/cleanup work in dependencies. -/
+def bodyExpansion (receipts : List Semantics.ObservingFunction.Receipt) (events : List RawEvent) : WorkM Nat := do
+  exactWork (Exact.charge (16*(events.length+receipts.length+1)))
+  let (expanded,_) ← countSteps (countReceipt receipts.toArray 32) (events.flatMap physicalSteps)
+    (0,Array.replicate receipts.length none)
+  return expanded
 
 structure Checked (receipts : List Semantics.ObservingFunction.Receipt)
     (before after : Semantics.RawTrace.Interface) (operations : List Semantics.Raw.Op) where
