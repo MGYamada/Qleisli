@@ -1,0 +1,14 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Qleisli Project Contributors
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/data_loading/qrom.py
+// Selected symbol: QROM; fixed data [1,2,3,0], low address bit first.
+
+use kernel::kernel;
+observe fn main() -> (((Bit, Bit), Bit), Bit) {
+    let q = kernel(join(join(join(init0(), init0()), init0()), init0()));
+    let (abc, d) = split(q);
+    let (ab, c) = split(abc);
+    let (a, b) = split(ab);
+    (((measure_z(a), measure_z(b)), measure_z(c)), measure_z(d))
+}
