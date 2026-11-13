@@ -82,7 +82,8 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-64-declared-meaning",
     "refs/heads/codex/beta-64-computed-predicate",
     "refs/heads/codex/beta-64-certified-computed",
-    "refs/heads/codex/beta-64-computed-product-action"))
+    "refs/heads/codex/beta-64-computed-product-action",
+    "refs/heads/codex/beta-303-ordered-access"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),

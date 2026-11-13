@@ -20,6 +20,7 @@ import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.SourceTypes.QuantumMatch
 import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.SourceTypes.QuantumSequence
+import QleisliKernel.SourceTypes.AccessSyntax
 import QleisliKernel.SourceTypes.OperationAccess
 import QleisliKernel.SourceTypes.SourceRuntimeContext
 import QleisliKernel.SourceTypes.SourceRuntimeTrace

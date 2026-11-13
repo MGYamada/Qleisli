@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.CallSyntax
+import QleisliKernel.SourceTypes.AccessSyntax
 
 /-! Bounded original-token controls; no name/owner/effect or body acceptance.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -51,5 +52,38 @@ example : ((parsed "/*λ*/h(q)").map fun call =>
     (call.callee.head?.map (·.span.startByte),call.opening.span.startByte,
       call.arguments.head?.map (fun arg => arg.tokens.head?.map (·.span.startByte)),
       call.closing.span.endByte)) = some (some 6,7,some (some 8),10) := by decide +kernel
+
+open AccessSyntax in
+private def places (source : String) : Option (List Place × List Place) := do
+  let tokens ← (lexLocated source).toOption
+  let both ← (readAdjacent tokens).toOption
+  let owners name := if name == "q" then some (⟨⟨name,⟨0,1⟩⟩,[.bits 3],[7,2,5]⟩ : Owner)
+    else if name == "empty" then some ⟨⟨name,⟨2,7⟩⟩,[.bits 0],[]⟩ else none
+  let naturals path := if path == ["i"] then some 1 else none
+  return (← both.before.places owners naturals (fun _ _ => none),
+    ← both.after.places owners naturals (fun _ _ => none))
+
+example : (places "cnot(ctrl q[i],excl q[0]); cnot(ctrl q[i],excl q[2]); q").map
+    (fun (left,right) => (left.map (·.axes),right.map (·.axes),AccessSyntax.compatible left right)) =
+    some ([[2],[7]],[[2],[5]],true) := by decide +kernel
+
+example : (places "cnot(ctrl q[1],excl q[0]); z(excl q[0]); q").map
+    (fun (left,right) => AccessSyntax.compatible left right) = some false := by decide +kernel
+
+example : (places "f(excl empty); g(ctrl empty); empty").map
+    (fun (left,right) => AccessSyntax.compatible left right) = some false := by decide +kernel
+
+example : (places "f(excl q[1..3]); g(ctrl q[i-i..1]); q").map
+    (fun (left,right) => (left.map (·.axes),right.map (·.axes),AccessSyntax.compatible left right)) =
+    some ([[2,5]],[[7]],true) := by decide +kernel
+
+example : (places "f(excl q[3]); g(ctrl q[1]); q").isNone = true := by decide +kernel
+example : (places "f(excl q[1. .3]); g(ctrl q[1]); q").isNone = true := by decide +kernel
+example : (places "f(excl q[1],q); g(ctrl q[1]); q").isNone = true := by decide +kernel
+example : (places "f(excl q[1],); g(ctrl q[1]); q").isNone = true := by decide +kernel
+example : (places "f(excl q[1]); (); g(ctrl q[1]); q").isNone = true := by decide +kernel
+example : (places "f(excl q[1]) g(ctrl q[2]); h(ctrl q[1]); q").isNone = true := by decide +kernel
+example : (places "defs::f[1](excl q[1]); g(ctrl q[2]); q").map
+    (fun (left,right) => AccessSyntax.compatible left right) = some true := by decide +kernel
 
 end QleisliKernel.Tests.CallSyntaxTests
