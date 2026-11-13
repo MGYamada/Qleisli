@@ -134,7 +134,7 @@ jobs:
 
   check-rust:
     needs: [changes, check-rust-differential, check-rust-remaining]
-    if: always() && needs.changes.outputs.profile == 'full'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.profile == 'full'
     runs-on: ubuntu-latest
     env:
       RUST_NEEDS_JSON: ${{ toJSON(needs) }}
@@ -210,7 +210,7 @@ jobs:
 
   check-rust-msrv:
     needs: [changes, check-rust-msrv-differential, check-rust-msrv-remaining]
-    if: always() && needs.changes.outputs.profile == 'full'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.profile == 'full'
     runs-on: ubuntu-latest
     env:
       RUST_NEEDS_JSON: ${{ toJSON(needs) }}
@@ -529,7 +529,7 @@ jobs:
 
   check-distribution:
     needs: [changes, check-distribution-package, check-rust]
-    if: always() && needs.changes.outputs.profile == 'full'
+    if: always() && needs.changes.result == 'success' && needs.changes.outputs.profile == 'full'
     outputs:
       release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
       dependency-cache: ${{ needs['check-distribution-package'].outputs['dependency-cache'] }}

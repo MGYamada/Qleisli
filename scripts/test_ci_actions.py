@@ -73,6 +73,13 @@ class CIActions(unittest.TestCase):
         self.assertIn('base: ${{ steps.select.outputs.base }}', job('changes'))
         self.assertIn('CONSTITUTION_BASE: ${{ needs.changes.outputs.base || inputs.release_base ||', job('check-docs'))
         self.assertIn('if: always()', job('required'))
+        for name in ('check-rust', 'check-rust-msrv', 'check-distribution'):
+            with self.subTest(aggregate=name):
+                self.assertIn(
+                    "if: always() && needs.changes.result == 'success' && "
+                    "needs.changes.outputs.profile == 'full'",
+                    job(name),
+                )
         self.assertIn('group: ${{ github.workflow }}-${{ github.run_id }}', workflow)
         self.assertIn('cancel-in-progress: false', workflow)
         self.assertIn('--report "$RUNNER_TEMP/pr-size.json"', job('changes'))

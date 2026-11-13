@@ -47,6 +47,8 @@ The `changes` job checks schema and admitted-guarantee source identities before
 scheduling executable validation. Stale records fail this inexpensive gate
 before Rust, native and distribution builds start. The independent
 `current-proof-records` workflow can still regenerate and verify those records.
+Rust and distribution aggregation start only after successful selection and
+source preflight. The required contexts still report a failed preflight.
 Each Rust producer also runs the pinned strict Clippy command before native
 preparation and test execution. The canonical lint/research verification remains
 in its complete validation plan and retains its source-bound receipt.
@@ -720,6 +722,12 @@ remain inert history, distinct from current checking and any speedup measurement
 Rust groups own their native preparation, so their setup action uses
 `prepare: 'false'`; the four other native consumers use the default preparation.
 The mathematical Lean job retains its separate model/full proof work.
+
+The compiled audit regression suite builds its neutral reduction-root fixtures
+once per invocation with the pinned Lean compiler. Each mutation retains its
+own directory, freshly compiled runtime roots and fresh execution of
+`lean-kernel/Audit.lean`. A fixture that imports the mutation is rebuilt in that
+directory. The real project audit and its release evidence remain separate.
 
 The workflow keeps scheduling, platform/tool installation, corpus/release
 conditions and the eight stable required contexts visible. Shared actions keep
