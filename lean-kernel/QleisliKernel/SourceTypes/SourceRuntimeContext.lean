@@ -475,6 +475,36 @@ structure ComputedEvent (sources : Sources) (caller : String) where
   returnedRead : SourceRuntimeComputed.returned written input body.value = .ok returned
   held : List Semantics.SourceOwners.Owner
 
+structure WorkspaceEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  written : SourceWorkspaceSyntax.Checked tokens
+  callerName : String
+  signature : Signature sources caller callerName
+  naturals : PhaseApplication.Naturals sources
+  scope : List String
+  input : Semantics.SourceOwners.Owner
+  scratch : Semantics.SourceOwners.Owner
+  fresh : Bool
+  nextOrdinal : Nat
+  freshMode : fresh = !written.parts.dirty.isSome
+  scratchType : scratch.basis = [.bit]
+  logical : ComputedLogical signature naturals scope input.basis
+    (some ⟨written.parts.logical,written.parts.logicalName⟩)
+  bodyInitial : Environment
+  seeded : (do
+    let data ← SourceRuntimeValues.bind [written.parts.dataBinder.text] [.owner input] []
+      (.workspaceData written.parts.header.calleeOffset)
+    SourceRuntimeValues.bind [written.parts.scratchBinder.text] [.owner scratch] data
+      (.workspaceScratch written.parts.header.calleeOffset)) = .ok bodyInitial
+  body : Arm sources caller bodyInitial written.parts.body
+  pure : body.inferredEffect = .unitary
+  complete : owners body.remaining = []
+  dataOut : Semantics.SourceOwners.Owner
+  scratchOut : Semantics.SourceOwners.Owner
+  returned : body.value = [.tuple 2,.owner dataOut,.owner scratchOut]
+  dataType : dataOut.basis = input.basis
+  scratchOutType : scratchOut.basis = [.bit]
+
 structure BranchEvent (sources : Sources) (caller : String) where
   tokens : List LocatedToken
   written : SourceControlSyntax.CheckedConditional tokens
@@ -602,6 +632,7 @@ inductive Event (sources : Sources) (caller : String) where
   | staticConditional (event : StaticEvent sources caller) (events : List (Event sources caller))
   | matching (event : MatchEvent sources caller) (arms : List (List (Event sources caller)))
   | computed (event : ComputedEvent sources caller) (body : List (Event sources caller))
+  | workspace (event : WorkspaceEvent sources caller) (body : List (Event sources caller))
   | registerPrimitive (event : RegisterEvent sources caller)
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
@@ -616,6 +647,7 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .staticConditional .. => none
   | .matching .. => none
   | .computed .. => none
+  | .workspace .. => none
   | .registerPrimitive event => some event.call.calleeOffset
 
 def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat :=
@@ -625,6 +657,7 @@ def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat
   | .staticConditional event .. => event.thenCalls ++ event.elseCalls
   | .matching event .. => event.arms.flatMap (·.2.calls)
   | .computed event .. => event.body.calls
+  | .workspace event .. => event.body.calls
   | _ => event.callOffset.toList
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
@@ -639,6 +672,7 @@ def Event.qmatchOffsets {sources caller} (event : Event sources caller) : List N
       QuantumSequence.originalOffsets event.written.parts.elseBody
   | .matching event .. => event.written.parts.arms.flatMap (fun arm => QuantumSequence.originalOffsets arm.body.tokens)
   | .computed event .. => QuantumSequence.originalOffsets event.written.parts.body
+  | .workspace event .. => QuantumSequence.originalOffsets event.written.parts.body
   | _ => event.qmatchOffset.toList
 
 def Event.basisOffsets {sources caller} : Event sources caller → List Nat
@@ -647,10 +681,12 @@ def Event.basisOffsets {sources caller} : Event sources caller → List Nat
   | .staticConditional event .. => event.selected.2.basisOffsets
   | .matching event .. => event.arms.flatMap (·.2.basisOffsets)
   | .computed event .. => event.body.basisOffsets
+  | .workspace event .. => event.body.basisOffsets
   | _ => []
 
 def Event.computedOffsets {sources caller} : Event sources caller → List Nat
   | .computed event .. => event.body.computedOffsets ++ [SourceRuntimeComputed.offset event.written]
+  | .workspace event .. => event.body.computedOffsets
   | .conditional event .. => event.thenArm.computedOffsets ++ event.elseArm.computedOffsets
   | .staticConditional event .. => event.selected.2.computedOffsets
   | .matching event .. => event.arms.flatMap (·.2.computedOffsets)
@@ -668,6 +704,7 @@ def Event.offset {sources caller} : Event sources caller → Nat
   | .staticConditional event .. => event.written.parts.keyword.span.startByte
   | .matching event .. => event.written.parts.keyword.span.startByte
   | .computed event .. => SourceRuntimeComputed.offset event.written
+  | .workspace event .. => event.written.parts.header.calleeOffset
   | .registerPrimitive event => event.call.calleeOffset
 
 def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
@@ -710,6 +747,7 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .matching event .. => event.naturals.sourceRows ++ event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows)
   | .computed event .. => event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
       event.predicate.canonical.staticRows ++ event.logical.sourceRows ++ event.body.staticRows
+  | .workspace event .. => event.naturals.sourceRows ++ event.logical.sourceRows ++ event.body.staticRows
   | .registerPrimitive event => event.naturals.sourceRows ++ CallName.sourceRows event.candidate ++
       event.application.arguments.flatMap (·.rows)
 

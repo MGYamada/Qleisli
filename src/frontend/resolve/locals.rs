@@ -1034,7 +1034,7 @@ impl<'ast> Task<'ast> {
                 ExprKind::If { .. } | ExprKind::ApplyContract { .. } => 3,
                 ExprKind::StaticIf { .. } => 7,
                 ExprKind::StaticFold { .. } => 10,
-                ExprKind::CertifiedComputed { .. } => 8,
+                ExprKind::CertifiedComputed { .. } | ExprKind::Workspace(_) => 8,
                 ExprKind::CoherentLift { .. } => 5,
                 ExprKind::WithComputed { .. } => 6,
                 ExprKind::Controlled { args, .. } => args.len().saturating_add(1),
@@ -1599,6 +1599,20 @@ where
                         Task::Reference(specification),
                         Task::Reference(implementation),
                     ]),
+                    ExprKind::Workspace(workspace) => {
+                        tasks.extend([
+                            Task::Leave,
+                            Task::Block(&workspace.body),
+                            Task::Bind(&workspace.scratch_binder, BindingKind::Runtime),
+                            Task::Bind(&workspace.data_binder, BindingKind::Runtime),
+                            Task::Enter,
+                            Task::Reference(&workspace.logical),
+                        ]);
+                        if let Some(dirty) = &workspace.dirty {
+                            tasks.push(Task::Expression(dirty));
+                        }
+                        tasks.push(Task::Expression(&workspace.data));
+                    }
                     ExprKind::ApplyStatic { operation, input }
                     | ExprKind::Adjoint { operation, input } => {
                         tasks.extend([Task::Expression(input), Task::Operation(operation)])

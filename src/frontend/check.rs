@@ -360,6 +360,7 @@ pub(super) enum ObligationKind {
         typed_ports: bool,
     },
     ProtectedClean,
+    WorkspaceRestoration,
     CertifiedClean {
         logical: OperationIdentity,
     },
@@ -536,7 +537,7 @@ struct Program<'a> {
     obligations: Vec<Obligation>,
     static_calls: BTreeMap<super::resolve::locals::UseSiteId, plans::StaticCallPlan>,
     body_statics: BTreeMap<super::resolve::locals::NodeId, plans::BodyStaticPlan>,
-    unitary_regions: Vec<(DefId, Span, BodyEffects)>,
+    unitary_regions: Vec<(DefId, Span, BodyEffects, &'static str)>,
     budget: Rc<Budget>,
 }
 impl<'a> Program<'a> {
@@ -771,6 +772,7 @@ impl<'a> Program<'a> {
                 ObligationKind::Injectivity { .. }
                 | ObligationKind::ControlSectors
                 | ObligationKind::ProtectedClean
+                | ObligationKind::WorkspaceRestoration
                 | ObligationKind::TransformedMeaning => {}
             }
         }
@@ -1011,7 +1013,7 @@ pub(super) fn program_with_sources<'a, R>(
             return Err(SourceError::new("effect", span, message).in_module(program.module(*id)));
         }
     }
-    for (owner, span, region) in &program.unitary_regions {
+    for (owner, span, region, description) in &program.unitary_regions {
         let context = EffectContext::Module(program.resolution.declaration(*owner).module);
         if region.inferred_using(|callee| effect_at(&program.resolution, &effects, context, callee))
             != Some(crate::ir::Effect::Unitary)
@@ -1019,7 +1021,7 @@ pub(super) fn program_with_sources<'a, R>(
             return Err(SourceError::new(
                 "effect",
                 *span,
-                super::effects::unitary_required("with_computed body must be unitary"),
+                super::effects::unitary_required(description),
             )
             .in_module(program.module(*owner)));
         }

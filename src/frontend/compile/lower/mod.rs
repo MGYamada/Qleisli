@@ -1360,10 +1360,12 @@ impl Lowerer<'_, '_> {
                 | ExprKind::StaticFold { .. }
                 | ExprKind::WithComputed { .. }
                 | ExprKind::CertifiedComputed { .. }
+                | ExprKind::Workspace(_)
         ) {
             self.prefer_runtime_root();
         }
         match &expr.kind {
+            ExprKind::Workspace(workspace) => self.workspace(module, expr.span, workspace, env),
             ExprKind::Variant(value) => self.variant_value(module, expr.span, value),
             ExprKind::Match(selection) => {
                 let scrutinee = self.expr(module, &selection.scrutinee, env)?;
@@ -1879,7 +1881,7 @@ impl Lowerer<'_, '_> {
                 basis: basis.clone(),
             },
         );
-        quantum_match::nominal::record_coherent_table(self, module, span, start)?;
+        quantum_match::nominal::record_coherent_table(self, module, span, start, 1)?;
         if output_cardinality != input_codes.len() {
             self.add_effect(module, span, Effect::Isometry);
         }
@@ -2081,7 +2083,7 @@ impl Lowerer<'_, '_> {
         if requires_source {
             self.nominal_basis_used = Some(true);
         }
-        quantum_match::nominal::record_coherent_table(self, module, span, start)?;
+        quantum_match::nominal::record_coherent_table(self, module, span, start, 1)?;
         Ok(source)
     }
 }

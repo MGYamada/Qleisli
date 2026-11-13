@@ -234,6 +234,22 @@ an exposed library signal interface are separate roles with their own
 obligations. EXACT-2026-01 still applies: an approximation error certificate
 cannot replace an applicable exact equation or exact clean-return obligation.
 
+## Explicit clean and dirty scopes
+
+`clean(data, logical) { |data, scratch| body }` supplies a fresh `Q<Bit>` in
+`|0⟩` and returns the data owner. `dirty(data, scratch, logical) { |data,
+scratch| body }` takes an existing `Q<Bit>` and returns the ordered pair of
+owners. Both bodies must return `(Q<A>, Q<Bit>)` in data/scratch order and
+have Unitary effect. `logical` names the closed Unitary action on `Q<A>`.
+
+The original body and logical action are checked against the actual Raw
+interval. Clean release requires exact action on the zero-initialized
+subspace, with the same zero scratch at exit. Dirty return requires identity
+on the entire scratch interface, including phase and correlations with an
+external reference. Access authority, restoration and resource accounting
+are separate obligations. The finite profile checks full carriers with up to
+five data bits and one scratch bit, within the shared exact-work limit.
+
 ## Checked cleanup is a separate contract
 
 The current two-argument `with_computed(source, predicate)` exposes one private

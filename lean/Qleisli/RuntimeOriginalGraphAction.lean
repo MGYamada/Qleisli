@@ -95,9 +95,10 @@ private theorem fragment_action {dependencies program block start count inputs o
 
 private theorem fragment_represents {dependencies program block start count inputs outputs effect}
     (frame : @RuntimePureInterval.Literal dependencies program block start count inputs outputs effect)
+    {interval : RuntimeInterval.Checked block start count} (sameInterval : frame.interval = interval)
     {inputRoles outputRoles}
-    (incoming : RuntimeOwnerMap.Checked inputRoles frame.interval.before)
-    (outgoing : RuntimeOwnerMap.Checked outputRoles frame.interval.after)
+    (incoming : RuntimeOwnerMap.Checked inputRoles interval.before)
+    (outgoing : RuntimeOwnerMap.Checked outputRoles interval.after)
     (input : Qleisli.RuntimeSemanticForest.Frame incoming.bindings)
     {selected returned spectators : Map}
     (beforeOrder : (selected++spectators).Perm incoming.bindings)
@@ -109,15 +110,16 @@ private theorem fragment_represents {dependencies program block start count inpu
     (rows : physical.rows = 2^frame.pureBody.state.frame.length)
     (lifted : BlockCodeLift incoming outgoing input selected returned spectators inputCode physical logical)
     (operator : Nat → Nat → ℂ) (actual : Qleisli.Semantics.ObservingAction.History)
-    (represented : Qleisli.RuntimeStructuralHistory.Represents input frame.interval.before actual operator)
+    (represented : Qleisli.RuntimeStructuralHistory.Represents input interval.before actual operator)
     (operations : List Semantics.Raw.Op) (emitted : List Semantics.Raw.Event)
     (literal : (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure)
-    (traced : RuntimeLocalEvents.trace frame.interval.before.quantum.reference operations =
-      some ⟨frame.interval.after.quantum.reference,emitted,frame.interval.before.quantum.frame.length⟩) :
+    (traced : RuntimeLocalEvents.trace interval.before.quantum.reference operations =
+      some ⟨interval.after.quantum.reference,emitted,interval.before.quantum.frame.length⟩) :
     ∃ output : Qleisli.RuntimeSemanticForest.Frame outgoing.bindings,
-      Qleisli.RuntimeStructuralHistory.Represents output frame.interval.after
+      Qleisli.RuntimeStructuralHistory.Represents output interval.after
         (Qleisli.RuntimeNamedThreePackedInstrument.pureHistory dependencies emitted actual)
         (applySourceBlock incoming.bindings outgoing.bindings selected returned spectators logical operator) := by
+  subst interval
   have live := incoming.complete.symm.trans (beforeOrder.symm.map Binding.port)
   rw [List.map_append,← selectedPorts] at live
   obtain ⟨entry,parentEvents,childEvents,entryRef,parentTrace,childTrace,exitWires,_,bounded,paired⟩ :=
@@ -181,7 +183,7 @@ theorem original_graph_history {dependencies program block arity start count inp
     .operation frame inputCode outputCode physical logical inputRead outputRead physicalRead checked equation
   let operator := applySourceBlock incoming.bindings outgoing.bindings selected returned spectators logical source.operator
   have refined := pure_step_history_lift node rootInputs inherited outgoing outgoingOrder source actual operator
-    originalAgreement read executed (fragment_represents frame.toLiteral incoming outgoing (initial.symm ▸ input)
+    originalAgreement read executed (fragment_represents frame.toLiteral rfl incoming outgoing (initial.symm ▸ input)
       beforeOrder selectedPorts returnedPorts physicalRead rows lifted source.operator actual
       (cast_represents initial.symm input represented))
   have chosen := Qleisli.RuntimeLiteralHistory.order_source selectedRead
@@ -307,7 +309,7 @@ theorem original_rectangular_history {sources caller dependencies program block 
   have lifted := operation_code_lift incoming outgoing (initial.symm ▸ input)
     beforeOrder afterOrder inputRead outputRead checked.action checked.equation
   have refined := pure_step_history_lift node inputs inherited outgoing outgoingOrder source actual operator
-    originalAgreement read executed (fragment_represents frame incoming outgoing (initial.symm ▸ input)
+    originalAgreement read executed (fragment_represents frame rfl incoming outgoing (initial.symm ▸ input)
       beforeOrder localInputs localOutputs checked.physicalRead rows lifted source.operator actual
       (cast_represents initial.symm input represented))
   have chosen := Qleisli.RuntimeLiteralHistory.order_source selectedRead
@@ -388,7 +390,7 @@ theorem original_transform_history {dependencies program block artifact caller}
     held.selected returned spectators transform.original source.operator
   have refined := pure_step_history_lift node inputs inherited outgoing
     (after := held.after) outputOrder source actual operator originalAgreement read executed
-    (fragment_represents held.literal.toLiteral incoming outgoing (initial.symm ▸ input)
+    (fragment_represents held.literal.toLiteral rfl incoming outgoing (initial.symm ▸ input)
       beforeOrder held.selectedPorts ports.symm transform.actualRead rows lifted source.operator actual
       (cast_represents initial.symm input represented))
   have chosen := Qleisli.RuntimeLiteralHistory.order_source held.selectedRead
@@ -512,8 +514,59 @@ theorem sourceStep_with_primitive {dependencies program block}
 #print axioms sourceStep_with_primitive
 
 def NeedsNonGraph {dependencies program block} : @RuntimePureBody.Step dependencies program block → Prop
-  | .pure (.operation ..) | .pure (.rectangularOperation _) | .pure (.transform ..) => False
+  | .pure (.operation ..) | .pure (.rectangularOperation _) | .pure (.transform ..) | .pure (.workspace ..) => False
   | _ => True
+
+private noncomputable def workspaceHistory {sources caller dependencies program block start count event children
+    original interval before literal}
+    (map : @RuntimeWorkspace.CallerMap sources caller dependencies program block start count event children
+      original interval before literal) (source : SourceHistory) : List SourceHistory :=
+  [{source with
+    owners := literal.continuation
+    operator := applySourceBlock literal.frame.bindings literal.after.bindings map.selected map.returned
+      map.spectators map.logical source.operator}]
+
+/-- The checked local workspace map extends to the actual caller frame,
+including inherited outcomes and reference amplitudes. -/
+theorem original_workspace_history {sources caller dependencies program block start count before}
+    {event : SourceTypes.SourceRuntimeContext.WorkspaceEvent sources caller} {children}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (location : RuntimeSourceEvent.Location (.workspace event children) start count)
+    (original : RuntimeWorkspace.Original event children) (literal : RuntimeWorkspace.Literal original interval before)
+    (map : RuntimeWorkspace.CallerMap literal)
+    (inputs : List Nat) (inherited : Option (Nat → Prop)) {ordinary : RuntimeOrdinaryBody.State}
+    {source : SourceHistory} {actual : Qleisli.Semantics.ObservingAction.History}
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs interval.before before ordinary source actual)
+    {events results}
+    (read : Semantics.Observation.readOps block.fuel interval.before.quantum.reference
+      ((block.operations.drop start).take count) = some (interval.after.quantum.reference,events))
+    (executed : Qleisli.Semantics.ObservingAction.run dependencies block.fuel events actual = some results) :
+    List.Forall₂ (SemanticHistoryAgreesWithInherited inherited inputs interval.after literal.continuation ordinary)
+      (workspaceHistory map source) results := by
+  have originalAgreement := agrees
+  obtain ⟨_,_,_,_,_,_,_,input,represented⟩ := agrees
+  have incomingOrder : before.bindings = literal.frame.bindings := literal.sameFrame.symm
+  let node : RuntimePureBody.Node dependencies program block := .workspace interval location original literal map
+  let operator := applySourceBlock literal.frame.bindings literal.after.bindings map.selected map.returned
+    map.spectators map.logical source.operator
+  apply pure_step_history_lift node inputs inherited literal.after literal.afterBindings source actual operator
+    originalAgreement read executed
+  intro operations rawEvents ops trace
+  obtain ⟨available,code⟩ := original_block_code map.outputRead
+  obtain ⟨returnOrder,valid⟩ := Qleisli.RuntimeCallHistory.literal_return_ports map.native
+  have wires := ((returnOrder.flatMap_right Semantics.Raw.Port.wires).trans
+    (RuntimeCallTraceFrames.native_wires _ valid)).length_eq
+  rw [map.returnPorts,List.flatMap_map] at wires
+  have rows : map.physical.rows = 2^map.native.pureBody.state.frame.length := by
+    rw [map.action.physicalShape.2,code]
+    change 2^(Qleisli.RuntimeSemanticForest.product map.returned).bits = _
+    rw [Qleisli.RuntimeSparseBlockEncoding.product_width available,wires]
+  have encoded := cast_represents incomingOrder input represented
+  let originalInput := incomingOrder ▸ input
+  have lifted := operation_code_lift literal.frame literal.after originalInput map.inputPartition
+    map.outputPartition map.inputRead map.outputRead map.action map.equation
+  exact fragment_represents map.native map.nativeInterval _ _ originalInput map.inputPartition map.entryPorts map.returnPorts
+    map.physicalRead rows lifted source.operator actual encoded operations rawEvents ops trace
 
 noncomputable def withGraph {dependencies program block}
     (fallback : List (@RuntimePureBody.Step dependencies program block) → RuntimePureBody.Step dependencies program block →
@@ -526,6 +579,7 @@ noncomputable def withGraph {dependencies program block}
     sourceRectangularHistory checked.source.input checked.source.output checked.returned expected source
   | .pure (.transform (event := event) _ _ _ _ _ held transform _) =>
     sourceTransformHistory event held.literal.returned transform.original source
+  | .pure (.workspace _ _ _ _ map) => some (workspaceHistory map source)
   | _ => fallback prior step source
 
 /-- In planned execution this evaluator uses the source occurrence's
@@ -591,6 +645,11 @@ theorem sourceStep_with_graph {dependencies program block}
       rcases owners with ⟨rfl,rfl⟩
       cases ordinary
       exact original_rectangular_history checked inputs inherited agrees read executed
+    case workspace =>
+      rename_i position original literal map
+      rcases owners with ⟨rfl,rfl⟩
+      cases ordinary
+      exact ⟨_,rfl,original_workspace_history (by assumption) original literal map inputs inherited agrees read executed⟩
     case transform =>
       rename_i sourceRequest original forward forwardReturned logical children interval held transform
       change ownerBefore = _ ∧ ownerAfter = held.after at owners

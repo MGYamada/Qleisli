@@ -36,6 +36,7 @@ import QleisliKernel.SourceTypes.SourceMatchSyntax
 import QleisliKernel.SourceTypes.SourceRuntimeOrdinary
 import QleisliKernel.Semantics.PrimitiveOperator
 import QleisliKernel.Raw.Finite
+import QleisliKernel.Raw.Workspace
 import QleisliKernel.Raw.Sector
 import QleisliKernel.Raw.Function
 import QleisliKernel.Raw.ProtectedEvaluation
@@ -157,6 +158,8 @@ import QleisliKernel.Qirf.RuntimeCallInterval
 import QleisliKernel.Qirf.RuntimeNamedBoundary
 import QleisliKernel.Qirf.RuntimeStructuralAction
 import QleisliKernel.SourceTypes.SourceComputedSyntax
+import QleisliKernel.SourceTypes.SourceWorkspaceSyntax
+import QleisliKernel.Qirf.RuntimeWorkspace
 import QleisliKernel.Qirf.RuntimeStructuredRoot
 import QleisliKernel.Qirf.RuntimeMaterialization
 import QleisliKernel.Qirf.RuntimeProviderPaths

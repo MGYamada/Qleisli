@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 import QleisliKernel.Qirf.RuntimeCertifiedComputed
+import QleisliKernel.Qirf.RuntimeWorkspace
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Actual original computed scope typing, owner histories and source bodies.
@@ -14,6 +15,100 @@ private def read (source : String) :=
   ((SourceRuntimeTrace.read (sources source) "main" "route").run 2000000000).1.toOption
 
 private def predicate := "classical fn predicate(b:Bit)->Bit{b}"
+
+private def cleanScope :=
+  "pub unitary fn route(q:Q<Bit>)->Q<Bit>{clean(q,h){|data,scratch|(h(data),scratch)}}"
+private def dirtyScope :=
+  "pub unitary fn route(q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>){dirty(q,d,h){|data,scratch|(h(data),scratch)}}"
+
+private def workspaceOwners (source : String) :=
+  (read source).bind fun checked =>
+    match checked.events with
+    | [.workspace event _] =>
+      some (event.fresh,event.input.ordinal,event.scratch.ordinal,
+        (valueOwners checked.summary.value).map (·.ordinal),
+        checked.summary.allocated.map (·.ordinal),checked.summary.consumed.map (·.ordinal))
+    | _ => none
+
+#guard workspaceOwners cleanScope == some (true,0,1,[0],[1],[1])
+#guard workspaceOwners dirtyScope == some (false,0,1,[0,1],[],[])
+#guard (read (dirtyScope.replace "dirty(q,d,h)" "dirty(q,q,h)")).isNone
+#guard (read (cleanScope.replace "(h(data),scratch)" "h(data)")).isNone
+
+private def readWorkspaceAction (source : String) : Finite.WorkM Nat := do
+  let checked ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ source)] "main" "route"
+  let [.workspace event children] := checked.events | throw .request
+  let original ← QleisliKernel.Qirf.RuntimeWorkspace.readOriginal event children
+  return original.body.matrix.rows
+
+private def checkWorkspaceSteps (source : String) (steps : List Semantics.Finite.Step) :
+    Finite.WorkM Unit := do
+  let checked ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ source)] "main" "route"
+  let [.workspace event children] := checked.events | throw .request
+  let original ← QleisliKernel.Qirf.RuntimeWorkspace.readOriginal event children
+  let _ ← QleisliKernel.Qirf.RuntimeWorkspace.checkSteps original [] steps
+
+private def hData : Semantics.Finite.Step := QleisliKernel.Raw.gateStep .h 0
+private def zScratch : Semantics.Finite.Step := QleisliKernel.Raw.gateStep .z 1
+
+#guard ((checkWorkspaceSteps cleanScope [hData]).run 20000000).1.isOk
+#guard ((checkWorkspaceSteps dirtyScope [hData]).run 20000000).1.isOk
+#guard (match ((checkWorkspaceSteps cleanScope [hData,zScratch]).run 20000000).1 with
+  | .error .equation => true
+  | _ => false)
+#guard (match ((checkWorkspaceSteps dirtyScope [hData,zScratch]).run 20000000).1 with
+  | .error .equation => true
+  | _ => false)
+
+private def cleanControlled :=
+  "unitary fn gate(q:Q<Bit>)->Q<Bit>{h(q)} " ++
+    "pub unitary fn route(q:Q<Bit>)->Q<Bit>{clean(q,h){|data,scratch|" ++
+    "let (data,scratch)=controlled(gate)(data,scratch);" ++
+    "let (data,scratch)=controlled(gate)(data,scratch);(h(data),scratch)}}"
+
+#guard ((readWorkspaceAction cleanScope).run 20000000).1.toOption == some 4
+#guard ((readWorkspaceAction dirtyScope).run 20000000).1.toOption == some 4
+#guard ((readWorkspaceAction cleanControlled).run 20000000).1.toOption == some 4
+
+private def workspaceInterval (sourceText : String) (operations : List Semantics.Observation.Op)
+    (fresh : Bool) : Finite.WorkM (List Nat × List Nat) := do
+  let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ sourceText)] "main" "route"
+  let [.workspace event children] := source.events | throw .request
+  let data : Semantics.Raw.Port := ⟨10,[6],1⟩
+  let scratch : Semantics.Raw.Port := ⟨11,[2],1⟩
+  let spectator : Semantics.Raw.Port := ⟨12,[],0⟩
+  let spectatorOwner : Semantics.SourceOwners.Owner := ⟨4,[.unit]⟩
+  let scratchPorts := if fresh then [] else [scratch]
+  let outputs := if fresh then [13,12] else [13,14,12]
+  let program : Semantics.Observation.Program :=
+    ⟨data :: scratchPorts ++ [spectator],[],operations,outputs,[],.unitary⟩
+  let block ← Qirf.RuntimeInterval.prepare [] program
+  let interval ← Qirf.RuntimeInterval.check block.block 0 operations.length
+  let scratchBindings := if fresh then [] else [⟨event.scratch,scratch⟩]
+  let bindings : Qirf.RuntimeOwnerMap.Map := ⟨event.input,data⟩ :: scratchBindings ++ [⟨spectatorOwner,spectator⟩]
+  let before : Qirf.RuntimeStructuralAction.SourceState := ⟨bindings,bindings.map (·.owner),event.nextOrdinal⟩
+  let original ← Qirf.RuntimeWorkspace.readOriginal event children
+  let checked ← Qirf.RuntimeWorkspace.readLiteral original interval before
+  let _ ← Qirf.RuntimeWorkspace.readCallerMap checked
+  return (checked.continuation.bindings.map (·.port.token),checked.continuation.issued.map (·.ordinal))
+
+private def cleanOps (useSteps logicalSteps : List Semantics.Finite.Step) (table : List Nat := [0,0]) :
+    List Semantics.Observation.Op :=
+  [.pure (.certifiedCompute 10 13 [8] table useSteps logicalSteps)]
+
+private def dirtyOps (steps : List Semantics.Finite.Step) (data : Nat := 10) (scratch : Nat := 11) :
+    List Semantics.Observation.Op :=
+  [.pure (.join data scratch 15),.pure (.applyUnitary 15 16 steps),.pure (.split 16 13 14 1)]
+
+#guard ((workspaceInterval cleanScope (cleanOps [hData] [hData]) true).run 20000000).1.toOption ==
+  some ([13,12],[0,4,1])
+#guard ((workspaceInterval dirtyScope (dirtyOps [hData]) false).run 20000000).1.toOption ==
+  some ([13,14,12],[0,1,4])
+#guard ((workspaceInterval cleanScope (cleanOps [hData,zScratch] [hData]) true).run 20000000).1.toOption.isNone
+#guard ((workspaceInterval cleanScope (cleanOps [hData] [hData] [1,1]) true).run 20000000).1.toOption.isNone
+#guard ((workspaceInterval dirtyScope (dirtyOps [hData,zScratch]) false).run 20000000).1.toOption.isNone
+#guard ((workspaceInterval dirtyScope (dirtyOps [hData] 11 10) false).run 20000000).1.toOption.isNone
+
 private def protectedSource := predicate ++
   "pub unitary fn route(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|aux|z(aux)}}"
 #guard (read protectedSource).map (fun checked => ((valueOwners checked.summary.value).map (·.ordinal),

@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check finite `clean` and `dirty` scopes against the original source, exact
+  scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.
 - Check bounded pure hierarchy `ctrl` calls on their actual replayed intervals,
   with exact ordered ports and a fresh native sector check before execution.

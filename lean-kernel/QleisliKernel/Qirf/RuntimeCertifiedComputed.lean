@@ -15,29 +15,32 @@ private def identity (dimension : Nat) : WorkM Matrix := do
   exactWork (Exact.charge ((dimension+1)^2))
   lift (arithmetic (Exact.Matrix.identity dimension))
 
-private def logicalAction {sources caller} (event : ComputedEvent sources caller) (dimension : Nat) : WorkM Action := do
-  match event.written.parts.logical,event.logical with
+def logicalAction {sources caller callerName} {signature : Signature sources caller callerName}
+    {naturals scope basis reference}
+    (logical : ComputedLogical signature naturals scope basis reference) (dimension : Nat) : WorkM Action := do
+  match reference,logical with
   | none,.protectedScope => throw .request
   | some _,.certified operation .. =>
     match operation.description.nodes with
-    | [.primitive kind basis] =>
-      guard (basis == event.input.basis) .request
+    | [.primitive kind actual] =>
+      guard (actual == basis) .request
       RuntimeComputedUse.primitive
         (match kind with | .h => .h | .globalPhaseEighth => .globalPhaseEighth)
-        basis operation.rows
+        actual operation.rows
     | [.provider owner name [] [] []] => do
       let some provider := operation.graph.root.provider | throw .request
       guard (provider.moduleName == owner && provider.declarationName == name) .request
       let signature ← SourceRuntimeContext.readSignature sources owner name {} (.source caller)
-      guard (signature.parameters.map (·.tree) == [Semantics.RuntimeType.owner event.input.basis] &&
-        signature.result.tree == Semantics.RuntimeType.owner event.input.basis) .request
+        signature.operations.catalogue
+      guard (signature.parameters.map (·.tree) == [Semantics.RuntimeType.owner basis] &&
+        signature.result.tree == Semantics.RuntimeType.owner basis) .request
       let body ← SourceRuntimeTrace.readBodyWithSignature signature
       let summary := body.checked.summary
       let [[.owner operand]] := summary.parameterValues | throw .request
       let [.owner returned] := summary.value | throw .request
-      guard (operand.basis == event.input.basis && returned.basis == operand.basis &&
+      guard (operand.basis == basis && returned.basis == operand.basis &&
         summary.inferredEffect == .unitary) .request
-      let action ← sourceAction sources (SourceTrace.sourceFuel sources) [operand] [returned] (← identity dimension)
+      let action ← sourceAction sources false (SourceTrace.sourceFuel sources) [operand] [returned] (← identity dimension)
         body.checked.events
       return {action with rows := operation.rows ++ signature.sourceRows ++ summary.staticRows ++ action.rows}
     | _ => throw .request
@@ -50,7 +53,7 @@ private def useAction {sources caller} {event : ComputedEvent sources caller}
   guard (event.written.parts.logical.isSome && auxiliary.basis == [.bit] &&
     body.result.value == [.tuple 2,.owner event.returned.data,.owner event.returned.auxiliary] &&
     inferredEffect body.result.events == .unitary) .request
-  let action ← sourceAction sources (SourceTrace.sourceFuel sources) [data,auxiliary]
+  let action ← sourceAction sources false (SourceTrace.sourceFuel sources) [data,auxiliary]
     [event.returned.data,event.returned.auxiliary] (← identity (2*dimension)) body.result.events
   return {action with rows := body.result.staticRows ++ action.rows}
 
@@ -61,14 +64,14 @@ structure Prepared {sources caller} (event : ComputedEvent sources caller) where
   used : Action
   useRead : RuntimeInterval.Computed (useAction body predicate.layout.labels.length) used
   logical : Action
-  logicalRead : RuntimeInterval.Computed (logicalAction event predicate.layout.labels.length) logical
+  logicalRead : RuntimeInterval.Computed (logicalAction event.logical predicate.layout.labels.length) logical
 
 def prepare {sources caller} (event : ComputedEvent sources caller) : WorkM (Prepared event) := do
   let predicate ← RuntimeComputedPredicate.readSource event
   guard (predicate.layout.bits < 6) .limit
   let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedSource event)
   let used ← NaturalAffine.witness (useAction body.val predicate.layout.labels.length)
-  let logical ← NaturalAffine.witness (logicalAction event predicate.layout.labels.length)
+  let logical ← NaturalAffine.witness (logicalAction event.logical predicate.layout.labels.length)
   return ⟨predicate,body.val,by with_reducible exact body.property,used.val,by with_reducible exact used.property,
     logical.val,by with_reducible exact logical.property⟩
 

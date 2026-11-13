@@ -138,6 +138,14 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (location : RuntimeSourceEvent.Location (.computed event children) start count)
       (prepared : RuntimeCertifiedComputed.Prepared event)
       (action : RuntimeCertifiedComputed.Checked prepared interval before) : Node dependencies program block
+  | workspace {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {start count sources caller} {event : SourceRuntimeContext.WorkspaceEvent sources caller}
+      {children : List (SourceRuntimeContext.Event sources caller)} {before}
+      (interval : RuntimeInterval.Checked block start count)
+      (location : RuntimeSourceEvent.Location (.workspace event children) start count)
+      (prepared : RuntimeWorkspace.Original event children)
+      (action : RuntimeWorkspace.Literal prepared interval before)
+      (map : RuntimeWorkspace.CallerMap action) : Node dependencies program block
   | named {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count inputs} {sources : Sources} {caller : String} {before childHistory childRetired}
       (event : SourceRuntimeContext.NamedEvent sources caller)
@@ -722,6 +730,14 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           | .inr prepared =>
             let action ← RuntimeCertifiedComputed.read prepared interval before
             finish action.literal.output (.certifiedComputed interval ⟨position,rfl,rfl,origin⟩ prepared action)
+        | .workspace event children,data,origin =>
+          let prepared ← RuntimeBodyQueries.readWorkspace execution.queries source event children position data
+          let action ← RuntimeWorkspace.readLiteral prepared interval before
+          let map ← RuntimeWorkspace.readCallerMap action
+          let node : Node dependencies program block := .workspace interval ⟨position,rfl,rfl,origin⟩ prepared action map
+          let retired := retired ++ event.body.consumed ++ (if event.fresh then [event.scratchOut] else [])
+          return (action.continuation,retired,ordinary,actions ++ [node],steps ++ [.pure node],
+            obligations,position.start+position.count,sourceCursor,receipts)
         | .named event,data,_ =>
           let named ← RuntimeBodyQueries.readNamed execution.queries source event position sourceCursor data
           let child := named.context

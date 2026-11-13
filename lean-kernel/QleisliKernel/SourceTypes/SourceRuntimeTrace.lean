@@ -108,6 +108,10 @@ private def readComputedLogical {sources owner name} (signature : Signature sour
       else throw .request
     else throw .request
 
+private def sourceModules {sources owner name} (signature : Signature sources owner name) :
+    Option (SourceModules.Prepared sources) :=
+  signature.operations.catalogue.map (·.modulesContext)
+
 /-- Every child is evaluated once in source argument order. A callee starts
 with its own full original body fuel; this evaluator's fuel bounds only its
 current original AST. -/
@@ -136,6 +140,56 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
       | .literal _ bit _ =>
         return (← outcome environment [.ordinary [.bit] (.bit bit)] environment [] [] nextOrdinal [],context)
+      | .workspace written inputTree dirtyTrees bodyTree =>
+        let (values,remaining,allocated,consumed,ordinal,events,rows,context) ←
+          evaluateChildren (⟨written.parts.data.tokens,inputTree⟩ :: dirtyTrees.trees) context
+        let (input,scratch,fresh) ← match values with
+          | [[.owner input]] => pure (input,⟨ordinal,[.bit]⟩,true)
+          | [[.owner input],[.owner scratch]] => pure (input,scratch,false)
+          | _ => throw .request
+        let dataName := written.parts.dataBinder.text
+        let scratchName := written.parts.scratchBinder.text
+        let offset := written.parts.header.calleeOffset
+        Finite.guard (![dataName,scratchName].any signature.staticNames.contains) .request
+        Finite.guard (input != scratch && !(held ++ owners remaining).contains scratch) .request
+        let logical ← readComputedLogical signature naturals scope input.basis
+          (some ⟨written.parts.logical,written.parts.logicalName⟩)
+        if freshMode : fresh = !written.parts.dirty.isSome then
+          if scratchType : scratch.basis = [.bit] then
+            let seed : Except String Environment := do
+              let data ← SourceRuntimeValues.bind [dataName] [.owner input] [] (.workspaceData offset)
+              SourceRuntimeValues.bind [scratchName] [.owner scratch] data (.workspaceScratch offset)
+            match seeded : seed with
+            | .error _ => throw .request
+            | .ok initial =>
+              let (body,context) ← recurse naturals (held ++ owners remaining)
+                (dataName :: scratchName :: scope) (if fresh then ordinal+1 else ordinal) initial bodyTree context
+              match returned : body.value with
+              | [.tuple 2,.owner dataOut,.owner scratchOut] =>
+                if valid : inferredEffect body.events = .unitary ∧ owners body.remaining = [] ∧
+                    dataOut.basis = input.basis ∧ scratchOut.basis = [.bit] then
+                  match callsRead : bodyTree.calls with
+                  | .error _ => throw .request
+                  | .ok calls =>
+                    Finite.guard (body.events.flatMap Event.callOffsets == calls &&
+                      body.events.flatMap Event.qmatchOffsets == QuantumSequence.originalOffsets written.parts.body) .request
+                    let arm : Arm sources owner initial written.parts.body :=
+                      ⟨bodyTree,body.value,body.remaining,body.allocated,body.consumed,body.nextOrdinal,body.balanced,
+                        inferredEffect body.events,body.events.any Event.quantumUse,body.staticRows,calls,callsRead,
+                        body.events.flatMap Event.basisOffsets,body.events.flatMap Event.computedOffsets⟩
+                    let event : WorkspaceEvent sources owner :=
+                      ⟨tokens,written,name,signature,naturals,scope,input,scratch,fresh,ordinal,freshMode,scratchType,
+                        logical,initial,seeded,arm,valid.1,valid.2.1,dataOut,scratchOut,
+                        returned,valid.2.2.1,valid.2.2.2⟩
+                    let value := if fresh then [.owner dataOut] else body.value
+                    return (← outcome environment value remaining
+                      (allocated ++ (if fresh then [scratch] else []) ++ body.allocated)
+                      (consumed ++ body.consumed ++ (if fresh then [scratchOut] else [])) body.nextOrdinal
+                      (events ++ [.workspace event body.events]) rows,context)
+                else throw .request
+              | _ => throw .request
+          else throw .request
+        else throw .request
       | .computed written inputTree bodyTree =>
         let (inputResult,context) ← recurse naturals held scope nextOrdinal environment inputTree context
         let [.owner input] := inputResult.value | throw .request
@@ -467,7 +521,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     (condition.staticRows ++ left.staticRows ++ right.staticRows),context)
       | .call call children =>
         if let some written ← adapt (SourceRuntimeTransformSyntax.read call.call.callee) then
-          let lookup ← SourceContext.read sources owner context scope written.base.2.callee
+          let lookup ← SourceContext.read sources owner context scope written.base.2.callee (sourceModules signature)
           let candidate ← Finite.lift lookup.answer.checked
           -- Classification uses the original resolved name. Primitive and
           -- opaque-formal applications retain their separate unary Op rule.
@@ -537,12 +591,12 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                 (events ++ [.operation event]) rows,context)
           else throw .request
         let written ← adapt (StaticApplication.readSyntax call.call.callee)
-        let lookup ← SourceContext.read sources owner context scope written.callee
+        let lookup ← SourceContext.read sources owner context scope written.callee (sourceModules signature)
         let candidate ← Finite.lift lookup.answer.checked
         let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← evaluateChildren children.trees lookup.context
         match selected : primitive candidate with
         | some .phase =>
-          let application ← PhaseApplication.read sources owner naturals scope call
+          let application ← PhaseApplication.readWithCandidate sources owner naturals scope call candidate
           let [[.owner operand]] := values | throw .request
           if bit : operand.basis = [.bit] then
             let phase : PhaseEvent sources owner :=
@@ -785,7 +839,7 @@ transform, including under zero powers. The continuation must separately bind
 its ordered ports and transformed operator to the actual emitted interval. -/
 def readTransformBody {sources caller} (event : TransformEvent sources caller) :
     Finite.WorkM (Body event.target.signature) := do
-  let body ← readBodyWithSignature event.target.signature
+  let body ← readBodyWithOriginalSetup event.target.signature (originalSetup event.forward)
   let checked := body.checked
   Finite.exactWork (Exact.charge (16*(valueFields checked.summary.value+
     valueFields event.forward.value+checked.events.length+

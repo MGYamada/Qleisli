@@ -1,0 +1,10 @@
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+use std::gate::{cnot, x};
+unitary fn logical(q: Q<Bit>) -> Q<Bit> { x(q) }
+pub unitary fn main(q: Q<Bit>, d: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    dirty(q, d, logical) { |data, scratch|
+        let (data, scratch) = cnot(data, scratch);
+        let (data, scratch) = cnot(x(data), scratch);
+        (data, x(scratch))
+    }
+}
