@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Lower bounded `excl` indices and slices in the hierarchy. Replay original
+  ordered ports against the phase-free structural nodes checked by Lean.
+
+- Lower statically checked `excl` and `ctrl` indices and half-open slices in
+  ordinary finite projects. Restore updated owners in their original axis
+  order and check the actual selected `ctrl` ports with the native checker.
+
 - Check protected and certified `with_computed` predicates on finite nominal
   carriers in selected execution and projects. Bind the original use body,
   certified logical supplier, physical table, owner order and exact auxiliary

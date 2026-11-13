@@ -647,6 +647,7 @@ fn hierarchy_execute(
         let checked = kernel
             .check_against_native(proposal.payload(), bytes)
             .map_err(checking_error)?;
+        proposal.validate_pure_source_steps(&checked)?;
         if options.command == "check" {
             return Ok(format!(
                 "{{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"{contract}\",{verification},{}}}",

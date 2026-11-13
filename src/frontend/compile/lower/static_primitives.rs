@@ -264,41 +264,16 @@ impl Lowerer<'_, '_> {
                         )?);
                     }
                     let slot = self.quantum(module, span, &value, false)?;
-                    let original = self
-                        .raw
-                        .registers
-                        .remove(&slot)
-                        .expect("live original register");
-                    let prefix = self.token();
-                    let tail = self.token();
-                    let suffix = self.token();
-                    let selected = self.register(Ty::bit(), vec![original.wires[position]]);
-                    let mut rest_wires = Vec::with_capacity(*n as usize - 1);
-                    rest_wires.extend_from_slice(&original.wires[..position]);
-                    rest_wires.extend_from_slice(&original.wires[position + 1..]);
-                    let rest = self.register(Ty::bits(n - 1), rest_wires);
-                    let bit = self.quantum(module, span, &selected, true)?;
-                    let remaining = self.quantum(module, span, &rest, false)?;
-                    self.raw.operations.extend([
-                        RawOp::Split {
-                            input: original.token,
-                            left: prefix,
-                            right: tail,
-                            left_bits: *k as u8,
-                        },
-                        RawOp::Split {
-                            input: tail,
-                            left: self.raw.registers[&bit].token,
-                            right: suffix,
-                            left_bits: 1,
-                        },
-                        RawOp::Join {
-                            left: prefix,
-                            right: suffix,
-                            output: self.raw.registers[&remaining].token,
-                        },
-                    ]);
-                    Ok(Value::pair(selected, rest))
+                    let (selected, remainder) = self.raw.take_range(
+                        slot,
+                        position..position + 1,
+                        Ty::bit(),
+                        Ty::bits(n - 1),
+                    );
+                    Ok(Value::pair(
+                        Value::quantum(selected, Ty::bit()),
+                        Value::quantum(remainder, Ty::bits(n - 1)),
+                    ))
                 } else {
                     if args[0].ty() != Ty::quantum(Ty::bit())
                         || args[1].ty() != Ty::quantum(Ty::bits(n - 1))
@@ -320,40 +295,8 @@ impl Lowerer<'_, '_> {
                             "put_bit operands alias",
                         )?);
                     }
-                    let bit = self.raw.registers.remove(&bit).expect("live Bit owner");
-                    let rest = self
-                        .raw
-                        .registers
-                        .remove(&rest)
-                        .expect("live register owner");
-                    let mut wires = Vec::with_capacity(*n as usize);
-                    wires.extend_from_slice(&rest.wires[..position]);
-                    wires.extend_from_slice(&bit.wires);
-                    wires.extend_from_slice(&rest.wires[position..]);
-                    let value = self.register(Ty::bits(*n), wires);
-                    let slot = self.quantum(module, span, &value, false)?;
-                    let prefix = self.token();
-                    let suffix = self.token();
-                    let head = self.token();
-                    self.raw.operations.extend([
-                        RawOp::Split {
-                            input: rest.token,
-                            left: prefix,
-                            right: suffix,
-                            left_bits: *k as u8,
-                        },
-                        RawOp::Join {
-                            left: prefix,
-                            right: bit.token,
-                            output: head,
-                        },
-                        RawOp::Join {
-                            left: head,
-                            right: suffix,
-                            output: self.raw.registers[&slot].token,
-                        },
-                    ]);
-                    Ok(value)
+                    let output = self.raw.put_range(bit, rest, position, Ty::bits(*n));
+                    Ok(Value::quantum(output, Ty::bits(*n)))
                 }
             }
             Primitive::PrependBit => {

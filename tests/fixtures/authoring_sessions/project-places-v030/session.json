@@ -1,0 +1,29 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#29 static indexed access in a finite project",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "7ed1ba4cb47cb4d43d34c453c36a47437d895778",
+  "context": "README.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "The unchanged first Bell preparation uses two ordered places of one parent owner.",
+      "sha256": {
+        "project/main.qli": "efa691883a5883db2f875ad8948058af87941d5ad302e0da8923763c9793b5d4"
+      },
+      "manifest_sha256": {
+        "attempt-01/project/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "current-run-observation.json"
+      ],
+      "reports": [
+        "first-check.json",
+        "duplicate-plan-check.json",
+        "current-run.json"
+      ]
+    }
+  ]
+}

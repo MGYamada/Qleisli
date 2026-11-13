@@ -943,7 +943,7 @@ mod tests {
             zero_basis: vec![],
             pure_traces: vec![],
             native_sources: vec![],
-            trace_zero_basis: false,
+            trace_structural_source: false,
             pure_trace_cells: 0,
         };
         let input = Port {

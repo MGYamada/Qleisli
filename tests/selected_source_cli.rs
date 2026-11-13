@@ -1206,7 +1206,7 @@ fn binding_refusals_precede_native_dispatch_in_text_and_json() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn selected_static_places_choose_raw_before_native_acceptance() {
+fn selected_static_places_route_to_supported_profiles_before_native_acceptance() {
     for call in [
         "x(excl q[1]);",
         "z(ctrl q[1]);",
@@ -1222,23 +1222,30 @@ fn selected_static_places_choose_raw_before_native_acceptance() {
                 command.arg("--ir-profile=raw");
             }
             let text = result(command.output().unwrap(), "check", true);
-            scope(&text, "main::main", "raw");
+            let profile = if explicit || call.contains("ctrl") {
+                "raw"
+            } else {
+                "hierarchy"
+            };
+            scope(&text, "main::main", profile);
         }
         let mut command = selected("check", &files.0.join("main.qli"), "main::main");
-        command.args([
-            "--ir-profile=hierarchy",
-            "--lean-kernel=/missing/place-checker",
-        ]);
-        let text = result(command.output().unwrap(), "check", false);
-        assert!(
-            text.contains(if call.starts_with("x(") {
-                "static place partitions"
-            } else {
-                "ctrl source access requires independently bound basis-sector evidence"
-            }),
-            "{text}"
-        );
-        assert!(text.contains("\"code\":\"unsupported\""), "{text}");
+        command.arg("--ir-profile=hierarchy");
+        if call.contains("ctrl") {
+            command.arg("--lean-kernel=/missing/place-checker");
+            let text = result(command.output().unwrap(), "check", false);
+            assert!(
+                text.contains(
+                    "ctrl source access requires independently bound basis-sector evidence"
+                ),
+                "{text}"
+            );
+            assert!(text.contains("\"code\":\"unsupported\""), "{text}");
+        } else {
+            command.arg(format!("--lean-kernel={}", kernel().display()));
+            let text = result(command.output().unwrap(), "check", true);
+            scope(&text, "main::main", "hierarchy");
+        }
     }
 }
 

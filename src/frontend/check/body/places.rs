@@ -228,7 +228,12 @@ impl Checker<'_, '_> {
             .iter()
             .any(|argument| argument.access == QuantumAccess::Ctrl)
         {
-            self.obligation(span, ObligationKind::ControlSectors, scope)?;
+            let ports = if arguments.len() == 1 {
+                std::slice::from_ref(&expected)
+            } else {
+                expected.tuple_fields().expect("checked ordered ports")
+            };
+            self.control_obligation(span, scope, Some(ports))?;
         }
         Ok(Ty::unit())
     }

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"hierarchical transport does not support static place partitions; select the Raw profile","primary":{"module":"main","path":"/private/tmp/qleisli-29-hierarchy.CR67PFi7/main.qli","start":78,"end":87},"related":[]}],"result":null}
