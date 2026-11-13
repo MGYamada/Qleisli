@@ -205,4 +205,5 @@ import QleisliKernel.Semantics.CanonicalTerminalQasm
 import QleisliKernel.Target.CanonicalOpenQasm
 import QleisliKernel.Target.CanonicalOpenQasmGates
 import QleisliKernel.Target.Routing
+import QleisliKernel.Target.CanonicalOpenQasmRouting
 import QleisliKernel.Qirf.EngineeringOpenQasm

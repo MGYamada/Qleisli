@@ -7,7 +7,8 @@ development milestones from the scope of their evidence.
 ## 0.3.0-beta — 2026-10-12
 
 - Prove exact ordered placement transport and count literal gates for a
-  fixed-occupancy SWAP segment with declared target connectivity.
+  fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
+  declared target connectivity.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
