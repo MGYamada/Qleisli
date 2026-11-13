@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import QleisliKernel.Qirf.RuntimePureInterval
 import QleisliKernel.Raw.Workspace
+import QleisliKernel.Raw.WorkspaceResources
 
 /-! Read the workspace body and logical map from the checked original source.
 Bind them to the literal Raw interval and its ordered live ports.
@@ -188,6 +189,9 @@ structure CallerMap {sources caller dependencies program block start count}
   logicalRead : RuntimeInterval.Computed (callerAction event.fresh original.layout.bits original.logical.matrix) logical
   action : CodeSpace.Map inputCode outputCode physical
   equation : action.logical = logical
+  receiptSlots : Qirf.Slots
+  resources : Raw.WorkspaceResources.Checked (Qirf.before receiptSlots) interval.before.quantum.reference
+    interval.after.quantum.reference literal.operations
 
 def Literal.continuation {sources caller dependencies program block start count event events original interval before}
     (literal : @Literal sources caller dependencies program block start count event events original interval before) :
@@ -241,7 +245,8 @@ def readLiteral {sources caller dependencies program block start count}
 def readCallerMap {sources caller dependencies program block start count}
     {event : WorkspaceEvent sources caller} {events : List (Event sources caller)}
     {original : Original event events} {interval : @RuntimeInterval.Checked dependencies program block start count}
-    {before : SourceState} (literal : Literal original interval before) : WorkM (CallerMap literal) := do
+    {before : SourceState} (literal : Literal original interval before)
+    (receiptSlots : Qirf.Slots) : WorkM (CallerMap literal) := do
   let selected ← RuntimeOwnerMap.order (inputOwners event) literal.frame.bindings
   let returned ← RuntimeOwnerMap.order (outputOwners event) literal.after.bindings
   exactWork (Exact.charge (64*(literal.frame.bindings.length+literal.after.bindings.length+1)^2))
@@ -258,11 +263,14 @@ def readCallerMap {sources caller dependencies program block start count}
       let action ← CodeSpace.readMap input.val output.val physical.val
       exactWork (Exact.charge (action.logical.entries.length+logical.val.entries.length+1))
       if equation : action.logical = logical.val then
+        exactWork (Exact.charge (8*(receiptSlots.size+1)))
+        let resources ← Raw.WorkspaceResources.read (Qirf.before receiptSlots) interval.before.quantum.reference
+          interval.after.quantum.reference literal.operations
         return ⟨selected,returned,spectators,owners.1,owners.2.1,owners.2.2.1,owners.2.2.2,
           native.val,native.property,ports.1,ports.2,input.val,output.val,
           by with_reducible exact input.property,by with_reducible exact output.property,
           physical.val,by with_reducible exact physical.property,logical.val,
-          by with_reducible exact logical.property,action,equation⟩
+          by with_reducible exact logical.property,action,equation,receiptSlots,resources⟩
       else throw .equation
     else throw .request
   else throw .request

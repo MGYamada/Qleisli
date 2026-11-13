@@ -71,7 +71,7 @@ private def cleanControlled :=
 #guard ((readWorkspaceAction cleanControlled).run 20000000).1.toOption == some 4
 
 private def workspaceInterval (sourceText : String) (operations : List Semantics.Observation.Op)
-    (fresh : Bool) : Finite.WorkM (List Nat × List Nat) := do
+    (fresh : Bool) : Finite.WorkM (List Nat × List Nat × Raw.WorkspaceResources.Counts × Nat) := do
   let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ sourceText)] "main" "route"
   let [.workspace event children] := source.events | throw .request
   let data : Semantics.Raw.Port := ⟨10,[6],1⟩
@@ -89,8 +89,9 @@ private def workspaceInterval (sourceText : String) (operations : List Semantics
   let before : Qirf.RuntimeStructuralAction.SourceState := ⟨bindings,bindings.map (·.owner),event.nextOrdinal⟩
   let original ← Qirf.RuntimeWorkspace.readOriginal event children
   let checked ← Qirf.RuntimeWorkspace.readLiteral original interval before
-  let _ ← Qirf.RuntimeWorkspace.readCallerMap checked
-  return (checked.continuation.bindings.map (·.port.token),checked.continuation.issued.map (·.ordinal))
+  let map ← Qirf.RuntimeWorkspace.readCallerMap checked #[]
+  return (checked.continuation.bindings.map (·.port.token),checked.continuation.issued.map (·.ordinal),
+    map.resources.counts,map.resources.expandedBodySteps)
 
 private def cleanOps (useSteps logicalSteps : List Semantics.Finite.Step) (table : List Nat := [0,0]) :
     List Semantics.Observation.Op :=
@@ -101,13 +102,23 @@ private def dirtyOps (steps : List Semantics.Finite.Step) (data : Nat := 10) (sc
   [.pure (.join data scratch 15),.pure (.applyUnitary 15 16 steps),.pure (.split 16 13 14 1)]
 
 #guard ((workspaceInterval cleanScope (cleanOps [hData] [hData]) true).run 20000000).1.toOption ==
-  some ([13,12],[0,4,1])
+  some ([13,12],[0,4,1],⟨2,1,1,2,1,0⟩,1)
 #guard ((workspaceInterval dirtyScope (dirtyOps [hData]) false).run 20000000).1.toOption ==
-  some ([13,14,12],[0,1,4])
+  some ([13,14,12],[0,1,4],⟨2,0,0,0,1,0⟩,1)
 #guard ((workspaceInterval cleanScope (cleanOps [hData,zScratch] [hData]) true).run 20000000).1.toOption.isNone
 #guard ((workspaceInterval cleanScope (cleanOps [hData] [hData] [1,1]) true).run 20000000).1.toOption.isNone
 #guard ((workspaceInterval dirtyScope (dirtyOps [hData,zScratch]) false).run 20000000).1.toOption.isNone
 #guard ((workspaceInterval dirtyScope (dirtyOps [hData] 11 10) false).run 20000000).1.toOption.isNone
+
+private def expandedWorkspaceBody : Finite.WorkM Nat := do
+  let gate : Semantics.Raw.Op := .gate .h 0 1
+  let body : Semantics.Observation.Program := ⟨[⟨0,[0],1⟩],[],[.pure gate,.pure (.gate .h 1 2)],[2],[],.unitary⟩
+  let input : Semantics.ObservingFunction.Input := ⟨[.bit],body,body,⟨"body","body",[]⟩⟩
+  let receipt ← Raw.BranchFunction.checkEntry [] input input
+  let call : Semantics.Finite.Step := ⟨[],.contract [0] 0 true⟩
+  Raw.WorkspaceResources.bodyExpansion [receipt] [.computed 1 [0] 1 1 [0,0] [hData,call] []]
+
+#guard (expandedWorkspaceBody.run 20000000).1.toOption == some 3
 
 private def protectedSource := predicate ++
   "pub unitary fn route(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|aux|z(aux)}}"

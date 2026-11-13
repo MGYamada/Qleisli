@@ -250,6 +250,13 @@ external reference. Access authority, restoration and resource accounting
 are separate obligations. The finite profile checks full carriers with up to
 five data bits and one scratch bit, within the shared exact-work limit.
 
+The finite checker records the whole live Raw frame at scope entry and the
+peak including fresh scratch. It records preparation, clean release, the two
+predicate passes in the clean packet, and the literal body steps. Dirty
+scratch is already live at entry. Circuit references contribute their checked
+expansion bounds. A target resource certificate also needs the actual routing
+schedule and costs under that target's gate set.
+
 ## Checked cleanup is a separate contract
 
 The current two-argument `with_computed(source, predicate)` exposes one private

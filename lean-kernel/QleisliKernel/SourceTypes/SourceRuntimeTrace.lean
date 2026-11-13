@@ -50,7 +50,9 @@ private def outcome {sources caller} (before : Environment) (value : Value) (rem
     (allocated consumed : List Semantics.SourceOwners.Owner) (nextOrdinal : Nat)
     (events : List (Event sources caller)) (rows : List (String × String) := []) :
     Finite.WorkM (Outcome sources caller before) := do
-  let staticRows ← SourceTrace.retainStaticRows (rows ++ events.flatMap Event.staticRows)
+  -- Each evaluated child already retained every row of its events. Callers
+  -- add only the rows contributed by their own new event or source operation.
+  let staticRows ← SourceTrace.retainStaticRows rows
   Finite.exactWork (Exact.charge (16*(environmentCells before+environmentCells remaining+valueFields value+
     events.length+1)+
     SourceTrace.Meter.permutationWork (owners before ++ allocated)
@@ -185,7 +187,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     return (← outcome environment value remaining
                       (allocated ++ (if fresh then [scratch] else []) ++ body.allocated)
                       (consumed ++ body.consumed ++ (if fresh then [scratchOut] else [])) body.nextOrdinal
-                      (events ++ [.workspace event body.events]) rows,context)
+                      (events ++ [.workspace event body.events]) (rows ++ (Event.workspace event body.events).staticRows),context)
                 else throw .request
               | _ => throw .request
           else throw .request
@@ -225,7 +227,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                       (inputResult.allocated ++ [initial.auxiliary] ++ body.allocated)
                       (inputResult.consumed ++ body.consumed ++ [returned.auxiliary]) body.nextOrdinal
                       (inputResult.events ++ [.computed event body.events])
-                      (inputResult.staticRows ++ body.staticRows),context)
+                      (inputResult.staticRows ++ body.staticRows ++ (Event.computed event body.events).staticRows),context)
               else throw .request
             else throw .request
         else throw .request
@@ -270,7 +272,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
               return (← outcome environment value remaining
                 (selected.allocated ++ allocated ++ phis.map (·.output)) (selected.consumed ++ consumed)
                 (ordinal+phis.length) (selected.events ++ [.matching event armEvents])
-                (selected.staticRows ++ labels.labels.sourceRows ++ arms.flatMap (·.2.staticRows)),context)
+                (selected.staticRows ++ labels.labels.sourceRows ++ arms.flatMap (·.2.staticRows) ++ naturals.sourceRows),context)
           else throw .request
         else throw .request
       | .staticConditional written thenTree elseTree =>
@@ -396,7 +398,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
           (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
           (first.events ++ last.events ++ [.selection tokens parsed original selector target scope naturals
-            held last.remaining]) (first.staticRows ++ last.staticRows),context)
+            held last.remaining]) (first.staticRows ++ last.staticRows ++ naturals.sourceRows),context)
       | .selectionExpression tokens parsed original selectorTree targetTree =>
         let (first,context) ← recurse naturals held scope nextOrdinal environment selectorTree context
         let [.owner selector] := first.value | throw .request
@@ -408,7 +410,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
           (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
           (first.events ++ last.events ++ [.selection tokens parsed original selector target scope naturals
-            held last.remaining]) (first.staticRows ++ last.staticRows),context)
+            held last.remaining]) (first.staticRows ++ last.staticRows ++ naturals.sourceRows),context)
       | .basis written inputTree bodyTree =>
         let (inputResult,context) ← recurse naturals held scope nextOrdinal environment inputTree context
         let [.owner input] := inputResult.value | throw .request
@@ -518,7 +520,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                   return (← outcome environment value remaining (condition.allocated ++ introduced)
                     (condition.consumed ++ retired) (right.nextOrdinal+phis.length)
                     (condition.events ++ [.conditional event left.events right.events])
-                    (condition.staticRows ++ left.staticRows ++ right.staticRows),context)
+                    (condition.staticRows ++ left.staticRows ++ right.staticRows ++ naturals.sourceRows),context)
       | .call call children =>
         if let some written ← adapt (SourceRuntimeTransformSyntax.read call.call.callee) then
           let lookup ← SourceContext.read sources owner context scope written.base.2.callee (sourceModules signature)
@@ -568,7 +570,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                             visibleUnitary,counts,originalCounts,copies,multiplied,access,ports,portsRead,
                             values,ordinal,value,new,used,after,applied,held,remaining⟩
                         return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
-                          after (events ++ [.transform event]) rows,context)
+                          after (events ++ [.transform event]) (rows ++ (Event.transform event).staticRows),context)
                   else throw .request
               else throw .request
             else throw .request
@@ -588,7 +590,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                 ⟨tokens,call,name,signature.original,signature.instantiation,naturals,scope,application,applicable,
                   values,ordinal,value,new,used,after,applied,held,owners remaining⟩
               return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
-                (events ++ [.operation event]) rows,context)
+                (events ++ [.operation event]) (rows ++ (Event.operation event).staticRows),context)
           else throw .request
         let written ← adapt (StaticApplication.readSyntax call.call.callee)
         let lookup ← SourceContext.read sources owner context scope written.callee (sourceModules signature)
@@ -602,7 +604,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             let phase : PhaseEvent sources owner :=
               ⟨tokens,call,scope,naturals,application,operand,bit,held,remaining⟩
             return (← outcome environment [.owner operand] remaining allocated consumed ordinal
-              (events ++ [.phase phase]) rows,context)
+              (events ++ [.phase phase]) (rows ++ (Event.phase phase).staticRows),context)
           else throw .request
         | some kind =>
           if SourceRegisterApplication.selected kind then
@@ -616,7 +618,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                 ⟨tokens,call,scope,naturals,written,candidate,kind,selected,application,values,ordinal,
                   value,new,used,after,applied,held,remaining⟩
               return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
-                after (events ++ [.registerPrimitive event]) rows,context)
+                after (events ++ [.registerPrimitive event]) (rows ++ (Event.registerPrimitive event).staticRows),context)
           Finite.guard written.arguments.isEmpty .request
           match applied : SourceRuntimePrimitive.apply kind ⟨owner,name,call.calleeOffset⟩ values ordinal with
           | .error _ => throw .request
@@ -648,7 +650,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                   ⟨tokens,call,scope,target,canonical,values,matched,inputOwners,rfl,fresh,mapping,rfl,
                     value,transported,used,consumedRead,held,remaining⟩
                 return (← outcome environment value remaining (allocated ++ fresh) (consumed ++ used)
-                  (ordinal+fresh.length) (events ++ [.named event]) rows,context)
+                  (ordinal+fresh.length) (events ++ [.named event]) (rows ++ (Event.named event).staticRows),context)
           else throw .request)
 
 def quantumUse {sources owner name} (signature : Signature sources owner name)
@@ -667,8 +669,10 @@ def readNestedWithSetup (sources : Sources) : (fuel : Nat) → (active : List So
     let frame := callFrame signature
     let _ ← SourceCallStack.read active frame
     let tokens := signature.original.occurrence.body
-    Finite.exactWork (Exact.charge (SourceTrace.Meter.syntaxWork tokens+
-      SourceTrace.Meter.syntaxWork signature.original.occurrence.header+
+    -- A retained setup already paid for reading and checking these exact body
+    -- tokens. The header, owner environment and closed traversal still run.
+    if provided.isNone then Finite.exactWork (Exact.charge (SourceTrace.Meter.syntaxWork tokens))
+    Finite.exactWork (Exact.charge (SourceTrace.Meter.syntaxWork signature.original.occurrence.header+
       64*((signature.parameters.map fun part => part.tree.length).sum+1)))
     match parameters : QuantumOperands.parameterPatterns signature.original with
     | .error _ => throw .request

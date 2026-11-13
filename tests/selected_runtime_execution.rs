@@ -120,6 +120,31 @@ fn source_workspace_scopes_require_exact_native_restoration() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn original_workspace_examples_fit_the_shared_exact_work_limit() {
+    for (source, outputs) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/scoped-workspace-v030/attempt-01/clean-restores/main.qli"
+            ),
+            1,
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/scoped-workspace-v030/attempt-01/dirty-restores/main.qli"
+            ),
+            2,
+        ),
+    ] {
+        let checked = selected_at(source, "main::main");
+        assert_eq!(checked.program().output_ports().len(), outputs);
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_context_checks_original_phase_parameters_and_aliases() {
     use qleisli::contract::exact::{Budget, Exact, Matrix};
     use qleisli::contract::{BasisType, Circuit};
