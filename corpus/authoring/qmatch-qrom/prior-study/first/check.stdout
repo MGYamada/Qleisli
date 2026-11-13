@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"expected `}`, found `[`","primary":{"path":"kernel.qli","start":441,"end":442,"line":8,"column":36},"related":[]}],"result":null}
