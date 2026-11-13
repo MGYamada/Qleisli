@@ -1,0 +1,9 @@
+#![no_implicit_prelude]
+struct R{v:Bit}
+isometry fn e(q:Q<Bit>)->Q<R>{basis q as b{R{v:b}}}
+isometry fn d(q:Q<R>)->Q<Bit>{basis q as r{not r.v}}
+meaning E:Bit->R=reference(e);
+meaning D:R->Bit=reference(d);
+meaning F:Bit=compose(E,D);
+unitary fn f(q:Q<Bit>)->Q<Bit>{basis q as b{not b}}
+pub observe fn main()->Bit{let q=basis unit(()) as _{0};measure_z(adjoint(checked_op(f,F))(q))}

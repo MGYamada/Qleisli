@@ -40,6 +40,13 @@ structure Provider (sources : Sources) where
   internalInference : Bool
   generic : Option (GenericCatalogue.Inference signature.original) := none
 
+structure MeaningRequirement (sources : Sources) where
+  subject : Nat
+  /-- Position in the operation-argument list for a declaration requirement.
+  A written `checked_op` has a single operand and no argument position. -/
+  argument : Option Nat
+  request : SourceMeaning.Request sources
+
 structure Result (sources : Sources) where
   input : Basis
   output : Basis
@@ -48,7 +55,7 @@ structure Result (sources : Sources) where
   provider : Option (Provider sources) := none
   formal : Option (Provider sources) := none
   kindRows : List (String × String) := []
-  requirements : List (Nat × SourceMeaning.Request sources) := []
+  requirements : List (MeaningRequirement sources) := []
 
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
@@ -117,9 +124,15 @@ def requirementsWithInstantiation {sources owner name original}
 
 private def indexedRequirements {sources : Sources} (operations : List (String × Nat))
     (requirements : List (String × SourceMeaning.Request sources)) :
-    WorkM (List (Nat × SourceMeaning.Request sources)) := requirements.mapM fun (name,request) => do
-  let some (_,index) := operations.find? (·.1 == name) | throw .request
-  pure (index,request)
+    WorkM (List (MeaningRequirement sources)) := do
+  if requirements.isEmpty then return []
+  let named := operations.zipIdx
+  let fields := (operations.map (fun (name,_) => name.utf8ByteSize+2)).sum
+  exactWork (Exact.charge (8*(fields+1)*(requirements.length+1)))
+  requirements.mapM fun (name,request) => do
+    exactWork (Exact.charge (8*(name.utf8ByteSize+1)*(operations.length+1)))
+    let some ((_,index),slot) := named.find? (fun (actual,_) => actual.1 == name) | throw .request
+    pure ⟨index,some slot,request⟩
 
 def kindRowsWithInstantiation {sources owner name original}
     (instantiation : @StaticInstantiation.Checked sources owner name original) : WorkM (List (String × String)) := do
@@ -201,7 +214,7 @@ def bindArguments {sources owner name} (signature : QuantumSignatureCore.Checked
 private def result {sources : Sources} (input output : Basis) (effect : Effect) (paths : Paths)
     (provider : Option (Provider sources) := none) (formal : Option (Provider sources) := none)
     (kindRows : List (String × String) := [])
-    (requirements : List (Nat × SourceMeaning.Request sources) := []) : WorkM (Result sources) := do
+    (requirements : List (MeaningRequirement sources) := []) : WorkM (Result sources) := do
   let _ ← FiniteCarrier.read input
   let _ ← FiniteCarrier.read output
   pure ⟨input,output,effect,paths,provider,formal,kindRows,requirements⟩
@@ -326,7 +339,7 @@ private def readNodeWith (sources : Sources) (context : Context) (description : 
     let caller := match context with | .external => none | .source caller => some caller
     let requirement ← SourceMeaning.request sources caller owner name
     guard (requirement.meaning.graph.input == c.input && requirement.meaning.graph.output == c.output) .request
-    result c.input c.output c.effect c.paths none none [] [(index,requirement)]
+    result c.input c.output c.effect c.paths none none [] [⟨index,none,requirement⟩]
 
 def readNode (sources : Sources) (context : Context) (description : Description)
     (previous : List (Result sources)) (node : Node)
@@ -440,9 +453,9 @@ structure SupplyData (sources : Sources) where
 
 private def remapResult {sources : Sources} (mapping : Nat → Option Nat) (value : Result sources) :
     Option (Result sources) := do
-  let requirements ← value.requirements.mapM fun (index,request) => do
-    let index ← mapping index
-    pure (index,request)
+  let requirements ← value.requirements.mapM fun requirement => do
+    let subject ← mapping requirement.subject
+    pure {requirement with subject}
   pure {value with requirements}
 
 def selectData {sources : Sources} (data : GraphData sources) (index : Nat) : Option (GraphData sources) := do
@@ -678,12 +691,13 @@ def CheckedGraph.sourceRows {sources context description} (graph : CheckedGraph 
     List (String × String) := graph.results.flatMap fun result =>
   result.kindRows ++ ((result.provider.toList ++ result.formal.toList).flatMap fun provider =>
     provider.signature.sourceRows ++ (provider.generic.map (·.sourceRows) |>.getD [])) ++
-    (result.requirements.flatMap fun (_,request) => request.sourceRows)
+    (result.requirements.flatMap fun requirement => requirement.request.sourceRows)
 
 /-- Local requests in original node order. Descendant requests remain separate
 under inverses, controls and zero powers; no ancestor copies or erases them. -/
 def CheckedGraph.requirements {sources context description} (graph : CheckedGraph sources context description) :
-    List (Nat × SourceMeaning.Request sources) := graph.results.flatMap (·.requirements)
+    List (Nat × SourceMeaning.Request sources) :=
+  graph.results.flatMap fun result => result.requirements.map fun requirement => (requirement.subject,requirement.request)
 
 def CheckedGraph.hasMeaningRequirements {sources context description} (graph : CheckedGraph sources context description) : Bool :=
   !graph.requirements.isEmpty

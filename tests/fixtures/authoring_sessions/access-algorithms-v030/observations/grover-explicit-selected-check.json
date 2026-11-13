@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "--entry=main::probe",
+    "--module=main=/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-access-29-20261111/attempt-01/grover-explicit/main.qli",
+    "--ir-profile=raw",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-11T14:52:23.868364+00:00",
+  "exit_code": 1,
+  "timeout": false,
+  "seconds": 0.009822958003496751,
+  "source_sha256": "5327772fd9f5665a4f27174127d6f68738aae53c2cabb042485918c2b2fec36e",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"sized preparation profile: unsupported runtime expression\",\"primary\":{\"module\":\"std::reflection\",\"path\":null,\"start\":996,\"end\":1047},\"related\":[]}],\"result\":null}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "sized preparation profile: unsupported runtime expression",
+        "primary": {
+          "module": "std::reflection",
+          "path": null,
+          "start": 996,
+          "end": 1047
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "original_record_sha256": "697e3db20b1ab4b5e81a4c35c115a92646d91518ed86fd70d73b305875386ec8"
+}

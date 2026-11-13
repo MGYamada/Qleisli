@@ -62,10 +62,13 @@ same-run `check-qptl` release receipt. A skipped, failed or absent selected
 job rejects all stable required contexts and release readiness. These checks
 are regression/proof-build evidence, not constitutional guarantee admissions.
 
-`check-lean` also builds the application proof in `lean/qptl-application`
-when the proof lane builds mathematical models. The application combines
-the original runtime-tape theorem and QPTL's coherent-sum law in a separate
-Lake workspace. It reuses the same pinned Mathlib packages after the
+`check-lean` also builds the application proofs in `lean/qptl-application`
+when the proof lane builds mathematical models. They combine the original
+runtime-tape theorem with QPTL's coherent-sum law, and actual protected Raw
+dispatch with its exact compute/use/uncompute square. The original pure Raw
+program proof then replaces both certified and protected clean scopes with
+their logical actions in the checked event order. These live in a separate Lake
+workspace. It reuses the same pinned Mathlib packages after the
 constitutional proof replay. The canonical proof workspace and native
 checker keep their existing dependency manifests.
 
@@ -129,8 +132,10 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-qmatch-basis-events`,
 `codex/beta-qmatch-gram-routing`,
 `codex/beta-qmatch-forward-tape`,
-`codex/beta-quantum-runtime-types` or
-`codex/beta-runtime-static-bindings`.
+`codex/beta-quantum-runtime-types`,
+`codex/beta-runtime-static-bindings`,
+`codex/beta-64-rectangular-nominal-meaning` or
+`codex/beta-64-declared-meaning`.
 The selected branch and workflow source must agree. On pushes, the producer
 first records the schema and scoped-guarantee source identity checks. Matching
 records finish this bootstrap workflow at that point. Stale records and manual

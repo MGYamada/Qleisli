@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#64 ordinary imported nominal body closure",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "870b510b7ce2cf0cb7531effc1ce64844197d073",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Original ordinary project and actual producer refusal.",
+      "sha256": {
+        "main.qli": "62c6564896cf9a2c72ec03bda18506d835cb539a44eb3bc80a30b390a58b6cf5",
+        "facade.qli": "e7cd9a914df81de4240d6ee745f409da237a198471cfe2d8c2ea9303a3ae7dbb",
+        "labels.qli": "729e6ac0432d19a4b65a2fc10b034594f4a9f102bf0f026f0162fca901a0656e"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "first-refusal.json"
+      ]
+    }
+  ]
+}

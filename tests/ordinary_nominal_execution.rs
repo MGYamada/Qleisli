@@ -74,18 +74,53 @@ fn nominal_table_deferral_preserves_actual_consumers_and_unused_body_checks() {
         std::collections::BTreeMap::from([(vec![false], 1.0)])
     );
     let root = SourceRoot::new(
-        "enum Tri { A, B, C } classical fn flag() -> Bit { match Tri::C { Tri::A => 0, Tri::B => 0, Tri::C => 1 } } isometry fn prepare() -> Q<Bit> { basis unit(()) as _ { flag() } } observe fn main() -> Bit { measure_z(prepare()) }",
-    );
-    let error = compile_project(&root.0).unwrap_err();
-    assert_eq!(error.code, ErrorCode::Unsupported);
-    assert!(error.message.contains("no nominal intermediate values"));
-
-    let root = SourceRoot::new(
         "enum Tri { A, B, C } classical fn unused() -> Bit { match Tri::A { Tri::A => 0 } } fn main() -> Bit { 0 }",
     );
     let error = compile_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);
     assert!(error.message.contains("non-exhaustive match"));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_runs_standalone_nominal_basis_with_the_original_body_scope() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/standalone-nominal-basis-v030/attempt-01/project");
+    let program = compile_project(&root).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(!program.qmatch_source_checked());
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        std::collections::BTreeMap::from([(vec![true], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_checks_each_original_invocation_of_a_nominal_meaning() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/standalone-nominal-meaning-v030/attempt-01/project",
+    );
+    check_project(&root).unwrap();
+    let program = compile_project(&root).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let probabilities = run_closed(&program, SimulationLimits::default()).unwrap();
+    let expected = (1.0 + std::f64::consts::FRAC_1_SQRT_2) / 2.0;
+    assert_eq!(probabilities.len(), 2);
+    assert!((probabilities[&vec![false]] - expected).abs() < 1e-12);
+    assert!((probabilities[&vec![true]] - (1.0 - expected)).abs() < 1e-12);
 }
 
 #[test]
@@ -249,7 +284,7 @@ fn checked_cli_reports_actual_result_scope_and_refuses_incomplete_export_before_
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
-fn foreign_nominal_outputs_are_bound_and_uncovered_intermediates_never_fall_back_to_raw() {
+fn foreign_nominal_outputs_and_intermediates_use_typed_native_execution() {
     let labels = "pub enum Tri { A,B,C }";
     let root = SourceRoot::new("use labels::Tri; pub observe fn main()->Tri{Tri::C}");
     root.write("labels.qli", labels);
@@ -265,16 +300,10 @@ fn foreign_nominal_outputs_are_bound_and_uncovered_intermediates_never_fall_back
         "use labels::Tri; pub observe fn main()->Bit{let t=Tri::C;match t{Tri::A=>0,Tri::B=>0,Tri::C=>1}}",
     );
     root.write("labels.qli", labels);
-    let error = compile_project(&root.0).unwrap_err();
-    assert_eq!(
-        error.code,
-        qleisli::frontend::compile::ErrorCode::Unsupported
-    );
-    assert!(
-        error
-            .message
-            .contains("intermediate nominal source modules")
-    );
+    let program = compile_project(&root.0).unwrap();
+    assert!(program.ordinary_result().is_some());
+    let distribution = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert_eq!(distribution, [(vec![true], 1.0)].into_iter().collect());
     let root = SourceRoot::new(
         "enum Tri{A,B,C} pub observe fn main()->Bit{let t=Tri::C;match t{Tri::A=>0,Tri::B=>0,Tri::C=>1}}",
     );
@@ -282,6 +311,52 @@ fn foreign_nominal_outputs_are_bound_and_uncovered_intermediates_never_fall_back
     assert!(
         program.ordinary_result().is_some(),
         "same-source intermediates use the typed gate"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn ordinary_helper_body_binds_foreign_nominal_reexports() {
+    use qleisli::edition::Edition;
+    use qleisli::interchange::native::Kernel;
+
+    let root = SourceRoot::new(include_str!(
+        "fixtures/authoring_sessions/ordinary-body-provenance-v030/attempt-01/main.qli"
+    ));
+    root.write(
+        "facade.qli",
+        include_str!(
+            "fixtures/authoring_sessions/ordinary-body-provenance-v030/attempt-01/facade.qli"
+        ),
+    );
+    root.write(
+        "labels.qli",
+        include_str!(
+            "fixtures/authoring_sessions/ordinary-body-provenance-v030/attempt-01/labels.qli"
+        ),
+    );
+    let program = compile_project(&root.0).unwrap();
+    assert!(program.ordinary_result().is_some());
+    let distribution = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert_eq!(distribution, [(vec![true], 1.0)].into_iter().collect());
+
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let request = program.request().unwrap();
+    kernel
+        .check_ordinary_root(program.artifact(), request)
+        .unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    assert_eq!(artifact.matches("pub use labels::Tri").count(), 1);
+    let private = artifact.replacen("pub use labels::Tri", "use labels::Tri", 1);
+    let error = kernel
+        .check_ordinary_root(private.as_bytes(), request)
+        .unwrap_err();
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
     );
 }
 

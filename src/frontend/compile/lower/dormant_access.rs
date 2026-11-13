@@ -318,7 +318,8 @@ fn check_action(
                     StaticCategory::Natural,
                     [false; 3],
                     &bindings,
-                    &module
+                    &module,
+                    false
                 )?,
                 instances::StaticValue::Deferred
             );
@@ -351,6 +352,7 @@ fn check_action(
     compiler.charge(&module, original.span, closed.len() + 1)?;
     let mut lower = Lowerer {
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
+        nominal_basis_used: None,
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),

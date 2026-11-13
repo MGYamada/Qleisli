@@ -239,7 +239,7 @@ private theorem output_tokens {dependencies program block arity start count inpu
   obtain ⟨work,left,ran⟩ := frame.pureRead
   have prepared := (Raw.Pure.verify_conditions _ _ _ work left ran).1
   obtain ⟨_,_,_,_,valid,_,_⟩ := Raw.prepare_conditions _ _ _ prepared
-  simp only [Raw.outputValid, Bool.and_eq_true, RuntimePureInterval.fragment] at valid
+  simp only [Raw.outputValid, Bool.and_eq_true] at valid
   exact Raw.Ownership.unique_nodup outputs valid.1.1.1.1
 
 /-- Gather the two source returns first and keep their spectators in the

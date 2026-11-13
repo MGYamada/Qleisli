@@ -114,6 +114,808 @@ fn selected_nominal_qmatch_binds_the_actual_complete_call() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_qmatch_checks_nominal_basis_rows_and_rejects_padding_leaks() {
+    use qleisli::ir::RawOp;
+
+    let source =
+        include_str!("fixtures/authoring_sessions/nominal-basis-rows-v030/attempt-01/main.qli");
+    let selected = selected(source);
+    let program = selected.program();
+    assert!(program.qmatch_source_checked());
+    assert!(matches!(
+        program.raw().operations.first(),
+        Some(RawOp::LiftBasis { table, .. }) if table == &[1, 2, 0, 3]
+    ));
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let original = r#""table":[1,2,0,3],"tag":"lift_basis""#;
+    assert_eq!(artifact.matches(original).count(), 1);
+    for table in ["[2,0,1,3]", "[1,2,3,0]"] {
+        let changed = format!(r#""table":{table},"tag":"lift_basis""#);
+        let artifact = artifact.replacen(original, &changed, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(artifact.as_bytes(), program.request().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+        assert!(
+            error.message.contains("Lean native checker rejected"),
+            "{error}"
+        );
+    }
+
+    let standalone = source.replace(
+        "qmatch(s, q) { Tri::C => phase, Tri::B => idle, Tri::A => idle }",
+        "(s, q)",
+    );
+    let selected = self::selected(&standalone);
+    assert_eq!(
+        selected.program().source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(!selected.program().qmatch_source_checked());
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn standalone_basis_checks_the_original_nominal_output_and_scope() {
+    use qleisli::ir::RawOp;
+
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/standalone-nominal-basis-v030/attempt-01/output");
+    let selected = ParsedProgram::load(BTreeMap::from([("main".into(), root.join("main.qli"))]))
+        .unwrap()
+        .instantiate_runtime_with_types(
+            "main::prepare",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap();
+    let program = selected.program();
+    let request = program.request().unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(!program.qmatch_source_checked());
+    assert!(
+        program
+            .raw()
+            .operations
+            .iter()
+            .any(|op| matches!(op, RawOp::LiftBasis { table, .. } if table == &[2]))
+    );
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let table = r#""table":[2],"tag":"lift_basis""#;
+    assert_eq!(artifact.matches(table).count(), 1);
+    let forged = artifact.replacen(table, r#""table":[3],"tag":"lift_basis""#, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), request)
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+
+    let encoded = std::str::from_utf8(request).unwrap();
+    let wrong_scope = encoded.replace(
+        "finite-source-basis-context-v5",
+        "finite-source-qmatch-context-v5",
+    );
+    let error = kernel()
+        .check_qmatch_source_v5(program.artifact(), wrong_scope.as_bytes())
+        .unwrap_err();
+    assert_eq!(error.code, "format", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn protected_nominal_predicate_checks_the_original_body_and_literal_table() {
+    use qleisli::ir::RawOp;
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn is_b(tag:Tri)->Bit{match tag{Tri::A=>0,Tri::B=>1,Tri::C=>0}}
+        unitary fn mark(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+        pub unitary fn keep(q:Q<Tri>, spectator:Q<Unit>)->(Q<Tri>,Q<Unit>){
+            (with_computed(q,is_b){|flag|mark(flag)},spectator)}";
+    let selected = selected(source);
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(matches!(
+        program.raw().operations.as_slice(),
+        [RawOp::ComputeUseUncompute { function, targets, ancilla_wires, .. }]
+            if function == &[0, 1, 0, 0] && targets.is_empty() && ancilla_wires.len() == 1
+    ));
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let request = program.request().unwrap();
+    for (original, forged) in [
+        (r#""function":[0,1,0,0]"#, r#""function":[0,0,1,0]"#),
+        (r#""function":[0,1,0,0]"#, r#""function":[0,1,0,1]"#),
+        ("Tri::B=>1", "Tri::B=>0"),
+        ("phase[1,1](q)", "phase[1,2](q)"),
+    ] {
+        assert_eq!(artifact.matches(original).count(), 1, "{original}");
+        let changed = artifact.replacen(original, forged, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(changed.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn nominal_predicate_leaves_padding_between_product_rows() {
+    use qleisli::ir::RawOp;
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn choose((tag,b):(Tri,Bit))->Bit{match tag{Tri::A=>b,Tri::B=>1,Tri::C=>0}}
+        pub unitary fn keep(q:Q<(Tri,Bit)>)->Q<(Tri,Bit)>{
+            with_computed(q,choose){|flag|phase[1,1](flag)}}";
+    let selected = selected(source);
+    assert!(matches!(
+        selected.program().raw().operations.as_slice(),
+        [RawOp::ComputeUseUncompute { function, .. }]
+            if function == &[0, 1, 0, 0, 1, 1, 0, 0]
+    ));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_checks_a_nominal_predicate_with_its_original_callee() {
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn is_b(tag:Tri)->Bit{match tag{Tri::A=>0,Tri::B=>1,Tri::C=>0}}
+        unitary fn mark(q:Q<Tri>)->Q<Tri>{with_computed(q,is_b){|flag|phase[1,1](flag)}}
+        observe fn main()->Unit{discard(mark(basis unit(()) as _{Tri::B}))}";
+    let program = compile_project(&SourceRoot::new(source).0).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn certified_nominal_predicate_binds_both_original_actions() {
+    use qleisli::ir::RawOp;
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn is_b(tag:Tri)->Bit{match tag{Tri::A=>0,Tri::B=>1,Tri::C=>0}}
+        unitary fn logical(q:Q<Tri>)->Q<Tri>{global_phase_eighth(q)}
+        pub unitary fn keep(q:Q<Tri>)->Q<Tri>{
+            with_computed(q,is_b,logical){|data,flag|(global_phase_eighth(data),flag)}}";
+    let selected = selected(source);
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(matches!(
+        program.raw().operations.as_slice(),
+        [RawOp::CertifiedCompute { function, use_steps, logical_steps, .. }]
+            if function == &[0, 1, 0, 0] && use_steps == logical_steps
+    ));
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let request = program.request().unwrap();
+    let phases = r#""phases":[1]"#;
+    assert_eq!(artifact.matches(phases).count(), 2);
+    let forged = artifact.replace(phases, r#""phases":[2]"#);
+    assert_eq!(
+        kernel()
+            .check_qmatch_source_v5(forged.as_bytes(), request)
+            .unwrap_err()
+            .code,
+        "contract"
+    );
+
+    let closed =
+        format!("{source} fn main()->Unit{{discard(keep(basis unit(()) as _{{Tri::B}}))}}");
+    let project = compile_project(&SourceRoot::new(&closed).0).unwrap();
+    assert_eq!(
+        project.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn certified_nominal_predicate_preserves_split_join_axes() {
+    use qleisli::ir::{CircuitAction, RawOp};
+    let source = "#![no_implicit_prelude]
+        pub enum Mode { A, B, C }
+        classical fn is_b((m,b):(Mode,Bit))->Bit{match m{Mode::A=>0,Mode::B=>1,Mode::C=>0}}
+        unitary fn logical(q:Q<(Mode,Bit)>)->Q<(Mode,Bit)>{
+            let (m,b)=split(q);
+            join(m,h(b))
+        }
+        pub unitary fn keep(q:Q<(Mode,Bit)>)->Q<(Mode,Bit)>{
+            with_computed(q,is_b,logical){|data,flag|
+                let (m,b)=split(data);
+                let (b,m)=split(join(b,m));
+                (join(m,h(b)),flag)
+            }
+        }";
+    let selected = selected(source);
+    let program = selected.program();
+    assert!(matches!(
+        program.raw().operations.as_slice(),
+        [RawOp::CertifiedCompute { function, use_steps, logical_steps, .. }]
+            if function == &[0, 1, 0, 0, 0, 1, 0, 0]
+                && use_steps == logical_steps && use_steps.len() == 1
+                && use_steps[0].controls.is_empty()
+                && use_steps[0].action == CircuitAction::Hadamard { target: 2 }
+    ));
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let expected = r#""action":{"tag":"hadamard","target":2}"#;
+    let wrong_axis = r#""action":{"tag":"hadamard","target":0}"#;
+    assert_eq!(artifact.matches(expected).count(), 2);
+    let forged = artifact.replace(expected, wrong_axis);
+    assert_eq!(
+        kernel()
+            .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+            .unwrap_err()
+            .code,
+        "contract"
+    );
+
+    let closed = "#![no_implicit_prelude]
+        enum Mode{A,B,C}
+        classical fn p((m,b):(Mode,Bit))->Bit{match m{Mode::A=>0,Mode::B=>1,Mode::C=>0}}
+        unitary fn g(q:Q<(Mode,Bit)>)->Q<(Mode,Bit)>{let(m,b)=split(q);join(m,h(b))}
+        observe fn main()->Unit{
+            let q=basis unit(()) as _{(Mode::B,0)};
+            discard(with_computed(q,p,g){|q,f|let(m,b)=split(q);(join(m,h(b)),f)})
+        }";
+    let project = compile_project(&SourceRoot::new(closed).0).unwrap();
+    assert_eq!(
+        project.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    let outcomes = run_closed(&project, SimulationLimits::default()).unwrap();
+    assert_eq!(outcomes.len(), 1);
+    assert!((outcomes[&Vec::new()] - 1.0).abs() < 1e-12);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_arm_compares_the_original_nominal_meaning_to_the_applied_operator() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/nominal-meaning-arm-v030/attempt-01/main.qli");
+    let source = ParsedProgram::load(BTreeMap::from([("main".into(), path)])).unwrap();
+    let finite = source.finite_meaning_target("main::Flip").unwrap();
+    assert_eq!(finite.permutation_table(), [1, 0]);
+    let selected = source
+        .instantiate_runtime_with_types(
+            "main::select",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap();
+    let program = selected.program();
+    assert!(program.qmatch_source_checked());
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let original = "Flag::Flip => not bit";
+    assert_eq!(artifact.matches(original).count(), 1);
+    let stale = artifact.replacen(original, "Flag::Flip => bit", 1);
+    let error = kernel()
+        .check_qmatch_source_v5(stale.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn standalone_nominal_meaning_checks_the_actual_call_interval_and_scope() {
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join(
+            "tests/fixtures/authoring_sessions/standalone-nominal-meaning-v030/attempt-01/selected",
+        )
+        .join("main.qli");
+    let source = ParsedProgram::load(BTreeMap::from([("main".into(), path)])).unwrap();
+    let selected = source
+        .instantiate_runtime_with_types(
+            "main::undo",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap();
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    assert!(!program.qmatch_source_checked());
+    kernel().check_program(program).unwrap();
+
+    let request = program.request().unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    for (before, after) in [
+        ("Label::Mark => b", "Label::Mark => 0"),
+        (r#""adjoint":true"#, r#""adjoint":false"#),
+    ] {
+        assert_eq!(artifact.matches(before).count(), 1);
+        let stale = artifact.replacen(before, after, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(stale.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+        assert!(
+            error.message.contains("Lean native checker rejected"),
+            "{error}"
+        );
+    }
+
+    let wrong_scope = std::str::from_utf8(request).unwrap().replace(
+        "finite-source-meaning-context-v5",
+        "finite-source-basis-context-v5",
+    );
+    let error = kernel()
+        .check_qmatch_source_v5(program.artifact(), wrong_scope.as_bytes())
+        .unwrap_err();
+    assert_eq!(error.code, "format", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn rectangular_nominal_meaning_checks_the_written_supplier_and_return_code() {
+    let source = r#"#![no_implicit_prelude]
+        pub enum Mode { A, B, C }
+        isometry fn specification(q: Q<Unit>) -> Q<Mode> { basis q as _ { Mode::B } }
+        isometry fn implementation(q: Q<Unit>) -> Q<Mode> { basis q as _ { Mode::B } }
+        meaning Prepare: Unit -> Mode = reference(specification);
+        isometry fn invoke[const U: Op<Unit -> Mode>](q: Q<Unit>) -> Q<Mode>
+            requires Applicable(U) { U(q) }
+        pub isometry fn prepare(q: Q<Unit>) -> Q<Mode> {
+            invoke[checked_op(implementation, Prepare)](q)
+        }"#;
+    let selected = selected_at(source, "main::prepare");
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    assert!(artifact.contains(r#""root":0"#));
+    let programs = artifact.find(r#""programs":[{"#).unwrap();
+    let first_table = r#""table":[1]"#;
+    let offset = programs + artifact[programs..].find(first_table).unwrap();
+    for code in [0, 3] {
+        let mut mutated = artifact.to_owned();
+        mutated.replace_range(
+            offset..offset + first_table.len(),
+            &format!(r#""table":[{code}]"#),
+        );
+        let error = kernel()
+            .check_qmatch_source_v5(mutated.as_bytes(), program.request().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+
+    let unused = source.replace("{ U(q) }", "{ basis q as _ { Mode::A } }");
+    let selected = selected_at(&unused, "main::prepare");
+    assert_eq!(
+        selected.program().source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let mismatched = unused.replace(
+        "implementation(q: Q<Unit>) -> Q<Mode> { basis q as _ { Mode::B } }",
+        "implementation(q: Q<Unit>) -> Q<Mode> { basis q as _ { Mode::C } }",
+    );
+    assert_ne!(unused, mismatched);
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), mismatched)]),
+    )
+    .unwrap();
+    let error = parsed
+        .instantiate_runtime_with_types(
+            "main::prepare",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn declared_rectangular_nominal_meaning_checks_used_and_unused_supplies() {
+    let source = "#![no_implicit_prelude]
+pub enum M{A,B,C}
+isometry fn r(q:Q<Unit>)->Q<M>{basis q as _{M::B}}
+isometry fn a(q:Q<Unit>)->Q<M>{basis q as _{M::B}}
+meaning P:Unit->M=reference(r);
+isometry fn f[const U:Op<Unit->M,P>](q:Q<Unit>)->Q<M> requires Applicable(U){U(q)}
+pub isometry fn g(q:Q<Unit>)->Q<M>{f[a](q)}";
+    let unused = source.replace("{U(q)}", "{basis q as _{M::A}}");
+    let written = source.replace("f[a]", "f[checked_op(a,P)]");
+    for original in [source, unused.as_str(), written.as_str()] {
+        let selected = selected_at(original, "main::g");
+        assert_eq!(
+            selected.program().source_body_scope(),
+            Some("finite-source-meaning-context-v5")
+        );
+    }
+    let closed = source.replace(
+        "pub isometry fn g(q:Q<Unit>)->Q<M>{f[a](q)}",
+        "pub observe fn main()->Unit{discard(f[a](unit(())));()}",
+    );
+    let project = SourceRoot::new(&closed);
+    let checked = compile_project(&project.0).unwrap();
+    assert_eq!(
+        checked.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+
+    let wrong = unused.replace(
+        "fn a(q:Q<Unit>)->Q<M>{basis q as _{M::B}}",
+        "fn a(q:Q<Unit>)->Q<M>{basis q as _{M::C}}",
+    );
+    assert_ne!(unused, wrong);
+    let parsed =
+        ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), wrong)])).unwrap();
+    let error = parsed
+        .instantiate_runtime_with_types(
+            "main::g",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn nominal_meaning_checks_the_original_cycle_and_inverse_on_three_labels() {
+    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/nominal-meaning-ports-v030/attempt-01/selected");
+    let selected = ParsedProgram::load(BTreeMap::from([(
+        "main".into(),
+        directory.join("main.qli"),
+    )]))
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::undo",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel())
+    .unwrap();
+    let program = selected.program();
+    let request = program.request().unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let inverse = r#""permutation":[2,0,1,3]"#;
+    let phases = r#""phases":[0,0,0,0]"#;
+    for (before, after) in [
+        (inverse, r#""permutation":[1,2,0,3]"#),
+        (inverse, r#""permutation":[3,0,1,2]"#),
+        (phases, r#""phases":[0,4,0,0]"#),
+    ] {
+        assert_eq!(artifact.matches(before).count(), 1);
+        let forged = artifact.replacen(before, after, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(forged.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_executes_the_checked_nominal_meaning_interval() {
+    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/nominal-meaning-ports-v030/attempt-01/project");
+    let program = compile_project(&directory).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn composed_meaning_keeps_the_nominal_intermediate_reference() {
+    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/nominal-meaning-composition-v030/attempt-03/selected",
+    );
+    let source = ParsedProgram::load(BTreeMap::from([(
+        "main".into(),
+        directory.join("main.qli"),
+    )]))
+    .unwrap();
+    let old_target = source.finite_meaning_target("main::Flip").unwrap_err();
+    assert!(
+        old_target
+            .message()
+            .contains("original typed runtime transport"),
+        "{old_target}"
+    );
+    let selected = source
+        .instantiate_runtime_with_types(
+            "main::undo",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap();
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let applied = r#""permutation":[1,0]"#;
+    assert_eq!(artifact.matches(applied).count(), 1);
+    let forged = artifact.replacen(applied, r#""permutation":[0,1]"#, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+
+    let project = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/nominal-meaning-composition-v030/attempt-03/project",
+    );
+    let program = compile_project(&project).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![true], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn tensor_meaning_checks_the_phase_on_the_original_nominal_product_axis() {
+    let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/nominal-meaning-composition-v030/attempt-03/tensor",
+    );
+    let selected = ParsedProgram::load(BTreeMap::from([(
+        "main".into(),
+        directory.join("main.qli"),
+    )]))
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::undo",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel())
+    .unwrap();
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-meaning-context-v5")
+    );
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let axis = r#""indices":[2]"#;
+    assert!(artifact.contains(axis));
+    let forged = artifact.replacen(axis, r#""indices":[0]"#, 1);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_nominal_basis_lift_uses_logical_dimensions() {
+    use qleisli::ir::{Effect, RawOp};
+
+    let source = r#"#![no_implicit_prelude]
+pub enum Tri { A, B, C }
+unitary fn idle(q: Q<Bit>) -> Q<Bit> { q }
+pub isometry fn keep(s: Q<Unit>, q: Q<Bit>, r: Q<Tri>) -> (Q<Unit>, Q<Bit>, Q<(Bit, Bit)>) {
+    let r = basis r as tag { match tag { Tri::B => (1,0), Tri::A => (0,0), Tri::C => (0,1) } };
+    let (s,q) = qmatch(s,q) { 0 => idle };
+    (s,q,r)
+}
+"#;
+    let accepted = selected(source);
+    let program = accepted.program();
+    assert!(program.qmatch_source_checked());
+    assert_eq!(
+        program.runtime_result().unwrap().public_effect,
+        Effect::Isometry
+    );
+    assert!(matches!(
+        program.raw().operations.first(),
+        Some(RawOp::LiftBasis { table, .. }) if table == &[0, 1, 2, 3]
+    ));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_qmatch_binds_nominal_sources_used_only_in_the_body() {
+    let entry = include_str!(
+        "fixtures/authoring_sessions/nominal-body-provenance-v030/attempt-01/main.qli"
+    );
+    let labels = include_str!(
+        "fixtures/authoring_sessions/nominal-body-provenance-v030/attempt-01/labels.qli"
+    );
+    let selected = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), entry.into()),
+            ("labels".into(), labels.into()),
+        ]),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::keep",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel())
+    .unwrap();
+    let program = selected.program();
+    kernel().check_program(program).unwrap();
+
+    // The physical circuit and all public port types remain unchanged. The
+    // original body may no longer construct or project this private field.
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    assert_eq!(artifact.matches("pub bit: Bit").count(), 1);
+    let private = artifact.replacen("pub bit: Bit", "bit: Bit", 1);
+    let error = kernel()
+        .check_qmatch_source_v5(private.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn selected_mixed_runtime_binds_foreign_nominal_body_dependencies() {
+    let main = "#![no_implicit_prelude] use labels::Packet;
+        pub unitary fn keep(q:Q<Bit>)->(Q<Bit>,Bit){
+            let packet=Packet{bit:1}; (q,packet.bit)
+        }";
+    let labels = "pub struct Packet{pub bit:Bit}";
+    let selected = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([
+            ("main".into(), main.into()),
+            ("labels".into(), labels.into()),
+        ]),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::keep",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel())
+    .unwrap();
+    let program = selected.program();
+    assert!(program.runtime_result().is_some());
+    assert!(!program.qmatch_source_checked());
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    assert_eq!(artifact.matches("pub bit:Bit").count(), 1);
+    let private = artifact.replacen("pub bit:Bit", "bit:Bit", 1);
+    let error = kernel()
+        .check_runtime_root(private.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_nominal_qmatch_checks_every_original_selection_in_order() {
     // The unchanged first authoring attempt: repeated H/Z sectors cancel as a
     // whole, so checking only the final identity would miss incorrect intervals.

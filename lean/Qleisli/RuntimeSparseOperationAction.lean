@@ -85,7 +85,7 @@ private theorem binding_ordinals {roles state} (checked : RuntimeOwnerMap.Checke
     (checked.bindings.map (fun binding => binding.owner.ordinal)).Nodup := by
   simpa only [← checked.ordered,List.map_map,Function.comp_def] using checked.ownersDistinct
 
-private theorem owner_complement {allRoles state roles selected}
+theorem owner_complement {allRoles state roles selected}
     (checked : RuntimeOwnerMap.Checked allRoles state)
     (contained : selected ⊆ checked.bindings) (order : selected.map Binding.owner = roles) :
     RuntimeSelectionPartition.complement checked.bindings selected =

@@ -3,6 +3,7 @@ import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeTransformRequest
 import QleisliKernel.Qirf.RuntimeBranchAction
 import QleisliKernel.Qirf.RuntimeBasisAction
+import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import QleisliKernel.SourceTypes.QuantumArms
 
 /-! Source-indexed staging data for the common runtime traversal.
@@ -72,8 +73,9 @@ inductive Prefixes {artifact : Artifact} (preparation : RuntimeGraphOperation.Pr
   | cons {actual : Sigma (StaticOperation.Actual artifact.sources signature.context)}
       {rest : List (Sigma (StaticOperation.Actual artifact.sources signature.context))} {before after : Queues}
       (cut : Cut before)
+      (origin : RuntimeGraphOperation.Origin actual.2.graph)
       (graph : Graph preparation actual.2.graph (RuntimeGraphOperation.required signature actual.1.1)
-        cut.implementations cut.references)
+        cut.implementations cut.references origin)
       (tail : Prefixes preparation signature rest cut.after after) :
       Prefixes preparation signature (actual :: rest) before after
 
@@ -93,14 +95,14 @@ mutual
 inductive Body {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :
     {owner name : String} → SourceRuntimeScope.Subject artifact.sources owner name → Context → Type where
   | mk {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name} {request : Context}
-      (noRootRequirements : source.signature.operations.rootRequirements.isEmpty = true)
       (positionsCount : request.positions.length = source.events.length)
       (offsets : request.positions.map (·.offset) = source.events.map SourceRuntimeContext.Event.offset)
-      (actuals : List (Sigma (StaticOperation.Actual artifact.sources source.signature.context)))
+      (actuals : List {actual : Sigma (StaticOperation.Actual artifact.sources source.signature.context) //
+        actual ∈ source.signature.operations.actuals})
       (originalActuals : RuntimeInterval.Computed
-        (if source.prefixRequired then RuntimeProviderHeaders.originalActuals source.signature.operations else pure []) actuals)
+        (if source.prefixRequired then RuntimeProviderHeaders.originalActualSlots source.signature.operations else pure []) actuals)
       (afterPrefix : Queues)
-      (prefixPlans : Prefixes preparation source.signature actuals (Queues.ofContext request) afterPrefix)
+      (prefixPlans : Prefixes preparation source.signature (actuals.map Subtype.val) (Queues.ofContext request) afterPrefix)
       (afterEvents : Queues)
       (events : Events preparation source (source.events.zip request.positions) afterPrefix afterEvents)
       (exhausted : afterEvents.isEmpty = true) : Body preparation source request
@@ -132,7 +134,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (childEmpty : child.positions.isEmpty = true ∧ child.sites.isEmpty = true ∧
         child.calls.isEmpty = true ∧ child.branches.isEmpty = true)
       (references : List (List BodyRequest)) (groups : child.references = [references])
-      (graph : Graph preparation event.operation.graph OperationAccess.applicable child.bodies references) :
+      (graph : Graph preparation event.operation.graph OperationAccess.applicable child.bodies references (.application event)) :
       Event preparation source (.operation event) position before {before with calls := remaining}
   | transform {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.TransformEvent artifact.sources owner} {position : Position} {before : Queues}
@@ -189,6 +191,16 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       {event : SourceRuntimeContext.BasisEvent artifact.sources owner} {position : Position} {before : Queues}
       (body : RuntimeBasisAction.Source event) :
       Event preparation source (.basis event) position before before
+  | computed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}
+      {position : Position} {before : Queues}
+      (prepared : RuntimeComputedUse.Prepared event) :
+      Event preparation source (.computed event children) position before before
+  | certifiedComputed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}
+      {position : Position} {before : Queues}
+      (prepared : RuntimeCertifiedComputed.Prepared event) :
+      Event preparation source (.computed event children) position before before
   | unsupported {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before : Queues}
       (unconnected : (match event with

@@ -1,0 +1,21 @@
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+use std::state::init0;
+use std::gate::x;
+use std::gate::cnot;
+unitary fn implementation(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (d,r) = split(q);
+    let (r,d) = cnot(r,d);
+    let r = x(r);
+    let (r,d) = cnot(r,d);
+    join(x(d),r)
+}
+unitary fn specified(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (d,r) = split(q);
+    join(d,x(r))
+}
+pub observe fn main() -> (Bit,Bit,Bit) {
+    let (e,d) = cnot(h(init0()),init0());
+    let (d,r) = split(apply_contract(implementation,specified,join(d,init0())));
+    let (e,d) = cnot(e,d);
+    (measure_z(h(e)),measure_z(d),measure_z(r))
+}

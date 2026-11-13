@@ -24,6 +24,16 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<AcceptedProgram, CompileError> {
+        self.materialize_instance_with_basis_body(instance, module, span, false)
+    }
+
+    fn materialize_instance_with_basis_body(
+        &mut self,
+        instance: Arc<ClosedInstance>,
+        module: &str,
+        span: Span,
+        reuse_basis_body: bool,
+    ) -> Result<AcceptedProgram, CompileError> {
         let profile = usize::from(self.force_typed_root);
         if self.effect_in_module(module, instance.definition) != Some(instance.source_effect) {
             return Err(self.error(
@@ -69,6 +79,17 @@ impl Compiler<'_> {
             self.validate_required_operation(requirement, operation, module, span)?;
         }
         self.check_dormant_instance(Arc::clone(&instance), module, span)?;
+        if reuse_basis_body && instance.record.is_none() {
+            if let Some(body) = self.checked.get(&instance.definition).filter(|body| {
+                body.source_body_scope() == Some(crate::interchange::qmatch::v5::BASIS_PROFILE)
+            }) {
+                let work = Self::accepted_copy_work(&instance, body);
+                self.charge(module, span, work)?;
+                // This is the same checked definition with an empty original
+                // substitution. Its use is still checked in the caller's v5 graph.
+                return Ok(self.checked[&instance.definition].clone());
+            }
+        }
         if let Some(record) = instance.record {
             match &self.instances[record].bodies[profile] {
                 BodyState::Preparing => {
@@ -141,6 +162,17 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<operations::Operation, CompileError> {
+        self.provider_instance_with_formal(instance, meaning, false, module, span)
+    }
+
+    pub(super) fn provider_instance_with_formal(
+        &mut self,
+        instance: Arc<ClosedInstance>,
+        meaning: Option<Key>,
+        inside_formal_meaning: bool,
+        module: &str,
+        span: Span,
+    ) -> Result<operations::Operation, CompileError> {
         let profile = usize::from(self.force_typed_root);
         if instance.source_effect > Effect::Isometry
             || self.effect_in_module(module, instance.definition) != Some(instance.source_effect)
@@ -171,6 +203,17 @@ impl Compiler<'_> {
                 "provider requires exact Q<A> -> Q<B> ports",
             ));
         };
+        if !inside_formal_meaning
+            && meaning.is_none()
+            && (basis.basis_bits().is_none() || codomain.basis_bits().is_none())
+        {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "typed provider requires an original checked Meaning occurrence",
+            ));
+        }
         if let Some(meaning) = meaning {
             let expected = &self.meanings[&meaning];
             let cost = operations::port_nodes(&expected.basis)
@@ -188,9 +231,17 @@ impl Compiler<'_> {
                 ));
             }
         }
-        // Even a warm provider lookup first traverses the full ordinary actual
-        // contract/body gate; its Ready body remains tied to the complete key.
-        let body = self.materialize_instance(Arc::clone(&instance), module, span)?;
+        // Both original port types were checked above. A nominal Meaning
+        // checks this same retained basis body again in the caller's graph.
+        // Generic providers keep the full actual contract/body gate.
+        let reuse_basis_body =
+            inside_formal_meaning || meaning.is_some_and(|id| self.meanings[&id].target.is_none());
+        let body = self.materialize_instance_with_basis_body(
+            Arc::clone(&instance),
+            module,
+            span,
+            reuse_basis_body,
+        )?;
         let closed_provider = if instance.record.is_none() {
             self.charge(module, span, 5)?;
             if !self.source.interfaces[&instance.definition]
@@ -276,6 +327,7 @@ impl Compiler<'_> {
             span,
             instance.definition,
             meaning,
+            inside_formal_meaning,
             instance.source_effect,
             basis.clone(),
             codomain.clone(),

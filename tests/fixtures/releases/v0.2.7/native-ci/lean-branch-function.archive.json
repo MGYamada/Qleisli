@@ -1,0 +1,30 @@
+{
+  "format": "qleisli.historical-fixture-archive",
+  "version": 1,
+  "source_commit": "b76fbc6702648fd5612af0814bbd6f13034a4d61",
+  "prefix": "tests/fixtures/releases/v0.2.7/native-ci/lean-branch-function",
+  "archive": "tests/fixtures/releases/v0.2.7/native-ci/lean-branch-function.tar.gz",
+  "archive_sha256": "7729d21d3f67e1a63d79539c159fd7e643e9c8884ca2d3bfb6d7b25a1e4469d7",
+  "entries": {
+    "tests/fixtures/releases/v0.2.7/native-ci/lean-branch-function/branch-inputs.json": {
+      "bytes": 5755235,
+      "sha256": "ceeef4b1faa6c52f64711e9ab691e8add4e2795b74830b41f49f58b18d26acb2",
+      "mode": "100644"
+    },
+    "tests/fixtures/releases/v0.2.7/native-ci/lean-branch-function/branch-observed.json": {
+      "bytes": 81770,
+      "sha256": "35e31016385587ebef994d60eeb334c8d179acb0bbbcd1fbb40bd5b95116f4e6",
+      "mode": "100644"
+    },
+    "tests/fixtures/releases/v0.2.7/native-ci/lean-branch-function/command.log.gz": {
+      "bytes": 167,
+      "sha256": "f1f490c863ee80ef5743b9ba3b241b88742129243fbc2959cae040c6bfa1b873",
+      "mode": "100644"
+    },
+    "tests/fixtures/releases/v0.2.7/native-ci/lean-branch-function/record.json": {
+      "bytes": 1977,
+      "sha256": "36d27de360a391fef718a5461f69553f0edc77b5b945fc414fc13451a5844331",
+      "mode": "100644"
+    }
+  }
+}

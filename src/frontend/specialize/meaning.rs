@@ -2,13 +2,21 @@
 //! This checks every declared target, including unused ones. Tables are
 //! untrusted mathematical requests, not provider equality or native evidence.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
-use crate::frontend::ast::{BasisExpr, Decl, FnBody, FnKind, Ident, Pattern, PatternKind, Span};
-use crate::frontend::check::{self, Budget, Interface, Result, SourceError};
-use crate::frontend::ordinary::{Boolean, finite};
+use crate::frontend::ast::{
+    BasisExpr, Decl, FnBody, FnKind, Ident, Pattern, PatternKind, Span, VariantValue,
+};
+use crate::frontend::check::{self, Budget, Interface, NominalTypes, Result, SourceError};
+use crate::frontend::ordinary::{
+    Boolean,
+    finite::{self, Label as Value, NominalContext},
+};
 use crate::frontend::resolve::locals::{BinderKey, Index, ResolvedUse};
 use crate::frontend::resolve::{DefId, Resolution, Target};
 use crate::frontend::source::SourceCollection;
-use crate::frontend::types::{Kind, Type};
+use crate::frontend::types::{
+    Kind, Type,
+    nominal::{Body, Field, Nominal},
+};
 use std::collections::BTreeMap;
 
 type Ty = Type<u32>;
@@ -222,8 +230,24 @@ pub(super) enum Rows {
         phases: Vec<u8>,
     },
     General(crate::frontend::meaning::Target),
+    Typed(std::collections::BTreeSet<DefId>),
 }
+
+fn nominal_port(ty: &Ty) -> bool {
+    match &ty.kind {
+        Kind::Nominal(_) => true,
+        Kind::Tuple(fields) => fields.iter().any(nominal_port),
+        _ => false,
+    }
+}
+
 impl TargetTable {
+    fn typed(&self) -> bool {
+        matches!(self.rows, Rows::Typed(_))
+            || nominal_port(&self.basis)
+            || nominal_port(&self.codomain)
+    }
+
     fn signature(basis: &Ty, span: Span) -> super::Result<crate::contract::BasisType> {
         use crate::contract::BasisType;
         fn signature(ty: &Ty, span: Span) -> super::Result<BasisType> {
@@ -267,6 +291,7 @@ impl TargetTable {
     pub(super) fn references(&self) -> std::collections::BTreeSet<DefId> {
         match &self.rows {
             Rows::General(target) => target.references(),
+            Rows::Typed(references) => references.clone(),
             _ => std::collections::BTreeSet::new(),
         }
     }
@@ -275,6 +300,13 @@ impl TargetTable {
         span: Span,
     ) -> super::Result<crate::contract::meaning::FiniteMeaning> {
         use crate::contract::meaning::FiniteMeaning;
+        if self.typed() {
+            return Err(super::Error::new(
+                "unsupported",
+                span,
+                "this Meaning requires its original typed runtime transport",
+            ));
+        }
         let basis = Self::signature(&self.basis, span)?;
         let requested = match &self.rows {
             Rows::General(target)
@@ -304,12 +336,14 @@ impl TargetTable {
                     })?;
                 FiniteMeaning::phase(basis, phases)
             }
+            Rows::Typed(_) => unreachable!("typed Meanings require original runtime transport"),
         };
         requested.map_err(|e| super::Error::new("meaning", span, e.to_string()))
     }
     pub(super) fn cells(&self) -> usize {
         match &self.rows {
             Rows::General(target) => target.cells(),
+            Rows::Typed(references) => references.len() + 1,
             Rows::Permutation(rows) | Rows::Phase(rows) => rows.len(),
             Rows::Monomial {
                 permutation,
@@ -317,10 +351,6 @@ impl TargetTable {
             } => permutation.len() + phases.len(),
         }
     }
-}
-struct Value {
-    ty: Ty,
-    label: u16,
 }
 struct Product {
     fields: Vec<Ty>,
@@ -333,6 +363,7 @@ struct Context<'a, 'ast> {
     interfaces: &'a BTreeMap<DefId, Interface>,
     indices: &'a BTreeMap<DefId, Index<'ast>>,
     budget: &'a Budget,
+    nominals: &'a NominalTypes,
     definition: DefId,
 }
 
@@ -343,6 +374,7 @@ pub(super) fn validate(
     indices: &BTreeMap<DefId, Index<'_>>,
     order: &[DefId],
     budget: &Budget,
+    nominals: &NominalTypes,
 ) -> Result<BTreeMap<DefId, TargetTable>> {
     let mut targets = BTreeMap::new();
     let mut composites = std::collections::BTreeSet::new();
@@ -357,6 +389,7 @@ pub(super) fn validate(
             interfaces,
             indices,
             budget,
+            nominals,
             definition: id,
         };
         if matches!(
@@ -385,6 +418,7 @@ pub(super) fn validate(
                 interfaces,
                 indices,
                 budget,
+                nominals,
                 definition: id,
             };
             let target = context
@@ -453,6 +487,19 @@ impl<'a> Context<'a, '_> {
                     pending.extend(fields);
                     0
                 }
+                Kind::Nominal(nominal) => match &nominal.body {
+                    Body::Enum(variants) => {
+                        self.budget.charge(span, variants.len() + 1)?;
+                        node.basis_width()
+                            .ok_or_else(|| self.invalid_nominal(span))?
+                            as usize
+                    }
+                    Body::Record(fields) => {
+                        self.budget.charge(span, fields.len())?;
+                        pending.extend(fields.iter().map(|field| &field.ty));
+                        0
+                    }
+                },
                 _ => return Err(self.error(span, "Meaning requires a closed ordinary basis")),
             };
             width = width.checked_add(bits).ok_or_else(|| {
@@ -508,14 +555,7 @@ impl<'a> Context<'a, '_> {
         let interface = &self.interfaces[&self.definition];
         let basis = self.closed(interface.meaning_input(), declaration.span)?;
         let codomain = self.closed(&interface.result, declaration.span)?;
-        let width = self.width(&basis, declaration.span)?;
-        if width > crate::contract::MAX_CONTRACT_BITS {
-            return Err(SourceError::new(
-                "limit",
-                declaration.span,
-                "exact Meanings support at most 6 bits",
-            ));
-        }
+        let width = self.meaning_width(&basis, declaration.span)?;
         let left = &targets[&self.global(first)?];
         let right = &targets[&self.global(second)?];
         self.budget.charge(
@@ -538,6 +578,17 @@ impl<'a> Context<'a, '_> {
             second.span,
             &mut |span, cells| self.budget.charge(span, cells),
         )?;
+        if left.typed() || right.typed() {
+            self.meaning_width(&codomain, declaration.span)?;
+            let mut references = left.references();
+            references.extend(right.references());
+            self.budget.charge(declaration.span, references.len() + 1)?;
+            return Ok(TargetTable {
+                basis,
+                codomain,
+                rows: Rows::Typed(references),
+            });
+        }
         if matches!(left.rows, Rows::General(_)) || matches!(right.rows, Rows::General(_)) {
             let left = left.expression(first.span).map_err(SourceError::from)?;
             let right = right.expression(second.span).map_err(SourceError::from)?;
@@ -586,12 +637,23 @@ impl<'a> Context<'a, '_> {
         if let FnBody::MeaningReference { function } = &declaration.body {
             let basis = self.closed(interface.meaning_input(), declaration.span)?;
             let codomain = self.closed(&interface.result, declaration.span)?;
+            let definition = self.global(function)?;
+            if nominal_port(&basis) || nominal_port(&codomain) {
+                self.meaning_width(&basis, declaration.span)?;
+                self.meaning_width(&codomain, declaration.span)?;
+                self.budget.charge(declaration.span, 2)?;
+                return Ok(TargetTable {
+                    basis,
+                    codomain,
+                    rows: Rows::Typed(std::collections::BTreeSet::from([definition])),
+                });
+            }
             let signature =
                 TargetTable::signature(&basis, declaration.span).map_err(SourceError::from)?;
             let target = crate::frontend::meaning::Target::reference(
                 signature,
                 TargetTable::signature(&codomain, declaration.span).map_err(SourceError::from)?,
-                self.global(function)?,
+                definition,
             )
             .map_err(|e| self.error(function.span, e.to_string()))?;
             self.budget.charge(declaration.span, target.cells())?;
@@ -611,14 +673,7 @@ impl<'a> Context<'a, '_> {
         let interface = &self.interfaces[&self.definition];
         let basis = self.closed(interface.meaning_input(), declaration.span)?;
         let codomain = self.closed(&interface.result, declaration.span)?;
-        let width = self.width(&basis, declaration.span)?;
-        if width > crate::contract::MAX_CONTRACT_BITS {
-            return Err(SourceError::new(
-                "limit",
-                declaration.span,
-                "exact Meanings support at most 6 bits",
-            ));
-        }
+        let width = self.meaning_width(&basis, declaration.span)?;
         let id = self.global(function)?;
         let mut child = Context {
             definition: id,
@@ -648,12 +703,24 @@ impl<'a> Context<'a, '_> {
         let FnBody::Basis(body) = &target.body else {
             return Err(self.error(function.span, "Meaning requires a classical function body"));
         };
-        let dimension = 1usize << width;
+        let codes = if nominal_port(&basis) {
+            let atoms = crate::frontend::specialize::carrier_description_budgeted(
+                &basis,
+                &mut |span, cells| self.budget.charge(span, cells).map_err(super::Error::from),
+            )
+            .map_err(SourceError::from)?;
+            crate::frontend::ordinary::proposed_codes(&[atoms])
+                .map_err(|error| self.error(declaration.span, error.to_string()))?
+                .1
+        } else {
+            (0..(1usize << width)).collect()
+        };
         // Reserve all table/collision cells before enumerating the first row.
+        let dimension = codes.len();
         self.budget.charge(declaration.span, dimension * 2)?;
         let mut table = Vec::with_capacity(dimension);
         let mut seen = vec![None; dimension];
-        for input in 0..dimension {
+        for &input in &codes {
             let mut env = Environment::new();
             child
                 .bind(
@@ -675,9 +742,13 @@ impl<'a> Context<'a, '_> {
         for (input, &output) in table.iter().enumerate() {
             self.budget.charge(declaration.span, 1)?;
             if *permutation {
-                let previous = seen.get_mut(usize::from(output)).ok_or_else(|| {
-                    self.error(declaration.span, "permutation output is outside its basis")
+                let ordinal = codes.binary_search(&usize::from(output)).map_err(|_| {
+                    self.error(
+                        declaration.span,
+                        "permutation output is outside its exact basis",
+                    )
                 })?;
+                let previous = &mut seen[ordinal];
                 if let Some(first) = previous.replace(input) {
                     return Err(self.error(
                         declaration.span,
@@ -698,6 +769,18 @@ impl<'a> Context<'a, '_> {
             },
         })
     }
+
+    fn meaning_width(&self, ty: &Ty, span: Span) -> Result<usize> {
+        let width = self.width(ty, span)?;
+        if width > crate::contract::MAX_CONTRACT_BITS {
+            return Err(SourceError::new(
+                "limit",
+                span,
+                "exact Meanings support at most 6 bits",
+            ));
+        }
+        Ok(width)
+    }
 }
 
 impl finite::Context for Context<'_, '_> {
@@ -711,6 +794,14 @@ impl finite::Context for Context<'_, '_> {
             span,
             "ordinary nominal values require their typed native transport",
         )
+    }
+    fn nominal(
+        &mut self,
+        expression: &BasisExpr,
+        env: &Environment,
+        depth: usize,
+    ) -> Result<Value> {
+        finite::nominal(self, expression, env, depth)
     }
     fn enter(&mut self, span: Span, depth: usize) -> Result<()> {
         self.budget.charge(span, 1)?;
@@ -756,7 +847,7 @@ impl finite::Context for Context<'_, '_> {
         }
     }
     fn push(&mut self, span: Span, tuple: &mut Product, value: Value) -> Result<()> {
-        let width = self.width(&value.ty, span)?;
+        let width = self.width(span, &value.ty)?;
         if tuple.width + width > 12 {
             return Err(SourceError::new(
                 "limit",
@@ -848,7 +939,96 @@ impl finite::Context for Context<'_, '_> {
         check::type_size_budgeted(&value.ty, 4096, 64, true, span, &mut |span, cells| {
             self.budget.charge(span, cells)
         })?;
-        self.width(&value.ty, span)?;
+        self.width(span, &value.ty)?;
         Ok(value)
+    }
+}
+
+impl finite::NominalContext for Context<'_, '_> {
+    fn enum_label(&mut self, value: &VariantValue) -> Result<(Ty, usize)> {
+        let ty = self.nominal_type(&value.type_name)?;
+        let Kind::Nominal(nominal) = &ty.kind else {
+            return Err(self.invalid_nominal(value.type_name.span));
+        };
+        let Body::Enum(labels) = &nominal.body else {
+            return Err(self.invalid_nominal(value.type_name.span));
+        };
+        for (ordinal, label) in labels.iter().enumerate() {
+            self.budget.charge(
+                value.variant.span,
+                label.len() + value.variant.text.len() + 1,
+            )?;
+            if *label == value.variant.text {
+                return Ok((ty, ordinal));
+            }
+        }
+        Err(self.invalid_nominal(value.variant.span))
+    }
+
+    fn nominal_type(&mut self, name: &Ident) -> Result<Ty> {
+        self.budget.charge(name.span, 1)?;
+        let index = &self.indices[&self.definition];
+        let ResolvedUse::Global(Target::Type(id)) = index.table.usage(index.usage(name)).target
+        else {
+            return Err(self.invalid_nominal(name.span));
+        };
+        self.closed(&self.nominals[&id], name.span)
+    }
+
+    fn record_index(
+        &mut self,
+        nominal: &Nominal<u32>,
+        fields: &[Field<u32>],
+        name: &Ident,
+    ) -> Result<usize> {
+        let module = &self.resolution.declaration(self.definition).name.0;
+        for (index, field) in fields.iter().enumerate() {
+            self.budget
+                .charge(name.span, field.name.len() + name.text.len() + 1)?;
+            if field.name == name.text {
+                self.budget
+                    .charge(name.span, module.len() + nominal.origin.module.len() + 1)?;
+                if !field.public && *module != nominal.origin.module {
+                    return Err(self.error(
+                        name.span,
+                        "field is private to its original declaring module",
+                    ));
+                }
+                return Ok(index);
+            }
+        }
+        Err(self.invalid_nominal(name.span))
+    }
+
+    fn charge(&mut self, span: Span, cells: usize) -> Result<()> {
+        self.budget.charge(span, cells)
+    }
+
+    fn copy_type(&mut self, span: Span, ty: &Ty) -> Result<Ty> {
+        self.copy(ty, span)
+    }
+
+    fn width(&mut self, span: Span, ty: &Ty) -> Result<usize> {
+        Context::width(self, ty, span)
+    }
+
+    fn same_type(&mut self, span: Span, actual: &Ty, expected: &Ty) -> Result<()> {
+        for ty in [actual, expected] {
+            check::type_size_budgeted(ty, 4096, 64, true, span, &mut |span, cells| {
+                self.budget.charge(span, cells)
+            })?;
+        }
+        if actual == expected {
+            Ok(())
+        } else {
+            Err(self.error(
+                span,
+                "finite label type differs from its original declared type",
+            ))
+        }
+    }
+
+    fn invalid_nominal(&self, span: Span) -> SourceError {
+        self.error(span, "invalid original nominal finite label")
     }
 }

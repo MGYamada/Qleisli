@@ -11,6 +11,72 @@ development milestones from the scope of their evidence.
   oracle. Compare both qmatch and CNOT/X implementations against the oracle;
   retain all-input, scalar-phase, superposition and reference correlations.
   Native semantic rejection remains distinct from source-preservation proof.
+- Check protected and certified `with_computed` predicates on finite nominal
+  carriers in selected execution and projects. Bind the original use body,
+  certified logical supplier, physical table, owner order and exact auxiliary
+  cleanup to the Raw interval.
+
+- Check Meaning refinements declared in operation formals against the actual
+  original argument and exact ports, including unused nominal arguments.
+- Check rectangular nominal Meaning applications through original named
+  calls. Check a written `checked_op` at its supplying argument, including
+  unused arguments, and retain the exact input and output carrier codes.
+- Check standalone composed Meanings with nominal intermediate types and
+  tensor Meanings with nominal components. Retain exact reference bodies,
+  type trees, axis order and phase in the native equation.
+- Check standalone endomorphic Meaning applications on finite nominal codes,
+  including a three-label permutation and its inverse. Reuse the checked
+  ordinary interpretation when both original queries identify the same leaf.
+- Check standalone nominal Meaning applications in projects and selected
+  execution. Bind the original application, actual Raw interval and
+  invocation-specific Meaning duties before accepting the result.
+- Evaluate nominal intermediate values in classical Meaning helpers for
+  selected coherent arms and compare the original Meaning with the applied
+  operator in the native source check.
+- Check standalone nominal basis lifts in selected execution and closed projects.
+  Report the original basis context that Lean checked against the Raw interval.
+- Check coherent nominal basis rows in selected v5 qmatch bodies. Generate
+  only original logical rows and bind their physical table to the native
+  source interval, including pure ordinary enum matches in helpers.
+- Bind imported nominal types used only inside ordinary and mixed runtime
+  bodies to their original type paths before checking the typed Raw root.
+- Retain imported nominal types used only inside a selected qmatch body.
+  The native v5 source check validates their original declarations and
+  visibility even when no public port names those types.
+- Distinguish live signal registers from scratch restoration obligations and
+  retain their explicit ownership and resource-accounting requirements.
+  Explain why ordinary comparison and hashing cannot compare quantum owners;
+  preserve static comparisons and ordinary functions named `hash`.
+- Specify the finite automatic-uncomputation premises and exercise non-diagonal
+  factors whose complete action is diagonal. Preserve the distinct exact phases
+  of H X H and X Z X, and reject a unitary auxiliary flip that leaves it dirty.
+- Distinguish clean auxiliary return from the requested coherent live action
+  and quantitative resource accounting; retain first reset/uncompute diagnostics
+  and small phase-sensitive source regressions. Connect certified and QPTL
+  protected cleanup to the actual ordered pure Raw program and fresh inspection.
+- Add an isolated, pinned doc-gen4 workspace for QPTL API documentation.
+  Keep documentation dependencies separate from the library and verifier builds.
+- Express exact compute/use/uncompute through reusable QPTL encoding squares
+  and apply the law to the actual protected Raw dispatch on arbitrary
+  correlated amplitudes. Keep source correspondence, general channel cleanup
+  and quantitative resource obligations separate.
+- Consolidate the historical v0.2.7 branch-function validation packet with the
+  existing lossless archive format. Preserve its complete original bytes,
+  file modes and immutable Git inventory; current executable inputs and
+  published evidence identities are unchanged.
+- Check dirty-workspace restoration through an exact two-owner function
+  contract and an entangled reference regression. Distinguish unchanged
+  reduced states from preserved correlation phase, without adding general
+  clean/dirty syntax or claiming quantitative resource bounds.
+- Route selected computed scopes through the existing common source emitter
+  from their original syntax and dependency closure. Retain structured Raw
+  uncomputation, local exact normalization receipts and typed native checks;
+  check the unchanged small Grover sources against independent exact equations.
+- Retain small access-call and explicit-owner algorithm pairs for fixed
+  arithmetic, coherent equality, a Grover iterate, a QPE controlled-power
+  prefix and a quantum-walk step. Keep exact phase/axis comparisons and
+  observed project execution separate from selected-profile limitations and
+  unfinished general source/resource proofs.
 - Distinguish live-binding exchange, structural axis reordering and physical
   SWAP in quantum assignment and retired-import diagnostics. Keep ordinary
   assignment advice separate and retain the explicit two-Bit library interfaces.

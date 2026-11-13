@@ -168,11 +168,17 @@ enum code, changed nominal identity, reordered field/axis or hidden Observe unde
 a pure label refuses. A declared public Observe bound is retained even for a
 pure implementation. Source rows require the actual selected original, exact
 checked nominal origins or actual original type-resolution paths from the
-selected parameter/result types and recursive record fields. The shared
+selected parameter/result types and recursive record fields. The ordinary
+and mixed runtime gates use the existing original body reader when signature
+and graph evidence leave source rows uncovered. This binds body-only type
+paths, including paths through called helpers, before the shared Raw root check.
+The shared
 independent resolver retains its exact query, original lookup bytes, visibility
 and import/reexport edges. An arbitrary row or a validated unused Nat helper
 cannot supply type-path coverage. Projection and both coverage scans are
-precharged within the existing work limit.
+precharged within the existing work limit. Coverage binds source relevance
+to the checked artifact. Source-to-Raw correspondence remains a separate
+obligation.
 
 Rust's private ordinary proposal decoder accounts for every proposed source's
 path and text under the existing aggregate identity limit, then defers relevance
@@ -247,7 +253,9 @@ when every selection has its own whole-circuit check and the original
 operation closure does not require v5. Nominal source gates, wider selection
 sectors, and original operation closure transport use the bounded v5 request.
 The compiler selects the request before native root checking and
-never retries a failed native decision. Small nominal named-arm qmatch functions
+never retries a failed native decision. V5 checks original nominal declarations
+and import paths used by constructors and field projections in the body, even
+when the types do not occur in the selected interface. Small nominal named-arm qmatch functions
 also submit the complete actual callee fragment to the existing source/arm gate
 below before whole-root runtime acceptance. The fragment retains its original
 complete quantum argument/result order, structural body and named-arm
@@ -258,10 +266,52 @@ Nominal enum/record targets, including empty records, retain their full original
 types with enum or built-in ordinal selectors. Their physical arm entries and
 controls are untrusted proposals: the same native source/sector gate binds the
 full target type, actual body and code equations. It issues no provider capability.
+Selected and project v5 bodies may include coherent basis lifts with nominal values.
+The producer evaluates only the original logical rows and completes unused
+physical inputs injectively. The native checker independently derives the
+logical table from the original finite expression and pure helper bodies,
+checks every ordinary match arm's dependencies, and binds the canonical rows
+to the actual Raw lift interval. A protected two-argument `with_computed` with
+an original nominal predicate also uses this check. Lean evaluates the total
+classical predicate on the exact logical codes, requires zero in the padding
+rows, and checks the original one-Bit use body against both exact diagonal
+entries of the literal Raw use. The same interval retains the original data
+owner and its spectators. The three-argument certified form binds the
+original use body and logical supplier independently to their literal
+circuits on the exact data and auxiliary codes. Explicit pair splits and joins
+retain their written owner order and the exact logical axes, including padding
+in the product code. The native cleanup equation covers the complete physical
+domain. When no selection or Meaning context is present, an actual checked
+basis lift or computed interval earns the report
+`finite-source-basis-context-v5`. It discharges the selected invocation's
+original duties and retains pending positions belonging to other invocations.
+Checked selections use
+`finite-source-qmatch-context-v5`.
 Nonstructural bodies and the full twelve-bit profile remain pending.
-This does not grant operation/provider access: those preparations retain their
-separate finite constraints and evidence. Operation-formal closure, nominal
-coherent-table/Meaning and wider qmatch integration remain pending. Independent
+A selected coherent arm can use an original classical Meaning helper with
+nominal intermediate values when the Meaning's ports are supported built-in
+types. Lean checks the helper against the original canonical inputs and
+compares the exact Meaning with the applied arm. Standalone applications can
+use the same equation check. The report names `finite-source-meaning-context-v5`
+after the native traversal binds an actual application interval and discharges
+the selected invocation's original Meaning duties. Other roots retain their
+pending positions for separate checks.
+Standalone applications also check endomorphic `permutation_by` and
+`phase_by` Meanings with finite nominal ports through the same native path.
+Lean checks the original provider body, the exact logical action on its
+canonical codes and the literal application. A composed Meaning can pass
+through a nominal intermediate type. Tensor Meanings retain the ordered
+logical axes of their nominal and built-in components. A reused Meaning
+evaluation requires the same original declarations, reference occurrences,
+exact ports, ordered graph edges and dependency rows in both source queries.
+Rectangular applications through a named call retain the written
+`checked_op` at its supplying argument, even when the callee leaves the
+argument unused. A rectangular application checks the distinct input and
+output codes against the actual Raw interval and preserves the spectator
+frame. A Meaning declared on an operation formal checks the exact supplied
+argument, including unused actuals. The original header duty and any
+`checked_op` written at the call site each retain their own source occurrence.
+Wider qmatch remains pending. Independent
 host-expression visibility and source/body preservation are separate obligations. No external schema, inverse/control capability, new guarantee
 admission or broader QS/PR/RS/EXACT discharge follows from this mode.
 

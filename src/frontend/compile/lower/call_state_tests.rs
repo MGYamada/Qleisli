@@ -60,8 +60,11 @@ fn compiler_from_prepared<'p>(
         force_typed_root: false,
         selected_entry: None,
         selected_calls: 0,
+        checked_static_calls: BTreeMap::new(),
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
+        nominal_basis_roots: BTreeSet::new(),
+        nominal_meaning_roots: BTreeSet::new(),
         checked: BTreeMap::new(),
         runtime_signatures: BTreeMap::new(),
         carrier_descriptions: Vec::new(),
@@ -139,6 +142,7 @@ fn check_body_budget_refusal(warm_signature: bool) {
         compiler.work = started;
         let mut lower = Lowerer {
             nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
+            nominal_basis_used: None,
             compiler: &mut compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),

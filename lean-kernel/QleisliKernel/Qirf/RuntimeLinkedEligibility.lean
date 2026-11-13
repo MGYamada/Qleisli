@@ -15,17 +15,17 @@ private def writtenName (description : GenericOperation.Description) : Bool :=
     | _ => false
 
 section
-variable {artifact catalogue owner tokens implementations references operation prepared root requested checked
+variable {artifact catalogue owner description graph implementations references originals prepared root requested checked
     queue rootOwner rootName name entry path}
-    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked}
+    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked}
     {index : Nat}
     {invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path}
     {closed : GenericOperation.Closed invoked.demand.transported.subject.description}
 
-structure Fulfilled (link : ClosedAt source index invoked closed) : Prop where
+structure Fulfilled (link : ClosedAt source index invoked closed) (binding : Prop) : Prop where
   written : invoked.demand.source.original.kind = .checkedMeaning
   operand : writtenName invoked.demand.source.original.subject = true
-  bindings : invoked.demand.source.original.bindings.isEmpty = true
+  bindings : binding
   application : invoked.demand.source.original.runtimeApplication.isNone = true
   providers : link.providers.AllBound ∨ link.applied.isSome = true
   input : link.structureMatch.matched.terminal.value.input = link.originalMeaning.request.meaning.graph.input
@@ -37,20 +37,22 @@ private structure Verdict where
   positive : Bool
   sound : positive = true → claim
 
-private def closedVerdict (link : ClosedAt source index invoked closed) : Verdict :=
+private def closedVerdict (link : ClosedAt source index invoked closed) (binding : Verdict) : Verdict :=
   let duty := invoked.demand.source.original
-  if h : duty.kind = .checkedMeaning ∧ writtenName duty.subject = true ∧ duty.bindings.isEmpty = true ∧
+  if h : duty.kind = .checkedMeaning ∧ writtenName duty.subject = true ∧ binding.positive = true ∧
       duty.runtimeApplication.isNone = true ∧ (link.providers.complete = true ∨ link.applied.isSome = true) then
-    ⟨Fulfilled link,true,fun _ =>
-      ⟨h.1,h.2.1,h.2.2.1,h.2.2.2.1,h.2.2.2.2,link.originalEquation.1,link.originalEquation.2.1,link.originalEquation.2.2⟩⟩
-  else ⟨Fulfilled link,false,by intro impossible; cases impossible⟩
+    ⟨Fulfilled link binding.claim,true,fun _ =>
+      ⟨h.1,h.2.1,binding.sound h.2.2.1,h.2.2.2.1,h.2.2.2.2,
+        link.originalEquation.1,link.originalEquation.2.1,link.originalEquation.2.2⟩⟩
+  else ⟨Fulfilled link binding.claim,false,by intro impossible; cases impossible⟩
 
 private def statusVerdict
-    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked)
     (index : Nat)
-    (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path) :
+    (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path)
+    (binding : Verdict) :
     (status : SourcePendingMeaning.DemandStatus invoked.demand) → ForStatus source index invoked status → Verdict
-  | .classified (.closed _),link => closedVerdict link
+  | .classified (.closed _),link => closedVerdict link binding
   | .classified (.conditional ..),_ | .inactive _,_ => ⟨False,false,by decide⟩
 end
 
@@ -68,7 +70,12 @@ variable {artifact catalogue queue context description graph origin implementati
 private def verdict : Verdict := by
   cases site with
   | unlocated => exact evidence.elim
-  | arm => exact statusVerdict source index invoked (assessment invoked) evidence
+  | arm | application =>
+    let empty := invoked.demand.source.original.bindings.isEmpty
+    exact statusVerdict source index invoked ⟨empty = true,empty,id⟩ (assessment invoked) evidence
+  | supplying =>
+    exact statusVerdict source index invoked ⟨Nonempty _,true,fun _ => ⟨evidence.2⟩⟩
+      (assessment invoked) evidence.1
 
 def Positive : Prop := (verdict site prepared checked source index invoked evidence).claim
 

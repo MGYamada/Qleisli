@@ -154,7 +154,7 @@ def CheckedStep {artifact root execution} (next : BlockRunner artifact root exec
 private def plannedOperationRequest {artifact} {preparation : RuntimeGraphOperation.Preparation artifact}
     {owner} {event : SourceTypes.SourceOperationApplication.Event artifact.sources owner}
     (original : RuntimeBodyQueries.Operation (.planned preparation) event) : RuntimeGraphOperation.Request artifact :=
-  ⟨_,_,event.operation.graph,SourceTypes.OperationAccess.applicable,original.child.bodies,original.graph.1,.unlocated⟩
+  ⟨_,_,event.operation.graph,SourceTypes.OperationAccess.applicable,original.child.bodies,original.graph.1,.application event⟩
 
 /-- Planned source execution uses the exact receipt from consuming this
 occurrence's checked graph, including its original preparation and location. -/
@@ -231,6 +231,16 @@ def OperationOrigin {artifact root} (execution : ExecutionMode artifact root)
       RuntimeInterval.Computed (RuntimeBodyQueries.readOperation execution.queries source event position cursor data) original ∧
       RuntimeInterval.Computed (operationNode block position event.inputOwners before after expected) node ∧
       OperationResult execution original expected receipts
+  | .rectangularOperation (event := retained) (expected := expected) (start := start) (count := count) _ =>
+    ∃ (owner name : String) (source : SourceTypes.SourceRuntimeScope.Subject artifact.sources owner name)
+      (event : SourceTypes.SourceOperationApplication.Event artifact.sources owner)
+      (position : Position) (cursor : execution.queries.Cursor)
+      (data : execution.queries.EventData source (.operation event) position)
+      (original : RuntimeBodyQueries.Operation execution.queries event)
+      (receipts : List execution.Receipt),
+      HEq event retained ∧ position.start = start ∧ position.count = count ∧
+      RuntimeInterval.Computed (RuntimeBodyQueries.readOperation execution.queries source event position cursor data) original ∧
+      OperationResult execution original expected receipts
   | .named .. | .transform .. => False
   | node@(.selection ..) => SelectionOrigin execution node
   | _ => True
@@ -257,6 +267,11 @@ theorem OperationOrigin.staged_action {artifact root}
         (receipt : RuntimeGraphOperation.StagedReceipt continuation),
         event.inputOwners = roles ∧ HEq receipt.request.graph event.operation.graph ∧
           expected = continuation.action receipt.evidence
+    | .rectangularOperation (event := retained) (expected := expected) _ =>
+      ∃ (owner : String) (event : SourceTypes.SourceOperationApplication.Event artifact.sources owner)
+        (receipt : RuntimeGraphOperation.StagedReceipt continuation),
+        HEq event retained ∧ HEq receipt.request.graph event.operation.graph ∧
+          expected = continuation.action receipt.evidence
     | _ => True := by
   cases node
   case operation =>
@@ -265,10 +280,16 @@ theorem OperationOrigin.staged_action {artifact root}
     let graph := original.graph.2.2
     exact ⟨owner,event,⟨plannedOperationRequest original,location,graph.evidence,graph.consumed,evidence,consumed⟩,
       roles,HEq.rfl,expected⟩
+  case rectangularOperation =>
+    obtain ⟨owner,_,_,event,_,_,_,original,_,same,_,_,_,performed⟩ := checked
+    obtain ⟨location,evidence,consumed,_,expected⟩ := performed
+    let graph := original.graph.2.2
+    exact ⟨owner,event,⟨plannedOperationRequest original,location,graph.evidence,graph.consumed,evidence,consumed⟩,
+      same,HEq.rfl,expected⟩
   all_goals exact True.intro
 
 private def IntrinsicNode {dependencies program block} : Node dependencies program block → Prop
-  | .primitive .. | .structural .. | .basis .. => True
+  | .primitive .. | .structural .. | .basis .. | .computed .. | .certifiedComputed .. => True
   | _ => False
 
 private theorem intrinsic_origin {artifact root} {execution : ExecutionMode artifact root}
@@ -710,7 +731,8 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
     (SourceTypes.SourceRuntimeValues.ordinary value).all fun (basis,_) =>
       Semantics.FiniteCarrier.dimension basis == some 1
   let pureCheck : WorkM Unit := do
-    guard (source.effect == .unitary && singleton source.value &&
+    guard (program.effect != .observe && SourceTypes.SourceEffect.permits (some program.effect) source.effect &&
+      singleton source.value &&
       source.parameterValues.all singleton &&
       program.classicalInputs.isEmpty && program.classicalOutputs.isEmpty) .request
     let _ ← lift (readOption (Sector.pureOps block.operations))
@@ -943,28 +965,44 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
       exact entered.2.snocPure _ rfl (fun _ => .of_operationOrigin (execution := execution) (intrinsic_origin intrinsic))
         (fun _ => .of_operationOrigin (execution := execution) (intrinsic_origin intrinsic))
     case operation =>
-      obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
-      obtain ⟨_,f,_shape,h⟩ := bind_success _ _ _ _ _ h
-      obtain ⟨operation,g,_operation,h⟩ := bind_success _ _ _ _ _ h
-      obtain ⟨performed,i,_performed,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨operation,e,_operation,h⟩ := bind_success _ _ _ _ _ h
+      split at h
+      swap
+      · cases h
+      rename_i caller
+      obtain ⟨performed,f,_performed,h⟩ := bind_success _ _ _ _ _ h
       rcases performed with ⟨expected,children,performedReceipts⟩
-      obtain ⟨node,j,_node,returned⟩ := bind_success _ _ _ _ _ h
-      have same := (pure_success _ _ _ _ returned).1
-      subst after
-      have chain := entered.1
       have resultRead : OperationResult execution operation expected performedReceipts := by
         cases execution with
         | fresh _ => trivial
         | planned preparation continuation =>
           rcases operation with ⟨child,⟨references,afterPlan,graph⟩,queryCursor⟩
-          exact planned_operation_result continuation _ ⟨rootOwner,rootName,owner,name,path,.unlocated⟩ _performed
-      have original := (show RuntimeInterval.Computed _ node from ⟨i,j,_node⟩)
-      obtain ⟨aligned,⟨first,last⟩,authentic⟩ := operation_aligned execution source _ block position
-        sourceCursor data operation ⟨f,g,_operation⟩ expected node history frame sameBindings owners
-        ⟨d,e,_owners⟩ performedReceipts resultRead
-        (by simpa only [sameBindings] using original)
-      exact ⟨chain.snoc aligned (.of_operationOrigin authentic) rfl ⟨first.trans atStart.symm,last⟩ True.intro,
-        entered.2.snocPure _ rfl (fun _ => .of_operationOrigin (execution := execution) authentic) (fun _ => .of_operationOrigin (execution := execution) authentic)⟩
+          exact planned_operation_result continuation _ ⟨rootOwner,rootName,owner,name,path,.application _ caller⟩ _performed
+      split at h
+      · obtain ⟨_,i,_shape,h⟩ := bind_success _ _ _ _ _ h
+        obtain ⟨owners,j,_owners,h⟩ := bind_success _ _ _ _ _ h
+        obtain ⟨node,k,_node,h⟩ := bind_success _ _ _ _ _ h
+        have same := (pure_success _ _ _ _ h).1
+        subst after
+        have original := (show RuntimeInterval.Computed _ node from ⟨j,k,_node⟩)
+        obtain ⟨aligned,⟨first,last⟩,authentic⟩ := operation_aligned execution source _ block position
+          sourceCursor data operation ⟨d,e,_operation⟩ expected node history frame sameBindings owners
+          ⟨i,j,_owners⟩ performedReceipts resultRead
+          (by simpa only [sameBindings] using original)
+        exact ⟨entered.1.snoc aligned (.of_operationOrigin authentic) rfl ⟨first.trans atStart.symm,last⟩ True.intro,
+          entered.2.snocPure _ rfl (fun _ => .of_operationOrigin (execution := execution) authentic)
+            (fun _ => .of_operationOrigin (execution := execution) authentic)⟩
+      · obtain ⟨checked,_,_checked,h⟩ := bind_success _ _ _ _ _ h
+        have same := (pure_success _ _ _ _ h).1
+        subst after
+        have authentic : OperationOrigin execution (.rectangularOperation checked) :=
+          ⟨owner,name,source,_,position,sourceCursor,data,operation,performedReceipts,
+            HEq.rfl,rfl,rfl,⟨d,e,_operation⟩,resultRead⟩
+        have startsWithSource : history = {history with bindings := frame.bindings} := by
+          rw [sameBindings]
+        exact ⟨entered.1.snoc ⟨startsWithSource,rfl⟩ (.of_operationOrigin authentic) rfl ⟨atStart.symm,rfl⟩ True.intro,
+          entered.2.snocPure _ rfl (fun _ => .of_operationOrigin (execution := execution) authentic)
+            (fun _ => .of_operationOrigin (execution := execution) authentic)⟩
     case transform =>
       obtain ⟨transformed,e,_transformed,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨forward,f,_forward,h⟩ := bind_success _ _ _ _ _ h
@@ -1030,6 +1068,17 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
         entered.2.snocPure _ rfl (fun _ => True.intro) (fun _ => True.intro)⟩
       change history = {history with bindings := frame.bindings}
       rw [sameBindings]
+    case computed =>
+      obtain ⟨prepared,e,_source,ran⟩ := bind_success _ _ _ _ _ h
+      cases prepared
+      all_goals
+        obtain ⟨_,_,_action,returned⟩ := bind_success _ _ _ _ _ ran
+        have same := (pure_success _ _ _ _ returned).1
+        subst after
+        refine ⟨entered.1.snoc ⟨?_,rfl⟩ True.intro rfl ⟨atStart.symm,rfl⟩ True.intro,
+          entered.2.snocPure _ rfl (fun _ => True.intro) (fun _ => True.intro)⟩
+        change history = {history with bindings := frame.bindings}
+        rw [sameBindings]
     case primitive =>
       split at h
       · obtain ⟨action,e,_action,returned⟩ := bind_success _ _ _ _ _ h

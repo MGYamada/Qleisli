@@ -356,7 +356,9 @@ impl Interface {
 #[derive(Clone, Debug)]
 pub(super) enum ObligationKind {
     ControlSectors,
-    Injectivity,
+    Injectivity {
+        typed_ports: bool,
+    },
     ProtectedClean,
     CertifiedClean {
         logical: OperationIdentity,
@@ -766,7 +768,7 @@ impl<'a> Program<'a> {
                         }
                     }
                 },
-                ObligationKind::Injectivity
+                ObligationKind::Injectivity { .. }
                 | ObligationKind::ControlSectors
                 | ObligationKind::ProtectedClean
                 | ObligationKind::TransformedMeaning => {}

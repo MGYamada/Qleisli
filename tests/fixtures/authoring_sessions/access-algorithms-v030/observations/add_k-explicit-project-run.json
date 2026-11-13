@@ -1,0 +1,43 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "run",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-access-29-20261111/attempt-01/add_k-explicit",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-11T14:52:05.477878+00:00",
+  "exit_code": 0,
+  "timeout": false,
+  "seconds": 2.4627807500073686,
+  "source_sha256": "2f48772d95aab5f3011e5bb971ff0be0ada1b871570e2c138563736d9d2a648f",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.5000000000000002},{\"bits\":[true,true,false],\"probability\":0.5000000000000002}]}}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false,
+            true
+          ],
+          "probability": 0.5000000000000002
+        },
+        {
+          "bits": [
+            true,
+            true,
+            false
+          ],
+          "probability": 0.5000000000000002
+        }
+      ]
+    }
+  },
+  "original_record_sha256": "808a71a17a274c0fce303528ca1cc6fb0de3cc00740a743ad65fed6fedc722e0"
+}

@@ -149,7 +149,18 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-qmatch-gram-routing",
                 "refs/heads/codex/beta-qmatch-forward-tape",
                 "refs/heads/codex/beta-quantum-runtime-types",
-                "refs/heads/codex/beta-runtime-static-bindings")
+                "refs/heads/codex/beta-runtime-static-bindings",
+                "refs/heads/codex/beta-64-nominal-body-provenance",
+                "refs/heads/codex/beta-64-nominal-basis",
+                "refs/heads/codex/beta-64-standalone-basis",
+                "refs/heads/codex/beta-64-standalone-meaning",
+                "refs/heads/codex/beta-64-nominal-meaning-ports",
+                "refs/heads/codex/beta-64-nominal-meaning-composition",
+                "refs/heads/codex/beta-64-rectangular-nominal-meaning",
+                "refs/heads/codex/beta-64-declared-meaning",
+                "refs/heads/codex/beta-64-computed-predicate",
+                "refs/heads/codex/beta-64-certified-computed",
+                "refs/heads/codex/beta-64-computed-product-action")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:

@@ -1,0 +1,15 @@
+#![no_implicit_prelude]
+pub enum Tri { A, B, C }
+struct Packet { spare: Bit, tag: Tri }
+classical fn next(tag: Tri) -> Tri {
+    match tag { Tri::C => Tri::A, Tri::A => Tri::B, Tri::B => Tri::C }
+}
+classical fn cycle(tag: Tri) -> Tri {
+    next((Packet { tag: tag, spare: 0 }).tag)
+}
+unitary fn idle(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn phase(q: Q<Bit>) -> Q<Bit> { global_phase_eighth(q) }
+pub unitary fn keep(s: Q<Tri>, q: Q<Bit>) -> (Q<Tri>, Q<Bit>) {
+    let s = basis s as tag { cycle(tag) };
+    qmatch(s, q) { Tri::C => phase, Tri::B => idle, Tri::A => idle }
+}

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"finite Meaning signatures require an exact closed Unit/Bit/Bits/product basis","primary":{"module":"main","path":"/private/tmp/qleisli-64-composed-nominal.zvOu3Vqp/record.qli","start":268,"end":316},"related":[]}],"result":null}

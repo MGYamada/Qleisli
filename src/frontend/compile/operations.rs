@@ -15,8 +15,9 @@ use crate::ir::*;
 pub(super) struct DeclaredMeaning {
     pub basis: Ty,
     pub codomain: Ty,
-    pub target: crate::frontend::meaning::Target,
-    pub raw: RawProgram,
+    pub target: Option<crate::frontend::meaning::Target>,
+    pub raw: Option<RawProgram>,
+    pub references: Vec<Key>,
     pub matrix: Matrix,
     pub pure: Option<Arc<crate::interchange::pure_leaf::CheckedPureLeaf>>,
 }
@@ -105,6 +106,7 @@ impl ProviderRoot {
 #[derive(Debug)]
 pub(super) enum Node {
     Provider(Arc<FunctionEvidence>),
+    Carrier(Option<Vec<CircuitStep>>),
     Pure(PureProvider),
     Inverse(Operation),
     Then(Operation, Operation),
@@ -137,6 +139,7 @@ pub(super) struct PureOrigin {
     pub(super) equation: Arc<crate::interchange::pure_leaf::SourcePureEquation>,
 }
 mod bindings;
+mod carrier;
 #[cfg(test)]
 mod identity_tests;
 mod pure;
@@ -316,9 +319,15 @@ impl Compiler<'_> {
             Stage::Basis,
         )?;
         self.work = work;
-        contract_basis(&basis)
-            .bits()
-            .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+        let typed = basis.basis_bits().is_none() || codomain.basis_bits().is_none();
+        if typed {
+            self.basis_codes(&key_name.0, decl.span, &basis)?;
+            self.basis_codes(&key_name.0, decl.span, &codomain)?;
+        } else {
+            contract_basis(&basis)
+                .bits()
+                .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+        }
         if let FnBody::MeaningReference { function } = &decl.body {
             let Callee::User(reference) = self.resolve(&key_name.0, function)? else {
                 unreachable!("common reference judgment requires an ordinary definition")
@@ -339,6 +348,24 @@ impl Compiler<'_> {
                     "Meaning reference requires an available pure source effect",
                 ));
             }
+            if typed {
+                let body = self
+                    .checked
+                    .get(&reference)
+                    .ok_or_else(|| {
+                        self.error(
+                            &key_name.0,
+                            function.span,
+                            ErrorCode::InvalidIr,
+                            "original reference function has not been independently checked",
+                        )
+                    })?
+                    .clone();
+                let matrix =
+                    self.carrier_program_action(&key_name.0, decl.span, &basis, &codomain, &body)?;
+                self.retain_carrier_meaning(*key, basis, codomain, matrix, vec![reference]);
+                return Ok(());
+            }
             let target = crate::frontend::meaning::Target::reference(
                 contract_basis(&basis),
                 contract_basis(&codomain),
@@ -355,14 +382,49 @@ impl Compiler<'_> {
         {
             let left = self.meaning_key(&key_name.0, first)?;
             let right = self.meaning_key(&key_name.0, second)?;
+            let tensor = matches!(&decl.body, FnBody::MeaningTensor { .. });
+            if typed
+                || self.meanings[&left].target.is_none()
+                || self.meanings[&right].target.is_none()
+            {
+                self.basis_codes(&key_name.0, decl.span, &basis)?;
+                self.basis_codes(&key_name.0, decl.span, &codomain)?;
+                let a = &self.meanings[&left];
+                let b = &self.meanings[&right];
+                let matrix = if tensor {
+                    a.matrix.tensor(&b.matrix, &mut self.exact_work)
+                } else {
+                    b.matrix.compose(&a.matrix, &mut self.exact_work)
+                }
+                .map_err(|e| self.op_error(&key_name.0, decl.span, e.into()))?;
+                self.charge(
+                    &key_name.0,
+                    decl.span,
+                    self.meanings[&left].references.len() + self.meanings[&right].references.len(),
+                )?;
+                let references = self.meanings[&left]
+                    .references
+                    .iter()
+                    .chain(&self.meanings[&right].references)
+                    .copied()
+                    .collect();
+                self.retain_carrier_meaning(*key, basis, codomain, matrix, references);
+                return Ok(());
+            }
             let dimension = 1usize
                 << contract_basis(&basis)
                     .bits()
                     .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
             self.charge(&key_name.0, decl.span, dimension * 2)?;
-            let left = &self.meanings[&left].target;
-            let right = &self.meanings[&right].target;
-            let target = if matches!(&decl.body, FnBody::MeaningTensor { .. }) {
+            let left = self.meanings[&left]
+                .target
+                .as_ref()
+                .expect("built-in Meaning");
+            let right = self.meanings[&right]
+                .target
+                .as_ref()
+                .expect("built-in Meaning");
+            let target = if tensor {
                 left.tensor(right)
             } else {
                 left.compose(right)
@@ -386,14 +448,23 @@ impl Compiler<'_> {
             ));
         };
         self.prepare_required_classical_table(fkey, &key_name.0, function.span)?;
-        let f = self.basis.get(&fkey).ok_or_else(|| {
-            self.missing_basis_error(
-                &key_name.0,
-                function.span,
-                &fkey,
-                "meaning requires an ordinary total classical function",
-            )
-        })?;
+        let nominal = if self.deferred_nominal_tables.contains(&fkey) {
+            Some(self.original_classical_table(fkey)?)
+        } else {
+            None
+        };
+        let f = if let Some(table) = &nominal {
+            table
+        } else {
+            self.basis.get(&fkey).ok_or_else(|| {
+                self.missing_basis_error(
+                    &key_name.0,
+                    function.span,
+                    &fkey,
+                    "meaning requires an ordinary total classical function",
+                )
+            })?
+        };
         let result = if *permutation {
             basis.clone()
         } else {
@@ -406,6 +477,16 @@ impl Compiler<'_> {
                 ErrorCode::TypeMismatch,
                 "meaning function has the wrong exact basis signature",
             ));
+        }
+        if typed {
+            let length = f.table.len();
+            self.charge(&key_name.0, decl.span, length)?;
+            let f = nominal.as_ref().unwrap_or_else(|| &self.basis[&fkey]);
+            let labels = f.table.clone();
+            let matrix =
+                self.carrier_table_action(&key_name.0, decl.span, &basis, *permutation, &labels)?;
+            self.retain_carrier_meaning(*key, basis, codomain, matrix, Vec::new());
+            return Ok(());
         }
         let target = if *permutation {
             FiniteMeaning::permutation(contract_basis(&basis), f.table.clone())
@@ -477,13 +558,16 @@ impl Compiler<'_> {
             .map_err(|e| self.op_error(&name.0, span, e))?;
             (raw, evidence.meaning().clone(), Some(Arc::new(evidence)))
         };
+        self.charge(&name.0, span, target.cells())?;
+        let references = target.reference_occurrences().collect();
         self.meanings.insert(
             *key,
             DeclaredMeaning {
                 basis,
                 codomain,
-                target,
-                raw,
+                target: Some(target),
+                raw: Some(raw),
+                references,
                 matrix,
                 pure,
             },
@@ -582,12 +666,18 @@ impl Compiler<'_> {
             );
             self.work = work;
             let codomain = codomain?;
-            contract_basis(&codomain)
-                .bits()
-                .map_err(|e| self.op_error(&module, parameter.name.span, e))?;
-            contract_basis(&basis)
-                .bits()
-                .map_err(|error| self.op_error(&module, original_basis.span, error))?;
+            for (port, span) in [
+                (&basis, original_basis.span),
+                (&codomain, parameter.name.span),
+            ] {
+                if port.basis_bits().is_none() {
+                    self.basis_codes(&module, span, port)?;
+                } else {
+                    contract_basis(port)
+                        .bits()
+                        .map_err(|e| self.op_error(&module, span, e))?;
+                }
+            }
             let meaning = if let Some(meaning_key) = meaning_key {
                 let original_meaning = original_meaning
                     .as_ref()
@@ -701,13 +791,15 @@ impl Compiler<'_> {
         let Kind::Q(basis) = &params[0].kind else {
             unreachable!("quantum unary interface")
         };
-        contract_basis(codomain)
-            .bits()
-            .map_err(|e| self.op_error(module, name.span, e))?;
-        contract_basis(basis)
-            .bits()
-            .map_err(|e| self.op_error(module, name.span, e))?;
         let mkey = meaning.map(|m| self.meaning_key(module, m)).transpose()?;
+        if mkey.is_none() && (basis.basis_bits().is_none() || codomain.basis_bits().is_none()) {
+            return Err(self.error(
+                module,
+                name.span,
+                ErrorCode::Unsupported,
+                "typed provider requires an original checked Meaning occurrence",
+            ));
+        }
         if let Some(mkey) = &mkey {
             if self.meanings[mkey].basis != **basis || self.meanings[mkey].codomain != **codomain {
                 return Err(self.error(
@@ -772,6 +864,7 @@ impl Compiler<'_> {
             name.span,
             key,
             mkey,
+            false,
             effect,
             (**basis).clone(),
             (**codomain).clone(),
@@ -796,12 +889,29 @@ impl Compiler<'_> {
         span: Span,
         key: Key,
         meaning: Option<Key>,
+        inside_formal_meaning: bool,
         effect: Effect,
         basis: Ty,
         codomain: Ty,
         program: &AcceptedProgram,
         bindings: &Bindings,
     ) -> Result<Operation, CompileError> {
+        if basis.basis_bits().is_none()
+            || codomain.basis_bits().is_none()
+            || meaning.is_some_and(|key| self.meanings[&key].target.is_none())
+        {
+            return self.carrier_provider_program(
+                module,
+                span,
+                key,
+                meaning,
+                inside_formal_meaning,
+                effect,
+                basis,
+                codomain,
+                program,
+            );
+        }
         contract_basis(&basis)
             .bits()
             .map_err(|error| self.op_error(module, span, error))?;
@@ -835,7 +945,8 @@ impl Compiler<'_> {
         );
         let evidence = if let Some(meaning) = meaning {
             let target = &self.meanings[&meaning];
-            if let Ok(finite) = target.target.finite() {
+            let legacy = target.target.as_ref().expect("built-in Meaning provider");
+            if let Ok(finite) = legacy.finite() {
                 MeaningEvidence::check_retained_with_kernel(
                     &self.kernel,
                     implementation,
@@ -847,9 +958,9 @@ impl Compiler<'_> {
             } else {
                 FunctionEvidence::check_retained_with_kernel(
                     &self.kernel,
-                    target.target.signature().clone(),
+                    legacy.signature().clone(),
                     implementation,
-                    target.raw.clone(),
+                    target.raw.as_ref().expect("built-in Meaning body").clone(),
                     identity,
                     &mut self.exact_work,
                 )
@@ -1063,12 +1174,15 @@ impl Compiler<'_> {
         };
         self.check_tree(module, span, basis.tree_size())?;
         self.check_tree(module, span, codomain.tree_size())?;
-        contract_basis(&codomain)
-            .bits()
-            .map_err(|e| self.op_error(module, span, e))?;
-        contract_basis(&basis)
-            .bits()
-            .map_err(|e| self.op_error(module, span, e))?;
+        for port in [&basis, &codomain] {
+            if port.basis_bits().is_none() {
+                self.basis_codes(module, span, port)?;
+            } else {
+                contract_basis(port)
+                    .bits()
+                    .map_err(|e| self.op_error(module, span, e))?;
+            }
+        }
         let meaning = node
             .meaning(&mut self.exact_work)
             .map_err(|e| self.op_error(module, span, e))?;
@@ -1202,6 +1316,7 @@ impl Node {
         }
         Ok(match self {
             Self::Provider(e) => Some(e.meaning().clone()),
+            Self::Carrier(_) => unreachable!("carrier leaves retain their logical matrix"),
             Self::Pure(e) => Some(e.leaf.meaning().clone()),
             Self::Requested(_, operation) => operation.meaning.clone(),
             Self::Inverse(a) => a.meaning.as_ref().map(|m| m.adjoint(budget)).transpose()?,
@@ -1223,7 +1338,14 @@ impl Node {
             }
             Self::Repeat(n, a) => {
                 if *n == 0 {
-                    let dimension = 1 << a.basis.basis_bits().expect("basis");
+                    let dimension = if let Some(matrix) = &a.meaning {
+                        matrix.cols()
+                    } else {
+                        1 << a
+                            .basis
+                            .basis_bits()
+                            .ok_or(ContractError::EvidenceMismatch)?
+                    };
                     budget.charge(dimension * dimension)?;
                     Some(Matrix::identity(dimension)?)
                 } else if let Some(m) = &a.meaning {
@@ -1236,6 +1358,20 @@ impl Node {
     }
 }
 impl Operation {
+    pub(super) fn uses_carrier(&self) -> bool {
+        match self.node.as_ref() {
+            Node::Carrier(_) => true,
+            Node::Provider(_) | Node::Pure(_) => false,
+            Node::Requested(_, child)
+            | Node::Inverse(child)
+            | Node::Controlled(child)
+            | Node::Repeat(_, child) => child.uses_carrier(),
+            Node::Then(left, right) | Node::Tensor(left, right) | Node::Conjugate(left, right) => {
+                left.uses_carrier() || right.uses_carrier()
+            }
+        }
+    }
+
     /// Compare complete private descriptions without expanding their issued
     /// native receipts. Equal matrices alone do not identify an operation.
     /// Construction bounds description depth/nodes before this traversal;
@@ -1294,6 +1430,11 @@ impl Operation {
                 charge(1)?;
                 a == b // FunctionEvidence compares issued proof identity only.
             }
+            (Node::Carrier(Some(a)), Node::Carrier(Some(b))) => {
+                charge(total_size(a.iter().chain(b).map(circuit::size)))?;
+                a == b
+            }
+            (Node::Carrier(None), Node::Carrier(None)) => true,
             (Node::Pure(a), Node::Pure(b)) => {
                 charge(3)?;
                 Arc::ptr_eq(&a.leaf, &b.leaf)
@@ -1353,8 +1494,8 @@ impl Operation {
                 ),
             ));
         }
-        let bits =
-            self.basis.basis_bits().expect("basis") + usize::from(access == Access::Controlled);
+        let bits = self.basis.basis_width().expect("closed basis") as usize
+            + usize::from(access == Access::Controlled);
         if bits > MAX_CONTRACT_BITS {
             return Err(compiler.error(
                 module,
@@ -1383,10 +1524,13 @@ impl Operation {
         } else {
             self.basis.clone()
         };
-        let budget = &mut compiler.exact_work;
-        let actual = Circuit::new(contract_basis(&basis), steps.clone())
-            .and_then(|c| c.matrix(budget))
-            .map_err(|e| compiler.op_error(module, span, e))?;
+        let actual = if basis.basis_bits().is_none() {
+            compiler.carrier_circuit_action(module, span, &basis, steps.clone())?
+        } else {
+            Circuit::new(contract_basis(&basis), steps.clone())
+                .and_then(|c| c.matrix(&mut compiler.exact_work))
+                .map_err(|e| compiler.op_error(module, span, e))?
+        };
         let m = self.meaning.as_ref().expect("concrete meaning");
         let expected = match access {
             Access::Apply => Ok(m.clone()),
@@ -1407,7 +1551,7 @@ impl Operation {
         Ok(steps)
     }
     fn materialize(&self, access: Access) -> Result<Vec<CircuitStep>, ContractError> {
-        let bits = self.basis.basis_bits().expect("basis");
+        let bits = self.basis.basis_width().expect("closed basis") as usize;
         let cat = |mut a: Vec<CircuitStep>,
                    b: Vec<CircuitStep>|
          -> Result<Vec<CircuitStep>, ContractError> {
@@ -1424,6 +1568,16 @@ impl Operation {
                     "rectangular preparation requires its original Raw body",
                 ));
             }
+            Node::Carrier(None) => {
+                return Err(ContractError::Type(
+                    "typed preparation requires its original Raw body",
+                ));
+            }
+            Node::Carrier(Some(steps)) => match access {
+                Access::Apply => steps.clone(),
+                Access::Adjoint => inverse(steps.clone()),
+                Access::Controlled => controlled(steps.clone(), bits),
+            },
             Node::Provider(e)
             | Node::Pure(PureProvider {
                 inverse: Some(e), ..
@@ -1464,8 +1618,8 @@ impl Operation {
             }
             Node::Tensor(a, b) => {
                 let shift = usize::from(access == Access::Controlled);
-                let abits = a.basis.basis_bits().expect("basis");
-                let bbits = b.basis.basis_bits().expect("basis");
+                let abits = a.basis.basis_width().expect("closed basis") as usize;
+                let bbits = b.basis.basis_width().expect("closed basis") as usize;
                 let axes: Vec<_> = (0..shift)
                     .chain((shift + abits)..(shift + abits + bbits))
                     .collect();

@@ -10,90 +10,13 @@ use crate::frontend::types::nominal::Body;
 mod tests;
 
 impl Lowerer<'_, '_> {
-    /// Resolve the original constructor/label occurrence through the common
-    /// source table. Spelling, width or a caller-supplied type is not authority.
-    pub(super) fn enum_label(
-        &mut self,
-        module: &str,
-        value: &VariantValue,
-    ) -> Result<(Ty, usize), CompileError> {
-        self.compiler.tick(module, value.type_name.span)?;
-        let ResolvedUse::Global(Target::Type(id)) =
-            self.compiler.locals().usage(&value.type_name).target
-        else {
-            return Err(self.error(
-                module,
-                value.type_name.span,
-                ErrorCode::TypeMismatch,
-                "enum label requires its original concrete type occurrence",
-            ));
-        };
-        let nominals = std::sync::Arc::clone(&self.compiler.source.nominals);
-        let original = nominals.get(&id).ok_or_else(|| {
-            self.error(
-                module,
-                value.type_name.span,
-                ErrorCode::TypeMismatch,
-                "enum label lost its original nominal declaration",
-            )
-        })?;
-        let owner = self.compiler.current_instance_owner().ok_or_else(|| {
-            self.error(
-                module,
-                value.type_name.span,
-                ErrorCode::TypeMismatch,
-                "enum label lacks its active original function",
-            )
-        })?;
-        let ty = self
-            .compiler
-            .close_body_type(owner, original, value.type_name.span)?;
-        let Kind::Nominal(nominal) = &ty.kind else {
-            return Err(self.error(
-                module,
-                value.type_name.span,
-                ErrorCode::TypeMismatch,
-                "enum label requires a nominal type",
-            ));
-        };
-        let Body::Enum(labels) = &nominal.body else {
-            return Err(self.error(
-                module,
-                value.type_name.span,
-                ErrorCode::Unsupported,
-                "ordinary record execution requires its typed native transport",
-            ));
-        };
-        self.compiler.charge(
-            module,
-            value.variant.span,
-            total_size(labels.iter().map(|name| {
-                name.len()
-                    .saturating_add(value.variant.text.len())
-                    .saturating_add(1)
-            })),
-        )?;
-        let ordinal = labels
-            .iter()
-            .position(|label| *label == value.variant.text)
-            .ok_or_else(|| {
-                self.error(
-                    module,
-                    value.variant.span,
-                    ErrorCode::TypeMismatch,
-                    "enum label is absent from its original declaration",
-                )
-            })?;
-        Ok((ty, ordinal))
-    }
-
     pub(super) fn variant_value(
         &mut self,
         module: &str,
         span: Span,
         value: &VariantValue,
     ) -> Result<Value, CompileError> {
-        let (ty, ordinal) = self.enum_label(module, value)?;
+        let (ty, ordinal) = self.compiler.enum_label(module, value)?;
         self.note_nominal(&ty, module, span)?;
         let width = ty
             .basis_width()
@@ -172,7 +95,7 @@ impl Lowerer<'_, '_> {
         let mut plan = Vec::with_capacity(arms.len());
         let mut seen = BTreeSet::new();
         for arm in arms {
-            let (label_ty, ordinal) = self.enum_label(module, &arm.label)?;
+            let (label_ty, ordinal) = self.compiler.enum_label(module, &arm.label)?;
             let same =
                 super::super::operations::same_port_budgeted(&ty, &label_ty, &mut |cells| {
                     self.compiler.charge(module, arm.span, cells)

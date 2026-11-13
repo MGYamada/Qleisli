@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#64 exact nominal ports for an original permutation Meaning",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "46e178a33f77cb63360fb68e098cd7f6a94627a5",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "The original selected source and a closed project using the same cycle.",
+      "sha256": {
+        "project/main.qli": "b545ca84a78043ee453b6844deec83a878753f705643b6f2d0f304b8dcb1a007",
+        "selected/main.qli": "cf974aed0d4189c180f6b2129d69ea79be3ef7f809bcca5ecca8343ab69e80ce"
+      },
+      "manifest_sha256": {
+        "project/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "selected/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "after-selected.json",
+        "after-project.json",
+        "after-run.json"
+      ],
+      "reports": [
+        "first-selected.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+use std::gate::{x,z};
+use std::state::init0;
+
+classical fn predicate(b: Bit) -> Bit { b }
+
+unitary fn probe(q: Q<Bit>) -> Q<Bit> {
+    with_computed(q,predicate) { |a| h(x(h(a))) }
+}
+
+pub observe fn main() -> Bit {
+    measure_z(h(probe(h(init0()))))
+}

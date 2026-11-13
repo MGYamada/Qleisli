@@ -1,0 +1,9 @@
+#![no_implicit_prelude]
+use labels::Packet;
+unitary fn idle(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn phase(q: Q<Bit>) -> Q<Bit> { global_phase_eighth(q) }
+pub unitary fn keep(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>, Bit) {
+    let packet = Packet { bit: 1 };
+    let (s, q) = qmatch(s, q) { 0 => idle, 1 => phase };
+    (s, q, packet.bit)
+}

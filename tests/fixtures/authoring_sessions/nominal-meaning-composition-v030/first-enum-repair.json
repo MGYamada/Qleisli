@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"expected `(`, found `if`","primary":{"module":"main","path":"/private/tmp/qleisli-64-composed-nominal.zvOu3Vqp/repaired.qli","start":90,"end":92},"related":[]}],"result":null}

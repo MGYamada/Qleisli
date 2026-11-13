@@ -1,12 +1,13 @@
 import QleisliKernel.Qirf.RuntimeNestedArm
 import QleisliKernel.Qirf.RuntimeLinkedEligibility
+import QleisliKernel.Qirf.RuntimeFormalMeaningDuty
 
 /-! Residual original Meaning duties after checking one common body.
 Coverage requires a unique written occurrence with positive semantic evidence.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeArmDutyCoverage
 open QleisliKernel Finite SourceTypes
-open QleisliKernel.Qirf.RuntimeBodyOperations (Prepared Traversed ArmLink)
+open QleisliKernel.Qirf.RuntimeBodyOperations (Prepared Traversed WrittenLink)
 
 variable {artifact : Artifact} {owner name : String} {arguments : StaticTypes.Arguments}
   {request : RuntimeContextRequest.Context} {order : Array Nat} {runtime : RuntimeFamily.Request}
@@ -68,17 +69,17 @@ private theorem buckets_spec {n : Nat} (keys : List (Fin n)) (start : Nat) (q : 
     · have different : key.val ≠ q.val := fun h => same (Fin.ext h)
       simp only [Vector.getElem_set,if_neg different,if_neg same,ih]
 
-def Positive (body : Traversed prepared order runtime) (link : ArmLink body.checked) : Prop :=
+def Positive (body : Traversed prepared order runtime) (link : WrittenLink body.checked) : Prop :=
   let receipt := body.checked.receipts[link.receiptIndex]
   RuntimeLinkedSubject.Positive receipt.location.site receipt.prepared receipt.evidence.checked
     receipt.evidence.source link.markerIndex link.binding.instanceBinding link.subject
 
-private def positive (body : Traversed prepared order runtime) (link : ArmLink body.checked) : Bool :=
+private def positive (body : Traversed prepared order runtime) (link : WrittenLink body.checked) : Bool :=
   let receipt := body.checked.receipts[link.receiptIndex]
   RuntimeLinkedSubject.positive receipt.location.site receipt.prepared receipt.evidence.checked
     receipt.evidence.source link.markerIndex link.binding.instanceBinding link.subject
 
-private theorem positive_sound (body : Traversed prepared order runtime) (link : ArmLink body.checked) :
+private theorem positive_sound (body : Traversed prepared order runtime) (link : WrittenLink body.checked) :
     positive body link = true → Positive body link :=
   RuntimeLinkedSubject.positive_sound _ _ _ _ _ _ _
 
@@ -94,7 +95,7 @@ private abbrev Payload (body : Traversed prepared order runtime) (receipt : Rece
 
 -- Transport the original payload to the two indexed array reads. The equality
 -- proofs erase; the eligibility test receives the actual receipt and entry.
-private def indexedPositive (body : Traversed prepared order runtime) (link : ArmLink body.checked)
+private def indexedPositive (body : Traversed prepared order runtime) (link : WrittenLink body.checked)
     (receipt : Receipt body) (entry : SourcePendingMeaning.Entry prepared.source.pending.queue)
     (atReceipt : receipt = body.checked.receipts[link.receiptIndex])
     (atEntry : entry = prepared.source.pending.entries[link.queueIndex]) :
@@ -110,7 +111,7 @@ private def indexedPositive (body : Traversed prepared order runtime) (link : Ar
 
 /-- A supplying argument and its enclosing arm are distinct claims even
 when their exact actions agree. Each points at its own original queue duty. -/
-inductive Origin (body : Traversed prepared order runtime) (link : ArmLink body.checked) :
+inductive Origin (body : Traversed prepared order runtime) (link : WrittenLink body.checked) :
     Position prepared → Type where
   | direct (test : {value : Bool // value = positive body link}) : Origin body link link.queueIndex
   | enclosing (proof : RuntimeNestedArm.Evidence body.checked link .enclosing) : Origin body link link.queueIndex
@@ -133,45 +134,86 @@ theorem Origin.sound {body : Traversed prepared order runtime} {link q} (origin 
   | enclosing proof => exact ⟨proof⟩
   | supplying _ proof => exact ⟨proof⟩
 
-structure Candidate (body : Traversed prepared order runtime) where
-  armIndex : Nat
-  link : ArmLink body.checked
-  atWritten : body.writtenArms[armIndex]? = some link
+structure WrittenCandidate (body : Traversed prepared order runtime) where
+  writtenIndex : Nat
+  link : WrittenLink body.checked
+  atWritten : body.writtenLinks[writtenIndex]? = some link
   queueIndex : Position prepared
   origin : Origin body link queueIndex
+
+inductive Candidate (body : Traversed prepared order runtime) where
+  | written (witness : WrittenCandidate body)
+  | formal (receiptIndex : Fin body.checked.receipts.length) (position : Position prepared)
+      (proof : RuntimeFormalMeaningDuty.AtReceipt body body.checked.receipts[receiptIndex] position)
+
+def Candidate.queueIndex {body : Traversed prepared order runtime} : Candidate body → Position prepared
+  | .written witness => witness.queueIndex
+  | .formal _ position _ => position
+
+def Candidate.receiptIndex {body : Traversed prepared order runtime} :
+    Candidate body → Fin body.checked.receipts.length
+  | .written witness => witness.link.receiptIndex
+  | .formal index .. => index
+
+def Candidate.accepted {body : Traversed prepared order runtime} : Candidate body → Bool
+  | .written witness => witness.origin.accepted
+  | .formal .. => true
+
+def Candidate.Contract {body : Traversed prepared order runtime} : Candidate body → Prop
+  | .written witness => witness.origin.Contract
+  | .formal index position _ => Nonempty
+      (RuntimeFormalMeaningDuty.AtReceipt body body.checked.receipts[index] position)
+
+theorem Candidate.sound {body : Traversed prepared order runtime} (candidate : Candidate body)
+    (accepted : candidate.accepted = true) : candidate.Contract := by
+  cases candidate with
+  | written witness => exact witness.origin.sound accepted
+  | formal _ _ proof => exact ⟨proof⟩
 
 /-- Keep one enclosing candidate per written link, including a negative
 one, and add the original supplying position only with its own evidence. -/
 def readCandidates (body : Traversed prepared order runtime) : WorkM (List (Candidate body)) := do
-  let arms := body.writtenArms
+  let written := body.writtenLinks
   let entries := prepared.source.pending.entries
-  exactWork (Exact.charge (32*(arms.length+entries.length+body.checked.receipts.length+1)))
+  exactWork (Exact.charge (32*(written.length+entries.length+body.checked.receipts.length+1)))
   let values := entries.toArray
   let receipts := body.checked.receipts.toArray
-  let armArray := arms.toArray
-  let rows ← (List.finRange arms.length).mapM fun (ordinal : Fin arms.length) => do
+  let writtenArray := written.toArray
+  -- The old enclosing proof can derive the same supplying duty. Once its
+  -- original prefix is present, use that direct occurrence. Multiple direct
+  -- occurrences still reach the uniqueness check below.
+  let supplied := (List.finRange written.length).foldl (init := Vector.replicate entries.length false) fun seen index =>
+    let link := writtenArray[index.val]'(by simpa only [writtenArray,List.size_toArray] using index.isLt)
+    let receipt := receipts[link.receiptIndex.val]'(by simpa only [receipts,List.size_toArray] using link.receiptIndex.isLt)
+    if receipt.request.origin.isSupplying then seen.set link.queueIndex.val true link.queueIndex.isLt else seen
+  let rows ← (List.finRange written.length).mapM fun (ordinal : Fin written.length) => do
     let i := ordinal.val
-    let chosen := armArray[i]'(by simpa only [armArray,List.size_toArray] using ordinal.isLt)
-    have selected : arms[i]? = some chosen := by
-      simp only [chosen,armArray,List.getElem_toArray]
-      exact List.getElem?_eq_getElem (show i < arms.length from ordinal.isLt)
+    let chosen := writtenArray[i]'(by simpa only [writtenArray,List.size_toArray] using ordinal.isLt)
+    have selected : written[i]? = some chosen := by
+      simp only [chosen,writtenArray,List.getElem_toArray]
+      exact List.getElem?_eq_getElem (show i < written.length from ordinal.isLt)
     let entry := values[chosen.queueIndex.val]'(by simpa only [values,entries,List.size_toArray] using chosen.queueIndex.isLt)
     let original := indexedPositive body chosen
       (receipts[chosen.receiptIndex.val]'(by simpa only [receipts,List.size_toArray] using chosen.receiptIndex.isLt))
       entry
       (by simp only [receipts,List.getElem_toArray,Fin.getElem_fin])
       (by simp only [entry,values,entries,List.getElem_toArray,Fin.getElem_fin])
-    let direct : Candidate body := ⟨i,chosen,selected,chosen.queueIndex,.direct original⟩
+    let direct : WrittenCandidate body := ⟨i,chosen,selected,chosen.queueIndex,.direct original⟩
     if !RuntimeNestedDuty.possible entry then return [direct]
     match ← RuntimeNestedArm.read body.checked chosen with
     | none => return [direct]
     | some nested =>
-      let caller : Candidate body := ⟨i,chosen,selected,nested.position,.supplying nested.position nested.supplying⟩
-      let parent : Candidate body := match nested.enclosing with
+      let caller : WrittenCandidate body := ⟨i,chosen,selected,nested.position,.supplying nested.position nested.supplying⟩
+      let parent : WrittenCandidate body := match nested.enclosing with
         | some proof => ⟨i,chosen,selected,chosen.queueIndex,.enclosing proof⟩
         | none => direct
-      return [parent,caller]
-  return rows.flatten
+      if supplied[nested.position.val] then return [parent] else return [parent,caller]
+  let formal ← (List.finRange body.checked.receipts.length).filterMapM fun index => do
+    let receipt := receipts[index.val]'(by simpa only [receipts,List.size_toArray] using index.isLt)
+    let some ⟨position,proof⟩ ← RuntimeFormalMeaningDuty.read body receipt | return none
+    return some (.formal index position (by
+      simpa only [receipt,receipts,List.getElem_toArray,Fin.getElem_fin] using proof))
+  return rows.flatten.map .written ++ formal
 
 /-- All candidate positions, including unresolved enclosing links. Two
 references to one original position stay ambiguous even if one is positive. -/
@@ -183,7 +225,7 @@ private def single {body : Traversed prepared order runtime} (q : Position prepa
     (lookup : Nat → Option (Candidate body)) : List Nat → Bool
   | [index] => match lookup index with
     | none => false
-    | some found => decide (found.queueIndex = q ∧ found.origin.accepted = true)
+    | some found => decide (found.queueIndex = q ∧ found.accepted = true)
   | _ => false
 
 def covered {body : Traversed prepared order runtime} (candidates : List (Candidate body))
@@ -201,12 +243,15 @@ structure Discharge {body : Traversed prepared order runtime} (candidates : List
   queue : candidate.queueIndex = q
   required : prepared.source.pending.entries[q.val].unconsumed = true
   unique : occurrences candidates q = [index]
-  proved : candidate.origin.Contract
+  proved : candidate.Contract
 
-/-- The enclosing arm link locates the common traversal. For a supplying
+/-- The written link locates the common traversal. For a supplying
 credit, candidate.origin carries its separately indexed caller obligation. -/
-def Discharge.link {body : Traversed prepared order runtime} {candidates : List (Candidate body)} {q}
-    (witness : Discharge candidates q) := witness.candidate.link
+def Discharge.writtenLink {body : Traversed prepared order runtime} {candidates : List (Candidate body)} {q}
+    (witness : Discharge candidates q) : Option (WrittenLink body.checked) :=
+  match witness.candidate with
+  | .written original => some original.link
+  | .formal .. => none
 
 private inductive Decision {body : Traversed prepared order runtime} (candidates : List (Candidate body)) (q : Position prepared) where
   | skipped (already : prepared.source.pending.entries[q.val].unconsumed = false)
@@ -231,8 +276,8 @@ private def classify {body : Traversed prepared order runtime} (candidates : Lis
         | none => exact .residual need.symm (by simp [covered,same,single,(original i).trans atIndex])
         | some found =>
           have selected := (original i).trans atIndex
-          if yes : found.queueIndex = q ∧ found.origin.accepted = true then
-            exact .consumed ⟨i,found,selected,yes.1,need.symm,same,found.origin.sound yes.2⟩
+          if yes : found.queueIndex = q ∧ found.accepted = true then
+            exact .consumed ⟨i,found,selected,yes.1,need.symm,same,found.sound yes.2⟩
               (by simp [covered,same,single,selected,yes])
           else exact .residual need.symm (by simp [covered,same,single,selected,yes])
 
@@ -265,6 +310,14 @@ structure Report (body : Traversed prepared order runtime) (indices : List (Posi
 
 def Report.residual {body : Traversed prepared order runtime} {indices} (report : Report body indices) := report.result.residual
 def Report.consumed {body : Traversed prepared order runtime} {indices} (report : Report body indices) := report.result.consumed
+
+/-- A discharged standalone Meaning comes from the same checked traversal,
+either at a literal application or at the original argument binding. -/
+def Report.hasStandaloneMeaning {body : Traversed prepared order runtime} {indices} (report : Report body indices) :
+    WorkM Bool := do
+  exactWork (Exact.charge (16*(report.consumed.length+body.checked.receipts.length+1)^2))
+  return report.consumed.any fun entry =>
+    body.checked.receipts[entry.2.candidate.receiptIndex].request.origin.isStandaloneMeaning
 
 def read (body : Traversed prepared order runtime) :
     WorkM (Report body (List.finRange prepared.source.pending.entries.length)) := do

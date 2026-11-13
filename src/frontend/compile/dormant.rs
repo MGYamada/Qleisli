@@ -251,6 +251,7 @@ impl<'a> Compiler<'a> {
         value: &ResolvedStatic,
         environment: &StaticEnvironment,
         requested: [bool; 3],
+        inside_formal_meaning: bool,
     ) -> Result<Option<Operation>, CompileError> {
         self.original_operation(environment.owner, module, value)?;
         let outer = self.dormant_operation_bindings(module, value.span)?;
@@ -261,6 +262,7 @@ impl<'a> Compiler<'a> {
             requested,
             &outer,
             module,
+            inside_formal_meaning,
         )? {
             instances::StaticValue::Operation(operation) => Ok(Some(operation)),
             instances::StaticValue::Deferred => Ok(None),
@@ -364,7 +366,7 @@ impl<'a> Compiler<'a> {
                 }
             }
         }
-        self.closed_operation(module, operation, environment, requested)
+        self.closed_operation(module, operation, environment, requested, false)
             .map(|_| ())
     }
 
@@ -502,8 +504,13 @@ impl<'a> Compiler<'a> {
             let operation = Arc::clone(operation);
             let environment = Arc::clone(&obligation.plan.environment);
             self.visit_dormant_environment(&environment, &module, span, |compiler, _inactive| {
-                let Some(actual) =
-                    compiler.closed_operation(&module, &operation, &environment, [false; 3])?
+                let Some(actual) = compiler.closed_operation(
+                    &module,
+                    &operation,
+                    &environment,
+                    [false; 3],
+                    true,
+                )?
                 else {
                     return Ok(());
                 };
@@ -652,6 +659,28 @@ impl<'a> Compiler<'a> {
             let environment = Arc::clone(&self.source.static_calls[&site].environment);
             self.visit_dormant_environment(&environment, &module, span, |compiler, inactive| {
                 if let Some(instance) = compiler.closed_call_instance(site, &module, span)? {
+                    if let Some(record) = instance
+                        .record
+                        .filter(|_| !inactive && !compiler.checked_static_calls.is_empty())
+                    {
+                        let offset = compiler.source.lexical[&owner].usage(site).span.start;
+                        compiler.charge(
+                            &module,
+                            span,
+                            (module.len() + 3)
+                                .saturating_mul(compiler.checked_static_calls.len() + 1),
+                        )?;
+                        if compiler
+                            .checked_static_calls
+                            .get(&(module.clone(), offset))
+                            .is_some_and(|records| records.contains(&record))
+                        {
+                            // The active invocation checked the callee's dormant
+                            // obligations and the original body was accepted in
+                            // this exact context by Lean.
+                            return Ok(());
+                        }
+                    }
                     // All actuals and their formal contracts were checked by
                     // the binder. An inactive edge back to this exact active
                     // instance cannot execute; its selected body is already

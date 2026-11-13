@@ -85,7 +85,7 @@ structure Field where
   code : Layout
   read : ∃ before after,(FiniteCarrier.read basis).run before = (.ok code,after)
 
-private def readField (value : Basis × Semantics.SourceOrdinary.Expression) : WorkM Field := do
+def readField (value : Basis × Semantics.SourceOrdinary.Expression) : WorkM Field := do
   let .input ordinal := value.2 | throw .request
   let code ← NaturalAffine.witness (FiniteCarrier.read value.1)
   return ⟨value.1,ordinal,code.val,by with_reducible exact code.property⟩

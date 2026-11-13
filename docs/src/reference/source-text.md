@@ -128,8 +128,10 @@ It checks retained declaration/source/occurrence identity before collecting
 bytes. This is untrusted provenance preparation. The ordinary-v2 route separately
 binds actual signature and recursive-field type paths, nominal origins and
 complete input/result storage; validating an unused helper grants no source-row
-coverage. Other intermediate nominal modules still require their own typed
-dependency transport. A host Basis description alone grants no execution
+coverage. The ordinary-v2 and runtime-v2 routes reuse the original runtime
+body reader for additional type provenance. It retains resolved original
+type paths and checks nominal declarations and member visibility. The v5
+qmatch route also checks the original body. A host Basis description alone grants no execution
 authority. Read-only retained nominal maps preserve the existing `Send + Sync`
 source-handle contract.
 

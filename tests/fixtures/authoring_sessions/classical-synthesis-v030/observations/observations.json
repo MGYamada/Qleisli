@@ -1,0 +1,30 @@
+[
+  {
+    "observation": "01-both-xor-check",
+    "returncode": 0,
+    "timed_out": false,
+    "first_packet_unchanged": true,
+    "binaries_unchanged": true
+  },
+  {
+    "observation": "02-both-xor-run",
+    "returncode": 0,
+    "timed_out": false,
+    "first_packet_unchanged": true,
+    "binaries_unchanged": true
+  },
+  {
+    "observation": "03-increment2-check",
+    "returncode": 0,
+    "timed_out": false,
+    "first_packet_unchanged": true,
+    "binaries_unchanged": true
+  },
+  {
+    "observation": "04-increment2-run",
+    "returncode": 0,
+    "timed_out": false,
+    "first_packet_unchanged": true,
+    "binaries_unchanged": true
+  }
+]

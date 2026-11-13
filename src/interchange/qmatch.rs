@@ -133,8 +133,12 @@ pub(crate) struct ContextSubject {
     /// An actual operation application has provider bodies and no fabricated
     /// containing-function prefix or nested runtime instruction coordinates.
     pub operation: Option<std::sync::Arc<OperationSubject>>,
+    // Compiler-local call coordinates and exact specialization records.
+    // These travel only with retained source contexts and never cross the wire.
+    pub retained_static_calls: Vec<(String, usize, usize)>,
     // Producer eligibility only; never serialized or trusted by a native gate.
     pub contains_selections: bool,
+    pub contains_meaning_applications: bool,
     pub requires_source_gate: bool,
     pub needs_qmatch_v5: bool,
     pub prefer_runtime_root: bool,

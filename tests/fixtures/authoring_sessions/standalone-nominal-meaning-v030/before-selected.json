@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-516-provider-followup/target/debug/qleisli",
+    "check",
+    "--entry=main::undo",
+    "--module=main=/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/issue-64-standalone-meaning-first-aQjFJ8QM/main.qli",
+    "--ir-profile=raw",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-11-12T03:20:53.867748+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "selected operation dependencies require independent closure transport",
+        "primary": {
+          "module": null,
+          "path": "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/issue-64-standalone-meaning-first-aQjFJ8QM/main.qli",
+          "start": 307,
+          "end": 436
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

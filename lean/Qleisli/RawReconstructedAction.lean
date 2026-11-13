@@ -186,7 +186,7 @@ theorem promoted_action {bits : Nat} {axes : List Nat} {logical actual : Matrix}
           dsimp only [weight]
           rw [Qleisli.RuntimeFiniteTargetScatter.gather_scatter row k axes unique (List.mem_range.mp member)]
 
-private theorem clean_action {dependencies : List Dependency} {sourceBits dataBits ancillaBits : Nat}
+theorem clean_action {dependencies : List Dependency} {sourceBits dataBits ancillaBits : Nat}
     {function : List Nat} {uses logicalSteps : List Step} {logical : Matrix} (work left : Nat)
     (read : (Raw.clean dependencies sourceBits dataBits ancillaBits function uses logicalSteps).run work =
       (.ok logical,left))

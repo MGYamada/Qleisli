@@ -10,7 +10,7 @@ const RUNTIME: &str = r#"{"format":"qleisli.runtime-root-request","version":2,"p
  "storage":[{"tag":"ordinary","basis":[{"tag":"unit"}],"storage":{"tag":"unit"}}],"public_effect":"unitary"}"#;
 
 fn value() -> Value {
-    json::parse(format!(r#"{{"format":"qleisli.qmatch-request","version":5,"profile":"finite-source-qmatch-context-v5",
+    json::parse(format!(r#"{{"format":"qleisli.qmatch-request","version":5,"profile":"{BASIS_PROFILE}",
       "source":{{"module":"m","function":"f","static_bases":[],"static_naturals":[],"static_operations":[]}},
       "runtime":{RUNTIME},
       "positions":[],"sites":[],"calls":[],"branches":[],"bodies":[
@@ -36,6 +36,9 @@ fn unified_body_subject_variants_are_exact_and_old_profiles_refuse() {
         decoded.context.bodies[1].subject,
         ProviderSubject::Pure { program: 9 }
     );
+    let mut wrong_scope = value();
+    object(&mut wrong_scope).insert("profile".into(), Value::String(PROFILE.into()));
+    assert!(Request::decode(&json::encode(&wrong_scope).unwrap()).is_err());
     for old in 1..5 {
         let mut changed = value();
         object(&mut changed).insert("version".into(), Value::Number(old));
@@ -160,6 +163,8 @@ fn arm_has_actual_programs_and_cannot_supply_a_duplicate_provider_table() {
         "sites".into(),
         Value::Array(vec![site(r#"{"implementation":3,"controlled":4}"#)]),
     );
+    assert!(Request::decode(&json::encode(&changed).unwrap()).is_err());
+    object(&mut changed).insert("profile".into(), Value::String(PROFILE.into()));
     let decoded = Request::decode(&json::encode(&changed).unwrap()).unwrap();
     assert_eq!(decoded.context.sites[0].arms[0].implementation, 3);
     for arm in [

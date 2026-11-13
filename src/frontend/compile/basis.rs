@@ -1,10 +1,10 @@
 use super::*;
+use crate::frontend::ordinary::finite::{self, NominalContext};
 
-#[derive(Clone, Debug)]
-pub(super) struct BasisValue {
-    pub ty: Ty,
-    pub label: u16,
-}
+mod nominal;
+mod planning;
+
+pub(super) use finite::Label as BasisValue;
 
 impl Compiler<'_> {
     /// A predicate over one register has one explicit domain parameter. Ordinary
@@ -50,12 +50,12 @@ impl Compiler<'_> {
         ty: &Ty,
         label: u16,
     ) -> Result<BTreeMap<BinderKey, BasisValue>, CompileError> {
-        if ty.basis_bits().is_none() {
+        if ty.basis_width().is_none_or(|width| width > MAX_BITS as u32) {
             return Err(self.error(
                 module,
                 pattern.span,
                 ErrorCode::Unsupported,
-                "finite label patterns require a closed built-in basis type",
+                "finite label patterns require a bounded closed basis type",
             ));
         }
         let mut env = BTreeMap::new();
@@ -99,7 +99,7 @@ impl Compiler<'_> {
                     let mut offset = 0;
                     let mut children = Vec::with_capacity(fields.len());
                     for (pattern, field) in patterns.iter().zip(fields) {
-                        let bits = field.basis_bits().expect("basis pattern type");
+                        let bits = field.basis_width().expect("bounded basis pattern type");
                         children.push((pattern, field, (label >> offset) & ((1u16 << bits) - 1)));
                         offset += bits;
                     }
@@ -218,7 +218,7 @@ impl Compiler<'_> {
                 self.deferred_nominal_tables.insert(key);
                 continue;
             }
-            let function = self.compile_basis_with_signature(&key, params, result)?;
+            let function = self.compile_basis_with_signature(&key, params, result, false)?;
             self.basis.insert(key, function);
         }
         Ok(())
@@ -253,7 +253,32 @@ impl Compiler<'_> {
     #[cfg(test)]
     pub(super) fn compile_basis(&mut self, key: &Key) -> Result<BasisFunction, CompileError> {
         let (params, result) = self.signature(key)?;
-        self.compile_basis_with_signature(key, params, result)
+        self.compile_basis_with_signature(key, params, result, false)
+    }
+
+    /// Evaluate a deferred classical table from its original declaration.
+    /// The caller must bind this proposal to the original native check.
+    pub(super) fn original_classical_table(
+        &mut self,
+        key: Key,
+    ) -> Result<BasisFunction, CompileError> {
+        let span = self.declarations[&key].span;
+        let module = self.dormant_module(key, span)?;
+        let instance = self.prepare_instance(
+            key,
+            BTreeMap::new(),
+            BTreeMap::new(),
+            BTreeMap::new(),
+            &module,
+            span,
+        )?;
+        let frame = self.enter_instance(instance, &module, span)?;
+        let result = (|| {
+            let (params, result) = self.signature(&key)?;
+            self.compile_basis_with_signature(&key, params, result, true)
+        })();
+        self.leave_instance(frame);
+        result
     }
 
     fn compile_basis_with_signature(
@@ -261,14 +286,15 @@ impl Compiler<'_> {
         key: &Key,
         params: Vec<Ty>,
         result: Ty,
+        nominal: bool,
     ) -> Result<BasisFunction, CompileError> {
         let decl = self.declarations[key];
         let key_name = self.source.resolution.declaration(*key).name.clone();
-        if params
+        let typed_port = params
             .iter()
             .chain(std::iter::once(&result))
-            .any(|ty| ty.basis_bits().is_none())
-        {
+            .any(|ty| ty.basis_bits().is_none());
+        if typed_port && !nominal {
             return Err(self.error(
                 &key_name.0,
                 decl.span,
@@ -276,10 +302,20 @@ impl Compiler<'_> {
                 "finite tables require closed built-in basis types",
             ));
         }
-        let bits: usize = params
+        let widths = params
             .iter()
-            .map(|ty| ty.basis_bits().expect("basis parameter"))
-            .sum();
+            .map(|ty| {
+                ty.basis_width().map(|bits| bits as usize).ok_or_else(|| {
+                    self.error(
+                        &key_name.0,
+                        decl.span,
+                        ErrorCode::Unsupported,
+                        "finite table requires an original closed basis parameter",
+                    )
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let bits = widths.iter().sum::<usize>();
         if bits > MAX_BITS {
             return Err(self.error(
                 &key_name.0,
@@ -291,12 +327,34 @@ impl Compiler<'_> {
         let FnBody::Basis(body) = &decl.body else {
             unreachable!("basis declaration")
         };
+        let canonical = if typed_port {
+            let [input] = params.as_slice() else {
+                return Err(self.error(
+                    &key_name.0,
+                    decl.span,
+                    ErrorCode::Arity,
+                    "typed finite table requires one exact basis parameter",
+                ));
+            };
+            Some(self.basis_codes(&key_name.0, decl.span, input)?.1)
+        } else {
+            None
+        };
+        let labels = canonical.iter().flatten().copied().chain(
+            0..if canonical.is_none() {
+                1usize << bits
+            } else {
+                0
+            },
+        );
         let mut table = Vec::new();
-        for label in 0..(1u16 << bits) {
+        let mut nominal_used = false;
+        for label in labels {
+            let label = label as u16;
             let mut env = BTreeMap::new();
             let mut offset = 0;
-            for (param, ty) in decl.params.iter().zip(&params) {
-                let width = ty.basis_bits().expect("basis type");
+            for ((param, ty), width) in decl.params.iter().zip(&params).zip(&widths) {
+                let width = *width;
                 let label = (label >> offset) & ((1 << width) - 1);
                 if let PatternKind::Name(name) = &param.pattern.kind {
                     // Retain the existing work accounting for legacy binders.
@@ -313,7 +371,11 @@ impl Compiler<'_> {
                 }
                 offset += width;
             }
-            let value = self.eval_basis(&key_name.0, body, &env, 0)?;
+            let value = if nominal {
+                self.eval_typed_basis(&key_name.0, body, &env, &mut nominal_used)?
+            } else {
+                self.eval_basis(&key_name.0, body, &env, 0)?
+            };
             if value.ty != result {
                 return Err(self.error(
                     &key_name.0,
@@ -338,14 +400,34 @@ impl Compiler<'_> {
         env: &BTreeMap<BinderKey, BasisValue>,
         depth: usize,
     ) -> Result<BasisValue, CompileError> {
-        super::super::ordinary::finite::evaluate(
+        finite::evaluate(
             &mut LabelContext {
                 compiler: self,
                 module,
+                nominal_used: None,
             },
             expr,
             env,
             depth,
+        )
+    }
+
+    pub(super) fn eval_typed_basis(
+        &mut self,
+        module: &str,
+        expr: &BasisExpr,
+        env: &BTreeMap<BinderKey, BasisValue>,
+        nominal_used: &mut bool,
+    ) -> Result<BasisValue, CompileError> {
+        finite::evaluate(
+            &mut LabelContext {
+                compiler: self,
+                module,
+                nominal_used: Some(nominal_used),
+            },
+            expr,
+            env,
+            0,
         )
     }
 }
@@ -353,13 +435,14 @@ impl Compiler<'_> {
 struct LabelContext<'context, 'source> {
     compiler: &'context mut Compiler<'source>,
     module: &'context str,
+    nominal_used: Option<&'context mut bool>,
 }
 struct LabelTuple {
     types: Vec<Ty>,
     bits: usize,
     label: u16,
 }
-impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
+impl finite::Context for LabelContext<'_, '_> {
     type Value = BasisValue;
     type Environment = BTreeMap<BinderKey, BasisValue>;
     type Tuple = LabelTuple;
@@ -372,6 +455,19 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
             ErrorCode::Unsupported,
             "ordinary nominal values require their typed native transport",
         )
+    }
+
+    fn nominal(
+        &mut self,
+        expr: &BasisExpr,
+        env: &Self::Environment,
+        depth: usize,
+    ) -> Result<BasisValue, CompileError> {
+        let Some(used) = self.nominal_used.as_deref_mut() else {
+            return Err(self.nominal_unavailable(expr.span));
+        };
+        *used = true;
+        finite::nominal(self, expr, env, depth)
     }
 
     fn enter(&mut self, span: Span, depth: usize) -> Result<(), CompileError> {
@@ -429,7 +525,7 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
         tuple: &mut LabelTuple,
         value: BasisValue,
     ) -> Result<(), CompileError> {
-        let width = value.ty.basis_bits().expect("basis value");
+        let width = self.width(span, &value.ty)?;
         if tuple.bits + width > MAX_BITS {
             return Err(self.compiler.error(
                 self.module,
@@ -527,6 +623,9 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
         };
         self.compiler
             .prepare_required_classical_table(key, self.module, callee.span)?;
+        if self.nominal_used.is_some() && self.compiler.deferred_nominal_tables.contains(&key) {
+            return self.nominal_call(key, span, args, env, depth);
+        }
         let function = self.compiler.basis.get(&key).ok_or_else(|| {
             self.compiler.missing_basis_error(
                 self.module,
@@ -551,7 +650,7 @@ impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
         let mut label = 0;
         let mut offset = 0;
         for (arg, ty) in args.iter().zip(&params) {
-            let value = self.compiler.eval_basis(self.module, arg, env, depth + 1)?;
+            let value = finite::evaluate(self, arg, env, depth + 1)?;
             if value.ty != *ty {
                 return Err(self.compiler.error(
                     self.module,

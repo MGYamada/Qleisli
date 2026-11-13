@@ -1,0 +1,85 @@
+{
+  "format": "qleisli.uncompute-first-source",
+  "version": 1,
+  "kind": "informed_first_attempt",
+  "task": "#72/#352: exact generic ancilla normalization and failed clean return",
+  "frozen_before_execution_utc": "2026-11-11T21:37:18.999Z",
+  "baseline_source_commit": "428496d8c22478383171f3656ab8a5f659195bad",
+  "author": "Codex delegated agent /root/review_access_29; exact model identifier not independently recorded",
+  "context": "Informed by the current Reference, existing generic computed_phase implementation, ordinary stdlib gate definitions, and prior regression/proof review. This is not a blind authoring evaluation.",
+  "references_sha256": {
+    "docs/src/reference/rust-boundary.md": "563a1fdebf90a077d4331e51e6e294f65b9e7b7de7600ae0270166526a860a24",
+    "docs/src/reference/elaboration.md": "8af1b0ef7b6df1df2b7a0132edcedf76430a193cdbcce7412a16f24289b87cbe",
+    "src/frontend/compile/lower/computed_phase.rs": "b25b7b7f162b7e812b1c1e4429fd898a77d23be59f6ff65106a2b14b2a68275d",
+    "src/frontend/compile/lower/certified.rs": "65862bdd994fdd6fafff1fb5c43201fbccd766a52f62873fcc01810a76b236a1",
+    "tests/computed_derived_source.rs": "306692892fa2c785868662209941493da2d1a0768a0a254c1e666b0ae7176bf3",
+    "stdlib/src/gate.qli": "921627f5ca702889134ef72bf827dac42b3ba35c6752a402fc1102f5bd9b4795",
+    "stdlib/src/state.qli": "5863d7cb0f495b601b44110225a8c3139106dbdda632373ecc5de6527824be27"
+  },
+  "source_files": {
+    "attempt-01/hxh/main.qli": {
+      "sha256": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+      "bytes": 253
+    },
+    "attempt-01/hxh/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "attempt-01/xzx/main.qli": {
+      "sha256": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+      "bytes": 253
+    },
+    "attempt-01/xzx/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "attempt-01/dirty-x/main.qli": {
+      "sha256": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779",
+      "bytes": 247
+    },
+    "attempt-01/dirty-x/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    }
+  },
+  "bound": "One data Bit plus one computed auxiliary Bit; at most two semantic quantum wires. No maximum-size case. No target workspace or quantitative resource claim.",
+  "ordered_roles": [
+    "data q",
+    "private auxiliary a"
+  ],
+  "predicate": "f(0)=0, f(1)=1. C_f maps |x,a> to |x,a xor x>; its structural inverse is the same C_f.",
+  "equations": {
+    "hxh": {
+      "ancilla_action": "H X H = Z = diag(1,-1)",
+      "exact_eighth_phases": [
+        0,
+        4
+      ],
+      "all_input_clean_action": "For every amplitude family alpha[x,r], C_f (I_q tensor Z_a tensor I_R) C_f sum[x,r] alpha[x,r]|x,0,r> = sum[x,r] (-1)^x alpha[x,r]|x,0,r>.",
+      "expected_check": "accept",
+      "expected_run": "accept; final Bit 1 has probability 1, Bit 0 has probability 0",
+      "numerical_note": "Actual simulation may retain floating-point residuals. Preserve raw output; it is not exact or general proof evidence."
+    },
+    "xzx": {
+      "ancilla_action": "X Z X = -Z = diag(-1,1)",
+      "exact_eighth_phases": [
+        4,
+        0
+      ],
+      "all_input_clean_action": "For every amplitude family alpha[x,r], C_f (I_q tensor (-Z_a) tensor I_R) C_f sum[x,r] alpha[x,r]|x,0,r> = sum[x,r] -(-1)^x alpha[x,r]|x,0,r>.",
+      "expected_check": "accept",
+      "expected_run": "accept; final Bit 1 has probability 1, Bit 0 has probability 0",
+      "exact_phase_counterexample": "This action is not Z: coefficient at (0,0) is -1 instead of +1. An independent exact native request for diag(1,-1) must reject the xzx implementation even though this readout cannot distinguish the global scalar.",
+      "numerical_note": "Readout alone does not establish global phase. Preserve all observed numerical residuals."
+    },
+    "dirty-x": {
+      "ancilla_action": "X = [[0,1],[1,0]]; it is unitary but not diagonal.",
+      "all_input_failure": "C_f (I_q tensor X_a tensor I_R) C_f sum[x,r] alpha[x,r]|x,0,r> = sum[x,r] alpha[x,r]|x,1,r>. The auxiliary is exactly |1>, so returning an owner and Unitary effect do not prove clean discharge.",
+      "expected_check": "reject: the two-argument exact diagonal normalization premise fails; predicted code unsupported with the explicit logical-contract repair hint",
+      "expected_run": "reject during compilation; no accepted distribution",
+      "repair_scope": "Adding a third argument alone cannot repair this physical body: the ordinary exact computed-relation/clean gate must still reject it."
+    }
+  },
+  "scope": "Equations are independent mathematical predictions, not Lean proof results or observed CLI outcomes. No source/CPTP/resource guarantee or current binary build attestation is asserted.",
+  "execution": "No parser, compiler, native checker, build, simulator, or sampled execution has been run on these first sources. Root will append actual observations separately."
+}

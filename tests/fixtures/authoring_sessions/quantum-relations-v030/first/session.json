@@ -1,0 +1,44 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#198 ordinary Eq/Ord/Hash versus live quantum ownership",
+  "author": "Codex delegated agent /root/review_access_29; model identifier not independently recorded",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "25ef5c0c91b220704c61743a41144a218c732038",
+  "context": "context.json",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "First unchanged desired sources before diagnostic implementation; no source repair.",
+      "sha256": {
+        "classical-static/main.qli": "42ea39dd51e31595fd7d747ddeb28486cb2b0d1c3786332d5f189fdf4742b9cd",
+        "declared-hash/main.qli": "7573bac52d972aa8bf7bff6905882d593c633628715f2a4fecd63afafcf554f1",
+        "eq-live/main.qli": "9bec61179b14d0bd872e5b9bda33fe6bf07e283d720cc91659bfdec13f0a2e6d",
+        "explicit-coherent/main.qli": "6ea319804833703febfcc5fde541867d2cfd7a6e2c5b4a7ab87b9bc883a38b2d",
+        "hash-live/main.qli": "1cca5a352d47633d5bd0f25c9d45e0679222805fc04a299773eeebe245eb5d96",
+        "hash-nested/main.qli": "8eefa11325e14580fc6c58a957af67932292032366954b0767ee676157f1e944",
+        "hash-zero/main.qli": "89b2261b8e1abcf1e13e6f6e81c39d6b92ddbef4c51a95be98a1876bfe7a7d85",
+        "imported-qualified-hash/helper.qli": "1bc09ba83301111104d51990ec9f036dd05cd1862c3e2fb098ae714c919c9067",
+        "imported-qualified-hash/main.qli": "2d9732d1c4acbfb41ac553c174def9ef99131c26c1944a06520b71b585cfbb05",
+        "ne-nested/main.qli": "bbaeec331d69e635515873a6c384fbd2676ad6f55994ebea02082eff6fb1bd17",
+        "ord-zero/main.qli": "78a35205339e129fc6e2479df5b5018369f84bd9d76d5aef1789a3482345b83e"
+      },
+      "manifest_sha256": {
+        "classical-static/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "declared-hash/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "eq-live/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "explicit-coherent/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "hash-live/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "hash-nested/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "hash-zero/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "imported-qualified-hash/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "ne-nested/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "ord-zero/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [],
+      "reports": []
+    }
+  ],
+  "status": "frozen-awaiting-first-observation",
+  "checksums": "SHA256SUMS"
+}

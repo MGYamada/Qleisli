@@ -42,11 +42,23 @@ def region {dependencies program block} : Node dependencies program block → Lo
     let op := Semantics.Raw.Op.liftBasis action.input.port.token action.output.token action.output.wires action.table
     ⟨start,count,[action.input.port.token],[action.output.token],[event.input],[event.output],
       interval,[action.input.port],[action.output],[op],action.literal,action.spectators⟩
+  | .computed (start := start) (count := count) (event := event) interval _ _ action =>
+    let literal := action.literal
+    ⟨start,count,[literal.input.port.token],[literal.output.token],[event.input],[event.input],
+      interval,[literal.input.port],[literal.output],[literal.operation],literal.literal,literal.spectators⟩
+  | .certifiedComputed (start := start) (count := count) (event := event) interval _ _ action =>
+    let literal := action.literal
+    ⟨start,count,[literal.input.port.token],[literal.output.token],[event.input],[event.input],
+      interval,[literal.input.port],[literal.output],[literal.operation],literal.original,literal.spectators⟩
   | .named (start := start) (count := count) (inputs := inputs) event frame _ _ boundary _ =>
     ⟨start,count,inputs,boundary.returned.map (·.token),event.inputOwners,
       SourceRuntimeValues.valueOwners event.value,frame.interval,frame.selected,boundary.returned,
       frame.operations,frame.literal,boundary.spectators⟩
   | .operation frame .. => pureLocal frame
+  | .rectangularOperation (start := start) (count := count) checked =>
+    ⟨start,count,[checked.entry.port.token],[checked.returned.token],
+      [checked.source.input],[checked.source.output],checked.frame.interval,checked.frame.selected,
+      checked.frame.returned,checked.frame.operations,checked.frame.literal,checked.frame.spectators⟩
   | .transform (event := event) _ _ _ _ _ owners _ _ =>
     { (pureLocal owners.literal) with outputRoles := RuntimeTransformOwners.outputs event }
   | .selection frame .. => pureLocal frame

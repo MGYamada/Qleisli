@@ -1,0 +1,59 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "run",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-access-29-20261111/attempt-01/walk-access",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-11T14:52:38.461831+00:00",
+  "exit_code": 0,
+  "timeout": false,
+  "seconds": 2.192440582992276,
+  "source_sha256": "68fe9a64dec5bdc3f7f6e85e4f580971b1fd02e7d7a575eefc0871e5b0a2d64a",
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001},{\"bits\":[true,false,true],\"probability\":0.2500000000000001},{\"bits\":[true,true,false],\"probability\":0.2500000000000001}]}}\n",
+  "raw_stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false,
+            false
+          ],
+          "probability": 0.2500000000000001
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "probability": 0.2500000000000001
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "probability": 0.2500000000000001
+        },
+        {
+          "bits": [
+            true,
+            true,
+            false
+          ],
+          "probability": 0.2500000000000001
+        }
+      ]
+    }
+  },
+  "original_record_sha256": "859d1d2b8a9f4c8796efb58ff33b99c5c903deeac2c562be0bba08aa096ab6a1"
+}

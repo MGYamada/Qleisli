@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.OrdinaryFamily
+import QleisliKernel.Qirf.TypedSourceRoot
 import QleisliKernel.Qirf.Carrier
 import QleisliKernel.SourceTypes.StaticRuntimeSignature
 import QleisliKernel.RuntimeStorage
@@ -90,7 +91,8 @@ def sourceRows (request : Request) {sources : SourceTypes.Sources}
 
 private def sourceRoot (artifact : Artifact) (order : Array Nat) (request : Request)
     (entry : SourceTypes.StaticRuntimeSignature.Checked artifact.sources request.moduleName request.declarationName request.staticArguments) :
-    WorkM Validity.Root := do
+    WorkM (Σ root, TypedSourceRoot.Binding artifact order request.moduleName request.declarationName
+      request.staticArguments (sourceRows request entry) root) := do
   let queryNodes := fun (query : SourceTypes.TypeRead artifact.sources) =>
     query.resolutions.foldl (fun count resolution => count+resolution.result.visited.length+1) 1
   let storedNodes := fun (store : Semantics.RuntimeStorage.Value) =>
@@ -107,19 +109,8 @@ private def sourceRoot (artifact : Artifact) (order : Array Nat) (request : Requ
   let actualNodes := (request.staticArguments.bases.map (fun argument =>
     argument.1.utf8ByteSize+argument.2.length+1)).sum
   exactWork (Exact.charge (8*(nodes+actualNodes)+5))
-  let extra := sourceRows request entry
-  let bytes := (artifact.sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
-  exactWork (Exact.charge (2*(bytes+artifact.sources.size+1)*(extra.length+1)))
-  Validity.checkRootWithSources artifact order extra
-
-private theorem sourceRoot_result (artifact : Artifact) (order : Array Nat) (request : Request)
-    (entry : SourceTypes.StaticRuntimeSignature.Checked artifact.sources request.moduleName request.declarationName request.staticArguments)
-    (root : Validity.Root) (work left : Nat)
-    (ok : (sourceRoot artifact order request entry).run work = (.ok root,left)) :
-    ∃ after, (Validity.checkRootWithSources artifact order (sourceRows request entry)).run after = (.ok root,left) := by
-  obtain ⟨_,charged,_,rest⟩ := bind_success _ _ _ _ _ ok
-  obtain ⟨_,after,_,checked⟩ := bind_success _ _ _ _ _ rest
-  exact ⟨after,checked⟩
+  TypedSourceRoot.read artifact order request.moduleName request.declarationName
+    request.staticArguments (sourceRows request entry)
 
 inductive Outputs (bases : List Basis) (stores : List Storage) : List Raw.Instrument.History → Type
   | nil : Outputs bases stores []
@@ -178,8 +169,8 @@ structure Checked (artifact : Artifact) (order : Array Nat) (request : Request) 
   inputStorage : StorageReads request.parameters request.inputStorage
   outputStorage : QleisliKernel.RuntimeStorage.Checked request.result request.storage
   root : Validity.Root
-  originalRoot : ∃ before after,
-    (Validity.checkRootWithSources artifact order (sourceRows request entry)).run before = (.ok root,after)
+  sourceBinding : TypedSourceRoot.Binding artifact order request.moduleName request.declarationName
+    request.staticArguments (sourceRows request entry) root
   inputCode : Semantics.Exact.Matrix
   outputCode : Semantics.Exact.Matrix
   inputCodeRead : ∃ before after,
@@ -227,37 +218,33 @@ def check (artifact : Artifact) (order : Array Nat) (request : Request) :
         let output ← QleisliKernel.RuntimeStorage.read request.result request.storage
         SourceTypes.checkMany artifact.sources
           (request.inputStorage.flatMap Semantics.RuntimeStorage.bases ++ Semantics.RuntimeStorage.bases request.storage)
-        let root ← perform (sourceRoot artifact order request entry)
+        let ⟨root,sourceBinding⟩ ← sourceRoot artifact order request entry
         let inputCode ← perform (Carrier.ownerCode (inputOwners request))
         let outputCode ← perform (Carrier.ownerCode (outputOwners request))
-        if actualInputs : root.result.program.inputs = (inputOwners request).map (·.port) then
-          if actualOutputs : root.result.program.outputs = (outputOwners request).map (·.port.token) then
+        if actualInputs : root.program.inputs = (inputOwners request).map (·.port) then
+          if actualOutputs : root.program.outputs = (outputOwners request).map (·.port.token) then
             if live : (outputOwners request).all
-                (fun owner => root.result.checked.state.quantum.live.contains owner.port) = true then
+                (fun owner => root.checked.state.quantum.live.contains owner.port) = true then
               let ordinaryInputs ← perform (OrdinaryFamily.storageIds ((inputValues request).map (·.2)))
               let ordinaryOutputs ← perform (OrdinaryFamily.storageIds ((outputValues request).map (·.2)))
-              if inputIds : ordinaryInputs.result = root.result.program.classicalInputs then
-                if outputIds : ordinaryOutputs.result = root.result.program.classicalOutputs then
+              if inputIds : ordinaryInputs.result = root.program.classicalInputs then
+                if outputIds : ordinaryOutputs.result = root.program.classicalOutputs then
                   if classical : (!entry.original.parsedHeader.ordinaryOnly ||
-                      !OrdinaryFamily.usesQuantum root.result.program.operations) = true then
+                      !OrdinaryFamily.usesQuantum root.program.operations) = true then
                     if annotated : annotationAllowed entry.original.parsedHeader.effect
-                        entry.original.declaration.isPublic (OrdinaryFamily.usesQuantum root.result.program.operations)
+                        entry.original.declaration.isPublic (OrdinaryFamily.usesQuantum root.program.operations)
                         request.publicEffect = true then
                       if effects : OrdinaryFamily.effectRank
-                          (logicalEffect root.result.program.effect inputCode.result.cols outputCode.result.cols) ≤
+                          (logicalEffect root.program.effect inputCode.result.cols outputCode.result.cols) ≤
                             OrdinaryFamily.effectRank request.publicEffect then
                         let domain ← OrdinaryDomain.read ((inputValues request).map (·.1))
                         if supplied : request.inputRows = OrdinaryDomain.assignments domain then
-                          let rows ← readRows root.result request inputCode.result outputCode.result
+                          let rows ← readRows root request inputCode.result outputCode.result
                             (domain.code.labels.length+1) (OrdinaryDomain.assignments domain)
                           return {
                             entry, originalEntry := ⟨original.before,original.after,original.ran⟩,
                             selection := selected, parameterTypes := parameters, resultType := result,
-                            inputStorage := inputs, outputStorage := output, root := root.result,
-                            originalRoot := (by
-                              obtain ⟨before,ran⟩ := sourceRoot_result artifact order request entry
-                                root.result root.before root.after root.ran
-                              exact ⟨before,root.after,ran⟩),
+                            inputStorage := inputs, outputStorage := output, root, sourceBinding,
                             inputCode := inputCode.result, outputCode := outputCode.result,
                             inputCodeRead := ⟨inputCode.before,inputCode.after,inputCode.ran⟩,
                             outputCodeRead := ⟨outputCode.before,outputCode.after,outputCode.ran⟩,
@@ -283,9 +270,9 @@ theorem Checked.original_safe {artifact order request} (checked : Checked artifa
     artifact.programs[artifact.root]? = some checked.root.program ∧
       Semantics.Ownership.OwnershipSafe checked.root.program ∧
       Semantics.ClassicalScope.ScopeSafe checked.root.program := by
-  obtain ⟨before,after,ran⟩ := checked.originalRoot
+  obtain ⟨before,after,ran⟩ := checked.sourceBinding.originalRoot
   have facts := Validity.checkRootWithSources_postcondition artifact order
-    (sourceRows request checked.entry) checked.root before after ran
+    checked.sourceBinding.rows checked.root before after ran
   obtain ⟨a,b,verified⟩ := facts.verification
   exact ⟨facts.original,Raw.Observation.verify_ownershipSafe _ _ _ _ _ verified,
     Raw.Observation.verify_scopeSafe _ _ _ _ _ verified⟩

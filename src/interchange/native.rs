@@ -615,9 +615,14 @@ impl AcceptedProgram {
             .map(|request| request.runtime.as_ref())
             .or(self.runtime_result.as_deref())
     }
-    /// Whether the native decision checked the complete original v5 qmatch context.
+    /// The original context profile checked by the retained v5 decision.
+    pub fn source_body_scope(&self) -> Option<&'static str> {
+        self.qmatch_result.as_ref().map(|request| request.profile())
+    }
+
+    /// Whether the native decision checked the original v5 qmatch context.
     pub fn qmatch_source_checked(&self) -> bool {
-        self.qmatch_result.is_some()
+        self.source_body_scope() == Some(super::qmatch::v5::PROFILE)
     }
     pub fn edition(&self) -> Edition {
         self.native.edition()

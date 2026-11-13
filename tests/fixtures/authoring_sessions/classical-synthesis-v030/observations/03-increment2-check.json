@@ -1,0 +1,60 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-classical-synthesis-30-first/attempt-01/increment2",
+    "--format=json",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/private/tmp/qleisli-516-provider-followup",
+  "exit_code": 0,
+  "recorded_utc": "2026-11-11T22:00:00.671976+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "checker_paths": [
+        "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "checker_identity": "unpinned",
+      "native_decisions": {
+        "count": 77,
+        "requests_checked": 2,
+        "complete": true
+      },
+      "entry": {
+        "present": true,
+        "request_checked": false,
+        "ordinary_result_checked": false,
+        "runtime_result_checked": false
+      },
+      "concrete_ir_roots": {
+        "local": 2,
+        "bundled": 24
+      },
+      "source_preservation_verified": false
+    }
+  },
+  "original_directory": "03-increment2-check",
+  "original_files": {
+    "command.json": {
+      "sha256": "e20eeb2c9ed9d1035decea5e76fbcdd42184d9abb57e8484c089a41d389b6b0d",
+      "utf8": "{\n  \"argv\": [\n    \"/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli\",\n    \"check\",\n    \"/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-classical-synthesis-30-first/attempt-01/increment2\",\n    \"--format=json\",\n    \"--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\"\n  ],\n  \"cwd\": \"/private/tmp/qleisli-516-provider-followup\",\n  \"started_at_utc\": \"2026-11-11T21:59:58.687922+00:00\",\n  \"before\": {\n    \"source_hashes\": {\n      \"SHA256SUMS\": \"5b25c289c9f0120feb7d7d3ab9728b0c488b6ae0e34e9eb5d672d688d7ca57f6\",\n      \"attempt-01/both-xor/Qargo.toml\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"attempt-01/both-xor/main.qli\": \"2aaf18cb188110555f332fc16b2ec90fe488752174234795bdaaab8e316f2774\",\n      \"attempt-01/increment2/Qargo.toml\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"attempt-01/increment2/main.qli\": \"e5d2cb8ba3fde4a964af7040bda98d441133999de03a731b2a9f5616c6e94cd8\",\n      \"context.json\": \"a9cb8cd99f07a8441e3f2c375267df4cd24658009dbb2e2fbb30c656ea832889\"\n    },\n    \"binaries\": {\n      \"cli\": {\n        \"path\": \"/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli\",\n        \"sha256\": \"ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1\"\n      },\n      \"kernel\": {\n        \"path\": \"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\n        \"sha256\": \"abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae\"\n      }\n    },\n    \"repository_head\": \"25ef5c0c91b220704c61743a41144a218c732038\",\n    \"repository_status_porcelain\": \"\"\n  }\n}\n"
+    },
+    "result.json": {
+      "sha256": "2bef512105c6d1760424952082914d34a9a10b7e96fb3f2f69de471149530898",
+      "utf8": "{\n  \"returncode\": 0,\n  \"timed_out\": false,\n  \"duration_seconds\": 1.9838202910032123,\n  \"finished_at_utc\": \"2026-11-11T22:00:00.671976+00:00\",\n  \"stdout_sha256\": \"82d3bf0819acd8764ece7a0f70f28a5663813bc204da1e4544a11362c452f97a\",\n  \"stderr_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n  \"after\": {\n    \"source_hashes\": {\n      \"SHA256SUMS\": \"5b25c289c9f0120feb7d7d3ab9728b0c488b6ae0e34e9eb5d672d688d7ca57f6\",\n      \"attempt-01/both-xor/Qargo.toml\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"attempt-01/both-xor/main.qli\": \"2aaf18cb188110555f332fc16b2ec90fe488752174234795bdaaab8e316f2774\",\n      \"attempt-01/increment2/Qargo.toml\": \"680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37\",\n      \"attempt-01/increment2/main.qli\": \"e5d2cb8ba3fde4a964af7040bda98d441133999de03a731b2a9f5616c6e94cd8\",\n      \"context.json\": \"a9cb8cd99f07a8441e3f2c375267df4cd24658009dbb2e2fbb30c656ea832889\"\n    },\n    \"binaries\": {\n      \"cli\": {\n        \"path\": \"/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli\",\n        \"sha256\": \"ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1\"\n      },\n      \"kernel\": {\n        \"path\": \"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\n        \"sha256\": \"abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae\"\n      }\n    },\n    \"repository_head\": \"25ef5c0c91b220704c61743a41144a218c732038\",\n    \"repository_status_porcelain\": \"\"\n  },\n  \"first_packet_unchanged\": true,\n  \"binaries_unchanged\": true\n}\n"
+    },
+    "stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "utf8": ""
+    },
+    "stdout.txt": {
+      "sha256": "82d3bf0819acd8764ece7a0f70f28a5663813bc204da1e4544a11362c452f97a",
+      "utf8": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"checker_paths\":[\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\"],\"checker_identity\":\"unpinned\",\"native_decisions\":{\"count\":77,\"requests_checked\":2,\"complete\":true},\"entry\":{\"present\":true,\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false},\"concrete_ir_roots\":{\"local\":2,\"bundled\":24},\"source_preservation_verified\":false}}\n"
+    }
+  }
+}

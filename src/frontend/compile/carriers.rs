@@ -16,6 +16,19 @@ fn copy_cells(atoms: &[Atom]) -> usize {
 }
 
 impl Compiler<'_> {
+    pub(super) fn basis_codes(
+        &mut self,
+        module: &str,
+        span: Span,
+        ty: &Ty,
+    ) -> Result<(usize, Vec<usize>), CompileError> {
+        let basis = self.carrier_description(module, span, ty)?;
+        let (width, codes) = crate::frontend::ordinary::proposed_codes(&[basis])
+            .map_err(|error| self.error(module, span, ErrorCode::Unsupported, error.to_string()))?;
+        self.charge(module, span, codes.len() + 1)?;
+        Ok((width, codes))
+    }
+
     pub(super) fn carrier_description(
         &mut self,
         module: &str,

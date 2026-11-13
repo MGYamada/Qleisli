@@ -120,8 +120,11 @@ fn process(
         force_typed_root: true,
         selected_entry: Some(entry),
         selected_calls: 0,
+        checked_static_calls: BTreeMap::new(),
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
+        nominal_basis_roots: BTreeSet::new(),
+        nominal_meaning_roots: BTreeSet::new(),
         checked: BTreeMap::new(),
         runtime_signatures: BTreeMap::new(),
         carrier_descriptions: Vec::new(),
@@ -178,6 +181,7 @@ fn process(
         }
     }
     compiler.prepare_selected_classical_tables(Some(&closure))?;
+    compiler.plan_original_tables(Some(&closure))?;
     prepare_evidence_dependencies(&mut compiler, &closure, &module, span)?;
     let instance = named_instance(&mut compiler, selected, entry, &module, span)?;
     let program =

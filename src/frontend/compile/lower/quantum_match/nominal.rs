@@ -26,8 +26,10 @@ pub(in crate::frontend::compile::lower) struct Frame {
     primitive_prelude: bool,
     selections: Vec<Selection>,
     calls: Vec<(Position, Arc<ContextSubject>)>,
+    retained_static_calls: Vec<(String, usize, usize)>,
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
+    contains_meaning_applications: bool,
     source_gate: bool,
     needs_qmatch_v5: bool,
     prefer_runtime_root: bool,
@@ -228,9 +230,13 @@ impl Frame {
                 )
             })
         });
+        let supplies = lower.compiler.qmatch_supplies(key, &name.0, span)?;
+        let contains_meaning_applications = supplies
+            .iter()
+            .any(|(_, operation)| !operation.meaning_references.is_empty());
         Ok(Some(Self {
             key,
-            supplies: lower.compiler.qmatch_supplies(key, &name.0, span)?,
+            supplies,
             inputs,
             classical_inputs,
             start: lower.raw.operations.len(),
@@ -240,8 +246,10 @@ impl Frame {
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
+            retained_static_calls: Vec::new(),
             branches: Vec::new(),
             contains_selections: false,
+            contains_meaning_applications,
             source_gate,
             needs_qmatch_v5: false,
             prefer_runtime_root: false,
@@ -293,8 +301,10 @@ impl Frame {
             primitive_prelude: false,
             selections: Vec::new(),
             calls: Vec::new(),
+            retained_static_calls: Vec::new(),
             branches: Vec::new(),
             contains_selections: false,
+            contains_meaning_applications: false,
             source_gate: self.source_gate,
             needs_qmatch_v5: false,
             prefer_runtime_root: false,
@@ -343,7 +353,9 @@ impl Frame {
             calls: self.calls,
             branches: self.branches,
             operation: None,
+            retained_static_calls: self.retained_static_calls,
             contains_selections: self.contains_selections,
+            contains_meaning_applications: self.contains_meaning_applications,
             requires_source_gate: self.source_gate,
             needs_qmatch_v5: self.needs_qmatch_v5,
             prefer_runtime_root: self.prefer_runtime_root,
@@ -388,7 +400,9 @@ impl Frame {
                 calls: self.calls,
                 branches: self.branches,
                 operation: None,
+                retained_static_calls: self.retained_static_calls,
                 contains_selections: self.contains_selections,
+                contains_meaning_applications: self.contains_meaning_applications,
                 requires_source_gate: self.source_gate,
                 needs_qmatch_v5: self.needs_qmatch_v5,
                 prefer_runtime_root: self.prefer_runtime_root,
@@ -538,7 +552,9 @@ impl Frame {
             calls: self.calls,
             branches: self.branches,
             operation: None,
+            retained_static_calls: self.retained_static_calls,
             contains_selections: self.contains_selections,
+            contains_meaning_applications: self.contains_meaning_applications,
             requires_source_gate: self.source_gate,
             needs_qmatch_v5: self.needs_qmatch_v5,
             prefer_runtime_root: self.prefer_runtime_root,
@@ -602,8 +618,8 @@ pub(in crate::frontend::compile::lower) fn record_primitive(
     Ok(())
 }
 
-/// The coherent basis body supplies the table for one literal Raw operation.
-pub(in crate::frontend::compile::lower) fn record_basis(
+/// The original coherent expression supplies a table to one literal Raw operation.
+pub(in crate::frontend::compile::lower) fn record_coherent_table(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
     span: Span,
@@ -617,7 +633,7 @@ pub(in crate::frontend::compile::lower) fn record_basis(
             module,
             span,
             ErrorCode::InvalidIr,
-            "basis lift precedes its original qmatch context",
+            "coherent table precedes its original qmatch context",
         )
     })?;
     let position = position(lower, module, span, span.start, relative, 1)?;
@@ -636,6 +652,7 @@ pub(in crate::frontend::compile::lower) fn record_named(
     callee: &Ident,
     start: usize,
     body: Option<Arc<ContextSubject>>,
+    static_record: Option<usize>,
 ) -> Result<(), CompileError> {
     let Some(frame) = lower.nominal_qmatch.as_ref() else {
         return Ok(());
@@ -680,13 +697,56 @@ pub(in crate::frontend::compile::lower) fn record_named(
         relative,
         count,
     )?;
-    lower.compiler.charge(module, callee.span, 8)?;
+    lower.compiler.charge(
+        module,
+        callee.span,
+        8 + static_record.map_or(0, |_| module.len() + 3),
+    )?;
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.record_event_outside_static_profile();
     frame.positions.push(position.clone());
     frame.contains_selections |= body.contains_selections;
+    frame.contains_meaning_applications |= body.contains_meaning_applications;
     frame.include_qmatch_profile(&body);
     frame.calls.push((position, body));
+    if let Some(record) = static_record {
+        frame
+            .retained_static_calls
+            .push((module.to_owned(), callee.span.start, record));
+    }
+    Ok(())
+}
+
+pub(in crate::frontend::compile::lower) fn retain_checked_calls(
+    compiler: &mut Compiler<'_>,
+    module: &str,
+    span: Span,
+    context: &ContextSubject,
+) -> Result<(), CompileError> {
+    let mut pending = vec![context];
+    while let Some(context) = pending.pop() {
+        compiler.charge(
+            module,
+            span,
+            context.calls.len() + 2 * context.branches.len() + 1,
+        )?;
+        for (owner, offset, record) in &context.retained_static_calls {
+            compiler.charge(
+                module,
+                span,
+                (owner.len() + 3).saturating_mul(compiler.checked_static_calls.len() + 1),
+            )?;
+            compiler
+                .checked_static_calls
+                .entry((owner.clone(), *offset))
+                .or_default()
+                .insert(*record);
+        }
+        pending.extend(context.calls.iter().map(|(_, child)| child.as_ref()));
+        for (_, then_body, else_body) in &context.branches {
+            pending.extend([then_body.as_ref(), else_body.as_ref()]);
+        }
+    }
     Ok(())
 }
 
@@ -701,6 +761,14 @@ pub(in crate::frontend::compile::lower) fn record_operation(
     access: Access,
 ) -> Result<(), CompileError> {
     let Some(frame) = lower.nominal_qmatch.as_ref() else {
+        if operation.uses_carrier() {
+            return Err(lower.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "typed Meaning application needs its original source context",
+            ));
+        }
         return Ok(());
     };
     let relative = start.checked_sub(frame.start).ok_or_else(|| {
@@ -734,6 +802,7 @@ pub(in crate::frontend::compile::lower) fn record_operation(
         .as_mut()
         .expect("original operation context");
     frame.record_event_outside_static_profile();
+    frame.contains_meaning_applications |= !original.meaning_references.is_empty();
     for body in original.original_contexts() {
         frame.include_qmatch_profile(body);
     }
@@ -780,6 +849,8 @@ pub(in crate::frontend::compile::lower) fn record_branch(
         .as_mut()
         .expect("original containing context");
     frame.contains_selections |= then_body.contains_selections || else_body.contains_selections;
+    frame.contains_meaning_applications |=
+        then_body.contains_meaning_applications || else_body.contains_meaning_applications;
     frame.source_gate |= then_body.requires_source_gate || else_body.requires_source_gate;
     frame.include_qmatch_profile(&then_body);
     frame.include_qmatch_profile(&else_body);
@@ -1005,7 +1076,9 @@ pub(super) fn emit(
     let mut arms = Vec::new();
     for arm in &selection.arms {
         let (label_basis, ordinal) = match (&basis.kind, &arm.label) {
-            (Kind::Nominal(_), QuantumLabel::Variant(label)) => lower.enum_label(module, label)?,
+            (Kind::Nominal(_), QuantumLabel::Variant(label)) => {
+                lower.compiler.enum_label(module, label)?
+            }
             (Kind::Unit | Kind::Bit | Kind::Bits(_), QuantumLabel::Ordinal(label)) => {
                 (basis.clone(), *label as usize)
             }

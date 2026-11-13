@@ -1830,7 +1830,7 @@ pub(super) fn validate_and_finish(
             }
             (
                 ObligationKind::ControlSectors
-                | ObligationKind::Injectivity
+                | ObligationKind::Injectivity { .. }
                 | ObligationKind::ProtectedClean
                 | ObligationKind::TransformedMeaning,
                 EvidenceSubject::Expression,

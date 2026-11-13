@@ -498,7 +498,22 @@ impl Checker<'_, '_> {
         if !equal {
             self.effects.add(Effect::Isometry, span);
         }
-        self.obligation(span, ObligationKind::Injectivity, scope)?;
+        fn typed_port(ty: &Ty) -> bool {
+            match &ty.kind {
+                Kind::Nominal(_) | Kind::Parameter(_) => true,
+                Kind::Tuple(fields) => fields.iter().any(typed_port),
+                _ => false,
+            }
+        }
+        self.program.budget.ty(span, input_basis)?;
+        self.program.budget.ty(span, &output)?;
+        self.obligation(
+            span,
+            ObligationKind::Injectivity {
+                typed_ports: typed_port(input_basis) || typed_port(&output),
+            },
+            scope,
+        )?;
         Ok(Ty::quantum(output))
     }
     fn basis_width(&self, ty: &Ty, span: Span) -> Result<Option<Linear>> {

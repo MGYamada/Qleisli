@@ -8,6 +8,13 @@ use crate::ir::{CircuitAction, CircuitStep, RawOp, RawProgram};
 
 mod ordinary;
 
+#[derive(Clone, Copy)]
+enum SourceClosure<'a> {
+    Evidence,
+    Runtime(&'a SourceRows),
+    Qmatch(&'a SourceRows, bool),
+}
+
 impl Compiler<'_> {
     pub(super) fn retained_sources(
         &mut self,
@@ -17,7 +24,14 @@ impl Compiler<'_> {
         bindings: &operations::Bindings,
         bodies: &[&RawProgram],
     ) -> Result<SourceRows, CompileError> {
-        self.collect_source_rows(module, span, roots, bindings, bodies, None)
+        self.collect_source_rows(
+            module,
+            span,
+            roots,
+            bindings,
+            bodies,
+            SourceClosure::Evidence,
+        )
     }
 
     /// Qmatch also checks primitive lookup misses and the imports of the
@@ -36,7 +50,7 @@ impl Compiler<'_> {
             &[key],
             &operations::Bindings::new(),
             &[],
-            Some((&types, primitive_prelude)),
+            SourceClosure::Qmatch(&types, primitive_prelude),
         )
     }
 
@@ -55,7 +69,25 @@ impl Compiler<'_> {
             &[key],
             bindings,
             &[raw],
-            Some((&types, false)),
+            SourceClosure::Qmatch(&types, false),
+        )
+    }
+
+    pub(super) fn retained_runtime_body_sources(
+        &mut self,
+        key: Key,
+        module: &str,
+        span: Span,
+        raw: &RawProgram,
+    ) -> Result<SourceRows, CompileError> {
+        let types = self.retained_ordinary_type_sources(key, module, span)?;
+        self.collect_source_rows(
+            module,
+            span,
+            &[key],
+            &operations::Bindings::new(),
+            &[raw],
+            SourceClosure::Runtime(&types),
         )
     }
 
@@ -66,7 +98,7 @@ impl Compiler<'_> {
         roots: &[Key],
         bindings: &operations::Bindings,
         bodies: &[&RawProgram],
-        qmatch: Option<(&SourceRows, bool)>,
+        closure: SourceClosure<'_>,
     ) -> Result<SourceRows, CompileError> {
         let mut work = self.work;
         let result = (|| {
@@ -80,14 +112,14 @@ impl Compiler<'_> {
                 types: BTreeSet::new(),
                 modules: BTreeSet::new(),
                 receipts: BTreeSet::new(),
-                qmatch: qmatch.is_some(),
+                runtime_lookup: !matches!(closure, SourceClosure::Evidence),
             };
             // Project entry selection has no lexical UseInfo. A reexported
             // main::main still supplies the host's entry, so its exact export
             // chain belongs to the source receipts produced in this project.
             let resolution = &collector.compiler.source.resolution;
             if let Some(owner) = resolution.module("main") {
-                if qmatch.is_none()
+                if matches!(closure, SourceClosure::Evidence)
                     && resolution.local(owner, "main").is_none()
                     && resolution.qualified("main::main").is_ok()
                 {
@@ -106,12 +138,16 @@ impl Compiler<'_> {
                 collector.raw(body)?;
             }
             collector.drain()?;
-            if let Some((types, primitive_prelude)) = qmatch {
-                collector.rows(SourceView::Rows(types))?;
-                if primitive_prelude {
-                    collector.source("std::prelude", None)?;
+            match closure {
+                SourceClosure::Evidence => {}
+                SourceClosure::Runtime(types) => collector.rows(SourceView::Rows(types))?,
+                SourceClosure::Qmatch(types, primitive_prelude) => {
+                    collector.rows(SourceView::Rows(types))?;
+                    if primitive_prelude {
+                        collector.source("std::prelude", None)?;
+                    }
+                    collector.catalogue_imports()?;
                 }
-                collector.catalogue_imports()?;
             }
             collector.charge(collector.modules.iter().map(|name| name.len() + 1).sum())?;
             Ok::<_, CompileError>(
@@ -237,7 +273,7 @@ struct Collector<'a, 'project> {
     types: BTreeSet<TypeId>,
     modules: BTreeSet<&'a str>,
     receipts: BTreeSet<usize>,
-    qmatch: bool,
+    runtime_lookup: bool,
 }
 impl<'a> Collector<'a, '_> {
     fn catalogue_imports(&mut self) -> Result<(), CompileError> {
@@ -358,7 +394,7 @@ impl<'a> Collector<'a, '_> {
             return self.refusal("source closure has an unknown original definition");
         };
         let original_module = self.compiler.originals.module(&record.name.0);
-        let lookup_needs_prelude = self.qmatch
+        let lookup_needs_prelude = self.runtime_lookup
             && original_module
                 .as_ref()
                 .is_some_and(|module| !module.ast.no_implicit_prelude);
@@ -432,8 +468,13 @@ impl<'a> Collector<'a, '_> {
         if let Some(program) = self.compiler.checked.get(&key) {
             self.raw(program.raw())?;
         }
-        if let Some(meaning) = self.compiler.meanings.get(&key) {
-            self.raw(&meaning.raw)?;
+        if let Some(raw) = self
+            .compiler
+            .meanings
+            .get(&key)
+            .and_then(|meaning| meaning.raw.as_ref())
+        {
+            self.raw(raw)?;
         }
         Ok(())
     }
@@ -524,6 +565,17 @@ impl<'a> Collector<'a, '_> {
             self.charge(4)?;
             match operation.node.as_ref() {
                 Node::Provider(receipt) => self.receipt(receipt)?,
+                Node::Carrier(_) => {
+                    let Some(origin) = &operation.source_origin else {
+                        return self
+                            .refusal("carrier operation has no original source association");
+                    };
+                    self.root(origin.definition, Some(&origin.table))?;
+                    if let Some(meaning) = origin.meaning {
+                        self.root(meaning, None)?;
+                    }
+                    self.raw(origin.body.program())?;
+                }
                 Node::Pure(pure) => {
                     let Some(origin) = &pure.origin else {
                         return self.refusal("pure operation has no original source association");
@@ -766,7 +818,7 @@ mod tests {
             types: BTreeSet::new(),
             modules: BTreeSet::new(),
             receipts: BTreeSet::new(),
-            qmatch: false,
+            runtime_lookup: false,
         };
         let error = collector
             .root(key, Some(&foreign.source.lexical[&key]))
@@ -868,7 +920,7 @@ mod tests {
                 types: BTreeSet::new(),
                 modules: BTreeSet::new(),
                 receipts: BTreeSet::new(),
-                qmatch: false,
+                runtime_lookup: false,
             };
             collector.type_root(root).unwrap();
             let result = collector.drain();

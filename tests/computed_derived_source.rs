@@ -53,6 +53,14 @@ fn probe(source: &str) -> (qleisli::interchange::native::AcceptedProgram, RawPro
 }
 
 fn request(actual: &RawProgram, basis: BasisType, expected: &Matrix) {
+    request_result(actual, basis, expected).unwrap();
+}
+
+fn request_result(
+    actual: &RawProgram,
+    basis: BasisType,
+    expected: &Matrix,
+) -> Result<(), qleisli::interchange::Error> {
     let [input] = actual.quantum_inputs.as_slice() else {
         panic!("single exact owner");
     };
@@ -86,7 +94,7 @@ fn request(actual: &RawProgram, basis: BasisType, expected: &Matrix) {
         expected,
         &mut Budget::new(DEFAULT_EXACT_WORK),
     )
-    .unwrap();
+    .map(|_| ())
 }
 
 fn source(body: &str, wrapper: &str) -> String {
@@ -98,6 +106,97 @@ fn source(body: &str, wrapper: &str) -> String {
         unitary fn probe(q:Q<Bit>)->Q<Bit>{{with_computed(q,predicate){{|a|{body}}}}}
         pub observe fn main()->Bit{{measure_z(apply_contract(probe,probe,init0()))}}"
     )
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn non_diagonal_factors_normalize_only_their_exact_complete_action() {
+    fn has_hadamard(original: &RawProgram) -> bool {
+        let mut pending = vec![original];
+        while let Some(body) = pending.pop() {
+            for operation in &body.operations {
+                match operation {
+                    RawOp::Gate {
+                        gate: SingleGate::H,
+                        ..
+                    } => return true,
+                    RawOp::ApplyUnitary { steps, .. } => {
+                        for step in steps {
+                            match &step.action {
+                                CircuitAction::Hadamard { .. } => return true,
+                                CircuitAction::Contract { evidence, .. } => {
+                                    pending.push(evidence.implementation());
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+        false
+    }
+    // H X H = Z, whereas X Z X = -Z. Equal standalone probabilities
+    // cannot justify discarding the latter's global sign before control.
+    for (body, phases, wrong) in [
+        ("h(x(h(a)))", [0, 4], [4, 0]),
+        ("x(z(x(a)))", [4, 0], [0, 4]),
+    ] {
+        let text = source(body, "use std::gate::x;");
+        let (accepted, actual) = probe(&text);
+        let expected = phase_matrix(&phases);
+        request(&actual, BasisType::Bit, &expected);
+        let error = request_result(&actual, BasisType::Bit, &phase_matrix(&wrong)).unwrap_err();
+        assert_eq!(error.code, "contract");
+        let receipt = accepted
+            .source_computed_normalizations()
+            .iter()
+            .find(|receipt| receipt.names().0.contains("main::probe::with_computed["))
+            .expect("noncanonical original requires a native normalization equation");
+        let original = receipt.implementation().program().raw();
+        let canonical = receipt.specification().program().raw();
+        assert_ne!(original, canonical);
+        assert!(has_hadamard(original));
+        for raw in [original, canonical] {
+            request(raw, BasisType::Bit, &expected);
+            assert_eq!(
+                request_result(raw, BasisType::Bit, &phase_matrix(&wrong))
+                    .unwrap_err()
+                    .code,
+                "contract"
+            );
+        }
+        assert!(
+            receipt
+                .sources()
+                .iter()
+                .any(|(name, bytes)| name == "main" && bytes == &text)
+        );
+        assert!(matches!(actual.operations.as_slice(),
+            [RawOp::ComputeUseUncompute { ancilla_wires, .. }] if ancilla_wires.len() == 1));
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn a_unitary_bit_flip_cannot_discharge_the_computed_auxiliary() {
+    let text = source("x(a)", "use std::gate::x;");
+    let error = compile_project(&SourceRoot::new(&text).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Unsupported);
+    assert!(error.message.contains("non-diagonal"));
+    assert!(
+        error
+            .message
+            .contains("with_computed(source, predicate, logical)")
+    );
+    assert!(error.message.contains("does not bypass cleanup checking"));
 }
 
 #[cfg_attr(

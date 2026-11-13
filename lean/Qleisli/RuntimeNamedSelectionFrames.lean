@@ -48,9 +48,10 @@ theorem node_frames {dependencies program block bindings}
   cases node with
   | primitive _ _ => trivial
   | structural _ => trivial
-  | basis => trivial
+  | basis | computed | certifiedComputed => trivial
   | named _ _ _ _ _ _ => trivial
   | operation _ _ _ _ _ _ _ _ _ _ => trivial
+  | rectangularOperation _ => trivial
   | transform => trivial
   | selection frame selectorBits targetBits retained restricted inputCode outputCode labels expected logical equations codes layouts =>
     obtain ⟨original⟩ := available

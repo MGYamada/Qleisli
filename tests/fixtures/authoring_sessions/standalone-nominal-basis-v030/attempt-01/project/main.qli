@@ -1,0 +1,7 @@
+#![no_implicit_prelude]
+enum Flag { Keep, Flip, Spare }
+classical fn output() -> Bit {
+    match Flag::Flip { Flag::Keep => 0, Flag::Flip => 1, Flag::Spare => 0 }
+}
+isometry fn prepare() -> Q<Bit> { basis unit(()) as _ { output() } }
+pub observe fn main() -> Bit { measure_z(prepare()) }

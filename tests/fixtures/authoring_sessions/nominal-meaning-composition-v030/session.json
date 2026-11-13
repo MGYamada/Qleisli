@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#64 reference Meaning composition through an exact nominal carrier",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "b5e49e2996363c80efe1216902df5b5eaca0ce54",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "First enum formulation.",
+      "sha256": {
+        "first/main.qli": "13c97f22576f64f79fd68e995ed4f720a4a91e8958c00fbc1c3f793a2bf81f0e"
+      },
+      "manifest_sha256": {
+        "first/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observed-enum.json"
+      ],
+      "reports": [
+        "first-enum.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Use a classical enum construction helper.",
+      "sha256": {
+        "enum/main.qli": "b4fb686ff39cd08d14ba39e41a3b9f692e1aa86eed1d868f947825bc354e269a"
+      },
+      "manifest_sha256": {
+        "enum/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observed-enum-repair.json"
+      ],
+      "reports": [
+        "first-enum-repair.json"
+      ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "Use a nominal record intermediate and test the original product axis.",
+      "sha256": {
+        "project/main.qli": "e9df2c1a591959759fcb348e39f2acb447953ce8bfa089475c08117e3108c0ed",
+        "selected/main.qli": "563869b415bd214167ba043a74040863caaf3c7897affe4ef5385535c551f970",
+        "tensor/main.qli": "a1518aab1b4b0ad68678d04f450fd2b9ca274ea343f0810f78e7248c4a640812"
+      },
+      "manifest_sha256": {
+        "project/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "selected/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tensor/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observed-record.json",
+        "observed-project.json",
+        "observed-tensor.json"
+      ],
+      "reports": [
+        "first-record.json"
+      ]
+    }
+  ]
+}

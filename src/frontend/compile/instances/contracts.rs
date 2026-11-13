@@ -171,7 +171,12 @@ impl Compiler<'_> {
                     let closed =
                         result.map_err(|error| self.originals.error(error.in_module(module)))?;
                     let mut precise = None;
-                    let checked = types::closed_basis_capacity(&closed, span, &mut |at, cells| {
+                    let capacity = if operation.uses_carrier() {
+                        types::typed_basis_capacity
+                    } else {
+                        types::closed_basis_capacity
+                    };
+                    let checked = capacity(&closed, span, &mut |at, cells| {
                         self.charge_at(&mut work, module, at, cells)
                             .map_err(|error| {
                                 precise = Some(error);

@@ -344,6 +344,103 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn clean_auxiliary_reset_does_not_preserve_live_coherence() {
+    // Kets are written |q,a>; numeric labels use q + 2a. For alpha|0> + beta|1>,
+    // CNOT computes alpha|00> + beta|11>. Coherent uncompute restores the
+    // original q; reset instead leaves two unnormalized private histories
+    // alpha|00> and beta|10>. Both return a to zero, but their live actions
+    // differ. These are numerical regressions, not an exact cleanup theorem.
+    let c = (FRAC_PI_4 / 2.0).cos();
+    let s = (FRAC_PI_4 / 2.0).sin();
+    for (preparation, alpha, beta) in [
+        (
+            "h(init0())",
+            Amplitude::real(FRAC_1_SQRT_2),
+            Amplitude::real(FRAC_1_SQRT_2),
+        ),
+        (
+            // Up to a common phase, T^3 H T H gives c|0> + zeta s|1>.
+            // Unequal weights and complex coherence exercise Z, X and Y.
+            "t(t(t(h(t(h(init0()))))))",
+            Amplitude::real(c),
+            Amplitude::polar(s, FRAC_PI_4),
+        ),
+    ] {
+        let coherent = [History {
+            public: vec![],
+            ket: vec![(0, alpha), (1, beta)],
+        }];
+        let reset = [
+            History {
+                public: vec![],
+                ket: vec![(0, alpha)],
+            },
+            History {
+                public: vec![],
+                ket: vec![(1, beta)],
+            },
+        ];
+        for axis in [Axis::X, Axis::Y, Axis::Z] {
+            let axes = [axis, Axis::Z];
+            let coherent_expected = born(&coherent, &axes);
+            let reset_expected = born(&reset, &axes);
+            // X distinguishes the intended identity from dephasing for both
+            // inputs, even though both auxiliary Z readouts are certainly zero.
+            if matches!(axis, Axis::X) {
+                assert!(coherent_expected[&bits(0, 2)] - reset_expected[&bits(0, 2)] > 0.2);
+            }
+            let main = format!(
+                "observe fn main() -> (Bit,Bit) {{
+                    let (q,a) = cnot({preparation},init0());
+                    let (q,a) = restore(q,a);
+                    ({},measure_z(a))
+                }}",
+                axis.read("q"),
+            );
+            let coherent_source = format!(
+                "unitary fn restore(q: Q<Bit>, a: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
+                    cnot(q,a)
+                }}
+                {main}"
+            );
+            let reset_source = format!(
+                "observe fn restore(q: Q<Bit>, a: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
+                    let a = reset(a);
+                    (q,a)
+                }}
+                {main}"
+            );
+            assert_distribution(&compile(&coherent_source), &coherent_expected);
+            assert_distribution(&compile(&reset_source), &reset_expected);
+        }
+    }
+}
+
+#[test]
+fn clean_auxiliary_reset_cannot_be_annotated_unitary() {
+    // Returning a fresh zero owner does not erase reset's Observe effect.
+    // The observing caller cannot justify a false Unitary helper annotation.
+    let root = SourceRoot::new(&format!(
+        "{IMPORTS}
+        unitary fn restore(q: Q<Bit>, a: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
+            let a = reset(a);
+            (q,a)
+        }}
+        observe fn main() -> (Bit,Bit) {{
+            let (q,a) = cnot(h(init0()),init0());
+            let (q,a) = restore(q,a);
+            (measure_z(h(q)),measure_z(a))
+        }}"
+    ));
+    let error = check_project(&root.0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Effect, "{error}");
+}
+
 const COMPUTED: &str = "
 classical fn predicate((((a,u),b),c): (((Bit,Unit),Bit),Bit)) -> Bit { (a and not b) xor c }
 unitary fn oracle(q: Q<(((Bit,Unit),Bit),Bit)>) -> Q<(((Bit,Unit),Bit),Bit)> {

@@ -45,6 +45,73 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [nominal Meaning composition study](nominal-meaning-composition-v030/session.json)
+retains the enum attempts, the first refusal for a record intermediate, a closed
+composition project, and a tensor phase on the bit axis of a nominal product.
+
+The [nominal Meaning ports study](nominal-meaning-ports-v030/session.json)
+retains the first three-label cycle, its initial refusal, and a closed project
+using the checked inverse. The native mutation tests retain the original
+Meaning while changing the applied inverse, padding transition or phase.
+
+The [standalone nominal Meaning study](standalone-nominal-meaning-v030/session.json)
+retains the first selected source, a project extension and actual checks.
+The selected and project invocations use the native application equation.
+
+The [nominal Meaning arm study](nominal-meaning-arm-v030/session.json)
+retains the original classical helper and coherent arm, the first preparation
+refusal and the later native source check of the unchanged program.
+
+The [nominal basis row study](nominal-basis-rows-v030/session.json) preserves
+the first three-label coherent cycle, the old producer refusal and the
+independent source discovery refusal. The unchanged source later passes the
+v5 gate, and the regression rejects reordered rows and padding leakage.
+
+The [ordinary nominal dependency study](ordinary-body-provenance-v030/session.json)
+retains a classical helper's first use of a reexported enum and the original
+typed dependency refusal. The runtime regression uses the unchanged project
+and checks rejection after privatizing the reexport.
+
+The [nominal body provenance study](nominal-body-provenance-v030/session.json)
+retains the original two-qubit selection and imported record source, the first
+missing-manifest diagnostic and the typed dependency refusal. A selected
+runtime regression reuses those sources and checks that privatizing the field
+in the retained original artifact is rejected.
+
+The [classical synthesis study](classical-synthesis-v030/session.json) preserves
+two small first programs and four actual checks/runs. A noninjective predicate
+works through XOR embedding and is reused after measurement; a separate
+two-bit increment has explicit modulo-four semantics. These finite-table
+observations do not establish scalable synthesis or source preservation.
+
+The [signal-interface study](signal-interface-v030/session.json) preserves
+three first sources and six actual observations. Returning an entangled signal
+is permitted, silently losing it rejects, and explicit discard retains its
+observing effect. Exact small operator tests remain separate from these
+numerical observations and from general resource proofs.
+
+The [quantum-relations study](quantum-relations-v030/session.json) preserves
+ten first projects and their original diagnostics. Unsupported runtime
+comparisons and unresolved `hash` calls are distinct from valid static and
+explicit Boolean/coherent comparisons and ordinary functions named `hash`.
+The first observations remain unchanged when teaching diagnostics improve.
+
+The [dirty restoration study](dirty-restoration-v030/session.json) retains
+three first sources and observations: exact restoration, a contract refusal,
+and a Bell-reference phase counterexample. General clean/dirty syntax remains open.
+
+The [clean-marginal study](clean-marginal-v030/README.md) preserves three first
+sources and six actual observations. Coherent uncompute and explicit reset
+return the same zero auxiliary but different live distributions; falsely
+Unitary reset rejects with its actual effect diagnostic. These bounded
+observations do not prove the general channel, source or resource obligations.
+
+The [small cross-algorithm access study](access-algorithms-v030/context.md)
+retains ten first access/explicit-owner programs, their independent mathematical
+expectations and thirty actual CLI observations. Project success, two selected
+Raw profile refusals and numerical distributions remain distinct from exact
+artifact regressions and unfinished general source/resource proofs.
+
 The [physical SWAP and structural output study](axis-routing-output-v030/context.md)
 retains six unchanged first sources and eighteen actual CLI observations.
 Usage failures, unchanged refusals, revised explanations and literal QASM/QIR
@@ -699,3 +766,10 @@ retains eleven original generated Main bodies and the first refactor,
 compilation, partial-comparison and policy refusals. Its bounded readers do not
 execute history; later compilation and small-system shadow checks remain
 separate from full coverage, default adoption and proof claims.
+
+The [standalone nominal basis study](standalone-nominal-basis-v030/session.json)
+retains two first projects and their actual refusals. The original
+[project manifest](standalone-nominal-basis-v030/attempt-01/project/Qargo.toml)
+and [selected manifest](standalone-nominal-basis-v030/attempt-01/output/Qargo.toml)
+are retained. The unchanged project now returns Bit 1 and the selected
+preparation verifies its canonical three-state output.

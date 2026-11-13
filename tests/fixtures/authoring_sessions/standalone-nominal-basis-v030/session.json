@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#64 standalone coherent nominal basis in project and selected Raw execution",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "1f942a87cb346ce615358dbcb92966af7403b91b",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Original standalone sources and actual before/after checks.",
+      "sha256": {
+        "project/main.qli": "fa85b293df301734a1149d66db5a1918369382879130b398f43f25385b1d5136",
+        "output/main.qli": "3468ebb427364e601f905fd0117f364c317d4c29a241ec7434bddc12d9f2c308"
+      },
+      "manifest_sha256": {
+        "project/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "output/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before-project.json",
+        "before-selected.json",
+        "after-project.json",
+        "after-run.json",
+        "after-selected.json"
+      ]
+    }
+  ]
+}

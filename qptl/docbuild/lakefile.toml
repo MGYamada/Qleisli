@@ -1,0 +1,12 @@
+name = "qptl_docbuild"
+reservoir = false
+
+[[require]]
+name = "qptl"
+path = ".."
+
+[[require]]
+name = "doc-gen4"
+scope = "leanprover"
+# doc-gen4 v4.30.0, matching QPTL's pinned Lean toolchain.
+rev = "689fdeecf45e08cc048214680d40cfe2491be78b"

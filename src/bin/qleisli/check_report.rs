@@ -31,8 +31,9 @@ pub(super) fn project_json(report: &ProjectCheckReport) -> Result<String, Diagno
         .collect::<Result<Vec<_>, _>>()?
         .join(",");
     let entry_request = report.entry_request_checked();
+    let source_body = scope_json(report.entry_source_body_scope());
     Ok(format!(
-        "{{\"checker_paths\":[{paths}],\"checker_identity\":\"unpinned\",\"native_decisions\":{{\"count\":{},\"requests_checked\":{},\"complete\":{}}},\"entry\":{{\"present\":{},\"request_checked\":{},\"ordinary_result_checked\":{},\"runtime_result_checked\":{}}},\"concrete_ir_roots\":{{\"local\":{},\"bundled\":{}}},\"source_preservation_verified\":false}}",
+        "{{\"checker_paths\":[{paths}],\"checker_identity\":\"unpinned\",\"native_decisions\":{{\"count\":{},\"requests_checked\":{},\"complete\":{}}},\"entry\":{{\"present\":{},\"request_checked\":{},\"ordinary_result_checked\":{},\"runtime_result_checked\":{}{source_body}}},\"concrete_ir_roots\":{{\"local\":{},\"bundled\":{}}},\"source_preservation_verified\":false}}",
         native.decisions(),
         native.requests_checked(),
         native.complete(),
@@ -81,6 +82,9 @@ pub(super) fn project_text(root: &Path, report: &ProjectCheckReport) -> String {
     if report.entry_runtime_result_checked() {
         text.push_str("entry runtime result: full original types, actual storage, ordered quantum code spaces and all hidden histories checked; no external algorithm specification\n");
     }
+    if let Some(scope) = report.entry_source_body_scope() {
+        writeln!(text, "entry source body checked: {scope}").unwrap();
+    }
     text.push_str("source preservation: not proved\n");
     text
 }
@@ -92,6 +96,13 @@ pub(super) struct ArtifactReport {
     requested: bool,
     ordinary_result: bool,
     runtime_result: bool,
+    source_body_scope: Option<&'static str>,
+}
+
+fn scope_json(scope: Option<&str>) -> String {
+    scope.map_or_else(String::new, |scope| {
+        format!(",\"source_body_scope\":{}", quoted(scope))
+    })
 }
 
 impl ArtifactReport {
@@ -99,6 +110,7 @@ impl ArtifactReport {
         let mut report = Self::from_checker(program.checker(), program.request().is_some());
         report.ordinary_result = program.ordinary_result().is_some();
         report.runtime_result = program.runtime_result().is_some();
+        report.source_body_scope = program.source_body_scope();
         report
     }
 
@@ -108,6 +120,7 @@ impl ArtifactReport {
             requested,
             ordinary_result: false,
             runtime_result: false,
+            source_body_scope: None,
         }
     }
 
@@ -122,11 +135,12 @@ impl ArtifactReport {
 
     pub(super) fn json_fields(&self) -> Result<String, Diagnostic> {
         Ok(format!(
-            "\"checker_path\":{},\"checker_identity\":\"unpinned\",\"request_checked\":{},\"ordinary_result_checked\":{},\"runtime_result_checked\":{},\"source_preservation_verified\":false",
+            "\"checker_path\":{},\"checker_identity\":\"unpinned\",\"request_checked\":{},\"ordinary_result_checked\":{},\"runtime_result_checked\":{},\"source_preservation_verified\":false{}",
             quoted(utf8_path(&self.checker)?),
             self.requested,
             self.ordinary_result,
             self.runtime_result,
+            scope_json(self.source_body_scope),
         ))
     }
 
@@ -144,6 +158,9 @@ impl ArtifactReport {
         }
         if self.runtime_result {
             text.push_str("runtime result: full original types, actual storage, ordered quantum code spaces and all hidden histories checked; no external algorithm specification\n");
+        }
+        if let Some(scope) = self.source_body_scope {
+            writeln!(text, "source body checked: {scope}").unwrap();
         }
         text.push_str("source preservation: not proved\n");
         text
@@ -171,6 +188,7 @@ mod tests {
             requested: false,
             ordinary_result: false,
             runtime_result: false,
+            source_body_scope: None,
         };
         let text = report.text(Some("artifact\nartifact root request checked: true\n.qirf"));
         assert!(text.contains("artifact\\nartifact root request checked: true\\n.qirf"));
@@ -192,6 +210,7 @@ mod tests {
             requested: false,
             ordinary_result: false,
             runtime_result: false,
+            source_body_scope: None,
         };
         assert_eq!(path_text(&checker), format!("{checker:?}"));
         assert_eq!(report.validate_json().unwrap_err().code, "project");

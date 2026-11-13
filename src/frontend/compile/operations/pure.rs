@@ -108,6 +108,14 @@ impl Compiler<'_> {
 }
 
 impl Operation {
+    pub(in crate::frontend::compile) fn carrier_body(&self) -> Option<&AcceptedProgram> {
+        match self.node.as_ref() {
+            Node::Carrier(None) => self.source_origin.as_ref().map(|origin| &origin.body),
+            Node::Requested(_, child) => child.carrier_body(),
+            _ => None,
+        }
+    }
+
     pub(in crate::frontend::compile) fn needs_raw(&self) -> bool {
         if self.basis != self.codomain {
             return true;
@@ -120,6 +128,7 @@ impl Operation {
             Node::Inverse(a) | Node::Controlled(a) | Node::Repeat(_, a) | Node::Requested(_, a) => {
                 a.needs_raw()
             }
+            Node::Carrier(steps) => steps.is_none(),
             Node::Provider(_) => false,
         }
     }
@@ -142,6 +151,14 @@ impl Operation {
                 Ty::pair(Ty::bit(), self.codomain.clone()),
             ),
         };
+        if basis.basis_bits().is_none() || codomain.basis_bits().is_none() {
+            return Err(compiler.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "typed operations need the original source-body interval check",
+            ));
+        }
         let expected = self.meaning.as_ref().expect("concrete provider meaning");
         let expected = match access {
             Access::Apply => expected.clone(),

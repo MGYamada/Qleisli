@@ -4,6 +4,8 @@
 use super::*;
 
 pub const PROFILE: &str = "finite-source-qmatch-context-v5";
+pub const BASIS_PROFILE: &str = "finite-source-basis-context-v5";
+pub const MEANING_PROFILE: &str = "finite-source-meaning-context-v5";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Source {
@@ -73,6 +75,27 @@ impl Source {
 }
 
 impl Request {
+    pub(crate) fn profile(&self) -> &'static str {
+        let mut pending = vec![&self.context];
+        let mut has_meaning = false;
+        while let Some(context) = pending.pop() {
+            if !context.sites.is_empty() {
+                return PROFILE;
+            }
+            has_meaning |= context.references.iter().any(|group| !group.is_empty());
+            pending.extend(context.calls.iter().map(|call| &call.body));
+            for branch in &context.branches {
+                pending.push(&branch.then_body);
+                pending.push(&branch.else_body);
+            }
+        }
+        if has_meaning {
+            MEANING_PROFILE
+        } else {
+            BASIS_PROFILE
+        }
+    }
+
     /// Collect reachability roots from independently typed program/evidence
     /// indices. Ordered occurrences still participate separately in the QDV.
     pub(in crate::interchange) fn graph_roots(
@@ -146,7 +169,7 @@ impl Request {
         let mut fields = vec![
             ("format".into(), text("qleisli.qmatch-request")),
             ("version".into(), n(5)),
-            ("profile".into(), text(PROFILE)),
+            ("profile".into(), text(self.profile())),
             ("source".into(), self.source.encode()),
             ("runtime".into(), self.runtime.value()?),
         ];
@@ -161,7 +184,6 @@ impl Request {
         )?;
         if value.field("format")?.text()? != "qleisli.qmatch-request"
             || value.field("version")?.number()? != 5
-            || value.field("profile")?.text()? != PROFILE
         {
             return Err(Error::format("unsupported qmatch request profile"));
         }
@@ -174,6 +196,9 @@ impl Request {
             context: Context::decode_fields(&value, 0, &mut remaining)?,
         };
         request.bounded()?;
+        if value.field("profile")?.text()? != request.profile() {
+            return Err(Error::format("unsupported qmatch request profile"));
+        }
         Ok(request)
     }
 }

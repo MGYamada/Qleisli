@@ -12,9 +12,9 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf.RuntimeLinkedSubject
 open QleisliKernel Finite SourceTypes
 
-structure ClosedAt {artifact catalogue owner tokens implementations references operation prepared root requested checked
+structure ClosedAt {artifact catalogue owner description graph implementations references originals prepared root requested checked
     queue rootOwner rootName name entry path}
-    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked)
     (index : Nat)
     (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path)
     (closed : GenericOperation.Closed invoked.demand.transported.subject.description) where
@@ -41,9 +41,9 @@ structure ClosedAt {artifact catalogue owner tokens implementations references o
   equation : RuntimeOperationTree.Equation structureMatch.matched.terminal.value marker.assertion.requirement
     marker.assertion.equation.specification
 
-theorem ClosedAt.originalEquation {artifact catalogue owner tokens implementations references operation prepared root requested checked
+theorem ClosedAt.originalEquation {artifact catalogue owner description graph implementations references originals prepared root requested checked
     queue rootOwner rootName name entry path}
-    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked}
+    {source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked}
     {index : Nat}
     {invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path}
     {closed : GenericOperation.Closed invoked.demand.transported.subject.description}
@@ -59,9 +59,9 @@ theorem ClosedAt.originalEquation {artifact catalogue owner tokens implementatio
     link.structureMatch.matched.action.trans
       ((congrArg RuntimeOperationTree.Value.action same).trans link.originalMeaning.action)⟩
 
-private def readClosed {artifact catalogue owner tokens implementations references operation prepared root requested checked
+private def readClosed {artifact catalogue owner description graph implementations references originals prepared root requested checked
     queue rootOwner rootName name entry path}
-    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked)
     (index : Nat)
     (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path)
     (closed : GenericOperation.Closed invoked.demand.transported.subject.description) :
@@ -89,18 +89,18 @@ def assessment {sources catalogue queue rootOwner rootName owner name entry path
     SourcePendingMeaning.DemandStatus invoked.demand :=
   (congrArg SourcePendingMeaning.Assessment invoked.subject).mp entry.subjectAssessment
 
-def ForStatus {artifact catalogue owner tokens implementations references operation prepared root requested checked
+def ForStatus {artifact catalogue owner description graph implementations references originals prepared root requested checked
     queue rootOwner rootName name entry path}
-    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked)
     (index : Nat)
     (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path) :
     SourcePendingMeaning.DemandStatus invoked.demand → Type
   | .classified (.closed closed) => ClosedAt source index invoked closed
   | .classified (.conditional ..) | .inactive _ => Unit
 
-private def readStatus {artifact catalogue owner tokens implementations references operation prepared root requested checked
+private def readStatus {artifact catalogue owner description graph implementations references originals prepared root requested checked
     queue rootOwner rootName name entry path}
-    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner tokens implementations references operation prepared root requested checked)
+    (source : @RuntimeSourceOperationMarkers.Checked artifact catalogue owner description graph implementations references originals prepared root requested checked)
     (index : Nat)
     (invoked : @RuntimeDutyInvocation.DemandBinding artifact.sources catalogue queue rootOwner rootName owner name entry path)
     (status : SourcePendingMeaning.DemandStatus invoked.demand) : WorkM (ForStatus source index invoked status) := by
@@ -121,7 +121,10 @@ def Evidence {artifact catalogue queue context description graph origin implemen
     (invoked : RuntimeDutyInvocation.DemandBinding entry path) : Type := by
   cases site with
   | unlocated => exact Empty
-  | arm => exact ForStatus source index invoked (assessment invoked)
+  | arm | application => exact ForStatus source index invoked (assessment invoked)
+  | supplying event slot caller =>
+    exact ForStatus source index invoked (assessment invoked) ×
+      RuntimeDutyInvocation.Supplying event slot (caller.symm ▸ path) invoked.demand.source.original
 
 def read {artifact catalogue queue context description graph origin implementations references root requested owner name rootOwner rootName}
     (site : @RuntimeGraphOperation.Site artifact.sources owner name context description graph origin)
@@ -134,6 +137,11 @@ def read {artifact catalogue queue context description graph origin implementati
     WorkM (Evidence site prepared checked source index invoked) := by
   cases site with
   | unlocated => exact throw .request
-  | arm => exact readStatus source index invoked (assessment invoked)
+  | arm | application => exact readStatus source index invoked (assessment invoked)
+  | supplying event slot caller =>
+    exact do
+      let original ← RuntimeDutyInvocation.readSupplying event slot (caller.symm ▸ path) invoked.demand.source.original
+      let subject ← readStatus source index invoked (assessment invoked)
+      pure ⟨subject,original⟩
 
 end QleisliKernel.Qirf.RuntimeLinkedSubject

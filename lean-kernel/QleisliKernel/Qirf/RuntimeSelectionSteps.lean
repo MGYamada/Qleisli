@@ -54,7 +54,9 @@ private def inspect {dependencies} : (item : Item dependencies) → View depende
     .child (.transform ordinal caller event.callerName event.call.calleeOffset
       event.target.resolution.moduleName event.target.resolution.declaration.name) (.nodes 0 nested)
       (by simp only [Smaller] <;> decreasing_tactic)
-  | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.basis ..) | .node _ (.operation ..) => .leaf
+  | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.basis ..)
+  | .node _ (.computed ..) | .node _ (.certifiedComputed ..) | .node _ (.operation ..) => .leaf
+  | .node _ (.rectangularOperation _) => .leaf
   | .nodes _ .nil => .leaf
   | .nodes ordinal (.cons first rest) => .pair (.atOrdinal ordinal) (.node ordinal first) (.nextOrdinal (ordinal+1)) (.nodes (ordinal+1) rest)
       (by simp only [Smaller] <;> decreasing_tactic) (by simp only [Smaller] <;> decreasing_tactic)
@@ -111,6 +113,27 @@ def readResult {dependencies program block} (result : BlockResult dependencies p
   exactWork (Exact.charge (8*(result.steps.length+1)))
   let held ← SourceTypes.NaturalAffine.witness (read (.steps 0 (Steps.ofList result.steps)))
   return ⟨held.val.1,held.val.2,by with_reducible exact held.property⟩
+
+/-- Locate an actual checked coherent-table interval using the same ordered mixed-body
+tree. Merely supplying a position or a physical lift does not satisfy this. -/
+private def hasBasis {dependencies} (item : Item dependencies) : WorkM Bool :=
+  WellFounded.fix (smallerWF (dependencies := dependencies))
+    (C := fun _ => WorkM Bool)
+    (fun current next => do
+      exactWork (Exact.charge 8)
+      match inspect current with
+      | .leaf =>
+        match current with
+        | .node _ (.basis ..) | .node _ (.computed ..) | .node _ (.certifiedComputed ..) => return true
+        | _ => return false
+      | .selection .. => return false
+      | .child _ one smaller => next one smaller
+      | .pair _ first _ rest smallerFirst smallerRest =>
+        if ← next first smallerFirst then return true else next rest smallerRest) item
+
+def readBasisResult {dependencies program block} (result : BlockResult dependencies program block) : WorkM Bool := do
+  exactWork (Exact.charge (8*(result.steps.length+1)))
+  hasBasis (.steps 0 (Steps.ofList result.steps))
 
 /-- The selected node retains the same program, block and complete literal
 receipt. Its ordinal is local to its original enclosing body or branch. -/

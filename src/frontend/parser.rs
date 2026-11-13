@@ -1413,6 +1413,23 @@ impl Parser {
         while let Some((_, operator)) = operators.pop() {
             Self::reduce_boolean(&mut values, operator)?;
         }
+        if matches!(
+            self.current().kind,
+            TokenKind::EqualEqual
+                | TokenKind::NotEqual
+                | TokenKind::LAngle
+                | TokenKind::LessEqual
+                | TokenKind::RAngle
+                | TokenKind::GreaterEqual
+        ) {
+            // This is a conditional explanation of unsupported syntax, not a
+            // type judgment about the operands. Static predicates and type
+            // delimiters are parsed separately and retain their existing rules.
+            return Err(self.error(&format!(
+                "ordinary runtime comparison {} is unsupported; compare ordinary Bits with an explicit classical function or Boolean expression. Static Nat comparisons remain available. If an operand contains live Q<T>, it has no ordinary Eq/Ord/Hash, including nested and zero-width owners. Owner/provenance identity and wire identity are not quantum-state equality. Coherent basis comparison needs an explicit reversible operation; quantum-state testing or tomography needs its own protocol with declared effects",
+                self.current().kind.description()
+            )));
+        }
         Ok(values.pop().unwrap().0)
     }
 

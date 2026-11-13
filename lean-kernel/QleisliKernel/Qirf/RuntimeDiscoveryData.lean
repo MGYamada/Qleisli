@@ -52,6 +52,16 @@ def ordinaryRows (sources : Sources) : Nat → {owner : String} →
         let children ← next source.checked.events
         return rows ++ event.target.sourceRows ++ source.checked.signature.sourceRows ++
           source.checked.summary.staticRows ++ children
+      | .matching event arms =>
+        exactWork (Exact.charge (16*(arms.length+event.arms.length+1)))
+        guard (arms.length == event.arms.length && event.arms.all (fun arm =>
+          arm.2.inferredEffect == .unitary && !arm.2.quantumUse &&
+          arm.2.allocated.isEmpty && arm.2.consumed.isEmpty)) .request
+        let children ← arms.foldlM (fun collected arm => do
+          let child ← next arm
+          exactWork (Exact.charge (collected.length+child.length+1))
+          return collected ++ child) []
+        return rows ++ event.labels.labels.sourceRows ++ children
       | _ => throw .request) [] )
 
 inductive OperationMode (artifact : Artifact) where
@@ -79,10 +89,10 @@ def OperationMode.takeReferences {artifact} (mode : OperationMode artifact) (exp
     return (group,remaining)
 
 def OperationMode.checkSignature {artifact} (mode : OperationMode artifact) {owner name}
-    (signature : SourceRuntimeContext.Signature artifact.sources owner name) : WorkM Unit :=
+    (signature : SourceRuntimeContext.Signature artifact.sources owner name) (hasOriginalCaller : Bool) : WorkM Unit :=
   match mode with
   | .strict => guard (!signature.operations.hasMeaningRequirements) .request
-  | .extended _ => guard signature.operations.rootRequirements.isEmpty .request
+  | .extended _ => guard (hasOriginalCaller || signature.operations.rootRequirements.isEmpty) .request
 
 
 end QleisliKernel.Qirf.RuntimeBodyDiscovery

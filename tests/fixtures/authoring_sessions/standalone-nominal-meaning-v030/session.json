@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#64 standalone original Meaning with a nominal classical helper",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "dddf2460d2fc8f46d1c955e01def4e4f47b7266a",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "The unchanged selected source and its project extension with a closed caller.",
+      "sha256": {
+        "selected/main.qli": "21669a6b60fb374b00d254fb02f5008e380e5527a693b56664eca6d36ebae690",
+        "project/main.qli": "19d1781ec1f20d0f12eba5a077e37f91d976b52c4951e3ff8498a0304adb5a42"
+      },
+      "manifest_sha256": {
+        "selected/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "project/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before-selected.json",
+        "after-selected.json",
+        "before-project-scope.json",
+        "after-project.json",
+        "after-run.json"
+      ]
+    }
+  ]
+}

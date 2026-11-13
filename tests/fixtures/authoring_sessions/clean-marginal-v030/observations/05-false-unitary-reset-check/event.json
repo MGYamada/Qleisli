@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli",
+    "check",
+    "/Users/masa/.codex/visualizations/2026/10/11/01a12c68-ecb8-7c83-9264-66796aabf74d/qleisli-source-resolution-20261027/stage7-clean-157-marginal-first/attempt-01/false-unitary-reset",
+    "--format=json",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/private/tmp/qleisli-516-provider-followup",
+  "exit_code": 1,
+  "recorded_utc": "2026-11-11T20:49:32.108260+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "effect",
+        "severity": "error",
+        "message": "body effect `Observe` exceeds asserted `Unitary` effect of `restore`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+        "primary": {
+          "path": "main.qli",
+          "start": 183,
+          "end": 191,
+          "line": 5,
+          "column": 13
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "raw_observation": "observations/05-false-unitary-reset-check/result.json",
+  "source_and_executable_identity_note": "Original first sources and existing executable bytes were checked before and after each invocation; this is not a build attestation or general source proof."
+}

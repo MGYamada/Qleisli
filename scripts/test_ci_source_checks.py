@@ -131,6 +131,9 @@ class SourceChecksTests(unittest.TestCase):
             ['python3', 'scripts/test_history_index.py'],
             ['python3', 'scripts/test_finite_adts_first.py'],
             ['python3', 'scripts/test_qmatch_source_coupling_history.py'],
+            ['python3', 'scripts/test_clean_marginal_first.py'],
+            ['python3', 'scripts/test_uncompute_boundary_first.py'],
+            ['python3', 'scripts/test_signal_relations_first.py'],
         ])
         later = checks.plan('repository-integrity')
         self.assertIn(['python3', 'scripts/test_check_production_coverage.py'], later)
@@ -150,7 +153,8 @@ class SourceChecksTests(unittest.TestCase):
             import check_rust_test_partition as partition
             heavy, rest = partition.selection(group, checks.definition(group)['commands'])
             self.assertEqual(heavy, ['frontend_ownership_differential', 'input_corpus', 'source_ir_correspondence'])
-            self.assertEqual(len(rest), 123)
+            self.assertEqual(len(rest), 124)
+            self.assertIn('access_algorithms', rest)
             self.assertIn('ordinary_nominal_execution', rest)
             self.assertIn('selected_ordinary_execution', rest)
             self.assertIn('selected_runtime_execution', rest)

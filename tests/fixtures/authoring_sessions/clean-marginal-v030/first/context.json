@@ -1,0 +1,22 @@
+{
+  "kind": "informed_first_attempt",
+  "task": "#157: exact clean ancilla state does not establish the requested coherent live-system action",
+  "author": "Codex delegated agent /root/review_access_29; model identifier not independently recorded",
+  "context": "Informed by existing Reference, ordinary stdlib sources, prior #157 proof work and the existing reset/reference regression; not a blind authoring benchmark.",
+  "frozen_before_execution_utc": "2026-11-11T19:59:48.874Z",
+  "baseline_source_commit": "678ada992383a5ea1194bdd198d97d5baae95342",
+  "baseline_note": "Observed repository HEAD only; not a compiler/native build attestation.",
+  "references_sha256": {
+    "stdlib/src/prelude.qli": "50a45e54b3e9d61e224dd0b64126fa1001ce080238c7cfdf0efa958dd687caac",
+    "stdlib/src/gate.qli": "921627f5ca702889134ef72bf827dac42b3ba35c6752a402fc1102f5bd9b4795",
+    "stdlib/src/state.qli": "5863d7cb0f495b601b44110225a8c3139106dbdda632373ecc5de6527824be27",
+    "docs/src/reference/rust-boundary.md": "18500e6ea2fadd93610d5b6b47446ba0ca1bef899e5fd6e7bda950686baf477a",
+    "docs/src/reference/primitive-boundary.md": "624207f32725abc39f6d74a3f7c5929894bdbfbc5224f01870aff0ae19b5bed3",
+    "tests/source_ir_correspondence.rs": "cbe07523229fab7d672f0460f01abec192b3f5c8b89df86cf145d5a8bf36392c",
+    "tests/fixtures/authoring_sessions/README.md": "c89a7287e0b390ef6e8d24456e35fef1a403ecf372af14f712708a644a018818"
+  },
+  "apis": "h and measure_z are unqualified primitives; cnot and init0 are current implicit-prelude source exports; reset is explicitly imported from std::state.",
+  "bound": "Two semantic quantum wires at most. Reset ends one owner before preparing its replacement; numerical runtime storage and target resource bounds are not claimed.",
+  "independent_review": "A separate agent reviewed the mathematical equations and tuple/axis interpretation before execution; no builds or commands were run.",
+  "execution": "No qleisli CLI, build, native checker, simulation, sampled run or program execution has occurred for these first sources. Root will append actual first diagnostics and identities."
+}

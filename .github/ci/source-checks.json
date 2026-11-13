@@ -190,6 +190,18 @@
         [
           "python3",
           "scripts/test_qmatch_source_coupling_history.py"
+        ],
+        [
+          "python3",
+          "scripts/test_clean_marginal_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_uncompute_boundary_first.py"
+        ],
+        [
+          "python3",
+          "scripts/test_signal_relations_first.py"
         ]
       ],
       "prepare": []
@@ -501,6 +513,8 @@
           "--bins",
           "--examples",
           "--benches",
+          "--test",
+          "access_algorithms",
           "--test",
           "algorithms",
           "--test",
@@ -919,6 +933,8 @@
           "--bins",
           "--examples",
           "--benches",
+          "--test",
+          "access_algorithms",
           "--test",
           "algorithms",
           "--test",

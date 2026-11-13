@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#72/#352: exact generic ancilla normalization and failed clean return",
+  "author": "Codex delegated agent /root/review_access_29; exact model identifier not independently recorded",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "428496d8c22478383171f3656ab8a5f659195bad",
+  "context": "context.json",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "First authored programs frozen before execution; HXH versus XZX preserves a meaningful exact global-phase distinction, while X is deliberately dirty.",
+      "sha256": {
+        "hxh/main.qli": "22590baded0ec340dee331f8c137f19307abb2fd235f1aa58bec526db9dbebaa",
+        "xzx/main.qli": "d23ec1ee6aadd8046dfd664770baad19bb3801a58bc1a2fdddec33dd9870522c",
+        "dirty-x/main.qli": "be8d0d40b4ef3ccdc814873b0aaaacaca6cdd9ca7f31ef5aa91f1ac81ac8c779"
+      },
+      "manifest_sha256": {
+        "hxh/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "xzx/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "dirty-x/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [],
+      "reports": []
+    }
+  ],
+  "status": "frozen-awaiting-first-observation",
+  "expectations": "context.json",
+  "checksums": "SHA256SUMS"
+}

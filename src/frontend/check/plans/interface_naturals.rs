@@ -765,6 +765,11 @@ impl Reader<'_, '_> {
                 a.name == b.name && a.key == b.key && a.span == b.span
             }
             (Kind::Q(a), Kind::Q(b)) => self.same_type(a, b, span)?,
+            (Kind::Nominal(_), Kind::Nominal(_)) => left.equivalent_by_budgeted(
+                right,
+                &mut |a, b| self.same_linear(a, b, span),
+                &mut |cells| self.context.budget.charge(span, cells),
+            )?,
             (Kind::Tuple(a), Kind::Tuple(b)) if a.len() == b.len() => {
                 self.context.budget.charge(span, a.len())?;
                 for (a, b) in a.iter().zip(b) {
@@ -961,6 +966,34 @@ mod tests {
                     unreachable!()
                 };
                 assert_eq!(packet.fields().nth(1), Some(&Ty::bits(Linear::constant(2))));
+                Ok(())
+            },
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn rectangular_operation_formal_retains_the_original_nominal_output() {
+        study(
+            "enum Mode { A,B,C } enum Other { A,B,C }
+             isometry fn f[const U:Op<Unit -> Mode>](q:Q<Unit>)->Q<Mode>
+                 requires Applicable(U) { U(q) }",
+            "main::f",
+            |reader, retained| {
+                assert!(retained.roots.is_empty());
+                reader.validate(retained)?;
+                let resolve::Target::Type(other) = reader
+                    .context
+                    .resolution
+                    .qualified_target("main::Other")
+                    .unwrap()
+                else {
+                    unreachable!()
+                };
+                let environment = Arc::get_mut(&mut retained.environment).unwrap();
+                let operation = environment.operations.values_mut().next().unwrap();
+                operation.codomain = Some(reader.context.nominals[&other].clone());
+                assert!(reader.validate(retained).is_err());
                 Ok(())
             },
         )

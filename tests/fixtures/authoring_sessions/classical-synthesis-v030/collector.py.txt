@@ -1,0 +1,68 @@
+from pathlib import Path
+import datetime, hashlib, json, os, platform, subprocess, time
+B = Path(__file__).resolve().parent
+first = B / "stage7-classical-synthesis-30-first"
+observations = B / "stage7-classical-synthesis-30-observations"
+workspace = Path("/private/tmp/qleisli-516-provider-followup")
+binaries = {
+    "cli": Path("/private/tmp/qleisli-beta-qmatch-bounded-v5.wxZviN/target/debug/qleisli"),
+    "kernel": workspace / "lean-kernel/.lake/build/bin/qleisli-kernel",
+}
+def sha(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+def snapshot():
+    return {
+        "source_hashes": {p.relative_to(first).as_posix(): sha(p) for p in sorted(first.rglob("*")) if p.is_file()},
+        "binaries": {name: {"path": str(path), "sha256": sha(path)} for name, path in binaries.items()},
+        "repository_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=workspace, text=True).strip(),
+        "repository_status_porcelain": subprocess.check_output(["git", "status", "--porcelain=v1"], cwd=workspace, text=True),
+    }
+def save(path, obj):
+    with path.open("x") as out:
+        json.dump(obj, out, ensure_ascii=False, indent=2)
+        out.write("\n")
+observations.mkdir(exist_ok=False)
+initial = snapshot()
+save(observations / "context.json", {
+    "observer": str(Path(__file__).resolve()), "observer_sha256": sha(Path(__file__)),
+    "python": platform.python_version(), "first_packet": str(first),
+    "created_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "initial": initial,
+    "scope": "Four serial current CLI check/run calls only, two/three qubits, no repair or build. No native child interception, independent matrix request, artifact/source proof or build attestation is claimed.",
+    "unchanged_predicate": "both is reused for coherent XOR and ordinary values after explicit observation.",
+})
+summary = []
+for number, (name, mode) in enumerate([(name, mode) for name in ["both-xor", "increment2"] for mode in ["check", "run"]], 1):
+    directory = observations / f"{number:02d}-{name}-{mode}"
+    directory.mkdir()
+    before = snapshot()
+    if before["source_hashes"] != initial["source_hashes"] or before["binaries"] != initial["binaries"]:
+        raise RuntimeError("First packet or fixed executable changed before observation; no command run")
+    argv = [str(binaries["cli"]), mode, str(first / "attempt-01" / name), "--format=json", "--lean-kernel=" + str(binaries["kernel"])]
+    save(directory / "command.json", {"argv": argv, "cwd": str(workspace), "started_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(), "before": before})
+    started = time.monotonic()
+    timed_out = False
+    try:
+        completed = subprocess.run(argv, cwd=workspace, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=120)
+        stdout, stderr, returncode = completed.stdout, completed.stderr, completed.returncode
+    except subprocess.TimeoutExpired as error:
+        timed_out = True
+        stdout, stderr, returncode = error.stdout or b"", error.stderr or b"", None
+    (directory / "stdout.txt").write_bytes(stdout)
+    (directory / "stderr.txt").write_bytes(stderr)
+    after = snapshot()
+    result = {
+        "returncode": returncode, "timed_out": timed_out, "duration_seconds": time.monotonic() - started,
+        "finished_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "stdout_sha256": hashlib.sha256(stdout).hexdigest(), "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
+        "after": after,
+        "first_packet_unchanged": before["source_hashes"] == after["source_hashes"],
+        "binaries_unchanged": before["binaries"] == after["binaries"],
+    }
+    save(directory / "result.json", result)
+    summary.append({"observation": directory.name, "returncode": returncode, "timed_out": timed_out,
+                    "first_packet_unchanged": result["first_packet_unchanged"], "binaries_unchanged": result["binaries_unchanged"]})
+    print(json.dumps(summary[-1]), flush=True)
+    if not result["first_packet_unchanged"] or not result["binaries_unchanged"]:
+        raise RuntimeError("Identity changed during observation; stop and retain result")
+save(observations / "observations.json", summary)

@@ -1,0 +1,25 @@
+// Copyright 2026 Qleisli Project Contributors.
+// SPDX-License-Identifier: Apache-2.0
+// Informed first source for issue #30; not yet checked or executed.
+use std::state::init0;
+use std::gate::x;
+
+// Total and noninjective; the predicate itself is not a unitary operator.
+classical fn both((a,b): (Bit,Bit)) -> Bit { a and b }
+
+// Preserve the original ordered pair and XOR into an arbitrary target Bit.
+pub unitary fn oracle(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> {
+    basis q as (ab,target) { (ab,target xor both(ab)) }
+}
+
+// Target starts at one, so this is not a zero-target-only preparation.
+// The same predicate is called ordinarily after consuming the quantum owners.
+pub observe fn main() -> ((Bit,Bit),(Bit,Bit)) {
+    let q = oracle(join(join(h(init0()),h(init0())),x(init0())));
+    let (ab,target) = split(q);
+    let (a,b) = split(ab);
+    let a = measure_z(a);
+    let b = measure_z(b);
+    let target = measure_z(target);
+    ((a,b),(target,both((a,b))))
+}

@@ -78,6 +78,7 @@ impl Compiler<'_> {
         requested: [bool; 3],
         outer_ops: &operations::Bindings,
         module: &str,
+        inside_formal_meaning: bool,
     ) -> Result<StaticValue, CompileError> {
         self.source_environment(environment, module, value.span)?;
         let span = value.span;
@@ -89,6 +90,7 @@ impl Compiler<'_> {
             outer_ops,
             module,
             1,
+            inside_formal_meaning,
         )?;
         if let StaticValue::Operation(operation) = &value {
             self.validate_operation_access(operation, requested, module, span)?;
@@ -106,6 +108,7 @@ impl Compiler<'_> {
         outer_ops: &operations::Bindings,
         module: &str,
         depth: usize,
+        inside_formal_meaning: bool,
     ) -> Result<StaticValue, CompileError> {
         self.tick(module, value.span)?;
         if depth > MAX_DEPTH {
@@ -229,9 +232,15 @@ impl Compiler<'_> {
                 };
                 Ok(number.map_or(StaticValue::Deferred, StaticValue::Natural))
             }
-            StaticCategory::Operation => {
-                self.source_operation(value, environment, requested, outer_ops, module, depth)
-            }
+            StaticCategory::Operation => self.source_operation(
+                value,
+                environment,
+                requested,
+                outer_ops,
+                module,
+                depth,
+                inside_formal_meaning,
+            ),
         }
     }
 
@@ -244,6 +253,7 @@ impl Compiler<'_> {
         outer_ops: &operations::Bindings,
         module: &str,
         depth: usize,
+        inside_formal_meaning: bool,
     ) -> Result<StaticValue, CompileError> {
         use operations::Constructor;
         let operation = match &value.kind {
@@ -301,7 +311,13 @@ impl Compiler<'_> {
                             module,
                             value.span,
                         )?;
-                        self.provider_instance(instance, None, module, value.span)?
+                        self.provider_instance_with_formal(
+                            instance,
+                            None,
+                            inside_formal_meaning,
+                            module,
+                            value.span,
+                        )?
                     }
                     _ => {
                         return Err(self.error(
@@ -335,7 +351,13 @@ impl Compiler<'_> {
                 else {
                     return Ok(StaticValue::Deferred);
                 };
-                self.provider_instance(instance, None, module, value.span)?
+                self.provider_instance_with_formal(
+                    instance,
+                    None,
+                    inside_formal_meaning,
+                    module,
+                    value.span,
+                )?
             }
             ResolvedStaticKind::Bind(implementation, meaning) => {
                 self.source_reference(meaning, environment, module, value.span)?;
@@ -439,6 +461,7 @@ impl Compiler<'_> {
                     outer_ops,
                     module,
                     depth + 1,
+                    inside_formal_meaning,
                 )?;
                 // Counts are original ordinary-u32 plans, even when the child
                 // is deferred or the eventual repeat has zero executions.
@@ -489,6 +512,7 @@ impl Compiler<'_> {
                     outer_ops,
                     module,
                     depth + 1,
+                    inside_formal_meaning,
                 )?;
                 let right = self.source_static(
                     right,
@@ -498,6 +522,7 @@ impl Compiler<'_> {
                     outer_ops,
                     module,
                     depth + 1,
+                    inside_formal_meaning,
                 )?;
                 match (left, right) {
                     (StaticValue::Operation(left), StaticValue::Operation(right)) => {
@@ -758,12 +783,13 @@ impl Compiler<'_> {
         let mut complete = true;
         for (ordinal, actual) in actuals.enumerate() {
             let formal = &self.source.interfaces[&target].statics[ordinal];
-            let (category, requested, ceiling) = match formal.kind {
-                StaticKind::Basis => (StaticCategory::Basis, [false; 3], None),
-                StaticKind::Natural => (StaticCategory::Natural, [false; 3], None),
+            let (category, requested, ceiling, meaning) = match formal.kind {
+                StaticKind::Basis => (StaticCategory::Basis, [false; 3], None, None),
+                StaticKind::Natural => (StaticCategory::Natural, [false; 3], None, None),
                 StaticKind::Operation {
                     access,
                     ref codomain,
+                    meaning,
                     ..
                 } => (
                     StaticCategory::Operation,
@@ -773,6 +799,7 @@ impl Compiler<'_> {
                     } else {
                         Effect::Unitary
                     }),
+                    meaning,
                 ),
             };
             // The formal demand is read before any deferral decision (#413).
@@ -788,6 +815,7 @@ impl Compiler<'_> {
                     outer_ops,
                     module,
                     1,
+                    meaning.is_some(),
                 )?
             };
             let formal = &self.source.interfaces[&target].statics[ordinal];
@@ -805,10 +833,6 @@ impl Compiler<'_> {
                     if ceiling.is_some_and(|ceiling| operation.effect > ceiling) {
                         return Err(self.error(module, actual.span, ErrorCode::Effect, "actual provider's source effect exceeds its original operation ceiling"));
                     }
-                    let meaning = match self.source.interfaces[&target].statics[ordinal].kind {
-                        StaticKind::Operation { meaning, .. } => meaning,
-                        _ => None,
-                    };
                     if let Some(meaning) = meaning {
                         self.validate_operation_meaning(&operation, meaning, module, actual.span)?;
                     }

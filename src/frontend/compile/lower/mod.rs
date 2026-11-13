@@ -123,6 +123,8 @@ struct Lowerer<'c, 'p> {
     // Producer eligibility only, never native evidence. Constructor visits in
     // either branch/callee prevent nominal intermediates using untyped Raw.
     nominal_modules: std::rc::Rc<std::cell::RefCell<BTreeSet<String>>>,
+    // Enabled only for a complete root that can require independent body checking.
+    nominal_basis_used: Option<bool>,
     raw: RawState<u32>,
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
@@ -450,7 +452,8 @@ impl Lowerer<'_, '_> {
     }
 
     fn uses_qmatch_v5(&self) -> bool {
-        self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
+        self.nominal_basis_used.is_some()
+            || self.compiler.force_typed_root && self.compiler.selected_entry.is_some()
     }
 
     fn call_user(
@@ -1283,10 +1286,18 @@ impl Lowerer<'_, '_> {
                     span,
                 )?;
                 let start = self.raw.operations.len();
+                let static_record = instance.record.filter(|_| !instance.operations.is_empty());
                 self.source_context = None;
                 let value = self.call_instance(&key, values, Some(site), instance)?;
                 let context = self.source_context.take();
-                quantum_match::nominal::record_named(self, module, callee, start, context)?;
+                quantum_match::nominal::record_named(
+                    self,
+                    module,
+                    callee,
+                    start,
+                    context,
+                    static_record,
+                )?;
                 Ok(value)
             }
             Callee::Primitive(primitive) => {
@@ -1710,6 +1721,7 @@ impl Lowerer<'_, '_> {
             .charge(module, name.span, ty.tree_size().nodes.saturating_mul(3))?;
         let mut inner = Lowerer {
             nominal_modules: std::rc::Rc::clone(&self.nominal_modules),
+            nominal_basis_used: None,
             compiler: self.compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
@@ -1778,25 +1790,62 @@ impl Lowerer<'_, '_> {
         self.compiler
             .charge(module, span, self.raw.registers[&slot].size())?;
         let reg = self.raw.registers[&slot].clone();
-        self.circuit_width(module, span, &reg.basis)?;
-        let mut result_ty = None;
-        let mut table = Vec::new();
-        let mut seen = BTreeSet::new();
-        for label in 0..(1u16 << reg.wires.len()) {
-            let env = self
-                .compiler
-                .bind_basis_pattern(module, binder, &reg.basis, label)?;
-            let value = self.compiler.eval_basis(module, basis, &env, 0)?;
-            if result_ty.as_ref().is_some_and(|ty| *ty != value.ty) {
+        let typed = self.nominal_basis_used.is_some();
+        let mut nominal = ordinary::has_nominal(&reg.basis);
+        let width = reg.wires.len();
+        if width > MAX_BITS {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "basis lift input exceeds the finite width limit",
+            ));
+        }
+        let physical_inputs = 1usize << width;
+        self.compiler
+            .charge(module, span, physical_inputs.saturating_mul(2))?;
+        let input_codes = if typed && nominal {
+            let (encoded_width, codes) = self.basis_codes(module, span, &reg.basis)?;
+            if encoded_width != width {
                 return Err(self.error(
                     module,
                     span,
-                    ErrorCode::TypeMismatch,
-                    "basis lift result type varies",
+                    ErrorCode::InvalidIr,
+                    "basis lift owner differs from its nominal code width",
                 ));
             }
+            codes
+        } else {
+            self.circuit_width(module, span, &reg.basis)?;
+            (0..physical_inputs).collect()
+        };
+        let mut result_ty = None;
+        let mut table = vec![None; physical_inputs];
+        let mut seen = BTreeSet::new();
+        for &label in &input_codes {
+            let env = self
+                .compiler
+                .bind_basis_pattern(module, binder, &reg.basis, label as u16)?;
+            let value = if typed {
+                self.compiler
+                    .eval_typed_basis(module, basis, &env, &mut nominal)?
+            } else {
+                self.compiler.eval_basis(module, basis, &env, 0)?
+            };
+            if let Some(ty) = &result_ty {
+                if !super::operations::same_port_budgeted(ty, &value.ty, &mut |cells| {
+                    self.compiler.charge(module, span, cells)
+                })? {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "basis lift result type varies",
+                    ));
+                }
+            }
             result_ty = Some(value.ty);
-            if !seen.insert(value.label) {
+            if !seen.insert(usize::from(value.label)) {
                 return Err(self.error(
                     module,
                     span,
@@ -1804,19 +1853,46 @@ impl Lowerer<'_, '_> {
                     "coherent basis lift is not injective",
                 ));
             }
-            table.push(value.label);
+            table[label] = Some(value.label);
         }
         let basis = result_ty.expect("nonempty domain");
         self.compiler
             .charge(module, span, basis.tree_size().nodes)?;
-        let bits = self.circuit_width(module, span, &basis)?;
-        if bits < reg.wires.len() {
+        nominal |= ordinary::has_nominal(&basis);
+        let (bits, output_cardinality) = if typed && ordinary::has_nominal(&basis) {
+            let (bits, codes) = self.basis_codes(module, span, &basis)?;
+            if seen.iter().any(|code| codes.binary_search(code).is_err()) {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "basis lift emits a padding code",
+                ));
+            }
+            (bits, codes.len())
+        } else {
+            let bits = self.circuit_width(module, span, &basis)?;
+            (bits, 1usize << bits)
+        };
+        if bits < width {
             return Err(self.error(
                 module,
                 span,
                 ErrorCode::TypeMismatch,
                 "basis lift cannot shrink its domain",
             ));
+        }
+        // Raw has a complete physical domain. Only canonical rows come from
+        // the source. Extend the remaining rows injectively in physical order.
+        let mut free = (0..(1usize << bits)).filter(|code| !seen.contains(code));
+        let table = table
+            .into_iter()
+            .map(|code| {
+                code.unwrap_or_else(|| free.next().expect("physical output capacity") as u16)
+            })
+            .collect();
+        if nominal {
+            self.nominal_basis_used = Some(true);
         }
         let mut wires = reg.wires.clone();
         wires.extend((reg.wires.len()..bits).map(|_| self.wire()));
@@ -1836,11 +1912,79 @@ impl Lowerer<'_, '_> {
                 basis: basis.clone(),
             },
         );
-        quantum_match::nominal::record_basis(self, module, span, start)?;
-        if bits > reg.wires.len() {
+        quantum_match::nominal::record_coherent_table(self, module, span, start)?;
+        if output_cardinality != input_codes.len() {
             self.add_effect(module, span, Effect::Isometry);
         }
         Ok(Value::quantum(slot, basis))
+    }
+
+    fn basis_codes(
+        &mut self,
+        module: &str,
+        span: Span,
+        ty: &Ty,
+    ) -> Result<(usize, Vec<usize>), CompileError> {
+        self.compiler.basis_codes(module, span, ty)
+    }
+
+    fn computed_table(
+        &mut self,
+        module: &str,
+        function: &Ident,
+        key: Key,
+        basis: &Ty,
+    ) -> Result<(Vec<u16>, bool), CompileError> {
+        self.compiler
+            .prepare_required_classical_table(key, module, function.span)?;
+        let requires_source = self.compiler.deferred_nominal_tables.contains(&key);
+        let predicate = if requires_source {
+            if self.nominal_qmatch.is_none() {
+                return Err(self.computed_refusal(
+                    module,
+                    function.span,
+                    ErrorCode::Unsupported,
+                    "this finite basis table needs the original source-body gate",
+                )?);
+            }
+            self.compiler.original_classical_table(key)?
+        } else {
+            let Some(predicate) = self.compiler.basis.get(&key) else {
+                let (code, message) = self
+                    .compiler
+                    .missing_basis_reason(&key, "predicate must be a classical function");
+                return Err(self.computed_refusal(module, function.span, code, message)?);
+            };
+            let size = predicate
+                .signature_size()
+                .saturating_add(predicate.table.len());
+            self.compiler.charge(module, function.span, size)?;
+            self.compiler.basis[&key].clone()
+        };
+        self.compiler
+            .check_predicate_domain(module, function.span, &predicate, basis)?;
+        let table = if requires_source {
+            let (bits, codes) = self.basis_codes(module, function.span, basis)?;
+            if codes.len() != predicate.table.len() {
+                return Err(self.computed_refusal(
+                    module,
+                    function.span,
+                    ErrorCode::InvalidIr,
+                    "computed predicate rows do not match the exact source basis",
+                )?);
+            }
+            let size = 1usize << bits;
+            self.compiler
+                .charge(module, function.span, size.saturating_add(codes.len()))?;
+            let mut table = vec![0; size];
+            for (code, value) in codes.into_iter().zip(predicate.table) {
+                table[code] = value;
+            }
+            table
+        } else {
+            predicate.table
+        };
+        Ok((table, requires_source))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1865,25 +2009,13 @@ impl Lowerer<'_, '_> {
                 "predicate must be a classical function",
             )?);
         };
-        self.compiler
-            .prepare_required_classical_table(key, module, function.span)?;
-        let Some(predicate) = self.compiler.basis.get(&key) else {
-            let (code, message) = self
-                .compiler
-                .missing_basis_reason(&key, "predicate must be a classical function");
-            return Err(self.computed_refusal(module, function.span, code, message)?);
-        };
-        let size = predicate
-            .signature_size()
-            .saturating_add(predicate.table.len());
-        self.compiler.charge(module, function.span, size)?;
-        let predicate = self.compiler.basis[&key].clone();
-        self.compiler.check_predicate_domain(
+        self.compiler.charge(
             module,
             function.span,
-            &predicate,
-            &self.raw.registers[&source_slot].basis,
+            self.raw.registers[&source_slot].basis.tree_size().nodes,
         )?;
+        let basis = self.raw.registers[&source_slot].basis.clone();
+        let (table, requires_source) = self.computed_table(module, function, key, &basis)?;
         self.compiler.charge(module, span, 5)?;
         let wire = self.wire();
         let ancilla = self.register(Ty::bit(), vec![wire]);
@@ -1905,6 +2037,10 @@ impl Lowerer<'_, '_> {
             .collect();
         self.bind_env(binder, Binding::Live(ancilla), &mut local);
         let start = self.raw.operations.len();
+        // The auxiliary body is re-read by the checker. Its internal operations
+        // have no positions in the surrounding literal Raw frame.
+        let containing = self.nominal_qmatch.take();
+        let previous_context = self.source_context.take();
         let previous_effect = self.effect;
         let previous_contract_effect = self.contract_effect;
         let previous_effect_source = self.effect_source.take();
@@ -1926,6 +2062,8 @@ impl Lowerer<'_, '_> {
         self.effect = previous_effect;
         self.contract_effect = previous_contract_effect;
         self.effect_source = previous_effect_source;
+        self.nominal_qmatch = containing;
+        self.source_context = previous_context;
         let result = evaluated?;
         self.compiler
             .charge(module, body.span, result.tree_size().nodes + 2)?;
@@ -1969,10 +2107,14 @@ impl Lowerer<'_, '_> {
             source_out: output,
             targets: vec![],
             ancilla_wires: vec![wire],
-            function: predicate.table,
+            function: table,
             use_ops,
         });
         source_reg.token = output;
+        if requires_source {
+            self.nominal_basis_used = Some(true);
+        }
+        quantum_match::nominal::record_coherent_table(self, module, span, start)?;
         Ok(source)
     }
 }
@@ -2021,8 +2163,15 @@ fn lower_function_in_context(
     let decl = compiler.declarations[key];
     let key_name = compiler.source.resolution.declaration(*key).name.clone();
     let (params, return_type) = compiler.signature(key)?;
+    let planned_basis = compiler.nominal_basis_roots.contains(key);
+    let planned_meaning = compiler.nominal_meaning_roots.contains(key);
+    let require_qmatch_v5 = require_qmatch_v5 || planned_meaning;
+    let typed_basis = planned_basis
+        || planned_meaning
+        || compiler.force_typed_root && compiler.selected_entry.is_some();
     let mut lower = Lowerer {
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
+        nominal_basis_used: typed_basis.then_some(false),
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
@@ -2058,10 +2207,9 @@ fn lower_function_in_context(
             )
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let runtime_inputs = if return_type.linear()
-        || params.iter().any(Ty::linear)
-        || !decl.static_params.is_empty()
-    {
+    let runtime_interface =
+        return_type.linear() || params.iter().any(Ty::linear) || !decl.static_params.is_empty();
+    let runtime_inputs = if runtime_interface || planned_basis || require_qmatch_v5 {
         Some(runtime::inputs(&mut lower, *key, &args)?)
     } else {
         None
@@ -2100,16 +2248,33 @@ fn lower_function_in_context(
         .as_ref()
         .filter(|context| {
             lower.uses_qmatch_v5()
-                && context.contains_selections
-                && (require_qmatch_v5 || context.needs_qmatch_v5 || !context.prefer_runtime_root)
+                && (lower.nominal_basis_used == Some(true)
+                    || require_qmatch_v5 && context.contains_meaning_applications
+                    || context.contains_selections
+                        && (planned_basis
+                            || require_qmatch_v5
+                            || context.needs_qmatch_v5
+                            || !context.prefer_runtime_root))
         })
         .cloned();
+    if lower.nominal_basis_used == Some(true) && (qmatch.is_none() || runtime_inputs.is_none()) {
+        return Err(lower.error(
+            &key_name.0,
+            decl.span,
+            ErrorCode::Unsupported,
+            "this finite basis table needs the original source-body gate",
+        ));
+    }
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {
         return Err(lower.error(
             &key_name.0,
             decl.span,
             ErrorCode::Unsupported,
-            "selected operation dependencies require independent closure transport",
+            if planned_meaning {
+                "a nominal Meaning use needs an original application or selection equation"
+            } else {
+                "selected operation dependencies require independent closure transport"
+            },
         ));
     }
     lower.compiler.charge(
@@ -2160,6 +2325,7 @@ fn lower_function_in_context(
         .as_ref()
         .is_some_and(|instance| instance.interface.bases.values().any(ordinary::has_nominal));
     let needs_typed_root = lower.compiler.force_typed_root
+        || qmatch.is_some()
         || nominal_actuals
         || !lower.nominal_modules.borrow().is_empty()
         || ordinary::has_nominal(&result.ty())
@@ -2168,7 +2334,7 @@ fn lower_function_in_context(
         super::selected::check_raw_capacity(lower.compiler, &key_name.0, decl.span, &raw)?;
     }
     let accepted = if needs_typed_root {
-        if let Some(inputs) = runtime_inputs {
+        if let Some(inputs) = runtime_inputs.filter(|_| runtime_interface || qmatch.is_some()) {
             runtime::accept(
                 &mut lower,
                 key,
@@ -2187,21 +2353,29 @@ fn lower_function_in_context(
             .kernel
             .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
     };
-    accepted
-        .map(|program| {
-            program
-                .retain_source_context(lower.source_context)
-                .retain_instrument_calls(lower.instrument_calls)
-        })
-        .map_err(|failure| {
-            let limit = failure.code == "limit";
-            verification_error(
-                lower.compiler,
-                &lower.operation_sources,
-                &key_name.0,
-                decl.span,
-                failure,
-                limit,
-            )
-        })
+    let program = accepted.map_err(|failure| {
+        let limit = failure.code == "limit";
+        verification_error(
+            lower.compiler,
+            &lower.operation_sources,
+            &key_name.0,
+            decl.span,
+            failure,
+            limit,
+        )
+    })?;
+    if let Some(context) = qmatch
+        .as_deref()
+        .filter(|_| program.source_body_scope().is_some())
+    {
+        quantum_match::nominal::retain_checked_calls(
+            lower.compiler,
+            &key_name.0,
+            decl.span,
+            context,
+        )?;
+    }
+    Ok(program
+        .retain_source_context(lower.source_context)
+        .retain_instrument_calls(lower.instrument_calls))
 }

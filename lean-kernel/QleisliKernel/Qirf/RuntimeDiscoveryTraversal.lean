@@ -56,10 +56,13 @@ structure PrefixResult {artifact owner name} (mode : OperationMode artifact)
 private def prefixRead {artifact owner name} (mode : OperationMode artifact)
     (next : {owner name : String} → (scope : Scope artifact owner name) → (request : Context) → WorkM (BodyResult mode scope request))
     (signature : SourceRuntimeContext.Signature artifact.sources owner name)
-    (actuals : List (Sigma (StaticOperation.Actual artifact.sources signature.context)))
-    (before : Queues) (explicit : Bool) : WorkM (PrefixResult mode signature actuals before) :=
-  let visit : Nat → (remaining : List (Sigma (StaticOperation.Actual artifact.sources signature.context))) →
-      (queues : Queues) → WorkM (PrefixResult mode signature remaining queues) :=
+    (actuals : List {actual : Sigma (StaticOperation.Actual artifact.sources signature.context) //
+      actual ∈ signature.operations.actuals})
+    (incoming : Option (RuntimeGraphOperation.Incoming artifact.sources signature))
+    (before : Queues) (explicit : Bool) : WorkM (PrefixResult mode signature (actuals.map Subtype.val) before) :=
+  let visit : Nat → (remaining : List {actual : Sigma (StaticOperation.Actual artifact.sources signature.context) //
+      actual ∈ signature.operations.actuals}) →
+      (queues : Queues) → WorkM (PrefixResult mode signature (remaining.map Subtype.val) queues) :=
     Nat.rec (fun remaining queues => match remaining with
       | [] => pure ⟨queues,{},[],some (.nil queues)⟩
       | _ :: _ => throw .limit)
@@ -67,12 +70,16 @@ private def prefixRead {artifact owner name} (mode : OperationMode artifact)
         match remaining with
         | [] => return ⟨queues,{},[],some (.nil queues)⟩
         | actual :: rest =>
-          let first ← graphRead mode next actual.2.graph (RuntimeGraphOperation.required signature actual.1.1) queues explicit
+          let origin ← match incoming with
+            | none => pure .unlocated
+            | some call => call.origin actual.val actual.property
+          let first ← graphRead mode next actual.val.2.graph (RuntimeGraphOperation.required signature actual.val.1.1)
+            queues explicit origin
           let last ← tail rest first.after
           exactWork (Exact.charge (first.discovery.rows.length+first.discovery.roots.length+first.receipts.length+1))
           let planned := match first.planned,last.planned with
             | some ⟨head,same⟩,some tail => some
-                (RuntimeBodyPlan.Prefixes.cons head.cut head.graphPlan (same.down.symm ▸ tail))
+                (RuntimeBodyPlan.Prefixes.cons head.cut origin head.graphPlan (same.down.symm ▸ tail))
             | _,_ => none
           return ⟨last.after,first.discovery.append last.discovery,first.receipts ++ last.receipts,planned⟩)
   visit actuals.length actuals before
@@ -141,22 +148,21 @@ private def collectEvents {artifact owner name} (mode : OperationMode artifact) 
 private def assembleBody {artifact owner name} (mode : OperationMode artifact) (scope : Scope artifact owner name)
     (request : Context) (positionsCount : request.positions.length = scope.events.length)
     (offsets : request.positions.map (·.offset) = scope.events.map SourceRuntimeContext.Event.offset)
-    (actuals : List (Sigma (StaticOperation.Actual artifact.sources scope.signature.context)))
+    (actuals : List {actual : Sigma (StaticOperation.Actual artifact.sources scope.signature.context) //
+      actual ∈ scope.signature.operations.actuals})
     (originalActuals : RuntimeInterval.Computed
-      (if scope.prefixRequired then RuntimeProviderHeaders.originalActuals scope.signature.operations else pure []) actuals)
-    (prefixResult : PrefixResult mode scope.signature actuals (Queues.ofContext request))
+      (if scope.prefixRequired then RuntimeProviderHeaders.originalActualSlots scope.signature.operations else pure []) actuals)
+    (prefixResult : PrefixResult mode scope.signature (actuals.map Subtype.val) (Queues.ofContext request))
     (events : EventsResult mode scope (scope.events.zip request.positions) prefixResult.after)
     (exhausted : events.after.isEmpty = true) : scope.BodyData mode.preparation request :=
   match scope with
   | .supplied .. => ()
-  | .original source =>
-    if root : source.signature.operations.rootRequirements.isEmpty = true then
-      match prefixResult.planned,events.data with
-      | some prefixPlans,some eventPlans =>
-        some (.mk root positionsCount offsets actuals originalActuals prefixResult.after prefixPlans
-          events.after eventPlans exhausted)
-      | _,_ => none
-    else none
+  | .original _ _ =>
+    match prefixResult.planned,events.data with
+    | some prefixPlans,some eventPlans =>
+      some (.mk positionsCount offsets actuals originalActuals prefixResult.after prefixPlans
+        events.after eventPlans exhausted)
+    | _,_ => none
 
 def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {owner name : String} →
     (scope : Scope artifact owner name) → (request : Context) → WorkM (BodyResult mode scope request) :=
@@ -169,10 +175,10 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
       exactWork (Exact.charge (32*(events.length+request.positions.length+request.sites.length+
         request.calls.length+request.branches.length+request.bodies.length+request.references.length+1)^2))
       if offsets : request.positions.map (·.offset) = events.map SourceRuntimeContext.Event.offset then
-        let _ ← if scope.prefixRequired then mode.checkSignature signature else pure ()
+        let _ ← if scope.prefixRequired then mode.checkSignature signature scope.incoming.isSome else pure ()
         let originals ← NaturalAffine.witness
-          (if scope.prefixRequired then RuntimeProviderHeaders.originalActuals signature.operations else pure [])
-        let prefixResult ← prefixRead mode next signature originals.val (Queues.ofContext request) (!request.references.isEmpty)
+          (if scope.prefixRequired then RuntimeProviderHeaders.originalActualSlots signature.operations else pure [])
+        let prefixResult ← prefixRead mode next signature originals.val scope.incoming (Queues.ofContext request) (!request.references.isEmpty)
         let eventStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do
           exactWork (Exact.charge (before.references.length+1))
@@ -195,7 +201,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
             | (callPosition,child) :: remaining =>
               if located : callPosition = position ∧ position.offset = event.call.calleeOffset then
                 let body ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
-                let nested ← next (scope.named body.val) child
+                let nested ← next (scope.named body.val (some (.named event body.val.originalSignature))) child
                 let after := {before with calls := remaining}
                 let data : scope.EventData mode.preparation (.named event) position before after := by
                   cases scope with
@@ -242,7 +248,8 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                 if childEmpty : child.positions.isEmpty = true ∧ child.sites.isEmpty = true ∧
                     child.calls.isEmpty = true ∧ child.branches.isEmpty = true then
                   let childQueues := Queues.ofContext child
-                  let graph ← graphRead mode next event.operation.graph OperationAccess.applicable childQueues (!child.references.isEmpty)
+                  let graph ← graphRead mode next event.operation.graph OperationAccess.applicable childQueues
+                    (!child.references.isEmpty) (.application event)
                   if consumed : graph.after.bodies.isEmpty = true ∧ graph.after.references.isEmpty = true then
                     let after := {before with calls := remaining}
                     let data : scope.EventData mode.preparation (.operation event) position before after := by
@@ -272,7 +279,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                           have groups : child.references = [planned.cut.references] := by
                             simpa only [childQueues,Queues.ofContext,refsEmpty] using planned.cut.groups
                           have ownGraph : RuntimeBodyPlan.Graph mode.preparation event.operation.graph OperationAccess.applicable
-                              child.bodies planned.cut.references := by
+                              child.bodies planned.cut.references (.application event) := by
                             rw [← bodies]
                             exact planned.graphPlan
                           exact some (.operation callPosition child remaining calls located childEmpty
@@ -328,7 +335,24 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               | supplied => exact ()
               | original => exact some (.basis checked)
             return ⟨before,⟨event.staticRows ++ checked.body.staticRows ++ rows,[]⟩,[],data⟩
-          | .matching .. | .computed .. | .registerPrimitive .. | .staticConditional .. => throw .request
+          | .computed event children =>
+            if event.written.parts.logical.isSome then
+              let prepared ← RuntimeCertifiedComputed.prepare event
+              let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events
+              let data : scope.EventData mode.preparation (.computed event children) position before before := by
+                cases scope with
+                | supplied => exact ()
+                | original => exact some (.certifiedComputed prepared)
+              return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
+            else
+              let prepared ← RuntimeComputedUse.prepare event
+              let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events
+              let data : scope.EventData mode.preparation (.computed event children) position before before := by
+                cases scope with
+                | supplied => exact ()
+                | original => exact some (.computed prepared)
+              return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
+          | .matching .. | .registerPrimitive .. | .staticConditional .. => throw .request
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do
           match event with
