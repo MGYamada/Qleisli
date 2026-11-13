@@ -1,0 +1,35 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "--entry=main::route",
+    "--module=main=/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/branch-baseline/wrong.qli",
+    "--ir-profile=raw",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-13T04:28:45Z",
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "contract",
+        "severity": "error",
+        "message": "ctrl requires exact computational-basis sector preservation: contract: Lean native checker rejected the artifact/request; no fallback; ctrl requires computational-basis sector preservation, not read-only access; phase kickback is permitted; use excl for arbitrary coherent access",
+        "primary": {
+          "module": "main",
+          "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/branch-baseline/wrong.qli",
+          "start": 81,
+          "end": 113
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

@@ -1,0 +1,29 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#29 distinguish actual sector preservation from hierarchy profile refusal",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "08232af163a5c2878467439c33192acd2920ee49",
+  "context": "README.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Keep the same CNOT orientation and exchange only the two source access roles.",
+      "sha256": {
+        "main.qli": "4f870e74638b229bf695aa66e1467c7562e32841c1a7adc7478446cb3bceec68",
+        "wrong.qli": "b148536f61064c157c3a597193282e080b1272e12b03c6bff552ab9ae1b41bca"
+      },
+      "observations": [
+        "main-raw.json",
+        "main-hierarchy.json",
+        "wrong-raw.json",
+        "wrong-hierarchy.json"
+      ],
+      "reports": [
+        "earliest-observations.json",
+        "current-observations.json"
+      ]
+    }
+  ]
+}

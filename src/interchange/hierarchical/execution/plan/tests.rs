@@ -226,7 +226,7 @@ fn predecision_plan_allocation_moves_unchanged_into_a_native_report() {
     )
     .unwrap();
     validate_leaves(&decoded.value, &response.indices).unwrap();
-    let report = NativeChecked::new(prepared, &response, false).unwrap();
+    let report = NativeChecked::new(prepared, &response, false, &[]).unwrap();
     assert_eq!(address, report.execution().unwrap() as *const Plan);
     assert_eq!(description, report.execution().unwrap().view().unwrap());
     assert_eq!(report.payload(), payload);
@@ -291,7 +291,7 @@ fn non_executable_inspection_retains_its_original_prepared_failure() {
     )
     .unwrap();
     validate_leaves(&decoded.value, &response.indices).unwrap();
-    let mut native = NativeChecked::new(prepared, &response, false).unwrap();
+    let mut native = NativeChecked::new(prepared, &response, false, &[]).unwrap();
     assert_eq!(native.payload(), payload);
     assert_eq!(native.execution().unwrap_err().code, failure.code);
     let message = failure.message;

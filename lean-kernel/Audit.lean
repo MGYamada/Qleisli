@@ -2,6 +2,7 @@ import QleisliKernel
 import QleisliKernel.Tests.FiniteRestriction
 import QleisliKernel.Tests.RawSector
 import QleisliKernel.Tests.QirfSector
+import QleisliKernel.Tests.HierarchyControl
 import QleisliKernel.Tests.ComputedSectors
 import QleisliKernel.Tests.NominalSector
 import QleisliKernel.Tests.SectorArms

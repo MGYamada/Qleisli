@@ -15,6 +15,7 @@ pub(super) enum Mode {
     QmatchSourceV5,
     Hierarchy,
     HierarchyRequest,
+    HierarchyControl,
     HierarchyFourier,
     Instrument,
     QpeInstrument,
@@ -38,6 +39,7 @@ impl Mode {
             Self::QmatchSourceV5 => "--qmatch-source-v5-check",
             Self::Hierarchy => "--hierarchy-pending",
             Self::HierarchyRequest => "--hierarchy-request-pending",
+            Self::HierarchyControl => "--hierarchy-control-pending",
             Self::HierarchyFourier => "--hierarchy-fourier-pending",
             Self::Instrument => "--instrument-pending",
             Self::QpeInstrument => "--qpe-instrument-pending",
@@ -61,6 +63,7 @@ impl Mode {
             "--qmatch-source-v5-check" => Ok(Self::QmatchSourceV5),
             "--hierarchy-pending" => Ok(Self::Hierarchy),
             "--hierarchy-request-pending" => Ok(Self::HierarchyRequest),
+            "--hierarchy-control-pending" => Ok(Self::HierarchyControl),
             "--hierarchy-fourier-pending" => Ok(Self::HierarchyFourier),
             "--instrument-pending" => Ok(Self::Instrument),
             "--qpe-instrument-pending" => Ok(Self::QpeInstrument),
@@ -87,7 +90,8 @@ impl Mode {
             | Self::HierarchyRequest
             | Self::HierarchyFourier
             | Self::Instrument
-            | Self::QpeInstrument => "pending",
+            | Self::QpeInstrument
+            | Self::HierarchyControl => "pending",
             Self::EngineeringPure
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
@@ -112,7 +116,8 @@ impl Mode {
             | Self::EngineeringPure
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
-            | Self::EngineeringOpenQasm => scope == Scope::Execution,
+            | Self::EngineeringOpenQasm
+            | Self::HierarchyControl => scope == Scope::Execution,
             Self::Readout | Self::Preparation => scope == Scope::Inspection,
         }
     }
@@ -268,6 +273,7 @@ mod tests {
             Mode::QmatchSourceV5,
             Mode::Hierarchy,
             Mode::HierarchyRequest,
+            Mode::HierarchyControl,
             Mode::HierarchyFourier,
             Mode::Instrument,
             Mode::QpeInstrument,
@@ -290,6 +296,7 @@ mod tests {
                     | Mode::EngineeringPureTensor
                     | Mode::EngineeringInstrument
                     | Mode::EngineeringOpenQasm
+                    | Mode::HierarchyControl
             ) {
                 Scope::Execution
             } else {

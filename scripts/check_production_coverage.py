@@ -925,7 +925,7 @@ PATHS = {
         ('src/frontend/specialize/elaborate.rs', ['pub fn check_operation_meanings', 'pub(super) fn require_unrefined',
          'pub(super) fn require_control_evidence', 'checked.obligations.iter().find',
          'pub fn check_function_contracts(', 'pub fn has_function_contracts(', 'fn require_function_contracts(']),
-        ('src/frontend/specialize/lower.rs', ['if let Err(error) = source.require_control_evidence()']),
+        ('src/frontend/specialize/lower.rs', ['source.require_control_evidence()?']),
         ('src/bin/qleisli/source_plan.rs', ['source.has_operation_meanings()', '.check_operation_meanings(']),
         ('src/frontend/meaning.rs', ['pub(super) fn materialize(', 'Node::Reference',
          'FunctionEvidence::check_retained_with_kernel', 'original reference artifact is absent']),
@@ -1233,6 +1233,23 @@ for _id, _boundaries, _mode, _method, _cli, _check, _test in [
         ('lean/Qleisli/NativeHierarchy.lean', ['theorem checkLeaves_semantics']),
     ], [_test])
 
+PATHS['hierarchy-control'] = path_rule(
+    'native-hierarchy-check', 'sized-source-proposal', '--hierarchy-control-pending', [
+        ('src/frontend/specialize/lower/control_access.rs',
+         ['zero_basis::validate(proposal)?', 'control_subjects(source', 'requests.push(ControlRequest']),
+        ('src/frontend/specialize/lower.rs',
+         ['pub fn check_pure_with_native(', '.check_against_native_with_controls(']),
+        ('src/interchange/hierarchical.rs', ['Mode::ControlRequest', 'view.is_none()']),
+        ('lean-kernel/Protocol/Hierarchical.lean', ['"QLR2"', 'readControlRequests']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean',
+         ['HierarchicalFinite.checkControls p.artifact p.controls', 'native core.extra']),
+        ('lean-kernel/QleisliKernel/Hierarchical/ControlAccess.lean',
+         ['request.matches root.interface', 'ControlAccess.checkMatrix', 'theorem check_bound']),
+    ], [('tests/selected_source_cli.rs',
+         'selected_hierarchy_checks_the_original_control_roles_on_the_executed_graph'),
+        ('src/frontend/specialize/lower/control_access.rs',
+         'same_graph_without_its_native_control_requests_cannot_validate_source')])
+
 # General same-artifact prepared predicates remain equivalent to the complete
 # original checks. These bindings preserve their actual proof/context and paid
 # fallback routes; trace descriptions remain unaccepted data.
@@ -1332,6 +1349,7 @@ NATIVE_DISPATCH = {
     '--qirf-engineering-instrument-native': '.engineeringInstrument',
     '--hierarchy-pending': '(.hierarchy .inspect)',
     '--hierarchy-request-pending': '(.hierarchy .request)',
+    '--hierarchy-control-pending': '(.hierarchy .controlRequest)',
     '--hierarchy-fourier-pending': '(.hierarchy .fourier)',
     '--instrument-pending': '(.hierarchy .instrument)',
     '--qpe-instrument-pending': '(.hierarchy .qpeInstrument)',
@@ -2009,6 +2027,7 @@ for _id, _binding in {
     'contract-acceptance': 'run_contract_binding',
     'hierarchy-inspect': 'run_hierarchy_binding',
     'hierarchy-request': 'run_hierarchy_binding',
+    'hierarchy-control': 'run_hierarchy_binding',
     'hierarchy-fourier': 'run_hierarchy_binding',
     'hierarchy-instrument': 'run_hierarchy_binding',
     'hierarchy-qpe': 'run_hierarchy_binding',

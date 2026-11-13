@@ -4,6 +4,7 @@
 
 mod bridge;
 mod runtime;
+pub(crate) use bridge::ControlRequest;
 use runtime::Mode;
 pub mod execution;
 
@@ -213,6 +214,7 @@ pub struct NativeChecked {
     payload: Arc<[u8]>,
     request: Option<Arc<[u8]>>,
     candidate: Option<Arc<[u8]>>,
+    controls: Box<[ControlRequest]>,
     instrument: bool,
     structural_work: usize,
     exact_work: usize,
@@ -223,11 +225,22 @@ impl NativeChecked {
     pub fn edition(&self) -> Edition {
         self.context.edition()
     }
-    fn new(prepared: Prepared, response: &runtime::Response, instrument: bool) -> Result<Self> {
+    fn new(
+        prepared: Prepared,
+        response: &runtime::Response,
+        instrument: bool,
+        controls: &[ControlRequest],
+    ) -> Result<Self> {
         if prepared.edition != response.context.edition() {
             return Err(Error::new(
                 "edition",
                 "native decision belongs to another edition",
+            ));
+        }
+        let checked_controls = response.context.mode() == Mode::ControlRequest.argument();
+        if checked_controls == controls.is_empty() {
+            return Err(Error::format(
+                "native hierarchy decision has different control obligations",
             ));
         }
         Ok(Self {
@@ -236,6 +249,7 @@ impl NativeChecked {
             payload: prepared.payload,
             request: prepared.request,
             candidate: prepared.candidate,
+            controls: controls.into(),
             instrument,
             structural_work: response.work,
             exact_work: response.exact_work,
@@ -245,6 +259,10 @@ impl NativeChecked {
     pub fn payload(&self) -> &[u8] {
         &self.payload
     }
+    pub(crate) fn control_requests(&self) -> &[ControlRequest] {
+        &self.controls
+    }
+
     /// Canonical path used for this invocation, not a binary attestation.
     /// It is retained without resolving the configured path again.
     pub fn checker(&self) -> &Path {
@@ -288,24 +306,41 @@ impl Kernel {
             prepared.view().as_deref(),
         )?;
         validate_leaves(&decoded.value, &response.indices)?;
-        NativeChecked::new(prepared, &response, false)
+        NativeChecked::new(prepared, &response, false, &[])
     }
 
     /// Native original-QIRF/request checking, including phase-fixed Fourier H.
     pub fn check_against_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked> {
-        let decoded = bridge::decode_request(payload, request)?;
+        self.check_against_native_with_controls(payload, request, &[])
+    }
+
+    pub(crate) fn check_against_native_with_controls(
+        &self,
+        payload: &[u8],
+        request: &[u8],
+        controls: &[ControlRequest],
+    ) -> Result<NativeChecked> {
+        let decoded = bridge::decode_with_controls(payload, request, controls)?;
         let mut prepared = Prepared::new(self.edition, payload, Some(request), None, false);
         let mode = if decoded.fourier_width.is_some() {
             Mode::Fourier
-        } else {
+        } else if controls.is_empty() {
             Mode::Request
+        } else {
+            Mode::ControlRequest
         };
+        let view = prepared.view();
+        if !controls.is_empty() && view.is_none() {
+            return Err(Error::format(
+                "hierarchy source control requires a comparable execution view",
+            ));
+        }
         let response = runtime::check(
             &self.executable,
             self.edition,
             decoded.bridge,
             mode,
-            prepared.view().as_deref(),
+            view.as_deref(),
         )?;
         validate_leaves(&decoded.actual, &response.indices)?;
         if let Some(width) = decoded.fourier_width {
@@ -318,7 +353,7 @@ impl Kernel {
                 response.pairs.clone(),
             )?;
         }
-        NativeChecked::new(prepared, &response, false)
+        NativeChecked::new(prepared, &response, false, controls)
     }
 
     /// Native composed initialization, finite circuit request and readout.
@@ -339,7 +374,7 @@ impl Kernel {
             &decoded.pure.pairs,
             response.pairs.clone(),
         )?;
-        NativeChecked::new(prepared, &response, true)
+        NativeChecked::new(prepared, &response, true, &[])
     }
 
     /// Native named-QPE provider, schedule and exact H checks. No production
@@ -376,7 +411,7 @@ impl Kernel {
         for &index in &response.hadamards {
             validate_hadamards(&decoded.provider.actual, 1, vec![index])?;
         }
-        NativeChecked::new(prepared, &response, true)
+        NativeChecked::new(prepared, &response, true, &[])
     }
 }
 
