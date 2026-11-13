@@ -2,7 +2,9 @@ import Qleisli.RawBranchFunction
 import Qleisli.RawPureInstrumentAction
 import Qleisli.RoutedControlCommutation
 import Qleisli.RuntimeAdjacentInterval
+import Qleisli.RuntimeCallPureFold
 import Qleisli.RuntimeForestProduct
+import Qleisli.RuntimeIntervalTrace
 import Qleisli.RuntimeNamedThreePackedOutput
 import QleisliKernel.Qirf.RuntimeNamedFrameAxes
 import QleisliKernel.Qirf.RuntimeAccessCallee
@@ -525,5 +527,322 @@ theorem checked_pair_boundaries
     RuntimeAdjacentSlices.adjacent second.call.frame.interval second.owners.routing⟩
 
 #print axioms checked_pair_boundaries
+
+private theorem take_frame {before after : Semantics.RawTrace.Interface} {token port}
+    (read : Semantics.RawTrace.take before token = some (port,after)) :
+    after.frame = before.frame := by
+  unfold Semantics.RawTrace.take at read
+  obtain ⟨_,_,returned⟩ := Option.bind_eq_some_iff.mp read
+  exact (congrArg (fun pair : Semantics.Raw.Port × Semantics.RawTrace.Interface => pair.2.frame)
+    (Option.some.inj returned)).symm
+
+private theorem structural_step {before after : Semantics.RawTrace.Interface} {operation events}
+    (read : Semantics.RawTrace.step before operation = some (after,events))
+    (routing : RuntimeAccessPartition.isRoute (.pure operation) = true) :
+    after.frame = before.frame ∧ events = [] := by
+  cases operation <;> simp only [RuntimeAccessPartition.isRoute,Bool.false_eq_true] at routing
+  case split input left right bits =>
+    simp only [Semantics.RawTrace.step] at read
+    obtain ⟨⟨port,rest⟩,taken,returned⟩ := Option.bind_eq_some_iff.mp read
+    have data := Prod.mk.inj (Option.some.inj returned)
+    have frame := congrArg Semantics.RawTrace.Interface.frame data.1
+    change rest.frame = after.frame at frame
+    exact ⟨frame.symm.trans (take_frame taken),data.2.symm⟩
+  case join left right output =>
+    simp only [Semantics.RawTrace.step] at read
+    obtain ⟨⟨l,rest⟩,leftRead,read⟩ := Option.bind_eq_some_iff.mp read
+    obtain ⟨⟨r,tail⟩,rightRead,returned⟩ := Option.bind_eq_some_iff.mp read
+    have data := Prod.mk.inj (Option.some.inj returned)
+    have frame := congrArg Semantics.RawTrace.Interface.frame data.1
+    change tail.frame = after.frame at frame
+    exact ⟨frame.symm.trans ((take_frame rightRead).trans (take_frame leftRead)),data.2.symm⟩
+
+private theorem structural_fold (operations : List Semantics.Raw.Op)
+    {before after : Semantics.RawTrace.Prepared}
+    (routing : (operations.map Semantics.Observation.Op.pure).all RuntimeAccessPartition.isRoute = true)
+    (read : operations.foldlM Semantics.RawTrace.advance before = some after) :
+    after.state.frame = before.state.frame ∧ after.events = before.events := by
+  induction operations generalizing before with
+  | nil =>
+    cases Option.some.inj read
+    exact ⟨rfl,rfl⟩
+  | cons operation operations ih =>
+    simp only [List.map_cons,List.all_cons,Bool.and_eq_true] at routing
+    rw [List.foldlM_cons] at read
+    obtain ⟨next,advanced,tail⟩ := Option.bind_eq_some_iff.mp read
+    unfold Semantics.RawTrace.advance at advanced
+    obtain ⟨⟨state,events⟩,stepped,returned⟩ := Option.bind_eq_some_iff.mp advanced
+    have ⟨frame,empty⟩ := structural_step stepped routing.1
+    have same := Option.some.inj returned
+    subst next
+    have ⟨lastFrame,lastEvents⟩ := ih routing.2 tail
+    exact ⟨lastFrame.trans frame,by simpa only [empty,List.append_nil] using lastEvents⟩
+
+/-- The actual routing slice changes owner ports and keeps the complete
+physical frame in order. Its independent trace emits no quantum events. -/
+theorem structural_interval {dependencies program} {block : RuntimeInterval.Block dependencies program}
+    {start count} (interval : RuntimeInterval.Checked block start count)
+    (routing : (((block.operations.drop start).take count).all RuntimeAccessPartition.isRoute) = true) :
+    ∃ operations : List Semantics.Raw.Op,
+      (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure ∧
+      RuntimeLocalEvents.trace interval.before.quantum.reference operations =
+        some ⟨interval.after.quantum.reference,[],interval.before.quantum.frame.length⟩ ∧
+      interval.after.quantum.frame = interval.before.quantum.frame := by
+  have pure_routes (operations : List RuntimeInterval.Op)
+      (routes : operations.all RuntimeAccessPartition.isRoute = true) :
+      ∃ pureOps : List Semantics.Raw.Op, operations = pureOps.map Semantics.Observation.Op.pure := by
+    induction operations with
+    | nil => exact ⟨[],rfl⟩
+    | cons operation operations ih =>
+      simp only [List.all_cons,Bool.and_eq_true] at routes
+      obtain ⟨tail,equation⟩ := ih routes.2
+      cases operation with
+      | pure op => exact ⟨op :: tail,congrArg _ equation⟩
+      | _ => cases routes.1
+  obtain ⟨operations,original⟩ := pure_routes _ routing
+  obtain ⟨work,left,read⟩ := interval.intervalRead
+  rw [original] at read routing
+  obtain ⟨events,trace⟩ := RuntimeIntervalTrace.checkOps_pure_trace dependencies block.fuel
+    interval.before interval.after operations work left read
+  have ⟨frame,empty⟩ := structural_fold operations routing trace
+  change events = [] at empty
+  subst events
+  exact ⟨operations,original,trace,frame⟩
+
+theorem checked_routing_intervals {tokens dependencies program block callee lookup names calls start count inputs outputs}
+    {call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
+      block start count inputs outputs}
+    {entry begin} (routing : RuntimeAccessPartition.Restored call entry begin) :
+    routing.preamble.after.quantum.frame = routing.preamble.before.quantum.frame ∧
+    routing.routing.after.quantum.frame = routing.routing.before.quantum.frame := by
+  have allowed := RuntimeAccessPartition.replay_routes routing.replayed
+  exact ⟨(structural_interval routing.preamble allowed.1).choose_spec.2.2,
+    (structural_interval routing.routing allowed.2).choose_spec.2.2⟩
+
+#print axioms structural_interval
+#print axioms checked_routing_intervals
+
+private theorem selected_spectator_partition (state : Raw.Observation.State)
+    (valid : Raw.stateValid state.quantum = true) (tokens : List Nat) (selected : List Semantics.Raw.Port)
+    (read : PureInterval.ports state tokens = some selected) (unique : tokens.Nodup) :
+    state.quantum.live.Perm (selected ++ PureInterval.spectators state tokens) := by
+  let chosen := fun port : Semantics.Raw.Port => tokens.contains port.token
+  have ⟨present,order⟩ := RuntimeNamedFrameAxes.selectedPorts _ _ _ read
+  have owners := (Raw.Ownership.valid _ valid).owners
+  have liveUnique : state.quantum.live.Nodup := List.Pairwise.of_map (·.token)
+    (fun _ _ different same => different (congrArg Semantics.Raw.Port.token same)) owners
+  have selectedUnique : selected.Nodup := List.Pairwise.of_map (·.token)
+    (fun _ _ different same => different (congrArg Semantics.Raw.Port.token same)) (order.symm ▸ unique)
+  have selectedPerm : (state.quantum.live.filter chosen).Perm selected := by
+    apply (List.perm_ext_iff_of_nodup (List.filter_sublist.nodup liveUnique) selectedUnique).mpr
+    intro port
+    constructor
+    · intro found
+      have ⟨live,chosenPort⟩ := List.mem_filter.mp found
+      have token : port.token ∈ selected.map (·.token) := order.symm ▸ List.contains_iff_mem.mp chosenPort
+      obtain ⟨original,selectedPort,same⟩ := List.mem_map.mp token
+      have first := RuntimeNamedFrameAxes.tokenLookup _ port owners live
+      have second := RuntimeNamedFrameAxes.tokenLookup _ original owners (present selectedPort)
+      rw [same] at second
+      exact (Option.some.inj (second.symm.trans first)) ▸ selectedPort
+    · intro member
+      exact List.mem_filter.mpr ⟨present member,List.contains_iff_mem.mpr
+        (order ▸ List.mem_map_of_mem (f := Semantics.Raw.Port.token) member)⟩
+  exact (List.filter_append_perm chosen state.quantum.live).symm.trans
+    (selectedPerm.append_right (PureInterval.spectators state tokens))
+
+private theorem checked_call_input_unique
+    {tokens dependencies program block callee lookup names calls start count inputs outputs}
+    (call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
+      block start count inputs outputs) : inputs.Nodup := by
+  obtain ⟨work,left,read⟩ := call.frame.pureRead
+  have prepared := (Raw.Pure.verify_conditions _ _ _ work left read).1
+  obtain ⟨initial,_,opened,_,_,_,_⟩ := Raw.prepare_conditions _ _ _ prepared
+  have initialValid := Raw.inputs_valid _ _ _ (by decide) opened
+  have inputUnique := (Raw.Ownership.valid _ initialValid).owners
+  change (initial.live.map (·.token)).Nodup at inputUnique
+  have live := congrArg Semantics.RawTrace.Interface.live (Raw.inputs_reference _ _ _ opened)
+  change initial.live = [] ++ call.frame.selected at live
+  rw [live,List.nil_append,(RuntimeNamedFrameAxes.selectedPorts _ _ _ call.frame.atEntry).2] at inputUnique
+  exact inputUnique
+
+/-- The selected input and returned wire lists agree in the original call.
+Together with its checked spectator list they account for the same physical
+width at both complete Raw boundaries, including zero-width owner tokens. -/
+theorem checked_call_width {tokens dependencies program block callee lookup names calls start count inputs outputs}
+    (call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
+      block start count inputs outputs) :
+    call.frame.interval.after.quantum.frame.length = call.frame.interval.before.quantum.frame.length := by
+  obtain ⟨work,left,read⟩ := call.frame.pureRead
+  let fragment := RuntimePureInterval.fragment call.frame.selected call.frame.operations outputs
+  have prepared := (Raw.Pure.verify_conditions dependencies fragment call.frame.pureBody work left read).1
+  obtain ⟨_,_,_,_,finished,_,_⟩ := Raw.prepare_conditions _ _ _ prepared
+  have outputUnique : outputs.Nodup := by
+    simp only [Raw.outputValid,Bool.and_eq_true] at finished
+    exact Raw.Ownership.unique_nodup outputs finished.1.1.1.1
+  have before := selected_spectator_partition _ call.frame.interval.history.1 _ _ call.frame.atEntry
+    (checked_call_input_unique call)
+  have after := selected_spectator_partition _ call.frame.interval.history.2.2.1 _ _ call.frame.atExit outputUnique
+  have beforeLength := (before.flatMap_right Semantics.Raw.Port.wires).length_eq
+  have afterLength := (after.flatMap_right Semantics.Raw.Port.wires).length_eq
+  have beforeCount := (Raw.Ownership.valid _ call.frame.interval.history.1).count
+  have afterCount := (Raw.Ownership.valid _ call.frame.interval.history.2.2.1).count
+  change (call.frame.interval.before.quantum.live.flatMap (·.wires)).length =
+    call.frame.interval.before.quantum.frame.length at beforeCount
+  change (call.frame.interval.after.quantum.live.flatMap (·.wires)).length =
+    call.frame.interval.after.quantum.frame.length at afterCount
+  have wires : call.frame.returned.flatMap Semantics.Raw.Port.wires =
+      call.frame.selected.flatMap Semantics.Raw.Port.wires := by
+    simp only [List.flatMap_def,call.inputAxes,call.outputAxes]
+  rw [← beforeCount,← afterCount,beforeLength,afterLength,List.flatMap_append,List.flatMap_append,
+    call.frame.spectators,wires]
+
+#print axioms checked_call_width
+
+private theorem takeTargets_frame (targets : List Semantics.Raw.Target)
+    (ports selected : List Semantics.Raw.Port) (before after : Semantics.RawTrace.Interface)
+    (read : targets.foldlM (fun (ports,next) target => do
+      let (port,next) ← Semantics.RawTrace.take next target.input
+      pure (ports ++ [port],next)) (ports,before) = some (selected,after)) :
+    after.frame = before.frame := by
+  induction targets generalizing ports before with
+  | nil => exact (congrArg (fun pair : List Semantics.Raw.Port × Semantics.RawTrace.Interface => pair.2.frame)
+      (Option.some.inj read)).symm
+  | cons target targets ih =>
+    simp only [List.foldlM_cons] at read
+    obtain ⟨⟨nextPorts,next⟩,first,tail⟩ := Option.bind_eq_some_iff.mp read
+    obtain ⟨⟨port,rest⟩,taken,returned⟩ := Option.bind_eq_some_iff.mp first
+    have frame : rest.frame = next.frame := congrArg
+      (fun pair : List Semantics.Raw.Port × Semantics.RawTrace.Interface => pair.2.frame) (Option.some.inj returned)
+    exact (ih nextPorts next tail).trans (frame.symm.trans (take_frame taken))
+
+private theorem pure_step_frame_prefix {before after : Semantics.RawTrace.Interface} {operation events}
+    (read : Semantics.RawTrace.step before operation = some (after,events)) : before.frame <+: after.frame := by
+  have result {state : Semantics.RawTrace.Interface} {emitted : List Semantics.Raw.Event}
+      (returned : some (state,emitted) = some (after,events)) : state.frame = after.frame :=
+    congrArg (fun pair : Semantics.RawTrace.Interface × List Semantics.Raw.Event => pair.1.frame)
+      (Option.some.inj returned)
+  cases operation with
+  | init0 output wire =>
+    rw [← result read]
+    exact ⟨[wire],rfl⟩
+  | liftBasis input output wires table =>
+    obtain ⟨⟨port,rest⟩,_,returned⟩ := Option.bind_eq_some_iff.mp read
+    rw [← result returned]
+    exact ⟨wires.drop port.bits,rfl⟩
+  | computeUseUncompute input output targets ancilla function uses =>
+    obtain ⟨⟨port,rest⟩,taken,tail⟩ := Option.bind_eq_some_iff.mp read
+    obtain ⟨⟨ports,last⟩,selected,returned⟩ := Option.bind_eq_some_iff.mp tail
+    let insert := fun (next : Semantics.RawTrace.Interface) (item : Semantics.Raw.Target × Semantics.Raw.Port) =>
+      Semantics.RawTrace.insert next item.1.output item.2.wires
+    have unchanged (items : List (Semantics.Raw.Target × Semantics.Raw.Port)) (next : Semantics.RawTrace.Interface) :
+        (items.foldl insert next).frame = next.frame := by
+      induction items generalizing next with
+      | nil => rfl
+      | cons head tail ih => exact ih (insert next head)
+    rw [← result returned]
+    change before.frame <+: ((targets.zip ports).foldl insert (Semantics.RawTrace.insert last output port.wires)).frame
+    rw [unchanged]
+    have frame := (takeTargets_frame targets [] ports rest last selected).trans (take_frame taken)
+    change before.frame <+: last.frame
+    rw [frame]
+  | packUnit output =>
+    rw [← result read]
+    exact List.prefix_rfl
+  | unpackUnit input =>
+    simp only [Semantics.RawTrace.step] at read
+    obtain ⟨⟨port,rest⟩,taken,returned⟩ := Option.bind_eq_some_iff.mp read
+    split at returned
+    · rw [← result returned, take_frame taken]
+    · cases returned
+  | gate | cnot | toffoli | quantumIf | split | join | applyUnitary | certifiedCompute =>
+    simp only [Semantics.RawTrace.step] at read
+    obtain ⟨⟨port,rest⟩,taken,tail⟩ := Option.bind_eq_some_iff.mp read
+    have first := take_frame taken
+    first
+    | have frame := result tail
+      simp only [Semantics.RawTrace.insert] at frame
+      rw [← frame,first]
+    | obtain ⟨⟨port₂,rest₂⟩,taken₂,tail₂⟩ := Option.bind_eq_some_iff.mp tail
+      have second := take_frame taken₂
+      first
+      | have frame := result tail₂
+        simp only [Semantics.RawTrace.insert] at frame
+        rw [← frame,second,first]
+      | obtain ⟨⟨port₃,rest₃⟩,taken₃,tail₃⟩ := Option.bind_eq_some_iff.mp tail₂
+        have third := take_frame taken₃
+        have frame := result tail₃
+        simp only [Semantics.RawTrace.insert] at frame
+        rw [← frame,third,second,first]
+
+private theorem pure_fold_frame_prefix (operations : List Semantics.Raw.Op)
+    {before after : Semantics.RawTrace.Prepared}
+    (read : operations.foldlM Semantics.RawTrace.advance before = some after) :
+    before.state.frame <+: after.state.frame := by
+  induction operations generalizing before with
+  | nil => cases Option.some.inj read; exact List.prefix_rfl
+  | cons operation operations ih =>
+    rw [List.foldlM_cons] at read
+    obtain ⟨next,advanced,tail⟩ := Option.bind_eq_some_iff.mp read
+    unfold Semantics.RawTrace.advance at advanced
+    obtain ⟨⟨state,events⟩,stepped,returned⟩ := Option.bind_eq_some_iff.mp advanced
+    have same := Option.some.inj returned
+    subst next
+    exact (pure_step_frame_prefix stepped).trans (ih tail)
+
+/-- Pure Raw instructions keep the existing frame as a prefix. The exact
+selected and spectator widths rule out growth in an original access call. -/
+theorem checked_call_frame {tokens dependencies program block callee lookup names calls start count inputs outputs}
+    (call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
+      block start count inputs outputs) :
+    call.frame.interval.after.quantum.frame = call.frame.interval.before.quantum.frame := by
+  obtain ⟨result,read,after,_⟩ := RuntimeIntervalTrace.interval_trace call.frame
+  have kept := pure_fold_frame_prefix call.frame.operations read
+  rw [after] at kept
+  exact (kept.eq_of_length (checked_call_width call).symm).symm
+
+/-- Both written calls refer to the same ordered caller frame. The equality
+comes from the actual intervening calls and checked split/join operations. -/
+theorem checked_pair_frame
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs) :
+    first.call.interval.frame.interval.before.quantum.frame = second.call.frame.interval.before.quantum.frame := by
+  obtain ⟨_,firstRestore,between,secondExtract,_⟩ := checked_pair_boundaries second
+  have restored := (checked_routing_intervals first.owners).2
+  have extracted := (checked_routing_intervals second.owners).1
+  rw [← firstRestore,between] at restored
+  rw [secondExtract] at extracted
+  exact ((extracted.trans restored).trans (checked_call_frame first.call.interval)).symm
+
+#print axioms checked_call_frame
+#print axioms checked_pair_frame
+
+/-- The original local and caller traces are related at every coefficient,
+using the spectator partition derived from the actual source-bound inputs. -/
+theorem checked_call_literal_action
+    {tokens dependencies program block callee lookup names calls start count inputs outputs}
+    (call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
+      block start count inputs outputs) :
+    let frame := call.frame
+    let spectators := PureInterval.spectators frame.interval.before inputs
+    ∃ entry : Raw.State, ∃ parentEvents childEvents,
+      entry.reference = ⟨frame.selected,frame.selected.flatMap (·.wires)⟩ ∧
+      RuntimeLocalEvents.trace frame.interval.before.quantum.reference frame.operations =
+        some ⟨frame.interval.after.quantum.reference,parentEvents,frame.interval.before.quantum.frame.length⟩ ∧
+      RuntimeLocalEvents.trace entry.reference frame.operations =
+        some ⟨frame.pureBody.state.reference,childEvents,entry.frame.length⟩ ∧
+      Qleisli.RuntimeCallHistory.PureAction dependencies frame.interval.before.quantum.reference entry.reference
+        frame.interval.after.quantum.reference frame.pureBody.state.reference spectators parentEvents childEvents := by
+  have partition := selected_spectator_partition _ call.frame.interval.history.1 _ _ call.frame.atEntry
+    (checked_call_input_unique call)
+  obtain ⟨entry,parentEvents,childEvents,entryRead,parentRead,childRead,_,_,_,action⟩ :=
+    Qleisli.RuntimeCallHistory.pure_interval_events call.frame _ partition
+  exact ⟨entry,parentEvents,childEvents,entryRead,parentRead,childRead,action⟩
+
+#print axioms checked_call_literal_action
 
 end Qleisli.Raw.AccessCommutation

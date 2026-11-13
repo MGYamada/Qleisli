@@ -82,6 +82,104 @@ def replay (entry : List Parameter) (places : List Place) (selected returned : L
           let token ← parent.remainder
           return {parent.parameter.port with token}
 
+/-- Only structural splits and joins belong to the routing around a call. -/
+def isRoute : RuntimeInterval.Op → Bool
+  | .pure (.split ..) | .pure (.join ..) => true
+  | _ => false
+
+private theorem extract_routes {parent place selected operations next position rest}
+    (read : extract parent place selected operations = some (next,position,rest))
+    (tail : rest.all isRoute = true) : operations.all isRoute = true := by
+  unfold extract at read
+  obtain ⟨input,_,read⟩ := Option.bind_eq_some_iff.mp read
+  split at read
+  · split at read
+    · cases read
+    · have same : operations = rest := congrArg (fun x : Parent × Option Nat × List RuntimeInterval.Op => x.2.2)
+        (Option.some.inj read)
+      rwa [same]
+  · split at read
+    · cases read
+    · split at read
+      · dsimp only at read
+        split at read
+        · cases read
+        · have same := congrArg (fun x : Parent × Option Nat × List RuntimeInterval.Op => x.2.2)
+            (Option.some.inj read)
+          simp only [List.all_cons,isRoute,Bool.true_and] at ⊢
+          simpa only [Prod.snd] using congrArg (fun ops => ops.all isRoute) same |>.trans tail
+      · cases read
+
+private theorem restore_routes {parent access operations next rest}
+    (read : restore parent access operations = some (next,rest))
+    (tail : rest.all isRoute = true) : operations.all isRoute = true := by
+  unfold restore at read
+  split at read
+  · split at read
+    · cases read
+    · have same : operations = rest := congrArg (fun x : Parent × List RuntimeInterval.Op => x.2)
+        (Option.some.inj read)
+      rwa [same]
+  · obtain ⟨input,_,read⟩ := Option.bind_eq_some_iff.mp read
+    split at read
+    · split at read
+      · cases read
+      · have same := congrArg (fun x : Parent × List RuntimeInterval.Op => x.2) (Option.some.inj read)
+        simp only [List.all_cons,isRoute,Bool.true_and] at ⊢
+        simpa only [Prod.snd] using congrArg (fun ops => ops.all isRoute) same |>.trans tail
+    · cases read
+
+private theorem fold_routes {α β : Type} (operations : β → List RuntimeInterval.Op)
+    (step : β → α → Option β)
+    (preserves : ∀ {before item after}, step before item = some after →
+      (operations after).all isRoute = true → (operations before).all isRoute = true)
+    (items : List α) {before after : β} (read : items.foldlM step before = some after)
+    (tail : (operations after).all isRoute = true) : (operations before).all isRoute = true := by
+  induction items generalizing before with
+  | nil => rw [Option.some.inj read]; exact tail
+  | cons first rest ih =>
+    rw [List.foldlM_cons] at read
+    obtain ⟨middle,stepped,remaining⟩ := Option.bind_eq_some_iff.mp read
+    exact preserves stepped (ih remaining)
+
+/-- A successful replay consumed every original operation before and after
+the selected call, and each consumed operation was a split or join. -/
+theorem replay_routes {entry places selected returned before after result}
+    (read : replay entry places selected returned before after = some result) :
+    before.all isRoute = true ∧ after.all isRoute = true := by
+  unfold replay at read
+  split at read
+  · cases read
+  · obtain ⟨⟨parents,accesses,remaining⟩,extracted,read⟩ := Option.bind_eq_some_iff.mp read
+    simp only at read
+    split at read
+    · cases read
+    · rename_i extractsDone
+      obtain ⟨⟨restored,tail⟩,restoredRead,read⟩ := Option.bind_eq_some_iff.mp read
+      simp only at read
+      split at read
+      · cases read
+      · rename_i restoresDone
+        have noRemaining : remaining = [] := List.isEmpty_iff.mp (by simpa using extractsDone)
+        have noTail : tail = [] := List.isEmpty_iff.mp (by simpa using restoresDone)
+        constructor
+        · refine fold_routes (fun state : List Parent × List Access × List RuntimeInterval.Op => state.2.2)
+            _ ?_ _ extracted ?_
+          · intro ⟨_,_,operations⟩ ⟨⟨_,_⟩,_⟩ next stepRead stepTail
+            obtain ⟨parent,_,stepRead⟩ := Option.bind_eq_some_iff.mp stepRead
+            obtain ⟨⟨updated,position,rest⟩,stepExtracted,stepRead⟩ := Option.bind_eq_some_iff.mp stepRead
+            cases Option.some.inj stepRead
+            exact extract_routes stepExtracted stepTail
+          · simp [noRemaining]
+        · refine fold_routes (fun state : List Parent × List RuntimeInterval.Op => state.2)
+            _ ?_ _ restoredRead ?_
+          · intro ⟨_,operations⟩ _ next stepRead stepTail
+            obtain ⟨parent,_,stepRead⟩ := Option.bind_eq_some_iff.mp stepRead
+            obtain ⟨⟨updated,rest⟩,stepRestored,stepRead⟩ := Option.bind_eq_some_iff.mp stepRead
+            cases Option.some.inj stepRead
+            exact restore_routes stepRestored stepTail
+          · simp [noTail]
+
 structure Restored {tokens dependencies program block callee lookup names calls start count inputs outputs}
     (call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
       block start count inputs outputs)
