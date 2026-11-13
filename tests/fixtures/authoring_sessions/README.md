@@ -122,6 +122,10 @@ Usage failures, unchanged refusals, revised explanations and literal QASM/QIR
 outputs remain separate from the bounded exact routing regression and the
 unfinished general source, target and resource obligations.
 
+The [shared control order study](shared-control-order-v030/context.md) preserves
+both written orders and the first Raw and hierarchy checks. Exact native
+comparisons distinguish the disjoint targets from the shared-target phase case.
+
 The [linked std descriptor study](linked-std-descriptor-v030/README.md) preserves
 two one-qubit user versions, actual API absence, old qargo import failures,
 empty-root packaging and generic dependency-table refusal in sixteen first
