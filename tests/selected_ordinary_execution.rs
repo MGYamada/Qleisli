@@ -387,12 +387,10 @@ fn selected_ordinary_prepares_only_tables_demanded_by_dormant_operations() {
          unitary fn run[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
          unitary fn unused(q:Q<Bit>)->Q<Bit>{run[oracle](q)}",
     )]);
-    let refused = nominal.compile_ordinary_with_kernel(&kernel).unwrap_err();
-    assert_eq!(refused.code, "unsupported");
-    assert!(
-        refused
-            .message
-            .contains("finite tables require closed built-in")
+    let checked = nominal.compile_ordinary_with_kernel(&kernel).unwrap();
+    assert_eq!(
+        run_closed(checked.program(), SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![false], 1.0)])
     );
     let unrelated = instance(&[(
         "main",
