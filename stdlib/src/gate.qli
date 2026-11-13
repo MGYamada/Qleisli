@@ -76,14 +76,3 @@ pub unitary fn swap(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
     let (b,a) = cnot(b,a);
     cnot(a,b)
 }
-
-/// Swap two equal-width register states with phase +1 and fixed wire order.
-/// Apply one physical Bit SWAP per axis pair. Width zero returns both owners.
-pub unitary fn swap_registers[const n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>) -> (Q<Bits<n>>, Q<Bits<n>>) {
-    qfor static i in 0..n carry (a,b) = (a,b) {
-        let (x,a) = take_bit[n,i](a);
-        let (y,b) = take_bit[n,i](b);
-        let (x,y) = swap(x,y);
-        yield (put_bit[n,i](x,a), put_bit[n,i](y,b));
-    }
-}

@@ -74,9 +74,12 @@ fn checked_permutation(text: &str, basis: BasisType, map: Vec<u16>) -> AcceptedP
 )]
 #[test]
 fn register_swap_preserves_wire_frames_and_axis_permutations_compose_without_gates() {
+    let local_swap = include_str!(
+        "fixtures/authoring_sessions/register-axis-routing-v030/attempt-01/swap_registers.qli"
+    );
     for width in 0..=3 {
         let source = format!(
-            "use std::gate::swap_registers;\n\
+            "{local_swap}\n\
              pub unitary fn probe(q:Q<(Bits<{width}>,Bits<{width}>)>)->Q<(Bits<{width}>,Bits<{width}>)>{{\
              let (a,b)=split(q); let (a,b)=swap_registers[{width}](a,b); join(a,b)}}"
         );
