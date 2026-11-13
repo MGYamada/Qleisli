@@ -1,6 +1,7 @@
 import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.AccessSyntax
 import QleisliKernel.Qirf.RuntimeAccessInterval
+import QleisliKernel.Qirf.RuntimeAccessSource
 
 /-! Bounded original-token controls; no name/owner/effect or body acceptance.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -141,5 +142,35 @@ private def emptyOwnerReturn (outputs : List Nat) : Bool :=
 
 example : emptyOwnerReturn [0,1] = true := by decide +kernel
 example : emptyOwnerReturn [1,0] = false := by decide +kernel
+
+open QleisliKernel.Finite QleisliKernel.Qirf in
+private def originalFirst (header body : String) (raw : Semantics.Raw.Program)
+    (count : Nat) (inputs outputs : List Nat) : Except Error (List String × List Nat) :=
+  let source := s!"pub unitary fn route({header}) -> {body}"
+  let attempt : WorkM (List String × List Nat) := do
+    let signature ← QuantumSignatureCore.read #[("main",source)] "main" "route"
+    let root ← RuntimeInterval.prepare [] (Semantics.Ownership.pureProgram raw)
+    let checked ← RuntimeAccessSource.read signature root
+    let first ← RuntimeAccessSource.readFirst checked 0 count inputs outputs
+    let _ ← RuntimeAccessInterval.checkSectors first.interval
+    return (checked.entry.map (·.original.binder.text), RuntimeAccessInterval.controlAxes first.interval.places)
+  (attempt.run 2000000).1
+
+private def cnotFirst : Semantics.Raw.Program :=
+  ⟨[⟨0,[7],1⟩,⟨1,[2],1⟩],[.cnot 0 1 2 3],[2,3],.unitary⟩
+
+example : (originalFirst "c: Q<Bit>, t: Q<Bit>"
+    "(Q<Bit>,Q<Bit>){cnot(ctrl c,excl t); cnot(ctrl c,excl t); (c,t)}"
+    cnotFirst 1 [0,1] [2,3]).toOption = some (["c","t"],[0]) := by decide +kernel
+
+private def emptyFirst (header : String) (ports : List Nat) : Except Finite.Error (List String × List Nat) :=
+  originalFirst header "(Q<Unit>,Q<Bits<0>>){f(ctrl a,excl b); g(ctrl a,excl b); (a,b)}"
+    ⟨[⟨0,[],0⟩,⟨1,[],0⟩],[],[0,1],.unitary⟩ 0 ports ports
+
+example : (emptyFirst "a: Q<Unit>, b: Q<Bits<0>>" [0,1]).toOption =
+    some (["a","b"],[]) := by decide +kernel
+example : (emptyFirst "a: Q<Unit>, b: Q<Bits<0>>" [1,0]).isOk = false := by decide +kernel
+example : (emptyFirst "a: Q<Unit>, a: Q<Bits<0>>" [0,1]).isOk = false := by decide +kernel
+example : (emptyFirst "a: Q<Unit>, b: Q<Bit>" [0,1]).isOk = false := by decide +kernel
 
 end QleisliKernel.Tests.CallSyntaxTests
