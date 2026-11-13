@@ -1108,6 +1108,38 @@ private def evaluator {sources owner name} (definition : Definition sources owne
         effect := direct effect,quantumUse := true,needs := body.needs ++ [⟨body.effect,.unitary,true⟩],
         basisObligations := body.basisObligations ++ [obligation]}
       pure (append input result)
+    | .workspace written input dirty body =>
+      let input ← next state scope environment input
+      let [.owner basis] := input.value | throw .request
+      let (values,operands) ← dirty.trees.foldlM (fun (values,prior) child => do
+        let result ← next state scope prior.remaining child.2
+        pure (values ++ [result.value],append prior result)) (([] : List Value),input)
+      let scratch : Value := [.owner [.fixed .bit]]
+      guard (values == (if written.parts.dirty.isSome then [scratch] else [])) .request
+      let logical ← operationWithModules reader state scope definition.operations 65 (some basis)
+        written.parts.logical.tokens
+      guard logical.paths.applicable .request
+      let _ ← SymbolicTypes.equate state logical.input basis
+      let _ ← SymbolicTypes.equate state logical.output basis
+      let data := written.parts.dataBinder
+      let auxiliary := written.parts.scratchBinder
+      let names := [data.text,auxiliary.text]
+      guard (names.all fun binder => !staticNames.contains binder) .request
+      let initial ← adapt (GenericValues.bind [data.text] [.owner basis] [] (data.span.startByte+1))
+      let initial ← adapt (GenericValues.bind [auxiliary.text] scratch initial (auxiliary.span.startByte+1))
+      let region ← next state (names ++ scope) initial body
+      guard (region.remaining.all fun cell => !hasOwner cell.value) .request
+      let pair := [.tuple 2,.owner basis] ++ scratch
+      GenericValues.expect state region.value pair
+      let result : Outcome sources := {region with
+        value := if written.parts.dirty.isSome then pair else [.owner basis],
+        remaining := operands.remaining,effect := direct .unitary,quantumUse := true,
+        references := logical.references ++ region.references,
+        needs := logical.needs ++ region.needs ++ [⟨logical.effect,.unitary,false⟩,⟨region.effect,.unitary,false⟩],
+        meanings := logical.meanings ++ region.meanings,
+        activities := logical.activities ++ region.activities,
+        rows := logical.rows ++ region.rows}
+      pure (append operands result)
     | .computed written input body =>
       let input ← next state scope environment input
       let [.owner inputBasis] := input.value | throw .request

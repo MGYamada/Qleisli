@@ -1148,6 +1148,7 @@ impl Checker<'_, '_> {
                 specification,
                 input,
             } => self.apply_contract(implementation, specification, input, scope, span)?,
+            ExprKind::Workspace(workspace) => self.workspace(workspace, scope, span)?,
             ExprKind::CoherentLift {
                 binder,
                 input,

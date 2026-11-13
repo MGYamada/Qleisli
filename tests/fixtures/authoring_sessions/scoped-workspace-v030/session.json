@@ -1,0 +1,36 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#70 write explicit clean and dirty workspace scopes",
+  "author": "Codex, informed by #70 and the Reference",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "5534b6d981bac363a6d89db3c5ca0569fe713770",
+  "context": "README.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve the first source programs and the installed CLI's parser diagnostics.",
+      "sha256": {
+        "clean-restores/main.qli": "76402424ccd2d8aef69748bfdc4b058bcc881c02ebcac89fde95a9e873b582a6",
+        "clean-leaks/main.qli": "d08b8a24c37591ebf2b3427eacfa74ffdf5e094d478ca79b2a5e97bc33c89331",
+        "dirty-restores/main.qli": "acceeac5d4bbd1b5f513d21118847285fe3208a022e1ea7898234b4509023c1c",
+        "dirty-alters-reference/main.qli": "d1a33d744497bf12099a8e0f64ebfcc319b1183b6470469f5a08aa7ecf3952ff"
+      },
+      "manifest_sha256": {
+        "clean-restores/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "clean-leaks/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "dirty-restores/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "dirty-alters-reference/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "clean-restores.json",
+        "clean-leaks.json",
+        "dirty-restores.json",
+        "dirty-alters-reference.json"
+      ],
+      "reports": [
+        "first-observations.json"
+      ]
+    }
+  ]
+}

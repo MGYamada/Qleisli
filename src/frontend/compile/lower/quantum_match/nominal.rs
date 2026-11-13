@@ -618,12 +618,13 @@ pub(in crate::frontend::compile::lower) fn record_primitive(
     Ok(())
 }
 
-/// The original coherent expression supplies a table to one literal Raw operation.
+/// Record the literal Raw interval of one original coherent expression.
 pub(in crate::frontend::compile::lower) fn record_coherent_table(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
     span: Span,
     start: usize,
+    count: usize,
 ) -> Result<(), CompileError> {
     let Some(frame) = lower.nominal_qmatch.as_ref() else {
         return Ok(());
@@ -636,7 +637,7 @@ pub(in crate::frontend::compile::lower) fn record_coherent_table(
             "coherent table precedes its original qmatch context",
         )
     })?;
-    let position = position(lower, module, span, span.start, relative, 1)?;
+    let position = position(lower, module, span, span.start, relative, count)?;
     lower.compiler.charge(module, span, 4)?;
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.record_event_outside_static_profile();

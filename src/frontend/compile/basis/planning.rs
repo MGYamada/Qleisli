@@ -9,7 +9,12 @@ impl Compiler<'_> {
         &mut self,
         selected: Option<&BTreeSet<Key>>,
     ) -> Result<(), CompileError> {
-        if self.source.nominals.is_empty() {
+        let has_nominals = !self.source.nominals.is_empty();
+        if !has_nominals
+            && !self.source.obligations.iter().any(|obligation| {
+                matches!(obligation.kind, check::ObligationKind::WorkspaceRestoration)
+            })
+        {
             return Ok(());
         }
         let mut work = self.work;
@@ -22,12 +27,14 @@ impl Compiler<'_> {
                 let module = &self.source.resolution.declaration(key).name.0;
                 let span = obligation.span;
                 self.charge_at(&mut work, module, span, 2)?;
-                if !matches!(
-                    obligation.kind,
+                let requires_plan = match obligation.kind {
+                    check::ObligationKind::WorkspaceRestoration => true,
                     check::ObligationKind::Injectivity { .. }
-                        | check::ObligationKind::ProtectedClean
-                        | check::ObligationKind::CertifiedClean { .. }
-                ) {
+                    | check::ObligationKind::ProtectedClean
+                    | check::ObligationKind::CertifiedClean { .. } => has_nominals,
+                    _ => false,
+                };
+                if !requires_plan {
                     continue;
                 }
                 if selected.is_some_and(|selected| !selected.contains(&key)) || roots.contains(&key)
@@ -39,6 +46,13 @@ impl Compiler<'_> {
                         self.charge_at(&mut work, module, at, cells)
                     })?;
                 let required = match (&obligation.kind, original) {
+                    (
+                        check::ObligationKind::WorkspaceRestoration,
+                        Some(OriginalNode::Expression(Expr {
+                            kind: ExprKind::Workspace(_),
+                            ..
+                        })),
+                    ) => true,
                     (
                         check::ObligationKind::Injectivity { typed_ports },
                         Some(OriginalNode::Expression(Expr {
@@ -85,7 +99,8 @@ impl Compiler<'_> {
                 )?;
                 let declaration = self.declarations[key];
                 let interface = &self.source.interfaces[key];
-                if interface.kind == FnKind::Meaning
+                if has_nominals
+                    && interface.kind == FnKind::Meaning
                     && (self.has_nominal_port(
                         interface.meaning_input(),
                         module,

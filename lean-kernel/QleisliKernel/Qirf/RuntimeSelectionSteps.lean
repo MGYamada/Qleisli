@@ -55,7 +55,7 @@ private def inspect {dependencies} : (item : Item dependencies) → View depende
       event.target.resolution.moduleName event.target.resolution.declaration.name) (.nodes 0 nested)
       (by simp only [Smaller] <;> decreasing_tactic)
   | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.basis ..)
-  | .node _ (.computed ..) | .node _ (.certifiedComputed ..) | .node _ (.operation ..) => .leaf
+  | .node _ (.computed ..) | .node _ (.certifiedComputed ..) | .node _ (.workspace ..) | .node _ (.operation ..) => .leaf
   | .node _ (.rectangularOperation _) => .leaf
   | .nodes _ .nil => .leaf
   | .nodes ordinal (.cons first rest) => .pair (.atOrdinal ordinal) (.node ordinal first) (.nextOrdinal (ordinal+1)) (.nodes (ordinal+1) rest)
@@ -124,7 +124,7 @@ private def hasBasis {dependencies} (item : Item dependencies) : WorkM Bool :=
       match inspect current with
       | .leaf =>
         match current with
-        | .node _ (.basis ..) | .node _ (.computed ..) | .node _ (.certifiedComputed ..) => return true
+        | .node _ (.basis ..) | .node _ (.computed ..) | .node _ (.certifiedComputed ..) | .node _ (.workspace ..) => return true
         | _ => return false
       | .selection .. => return false
       | .child _ one smaller => next one smaller

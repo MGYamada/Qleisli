@@ -7,6 +7,53 @@ use std::collections::BTreeMap;
 const TYPE_WORDS: [&str; 7] = ["Q", "Op", "Unit", "Bit", "CBit", "Bits", "CBits"];
 
 #[test]
+fn workspace_syntax_retains_original_arguments_and_contextual_names() {
+    for (source, expected_dirty) in [
+        (
+            include_str!(
+                "../../../tests/fixtures/authoring_sessions/scoped-workspace-v030/attempt-01/clean-restores/main.qli"
+            ),
+            false,
+        ),
+        (
+            include_str!(
+                "../../../tests/fixtures/authoring_sessions/scoped-workspace-v030/attempt-01/dirty-restores/main.qli"
+            ),
+            true,
+        ),
+    ] {
+        let module = parse_module(source).unwrap();
+        let main = module.decls.last().unwrap();
+        let FnBody::Quantum(body) = &main.body else {
+            panic!("runtime body")
+        };
+        let ExprKind::Workspace(scope) = &body.result.kind else {
+            panic!("workspace scope")
+        };
+        assert_eq!(scope.dirty.is_some(), expected_dirty);
+        assert_eq!(
+            &source[scope.logical.span.start..scope.logical.span.end],
+            "logical"
+        );
+        assert_eq!(scope.data_binder.text, "data");
+        assert_eq!(scope.scratch_binder.text, "scratch");
+    }
+    assert!(
+        parse_module(
+            "fn clean(q: Q<Bit>) -> Q<Bit> { q } fn dirty(q: Q<Bit>) -> Q<Bit> { clean(q) }"
+        )
+        .is_ok()
+    );
+    let invalid = "fn f(q: Q<Bit>) -> Q<Bit> { clean(q,h) { |a,a| (a,a) } }";
+    assert!(
+        parse_module(invalid)
+            .unwrap_err()
+            .message
+            .contains("distinct")
+    );
+}
+
+#[test]
 fn const_parameter_headers_preserve_order_kinds_and_original_name_spans() {
     let source = "// λ\npub fn f[const n: Nat, const B: Basis, const U: Op<B>](q: Q<B>) -> Q<B> requires Applicable(U) { U(q) }";
     let syntax = parse_module(source).unwrap();

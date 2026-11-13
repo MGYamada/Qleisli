@@ -74,6 +74,8 @@ def eventRows {sources caller} : Nat → SourceRuntimeContext.Event sources call
         children.flatMap (fun arm => arm.flatMap next)
     | .computed event children => event.generic.sourceRows ++
         (SourceRuntimeContext.Event.computed event children).staticRows ++ children.flatMap next
+    | .workspace event children =>
+        (SourceRuntimeContext.Event.workspace event children).staticRows ++ children.flatMap next
     | .registerPrimitive event => (SourceRuntimeContext.Event.registerPrimitive event).staticRows)
 
 def Header.rows {artifact context description graph index request}

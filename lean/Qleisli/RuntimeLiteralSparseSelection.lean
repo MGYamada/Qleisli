@@ -140,7 +140,7 @@ noncomputable def sourceNamedSelection {dependencies program block step}
       exact [{source with owners := boundary.after, operator}]
     | primitive _ _ => exact False.elim selected
     | structural _ => exact False.elim selected
-    | basis | computed | certifiedComputed => exact False.elim selected
+    | basis | computed | certifiedComputed | workspace => exact False.elim selected
     | named _ _ _ _ _ _ => exact False.elim selected
     | operation _ _ _ _ _ _ _ _ _ _ => exact False.elim selected
     | rectangularOperation _ => exact False.elim selected

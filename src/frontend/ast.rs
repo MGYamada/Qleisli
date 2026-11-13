@@ -210,6 +210,18 @@ pub struct Expr {
     pub span: Span,
 }
 
+/// A clean scope allocates its auxiliary. A dirty scope takes an explicit
+/// existing owner and returns it alongside the data.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct WorkspaceScope {
+    pub data: Expr,
+    pub dirty: Option<Expr>,
+    pub logical: Ident,
+    pub data_binder: Ident,
+    pub scratch_binder: Ident,
+    pub body: Block,
+}
+
 /// Explicit ordinary constructors retain their original type/member occurrences.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariantValue {
@@ -292,6 +304,7 @@ pub enum ExprKind {
     },
     /// Retain lexical identities for capture diagnostics, never for lowering.
     UnsupportedClosure(Box<UnsupportedClosure>),
+    Workspace(Box<WorkspaceScope>),
     AccessCall {
         callee: Ident,
         static_args: Vec<StaticOp>,

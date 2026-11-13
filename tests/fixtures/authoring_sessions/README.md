@@ -108,6 +108,10 @@ The [dirty restoration study](dirty-restoration-v030/session.json) retains
 three first sources and observations: exact restoration, a contract refusal,
 and a Bell-reference phase counterexample. General clean/dirty syntax remains open.
 
+The [first clean and dirty scopes](scoped-workspace-v030/README.md) preserve
+four proposed programs and their original parser refusals, with separate
+exact restoration expectations for the positive and negative cases.
+
 The [clean-marginal study](clean-marginal-v030/README.md) preserves three first
 sources and six actual observations. Coherent uncompute and explicit reset
 return the same zero auxiliary but different live distributions; falsely

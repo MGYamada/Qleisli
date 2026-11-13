@@ -20,11 +20,19 @@ private def adapt {α : Type} (value : Except String α) : Finite.WorkM α :=
 
 /-- The empty scope permits recording only scope-independent source lookup.
 The execution witness belongs to its actual first work state, not later hits. -/
+def readOriginal (sources : Sources) (modules : Option (SourceModules.Prepared sources))
+    (caller : String) (tokens : List LocatedToken) : Finite.WorkM (CallName.Checked sources caller [] tokens) :=
+  match modules with
+  | none => CallName.read sources caller [] tokens
+  | some _ => CallName.readWithModules sources modules caller [] tokens
+
 inductive Recorded (sources : Sources) (caller : String) (tokens : List LocatedToken) where
   | accepted (checked : CallName.Checked sources caller [] tokens) (before after : Nat)
-      (executed : (CallName.read sources caller [] tokens).run before = (.ok checked,after))
+      (modules : Option (SourceModules.Prepared sources))
+      (executed : (readOriginal sources modules caller tokens).run before = (.ok checked,after))
   | refused (before after : Nat)
-      (executed : (CallName.read sources caller [] tokens).run before = (.error .request,after))
+      (modules : Option (SourceModules.Prepared sources))
+      (executed : (readOriginal sources modules caller tokens).run before = (.error .request,after))
 
 structure Entry (sources : Sources) (caller : String) where
   tokens : List LocatedToken
@@ -37,11 +45,12 @@ structure Context (sources : Sources) (caller : String) where
 def Entry.key {sources caller} (entry : Entry sources caller) : List String :=
   entry.tokens.map (·.text)
 
-private def capture (sources : Sources) (caller : String) (tokens : List LocatedToken) :
+private def capture (sources : Sources) (modules : Option (SourceModules.Prepared sources))
+    (caller : String) (tokens : List LocatedToken) :
     Finite.WorkM (Recorded sources caller tokens) := fun before =>
-  match executed : (CallName.read sources caller [] tokens).run before with
-  | (.ok checked,after) => (.ok (.accepted checked before after executed),after)
-  | (.error .request,after) => (.ok (.refused before after executed),after)
+  match executed : (readOriginal sources modules caller tokens).run before with
+  | (.ok checked,after) => (.ok (.accepted checked before after modules executed),after)
+  | (.error .request,after) => (.ok (.refused before after modules executed),after)
   | (.error error,after) => (.error error,after)
 
 /-- Rebind only the lexical proof. Every original module/declaration, policy,
@@ -78,7 +87,7 @@ def Answer.checked {sources caller scope tokens} (answer : Answer sources caller
   | .original entry same unbound =>
     match entry.recorded with
     | .refused .. => .error .request
-    | .accepted checked _ _ _ =>
+    | .accepted checked .. =>
       have decision : CallName.Decision sources caller [] (tokens.map (·.text)) :=
         same ▸ checked.decision
       .ok ⟨answer.name,rescope decision unbound⟩
@@ -120,7 +129,7 @@ the lexical decision, charge actual cache-key comparisons. A miss executes and
 charges the unchanged original reader exactly once. No module is scanned merely
 because it is present in the supplied source table. -/
 def read (sources : Sources) (caller : String) (context : Context sources caller)
-    (scope : List String) (tokens : List LocatedToken) :
+    (scope : List String) (tokens : List LocatedToken) (modules : Option (SourceModules.Prepared sources) := none) :
     Finite.WorkM (Lookup sources caller scope tokens) := do
   let texts := tokens.map (·.text)
   Finite.exactWork (Exact.charge (8*(nameFields texts+1)+2*(nameFields scope+1)))
@@ -137,7 +146,7 @@ def read (sources : Sources) (caller : String) (context : Context sources caller
       return ⟨⟨name,.original matched.entry matched.same unbound⟩,context,true⟩
     | none =>
       Finite.exactWork (Exact.charge (nameFields texts+1))
-      let recorded ← capture sources caller tokens
+      let recorded ← capture sources modules caller tokens
       let entry : Entry sources caller := ⟨tokens,recorded⟩
       return ⟨⟨name,.original entry rfl unbound⟩,⟨entry :: context.entries⟩,false⟩
 
@@ -147,10 +156,10 @@ def Recorded.response {sources caller tokens} : Recorded sources caller tokens �
   | .refused .. => .error .request
 
 theorem Recorded.original {sources caller tokens} (recorded : Recorded sources caller tokens) :
-    ∃ first last, (CallName.read sources caller [] tokens).run first = (recorded.response,last) := by
+    ∃ modules first last, (readOriginal sources modules caller tokens).run first = (recorded.response,last) := by
   cases recorded with
-  | accepted checked first last executed => exact ⟨first,last,executed⟩
-  | refused first last executed => exact ⟨first,last,executed⟩
+  | accepted checked first last modules executed => exact ⟨modules,first,last,executed⟩
+  | refused first last modules executed => exact ⟨modules,first,last,executed⟩
 
 theorem Answer.originalSpelling {sources caller scope tokens}
     (answer : Answer sources caller scope tokens) :

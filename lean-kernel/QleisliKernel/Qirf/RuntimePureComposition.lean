@@ -50,6 +50,14 @@ def region {dependencies program block} : Node dependencies program block → Lo
     let literal := action.literal
     ⟨start,count,[literal.input.port.token],[literal.output.token],[event.input],[event.input],
       interval,[literal.input.port],[literal.output],[literal.operation],literal.original,literal.spectators⟩
+  | .workspace (start := start) (count := count) (event := event) interval _ _ action _ =>
+    let scratch := action.scratch.map (·.port)
+    ⟨start,count,RuntimeWorkspace.outputTokens action.input.port.token (scratch.map (·.token)),
+      RuntimeWorkspace.outputTokens action.emitted.dataOut action.emitted.scratchOut,
+      event.input :: (action.scratch.map (fun _ => event.scratch)).toList,
+      event.dataOut :: (action.scratchOut.map (fun _ => event.scratchOut)).toList,
+      interval,action.input.port :: scratch.toList,action.dataOut :: action.scratchOut.toList,
+      action.operations,action.originalOperations,action.spectators⟩
   | .named (start := start) (count := count) (inputs := inputs) event frame _ _ boundary _ =>
     ⟨start,count,inputs,boundary.returned.map (·.token),event.inputOwners,
       SourceRuntimeValues.valueOwners event.value,frame.interval,frame.selected,boundary.returned,

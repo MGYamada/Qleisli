@@ -1,0 +1,118 @@
+{
+  "kind": "informed_first_attempt",
+  "issue": 70,
+  "contract_base": "5534b6d981bac363a6d89db3c5ca0569fe713770",
+  "build_provenance": "Existing executables; no claim they were built from contract_base.",
+  "executables": {
+    "/Users/masa/.cargo/bin/qleisli": "837e1acb97aa6c55f8f3d39942a9eabd6b80a8fe8dff7267ff1555507a5432bb",
+    "/private/tmp/qleisli-472-original-rows.x8Yf1k/lean-kernel/.lake/build/bin/qleisli-kernel": "a6a0c7364a14892966e922827d8d5952b483c59dedd73c4a9234acd3e4563d48"
+  },
+  "sha256": {
+    "clean-restores/main.qli": "76402424ccd2d8aef69748bfdc4b058bcc881c02ebcac89fde95a9e873b582a6",
+    "clean-restores/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "clean-leaks/main.qli": "d08b8a24c37591ebf2b3427eacfa74ffdf5e094d478ca79b2a5e97bc33c89331",
+    "clean-leaks/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "dirty-restores/main.qli": "acceeac5d4bbd1b5f513d21118847285fe3208a022e1ea7898234b4509023c1c",
+    "dirty-restores/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "dirty-alters-reference/main.qli": "d1a33d744497bf12099a8e0f64ebfcc319b1183b6470469f5a08aa7ecf3952ff",
+    "dirty-alters-reference/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "observations": [
+    {
+      "project": "clean-restores",
+      "command": [
+        "/Users/masa/.cargo/bin/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/clean-restores",
+        "--format=json",
+        "--lean-kernel=/private/tmp/qleisli-472-original-rows.x8Yf1k/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "returncode": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `}`, found `{`\",\"primary\":{\"path\":\"main.qli\",\"start\":217,\"end\":218,\"line\":5,\"column\":23},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "clean-restores",
+      "command": [
+        "/Users/masa/.cargo/bin/qleisli",
+        "doc",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/clean-restores/main.qli"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/clean-restores/main.qli: expected `}`, found `{` at byte 217..218\n"
+    },
+    {
+      "project": "clean-leaks",
+      "command": [
+        "/Users/masa/.cargo/bin/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/clean-leaks",
+        "--format=json",
+        "--lean-kernel=/private/tmp/qleisli-472-original-rows.x8Yf1k/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "returncode": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `}`, found `{`\",\"primary\":{\"path\":\"main.qli\",\"start\":217,\"end\":218,\"line\":5,\"column\":23},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "clean-leaks",
+      "command": [
+        "/Users/masa/.cargo/bin/qleisli",
+        "doc",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/clean-leaks/main.qli"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/clean-leaks/main.qli: expected `}`, found `{` at byte 217..218\n"
+    },
+    {
+      "project": "dirty-restores",
+      "command": [
+        "/Users/masa/.cargo/bin/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/dirty-restores",
+        "--format=json",
+        "--lean-kernel=/private/tmp/qleisli-472-original-rows.x8Yf1k/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "returncode": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `}`, found `{`\",\"primary\":{\"path\":\"main.qli\",\"start\":249,\"end\":250,\"line\":5,\"column\":26},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "dirty-restores",
+      "command": [
+        "/Users/masa/.cargo/bin/qleisli",
+        "doc",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/dirty-restores/main.qli"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/dirty-restores/main.qli: expected `}`, found `{` at byte 249..250\n"
+    },
+    {
+      "project": "dirty-alters-reference",
+      "command": [
+        "/Users/masa/.cargo/bin/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/dirty-alters-reference",
+        "--format=json",
+        "--lean-kernel=/private/tmp/qleisli-472-original-rows.x8Yf1k/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "returncode": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `}`, found `{`\",\"primary\":{\"path\":\"main.qli\",\"start\":246,\"end\":247,\"line\":5,\"column\":26},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "dirty-alters-reference",
+      "command": [
+        "/Users/masa/.cargo/bin/qleisli",
+        "doc",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/dirty-alters-reference/main.qli"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-70-scope-first.d14v4xgb/dirty-alters-reference/main.qli: expected `}`, found `{` at byte 246..247\n"
+    }
+  ]
+}
