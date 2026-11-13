@@ -11,6 +11,13 @@ development milestones from the scope of their evidence.
   oracle. Compare both qmatch and CNOT/X implementations against the oracle;
   retain all-input, scalar-phase, superposition and reference correlations.
   Native semantic rejection remains distinct from source-preservation proof.
+- Lower bounded `excl` indices and slices in the hierarchy. Replay original
+  ordered ports against the phase-free structural nodes checked by Lean.
+
+- Lower statically checked `excl` and `ctrl` indices and half-open slices in
+  ordinary finite projects. Restore updated owners in their original axis
+  order and check the actual selected `ctrl` ports with the native checker.
+
 - Check protected and certified `with_computed` predicates on finite nominal
   carriers in selected execution and projects. Bind the original use body,
   certified logical supplier, physical table, owner order and exact auxiliary

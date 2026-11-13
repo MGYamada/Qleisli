@@ -95,11 +95,6 @@ impl<'a> Compiler<'a> {
                 "control obligation lacks its original ordered Ctrl arguments",
             )?);
         }
-        // Indexed places belong to their existing separate profile gate.
-        // This pass neither materializes nor discharges that obligation.
-        if args.iter().any(|argument| argument.selection.is_some()) {
-            return Ok(());
-        }
         let Some(callee_site) = self.locals().try_reference_site(callee) else {
             return Err(self.dormant_error(
                 module,
@@ -273,10 +268,10 @@ impl<'a> Compiler<'a> {
                 return Err(self.error(module, expression.span, ErrorCode::Effect, message));
             }
             self.charge_at(&mut work, module, expression.span, args.len() + 1)?;
-            let mut owners = Vec::with_capacity(args.len());
+            let mut owners = BTreeMap::new();
             for argument in args {
                 let ExprKind::Name(name) = &argument.value.kind else {
-                    let message = "dormant control requires whole original lexical Q owners";
+                    let message = "dormant control requires original lexical Q owners";
                     self.charge_at(&mut work, module, argument.value.span, message.len() + 1)?;
                     return Err(self.error(
                         module,
@@ -299,13 +294,20 @@ impl<'a> Compiler<'a> {
                         _ => None,
                     }
                 });
-                let Some(id) = id.filter(|id| !owners.contains(id)) else {
-                    let message =
-                        "control argument differs from its distinct original runtime owner";
+                let Some(id) = id else {
+                    let message = "control argument differs from its original runtime owner";
                     self.charge_at(&mut work, module, name.span, message.len() + 1)?;
                     return Err(self.error(module, name.span, ErrorCode::Ownership, message));
                 };
-                owners.push(id);
+                let indexed = argument.selection.is_some();
+                if owners
+                    .insert(id, indexed)
+                    .is_some_and(|previous| !indexed || !previous)
+                {
+                    let message = "whole control argument overlaps its original runtime owner";
+                    self.charge_at(&mut work, module, name.span, message.len() + 1)?;
+                    return Err(self.error(module, name.span, ErrorCode::Ownership, message));
+                }
             }
             Ok((plan.callee.site, plan.target))
         })();

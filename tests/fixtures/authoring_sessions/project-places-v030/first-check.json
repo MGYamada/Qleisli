@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"finite profile does not yet lower indexed quantum access","primary":{"path":"main.qli","start":130,"end":139,"line":5,"column":10},"related":[]}],"result":null}

@@ -686,23 +686,44 @@ impl Checker<'_, '_> {
         scope: &Scope,
         subject: plans::EvidenceSubject,
     ) -> Result<()> {
+        self.record_obligation(span, kind, scope, subject, Vec::new())
+    }
+    fn control_obligation(
+        &mut self,
+        span: Span,
+        scope: &Scope,
+        selected: Option<&[Ty]>,
+    ) -> Result<()> {
+        let node = self.original_node(span)?;
+        let Some(super::super::resolve::locals::OriginalNode::Expression(original)) =
+            self.index().original_node(node)
+        else {
+            return Err(SourceError::new(
+                "source",
+                span,
+                "control action lacks its original expression",
+            ));
+        };
+        let owners = self.capture().runtime_owners(original, scope, selected)?;
+        self.record_obligation(
+            span,
+            ObligationKind::ControlSectors,
+            scope,
+            plans::EvidenceSubject::Expression,
+            owners,
+        )
+    }
+    fn record_obligation(
+        &mut self,
+        span: Span,
+        kind: ObligationKind,
+        scope: &Scope,
+        subject: plans::EvidenceSubject,
+        runtime_owners: Vec<plans::RuntimeOwnerPlan>,
+    ) -> Result<()> {
         self.tick(span)?;
         self.program.budget.charge(span, 4)?;
         let node = self.original_node(span)?;
-        let runtime_owners = if matches!(kind, ObligationKind::ControlSectors) {
-            let Some(super::super::resolve::locals::OriginalNode::Expression(original)) =
-                self.index().original_node(node)
-            else {
-                return Err(SourceError::new(
-                    "source",
-                    span,
-                    "control action lacks its original expression",
-                ));
-            };
-            self.capture().runtime_owners(original, scope)?
-        } else {
-            Vec::new()
-        };
         let plan = plans::EvidencePlan {
             node,
             environment: self.plan_environment(scope, span)?,

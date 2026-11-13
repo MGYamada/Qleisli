@@ -913,7 +913,7 @@ impl Checker<'_, '_> {
         {
             // Retain the original obligation even when specialization never
             // visits this declaration, branch, loop body or provider call.
-            self.obligation(span, ObligationKind::ControlSectors, scope)?;
+            self.control_obligation(span, scope, None)?;
         }
         Ok(Ty::unit())
     }

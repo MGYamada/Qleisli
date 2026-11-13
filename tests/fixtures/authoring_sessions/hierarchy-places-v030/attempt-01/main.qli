@@ -1,0 +1,9 @@
+use std::gate::x;
+pub unitary fn indexed(q: Q<Bits<3>>) -> Q<Bits<3>> {
+    x(excl q[2]);
+    q
+}
+pub unitary fn explicit(q: Q<Bits<3>>) -> Q<Bits<3>> {
+    let (b, rest) = take_bit[3,2](q);
+    put_bit[3,2](x(b), rest)
+}

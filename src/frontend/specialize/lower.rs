@@ -18,6 +18,7 @@ use std::collections::{BTreeMap, BTreeSet};
 #[path = "fourier.rs"]
 mod fourier;
 mod fourier_transport;
+mod places;
 mod preservation;
 mod zero_basis;
 pub use preservation::{FramePort, InitializationMove, PreparationValidation, SourceEvent};
@@ -83,6 +84,21 @@ impl HierarchyProposal {
     }
     pub(super) fn validate_fourier_transport(&self) -> Result<()> {
         fourier_transport::validate(self)
+    }
+    /// Replay retained structural source steps against the same checked pure bytes.
+    /// This verifies local structural and call links and leaves general source
+    /// Meaning verification to an independent request.
+    pub fn validate_pure_source_steps(
+        &self,
+        checked: &crate::interchange::hierarchical::NativeChecked,
+    ) -> Result<()> {
+        self.source.require_edition(checked.edition())?;
+        if self.instrument || checked.is_instrument() || self.payload() != checked.payload() {
+            return Err(preservation::invalid(
+                "native pure check differs from the source proposal",
+            ));
+        }
+        zero_basis::validate(self)
     }
     /// Whether the proposal uses initialization/unitary/readout transport.
     /// This includes checked public Isometry roots with no measurements, even
@@ -737,7 +753,7 @@ struct Lower<'a> {
     zero_basis: Vec<zero_basis::Interval>,
     pure_traces: Vec<zero_basis::DefinitionTrace>,
     native_sources: Vec<zero_basis::NativeSourceTrace>,
-    trace_zero_basis: bool,
+    trace_structural_source: bool,
     pure_trace_cells: usize,
 }
 struct NativeOperation<'a> {
@@ -857,7 +873,9 @@ impl Lower<'_> {
         }
         let mut found = false;
         for step in self.source.definitions()[id].steps() {
-            found |= if zero_basis::classify(step) == Some(zero_basis::Kind::Structural) {
+            found |= if step.partition().is_some()
+                || zero_basis::classify(step) == Some(zero_basis::Kind::Structural)
+            {
                 false
             } else if let Some(name) = step.primitive_kind() {
                 match name {
@@ -915,7 +933,7 @@ impl Lower<'_> {
             offset += n;
         }
         let mut children = vec![];
-        let mut trace = if self.trace_zero_basis {
+        let mut trace = if self.trace_structural_source {
             let cells = inputs.iter().try_fold(8usize, |total, port| {
                 total
                     .checked_add(
@@ -1369,7 +1387,7 @@ impl Lower<'_> {
     fn operation(&mut self, op: &SourceOperation) -> Result<usize> {
         let key = op.key();
         if let Some(native) = self.native_operations.iter().find(|entry| entry.key == key) {
-            if zero_basis::operation_uses_table(self.source, op)? {
+            if zero_basis::operation_needs_replay(self.source, op)? {
                 let witness = native
                     .witness
                     .as_ref()
@@ -1407,7 +1425,7 @@ impl Lower<'_> {
                 .map(|p| &p.basis)
                 .ne(after.iter().map(|p| &p.basis))
             {
-                return if self.trace_zero_basis {
+                return if self.trace_structural_source {
                     Ok(child)
                 } else {
                     self.factor_fourier(child)
@@ -1416,7 +1434,7 @@ impl Lower<'_> {
             let enter = self.graph.identity(before.clone())?;
             let rename = self.graph.rename(after, before)?;
             let closed = self.graph.sequence(vec![enter, child, rename])?;
-            if self.trace_zero_basis {
+            if self.trace_structural_source {
                 Ok(closed)
             } else {
                 self.factor_fourier(closed)
@@ -1452,6 +1470,9 @@ impl Lower<'_> {
         before: Vec<Port>,
         origin: (usize, usize),
     ) -> Result<(usize, Vec<Port>)> {
+        if let Some(partition) = step.partition() {
+            return self.partition_step(step, partition, before);
+        }
         if step.basis_table().is_some() {
             return self.zero_basis_structural(step, before, origin);
         }
@@ -2047,7 +2068,8 @@ impl Lower<'_> {
         instrument: &mut Instrument,
         origin: (usize, usize),
     ) -> Result<(Vec<Item>, usize)> {
-        let structural = zero_basis::classify(step) == Some(zero_basis::Kind::Structural)
+        let structural = step.partition().is_some()
+            || zero_basis::classify(step) == Some(zero_basis::Kind::Structural)
             || step.primitive_kind().is_some_and(|name| match name {
                 Primitive::Unit
                 | Primitive::Split
@@ -2089,7 +2111,6 @@ impl Lower<'_> {
 /// Preserve the existing preflight error API using the same typed classification
 /// used by target selection. Internal/limit failures are never reclassified.
 pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
-    source.require_control_evidence()?;
     for step in source
         .definitions()
         .iter()
@@ -2146,6 +2167,9 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
                 .map_or(root.path(), |(module, _)| module),
         )
     };
+    if let Err(error) = source.require_control_evidence() {
+        return Ok(HierarchyEligibility::Ineligible(error));
+    }
     let profile = match root_profile(source) {
         Ok(profile) => profile,
         Err(error) => return Ok(HierarchyEligibility::Ineligible(error)),
@@ -2205,14 +2229,10 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
             )));
         }
     }
-    let has_basis_tables = source
-        .definitions()
-        .iter()
-        .flat_map(|definition| definition.steps())
-        .any(|step| step.basis_table().is_some());
+    let needs_replay = zero_basis::needs_replay(source);
     for definition in source.definitions() {
         for step in definition.steps() {
-            if let Some(operation) = step.operation().filter(|_| has_basis_tables) {
+            if let Some(operation) = step.operation().filter(|_| needs_replay) {
                 // Isometry arrows are materialized by invoke/invoke_operation,
                 // then replayed against their original bodies and source paths.
                 // Their preparation is not an atomic pure transformation. Pure
@@ -2229,16 +2249,16 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
                 if forward_isometry && !zero_basis::materialized_without_repeat(operation)? {
                     return Ok(HierarchyEligibility::Ineligible(Error::new(
                         "unsupported", step.span(),
-                        "zero-basis forward repetition requires retained original child transport; select the Raw profile",
+                        "forward repetition requires retained original child transport; select the Raw profile",
                     ).in_module(step.module())));
                 }
-                if zero_basis::operation_uses_table(source, operation)?
+                if zero_basis::operation_needs_replay(source, operation)?
                     && !zero_basis::operation_has_structural_tables(source, operation)?
                     && !forward_isometry
                 {
                     return Ok(HierarchyEligibility::Ineligible(Error::new(
                         "unsupported",step.span(),
-                        "zero-basis hierarchy transport requires original structural unitary tables; preparation retains the Raw profile",
+                        "hierarchy transport requires replay of the original structural operation; preparation retains the Raw profile",
                     ).in_module(step.module())));
                 }
             }
@@ -2248,12 +2268,18 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
                     "hierarchical transport does not support coherent basis tables; select the Raw profile",
                 ).in_module(step.module())));
             }
-            if step.partition().is_some() {
-                return Ok(HierarchyEligibility::Ineligible(Error::new(
-                    "unsupported",
-                    step.span(),
-                    "hierarchical transport does not support static place partitions; select the Raw profile",
-                ).in_module(step.module())));
+            if step
+                .partition()
+                .is_some_and(|partition| partition.width > 8)
+            {
+                return Ok(HierarchyEligibility::Ineligible(
+                    Error::new(
+                        "unsupported",
+                        step.span(),
+                        "hierarchical place owner exceeds eight axes",
+                    )
+                    .in_module(step.module()),
+                ));
             }
             if step.boolean().is_some() {
                 return Ok(HierarchyEligibility::Ineligible(Error::new(
@@ -2277,7 +2303,7 @@ pub(super) fn operation_needs_source_witness(
     source: &ElaboratedProgram,
     operation: &SourceOperation,
 ) -> Result<bool> {
-    zero_basis::operation_uses_table(source, operation)
+    zero_basis::operation_needs_replay(source, operation)
 }
 
 pub(super) fn lower_with_checked_operation(
@@ -2361,11 +2387,7 @@ fn lower_inner<'a>(
         zero_basis: vec![],
         pure_traces: vec![],
         native_sources: vec![],
-        trace_zero_basis: source
-            .definitions()
-            .iter()
-            .flat_map(|definition| definition.steps())
-            .any(|step| step.basis_table().is_some()),
+        trace_structural_source: zero_basis::needs_replay(source),
         pure_trace_cells: 0,
     };
     // Shared primitive proposals precede composite definitions. This is transport
@@ -2407,7 +2429,7 @@ fn lower_inner<'a>(
         let id = lower.pure_definition(source.root())?;
         // This new source replay binds the actual ordered nodes. A trace
         // factorization without that binding must not replace its root.
-        let id = if lower.trace_zero_basis {
+        let id = if lower.trace_structural_source {
             id
         } else {
             lower.factor_fourier(id)?

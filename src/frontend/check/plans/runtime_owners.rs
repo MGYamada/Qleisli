@@ -1,4 +1,4 @@
-//! Original ordered owner types at common-checked coherent access actions.
+//! Original ordered call-port types at common-checked coherent access actions.
 //! These untrusted snapshots grant no caller-prefix or frame preservation proof.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
@@ -19,6 +19,7 @@ impl Capture<'_, '_> {
         &self,
         expression: &ast::Expr,
         scope: &Scope,
+        selected: Option<&[Ty]>,
     ) -> Result<Vec<RuntimeOwnerPlan>> {
         let span = expression.span;
         self.budget.charge(span, 4)?;
@@ -33,6 +34,7 @@ impl Capture<'_, '_> {
             .charge(span, args.len().saturating_mul(2).saturating_add(1))?;
         if args.is_empty()
             || args.len() > 64
+            || selected.is_some_and(|ports| ports.len() != args.len())
             || !args
                 .iter()
                 .any(|argument| argument.access == ast::QuantumAccess::Ctrl)
@@ -44,7 +46,7 @@ impl Capture<'_, '_> {
             ));
         }
         let mut owners = Vec::with_capacity(args.len());
-        for argument in args {
+        for (ordinal, argument) in args.iter().enumerate() {
             self.budget.charge(argument.value.span, 2)?;
             let ast::ExprKind::Name(name) = &argument.value.kind else {
                 return Err(SourceError::new(
@@ -89,7 +91,15 @@ impl Capture<'_, '_> {
                 ));
             }
             self.budget.charge(name.span, 2)?;
-            let ty = Arc::new(self.budget.copy_ty(name.span, &binding.ty)?);
+            let ty = selected.map_or(&binding.ty, |ports| &ports[ordinal]);
+            if !port_matches(argument, ty) {
+                return Err(SourceError::new(
+                    "source",
+                    name.span,
+                    "control snapshot differs from its checked port",
+                ));
+            }
+            let ty = Arc::new(self.budget.copy_ty(name.span, ty)?);
             owners.push(RuntimeOwnerPlan {
                 reference,
                 source_type: Arc::clone(&ty),
@@ -98,6 +108,18 @@ impl Capture<'_, '_> {
         }
         Ok(owners)
     }
+}
+
+fn port_matches(argument: &ast::AccessArgument, ty: &Ty) -> bool {
+    matches!(
+        (
+            &argument.selection,
+            ty.quantum_basis().map(|basis| &basis.kind)
+        ),
+        (None, Some(_))
+            | (Some(ast::AxisSelection::Index(_)), Some(Kind::Bit))
+            | (Some(ast::AxisSelection::Range { .. }), Some(Kind::Bits(_)))
+    )
 }
 
 impl Validation<'_, '_> {
@@ -140,7 +162,7 @@ impl Validation<'_, '_> {
                 return Err(self.failure(name.span));
             };
             if self.key(owner, key, name.span)? != BindingKind::Runtime
-                || retained.ty.quantum_basis().is_none()
+                || !port_matches(argument, &retained.ty)
                 || !Arc::ptr_eq(&retained.ty, &retained.source_type)
             {
                 return Err(self.failure(name.span));
@@ -235,7 +257,7 @@ pub(in crate::frontend) fn original_runtime_owners<'plan, E>(
             || table
                 .try_binder(key.id)
                 .is_none_or(|binder| binder.kind != BindingKind::Runtime || binder.key != *key)
-            || retained.ty.quantum_basis().is_none()
+            || !port_matches(argument, &retained.ty)
             || !Arc::ptr_eq(&retained.ty, &retained.source_type)
         {
             refuse!();
