@@ -1289,6 +1289,94 @@ fn register_routing_exports_keep_physical_gates_and_structural_order() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn both_exports_require_the_complete_basis_table_to_be_an_axis_map() {
+    let build = |table| {
+        raw(
+            vec![
+                RawOp::Init0 {
+                    output: TokenId(0),
+                    wire: WireId(0),
+                },
+                RawOp::Init0 {
+                    output: TokenId(1),
+                    wire: WireId(1),
+                },
+                RawOp::Init0 {
+                    output: TokenId(2),
+                    wire: WireId(2),
+                },
+                RawOp::Join {
+                    left: TokenId(0),
+                    right: TokenId(1),
+                    output: TokenId(3),
+                },
+                RawOp::Join {
+                    left: TokenId(3),
+                    right: TokenId(2),
+                    output: TokenId(4),
+                },
+                RawOp::LiftBasis {
+                    input: TokenId(4),
+                    output: TokenId(5),
+                    output_wires: vec![WireId(0), WireId(1), WireId(2)],
+                    table,
+                },
+                RawOp::Split {
+                    input: TokenId(5),
+                    left: TokenId(6),
+                    right: TokenId(7),
+                    left_bits: 1,
+                },
+                RawOp::Split {
+                    input: TokenId(7),
+                    left: TokenId(8),
+                    right: TokenId(9),
+                    left_bits: 1,
+                },
+                RawOp::MeasureZ {
+                    input: TokenId(6),
+                    output: ClassicalId(0),
+                },
+                RawOp::MeasureZ {
+                    input: TokenId(8),
+                    output: ClassicalId(1),
+                },
+                RawOp::MeasureZ {
+                    input: TokenId(9),
+                    output: ClassicalId(2),
+                },
+            ],
+            vec![ClassicalId(0), ClassicalId(1), ClassicalId(2)],
+        )
+    };
+    let ordered = vec![0, 2, 4, 6, 1, 3, 5, 7];
+    let valid = build(ordered.clone());
+    let qasm = export_openqasm3(&valid).unwrap();
+    assert_eq!(literal_output_axes(&qasm), [2, 0, 1]);
+    assert!(literal_target(&qasm).1.is_empty());
+    let qir = export_qir_base(&valid).unwrap();
+    assert_eq!(qir.matches("call void @__quantum__qis__").count(), 3);
+
+    // The corrupted permutation preserves zero and every one-hot image.
+    // Its changed multi-bit rows make it a general unitary basis table.
+    let mut changed = ordered;
+    changed.swap(3, 7);
+    let valid_but_not_wiring = build(changed);
+    for error in [
+        export_openqasm3(&valid_but_not_wiring).unwrap_err(),
+        export_qir_base(&valid_but_not_wiring).unwrap_err(),
+    ] {
+        assert_eq!(error.kind, InteropErrorKind::Unsupported);
+        assert_eq!(error.operation, Some(5));
+        assert!(error.message.contains("only equal-width axis permutations"));
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn ordinary_inlined_hzh_exports_literal_x_across_pure_raw_steps() {
     use qleisli::contract::exact::{Exact, Matrix};
     let program = ordinary_terminal(

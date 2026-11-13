@@ -132,8 +132,7 @@ fn register_swap_preserves_wire_frames_and_axis_permutations_compose_without_gat
                 program.instantiate("main::probe", BTreeMap::new(), BTreeMap::new())
             })
             .and_then(|entry| entry.elaborate())
-            .err()
-            .expect("invalid axis pair");
+            .expect_err("invalid axis pair");
         assert!(error.to_string().contains("natural premise"), "{error}");
     }
 }
