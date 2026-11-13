@@ -1,0 +1,6 @@
+pub unitary fn transpose_axes[const n: Nat, const i: Nat, const j: Nat](q: Q<Bits<n>>) -> Q<Bits<n>>
+    requires i < j, j < n {
+    let (a,rest) = take_bit[n,i](q);
+    let (b,rest) = take_bit[n-1,j-1](rest);
+    put_bit[n,i](b,put_bit[n-1,j-1](a,rest))
+}

@@ -342,13 +342,25 @@ difference between label copying and state copying.
 | Target | Existing Raw `ComputeUseUncompute` or certified retained-body construction and finite evidence, within each supported profile |
 | Evaluation order | Evaluate source once; compute specified ancilla, execute checked scoped body, then uncompute. |
 | Owners | Predicate takes one ordinary parameter of source's exact tree. Two-argument body returns ancilla; three-argument body returns data and ancilla. Capture/protection rules remain explicit; no standalone Release0 is inserted. |
-| Exact phase | Preserve complete use/logical action and require exact all-input clean return; known-input/marginal tests or approximate cleanup are insufficient. |
+| Exact phase | Preserve the specified use/logical action and require exact all-input clean return. A cleanliness check alone cannot certify the live action or its phase. Approximate cleanup cannot discharge this obligation. |
 | Source spans | Keep source, predicate, body, returned owner and logical-contract origins. |
 | Refusal | Wrong predicate arity/tree, unsupported body, Observe effect, lost/aliased/protected owners, failed equality/cleanup or capacity exhaustion rejects. The two-argument path retains an already canonical empty/Z/T token chain through the existing protected gate. Other supported one-Bit ancilla bodies require native whole-original and canonical-witness equations for the same exact eighth-root diagonal before scalar/Z/T normalization. Chunking supplies only an untrusted matrix proposal; existing graph, dependency, source and shared-work capacities remain. Non-diagonal or unrepresentable actions reject; no name-based exception supplies evidence. |
 | Remaining obligations | Independently check actual retained compute/use/uncompute and exact logical/cleanup contract with references; syntax and Unitary annotations supply no clean evidence. |
 
 See [scoped bodies](functional-boundary.md#scoped-bodies-finite-elaboration-and-effects)
 and [predicate trees](type-model.md#structural-equality-coherence-and-physical-maps).
+
+For a finite trace-preserving channel with its workspace initialized in a
+fixed pure state, exact return of that workspace marginal on every live
+input is equivalent to factorization with the same workspace state for every
+joint input with an external reference. In a scratch basis containing the
+clean state, the unwanted diagonal populations are sums of squared Kraus
+coefficients. Their vanishing on all live basis inputs forces every unwanted
+coefficient to vanish. The live output includes any declared classical
+outcome register with its original probabilities. The QPTL theorem
+`QPTL.FiniteMatrix.fixedScratch_iff` gives the separation equivalence for
+finite Kraus families. The exact requested live action, coherent phase,
+dirty-workspace identity and quantitative costs have their own contracts.
 
 ## Explicit maps and unsupported candidates
 

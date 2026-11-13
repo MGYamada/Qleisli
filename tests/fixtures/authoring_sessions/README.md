@@ -126,6 +126,10 @@ Usage failures, unchanged refusals, revised explanations and literal QASM/QIR
 outputs remain separate from the bounded exact routing regression and the
 unfinished general source, target and resource obligations.
 
+The [register routing study](register-axis-routing-v030/context.md) retains
+the first register SWAP and axis-transposition sources and ten actual selected
+CLI observations. Independent operator and export checks use separate regressions.
+
 The [linked std descriptor study](linked-std-descriptor-v030/README.md) preserves
 two one-qubit user versions, actual API absence, old qargo import failures,
 empty-root packaging and generic dependency-table refusal in sixteen first
