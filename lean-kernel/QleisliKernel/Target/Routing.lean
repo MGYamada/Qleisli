@@ -309,6 +309,15 @@ private def readSwaps : (steps : List Step) → Option {moves : List Swap // mov
     let moves ← readSwaps rest
     return ⟨move.val :: moves.val,by simp [move.property,moves.property]⟩
 
+theorem Checked.gateContribution {profile occupied moves} (checked : Checked profile occupied moves)
+    (move : Swap) (member : move ∈ moves) (input : Nat) (value : Semantics.Exact.Scalar)
+    (valid : QleisliKernel.Exact.Scalar.valid value = true) :
+    Finite.contributions [] move.step input value =
+      .ok (if value == Semantics.Exact.Scalar.zero then [] else [(move.label input,value)]) := by
+  have admissible := checked.admissible move member
+  simp only [legal,Bool.and_eq_true,bne_iff_ne] at admissible
+  exact move.contribution input value admissible.1.1.1 valid
+
 /-- The schedule retains the literal gate word and checks occupied physical
 locations once. Charging every literal SWAP separately includes pairs that
 cancel semantically. Connectivity and other physical conventions come from the
@@ -337,6 +346,18 @@ theorem Schedule.swapCount_original {profile occupied actual} (schedule : Schedu
 theorem Schedule.width_during {profile occupied actual} (schedule : Schedule profile occupied actual)
     (length : Nat) : (placement (schedule.moves.take length) occupied).length = schedule.liveWidth :=
   placement_length _ _
+
+theorem Schedule.actualGateContribution {profile occupied actual} (schedule : Schedule profile occupied actual)
+    (step : Step) (member : step ∈ actual) :
+    ∃ move ∈ schedule.moves,move.step = step ∧
+      ∀ input value,QleisliKernel.Exact.Scalar.valid value = true →
+        Finite.contributions [] step input value =
+          .ok (if value == Semantics.Exact.Scalar.zero then [] else [(move.label input,value)]) := by
+  rw [← schedule.original] at member
+  obtain ⟨move,present,equal⟩ := List.mem_map.mp member
+  refine ⟨move,present,equal,?_⟩
+  rw [← equal]
+  exact schedule.checked.gateContribution move present
 
 theorem Schedule.preservesCoefficients {profile occupied actual} (schedule : Schedule profile occupied actual)
     {Reference Scalar : Type} (input : Reference → Nat → Scalar) (reference : Reference)
