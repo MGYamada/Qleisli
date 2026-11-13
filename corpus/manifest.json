@@ -1672,6 +1672,24 @@
         0,
         0
       ]
+    },
+    {
+      "id": "qualtran/qrom2_qmatch",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/data_loading/qrom.py",
+      "symbol": "QROM",
+      "license": "Apache-2.0",
+      "qubits": 4,
+      "kind": "unitary",
+      "contract": "For address a=a0+2*a1, XOR data[a] into the two-bit target, with data=[1,2,3,0]; retain address and arbitrary target.",
+      "limitations": "Four-qubit actual qmatch translation, written arms 3,1,0,2. Not general QROM synthesis, source preservation, or a QS/PR/RS/EXACT discharge.",
+      "project": "qualtran/qrom2_qmatch",
+      "default_input": [
+        0,
+        0,
+        0,
+        0
+      ]
     }
   ],
   "authoring_sessions": [
@@ -1684,7 +1702,8 @@
     "authoring/v026-small/session.json",
     "authoring/v027-small/session.json",
     "authoring/v028-small/session.json",
-    "authoring/v029-small/session.json"
+    "authoring/v029-small/session.json",
+    "authoring/qmatch-qrom/session.json"
   ],
   "sized_experiments": [
     {
@@ -1914,5 +1933,19 @@
     "migrations/operation-counterexamples-v030/counterexamples.json",
     "migrations/capability-naming-v030/counterexamples.json",
     "migrations/language-primitives-v030/counterexamples.json"
+  ],
+  "additional_semantic_faults": [
+    {
+      "id": "qrom2_qmatch_wrong_arm",
+      "reference": "qualtran/qrom2_qmatch",
+      "project": "semantic_faults/qrom2_qmatch_wrong_arm",
+      "reason": "Change arm 1 from XOR 2 to XOR 1, preserving all labels, source syntax and target types."
+    },
+    {
+      "id": "qrom2_qmatch_arm_phase",
+      "reference": "qualtran/qrom2_qmatch",
+      "project": "semantic_faults/qrom2_qmatch_arm_phase",
+      "reason": "Add exp(i*pi/4) only to the keep arm. Every basis probability agrees, but exact amplitudes and sector coherence differ."
+    }
   ]
 }

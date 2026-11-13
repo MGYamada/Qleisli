@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "project": "qualtran/qrom2_qmatch",
+      "action": "check",
+      "argv": [
+        "/workspace/scratch/732d143ac341/Qleisli/target/debug/qleisli",
+        "check",
+        "/workspace/scratch/732d143ac341/Qleisli/corpus/qualtran/qrom2_qmatch",
+        "--format=json"
+      ],
+      "cwd": "/workspace/scratch/732d143ac341/Qleisli",
+      "started_utc": "2026-11-12T00:31:58.684079+00:00",
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"checker_paths\":[\"/workspace/scratch/732d143ac341/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel\"],\"checker_identity\":\"unpinned\",\"native_decisions\":{\"count\":91,\"requests_checked\":4,\"complete\":true},\"entry\":{\"present\":true,\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false},\"concrete_ir_roots\":{\"local\":6,\"bundled\":24},\"source_preservation_verified\":false}}\n",
+      "stderr": "",
+      "exit_code": 0,
+      "sources": {
+        "corpus/qualtran/qrom2_qmatch/main.qli": "6e3cdfdcf39c73986671094e813c3ed47be009d0d1678bb4808b2e3f44df419a",
+        "corpus/qualtran/qrom2_qmatch/kernel.qli": "a177e416572465cd324124e16c158a26db06a78b8edf0671d2f4c0c19d5da879"
+      },
+      "binaries": {
+        "target/debug/qleisli": "cce8eaa72b2c6668f57c0175ebd480f8a82e0a19cb7b66d835d26284ba8b8f0f",
+        "lean-kernel/.lake/build/bin/qleisli-kernel": "4b4283ecea826f0bde2ad97dfb5b6c2810ec633931f684c3c3a04185bc4b6e2b"
+      },
+      "unchanged": true
+    }
+  ]
+}

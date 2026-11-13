@@ -33,7 +33,7 @@ fn all_reviewed_corpus_projects_compile_verify_and_execute() {
         assert!(count > 0, "missing reviewed source family {source}");
     }
     logical.sort();
-    assert_eq!(logical.len(), 87, "logical corpus coverage changed");
+    assert_eq!(logical.len(), 88, "logical corpus coverage changed");
     let current = current_corpus_projects(&logical);
     for project in current {
         let checked = compile_project(&project)

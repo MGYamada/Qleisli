@@ -483,9 +483,9 @@ validation and release readiness. Exhaustive corpus execution is no longer a
 CI or release requirement. Other full-validation, proof, package, installation
 and constitutional gates retain their existing scope.
 
-The representative corpus run checks all 87
+The representative corpus run checks all 88
 shipped entries, both X/Y measurements of 20 deterministic representative entries
-stratified by source and existing qubit width, four selected type-correct semantic
+stratified by source and existing qubit width, six selected type-correct semantic
 faults and all rejection cases. It omits the other matrix entries, all additional
 protocol probes and 59 semantic faults. The report explicitly names this reduced
 mode, selected entries and omitted faults; its success is not exhaustive coverage.
@@ -759,7 +759,7 @@ regressions are added (69 commands total). Full hierarchy execution also compare
 decisions and named-QPE residual/reference coefficients against independent
 small-system oracles. These tests do not claim a universal parser/compiler proof.
 
-The current manifest contains 73 groups and 116 commands. The finite-carrier group
+The current manifest contains 73 groups and 118 commands. The finite-carrier group
 also executes 20 complete ordinary input/history controls against the actual
 compiled definitions, including omitted inputs and zero-probability histories.
 It compares 33 shared qmatch request shapes and two exact scalar controls with
@@ -767,6 +767,9 @@ It compares 33 shared qmatch request shapes and two exact scalar controls with
 component has an execution-only native mode and retains the actual compared Rust
 graph/request. Its private component handle grants no ordinary/selected source
 execution or inverse/control access. Fresh compiled-native checks remain required.
+The same group runs the actual qmatch QROM corpus against an independent exact
+16-by-16 oracle, including valid arm/phase mutations. Normal and MSRV Rust jobs
+discover the same regression under `static_semantics`.
 These are conformance observations; generic domain/signature/history properties
 remain separate Lean proofs. Concrete IO tests do not use kernel reduction as
 a performance-intensive substitute for execution. The pure tensor group
