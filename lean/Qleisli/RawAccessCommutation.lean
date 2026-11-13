@@ -1146,4 +1146,465 @@ theorem checked_pair_promoted_action
 
 end LiteralPromotion
 
+section Exchange
+open Semantics.Finite (bit gather)
+open Qleisli.RuntimeForestProduct (gather_bound)
+open Qleisli.Semantics.Exact (entry action)
+open scoped BigOperators Matrix
+
+private def coordinate (axes : List Nat) (label : Nat) : Fin (2^axes.length) :=
+  ⟨gather label axes,gather_bound label axes⟩
+
+private theorem coordinate_eq_iff (axes : List Nat) (a b : Nat) :
+    coordinate axes a = coordinate axes b ↔ ∀ axis ∈ axes, bit a axis = bit b axis := by
+  constructor
+  · intro same axis present
+    obtain ⟨index,bound,rfl⟩ := List.getElem_of_mem present
+    have digits := congrArg (fun x : Fin (2^axes.length) => bit x.val index) same
+    change bit (gather a axes) index = bit (gather b axes) index at digits
+    simpa only [RuntimeScatterTransport.gather_at _ _ _ bound] using digits
+  · intro same
+    exact Fin.ext (gather_same_on axes a b same)
+
+private theorem bit_outside_width {label bits axis : Nat} (inside : label < 2^bits)
+    (outside : bits ≤ axis) : bit label axis = 0 := by
+  have power : 2^bits ≤ 2^axis := Nat.pow_le_pow_right (by decide) outside
+  simp [bit,Nat.div_eq_of_lt (inside.trans_le power)]
+
+private noncomputable def sectorRoute {bits : Nat} {shared first second rest : List Nat}
+    (partition : (shared ++ first ++ second ++ rest).Perm (List.range bits)) :
+    Fin (2^bits) ≃ Fin (2^shared.length) × (Fin (2^first.length) × (Fin (2^second.length) × Fin (2^rest.length))) := by
+  let route := fun label : Fin (2^bits) =>
+    (coordinate shared label.val,coordinate first label.val,coordinate second label.val,coordinate rest label.val)
+  apply Equiv.ofBijective route
+  apply (Fintype.bijective_iff_injective_and_card route).mpr
+  constructor
+  · intro a b same
+    apply Fin.ext
+    apply labels_equal_of_bits
+    intro axis
+    by_cases inside : axis < bits
+    · have present := partition.symm.subset (List.mem_range.mpr inside)
+      simp only [List.mem_append] at present
+      obtain ((onShared | onFirst) | onSecond) | onRest := present
+      · exact (coordinate_eq_iff _ _ _).mp (congrArg Prod.fst same) axis onShared
+      · exact (coordinate_eq_iff _ _ _).mp (congrArg (fun p => p.2.1) same) axis onFirst
+      · exact (coordinate_eq_iff _ _ _).mp (congrArg (fun p => p.2.2.1) same) axis onSecond
+      · exact (coordinate_eq_iff _ _ _).mp (congrArg (fun p => p.2.2.2) same) axis onRest
+    · exact (bit_outside_width a.isLt (Nat.le_of_not_gt inside)).trans
+        (bit_outside_width b.isLt (Nat.le_of_not_gt inside)).symm
+  · have length := partition.length_eq
+    simp only [List.length_append,List.length_range] at length
+    rw [← length]
+    simp only [Fintype.card_prod,Fintype.card_fin,Nat.pow_add,Nat.mul_assoc]
+
+private theorem sectorRoute_read {bits : Nat} {shared first second rest : List Nat}
+    (partition : (shared ++ first ++ second ++ rest).Perm (List.range bits))
+    (label : Fin (2^bits)) : sectorRoute partition label =
+      (coordinate shared label.val,coordinate first label.val,coordinate second label.val,coordinate rest label.val) := rfl
+
+private theorem promotion_exchange {bits : Nat} {firstAxes secondAxes : List Nat}
+    {localFirst localSecond first second : Semantics.Exact.Matrix} {a b c d : Nat}
+    (firstRead : (Raw.promote bits firstAxes localFirst).run a = (.ok first,b))
+    (secondRead : (Raw.promote bits secondAxes localSecond).run c = (.ok second,d))
+    (firstPreserves : ∀ (row : Fin first.rows) (col : Fin first.cols), entry first row.val col.val ≠ 0 →
+      ∀ axis ∈ secondAxes, bit row.val axis = bit col.val axis)
+    (secondPreserves : ∀ (row : Fin second.rows) (col : Fin second.cols), entry second row.val col.val ≠ 0 →
+      ∀ axis ∈ firstAxes, bit row.val axis = bit col.val axis)
+    {Reference : Type} (joint : Nat → Reference → ℂ) (row : Fin (2^bits)) (reference : Reference) :
+    action second (action first joint) row.val reference = action first (action second joint) row.val reference := by
+  let onFirst := (List.range bits).filter (fun axis => firstAxes.contains axis)
+  let offFirst := (List.range bits).filter (fun axis => !firstAxes.contains axis)
+  let shared := onFirst.filter (fun axis => secondAxes.contains axis)
+  let firstOnly := onFirst.filter (fun axis => !secondAxes.contains axis)
+  let secondOnly := offFirst.filter (fun axis => secondAxes.contains axis)
+  let spectators := offFirst.filter (fun axis => !secondAxes.contains axis)
+  have order : (shared ++ firstOnly ++ secondOnly ++ spectators).Perm (List.range bits) := by
+    simpa only [commonOrder,List.partition_eq_filter_filter,shared,firstOnly,secondOnly,spectators,onFirst,offFirst]
+      using commonOrder_perm bits firstAxes secondAxes
+  let route := sectorRoute order
+  have fShape := Qleisli.Raw.promote_denotes _ _ _ _ a b firstRead
+  have sShape := Qleisli.Raw.promote_denotes _ _ _ _ c d secondRead
+  let firstMatrix : Matrix (Fin (2^bits)) (Fin (2^bits)) ℂ := fun r k => entry first r.val k.val
+  let secondMatrix : Matrix (Fin (2^bits)) (Fin (2^bits)) ℂ := fun r k => entry second r.val k.val
+  have firstBound : ∀ axis ∈ firstAxes, axis < bits := by
+    obtain ⟨_,middle,guarded,_⟩ := Finite.bind_success _ _ _ _ _ firstRead
+    have shape := (Finite.guard_success _ _ _ middle guarded).1
+    simp only [Bool.and_eq_true,Finite.axesValid,List.all_eq_true,decide_eq_true_eq] at shape
+    exact shape.1.1.2.1.2
+  have secondBound : ∀ axis ∈ secondAxes, axis < bits := by
+    obtain ⟨_,middle,guarded,_⟩ := Finite.bind_success _ _ _ _ _ secondRead
+    have shape := (Finite.guard_success _ _ _ middle guarded).1
+    simp only [Bool.and_eq_true,Finite.axesValid,List.all_eq_true,decide_eq_true_eq] at shape
+    exact shape.1.1.2.1.2
+  have sharedMem (axis : Nat) : axis ∈ shared ↔ axis ∈ firstAxes ∧ axis ∈ secondAxes := by
+    simp only [shared,onFirst,List.mem_filter,List.mem_range,List.contains_iff_mem]
+    exact ⟨fun h => ⟨h.1.2,h.2⟩,fun h => ⟨⟨firstBound axis h.1,h.1⟩,h.2⟩⟩
+  have absent (axes : List Nat) (axis : Nat) : axes.contains axis = false ↔ axis ∉ axes := by
+    rw [← Bool.not_eq_true,List.contains_iff_mem]
+  have firstMem (axis : Nat) : axis ∈ firstOnly ↔ axis ∈ firstAxes ∧ axis ∉ secondAxes := by
+    simp only [firstOnly,onFirst,List.mem_filter,List.mem_range,Bool.not_eq_true',List.contains_iff_mem,absent]
+    exact ⟨fun h => ⟨h.1.2,h.2⟩,fun h => ⟨⟨firstBound axis h.1,h.1⟩,h.2⟩⟩
+  have secondMem (axis : Nat) : axis ∈ secondOnly ↔ axis ∉ firstAxes ∧ axis ∈ secondAxes := by
+    simp only [secondOnly,offFirst,List.mem_filter,List.mem_range,Bool.not_eq_true',List.contains_iff_mem,absent]
+    exact ⟨fun h => ⟨h.1.2,h.2⟩,fun h => ⟨⟨secondBound axis h.2,h.1⟩,h.2⟩⟩
+  have restMem (axis : Nat) : axis ∈ spectators ↔ axis < bits ∧ axis ∉ firstAxes ∧ axis ∉ secondAxes := by
+    simp only [spectators,offFirst,List.mem_filter,List.mem_range,Bool.not_eq_true',absent,and_assoc]
+  have bitsIn {x y : Fin (2^bits)} (axes : List Nat) (same : coordinate axes x.val = coordinate axes y.val) :
+      ∀ axis ∈ axes, bit x.val axis = bit y.val axis := (coordinate_eq_iff _ _ _).mp same
+  have bitsOut {x y : Fin (2^bits)} (axis : Nat) (outside : ¬axis < bits) : bit x.val axis = bit y.val axis :=
+    (bit_outside_width x.isLt (Nat.le_of_not_gt outside)).trans
+      (bit_outside_width y.isLt (Nat.le_of_not_gt outside)).symm
+  have routeRead (p : Fin (2^shared.length) × (Fin (2^firstOnly.length) × (Fin (2^secondOnly.length) × Fin (2^spectators.length)))) :
+      (coordinate shared (route.symm p).val,coordinate firstOnly (route.symm p).val,
+        coordinate secondOnly (route.symm p).val,coordinate spectators (route.symm p).val) = p := by
+    exact (sectorRoute_read order _).symm.trans (route.apply_symm_apply p)
+  have commute := Qleisli.RoutedControlCommutation.sector_fibre_exchange route firstMatrix secondMatrix 0 0 0
+    (by
+      intro s f t r s' f' t' r' nonzero
+      let x := route.symm (s,f,t,r)
+      let y := route.symm (s',f',t',r')
+      let rx : Fin first.rows := ⟨x.val,fShape.1.symm ▸ x.isLt⟩
+      let cy : Fin first.cols := ⟨y.val,fShape.2.1.symm ▸ y.isLt⟩
+      have on := firstPreserves rx cy nonzero
+      have off : ∀ axis ∉ firstAxes, bit x.val axis = bit y.val axis := by
+        by_contra different
+        exact nonzero ((promotion_entry_on_fibre _ _ _ _ a b firstRead rx cy).trans (if_neg different))
+      have xRead := routeRead (s,f,t,r)
+      have yRead := routeRead (s',f',t',r')
+      refine ⟨?_,?_,?_⟩
+      · exact (congrArg Prod.fst xRead).symm.trans (((coordinate_eq_iff _ _ _).mpr
+          (fun axis present => on axis ((sharedMem axis).mp present).2)).trans (congrArg Prod.fst yRead))
+      · exact (congrArg (fun p => p.2.2.1) xRead).symm.trans (((coordinate_eq_iff _ _ _).mpr
+          (fun axis present => off axis ((secondMem axis).mp present).1)).trans (congrArg (fun p => p.2.2.1) yRead))
+      · exact (congrArg (fun p => p.2.2.2) xRead).symm.trans (((coordinate_eq_iff _ _ _).mpr
+          (fun axis present => off axis ((restMem axis).mp present).2.1)).trans (congrArg (fun p => p.2.2.2) yRead)))
+    (by
+      intro s f t r s' f' t' r' nonzero
+      let x := route.symm (s,f,t,r)
+      let y := route.symm (s',f',t',r')
+      let rx : Fin second.rows := ⟨x.val,sShape.1.symm ▸ x.isLt⟩
+      let cy : Fin second.cols := ⟨y.val,sShape.2.1.symm ▸ y.isLt⟩
+      have on := secondPreserves rx cy nonzero
+      have off : ∀ axis ∉ secondAxes, bit x.val axis = bit y.val axis := by
+        by_contra different
+        exact nonzero ((promotion_entry_on_fibre _ _ _ _ c d secondRead rx cy).trans (if_neg different))
+      have xRead := routeRead (s,f,t,r)
+      have yRead := routeRead (s',f',t',r')
+      refine ⟨?_,?_,?_⟩
+      · exact (congrArg Prod.fst xRead).symm.trans (((coordinate_eq_iff _ _ _).mpr
+          (fun axis present => on axis ((sharedMem axis).mp present).1)).trans (congrArg Prod.fst yRead))
+      · exact (congrArg (fun p => p.2.1) xRead).symm.trans (((coordinate_eq_iff _ _ _).mpr
+          (fun axis present => off axis ((firstMem axis).mp present).2)).trans (congrArg (fun p => p.2.1) yRead))
+      · exact (congrArg (fun p => p.2.2.2) xRead).symm.trans (((coordinate_eq_iff _ _ _).mpr
+          (fun axis present => off axis ((restMem axis).mp present).2.2)).trans (congrArg (fun p => p.2.2.2) yRead)))
+    (by
+      intro s f f' t r
+      let x := route.symm (s,f,t,r)
+      let y := route.symm (s,f',t,r)
+      let x' := route.symm (s,f,0,0)
+      let y' := route.symm (s,f',0,0)
+      have selected {u v : Fin (2^bits)} (sharedEq : coordinate shared u.val = coordinate shared v.val)
+          (targetEq : coordinate firstOnly u.val = coordinate firstOnly v.val) :
+          ∀ axis ∈ firstAxes, bit u.val axis = bit v.val axis := by
+        intro axis first
+        by_cases second : axis ∈ secondAxes
+        · exact bitsIn _ sharedEq axis ((sharedMem axis).mpr ⟨first,second⟩)
+        · exact bitsIn _ targetEq axis ((firstMem axis).mpr ⟨first,second⟩)
+      have other {u v : Fin (2^bits)} (targetEq : coordinate secondOnly u.val = coordinate secondOnly v.val)
+          (restEq : coordinate spectators u.val = coordinate spectators v.val) :
+          ∀ axis ∉ firstAxes, bit u.val axis = bit v.val axis := by
+        intro axis first
+        by_cases second : axis ∈ secondAxes
+        · exact bitsIn _ targetEq axis ((secondMem axis).mpr ⟨first,second⟩)
+        · by_cases inside : axis < bits
+          · exact bitsIn _ restEq axis ((restMem axis).mpr ⟨inside,first,second⟩)
+          · exact bitsOut axis inside
+      have xr := routeRead (s,f,t,r)
+      have yr := routeRead (s,f',t,r)
+      have xr' := routeRead (s,f,0,0)
+      have yr' := routeRead (s,f',0,0)
+      exact promotion_fibre_independence _ _ _ _ a b firstRead
+        ⟨x.val,fShape.1.symm ▸ x.isLt⟩ ⟨x'.val,fShape.1.symm ▸ x'.isLt⟩
+        ⟨y.val,fShape.2.1.symm ▸ y.isLt⟩ ⟨y'.val,fShape.2.1.symm ▸ y'.isLt⟩
+        (selected ((congrArg Prod.fst xr).trans (congrArg Prod.fst xr').symm)
+          ((congrArg (fun p => p.2.1) xr).trans (congrArg (fun p => p.2.1) xr').symm))
+        (selected ((congrArg Prod.fst yr).trans (congrArg Prod.fst yr').symm)
+          ((congrArg (fun p => p.2.1) yr).trans (congrArg (fun p => p.2.1) yr').symm))
+        (other ((congrArg (fun p => p.2.2.1) xr).trans (congrArg (fun p => p.2.2.1) yr).symm)
+          ((congrArg (fun p => p.2.2.2) xr).trans (congrArg (fun p => p.2.2.2) yr).symm))
+        (other ((congrArg (fun p => p.2.2.1) xr').trans (congrArg (fun p => p.2.2.1) yr').symm)
+          ((congrArg (fun p => p.2.2.2) xr').trans (congrArg (fun p => p.2.2.2) yr').symm)))
+    (by
+      intro s f t t' r
+      let x := route.symm (s,f,t,r)
+      let y := route.symm (s,f,t',r)
+      let x' := route.symm (s,0,t,0)
+      let y' := route.symm (s,0,t',0)
+      have selected {u v : Fin (2^bits)} (sharedEq : coordinate shared u.val = coordinate shared v.val)
+          (targetEq : coordinate secondOnly u.val = coordinate secondOnly v.val) :
+          ∀ axis ∈ secondAxes, bit u.val axis = bit v.val axis := by
+        intro axis second
+        by_cases first : axis ∈ firstAxes
+        · exact bitsIn _ sharedEq axis ((sharedMem axis).mpr ⟨first,second⟩)
+        · exact bitsIn _ targetEq axis ((secondMem axis).mpr ⟨first,second⟩)
+      have other {u v : Fin (2^bits)} (targetEq : coordinate firstOnly u.val = coordinate firstOnly v.val)
+          (restEq : coordinate spectators u.val = coordinate spectators v.val) :
+          ∀ axis ∉ secondAxes, bit u.val axis = bit v.val axis := by
+        intro axis second
+        by_cases first : axis ∈ firstAxes
+        · exact bitsIn _ targetEq axis ((firstMem axis).mpr ⟨first,second⟩)
+        · by_cases inside : axis < bits
+          · exact bitsIn _ restEq axis ((restMem axis).mpr ⟨inside,first,second⟩)
+          · exact bitsOut axis inside
+      have xr := routeRead (s,f,t,r)
+      have yr := routeRead (s,f,t',r)
+      have xr' := routeRead (s,0,t,0)
+      have yr' := routeRead (s,0,t',0)
+      exact promotion_fibre_independence _ _ _ _ c d secondRead
+        ⟨x.val,sShape.1.symm ▸ x.isLt⟩ ⟨x'.val,sShape.1.symm ▸ x'.isLt⟩
+        ⟨y.val,sShape.2.1.symm ▸ y.isLt⟩ ⟨y'.val,sShape.2.1.symm ▸ y'.isLt⟩
+        (selected ((congrArg Prod.fst xr).trans (congrArg Prod.fst xr').symm)
+          ((congrArg (fun p => p.2.2.1) xr).trans (congrArg (fun p => p.2.2.1) xr').symm))
+        (selected ((congrArg Prod.fst yr).trans (congrArg Prod.fst yr').symm)
+          ((congrArg (fun p => p.2.2.1) yr).trans (congrArg (fun p => p.2.2.1) yr').symm))
+        (other ((congrArg (fun p => p.2.1) xr).trans (congrArg (fun p => p.2.1) yr).symm)
+          ((congrArg (fun p => p.2.2.2) xr).trans (congrArg (fun p => p.2.2.2) yr).symm))
+        (other ((congrArg (fun p => p.2.1) xr').trans (congrArg (fun p => p.2.1) yr').symm)
+          ((congrArg (fun p => p.2.2.2) xr').trans (congrArg (fun p => p.2.2.2) yr').symm)))
+    (fun label => joint label.val) row reference
+  have rangeSum (n : Nat) (f : Nat → ℂ) :
+      ((List.range n).map f).sum = ∑ i ∈ Finset.range n, f i := by
+    induction n with
+    | zero => simp
+    | succ n ih => simp [List.range_succ,ih,Finset.sum_range_succ]
+  have matAction (matrix : Semantics.Exact.Matrix) (columns : matrix.cols = 2^bits)
+      (input : Nat → Reference → ℂ) (output : Fin (2^bits)) :
+      ((fun r k : Fin (2^bits) => entry matrix r.val k.val : Matrix (Fin (2^bits)) (Fin (2^bits)) ℂ) *ᵥ
+        (fun k => input k.val reference)) output = action matrix input output.val reference := by
+    unfold Matrix.mulVec dotProduct action
+    rw [Fin.sum_univ_eq_sum_range (fun k => entry matrix output.val k * input k reference),columns,rangeSum]
+  rw [← Matrix.mulVec_mulVec,← Matrix.mulVec_mulVec] at commute
+  have firstApply : firstMatrix *ᵥ (fun k => joint k.val reference) =
+      fun k => action first joint k.val reference := funext (matAction first fShape.2.1 joint)
+  have secondApply : secondMatrix *ᵥ (fun k => joint k.val reference) =
+      fun k => action second joint k.val reference := funext (matAction second sShape.2.1 joint)
+  rw [firstApply,secondApply] at commute
+  exact (matAction second sShape.2.1 (action first joint) row).symm.trans
+    (commute.trans (matAction first fShape.2.1 (action second joint) row))
+
+#print axioms promotion_exchange
+
+/-- The original checked calls admit the same ordered action after exchanging
+their promoted operators. Shared control bits come from the written places. -/
+theorem checked_pair_exchange
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs)
+    {firstRequest secondRequest} (pair : RuntimeAccessCallee.Pair second firstRequest secondRequest)
+    (firstMap secondMap : Semantics.Exact.Matrix) (a b c d : Nat)
+    (firstRead : (Raw.promote first.call.interval.frame.interval.before.quantum.frame.length
+      (callerAxes (call := first.call.interval)) pair.firstSectors.actual).run a = (.ok firstMap,b))
+    (secondRead : (Raw.promote second.call.frame.interval.before.quantum.frame.length
+      (callerAxes (call := second.call)) pair.secondSectors.actual).run c = (.ok secondMap,d)) :
+    ∃ firstEvents secondEvents,
+      RuntimeLocalEvents.trace first.call.interval.frame.interval.before.quantum.reference first.call.interval.frame.operations =
+        some ⟨first.call.interval.frame.interval.after.quantum.reference,firstEvents,
+          first.call.interval.frame.interval.before.quantum.frame.length⟩ ∧
+      RuntimeLocalEvents.trace second.call.frame.interval.before.quantum.reference second.call.frame.operations =
+        some ⟨second.call.frame.interval.after.quantum.reference,secondEvents,
+          second.call.frame.interval.before.quantum.frame.length⟩ ∧
+      ∀ (Reference : Type) (joint : Nat → Reference → ℂ) (row : Nat) (reference : Reference),
+        row < secondMap.rows →
+        Qleisli.Semantics.RawAction.events root.dependencies (firstEvents ++ secondEvents)
+          (fun col => joint col reference) row = action firstMap (action secondMap joint) row reference := by
+  obtain ⟨firstEvents,secondEvents,firstTrace,secondTrace,original⟩ :=
+    checked_pair_promoted_action second pair firstMap secondMap a b c d firstRead secondRead
+  refine ⟨firstEvents,secondEvents,firstTrace,secondTrace,?_⟩
+  intro Reference joint row reference rowBound
+  have sameFrame := checked_pair_frame second
+  have firstOn := first_promotion_preserves_second_axes second sameFrame pair.firstSectors firstMap a b firstRead
+  have secondOn := second_promotion_preserves_first_axes second pair.secondSectors secondMap c d secondRead
+  have secondRows := (Qleisli.Raw.promote_denotes _ _ _ _ c d secondRead).1
+  have sameWidth := congrArg List.length sameFrame
+  have secondInFirst := secondRead
+  rw [← sameWidth] at secondInFirst
+  have bounded : row < 2^first.call.interval.frame.interval.before.quantum.frame.length := by
+    rwa [sameWidth,← secondRows]
+  exact (original Reference joint row reference rowBound).trans
+    (promotion_exchange firstRead secondInFirst firstOn secondOn joint ⟨row,bounded⟩ reference)
+
+#print axioms checked_pair_exchange
+
+private theorem routing_read {dependencies program} {block : RuntimeInterval.Block dependencies program}
+    {start count} (interval : RuntimeInterval.Checked block start count)
+    (routes : (((block.operations.drop start).take count).all RuntimeAccessPartition.isRoute) = true) :
+    Semantics.Observation.readOps 65 interval.before.quantum.reference ((block.operations.drop start).take count) =
+      some (interval.after.quantum.reference,[]) := by
+  obtain ⟨operations,literal,trace,_⟩ := structural_interval interval routes
+  rw [literal]
+  exact Qleisli.RuntimeAdjacentSlices.readOps_pure 64 _ _ _ trace
+
+private theorem call_read {dependencies program block arity start count inputs outputs roles}
+    (frame : @RuntimePureInterval.Checked dependencies program block arity start count inputs outputs roles)
+    {events : List Semantics.Raw.Event}
+    (trace : RuntimeLocalEvents.trace frame.interval.before.quantum.reference frame.operations =
+      some ⟨frame.interval.after.quantum.reference,events,frame.interval.before.quantum.frame.length⟩) :
+    Semantics.Observation.readOps 65 frame.interval.before.quantum.reference ((block.operations.drop start).take count) =
+      some (frame.interval.after.quantum.reference,events.map Semantics.Observation.Event.pure) := by
+  rw [frame.literal]
+  exact Qleisli.RuntimeAdjacentSlices.readOps_pure 64 _ _ _ trace
+
+private theorem pair_root_events
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs)
+    {firstRequest secondRequest} (pair : RuntimeAccessCallee.Pair second firstRequest secondRequest)
+    {firstEvents secondEvents : List Semantics.Raw.Event}
+    (firstTrace : RuntimeLocalEvents.trace first.call.interval.frame.interval.before.quantum.reference
+      first.call.interval.frame.operations = some ⟨first.call.interval.frame.interval.after.quantum.reference,firstEvents,
+        first.call.interval.frame.interval.before.quantum.frame.length⟩)
+    (secondTrace : RuntimeLocalEvents.trace second.call.frame.interval.before.quantum.reference
+      second.call.frame.operations = some ⟨second.call.frame.interval.after.quantum.reference,secondEvents,
+        second.call.frame.interval.before.quantum.frame.length⟩) :
+    let exit := second.owners.routing.after.quantum.reference
+    block.whole.prepared.state = exit ∧
+    block.whole.prepared.events = (firstEvents ++ secondEvents).map Semantics.Observation.Event.pure ++
+      [.pure (.reorder exit.frame.length (Semantics.RawTrace.axes exit
+        (root.program.outputs.flatMap fun token => ((exit.live.find? (fun port => port.token == token)).map (·.wires)).getD [])))] := by
+  intro exit
+  let ops := root.program.operations
+  let firstCountRoutes := RuntimeAccessPartition.routingCount first.call.interval.places
+  let lastCountRoutes := RuntimeAccessPartition.routingCount second.call.places
+  let mid := first.nextOffset
+  have middle : mid = firstStart+firstCount+firstCountRoutes := rfl
+  have finish := pair.finalOffset
+  change start+count+lastCountRoutes = ops.length at finish
+  have join : mid + (start-mid) = start := Nat.add_sub_of_le second.owners.bounded
+  have split : ops = ((((ops.take firstStart ++ (ops.drop firstStart).take firstCount) ++
+      (ops.drop (firstStart+firstCount)).take firstCountRoutes) ++ (ops.drop mid).take (start-mid)) ++
+      (ops.drop start).take count) ++ (ops.drop (start+count)).take lastCountRoutes := by
+    simp only [← Qleisli.RuntimeAdjacentSlices.prefixSplit,← middle,join,finish,List.take_length]
+  have firstRoutes := RuntimeAccessPartition.replay_routes first.owners.replayed
+  have secondRoutes := RuntimeAccessPartition.replay_routes second.owners.replayed
+  have takeFirst := routing_read first.owners.preamble firstRoutes.1
+  have putFirst := routing_read first.owners.routing firstRoutes.2
+  have takeSecond := routing_read second.owners.preamble secondRoutes.1
+  have putSecond := routing_read second.owners.routing secondRoutes.2
+  have executeFirst := call_read first.call.interval.frame firstTrace
+  have executeSecond := call_read second.call.frame secondTrace
+  have ⟨beginFirst,endFirst,between,beginSecond,endSecond⟩ := checked_pair_boundaries second
+  have opened : first.owners.preamble.before = block.entry := by
+    obtain ⟨work,left,read⟩ := first.owners.preamble.prefixRead
+    change (Raw.Observation.checkOps root.dependencies 65 block.entry []).run work =
+      (.ok first.owners.preamble.before,left) at read
+    obtain ⟨_,_,folded,rest⟩ := Finite.bind_success _ _ _ _ _ read
+    obtain ⟨_,_,_,done_⟩ := Finite.bind_success _ _ _ _ _ rest
+    exact (Finite.pure_success _ _ _ _ done_).1.trans (Finite.pure_success _ _ _ _ folded).1
+  have initial := (RuntimeNamedFrameAxes.initialized block.inputRead).1
+  rw [opened,initial,beginFirst] at takeFirst
+  rw [← endFirst,between] at putFirst
+  rw [beginSecond] at takeSecond
+  rw [← endSecond] at putSecond
+  change Semantics.Observation.readOps 65 (Semantics.RawTrace.initial root.program.inputs) (ops.take firstStart) =
+    some (first.call.interval.frame.interval.before.quantum.reference,[]) at takeFirst
+  change Semantics.Observation.readOps 65 first.call.interval.frame.interval.after.quantum.reference
+    ((ops.drop (firstStart+firstCount)).take firstCountRoutes) = some (second.owners.preamble.before.quantum.reference,[]) at putFirst
+  change Semantics.Observation.readOps 65 second.owners.preamble.before.quantum.reference
+    ((ops.drop mid).take (start-mid)) = some (second.call.frame.interval.before.quantum.reference,[]) at takeSecond
+  change Semantics.Observation.readOps 65 second.call.frame.interval.after.quantum.reference
+    ((ops.drop (start+count)).take lastCountRoutes) = some (exit,[]) at putSecond
+  change Semantics.Observation.readOps 65 first.call.interval.frame.interval.before.quantum.reference
+    ((ops.drop firstStart).take firstCount) =
+      some (first.call.interval.frame.interval.after.quantum.reference,
+        firstEvents.map Semantics.Observation.Event.pure) at executeFirst
+  change Semantics.Observation.readOps 65 second.call.frame.interval.before.quantum.reference
+    ((ops.drop start).take count) = some (second.call.frame.interval.after.quantum.reference,
+      secondEvents.map Semantics.Observation.Event.pure) at executeSecond
+  have appendRead (initial middle final : Semantics.RawTrace.Interface)
+      (left right : List Semantics.Observation.Op) (before after : List Semantics.Observation.Event)
+      (first : Semantics.Observation.readOps 65 initial left = some (middle,before))
+      (second : Semantics.Observation.readOps 65 middle right = some (final,after)) :
+      Semantics.Observation.readOps 65 initial (left ++ right) = some (final,before ++ after) := by
+    rw [Qleisli.RuntimeAdjacentSlices.readOps_append 64,first]
+    change (do let result ← Semantics.Observation.readOps 65 middle right
+               pure (result.1,before ++ result.2)) = _
+    rw [second]
+    rfl
+  have bodyRead : Semantics.Observation.readOps 65 (Semantics.RawTrace.initial root.program.inputs) ops =
+      some (exit,(firstEvents ++ secondEvents).map Semantics.Observation.Event.pure) := by
+    have read := appendRead _ _ _ _ _ _ _ (appendRead _ _ _ _ _ _ _
+      (appendRead _ _ _ _ _ _ _ (appendRead _ _ _ _ _ _ _
+        (appendRead _ _ _ _ _ _ _ takeFirst executeFirst) putFirst) takeSecond) executeSecond) putSecond
+    rw [← split] at read
+    simpa only [List.nil_append,List.append_nil,List.map_append] using read
+  have actual := block.originalRoot.reader
+  change Semantics.Observation.read root.program = some block.whole.prepared at actual
+  change Semantics.Observation.readOps 65 (Semantics.RawTrace.initial root.program.inputs) root.program.operations = _ at bodyRead
+  simp only [Semantics.Observation.read,bodyRead,bind,Option.bind,pure] at actual
+  exact ⟨(congrArg Semantics.Observation.Prepared.state (Option.some.inj actual)).symm,
+    (congrArg Semantics.Observation.Prepared.events (Option.some.inj actual)).symm⟩
+
+#print axioms pair_root_events
+
+/-- The independently read root applies the exchanged operators and then the
+same literal output permutation. The equality holds on arbitrary reference
+amplitudes with the exact phase and the original output-token order. -/
+theorem checked_pair_root_exchange
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs)
+    {firstRequest secondRequest} (pair : RuntimeAccessCallee.Pair second firstRequest secondRequest)
+    (firstMap secondMap : Semantics.Exact.Matrix) (a b c d : Nat)
+    (firstRead : (Raw.promote first.call.interval.frame.interval.before.quantum.frame.length
+      (callerAxes (call := first.call.interval)) pair.firstSectors.actual).run a = (.ok firstMap,b))
+    (secondRead : (Raw.promote second.call.frame.interval.before.quantum.frame.length
+      (callerAxes (call := second.call)) pair.secondSectors.actual).run c = (.ok secondMap,d)) :
+    let exit := second.owners.routing.after.quantum.reference
+    let returned := root.program.outputs.flatMap fun token =>
+      ((exit.live.find? (fun port => port.token == token)).map (·.wires)).getD []
+    let finish := Semantics.Raw.Event.reorder exit.frame.length (Semantics.RawTrace.axes exit returned)
+    ∃ firstEvents secondEvents,
+      block.whole.prepared.state = exit ∧
+      block.whole.prepared.events = (firstEvents ++ secondEvents ++ [finish]).map Semantics.Observation.Event.pure ∧
+      ∀ (Reference : Type) (joint : Nat → Reference → ℂ) (row : Nat) (reference : Reference),
+        Qleisli.Semantics.RawAction.events root.dependencies (firstEvents ++ secondEvents ++ [finish])
+          (fun col => joint col reference) row = Qleisli.Semantics.RawAction.event root.dependencies finish
+            (fun col => action firstMap (action secondMap joint) col reference) row := by
+  intro exit returned finish
+  obtain ⟨firstEvents,secondEvents,firstTrace,secondTrace,exchange⟩ :=
+    checked_pair_exchange second pair firstMap secondMap a b c d firstRead secondRead
+  obtain ⟨state,original⟩ := pair_root_events second pair firstTrace secondTrace
+  refine ⟨firstEvents,secondEvents,state,?_,?_⟩
+  · simpa only [List.map_append,List.map_cons,List.map_nil] using original
+  intro Reference joint row reference
+  have endFrame := (checked_routing_intervals second.owners).2
+  have callEnd := (checked_pair_boundaries second).2.2.2.2
+  rw [← callEnd,checked_call_frame second.call] at endFrame
+  have rows := (Qleisli.Raw.promote_denotes _ _ _ _ c d secondRead).1
+  have width : secondMap.rows = 2^exit.frame.length := by
+    change secondMap.rows = 2^second.owners.routing.after.quantum.frame.length
+    rw [endFrame,rows]
+  simp only [Qleisli.Semantics.RawAction.events,List.foldl_append,List.foldl_cons,List.foldl_nil]
+  unfold finish Qleisli.Semantics.RawAction.event
+  apply Qleisli.Exact.sum_map_congr
+  intro col member
+  have bounded : col < secondMap.rows := width.symm ▸ List.mem_range.mp member
+  have same := exchange Reference joint col reference bounded
+  simpa only [Qleisli.Semantics.RawAction.events,List.foldl_append] using congrArg
+    (fun coefficient => if gather col (Semantics.RawTrace.axes exit returned) == row then coefficient else 0) same
+
+#print axioms checked_pair_root_exchange
+
+end Exchange
+
 end Qleisli.Raw.AccessCommutation
