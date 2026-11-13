@@ -262,4 +262,95 @@ theorem shared_wires_are_controls
 
 #print axioms shared_wires_are_controls
 
+open SourceTypes.AccessSyntax (Place) in
+private theorem written_control_position (places : List Place) (offset : Nat) (prior : List Nat)
+    (place : Place) (member : place ∈ places) (control : place.role = .ctrl)
+    (wire : Nat) (present : wire ∈ place.axes) :
+    ∃ index, (places.flatMap (·.axes))[index]? = some wire ∧
+      offset+index ∈ (places.foldl (fun (base,axes) item =>
+        (base+item.axes.length, if item.role == .ctrl then
+          axes ++ (List.range item.axes.length).map (base+·) else axes)) (offset,prior)).2 := by
+  have retained (items : List Place) (base : Nat) (before : List Nat) (index : Nat)
+      (held : index ∈ before) :
+      index ∈ (items.foldl (fun (base,axes) item =>
+        (base+item.axes.length, if item.role == .ctrl then
+          axes ++ (List.range item.axes.length).map (base+·) else axes)) (base,before)).2 := by
+    induction items generalizing base before with
+    | nil => exact held
+    | cons first rest ih =>
+      simp only [List.foldl_cons]
+      apply ih
+      split <;> simp [held]
+  induction places generalizing offset prior with
+  | nil => cases member
+  | cons first rest ih =>
+    simp only [List.flatMap_cons,List.foldl_cons]
+    rcases List.mem_cons.mp member with rfl | later
+    · obtain ⟨index,bounded,read⟩ := List.getElem_of_mem present
+      refine ⟨index,?_,?_⟩
+      · rw [List.getElem?_append_left bounded,List.getElem?_eq_getElem bounded,read]
+      · apply retained
+        have indexed : offset+index ∈ (List.range place.axes.length).map (offset+·) :=
+          List.mem_map_of_mem (List.mem_range.mpr bounded)
+        rw [control]
+        exact List.mem_append_right _ indexed
+    · obtain ⟨index,read,held⟩ := ih (offset+first.axes.length)
+        (if first.role == .ctrl then prior ++ (List.range first.axes.length).map (offset+·) else prior) later
+      refine ⟨first.axes.length+index,?_,?_⟩
+      · rwa [List.getElem?_append_right (Nat.le_add_right _ _),Nat.add_sub_cancel_left]
+      · simpa only [Nat.add_assoc] using held
+
+/-- A written coherent control wire occurs at its actual position in the
+matrix mask, even when its port follows an exclusive or zero-width port. -/
+theorem control_wire_index (places : List SourceTypes.AccessSyntax.Place)
+    (place : SourceTypes.AccessSyntax.Place) (member : place ∈ places) (control : place.role = .ctrl)
+    (wire : Nat) (present : wire ∈ place.axes) :
+    ∃ index ∈ RuntimeAccessInterval.controlAxes places, (places.flatMap (·.axes))[index]? = some wire := by
+  obtain ⟨index,read,held⟩ := written_control_position places 0 [] place member control wire present
+  exact ⟨index,by simpa only [Nat.zero_add,RuntimeAccessInterval.controlAxes] using held,read⟩
+
+#print axioms control_wire_index
+
+section SharedCoordinate
+variable {artifact : Artifact} {root : Validity.Root} {owner name signature tokens}
+  {block : RuntimeInterval.Prepared root.dependencies root.program} {callee start count inputs outputs}
+  {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+  {call : @RuntimeAccessInterval.Checked tokens root.dependencies root.program callee source.lookup source.naturals
+    (fun _ _ => none) block.block start count inputs outputs} {request : RuntimeAccessCallee.Context}
+
+/-- A nonzero promoted entry cannot change the physical bit of any written
+coherent-control operand. The frame lookup rules out a default axis. -/
+theorem checked_caller_control_bit
+    (sectors : RuntimeAccessInterval.Sectors call) (actual : Semantics.Exact.Matrix) (work left : Nat)
+    (read : (Raw.promote call.frame.interval.before.quantum.frame.length
+      (callerAxes (call := call)) sectors.actual).run work = (.ok actual,left))
+    (row : Fin actual.rows) (col : Fin actual.cols)
+    (nonzero : Qleisli.Semantics.Exact.entry actual row.val col.val ≠ 0)
+    (place : SourceTypes.AccessSyntax.Place) (member : place ∈ call.places) (control : place.role = .ctrl)
+    (wire : Nat) (present : wire ∈ place.axes) :
+    Semantics.Finite.bit row.val (call.frame.interval.before.quantum.frame.idxOf wire) =
+      Semantics.Finite.bit col.val (call.frame.interval.before.quantum.frame.idxOf wire) := by
+  let axis := call.frame.interval.before.quantum.frame.idxOf wire
+  obtain ⟨index,maskMember,written⟩ := control_wire_index call.places place member control wire present
+  have original : (call.frame.selected.flatMap Semantics.Raw.Port.wires)[index]? = some wire := by
+    rw [List.flatMap_def,call.inputAxes,← List.flatMap_def]
+    exact written
+  have mapped : (callerAxes (call := call))[index]? = some axis := by
+    simp only [callerAxes,RuntimeForestCode.portAxes,List.getElem?_map,original,Option.map_some,axis]
+  have axisBound : index < (callerAxes (call := call)).length := List.getElem?_eq_some_iff.mp mapped |>.1
+  have axisEq : (callerAxes (call := call))[index]'axisBound = axis := by
+    simpa only [List.getElem?_eq_getElem axisBound,Option.some.injEq] using mapped
+  obtain ⟨position,maskBound,maskEq⟩ := List.getElem_of_mem maskMember
+  have preserves := (promoted_preserves_coordinates sectors _ _ actual work left read row col nonzero).2
+  have bitEq := congrArg (fun label => Semantics.Finite.bit label position) preserves
+  dsimp only at bitEq
+  rw [RuntimeScatterTransport.gather_at _ _ _ maskBound,
+    RuntimeScatterTransport.gather_at _ _ _ maskBound,maskEq,
+    RuntimeScatterTransport.gather_at _ _ _ axisBound,
+    RuntimeScatterTransport.gather_at _ _ _ axisBound,axisEq] at bitEq
+  exact bitEq
+
+#print axioms checked_caller_control_bit
+end SharedCoordinate
+
 end Qleisli.Raw.AccessCommutation
