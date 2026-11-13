@@ -404,6 +404,11 @@ impl SourceStep {
         &self.accesses
     }
 
+    pub(super) fn needs_control_check(&self) -> bool {
+        self.accesses
+            .contains(&crate::frontend::ast::QuantumAccess::Ctrl)
+    }
+
     // A retained role is a checking obligation, never evidence of preservation.
     // Both transport profiles must inspect it before generating a proposal.
     pub(super) fn check_access_contract(&self) -> Result<()> {
@@ -927,6 +932,12 @@ impl ElaboratedProgram {
     pub fn lower(&self) -> Result<super::HierarchyProposal> {
         super::lower::lower(self)
     }
+    /// Prepare a pure hierarchy for a mandatory native source-control check.
+    /// The proposal grants no acceptance or execution authority.
+    pub fn lower_hierarchy_with_controls(&self) -> Result<super::HierarchyProposal> {
+        super::lower::lower_with_controls(self)
+    }
+
     /// Produce a bounded Raw proposal from this retained specialization.
     /// This performs no native acceptance or source-preservation proof.
     pub fn lower_raw(&self) -> Result<super::RawSourceProposal> {

@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check bounded pure hierarchy `ctrl` calls on their actual replayed intervals,
+  with exact ordered ports and a fresh native sector check before execution.
+
 - Lower bounded `excl` indices and slices in the hierarchy. Replay original
   ordered ports against the phase-free structural nodes checked by Lean.
 

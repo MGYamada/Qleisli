@@ -1,0 +1,201 @@
+{
+  "baseline_worktree_commit": "6392f03cc2deeead08e521a6f61021a976a85635",
+  "initial_manifest": "[qrate]\nname = \"hierarchy-ctrl-first\"\nedition = \"2026\"\n",
+  "initial_binary_hashes": [
+    "157b488c1842314c66596fcdcb689543a75b3abfdc90bab7f1f13f553177ccfe  target/debug/qleisli",
+    "2b9d205d07460f565a328247ad7250841d2cbaa47538a3b3fa2f1792cfbbcdb2  lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "schema_2_repair_changed_source": false,
+  "observations": {
+    "main-raw": {
+      "first_manifest_exit_code": 1,
+      "first_manifest_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "project",
+            "severity": "error",
+            "message": "Qargo.toml requires schema-version = 2",
+            "primary": {
+              "module": "main",
+              "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/main.qli",
+              "start": 0,
+              "end": 55
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      },
+      "first_schema_2_exit_code": 0,
+      "first_schema_2_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": false,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::route",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      }
+    },
+    "main-hierarchy": {
+      "first_manifest_exit_code": 1,
+      "first_manifest_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "project",
+            "severity": "error",
+            "message": "Qargo.toml requires schema-version = 2",
+            "primary": {
+              "module": "main",
+              "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/main.qli",
+              "start": 0,
+              "end": 55
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      },
+      "first_schema_2_exit_code": 1,
+      "first_schema_2_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "ctrl source access requires independently bound basis-sector evidence; source lowering is not yet supported",
+            "primary": {
+              "module": "main",
+              "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/schema2/main.qli",
+              "start": 81,
+              "end": 113
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    "wrong-raw": {
+      "first_manifest_exit_code": 1,
+      "first_manifest_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "project",
+            "severity": "error",
+            "message": "Qargo.toml requires schema-version = 2",
+            "primary": {
+              "module": "main",
+              "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/wrong.qli",
+              "start": 0,
+              "end": 55
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      },
+      "first_schema_2_exit_code": 1,
+      "first_schema_2_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "contract",
+            "severity": "error",
+            "message": "ctrl requires exact computational-basis sector preservation: contract: Lean native checker rejected the artifact/request; no fallback; ctrl requires computational-basis sector preservation, not read-only access; phase kickback is permitted; use excl for arbitrary coherent access",
+            "primary": {
+              "module": "main",
+              "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/schema2/wrong.qli",
+              "start": 81,
+              "end": 113
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    "wrong-hierarchy": {
+      "first_manifest_exit_code": 1,
+      "first_manifest_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "project",
+            "severity": "error",
+            "message": "Qargo.toml requires schema-version = 2",
+            "primary": {
+              "module": "main",
+              "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/wrong.qli",
+              "start": 0,
+              "end": 55
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      },
+      "first_schema_2_exit_code": 1,
+      "first_schema_2_stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "ctrl source access requires independently bound basis-sector evidence; source lowering is not yet supported",
+            "primary": {
+              "module": "main",
+              "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/schema2/wrong.qli",
+              "start": 81,
+              "end": 113
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    }
+  }
+}

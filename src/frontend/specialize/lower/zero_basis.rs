@@ -50,7 +50,9 @@ pub(super) fn needs_replay(source: &ElaboratedProgram) -> bool {
         .definitions()
         .iter()
         .flat_map(|definition| definition.steps())
-        .any(|step| step.basis_table().is_some() || step.partition().is_some())
+        .any(|step| {
+            step.basis_table().is_some() || step.partition().is_some() || step.needs_control_check()
+        })
 }
 
 pub(super) fn operation_needs_replay(
@@ -84,7 +86,10 @@ pub(super) fn operation_needs_replay(
             p::invalid("source operation references an absent original definition")
         })?;
         for step in definition.steps() {
-            if step.basis_table().is_some() || step.partition().is_some() {
+            if step.basis_table().is_some()
+                || step.partition().is_some()
+                || step.needs_control_check()
+            {
                 return Ok(true);
             }
             if let Some(id) = step.called_definition() {

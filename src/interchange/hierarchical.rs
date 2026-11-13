@@ -4,6 +4,7 @@
 
 mod bridge;
 mod runtime;
+pub(crate) use bridge::ControlRequest;
 use runtime::Mode;
 pub mod execution;
 
@@ -245,6 +246,10 @@ impl NativeChecked {
     pub fn payload(&self) -> &[u8] {
         &self.payload
     }
+    pub(crate) fn has_control_checks(&self) -> bool {
+        self.context.mode() == Mode::ControlRequest.argument()
+    }
+
     /// Canonical path used for this invocation, not a binary attestation.
     /// It is retained without resolving the configured path again.
     pub fn checker(&self) -> &Path {
@@ -293,19 +298,36 @@ impl Kernel {
 
     /// Native original-QIRF/request checking, including phase-fixed Fourier H.
     pub fn check_against_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked> {
-        let decoded = bridge::decode_request(payload, request)?;
+        self.check_against_native_with_controls(payload, request, &[])
+    }
+
+    pub(crate) fn check_against_native_with_controls(
+        &self,
+        payload: &[u8],
+        request: &[u8],
+        controls: &[ControlRequest],
+    ) -> Result<NativeChecked> {
+        let decoded = bridge::decode_with_controls(payload, request, controls)?;
         let mut prepared = Prepared::new(self.edition, payload, Some(request), None, false);
         let mode = if decoded.fourier_width.is_some() {
             Mode::Fourier
-        } else {
+        } else if controls.is_empty() {
             Mode::Request
+        } else {
+            Mode::ControlRequest
         };
+        let view = prepared.view();
+        if !controls.is_empty() && view.is_none() {
+            return Err(Error::format(
+                "hierarchy source control requires a comparable execution view",
+            ));
+        }
         let response = runtime::check(
             &self.executable,
             self.edition,
             decoded.bridge,
             mode,
-            prepared.view().as_deref(),
+            view.as_deref(),
         )?;
         validate_leaves(&decoded.actual, &response.indices)?;
         if let Some(width) = decoded.fourier_width {

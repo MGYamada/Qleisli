@@ -596,7 +596,7 @@ fn carrier_supported(ty: &SourceType) -> bool {
         _ => false,
     }
 }
-fn finite_basis(basis: &SourceType) -> Option<BasisType> {
+pub(super) fn finite_basis(basis: &SourceType) -> Option<BasisType> {
     match &basis.kind {
         Kind::Unit => Some(BasisType::Unit),
         Kind::Bit => Some(BasisType::Bit),
@@ -1929,12 +1929,11 @@ fn lower_refined_with_control(
     lower_controlled_source(source, kernel, budget, meanings)
 }
 
-fn lower_controlled_source(
+/// Every original obligation must occur in every retained concrete instance.
+pub(super) fn control_subjects(
     source: &ElaboratedProgram,
-    kernel: &native::Kernel,
     budget: &mut Budget,
-    meanings: Arc<Vec<CheckedMeaning>>,
-) -> Result<RawSourceProposal> {
+) -> Result<Vec<usize>> {
     use crate::frontend::{ast::QuantumAccess, check::ObligationKind};
     let span = source.definitions()[source.root()].span();
     let checked = &source.instantiation().program.checked;
@@ -1985,6 +1984,16 @@ fn lower_controlled_source(
             ).in_module(&original.name.0));
         }
     }
+    Ok(subjects)
+}
+
+fn lower_controlled_source(
+    source: &ElaboratedProgram,
+    kernel: &native::Kernel,
+    budget: &mut Budget,
+    meanings: Arc<Vec<CheckedMeaning>>,
+) -> Result<RawSourceProposal> {
+    let subjects = control_subjects(source, budget)?;
     for subject in subjects {
         // Check each specialization, not just one representative per source
         // declaration. Zero-count providers still retain their original body.

@@ -10,6 +10,7 @@ use crate::interchange::process::TransportLimits;
 pub(super) enum Mode {
     Inspect,
     Request,
+    ControlRequest,
     Fourier,
     Instrument,
     QpeInstrument,
@@ -19,15 +20,17 @@ impl Mode {
         match self {
             Self::Inspect => "artifact inspection",
             Self::Request => "composition-request checking",
+            Self::ControlRequest => "source control and composition-request checking",
             Self::Fourier => "independent Fourier-request checking",
             Self::Instrument => "composition-instrument checking",
             Self::QpeInstrument => "named-QPE instrument checking",
         }
     }
-    fn argument(self) -> &'static str {
+    pub(super) fn argument(self) -> &'static str {
         match self {
             Self::Inspect => "--hierarchy-pending",
             Self::Request => "--hierarchy-request-pending",
+            Self::ControlRequest => "--hierarchy-control-pending",
             Self::Fourier => "--hierarchy-fourier-pending",
             Self::Instrument => "--instrument-pending",
             Self::QpeInstrument => "--qpe-instrument-pending",
@@ -38,6 +41,7 @@ impl Mode {
         match self {
             Self::Inspect => ContextMode::Hierarchy,
             Self::Request => ContextMode::HierarchyRequest,
+            Self::ControlRequest => ContextMode::HierarchyControl,
             Self::Fourier => ContextMode::HierarchyFourier,
             Self::Instrument => ContextMode::Instrument,
             Self::QpeInstrument => ContextMode::QpeInstrument,
@@ -50,9 +54,11 @@ impl Mode {
     fn transport_limits(self) -> TransportLimits {
         match self {
             Self::Inspect => TransportLimits::HIERARCHY_INSPECTION,
-            Self::Request | Self::Fourier | Self::Instrument | Self::QpeInstrument => {
-                TransportLimits::HIERARCHY_REQUEST
-            }
+            Self::Request
+            | Self::ControlRequest
+            | Self::Fourier
+            | Self::Instrument
+            | Self::QpeInstrument => TransportLimits::HIERARCHY_REQUEST,
         }
     }
 }
@@ -136,7 +142,11 @@ fn response_bound(
         .collect::<Result<_>>()?;
     let pairs = match mode {
         Mode::Inspect => Vec::new(),
-        Mode::Request | Mode::Fourier | Mode::Instrument | Mode::QpeInstrument => {
+        Mode::Request
+        | Mode::ControlRequest
+        | Mode::Fourier
+        | Mode::Instrument
+        | Mode::QpeInstrument => {
             let count = integer(
                 lines.next(),
                 if matches!(mode, Mode::Fourier) {

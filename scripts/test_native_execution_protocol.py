@@ -45,7 +45,7 @@ def inner(artifact, request=None):
 
 def check_response_contexts():
     """Synthetic framing negatives supplement, never replace, native decisions."""
-    assert len(MODES) == 16
+    assert len(MODES) == 17
     for mode, (claim, scopes) in MODES.items():
         for scope in scopes:
             frame = f'qleisli.native-result 3\n{claim}\n2026\n{VERSION}\n{mode}\n{scope}\n42\n'.encode()

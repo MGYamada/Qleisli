@@ -3,6 +3,78 @@
 use std::collections::BTreeMap;
 
 use super::{Error, Result, Value, Writer, decode, json, number};
+use crate::contract::BasisType;
+
+pub(crate) struct ControlRequest {
+    pub root: usize,
+    pub ports: Vec<BasisType>,
+    pub controls: Vec<bool>,
+}
+
+fn write_control_basis(w: &mut Writer, basis: &BasisType) -> Result<()> {
+    let mut pending = vec![basis];
+    let mut atoms = Vec::new();
+    while let Some(basis) = pending.pop() {
+        if atoms.len() == 128 {
+            return Err(Error::limit("hierarchy control basis exceeds 128 atoms"));
+        }
+        atoms.push(basis);
+        match basis {
+            BasisType::Pair(left, right) => pending.extend([right.as_ref(), left.as_ref()]),
+            BasisType::Tuple(fields) => pending.extend(fields.iter().rev()),
+            _ => {}
+        }
+    }
+    w.word(atoms.len() as u32)?;
+    for basis in atoms {
+        match basis {
+            BasisType::Unit => w.word(0)?,
+            BasisType::Bit => w.word(1)?,
+            BasisType::Bits(width) => {
+                w.word(2)?;
+                w.word(*width)?;
+            }
+            BasisType::Pair(..) => {
+                w.word(3)?;
+                w.word(2)?;
+            }
+            BasisType::Tuple(fields) => {
+                w.word(3)?;
+                w.word(
+                    u32::try_from(fields.len())
+                        .map_err(|_| Error::limit("tuple arity exceeds u32"))?,
+                )?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn write_controls(w: &mut Writer, controls: &[ControlRequest], definitions: usize) -> Result<()> {
+    if controls.len() > 100_000 {
+        return Err(Error::limit("hierarchy control requests exceed 100000"));
+    }
+    w.bytes[..4].copy_from_slice(b"QLR2");
+    w.word(controls.len() as u32)?;
+    for control in controls {
+        if control.root >= definitions
+            || control.ports.is_empty()
+            || control.ports.len() > 64
+            || control.ports.len() != control.controls.len()
+        {
+            return Err(Error::format("invalid hierarchy control request interface"));
+        }
+        w.word(control.root as u32)?;
+        w.word(control.ports.len() as u32)?;
+        for basis in &control.ports {
+            write_control_basis(w, basis)?;
+        }
+        for &role in &control.controls {
+            w.word(u32::from(role))?;
+        }
+    }
+    Ok(())
+}
 
 pub(super) struct Pair {
     pub actual: usize,
@@ -82,6 +154,14 @@ fn children(meaning: &Value) -> Result<Vec<usize>> {
 }
 
 pub(crate) fn decode_request(payload: &[u8], request: &[u8]) -> Result<BoundDecoded> {
+    decode_with_controls(payload, request, &[])
+}
+
+pub(crate) fn decode_with_controls(
+    payload: &[u8],
+    request: &[u8],
+    controls: &[ControlRequest],
+) -> Result<BoundDecoded> {
     let decoded = decode(payload)?;
     let required = json::parse(request)?;
     required.fields(&[
@@ -149,6 +229,12 @@ pub(crate) fn decode_request(payload: &[u8], request: &[u8]) -> Result<BoundDeco
     // Reject cycles in the requested table before proposing node pairs.
     w.schedule()?;
     if requested[entry].field("body")?.field("tag")?.text()? == "qft" {
+        if !controls.is_empty() {
+            return Err(Error::new(
+                "unsupported",
+                "hierarchy source controls require a composition request",
+            ));
+        }
         if requested.len() != 1
             || entry != 0
             || required.field("kind")?.text()? != "equation"
@@ -237,6 +323,13 @@ pub(crate) fn decode_request(payload: &[u8], request: &[u8]) -> Result<BoundDeco
     w.word(order.len() as u32)?;
     for i in order {
         w.word(i as u32)?;
+    }
+    if !controls.is_empty() {
+        write_controls(
+            &mut w,
+            controls,
+            decoded.value.field("definitions")?.array()?.len(),
+        )?;
     }
     Ok(BoundDecoded {
         actual: decoded.value,
