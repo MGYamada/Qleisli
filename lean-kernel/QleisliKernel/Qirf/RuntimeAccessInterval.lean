@@ -82,13 +82,14 @@ def checkSectors {tokens dependencies program call lookup names calls block star
   return ⟨actual.val,by with_reducible exact actual.property,preserved⟩
 
 /-- The compatibility result now speaks about the wire lists read from the
-two actual intervals. This is the disjoint-support premise, separately from
+two actual intervals, even when structural routing lies between them. This is
+the disjoint-support premise, separately from
 the locality and semantic equations for those intervals. -/
 theorem exclusive_actual_disjoint {tokensA tokensB dependencies program callA callB lookupA lookupB
-    names calls block start countA countB inputsA outputsA inputsB outputsB}
-    (first : @Checked tokensA dependencies program callA lookupA names calls block start countA inputsA outputsA)
+    names calls block startA startB countA countB inputsA outputsA inputsB outputsB}
+    (first : @Checked tokensA dependencies program callA lookupA names calls block startA countA inputsA outputsA)
     (second : @Checked tokensB dependencies program callB lookupB names calls block
-      (start+countA) countB inputsB outputsB)
+      startB countB inputsB outputsB)
     (ok : compatible first.places second.places = true)
     (a b : Nat) (left : Place) (right : Place)
     (leftAt : first.places[a]? = some left) (rightAt : second.places[b]? = some right)

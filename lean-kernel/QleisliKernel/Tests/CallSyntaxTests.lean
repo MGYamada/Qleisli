@@ -2,6 +2,7 @@ import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.AccessSyntax
 import QleisliKernel.Qirf.RuntimeAccessInterval
 import QleisliKernel.Qirf.RuntimeAccessSource
+import QleisliKernel.Qirf.RuntimeAccessPartition
 
 /-! Bounded original-token controls; no name/owner/effect or body acceptance.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -172,5 +173,70 @@ example : (emptyFirst "a: Q<Unit>, b: Q<Bits<0>>" [0,1]).toOption =
 example : (emptyFirst "a: Q<Unit>, b: Q<Bits<0>>" [1,0]).isOk = false := by decide +kernel
 example : (emptyFirst "a: Q<Unit>, a: Q<Bits<0>>" [0,1]).isOk = false := by decide +kernel
 example : (emptyFirst "a: Q<Unit>, b: Q<Bit>" [0,1]).isOk = false := by decide +kernel
+
+open QleisliKernel.Finite QleisliKernel.Qirf in
+private def partitionFirst (source : String) (raw : Semantics.Raw.Program)
+    (start count : Nat) (inputs outputs : List Nat) : Bool × Option (List Semantics.Raw.Port) :=
+  let prepare := RuntimeInterval.prepare [] (Semantics.Ownership.pureProgram raw)
+  let attempt : WorkM (List Semantics.Raw.Port) := do
+    let root ← prepare
+    let signature ← QuantumSignatureCore.read #[("main",source)] "main" "route"
+    let checked ← RuntimeAccessSource.read signature root
+    let partition ← RuntimeAccessPartition.read checked start count inputs outputs
+    let _ ← RuntimeAccessInterval.checkSectors partition.call.interval
+    return partition.owners.restored
+  ((prepare.run 2000000).1.isOk,(attempt.run 2000000).1.toOption)
+
+private def partitionCnotSource : String :=
+  "pub unitary fn route(q: Q<Bits<3>>) -> Q<Bits<3>> {\
+    cnot(ctrl q[1],excl q[0]); cnot(ctrl q[1],excl q[2]); q}"
+
+private def partitionCnot (restorePosition : Nat) : Semantics.Raw.Program :=
+  ⟨[⟨0,[7,2,5],3⟩],
+    [.split 0 1 2 1,.split 2 3 4 1,.join 1 4 5,
+      .split 5 6 7 0,.split 7 8 9 1,.join 6 9 10,
+      .cnot 3 8 11 12,
+      .split 10 13 14 0,.join 13 12 15,.join 15 14 16,
+      .split 16 17 18 restorePosition,.join 17 11 19,.join 19 18 20],
+    [20],.unitary⟩
+
+example : partitionFirst partitionCnotSource (partitionCnot 1) 6 1 [3,8] [11,12] =
+    (true,some [⟨20,[7,2,5],3⟩]) := by decide +kernel
+example : partitionFirst partitionCnotSource (partitionCnot 2) 6 1 [3,8] [11,12] =
+    (true,none) := by decide +kernel
+
+private def partitionEmpty (start : Nat) : Bool × Option (List Semantics.Raw.Port) :=
+  let source := s!"pub unitary fn route(q: Q<Bits<2>>) -> Q<Bits<2>> " ++
+    "{f(excl q[" ++ toString start ++ ".." ++ toString start ++ "]); g(excl q[0]); q}"
+  partitionFirst source
+    ⟨[⟨0,[5,7],2⟩],[.split 0 1 2 1,.split 2 3 4 0,.join 1 4 5,
+      .split 5 6 7 1,.join 6 3 8,.join 8 7 9],[9],.unitary⟩ 3 0 [3] [3]
+
+example : partitionEmpty 1 = (true,some [⟨9,[5,7],2⟩]) := by decide +kernel
+example : partitionEmpty 0 = (true,none) := by decide +kernel
+
+open QleisliKernel.Finite QleisliKernel.Qirf in
+private def partitionPair (source : String) (gap : List Semantics.Raw.Op) (parent : Nat) :
+    Bool × Option (List Semantics.Raw.Port) :=
+  let firstRaw := partitionCnot 1
+  let raw : Semantics.Raw.Program := {firstRaw with operations := firstRaw.operations ++ gap ++
+    [.split parent 21 22 1,.split 22 23 24 1,.join 21 24 25,
+      .split 25 26 27 1,.split 27 28 29 1,.join 26 29 30,
+      .cnot 23 28 31 32,
+      .split 30 33 34 1,.join 33 32 35,.join 35 34 36,
+      .split 36 37 38 1,.join 37 31 39,.join 39 38 40], outputs := [40]}
+  let prepare := RuntimeInterval.prepare [] (Semantics.Ownership.pureProgram raw)
+  let attempt : WorkM (List Semantics.Raw.Port) := do
+    let root ← prepare
+    let signature ← QuantumSignatureCore.read #[("main",source)] "main" "route"
+    let checked ← RuntimeAccessSource.read signature root
+    let first ← RuntimeAccessPartition.read checked 6 1 [3,8] [11,12]
+    let second ← RuntimeAccessPartition.readSecond first (19+gap.length) 1 [23,28] [31,32]
+    let _ ← RuntimeAccessInterval.checkSectors second.call
+    return second.owners.restored
+  ((prepare.run 2000000).1.isOk,(attempt.run 2000000).1.toOption)
+
+example : partitionPair partitionCnotSource [] 20 = (true,some [⟨40,[7,2,5],3⟩]) := by decide +kernel
+example : partitionPair partitionCnotSource [.applyUnitary 20 41 []] 41 = (true,none) := by decide +kernel
 
 end QleisliKernel.Tests.CallSyntaxTests

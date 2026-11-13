@@ -118,8 +118,10 @@ structure Place where
   owner : Owner
   basis : Semantics.Finite.Basis
   axes : List Nat
-  whole : Bool
+  range : Option (Nat × Nat)
   deriving BEq, Repr
+
+def Place.whole (place : Place) : Bool := place.range.isNone
 
 open Semantics.SourceNatural in
 /-- Instantiate a written selector in an explicit static environment and keep
@@ -130,18 +132,18 @@ def Argument.place {tokens} (argument : Argument tokens) (lookup : String → Op
   if owner.binder.text != argument.owner.text ||
       Semantics.Finite.width owner.basis != owner.wires.length then none else
   match argument.selection with
-  | .whole => some ⟨argument.role,owner,owner.basis,owner.wires,true⟩
+  | .whole => some ⟨argument.role,owner,owner.basis,owner.wires,none⟩
   | .index index => do
     let [.bits _] := owner.basis | none
     let axis ← evaluate (argument.selector.length+1) names calls index
     let wire ← owner.wires[axis]?
-    return ⟨argument.role,owner,[.bit],[wire],false⟩
+    return ⟨argument.role,owner,[.bit],[wire],some (axis,axis+1)⟩
   | .slice start stop => do
     let [.bits n] := owner.basis | none
     let i ← evaluate (argument.selector.length+1) names calls start
     let j ← evaluate (argument.selector.length+1) names calls stop
     if i ≤ j && j ≤ n then
-      some ⟨argument.role,owner,[.bits (j-i)],(owner.wires.drop i).take (j-i),false⟩
+      some ⟨argument.role,owner,[.bits (j-i)],(owner.wires.drop i).take (j-i),some (i,j)⟩
     else none
 
 def CheckedCall.places {tokens} (checked : CheckedCall tokens) (lookup : String → Option Owner)
