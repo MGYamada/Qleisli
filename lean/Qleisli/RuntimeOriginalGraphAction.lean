@@ -646,10 +646,10 @@ theorem sourceStep_with_graph {dependencies program block}
       cases ordinary
       exact original_rectangular_history checked inputs inherited agrees read executed
     case workspace =>
-      rename_i position original literal map
       rcases owners with ⟨rfl,rfl⟩
       cases ordinary
-      exact ⟨_,rfl,original_workspace_history (by assumption) original literal map inputs inherited agrees read executed⟩
+      exact ⟨_,rfl,original_workspace_history (by assumption) (by assumption) (by assumption) (by assumption)
+        inputs inherited agrees read executed⟩
     case transform =>
       rename_i sourceRequest original forward forwardReturned logical children interval held transform
       change ownerBefore = _ ∧ ownerAfter = held.after at owners
