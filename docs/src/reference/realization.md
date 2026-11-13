@@ -490,8 +490,9 @@ occupied locations connected in the declared profile. It moves both
 locations in the placement, leaves every other location alone, and counts
 as one operation even when a later SWAP cancels it. The final placement
 preserves logical axis order and exact joint coefficients with any
-reference. The Lean component independently decodes the literal SWAP
-instructions from a designated byte interval of canonical OpenQASM output.
+reference. The Lean component independently decodes the declared register
+width and the literal SWAP instructions from a designated byte interval
+of canonical OpenQASM output. It also checks the target capacity.
 A complete certificate still establishes that the interval is used for
 routing and that its entry placement is correct. It also checks the other
 target operations, allocation, release and reuse.
