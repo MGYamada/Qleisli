@@ -141,6 +141,21 @@ private def expandedWorkspaceBody : Finite.WorkM Nat := do
 
 #guard (expandedWorkspaceBody.run 20000000).1.toOption == some 3
 
+private def nestedPhysicalWorkspace : Finite.WorkM (Nat × Nat) := do
+  let body : Semantics.Observation.Program :=
+    ⟨[⟨0,[0],1⟩],[],[.pure (.certifiedCompute 0 1 [1] [0,0] [hData,hData] [])],[1],[],.unitary⟩
+  let input : Semantics.ObservingFunction.Input := ⟨[.bit],body,body,⟨"cleanCall","cleanCall",[]⟩⟩
+  let checked ← Raw.BranchFunction.checkEntry [] input input
+  let call : Semantics.Finite.Step := ⟨[],.contract [0] 0 false⟩
+  let inverse : Semantics.Finite.Step := ⟨[],.contract [0] 0 true⟩
+  let expansion ← Raw.WorkspaceResources.bodyExpansion [checked] [.circuit 1 [call,inverse]]
+  return (checked.expandedSteps,expansion)
+
+-- Each call contains two physical H steps and two predicate passes.
+#guard (nestedPhysicalWorkspace.run 20000000).1.toOption == some (1,8)
+#guard ((Raw.WorkspaceResources.bodyExpansion [] [.circuit 1 [⟨[],.contract [0] 0 false⟩]]).run
+  20000000).1.toOption.isNone
+
 private def protectedSource := predicate ++
   "pub unitary fn route(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|aux|z(aux)}}"
 #guard (read protectedSource).map (fun checked => ((valueOwners checked.summary.value).map (·.ordinal),
