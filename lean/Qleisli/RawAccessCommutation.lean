@@ -2,6 +2,7 @@ import Qleisli.RawBranchFunction
 import Qleisli.RawPureInstrumentAction
 import Qleisli.RoutedControlCommutation
 import Qleisli.RuntimeAdjacentInterval
+import Qleisli.RuntimeAdjacentRootAction
 import Qleisli.RuntimeCallPureFold
 import Qleisli.RuntimeForestProduct
 import Qleisli.RuntimeIntervalTrace
@@ -821,6 +822,39 @@ theorem checked_pair_frame
 #print axioms checked_call_frame
 #print axioms checked_pair_frame
 
+/-- The second call preserves every physical axis used by the first call.
+The intervening checked operations supply the common frame. -/
+theorem second_promotion_preserves_first_axes
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs)
+    (sectors : RuntimeAccessInterval.Sectors second.call)
+    (actual : Semantics.Exact.Matrix) (work left : Nat)
+    (read : (Raw.promote second.call.frame.interval.before.quantum.frame.length
+      (callerAxes (call := second.call)) sectors.actual).run work = (.ok actual,left))
+    (row : Fin actual.rows) (col : Fin actual.cols)
+    (nonzero : Qleisli.Semantics.Exact.entry actual row.val col.val ≠ 0)
+    (axis : Nat) (firstUses : axis ∈ callerAxes (call := first.call.interval)) :
+    Semantics.Finite.bit row.val axis = Semantics.Finite.bit col.val axis := by
+  by_cases secondUses : axis ∈ callerAxes (call := second.call)
+  · have same := checked_pair_frame second
+    obtain ⟨wire,atFirst,_,place,member,control,present⟩ :=
+      shared_caller_axis_is_control second same axis firstUses secondUses
+    have atSecond : second.call.frame.interval.before.quantum.frame[axis]? = some wire := same ▸ atFirst
+    have wireIn := List.mem_of_getElem? atSecond
+    have indexed := RuntimeNamedFrameAxes.wireLookup _ wireIn
+    have position : second.call.frame.interval.before.quantum.frame.idxOf wire = axis := by
+      have valid := (Raw.Ownership.valid _ second.call.frame.interval.history.1).frame
+      exact (List.getElem?_inj (List.idxOf_lt_length_of_mem wireIn) valid).mp (indexed.trans atSecond.symm)
+    rw [← position]
+    exact checked_caller_control_bit sectors actual work left read row col nonzero place member control wire present
+  · exact (promoted_preserves_coordinates sectors _ _ actual work left read row col nonzero).1 axis secondUses
+
+#print axioms second_promotion_preserves_first_axes
+
 /-- The original local and caller traces are related at every coefficient,
 using the spectator partition derived from the actual source-bound inputs. -/
 theorem checked_call_literal_action
@@ -835,14 +869,281 @@ theorem checked_call_literal_action
         some ⟨frame.interval.after.quantum.reference,parentEvents,frame.interval.before.quantum.frame.length⟩ ∧
       RuntimeLocalEvents.trace entry.reference frame.operations =
         some ⟨frame.pureBody.state.reference,childEvents,entry.frame.length⟩ ∧
+      Qleisli.RawFiniteRows.BoundedEvents frame.interval.before.quantum.frame.length parentEvents
+        frame.interval.after.quantum.frame.length ∧
       Qleisli.RuntimeCallHistory.PureAction dependencies frame.interval.before.quantum.reference entry.reference
         frame.interval.after.quantum.reference frame.pureBody.state.reference spectators parentEvents childEvents := by
   have partition := selected_spectator_partition _ call.frame.interval.history.1 _ _ call.frame.atEntry
     (checked_call_input_unique call)
-  obtain ⟨entry,parentEvents,childEvents,entryRead,parentRead,childRead,_,_,_,action⟩ :=
+  obtain ⟨entry,parentEvents,childEvents,entryRead,parentRead,childRead,_,_,bounds,action⟩ :=
     Qleisli.RuntimeCallHistory.pure_interval_events call.frame _ partition
-  exact ⟨entry,parentEvents,childEvents,entryRead,parentRead,childRead,action⟩
+  exact ⟨entry,parentEvents,childEvents,entryRead,parentRead,childRead,bounds,action⟩
 
 #print axioms checked_call_literal_action
+
+private theorem fragment_observing_trace {program : Semantics.Raw.Program}
+    {entry : Semantics.RawTrace.Interface} {result : Semantics.RawTrace.Prepared}
+    (input : entry = Semantics.RawTrace.initial program.inputs)
+    (trace : RuntimeLocalEvents.trace entry program.operations = some result) :
+    Semantics.Observation.read (Semantics.Ownership.pureProgram program) =
+      some ⟨(Semantics.RawTrace.finish program result).state,
+        (Semantics.RawTrace.finish program result).events.map Semantics.Observation.Event.pure,
+        entry.frame.length⟩ := by
+  have read := Qleisli.RuntimeAdjacentSlices.readOps_pure 64 _ _ _ trace
+  rw [input] at read ⊢
+  unfold Semantics.Observation.read Semantics.Ownership.pureProgram
+  simp only [read,bind,Option.bind,pure,Semantics.RawTrace.finish,List.map_append,List.map_cons,List.map_nil]
+
+/-- Reconstruct the exact local coefficient of the original child trace at
+the same physical row, with the recorded return order and reference column. -/
+theorem checked_sector_literal_action
+    {tokens dependencies program block callee lookup names calls start count inputs outputs}
+    {call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
+      block start count inputs outputs} (sectors : RuntimeAccessInterval.Sectors call)
+    {entry : Raw.State} {childEvents : List Semantics.Raw.Event}
+    (entryRead : entry.reference = ⟨call.frame.selected,call.frame.selected.flatMap (·.wires)⟩)
+    (childTrace : RuntimeLocalEvents.trace entry.reference call.frame.operations =
+      some ⟨call.frame.pureBody.state.reference,childEvents,entry.frame.length⟩)
+    {Reference : Type} (joint : Nat → Reference → ℂ) (row : Nat) (reference : Reference)
+    (rowBound : row < 2^call.frame.pureBody.state.frame.length)
+    (matrixBound : Qleisli.RuntimeCallHistory.project call.frame.pureBody.state.reference
+      (call.frame.returned.flatMap (·.wires)) row < sectors.actual.rows) :
+    Qleisli.Semantics.RawAction.events dependencies childEvents (fun col => joint col reference) row =
+      Qleisli.Semantics.Exact.action sectors.actual joint
+        (Qleisli.RuntimeCallHistory.project call.frame.pureBody.state.reference
+          (call.frame.returned.flatMap (·.wires)) row) reference := by
+  obtain ⟨whole,wholeRead,action⟩ := Qleisli.RuntimeCallHistory.fragment_prefix_action
+    call.frame.toLiteral entryRead childTrace (fun col => joint col reference) row rowBound
+  let fragment := RuntimePureInterval.fragment call.frame.selected call.frame.operations outputs
+  let trace : Semantics.RawTrace.Prepared := ⟨call.frame.pureBody.state.reference,childEvents,entry.frame.length⟩
+  have opened : entry.reference = Semantics.RawTrace.initial fragment.inputs := entryRead
+  have observed := fragment_observing_trace opened childTrace
+  have finished : Semantics.RawTrace.finish fragment trace = whole := by
+    apply Option.some.inj
+    rw [← wholeRead]
+    symm
+    change (do
+      let result ← RuntimeLocalEvents.trace (Semantics.RawTrace.initial fragment.inputs) fragment.operations
+      pure (Semantics.RawTrace.finish fragment result)) = _
+    rw [← opened]
+    change (do
+      let result ← RuntimeLocalEvents.trace entry.reference call.frame.operations
+      pure (Semantics.RawTrace.finish fragment result)) = _
+    rw [childTrace]
+    rfl
+  change Semantics.Observation.read call.fragment = some ⟨(Semantics.RawTrace.finish fragment trace).state,
+    (Semantics.RawTrace.finish fragment trace).events.map Semantics.Observation.Event.pure,entry.frame.length⟩ at observed
+  rw [finished] at observed
+  exact action.symm.trans (checked_sector_action sectors _ observed whole.events rfl joint ⟨_,matrixBound⟩ reference).symm
+
+#print axioms checked_sector_literal_action
+
+section LiteralPromotion
+open Semantics.Finite (gather scatter)
+open Qleisli.RuntimeForestProduct (gather_bound)
+open Qleisli.RuntimeCallTraceFrames (WireOrder native_wires)
+open Qleisli.RuntimeCallHistory (project)
+open Qleisli.Semantics.Exact (action)
+open Qleisli.Semantics.RawAction (events)
+
+private theorem gather_scatter_disjoint (row value : Nat) (axes spectators : List Nat)
+    (outside : ∀ axis ∈ spectators, axis ∉ axes) :
+    gather (scatter row axes value) spectators = gather row spectators :=
+  gather_same_on spectators _ _ (fun axis present => RuntimeScatterTransport.scatter_outside _ _ _ _ (outside axis present))
+
+/-- A single pair of ordered coordinates gives the finite input for the
+parent action, including when one of the coordinate lists is empty. -/
+private theorem combine_coordinates {parent child spectators : List Nat}
+    (partition : parent.Perm (child++spectators)) (distinct : parent.Nodup) :
+    let axes := child.map parent.idxOf
+    let rest := spectators.map parent.idxOf
+    let combine := fun low high => scatter (scatter 0 rest high) axes low
+    ∀ low high, low < 2^axes.length → high < 2^rest.length →
+      combine low high < 2^parent.length ∧ gather (combine low high) axes = low ∧
+      gather (combine low high) rest = high := by
+  intro axes rest combine low high localBound highBound
+  have permutation : (axes ++ rest).Perm (List.range parent.length) :=
+    Qleisli.RuntimeCallTraceProjection.split_axes partition distinct
+  have unique := (List.nodup_append.mp (permutation.symm.nodup List.nodup_range))
+  have inside : ∀ axis ∈ axes ++ rest, axis < parent.length := fun axis present =>
+    List.mem_range.mp (permutation.subset present)
+  have zero : 0 < 2^parent.length := Nat.two_pow_pos _
+  have highPhysical := Qleisli.Finite.Pull.scatter_bound 0 parent.length high rest zero
+    (fun axis present => inside axis (List.mem_append_right _ present))
+  refine ⟨Qleisli.Finite.Pull.scatter_bound _ _ _ _ highPhysical
+    (fun axis present => inside axis (List.mem_append_left _ present)),
+    Qleisli.RuntimeFiniteTargetScatter.gather_scatter _ _ _ unique.1 localBound,?_⟩
+  change gather (scatter (scatter 0 rest high) axes low) rest = high
+  rw [gather_scatter_disjoint _ _ _ _ (fun axis inRest inAxes => unique.2.2 axis inAxes axis inRest rfl)]
+  exact Qleisli.RuntimeFiniteTargetScatter.gather_scatter _ _ _ unique.2.1 highBound
+
+private theorem checked_child_frame
+    {tokens dependencies program block callee lookup names calls start count inputs outputs}
+    (call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
+      block start count inputs outputs) {entry : Raw.State} {childEvents : List Semantics.Raw.Event}
+    (entryRead : entry.reference = ⟨call.frame.selected,WireOrder call.frame.selected⟩)
+    (childTrace : RuntimeLocalEvents.trace entry.reference call.frame.operations =
+      some ⟨call.frame.pureBody.state.reference,childEvents,entry.frame.length⟩) :
+    call.frame.pureBody.state.frame = WireOrder call.frame.selected := by
+  have kept := pure_fold_frame_prefix call.frame.operations childTrace
+  have entryFrame := congrArg Semantics.RawTrace.Interface.frame entryRead
+  change entry.frame = WireOrder call.frame.selected at entryFrame
+  change entry.frame <+: call.frame.pureBody.state.frame at kept
+  rw [entryFrame] at kept
+  have ⟨ports,valid⟩ := Qleisli.RuntimeCallHistory.fragment_return_ports call.frame
+  have wireOrder : WireOrder call.frame.returned = WireOrder call.frame.selected := by
+    simp only [List.flatMap_def,call.inputAxes,call.outputAxes]
+  have widths := ((ports.flatMap_right Semantics.Raw.Port.wires).trans (native_wires _ valid)).length_eq
+  change (WireOrder call.frame.returned).length = _ at widths
+  rw [wireOrder] at widths
+  exact (kept.eq_of_length widths).symm
+
+/-- In the original caller frame, each column of the checked promotion is
+the exact action of the actual Raw interval on that column. -/
+theorem checked_call_promoted_action
+    {tokens dependencies program block callee lookup names calls start count inputs outputs}
+    (call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
+      block start count inputs outputs) (sectors : RuntimeAccessInterval.Sectors call)
+    (actual : Semantics.Exact.Matrix) (work left : Nat)
+    (read : (Raw.promote call.frame.interval.before.quantum.frame.length
+      (RuntimeForestCode.portAxes call.frame.interval.before.quantum.frame call.frame.selected)
+      sectors.actual).run work = (.ok actual,left)) :
+    ∃ parentEvents,
+      RuntimeLocalEvents.trace call.frame.interval.before.quantum.reference call.frame.operations =
+        some ⟨call.frame.interval.after.quantum.reference,parentEvents,call.frame.interval.before.quantum.frame.length⟩ ∧
+      ∀ (Reference : Type) (joint : Nat → Reference → ℂ) (row : Nat) (reference : Reference),
+        row < actual.rows →
+        events dependencies parentEvents (fun col => joint col reference) row = action actual joint row reference := by
+  obtain ⟨entry,parentEvents,childEvents,entryRead,parentRead,childRead,bounded,locality⟩ := checked_call_literal_action call
+  refine ⟨parentEvents,parentRead,?_⟩
+  intro Reference joint row reference rowBound
+  let parent := call.frame.interval.before.quantum.frame
+  let chosen := WireOrder call.frame.selected
+  let spectators := PureInterval.spectators call.frame.interval.before inputs
+  let axes := chosen.map parent.idxOf
+  let rest := (WireOrder spectators).map parent.idxOf
+  let combine := fun low high => scatter (scatter 0 rest high) axes low
+  have parentDistinct := (Raw.Ownership.valid _ call.frame.interval.history.1).frame
+  change parent.Nodup at parentDistinct
+  have parentPorts := selected_spectator_partition _ call.frame.interval.history.1 _ _ call.frame.atEntry
+    (checked_call_input_unique call)
+  have partition : parent.Perm (chosen ++ WireOrder spectators) := by
+    simpa only [parent,chosen,spectators,List.flatMap_append] using
+      (native_wires _ call.frame.interval.history.1).symm.trans (parentPorts.flatMap_right Semantics.Raw.Port.wires)
+  have both := Qleisli.RuntimeCallTraceProjection.split_axes partition parentDistinct
+  have unique := List.nodup_append.mp (both.symm.nodup List.nodup_range)
+  have geometry := Qleisli.Raw.promote_denotes _ _ _ _ work left read
+  have inParent : row < 2^parent.length := geometry.1 ▸ rowBound
+  have frame := checked_call_frame call
+  have childFrame := checked_child_frame call entryRead childRead
+  have entryFrame := congrArg Semantics.RawTrace.Interface.frame entryRead
+  have sameInput (input : Nat) (inside : input < 2^parent.length) :
+      joint input reference = joint (combine (gather input axes) (gather input rest)) reference := by
+    have data := combine_coordinates partition parentDistinct (gather input axes) (gather input rest)
+      (gather_bound _ _) (gather_bound _ _)
+    exact congrArg (fun index => joint index reference)
+      ((Qleisli.RuntimeCallTraceProjection.split_eq partition parentDistinct inside data.1).mpr
+        ⟨data.2.1.symm,data.2.2.symm⟩)
+  have localAction := locality (fun low high => joint (combine low high) reference) row
+    (by change row < 2^call.frame.interval.after.quantum.frame.length; rwa [frame])
+  change entry.frame = chosen at entryFrame
+  change events dependencies parentEvents (fun col => joint (combine (gather col (entry.frame.map parent.idxOf))
+    (gather col rest)) reference) row =
+    events dependencies childEvents
+      (fun col => joint (combine col (gather row ((WireOrder spectators).map call.frame.interval.after.quantum.frame.idxOf))) reference)
+      (gather row (call.frame.pureBody.state.frame.map call.frame.interval.after.quantum.frame.idxOf)) at localAction
+  rw [entryFrame,frame,childFrame] at localAction
+  have traceAction := (bounded.congr dependencies _ _ sameInput row (by rw [frame]; exact inParent)).trans localAction
+  have childWidth : axes.length = call.frame.pureBody.state.frame.length := by rw [childFrame,List.length_map]
+  have returnOrder : WireOrder call.frame.returned = chosen := by
+    simp only [chosen,List.flatMap_def,call.inputAxes,call.outputAxes]
+  have returnCoord : project call.frame.pureBody.state.reference (WireOrder call.frame.returned) (gather row axes) =
+      gather row axes := by
+    have chosenUnique : chosen.Nodup := (List.nodup_append.mp (parentDistinct.perm partition)).1
+    change gather (gather row axes) ((WireOrder call.frame.returned).map call.frame.pureBody.state.frame.idxOf) = _
+    rw [returnOrder,childFrame,RuntimeNamedCallerAction.self_indices _ chosenUnique,
+      Qleisli.RuntimeNamedCallerAction.gather_range]
+    exact Nat.mod_eq_of_lt (by simpa only [axes,List.length_map] using gather_bound row axes)
+  obtain ⟨_,middle,guarded,_⟩ := Finite.bind_success _ _ _ _ _ read
+  have shape := (Finite.guard_success _ _ _ middle guarded).1
+  simp only [Bool.and_eq_true,beq_iff_eq] at shape
+  have child := checked_sector_literal_action sectors entryRead childRead
+    (fun col ref => joint (combine col (gather row rest)) ref) (gather row axes) reference
+    (by rw [← childWidth]; exact gather_bound _ _) (by rw [returnCoord,shape.1.2]; exact gather_bound _ _)
+  rw [returnCoord] at child
+  have promoted := Qleisli.Raw.ReconstructedAction.promoted_action work left read joint row reference rowBound
+  rw [traceAction,child,promoted]
+  unfold action
+  apply Qleisli.Exact.sum_map_congr
+  intro col member
+  have colBound : col < 2^axes.length := (shape.2.trans shape.1.2) ▸ List.mem_range.mp member
+  have data := combine_coordinates partition parentDistinct col (gather row rest) colBound (gather_bound _ _)
+  have scattered : scatter row axes col < 2^parent.length := Qleisli.Finite.Pull.scatter_bound _ _ _ _ inParent
+    (fun axis member => List.mem_range.mp (both.subset (List.mem_append_left _ member)))
+  have same := (Qleisli.RuntimeCallTraceProjection.split_eq partition parentDistinct data.1 scattered).mpr
+    ⟨data.2.1.trans (Qleisli.RuntimeFiniteTargetScatter.gather_scatter _ _ _ unique.1 colBound).symm,
+      data.2.2.trans (gather_scatter_disjoint _ _ _ _ (fun axis inRest inAxes => unique.2.2 axis inAxes axis inRest rfl)).symm⟩
+  change combine col (gather row rest) = scatter row axes col at same
+  change Semantics.Exact.entry sectors.actual (gather row axes) col * joint (combine col (gather row rest)) reference =
+    Semantics.Exact.entry sectors.actual (gather row axes) col * joint (scatter row axes col) reference
+  rw [same]
+
+#print axioms checked_call_promoted_action
+
+/-- The ordered action of the two original call traces equals the ordered
+composition of their promotions on every finite row and reference column. -/
+theorem checked_pair_promoted_action
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs)
+    {firstRequest secondRequest} (pair : RuntimeAccessCallee.Pair second firstRequest secondRequest)
+    (firstMap secondMap : Semantics.Exact.Matrix) (a b c d : Nat)
+    (firstRead : (Raw.promote first.call.interval.frame.interval.before.quantum.frame.length
+      (callerAxes (call := first.call.interval)) pair.firstSectors.actual).run a = (.ok firstMap,b))
+    (secondRead : (Raw.promote second.call.frame.interval.before.quantum.frame.length
+      (callerAxes (call := second.call)) pair.secondSectors.actual).run c = (.ok secondMap,d)) :
+    ∃ firstEvents secondEvents,
+      RuntimeLocalEvents.trace first.call.interval.frame.interval.before.quantum.reference first.call.interval.frame.operations =
+        some ⟨first.call.interval.frame.interval.after.quantum.reference,firstEvents,
+          first.call.interval.frame.interval.before.quantum.frame.length⟩ ∧
+      RuntimeLocalEvents.trace second.call.frame.interval.before.quantum.reference second.call.frame.operations =
+        some ⟨second.call.frame.interval.after.quantum.reference,secondEvents,
+          second.call.frame.interval.before.quantum.frame.length⟩ ∧
+      ∀ (Reference : Type) (joint : Nat → Reference → ℂ) (row : Nat) (reference : Reference),
+        row < secondMap.rows →
+        events root.dependencies (firstEvents ++ secondEvents) (fun col => joint col reference) row =
+          action secondMap (action firstMap joint) row reference := by
+  obtain ⟨firstEvents,firstTrace,firstAction⟩ :=
+    checked_call_promoted_action first.call.interval pair.firstSectors firstMap a b firstRead
+  obtain ⟨secondEvents,secondTrace,secondAction⟩ :=
+    checked_call_promoted_action second.call pair.secondSectors secondMap c d secondRead
+  obtain ⟨entry,parentEvents,childEvents,entryRead,parentRead,childRead,bounded,locality⟩ :=
+    checked_call_literal_action second.call
+  have same := congrArg Semantics.RawTrace.Prepared.events (Option.some.inj (parentRead.symm.trans secondTrace))
+  change parentEvents = secondEvents at same
+  subst parentEvents
+  refine ⟨firstEvents,secondEvents,firstTrace,secondTrace,?_⟩
+  intro Reference joint row reference rowBound
+  have firstRows := (Qleisli.Raw.promote_denotes _ _ _ _ a b firstRead).1
+  have secondRows := (Qleisli.Raw.promote_denotes _ _ _ _ c d secondRead).1
+  have sameFrame := checked_pair_frame second
+  have after := checked_call_frame second.call
+  have sameInput (col : Nat) (within : col < 2^second.call.frame.interval.before.quantum.frame.length) :
+      events root.dependencies firstEvents (fun input => joint input reference) col =
+        action firstMap joint col reference := by
+    apply firstAction
+    rwa [firstRows,sameFrame]
+  have outputBound : row < 2^second.call.frame.interval.after.quantum.frame.length := by
+    rwa [after,← secondRows]
+  simp only [events,List.foldl_append]
+  exact (bounded.congr root.dependencies _ _ sameInput row outputBound).trans
+    (secondAction Reference (action firstMap joint) row reference rowBound)
+
+#print axioms checked_pair_promoted_action
+
+end LiteralPromotion
 
 end Qleisli.Raw.AccessCommutation
