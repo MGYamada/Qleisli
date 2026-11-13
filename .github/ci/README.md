@@ -721,6 +721,12 @@ Rust groups own their native preparation, so their setup action uses
 `prepare: 'false'`; the four other native consumers use the default preparation.
 The mathematical Lean job retains its separate model/full proof work.
 
+The compiled audit regression suite builds its neutral reduction-root fixtures
+once per invocation with the pinned Lean compiler. Each mutation retains its
+own directory, freshly compiled runtime roots and fresh execution of
+`lean-kernel/Audit.lean`. A fixture that imports the mutation is rebuilt in that
+directory. The real project audit and its release evidence remain separate.
+
 The workflow keeps scheduling, platform/tool installation, corpus/release
 conditions and the eight stable required contexts visible. Shared actions keep
 the previous report paths, artifact names, action pins, tool versions and trusted
