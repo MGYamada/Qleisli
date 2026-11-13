@@ -102,7 +102,7 @@ including `std::basis`, have no primitive privilege.
 
 ## Current interfaces and contracts
 
-The eight bundled ordinary modules expose twenty-seven public definitions, six
+The eight bundled ordinary modules expose twenty-six public definitions, six
 transparent prelude reexports and five
 private helpers for a classical predicate, scalar phase, parameterized phase,
 packed CNOT and fixed Bit identity.

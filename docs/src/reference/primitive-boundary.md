@@ -237,7 +237,7 @@ target-realization or quantitative resource theorem.
 ## Ordinary library and module resolution
 
 `src/frontend/source.rs::BundledRegistry` embeds **eight ordinary source
-modules with twenty-seven public definitions**, six transparent prelude reexports
+modules with twenty-six public definitions**, six transparent prelude reexports
 and five private helpers for
 reflection, scalar phase, parameterized phase, packed CNOT and fixed Bit identity.
 Both loaders retain all eight complete original sources
