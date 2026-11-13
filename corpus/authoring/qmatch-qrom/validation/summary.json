@@ -1,0 +1,179 @@
+{
+  "format": "qleisli.qmatch-qrom-local-regression-observations",
+  "version": 1,
+  "baseline_commit": "7e5ab1d2db56f52a39aea37eb069813f3ad24771",
+  "observed_utc": "2026-11-12T00:46:29.997988+00:00",
+  "source_preservation_verified": false,
+  "toolchains": {
+    "rust": "1.98.1",
+    "msrv": "1.85.0",
+    "lean": "4.30.0"
+  },
+  "tested_source_sha256": {
+    ".github/ci/native-comparisons.json": "bf0f6953b9a5c15853e239acc91da7cf0c0b72633aea3b970581ae4102d1922d",
+    "corpus/authoring/qmatch-qrom/attempt-01/qualtran/qrom2_qmatch/kernel.qli": "a177e416572465cd324124e16c158a26db06a78b8edf0671d2f4c0c19d5da879",
+    "corpus/authoring/qmatch-qrom/attempt-01/qualtran/qrom2_qmatch/main.qli": "6e3cdfdcf39c73986671094e813c3ed47be009d0d1678bb4808b2e3f44df419a",
+    "corpus/authoring/qmatch-qrom/first-faults/qrom2_qmatch_arm_phase/kernel.qli": "77e9ce5a5f882a545ac4010ad9405d6c3c22af91e080caca0aa658093b36a0fc",
+    "corpus/authoring/qmatch-qrom/first-faults/qrom2_qmatch_arm_phase/main.qli": "6e3cdfdcf39c73986671094e813c3ed47be009d0d1678bb4808b2e3f44df419a",
+    "corpus/authoring/qmatch-qrom/first-faults/qrom2_qmatch_wrong_arm/kernel.qli": "c496282b8587993f2ef31188e39bcfdbf63627e1411723bc874f5b84d1f32471",
+    "corpus/authoring/qmatch-qrom/first-faults/qrom2_qmatch_wrong_arm/main.qli": "6e3cdfdcf39c73986671094e813c3ed47be009d0d1678bb4808b2e3f44df419a",
+    "corpus/manifest.json": "29ce9d3bc72d843b65180542772f10dc2ee1a3e8b8d2e8642b28acafb015fe9a",
+    "corpus/qualtran/qrom2_qmatch/kernel.qli": "a177e416572465cd324124e16c158a26db06a78b8edf0671d2f4c0c19d5da879",
+    "corpus/qualtran/qrom2_qmatch/main.qli": "6e3cdfdcf39c73986671094e813c3ed47be009d0d1678bb4808b2e3f44df419a",
+    "corpus/semantic_faults/qrom2_qmatch_arm_phase/kernel.qli": "77e9ce5a5f882a545ac4010ad9405d6c3c22af91e080caca0aa658093b36a0fc",
+    "corpus/semantic_faults/qrom2_qmatch_arm_phase/main.qli": "6e3cdfdcf39c73986671094e813c3ed47be009d0d1678bb4808b2e3f44df419a",
+    "corpus/semantic_faults/qrom2_qmatch_wrong_arm/kernel.qli": "c496282b8587993f2ef31188e39bcfdbf63627e1411723bc874f5b84d1f32471",
+    "corpus/semantic_faults/qrom2_qmatch_wrong_arm/main.qli": "6e3cdfdcf39c73986671094e813c3ed47be009d0d1678bb4808b2e3f44df419a",
+    "scripts/check_docs.py": "5b7a0dd39f8d85a5c152fc6524188ff4516b1389c744ac7c87d3d5a3ae5dfbbe",
+    "scripts/check_input_corpus.py": "d62db5e84599c67688db47f36fd608b6b8df9580412c758b9e68f5a3a675d717",
+    "scripts/test_check_input_corpus.py": "2c70a6211e2b27e7019461b45a82886af0e4def525368a854e4182d75a960419",
+    "scripts/test_run_native_ci.py": "13a7bae47d1dc702348f3a873336e07accebab605f9ce15d5f9a582d2aa2ed8e",
+    "tests/input_corpus.rs": "06a1add363ce958da825b65f3aa3ff80d2664425b7661d1a18e063c61d64d1a8",
+    "tests/native_roundtrip.rs": "93be8d3795d381daf4cdb77c7cf54388d3737dceb603cf5955e683ca29019ac5",
+    "tests/static_semantics.rs": "05ba76db9f1493c68b6885c75c939994f5aec9cb1f45523b01bc7bb4f34cbaf8",
+    "tests/static_semantics/qmatch_qrom.rs": "b304a891cc97ce1b78dd02890ae70c5168d00b221cec62ff401df56c2fee4bd8"
+  },
+  "source_and_accepted_ir_snapshots": {
+    "evidence/rust-native-artifacts/qualtran_qrom2_qmatch": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "929fccf39005c92e9637cb4e0e84b841252117a69fb94b60e4a281e4eeeb86c0",
+      "kernel.qli": "a177e416572465cd324124e16c158a26db06a78b8edf0671d2f4c0c19d5da879"
+    },
+    "evidence/rust-native-artifacts/coherence": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "929fccf39005c92e9637cb4e0e84b841252117a69fb94b60e4a281e4eeeb86c0",
+      "kernel.qli": "a177e416572465cd324124e16c158a26db06a78b8edf0671d2f4c0c19d5da879"
+    },
+    "evidence/rust-native-artifacts/semantic_faults_qrom2_qmatch_arm_phase": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "c9f1d78e31d4a4ebd568dea8d823c982be95979ccb1c14d5cc0e84428d231e15",
+      "kernel.qli": "77e9ce5a5f882a545ac4010ad9405d6c3c22af91e080caca0aa658093b36a0fc"
+    },
+    "evidence/rust-native-artifacts/qualtran_qrom2": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "9c834c4fa859dffda2440bf3919c1fd49aed140f003cfb48845cc42278c19966",
+      "kernel.qli": "d497a4ca1ca5a190ddab1c39f097b87aac72fcf4037a4630f2216c4fd4de6392"
+    },
+    "evidence/rust-native-artifacts/semantic_faults_qrom2_qmatch_wrong_arm": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "eceb095542939bb3dd8d4f69ad771ae211bf741a9b8a6fba4b6a5b1f75be0bd2",
+      "kernel.qli": "c496282b8587993f2ef31188e39bcfdbf63627e1411723bc874f5b84d1f32471"
+    },
+    "evidence/rust-native-artifacts/global_phase": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "9731f58dcd6988aa2e5b5a245568dc3a58b6b2564897837a53724441ee61eb78",
+      "kernel.qli": "ccdab2b9e520ba7427fa77f543b31cc33071cee0ad387f10b9500288c1ecc089"
+    },
+    "evidence/msrv-native-artifacts/qualtran_qrom2_qmatch": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "929fccf39005c92e9637cb4e0e84b841252117a69fb94b60e4a281e4eeeb86c0",
+      "kernel.qli": "a177e416572465cd324124e16c158a26db06a78b8edf0671d2f4c0c19d5da879"
+    },
+    "evidence/msrv-native-artifacts/coherence": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "929fccf39005c92e9637cb4e0e84b841252117a69fb94b60e4a281e4eeeb86c0",
+      "kernel.qli": "a177e416572465cd324124e16c158a26db06a78b8edf0671d2f4c0c19d5da879"
+    },
+    "evidence/msrv-native-artifacts/semantic_faults_qrom2_qmatch_arm_phase": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "c9f1d78e31d4a4ebd568dea8d823c982be95979ccb1c14d5cc0e84428d231e15",
+      "kernel.qli": "77e9ce5a5f882a545ac4010ad9405d6c3c22af91e080caca0aa658093b36a0fc"
+    },
+    "evidence/msrv-native-artifacts/qualtran_qrom2": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "9c834c4fa859dffda2440bf3919c1fd49aed140f003cfb48845cc42278c19966",
+      "kernel.qli": "d497a4ca1ca5a190ddab1c39f097b87aac72fcf4037a4630f2216c4fd4de6392"
+    },
+    "evidence/msrv-native-artifacts/semantic_faults_qrom2_qmatch_wrong_arm": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "eceb095542939bb3dd8d4f69ad771ae211bf741a9b8a6fba4b6a5b1f75be0bd2",
+      "kernel.qli": "c496282b8587993f2ef31188e39bcfdbf63627e1411723bc874f5b84d1f32471"
+    },
+    "evidence/msrv-native-artifacts/global_phase": {
+      "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "main.qli": "0fc389d3c8440620ce434006b06a626f6ae04718cf4de3bffea7d9817d48b8f6",
+      "accepted-ir.json": "9731f58dcd6988aa2e5b5a245568dc3a58b6b2564897837a53724441ee61eb78",
+      "kernel.qli": "ccdab2b9e520ba7427fa77f543b31cc33071cee0ad387f10b9500288c1ecc089"
+    }
+  },
+  "snapshot_path_note": "Keys identify paths in the original local evidence archive, not repository paths. Reproduce with QLEISLI_QROM_EVIDENCE_DIR; these identities are observations only.",
+  "observed_binary_sha256": {
+    "target/debug/qleisli": "cce8eaa72b2c6668f57c0175ebd480f8a82e0a19cb7b66d835d26284ba8b8f0f",
+    "lean-kernel/.lake/build/bin/qleisli-kernel": "4b4283ecea826f0bde2ad97dfb5b6c2810ec633931f684c3c3a04185bc4b6e2b"
+  },
+  "checker_identity": "unpinned",
+  "binary_identity_scope": "Local build identities only; no source-to-native binary attestation.",
+  "logs_sha256": {
+    "corpus-discovery.json": "a57728e1a5685fbf10b020053b8e422bb39b3967ce24eec29c2e81e04590c465",
+    "existing-static-semantics.json": "bfe63f4dbacc40313496d0aecdcfd01c52f1c53e18606da93d62b7b568101036",
+    "native-audit.json": "b724c2721fcc67126f5a7894bbb2f474b2007bf875f43d87456e44f8169d6d65",
+    "native-source-policy.json": "5be5c7489105f3e9764a80da132f27b247a9d4d75ed49b4009cbaa8867cb9019",
+    "rust-1.98.1.json": "90f15ff4641fad32d6de752681816e35ee8c64aecb4c544407851cc9adbe07b4",
+    "rust-msrv-1.85.0.json": "2438e6a77b470d22b8db8f4f33353c7c179ca0199020eb148868f764756ebde3"
+  },
+  "results": {
+    "rust_1_98_1_new_exact_tests": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0
+    },
+    "rust_1_85_0_new_exact_tests": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0
+    },
+    "existing_exact_tests": 19,
+    "corpus_python_tests": 87,
+    "native_ci_inventory_python_tests": 28,
+    "rust_corpus_discovery_tests": 1,
+    "native_lean_build": "passed: 1110 jobs",
+    "native_source_policy": "passed: 668 modules",
+    "native_audit": "passed: 55254 declarations; only propext, Classical.choice, Quot.sound",
+    "cli_check_run_emit_ir_invocations": 12,
+    "numerical_basis_probes": 16,
+    "numerical_reference_probes": 2,
+    "numerical_max_probability_error": 3.608224830031759e-16,
+    "numerical_tolerance": 1e-11,
+    "quick_positive_complex_probes": 0,
+    "quick_detected_type_correct_semantic_faults": 2,
+    "additional_checks": [
+      "corpus provenance",
+      "focused Clippy",
+      "rustfmt",
+      "docs",
+      "fixture budget",
+      "constitution identity",
+      "normal/MSRV target partitions"
+    ]
+  },
+  "skipped": [
+    "Entire Rust all-target suite",
+    "All 88 corpus runtime cases",
+    "Exhaustive Python entry tomography",
+    "Full Mathlib/QPTL replay",
+    "Fresh leanchecker replay",
+    "Julia reference suites",
+    "Package/release/installation checks",
+    "Hosted latest-head CI and independent review"
+  ],
+  "remaining": [
+    "General original-source/qmatch-to-IR preservation",
+    "Native compilation, decoding, runtime and target correspondence",
+    "Broader QS/PR/RS/EXACT obligations and general QROM synthesis",
+    "Recovery of earlier external-only trial source bytes",
+    "Latest-head hosted CI/review and issue evidence links"
+  ],
+  "scope": "Finite conformance observations and native equations. No general source/runtime preservation theorem, fresh leanchecker replay, full QS/PR/RS/EXACT discharge, independent human review or hosted CI success is claimed. The 18 numerical observations are supplementary; exact whole-matrix regressions remain the algorithm criterion.",
+  "log_encoding": "Each JSON log preserves the complete raw combined output in combined_output, including its final blank lines; raw_output_sha256 binds the decoded UTF-8 bytes."
+}

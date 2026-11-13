@@ -1,0 +1,8 @@
+{
+  "format": "qleisli.observed-command-output",
+  "version": 1,
+  "exit_code": 0,
+  "output_streams": "stdout and stderr captured together",
+  "combined_output": "Checked 668 kernel/transport/test source modules; no external Lake dependencies.\n",
+  "raw_output_sha256": "d8719943d4e3b832dc8fb392afd19233e2645431e129b7471d06ea2cac06d596"
+}

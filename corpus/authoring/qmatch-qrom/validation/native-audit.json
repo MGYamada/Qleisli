@@ -1,0 +1,8 @@
+{
+  "format": "qleisli.observed-command-output",
+  "version": 1,
+  "exit_code": 0,
+  "output_streams": "stdout and stderr captured together",
+  "combined_output": "Audited 55254 kernel/transport declarations, 1461 pure import modules and 1474 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "raw_output_sha256": "b345e45aec931e83964eb1a738381a900f51d1607ec40ed93927132d08283874"
+}
