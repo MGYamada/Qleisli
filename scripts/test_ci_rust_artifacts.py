@@ -78,7 +78,7 @@ class SyntheticRustReceipts:
         from check_input_corpus import representative_entries
         manifest_raw = (self.root / 'corpus/manifest.json').read_bytes(); manifest = json.loads(manifest_raw)
         negative = json.loads((self.root / 'corpus' / manifest['negative_expectations']['path']).read_text())
-        ids = {'cases': [row['id'] for row in manifest['cases']], 'semantic_faults': sorted(gate.QUICK_FAULTS),
+        ids = {'cases': [row['id'] for row in manifest['cases']], 'semantic_faults': sorted(gate.QUICK_FAULT_IDS),
                'negative_cases': [row['id'] for row in negative['cases']]}
         probes = representative_entries(manifest['cases'])
         codes = {row['id']: row['expected_code'] for row in negative['cases']}

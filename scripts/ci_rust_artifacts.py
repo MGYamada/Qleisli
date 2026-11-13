@@ -18,10 +18,10 @@ import ci_archive_rust
 import ci_runtime
 import ci_source_checks as checks
 from ci_rust_producers import RUST_SUITES, SHA, expected_producer_receipts, producer_jobs, require, validate_context
+from check_input_corpus import QUICK_FAULT_IDS, representative_entries
 from check_ratification_packet import ROOT, exact_keys, json_object, read_file
 
 LIMIT = 16 * 1024 * 1024
-QUICK_FAULTS = {'rx_missing_scalar', 'swapped_bell_labels', 'missing_add_two', 'incomplete_swap'}
 
 
 def digest(data):
@@ -134,7 +134,6 @@ def check_archive_report(root, context, claim, raw_metadata, record):
 
 
 def check_corpus(root, raw, compiler, read_source):
-    from check_input_corpus import representative_entries
     report = json_object(raw, 'Rust corpus report')
     manifest_raw = read_source('corpus/manifest.json')
     manifest = json_object(manifest_raw, 'corpus manifest')
@@ -146,7 +145,7 @@ def check_corpus(root, raw, compiler, read_source):
             and report.get('manifest_sha256') == digest(manifest_raw)
             and report.get('oracle_script_sha256') == digest(read_source('scripts/check_input_corpus.py'))
             and report.get('compiler_sha256') == compiler['sha256'], 'wrong or incomplete Rust corpus report')
-    expected = {'cases': {row['id'] for row in manifest['cases']}, 'semantic_faults': QUICK_FAULTS,
+    expected = {'cases': {row['id'] for row in manifest['cases']}, 'semantic_faults': QUICK_FAULT_IDS,
                 'negative_cases': {row['id'] for row in negative['cases']}}
     probes = representative_entries(manifest['cases'])
     require(same_data(report.get('representative_entries'), json.loads(json.dumps(probes)))

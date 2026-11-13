@@ -1,0 +1,8 @@
+{
+  "format": "qleisli.observed-command-output",
+  "version": 1,
+  "exit_code": 0,
+  "output_streams": "stdout and stderr captured together",
+  "combined_output": "   Compiling qleisli v0.3.0-beta (/workspace/scratch/732d143ac341/Qleisli)\n    Finished `test` profile [unoptimized] target(s) in 32.20s\n     Running tests/static_semantics.rs (target/debug/deps/static_semantics-144c8a5f394b8e28)\n\nrunning 4 tests\ntest qmatch_qrom::qmatch_qrom_oracle_pins_all_ordered_outputs ... ok\ntest qmatch_qrom::qmatch_qrom_exact_coherence_and_external_reference_correlations ... ok\nsemantic_faults/qrom2_qmatch_wrong_arm: valid source; 8 differing exact entries; native EquationMismatch\nqualtran/qrom2_qmatch: all 256 exact entries and native requested equation passed\nsemantic_faults/qrom2_qmatch_arm_phase: valid source; 4 differing exact entries; native EquationMismatch\nqualtran/qrom2: all 256 exact entries and native requested equation passed\ntest qmatch_qrom::qmatch_qrom_complete_matrix_and_explicit_circuit_match_independent_oracle ... ok\ntest qmatch_qrom::qmatch_qrom_valid_wrong_arm_and_phase_are_semantic_rejections ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 19 filtered out; finished in 18.87s\n\n",
+  "raw_output_sha256": "7151028d6762f6787bbff6be81a0e0249fbc14dda16dfb433242e4d08618e701"
+}
