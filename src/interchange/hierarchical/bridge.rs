@@ -1,7 +1,8 @@
 //! Strict external field codec and untrusted schedule/binary producer.
 //! The Lean checker independently validates every proposed reference and rule.
 mod request;
-pub(super) use request::decode_request;
+pub(crate) use request::ControlRequest;
+pub(super) use request::{decode_request, decode_with_controls};
 mod instrument;
 pub(super) use instrument::decode_instrument;
 mod qpe;

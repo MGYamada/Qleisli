@@ -13,11 +13,17 @@ re-decoding. Both the immutable subject identity and an execution-capable
 native scope are required. An inspection for identical bytes cannot substitute.
 
 Hierarchy reports likewise retain the same boxed plan prepared before the
-fresh native check. Each of the five modes compares that plan, including exact
+fresh native check. Each execution mode compares that plan, including exact
 finite descriptions and ordered preparation/readout coordinates. A failed plan
 or description is retained as an execution error while explicit inspection
 remains available. No report can lazily replace it with an unchecked plan.
 Compatibility reports additionally keep freshly checked finite-leaf handles.
+
+For pure source `ctrl` calls, the `QLR2` request carries ordered original
+owner basis trees and control roles for each replayed call node. The
+`--hierarchy-control-pending` mode requires an execution view and checks
+these obligations in the same invocation as composition and plan comparison.
+A successful response identifies that mode explicitly.
 
 ## Native envelope cutover
 

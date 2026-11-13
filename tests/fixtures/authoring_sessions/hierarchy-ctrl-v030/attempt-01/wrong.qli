@@ -1,0 +1,6 @@
+use std::gate::cnot;
+
+pub unitary fn route(pair: Q<Bits<2>>) -> Q<Bits<2>> {
+    cnot(excl pair[1], ctrl pair[0]);
+    pair
+}

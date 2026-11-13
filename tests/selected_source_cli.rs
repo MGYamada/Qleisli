@@ -1222,31 +1222,81 @@ fn selected_static_places_route_to_supported_profiles_before_native_acceptance()
                 command.arg("--ir-profile=raw");
             }
             let text = result(command.output().unwrap(), "check", true);
-            let profile = if explicit || call.contains("ctrl") {
-                "raw"
-            } else {
-                "hierarchy"
-            };
+            let profile = if explicit { "raw" } else { "hierarchy" };
             scope(&text, "main::main", profile);
-        }
-        let mut command = selected("check", &files.0.join("main.qli"), "main::main");
-        command.arg("--ir-profile=hierarchy");
-        if call.contains("ctrl") {
-            command.arg("--lean-kernel=/missing/place-checker");
-            let text = result(command.output().unwrap(), "check", false);
-            assert!(
-                text.contains(
-                    "ctrl source access requires independently bound basis-sector evidence"
-                ),
+            assert_eq!(
+                text.contains("\"source_control_checked\":true"),
+                !explicit && call.contains("ctrl"),
                 "{text}"
             );
-            assert!(text.contains("\"code\":\"unsupported\""), "{text}");
-        } else {
-            command.arg(format!("--lean-kernel={}", kernel().display()));
-            let text = result(command.output().unwrap(), "check", true);
-            scope(&text, "main::main", "hierarchy");
         }
+        let text = result(
+            selected("check", &files.0.join("main.qli"), "main::main")
+                .arg("--ir-profile=hierarchy")
+                .arg(format!("--lean-kernel={}", kernel().display()))
+                .output()
+                .unwrap(),
+            "check",
+            true,
+        );
+        scope(&text, "main::main", "hierarchy");
+        assert_eq!(
+            text.contains("\"source_control_checked\":true"),
+            call.contains("ctrl")
+        );
     }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn selected_hierarchy_checks_the_original_control_roles_on_the_executed_graph() {
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/hierarchy-ctrl-v030/attempt-01");
+    let positive = directory.join("main.qli");
+    let negative = directory.join("wrong.qli");
+
+    let mut command = selected("check", &negative, "main::route");
+    command.arg("--ir-profile=hierarchy");
+    #[cfg(unix)]
+    let log = {
+        let log = LoggedKernel::new();
+        log.attach(&mut command, true);
+        log
+    };
+    #[cfg(not(unix))]
+    command.arg(format!("--lean-kernel={}", kernel().display()));
+    let text = result(command.output().unwrap(), "check", false);
+    assert!(text.contains("\"code\":\"contract\""), "{text}");
+    #[cfg(unix)]
+    assert_eq!(log.calls(), ["--hierarchy-control-pending"]);
+
+    let text = result(
+        selected("run", &positive, "main::route")
+            .arg("--ir-profile=hierarchy")
+            .arg("--basis=2")
+            .arg(format!("--lean-kernel={}", kernel().display()))
+            .output()
+            .unwrap(),
+        "run",
+        true,
+    );
+    scope(&text, "main::route", "hierarchy");
+    assert!(text.contains("\"source_control_checked\":true"), "{text}");
+    amplitudes(&text, &[[0., 0.], [0., 0.], [0., 0.], [1., 0.]]);
+
+    let text = result(
+        selected("check", &positive, "main::route")
+            .arg("--ir-profile=hierarchy")
+            .arg("--lean-kernel=/missing/hierarchy-control-checker")
+            .output()
+            .unwrap(),
+        "check",
+        false,
+    );
+    assert!(text.contains("\"code\":\"io\""), "{text}");
 }
 
 #[cfg_attr(

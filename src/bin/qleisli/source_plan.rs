@@ -194,14 +194,19 @@ impl RequestScope {
             Self::NamedQpe => "qpe",
         }
     }
-    fn report(self) -> String {
+    fn report(self, source_control: bool) -> String {
         let (origin, authority) = match self {
             Self::ProducerConsistency => ("producer", "checked-produced-ir"),
             Self::CallerComposition => ("caller", "checked-ir-against-caller-request"),
             Self::NamedQpe => ("caller-provider", "checked-ir-against-named-qpe"),
         };
+        let control = if source_control {
+            ",\"source_control_checked\":true"
+        } else {
+            ""
+        };
         format!(
-            "\"verification\":{{\"scope\":\"{}\",\"request_origin\":\"{origin}\",\"source_meaning_verified\":false}},\"execution_authority\":\"{authority}\"",
+            "\"verification\":{{\"scope\":\"{}\",\"request_origin\":\"{origin}\",\"source_meaning_verified\":false{control}}},\"execution_authority\":\"{authority}\"",
             self.name()
         )
     }
@@ -444,6 +449,8 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
                 &mut source_budget,
             )?
             .lower_hierarchy()?
+    } else if source.has_control_obligations() && options.command != "emit-proposal" {
+        source.lower_hierarchy_with_controls()?
     } else {
         source.lower()?
     };
@@ -558,7 +565,7 @@ fn hierarchy_execute(
     use hierarchical::execution::{ExecutionLimits, SamplingLimits};
     let scope = request.scope();
     let contract = scope.contract();
-    let verification = scope.report();
+    let verification = scope.report(proposal.source().has_control_obligations());
     let source = proposal.source().instantiation();
     let isometry = source.program().public_function_effect(source.entry())
         == Some(qleisli::ir::Effect::Isometry);
@@ -644,10 +651,15 @@ fn hierarchy_execute(
         let PreparedRequest::Composition { bytes, .. } = request else {
             unreachable!("named QPE requires an observing entry during preparation")
         };
-        let checked = kernel
-            .check_against_native(proposal.payload(), bytes)
-            .map_err(checking_error)?;
-        proposal.validate_pure_source_steps(&checked)?;
+        let checked = if proposal.source().has_control_obligations() {
+            proposal.check_pure_with_native(&kernel, bytes)?
+        } else {
+            let checked = kernel
+                .check_against_native(proposal.payload(), bytes)
+                .map_err(checking_error)?;
+            proposal.validate_pure_source_steps(&checked)?;
+            checked
+        };
         if options.command == "check" {
             return Ok(format!(
                 "{{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"{contract}\",{verification},{}}}",

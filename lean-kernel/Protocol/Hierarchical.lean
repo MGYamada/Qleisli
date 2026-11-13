@@ -1,5 +1,6 @@
 import Protocol.Core
 import QleisliKernel.Hierarchical.Root
+import QleisliKernel.Hierarchical.ControlAccess
 import QleisliKernel.Hierarchical.FourierRoot
 import QleisliKernel.Hierarchical.Readout
 import QleisliKernel.Hierarchical.Preparation
@@ -211,11 +212,27 @@ structure RootPacket where
   request : QleisliKernel.Hierarchical.Root.Request
   pairs : Array QleisliKernel.Hierarchical.Root.Pair
   pairOrder : Array Nat
+  controls : Array QleisliKernel.Hierarchical.ControlAccess.Request := #[]
+
+private def readControlRequests : DecodeM (Array QleisliKernel.Hierarchical.ControlAccess.Request) := do
+  let requests ← array do
+    let root ← word
+    let count ← word
+    if count == 0 then throw .syntax
+    if count > 64 then throw .limit
+    let ports ← (List.range count).mapM (fun _ => basis)
+    let roles ← (List.range count).mapM (fun _ => boolean)
+    return ⟨root,ports.toArray,roles.toArray⟩
+  if requests.isEmpty then throw .syntax
+  return requests
 
 private def parseRequestBudget (input : ByteArray) (remaining : Nat) (shared : Bool) :
     Except Protocol.Error (RootPacket × Nat) := do
   if input.size > maxBridgeBytes then throw .limit
-  if input.size < 4 || input.extract 0 4 != "QLR1".toUTF8 then throw .syntax
+  if input.size < 4 then throw .syntax
+  let magic := input.extract 0 4
+  let withControls := !shared && magic == "QLR2".toUTF8
+  if magic != "QLR1".toUTF8 && !withControls then throw .syntax
   let read : DecodeM RootPacket := do
     let encoded ← block maxBridgeBytes
     let cursor ← get
@@ -237,7 +254,9 @@ private def parseRequestBudget (input : ByteArray) (remaining : Nat) (shared : B
       ⟨kind,effect,← interface,← array meaning,← word⟩
     let pairs ← array do
       return (⟨← word,← word,← array word⟩ : QleisliKernel.Hierarchical.Root.Pair)
-    return ⟨artifact,order,request,pairs,← array word⟩
+    let pairOrder ← array word
+    let controls ← if withControls then readControlRequests else pure #[]
+    return ⟨artifact,order,request,pairs,pairOrder,controls⟩
   let (result,final) ← read.run { bytes := input, remaining := remaining }
   if final.position != input.size then throw .syntax
   return (result,final.remaining)

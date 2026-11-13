@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check bounded pure hierarchy `ctrl` calls on their actual replayed intervals,
+  with exact ordered ports and a fresh native sector check before execution.
 - Add an actual four-qubit qmatch QROM corpus case with noncanonical arm order,
   valid wrong-arm/phase counterexamples and an independent exact full-matrix
   oracle. Compare both qmatch and CNOT/X implementations against the oracle;

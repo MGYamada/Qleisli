@@ -15,6 +15,7 @@ use crate::ir::{
     TokenId, WireId,
 };
 use std::collections::{BTreeMap, BTreeSet};
+mod control_access;
 #[path = "fourier.rs"]
 mod fourier;
 mod fourier_transport;
@@ -92,14 +93,45 @@ impl HierarchyProposal {
         &self,
         checked: &crate::interchange::hierarchical::NativeChecked,
     ) -> Result<()> {
+        self.validate_control_receipt(checked, &control_access::requests(self)?)
+    }
+
+    fn validate_control_receipt(
+        &self,
+        checked: &interchange::hierarchical::NativeChecked,
+        controls: &[interchange::hierarchical::ControlRequest],
+    ) -> Result<()> {
         self.source.require_edition(checked.edition())?;
         if self.instrument || checked.is_instrument() || self.payload() != checked.payload() {
             return Err(preservation::invalid(
                 "native pure check differs from the source proposal",
             ));
         }
-        zero_basis::validate(self)
+        if checked.control_requests() != controls {
+            return Err(preservation::invalid(
+                "native pure check differs from the original source control obligations",
+            ));
+        }
+        if controls.is_empty() {
+            zero_basis::validate(self)?;
+        }
+        Ok(())
     }
+    /// Replay the original calls and submit their exact intervals to the same
+    /// native invocation that checks and binds the executable hierarchy.
+    pub fn check_pure_with_native(
+        &self,
+        kernel: &interchange::hierarchical::Kernel,
+        request: &[u8],
+    ) -> Result<interchange::hierarchical::NativeChecked> {
+        let controls = control_access::requests(self)?;
+        let checked = kernel
+            .check_against_native_with_controls(self.payload(), request, &controls)
+            .map_err(|failure| control_access::native_error(self, failure))?;
+        self.validate_control_receipt(&checked, &controls)?;
+        Ok(checked)
+    }
+
     /// Whether the proposal uses initialization/unitary/readout transport.
     /// This includes checked public Isometry roots with no measurements, even
     /// when their actual bodies are Unitary. It does not reclassify the source
@@ -2111,12 +2143,21 @@ impl Lower<'_> {
 /// Preserve the existing preflight error API using the same typed classification
 /// used by target selection. Internal/limit failures are never reclassified.
 pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
+    source.require_control_evidence()?;
+    check_profile_for(source, false)
+}
+
+fn check_profile_for(source: &ElaboratedProgram, controls: bool) -> Result<()> {
     for step in source
         .definitions()
         .iter()
         .flat_map(|definition| definition.steps())
     {
-        step.check_access_contract()?;
+        if controls {
+            step.check_access_shape()?;
+        } else {
+            step.check_access_contract()?;
+        }
     }
     match hierarchy_eligibility(source)? {
         HierarchyEligibility::Eligible => Ok(()),
@@ -2167,13 +2208,17 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
                 .map_or(root.path(), |(module, _)| module),
         )
     };
-    if let Err(error) = source.require_control_evidence() {
-        return Ok(HierarchyEligibility::Ineligible(error));
-    }
     let profile = match root_profile(source) {
         Ok(profile) => profile,
         Err(error) => return Ok(HierarchyEligibility::Ineligible(error)),
     };
+    if let Err(error) = control_access::eligible(source, profile) {
+        return if error.code() == "unsupported" {
+            Ok(HierarchyEligibility::Ineligible(error))
+        } else {
+            Err(error)
+        };
+    }
     if source
         .definitions()
         .iter()
@@ -2295,7 +2340,12 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
 
 pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
     source.require_unrefined()?;
-    lower_inner(source, &[])
+    lower_inner(source, &[], false)
+}
+
+pub(super) fn lower_with_controls(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
+    source.require_unrefined()?;
+    lower_inner(source, &[], true)
 }
 
 /// Retain original Raw correspondence only where hierarchy also carries basis intervals.
@@ -2326,7 +2376,7 @@ pub(super) fn lower_with_checked_operation(
         leaf: check.leaf(),
         witness,
     }];
-    lower_inner(proposal.source(), &operations)
+    lower_inner(proposal.source(), &operations, false)
 }
 
 pub(super) fn lower_with_checked_meanings(
@@ -2365,15 +2415,20 @@ pub(super) fn lower_with_checked_meanings(
             })
         })
         .collect::<Result<Vec<_>>>()?;
-    lower_inner(check.source(), &operations)
+    lower_inner(check.source(), &operations, false)
 }
 
 fn lower_inner<'a>(
     source: &'a ElaboratedProgram,
     native_operations: &'a [NativeOperation<'a>],
+    controls: bool,
 ) -> Result<HierarchyProposal> {
     source.require_function_contracts()?;
-    check_profile(source)?;
+    if controls {
+        check_profile_for(source, true)?;
+    } else {
+        check_profile(source)?;
+    }
     let profile = root_profile(source)?;
     let mut lower = Lower {
         source,

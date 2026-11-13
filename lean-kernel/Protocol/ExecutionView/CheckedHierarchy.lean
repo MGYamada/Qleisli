@@ -85,7 +85,7 @@ open Gate
 open QleisliKernel.Hierarchical
 
 inductive Mode where
-  | inspect | request | fourier | instrument | qpeInstrument
+  | inspect | request | controlRequest | fourier | instrument | qpeInstrument
   deriving BEq, DecidableEq, Repr
 
 /-- Each variant retains the original decoded packet and its fresh complete
@@ -135,8 +135,9 @@ def checkCore (mode : Mode) (bytes : ByteArray) : Except Gate.Error Core := do
     let (artifact,order) ← parsed (Protocol.Hierarchical.parse bytes)
     let checked ← structural (Conditional.checkAll artifact order)
     return .inspect artifact order checked
-  | .request =>
+  | .request | .controlRequest =>
     let p ← parsed (Protocol.Hierarchical.parseRequest bytes)
+    if p.controls.isEmpty != (mode == .request) then throw .packet
     let checked ← structural (Root.checkAll p.artifact p.order p.request p.pairs p.pairOrder)
     return .request p checked
   | .fourier =>
@@ -155,7 +156,9 @@ def checkCore (mode : Mode) (bytes : ByteArray) : Except Gate.Error Core := do
 /-- Independent pair and phase-fixed H checks keep their original obligations.
 They share the same remaining budget as the actual-leaf reconstruction. -/
 def Core.extra : Core → Finite.WorkM Unit
-  | .request p c => HierarchicalFinite.checkPairs p.artifact p.request p.pairs c.binding.requests
+  | .request p c => do
+    HierarchicalFinite.checkPairs p.artifact p.request p.pairs c.binding.requests
+    HierarchicalFinite.checkControls p.artifact p.controls
   | .fourier p c => HierarchicalFinite.checkHadamards p.artifact
       (c.binding.body.requests.map Hadamard.Request.leafIndex)
   | .instrument p c => HierarchicalFinite.checkPairs p.packet.artifact
@@ -182,7 +185,8 @@ def Core.plan (core : Core) (matrices : HierarchyView.Matrices) : Finite.WorkM V
 def CoreBound (mode : Mode) (bytes : ByteArray) : Core → Prop
   | .inspect a o c => mode = .inspect ∧ Protocol.Hierarchical.parse bytes = .ok (a,o) ∧
       Conditional.checkAll a o = .ok c
-  | .request p c => mode = .request ∧ Protocol.Hierarchical.parseRequest bytes = .ok p ∧
+  | .request p c => (mode = .request ∨ mode = .controlRequest) ∧
+      p.controls.isEmpty = (mode == .request) ∧ Protocol.Hierarchical.parseRequest bytes = .ok p ∧
       Root.checkAll p.artifact p.order p.request p.pairs p.pairOrder = .ok c
   | .fourier p c => mode = .fourier ∧ Protocol.Hierarchical.parseFourier bytes = .ok p ∧
       FourierRoot.checkAll p.artifact p.order p.request p.wiringOrder = .ok c
@@ -218,10 +222,22 @@ theorem checkCore_bound (mode : Mode) (bytes : ByteArray) (core : Core)
     obtain ⟨p,c,hp,hc,rfl⟩ := step_bound (Protocol.Hierarchical.parse bytes)
       (fun p => Conditional.checkAll p.1 p.2) (fun p c => Core.inspect p.1 p.2 c) core ok
     exact ⟨rfl,hp,hc⟩
-  | request =>
-    obtain ⟨p,c,hp,hc,rfl⟩ := step_bound (Protocol.Hierarchical.parseRequest bytes)
-      (fun p => Root.checkAll p.artifact p.order p.request p.pairs p.pairOrder) Core.request core ok
-    exact ⟨rfl,hp,hc⟩
+  | request | controlRequest =>
+    unfold checkCore at ok
+    cases hp : Protocol.Hierarchical.parseRequest bytes with
+    | error e => simp [hp,parsed,bind,Except.bind,Except.mapError] at ok
+    | ok packet =>
+      simp only [hp,parsed,Except.mapError,bind,Except.bind] at ok
+      split at ok
+      next refused => contradiction
+      next roles =>
+        cases hc : Root.checkAll packet.artifact packet.order packet.request packet.pairs packet.pairOrder with
+        | error error => simp [hc,structural,Except.mapError,pure,Except.pure] at ok
+        | ok result =>
+          have same : Core.request packet result = core := by
+            simpa [hc,structural,Except.mapError,pure,Except.pure] using ok
+          subst core
+          exact ⟨by simp,by simpa using roles,hp,hc⟩
   | fourier =>
     obtain ⟨p,c,hp,hc,rfl⟩ := step_bound (Protocol.Hierarchical.parseFourier bytes)
       (fun p => FourierRoot.checkAll p.artifact p.order p.request p.wiringOrder) Core.fourier core ok
@@ -269,6 +285,29 @@ theorem inspectMode_binding (mode : Mode) (bytes : ByteArray) (checked : Inspect
   subst w₁
   exact ⟨⟨w₂,checkCore_bound mode bytes core original.1,original.1,
     native_success _ _ _ _ hm,nativeExtra⟩⟩
+
+theorem inspectMode_controls (bytes : ByteArray) (checked : Inspected) (work left : Nat)
+    (ok : (inspectMode .controlRequest bytes).run work = (.ok checked,left)) :
+    ∃ packet structural,
+      checked.core = .request packet structural ∧
+      Protocol.Hierarchical.parseRequest bytes = .ok packet ∧
+      packet.controls.isEmpty = false ∧
+      ∀ request ∈ packet.controls.toList, ∃ actual a b,
+        (HierarchicalFinite.checkControl packet.artifact request).run a = (.ok actual,b) := by
+  obtain ⟨binding⟩ := inspectMode_binding .controlRequest bytes checked work left ok
+  have original := binding.original
+  have extra := binding.extraBound
+  cases h : checked.core with
+  | request packet structural =>
+    rw [h] at original extra
+    obtain ⟨_,present,parsed,_⟩ := original
+    unfold Core.extra at extra
+    obtain ⟨_,middle,_,controls⟩ := Finite.bind_success _ _ _ _ _ extra
+    exact ⟨packet,structural,rfl,parsed,present,
+      HierarchicalFinite.checkControls_each _ _ middle left controls⟩
+  | inspect _ _ _ | fourier _ _ | instrument _ _ | qpeInstrument _ _ =>
+    rw [h] at original
+    simp [CoreBound] at original
 
 /-- Compare a plan derived from this call's exact original checks. -/
 def checkMode (mode : Mode) (bytes supplied : ByteArray) : CheckM Inspected := do
