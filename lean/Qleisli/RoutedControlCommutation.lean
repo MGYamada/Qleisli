@@ -32,6 +32,71 @@ theorem factors_commute (n m r : Nat) (U : Matrix (Bits n) (Bits n) ℂ)
   rw [← Matrix.mul_kronecker_mul, ← Matrix.mul_kronecker_mul]
   simp
 
+/-- Common ordered coordinates may use any finite shared control basis. Local
+matrices are read within each sector and keep their full complex coefficients.
+The unused factors stay diagonal, including every spectator coordinate. -/
+theorem sector_locality_commute {B A C S : Type} [Fintype B] [Fintype A] [Fintype C] [Fintype S]
+    [DecidableEq B] [DecidableEq A] [DecidableEq C] [DecidableEq S]
+    (U : B → Matrix A A ℂ) (V : B → Matrix C C ℂ)
+    (first second : Matrix (B × (A × (C × S))) (B × (A × (C × S))) ℂ)
+    (firstLocal : ∀ b a c s b' a' c' s',
+      first (b,a,c,s) (b',a',c',s') =
+        if b = b' ∧ c = c' ∧ s = s' then U b a a' else 0)
+    (secondLocal : ∀ b a c s b' a' c' s',
+      second (b,a,c,s) (b',a',c',s') =
+        if b = b' ∧ a = a' ∧ s = s' then V b c c' else 0) :
+    first * second = second * first := by
+  let L := fun b => Matrix.kronecker (U b) (1 : Matrix (C × S) (C × S) ℂ)
+  let R := fun b => Matrix.kronecker (1 : Matrix A A ℂ)
+    (Matrix.kronecker (V b) (1 : Matrix S S ℂ))
+  have left : first = ControlledPowers.block L := by
+    ext ⟨b,a,c,s⟩ ⟨b',a',c',s'⟩
+    rw [firstLocal]
+    by_cases hb : b = b' <;> by_cases hc : c = c' <;> by_cases hs : s = s' <;>
+      simp [ControlledPowers.block,L,Prod.ext_iff,hb,hc,hs]
+  have right : second = ControlledPowers.block R := by
+    ext ⟨b,a,c,s⟩ ⟨b',a',c',s'⟩
+    rw [secondLocal]
+    by_cases hb : b = b' <;> by_cases ha : a = a' <;> by_cases hs : s = s' <;>
+      simp [ControlledPowers.block,R,hb,ha,hs]
+  rw [left,right,← ControlledPowers.block_mul,← ControlledPowers.block_mul]
+  congr 1
+  funext b
+  dsimp only [L,R]
+  simp only [Matrix.kronecker]
+  rw [← Matrix.mul_kronecker_mul,← Matrix.mul_kronecker_mul]
+  simp
+
+/-- A common bijective route transports the sectorwise exchange to the
+original coordinate order. Each arbitrary reference column is acted on in
+that order, with no restriction on correlations. -/
+theorem sector_locality_exchange_reference {B A C S I Ref : Type}
+    [Fintype B] [Fintype A] [Fintype C] [Fintype S] [Fintype I]
+    [DecidableEq B] [DecidableEq A] [DecidableEq C] [DecidableEq S]
+    (route : I ≃ B × (A × (C × S)))
+    (U : B → Matrix A A ℂ) (V : B → Matrix C C ℂ)
+    (first second : Matrix I I ℂ)
+    (firstLocal : ∀ b a c s b' a' c' s',
+      first (route.symm (b,a,c,s)) (route.symm (b',a',c',s')) =
+        if b = b' ∧ c = c' ∧ s = s' then U b a a' else 0)
+    (secondLocal : ∀ b a c s b' a' c' s',
+      second (route.symm (b,a,c,s)) (route.symm (b',a',c',s')) =
+        if b = b' ∧ a = a' ∧ s = s' then V b c c' else 0)
+    (joint : I → Ref → ℂ) (output : I) (reference : Ref) :
+    ((second * first) *ᵥ (fun input => joint input reference)) output =
+      ((first * second) *ᵥ (fun input => joint input reference)) output := by
+  have commute := sector_locality_commute U V (first.submatrix route.symm route.symm)
+    (second.submatrix route.symm route.symm) firstLocal secondLocal
+  have transported : (first * second).submatrix route.symm route.symm =
+      (second * first).submatrix route.symm route.symm := by
+    simpa only [Matrix.submatrix_mul_equiv] using commute
+  have restored := congrArg (fun matrix : Matrix (B × (A × (C × S))) (B × (A × (C × S))) ℂ =>
+    matrix.submatrix route route) transported
+  have same : first * second = second * first := by
+    ext row col
+    simpa [Matrix.submatrix] using congrFun (congrFun restored row) col
+  rw [same]
+
 theorem permutation_sandwich {I : Type} [Fintype I] [DecidableEq I]
     (route : I ≃ I) (M : Matrix I I ℂ) :
     permutation route.symm * M * permutation route = M.submatrix route route := by
