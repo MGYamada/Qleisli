@@ -82,9 +82,8 @@ private def bodyAction (leaf : LeafReader) (definition : Definition)
 /-- Read the root from the original table, recursively through actual edges.
 Charge before reading endpoint fields and materializing children. Recursion
 spends fuel as well as shared work, including under a zero repetition. -/
-def action (leaf : LeafReader) (artifact : Artifact) : Nat → Nat → WorkM Matrix
-  | 0, _ => throw .limit
-  | fuel+1, index => do
+def action (leaf : LeafReader) (artifact : Artifact) (fuel : Nat) : Nat → WorkM Matrix :=
+  Nat.rec (fun _ => throw .limit) (fun _ child index => do
     let definition ← read artifact.definitions[index]?
     let interface := definition.interface
     exactWork (Exact.charge (16 * (1 + interface.scan + definition.body.charge)))
@@ -94,9 +93,9 @@ def action (leaf : LeafReader) (artifact : Artifact) : Nat → Nat → WorkM Mat
     guard (bits ≤ 6 && outputBits ≤ 6) .limit
     guard (definition.effect == .unitary && bits == outputBits &&
       NodeTyping.quantumOnly interface) .request
-    let actual ← bodyAction leaf definition (action leaf artifact fuel) bits
+    let actual ← bodyAction leaf definition child bits
     guard (actual.rows == 2^bits && actual.cols == 2^bits) .request
-    return actual
+    return actual) fuel
 
 /-- The original source supplies the ordered port types and role at each
 argument. A zero-width owner still occupies one position in both lists. -/
