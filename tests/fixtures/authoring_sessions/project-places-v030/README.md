@@ -1,8 +1,8 @@
 # Indexed access in a finite project
 
-The [first project](project/main.qli) puts a Hadamard on one bit, uses that
+The [first project](attempt-01/project/main.qli) puts a Hadamard on one bit, uses that
 bit as `ctrl` and the other as `excl`, then observes the returned register.
-The [edition 2026 manifest](project/Qargo.toml) and source are unchanged
+The [edition 2026 manifest](attempt-01/project/Qargo.toml) and source are unchanged
 across the observations.
 
 - [Initial check](first-check.json) on `7ed1ba4cb47cb4d43d34c453c36a47437d895778`

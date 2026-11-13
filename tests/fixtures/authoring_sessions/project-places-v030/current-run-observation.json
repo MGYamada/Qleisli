@@ -1,0 +1,35 @@
+{
+  "command": [
+    "qleisli",
+    "run",
+    "attempt-01/project",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-11-13T03:17:41.376590+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 0.5000000000000001
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 0.5000000000000002
+        }
+      ]
+    }
+  }
+}
