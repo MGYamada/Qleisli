@@ -162,22 +162,24 @@ effects and ownership are still checked in unexecuted code. Runtime indices,
 unproved bounds/disjointness, overflow and budget exhaustion fail at compile
 time; there is no runtime bounds panic.
 
-Selected Raw lowering supports concrete places within its existing finite
-profile. It partitions each parent into ordered selected and remainder owners,
+The finite project compiler and selected Raw lowering support concrete places
+within their bounded profiles. Each partitions each parent into ordered selected and remainder owners,
 calls the callee once with all selected arguments, then reconstructs each
 parent in reverse extraction order using the updated returned values. Empty
 selected and remainder owners retain their logical identities and scalar phase.
 Existing Split/Join instructions perform these partitions without physical
-SWAPs, preparation, measurement or cleanup. Independent source-step replay
-checks the actual partitions and reassembly; native validity alone cannot
-establish the original place, even when a wrong round trip denotes identity.
-`ctrl` additionally requires fresh native sector checking of the retained
-concrete callee. Checker-free control emission remains unsupported.
+SWAPs, preparation, measurement or cleanup. The project compiler submits its
+emitted program to native Raw checking. The selected path also replays source
+steps against the actual partitions and reassembly. `ctrl` requires fresh
+native sector checking of the concrete callee on its ordered selected ports.
+A dormant action with closed ports can be checked without evaluating an
+inactive branch's register extraction. Checker-free control emission remains
+unsupported.
 
 Auto profile selection chooses Raw for partition steps before native checking.
-Explicit hierarchical and finite-project lowering refuse this profile; no
-selector is silently treated as whole-owner access. These bounded checks are
-not a general source/phase, reference-preservation or quantitative-resource proof.
+Explicit hierarchical lowering still refuses these steps. General source
+preservation, reference behavior and quantitative resource correspondence
+remain proof obligations.
 
 ### Ordinary expressions and classical functions
 

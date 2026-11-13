@@ -15,6 +15,7 @@ mod function_contract;
 mod nominal;
 mod operations;
 mod ordinary;
+mod places;
 mod primitives;
 mod quantum_match;
 mod record;
@@ -935,17 +936,33 @@ impl Lowerer<'_, '_> {
     fn exclusive_call(
         &mut self,
         module: &str,
-        callee: &Ident,
-        static_args: &[StaticOp],
         arguments: &[AccessArgument],
         env: &mut Env,
         source: &Expr,
     ) -> Result<Value, CompileError> {
+        let (values, places) = self.prepare_places(module, arguments, env)?;
+        let returned = self.checked_access_action(module, source, values, env)?;
+        self.restore_places(module, places, returned, env)?;
+        Ok(Value::Unit)
+    }
+
+    fn checked_access_action(
+        &mut self,
+        module: &str,
+        source: &Expr,
+        values: Vec<Value>,
+        env: &mut Env,
+    ) -> Result<Vec<Value>, CompileError> {
+        let ExprKind::AccessCall {
+            callee,
+            static_args,
+            args: arguments,
+        } = &source.kind
+        else {
+            unreachable!("access action from its original expression");
+        };
         let span = source.span;
-        self.compiler
-            .charge(module, span, arguments.len().saturating_mul(3))?;
         let mut owners = Vec::new();
-        let mut seen = BTreeSet::new();
         let control = arguments
             .iter()
             .any(|arg| arg.access == QuantumAccess::Ctrl);
@@ -953,46 +970,14 @@ impl Lowerer<'_, '_> {
         let mut signatures = Vec::new();
         let mut axes = Vec::new();
         let mut offset = 0;
-        for argument in arguments {
-            let ExprKind::Name(name) = &argument.value.kind else {
-                return Err(self.error(
-                    module,
-                    argument.value.span,
-                    ErrorCode::Unsupported,
-                    "exclusive access requires a whole lexical Q<A> owner",
-                ));
-            };
-            let key = self.compiler.locals().local_key(name).ok_or_else(|| {
-                self.error(
-                    module,
-                    name.span,
-                    ErrorCode::Ownership,
-                    "exclusive owner is unavailable",
-                )
-            })?;
-            let value = env.get(key).and_then(Binding::as_ref).ok_or_else(|| {
-                self.error(
-                    module,
-                    name.span,
-                    ErrorCode::Ownership,
-                    "exclusive owner is consumed or hidden",
-                )
-            })?;
-            if !matches!(value, Value::Quantum(..)) || !seen.insert(key.clone()) {
-                return Err(self.error(
-                    module,
-                    name.span,
-                    ErrorCode::Ownership,
-                    "exclusive access requires distinct live Q<A> owners",
-                ));
-            }
-            let mut charge = key.name.len() + value.tree_size().nodes;
+        for (argument, value) in arguments.iter().zip(&values) {
             if control {
                 let Value::Quantum(slot, _) = value else {
-                    unreachable!("whole quantum owner checked above");
+                    unreachable!("prepared access owner");
                 };
                 let register = &self.raw.registers[slot];
-                charge += register.size();
+                self.compiler
+                    .charge(module, argument.value.span, register.size())?;
                 signatures.push(super::operations::contract_basis(&register.basis));
                 ports.push(QuantumPort {
                     token: register.token,
@@ -1006,8 +991,7 @@ impl Lowerer<'_, '_> {
                 }
                 offset += register.wires.len();
             }
-            owners.push((key.clone(), value.ty()));
-            self.compiler.charge(module, name.span, charge)?;
+            owners.push(value.ty());
         }
         let first = self.raw.operations.len();
         if control && self.bound_operation(callee).is_none() {
@@ -1022,14 +1006,7 @@ impl Lowerer<'_, '_> {
                 }
             }
         }
-        let result = self.runtime_call(
-            module,
-            callee,
-            static_args,
-            RuntimeArguments::Accesses(arguments),
-            env,
-            source,
-        )?;
+        let result = self.runtime_call(module, callee, static_args, env, source, Some(values))?;
         let returned = if owners.len() == 1 {
             vec![result]
         } else {
@@ -1046,7 +1023,7 @@ impl Lowerer<'_, '_> {
             || returned
                 .iter()
                 .zip(&owners)
-                .any(|(value, (_, ty))| !matches!(value, Value::Quantum(..)) || value.ty() != *ty)
+                .any(|(value, ty)| !matches!(value, Value::Quantum(..)) || value.ty() != *ty)
         {
             return Err(self.error(
                 module,
@@ -1112,14 +1089,7 @@ impl Lowerer<'_, '_> {
                 ));
             }
         }
-        for ((key, _), value) in owners.into_iter().zip(returned) {
-            self.access_updates
-                .last_mut()
-                .expect("exclusive call inside a block")
-                .insert(key.clone());
-            env.insert(key, Binding::Live(value));
-        }
-        Ok(Value::Unit)
+        Ok(returned)
     }
 
     fn original_runtime_call(
@@ -1207,11 +1177,16 @@ impl Lowerer<'_, '_> {
         module: &str,
         callee: &Ident,
         static_args: &[StaticOp],
-        args: RuntimeArguments<'_>,
         env: &mut Env,
         source: &Expr,
+        prepared: Option<Vec<Value>>,
     ) -> Result<Value, CompileError> {
         let span = source.span;
+        let args = match &source.kind {
+            ExprKind::Call { args, .. } => RuntimeArguments::Values(args),
+            ExprKind::AccessCall { args, .. } => RuntimeArguments::Accesses(args),
+            _ => unreachable!("runtime call from its original expression"),
+        };
         // Keep legacy ordinary-call resolution and diagnostics. New
         // static calls resolve descriptions after runtime arguments.
         let legacy_target = if static_args.is_empty() && self.bound_operation(callee).is_none() {
@@ -1232,10 +1207,13 @@ impl Lowerer<'_, '_> {
         } else {
             None
         };
-        let values = args
-            .iter()
-            .map(|arg| self.expr(module, arg, env))
-            .collect::<Result<Vec<_>, _>>()?;
+        let values = if let Some(values) = prepared {
+            values
+        } else {
+            args.iter()
+                .map(|arg| self.expr(module, arg, env))
+                .collect::<Result<Vec<_>, _>>()?
+        };
         self.static_name(module, callee, env)?;
         if self.bound_operation(callee).is_some() {
             if !static_args.is_empty() || values.len() != 1 {
@@ -1546,20 +1524,9 @@ impl Lowerer<'_, '_> {
             ExprKind::Call {
                 callee,
                 static_args,
-                args,
-            } => self.runtime_call(
-                module,
-                callee,
-                static_args,
-                RuntimeArguments::Values(args),
-                env,
-                expr,
-            ),
-            ExprKind::AccessCall {
-                callee,
-                static_args,
-                args,
-            } => self.exclusive_call(module, callee, static_args, args, env, expr),
+                ..
+            } => self.runtime_call(module, callee, static_args, env, expr, None),
+            ExprKind::AccessCall { args, .. } => self.exclusive_call(module, args, env, expr),
             ExprKind::If {
                 condition,
                 then_branch,

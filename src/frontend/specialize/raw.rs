@@ -1399,7 +1399,6 @@ impl Emitter<'_> {
         step: &super::SourceStep,
         inputs: &[Vec<Atom>],
     ) -> Result<Vec<Atom>> {
-        use crate::ir::RawOp;
         let span = step.span();
         if p.start > p.end || p.end > p.width || p.width > 8 || (p.bit && p.end - p.start != 1) {
             return Err(invalid(
@@ -1433,47 +1432,18 @@ impl Emitter<'_> {
             let register = self
                 .raw
                 .registers
-                .remove(&slot)
+                .get(&slot)
                 .ok_or_else(|| invalid(span, "take_bit source owner is absent"))?;
             if register.basis != SourceType::bits(n) || register.wires.len() != width {
                 return Err(invalid(span, "take_bit changes its original register type"));
             }
-            let prefix = self.raw.token();
-            let tail = self.raw.token();
-            let suffix = self.raw.token();
-            let bit = self.raw.register(
-                selected_basis.clone(),
-                register.wires[position..p.end as usize].to_vec(),
-            );
-            let rest = self.raw.register(
+            let (selected, remainder) = self.raw.take_range(
+                slot,
+                position..p.end as usize,
+                selected_basis,
                 SourceType::bits(n - selected_width),
-                register
-                    .wires
-                    .iter()
-                    .enumerate()
-                    .filter_map(|(i, w)| (i < position || i >= p.end as usize).then_some(*w))
-                    .collect(),
             );
-            self.raw.operations.extend([
-                RawOp::Split {
-                    input: register.token,
-                    left: prefix,
-                    right: tail,
-                    left_bits: p.start as u8,
-                },
-                RawOp::Split {
-                    input: tail,
-                    left: self.raw.registers[&bit].token,
-                    right: suffix,
-                    left_bits: selected_width as u8,
-                },
-                RawOp::Join {
-                    left: prefix,
-                    right: suffix,
-                    output: self.raw.registers[&rest].token,
-                },
-            ]);
-            Ok(vec![Atom::Quantum(bit), Atom::Quantum(rest)])
+            Ok(vec![Atom::Quantum(selected), Atom::Quantum(remainder)])
         } else {
             let [bit, rest] = inputs else {
                 return Err(invalid(span, "put_bit requires two original owners"));
@@ -1483,47 +1453,24 @@ impl Emitter<'_> {
             if bit == rest {
                 return Err(invalid(span, "put_bit owners alias"));
             }
-            let bit = self
+            let selected = self
                 .raw
                 .registers
-                .remove(&bit)
+                .get(&bit)
                 .ok_or_else(|| invalid(span, "put_bit bit owner is absent"))?;
-            let rest = self
+            let remainder = self
                 .raw
                 .registers
-                .remove(&rest)
+                .get(&rest)
                 .ok_or_else(|| invalid(span, "put_bit register owner is absent"))?;
-            if bit.basis != selected_basis
-                || bit.wires.len() != selected_width as usize
-                || rest.basis != SourceType::bits(n - selected_width)
-                || rest.wires.len() != width - selected_width as usize
+            if selected.basis != selected_basis
+                || selected.wires.len() != selected_width as usize
+                || remainder.basis != SourceType::bits(n - selected_width)
+                || remainder.wires.len() != width - selected_width as usize
             {
                 return Err(invalid(span, "put_bit changes its original owner types"));
             }
-            let mut wires = rest.wires;
-            wires.splice(position..position, bit.wires);
-            let output = self.raw.register(SourceType::bits(n), wires);
-            let prefix = self.raw.token();
-            let suffix = self.raw.token();
-            let head = self.raw.token();
-            self.raw.operations.extend([
-                RawOp::Split {
-                    input: rest.token,
-                    left: prefix,
-                    right: suffix,
-                    left_bits: p.start as u8,
-                },
-                RawOp::Join {
-                    left: prefix,
-                    right: bit.token,
-                    output: head,
-                },
-                RawOp::Join {
-                    left: head,
-                    right: suffix,
-                    output: self.raw.registers[&output].token,
-                },
-            ]);
+            let output = self.raw.put_range(bit, rest, position, SourceType::bits(n));
             Ok(vec![Atom::Quantum(output)])
         }
     }

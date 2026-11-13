@@ -120,7 +120,6 @@ fn check_action(
     if args.is_empty()
         || args.len() > MAX_DEPTH
         || !args.iter().any(|arg| arg.access == QuantumAccess::Ctrl)
-        || args.iter().any(|arg| arg.selection.is_some())
     {
         return Ok(PrimitiveControlVisit::NotCovered);
     }
@@ -231,7 +230,7 @@ fn check_action(
                 .as_ref()
                 .expect("original accessor checked runtime key");
             compiler.charge_at(&mut work, &module, original.span, key.name.len() + 1)?;
-            owners.push((key.clone(), Arc::clone(&retained.ty)));
+            owners.push(Arc::clone(&retained.ty));
         }
         Ok::<_, CompileError>((owners, Arc::clone(&obligation.plan.environment)))
     })();
@@ -325,12 +324,16 @@ fn check_action(
             );
         }
     }
-    compiler.charge(&module, original.span, owners.len())?;
+    compiler.charge(&module, original.span, owners.len() + args.len())?;
+    let selected = args.iter().any(|argument| argument.selection.is_some());
     let mut closed = Vec::with_capacity(owners.len());
-    for (key, source_type) in owners {
+    for source_type in owners {
         match compiler.close_source_type_partial(&source_type, &environment, original.span)? {
-            Some(ty) => closed.push((key, ty)),
-            None if compiler.concrete_context.current.is_some()
+            Some(ty) => closed.push(ty),
+            // A slice width can depend on an original fold index. The
+            // concrete access checks its closed ports on each iteration.
+            None if !selected
+                && compiler.concrete_context.current.is_some()
                 && !compiler.in_inactive_region() =>
             {
                 let message =
@@ -367,13 +370,12 @@ fn check_action(
         depth: 0,
         bindings,
     };
-    let mut env = Env::new();
+    let mut values = Vec::with_capacity(closed.len());
     let mut quantum = Vec::new();
     let mut classical = Vec::new();
-    // The original common judgment supplies types and exact live BinderKeys,
-    // including aliases, carry binders and zero-width owners, in CALL order.
-    // It grants neither caller-prefix execution nor whole-body acceptance.
-    for (key, ty) in closed {
+    // Check only the original action on its checked ports. Inactive regions
+    // have no concrete parent interval to extract, even when the ports close.
+    for ty in closed {
         let mut work = lower.compiler.work;
         let charged = super::super::dormant::charge_port_copy(&ty, 8, &mut |cells| {
             lower
@@ -382,28 +384,14 @@ fn check_action(
         });
         lower.compiler.work = work;
         charged?;
-        lower
-            .compiler
-            .charge(&module, original.span, key.name.len() + 16)?;
-        let value = lower.input(&ty, &module, original.span, &mut quantum, &mut classical)?;
-        if env.insert(key, Binding::Live(value)).is_some() {
-            return Err(refuse(
-                lower.compiler,
-                &module,
-                original.span,
-                "primitive control requires distinct original runtime owners",
-            )?);
-        }
+        values.push(lower.input(&ty, &module, original.span, &mut quantum, &mut classical)?);
     }
     lower.compiler.charge(
         &module,
         original.span,
         module.len() + callee.text.len() + args.len().saturating_mul(8) + 16,
     )?;
-    // The exact original AST reaches exclusive_call -> runtime_call -> the
-    // existing native actual-Raw/ordered-owner sector request. AccessCall
-    // restores its owners; do not finish an artificial surrounding function.
-    lower.expr(&module, original, &mut env)?;
+    lower.checked_access_action(&module, original, values, &mut Env::new())?;
     Ok(PrimitiveControlVisit::CheckedAction)
 }
 

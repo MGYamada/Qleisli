@@ -10,6 +10,7 @@ use super::types::{Kind, Type};
 use crate::ir::{CircuitAction, CircuitStep, ClassicalId, RawOp, SingleGate, TokenId, WireId};
 use std::collections::BTreeMap;
 use std::fmt;
+use std::ops::Range;
 
 pub(crate) type Slot = u32;
 
@@ -103,6 +104,88 @@ impl<N> RawState<N> {
         );
         slot
     }
+    /// Untrusted structural partition of a caller-checked ordered range.
+    pub(crate) fn take_range(
+        &mut self,
+        input: Slot,
+        range: Range<usize>,
+        selected_basis: Type<N>,
+        remainder_basis: Type<N>,
+    ) -> (Slot, Slot) {
+        let original = self.registers.remove(&input).expect("checked register");
+        let prefix = self.token();
+        let tail = self.token();
+        let suffix = self.token();
+        let width = range.len();
+        let mut wires = original.wires;
+        let selected_wires = wires.drain(range.clone()).collect();
+        let selected = self.register(selected_basis, selected_wires);
+        let remainder = self.register(remainder_basis, wires);
+        self.operations.extend([
+            RawOp::Split {
+                input: original.token,
+                left: prefix,
+                right: tail,
+                left_bits: range.start as u8,
+            },
+            RawOp::Split {
+                input: tail,
+                left: self.registers[&selected].token,
+                right: suffix,
+                left_bits: width as u8,
+            },
+            RawOp::Join {
+                left: prefix,
+                right: suffix,
+                output: self.registers[&remainder].token,
+            },
+        ]);
+        (selected, remainder)
+    }
+
+    /// Reinsert a caller-checked returned owner at its original position.
+    pub(crate) fn put_range(
+        &mut self,
+        selected: Slot,
+        remainder: Slot,
+        position: usize,
+        basis: Type<N>,
+    ) -> Slot {
+        let selected = self
+            .registers
+            .remove(&selected)
+            .expect("checked selected owner");
+        let remainder = self
+            .registers
+            .remove(&remainder)
+            .expect("checked remainder");
+        let mut wires = remainder.wires;
+        wires.splice(position..position, selected.wires);
+        let output = self.register(basis, wires);
+        let prefix = self.token();
+        let suffix = self.token();
+        let head = self.token();
+        self.operations.extend([
+            RawOp::Split {
+                input: remainder.token,
+                left: prefix,
+                right: suffix,
+                left_bits: position as u8,
+            },
+            RawOp::Join {
+                left: prefix,
+                right: selected.token,
+                output: head,
+            },
+            RawOp::Join {
+                left: head,
+                right: suffix,
+                output: self.registers[&output].token,
+            },
+        ]);
+        output
+    }
+
     pub(crate) fn init0(&mut self) -> Slot {
         let wire = self.wire();
         let slot = self.register(Type::bit(), vec![wire]);

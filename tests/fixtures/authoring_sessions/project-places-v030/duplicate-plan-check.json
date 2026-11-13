@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"run","outcome":"error","diagnostics":[{"code":"project","severity":"error","message":"duplicate original body static plan","primary":{"path":"main.qli","start":137,"end":138,"line":5,"column":17},"related":[]}],"result":null}

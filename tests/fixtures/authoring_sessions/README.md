@@ -45,6 +45,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [finite project access study](project-places-v030/README.md) preserves
+the original Bell preparation, the initial indexed-access refusal, the
+duplicate-plan diagnostic and a current run of the unchanged source.
+
 The [nominal Meaning composition study](nominal-meaning-composition-v030/session.json)
 retains the enum attempts, the first refusal for a record intermediate, a closed
 composition project, and a tensor phase on the bit axis of a nominal product.

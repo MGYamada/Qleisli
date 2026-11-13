@@ -1264,13 +1264,7 @@ fn indexed_place_profiles_preserve_the_common_judgment_before_transport() {
         .accept(proposal.proposal())
         .unwrap();
     proposal.validate_source_steps(&accepted).unwrap();
-    let error = check_project(&SourceRoot::new(text).0).unwrap_err();
-    assert_eq!(error.code, ErrorCode::Unsupported);
-    assert_eq!(
-        error.message,
-        "finite profile does not yet lower indexed quantum access"
-    );
-    assert_eq!(&text[error.span.start..error.span.end], "excl q[0]");
+    check_project(&SourceRoot::new(text).0).unwrap();
     // An invalid source must fail the common judgment before either lowerer.
     let invalid = text.replace("q[0]", "q[2]");
     assert_eq!(
@@ -1279,6 +1273,120 @@ fn indexed_place_profiles_preserve_the_common_judgment_before_transport() {
             .code,
         ErrorCode::TypeMismatch
     );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn project_selected_places_preserve_phase_and_order_against_explicit_owner_flow() {
+    let source = "
+        use std::gate::cnot;
+        use std::state::init0;
+        unitary fn explicit(q:Q<(Bits<3>,Bit)>)->Q<(Bits<3>,Bit)>{
+            let(q,reference)=split(q);
+            let(c,r)=take_bit[3,2](q);
+            let(t,r)=take_bit[2,0](r);
+            let(c,t)=cnot(c,t);
+            let r=put_bit[2,0](t,r);
+            let q=put_bit[3,2](c,r);
+            join(global_phase_eighth(q),reference)
+        }
+        meaning Expected:(Bits<3>,Bit)=reference(explicit);
+        unitary fn selected(q:Q<(Bits<3>,Bit)>)->Q<(Bits<3>,Bit)>{
+            let(q,reference)=split(q);
+            static let control=2;
+            cnot(ctrl q[control],excl q[0]);
+            global_phase_eighth(ctrl q[1..1]);
+            join(q,reference)
+        }
+        pub observe fn main()->Bit{
+            let z=basis unit(()) as _ { empty_bits() };
+            let q=put_bit[3,2](init0(),put_bit[2,1](init0(),put_bit[1,0](init0(),z)));
+            let(q,r)=split(apply_contract(selected,Expected,join(q,init0())));
+            discard(q);
+            measure_z(r)
+        }";
+    for selection in ["q[1..1]", "q[0..3]"] {
+        let variant = source.replace("q[1..1]", selection);
+        compile_project(&SourceRoot::new(&variant).0).unwrap();
+    }
+    for changed in [
+        source.replace("ctrl q[control],excl q[0]", "ctrl q[0],excl q[control]"),
+        source.replace("global_phase_eighth(ctrl q[1..1]);", ""),
+    ] {
+        let failure = compile_project(&SourceRoot::new(&changed).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Contract, "{failure}");
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn project_selected_controls_check_closed_dormant_sites() {
+    for call in ["h(ctrl q[0])", "flip(ctrl q[0])", "hold[flip](ctrl q[0])"] {
+        let source = format!(
+            "use std::gate::x;
+             unitary fn flip(q:Q<Bit>)->Q<Bit>{{x(q)}}
+             unitary fn hold[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+             requires Applicable(U){{U(q)}}
+             pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{{
+                 if static 0==0 {{q}} else {{{call};q}}
+             }}"
+        );
+        let failure = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Contract, "{call}: {failure}");
+        assert!(failure.message.contains("sector preservation"), "{failure}");
+        assert_eq!(&source[failure.span.start..failure.span.end], call);
+    }
+    // The closed action can be checked under the original empty branch
+    // without constructing an out-of-range view in the caller's register.
+    check_project(
+        &SourceRoot::new(
+            "pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{
+            if static 0==0 {q} else {phase[1,3](ctrl q[2]);q}
+        }",
+        )
+        .0,
+    )
+    .unwrap();
+    // A symbolic index does not hide a closed nonsector action.
+    let generic = "unitary fn f[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>>
+        requires K<N {h(ctrl q[K]);q}";
+    let failure = check_project(&SourceRoot::new(generic).0).unwrap_err();
+    assert_eq!(failure.code, ErrorCode::Contract, "{failure}");
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn project_static_fold_restores_the_parent_at_each_original_index() {
+    let source = "
+        use std::gate::x;
+        use std::state::init0;
+        unitary fn flip_all[const N:Nat](q:Q<Bits<N>>)->Q<Bits<N>>{
+            qfor static i in 0..N carry r=q {
+                x(excl r[i]);
+                global_phase_eighth(ctrl r[0..i]);
+                yield r;
+            }
+        }
+        pub observe fn main()->(Bit,Bit){
+            let empty=basis unit(()) as _ { empty_bits() };
+            let q=put_bit[2,0](init0(),put_bit[1,0](x(init0()),empty));
+            let(a,r)=take_bit[2,0](flip_all[2](q));
+            let(b,r)=take_bit[1,0](r);
+            discard(r);
+            (measure_z(a),measure_z(b))
+        }";
+    let accepted = compile_project(&SourceRoot::new(source).0).unwrap();
+    let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    assert_runtime_distribution(&distribution, &BTreeMap::from([(vec![true, false], 1.0)]));
 }
 
 #[test]
