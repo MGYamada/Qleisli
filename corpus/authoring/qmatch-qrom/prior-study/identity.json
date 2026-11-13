@@ -1,0 +1,65 @@
+{
+  "baseline_commit": "965c1657f368ee1a38f5cb5b6e5bbfd51c4c9210",
+  "attempts": {
+    "first": {
+      "source_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kernel.qli": "655b76535f24f52e4c78d9530b8a8ddb93cb14519fa21cf2d75565d13874f4fe",
+        "main.qli": "8b181dca9722d1bd22801ecb5cbb54fabe45603485bd1f05748621d0e3d80609"
+      },
+      "cli_sha256": "a9abf495beb95d0c33ae945b7981e3307d57c1148879d77eaf70e348c4ad8d97",
+      "native_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+      "exit_code": 1,
+      "streams": {
+        "stdout": {
+          "original_sha256": "85fecb47f569e46a8f01514a3487cec8aeb35373c61c089913fc7667e84a2db3",
+          "retained_sha256": "85fecb47f569e46a8f01514a3487cec8aeb35373c61c089913fc7667e84a2db3"
+        },
+        "stderr": {
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "repair-01": {
+      "source_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kernel.qli": "7d78cceb0f16a6d8e743e342a69244491bd63fc7c54af7a3f98ea72883dae5c0",
+        "main.qli": "8b181dca9722d1bd22801ecb5cbb54fabe45603485bd1f05748621d0e3d80609"
+      },
+      "cli_sha256": "a9abf495beb95d0c33ae945b7981e3307d57c1148879d77eaf70e348c4ad8d97",
+      "native_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+      "exit_code": 1,
+      "streams": {
+        "stdout": {
+          "original_sha256": "3ad5d5f4f2c2e2d9ddb8d4c0cb250e9bd41ae8ccfe98140a68daa717f58bf9c8",
+          "retained_sha256": "3ad5d5f4f2c2e2d9ddb8d4c0cb250e9bd41ae8ccfe98140a68daa717f58bf9c8"
+        },
+        "stderr": {
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "repair-02": {
+      "source_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kernel.qli": "5d007b6b1fe6b5063462bd6578313af254ffd28a8880a6528860f73f2973b094",
+        "main.qli": "8b181dca9722d1bd22801ecb5cbb54fabe45603485bd1f05748621d0e3d80609"
+      },
+      "cli_sha256": "a9abf495beb95d0c33ae945b7981e3307d57c1148879d77eaf70e348c4ad8d97",
+      "native_sha256": "abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae",
+      "exit_code": 0,
+      "streams": {
+        "stdout": {
+          "original_sha256": "c0bf7dc2aa2997170a0e8027cb4f35d88282bed4ace54a4bc9c98219ee1f42a2",
+          "retained_sha256": "623a9699254a423b480c41e4a9e7dcdc94282c83fc4f8d9547f19b9bf5cb16c2"
+        },
+        "stderr": {
+          "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "retained_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  }
+}
