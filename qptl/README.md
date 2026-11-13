@@ -98,6 +98,12 @@ properties. Lean checks the resulting proof.
   equations for each label. `directSum_action` evaluates one output coordinate
   from the corresponding sector of an arbitrary joint input and retains that
   sector's complex phase.
+- `fixedScratch_iff` characterizes exact separation of a designated scratch
+  basis state for finite Kraus families. Vanishing unwanted diagonal populations
+  on live basis inputs is equivalent to separation for every joint input with
+  a reference. The live output basis can include the complete classical outcome
+  register. For a trace-preserving family on normalized inputs, the retained
+  scratch population is one.
 
 The tests include a rectangular state preparation, a coherent sign change
 through a rectangular encoding, and an arbitrary joint input with a reference. [Proof examples](QPTLTests.lean)
