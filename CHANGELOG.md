@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add physical `std::gate::swap_registers` and structural
+  `std::structure::transpose_axes` for statically sized registers.
 - Lower bounded `excl` indices and slices in the hierarchy. Replay original
   ordered ports against the phase-free structural nodes checked by Lean.
 

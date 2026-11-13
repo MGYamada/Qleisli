@@ -102,7 +102,7 @@ including `std::basis`, have no primitive privilege.
 
 ## Current interfaces and contracts
 
-The eight bundled ordinary modules expose twenty-five public definitions, six
+The eight bundled ordinary modules expose twenty-seven public definitions, six
 transparent prelude reexports and five
 private helpers for a classical predicate, scalar phase, parameterized phase,
 packed CNOT and fixed Bit identity.
@@ -119,6 +119,7 @@ move; they are not constitutional ledger entries or verification badges.
 | `std::transform::qft2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | F001: positive F4 with included reversal; Unitary. |
 | `std::transform::qft3` | `fn (Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)>` | F002: positive F8 with included reversal; Unitary. |
 | `std::gate::swap` | `unitary fn (Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | Two-Bit SWAP, exact phase +1; three ordinary CNOT calls with retained controlled-X work, original output wire order. Actual target gate costs require a checked realization. |
+| `std::gate::swap_registers` | `[const n:Nat]`, `unitary fn (Q<Bits<n>>, Q<Bits<n>>) -> (Q<Bits<n>>, Q<Bits<n>>)` | Exchanges the two register states with phase +1, in the original wire frames. Applies a two-Bit SWAP to each corresponding axis pair. At width zero both logical owners return. |
 | `std::gate::t` | `unitary fn (Q<Bit>) -> Q<Bit>` | Exact `diag(1, exp(i*pi/4))`, derived by controlling the scalar phase on a fresh `Q<Unit>` owner and explicitly consuming that owner. No additional physical wire. |
 | `std::gate::{s,sdg,tdg,z,x}` | Each `unitary fn (Q<Bit>) -> Q<Bit>` | S and Z use the quarter-turn and half-turn phases `phase[1,2]` and `phase[1,1]`; S† and T† use `adjoint(s)` and `adjoint(t)`. X is `H Z H`. Each preserves the full exact phase and the original returned owner interface. |
 | `std::gate::id` | Static `[const A:Basis]`; `unitary fn (Q<A>) -> Q<A>` | Identity with coefficient +1, retaining the full Basis tree and every zero-width owner. No physical instruction or implicit type conversion. |
@@ -130,14 +131,14 @@ move; they are not constitutional ledger entries or verification badges.
 | `std::structure::empty` | Nullary `unitary fn () -> Q<Bits<0>>` | Explicit singleton basis map from a fresh Unit owner to the exact Bits<0> tag, coefficient +1, no physical wire. |
 | `std::structure::consume_empty` | `unitary fn (Q<Bits<0>>) -> Unit` | Explicit singleton map to Unit followed by `finish`; complete scalar/reference action retained, no observation or implicit coercion. |
 | `std::structure::permute_axes` | `unitary fn (Q<(Bit,Bit)>) -> Q<(Bit,Bit)>` | Structural two-axis map `[1,0]`, exact phase +1; reversed output wire order, no gate instruction. |
+| `std::structure::transpose_axes` | `[const n:Nat,const i:Nat,const j:Nat]`, `unitary fn (Q<Bits<n>>) -> Q<Bits<n>>` with `i < j < n` | The output-to-input axis map is the identity with positions `i` and `j` exchanged. The phase is +1 and the body emits no gate instruction. |
 | `std::reflection::reflect_uniform2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | R002: `2|++><++| - I`, with this exact sign; Unitary. |
 | `std::measurement::measure_x` | `fn (Q<Bit>) -> Bit` | R003: destructive X measurement; Observe. |
 | `std::measurement::measure_z2` | `fn (Q<(Bit, Bit)>) -> (Bit, Bit)` | R004: destructive ordered two-bit Z measurement; Observe. |
 | `std::measurement::parity_zz` | `fn (Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Bit)` | R005: nondestructive Z-parity measurement of the data; Observe. |
 
-The `std::gate` and `std::structure` functions are ordinary `.qli`, not sealed
-compiler entries. The two-Bit interfaces of `swap` and `permute_axes` are explicit:
-generic register SWAP and arbitrary permutation witnesses remain unsupported. `swap(excl a, excl b)`
+The `std::gate` and `std::structure` functions are ordinary checked `.qli`.
+`swap(excl a, excl b)`
 returns authority to the updated original owners; `permute_axes(q)` consumes
 and returns its pair with the explicit axis map. Neither is binding exchange.
 Under fixed input/output coordinates both denote `|a,b> -> |b,a>` with phase
@@ -146,6 +147,12 @@ no optimizer permission to replace one routing implementation by the other.
 Actual target routing and quantitative resource claims need their own checked
 correspondence and accounting; zero source gate instructions are not a promise
 of zero physical routing cost.
+
+On `Bits<3>`, first exchanging positions 1 and 2, then positions 0 and 1,
+gathers the original axes in order `[2,0,1]`. Each argument is relative to the
+input order at that call. Finite sequences of transpositions describe arbitrary
+ordered permutations under the usual specialization bounds. A single
+first-class permutation argument is still unsupported.
 
 For T, the private scalar helper has exact meaning `zeta_8 I_Unit`. Coherent
 control gives `diag(1,zeta_8)` on the retained Bit; the zero-width target is a

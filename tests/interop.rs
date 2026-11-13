@@ -611,7 +611,7 @@ fn literal_target(text: &str) -> (usize, Vec<CircuitStep>) {
         steps.push(CircuitStep { controls, action });
     }
     let width = width.expect("physical target declaration");
-    assert!(width <= 3, "only small target experiments");
+    assert!(width <= 4, "only small target experiments");
     (width, steps)
 }
 
@@ -1201,6 +1201,86 @@ fn ordinary_swap_and_structural_axes_keep_distinct_export_work_and_readout_order
                 "{fault}: {changed}"
             );
         }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn register_routing_exports_keep_physical_gates_and_structural_order() {
+    use qleisli::contract::exact::{Exact, Matrix};
+    for (body, expected_gates, expected_axes, gather) in [
+        (
+            "let (a,b) = swap_registers[2](a,b);",
+            vec![
+                "cx q[0], q[2];",
+                "cx q[2], q[0];",
+                "cx q[0], q[2];",
+                "cx q[1], q[3];",
+                "cx q[3], q[1];",
+                "cx q[1], q[3];",
+            ],
+            [0, 1, 2, 3],
+            [2, 3, 0, 1],
+        ),
+        (
+            "let a = transpose_axes[2,0,1](a);",
+            vec![],
+            [1, 0, 2, 3],
+            [1, 0, 2, 3],
+        ),
+    ] {
+        let source = format!(
+            "use std::gate::swap_registers; use std::structure::{{empty,consume_empty,transpose_axes}};\n\
+             use std::state::init0;\n\
+             isometry fn pair()->Q<Bits<2>>{{let a=init0();let b=init0();put_bit[2,0](a,put_bit[1,0](b,empty()))}}\n\
+             observe fn main()->(Bit,Bit,Bit,Bit){{\n\
+             let a=pair();let b=pair();{body}\n\
+             let (a0,a)=take_bit[2,0](a);let (a1,a)=take_bit[1,0](a);\n\
+             let (b0,b)=take_bit[2,0](b);let (b1,b)=take_bit[1,0](b);\n\
+             consume_empty(a);consume_empty(b);(measure_z(a0),measure_z(a1),measure_z(b0),measure_z(b1))}}"
+        );
+        let program =
+            qleisli::frontend::compile::compile_project(&common::SourceRoot::new(&source).0)
+                .unwrap();
+        let qasm = export_openqasm3(&program).unwrap();
+        assert_eq!(literal_target(&qasm).0, 4);
+        assert_eq!(literal_output_axes(&qasm), expected_axes);
+        assert_eq!(
+            qasm.lines()
+                .filter(|line| line.starts_with("cx "))
+                .collect::<Vec<_>>(),
+            expected_gates
+        );
+        let qir = export_qir_base(&program).unwrap();
+        assert_eq!(
+            qir.matches("call void @__quantum__qis__cnot__body(")
+                .count(),
+            expected_gates.len()
+        );
+        let expected = Matrix::new(
+            16,
+            16,
+            (0..256)
+                .map(|entry| {
+                    let input = entry % 16;
+                    let output: usize = gather
+                        .iter()
+                        .enumerate()
+                        .map(|(axis, source)| ((input >> source) & 1) << axis)
+                        .sum();
+                    if entry / 16 == output {
+                        Exact::one()
+                    } else {
+                        Exact::zero()
+                    }
+                })
+                .collect(),
+        )
+        .unwrap();
+        exact_routed_target_matrix(&qasm, expected).unwrap();
     }
 }
 

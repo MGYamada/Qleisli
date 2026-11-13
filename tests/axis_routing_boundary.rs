@@ -4,6 +4,7 @@ mod common;
 
 use common::SourceRoot;
 use qleisli::contract::exact::{Budget, Exact};
+use qleisli::contract::meaning::FiniteMeaning;
 use qleisli::contract::{
     BasisType, ContractError, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity,
 };
@@ -43,6 +44,98 @@ fn selected_at(text: &str, entry: &str) -> AcceptedProgram {
 
 fn selected(text: &str) -> AcceptedProgram {
     selected_at(text, "main::probe")
+}
+
+fn checked_permutation(text: &str, basis: BasisType, map: Vec<u16>) -> AcceptedProgram {
+    let entry = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), text.into())]),
+    )
+    .unwrap()
+    .instantiate("main::probe", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
+    let kernel = Kernel::selected(qleisli::edition::Edition::E2026).unwrap();
+    let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+    let proposal = entry.lower_raw_with_kernel(&kernel, &mut budget).unwrap();
+    let meaning = FiniteMeaning::permutation(basis, map).unwrap();
+    proposal
+        .check_finite_meaning(&kernel, &meaning, &mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap();
+    let accepted = kernel.accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    accepted
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn register_swap_preserves_wire_frames_and_axis_permutations_compose_without_gates() {
+    for width in 0..=3 {
+        let source = format!(
+            "use std::gate::swap_registers;\n\
+             pub unitary fn probe(q:Q<(Bits<{width}>,Bits<{width}>)>)->Q<(Bits<{width}>,Bits<{width}>)>{{\
+             let (a,b)=split(q); let (a,b)=swap_registers[{width}](a,b); join(a,b)}}"
+        );
+        let mask = (1 << width) - 1;
+        let map = (0..1 << (2 * width))
+            .map(|label| ((label & mask) << width) | (label >> width))
+            .collect();
+        let bits = BasisType::Bits(width);
+        let checked = checked_permutation(&source, BasisType::pair(bits.clone(), bits), map);
+        assert_eq!(checked.output_ports().len(), 1);
+        assert_eq!(
+            checked.output_ports()[0].wires,
+            checked.raw().quantum_inputs[0].wires
+        );
+        assert_eq!(
+            checked
+                .raw()
+                .operations
+                .iter()
+                .filter(|op| matches!(op, RawOp::ApplyUnitary { .. }))
+                .count(),
+            3 * usize::try_from(width).unwrap()
+        );
+    }
+
+    let source = "use std::structure::transpose_axes;\n\
+                  pub unitary fn probe(q:Q<Bits<3>>)->Q<Bits<3>>{\
+                  transpose_axes[3,0,1](transpose_axes[3,1,2](q))}";
+    let checked = checked_permutation(source, BasisType::Bits(3), vec![0, 2, 4, 6, 1, 3, 5, 7]);
+    let input = &checked.raw().quantum_inputs[0].wires;
+    assert_eq!(
+        checked.output_ports()[0].wires,
+        [input[2], input[0], input[1]]
+    );
+    assert!(
+        checked
+            .raw()
+            .operations
+            .iter()
+            .all(|op| matches!(op, RawOp::Split { .. } | RawOp::Join { .. }))
+    );
+
+    for invalid in ["3,1,1", "3,2,1", "3,0,3"] {
+        let source = format!(
+            "use std::structure::transpose_axes; pub unitary fn probe(q:Q<Bits<3>>)->Q<Bits<3>>{{transpose_axes[{invalid}](q)}}"
+        );
+        let parsed = ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), source)]),
+        );
+        let error = parsed
+            .and_then(|program| {
+                program.instantiate("main::probe", BTreeMap::new(), BTreeMap::new())
+            })
+            .and_then(|entry| entry.elaborate())
+            .err()
+            .expect("invalid axis pair");
+        assert!(error.to_string().contains("natural premise"), "{error}");
+    }
 }
 
 fn finite(text: &str) -> (AcceptedProgram, String) {
