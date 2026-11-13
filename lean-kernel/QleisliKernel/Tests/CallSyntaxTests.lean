@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.CallSyntax
 import QleisliKernel.SourceTypes.AccessSyntax
+import QleisliKernel.Qirf.RuntimeAccessInterval
 
 /-! Bounded original-token controls; no name/owner/effect or body acceptance.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -85,5 +86,60 @@ example : (places "f(excl q[1]); (); g(ctrl q[1]); q").isNone = true := by decid
 example : (places "f(excl q[1]) g(ctrl q[2]); h(ctrl q[1]); q").isNone = true := by decide +kernel
 example : (places "defs::f[1](excl q[1]); g(ctrl q[2]); q").map
     (fun (left,right) => AccessSyntax.compatible left right) = some true := by decide +kernel
+
+open QleisliKernel.Finite QleisliKernel.Qirf in
+private def checkAccessInterval (text : String) (inputs outputs : List Nat) (checkControl : Bool) :
+    Except String (Except Error (List Nat)) := do
+  let call ← AccessSyntax.readCall (← lexLocated text)
+  let lookup name : Option AccessSyntax.Owner :=
+    if name == "q" then some ⟨⟨name,⟨0,1⟩⟩,[.bits 3],[7,2,5]⟩ else none
+  let raw : Semantics.Raw.Program :=
+    ⟨[⟨0,[7],1⟩,⟨1,[2],1⟩,⟨2,[5],1⟩],[.cnot 1 0 3 4],[4,3,2],.unitary⟩
+  let program := Semantics.Ownership.pureProgram raw
+  let action : WorkM (List Nat) := do
+    let root ← RuntimeInterval.prepare [] program
+    let checked ← RuntimeAccessInterval.read call lookup (fun _ => none) (fun _ _ => none)
+      root.block 0 1 inputs outputs
+    if checkControl then
+      let _ ← RuntimeAccessInterval.checkSectors checked
+    return RuntimeAccessInterval.controlAxes checked.places
+  return (action.run 2000000).1
+
+private def outcome : Except String (Except Finite.Error (List Nat)) → String
+  | .ok (.ok [0]) => "ordered control"
+  | .ok (.error .request) => "request"
+  | .ok (.error .equation) => "equation"
+  | _ => "unexpected"
+
+example : outcome (checkAccessInterval "cnot(ctrl q[1],excl q[0])" [1,0] [3,4] true) =
+    "ordered control" := by decide +kernel
+example : outcome (checkAccessInterval "cnot(ctrl q[1],excl q[0])" [0,1] [4,3] false) =
+    "request" := by decide +kernel
+example : outcome (checkAccessInterval "cnot(ctrl q[1],excl q[0])" [1,0] [4,3] false) =
+    "request" := by decide +kernel
+example : outcome (checkAccessInterval "cnot(ctrl q[1],excl q[2])" [1,0] [3,4] false) =
+    "request" := by decide +kernel
+example : outcome (checkAccessInterval "cnot(excl q[1],ctrl q[0])" [1,0] [3,4] true) =
+    "equation" := by decide +kernel
+
+open QleisliKernel.Finite QleisliKernel.Qirf in
+private def emptyOwnerReturn (outputs : List Nat) : Bool :=
+  let attempt : Except String Bool := do
+    let tokens ← lexLocated "f(ctrl a,excl b)"
+    let call ← AccessSyntax.readCall tokens
+    let lookup name : Option AccessSyntax.Owner :=
+      if name == "a" then some ⟨⟨name,⟨0,1⟩⟩,[.unit],[]⟩
+      else if name == "b" then some ⟨⟨name,⟨3,4⟩⟩,[.bits 0],[]⟩ else none
+    let raw : Semantics.Raw.Program := ⟨[⟨0,[],0⟩,⟨1,[],0⟩],[],[0,1],.unitary⟩
+    let program := Semantics.Ownership.pureProgram raw
+    let action : WorkM Unit := do
+      let root ← RuntimeInterval.prepare [] program
+      let _ ← RuntimeAccessInterval.read call lookup (fun _ => none) (fun _ _ => none)
+        root.block 0 0 [0,1] outputs
+    return (action.run 2000000).1.isOk
+  attempt.toOption.getD false
+
+example : emptyOwnerReturn [0,1] = true := by decide +kernel
+example : emptyOwnerReturn [1,0] = false := by decide +kernel
 
 end QleisliKernel.Tests.CallSyntaxTests
