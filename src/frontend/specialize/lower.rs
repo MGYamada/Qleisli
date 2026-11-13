@@ -93,18 +93,29 @@ impl HierarchyProposal {
         &self,
         checked: &crate::interchange::hierarchical::NativeChecked,
     ) -> Result<()> {
+        self.validate_control_receipt(checked, &control_access::requests(self)?)
+    }
+
+    fn validate_control_receipt(
+        &self,
+        checked: &interchange::hierarchical::NativeChecked,
+        controls: &[interchange::hierarchical::ControlRequest],
+    ) -> Result<()> {
         self.source.require_edition(checked.edition())?;
         if self.instrument || checked.is_instrument() || self.payload() != checked.payload() {
             return Err(preservation::invalid(
                 "native pure check differs from the source proposal",
             ));
         }
-        if self.source.has_control_obligations() && !checked.has_control_checks() {
+        if checked.control_requests() != controls {
             return Err(preservation::invalid(
-                "native pure check omits the original source control obligations",
+                "native pure check differs from the original source control obligations",
             ));
         }
-        zero_basis::validate(self)
+        if controls.is_empty() {
+            zero_basis::validate(self)?;
+        }
+        Ok(())
     }
     /// Replay the original calls and submit their exact intervals to the same
     /// native invocation that checks and binds the executable hierarchy.
@@ -117,7 +128,7 @@ impl HierarchyProposal {
         let checked = kernel
             .check_against_native_with_controls(self.payload(), request, &controls)
             .map_err(|failure| control_access::native_error(self, failure))?;
-        self.validate_pure_source_steps(&checked)?;
+        self.validate_control_receipt(&checked, &controls)?;
         Ok(checked)
     }
 

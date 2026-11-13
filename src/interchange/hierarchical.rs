@@ -214,6 +214,7 @@ pub struct NativeChecked {
     payload: Arc<[u8]>,
     request: Option<Arc<[u8]>>,
     candidate: Option<Arc<[u8]>>,
+    controls: Box<[ControlRequest]>,
     instrument: bool,
     structural_work: usize,
     exact_work: usize,
@@ -224,11 +225,22 @@ impl NativeChecked {
     pub fn edition(&self) -> Edition {
         self.context.edition()
     }
-    fn new(prepared: Prepared, response: &runtime::Response, instrument: bool) -> Result<Self> {
+    fn new(
+        prepared: Prepared,
+        response: &runtime::Response,
+        instrument: bool,
+        controls: &[ControlRequest],
+    ) -> Result<Self> {
         if prepared.edition != response.context.edition() {
             return Err(Error::new(
                 "edition",
                 "native decision belongs to another edition",
+            ));
+        }
+        let checked_controls = response.context.mode() == Mode::ControlRequest.argument();
+        if checked_controls == controls.is_empty() {
+            return Err(Error::format(
+                "native hierarchy decision has different control obligations",
             ));
         }
         Ok(Self {
@@ -237,6 +249,7 @@ impl NativeChecked {
             payload: prepared.payload,
             request: prepared.request,
             candidate: prepared.candidate,
+            controls: controls.into(),
             instrument,
             structural_work: response.work,
             exact_work: response.exact_work,
@@ -246,8 +259,8 @@ impl NativeChecked {
     pub fn payload(&self) -> &[u8] {
         &self.payload
     }
-    pub(crate) fn has_control_checks(&self) -> bool {
-        self.context.mode() == Mode::ControlRequest.argument()
+    pub(crate) fn control_requests(&self) -> &[ControlRequest] {
+        &self.controls
     }
 
     /// Canonical path used for this invocation, not a binary attestation.
@@ -293,7 +306,7 @@ impl Kernel {
             prepared.view().as_deref(),
         )?;
         validate_leaves(&decoded.value, &response.indices)?;
-        NativeChecked::new(prepared, &response, false)
+        NativeChecked::new(prepared, &response, false, &[])
     }
 
     /// Native original-QIRF/request checking, including phase-fixed Fourier H.
@@ -340,7 +353,7 @@ impl Kernel {
                 response.pairs.clone(),
             )?;
         }
-        NativeChecked::new(prepared, &response, false)
+        NativeChecked::new(prepared, &response, false, controls)
     }
 
     /// Native composed initialization, finite circuit request and readout.
@@ -361,7 +374,7 @@ impl Kernel {
             &decoded.pure.pairs,
             response.pairs.clone(),
         )?;
-        NativeChecked::new(prepared, &response, true)
+        NativeChecked::new(prepared, &response, true, &[])
     }
 
     /// Native named-QPE provider, schedule and exact H checks. No production
@@ -398,7 +411,7 @@ impl Kernel {
         for &index in &response.hadamards {
             validate_hadamards(&decoded.provider.actual, 1, vec![index])?;
         }
-        NativeChecked::new(prepared, &response, true)
+        NativeChecked::new(prepared, &response, true, &[])
     }
 }
 

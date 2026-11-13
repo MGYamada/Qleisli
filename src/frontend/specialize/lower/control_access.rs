@@ -125,4 +125,47 @@ mod tests {
             .unwrap_err();
         assert_eq!(failure.code(), "contract");
     }
+
+    #[test]
+    fn same_graph_with_different_control_roles_cannot_reuse_a_native_receipt() {
+        let edition = crate::edition::Edition::E2026;
+        let lower = |args| {
+            let text = format!(
+                "use std::gate::cnot; pub unitary fn main(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){{cnot({args});(c,q)}}"
+            );
+            ParsedProgram::parse(edition, BTreeMap::from([("main".into(), text)]))
+                .unwrap()
+                .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap()
+                .lower_hierarchy_with_controls()
+                .unwrap()
+        };
+        let original = lower("ctrl c,excl q");
+        let different = lower("excl c,ctrl q");
+        assert_eq!(original.payload(), different.payload());
+        assert_eq!(
+            original.comparison_request(),
+            different.comparison_request()
+        );
+        let kernel = Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+            edition,
+        );
+        let receipt = original
+            .check_pure_with_native(&kernel, original.comparison_request())
+            .unwrap();
+        original.validate_pure_source_steps(&receipt).unwrap();
+        let failure = different.validate_pure_source_steps(&receipt).unwrap_err();
+        assert_eq!(failure.code(), "preservation");
+        assert!(
+            failure.message().contains("control obligations"),
+            "{failure}"
+        );
+        let failure = different
+            .check_pure_with_native(&kernel, different.comparison_request())
+            .unwrap_err();
+        assert_eq!(failure.code(), "contract");
+    }
 }

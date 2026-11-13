@@ -5,6 +5,7 @@ use std::collections::BTreeMap;
 use super::{Error, Result, Value, Writer, decode, json, number};
 use crate::contract::BasisType;
 
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct ControlRequest {
     pub root: usize,
     pub ports: Vec<BasisType>,
