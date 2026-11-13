@@ -75,7 +75,7 @@ theorem events_selected (dependencies : List Dependency) (base globalBits localB
 permutation remains RuntimePureComposition.Prepared.orderedRootTrace's event. -/
 def trace (before : Semantics.RawTrace.Interface) (operations : List Semantics.Raw.Op) :
     Option Semantics.RawTrace.Prepared :=
-  Semantics.RawTrace.interval before operations
+  operations.foldlM Semantics.RawTrace.advance ⟨before,[],before.frame.length⟩
 
 /-- The sector fragment's synthetic identity finish contributes no circuit
 chunk. Every actual circuit, including an empty one, retains its own position. -/
