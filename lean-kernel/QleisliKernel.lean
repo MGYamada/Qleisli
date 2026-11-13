@@ -177,6 +177,7 @@ import QleisliKernel.Qirf.OrdinaryFamily
 import QleisliKernel.Qirf.RuntimeFamily
 import QleisliKernel.Qirf.Ownership
 import QleisliKernel.Hierarchical.Conditional
+import QleisliKernel.Hierarchical.ControlAccess
 import QleisliKernel.Hierarchical.Root
 import QleisliKernel.Hierarchical.Gradient
 import QleisliKernel.Hierarchical.FourierStage

@@ -138,7 +138,7 @@ requires its own evidence for the changed owner flow and other contracts.
 | Owners | Keep the same lexical owner identities with returned values. Require caller-visible checked Unitary effect, independent body checking and the exact original owner interface. Subsequent consuming calls still make their binders spent; shadows cannot restore them. |
 | Exact phase | Preserve the complete callee action, including entanglement, ordered axes and zero-width phase. Insert no inverse or cleanup. |
 | Source spans | Retain original callee and argument identifiers, byte spans and callee-body origins. Contextual marker spans do not replace owner-identifier spans. |
-| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, mixed ordinary/access arguments, escaping access, failed native control-sector check or unavailable concrete projection rejects. Static selections follow the separate rule below. Checker-free Raw and hierarchical `ctrl` remain unsupported. Native-checked Raw also checks unused closed functions leading to control obligations; it invents no static bindings and refuses original obligations without a concrete interval in each retained specialization. |
+| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, mixed ordinary/access arguments, escaping access, failed native control-sector check or unavailable concrete projection rejects. Static selections follow the separate rule below. Checker-free `ctrl` remains unsupported. Native-checked Raw also checks unused closed functions leading to control obligations; it invents no static bindings and refuses original obligations without a concrete interval in each retained specialization. |
 | Remaining obligations | Check emitted artifacts and requests independently. The lookup-level scope-update model has finite-map, type-embedding and update-provenance premises; it is not a source-preservation proof or quantitative resource certificate. General footprints, lifetimes and access declarations remain pending. |
 
 See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).
@@ -191,10 +191,13 @@ unsupported.
 The hierarchy supports `excl` indices and slices on owners of up to eight axes
 using its existing bit extraction, reinsertion, and empty-owner operations.
 Source replay checks each partition's original ordered ports and the actual
-phase-free graph interval. Automatic profile selection can choose hierarchy
-for these calls. Selected `ctrl` continues to require native-checked Raw.
-General source preservation and quantitative resource correspondence remain
-proof obligations.
+phase-free graph interval. For supported pure `ctrl` calls, replay binds the
+original ordered call interval in that same graph. Lean checks the exact
+action's sectors during the invocation that checks the executable hierarchy.
+Each control decision covers at most six physical input bits and uses the
+existing exact scalar ring. Unretained control occurrences and observing or
+Meaning-bound entries remain outside this hierarchy profile. General source
+preservation and quantitative resource correspondence remain proof obligations.
 
 ### Ordinary expressions and classical functions
 

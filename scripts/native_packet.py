@@ -29,6 +29,7 @@ MODES = {
     '--qmatch-source-check': ('accepted', ('execution',)),
     '--hierarchy-pending': ('pending', ('inspection', 'execution')),
     '--hierarchy-request-pending': ('pending', ('inspection', 'execution')),
+    '--hierarchy-control-pending': ('pending', ('execution',)),
     '--hierarchy-fourier-pending': ('pending', ('inspection', 'execution')),
     '--instrument-pending': ('pending', ('inspection', 'execution')),
     '--qpe-instrument-pending': ('pending', ('inspection', 'execution')),

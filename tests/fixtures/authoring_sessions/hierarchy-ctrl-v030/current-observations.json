@@ -1,0 +1,137 @@
+{
+  "binary_hashes": [
+    "76c23827b8c441ad5f9a17ec6805f4a6c18b5a58a6be02a20db1437a428b65c7  target/debug/qleisli",
+    "58ad44d604be96d5014e8a9e66c1bfd2ccf0b33e8247d99c3357dfc0636cd396  lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "observations": {
+    "main-checked": {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::route",
+        "--module=main=/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/branch-baseline/main.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T04:49:18Z",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "profile": "sized-unitary",
+          "contract": "composition",
+          "verification": {
+            "scope": "producer-consistency",
+            "request_origin": "producer",
+            "source_meaning_verified": false,
+            "source_control_checked": true
+          },
+          "execution_authority": "checked-produced-ir",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": true,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "entry": "main::route",
+          "ir_profile": "hierarchy",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      }
+    },
+    "wrong-checked": {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::route",
+        "--module=main=/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/branch-baseline/wrong.qli",
+        "--ir-profile=hierarchy",
+        "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T04:49:18Z",
+      "exit_code": 1,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "contract",
+            "severity": "error",
+            "message": "contract: Lean source control and composition-request checking: the native checker rejected the artifact or request",
+            "primary": {
+              "module": "main",
+              "path": "/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/branch-baseline/wrong.qli",
+              "start": 22,
+              "end": 125
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    "main-run": {
+      "command": [
+        "target/debug/qleisli",
+        "run",
+        "--entry=main::route",
+        "--module=main=/private/tmp/qleisli-hierarchy-ctrl-first.nNpF4M/branch-baseline/main.qli",
+        "--ir-profile=hierarchy",
+        "--basis=2",
+        "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T04:49:18Z",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "quantum_bits": 2,
+          "amplitudes": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              6.123233995736767e-17
+            ],
+            [
+              1.0000000000000002,
+              -6.123233995736767e-17
+            ]
+          ],
+          "verification": {
+            "scope": "producer-consistency",
+            "request_origin": "producer",
+            "source_meaning_verified": false,
+            "source_control_checked": true
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::route",
+          "ir_profile": "hierarchy",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      }
+    }
+  }
+}

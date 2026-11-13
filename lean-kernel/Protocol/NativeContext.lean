@@ -28,6 +28,7 @@ def Mode.name : Mode → String
   | .contract => "--qirf-contract"
   | .hierarchy .inspect => "--hierarchy-pending"
   | .hierarchy .request => "--hierarchy-request-pending"
+  | .hierarchy .controlRequest => "--hierarchy-control-pending"
   | .hierarchy .fourier => "--hierarchy-fourier-pending"
   | .hierarchy .instrument => "--instrument-pending"
   | .hierarchy .qpeInstrument => "--qpe-instrument-pending"
@@ -48,6 +49,7 @@ def Mode.parse : String → Option Mode
   | "--qirf-contract" => some .contract
   | "--hierarchy-pending" => some (.hierarchy .inspect)
   | "--hierarchy-request-pending" => some (.hierarchy .request)
+  | "--hierarchy-control-pending" => some (.hierarchy .controlRequest)
   | "--hierarchy-fourier-pending" => some (.hierarchy .fourier)
   | "--instrument-pending" => some (.hierarchy .instrument)
   | "--qpe-instrument-pending" => some (.hierarchy .qpeInstrument)

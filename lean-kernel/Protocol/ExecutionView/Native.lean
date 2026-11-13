@@ -55,7 +55,9 @@ def contract (bytes : ByteArray) : CheckM (Packet.Scope × NativeContract.Retain
 def hierarchyInput (mode : CheckedHierarchy.Modes.Mode) (input : Packet.Input) :
     CheckM CheckedHierarchy.Modes.Inspected :=
   match input.scope with
-  | .inspection => CheckedHierarchy.Modes.inspectMode mode input.original
+  | .inspection => do
+    guard (mode != .controlRequest) .packet
+    CheckedHierarchy.Modes.inspectMode mode input.original
   | .execution => CheckedHierarchy.Modes.checkMode mode input.original input.graph
   | .caller => throw .packet
 

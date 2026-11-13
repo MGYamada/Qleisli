@@ -53,6 +53,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | `engineering_openqasm::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-openqasm3` | Literal canonical target bytes, original ideal/dependencies, exact Unit/Bit signatures, closed epsilon/majorants and the complete retained QDV1 view | `--engineering-openqasm-check` → `CheckedEngineeringOpenQasm.run` → independent byte decode and unchanged complete instrument checks | `NativeEngineeringOpenQasmProtocol.run_meaning` binds the literal target and original ideal to the actual checking execution. `run_complete_adjoint_bound` covers every finite reference. The private report is engineering-only, without an actual `AcceptedProgram`, source/export-preservation, pure/control, cleanup, hardware, resources or constitutional PR/RS claim. |
 | `hierarchical::Kernel::{inspect,inspect_native}` | Dedicated hierarchy payload and all required finite leaves | `--hierarchy-pending` → `Conditional.checkAll` and `HierarchicalFinite.checkLeaves` | `NativeHierarchy.conditional_derives` and `checkLeaves_semantics` bind structural derivation and finite meaning. Full analytic meaning-to-Operator composition remains open. |
 | `hierarchical::Kernel::{check_against,check_against_native}`, ordinary request branch | Hierarchy payload and composition request | `--hierarchy-request-pending` → `Root.checkAll`, `checkLeaves` and `checkPairs` | `NativeHierarchy.requested_pairs` and finite-leaf results retain their stated premises; a producer comparison request proves consistency, not source preservation. |
+| Selected pure hierarchy source with `ctrl` | One hierarchy composition, compared plan and each original call's replayed node index, ordered basis forest and control roles | `--hierarchy-control-pending` → `Root.checkAll`, finite leaves and pairs, and `HierarchicalFinite.checkControls` | `ControlAccess.check_bound` binds the native sector predicate to the executable action of the selected node. Source occurrence replay and the general source/resource correspondence have separate scopes. |
 | The same methods' Fourier branch | Hierarchy payload and Fourier request, including Hadamard obligations | `--hierarchy-fourier-pending` → `FourierRoot.checkAll`, `checkLeaves` and `checkHadamards` | `NativeHierarchy.hadamard_semantics` and `checkHadamards_semantics` establish finite obligations; complete analytic/source/runtime composition remains open. |
 | `check_instrument` / `check_instrument_native` | Instrument payload and preparation/evolution/readout request | `--instrument-pending` → `Instrument.checkAll`, `checkLeaves` and `checkPairs` | `Instrument.checkAll_stages` / `checkAll_boundary` and native finite results cover components. They do not establish complete source or host execution preservation. |
 | `check_qpe_instrument` / `check_qpe_instrument_native` | Instrument payload, named provider request and candidate binding | `--qpe-instrument-pending` → `QpeInstrument.checkAll`, `checkLeaves`, `checkPairs` and `checkHadamards` | Named structural and finite obligations are checked. The complete native analytic Operator bridge and general source-QPE meaning remain open. |
@@ -60,7 +61,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | Phase-word, phase DAG, layout, layout DAG and phase-layout file protocols | Separate component artifacts and requirements | `Cli.Finite` → `verify`, `Hierarchy.check`, `Layout.check`, `LayoutDag.check`, `PhaseLayout.check` | Existing phase/layout component results do not extend automatically to ordinary production programs. |
 | `Finite.check` / `checkAll`, `circuitMatrix`, `FiniteCodec.readMatrix` | Finite circuits, contracts or serialized matrices | Finite checking, evaluation or decoding, respectively | Finite component theorems have explicit inputs. Evaluation and decoding alone are not acceptance; composition with each actual production root is required. |
 
-`lean-kernel/Main.lean` dispatches sixteen explicitly versioned native modes,
+`lean-kernel/Main.lean` dispatches nineteen explicitly versioned native modes,
 including four mechanically separate engineering-only comparisons.
 `lean-kernel/Cli/NativeContext.lean` invokes the pure
 `Protocol.NativeContext.run` dispatcher and its single reply projection. It
@@ -956,7 +957,7 @@ chapter enables no such change.
 
 The [five-role architecture](primitive-boundary.md#generic-acceptance-and-library-owned-algorithms)
 assigns compatibility duties for flat Raw IR, both QIRF profiles, finite
-contracts, all five hierarchy modes, component protocols, source/qrate and
+contracts, the five original hierarchy modes, component protocols, source/qrate and
 module-map entrypoints, Rust/Python clients, foreign adapters and research
 comparisons. A later migration must preserve each supported contract or state
 its explicit versioned replacement, unsupported cases and migration tests.

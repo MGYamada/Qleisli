@@ -1,6 +1,7 @@
 import Protocol.Hierarchical
 import Protocol.FiniteCodec
 import QleisliKernel.Hierarchical.FiniteBinding
+import QleisliKernel.Hierarchical.ControlAccess
 import Protocol.Qirf
 
 /-! Unproved decoding adapter for fresh VM-27 independent finite requests.
@@ -16,17 +17,53 @@ def basis (atoms : Artifact.Basis) : QleisliKernel.Finite.WorkM Semantics.Finite
     | .tuple 2 => pure .pair | .tuple arity => pure (.tuple arity)
     | .bits n => pure (.bits n)
 
-def checkLeaf (program : ByteArray) (interface : Artifact.Interface)
-    (required : Semantics.Exact.Matrix) : QleisliKernel.Finite.WorkM Unit := do
+/-- Reconstruct one original leaf on its exact typed hierarchy interface.
+The hierarchy sector request never supplies a replacement matrix. -/
+def readLeaf (program : ByteArray) (interface : Artifact.Interface) :
+    QleisliKernel.Finite.WorkM Semantics.Exact.Matrix := do
   QleisliKernel.Finite.guard (Finite.unary interface) .request
   let input ← QleisliKernel.Finite.lift (QleisliKernel.Finite.readOption interface.inputs.quantum[0]?)
   let output ← QleisliKernel.Finite.lift (QleisliKernel.Finite.readOption interface.outputs.quantum[0]?)
   let signature ← basis input.basis
   let (artifact,order) ← Qirf.read program
-  let _ ← QleisliKernel.Qirf.check artifact order signature
+  QleisliKernel.Qirf.reconstruct artifact order signature
     ⟨input.owner,input.axes.toList,Semantics.Finite.width signature⟩
-    ⟨output.owner,output.axes.toList,Semantics.Finite.width signature⟩ required
+    ⟨output.owner,output.axes.toList,Semantics.Finite.width signature⟩
+
+def checkLeaf (program : ByteArray) (interface : Artifact.Interface)
+    (required : Semantics.Exact.Matrix) : QleisliKernel.Finite.WorkM Unit := do
+  let actual ← readLeaf program interface
+  QleisliKernel.Finite.exactWork (Exact.charge actual.entries.length)
+  QleisliKernel.Finite.guard (actual == required) .equation
+
+/-- The caller still supplies the fresh complete hierarchy acceptance and the
+original source occurrence binding before consuming this calculation. -/
+def checkControl (artifact : Artifact.Artifact) (request : ControlAccess.Request) :
+    QleisliKernel.Finite.WorkM Semantics.Exact.Matrix :=
+  ControlAccess.check readLeaf artifact request
+
+theorem checkControl_bound (artifact : Artifact.Artifact) (request : ControlAccess.Request)
+    (actual : Semantics.Exact.Matrix) (work left : Nat)
+    (ok : (checkControl artifact request).run work = (.ok actual,left)) :
+    ∃ root start middle, artifact.definitions[request.root]? = some root ∧
+      request.matches root.interface = true ∧
+      (ControlAccess.action readLeaf artifact Limits.maxDepth request.root).run start =
+        (.ok actual,middle) ∧
+      (QleisliKernel.Qirf.ControlAccess.checkMatrix (Ports.wireCount root.interface.inputs)
+        actual (ControlAccess.controlledAxes request.controls root.interface.inputs)).run middle =
+        (.ok (),left) ∧
+      Semantics.ControlAccess.PreservesSectors actual
+        (ControlAccess.controlledAxes request.controls root.interface.inputs) :=
+  ControlAccess.check_bound readLeaf artifact request actual work left ok
+
+private def checkControlRequest (artifact : Artifact.Artifact) (request : ControlAccess.Request) :
+    QleisliKernel.Finite.WorkM Unit := do
+  let _ ← checkControl artifact request
   pure ()
+
+def checkControls (artifact : Artifact.Artifact) (requests : Array ControlAccess.Request) :
+    QleisliKernel.Finite.WorkM Unit :=
+  requests.toList.foldlM (fun _ request => checkControlRequest artifact request) ()
 
 def matrix (bytes : ByteArray) : QleisliKernel.Finite.WorkM Semantics.Exact.Matrix := do
   let text ← QleisliKernel.Finite.lift (match String.fromUTF8? bytes with
@@ -94,10 +131,46 @@ theorem fold_each {A : Type} (items : List A) (check : A → WorkM Unit) (work l
     · subst actual; exact ⟨work,middle,checked⟩
     · exact ih middle remaining actual inside
 
+open QleisliKernel.Finite in
+theorem checkControls_each (artifact : Artifact.Artifact) (requests : Array ControlAccess.Request)
+    (work left : Nat) (ok : (checkControls artifact requests).run work = (.ok (),left)) :
+    ∀ request ∈ requests.toList, ∃ actual a b,
+      (checkControl artifact request).run a = (.ok actual,b) := by
+  intro request member
+  obtain ⟨a,b,checked⟩ := fold_each _ _ _ _ ok request member
+  obtain ⟨actual,middle,success,_⟩ := bind_success _ _ _ _ _ checked
+  exact ⟨actual,a,middle,success⟩
+
 theorem checkLeaves_each (requests : Array Finite.Request) (work left : Nat)
     (ok : (checkLeaves requests).run work = (.ok (),left)) :
     ∀ request ∈ requests.toList, ∃ a b, (checkRequest request).run a = (.ok (),b) :=
   fold_each _ _ _ _ ok
+
+open QleisliKernel.Finite in
+theorem readLeaf_conditions (program : ByteArray) (interface : Artifact.Interface)
+    (actual : Semantics.Exact.Matrix) (work left : Nat)
+    (ok : (readLeaf program interface).run work = (.ok actual,left)) :
+    ∃ input output signature artifact order a b c,
+      Finite.unary interface = true ∧ interface.inputs.quantum[0]? = some input ∧
+      interface.outputs.quantum[0]? = some output ∧
+      (basis input.basis).run a = (.ok signature,b) ∧
+      (Qirf.read program).run b = (.ok (artifact,order),c) ∧
+      (QleisliKernel.Qirf.reconstruct artifact order signature
+        ⟨input.owner,input.axes.toList,Semantics.Finite.width signature⟩
+        ⟨output.owner,output.axes.toList,Semantics.Finite.width signature⟩).run c = (.ok actual,left) := by
+  obtain ⟨_,w₁,hg,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨input,w₂,hi,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨output,w₃,ho,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨signature,w₄,hb,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨decoded,w₅,hd,hc⟩ := bind_success _ _ _ _ _ h
+  have presentInput : interface.inputs.quantum[0]? = some input := by
+    have found := (lift_success _ _ _ _ hi).1
+    cases hf : interface.inputs.quantum[0]? <;> simp_all [readOption]
+  have presentOutput : interface.outputs.quantum[0]? = some output := by
+    have found := (lift_success _ _ _ _ ho).1
+    cases hf : interface.outputs.quantum[0]? <;> simp_all [readOption]
+  exact ⟨input,output,signature,decoded.1,decoded.2,w₃,w₄,w₅,
+    (guard_success _ _ _ _ hg).1,presentInput,presentOutput,hb,hd,hc⟩
 
 open QleisliKernel.Finite in
 theorem checkLeaf_conditions (program : ByteArray) (interface : Artifact.Interface)
@@ -111,21 +184,13 @@ theorem checkLeaf_conditions (program : ByteArray) (interface : Artifact.Interfa
       (QleisliKernel.Qirf.reconstruct artifact order signature
         ⟨input.owner,input.axes.toList,Semantics.Finite.width signature⟩
         ⟨output.owner,output.axes.toList,Semantics.Finite.width signature⟩).run c = (.ok required,d) := by
-  obtain ⟨_,w₁,hg,h⟩ := bind_success _ _ _ _ _ ok
-  obtain ⟨input,w₂,hi,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨output,w₃,ho,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨signature,w₄,hb,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨decoded,w₅,hd,h⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨actual,w₆,hc,_⟩ := bind_success _ _ _ _ _ h
-  obtain ⟨same,y,hr⟩ := QleisliKernel.Qirf.check_reconstruct _ _ _ _ _ _ _ _ _ hc
-  have presentInput : interface.inputs.quantum[0]? = some input := by
-    have found := (lift_success _ _ _ _ hi).1
-    cases hf : interface.inputs.quantum[0]? <;> simp_all [readOption]
-  have presentOutput : interface.outputs.quantum[0]? = some output := by
-    have found := (lift_success _ _ _ _ ho).1
-    cases hf : interface.outputs.quantum[0]? <;> simp_all [readOption]
-  exact ⟨input,output,signature,decoded.1,decoded.2,w₃,w₄,w₅,y,
-    (guard_success _ _ _ _ hg).1,presentInput,presentOutput,hb,hd,by simpa only [same] using hr⟩
+  obtain ⟨actual,middle,read,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,_,checked⟩ := bind_success _ _ _ _ _ h
+  have same := beq_iff_eq.mp (guard_success _ _ _ _ checked).1
+  subst actual
+  obtain ⟨input,output,signature,artifact,order,a,b,c,bound⟩ :=
+    readLeaf_conditions _ _ _ _ _ read
+  exact ⟨input,output,signature,artifact,order,a,b,c,middle,bound⟩
 
 open QleisliKernel.Finite in
 theorem checkRequest_conditions (request : Finite.Request) (work left : Nat)

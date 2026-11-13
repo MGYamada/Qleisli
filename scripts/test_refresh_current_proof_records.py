@@ -161,6 +161,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-64-computed-predicate",
                 "refs/heads/codex/beta-64-certified-computed",
                 "refs/heads/codex/beta-64-computed-product-action",
+                "refs/heads/codex/beta-29-hierarchy-ctrl",
                 "refs/heads/codex/beta-303-ordered-access")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
