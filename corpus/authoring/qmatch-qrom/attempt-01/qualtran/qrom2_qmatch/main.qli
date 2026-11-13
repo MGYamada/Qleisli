@@ -1,0 +1,16 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Qleisli Project Contributors
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/data_loading/qrom.py
+// Selected symbol(s): QROM
+// Closed observing driver, not the independent QROM specification.
+
+use kernel::kernel;
+
+observe fn main() -> (((Bit, Bit), Bit), Bit) {
+    let q = kernel(join(join(join(init0(), init0()), init0()), init0()));
+    let (part3, t1) = split(q);
+    let (address, t0) = split(part3);
+    let (a0, a1) = split(address);
+    (((measure_z(a0), measure_z(a1)), measure_z(t0)), measure_z(t1))
+}

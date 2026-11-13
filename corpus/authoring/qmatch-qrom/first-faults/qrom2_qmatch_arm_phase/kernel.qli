@@ -1,0 +1,44 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Qleisli Project Contributors
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/data_loading/qrom.py
+// Selected symbol(s): QROM
+// Four-qubit qmatch translation; see README.md and corpus/POLICY.md.
+
+use std::structure::consume_empty;
+
+unitary fn keep(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> { global_phase_eighth(q) }
+
+unitary fn load1(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (lo, hi) = split(q);
+    join(x(lo), hi)
+}
+
+unitary fn load2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (lo, hi) = split(q);
+    join(lo, x(hi))
+}
+
+unitary fn load3(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (lo, hi) = split(q);
+    join(x(lo), x(hi))
+}
+
+pub unitary fn kernel(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {
+    let (part3, t1) = split(q);
+    let (address, t0) = split(part3);
+    let (a0, a1) = split(address);
+    let empty = basis unit(()) as _ { empty_bits() };
+    let address = put_bit[2,0](a0, put_bit[1,0](a1, empty));
+    let (address, target) = qmatch(address, join(t0, t1)) {
+        3 => keep,
+        1 => load2,
+        0 => load1,
+        2 => load3
+    };
+    let (a0, rest) = take_bit[2,0](address);
+    let (a1, empty) = take_bit[1,0](rest);
+    consume_empty(empty);
+    let (t0, t1) = split(target);
+    join(join(join(a0, a1), t0), t1)
+}

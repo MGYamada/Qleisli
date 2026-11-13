@@ -84,7 +84,7 @@ fn compiled_project_discovery_selects_current_sources() {
     let roots = compiled_projects(manifest);
     let selected: BTreeSet<_> = roots.iter().cloned().collect();
     assert_eq!(selected.len(), roots.len(), "duplicate compiled project");
-    assert_eq!(roots.len(), 101, "logical compilation coverage changed");
+    assert_eq!(roots.len(), 102, "logical compilation coverage changed");
     assert_eq!(
         roots
             .iter()
@@ -107,7 +107,7 @@ fn compiled_project_discovery_selects_current_sources() {
         assert!(!provider.is_empty(), "missing corpus provider {source}");
         expected.extend(provider);
     }
-    assert_eq!(expected.len(), 87, "logical corpus coverage changed");
+    assert_eq!(expected.len(), 88, "logical corpus coverage changed");
     let logical: Vec<_> = expected.iter().cloned().collect();
     let current = current_corpus_projects(&logical);
     let snapshots: BTreeSet<_> = logical
@@ -186,7 +186,7 @@ fn compiled_examples_reencode_exactly_and_caches_match_implementations() {
         let compiled = qleisli::frontend::compile::compile_project(root).unwrap();
         evidence += assert_roundtrip(&compiled, &kernel, &context);
     }
-    // All 87 corpus round trips run alongside their execution checks in
+    // All 88 corpus round trips run alongside their execution checks in
     // input_corpus, using the same helper and one compilation per project.
     // These examples must still exercise their five existing receipts.
     assert!(

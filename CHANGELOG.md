@@ -8,7 +8,11 @@ development milestones from the scope of their evidence.
 
 - Check bounded pure hierarchy `ctrl` calls on their actual replayed intervals,
   with exact ordered ports and a fresh native sector check before execution.
-
+- Add an actual four-qubit qmatch QROM corpus case with noncanonical arm order,
+  valid wrong-arm/phase counterexamples and an independent exact full-matrix
+  oracle. Compare both qmatch and CNOT/X implementations against the oracle;
+  retain all-input, scalar-phase, superposition and reference correlations.
+  Native semantic rejection remains distinct from source-preservation proof.
 - Lower bounded `excl` indices and slices in the hierarchy. Replay original
   ordered ports against the phase-free structural nodes checked by Lean.
 

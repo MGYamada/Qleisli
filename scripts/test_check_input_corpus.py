@@ -27,7 +27,31 @@ class IntakeTests(unittest.TestCase):
         path.write_text(json.dumps(manifest))
 
     def test_current_intake_passes(self):
-        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 87)
+        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 88)
+
+    def test_qmatch_qrom_faults_are_discovered_without_rewriting_historical_manifest(self):
+        before = (self.root / "semantic_faults/manifest.json").read_bytes()
+        faults = corpus.semantic_fault_cases(self.root)
+        for name in ("qrom2_qmatch_wrong_arm", "qrom2_qmatch_arm_phase"):
+            fault = next(f for f in faults if f["id"] == name)
+            self.assertEqual(fault["reference"], "qualtran/qrom2_qmatch")
+            self.assertIn(name, corpus.QUICK_FAULT_IDS)
+        self.assertEqual((self.root / "semantic_faults/manifest.json").read_bytes(), before)
+        self.edit_manifest(lambda m: m["additional_semantic_faults"].append(m["additional_semantic_faults"][0]))
+        with self.assertRaisesRegex(ValueError, "duplicate semantic fault ID"):
+            corpus.check_manifest(self.root)
+
+    def test_qmatch_qrom_fault_omission_is_not_silent(self):
+        self.edit_manifest(lambda m: m.pop("additional_semantic_faults"))
+        with self.assertRaisesRegex(ValueError, "unrecorded semantic fault project"):
+            corpus.check_manifest(self.root)
+
+    def test_qmatch_qrom_oracle_has_exact_ordered_columns_for_every_initial_target(self):
+        outputs = [4, 9, 14, 3, 0, 13, 10, 7, 12, 1, 6, 11, 8, 5, 2, 15]
+        for name in ("qrom2", "qrom2_qmatch"):
+            for col, row in enumerate(outputs):
+                self.assertEqual(corpus.reference_column({"id": "qualtran/" + name, "qubits": 4}, col),
+                                 [complex(i == row) for i in range(16)])
 
     def test_sized_experiment_cannot_add_an_input_source(self):
         self.edit_manifest(lambda m: m["sized_experiments"][0].update(source="unapproved"))
@@ -923,7 +947,7 @@ class ReportTests(unittest.TestCase):
             if case["id"] in selected:
                 self.assertTrue(all(0 <= index < 1 << case["qubits"] for index in selected[case["id"]]))
         full = sum(corpus.semantic_probe_count(case, True) for case in cases if case["kind"] == "unitary")
-        self.assertEqual(full, 15848)
+        self.assertEqual(full, 16376)
         self.assertLess((len(cases) + 2 * len(selected)) / full, 0.01)
 
     def test_quick_case_checks_shipped_output_and_both_complex_axes(self):
@@ -952,9 +976,9 @@ class ReportTests(unittest.TestCase):
             with patch.object(corpus, "check_case", side_effect=check), patch.object(corpus, "check_semantic_fault", side_effect=lambda f, *a: dict(id=f["id"])) as faults, patch.object(corpus, "check_negative", side_effect=lambda c, b: dict(id=c["id"])):
                 self.assertEqual(corpus.main([__file__, "--quick", "--report", str(path)]), 0)
             report = json.loads(path.read_text())
-            self.assertEqual(len(report["cases"]), 87)
+            self.assertEqual(len(report["cases"]), 88)
             self.assertEqual(sum(row["semantic_probes"] for row in report["cases"]), 40)
-            self.assertEqual(faults.call_count, 4)
+            self.assertEqual(faults.call_count, 6)
             self.assertEqual(set(report["expected_ids"]["semantic_faults"]), corpus.QUICK_FAULT_IDS)
             self.assertEqual(len(report["omitted_semantic_fault_ids"]), 59)
             self.assertEqual(len(report["negative_cases"]), 4)
