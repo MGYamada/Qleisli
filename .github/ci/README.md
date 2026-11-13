@@ -47,6 +47,8 @@ The `changes` job checks schema and admitted-guarantee source identities before
 scheduling executable validation. Stale records fail this inexpensive gate
 before Rust, native and distribution builds start. The independent
 `current-proof-records` workflow can still regenerate and verify those records.
+Rust and distribution aggregation start only after successful selection and
+source preflight. The required contexts still report a failed preflight.
 Each Rust producer also runs the pinned strict Clippy command before native
 preparation and test execution. The canonical lint/research verification remains
 in its complete validation plan and retains its source-bound receipt.
