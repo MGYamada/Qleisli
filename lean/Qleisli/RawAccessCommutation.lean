@@ -353,4 +353,148 @@ theorem checked_caller_control_bit
 #print axioms checked_caller_control_bit
 end SharedCoordinate
 
+section PromotionFactors
+open Semantics.Finite (bit gather scatter)
+open Qleisli.Semantics.Exact (entry)
+
+private theorem labels_equal_of_bits (a b : Nat) (equal : ∀ axis, bit a axis = bit b axis) : a = b := by
+  apply Nat.eq_of_testBit_eq
+  intro axis
+  have same := equal axis
+  simp only [bit,← Nat.toNat_testBit] at same
+  cases left : a.testBit axis <;> cases right : b.testBit axis <;> simp_all
+
+private theorem scatter_gather_eq_iff (axes : List Nat) (unique : axes.Nodup) (row col : Nat) :
+    scatter col axes (gather row axes) = row ↔ ∀ axis ∉ axes, bit row axis = bit col axis := by
+  constructor
+  · intro same axis outside
+    rw [← same]
+    exact RuntimeScatterTransport.scatter_outside _ _ _ _ outside
+  · intro outside
+    apply labels_equal_of_bits
+    intro axis
+    by_cases selected : axis ∈ axes
+    · obtain ⟨index,bound,rfl⟩ := List.getElem_of_mem selected
+      rw [RuntimeScatterTransport.scatter_at _ _ _ unique _ bound,
+        RuntimeScatterTransport.gather_at _ _ _ bound]
+    · rw [RuntimeScatterTransport.scatter_outside _ _ _ _ selected,outside axis selected]
+
+private theorem gather_same_on (axes : List Nat) (row col : Nat)
+    (same : ∀ axis ∈ axes, bit row axis = bit col axis) : gather row axes = gather col axes := by
+  unfold gather
+  apply congrArg List.sum
+  apply List.map_congr_left
+  intro indexed member
+  rcases indexed with ⟨axis,index⟩
+  change bit row axis * 2^index = bit col axis * 2^index
+  rw [same axis (List.fst_mem_of_mem_zipIdx member)]
+
+/-- The coefficient of an actual promotion is its local coefficient on the
+unchanged spectator fibre. The identity factors can be read one bit at a time. -/
+theorem promotion_entry_on_fibre (bits : Nat) (axes : List Nat) (localMap actual : Semantics.Exact.Matrix)
+    (work left : Nat) (read : (Raw.promote bits axes localMap).run work = (.ok actual,left))
+    (row : Fin actual.rows) (col : Fin actual.cols) : open Classical in
+    entry actual row.val col.val = if ∀ axis ∉ axes, bit row.val axis = bit col.val axis then
+      entry localMap (gather row.val axes) (gather col.val axes) else 0 := by
+  classical
+  obtain ⟨_,middle,guarded,_⟩ := Finite.bind_success _ _ _ _ _ read
+  have shape := (Finite.guard_success _ _ _ middle guarded).1
+  simp only [Bool.and_eq_true,beq_iff_eq] at shape
+  have valid := shape.1.1.2
+  simp only [Finite.axesValid,Bool.and_eq_true] at valid
+  have unique := Raw.Ownership.unique_nodup axes valid.2
+  have coefficient := (Qleisli.Raw.promote_denotes _ _ _ _ work left read).2.2 _ _ row.isLt col.isLt
+  simpa only [beq_iff_eq,scatter_gather_eq_iff axes unique] using coefficient
+
+/-- When the local coordinates coincide, changing the spectator coordinates
+within the same fibre cannot change the promoted coefficient. -/
+theorem promotion_fibre_independence (bits : Nat) (axes : List Nat) (localMap actual : Semantics.Exact.Matrix)
+    (work left : Nat) (read : (Raw.promote bits axes localMap).run work = (.ok actual,left))
+    (row row' : Fin actual.rows) (col col' : Fin actual.cols)
+    (rowLocal : ∀ axis ∈ axes, bit row.val axis = bit row'.val axis)
+    (colLocal : ∀ axis ∈ axes, bit col.val axis = bit col'.val axis)
+    (spectators : ∀ axis ∉ axes, bit row.val axis = bit col.val axis)
+    (spectators' : ∀ axis ∉ axes, bit row'.val axis = bit col'.val axis) :
+    entry actual row.val col.val = entry actual row'.val col'.val := by
+  rw [promotion_entry_on_fibre bits axes localMap actual work left read row col, if_pos spectators,
+    promotion_entry_on_fibre bits axes localMap actual work left read row' col', if_pos spectators',
+    gather_same_on axes _ _ rowLocal,gather_same_on axes _ _ colLocal]
+
+#print axioms promotion_entry_on_fibre
+#print axioms promotion_fibre_independence
+end PromotionFactors
+
+/-- Read a shared caller coordinate through both checked argument lists.
+The same coordinate in a common physical frame must identify the same wire. -/
+theorem shared_caller_axis_is_control
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs)
+    (sameFrame : first.call.interval.frame.interval.before.quantum.frame =
+      second.call.frame.interval.before.quantum.frame)
+    (axis : Nat) (left : axis ∈ callerAxes (call := first.call.interval))
+    (right : axis ∈ callerAxes (call := second.call)) :
+    ∃ wire, first.call.interval.frame.interval.before.quantum.frame[axis]? = some wire ∧
+      (∃ place ∈ first.call.interval.places, place.role = .ctrl ∧ wire ∈ place.axes) ∧
+      (∃ place ∈ second.call.places, place.role = .ctrl ∧ wire ∈ place.axes) := by
+  obtain ⟨a,inFirst,firstIndex⟩ := List.mem_map.mp left
+  obtain ⟨b,inSecond,secondIndex⟩ := List.mem_map.mp right
+  have present {offset length : Nat} (interval : RuntimeInterval.Checked block.block offset length)
+      (ports : List Semantics.Raw.Port)
+      (tokens : List Nat) (read : PureInterval.ports interval.before tokens = some ports)
+      (wire : Nat) (member : wire ∈ ports.flatMap (·.wires)) : wire ∈ interval.before.quantum.frame := by
+    obtain ⟨port,selected,onPort⟩ := List.mem_flatMap.mp member
+    have live := (RuntimeNamedFrameAxes.selectedPorts _ _ _ read).1 selected
+    exact (Raw.Ownership.valid _ interval.history.1).covered wire (List.mem_flatMap.mpr ⟨port,live,onPort⟩)
+  have firstPresent := present _ _ _ first.call.interval.frame.atEntry a inFirst
+  have secondPresent := present _ _ _ second.call.frame.atEntry b inSecond
+  have firstRead := RuntimeNamedFrameAxes.wireLookup _ firstPresent
+  have secondRead := RuntimeNamedFrameAxes.wireLookup _ secondPresent
+  change first.call.interval.frame.interval.before.quantum.frame.idxOf a = axis at firstIndex
+  change second.call.frame.interval.before.quantum.frame.idxOf b = axis at secondIndex
+  rw [firstIndex] at firstRead
+  rw [secondIndex,← sameFrame] at secondRead
+  have same := Option.some.inj (firstRead.symm.trans secondRead)
+  subst b
+  exact ⟨a,firstRead,shared_wires_are_controls second a inFirst inSecond⟩
+
+#print axioms Qleisli.RoutedControlCommutation.sector_fibre_exchange
+#print axioms shared_caller_axis_is_control
+
+/-- The first promoted call can change only coordinates used exclusively by
+that call. The second call's selected coordinates are therefore preserved. -/
+theorem first_promotion_preserves_second_axes
+    {artifact : Artifact} {root : Validity.Root} {owner name signature}
+    {block : RuntimeInterval.Prepared root.dependencies root.program}
+    {source : @RuntimeAccessSource.Checked artifact.sources owner name root.dependencies root.program signature block}
+    {firstStart firstCount firstInputs firstOutputs start count inputs outputs}
+    {first : RuntimeAccessPartition.Checked source firstStart firstCount firstInputs firstOutputs}
+    (second : RuntimeAccessPartition.Second first start count inputs outputs)
+    (sameFrame : first.call.interval.frame.interval.before.quantum.frame =
+      second.call.frame.interval.before.quantum.frame)
+    (sectors : RuntimeAccessInterval.Sectors first.call.interval)
+    (actual : Semantics.Exact.Matrix) (work left : Nat)
+    (read : (Raw.promote first.call.interval.frame.interval.before.quantum.frame.length
+      (callerAxes (call := first.call.interval)) sectors.actual).run work = (.ok actual,left))
+    (row : Fin actual.rows) (col : Fin actual.cols)
+    (nonzero : Qleisli.Semantics.Exact.entry actual row.val col.val ≠ 0)
+    (axis : Nat) (secondUses : axis ∈ callerAxes (call := second.call)) :
+    Semantics.Finite.bit row.val axis = Semantics.Finite.bit col.val axis := by
+  by_cases firstUses : axis ∈ callerAxes (call := first.call.interval)
+  · obtain ⟨wire,wireAt,⟨place,member,control,present⟩,_⟩ :=
+      shared_caller_axis_is_control second sameFrame axis firstUses secondUses
+    have wireIn := List.mem_of_getElem? wireAt
+    have indexed := RuntimeNamedFrameAxes.wireLookup _ wireIn
+    have position : first.call.interval.frame.interval.before.quantum.frame.idxOf wire = axis := by
+      have valid := (Raw.Ownership.valid _ first.call.interval.frame.interval.history.1).frame
+      exact (List.getElem?_inj (List.idxOf_lt_length_of_mem wireIn) valid).mp (indexed.trans wireAt.symm)
+    rw [← position]
+    exact checked_caller_control_bit sectors actual work left read row col nonzero place member control wire present
+  · exact (promoted_preserves_coordinates sectors _ _ actual work left read row col nonzero).1 axis firstUses
+
+#print axioms first_promotion_preserves_second_axes
+
 end Qleisli.Raw.AccessCommutation

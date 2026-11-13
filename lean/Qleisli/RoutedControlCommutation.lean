@@ -97,6 +97,47 @@ theorem sector_locality_exchange_reference {B A C S I Ref : Type}
     simpa [Matrix.submatrix] using congrFun (congrFun restored row) col
   rw [same]
 
+/-- Factor equations follow from support and invariance on a sector fibre.
+The coefficient matrices are restrictions of the actual maps at one fixed
+spectator value and one fixed value of the other call's target. -/
+theorem sector_fibre_exchange {B A C S I Ref : Type}
+    [Fintype B] [Fintype A] [Fintype C] [Fintype S] [Fintype I]
+    [DecidableEq B] [DecidableEq A] [DecidableEq C] [DecidableEq S]
+    (route : I ≃ B × (A × (C × S))) (first second : Matrix I I ℂ)
+    (fixedA : A) (fixedC : C) (fixedS : S)
+    (firstSupport : ∀ b a c s b' a' c' s',
+      first (route.symm (b,a,c,s)) (route.symm (b',a',c',s')) ≠ 0 → b = b' ∧ c = c' ∧ s = s')
+    (secondSupport : ∀ b a c s b' a' c' s',
+      second (route.symm (b,a,c,s)) (route.symm (b',a',c',s')) ≠ 0 → b = b' ∧ a = a' ∧ s = s')
+    (firstFibre : ∀ b a a' c s,
+      first (route.symm (b,a,c,s)) (route.symm (b,a',c,s)) =
+        first (route.symm (b,a,fixedC,fixedS)) (route.symm (b,a',fixedC,fixedS)))
+    (secondFibre : ∀ b a c c' s,
+      second (route.symm (b,a,c,s)) (route.symm (b,a,c',s)) =
+        second (route.symm (b,fixedA,c,fixedS)) (route.symm (b,fixedA,c',fixedS)))
+    (joint : I → Ref → ℂ) (output : I) (reference : Ref) :
+    ((second * first) *ᵥ (fun input => joint input reference)) output =
+      ((first * second) *ᵥ (fun input => joint input reference)) output := by
+  let U : B → Matrix A A ℂ := fun b a a' =>
+    first (route.symm (b,a,fixedC,fixedS)) (route.symm (b,a',fixedC,fixedS))
+  let V : B → Matrix C C ℂ := fun b c c' =>
+    second (route.symm (b,fixedA,c,fixedS)) (route.symm (b,fixedA,c',fixedS))
+  refine sector_locality_exchange_reference route U V first second ?_ ?_ joint output reference
+  · intro b a c s b' a' c' s'
+    by_cases diagonal : b = b' ∧ c = c' ∧ s = s'
+    · obtain ⟨rfl,rfl,rfl⟩ := diagonal
+      rw [if_pos ⟨rfl,rfl,rfl⟩]
+      exact firstFibre b a a' c s
+    · rw [if_neg diagonal]
+      exact not_ne_iff.mp (fun nonzero => diagonal (firstSupport b a c s b' a' c' s' nonzero))
+  · intro b a c s b' a' c' s'
+    by_cases diagonal : b = b' ∧ a = a' ∧ s = s'
+    · obtain ⟨rfl,rfl,rfl⟩ := diagonal
+      rw [if_pos ⟨rfl,rfl,rfl⟩]
+      exact secondFibre b a c c' s
+    · rw [if_neg diagonal]
+      exact not_ne_iff.mp (fun nonzero => diagonal (secondSupport b a c s b' a' c' s' nonzero))
+
 theorem permutation_sandwich {I : Type} [Fintype I] [DecidableEq I]
     (route : I ≃ I) (M : Matrix I I ℂ) :
     permutation route.symm * M * permutation route = M.submatrix route route := by
