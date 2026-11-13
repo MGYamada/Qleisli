@@ -483,6 +483,18 @@ width is the maximum simultaneous live count; a sum of separate peaks is a
 conservative upper bound, not necessarily the realized peak. Logical width
 alone does not bound the physical implementation width.
 
+A fixed-occupancy SWAP segment records the ordered placement of all
+occupied locations, including any source, synthesis and routing scratch
+that is live during the segment. Each literal SWAP must name two distinct
+occupied locations connected in the declared profile. It moves both
+locations in the placement, leaves every other location alone, and counts
+as one operation even when a later SWAP cancels it. The final placement
+preserves logical axis order and exact joint coefficients with any
+reference. The Lean component checks these facts against the supplied
+finite gate word. A complete certificate still binds that word to emitted
+bytes, covers the other target operations and checks allocation, release
+and reuse.
+
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
 Compiler memory, checker work limits, static termination, ownership safety
