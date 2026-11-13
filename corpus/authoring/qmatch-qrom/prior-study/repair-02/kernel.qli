@@ -1,0 +1,36 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Qleisli Project Contributors
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/data_loading/qrom.py
+// Selected symbol: QROM; fixed data [1,2,3,0], low address bit first.
+
+use std::structure::empty;
+use std::structure::consume_empty;
+
+unitary fn load1(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    join(x(a), b)
+}
+unitary fn load2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    join(a, x(b))
+}
+unitary fn load3(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    join(x(a), x(b))
+}
+unitary fn keep(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> { q }
+
+pub unitary fn kernel(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {
+    let (abc, d) = split(q);
+    let (ab, c) = split(abc);
+    let (a, b) = split(ab);
+    let s = put_bit[2,0](a, put_bit[1,0](b, empty()));
+    let (s, target) = qmatch(s, join(c, d)) { 3 => keep, 1 => load2, 0 => load1, 2 => load3 };
+    let (a, rest) = take_bit[2,0](s);
+    let (b, zero) = take_bit[1,0](rest);
+    consume_empty(zero);
+    let ab = join(a, b);
+    let (c, d) = split(target);
+    join(join(ab, c), d)
+}
