@@ -11,7 +11,7 @@ open QleisliKernel Finite
 open SourceTypes.AccessSyntax
 open QleisliKernel.Semantics.SourceNatural (Names Calls)
 
-private def carrier : Semantics.Finite.Atom → Semantics.FiniteCarrier.Atom
+def carrier : Semantics.Finite.Atom → Semantics.FiniteCarrier.Atom
   | .unit => .unit
   | .bit => .bit
   | .bits n => .bits n

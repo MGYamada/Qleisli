@@ -3,6 +3,7 @@ import QleisliKernel.SourceTypes.AccessSyntax
 import QleisliKernel.Qirf.RuntimeAccessInterval
 import QleisliKernel.Qirf.RuntimeAccessSource
 import QleisliKernel.Qirf.RuntimeAccessPartition
+import QleisliKernel.Qirf.RuntimeAccessCallee
 
 /-! Bounded original-token controls; no name/owner/effect or body acceptance.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -238,5 +239,66 @@ private def partitionPair (source : String) (gap : List Semantics.Raw.Op) (paren
 
 example : partitionPair partitionCnotSource [] 20 = (true,some [⟨40,[7,2,5],3⟩]) := by decide +kernel
 example : partitionPair partitionCnotSource [.applyUnitary 20 41 []] 41 = (true,none) := by decide +kernel
+
+open QleisliKernel.Finite QleisliKernel.Qirf in
+private def accessCallee (body : String) (operations : List Semantics.Raw.Op) (tokens : List Nat)
+    (offsetDelta : Nat) : Bool × Bool :=
+  let caller := "#![no_implicit_prelude]\nuse gates::act;\n" ++
+    "pub unitary fn route(q: Q<Bit>) -> Q<Bit> { act(excl q); act(excl q); q }"
+  let callee := "#![no_implicit_prelude]\npub unitary fn act(q: Q<Bit>) -> Q<Bit> { " ++ body ++ " }"
+  let sources : Sources := #[("main",caller),("gates",callee)]
+  let raw : Semantics.Raw.Program := ⟨[⟨0,[7],1⟩],operations,tokens,.unitary⟩
+  let program := Semantics.Ownership.pureProgram raw
+  let artifact : Artifact := ⟨#[program],#[],sources,0,none⟩
+  let attempt : WorkM Unit := do
+    let root ← Validity.checkRootWithSources artifact #[0] sources.toList
+    let prepared ← RuntimeInterval.prepare root.dependencies root.program
+    let signature ← QuantumSignatureCore.read sources "main" "route"
+    let source ← RuntimeAccessSource.read signature prepared
+    let first ← RuntimeAccessPartition.read source 0 operations.length [0] tokens
+    let original ← OrdinarySignature.readOriginal sources "gates" "act"
+    let firstToken :: _ := original.occurrence.body | throw .request
+    let position : SourceSequence.Position := ⟨firstToken.span.startByte+offsetDelta,0,operations.length⟩
+    let request := RuntimeContextRequest.Context.mk [position] [] [] [] []
+    let _ ← RuntimeAccessCallee.read (artifact := artifact) root source first.call.interval request
+    return ()
+  (((Validity.checkRootWithSources artifact #[0] sources.toList).run 10000000).1.isOk,
+    (attempt.run 10000000).1.isOk)
+
+#guard accessCallee "h(q)" [.gate .h 0 1] [1] 0 == (true,true)
+#guard accessCallee "h(q)" [.gate .x 0 1] [1] 0 == (true,false)
+#guard accessCallee "h(q)" [.gate .h 0 1] [1] 1 == (true,false)
+
+open QleisliKernel.Finite QleisliKernel.Qirf in
+private def namedPair (returned : String) (firstGate : Semantics.Raw.Gate)
+    (tail : List Semantics.Raw.Op) (outputs : List Nat) : Bool × Bool :=
+  let source := "#![no_implicit_prelude]\npub unitary fn route(a: Q<Bit>, b: Q<Bit>) " ++
+    "-> (Q<Bit>,Q<Bit>) { gates::act(excl a); gates::act(excl b); " ++ returned ++ " }"
+  let callee := "#![no_implicit_prelude]\npub unitary fn act(q: Q<Bit>) -> Q<Bit> { h(q) }"
+  let sources : Sources := #[("main",source),("gates",callee)]
+  let raw : Semantics.Raw.Program := ⟨[⟨0,[7],1⟩,⟨1,[2],1⟩],
+    [.gate firstGate 0 2,.gate .h 1 3] ++ tail,outputs,.unitary⟩
+  let artifact : Artifact := ⟨#[Semantics.Ownership.pureProgram raw],#[],sources,0,none⟩
+  let prepare := Validity.checkRootWithSources artifact #[0] sources.toList
+  let attempt : WorkM Unit := do
+    let root ← prepare
+    let prepared ← RuntimeInterval.prepare root.dependencies root.program
+    let signature ← QuantumSignatureCore.read sources "main" "route"
+    let source ← RuntimeAccessSource.read signature prepared
+    let first ← RuntimeAccessPartition.read source 0 1 [0] [2]
+    let second ← RuntimeAccessPartition.readSecond first 1 1 [1] [3]
+    let original ← OrdinarySignature.readOriginal sources "gates" "act"
+    let firstToken :: _ := original.occurrence.body | throw .request
+    let position : SourceSequence.Position := ⟨firstToken.span.startByte,0,1⟩
+    let request := RuntimeContextRequest.Context.mk [position] [] [] [] []
+    let _ ← RuntimeAccessCallee.readPair (artifact := artifact) root second request request
+    return ()
+  ((prepare.run 20000000).1.isOk,(attempt.run 20000000).1.isOk)
+
+#guard namedPair "(a,b)" .h [] [2,3] == (true,true)
+#guard namedPair "(b,a)" .h [] [3,2] == (true,true)
+#guard namedPair "(a,b)" .h [] [3,2] == (true,false)
+#guard namedPair "(a,b)" .x [] [2,3] == (true,false)
+#guard namedPair "(a,b)" .h [.applyUnitary 3 4 []] [2,4] == (true,false)
 
 end QleisliKernel.Tests.CallSyntaxTests
