@@ -1,0 +1,453 @@
+{
+  "observations": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::swap_registers",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/swap_registers.qli",
+        "--ir-profile=raw",
+        "--nat=n=0",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:15:32.060578+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": false,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::swap_registers",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::swap_registers\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::swap_registers",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/swap_registers.qli",
+        "--ir-profile=hierarchy",
+        "--nat=n=0",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:15:32.224095+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "profile": "sized-unitary",
+          "contract": "composition",
+          "verification": {
+            "scope": "producer-consistency",
+            "request_origin": "producer",
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": true,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "entry": "main::swap_registers",
+          "ir_profile": "hierarchy",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":true,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"entry\":\"main::swap_registers\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::swap_registers",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/swap_registers.qli",
+        "--ir-profile=raw",
+        "--nat=n=1",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:15:32.113560+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": false,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::swap_registers",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::swap_registers\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::swap_registers",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/swap_registers.qli",
+        "--ir-profile=hierarchy",
+        "--nat=n=1",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:15:32.292108+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "profile": "sized-unitary",
+          "contract": "composition",
+          "verification": {
+            "scope": "producer-consistency",
+            "request_origin": "producer",
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": true,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "entry": "main::swap_registers",
+          "ir_profile": "hierarchy",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":true,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"entry\":\"main::swap_registers\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::swap_registers",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/swap_registers.qli",
+        "--ir-profile=raw",
+        "--nat=n=2",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:14:39.692619+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": false,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::swap_registers",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::swap_registers\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::swap_registers",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/swap_registers.qli",
+        "--ir-profile=hierarchy",
+        "--nat=n=2",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:14:39.749849+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "profile": "sized-unitary",
+          "contract": "composition",
+          "verification": {
+            "scope": "producer-consistency",
+            "request_origin": "producer",
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": true,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "entry": "main::swap_registers",
+          "ir_profile": "hierarchy",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":true,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"entry\":\"main::swap_registers\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::swap_registers",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/swap_registers.qli",
+        "--ir-profile=raw",
+        "--nat=n=3",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:15:32.173276+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": false,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::swap_registers",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::swap_registers\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::swap_registers",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/swap_registers.qli",
+        "--ir-profile=hierarchy",
+        "--nat=n=3",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:15:32.377139+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "profile": "sized-unitary",
+          "contract": "composition",
+          "verification": {
+            "scope": "producer-consistency",
+            "request_origin": "producer",
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": true,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "entry": "main::swap_registers",
+          "ir_profile": "hierarchy",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":true,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"entry\":\"main::swap_registers\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::transpose_axes",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/transpose_axes.qli",
+        "--ir-profile=raw",
+        "--nat=n=2",
+        "--nat=i=0",
+        "--nat=j=1",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:14:39.781130+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": false,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::transpose_axes",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":false,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::transpose_axes\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "--entry=main::transpose_axes",
+        "--module=main=/private/tmp/qleisli-76-register-first.seY0k5/transpose_axes.qli",
+        "--ir-profile=hierarchy",
+        "--nat=n=2",
+        "--nat=i=0",
+        "--nat=j=1",
+        "--format=json"
+      ],
+      "recorded_utc": "2026-11-13T05:14:39.817370+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "profile": "sized-unitary",
+          "contract": "composition",
+          "verification": {
+            "scope": "producer-consistency",
+            "request_origin": "producer",
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "checker_identity": "unpinned",
+          "request_checked": true,
+          "ordinary_result_checked": false,
+          "runtime_result_checked": false,
+          "source_preservation_verified": false,
+          "entry": "main::transpose_axes",
+          "ir_profile": "hierarchy",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"checker_path\":\"/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"request_checked\":true,\"ordinary_result_checked\":false,\"runtime_result_checked\":false,\"source_preservation_verified\":false,\"entry\":\"main::transpose_axes\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}}\n",
+      "stderr": "",
+      "cli_sha256": "24afc6d296d5f1c19621b60e9dbd9c1d9de8f9199e1ab418f096cb0fd8ca9ed7",
+      "kernel_sha256": "f947cfa93ad9522789c56c6c8e97913ac411c36261e6f10ec1c4eec8d82243b7"
+    }
+  ]
+}

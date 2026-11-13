@@ -6,6 +6,7 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Add structural `std::structure::transpose_axes` for statically sized registers.
 - Add an actual four-qubit qmatch QROM corpus case with noncanonical arm order,
   valid wrong-arm/phase counterexamples and an independent exact full-matrix
   oracle. Compare both qmatch and CNOT/X implementations against the oracle;

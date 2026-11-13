@@ -22,7 +22,7 @@ The normative [semantic namespace Reference](docs/src/reference/stdlib.md)
 defines mathematical admission and naming rules. The eight ordinary bundled
 modules are `std::basis`, `std::transform`, `std::reflection`,
 `std::measurement`, `std::gate`, `std::structure`, `std::state` and
-`std::prelude`, with twenty-five public
+`std::prelude`, with twenty-six public
 definitions and five private reflection, scalar-phase, phase-provider,
 packed-control and fixed-identity helpers. The prelude transparently reexports
 six existing derived declarations; it adds no function body or primitive.
