@@ -12,7 +12,7 @@ open QleisliKernel QleisliKernel.Finite QleisliKernel.Qirf
 open RuntimeOwnerMap (Binding Map)
 open Qleisli.RuntimeStructuralLayoutEvidence (SemanticOwnerLayout)
 
-private theorem selected_binding {owner bindings} (selected : RuntimePrimitiveSource.PortAt owner bindings) :
+theorem selected_binding {owner bindings} (selected : RuntimePrimitiveSource.PortAt owner bindings) :
     (⟨owner,selected.port⟩ : Binding) ∈ bindings := by
   obtain ⟨work,left,read⟩ := selected.original
   unfold RuntimePrimitiveSource.rolePorts at read

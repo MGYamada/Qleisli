@@ -256,9 +256,9 @@ impl Compiler<'_> {
         self.compile_basis_with_signature(key, params, result, false)
     }
 
-    /// Evaluate a deferred classical helper for an original Meaning.
-    /// The caller must bind this proposal to the original native equation.
-    pub(super) fn nominal_meaning_table(
+    /// Evaluate a deferred classical table from its original declaration.
+    /// The caller must bind this proposal to the original native check.
+    pub(super) fn original_classical_table(
         &mut self,
         key: Key,
     ) -> Result<BasisFunction, CompileError> {

@@ -124,6 +124,20 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (location : RuntimeSourceEvent.Location (.basis event) start count)
       (source : RuntimeBasisAction.Source event)
       (action : RuntimeBasisAction.Checked event interval before) : Node dependencies program block
+  | computed {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {start count sources caller} {event : SourceRuntimeContext.ComputedEvent sources caller}
+      {children : List (SourceRuntimeContext.Event sources caller)} {before}
+      (interval : RuntimeInterval.Checked block start count)
+      (location : RuntimeSourceEvent.Location (.computed event children) start count)
+      (prepared : RuntimeComputedUse.Prepared event)
+      (action : RuntimeComputedUse.Checked prepared interval before) : Node dependencies program block
+  | certifiedComputed {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {start count sources caller} {event : SourceRuntimeContext.ComputedEvent sources caller}
+      {children : List (SourceRuntimeContext.Event sources caller)} {before}
+      (interval : RuntimeInterval.Checked block start count)
+      (location : RuntimeSourceEvent.Location (.computed event children) start count)
+      (prepared : RuntimeCertifiedComputed.Prepared event)
+      (action : RuntimeCertifiedComputed.Checked prepared interval before) : Node dependencies program block
   | named {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count inputs} {sources : Sources} {caller : String} {before childHistory childRetired}
       (event : SourceRuntimeContext.NamedEvent sources caller)
@@ -695,6 +709,19 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let consumed := if event.input == event.output then [] else [event.input]
           return (after,retired ++ consumed,ordinary,actions ++ [node],steps ++ [.pure node],
             obligations,position.start+position.count,sourceCursor,receipts)
+        | .computed event children,data,origin =>
+          let prepared ← RuntimeBodyQueries.readComputed execution.queries source event children position data
+          let finish output node :=
+            let after := RuntimeComputedPredicate.continued event before output
+            pure (after,retired ++ event.body.consumed ++ [event.returned.auxiliary],ordinary,actions ++ [node],steps ++ [.pure node],
+              obligations,position.start+position.count,sourceCursor,receipts)
+          match prepared with
+          | .inl prepared =>
+            let action ← RuntimeComputedUse.read prepared interval before
+            finish action.literal.output (.computed interval ⟨position,rfl,rfl,origin⟩ prepared action)
+          | .inr prepared =>
+            let action ← RuntimeCertifiedComputed.read prepared interval before
+            finish action.literal.output (.certifiedComputed interval ⟨position,rfl,rfl,origin⟩ prepared action)
         | .named event,data,_ =>
           let named ← RuntimeBodyQueries.readNamed execution.queries source event position sourceCursor data
           let child := named.context

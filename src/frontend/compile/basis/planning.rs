@@ -22,9 +22,14 @@ impl Compiler<'_> {
                 let module = &self.source.resolution.declaration(key).name.0;
                 let span = obligation.span;
                 self.charge_at(&mut work, module, span, 2)?;
-                let check::ObligationKind::Injectivity { typed_ports } = obligation.kind else {
+                if !matches!(
+                    obligation.kind,
+                    check::ObligationKind::Injectivity { .. }
+                        | check::ObligationKind::ProtectedClean
+                        | check::ObligationKind::CertifiedClean { .. }
+                ) {
                     continue;
-                };
+                }
                 if selected.is_some_and(|selected| !selected.contains(&key)) || roots.contains(&key)
                 {
                     continue;
@@ -33,19 +38,36 @@ impl Compiler<'_> {
                     .original_node_budgeted(obligation.plan.node, |at, cells| {
                         self.charge_at(&mut work, module, at, cells)
                     })?;
-                let Some(OriginalNode::Expression(Expr {
-                    kind: ExprKind::CoherentLift { basis, .. },
-                    ..
-                })) = original
-                else {
-                    return Err(self.error(
-                        module,
-                        span,
-                        ErrorCode::InvalidIr,
-                        "basis plan lacks its original lift",
-                    ));
+                let required = match (&obligation.kind, original) {
+                    (
+                        check::ObligationKind::Injectivity { typed_ports },
+                        Some(OriginalNode::Expression(Expr {
+                            kind: ExprKind::CoherentLift { basis, .. },
+                            ..
+                        })),
+                    ) => *typed_ports || self.basis_uses_nominal(basis, module, &mut work)?,
+                    (
+                        check::ObligationKind::ProtectedClean
+                        | check::ObligationKind::CertifiedClean { .. },
+                        Some(OriginalNode::Expression(Expr {
+                            kind:
+                                ExprKind::WithComputed { function, .. }
+                                | ExprKind::CertifiedComputed { function, .. },
+                            ..
+                        })),
+                    ) => matches!(locals.usage(function).target,
+                        ResolvedUse::Global(Target::Declaration(predicate))
+                            if self.deferred_nominal_tables.contains(&predicate)),
+                    _ => {
+                        return Err(self.error(
+                            module,
+                            span,
+                            ErrorCode::InvalidIr,
+                            "coherent table plan lacks its original expression",
+                        ));
+                    }
                 };
-                if typed_ports || self.basis_uses_nominal(basis, module, &mut work)? {
+                if required {
                     roots.insert(key);
                 }
             }

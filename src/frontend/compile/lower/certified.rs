@@ -58,27 +58,8 @@ impl Lowerer<'_, '_> {
                 "predicate must be a classical function",
             ));
         };
-        self.compiler
-            .prepare_required_classical_table(key, module, function.span)?;
-        let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
-            self.compiler.missing_basis_error(
-                module,
-                function.span,
-                &key,
-                "predicate must be a classical function",
-            )
-        })?;
-        let size = predicate
-            .signature_size()
-            .saturating_add(predicate.table.len());
-        self.compiler.charge(module, function.span, size)?;
-        let predicate = self.compiler.basis[&key].clone();
-        self.compiler.check_predicate_domain(
-            module,
-            function.span,
-            &predicate,
-            &source_reg.basis,
-        )?;
+        let (table, requires_source) =
+            self.computed_table(module, function, key, &source_reg.basis)?;
         if data_binder.text == ancilla_binder.text {
             return Err(self.error(
                 module,
@@ -108,11 +89,12 @@ impl Lowerer<'_, '_> {
         }
         let wire = self.wire();
         let output = self.token();
+        let start = self.raw.operations.len();
         self.raw.operations.push(RawOp::CertifiedCompute {
             source: source_reg.token,
             source_out: output,
             ancilla_wires: vec![wire],
-            function: predicate.table,
+            function: table,
             use_steps,
             logical_steps,
         });
@@ -121,6 +103,10 @@ impl Lowerer<'_, '_> {
             .get_mut(&source_slot)
             .expect("owned source")
             .token = output;
+        if requires_source {
+            self.nominal_basis_used = Some(true);
+        }
+        quantum_match::nominal::record_coherent_table(self, module, span, start)?;
         Ok(source)
     }
 

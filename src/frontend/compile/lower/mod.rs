@@ -1912,7 +1912,7 @@ impl Lowerer<'_, '_> {
                 basis: basis.clone(),
             },
         );
-        quantum_match::nominal::record_basis(self, module, span, start)?;
+        quantum_match::nominal::record_coherent_table(self, module, span, start)?;
         if output_cardinality != input_codes.len() {
             self.add_effect(module, span, Effect::Isometry);
         }
@@ -1926,6 +1926,65 @@ impl Lowerer<'_, '_> {
         ty: &Ty,
     ) -> Result<(usize, Vec<usize>), CompileError> {
         self.compiler.basis_codes(module, span, ty)
+    }
+
+    fn computed_table(
+        &mut self,
+        module: &str,
+        function: &Ident,
+        key: Key,
+        basis: &Ty,
+    ) -> Result<(Vec<u16>, bool), CompileError> {
+        self.compiler
+            .prepare_required_classical_table(key, module, function.span)?;
+        let requires_source = self.compiler.deferred_nominal_tables.contains(&key);
+        let predicate = if requires_source {
+            if self.nominal_qmatch.is_none() {
+                return Err(self.computed_refusal(
+                    module,
+                    function.span,
+                    ErrorCode::Unsupported,
+                    "this finite basis table needs the original source-body gate",
+                )?);
+            }
+            self.compiler.original_classical_table(key)?
+        } else {
+            let Some(predicate) = self.compiler.basis.get(&key) else {
+                let (code, message) = self
+                    .compiler
+                    .missing_basis_reason(&key, "predicate must be a classical function");
+                return Err(self.computed_refusal(module, function.span, code, message)?);
+            };
+            let size = predicate
+                .signature_size()
+                .saturating_add(predicate.table.len());
+            self.compiler.charge(module, function.span, size)?;
+            self.compiler.basis[&key].clone()
+        };
+        self.compiler
+            .check_predicate_domain(module, function.span, &predicate, basis)?;
+        let table = if requires_source {
+            let (bits, codes) = self.basis_codes(module, function.span, basis)?;
+            if codes.len() != predicate.table.len() {
+                return Err(self.computed_refusal(
+                    module,
+                    function.span,
+                    ErrorCode::InvalidIr,
+                    "computed predicate rows do not match the exact source basis",
+                )?);
+            }
+            let size = 1usize << bits;
+            self.compiler
+                .charge(module, function.span, size.saturating_add(codes.len()))?;
+            let mut table = vec![0; size];
+            for (code, value) in codes.into_iter().zip(predicate.table) {
+                table[code] = value;
+            }
+            table
+        } else {
+            predicate.table
+        };
+        Ok((table, requires_source))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1950,25 +2009,13 @@ impl Lowerer<'_, '_> {
                 "predicate must be a classical function",
             )?);
         };
-        self.compiler
-            .prepare_required_classical_table(key, module, function.span)?;
-        let Some(predicate) = self.compiler.basis.get(&key) else {
-            let (code, message) = self
-                .compiler
-                .missing_basis_reason(&key, "predicate must be a classical function");
-            return Err(self.computed_refusal(module, function.span, code, message)?);
-        };
-        let size = predicate
-            .signature_size()
-            .saturating_add(predicate.table.len());
-        self.compiler.charge(module, function.span, size)?;
-        let predicate = self.compiler.basis[&key].clone();
-        self.compiler.check_predicate_domain(
+        self.compiler.charge(
             module,
             function.span,
-            &predicate,
-            &self.raw.registers[&source_slot].basis,
+            self.raw.registers[&source_slot].basis.tree_size().nodes,
         )?;
+        let basis = self.raw.registers[&source_slot].basis.clone();
+        let (table, requires_source) = self.computed_table(module, function, key, &basis)?;
         self.compiler.charge(module, span, 5)?;
         let wire = self.wire();
         let ancilla = self.register(Ty::bit(), vec![wire]);
@@ -1990,6 +2037,10 @@ impl Lowerer<'_, '_> {
             .collect();
         self.bind_env(binder, Binding::Live(ancilla), &mut local);
         let start = self.raw.operations.len();
+        // The auxiliary body is re-read by the checker. Its internal operations
+        // have no positions in the surrounding literal Raw frame.
+        let containing = self.nominal_qmatch.take();
+        let previous_context = self.source_context.take();
         let previous_effect = self.effect;
         let previous_contract_effect = self.contract_effect;
         let previous_effect_source = self.effect_source.take();
@@ -2011,6 +2062,8 @@ impl Lowerer<'_, '_> {
         self.effect = previous_effect;
         self.contract_effect = previous_contract_effect;
         self.effect_source = previous_effect_source;
+        self.nominal_qmatch = containing;
+        self.source_context = previous_context;
         let result = evaluated?;
         self.compiler
             .charge(module, body.span, result.tree_size().nodes + 2)?;
@@ -2054,10 +2107,14 @@ impl Lowerer<'_, '_> {
             source_out: output,
             targets: vec![],
             ancilla_wires: vec![wire],
-            function: predicate.table,
+            function: table,
             use_ops,
         });
         source_reg.token = output;
+        if requires_source {
+            self.nominal_basis_used = Some(true);
+        }
+        quantum_match::nominal::record_coherent_table(self, module, span, start)?;
         Ok(source)
     }
 }

@@ -145,6 +145,22 @@ def readBasis {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.basis body⟩ => pure body
     | ⟨_,_,.unsupported _⟩ => throw .request
 
+
+def readComputed {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (event : SourceRuntimeContext.ComputedEvent artifact.sources owner) (children : List (SourceRuntimeContext.Event artifact.sources owner))
+    (position : Position) (data : mode.EventData source (.computed event children) position) :
+    WorkM (Sum (RuntimeComputedUse.Prepared event) (RuntimeCertifiedComputed.Prepared event)) :=
+  match mode with
+  | .fresh =>
+    if event.written.parts.logical.isSome then Sum.inr <$> RuntimeCertifiedComputed.prepare event
+    else Sum.inl <$> RuntimeComputedUse.prepare event
+  | .planned _ =>
+    match data with
+    | ⟨_,_,.computed prepared⟩ => pure (.inl prepared)
+    | ⟨_,_,.certifiedComputed prepared⟩ => pure (.inr prepared)
+    | ⟨_,_,.unsupported _⟩ => throw .request
+
 structure Named {artifact : Artifact} (mode : Mode artifact) {owner : String}
     (event : SourceRuntimeContext.NamedEvent artifact.sources owner) where
   context : Context

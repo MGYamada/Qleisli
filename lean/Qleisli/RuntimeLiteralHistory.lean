@@ -48,6 +48,8 @@ private theorem pure_node_operations {dependencies program block}
   | primitive action _ => exact ⟨_,action.interval.literal⟩
   | structural action => exact ⟨[action.operation],action.literal⟩
   | basis _ _ _ action => exact ⟨[_],action.literal⟩
+  | computed _ _ _ action => exact ⟨[_],action.literal.literal⟩
+  | certifiedComputed _ _ _ action => exact ⟨[_],action.literal.original⟩
   | named _ frame _ _ _ _ => exact ⟨_,frame.literal⟩
   | operation frame _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩
   | rectangularOperation checked => exact ⟨_,checked.frame.literal⟩

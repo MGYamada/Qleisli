@@ -335,7 +335,24 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               | supplied => exact ()
               | original => exact some (.basis checked)
             return ⟨before,⟨event.staticRows ++ checked.body.staticRows ++ rows,[]⟩,[],data⟩
-          | .matching .. | .computed .. | .registerPrimitive .. | .staticConditional .. => throw .request
+          | .computed event children =>
+            if event.written.parts.logical.isSome then
+              let prepared ← RuntimeCertifiedComputed.prepare event
+              let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events
+              let data : scope.EventData mode.preparation (.computed event children) position before before := by
+                cases scope with
+                | supplied => exact ()
+                | original => exact some (.certifiedComputed prepared)
+              return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
+            else
+              let prepared ← RuntimeComputedUse.prepare event
+              let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events
+              let data : scope.EventData mode.preparation (.computed event children) position before before := by
+                cases scope with
+                | supplied => exact ()
+                | original => exact some (.computed prepared)
+              return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
+          | .matching .. | .registerPrimitive .. | .staticConditional .. => throw .request
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do
           match event with

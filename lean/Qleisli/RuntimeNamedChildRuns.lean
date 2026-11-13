@@ -289,7 +289,7 @@ theorem OperationOrigin.staged_action {artifact root}
   all_goals exact True.intro
 
 private def IntrinsicNode {dependencies program block} : Node dependencies program block → Prop
-  | .primitive .. | .structural .. | .basis .. => True
+  | .primitive .. | .structural .. | .basis .. | .computed .. | .certifiedComputed .. => True
   | _ => False
 
 private theorem intrinsic_origin {artifact root} {execution : ExecutionMode artifact root}
@@ -1068,6 +1068,17 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
         entered.2.snocPure _ rfl (fun _ => True.intro) (fun _ => True.intro)⟩
       change history = {history with bindings := frame.bindings}
       rw [sameBindings]
+    case computed =>
+      obtain ⟨prepared,e,_source,ran⟩ := bind_success _ _ _ _ _ h
+      cases prepared
+      all_goals
+        obtain ⟨_,_,_action,returned⟩ := bind_success _ _ _ _ _ ran
+        have same := (pure_success _ _ _ _ returned).1
+        subst after
+        refine ⟨entered.1.snoc ⟨?_,rfl⟩ True.intro rfl ⟨atStart.symm,rfl⟩ True.intro,
+          entered.2.snocPure _ rfl (fun _ => True.intro) (fun _ => True.intro)⟩
+        change history = {history with bindings := frame.bindings}
+        rw [sameBindings]
     case primitive =>
       split at h
       · obtain ⟨action,e,_action,returned⟩ := bind_success _ _ _ _ _ h

@@ -106,7 +106,7 @@ theorem selection_wires
       source.before.bindings.map (fun binding => (binding.owner,binding.port.wires)) :=
   selection_wires_of_read frame source restricted
 
-private theorem forest_by_bases (owners : List Semantics.CarrierInterface.Owner) :
+theorem forest_by_bases (owners : List Semantics.CarrierInterface.Owner) :
     Semantics.CarrierInterface.forest owners =
       match owners.map (·.basis) with
       | [] => [.unit]

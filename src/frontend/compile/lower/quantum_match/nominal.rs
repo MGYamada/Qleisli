@@ -618,8 +618,8 @@ pub(in crate::frontend::compile::lower) fn record_primitive(
     Ok(())
 }
 
-/// The coherent basis body supplies the table for one literal Raw operation.
-pub(in crate::frontend::compile::lower) fn record_basis(
+/// The original coherent expression supplies a table to one literal Raw operation.
+pub(in crate::frontend::compile::lower) fn record_coherent_table(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
     span: Span,
@@ -633,7 +633,7 @@ pub(in crate::frontend::compile::lower) fn record_basis(
             module,
             span,
             ErrorCode::InvalidIr,
-            "basis lift precedes its original qmatch context",
+            "coherent table precedes its original qmatch context",
         )
     })?;
     let position = position(lower, module, span, span.start, relative, 1)?;

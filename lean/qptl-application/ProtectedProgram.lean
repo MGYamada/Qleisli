@@ -1,6 +1,8 @@
 import ProtectedClean
 import Qleisli.RawPure
 import Qleisli.FiniteMatrixAction
+import Qleisli.RuntimeComputedProtectedAction
+import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import Qleisli.RuntimeForestProduct
 
 /-! Exact cleanup in the actual ordered pure Raw program. Certified scopes
@@ -160,6 +162,27 @@ theorem certified_clean_square {R : Type} (dependencies : List Dependency)
   rw [padding]
   exact (certified_clean_action _ _ _ _ _ _ _ _ _ _ accepted joint row.val reference row.isLt).symm
 
+
+/-- Bind the certified square to the same physical result that was checked
+against the original logical supplier on the exact data code. -/
+theorem original_certified_clean_square
+    {sources caller dependencies program block start count event prepared interval before}
+    (checked : @Qirf.RuntimeCertifiedComputed.Checked sources caller dependencies program block start count
+      event prepared interval before) {R : Type} :
+    let bits := checked.literal.input.port.bits
+    CommSq (TypeCat.ofHom (action checked.logical.emitted (R := R)))
+      (TypeCat.ofHom (zeroImage bits 1))
+      (TypeCat.ofHom (zeroImage bits 1))
+      (TypeCat.ofHom (finiteCircuit dependencies (bits+1)
+        ([Raw.computeStep bits bits 1 checked.literal.table] ++ checked.literal.useSteps ++
+          [Raw.computeStep bits bits 1 checked.literal.table]))) := by
+  intro bits
+  obtain ⟨work,left,read⟩ := checked.logical.emittedRead
+  exact certified_clean_square dependencies bits bits 1 checked.literal.table checked.literal.useSteps
+    checked.literal.logicalSteps checked.logical.emitted work left read
+
+#print axioms original_certified_clean_square
+
 /-- The actual protected event check supplies the structured square; the
 inverse is the literal XOR involution, not an assumed final clean equation. -/
 theorem protected_event_square {R : Type} (dependencies : List Dependency)
@@ -184,6 +207,35 @@ theorem protected_event_square {R : Type} (dependencies : List Dependency)
   change Qleisli.Semantics.Protected.compute f (Qleisli.Semantics.Protected.compute f joint) = joint
   funext source ancilla target reference
   simp only [Qleisli.Semantics.Protected.compute,Nat.xor_assoc,Nat.xor_self,Nat.xor_zero]
+
+
+/-- The clean result of the actual checked scope uses the original predicate
+and original auxiliary body. The equation holds at every auxiliary coordinate
+and for arbitrary reference-indexed amplitudes. -/
+theorem original_protected_clean_action
+    {sources caller dependencies program block start count event prepared interval before}
+    (checked : @Qirf.RuntimeComputedUse.Checked sources caller dependencies program block start count
+      event prepared interval before)
+    {R : Type} (ψ : Qleisli.Semantics.Protected.Logical R)
+    (source auxiliary target : Nat) (reference : R)
+    {choice : Nat} (chosen : prepared.predicate.table[source]? = some choice) (bit : choice = 0 ∨ choice = 1) :
+    let f := fun row => checked.literal.table[row]?.getD 0
+    Qleisli.Semantics.Protected.compute f
+      (Qleisli.Semantics.Protected.run checked.literal.uses
+        (Qleisli.Semantics.Protected.compute f (Qleisli.Semantics.Protected.zero ψ)))
+      source auxiliary target reference =
+      if auxiliary = 0 then ψ source target reference * scalar (prepared.action.matrix.entry choice choice) else 0 := by
+  intro f
+  obtain ⟨result,dispatched⟩ := checked.literal.dispatch
+  obtain ⟨_,_,_,_,_,clean⟩ := Qleisli.Raw.ProtectedClean.accepted_clean_action
+    (dependencies.map (·.signature)) interval.before.quantum checked.literal.input.port.token
+    checked.literal.output.token [] [checked.literal.auxiliary] checked.literal.table checked.literal.uses
+    result dispatched ψ
+  rw [clean]
+  simp only [Qleisli.Semantics.Protected.zero,
+    Qleisli.RuntimeComputedProtectedAction.original_phase checked ψ source target reference chosen bit]
+
+#print axioms original_protected_clean_action
 
 /-- The independently requested local action, embedded on the original axes.
 Only clean scopes are replaced; all other events retain their literal action. -/

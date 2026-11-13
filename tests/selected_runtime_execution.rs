@@ -220,6 +220,201 @@ fn standalone_basis_checks_the_original_nominal_output_and_scope() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn protected_nominal_predicate_checks_the_original_body_and_literal_table() {
+    use qleisli::ir::RawOp;
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn is_b(tag:Tri)->Bit{match tag{Tri::A=>0,Tri::B=>1,Tri::C=>0}}
+        unitary fn mark(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+        pub unitary fn keep(q:Q<Tri>, spectator:Q<Unit>)->(Q<Tri>,Q<Unit>){
+            (with_computed(q,is_b){|flag|mark(flag)},spectator)}";
+    let selected = selected(source);
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(matches!(
+        program.raw().operations.as_slice(),
+        [RawOp::ComputeUseUncompute { function, targets, ancilla_wires, .. }]
+            if function == &[0, 1, 0, 0] && targets.is_empty() && ancilla_wires.len() == 1
+    ));
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let request = program.request().unwrap();
+    for (original, forged) in [
+        (r#""function":[0,1,0,0]"#, r#""function":[0,0,1,0]"#),
+        (r#""function":[0,1,0,0]"#, r#""function":[0,1,0,1]"#),
+        ("Tri::B=>1", "Tri::B=>0"),
+        ("phase[1,1](q)", "phase[1,2](q)"),
+    ] {
+        assert_eq!(artifact.matches(original).count(), 1, "{original}");
+        let changed = artifact.replacen(original, forged, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(changed.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn nominal_predicate_leaves_padding_between_product_rows() {
+    use qleisli::ir::RawOp;
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn choose((tag,b):(Tri,Bit))->Bit{match tag{Tri::A=>b,Tri::B=>1,Tri::C=>0}}
+        pub unitary fn keep(q:Q<(Tri,Bit)>)->Q<(Tri,Bit)>{
+            with_computed(q,choose){|flag|phase[1,1](flag)}}";
+    let selected = selected(source);
+    assert!(matches!(
+        selected.program().raw().operations.as_slice(),
+        [RawOp::ComputeUseUncompute { function, .. }]
+            if function == &[0, 1, 0, 0, 1, 1, 0, 0]
+    ));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_checks_a_nominal_predicate_with_its_original_callee() {
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn is_b(tag:Tri)->Bit{match tag{Tri::A=>0,Tri::B=>1,Tri::C=>0}}
+        unitary fn mark(q:Q<Tri>)->Q<Tri>{with_computed(q,is_b){|flag|phase[1,1](flag)}}
+        observe fn main()->Unit{discard(mark(basis unit(()) as _{Tri::B}))}";
+    let program = compile_project(&SourceRoot::new(source).0).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert_eq!(
+        run_closed(&program, SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![], 1.0)])
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn certified_nominal_predicate_binds_both_original_actions() {
+    use qleisli::ir::RawOp;
+    let source = "#![no_implicit_prelude]
+        pub enum Tri { A, B, C }
+        classical fn is_b(tag:Tri)->Bit{match tag{Tri::A=>0,Tri::B=>1,Tri::C=>0}}
+        unitary fn logical(q:Q<Tri>)->Q<Tri>{global_phase_eighth(q)}
+        pub unitary fn keep(q:Q<Tri>)->Q<Tri>{
+            with_computed(q,is_b,logical){|data,flag|(global_phase_eighth(data),flag)}}";
+    let selected = selected(source);
+    let program = selected.program();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    assert!(matches!(
+        program.raw().operations.as_slice(),
+        [RawOp::CertifiedCompute { function, use_steps, logical_steps, .. }]
+            if function == &[0, 1, 0, 0] && use_steps == logical_steps
+    ));
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let request = program.request().unwrap();
+    let phases = r#""phases":[1]"#;
+    assert_eq!(artifact.matches(phases).count(), 2);
+    let forged = artifact.replace(phases, r#""phases":[2]"#);
+    assert_eq!(
+        kernel()
+            .check_qmatch_source_v5(forged.as_bytes(), request)
+            .unwrap_err()
+            .code,
+        "contract"
+    );
+
+    let closed =
+        format!("{source} fn main()->Unit{{discard(keep(basis unit(()) as _{{Tri::B}}))}}");
+    let project = compile_project(&SourceRoot::new(&closed).0).unwrap();
+    assert_eq!(
+        project.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn certified_nominal_predicate_preserves_split_join_axes() {
+    use qleisli::ir::{CircuitAction, RawOp};
+    let source = "#![no_implicit_prelude]
+        pub enum Mode { A, B, C }
+        classical fn is_b((m,b):(Mode,Bit))->Bit{match m{Mode::A=>0,Mode::B=>1,Mode::C=>0}}
+        unitary fn logical(q:Q<(Mode,Bit)>)->Q<(Mode,Bit)>{
+            let (m,b)=split(q);
+            join(m,h(b))
+        }
+        pub unitary fn keep(q:Q<(Mode,Bit)>)->Q<(Mode,Bit)>{
+            with_computed(q,is_b,logical){|data,flag|
+                let (m,b)=split(data);
+                let (b,m)=split(join(b,m));
+                (join(m,h(b)),flag)
+            }
+        }";
+    let selected = selected(source);
+    let program = selected.program();
+    assert!(matches!(
+        program.raw().operations.as_slice(),
+        [RawOp::CertifiedCompute { function, use_steps, logical_steps, .. }]
+            if function == &[0, 1, 0, 0, 0, 1, 0, 0]
+                && use_steps == logical_steps && use_steps.len() == 1
+                && use_steps[0].controls.is_empty()
+                && use_steps[0].action == CircuitAction::Hadamard { target: 2 }
+    ));
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let expected = r#""action":{"tag":"hadamard","target":2}"#;
+    let wrong_axis = r#""action":{"tag":"hadamard","target":0}"#;
+    assert_eq!(artifact.matches(expected).count(), 2);
+    let forged = artifact.replace(expected, wrong_axis);
+    assert_eq!(
+        kernel()
+            .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+            .unwrap_err()
+            .code,
+        "contract"
+    );
+
+    let closed = "#![no_implicit_prelude]
+        enum Mode{A,B,C}
+        classical fn p((m,b):(Mode,Bit))->Bit{match m{Mode::A=>0,Mode::B=>1,Mode::C=>0}}
+        unitary fn g(q:Q<(Mode,Bit)>)->Q<(Mode,Bit)>{let(m,b)=split(q);join(m,h(b))}
+        observe fn main()->Unit{
+            let q=basis unit(()) as _{(Mode::B,0)};
+            discard(with_computed(q,p,g){|q,f|let(m,b)=split(q);(join(m,h(b)),f)})
+        }";
+    let project = compile_project(&SourceRoot::new(closed).0).unwrap();
+    assert_eq!(
+        project.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    let outcomes = run_closed(&project, SimulationLimits::default()).unwrap();
+    assert_eq!(outcomes.len(), 1);
+    assert!((outcomes[&Vec::new()] - 1.0).abs() < 1e-12);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_arm_compares_the_original_nominal_meaning_to_the_applied_operator() {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/nominal-meaning-arm-v030/attempt-01/main.qli");

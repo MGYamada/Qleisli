@@ -1036,7 +1036,14 @@ callees; unrelated declarations do not become table roots. Coherent basis
 lifts evaluate these deferred bodies on canonical source values and use the
 v5 source interval check described above. Coherent arms and standalone
 applications use the original Meaning equation check for nominal intermediate
-values. Nominal Meaning ports and predicate table consumers remain pending.
+values. Supported square and rectangular Meaning applications also check their
+exact nominal ports and original supplying operations. The two finite
+`with_computed` forms use the same original-source route for supported nominal
+predicates. The checker evaluates the exact logical input codes, checks the
+physical padding and binds the emitted region to the original use body.
+The certified form also checks the original logical supplier and exact
+auxiliary cleanup. See the [production boundary](production-boundary.md)
+for the scope and its work limits.
 Eligible closed ordinary roots use the native input/result/history gate above.
 
 Before specialization, both paths enforce the common 1,000,000-work budget
