@@ -110,6 +110,22 @@ structure Checked {dependencies program sources caller}
   afterFrame : RuntimeOwnerMap.Checked (after.bindings.map (·.owner)) interval.after
   sameFrame : afterFrame.bindings = after.bindings
 
+theorem Checked.take_wires {dependencies program sources caller block start count event before}
+    (action : @Checked dependencies program sources caller block start count event before)
+    {port : Semantics.Raw.Port} (kind : event.kind = .takeBit) (inputs : action.inputs = [port]) :
+    action.outputs.map (·.wires) =
+      [(port.wires.drop action.index).take 1,port.wires.take action.index ++ port.wires.drop (action.index+1)] := by
+  rw [action.wireOrder,kind,inputs]
+  rfl
+
+theorem Checked.put_wires {dependencies program sources caller block start count event before}
+    (action : @Checked dependencies program sources caller block start count event before)
+    {bit rest : Semantics.Raw.Port} (kind : event.kind = .putBit) (inputs : action.inputs = [bit,rest]) :
+    action.outputs.map (·.wires) =
+      [rest.wires.take action.index ++ bit.wires ++ rest.wires.drop action.index] := by
+  rw [action.wireOrder,kind,inputs]
+  rfl
+
 /-- The literal three-operation repartition changes only logical ownership.
 It keeps the physical frame and emits no quantum event. -/
 theorem Checked.trace_frame {dependencies program sources caller block start count event before}
