@@ -11,7 +11,7 @@ open Semantics.RawTrace (Interface)
 open CanonicalOpenQasmResources (Circuit Instruction)
 
 inductive Match where
-  | original | route | decomposed (gateCount : Nat)
+  | original | route | decomposed (gateCount : Nat) | synthesized (gateCount : Nat) (scratch : List Nat)
   deriving BEq, DecidableEq, Repr
 
 structure State where
@@ -85,20 +85,102 @@ def checkDecomposition (circuit : Circuit) (start count : Nat) (locations : List
       else throw .request
   else throw .request
 
+private def outsideUntouched (circuit : Circuit) (start count : Nat) (scratch : List Nat) : Bool :=
+  scratch.all fun wire => !circuit.measurements.contains wire &&
+    ((circuit.gates.take start) ++ (circuit.gates.drop (start+count))).all fun gate => !gate.wires.contains wire
+
+private def checkedSynthesis (axes scratch : Nat) (target : List Semantics.Finite.Step)
+    (logical : Semantics.Exact.Matrix) : WorkM Semantics.Exact.Matrix := do
+  let zero ← Raw.zeroEncoding axes scratch
+  let required : Semantics.Finite.Contract := ⟨zero,zero,logical⟩
+  Finite.check [] (Raw.circuit (axes+scratch) target) required required
+
+/-- A temporary target register is appended above the original ordered data
+support. Its complete entry word starts in zero and the checked equation
+returns it to zero, with every original input column and exact phase retained. -/
+structure Synthesis (circuit : Circuit) (start count : Nat) (locations scratch : List Nat)
+    (steps : List Semantics.Finite.Step) where
+  axes : List Nat
+  originalAxes : axes = (steps.flatMap stepAxes).eraseDups
+  inFrame : steps.all (fun step => (stepAxes step).all (· < locations.length)) = true
+  layout : List Nat
+  placed : axes.mapM (fun axis => locations[axis]?) = some layout
+  declared : circuit.declares (locations ++ scratch)
+  exclusive : outsideUntouched circuit start count scratch = true
+  actual : List Semantics.Finite.Step
+  targetWord : CanonicalOpenQasmWorkspace.interval circuit (layout ++ scratch) start count = some actual
+  logical : Semantics.Exact.Matrix
+  originalOperator : RuntimeInterval.Computed
+    (circuitMatrix [] (Raw.circuit axes.length (localWord locations.length axes steps))) logical
+  physical : Semantics.Exact.Matrix
+  restored : RuntimeInterval.Computed (checkedSynthesis axes.length scratch.length actual logical) physical
+
+theorem Synthesis.zeroReturn {circuit start count locations scratch steps}
+    (checked : Synthesis circuit start count locations scratch steps) :
+    ∃ encoding first middle afterCircuit lhs lhsWork rhs rhsWork,
+      (Raw.zeroEncoding checked.axes.length scratch.length).run first = (.ok encoding,middle) ∧
+      Exact.Matrix.compose checked.physical encoding.map afterCircuit = (.ok lhs,lhsWork) ∧
+      Exact.Matrix.compose encoding.map checked.logical lhsWork = (.ok rhs,rhsWork) ∧ lhs = rhs := by
+  obtain ⟨first,left,ran⟩ := checked.restored
+  unfold checkedSynthesis at ran
+  obtain ⟨encoding,middle,zero,accepted⟩ := bind_success _ _ _ _ _ ran
+  obtain ⟨_,afterCircuit,lhs,lhsWork,rhs,rhsWork,_,same⟩ :=
+    (Finite.check_conditions _ _ _ _ _ _ _ accepted).2.2.2.2.2.2
+  exact ⟨encoding,first,middle,afterCircuit,lhs,lhsWork,rhs,rhsWork,zero,same⟩
+
+theorem Synthesis.exclusiveScratch {circuit start count locations scratch steps}
+    (checked : Synthesis circuit start count locations scratch steps) {wire : Nat} (member : wire ∈ scratch) :
+    wire ∉ circuit.measurements ∧
+      ∀ gate ∈ circuit.gates.take start ++ circuit.gates.drop (start+count), wire ∉ gate.wires := by
+  have untouched := List.all_eq_true.mp checked.exclusive wire member
+  have places : wire ∉ circuit.measurements ∧
+      (∀ gate ∈ circuit.gates.take start, wire ∉ gate.wires) ∧
+      (∀ gate ∈ circuit.gates.drop (start+count), wire ∉ gate.wires) := by
+    simpa [List.contains_eq_mem,List.all_eq_true] using untouched
+  exact ⟨places.1,fun gate occurs => (List.mem_append.mp occurs).elim (places.2.1 gate) (places.2.2 gate)⟩
+
+def checkSynthesis (circuit : Circuit) (start count : Nat) (locations scratch : List Nat)
+    (steps : List Semantics.Finite.Step) : WorkM (Synthesis circuit start count locations scratch steps) := do
+  guard (locations.length ≤ 12 && scratch.length ≤ 6 && !scratch.isEmpty && steps.length ≤ 1024 &&
+    start+count ≤ circuit.gates.length && count ≤ 1024) .limit
+  exactWork (Exact.charge (64*(1+start+count+steps.length+circuit.gates.length+circuit.measurements.length)*
+    (1+locations.length+scratch.length)))
+  if inFrame : steps.all (fun step => (stepAxes step).all (· < locations.length)) then
+    let axes := (steps.flatMap stepAxes).eraseDups
+    guard (axes.length + scratch.length ≤ 6) .limit
+    if valid : circuit.declares (locations ++ scratch) ∧ outsideUntouched circuit start count scratch = true then
+      match placed : axes.mapM (fun axis => locations[axis]?) with
+      | none => throw .request
+      | some layout =>
+        match targetWord : CanonicalOpenQasmWorkspace.interval circuit (layout ++ scratch) start count with
+        | none => throw .request
+        | some actual =>
+          let logical ← SourceTypes.NaturalAffine.witness
+            (circuitMatrix [] (Raw.circuit axes.length (localWord locations.length axes steps)))
+          let checked ← SourceTypes.NaturalAffine.witness (checkedSynthesis axes.length scratch.length actual logical.val)
+          return ⟨axes,rfl,inFrame,layout,placed,valid.1,valid.2,actual,targetWord,logical.val,
+            by exact logical.property,checked.val,by exact checked.property⟩
+    else throw .request
+  else throw .request
+
 private def followRaw (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op)
-    (reserved : List Nat) (size : Option Nat := none) : WorkM State := do
+    (reserved : List Nat) (alignment : Match) : WorkM State := do
   let (next,events) ← lift (readOption (Semantics.RawTrace.step state.raw operation))
-  let (locations,gateIndex) ← match size,events with
-    | none,[] => pure (state.locations,state.gateIndex)
-    | none,[.init0 _] => lift (readOption ((fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)))
-    | none,[.liftBasis before after [] [axis] [0]] =>
+  let (locations,gateIndex) ← match alignment,events with
+    | .original,[] => pure (state.locations,state.gateIndex)
+    | .original,[.init0 _] => lift (readOption ((fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)))
+    | .original,[.liftBasis before after [] [axis] [0]] =>
       if after == before+1 && axis == before then
         lift (readOption ((fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)))
       else throw .request
-    | none,[.circuit _ steps] =>
+    | .original,[.circuit _ steps] =>
       lift (readOption ((gateWord circuit state.gateIndex state.locations steps).map (state.locations,·)))
-    | some count,[.circuit _ steps] => do
+    | .decomposed count,[.circuit _ steps] => do
       let _ ← checkDecomposition circuit state.gateIndex count state.locations steps
+      pure (state.locations,state.gateIndex+count)
+    | .synthesized count scratch,[.circuit _ steps] => do
+      guard (scratch.all fun wire => !reserved.contains wire) .request
+      let _ ← checkSynthesis circuit state.gateIndex count state.locations scratch steps
       pure (state.locations,state.gateIndex+count)
     | _,_ => throw .request
   if next.frame.length == locations.length then
@@ -118,10 +200,9 @@ private def replayFrom (original : Array Semantics.Observation.Op) (circuit : Ci
     (alignment : List Match) (initial : State) (reserved : List Nat := []) : WorkM State :=
   alignment.foldlM (fun state action => match action with
     | .route => lift (readOption (followSwap circuit connected state reserved))
-    | .original | .decomposed _ => do
+    | .original | .decomposed _ | .synthesized _ _ => do
       let some (.pure operation) := original[state.rawIndex]? | throw .request
-      let size := match action with | .decomposed count => some count | _ => none
-      followRaw circuit state operation reserved size) initial
+      followRaw circuit state operation reserved action) initial
 
 def replay (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
     (alignment : List Match) : WorkM State :=

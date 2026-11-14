@@ -246,6 +246,35 @@ private def controlledSWord := "t q[0];\nt q[3];\ncx q[0], q[3];\ntdg q[3];\ncx 
 #guard ((changeControlledPhase (controlledSWord.replace "tdg" "t")).run exactWorkLimit).1.toOption.isNone
 #guard ((changeControlledPhase (controlledSWord.replace "q[3]" "q[1]")).run exactWorkLimit).1.toOption.isNone
 
+private def controlledTWord := "ccx q[0], q[1], q[2];\nt q[2];\nccx q[0], q[1], q[2];\n"
+
+private def synthesisTrace (word : String) (gateCount : Nat := 3) (scratch : List Nat := [2])
+    (measurement : Nat := 1) : Finite.WorkM (List Nat × Nat) := do
+  let phase : Semantics.Finite.Step := ⟨[⟨0,true⟩],.monomial [1] [0,1] [0,1]⟩
+  let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 5),.pure (.init0 11 3),
+    .pure (.join 10 11 12),.pure (.applyUnitary 12 13 [phase]),.pure (.split 13 14 15 1),
+    .measure 15 20,.measure 14 21],[],[20,21],.observe⟩
+  let _ ← Qirf.RuntimeInterval.prepare [] program
+  let header := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[2] c;\nreset q;\n"
+  let target ← Target.CanonicalOpenQasmResources.check
+    (header ++ word ++ s!"c[0] = measure q[{measurement}];\nc[1] = measure q[0];\n").toUTF8 3
+  let trace ← Target.CanonicalOpenQasmPlacement.finishTrace target program (fun _ _ => false) [] []
+    [.original,.original,.original,.synthesized gateCount scratch,.original]
+  return (target.circuit.measurements,trace.final.gateIndex)
+
+#guard ((synthesisTrace controlledTWord).run exactWorkLimit).1.toOption == some ([1,0],3)
+#guard ((synthesisTrace "ccx q[0], q[1], q[2];\nt q[2];\n" 2).run exactWorkLimit).1.toOption.isNone
+#guard ((synthesisTrace (controlledTWord.replace "t q[2]" "tdg q[2]")).run exactWorkLimit).1.toOption.isNone
+#guard ((synthesisTrace controlledTWord 3 [1]).run exactWorkLimit).1.toOption.isNone
+#guard ((synthesisTrace controlledTWord 3 [2] 2).run exactWorkLimit).1.toOption.isNone
+#guard ((synthesisTrace (controlledTWord ++ "x q[2];\n")).run exactWorkLimit).1.toOption.isNone
+#guard
+  let request := synthesisTrace controlledTWord
+  let consumed := exactWorkLimit - (request.run exactWorkLimit).2
+  match (request.run (consumed-1)).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
 private def terminalOutputOrder (measurements : String) : Finite.WorkM Unit := do
   let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 6),.pure (.init0 11 7),
     .pure (.init0 12 8),.measure 11 20,.discard 12,.measure 10 21],[],[21,20],.observe⟩
