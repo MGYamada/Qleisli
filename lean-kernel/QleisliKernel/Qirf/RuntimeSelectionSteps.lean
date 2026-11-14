@@ -56,8 +56,7 @@ private def inspect {dependencies} : (item : Item dependencies) → View depende
       (by simp only [Smaller] <;> decreasing_tactic)
   | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.register ..) | .node _ (.basis ..)
   | .node _ (.computed ..) | .node _ (.certifiedComputed ..) | .node _ (.workspace ..) | .node _ (.operation ..) => .leaf
-  | .node _ (.rectangularOperation _) | .node _ (.structuralComputed ..)
-  | .node _ (.register ..) => .leaf
+  | .node _ (.rectangularOperation _) | .node _ (.structuralComputed ..) => .leaf
   | .nodes _ .nil => .leaf
   | .nodes ordinal (.cons first rest) => .pair (.atOrdinal ordinal) (.node ordinal first) (.nextOrdinal (ordinal+1)) (.nodes (ordinal+1) rest)
       (by simp only [Smaller] <;> decreasing_tactic) (by simp only [Smaller] <;> decreasing_tactic)
