@@ -12,6 +12,7 @@ use crate::ir::{CircuitAction, CircuitStep};
 
 /// Output positions of the input gate boundaries. Interior boundaries of a
 /// rewritten word disappear even when its replacement emits zero gates.
+#[derive(Debug)]
 pub(super) struct GateBoundaries(Vec<Option<usize>>);
 
 impl GateBoundaries {
