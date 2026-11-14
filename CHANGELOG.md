@@ -9,6 +9,9 @@ development milestones from the scope of their evidence.
 - Prove the exact action of literal controlled-X sequences for future
   table-free classical synthesis. The component checks phases and target
   coordinates by inspecting the circuit steps and their controls (#30).
+- Reconstruct Boolean predicates from original typed bodies and verify the
+  matching phase-free XOR in a literal Raw interval. The checked component
+  preserves the ordered owner frame and meters clause expansion (#30).
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.
