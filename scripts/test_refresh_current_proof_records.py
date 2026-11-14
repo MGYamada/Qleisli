@@ -169,7 +169,8 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-70-openqasm-workspace",
                 "refs/heads/codex/beta-70-openqasm-decomposition",
                 "refs/heads/codex/beta-70-openqasm-synthesis-scratch",
-                "refs/heads/codex/beta-70-openqasm-synthesis-reuse")
+                "refs/heads/codex/beta-70-openqasm-synthesis-reuse",
+                "refs/heads/codex/beta-70-openqasm-raw-spans")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:

@@ -301,6 +301,32 @@ private def reuseSynthesisTrace (word : String) (second : Target.CanonicalOpenQa
 #guard ((reuseSynthesisTrace (controlledTWord ++ controlledTWord) (.synthesized 3 [2]) [] [2] 2).run
   exactWorkLimit).1.toOption.isNone
 
+private def optimizedSpan (word : String) (rawCount : Nat := 5) (gates : Nat := 1) :
+    Finite.WorkM (List Nat × Nat) := do
+  let original : List Semantics.Observation.Op := [.pure (.init0 10 6),.pure (.gate .h 10 11),
+    .pure (.packUnit 12),.pure (.gate .z 11 13),.pure (.unpackUnit 12),.pure (.gate .h 13 14),.measure 14 20]
+  let program : Semantics.Observation.Program := ⟨[],[],original,[],[20],.observe⟩
+  let _ ← Qirf.RuntimeInterval.prepare [] program
+  let header := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[2] q;\nbit[1] c;\nreset q;\n"
+  let target ← Target.CanonicalOpenQasmResources.check
+    (header ++ word ++ "c[0] = measure q[1];\n").toUTF8 2
+  let trace ← Target.CanonicalOpenQasmPlacement.finishTrace target program (fun _ _ => true) [] []
+    [.original,.route,.optimized rawCount gates]
+  return (target.circuit.measurements,trace.final.rawIndex)
+
+private def optimizedWord := "swap q[0], q[1];\nx q[1];\n"
+#guard ((optimizedSpan optimizedWord).run exactWorkLimit).1.toOption == some ([1],6)
+#guard ((optimizedSpan optimizedWord 6).run exactWorkLimit).1.toOption.isNone
+#guard ((optimizedSpan optimizedWord 4).run exactWorkLimit).1.toOption.isNone
+#guard ((optimizedSpan (optimizedWord.replace "x q[1]" "x q[0]")).run exactWorkLimit).1.toOption.isNone
+#guard ((optimizedSpan (optimizedWord.replace "x q[1]" "y q[1]")).run exactWorkLimit).1.toOption.isNone
+#guard
+  let request := optimizedSpan optimizedWord
+  let consumed := exactWorkLimit - (request.run exactWorkLimit).2
+  match (request.run (consumed-1)).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
 private def terminalOutputOrder (measurements : String) : Finite.WorkM Unit := do
   let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 6),.pure (.init0 11 7),
     .pure (.init0 12 8),.measure 11 20,.discard 12,.measure 10 21],[],[21,20],.observe⟩
