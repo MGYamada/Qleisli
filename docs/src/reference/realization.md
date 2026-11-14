@@ -596,7 +596,8 @@ check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
 measurements. Counts come from Lean's decoding of the returned text.
 The internal packet binds the complete original QLV3 request and literal target
 bytes. Lean rechecks the original source, decodes the target and replays
-placement using one 20,000,000 exact-work budget. The report covers the
+placement using one 20,000,000 exact-work budget. Exhausting it returns a
+limit rejection with no resource payload. The report covers the
 supported canonical terminal profile and its declared physical register.
 Lean proves that the decoded register width bounds the maximum Raw live width
 over the workspace occurrences visited by the replay, including caller

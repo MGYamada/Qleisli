@@ -109,6 +109,19 @@ theorem native_clean_access_counted_once (product : String) (bytes : ByteArray)
   obtain ⟨reuse⟩ := checked.placement.trace.restored scratch member
   exact ⟨reuse.prepared_and_counted.2.1,reuse.unmeasured,clean_access_counted_once reuse⟩
 
+/-- A failed placement work check serializes only the limit rejection.
+Neither the checked prefix nor partial resource counts are published. -/
+theorem native_limit_has_no_resources (product : String) (bytes : ByteArray) (work left : Nat)
+    (ran : (Protocol.NativeContext.run .openQasmPlacement product bytes).run work =
+      (.error (.native (.arithmetic .workLimit)),left)) :
+    let result := (Protocol.NativeContext.run .openQasmPlacement product bytes).run work
+    let reply := Protocol.NativeContext.reply .openQasmPlacement work result.1 result.2
+    reply.success = false ∧ reply.lines = ["qleisli.native-result 3","error","limit"] := by
+  dsimp only
+  rw [ran]
+  exact ⟨rfl,rfl⟩
+
+#print axioms native_limit_has_no_resources
 #print axioms native_clean_access_counted_once
 #print axioms decoded_action
 end Qleisli.WorkspaceTargetAction
