@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "5baf4b1bde05e08020a818e74eb3f68c7c94e6f9bc18787aecba512bbefe47ef",
+    "sha256": "a54b925d11f06d1cec7285e2489d83e68d2ba9fb6cce03e9a5c81cc8ada4664e",
     "files": {
       "lean/Audit.lean": "769d64e8aa64d7e00217c3ca69857c07e86955cabc606b95621c8d068b7de87a",
       "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -719,7 +719,7 @@
       "lean-kernel/QleisliKernel/Raw/Trace.lean": "896a9574df00499b4ab84cce70ad4a5b2f71d752430a39bde1fa03dcdf1c984c",
       "lean-kernel/QleisliKernel/Raw/Unit.lean": "31b71c21419cabfaaaae373a63d4c022fce1a07391556dbcda47e335848f4363",
       "lean-kernel/QleisliKernel/Raw/Workspace.lean": "b9fd7dfdef6bcc421baed3891e7598e68a3df20b7b1bba3e23272fa3423fe421",
-      "lean-kernel/QleisliKernel/Raw/WorkspaceResources.lean": "d863110fbfd276cf2cadacd807f102123cf51a6863151d579cd349a6eaff4f13",
+      "lean-kernel/QleisliKernel/Raw/WorkspaceResources.lean": "7d7301151fe9dd477c471c7773299d89c9ff88fb7f2d5160db6bacd708434ef4",
       "lean-kernel/QleisliKernel/Reshape.lean": "3d71d4a62e50cc8764022698e5d5a232e7228ef74b4243e7c2349907ab3494c1",
       "lean-kernel/QleisliKernel/RuntimeStorage.lean": "f2a8dcd816a6399167f9cad7ef3ab6f9374d54e7a7582030742ecf8e298cf9fc",
       "lean-kernel/QleisliKernel/Schema.lean": "ebc26051e5647fe2b0b8a049de366dad5c4789f377176ec48708310ff0004bf8",
@@ -1028,7 +1028,7 @@
       "lean-kernel/QleisliKernel/Tests/SourceQuantum/Sites.lean": "826b0ab045cbf33547f4aacc36c0ade7d0626f02d89178572b71c140d25e28ab",
       "lean-kernel/QleisliKernel/Tests/SourceQuantum.lean": "7a9a81d56dcc8ae36d63a05039ed3bf16f3ef686bb061e5932d0929c66a4e85e",
       "lean-kernel/QleisliKernel/Tests/SourceRuntimeBasisBindings.lean": "a63853df312f4c01e86dc2d26a2f0b7d8050329fb5ba97e829a339c362fbe628",
-      "lean-kernel/QleisliKernel/Tests/SourceRuntimeComputed.lean": "d267c3074cf0defa32271afccfc3f9342b9d5d5690be710bca4db00ba5ad02aa",
+      "lean-kernel/QleisliKernel/Tests/SourceRuntimeComputed.lean": "d3a88962bdfcc8caf8096f1ebf8409baa9b8dc83ba536d7b546a208e505ed265",
       "lean-kernel/QleisliKernel/Tests/SourceRuntimeEmpty.lean": "be63a41a67b039164a2327a7cf2a4074c5ccd1917d161cd550a915d0774d9bd0",
       "lean-kernel/QleisliKernel/Tests/SourceRuntimeMatch.lean": "e1aa9580dd5ea04954d7a30d64925f8fbae9691053320081a6ee959096b7ad75",
       "lean-kernel/QleisliKernel/Tests/SourceRuntimeNominal.lean": "9419f2abc2038e6234d7a2a19c0119d346c06ac6b7187c8ee26e83f42b531f2a",
