@@ -257,8 +257,8 @@ structure CheckedPlacement {bytes : ByteArray} (original : Original bytes) {targ
     (finishTrace target original.checked.root.program connected reserved segments suffix synthesis) trace
 
 /-- Check the emitted bytes and workspace intervals from the same original
-source decision. This is the pure checker adapter, before native framing and
-producer alignment are connected. -/
+source decision. The alignment supplies target coordinates only. The
+checker derives original source intervals from the accepted root. -/
 def Original.checkPlacement {bytes : ByteArray} (original : Original bytes) {targetBytes capacity}
     (target : Target.CanonicalOpenQasmResources.Checked targetBytes capacity) (connected : Nat → Nat → Bool)
     (reserved synthesis : List Nat) (plans : List WorkspaceAlignment) (suffix : List Match) :
@@ -297,8 +297,178 @@ theorem run_binding (bytes : ByteArray) (checked : Σ value : Packet.Input, Orig
     simp only [input,scope] at consumed
     exact ⟨parsed.1,rfl,check_binding _ _ _ _ _ consumed⟩
 
+
+namespace PlacementPacket
+open QleisliKernel.Target
+
+structure PacketParts where
+  source : ByteArray
+  target : ByteArray
+  alignment : ByteArray
+
+/-- QTP1 carries the original QLV3 packet, literal target bytes and an alignment
+proposal. All three lengths are checked before slicing the transport. -/
+def split (bytes : ByteArray) : Except Gate.Error PacketParts := do
+  if bytes.size < 16 || bytes.size > Packet.maxPacketBytes ||
+      bytes.extract 0 4 != "QTP1".toUTF8 then throw .packet
+  let sourceBytes := Packet.u32 bytes 4
+  let targetBytes := Packet.u32 bytes 8
+  let alignmentBytes := Packet.u32 bytes 12
+  let targetStart := 16 + sourceBytes
+  let alignmentStart := targetStart + targetBytes
+  if sourceBytes < 28 || targetBytes == 0 || targetBytes > 1048576 ||
+      alignmentBytes > 1048576 || bytes.size != alignmentStart + alignmentBytes then
+    throw .packet
+  return ⟨bytes.extract 16 targetStart, bytes.extract targetStart alignmentStart,
+    bytes.extract alignmentStart bytes.size⟩
+
+structure Alignment where
+  capacity : Nat
+  edges : List (Nat × Nat)
+  reserved : List Nat
+  synthesis : List Nat
+  plans : List WorkspaceAlignment
+  suffix : List Match
+
+def Alignment.connected (alignment : Alignment) (a b : Nat) : Bool :=
+  alignment.edges.contains (min a b, max a b)
+
+private abbrev Reader := StateT Nat (Except Gate.Error)
+
+private def natural (bytes : ByteArray) : Reader Nat := do
+  let offset ← get
+  if offset + 4 > bytes.size then throw .packet
+  set (offset + 4)
+  return Packet.u32 bytes offset
+
+private def items {α : Type} (bytes : ByteArray) (cap : Nat) (read : Reader α) : Reader (List α) := do
+  let count ← natural bytes
+  let offset ← get
+  -- Each element begins with at least one u32. Reject bad counts before allocation.
+  if count > cap || count > (bytes.size - offset)/4 then throw .packet
+  (List.range count).mapM fun _ => read
+
+private def wires (bytes : ByteArray) : Reader (List Nat) :=
+  items bytes 12 (natural bytes)
+
+private def action (bytes : ByteArray) : Reader Match := do
+  match ← natural bytes with
+  | 0 => return .original
+  | 1 => return .route
+  | 2 => return .decomposed (← natural bytes)
+  | 3 => return .synthesized (← natural bytes) (← wires bytes)
+  | 4 => return .optimized (← natural bytes) (← natural bytes) (← wires bytes)
+  | _ => throw .packet
+
+private def workspace (bytes : ByteArray) : Reader WorkspaceAlignment := do
+  let prefixSteps ← items bytes 65536 (action bytes)
+  let gates ← natural bytes
+  let scratch ← natural bytes
+  if scratch > 12 then throw .packet
+  return ⟨prefixSteps,gates,if scratch == 12 then none else some scratch⟩
+
+private def readAlignment (bytes : ByteArray) : Reader Alignment := do
+  let capacity ← natural bytes
+  if capacity > 12 then throw .packet
+  let edges ← items bytes 66 (do
+    let a ← natural bytes
+    let b ← natural bytes
+    if a ≥ b || b ≥ capacity then throw .packet
+    return (a,b))
+  if edges.eraseDups != edges then throw .packet
+  let reserved ← wires bytes
+  let synthesis ← wires bytes
+  let plans ← items bytes 65536 (workspace bytes)
+  let suffix ← items bytes 65536 (action bytes)
+  return ⟨capacity,edges,reserved,synthesis,plans,suffix⟩
+
+/-- The plan is only a producer proposal. Precharge its byte traversal before
+allocating lists, and use the same work state for source and target checking. -/
+def alignment (bytes : ByteArray) : CheckM Alignment := do
+  guard (bytes.size ≤ 1048576) .packet
+  native (Finite.exactWork (Exact.charge (8*(bytes.size+1))))
+  let (proposal,offset) ← lift ((readAlignment bytes).run 0)
+  guard (offset == bytes.size) .packet
+  return proposal
+
+structure Checked (bytes : ByteArray) where
+  parts : PacketParts
+  framed : split bytes = .ok parts
+  proposal : Alignment
+  source : Σ value : Packet.Input, Original value.original
+  target : CanonicalOpenQasmResources.Checked parts.target proposal.capacity
+  placement : CheckedPlacement source.2 target proposal.connected proposal.reserved proposal.synthesis
+    proposal.plans proposal.suffix
+
+private def verify (bytes : ByteArray) : CheckM (Checked bytes) := do
+  match framed : split bytes with
+  | .error error => throw error
+  | .ok parts =>
+    let proposal ← alignment parts.alignment
+    let source ← CheckedQmatchV5.run parts.source
+    let target ← native (CanonicalOpenQasmResources.check parts.target proposal.capacity)
+    let placement ← native (source.2.checkPlacement target proposal.connected proposal.reserved
+      proposal.synthesis proposal.plans proposal.suffix)
+    return ⟨parts,framed,proposal,source,target,placement⟩
+
+/-- Recheck the original source envelope, then independently decode and check
+the emitted OpenQASM under the supplied placement proposal. -/
+def check (bytes : ByteArray) : CheckM (Checked bytes) := do
+  guard (bytes.size ≤ Packet.maxPacketBytes) .packet
+  native (Finite.exactWork (Exact.charge (bytes.size+1)))
+  verify bytes
+
+theorem check_binding (bytes : ByteArray) (checked : Checked bytes) (work left : Nat)
+    (ok : (check bytes).run work = (.ok checked,left)) :
+    ∃ afterFrame afterPlan afterSource afterTarget,
+      (Finite.exactWork (Exact.charge (bytes.size+1))).run work = (.ok (),afterFrame) ∧
+      (alignment checked.parts.alignment).run afterFrame = (.ok checked.proposal,afterPlan) ∧
+      (CheckedQmatchV5.run checked.parts.source).run afterPlan = (.ok checked.source,afterSource) ∧
+      (CanonicalOpenQasmResources.check checked.parts.target checked.proposal.capacity).run afterSource =
+        (.ok checked.target,afterTarget) ∧
+      (checked.source.2.checkPlacement checked.target checked.proposal.connected checked.proposal.reserved
+        checked.proposal.synthesis checked.proposal.plans checked.proposal.suffix).run afterTarget =
+        (.ok checked.placement,left) := by
+  unfold check at ok
+  obtain ⟨_,start,gated,afterGuard⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,afterFrame,charged,stages⟩ := bind_success _ _ _ _ _ afterGuard
+  have entered := (guard_success _ _ _ _ gated).2
+  subst start
+  clear ok afterGuard gated
+  unfold verify at stages
+  split at stages
+  · change (Except.error _,afterFrame) = (.ok checked,left) at stages
+    cases stages
+  · obtain ⟨proposal,afterPlan,plan,rest⟩ := bind_success _ _ _ _ _ stages
+    obtain ⟨source,afterSource,sourceRun,rest⟩ := bind_success _ _ _ _ _ rest
+    obtain ⟨target,afterTarget,targetRun,rest⟩ := bind_success _ _ _ _ _ rest
+    obtain ⟨placement,remaining,placementRun,returned⟩ := bind_success _ _ _ _ _ rest
+    cases returned
+    exact ⟨afterFrame,afterPlan,afterSource,afterTarget,native_success _ _ _ _ charged,
+      plan,sourceRun,native_success _ _ _ _ targetRun,native_success _ _ _ _ placementRun⟩
+
+theorem Checked.source_bound {bytes : ByteArray} (checked : Checked bytes) (work left : Nat)
+    (ok : (check bytes).run work = (.ok checked,left)) :
+    ∃ afterPlan afterSource,
+      Packet.read checked.parts.source = .ok checked.source.1 ∧ checked.source.1.scope = .execution ∧
+        Nonempty (Binding checked.source.1.original checked.source.1.graph checked.source.2
+          afterPlan afterSource) := by
+  obtain ⟨_,afterPlan,afterSource,_,_,_,sourceRun,_,_⟩ := check_binding _ _ _ _ ok
+  exact ⟨afterPlan,afterSource,run_binding _ _ _ _ sourceRun⟩
+
+theorem Checked.target_counts {bytes : ByteArray} (checked : Checked bytes) :
+    (CanonicalOpenQasmResources.decode checked.parts.target).map
+      CanonicalOpenQasmResources.Circuit.counts = some checked.target.circuit.counts := by
+  rw [checked.target.original]
+  rfl
+
+end PlacementPacket
+
 #print axioms check_binding
 #print axioms Original.covers
 #print axioms Original.root_safe
 #print axioms run_binding
+#print axioms PlacementPacket.check_binding
+#print axioms PlacementPacket.Checked.source_bound
+#print axioms PlacementPacket.Checked.target_counts
 end QleisliKernel.Protocol.ExecutionView.CheckedQmatchV5
