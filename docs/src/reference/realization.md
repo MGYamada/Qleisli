@@ -508,7 +508,11 @@ and requires the physical register to cover the checked Raw peak. For a fresh
 scratch wire, the checker can verify that nothing touches it between the
 initial reset and workspace entry, or after exact restoration. This profile
 keeps the physical reservation throughout. The surrounding circuit must
-establish the placement of live owners and any reuse across intervals.
+establish the placement of live owners. A physical scratch location can also
+be reused across ordered, disjoint, nonempty clean intervals. The checker
+requires an exact zero-return equation for each interval, checks that every
+gate touching that location lies in one of those intervals, and checks that
+the location is absent from terminal readout.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.

@@ -72,7 +72,8 @@ private def cleanControlled :=
 #guard ((readWorkspaceAction cleanControlled).run 20000000).1.toOption == some 4
 
 private def workspaceInterval (sourceText : String) (operations : List Semantics.Observation.Op)
-    (fresh : Bool) (targetTest : Option (String × List Nat × Nat × Nat) := none) :
+    (fresh : Bool) (targetTest : Option (String × List Nat × Nat × Nat) := none)
+    (reuseTest : Option (String × List Nat × Nat × Nat × Nat) := none) :
     Finite.WorkM (List Nat × List Nat × Raw.WorkspaceResources.Counts × Nat) := do
   let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ sourceText)] "main" "route"
   let [.workspace event children] := source.events | throw .request
@@ -95,6 +96,17 @@ private def workspaceInterval (sourceText : String) (operations : List Semantics
   if let some (text,layout,start,count) := targetTest then
     let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
     let _ ← Target.CanonicalOpenQasmWorkspace.checkLifetime map target layout start count
+  if let some (text,layout,first,second,count) := reuseTest then
+    let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
+    let before ← Target.CanonicalOpenQasmWorkspace.check map target layout first count
+    let after ← Target.CanonicalOpenQasmWorkspace.check map target layout second count
+    if offered : event.fresh = true then
+      match scratch : layout.getLast? with
+      | none => throw .request
+      | some wire =>
+        let _ ← Target.CanonicalOpenQasmWorkspace.checkReuse target wire
+          [before.cleanUse offered scratch,after.cleanUse offered scratch]
+    else throw .request
   return (checked.continuation.bindings.map (·.port.token),checked.continuation.issued.map (·.ordinal),
     map.resources.counts,map.resources.expandedBodySteps)
 
@@ -130,6 +142,22 @@ private def targetWorkspaceAccepted (fresh : Bool) (text : String) (layout : Lis
 #guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[2];\nz q[0];\n") [2,0] 0 1
 #guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[1];\n") [2,0] 0 1
 #guard !targetWorkspaceAccepted true (targetWorkspace 1 "h q[0];\n") [0,0] 0 1
+
+private def reusableWorkspace (gates : String) (first second : Nat) (count : Nat := 1) : Bool :=
+  ((workspaceInterval cleanScope (cleanOps [hData] [hData]) true none
+    (some (targetWorkspace 3 gates,[2,0],first,second,count))).run 20000000).1.isOk
+
+#guard reusableWorkspace "h q[2];\nt q[1];\nh q[2];\n" 0 2
+#guard !reusableWorkspace "h q[2];\nt q[1];\nh q[2];\n" 2 0
+#guard !reusableWorkspace "h q[2];\n" 0 0
+#guard !reusableWorkspace "h q[2];\nx q[0];\nh q[2];\n" 0 2
+#guard !reusableWorkspace "x q[0];\nh q[2];\nh q[2];\n" 1 2
+#guard !reusableWorkspace "h q[2];\nh q[2];\nx q[0];\n" 0 1
+
+private def touchAndRestore : String := "h q[0];\nh q[2];\nh q[0];\n"
+#guard reusableWorkspace (touchAndRestore ++ "t q[1];\n" ++ touchAndRestore) 0 4 3
+#guard !reusableWorkspace (touchAndRestore ++ "x q[0];\n" ++ touchAndRestore) 0 4 3
+#guard !reusableWorkspace (touchAndRestore ++ "t q[1];\nh q[0];\nh q[2];\nz q[0];\n") 0 4 3
 
 private def expandedWorkspaceBody : Finite.WorkM Nat := do
   let gate : Semantics.Raw.Op := .gate .h 0 1

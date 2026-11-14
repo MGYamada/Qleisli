@@ -11,6 +11,8 @@ development milestones from the scope of their evidence.
   declared target connectivity.
 - Read complete canonical OpenQASM terminal resources and check a designated
   target gate interval against the original clean/dirty workspace operator.
+- Check reuse of a reserved physical scratch wire across exact clean-return
+  intervals and refuse unaccounted gates or terminal readout on that wire.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.

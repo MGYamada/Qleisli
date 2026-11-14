@@ -2,8 +2,8 @@ import QleisliKernel.Target.CanonicalOpenQasmResources
 import QleisliKernel.Qirf.RuntimeWorkspace
 
 /-! Compare a designated gate interval of the decoded target with the checked
-source workspace operator. The caller still establishes the entry placement
-and scratch lifetime in the surrounding target circuit.
+source workspace operator. Check access to clean scratch before, between and
+after the selected intervals. The caller supplies the data-owner placement.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Target.CanonicalOpenQasmWorkspace
 open Finite Qirf
@@ -106,5 +106,95 @@ def checkLifetime {sources caller dependencies program block sourceStart sourceC
     let body ← check map target layout start count
     return ⟨body,live⟩
   else throw .request
+
+/-- One exact use of a clean physical location in the original byte-decoded
+circuit. Its complete local operator satisfies the zero-embedding equation. -/
+structure CleanUse (circuit : Circuit) (scratch : Nat) where
+  layout : List Nat
+  start : Nat
+  count : Nat
+  declared : circuit.declares layout
+  scratchLast : layout.getLast? = some scratch
+  dataBits : Nat
+  shape : layout.length = dataBits+1
+  steps : List Semantics.Finite.Step
+  actual : interval circuit layout start count = some steps
+  dependencies : List Semantics.Finite.Dependency
+  logical : Semantics.Exact.Matrix
+  physical : Semantics.Exact.Matrix
+  accepted : ∃ work left,(Raw.Workspace.check dependencies false dataBits steps logical).run work =
+    (.ok physical,left)
+
+def Checked.cleanUse {sources caller dependencies program block sourceStart sourceCount event events original
+    sourceInterval sourceBefore}
+    {literal : @RuntimeWorkspace.Literal sources caller dependencies program block
+      sourceStart sourceCount event events original sourceInterval sourceBefore}
+    {map : RuntimeWorkspace.CallerMap literal} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {layout start count scratch}
+    (checked : Checked map target layout start count)
+    (fresh : event.fresh = true) (last : layout.getLast? = some scratch) : CleanUse target.circuit scratch :=
+  ⟨layout,start,count,checked.declared,last,original.layout.bits,checked.shape,checked.gates,
+    checked.actualInterval,dependencies,original.logical.matrix,checked.equation.actual,by
+      obtain ⟨work,left,ran⟩ := checked.equation.checked
+      have actual := (Raw.Workspace.checkOriginal_bound _ _ _ _ _ _ _ work left ran).2
+      rw [fresh] at actual
+      obtain ⟨after,restored⟩ := actual
+      exact ⟨work,after,restored⟩⟩
+
+def CleanUse.covers {circuit scratch} (use : CleanUse circuit scratch) (gateIndex : Nat) : Bool :=
+  use.start ≤ gateIndex && gateIndex < use.start+use.count
+
+def CleanUse.before {circuit scratch} (first next : CleanUse circuit scratch) : Prop :=
+  first.start+first.count ≤ next.start
+
+instance {circuit scratch} (first next : CleanUse circuit scratch) : Decidable (first.before next) := by
+  unfold CleanUse.before
+  infer_instance
+
+def CleanUse.complete {circuit : Circuit} {scratch : Nat} (uses : List (CleanUse circuit scratch)) : Bool :=
+  circuit.gates.zipIdx.all fun (gate,index) =>
+    !(gate.wires.contains scratch) || uses.any (·.covers index)
+
+/-- Each clean owner starts after the previous use is restored. Every access
+to this physical location belongs to one of the exact uses, and it remains
+unmeasured; all gaps leave the axis untouched. -/
+structure Reuse {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (scratch : Nat) (uses : List (CleanUse target.circuit scratch)) : Type where
+  reserved : scratch < target.circuit.qubits
+  ordered : uses.Pairwise CleanUse.before
+  nonempty : ∀ use ∈ uses, 0 < use.count
+  unmeasured : scratch ∉ target.circuit.measurements
+  complete : CleanUse.complete uses = true
+
+def checkReuse {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (scratch : Nat) (uses : List (CleanUse target.circuit scratch)) : WorkM (Reuse target scratch uses) := do
+  guard (uses.length ≤ target.circuit.gates.length) .limit
+  exactWork (Exact.charge (32*(1+uses.length)*(1+uses.length+target.circuit.gates.length)))
+  if valid : scratch < target.circuit.qubits ∧ uses.Pairwise CleanUse.before ∧
+      (∀ use ∈ uses, 0 < use.count) ∧ scratch ∉ target.circuit.measurements ∧ CleanUse.complete uses = true then
+    return ⟨valid.1,valid.2.1,valid.2.2.1,valid.2.2.2.1,valid.2.2.2.2⟩
+  else throw .request
+
+theorem Reuse.accessCovered {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {scratch uses} (reuse : Reuse target scratch uses)
+    (index : Nat) (gate : Instruction) (actual : target.circuit.gates[index]? = some gate)
+    (usesScratch : scratch ∈ gate.wires) :
+    ∃ use ∈ uses,use.start ≤ index ∧ index < use.start+use.count := by
+  have indexed : (gate,index) ∈ target.circuit.gates.zipIdx := List.mk_mem_zipIdx_iff_getElem?.mpr actual
+  have found := List.all_eq_true.mp reuse.complete _ indexed
+  simp [List.contains_eq_mem,usesScratch,CleanUse.covers,List.any_eq_true] at found
+  exact found
+
+theorem CleanUse.exactRestoration {circuit scratch} (use : CleanUse circuit scratch) :
+    ∃ contract first middle work after lhs lhsWork rhs rhsWork,
+      (Raw.Workspace.required false use.dataBits use.logical).run first = (.ok contract,middle) ∧
+      (circuitMatrix use.dependencies (Raw.circuit (use.dataBits+1) use.steps)).run work =
+        (.ok use.physical,after) ∧
+      Exact.Matrix.compose use.physical contract.input.map after = (.ok lhs,lhsWork) ∧
+      Exact.Matrix.compose contract.output.map contract.logical lhsWork = (.ok rhs,rhsWork) ∧ lhs = rhs := by
+  obtain ⟨work,left,ran⟩ := use.accepted
+  obtain ⟨contract,middle,circuitWork,after,lhs,lhsWork,rhs,rhsWork,facts⟩ :=
+    Raw.Workspace.check_conditions _ _ _ _ _ _ work left ran
+  exact ⟨contract,work,middle,circuitWork,after,lhs,lhsWork,rhs,rhsWork,facts⟩
 
 end QleisliKernel.Target.CanonicalOpenQasmWorkspace
