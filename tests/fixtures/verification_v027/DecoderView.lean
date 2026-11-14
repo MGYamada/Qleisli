@@ -52,6 +52,9 @@ def rawOp : Semantics.Raw.Op → Json
   | .applyUnitary i o steps => tag "apply_unitary" [("input",toJson i),("output",toJson o),("steps",js (steps.map step))]
   | .certifiedCompute i o ancilla function uses logical => tag "certified_compute" [("source",toJson i),("source_out",toJson o),
       ("ancilla_wires",toJson ancilla),("function",toJson function),("use_steps",js (uses.map step)),("logical_steps",js (logical.map step))]
+  | .structuralCompute i o scratch forward inverse uses => tag "structural_compute"
+      [("source",toJson i),("source_out",toJson o),("scratch",toJson scratch),
+        ("forward",js (forward.map step)),("inverse",js (inverse.map step)),("uses",js (uses.map usage))]
   | .computeUseUncompute i o targets ancilla function uses => tag "compute_use_uncompute" [("source",toJson i),("source_out",toJson o),
       ("targets",js (targets.map fun t => obj [("input",toJson t.input),("output",toJson t.output)])),
       ("ancilla_wires",toJson ancilla),("function",toJson function),("use_ops",js (uses.map usage))]
