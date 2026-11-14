@@ -74,7 +74,7 @@ impl State {
         &mut self,
         circuit: &mut TerminalCircuit,
         barriers: &[bool; MAX_GATES + 1],
-    ) -> Result<(), InteropError> {
+    ) -> Result<[bool; MAX_GATES + 1], InteropError> {
         if circuit.gates.len() > MAX_GATES || circuit.qubits > MAX_QUBITS {
             return Err(InteropError::limit(
                 "terminal normalization input exceeds target limits",
@@ -119,11 +119,14 @@ impl State {
         // Complete every equation check before changing the output word. A
         // failure retains the original target gates and produces no artifact.
         if replacements.is_empty() {
-            return Ok(());
+            return Ok(*barriers);
         }
+        let last = circuit.gates.len();
+        let mut mapped = [false; MAX_GATES + 1];
         let mut positions = replacements.into_iter().peekable();
         let mut original = std::mem::take(&mut circuit.gates).into_iter().enumerate();
         while let Some((index, mut op)) = original.next() {
+            mapped[circuit.gates.len()] = barriers[index];
             if positions.peek() == Some(&index) {
                 positions.next();
                 // The matched actual word has the same one physical operand.
@@ -134,7 +137,8 @@ impl State {
             }
             circuit.gates.push(op);
         }
-        Ok(())
+        mapped[circuit.gates.len()] = barriers[last];
+        Ok(mapped)
     }
 
     fn check(
@@ -595,9 +599,11 @@ mod tests {
             ],
             3,
         );
-        state
-            .terminal(&mut multiple, &[false; MAX_GATES + 1])
-            .unwrap();
+        let mut barriers = [false; MAX_GATES + 1];
+        barriers[3] = true;
+        barriers[6] = true;
+        let mapped = state.terminal(&mut multiple, &barriers).unwrap();
+        assert_eq!(&mapped[..3], &[false, true, true]);
         assert_eq!(
             gate_snapshot(&multiple),
             vec![(Gate::X, vec![2]), (Gate::X, vec![0])]

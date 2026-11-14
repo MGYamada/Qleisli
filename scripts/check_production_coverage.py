@@ -1704,8 +1704,8 @@ _terminal_foreign_sources = {'src/interop/profile.rs': ['let mut normalization_b
                             'super::export::finish(&mut circuit, &mut expansion, '
                             '&normalization_barriers)?;'],
  'src/interop/export.rs': ['pub(super) fn finish(',
-                           'expansion.normalizations.terminal(circuit, barriers)?;',
-                           'fold_phases(circuit);'],
+                           'let barriers = expansion.normalizations.terminal(circuit, barriers)?;',
+                           'fold_phases(circuit, &barriers);', '!barriers[*index] && next.wires == op.wires'],
  'src/interop/export/normalization.rs': ['pub(super) fn terminal(',
                                          'if circuit.gates.len() > MAX_GATES || circuit.qubits > '
                                          'MAX_QUBITS {',

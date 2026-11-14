@@ -35,6 +35,8 @@ development milestones from the scope of their evidence.
   placement packet, sharing exact work across both checks and the replay.
 - Reject canonical OpenQASM gate instructions with missing operands before
   exact operator comparison.
+- Preserve allocation, workspace and observation boundaries through OpenQASM
+  phase folding, including after earlier gate compaction.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
