@@ -124,6 +124,10 @@ def advance (prepared : Prepared) (op : Op) : Option Prepared := do
   let (next,events) ← step prepared.state op
   return {prepared with state := next,events := prepared.events ++ events}
 
+/-- Read an original interval without inserting an output permutation. -/
+def interval (before : Interface) (operations : List Op) : Option Prepared :=
+  operations.foldlM advance ⟨before,[],before.frame.length⟩
+
 def initial (ports : List Port) : Interface :=
   ⟨ports,ports.flatMap (·.wires)⟩
 

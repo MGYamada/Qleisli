@@ -80,6 +80,9 @@ development milestones from the scope of their evidence.
   contract and an entangled reference regression. Distinguish unchanged
   reduced states from preserved correlation phase, without adding general
   clean/dirty syntax or claiming quantitative resource bounds.
+- Record live width, scratch preparation and release, cleanup passes and
+  literal circuit steps on checked source workspace intervals. Charge each
+  declaration lookup for module keys and the selected source body.
 - Route selected computed scopes through the existing common source emitter
   from their original syntax and dependency closure. Retain structured Raw
   uncomputation, local exact normalization receipts and typed native checks;

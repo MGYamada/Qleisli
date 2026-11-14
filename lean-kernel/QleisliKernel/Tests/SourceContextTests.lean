@@ -155,7 +155,7 @@ private def costs (sources : Sources) (queries : List (List String × List Locat
   (10000000-cached.2,10000000-original.2)
 #guard costs (standard) [([],h),([],h)] = (175,226)
 #guard costs (standard) [([],h),(["h"],h)] = (173,228)
-#guard costs #[("main","use leaf::h;"),("leaf",publicH)] [([],h),([],h)] = (508,892)
+#guard costs #[("main","use leaf::h;"),("leaf",publicH)] [([],h),([],h)] = (517,910)
 -- Assert the scalar lookup result separately from its work counters.
 #guard summary (standard) [([],tokens "global_phase_eighth"),([],tokens "global_phase_eighth")] =
   some (List.replicate 2 {selected := "primitive",name := "global_phase_eighth",prelude := some ""},1,1)

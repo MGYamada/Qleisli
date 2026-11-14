@@ -733,7 +733,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
         | .workspace event children,data,origin =>
           let prepared ← RuntimeBodyQueries.readWorkspace execution.queries source event children position data
           let action ← RuntimeWorkspace.readLiteral prepared interval before
-          let map ← RuntimeWorkspace.readCallerMap action
+          let map ← RuntimeWorkspace.readCallerMap action root.receipts
           let node : Node dependencies program block := .workspace interval ⟨position,rfl,rfl,origin⟩ prepared action map
           let retired := retired ++ event.body.consumed ++ (if event.fresh then [event.scratchOut] else [])
           return (action.continuation,retired,ordinary,actions ++ [node],steps ++ [.pure node],

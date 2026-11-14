@@ -37,6 +37,7 @@ import QleisliKernel.SourceTypes.SourceRuntimeOrdinary
 import QleisliKernel.Semantics.PrimitiveOperator
 import QleisliKernel.Raw.Finite
 import QleisliKernel.Raw.Workspace
+import QleisliKernel.Raw.WorkspaceResources
 import QleisliKernel.Raw.Sector
 import QleisliKernel.Raw.Function
 import QleisliKernel.Raw.ProtectedEvaluation

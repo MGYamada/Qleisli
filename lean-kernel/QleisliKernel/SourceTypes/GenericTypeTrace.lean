@@ -1340,7 +1340,7 @@ def discover (sources : Sources) (fuel : Nat) (pending : List DefId) (visited : 
           let body ← readBody sources owner name helpers originals modules meanings
           next (rest ++ body.outcome.references) (visited ++ [body])) fuel) pending visited
 
-private def effectEntries {sources} (records : List (BodyRecord sources)) : List Entry := records.map (·.entry)
+def effectEntries {sources} (records : List (BodyRecord sources)) : List Entry := records.map (·.entry)
 
 private theorem effectEntryIds {sources} (records : List (BodyRecord sources)) :
     (effectEntries records).map Entry.id = records.map BodyRecord.id := by
@@ -1431,6 +1431,14 @@ private def inferPrepared {sources} (records : List (BodyRecord sources))
 
 def infer {sources} (records : List (BodyRecord sources)) (body : BodyRecord sources) : WorkM (Inferred records body) := do
   inferPrepared records (← SourceEffectClosure.prepare (effectEntries records)) body
+
+/-- Recheck the current body's obligations using the original catalogue's
+effect graph, whose entries depend only on the unchanged typed records. -/
+def inferFrom {sources} (records : List (BodyRecord sources)) (body : BodyRecord sources)
+    (prepared : SourceEffectClosure.Prepared (effectEntries records))
+    (cohort : SourceEffectClosure.Cohort prepared) : WorkM (Inferred records body) := do
+  let selected ← SourceEffectClosure.lookup cohort body.id
+  inferClosure records prepared (some cohort) body selected.value
 
 inductive AllInferred {sources} (records : List (BodyRecord sources)) : List (BodyRecord sources) → Type where
   | nil : AllInferred records []
