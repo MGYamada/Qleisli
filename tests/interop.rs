@@ -113,6 +113,52 @@ fn terminal_export_realizes_source_clean_and_dirty_workspaces() {
         .replace('\n', "\\u000a");
     let output = String::from_utf8(cli.stdout).unwrap();
     assert!(output.contains(&expected_text), "{output}");
+    let checked = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args(["interop", "emit-qasm"])
+        .arg(&root.0)
+        .args(["--input=qli", "--resources"])
+        .output()
+        .unwrap();
+    let json = String::from_utf8(checked.stdout).unwrap();
+    assert!(checked.status.success(), "{json}");
+    assert!(json.contains(&expected_text), "{json}");
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&source_program)
+        .expect("Lean checks the actual workspace target");
+    assert_eq!(text, emitted);
+    assert!(resources.exact_work > 0);
+    assert!(resources.exact_work <= qleisli::contract::DEFAULT_EXACT_WORK);
+    assert_eq!(resources.qubits, 3);
+    assert_eq!(resources.resets, 3);
+    assert_eq!(resources.gates, 3);
+    assert_eq!(resources.swaps, 0);
+    assert_eq!(resources.t_gates, 0);
+    assert_eq!(resources.measurements, 2);
+    assert!(
+        json.contains(
+            "\"qubits\":3,\"resets\":3,\"gates\":3,\"swaps\":0,\"t_gates\":0,\"measurements\":2"
+        ),
+        "{json}",
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_workspace_resource_report_retains_zero_gate_scopes() {
+    let source = "#![no_implicit_prelude]\n\
+        isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
+        unitary fn same(q:Q<Bit>)->Q<Bit>{q}\n\
+        observe fn main()->Bit{measure_z(clean(zero(),same){|data,scratch|(data,scratch)})}";
+    let root = common::SourceRoot::new(source);
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert_eq!(text, export_openqasm3(&program).unwrap());
+    assert_eq!(resources.qubits, 2);
+    assert_eq!(resources.resets, 2);
+    assert_eq!(resources.gates, 0);
+    assert_eq!(resources.measurements, 1);
 }
 
 #[cfg_attr(

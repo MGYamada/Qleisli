@@ -1339,6 +1339,7 @@ NATIVE_DISPATCH = {
     '--runtime-root-check': '.runtimeRoot',
     '--qmatch-source-check': '.qmatchSource',
     '--qmatch-source-v5-check': '.qmatchSourceV5',
+    '--openqasm-placement-check': '.openQasmPlacement',
     '--ordinary-root-check': '.ordinaryRoot',
     '--qirf-native': '.ordinary',
     '--qirf-contract': '.contract',
@@ -1704,8 +1705,8 @@ _terminal_foreign_sources = {'src/interop/profile.rs': ['let mut normalization_b
                             'super::export::finish(&mut circuit, &mut expansion, '
                             '&normalization_barriers)?;'],
  'src/interop/export.rs': ['pub(super) fn finish(',
-                           'let barriers = expansion.normalizations.terminal(circuit, barriers)?;',
-                           'fold_phases(circuit, &barriers);', '!barriers[*index] && next.wires == op.wires'],
+                           'let compaction = expansion.normalizations.terminal(circuit, barriers)?;',
+                           'let phase_boundaries = fold_phases(circuit, &compaction.remap(barriers));', '!barriers[*index] && next.wires == op.wires'],
  'src/interop/export/normalization.rs': ['pub(super) fn terminal(',
                                          'if circuit.gates.len() > MAX_GATES || circuit.qubits > '
                                          'MAX_QUBITS {',
@@ -1979,6 +1980,21 @@ PATHS['contract-acceptance']['tests'].extend([
     dict(path='tests/static_semantics.rs',
          test='qmatch_keeps_full_target_tuple_tree_with_zero_width_children'),
 ])
+
+PATHS['openqasm-placement'] = path_rule(
+    'lean-component', 'foreign', '--openqasm-placement-check', [
+        ('src/bin/qleisli/interop.rs', ['Some("--resources") if !resources', 'interop::export_openqasm3_with_resources(program)']),
+        ('src/interop/mod.rs', ['pub fn export_openqasm3_with_resources(', 'check_openqasm_placement(text.as_bytes(), &alignment.encode())']),
+        ('src/interop/placement.rs', ['fn workspace_intervals(', 'enum Match', 'pub(super) fn encode(']),
+        ('src/interchange/native/openqasm_placement.rs', ['qmatch_v5::complete(self.execution_view_graph(), request)?',
+            'Kernel::encode_subject(', 'b"QTP1"', 'Mode::OpenQasmPlacement.argument()', 'Scope::Execution']),
+        ('lean-kernel/Protocol/NativeContext.lean', ['if placement : mode = .openQasmPlacement then',
+            'CheckedQmatchV5.PlacementPacket.check bytes', 'value.2.target.circuit.counts',
+            'guard (requestedProduct == productVersion) .version\n      let checked ← check .openQasmPlacement bytes']),
+        ('lean-kernel/Protocol/NativeContext/Bindings.lean', ['theorem run_openqasm_placement_binding ']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean',
+            ['let source ← CheckedQmatchV5.run parts.source', 'theorem Checked.target_counts ']),
+    ], [('tests/interop.rs', 'terminal_export_realizes_source_clean_and_dirty_workspaces')])
 
 # Main routes all native modes through this common adapter. The retained older
 # IO modules above remain in the source/audit inventory; their existence is not
