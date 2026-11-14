@@ -30,6 +30,59 @@ private def outputWires (kind : CallName.Primitive) (index : Nat)
     [rest.wires.take index ++ bit.wires ++ rest.wires.drop index]
   | _,_ => []
 
+private def repartitions : Semantics.Raw.Op → Prop
+  | .split .. | .join .. => True
+  | _ => False
+
+private theorem outputTokens_repartitions {kind index inputs operations result}
+    (read : RuntimeInterval.Computed (outputTokens kind index inputs operations) result) :
+    ∀ operation ∈ operations, repartitions operation := by
+  obtain ⟨work,left,checked⟩ := read
+  unfold outputTokens at checked
+  split at checked
+  · simp [repartitions]
+  · simp [repartitions]
+  · cases checked
+
+private theorem repartition_step {operation before after events} (shape : repartitions operation)
+    (read : Semantics.RawTrace.step before operation = some (after,events)) :
+    after.frame = before.frame ∧ events = [] := by
+  cases operation <;> try cases shape
+  case split input left right leftBits =>
+    cases found : before.live.find? (fun port => port.token == input) <;>
+      simp_all [Semantics.RawTrace.step, Semantics.RawTrace.take, Semantics.RawTrace.insert, bind, Option.bind, pure]
+    exact (congrArg Semantics.RawTrace.Interface.frame read.1).symm
+  case join left right output =>
+    let remaining := before.live.filter (fun port => port.token != left)
+    cases first : before.live.find? (fun port => port.token == left)
+    · simp [Semantics.RawTrace.step, Semantics.RawTrace.take, first, bind, Option.bind] at read
+    · cases second : remaining.find? (fun port => port.token == right) <;>
+        simp_all [Semantics.RawTrace.step, Semantics.RawTrace.take, Semantics.RawTrace.insert, bind, Option.bind, pure, remaining]
+      exact (congrArg Semantics.RawTrace.Interface.frame read.1).symm
+
+private theorem repartition_trace {operations : List Semantics.Raw.Op}
+    (shape : ∀ operation ∈ operations, repartitions operation)
+    {before after : Semantics.RawTrace.Prepared}
+    (read : operations.foldlM Semantics.RawTrace.advance before = some after) :
+    after.state.frame = before.state.frame ∧ after.events = before.events := by
+  induction operations generalizing before with
+  | nil =>
+    have same : before = after := Option.some.inj read
+    subst after
+    exact ⟨rfl,rfl⟩
+  | cons operation rest ih =>
+    simp only [List.foldlM_cons, Semantics.RawTrace.advance] at read
+    cases split : Semantics.RawTrace.step before.state operation with
+    | none => simp [split, bind, Option.bind] at read
+    | some result =>
+      obtain ⟨state, events⟩ := result
+      have step := repartition_step (shape operation List.mem_cons_self) split
+      have tail : rest.foldlM Semantics.RawTrace.advance
+          {before with state := state,events := before.events ++ events} = some after := by
+        simpa only [split, bind, Option.bind, pure] using read
+      have kept := ih (fun next held => shape next (List.mem_cons_of_mem _ held)) tail
+      exact ⟨kept.1.trans step.1,kept.2.trans (by rw [step.2,List.append_nil])⟩
+
 structure Checked {dependencies program sources caller}
     (block : RuntimeInterval.Block dependencies program) (start count : Nat)
     (event : SourceRuntimeContext.RegisterEvent sources caller) (before : SourceState) where
@@ -56,6 +109,48 @@ structure Checked {dependencies program sources caller}
   ordinal : after.nextOrdinal = event.afterOrdinal
   afterFrame : RuntimeOwnerMap.Checked (after.bindings.map (·.owner)) interval.after
   sameFrame : afterFrame.bindings = after.bindings
+
+/-- The literal three-operation repartition changes only logical ownership.
+It keeps the physical frame and emits no quantum event. -/
+theorem Checked.trace_frame {dependencies program sources caller block start count event before}
+    (action : @Checked dependencies program sources caller block start count event before)
+    {after : Semantics.RawTrace.Prepared}
+    (traced : Semantics.RawTrace.interval action.interval.before.quantum.reference action.operations = some after) :
+    after.state.frame = action.interval.before.quantum.frame ∧ after.events = [] :=
+  repartition_trace (outputTokens_repartitions action.tokenOrder) traced
+
+/-- The extracted bit and retained register partition the same physical wires,
+with the extracted axis first in source result order. Insertion preserves the
+order on either side of the bit and restores the same wire set. -/
+theorem Checked.wires_permute {dependencies program sources caller block start count event before}
+    (action : @Checked dependencies program sources caller block start count event before) :
+    (action.outputs.flatMap (·.wires)).Perm (action.inputs.flatMap (·.wires)) := by
+  obtain ⟨work,left,checked⟩ := action.tokenOrder
+  have literal := action.wireOrder
+  unfold outputTokens at checked
+  unfold List.flatMap
+  rw [literal]
+  split at checked
+  case h_1 _ _ port _ _ _ _ _ _ _ _ _ _ _ kindEq inputsEq _ =>
+    simp only [kindEq, inputsEq, outputWires, List.map_cons, List.map_nil,
+      List.flatten_cons, List.flatten_nil, List.append_nil]
+    have pieces := List.take_append_drop 1 (port.wires.drop action.index)
+    rw [List.drop_drop] at pieces
+    calc
+      List.Perm _ (port.wires.take action.index ++ ((port.wires.drop action.index).take 1 ++
+          port.wires.drop (action.index + 1))) := by
+        rw [← List.append_assoc, ← List.append_assoc]
+        exact List.Perm.append_right _ List.perm_append_comm
+      List.Perm _ port.wires := by rw [pieces, List.take_append_drop]
+  case h_2 _ _ _ bit rest _ _ _ _ _ _ _ _ _ _ kindEq inputsEq _ =>
+    simp only [kindEq, inputsEq, outputWires, List.map_cons, List.map_nil,
+      List.flatten_cons, List.flatten_nil, List.append_nil]
+    calc
+      List.Perm _ (bit.wires ++ (rest.wires.take action.index ++ rest.wires.drop action.index)) := by
+        rw [← List.append_assoc]
+        exact List.Perm.append_right _ List.perm_append_comm
+      List.Perm _ _ := by rw [List.take_append_drop]
+  case h_3 => cases checked
 
 def read {dependencies program sources caller} {block : RuntimeInterval.Block dependencies program} {start count}
     (interval : RuntimeInterval.Checked block start count)
@@ -93,5 +188,8 @@ def read {dependencies program sources caller} {block : RuntimeInterval.Block de
           returned.2.2.1,returned.2.2.2.1,returned.2.2.2.2.1,returned.2.2.2.2.2,
           after,rfl,rfl,rfl,frame.val,frame.property⟩
       else throw .request
+
+#print axioms Checked.trace_frame
+#print axioms Checked.wires_permute
 
 end QleisliKernel.Qirf.RuntimeRegisterAction

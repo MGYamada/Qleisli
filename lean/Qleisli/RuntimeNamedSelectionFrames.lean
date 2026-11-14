@@ -47,7 +47,7 @@ theorem node_frames {dependencies program block bindings}
     NodeFrames node := by
   cases node with
   | primitive _ _ => trivial
-  | structural _ => trivial
+  | structural _ | register _ _ => trivial
   | basis | computed | certifiedComputed | workspace => trivial
   | named _ _ _ _ _ _ => trivial
   | operation _ _ _ _ _ _ _ _ _ _ => trivial
