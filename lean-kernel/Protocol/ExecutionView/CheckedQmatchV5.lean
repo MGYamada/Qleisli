@@ -230,22 +230,57 @@ structure WorkspaceAlignment where
   gateCount : Nat
   scratch : Option Nat
 
-private def workspaceSegment {deps program block} (node : RuntimePureBody.Node deps program block) :
-    Option (WorkspaceAlignment → Segment program) :=
+/-- Each application can instantiate the independently checked local
+workspace at its original position in the closed root. -/
+private abbrev WorkspaceBuilder (program : Semantics.Observation.Program) :=
+  WorkspaceAlignment → Finite.WorkM (Segment program)
+
+private def workspaceSegment {deps program block} (root : Semantics.Observation.Program)
+    (base : Nat) (node : RuntimePureBody.Node deps program block) :
+    Option (WorkspaceBuilder root) :=
   match node with
   | .workspace (sources := sources) (caller := caller) (event := event) (children := events)
       (start := start) (count := count) (before := before) interval _ original literal map =>
-    some fun plan => ⟨sources,caller,deps,block,start,count,event,events,original,interval,before,literal,map,
-      plan.prefixMatches,plan.gateCount,plan.scratch⟩
+    some fun plan => do
+      Finite.exactWork (Exact.charge (32*(1+base+start+count+root.operations.length)))
+      let actual := (root.operations.drop (base+start)).take count
+      let localOps := (block.operations.drop start).take count
+      if bound : ObservationBinding.lists (ObservationBinding.operation 65) actual localOps = true then
+        let same := ObservationBinding.lists_sound (ObservationBinding.operation 65)
+          (ObservationBinding.operation_sound 65) _ _ bound
+        return ⟨sources,caller,deps,program,block,base,start,count,event,events,original,interval,same,before,
+          literal,map,plan.prefixMatches,plan.gateCount,plan.scratch⟩
+      else throw .request
   | _ => none
+
+/-- Traverse only original named call intervals. Transform proof operands are
+separate programs and cannot add source occurrences to the emitted root. -/
+private def workspaceSteps {deps} (root : Semantics.Observation.Program) :
+    (fuel : Nat) → {program : Semantics.Observation.Program} →
+    {block : RuntimeInterval.Block deps program} →
+    Nat → RuntimePureBody.Steps deps program block → Finite.WorkM (List (WorkspaceBuilder root))
+  | _, _, _, _, .nil => pure []
+  | 0, _, _, _, .cons .. => throw .limit
+  | fuel+1, _, _, base, .cons first rest => do
+    Finite.exactWork (Exact.charge 32)
+    let here ← match first with
+      | .pure node => pure ((workspaceSegment root base node).toList)
+      | .named (start := start) _ _ _ _ _ _ children =>
+        workspaceSteps root fuel (base+start) children
+      | .conditional .. => throw .request
+      | _ => pure []
+    let tail ← workspaceSteps root fuel base rest
+    Finite.exactWork (Exact.charge here.length)
+    return here ++ tail
 
 def Original.workspaceSegments {bytes : ByteArray} (original : Original bytes) (plans : List WorkspaceAlignment) :
     Finite.WorkM (List (Segment original.checked.root.program)) := do
-  let actions := original.checked.checked.result.actions
-  Finite.exactWork (Exact.charge (32*(actions.length+plans.length+1)))
-  let builders := actions.filterMap workspaceSegment
+  let steps := original.checked.checked.result.steps
+  Finite.exactWork (Exact.charge (32*(steps.length+plans.length+1)))
+  Finite.guard (steps.length ≤ 65536) .limit
+  let builders ← workspaceSteps original.checked.root.program 65536 0 (RuntimePureBody.Steps.ofList steps)
   Finite.guard (builders.length == plans.length) .request
-  return List.zipWith (fun build plan => build plan) builders plans
+  (List.zipWith (fun build plan => build plan) builders plans).mapM id
 
 structure CheckedPlacement {bytes : ByteArray} (original : Original bytes) {targetBytes capacity}
     (target : Target.CanonicalOpenQasmResources.Checked targetBytes capacity) (connected : Nat → Nat → Bool)

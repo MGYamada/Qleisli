@@ -10,29 +10,35 @@ pub(super) fn workspace_intervals(
     root: &ContextSubject,
     length: usize,
 ) -> Result<Vec<WorkspaceInterval>, InteropError> {
-    let mut pending: Vec<_> = root.calls.iter().map(|(_, child)| child.as_ref()).collect();
-    let mut visits = pending.len();
-    while let Some(context) = pending.pop() {
-        if !context.workspace_intervals.is_empty() {
-            return Err(InteropError::unsupported(
-                "checked OpenQASM placement requires workspace scopes in the root body",
-            ));
-        }
-        visits += context.calls.len();
-        if visits > MAX_OPERATIONS {
+    let mut intervals = Vec::new();
+    let mut pending = vec![(0, length, root)];
+    let mut visits = 0;
+    while let Some((base, length, context)) = pending.pop() {
+        visits += 1;
+        if visits + pending.len() + context.calls.len() + context.workspace_intervals.len()
+            > MAX_OPERATIONS
+        {
             return Err(InteropError::limit(
                 "workspace alignment context exceeds operation limit",
             ));
         }
-        pending.extend(context.calls.iter().map(|(_, child)| child.as_ref()));
-    }
-
-    let mut intervals = root.workspace_intervals.clone();
-    if intervals
-        .iter()
-        .any(|interval| interval.count == 0 || interval.start + interval.count > length)
-    {
-        return Err(invalid_alignment());
+        for interval in &context.workspace_intervals {
+            if interval.count == 0 || interval.start + interval.count > length {
+                return Err(invalid_alignment());
+            }
+            intervals.push(WorkspaceInterval {
+                start: base + interval.start,
+                ..*interval
+            });
+        }
+        for (position, child) in &context.calls {
+            let start = position.start as usize;
+            let count = position.count as usize;
+            if start + count > length {
+                return Err(invalid_alignment());
+            }
+            pending.push((base + start, count, child.as_ref()));
+        }
     }
     intervals.sort_by_key(|interval| interval.start);
     if intervals
@@ -260,5 +266,93 @@ impl<'a> AlignmentBuilder<'a> {
             workspaces,
             suffix,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::edition::Edition;
+    use crate::frontend::{
+        parser::parse_module,
+        project::{ModuleOrigin, Project, SourceModule},
+    };
+    use crate::interchange::native::Kernel;
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn native_rejects_swapped_workspace_and_spectator_wires() {
+        let source = "#![no_implicit_prelude]\n\
+            isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
+            unitary fn mark(q:Q<Bit>)->Q<Bit>{clean(q,h){|data,scratch|(h(data),scratch)}}\n\
+            unitary fn mark_twice(q:Q<Bit>)->Q<Bit>{mark(mark(q))}\n\
+            observe fn main()->(Bit,Bit){\n\
+                let held=h(zero()); let q=mark_twice(zero());\n\
+                let a=measure_z(held); let b=measure_z(q); (b,a)}";
+        let root = std::path::PathBuf::from("/workspace-check");
+        let module = SourceModule {
+            name: "main".into(),
+            path: root.join("main.qli"),
+            source: source.into(),
+            ast: parse_module(source).unwrap(),
+            imports: Default::default(),
+            origin: ModuleOrigin::Local,
+        };
+        let program = Project::from_modules(root, [("main".into(), module)].into(), Edition::E2026)
+            .compile_with_kernel(&Kernel::selected(Edition::E2026).unwrap())
+            .unwrap();
+        let intervals = workspace_intervals(
+            program.source_context().unwrap(),
+            program.raw().operations.len(),
+        )
+        .unwrap();
+        let (circuit, alignment) =
+            super::super::profile::extract_with_alignment(&program, &intervals).unwrap();
+        let target = super::super::openqasm::write(&circuit);
+        let encoded = alignment.encode();
+        assert_eq!(alignment.workspaces.len(), 2);
+        assert_eq!(
+            program
+                .check_openqasm_placement(target.as_bytes(), &encoded)
+                .unwrap()
+                .gates,
+            3
+        );
+
+        let original_gates = "h q[0];\nh q[1];\nh q[1];";
+        let original_readout = "c[0] = measure q[1];\nc[1] = measure q[0];";
+        for (original, wrong) in [
+            (original_gates, "h q[1];\nh q[0];\nh q[1];"),
+            (original_gates, "h q[0];\nh q[1];\nh q[0];"),
+            (original_gates, "h q[0];\nh q[2];\nh q[1];"),
+            (
+                original_readout,
+                "c[0] = measure q[0];\nc[1] = measure q[1];",
+            ),
+        ] {
+            let changed = target.replace(original, wrong);
+            assert_ne!(changed, target);
+            let refusal = program
+                .check_openqasm_placement(changed.as_bytes(), &encoded)
+                .unwrap_err();
+            assert!(
+                matches!(refusal.code, "contract" | "invalid_ir"),
+                "{refusal}: {changed}"
+            );
+        }
+
+        let mut shifted = alignment;
+        shifted.workspaces[0].gates = 0;
+        shifted.workspaces[1].gates = 2;
+        assert_eq!(
+            program
+                .check_openqasm_placement(target.as_bytes(), &shifted.encode())
+                .unwrap_err()
+                .code,
+            "contract"
+        );
     }
 }

@@ -91,6 +91,7 @@ pub struct OpenQasmResources {
 
 /// Export a closed typed workspace program and check the placement of the
 /// emitted gates against its original source before returning resource counts.
+/// The checked terminal subset includes workspace intervals in named calls.
 pub fn export_openqasm3_with_resources(
     program: &AcceptedProgram,
 ) -> Result<(String, OpenQasmResources), InteropError> {

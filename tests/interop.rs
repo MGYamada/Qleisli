@@ -166,6 +166,31 @@ fn terminal_workspace_resource_report_retains_zero_gate_scopes() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_workspace_resource_report_replays_named_scopes_with_caller_spectators() {
+    let source = "#![no_implicit_prelude]\n\
+        isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
+        unitary fn mark(q:Q<Bit>)->Q<Bit>{clean(q,h){|data,scratch|(h(data),scratch)}}\n\
+        unitary fn mark_twice(q:Q<Bit>)->Q<Bit>{mark(mark(q))}\n\
+        observe fn main()->(Bit,Bit){\n\
+            let held=h(zero()); let q=mark_twice(zero());\n\
+            let a=measure_z(held); let b=measure_z(q); (b,a)}";
+    let root = common::SourceRoot::new(source);
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert!(
+        text.contains("h q[0];\nh q[1];\nh q[1];\nc[0] = measure q[1];\nc[1] = measure q[0];\n")
+    );
+    assert_eq!(resources.qubits, 3);
+    assert_eq!(resources.resets, 3);
+    assert_eq!(resources.gates, 3);
+    assert_eq!(resources.measurements, 2);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_export_checks_the_retained_source_interface() {
     use qleisli::edition::Edition;
     use qleisli::frontend::compile::ParsedProgram;

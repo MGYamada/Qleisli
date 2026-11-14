@@ -1994,7 +1994,9 @@ PATHS['openqasm-placement'] = path_rule(
         ('lean-kernel/Protocol/NativeContext/Bindings.lean', ['theorem run_openqasm_placement_binding ']),
         ('lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean',
             ['let source ← CheckedQmatchV5.run parts.source', 'theorem Checked.target_counts ']),
-    ], [('tests/interop.rs', 'terminal_export_realizes_source_clean_and_dirty_workspaces')])
+    ], [('tests/interop.rs', 'terminal_export_realizes_source_clean_and_dirty_workspaces'),
+        ('tests/interop.rs', 'terminal_workspace_resource_report_replays_named_scopes_with_caller_spectators'),
+        ('src/interop/placement.rs', 'native_rejects_swapped_workspace_and_spectator_wires')])
 
 # Main routes all native modes through this common adapter. The retained older
 # IO modules above remain in the source/audit inventory; their existence is not

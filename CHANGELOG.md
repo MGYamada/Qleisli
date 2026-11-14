@@ -36,7 +36,8 @@ development milestones from the scope of their evidence.
 - Reject canonical OpenQASM gate instructions with missing operands before
   exact operator comparison.
 - Report Lean-checked OpenQASM resources for closed typed workspace programs
-  with `interop emit-qasm --resources`, bound to the emitted text.
+  with `interop emit-qasm --resources`, bound to the emitted text. It checks
+  workspace scopes in named calls with the full caller placement.
 - Preserve allocation, workspace and observation boundaries through OpenQASM
   phase folding, including after earlier gate compaction.
 

@@ -280,7 +280,8 @@ structure WorkspaceBinding {sources caller dependencies program block sourceStar
   operations : ObservationBinding.lists (ObservationBinding.operation 65) block.operations program.operations = true
   offset : prefixCheck.state.rawIndex = sourceStart
   sameFrame : prefixCheck.state.raw = sourceInterval.before.quantum.reference
-  placed : CanonicalOpenQasmWorkspace.Placed map target prefixCheck.state.locations prefixCheck.state.gateIndex count
+  placed : CanonicalOpenQasmWorkspace.Placed map target sourceInterval.before.quantum.reference.frame
+    prefixCheck.state.locations prefixCheck.state.gateIndex count
 
 theorem WorkspaceBinding.originalOperations {sources caller dependencies program block sourceStart sourceCount event
     events original sourceInterval sourceBefore}
@@ -414,13 +415,17 @@ structure Segment (program : Semantics.Observation.Program) where
   sources : SourceTypes.Sources
   caller : String
   dependencies : List Semantics.Finite.Dependency
-  block : RuntimeInterval.Block dependencies program
+  localProgram : Semantics.Observation.Program
+  block : RuntimeInterval.Block dependencies localProgram
+  base : Nat
   start : Nat
   length : Nat
   event : SourceTypes.SourceRuntimeContext.WorkspaceEvent sources caller
   events : List (SourceTypes.SourceRuntimeContext.Event sources caller)
   original : RuntimeWorkspace.Original event events
   sourceInterval : RuntimeInterval.Checked block start length
+  literalRoot : (program.operations.drop (base+start)).take length =
+    (block.operations.drop start).take length
   sourceBefore : RuntimeStructuralAction.SourceState
   literal : RuntimeWorkspace.Literal original sourceInterval sourceBefore
   map : RuntimeWorkspace.CallerMap literal
@@ -428,22 +433,40 @@ structure Segment (program : Semantics.Observation.Program) where
   count : Nat
   scratch : Option Nat
 
-private def Segment.exit {program : Semantics.Observation.Program} (segment : Segment program) (entry : State) :
-    State :=
-  ⟨segment.sourceInterval.after.quantum.reference,entry.locations,segment.start+segment.length,
-    entry.gateIndex+segment.count,entry.synthesis⟩
+def Segment.rootStart {program : Semantics.Observation.Program} (segment : Segment program) : Nat :=
+  segment.base + segment.start
+
+private def Segment.selectedPorts {program : Semantics.Observation.Program} (segment : Segment program) :
+    List Semantics.Raw.Port := segment.map.selected.map (·.port)
+
+private def Segment.returnedPorts {program : Semantics.Observation.Program} (segment : Segment program) :
+    List Semantics.Raw.Port := segment.map.returned.map (·.port)
+
+private def followWorkspace (state : Interface) (operations : List Semantics.Raw.Op) : Option Interface :=
+  operations.foldlM (fun current op => (Semantics.RawTrace.step current op).map Prod.fst) state
+
+private def Segment.exit {program : Semantics.Observation.Program} (segment : Segment program)
+    (entry : State) (after : Interface) : State :=
+  ⟨after,entry.locations,segment.rootStart+segment.length,entry.gateIndex+segment.count,entry.synthesis⟩
 
 structure BoundSegment {program : Semantics.Observation.Program} (segment : Segment program)
     {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (connected : Nat → Nat → Bool) (reserved : List Nat) (previous entry : State) where
   replayed : RuntimeInterval.Computed
     (replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved) entry
-  operations : segment.block.operations = program.operations
-  offset : entry.rawIndex = segment.start
-  sameEntry : entry.raw = segment.sourceInterval.before.quantum.reference
-  sameWires : segment.sourceInterval.after.quantum.reference.frame = entry.raw.frame
+  offset : entry.rawIndex = segment.rootStart
+  selected : PureInterval.portsOf entry.raw.live (segment.selectedPorts.map (·.token)) =
+    some segment.selectedPorts
+  after : Interface
+  continued : followWorkspace entry.raw segment.literal.operations = some after
+  returned : PureInterval.portsOf after.live (segment.returnedPorts.map (·.token)) =
+    some segment.returnedPorts
+  sameWires : after.frame = entry.raw.frame
+  spectators : entry.raw.live.filter (fun port => !(segment.selectedPorts.map (·.token)).contains port.token) =
+    after.live.filter (fun port => !(segment.returnedPorts.map (·.token)).contains port.token)
   reservedScratch : ∀ wire ∈ segment.scratch.toList, wire ∈ reserved
-  placed : CanonicalOpenQasmWorkspace.Placed segment.map target entry.locations entry.gateIndex segment.count
+  placed : CanonicalOpenQasmWorkspace.Placed segment.map target entry.raw.frame
+    entry.locations entry.gateIndex segment.count
   scratchUsed : placed.freshScratch = segment.scratch
 
 private def segmentWork {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
@@ -457,23 +480,31 @@ private def checkSegment {program : Semantics.Observation.Program} (segment : Se
     (connected : Nat → Nat → Bool) (reserved : List Nat) (previous : State) :
     WorkM (Σ entry, BoundSegment segment target connected reserved previous entry) := do
   segmentWork target program segment.alignment
-  exactWork (Exact.charge (16*(1+program.operations.length+segment.block.operations.length)))
   let replayed ← SourceTypes.NaturalAffine.witness
     (replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved)
   let entry := replayed.val
-  if bound : ObservationBinding.lists (ObservationBinding.operation 65)
-      segment.block.operations program.operations = true ∧ entry.rawIndex = segment.start ∧
-      entry.raw = segment.sourceInterval.before.quantum.reference ∧
-      segment.sourceInterval.after.quantum.reference.frame = entry.raw.frame ∧
+  let selected := segment.selectedPorts.map (·.token)
+  let returned := segment.returnedPorts.map (·.token)
+  exactWork (Exact.charge (64*(1+segment.length)*(1+entry.raw.live.length+entry.raw.frame.length)))
+  if before : entry.rawIndex = segment.rootStart ∧
+      PureInterval.portsOf entry.raw.live selected = some segment.selectedPorts ∧
       (∀ wire ∈ segment.scratch.toList,wire ∈ reserved) then
-    let placed ← CanonicalOpenQasmWorkspace.checkPlacement segment.map target entry.locations
-      entry.gateIndex segment.count segment.scratch
-    if scratchUsed : placed.freshScratch = segment.scratch then
-      let operations := ObservationBinding.lists_sound (ObservationBinding.operation 65)
-        (ObservationBinding.operation_sound 65) _ _ bound.1
-      return ⟨entry,⟨by exact replayed.property,operations,bound.2.1,bound.2.2.1,
-        bound.2.2.2.1,bound.2.2.2.2,placed,scratchUsed⟩⟩
-    else throw .request
+    match continued : followWorkspace entry.raw segment.literal.operations with
+    | none => throw .request
+    | some after =>
+      exactWork (Exact.charge (32*(1+after.live.length+entry.raw.live.length)*
+        (1+selected.length+returned.length)))
+      if exit : PureInterval.portsOf after.live returned = some segment.returnedPorts ∧
+          after.frame = entry.raw.frame ∧
+          entry.raw.live.filter (fun port => !selected.contains port.token) =
+            after.live.filter (fun port => !returned.contains port.token) then
+        let placed ← CanonicalOpenQasmWorkspace.checkPlacementInFrame segment.map target entry.raw.frame
+          entry.locations entry.gateIndex segment.count segment.scratch
+        if scratchUsed : placed.freshScratch = segment.scratch then
+          return ⟨entry,⟨by exact replayed.property,before.1,before.2.1,after,continued,
+            exit.1,exit.2.1,exit.2.2,before.2.2,placed,scratchUsed⟩⟩
+        else throw .request
+      else throw .request
   else throw .request
 
 private def BoundSegment.addCleanUse {program : Semantics.Observation.Program} {bytes capacity}
@@ -501,7 +532,7 @@ inductive WorkspaceTrace {program : Semantics.Observation.Program} {bytes capaci
   | next {previous entry : State} {segment : Segment program} {uses : CleanUses target.circuit}
     (earlier : WorkspaceTrace (program := program) target connected reserved synthesis previous uses)
     (bound : BoundSegment segment target connected reserved previous entry) :
-      WorkspaceTrace (program := program) target connected reserved synthesis (segment.exit entry)
+      WorkspaceTrace (program := program) target connected reserved synthesis (segment.exit entry bound.after)
         (fun scratch => bound.addCleanUse scratch (uses scratch))
 
 structure TraceWithUses {program : Semantics.Observation.Program} {bytes capacity}
@@ -539,7 +570,7 @@ def finishTrace {bytes capacity} (target : CanonicalOpenQasmResources.Checked by
         (∀ wire ∈ synthesis, wire ∉ target.circuit.measurements) then
       let recorded ← segments.foldlM (fun (state : @TraceWithUses program bytes capacity target connected reserved synthesis) segment => do
         let ⟨entry,bound⟩ ← checkSegment segment target connected reserved state.exit
-        pure ⟨segment.exit entry,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),.next state.trace bound⟩)
+        pure ⟨segment.exit entry bound.after,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),.next state.trace bound⟩)
         ⟨{synthesis := synthesis},fun _ => [],.start⟩
       segmentWork target program suffix
       let final ← SourceTypes.NaturalAffine.witness
