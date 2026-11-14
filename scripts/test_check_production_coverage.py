@@ -23,8 +23,8 @@ class ProductionCoverage(unittest.TestCase):
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 41)
-        self.assertEqual(result['native_modes'], 19)
+        self.assertEqual(result['production_paths'], 42)
+        self.assertEqual(result['native_modes'], 20)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
@@ -485,7 +485,8 @@ class ProductionCoverage(unittest.TestCase):
     def test_native_context_guards_and_original_bindings_are_required(self):
         for path, markers in (
             ('lean-kernel/Protocol/NativeContext.lean', [
-                'guard (requestedProduct == productVersion) .version',
+                'guard (requestedProduct == productVersion) .version\n  let input ← lift (Packet.read bytes)',
+                'guard (requestedProduct == productVersion) .version\n      let checked ← check .openQasmPlacement bytes',
                 'let input ← lift (Packet.read bytes)\n  let value ← check mode bytes',
                 'guard (decide (scope mode value = input.scope)) .packet',
                 'theorem run_edition ',
@@ -504,7 +505,7 @@ class ProductionCoverage(unittest.TestCase):
                 'theorem run_hierarchy_binding ', 'theorem run_engineering_pure_binding ',
                 'theorem run_engineering_tensor_binding ',
                 'theorem run_engineering_instrument_binding ',
-                'theorem run_engineering_target_binding ',
+                'theorem run_engineering_target_binding ', 'theorem run_openqasm_placement_binding ',
                 'theorem run_readout_binding ', 'theorem run_preparation_binding ',
             ]),
         ):
@@ -541,7 +542,8 @@ class ProductionCoverage(unittest.TestCase):
         for path, marker in [('src/interop/profile.rs', 'let mut normalization_barriers = [false; MAX_GATES + 1];'),
  ('src/interop/profile.rs',
   'super::export::finish(&mut circuit, &mut expansion, &normalization_barriers)?;'),
- ('src/interop/export.rs', 'expansion.normalizations.terminal(circuit, barriers)?;'),
+ ('src/interop/export.rs', 'let compaction = expansion.normalizations.terminal(circuit, barriers)?;'),
+ ('src/interop/export.rs', '!barriers[*index] && next.wires == op.wires'),
  ('src/interop/export/normalization.rs', 'if barriers[index + 1] || barriers[index + 2] {'),
  ('src/interop/export/normalization.rs', '.charge(circuit.gates.len() + 1)'),
  ('src/interop/export/normalization.rs',

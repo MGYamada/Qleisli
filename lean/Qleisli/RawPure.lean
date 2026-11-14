@@ -19,7 +19,7 @@ theorem event_cleanup (dependencies : List Dependency) (event : Event) (work lef
   | circuit _ _ | init0 _ | liftBasis _ _ _ _ _ | reorder _ _ => trivial
   | computed bits axes sourceBits ancillaBits function uses logicalSteps =>
     obtain ⟨logical,middle,hc,_⟩ := bind_success _ _ _ _ _ ok
-    exact ⟨logical,clean_denotes _ _ _ _ _ _ _ _ _ _ hc⟩
+    exact ⟨logical,clean_denotes _ _ _ _ _ _ _ _ _ _ (restoration_success false _ _ _ _ hc)⟩
   | protectedComputed bits axes sourceBits ancillaBits function uses =>
     have valid := (guard_success _ _ _ _ ok).1
     simp only [Bool.and_eq_true] at valid

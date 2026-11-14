@@ -2,6 +2,7 @@ import QleisliKernel.Qirf.RuntimeOwnerTransition
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimePrimitiveSource
 import QleisliKernel.Qirf.RuntimeStructuralAction
+import QleisliKernel.Qirf.RuntimeRegisterAction
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeNamedBoundary
 import QleisliKernel.Qirf.RuntimeCallScope

@@ -6,6 +6,7 @@
 
 mod export;
 mod openqasm;
+mod placement;
 mod profile;
 mod qir;
 
@@ -76,13 +77,62 @@ impl fmt::Display for InteropError {
 }
 impl std::error::Error for InteropError {}
 
+/// Resources checked by Lean for the exact OpenQASM text returned with them.
+#[derive(Debug, PartialEq, Eq)]
+pub struct OpenQasmResources {
+    pub exact_work: usize,
+    pub qubits: usize,
+    pub resets: usize,
+    pub gates: usize,
+    pub swaps: usize,
+    pub t_gates: usize,
+    pub measurements: usize,
+}
+
+/// Export a closed typed workspace program and check the placement of the
+/// emitted gates against its original source before returning resource counts.
+/// The checked terminal subset includes workspace intervals in named calls.
+pub fn export_openqasm3_with_resources(
+    program: &AcceptedProgram,
+) -> Result<(String, OpenQasmResources), InteropError> {
+    profile::check_openqasm_result(program)?;
+    let context = program.source_context().ok_or_else(|| {
+        InteropError::unsupported("checked OpenQASM resources require original workspace source")
+    })?;
+    let intervals = placement::workspace_intervals(context, program.raw().operations.len())?;
+    if intervals.is_empty() {
+        return Err(InteropError::unsupported(
+            "checked OpenQASM resources require at least one source workspace",
+        ));
+    }
+    let (circuit, alignment) = profile::extract_with_alignment(program, &intervals)?;
+    let text = openqasm::write(&circuit);
+    let resources = program
+        .check_openqasm_placement(text.as_bytes(), &alignment.encode())
+        .map_err(|error| {
+            let kind = match error.code {
+                "limit" => InteropErrorKind::Limit,
+                "unsupported" => InteropErrorKind::Unsupported,
+                _ => InteropErrorKind::InvalidIr,
+            };
+            InteropError::new(kind, error.to_string())
+        })?;
+    Ok((text, resources))
+}
+
 /// Export a closed, verified terminal-profile program as OpenQASM 3.0.
+/// Typed classical results use the checked measurement-bit order. Unit emits
+/// no bits, and the target contains no nominal types or tuple metadata.
 pub fn export_openqasm3(program: &AcceptedProgram) -> Result<String, InteropError> {
+    profile::check_openqasm_result(program)?;
     Ok(openqasm::write(&profile::extract(program)?))
 }
 
 /// Export QIR 2.0 Base Profile text with the explicit QIS in the connection spec.
 /// Standard LLVM assembly/verification and target support remain external gates.
 pub fn export_qir_base(program: &AcceptedProgram) -> Result<String, InteropError> {
+    program
+        .portable_artifact()
+        .map_err(|error| InteropError::unsupported(error.to_string()))?;
     Ok(qir::write(&profile::extract(program)?))
 }

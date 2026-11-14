@@ -13,13 +13,14 @@ reference column, and ordinary agreement uses the actual resulting history.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.RuntimeLiteralHistory
 open QleisliKernel QleisliKernel.Qirf
+open QleisliKernel.Semantics.Finite (gather)
 open QleisliKernel.Semantics.Observation (Event readOps)
 open QleisliKernel.Semantics.Finite (Dependency)
 open RuntimeForestCode (Frame OwnerCode)
 open RuntimeOrdinaryBody (valuation)
 open RuntimeOrdinarySSA (Agreement)
 open Qleisli.Semantics.ObservingAction (History run step)
-open Qleisli.RuntimeForestProduct (referenceAction)
+open Qleisli.RuntimeForestProduct (gather_append referenceAction)
 open Qleisli.RuntimeOriginalBranchJoin (RepresentsOperator)
 open Qleisli.RuntimeOriginalObservation (outcomeJoint)
 open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
@@ -133,6 +134,55 @@ theorem register_history {dependencies program sources caller block start count 
   exact ⟨frame,singleton,kept⟩
 
 #print axioms register_history
+
+/-- The logical digits of a checked register repartition read the actual
+ordered result ports. This equation is pointwise in the physical basis row. -/
+theorem take_register_digits {dependencies program sources caller block start count event before}
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (physical : Nat) :
+    let frame := action.interval.before.quantum.frame
+    let digit := fun port : Semantics.Raw.Port => gather physical (port.wires.map frame.idxOf)
+    ∀ port, event.kind = .takeBit → action.inputs = [port] →
+      let low := gather physical ((port.wires.take action.index).map frame.idxOf)
+      let high := gather physical ((port.wires.drop (action.index + 1)).map frame.idxOf)
+      let selected := gather physical (((port.wires.drop action.index).take 1).map frame.idxOf)
+      action.outputs.map digit = [selected,low + 2^(min action.index port.wires.length)*high] ∧
+        digit port = low + 2^(min action.index port.wires.length) *
+          (selected + 2^(min 1 (port.wires.length - action.index))*high) := by
+  dsimp only
+  intro port kind inputs
+  have wires := action.take_wires kind inputs
+  have pieces := List.take_append_drop 1 (port.wires.drop action.index)
+  rw [List.drop_drop] at pieces
+  constructor
+  · let digits := fun wires : List Nat => gather physical (wires.map action.interval.before.quantum.frame.idxOf)
+    change List.map (digits ∘ Semantics.Raw.Port.wires) action.outputs = _
+    rw [← List.map_map, wires]
+    simp only [digits, List.map_cons, List.map_nil, List.map_append, gather_append, List.length_map, List.length_take]
+  · conv_lhs => rw [← List.take_append_drop action.index port.wires, ← pieces]
+    simp only [List.map_append, gather_append, List.length_map, List.length_take, List.length_drop]
+
+/-- Insertion places the selected digit between the low and high parts of
+the original retained register. This uses the same physical row as extraction. -/
+theorem put_register_digits {dependencies program sources caller block start count event before}
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (physical : Nat) (bit rest : Semantics.Raw.Port)
+    (kind : event.kind = .putBit) (inputs : action.inputs = [bit,rest]) :
+    let frame := action.interval.before.quantum.frame
+    let digit := fun wires : List Nat => gather physical (wires.map frame.idxOf)
+    let low := rest.wires.take action.index
+    let high := rest.wires.drop action.index
+    action.outputs.map (fun port => digit port.wires) =
+      [digit low + 2^low.length * (digit bit.wires + 2^bit.wires.length * digit high)] := by
+  dsimp only
+  have wires := action.put_wires kind inputs
+  let digits := fun wires : List Nat => gather physical (wires.map action.interval.before.quantum.frame.idxOf)
+  change List.map (digits ∘ Semantics.Raw.Port.wires) action.outputs = _
+  rw [← List.map_map, wires]
+  simp only [digits, List.map_cons, List.map_nil, List.append_assoc, List.map_append, gather_append, List.length_map]
+
+#print axioms take_register_digits
+#print axioms put_register_digits
 
 theorem pure_history {dependencies program block}
     (node : RuntimePureBody.Node dependencies program block)

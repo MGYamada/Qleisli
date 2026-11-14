@@ -33,6 +33,11 @@ def decision(returncode, output, stderr, empty_input):
         and stderr == f'{code}: Lean native checker rejected the artifact/request; no fallback\n'
         for code in ('invalid_ir', 'contract', 'format', 'limit')):
         return False, 'native'
+    if returncode == 1 and output == 'error\tcontract\n' and stderr in (
+        'contract: clean workspace restoration failed: expected exact zero return and the declared data action\n',
+        'contract: dirty workspace restoration failed: expected identity on scratch for every input and reference and the declared data action\n',
+    ):
+        return False, 'native'
     if (empty_input and returncode == 1 and output == 'error\tlimit\n'
             and stderr == 'limit: proposal files must contain 1..16777216 bytes\n'):
         return False, 'proposal-bound'

@@ -6,7 +6,7 @@ use crate::frontend::types::nominal::Body;
 use crate::interchange::carrier::{Interface, Owner};
 use crate::interchange::qmatch::{
     ArmSubject, ContextSubject, Position, SelectionBody, SelectionSubject, SourceSite,
-    StaticInterval,
+    StaticInterval, WorkspaceInterval,
 };
 
 mod arms;
@@ -22,6 +22,7 @@ pub(in crate::frontend::compile::lower) struct Frame {
     start: usize,
     positions: Vec<Position>,
     static_intervals: Vec<StaticInterval>,
+    workspace_intervals: Vec<WorkspaceInterval>,
     events_outside_static_profile: usize,
     primitive_prelude: bool,
     selections: Vec<Selection>,
@@ -242,6 +243,7 @@ impl Frame {
             start: lower.raw.operations.len(),
             positions: Vec::new(),
             static_intervals: Vec::new(),
+            workspace_intervals: Vec::new(),
             events_outside_static_profile: 0,
             primitive_prelude: false,
             selections: Vec::new(),
@@ -297,6 +299,7 @@ impl Frame {
             start: 0,
             positions: Vec::new(),
             static_intervals: Vec::new(),
+            workspace_intervals: Vec::new(),
             events_outside_static_profile: 0,
             primitive_prelude: false,
             selections: Vec::new(),
@@ -349,6 +352,7 @@ impl Frame {
             supplies: self.supplies,
             positions: self.positions,
             static_intervals: self.static_intervals,
+            workspace_intervals: self.workspace_intervals,
             selections,
             calls: self.calls,
             branches: self.branches,
@@ -396,6 +400,7 @@ impl Frame {
                 supplies: self.supplies,
                 positions: self.positions,
                 static_intervals: self.static_intervals,
+                workspace_intervals: self.workspace_intervals,
                 selections: Vec::new(),
                 calls: self.calls,
                 branches: self.branches,
@@ -548,6 +553,7 @@ impl Frame {
             supplies: self.supplies,
             positions: self.positions,
             static_intervals: self.static_intervals,
+            workspace_intervals: self.workspace_intervals,
             selections,
             calls: self.calls,
             branches: self.branches,
@@ -642,6 +648,29 @@ pub(in crate::frontend::compile::lower) fn record_coherent_table(
     let frame = lower.nominal_qmatch.as_mut().expect("original context");
     frame.record_event_outside_static_profile();
     frame.positions.push(position);
+    Ok(())
+}
+
+/// Keep the literal occurrence independently of any adjacent Raw shape.
+pub(in crate::frontend::compile::lower) fn record_workspace(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+    count: usize,
+    fresh: bool,
+) -> Result<(), CompileError> {
+    record_coherent_table(lower, module, span, start, count)?;
+    lower.compiler.charge(module, span, 3)?;
+    let frame = lower
+        .nominal_qmatch
+        .as_mut()
+        .expect("original workspace context");
+    frame.workspace_intervals.push(WorkspaceInterval {
+        start: start - frame.start,
+        count,
+        fresh,
+    });
     Ok(())
 }
 

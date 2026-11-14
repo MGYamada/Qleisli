@@ -21,3 +21,15 @@ The [retained dirty-restoration study](../dirty-restoration-v030/session.json)
 exercises the existing exact function contract for that identity and its
 phase counterexample. These proposed programs record the separate surface
 syntax gap. Historical commands are inert.
+
+The first register follow-up on `623d1edc537e5003261ec6c8826d72921061f3fb`
+uses a two-bit `Bits<2>` data owner, one scratch bit, and the identity
+workspace body. The [clean source](bits-register-before/clean.qli) and
+[dirty source](bits-register-before/dirty.qli) are saved with their
+[manifest](bits-register-before/Qargo.toml). Each was originally run as
+`qleisli interop emit-qasm <project> --input=qli --resources` with its source
+as `main.qli`. The actual [clean response](bits-register-before/clean.json) and
+[dirty response](bits-register-before/dirty.json) both record the generic
+native contract refusal. The native executable SHA-256 was
+`2d1a3af3bef143dbd4dc40c0d122e1f5ac886f1d94ad1f5f37be6869aa986ddc`.
+The same check accepted both scopes with a `Bit` or `(Bit, Bit)` data owner.

@@ -367,7 +367,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
             let data : scope.EventData mode.preparation (.registerPrimitive event) position before before := by
               cases scope with
               | supplied => exact ()
-              | original => exact some .registerPrimitive
+              | original => exact some (.register event)
             return ⟨before,⟨(SourceRuntimeContext.Event.registerPrimitive event).staticRows,[]⟩,[],data⟩
           | .matching .. | .staticConditional .. => throw .request
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →

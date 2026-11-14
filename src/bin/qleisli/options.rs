@@ -40,6 +40,7 @@ pub(super) const USAGE: &str = "usage:
   qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf> --edition=2026 [--shots=N --seed=S] [--lean-kernel=PATH]
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <source> --input=qli [--expect-edition=2026] [--shots=N --seed=S] [--lean-kernel=PATH]
+  qleisli interop emit-qasm <source> --input=qli --resources [--expect-edition=2026] [--lean-kernel=PATH]
   interop always returns JSON; qli input takes a project directory.
   Raw qirf/qasm interop requires --edition=2026; source projects select it in Qargo.toml.
   Edition selects the constitutional regime, independently of the compiler release.

@@ -73,6 +73,41 @@ fn selected_checked_qmatch_arm_compares_the_original_phase() {
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn selected_workspace_checks_the_original_restoration_contract() {
+    let source = "#![no_implicit_prelude]
+        unitary fn dirty_body(q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>){
+            dirty(q,d,h){|a,s|(h(a),s)}
+        }
+        pub unitary fn entry(q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>){dirty_body(q,d)}";
+    for (text, valid) in [
+        (source.to_owned(), true),
+        (source.replace("(h(a),s)", "(h(a),phase[1,1](s))"), false),
+    ] {
+        let files = SourceRoot::new(&text);
+        let output = selected("check", &files.0.join("main.qli"), "main::entry")
+            .arg(format!("--lean-kernel={}", kernel().display()))
+            .output()
+            .unwrap();
+        let report = result(output, "check", valid);
+        if valid {
+            assert!(
+                report.contains("\"runtime_result_checked\":true"),
+                "{report}"
+            );
+        } else {
+            assert!(
+                report.contains("dirty workspace restoration failed"),
+                "{report}"
+            );
+        }
+    }
+}
+
 fn result(output: Output, action: &str, success: bool) -> String {
     assert_eq!(output.status.success(), success, "{output:?}");
     assert!(output.stderr.is_empty(), "{output:?}");

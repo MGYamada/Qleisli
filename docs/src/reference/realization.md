@@ -483,6 +483,121 @@ width is the maximum simultaneous live count; a sum of separate peaks is a
 conservative upper bound, not necessarily the realized peak. Logical width
 alone does not bound the physical implementation width.
 
+A fixed-occupancy SWAP segment records the ordered placement of all
+occupied locations, including any source, synthesis and routing scratch
+that is live during the segment. Each literal SWAP must name two distinct
+occupied locations connected in the declared profile. It moves both
+locations in the placement, leaves every other location alone, and counts
+as one operation even when a later SWAP cancels it. The final placement
+preserves logical axis order and exact joint coefficients with any
+reference. The Lean component independently decodes the declared register
+width and the literal SWAP instructions from a designated byte interval
+of canonical OpenQASM output. It also checks the target capacity.
+A complete certificate still establishes that the interval is used for
+routing and that its entry placement is correct. It also checks the other
+target operations, allocation, release and reuse.
+
+The canonical terminal profile reserves all declared physical locations
+and resets them before its first gate. It retains the reservation through
+terminal measurement. The independent complete-artifact reader counts
+reserved and reset wires, gates, literal SWAPs, T/TDG and measurements from
+the output bytes. An exact finite workspace check can also compare a
+designated gate interval with the independently checked original clean or
+dirty body. The comparison uses the declared ordered data/scratch placement
+and requires the physical register to cover the checked Raw peak. The checker
+can derive the workspace's ordered locations from the checked original Raw
+frame and its complete injective physical placement. A fresh scratch must
+occupy a location absent from that frame. For a fresh scratch wire, the
+checker can verify that nothing touches it between the initial reset and
+workspace entry, or after exact restoration. This profile keeps the physical
+reservation throughout.
+
+For a closed straight-line Raw prefix with zero preparations, structural
+owner operations and finite gates, the checker derives this frame by
+replaying the original prefix and the decoded target gate word. Marked
+routing operations must match connected physical SWAPs in the emitted word.
+An ordinary Raw SWAP is matched as a gate and does not move the encoding.
+The derived original frame must equal the checked workspace entry, including
+zero-width ports. With one checked workspace interval and literal gates, the
+checker can carry the original exit owners through the target suffix and use
+the resulting placement to verify the emitted terminal measurements in
+classical output order. All original quantum owners must be consumed by the
+end. Discarded owners and measurements outside the classical outputs do not
+add to the emitted readout. The single-interval check requires an exclusive
+lifetime for fresh scratch. Outside a workspace interval the checker can also
+compare a single original circuit event against a decomposed target word. It
+derives the ordered support from the original operands and controls and
+compares the complete exact operators on that support, up to six axes. Gates
+on other wires and phase changes are rejected. Matrix checking spends the
+same cumulative work as the surrounding replay.
+
+A gate decomposition may use allocated synthesis scratch. The checker
+verifies that its physical locations are declared and separate from all live
+owners. It compares the full target word on the data and scratch with the
+original operator under the canonical zero embedding at both ends. The
+six-axis bound includes scratch. This checks the exact phase and zero return
+for every input column, so the equation also preserves correlations with
+external references. A complete trace may reserve locations for several
+disjoint synthesis slices. The original allocation, routing, source
+workspace and readout cannot touch these locations. Every slice using them
+checks its own zero return. An individual slice can instead use exclusive
+scratch, which the checker verifies is untouched everywhere else.
+
+A physical scratch location can also be reused across ordered, disjoint,
+clean intervals. A zero-gate interval still checks the exact zero-return
+equation and covers no gate accesses. The checker
+requires an exact zero-return equation for each interval, checks that every
+gate touching that location lies in one of those intervals, and checks that
+the location is absent from terminal readout. The literal multi-interval check
+derives every entry placement from the preceding original owners and target
+word. It reserves each designated scratch location across the complete trace,
+keeping it out of ordinary preparations, routing and terminal readout. Each
+reuse interval must be bound to its own checked original workspace.
+
+For a successful native placement check, each reusable clean wire is in the
+counted reset register. Every gate that touches that wire belongs to a
+checked restoration interval, with one operator step per decoded gate in
+the interval. A routing action before a workspace or in the terminal suffix
+points to a literal SWAP on an allowed edge at a counted gate index. The
+reported SWAP total includes the literal routing gates as well as any
+ordinary SWAP instructions in the target word.
+The replay can also align a target word with several consecutive Raw circuit
+events and structural owner operations. It reads the actual owner transitions
+and checks the combined operator on the ordered support, with the same
+zero-return check when the slice uses synthesis scratch. Preparation,
+observation and source workspace boundaries require their own alignment.
+The typed-source adapter reads workspace intervals from the original checked
+root and named calls. It binds each local interval to the identical Raw
+operations at its position in the root, checks the selected and returned
+ports against the full caller frame, and retains all untouched spectator
+ports. The exporter preserves the interval boundaries across exact
+rewrites and proposes the corresponding gate positions and scratch locations.
+Lean checks the proposal against the original source, including the clean and
+dirty intervals and terminal result order.
+For a `Q<Bits<n>>` data register, each original `take_bit` or `put_bit` index
+determines the ordered wire selection or insertion. The Raw repartition retains
+the other owners, including a distinct `Q<Bits<0>>` remainder. Repartition inside
+a workspace body is part of its independently evaluated exact operator.
+
+Use `qleisli interop emit-qasm <source> --input=qli --resources` for the
+checked resource report on a closed typed program with workspace scopes in
+its root or in a statically named call.
+The JSON result contains the emitted text, exact work spent in the placement
+check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
+measurements. Counts come from Lean's decoding of the returned text.
+The internal packet binds the complete original QLV3 request and literal target
+bytes. Lean rechecks the original source, decodes the target and replays
+placement using one 20,000,000 exact-work budget. The report covers the
+supported canonical terminal profile and its declared physical register.
+Lean proves that the decoded register width bounds the maximum Raw live width
+over the workspace occurrences visited by the replay, including caller
+spectators and temporary clean wires.
+The native reply theorem binds the reported counts to those exact target bytes
+and proves that the reserved width is within the requested target capacity.
+A structural basis lift updates the physical placement only when its complete
+table is an axis permutation. It contributes zero gates. A routing SWAP
+must occupy a literal gate position.
+
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
 Compiler memory, checker work limits, static termination, ownership safety
@@ -539,8 +654,18 @@ maps, before merging adjacent diagonal actions. Contract expansion shares the
 existing 1,000,000-step function limit across the whole export; this is a producer
 work limit, not a target-resource bound. Flat input and emitted-gate limits remain
 unchanged. The exporter explicitly allocates and uncomputes conjunction scratch
-and rejects output exceeding its physical qubit capacity. A nontrivial
-uncontrolled scalar still has no terminal-gate realization in this profile.
+and rejects output exceeding its physical qubit capacity. For an accepted
+single-bit certified compute with an all-zero predicate, the exporter emits
+the physical body with data axes followed by a separately reserved clean
+scratch wire. It reuses that wire after complete verified zero return. The
+Rust/Lean regression binds the same emitted OpenQASM bytes to two original
+clean intervals and checks their placement, exact restoration and readout.
+The terminal OpenQASM exporter can consume the original accepted handle of a
+closed typed source program. It emits a wire-level projection of a Unit result
+or a positive-width product of measured bits in the verified SSA output order.
+Nominal results, zero-width components of products and source parameters are
+outside this projection. Typed QIRF transport remains a separate obligation.
+A nontrivial uncontrolled scalar has no realization in this gate vocabulary.
 The independent `scripts/test_review_v024.py` oracle checks
 emitted small QFT/control circuits, including complex phase, output axes and
 zero-return scratch. Such bounded numerical validation is distinct from a

@@ -114,6 +114,9 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
   | primitive {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name} {position : Position} {queues : Queues}
       (event : SourceRuntimeContext.PrimitiveEvent artifact.sources owner) :
       Event preparation source (.primitive event) position queues queues
+  | register {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {position : Position} {queues : Queues} (event : SourceRuntimeContext.RegisterEvent artifact.sources owner) :
+      Event preparation source (.registerPrimitive event) position queues queues
   | phase {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name} {position : Position} {queues : Queues}
       (event : SourceRuntimeContext.PhaseEvent artifact.sources owner) :
       Event preparation source (.phase event) position queues queues
@@ -207,9 +210,6 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       {children : List (SourceRuntimeContext.Event artifact.sources owner)} {position : Position} {before : Queues}
       (prepared : RuntimeWorkspace.Original event children) :
       Event preparation source (.workspace event children) position before before
-  | registerPrimitive {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
-      {event : SourceRuntimeContext.RegisterEvent artifact.sources owner} {position : Position} {before : Queues} :
-      Event preparation source (.registerPrimitive event) position before before
   | unsupported {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before : Queues}
       (unconnected : (match event with

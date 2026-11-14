@@ -138,8 +138,10 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-runtime-static-bindings`,
 `codex/beta-64-rectangular-nominal-meaning` or
 `codex/beta-64-declared-meaning`, `codex/beta-29-hierarchy-ctrl`, or
-`codex/beta-70-scoped-workspace`, or `codex/beta-70-resource-candidate`,
-`codex/beta-30-structural-rust`, or `codex/beta-30-word-coordinate`.
+`codex/beta-70-scoped-workspace`, `codex/beta-70-resource-candidate`,
+`codex/beta-70-target-routing`, `codex/beta-70-bits-workspace`,
+`codex/beta-30-structural-rust`, `codex/beta-30-word-coordinate`,
+or `codex/beta-70-30-integration`.
 The selected branch and workflow source must agree. On pushes, the producer
 first records the schema and scoped-guarantee source identity checks. Matching
 records finish this bootstrap workflow at that point. Stale records and manual

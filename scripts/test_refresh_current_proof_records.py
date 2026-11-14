@@ -170,7 +170,22 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-30-structural-raw",
                 "refs/heads/codex/beta-30-structural-transport",
                 "refs/heads/codex/beta-30-structural-rust",
-                "refs/heads/codex/beta-30-word-coordinate")
+                "refs/heads/codex/beta-30-word-coordinate",
+                "refs/heads/codex/beta-70-target-routing",
+                "refs/heads/codex/beta-70-workspace-replay",
+                "refs/heads/codex/beta-70-openqasm-workspace",
+                "refs/heads/codex/beta-70-openqasm-decomposition",
+                "refs/heads/codex/beta-70-openqasm-synthesis-scratch",
+                "refs/heads/codex/beta-70-openqasm-synthesis-reuse",
+                "refs/heads/codex/beta-70-openqasm-raw-spans",
+                "refs/heads/codex/beta-70-openqasm-typed-terminal",
+                "refs/heads/codex/beta-70-openqasm-source-trace",
+                "refs/heads/codex/beta-70-openqasm-placement-packet",
+                "refs/heads/codex/beta-70-openqasm-alignment-cuts",
+                "refs/heads/codex/beta-70-nested-workspace-placement",
+                "refs/heads/codex/beta-70-workspace-structural-layout",
+                "refs/heads/codex/beta-70-bits-workspace",
+                "refs/heads/codex/beta-70-30-integration")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:
