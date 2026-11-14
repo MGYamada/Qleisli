@@ -34,7 +34,7 @@ def step (value : Finite.Step) : Value :=
     | .contract indices dependency adjoint => record "contract" [ns indices,n dependency,.boolean adjoint]
   record "step" [controls,action]
 
-private def steps (values : List Finite.Step) : Value := .array (values.map step)
+def steps (values : List Finite.Step) : Value := .array (values.map step)
 
 def circuit (value : Finite.Circuit) : Value := record "circuit" [basis value.basis,steps value.steps]
 
@@ -48,7 +48,7 @@ private def protectedBit (value : Raw.ProtectedBit) : Value :=
   record "protected-bit" [n (match value.region with | .source => 0 | .ancilla => 1),n value.index]
 private def controls (values : List Raw.ProtectedControl) : Value := .array (values.map fun c =>
   record "protected-control" [protectedBit c.bit,.boolean c.whenOne])
-private def usage : Raw.Use → Value
+def usage : Raw.Use → Value
   | .protectedGate bit g => record "protected-gate" [protectedBit bit,gate g]
   | .targetGate cs target g => record "target-gate" [controls cs,n target,gate g]
   | .phase cs p => record "protected-phase" [controls cs,phase p]

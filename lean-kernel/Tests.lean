@@ -154,6 +154,7 @@ import QleisliKernel.Tests.RuntimeStorage
 import QleisliKernel.Tests.RuntimeCode
 import QleisliKernel.Tests.RuntimeFamily
 import Protocol.ExecutionView.CheckedQmatch
+import Protocol.ExecutionView.StructuralComputed
 import QleisliKernel.Tests.SourceMembers
 import QleisliKernel.Tests.OrdinaryInputs
 import QleisliKernel.Qirf.ControlAccess
@@ -1810,3 +1811,55 @@ example : (ExecutionView.CheckedQmatch.check ByteArray.empty ByteArray.empty).ru
 #print axioms ExecutionView.CheckedQmatch.Binding.root_safe
 #print axioms ExecutionView.CheckedQmatch.run_binding
 end QleisliKernel.Tests.QmatchTransport
+
+namespace QleisliKernel.Tests.StructuralComputedTransport
+open Qirf SourceTypes SourceRuntimeContext Protocol.ExecutionView
+open StructuralComputed
+
+private def source := "#![no_implicit_prelude]\n" ++
+  "classical fn both((a,b):(Bit,Bit))->Bit{a and b}\n" ++
+  "pub unitary fn route(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>" ++
+  "{with_computed(q,both){|flag|phase[1,1](flag)}}"
+
+private def stepJson := "{\"controls\":[{\"index\":0,\"when_one\":true},{\"index\":1,\"when_one\":true}]," ++
+  "\"action\":{\"tag\":\"monomial\",\"indices\":[2],\"permutation\":[1,0],\"phases\":[0,0]}}"
+
+private def text := "{\"tag\":\"structural_compute\",\"source\":10,\"source_out\":12,\"scratch\":4," ++
+  "\"forward\":[" ++ stepJson ++ "],\"inverse\":[" ++ stepJson ++ "]," ++
+  "\"uses\":[{\"tag\":\"protected_gate\",\"bit\":{\"region\":\"ancilla\",\"index\":0},\"gate\":\"z\"}]}"
+
+private def steps : List Semantics.Finite.Step :=
+  [⟨[⟨0,true⟩,⟨1,true⟩],.monomial [2] [1,0] [0,0]⟩]
+private def packet : StructuralComputedRaw.Packet := ⟨10,12,4,steps,steps,[.protectedGate ⟨.ancilla,0⟩ .z]⟩
+private def entryPort : Semantics.Raw.Port := ⟨10,[8,2],2⟩
+private def exitPort : Semantics.Raw.Port := ⟨12,[8,2],2⟩
+
+private def probe (body : String) (candidate : StructuralComputedRaw.Packet)
+    (input output : Semantics.Raw.Port) : Gate.CheckM Unit := do
+  let source ← Gate.native (SourceRuntimeTrace.read #[("main",source)] "main" "route")
+  let [Event.computed event _] := source.events | throw .packet
+  let original ← Gate.native (StructuralXorPredicate.read event)
+  let history : RuntimeStructuralAction.SourceState := ⟨[⟨event.input,entryPort⟩],[event.input],event.nextOrdinal⟩
+  let raw : Raw.State := {live := [entryPort],seenTokens := [10],seenWires := [8,2],frame := [2,8]}
+  let candidate ← Gate.lift ((encode (view candidate input output)).mapError fun _ => .encoding)
+  let _ ← check original history {quantum := raw} body.toUTF8 candidate
+  return ()
+
+private def failure (body : String) (candidate : StructuralComputedRaw.Packet) (input output : Semantics.Raw.Port) :
+    Option Gate.Error :=
+  match ((probe body candidate input output).run exactWorkLimit).1 with
+  | .ok _ => none
+  | .error error => some error
+
+#guard (decode text.toUTF8).toOption == some packet
+#guard failure text packet entryPort exitPort == none
+#guard failure text {packet with inverse := []} entryPort exitPort == some .decodedView
+#guard failure text packet {entryPort with wires := [2,8]} exitPort == some .decodedView
+#guard failure text packet entryPort {exitPort with token := 13} == some .decodedView
+#guard failure (text.replace "structural_compute" "compute_use_uncompute") packet entryPort exitPort == some .packet
+#guard failure (text.replace "\"scratch\":4" "\"scratch\":4,\"function\":[0,0,0,1]") packet entryPort exitPort == some .packet
+#guard failure (text.replace "\"scratch\":4" "\"scratch\":4294967296") packet entryPort exitPort == some .packet
+#guard failure (text.replace "\"scratch\":4" "\"scratch\":6,\"scratch\":4") packet entryPort exitPort == some .packet
+#guard failure (text.replace "\"phases\":[0,0]" "\"phases\":[4,4]") packet entryPort exitPort == some (.native .equation)
+
+end QleisliKernel.Tests.StructuralComputedTransport
