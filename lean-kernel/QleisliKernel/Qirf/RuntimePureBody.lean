@@ -2,6 +2,7 @@ import QleisliKernel.Qirf.RuntimeOwnerTransition
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimePrimitiveSource
 import QleisliKernel.Qirf.RuntimeStructuralAction
+import QleisliKernel.Qirf.RuntimeRegisterAction
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeNamedBoundary
 import QleisliKernel.Qirf.RuntimeCallScope
@@ -118,6 +119,10 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       {start count sources caller event before}
       (action : RuntimeStructuralAction.Checked (sources := sources) (caller := caller) block start count event before) :
       Node dependencies program block
+  | register {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {start count sources caller} {event : SourceRuntimeContext.RegisterEvent sources caller} {before}
+      (location : RuntimeSourceEvent.Location (.registerPrimitive event) start count)
+      (action : RuntimeRegisterAction.Checked block start count event before) : Node dependencies program block
   | basis {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count sources caller} {event : SourceRuntimeContext.BasisEvent sources caller} {before}
       (interval : RuntimeInterval.Checked block start count)
@@ -704,6 +709,11 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
             let (after,node) ← primitiveAt interval history boundFrame (.primitive event) (some ⟨position,rfl,rfl,origin⟩)
             return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations,position.start+position.count,sourceCursor,receipts)
+        | .registerPrimitive event,data,origin =>
+          let action ← RuntimeRegisterAction.read interval event before
+          let node : Node dependencies program block := .register ⟨position,rfl,rfl,origin⟩ action
+          return (action.after,retired ++ event.consumed,ordinary,actions ++ [node],steps ++ [.pure node],
+            obligations,position.start+position.count,sourceCursor,receipts)
         | .phase event,data,origin =>
           let (after,node) ← primitiveAt interval history boundFrame (.phase event) (some ⟨position,rfl,rfl,origin⟩)
           return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],

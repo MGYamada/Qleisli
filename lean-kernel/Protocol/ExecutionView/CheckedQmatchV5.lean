@@ -253,25 +253,31 @@ private def workspaceSegment {deps program block} (root : Semantics.Observation.
       else throw .request
   | _ => none
 
+private abbrev WorkspaceTraversal (deps : List Semantics.Finite.Dependency)
+    (root : Semantics.Observation.Program) :=
+  {program : Semantics.Observation.Program} → {block : RuntimeInterval.Block deps program} →
+    Nat → RuntimePureBody.Steps deps program block → Finite.WorkM (List (WorkspaceBuilder root))
+
 /-- Traverse only original named call intervals. Transform proof operands are
 separate programs and cannot add source occurrences to the emitted root. -/
 private def workspaceSteps {deps} (root : Semantics.Observation.Program) :
-    (fuel : Nat) → {program : Semantics.Observation.Program} →
-    {block : RuntimeInterval.Block deps program} →
-    Nat → RuntimePureBody.Steps deps program block → Finite.WorkM (List (WorkspaceBuilder root))
-  | _, _, _, _, .nil => pure []
-  | 0, _, _, _, .cons .. => throw .limit
-  | fuel+1, _, _, base, .cons first rest => do
-    Finite.exactWork (Exact.charge 32)
-    let here ← match first with
-      | .pure node => pure ((workspaceSegment root base node).toList)
-      | .named (start := start) _ _ _ _ _ _ children =>
-        workspaceSteps root fuel (base+start) children
-      | .conditional .. => throw .request
-      | _ => pure []
-    let tail ← workspaceSteps root fuel base rest
-    Finite.exactWork (Exact.charge here.length)
-    return here ++ tail
+    Nat → WorkspaceTraversal deps root :=
+  Nat.rec (motive := fun _ => WorkspaceTraversal deps root)
+    (fun {_} {_} _ steps => match steps with
+      | .nil => pure []
+      | .cons .. => throw .limit)
+    (fun _ traverse {_} {_} base steps => match steps with
+      | .nil => pure []
+      | .cons first rest => do
+        Finite.exactWork (Exact.charge 32)
+        let here ← match first with
+          | .pure node => pure ((workspaceSegment root base node).toList)
+          | .named (start := start) _ _ _ _ _ _ children => traverse (base+start) children
+          | .conditional .. => throw .request
+          | _ => pure []
+        let tail ← traverse base rest
+        Finite.exactWork (Exact.charge here.length)
+        return here ++ tail)
 
 def Original.workspaceSegments {bytes : ByteArray} (original : Original bytes) (plans : List WorkspaceAlignment) :
     Finite.WorkM (List (Segment original.checked.root.program)) := do
@@ -497,6 +503,10 @@ theorem Checked.target_counts {bytes : ByteArray} (checked : Checked bytes) :
   rw [checked.target.original]
   rfl
 
+theorem Checked.covers_workspace_peak {bytes : ByteArray} (checked : Checked bytes) :
+    checked.placement.trace.recorded.peakWires ≤ checked.target.circuit.counts.reserved := by
+  exact checked.placement.trace.recorded.trace.peakWires_le
+
 end PlacementPacket
 
 #print axioms check_binding
@@ -506,4 +516,5 @@ end PlacementPacket
 #print axioms PlacementPacket.check_binding
 #print axioms PlacementPacket.Checked.source_bound
 #print axioms PlacementPacket.Checked.target_counts
+#print axioms PlacementPacket.Checked.covers_workspace_peak
 end QleisliKernel.Protocol.ExecutionView.CheckedQmatchV5

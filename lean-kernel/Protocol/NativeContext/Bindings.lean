@@ -45,6 +45,47 @@ theorem run_openqasm_placement_binding (product : String) (bytes : ByteArray)
   cases returned
   exact ⟨checked,placed,beq_iff_eq.mp productCheck,rfl⟩
 
+/-- Relate the executable reply to the counts recovered from the original
+OpenQASM bytes and to the source workspace width those counts cover. -/
+theorem run_openqasm_placement_resources (product : String) (bytes : ByteArray)
+    (decision : Decision .openQasmPlacement) (work left : Nat)
+    (ok : (run .openQasmPlacement product bytes).run work = (.ok decision,left)) :
+    ∃ checked : CheckedQmatchV5.PlacementPacket.Checked bytes,
+      let counts := checked.target.circuit.counts
+      CheckedQmatchV5.PlacementPacket.split bytes = .ok checked.parts ∧
+      (Target.CanonicalOpenQasmResources.decode checked.parts.target).map
+        Target.CanonicalOpenQasmResources.Circuit.counts = some counts ∧
+      checked.placement.trace.recorded.peakWires ≤ counts.reserved ∧
+      counts.reserved ≤ checked.proposal.capacity ∧
+      (reply .openQasmPlacement work (.ok decision) left).lines.drop 6 =
+        [work-left,counts.reserved,counts.reset,counts.gates,counts.swaps,
+          counts.tGates,counts.measurements].map toString := by
+  obtain ⟨checked,_,_,rfl⟩ := run_openqasm_placement_binding product bytes decision work left ok
+  exact ⟨checked,checked.framed,checked.target_counts,checked.covers_workspace_peak,
+    checked.target.capacityBound,rfl⟩
+
+#print axioms run_openqasm_placement_resources
+
+/-- The successful native decision ties clean preparation and every later
+scratch access to the decoded register and the counted restoration slices. -/
+theorem run_openqasm_clean_costs (product : String) (bytes : ByteArray)
+    (decision : Decision .openQasmPlacement) (work left : Nat)
+    (ok : (run .openQasmPlacement product bytes).run work = (.ok decision,left)) :
+    let placed := decision.value.2
+    let circuit := placed.target.circuit
+    ∀ scratch ∈ placed.proposal.reserved,
+      scratch < circuit.counts.reset ∧
+      ∀ index gate, circuit.gates[index]? = some gate → scratch ∈ gate.wires →
+        ∃ use ∈ placed.placement.trace.recorded.cleanUses scratch,
+          use.start ≤ index ∧ index < use.start+use.count ∧
+          use.steps.length = use.count ∧ use.start+use.count ≤ circuit.counts.gates := by
+  obtain ⟨checked,_,_,rfl⟩ := run_openqasm_placement_binding product bytes decision work left ok
+  dsimp only
+  intro scratch member
+  obtain ⟨reuse⟩ := checked.placement.trace.restored scratch member
+  exact reuse.prepared_and_counted.2
+
+#print axioms run_openqasm_clean_costs
 
 theorem run_typed_ordinary_binding (product : String) (bytes : ByteArray)
     (decision : Decision .ordinaryRoot) (work left : Nat)

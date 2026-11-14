@@ -533,7 +533,8 @@ PATHS = {
             'instantiation.compile_runtime_with_kernel(', 'compiled.runtime_parameters() != 0',
             'fn runtime_execute(', 'finite-ordinary-root-v2']),
         ('src/frontend/specialize/runtime_selection.rs', ['fn roots(', 'index.original_nodes()',
-            'ExprKind::QuantumMatch(_)', 'index.table.resolved_uses()', 'roots.contains(&callee)']),
+            'ExprKind::QuantumMatch(_)', 'ExprKind::Workspace(_)',
+            'index.table.resolved_uses()', 'roots.contains(&callee)']),
         ('lean-kernel/Protocol/OrdinaryRoot.lean', ['def check ', 'Qirf.OrdinaryFamily.check artifact order request',
             'theorem check_binding ']),
         ('lean-kernel/QleisliKernel/Qirf/OrdinaryFamily.lean', ['TypedSourceRoot.read artifact order',
@@ -574,7 +575,8 @@ PATHS = {
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_prepares_meanings_for_unused_refined_and_zero_repeat_operations'),
         ('tests/selected_ordinary_execution.rs', 'selected_main_uses_exported_eligibility_while_project_main_keeps_its_contract'),
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_prepares_only_tables_demanded_by_dormant_operations'),
-        ('tests/selected_source_cli.rs', 'selected_qmatch_calls_preserve_interference_and_choose_original_runtime_lowering')]),
+        ('tests/selected_source_cli.rs', 'selected_qmatch_calls_preserve_interference_and_choose_original_runtime_lowering'),
+        ('tests/selected_source_cli.rs', 'selected_workspace_checks_the_original_restoration_contract')]),
     'ordinary-result-views': path_rule('checked-view', 'ordinary-result', '', [
         ('src/interchange/native.rs', ['ordinary_result: Option<Arc<super::ordinary_root::Request>>',
             'pub fn ordinary_result(', 'pub fn portable_artifact(', 'self.ordinary_result.is_some()']),
@@ -1991,11 +1993,14 @@ PATHS['openqasm-placement'] = path_rule(
         ('lean-kernel/Protocol/NativeContext.lean', ['if placement : mode = .openQasmPlacement then',
             'CheckedQmatchV5.PlacementPacket.check bytes', 'value.2.target.circuit.counts',
             'guard (requestedProduct == productVersion) .version\n      let checked ← check .openQasmPlacement bytes']),
-        ('lean-kernel/Protocol/NativeContext/Bindings.lean', ['theorem run_openqasm_placement_binding ']),
+        ('lean-kernel/Protocol/NativeContext/Bindings.lean',
+            ['theorem run_openqasm_placement_binding ', 'theorem run_openqasm_placement_resources ']),
         ('lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean',
-            ['let source ← CheckedQmatchV5.run parts.source', 'theorem Checked.target_counts ']),
+            ['let source ← CheckedQmatchV5.run parts.source', 'theorem Checked.target_counts ',
+             'theorem Checked.covers_workspace_peak ']),
     ], [('tests/interop.rs', 'terminal_export_realizes_source_clean_and_dirty_workspaces'),
         ('tests/interop.rs', 'terminal_workspace_resource_report_replays_named_scopes_with_caller_spectators'),
+        ('tests/interop.rs', 'terminal_workspace_resource_report_tracks_bits_register_axes'),
         ('src/interop/placement.rs', 'native_rejects_swapped_workspace_and_spectator_wires')])
 
 # Main routes all native modes through this common adapter. The retained older

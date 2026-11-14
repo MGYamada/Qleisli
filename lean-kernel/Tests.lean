@@ -2021,4 +2021,16 @@ private def actualPacket := placementBytes fixturePacket emitted.toUTF8 placemen
   | .error (.native (.arithmetic .workLimit)) => true
   | _ => false
 
+-- Use the same packet and dispatcher as the native resource report. Derive the
+-- budget from the successful run so the boundary follows the cost model.
+#guard
+  let mode := Protocol.NativeContext.Mode.openQasmPlacement
+  let check := Protocol.NativeContext.run mode Protocol.productVersion actualPacket
+  let (result, remaining) := check.run mode.workLimit
+  let consumed := mode.workLimit - remaining
+  match result, (check.run consumed).1, (check.run (consumed - 1)).1 with
+  | .ok _, .ok _, .error (.native (.arithmetic .workLimit)) =>
+    ((CheckedQmatchV5.run fixturePacket).run (consumed - 1)).1.isOk
+  | _, _, _ => false
+
 end QleisliKernel.Tests.WorkspaceTarget

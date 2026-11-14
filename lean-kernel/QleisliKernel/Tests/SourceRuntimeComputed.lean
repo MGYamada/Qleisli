@@ -55,11 +55,14 @@ private def zScratch : Semantics.Finite.Step := QleisliKernel.Raw.gateStep .z 1
 
 #guard ((checkWorkspaceSteps cleanScope [hData]).run 20000000).1.isOk
 #guard ((checkWorkspaceSteps dirtyScope [hData]).run 20000000).1.isOk
+#guard (match ((checkWorkspaceSteps cleanScope [hData,Raw.gateStep .h 1]).run 20000000).1 with
+  | .error (.workspaceRestoration false) => true
+  | _ => false)
 #guard (match ((checkWorkspaceSteps cleanScope [hData,zScratch]).run 20000000).1 with
   | .error .equation => true
   | _ => false)
 #guard (match ((checkWorkspaceSteps dirtyScope [hData,zScratch]).run 20000000).1 with
-  | .error .equation => true
+  | .error (.workspaceRestoration true) => true
   | _ => false)
 
 private def cleanControlled :=

@@ -191,6 +191,44 @@ fn terminal_workspace_resource_report_replays_named_scopes_with_caller_spectator
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_workspace_resource_report_tracks_bits_register_axes() {
+    let source = "use std::state::init0;\n\
+        use std::structure::{empty,consume_empty};\n\
+        unitary fn mark(q:Q<Bits<2>>)->Q<Bits<2>>{\n\
+            let (bit,rest)=take_bit[2,1](q); put_bit[2,1](h(bit),rest)}\n\
+        observe fn main()->(Bit,Bit,Bit){\n\
+            let low=init0(); let high=init0();\n\
+            let q=put_bit[2,1](high,put_bit[1,0](low,empty()));\n\
+            let q=clean(q,mark){|data,scratch|(mark(data),scratch)};\n\
+            let (q,s)=dirty(q,init0(),mark){|data,scratch|(mark(data),scratch)};\n\
+            let (upper,q)=take_bit[2,1](q); let (lower,q)=take_bit[1,0](q);\n\
+            consume_empty(q); (measure_z(lower),measure_z(upper),measure_z(s))}";
+    let root = common::SourceRoot::new(source);
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert_eq!(
+        text.lines()
+            .filter(|line| line.starts_with("h "))
+            .collect::<Vec<_>>(),
+        ["h q[1];", "h q[1];"]
+    );
+    assert_eq!(literal_output_axes(&text), [0, 1, 3]);
+    assert_eq!(
+        (
+            resources.qubits,
+            resources.resets,
+            resources.gates,
+            resources.measurements
+        ),
+        (4, 4, 2, 3)
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_export_checks_the_retained_source_interface() {
     use qleisli::edition::Edition;
     use qleisli::frontend::compile::ParsedProgram;

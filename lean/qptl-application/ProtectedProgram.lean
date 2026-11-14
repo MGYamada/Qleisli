@@ -265,6 +265,9 @@ theorem event_action (dependencies : List Dependency) (operation : Event) (work 
   | circuit _ _ | init0 _ | liftBasis _ _ _ _ _ | reorder _ _ => rfl
   | computed bits axes sourceBits ancillaBits function uses logicalSteps =>
     obtain ⟨logical,middle,clean,_⟩ := bind_success _ _ _ _ _ accepted
+    have clean := restoration_success false
+      (Raw.clean dependencies sourceBits axes.length ancillaBits function uses logicalSteps)
+      logical work middle clean
     obtain ⟨_,_,a,b,_,_,_,_,logicalRead,_,_⟩ :=
       Raw.clean_conditions _ _ _ _ _ _ _ _ _ _ clean
     have logicalRows : logical.rows = 2^axes.length := by

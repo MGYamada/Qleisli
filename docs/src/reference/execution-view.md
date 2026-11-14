@@ -90,6 +90,10 @@ match edition, product, actual mode and requested scope before interpreting and
 fully consuming their own bounded payload. Edition alone identifies neither a
 checker implementation nor a completed constitutional proof.
 
+A failed workspace restoration equation can return `clean_workspace` or
+`dirty_workspace`. The Rust adapter presents the corresponding restoration
+obligation under the existing contract rejection category.
+
 The actual Main adapter invokes one pure `Protocol.NativeContext.run` and its
 one reply projection. Its checked success bindings retain each original gate,
 execution/caller comparison and scoped decoded-root property. Rust kernels

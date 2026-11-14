@@ -72,7 +72,10 @@ fn source_workspace_scopes_require_exact_native_restoration() {
     }
     let clean_leaks = clean.replacen("let (data,scratch)=controlled(gate)(data,scratch);", "", 1);
     let dirty_phase = dirty.replace("(h(data),scratch)", "(h(data),phase[1,1](scratch))");
-    for source in [clean_leaks, dirty_phase] {
+    for (source, obligation) in [
+        (clean_leaks, "clean workspace restoration failed"),
+        (dirty_phase, "dirty workspace restoration failed"),
+    ] {
         let result = ParsedProgram::parse(
             Edition::E2026,
             BTreeMap::from([("main".into(), source.clone())]),
@@ -90,10 +93,7 @@ fn source_workspace_scopes_require_exact_native_restoration() {
             panic!("restoration must fail for {source}");
         };
         assert_eq!(error.code, "invalid_ir", "{error:?}\n{source}");
-        assert!(
-            error.message.contains("Lean native checker rejected"),
-            "{error:?}"
-        );
+        assert!(error.message.contains(obligation), "{error:?}");
     }
 
     let closed = "#![no_implicit_prelude]\n\

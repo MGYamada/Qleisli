@@ -54,7 +54,7 @@ private def inspect {dependencies} : (item : Item dependencies) → View depende
     .child (.transform ordinal caller event.callerName event.call.calleeOffset
       event.target.resolution.moduleName event.target.resolution.declaration.name) (.nodes 0 nested)
       (by simp only [Smaller] <;> decreasing_tactic)
-  | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.basis ..)
+  | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.register ..) | .node _ (.basis ..)
   | .node _ (.computed ..) | .node _ (.certifiedComputed ..) | .node _ (.workspace ..) | .node _ (.operation ..) => .leaf
   | .node _ (.rectangularOperation _) => .leaf
   | .nodes _ .nil => .leaf
