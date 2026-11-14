@@ -103,7 +103,8 @@ is a single Bit or a full Bits word, including the zero-width rest word. -/
 theorem apply_register_owners {kind naturals arguments nextOrdinal value allocated consumed afterOrdinal}
     (register : kind = .takeBit ∨ kind = .putBit)
     (applied : apply kind naturals arguments nextOrdinal = .ok (value,allocated,consumed,afterOrdinal)) :
-    ∀ owner ∈ allocated ++ consumed, owner.basis = [.bit] ∨ ∃ width, owner.basis = [.bits width] := by
+    (consumed.map (·.ordinal)).Nodup ∧
+      ∀ owner ∈ allocated ++ consumed, owner.basis = [.bit] ∨ ∃ width, owner.basis = [.bits width] := by
   dsimp only [apply, Bind.bind, Except.bind, pure, Except.pure, Functor.map, Except.map,
     throw, MonadExceptOf.throw] at applied
   split at applied
@@ -116,6 +117,7 @@ theorem apply_register_owners {kind naturals arguments nextOrdinal value allocat
       · rename_i inputType
         have inputBasis : input.basis = [.bits width] := by simpa using inputType
         cases applied
+        refine ⟨by simp,?_⟩
         intro owner member
         simp only [List.cons_append, List.nil_append, List.mem_cons, List.not_mem_nil, or_false] at member
         rcases member with rfl | rfl | rfl
@@ -135,7 +137,9 @@ theorem apply_register_owners {kind naturals arguments nextOrdinal value allocat
           by_cases same : rest.basis = [.bits (width-1)]
           · exact same
           · exact False.elim (inputTypes (.inr same))
+        have distinct : bit.ordinal ≠ rest.ordinal := fun same => inputTypes (.inl (.inl same))
         cases applied
+        refine ⟨by simp [distinct],?_⟩
         intro owner member
         simp only [List.cons_append, List.nil_append, List.mem_cons, List.not_mem_nil, or_false] at member
         rcases member with rfl | rfl | rfl

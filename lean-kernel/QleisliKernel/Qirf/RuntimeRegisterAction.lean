@@ -89,6 +89,8 @@ structure Checked {dependencies program sources caller}
   interval : RuntimeInterval.Checked block start count
   operations : List Semantics.Raw.Op
   literal : (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure
+  beforeFrame : RuntimeOwnerMap.Checked (before.bindings.map (·.owner)) interval.before
+  sameBefore : beforeFrame.bindings = before.bindings
   inputs : List Semantics.Raw.Port
   inputsRead : RuntimeInterval.Computed
     ((RuntimeOwnerMap.order event.consumed before.bindings).map (·.map (·.port))) inputs
@@ -114,8 +116,9 @@ structure Checked {dependencies program sources caller}
 operation supplied the consumed and allocated owner lists. -/
 theorem Checked.register_owners {dependencies program sources caller block start count event before}
     (action : @Checked dependencies program sources caller block start count event before) :
-    ∀ owner ∈ event.allocated ++ event.consumed,
-      owner.basis = [.bit] ∨ ∃ width, owner.basis = [.bits width] := by
+    (event.consumed.map (·.ordinal)).Nodup ∧
+      ∀ owner ∈ event.allocated ++ event.consumed,
+        owner.basis = [.bit] ∨ ∃ width, owner.basis = [.bits width] := by
   obtain ⟨work,left,checked⟩ := action.tokenOrder
   have kind : event.kind = .takeBit ∨ event.kind = .putBit := by
     unfold outputTokens at checked
@@ -193,7 +196,7 @@ def read {dependencies program sources caller} {block : RuntimeInterval.Block de
     block.operations.length+before.issued.length*event.allocated.length+1)))
   guard (before.nextOrdinal == event.nextOrdinal &&
     event.allocated.all (fun owner => !before.issued.any (fun previous => previous.ordinal == owner.ordinal))) .request
-  let _ ← RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) interval.before before.bindings
+  let incoming ← RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) interval.before before.bindings
   let inputs ← NaturalAffine.witness ((RuntimeOwnerMap.order event.consumed before.bindings).map (·.map (·.port)))
   match originalIndex : (event.application.arguments.map (·.value))[1]? with
   | none => throw .request
@@ -213,7 +216,7 @@ def read {dependencies program sources caller} {block : RuntimeInterval.Block de
               (event.allocated.zip outputs).map (fun (owner,port) => ⟨owner,port⟩),
             before.issued ++ event.allocated,event.afterOrdinal⟩
         let frame ← RuntimeOwnerMap.checkBindings (after.bindings.map (·.owner)) interval.after after.bindings
-        return ⟨interval,operations,Sector.pureOps_bound _ _ literal,inputs.val,
+        return ⟨interval,operations,Sector.pureOps_bound _ _ literal,incoming.val,incoming.property,inputs.val,
           by with_reducible exact inputs.property,outputs,returned.1,axis,originalIndex,
           by rw [returned.2.1]; with_reducible exact tokens.property,
           returned.2.2.1,returned.2.2.2.1,returned.2.2.2.2.1,returned.2.2.2.2.2,

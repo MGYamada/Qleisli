@@ -2,6 +2,8 @@ import Qleisli.RuntimeSemanticForest
 import Qleisli.RuntimeNamedBlockEncoding
 import Qleisli.RuntimeNamedBlockSpectators
 import Qleisli.RuntimeNamedCarrierEncoding
+import Qleisli.RuntimeNamedThreePackedOutput
+import Qleisli.RuntimeLiteralReturnOrder
 import QleisliKernel.Qirf.RuntimeRegisterAction
 
 /-! The exact sparse caller encoding decomposes around the entire selected
@@ -71,7 +73,7 @@ theorem register_layout {dependencies program sources caller block start count e
     (wires : binding.port.wires.length = binding.port.bits) :
     Nonempty (Qleisli.RuntimeStructuralLayoutEvidence.SemanticOwnerLayout binding) ∧
       (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits) := by
-  obtain bit | ⟨size,word⟩ := action.register_owners binding.owner
+  obtain bit | ⟨size,word⟩ := action.register_owners.2 binding.owner
     (List.mem_append.mpr consumed.symm)
   · let code : Semantics.FiniteCarrier.Layout := ⟨1,[0,1]⟩
     have original : layout binding.owner.basis = some code := by rw [bit]; rfl
@@ -91,6 +93,7 @@ and the zip of freshly allocated source roles with the actual Raw ports. -/
 theorem register_blocks {dependencies program sources caller block start count event before}
     (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before) :
     ∃ selected : Map,
+      RuntimeInterval.Computed (RuntimeOwnerMap.order event.consumed before.bindings) selected ∧
       selected ⊆ before.bindings ∧ selected.map (·.owner) = event.consumed ∧
       selected.map (·.port) = action.inputs ∧
       let returned := (action.outputs.zip event.allocated).map
@@ -105,7 +108,7 @@ theorem register_blocks {dependencies program sources caller block start count e
   obtain ⟨selected,middle,ordered,ports⟩ := Finite.bind_success _ _ _ _ _ read
   have original := RuntimeSelectionPartition.order_values _ _ selected ⟨work,middle,ordered⟩
   have same : selected.map (·.port) = action.inputs := (Finite.pure_success _ _ _ _ ports).1.symm
-  refine ⟨selected,original.1,original.2,same,?_⟩
+  refine ⟨selected,⟨work,middle,ordered⟩,original.1,original.2,same,?_⟩
   intro returned
   have checkedLayout (ports : List Semantics.Raw.Port) (roles : List RuntimeOwnerMap.Owner)
       (widths : RuntimeStructuralAction.widths ports roles = true)
@@ -126,6 +129,41 @@ theorem register_blocks {dependencies program sources caller block start count e
     exact checkedLayout action.outputs event.allocated action.outputWidths _ paired (.inr (List.of_mem_zip paired).2)
   exact ⟨fun binding member => (inputs binding member).1,fun binding member => (outputs binding member).1,
     fun binding member => (inputs binding member).2,fun binding member => (outputs binding member).2⟩
+
+theorem register_partition {dependencies program sources caller block start count event before}
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    {selected : Map} (subset : selected ⊆ before.bindings)
+    (roles : selected.map Binding.owner = event.consumed)
+    (beforeDistinct : (before.bindings.map (fun b => b.owner.ordinal)).Nodup) :
+    (selected ++ before.bindings.filter (fun binding => !event.consumed.contains binding.owner)).Perm
+      before.bindings := by
+  let chosen := fun binding : Binding => event.consumed.contains binding.owner
+  have selectedUnique : (selected.map (fun binding => binding.owner.ordinal)).Nodup := by
+    change (selected.map (Semantics.SourceOwners.Owner.ordinal ∘ Binding.owner)).Nodup
+    rw [← List.map_map,roles]
+    exact action.register_owners.1
+  have selectedDistinct : selected.Nodup :=
+    List.Pairwise.of_map (fun binding : Binding => binding.owner.ordinal)
+      (fun _ _ different same => different (congrArg (fun b : Binding => b.owner.ordinal) same)) selectedUnique
+  have unique : before.bindings.Nodup :=
+    List.Pairwise.of_map (fun binding : Binding => binding.owner.ordinal)
+      (fun _ _ different same => different (congrArg (fun b : Binding => b.owner.ordinal) same)) beforeDistinct
+  have full : selected.Perm (before.bindings.filter chosen) := by
+    apply (List.perm_ext_iff_of_nodup selectedDistinct (List.Pairwise.filter chosen unique)).mpr
+    intro binding
+    constructor
+    · intro member
+      refine List.mem_filter.mpr ⟨subset member,?_⟩
+      exact List.contains_iff_mem.mpr (roles ▸ List.mem_map_of_mem member)
+    · intro member
+      obtain ⟨present,chosenRead⟩ := List.mem_filter.mp member
+      obtain ⟨found,inside,same⟩ := List.mem_map.mp
+        (roles.symm ▸ List.contains_iff_mem.mp chosenRead :
+          binding.owner ∈ selected.map Binding.owner)
+      have sameBinding := RuntimeOwnerTransitionAction.map_unique (fun b : Binding => b.owner.ordinal)
+        before.bindings beforeDistinct found (subset inside) binding present (congrArg (·.ordinal) same)
+      exact sameBinding ▸ inside
+  exact (full.append_right _).trans (List.filter_append_perm chosen _)
 
 theorem product_append {selected spectators : Map} (available : Available (selected++spectators)) :
     product (selected++spectators) = tensor (product selected) (product spectators) := by
@@ -373,11 +411,137 @@ theorem full_block_repartition {before after spectators : Map}
   rw [block_result input, block_result output, eval _ inputFull, eval _ outputFull]
   rw [gather_repartition physical wires unique]
 
+private def registerReturns (outputs : List Semantics.Raw.Port) (roles : List RuntimeOwnerMap.Owner) : Map :=
+  (outputs.zip roles).map (fun (port,owner) => ⟨owner,port⟩)
+
+private theorem registerReturn_order (outputs : List Semantics.Raw.Port) (roles : List RuntimeOwnerMap.Owner) :
+    registerReturns outputs roles = (roles.zip outputs).map (fun (owner,port) => ⟨owner,port⟩) := by
+  induction outputs generalizing roles with
+  | nil => cases roles <;> rfl
+  | cons port rest ih =>
+    cases roles with
+    | nil => rfl
+    | cons owner remaining => exact congrArg (List.cons ⟨owner,port⟩) (ih remaining)
+
+private def registerSpectators (bindings : Map) (roles : List RuntimeOwnerMap.Owner) : Map :=
+  bindings.filter (fun binding => !roles.contains binding.owner)
+
+noncomputable def sourceRegister {dependencies program sources caller block start count event before}
+    {Reference : Type}
+    (checked : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (joint : Nat → Reference → ℂ) : Option (Nat → Reference → ℂ) := do
+  let selected ← event.consumed.mapM (RuntimeOwnerMap.byOwner before.bindings)
+  let returned := registerReturns checked.outputs event.allocated
+  let spectators := registerSpectators before.bindings event.consumed
+  let physical := checked.interval.before.quantum.frame
+  let inputCard := (product selected).labels.length
+  let outputCard := (product returned).labels.length
+  return fun logical ref =>
+    let packed := recode checked.after.bindings (returned++spectators) (sourceDimension (returned++spectators)) logical
+    let original := gather (scatter 0 (forestAxes physical returned) (packed % outputCard))
+      (forestAxes physical selected)
+    joint (recode (selected++spectators) before.bindings (sourceDimension before.bindings)
+      (original + inputCard * (packed / outputCard))) ref
+
+/-- Lift the literal register repartition to the actual ordered source
+bindings and every external-reference column of the original operator. -/
+theorem original_register_action {dependencies program sources caller block start count event before}
+    (checked : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (input : Frame before.bindings)
+    (frames : checked.interval.after.quantum.frame = checked.interval.before.quantum.frame) :
+    ∃ output : Frame checked.after.bindings,
+      ∀ {Reference : Type} (joint : Nat → Reference → ℂ), ∃ expected,
+        sourceRegister checked joint = some expected ∧
+        ∀ row ref, action input checked.interval.before.quantum.frame joint row ref =
+          action output checked.interval.after.quantum.frame expected row ref := by
+  obtain ⟨selected,ordered,subset,roles,ports,selectedAvailable,returnedAvailable,selectedFull,returnedFull⟩ :=
+    register_blocks checked
+  let returned := registerReturns checked.outputs event.allocated
+  let spectators := registerSpectators before.bindings event.consumed
+  let physical := checked.interval.before.quantum.frame
+  have original : before.bindings.Nodup := by
+    rw [← checked.sameBefore]
+    exact List.Pairwise.of_map (fun b : Binding => b.port.token)
+      (fun _ _ different same => different (congrArg (fun b : Binding => b.port.token) same))
+      checked.beforeFrame.tokensDistinct
+  have partition := register_partition checked subset roles
+    (by simpa only [List.map_map, Function.comp_def] using checked.beforeFrame.ownersDistinct)
+  have outOrder : checked.after.bindings = spectators ++ returned := by
+    rw [checked.bindings]
+    change spectators ++ _ = spectators ++ registerReturns checked.outputs event.allocated
+    rw [registerReturn_order]
+  have preserved : Available spectators :=
+    fun b member => input.available b (List.mem_filter.mp member).1
+  obtain ⟨groupedIn⟩ := frame_exists (bindings := selected++spectators) (by
+    intro b member
+    exact (List.mem_append.mp member).elim (selectedAvailable b) (preserved b))
+  obtain ⟨groupedOut⟩ := frame_exists (bindings := returned++spectators) (by
+    intro b member
+    exact (List.mem_append.mp member).elim (returnedAvailable b) (preserved b))
+  obtain ⟨output⟩ := frame_exists (bindings := checked.after.bindings) (by
+    rw [outOrder]
+    intro b member
+    exact (List.mem_append.mp member).elim (preserved b) (returnedAvailable b))
+  have returnedPorts : returned.map Binding.port = checked.outputs := by
+    unfold returned registerReturns
+    simp only [List.map_map,Function.comp_def]
+    exact List.map_fst_zip (Nat.le_of_eq (beq_iff_eq.mp (Bool.and_eq_true_iff.mp checked.outputWidths).1))
+  have axes : (forestAxes physical selected).Perm (forestAxes physical returned) := by
+    unfold forestAxes
+    rw [← List.flatMap_map Binding.port, ports, ← List.flatMap_map Binding.port, returnedPorts]
+    exact checked.wires_permute.symm.map _
+  have realOutput : checked.after.bindings.Nodup := by
+    rw [← checked.sameFrame]
+    exact List.Pairwise.of_map (fun b : Binding => b.port.token)
+      (fun _ _ different same => different (congrArg (fun b : Binding => b.port.token) same))
+      checked.afterFrame.tokensDistinct
+  have outputOrder : (returned++spectators).Perm checked.after.bindings := by
+    rw [outOrder]
+    exact List.perm_append_comm
+  have fullAxes := Qleisli.RuntimeNamedThreePackedOutput.final_axes_permutation
+    checked.afterFrame checked.interval.history.2.2.1
+  rw [checked.sameFrame,frames] at fullAxes
+  have unaliased : (forestAxes physical returned).Nodup := by
+    have sorted := (fullAxes.nodup_iff.mpr List.nodup_range)
+    rw [outOrder,forestAxes,List.flatMap_append,List.map_append] at sorted
+    exact (List.nodup_append.mp sorted).2.1
+  refine ⟨output,?_⟩
+  intro Reference joint
+  let old := fun logical ref => joint (recode (selected++spectators) before.bindings
+    (sourceDimension before.bindings) logical) ref
+  let inCard := (product selected).labels.length
+  let outCard := (product returned).labels.length
+  let byBlock := fun digit spectator ref => old (digit + inCard * spectator) ref
+  let new := blockJoint outCard (fun digit spectator ref =>
+    byBlock (gather (scatter 0 (forestAxes physical returned) digit) (forestAxes physical selected)) spectator ref)
+  let expected := fun logical ref => new
+    (recode checked.after.bindings (returned++spectators) (sourceDimension (returned++spectators)) logical) ref
+  refine ⟨expected,?_,?_⟩
+  · rw [sourceRegister, Qleisli.RuntimeLiteralHistory.order_source ordered]
+    rfl
+  · intro row ref
+    have inputBlock : blockJoint inCard byBlock = old := by
+      funext logical ref
+      unfold blockJoint byBlock
+      rw [Nat.mod_add_div]
+    rw [frames]
+    calc
+      _ = action groupedIn physical old row ref := regroup_action input groupedIn
+        partition.symm original physical joint row ref
+      _ = action groupedOut physical new row ref := by
+        rw [← inputBlock]
+        exact full_block_repartition groupedIn groupedOut physical axes unaliased
+          (full_product selectedAvailable selectedFull physical)
+          (full_product returnedAvailable returnedFull physical) byBlock row ref
+      _ = _ := regroup_action groupedOut output outputOrder
+        (outputOrder.nodup_iff.mpr realOutput) physical new row ref
+
 #print axioms block_action
 #print axioms full_product
 #print axioms register_layout
 #print axioms register_blocks
 #print axioms full_block_repartition
+#print axioms original_register_action
 #print axioms sparse_caller_input
 #print axioms caller_input
 end Qleisli.RuntimeSparseBlockEncoding
