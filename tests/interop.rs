@@ -229,6 +229,67 @@ fn terminal_workspace_resource_report_tracks_bits_register_axes() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_workspace_resources_bind_the_declared_controlled_phase() {
+    let source = include_str!(
+        "fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-02/main.qli"
+    );
+    let root = common::SourceRoot::new(source);
+    root.write(
+        "Qargo.toml",
+        include_str!(
+            "fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-02/Qargo.toml"
+        ),
+    );
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert!(
+        text.contains("t q[0];\nt q[1];\ncx q[0], q[1];\ntdg q[1];\ncx q[0], q[1];\n"),
+        "{text}"
+    );
+    assert_eq!(resources.qubits, 3);
+    assert_eq!(resources.resets, 3);
+    assert_eq!(resources.gates, 9);
+    assert_eq!(resources.t_gates, 3);
+    assert_eq!(resources.measurements, 2);
+    assert!(resources.exact_work <= qleisli::contract::DEFAULT_EXACT_WORK);
+
+    let emitted = import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
+    for item in [&program, &emitted] {
+        let distribution = run_closed(item, SimulationLimits::default()).unwrap();
+        for (bits, expected) in [
+            ([false, false], 0.625),
+            ([true, false], 0.125),
+            ([false, true], 0.125),
+            ([true, true], 0.125),
+        ] {
+            close(
+                distribution.get(bits.as_slice()).copied().unwrap_or(0.0),
+                expected,
+            );
+        }
+    }
+
+    let changed = common::SourceRoot::new(include_str!(
+        "fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-03/main.qli"
+    ));
+    changed.write(
+        "Qargo.toml",
+        include_str!(
+            "fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-03/Qargo.toml"
+        ),
+    );
+    let error = qleisli::frontend::compile::compile_project(&changed.0).unwrap_err();
+    assert!(
+        error.message.contains("clean workspace restoration failed"),
+        "{error}"
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_workspace_resource_report_counts_physical_clean_uncomputation() {
     let source = r#"
         use std::gate::x;

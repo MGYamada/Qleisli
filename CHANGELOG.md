@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reconstruct controlled phases in written workspace logical operations using
+  the independently checked workspace source fragment.
 - Factor checked structural predicate circuits into their exact logical action
   in the complete Raw event fold, preserving the independent source equation.
 - Prove the original Raw resource counts for structural predicates, including

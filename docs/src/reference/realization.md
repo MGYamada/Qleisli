@@ -574,6 +574,10 @@ ports. The exporter preserves the interval boundaries across exact
 rewrites and proposes the corresponding gate positions and scratch locations.
 Lean checks the proposal against the original source, including the clean and
 dirty intervals and terminal result order.
+The written logical operation and the workspace body use the same admitted
+workspace source fragment. This lets an independently checked controlled
+phase appear in the declared logical operation and in the body; their exact
+restoration equation still checks the complete data and scratch action.
 The application theorem `Qleisli.WorkspaceTargetAction.decoded_action`
 connects the exact action of that decoded workspace slice to the literal Raw
 body on its full ordered data and scratch interface. The equality preserves
