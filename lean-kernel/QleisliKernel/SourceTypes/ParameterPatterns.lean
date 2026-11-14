@@ -5,8 +5,8 @@ type clause is compared to the original common header reader.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes.ParameterPatterns
 
-def read {sources owner name} (original : OrdinarySignature.Original sources owner name) :
-    Except String (List (List String)) := do
+def readLocated {sources owner name} (original : OrdinarySignature.Original sources owner name) :
+    Except String (List (List LocatedToken)) := do
   let suffix := original.occurrence.header.dropWhile (· != original.occurrence.nameToken)
   let nameToken :: header := suffix | throw "missing original parameter clause"
   let header ← match original.parsedHeader.staticTokens with
@@ -26,13 +26,17 @@ def read {sources owner name} (original : OrdinarySignature.Original sources own
   let ending := tail.drop raw.length
   if ending.map (·.text) != [")","-",">"] ++ result.map (·.text) ++ requirements then
     throw "original parameter boundary mismatch"
-  let clauses ← splitMembers (raw.map (·.text))
+  let clauses ← splitMembersWith (·.text) raw
   let pairs ← clauses.mapM fun clause => do
-    let pattern := clause.takeWhile (· != ":")
-    let ":" :: ty := clause.drop pattern.length | throw "missing original parameter type"
-    if pattern.isEmpty || ty.isEmpty then throw "empty original parameter pattern/type"
-    pure (pattern,ty)
+    let (pattern,rest) := clause.span (·.text != ":")
+    let colon :: ty := rest | throw "missing original parameter type"
+    if colon.text != ":" || pattern.isEmpty || ty.isEmpty then throw "empty original parameter pattern/type"
+    pure (pattern,ty.map (·.text))
   if pairs.map Prod.snd != original.parsedHeader.parameterTypes then throw "original type clause mismatch"
   pure (pairs.map Prod.fst)
+
+def read {sources owner name} (original : OrdinarySignature.Original sources owner name) :
+    Except String (List (List String)) :=
+  (readLocated original).map (List.map (List.map (·.text)))
 
 end QleisliKernel.SourceTypes.ParameterPatterns

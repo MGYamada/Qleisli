@@ -21,27 +21,31 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.SourceTypes
 open Semantics.FiniteCarrier
 
-private structure Parts where
+private structure Parts (α : Type) where
   stack : List String := []
-  current : List String := []
-  parts : List (List String) := []
+  current : List α := []
+  parts : List (List α) := []
 
-private def part (s : Parts) (token : String) : Except String Parts := do
+private def part {α : Type} (text : α → String) (s : Parts α) (value : α) : Except String (Parts α) := do
+  let token := text value
   if token == "(" || token == "<" || token == "[" then
-    return {s with stack := (if token == "(" then ")" else if token == "[" then "]" else ">") :: s.stack,current := token :: s.current}
+    return {s with stack := (if token == "(" then ")" else if token == "[" then "]" else ">") :: s.stack,current := value :: s.current}
   if token == ")" || token == ">" || token == "]" then
     let expected :: rest := s.stack | throw "unmatched type delimiter"
     if token != expected then throw "mismatched type delimiter"
-    return {s with stack := rest,current := token :: s.current}
+    return {s with stack := rest,current := value :: s.current}
   if token == "," && s.stack.isEmpty then
     if s.current.isEmpty then throw "empty member"
     return {s with current := [],parts := s.current.reverse :: s.parts}
-  return {s with current := token :: s.current}
+  return {s with current := value :: s.current}
 
-def splitMembers (tokens : List String) : Except String (List (List String)) := do
-  let s ← tokens.foldlM part {}
+def splitMembersWith {α : Type} (text : α → String) (tokens : List α) : Except String (List (List α)) := do
+  let s ← tokens.foldlM (part text) {}
   if !s.stack.isEmpty then throw "incomplete member type"
   return (if s.current.isEmpty then s.parts else s.current.reverse :: s.parts).reverse
+
+def splitMembers (tokens : List String) : Except String (List (List String)) :=
+  splitMembersWith id tokens
 
 /-- Origin lookup is canonical: an alias never becomes a new declaration. -/
 def lookup (sources : Sources) (moduleName name : String) : Except String (String × Declaration) := do

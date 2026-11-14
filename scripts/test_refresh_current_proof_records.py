@@ -162,6 +162,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-64-certified-computed",
                 "refs/heads/codex/beta-64-computed-product-action",
                 "refs/heads/codex/beta-29-hierarchy-ctrl",
+                "refs/heads/codex/beta-303-ordered-access",
                 "refs/heads/codex/beta-70-scoped-workspace",
                 "refs/heads/codex/beta-70-resource-candidate")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
