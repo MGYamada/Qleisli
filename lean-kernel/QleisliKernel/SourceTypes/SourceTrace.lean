@@ -196,7 +196,7 @@ def evalWithReader (sources : Sources) (caller : String)
     match tree with
     | .empty .. => return (← outcome environment [.tuple 0] environment [],context)
     | .literal .. | .boolean .. | .conditional .. | .staticConditional .. | .basis .. |
-        .variant .. | .record .. | .projection .. | .matching .. | .computed .. |
+        .variant .. | .record .. | .projection .. | .bitIndex .. | .matching .. | .computed .. |
         .workspace .. => throw .request
     | .move tokens _ _ =>
       Finite.exactWork (Exact.charge (Meter.moveWork tokens environment))

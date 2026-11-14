@@ -337,6 +337,13 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let typeRows ← NaturalRows.nominalOrigins sources naturals.helpers.val basis
         return (← outcome environment value result.remaining result.allocated result.consumed
           result.nextOrdinal result.events (result.staticRows ++ typeRows),context)
+      | .bitIndex _ _ _ _ _ _ index _ receiver =>
+        let (result,context) ← recurse naturals held scope nextOrdinal environment receiver context
+        let [.ordinary [.bits width] expression] := result.value | throw .request
+        Finite.guard (index < width) .request
+        Finite.exactWork (Exact.charge (8*(index+1)))
+        return (← outcome environment [.ordinary [.bit] (.field (2^index) 2 expression)]
+          result.remaining result.allocated result.consumed result.nextOrdinal result.events result.staticRows,context)
       | .move tokens _ _ =>
         Finite.exactWork (Exact.charge (SourceTrace.Meter.moveWork tokens []+16*environmentCells environment))
         let (value,remaining) ← adapt (move tokens environment)

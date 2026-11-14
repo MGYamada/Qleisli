@@ -47,6 +47,7 @@ private theorem pure_node_operations {dependencies program block}
   cases node with
   | primitive action _ => exact ⟨_,action.interval.literal⟩
   | structural action => exact ⟨[action.operation],action.literal⟩
+  | register _ action => exact ⟨action.operations,action.literal⟩
   | basis _ _ _ action => exact ⟨[_],action.literal⟩
   | computed _ _ _ action => exact ⟨[_],action.literal.literal⟩
   | certifiedComputed _ _ _ action => exact ⟨[_],action.literal.original⟩
@@ -101,6 +102,37 @@ theorem pure_history_with_inherited {dependencies program block}
     cases inherited with
     | none => exact issued_mono keep (agrees.2 member)
     | some _ => exact (agrees.2 member).imp (fun retained => retained) (issued_mono keep)
+
+/-- Extracting or inserting a register bit changes the ordered owner map while
+leaving the physical history, its full complex action and all values intact. -/
+theorem register_history {dependencies program sources caller block start count event before}
+    (location : RuntimeSourceEvent.Location (.registerPrimitive event) start count)
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (inherited : Option (Nat → Prop)) (inputs : List Nat)
+    (ordinary : RuntimeOrdinaryBody.State) (history : History)
+    {events : List Event} {results : List History}
+    (agrees : AgreesWithInherited inherited inputs action.interval.before ordinary history)
+    (read : readOps block.fuel action.interval.before.quantum.reference ((block.operations.drop start).take count) =
+      some (action.interval.after.quantum.reference,events))
+    (executed : run dependencies block.fuel events history = some results) :
+    action.interval.after.quantum.frame = action.interval.before.quantum.frame ∧
+      results = [history] ∧ AgreesWithInherited inherited inputs action.interval.after ordinary history := by
+  obtain ⟨operations,rawEvents,literal,traced,singleton,kept⟩ :=
+    pure_history_with_inherited (.register location action) inherited inputs ordinary history agrees read executed
+  change (block.operations.drop start).take count = _ at literal
+  have same : operations = action.operations :=
+    (List.map_inj_right (f := Semantics.Observation.Op.pure)
+      (fun _ _ equal => Semantics.Observation.Op.pure.inj equal)).mp
+      (literal.symm.trans action.literal)
+  subst operations
+  have unchanged := action.trace_frame traced
+  change action.interval.after.quantum.frame = action.interval.before.quantum.frame ∧ rawEvents = [] at unchanged
+  obtain ⟨frame,rfl⟩ := unchanged
+  have identity : pureHistory dependencies [] history = history := by cases history; rfl
+  rw [identity] at singleton kept
+  exact ⟨frame,singleton,kept⟩
+
+#print axioms register_history
 
 theorem pure_history {dependencies program block}
     (node : RuntimePureBody.Node dependencies program block)

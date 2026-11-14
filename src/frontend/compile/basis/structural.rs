@@ -21,7 +21,7 @@ impl Parity {
 enum Value {
     Unit,
     Bit(Parity),
-    Word,
+    Word { start: usize, width: usize },
     Tuple(Vec<Rc<Value>>),
 }
 
@@ -108,6 +108,7 @@ impl Synthesis<'_, '_> {
                 value
             }
             Kind::Bits(width) => {
+                let start = *axis;
                 *axis = axis.checked_add(*width as usize).ok_or_else(|| {
                     self.compiler.error(
                         module,
@@ -116,7 +117,10 @@ impl Synthesis<'_, '_> {
                         "structural predicate axis overflow",
                     )
                 })?;
-                Value::Word
+                Value::Word {
+                    start,
+                    width: *width as usize,
+                }
             }
             Kind::Tuple(fields) => {
                 self.compiler.charge(module, span, fields.len())?;
@@ -208,6 +212,15 @@ impl Synthesis<'_, '_> {
         match runtime_expression(expr) {
             RuntimeExpression::Nominal => Err(self.unsupported(module, expr.span)),
             RuntimeExpression::Unit => Ok(Rc::new(Value::Unit)),
+            RuntimeExpression::BitIndex { receiver, index } => {
+                let word = self.expression(module, receiver, bindings, depth + 1)?;
+                match word.as_ref() {
+                    Value::Word { start, width } if index < *width => {
+                        Ok(Rc::new(Value::Bit(Parity::new(vec![vec![start + index]]))))
+                    }
+                    _ => Err(self.unsupported(module, expr.span)),
+                }
+            }
             RuntimeExpression::Name(name) => {
                 self.compiler
                     .charge(module, name.span, name.text.len() + bindings.len() + 1)?;
@@ -235,7 +248,7 @@ impl Synthesis<'_, '_> {
                     .collect::<Result<Vec<_>, _>>()?;
                 match target {
                     Callee::Primitive(PrimitiveId::EmptyBits) if args.is_empty() => {
-                        Ok(Rc::new(Value::Word))
+                        Ok(Rc::new(Value::Word { start: 0, width: 0 }))
                     }
                     Callee::User(key) => {
                         let target_module = self.compiler.dormant_module(key, callee.span)?;

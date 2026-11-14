@@ -205,6 +205,7 @@ pub(in crate::frontend) struct Table {
     uses: Vec<UseInfo>,
     scopes: Vec<Option<ScopeId>>,
     nodes: Vec<NodeInfo>,
+    reads_word_coordinate: bool,
     #[cfg_attr(
         not(test),
         allow(
@@ -215,6 +216,10 @@ pub(in crate::frontend) struct Table {
     association: Arc<OriginalAssociation>,
 }
 impl Table {
+    pub(in crate::frontend) fn reads_word_coordinate(&self) -> bool {
+        self.reads_word_coordinate
+    }
+
     /// Original resolved occurrences, including references in inactive branches.
     /// Callers must bound traversal; diagnostic candidates are not resolution.
     pub(in crate::frontend) fn resolved_uses(&self) -> &[UseInfo] {
@@ -329,6 +334,7 @@ impl<'ast> Index<'ast> {
                     uses: vec![],
                     scopes: vec![None],
                     nodes: vec![],
+                    reads_word_coordinate: false,
                     association: Arc::clone(&association),
                 },
                 bindings: BTreeMap::new(),
@@ -967,7 +973,9 @@ impl<'ast> Task<'ast> {
                 BasisExprKind::Match(selection) => {
                     selection.arms.len().saturating_mul(2).saturating_add(1)
                 }
-                BasisExprKind::Variant(_) | BasisExprKind::Field { .. } => 1,
+                BasisExprKind::Variant(_)
+                | BasisExprKind::Field { .. }
+                | BasisExprKind::BitIndex { .. } => 1,
                 BasisExprKind::Record(record) => record.fields.len().saturating_add(1),
                 BasisExprKind::Name(_) | BasisExprKind::Not(_) => 1,
                 BasisExprKind::Call { args, .. } => args.len().saturating_add(1),
@@ -1408,6 +1416,10 @@ where
                         tasks.push(Task::Reference(&record.type_name));
                     }
                     BasisExprKind::Field { receiver, .. } => tasks.push(Task::Basis(receiver)),
+                    BasisExprKind::BitIndex { receiver, .. } => {
+                        self.index.table.reads_word_coordinate = true;
+                        tasks.push(Task::Basis(receiver));
+                    }
                     BasisExprKind::Name(name) => tasks.push(Task::Reference(name)),
                     BasisExprKind::Call { callee, args } => {
                         tasks.extend(args.iter().rev().map(Task::Basis));

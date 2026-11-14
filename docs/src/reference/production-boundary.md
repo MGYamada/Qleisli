@@ -280,13 +280,22 @@ entries of the literal Raw use. The same interval retains the original data
 owner and its spectators. Selected runtime functions and projects that use the
 original source-body gate also support circuit synthesis for first-order
 Boolean predicates on built-in basis inputs. The compiler emits controlled
-XOR steps from constants, input bits, Boolean
+XOR steps from constants, input bits, literal `Bits<n>` coordinates, Boolean
 operations, tuple bindings, and supported helper calls. Lean checks the
 ordered controls and both compute passes against the original predicate, then
-checks the protected use on both auxiliary values. This path does not build a
-table of the predicate or expand all the input labels. It uses one private
-scratch bit and the existing work and interface limits. The three-argument
-certified form binds the original use body and logical supplier independently to their literal
+checks the protected use on both auxiliary values. This path checks the
+predicate and both circuits in their structural representation. Work is
+charged for the source expression, intermediate clause products, literal
+circuit fields and owner-frame checks. It uses one private scratch bit and
+the existing work and interface limits. For example, a
+two-bit increment modulo four can use the checked carry predicate
+`word[0] and word[1]` as a controlled phase between Hadamards on the high
+bit, followed by a low-bit flip. The literal `take_bit` and `put_bit`
+intervals retain the original register coordinates and arbitrary reference
+amplitudes. A finite transform such as a specialized adjoint, control or power
+selects the checked finite representation when preparing its original body.
+The three-argument certified form binds the original use body and logical
+supplier independently to their literal
 circuits on the exact data and auxiliary codes. Explicit pair splits and joins
 retain their written owner order and the exact logical axes, including padding
 in the product code. The native cleanup equation covers the complete physical

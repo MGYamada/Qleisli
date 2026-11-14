@@ -206,6 +206,26 @@ private def compileStep (fields : List Field) : (expression : Expression) →
     let left ← recur first (by decreasing_tactic)
     let right ← recur second (by decreasing_tactic)
     join left right
+  | .field stride 2 (.input index), _ => do
+    charged (fields.length + 1)
+    match input : fields[index]? with
+    | some (.bits axis width) =>
+      charged width
+      Finite.guard (stride < 2^width) .request
+      let offset := stride.log2
+      if slice : offset < width ∧ stride = 2^offset then
+        return ⟨[[⟨axis+offset,true⟩]], by
+          intro label
+          rw [evaluate_unfold]
+          simp only [evaluateStep]
+          rw [evaluate_unfold]
+          simp only [evaluateStep, valuation, input, Option.map_some, Field.read,
+            bind, Option.bind]
+          rw [slice.2]
+          simp [parity_single]
+          exact bit_slice label axis offset width slice.1⟩
+      else throw .request
+    | _ => throw .request
   | .equalsOrdinal expected (.input index), _ => do
     charged (fields.length + 1)
     match input : fields[index]? with

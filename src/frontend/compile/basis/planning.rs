@@ -10,7 +10,9 @@ impl Compiler<'_> {
         selected: Option<&BTreeSet<Key>>,
     ) -> Result<(), CompileError> {
         let has_nominals = !self.source.nominals.is_empty();
+        let word_predicates = self.word_coordinate_functions(selected)?;
         if !has_nominals
+            && word_predicates.is_empty()
             && !self.source.obligations.iter().any(|obligation| {
                 matches!(obligation.kind, check::ObligationKind::WorkspaceRestoration)
             })
@@ -30,8 +32,10 @@ impl Compiler<'_> {
                 let requires_plan = match obligation.kind {
                     check::ObligationKind::WorkspaceRestoration => true,
                     check::ObligationKind::Injectivity { .. }
-                    | check::ObligationKind::ProtectedClean
                     | check::ObligationKind::CertifiedClean { .. } => has_nominals,
+                    check::ObligationKind::ProtectedClean => {
+                        has_nominals || !word_predicates.is_empty()
+                    }
                     _ => false,
                 };
                 if !requires_plan {
@@ -71,7 +75,9 @@ impl Compiler<'_> {
                         })),
                     ) => matches!(locals.usage(function).target,
                         ResolvedUse::Global(Target::Declaration(predicate))
-                            if self.deferred_nominal_tables.contains(&predicate)),
+                            if self.deferred_nominal_tables.contains(&predicate)
+                                || matches!(obligation.kind, check::ObligationKind::ProtectedClean)
+                                   && word_predicates.contains(&predicate)),
                     _ => {
                         return Err(self.error(
                             module,
@@ -136,6 +142,31 @@ impl Compiler<'_> {
         Ok(())
     }
 
+    fn word_coordinate_functions(
+        &mut self,
+        selected: Option<&BTreeSet<Key>>,
+    ) -> Result<BTreeSet<Key>, CompileError> {
+        let mut functions = BTreeSet::new();
+        let mut work = self.work;
+        for key in &self.source.dependency_order {
+            let decl = self.declarations[key];
+            if selected.is_some_and(|set| !set.contains(key)) || decl.kind != FnKind::Classical {
+                continue;
+            }
+            let module = &self.source.resolution.declaration(*key).name.0;
+            let table = &self.source.lexical[key];
+            let uses = table.resolved_uses();
+            self.charge_at(&mut work, module, decl.span, uses.len() + 1)?;
+            if table.reads_word_coordinate() || uses.iter().any(|usage| {
+                matches!(usage.target, ResolvedUse::Global(Target::Declaration(callee)) if functions.contains(&callee))
+            }) {
+                functions.insert(*key);
+            }
+        }
+        self.work = work;
+        Ok(functions)
+    }
+
     fn has_nominal_port(
         &self,
         ty: &check::Ty,
@@ -186,7 +217,10 @@ impl Compiler<'_> {
                     self.charge_at(work, module, expression.span, fields.len())?;
                     pending.extend(fields);
                 }
-                BasisExprKind::Not(value) => pending.push(value),
+                BasisExprKind::Not(value)
+                | BasisExprKind::BitIndex {
+                    receiver: value, ..
+                } => pending.push(value),
                 BasisExprKind::And(a, b) | BasisExprKind::Xor(a, b) => {
                     pending.push(a);
                     pending.push(b);

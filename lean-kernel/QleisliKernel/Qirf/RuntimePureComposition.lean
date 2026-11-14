@@ -38,6 +38,9 @@ def region {dependencies program block} : Node dependencies program block → Lo
   | .structural (start := start) (count := count) action =>
     ⟨start,count,action.inputs.map (·.token),action.outputs.map (·.token),action.inputRoles,action.outputRoles,
       action.interval,action.inputs,action.outputs,[action.operation],action.literal,action.spectators⟩
+  | .register (start := start) (count := count) (event := event) _ action =>
+    ⟨start,count,action.inputs.map (·.token),action.outputs.map (·.token),event.consumed,event.allocated,
+      action.interval,action.inputs,action.outputs,action.operations,action.literal,action.spectators⟩
   | .basis (start := start) (count := count) (event := event) interval _ _ action =>
     let op := Semantics.Raw.Op.liftBasis action.input.port.token action.output.token action.output.wires action.table
     ⟨start,count,[action.input.port.token],[action.output.token],[event.input],[event.output],

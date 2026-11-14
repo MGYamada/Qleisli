@@ -102,6 +102,182 @@ fn selected_computed_predicate_checks_the_literal_xor_scope() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn source_word_predicate_is_shared_by_a_coherent_oracle_and_ordinary_readout() {
+    use qleisli::ir::RawOp;
+
+    let source = include_str!(
+        "fixtures/authoring_sessions/classical-synthesis-v030/word-coordinate-first/first.qli"
+    );
+    let checked = selected_at(source, "main::oracle");
+    let program = checked.program();
+    let [
+        RawOp::StructuralCompute {
+            forward, inverse, ..
+        },
+    ] = program.raw().operations.as_slice()
+    else {
+        panic!("expected a literal circuit and private scratch");
+    };
+    assert_eq!(forward, inverse);
+    assert_eq!(forward.len(), 2);
+    assert_eq!(
+        forward
+            .iter()
+            .map(|step| step
+                .controls
+                .iter()
+                .map(|control| control.index)
+                .collect::<Vec<_>>())
+            .collect::<Vec<_>>(),
+        [vec![0, 2], vec![0, 1, 2]],
+    );
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let changed = artifact.replacen("word[2]", "word[0]", 1);
+    assert_ne!(artifact, changed);
+    let failure = kernel()
+        .check_qmatch_source_v5(changed.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(failure.code, "contract", "{failure}");
+
+    let closed = format!(
+        "{source}\n\
+        observe fn main()->(Bit,Bit){{\n\
+            let a=measure_z(h(basis unit(()) as _{{0}}));\n\
+            let b=measure_z(basis unit(()) as _{{0}});\n\
+            let c=measure_z(basis unit(()) as _{{1}});\n\
+            let word=prepend_bit[2](a,prepend_bit[1](b,prepend_bit[0](c,empty_bits())));\n\
+            (a,marked(word))\n\
+        }}\n"
+    );
+    let program = compile_project(&SourceRoot::new(&closed).0).unwrap();
+    let result = run_closed(&program, SimulationLimits::default()).unwrap();
+    for expected in [vec![false, false], vec![true, true]] {
+        assert!((result.get(&expected).copied().unwrap_or(0.0) - 0.5).abs() < 1e-12);
+    }
+
+    let closed_oracle = format!(
+        "{source}\n\
+        observe fn main()->Bit{{\n\
+            let empty=basis unit(()) as _{{empty_bits()}};\n\
+            let c=put_bit[1,0](basis unit(()) as _{{1}},empty);\n\
+            let bc=put_bit[2,0](basis unit(()) as _{{0}},c);\n\
+            let abc=put_bit[3,0](h(basis unit(()) as _{{0}}),bc);\n\
+            let (a,bc)=take_bit[3,0](oracle(abc));\n\
+            discard(bc); measure_z(h(a))\n\
+        }}"
+    );
+    let program = compile_project(&SourceRoot::new(&closed_oracle).0).unwrap();
+    assert!(
+        program
+            .raw()
+            .operations
+            .iter()
+            .any(|op| matches!(op, RawOp::StructuralCompute { .. }))
+    );
+    assert!(
+        !program
+            .raw()
+            .operations
+            .iter()
+            .any(|op| matches!(op, RawOp::LiftBasis { table, .. } if table.len() > 1))
+    );
+    let result = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert!((result.get(&vec![true]).copied().unwrap_or(0.0) - 1.0).abs() < 1e-12);
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    for (original, modified) in [
+        ("put_bit[3,0]", "put_bit[3,1]"),
+        ("take_bit[3,0]", "take_bit[3,1]"),
+    ] {
+        let changed = artifact.replacen(original, modified, 1);
+        assert_ne!(artifact, changed);
+        let failure = kernel()
+            .check_qmatch_source_v5(changed.as_bytes(), program.request().unwrap())
+            .unwrap_err();
+        assert_eq!(failure.code, "contract", "{failure}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_two_bit_increment_uses_a_synthesized_carry() {
+    use qleisli::ir::RawOp;
+
+    // Reversible addition by one modulo four, with the low bit at index zero.
+    // The carry predicate becomes controlled-Z on the original two-bit word;
+    // Hadamard conjugation flips the high bit when the original low bit is one.
+    let source = r#"#![no_implicit_prelude]
+        classical fn carry(word: Bits<2>) -> Bit { word[0] and word[1] }
+
+        unitary fn increment(word: Q<Bits<2>>) -> Q<Bits<2>> {
+            let (hi,lo)=take_bit[2,1](word);
+            let before=put_bit[2,1](h(hi),lo);
+            let after=with_computed(before,carry) { |flag| phase[1,1](flag) };
+            let (hi,lo)=take_bit[2,1](after);
+            let (lo,empty)=take_bit[1,0](lo);
+            let next_lo=h(phase[1,1](h(lo)));
+            put_bit[2,1](h(hi),put_bit[1,0](next_lo,empty))
+        }
+
+        pub observe fn main() -> (Bit,Bit) {
+            let empty=basis unit(()) as _{empty_bits()};
+            let lo=put_bit[1,0](h(basis unit(()) as _{0}),empty);
+            let word=put_bit[2,1](basis unit(()) as _{1},lo);
+            let (hi,lo)=take_bit[2,1](increment(word));
+            let (lo,empty)=take_bit[1,0](lo);
+            discard(empty);
+            (measure_z(lo),measure_z(hi))
+        }
+    "#;
+    let program = compile_project(&SourceRoot::new(source).0).unwrap();
+    let mut carries = program.raw().operations.iter().filter_map(|operation| {
+        if let RawOp::StructuralCompute {
+            forward, inverse, ..
+        } = operation
+        {
+            Some((forward, inverse))
+        } else {
+            None
+        }
+    });
+    let (forward, inverse) = carries.next().expect("synthesized reversible carry");
+    assert!(carries.next().is_none());
+    assert_eq!(forward, inverse);
+    assert_eq!(forward.len(), 1);
+    assert_eq!(
+        forward[0]
+            .controls
+            .iter()
+            .map(|control| (control.index, control.when_one))
+            .collect::<Vec<_>>(),
+        [(0, true), (1, true)],
+    );
+    assert!(
+        !program.raw().operations.iter().any(
+            |operation| matches!(operation, RawOp::LiftBasis { table, .. } if table.len() > 1)
+        )
+    );
+
+    // (2 + 1) mod 4 = 3 and (3 + 1) mod 4 = 0.
+    let distribution = run_closed(&program, SimulationLimits::default()).unwrap();
+    for (output, expected) in [
+        (vec![false, false], 0.5),
+        (vec![true, false], 0.0),
+        (vec![false, true], 0.0),
+        (vec![true, true], 0.5),
+    ] {
+        assert!((distribution.get(&output).copied().unwrap_or(0.0) - expected).abs() < 1e-12);
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_finite_transforms_preserve_a_computed_predicate() {
     use qleisli::ir::RawOp;
 

@@ -54,6 +54,12 @@ pub(in crate::frontend) trait Context {
     fn name(&mut self, name: &Ident, env: &Self::Environment) -> Result<Self::Value, Self::Error>;
     fn unit(&mut self) -> Self::Value;
     fn bit(&mut self, value: bool) -> Self::Value;
+    fn bit_index(
+        &mut self,
+        span: Span,
+        value: Self::Value,
+        index: u32,
+    ) -> Result<Self::Value, Self::Error>;
     fn tuple(&mut self, fields: usize) -> Self::Tuple;
     fn push(
         &mut self,
@@ -98,6 +104,14 @@ pub(in crate::frontend) fn evaluate<C: Context>(
         BasisExprKind::Name(name) => context.name(name, env)?,
         BasisExprKind::Unit => context.unit(),
         BasisExprKind::Bit(value) => context.bit(*value),
+        BasisExprKind::BitIndex {
+            receiver,
+            index,
+            index_span,
+        } => {
+            let word = evaluate(context, receiver, env, depth + 1)?;
+            context.bit_index(*index_span, word, *index)?
+        }
         BasisExprKind::Tuple(fields) => {
             let mut tuple = context.tuple(fields.len());
             for field in fields {
@@ -131,6 +145,13 @@ pub(in crate::frontend) fn evaluate<C: Context>(
         }
     };
     context.finish(expr.span, value)
+}
+
+pub(in crate::frontend) fn label_bit_index(value: &Label, index: u32) -> Option<bool> {
+    match value.ty.kind {
+        Kind::Bits(width) if index < width => Some(value.label.checked_shr(index)? & 1 != 0),
+        _ => None,
+    }
 }
 
 /// Evaluate nominal values and choose the matching declaration ordinal.
