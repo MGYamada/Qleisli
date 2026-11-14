@@ -60,6 +60,51 @@ theorem Checked.sourceOperator {sources caller dependencies program block source
     checked.equation.actual = original.body.matrix :=
   checked.equation.originalBody
 
+/-- The encoding associates the original Raw frame, in its actual wire order,
+with distinct reserved target locations. Unselected locations, including
+spectator ports and their correlations, stay outside the local gate word. -/
+def placedWires (rawFrame targetFrame wires : List Nat) : Option (List Nat) :=
+  wires.mapM fun wire => do
+    if rawFrame.contains wire then targetFrame[rawFrame.idxOf wire]? else none
+
+structure Placed {sources caller dependencies program block sourceStart sourceCount event events original
+    sourceInterval sourceBefore}
+    {literal : @RuntimeWorkspace.Literal sources caller dependencies program block
+      sourceStart sourceCount event events original sourceInterval sourceBefore}
+    (map : RuntimeWorkspace.CallerMap literal) {bytes capacity}
+    (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (targetFrame : List Nat) (start count : Nat) where
+  full : targetFrame.length = sourceInterval.before.quantum.reference.frame.length
+  declared : target.circuit.declares targetFrame
+  liveLayout : List Nat
+  boundOwners : placedWires sourceInterval.before.quantum.reference.frame targetFrame
+    (map.selected.flatMap (·.port.wires)) = some liveLayout
+  freshScratch : Option Nat
+  scratchMode : freshScratch.isSome = event.fresh
+  scratchFree : ∀ location ∈ freshScratch.toList, location ∉ targetFrame
+  body : Checked map target (liveLayout ++ freshScratch.toList) start count
+
+def checkPlacement {sources caller dependencies program block sourceStart sourceCount event events original
+    sourceInterval sourceBefore}
+    {literal : @RuntimeWorkspace.Literal sources caller dependencies program block
+      sourceStart sourceCount event events original sourceInterval sourceBefore}
+    (map : RuntimeWorkspace.CallerMap literal) {bytes capacity}
+    (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (targetFrame : List Nat) (start count : Nat) (scratch : Option Nat) :
+    WorkM (Placed map target targetFrame start count) := do
+  let rawFrame := sourceInterval.before.quantum.reference.frame
+  let wires := map.selected.flatMap (·.port.wires)
+  guard (rawFrame.length ≤ 12 && targetFrame.length ≤ 12 && wires.length ≤ 12) .limit
+  exactWork (Exact.charge (32*(1+wires.length)*(1+rawFrame.length+targetFrame.length)))
+  if valid : targetFrame.length = rawFrame.length ∧ target.circuit.declares targetFrame ∧
+      scratch.isSome = event.fresh ∧ (∀ location ∈ scratch.toList, location ∉ targetFrame) then
+    match read : placedWires rawFrame targetFrame wires with
+    | none => throw .request
+    | some layout =>
+      let body ← check map target (layout ++ scratch.toList) start count
+      return ⟨valid.1,valid.2.1,layout,read,scratch,valid.2.2.1,valid.2.2.2,body⟩
+  else throw .request
+
 /-- The declaration reserves and resets the entire target register. The two
 prefix/suffix restrictions give a sufficient static lifetime condition for a
 fresh scratch axis: zero at entry and unused after exact restoration. Dirty

@@ -73,7 +73,8 @@ private def cleanControlled :=
 
 private def workspaceInterval (sourceText : String) (operations : List Semantics.Observation.Op)
     (fresh : Bool) (targetTest : Option (String × List Nat × Nat × Nat) := none)
-    (reuseTest : Option (String × List Nat × Nat × Nat × Nat) := none) :
+    (reuseTest : Option (String × List Nat × Nat × Nat × Nat) := none)
+    (placementTest : Option (String × List Nat × Option Nat) := none) :
     Finite.WorkM (List Nat × List Nat × Raw.WorkspaceResources.Counts × Nat) := do
   let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ sourceText)] "main" "route"
   let [.workspace event children] := source.events | throw .request
@@ -96,6 +97,9 @@ private def workspaceInterval (sourceText : String) (operations : List Semantics
   if let some (text,layout,start,count) := targetTest then
     let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
     let _ ← Target.CanonicalOpenQasmWorkspace.checkLifetime map target layout start count
+  if let some (text,frame,scratch) := placementTest then
+    let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
+    let _ ← Target.CanonicalOpenQasmWorkspace.checkPlacement map target frame 0 1 scratch
   if let some (text,layout,first,second,count) := reuseTest then
     let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
     let before ← Target.CanonicalOpenQasmWorkspace.check map target layout first count
@@ -142,6 +146,18 @@ private def targetWorkspaceAccepted (fresh : Bool) (text : String) (layout : Lis
 #guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[2];\nz q[0];\n") [2,0] 0 1
 #guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[1];\n") [2,0] 0 1
 #guard !targetWorkspaceAccepted true (targetWorkspace 1 "h q[0];\n") [0,0] 0 1
+
+private def placedWorkspace (fresh : Bool) (frame : List Nat) (scratch : Option Nat) : Bool :=
+  let (source,operations) := if fresh then (cleanScope,cleanOps [hData] [hData]) else (dirtyScope,dirtyOps [hData])
+  ((workspaceInterval source operations fresh none none
+    (some (targetWorkspace 3 "h q[2];\n",frame,scratch))).run 20000000).1.isOk
+
+#guard placedWorkspace true [2] (some 0)
+#guard placedWorkspace false [2,0] none
+#guard !placedWorkspace true [2] (some 2)
+#guard !placedWorkspace true [2,0] (some 1)
+#guard !placedWorkspace false [0,2] none
+#guard !placedWorkspace false [2,0] (some 1)
 
 private def reusableWorkspace (gates : String) (first second : Nat) (count : Nat := 1) : Bool :=
   ((workspaceInterval cleanScope (cleanOps [hData] [hData]) true none

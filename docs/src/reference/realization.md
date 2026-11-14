@@ -504,11 +504,15 @@ reserved and reset wires, gates, literal SWAPs, T/TDG and measurements from
 the output bytes. An exact finite workspace check can also compare a
 designated gate interval with the independently checked original clean or
 dirty body. The comparison uses the declared ordered data/scratch placement
-and requires the physical register to cover the checked Raw peak. For a fresh
+and requires the physical register to cover the checked Raw peak. The checker
+can derive the workspace's ordered locations from the checked original Raw
+frame and its complete injective physical placement. A fresh scratch must
+occupy a location absent from that frame. For a fresh
 scratch wire, the checker can verify that nothing touches it between the
 initial reset and workspace entry, or after exact restoration. This profile
 keeps the physical reservation throughout. The surrounding circuit must
-establish the placement of live owners. A physical scratch location can also
+establish how the complete placement follows from the preceding gates.
+A physical scratch location can also
 be reused across ordered, disjoint, nonempty clean intervals. The checker
 requires an exact zero-return equation for each interval, checks that every
 gate touching that location lies in one of those intervals, and checks that
