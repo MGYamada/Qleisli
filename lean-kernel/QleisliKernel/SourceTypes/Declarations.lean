@@ -140,6 +140,15 @@ structure Resolved where
   retain their existing fields; a trace is not supplied by the caller. -/
   visited : List Semantics.SourceResolution.Binding
 
+private def chargeBindingLookup (sources : Sources) (moduleName name : String) : Finite.WorkM Unit := do
+  let rows := sources.toList
+  -- The first scan selects the size to reserve. The second scan is the
+  -- original binding lookup. Neither scan reads bodies of unrelated modules.
+  Finite.exactWork (Exact.charge (2*(rows.map fun row =>
+    row.1.utf8ByteSize+moduleName.utf8ByteSize+1).sum+1))
+  let bytes := ((rows.find? (fun row => row.1 == moduleName)).map (·.2.utf8ByteSize)).getD 0
+  Finite.exactWork (Exact.charge (bytes+name.utf8ByteSize+moduleName.utf8ByteSize+3))
+
 private def resolveBinding : Nat → Sources → String → String → String → Bool →
     List (String × String) → Finite.WorkM Resolved :=
   Nat.rec (fun _ _ _ _ _ _ => throw .limit) (fun _ recurse sources caller moduleName name localImports active => do
@@ -147,8 +156,7 @@ private def resolveBinding : Nat → Sources → String → String → String �
     Finite.guard (!active.contains (moduleName,name)) .request
     -- Charge the lookup and retained binding/list cell before constructing
     -- either. Source strings and declarations are shared with that lookup.
-    Finite.exactWork (Exact.charge ((sources.toList.map fun row =>
-      row.1.utf8ByteSize+row.2.utf8ByteSize).sum+name.utf8ByteSize+moduleName.utf8ByteSize+3))
+    chargeBindingLookup sources moduleName name
     let (source,decl) ← adapt (originalBinding sources moduleName name)
     if decl.kind != "import" then
       Finite.guard (decl.isPublic || moduleName == caller) .request

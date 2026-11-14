@@ -98,6 +98,17 @@ private def cyclic_import_is_not_resolved : Bool := decide (
     resolved #[("main",imported),("other","pub use main::h;")] "main" ["h"] = false)
 #guard cyclic_import_is_not_resolved
 
+-- Each import hop scans the keys and the selected source. Unrelated source
+-- bodies do not consume the budget of an otherwise identical lookup.
+private def importWork (sources : Sources) : Option Nat :=
+  let (result,left) := (resolveReference sources "main" ["h"]).run 500
+  result.toOption.map (fun _ => 500-left)
+
+#guard (importWork #[("main",imported),("other",publicFunction),("unused","")]).isSome
+#guard importWork #[("main",imported),("other",publicFunction),("unused",String.ofList (List.replicate 1000 ' '))] ==
+  importWork #[("main",imported),("other",publicFunction),("unused","")]
+#guard (importWork #[("main",imported),("other",publicFunction ++ String.ofList (List.replicate 1000 ' '))]).isNone
+
 -- This deliberately exposes the component boundary: cataloguing a function
 -- does not validate its full header, body, effects or permission to call it.
 private def incomplete_function_header_remains_a_catalogue_binding : Bool := decide (

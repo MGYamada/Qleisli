@@ -677,6 +677,93 @@ impl Checker<'_, '_> {
         )?;
         Ok((id, result))
     }
+    pub(super) fn workspace(
+        &mut self,
+        workspace: &WorkspaceScope,
+        scope: &mut Scope,
+        span: Span,
+    ) -> Result<Ty> {
+        let data = self.expr(&workspace.data, scope, None)?;
+        let basis = data.quantum_basis().ok_or_else(|| {
+            SourceError::new(
+                "type",
+                workspace.data.span,
+                "workspace data requires one Q<A> owner",
+            )
+        })?;
+        let scratch = Ty::quantum(Ty::bit());
+        if let Some(dirty) = &workspace.dirty {
+            self.expr(dirty, scope, Some(&scratch))?;
+        }
+        let logical = self.target_operation(&workspace.logical, basis, scope)?;
+        access(&logical, Access::Apply, workspace.logical.span)?;
+        normalize::expect(
+            logical.output(),
+            basis,
+            &scope.context,
+            workspace.logical.span,
+            &self.program.budget,
+        )?;
+        if logical.effect != Effect::Unitary {
+            return Err(SourceError::new(
+                "effect",
+                workspace.logical.span,
+                "workspace logical operation must be unitary",
+            ));
+        }
+        let mut inner = scope.copy(&self.program.budget, span)?;
+        inner.values.clear();
+        for (binder, ty) in [
+            (
+                &workspace.data_binder,
+                self.program.budget.copy_ty(span, &data)?,
+            ),
+            (
+                &workspace.scratch_binder,
+                self.program.budget.copy_ty(span, &scratch)?,
+            ),
+        ] {
+            bind_name(
+                binder,
+                ty,
+                self.index(),
+                &mut inner,
+                &self.program.budget,
+                binder.span,
+            )?;
+        }
+        let expected = Ty::pair(self.program.budget.copy_ty(span, &data)?, scratch);
+        let body = &workspace.body;
+        let surrounding = std::mem::replace(&mut self.effects, BodyEffects::new(body.span));
+        let checked = self.block(body, &mut inner, Some(&expected));
+        let region = std::mem::replace(&mut self.effects, surrounding);
+        checked?;
+        if let Some(key) = self.live_owner(&inner, body.span)? {
+            return Err(disposal_error(
+                self.index().table.binder(key.id).span,
+                format!("workspace owner `{}` must be returned", key.name),
+            ));
+        }
+        self.program
+            .budget
+            .charge(body.span, region.storage_cells() + 1)?;
+        self.effects.merge(&region);
+        let description = if workspace.dirty.is_some() {
+            "dirty workspace body must be unitary"
+        } else {
+            "clean workspace body must be unitary"
+        };
+        self.program
+            .unitary_regions
+            .push((self.definition, body.span, region, description));
+        self.obligation(span, ObligationKind::WorkspaceRestoration, scope)?;
+        Ok(if workspace.dirty.is_some() {
+            expected
+        } else {
+            data
+        })
+    }
+
     #[allow(clippy::too_many_arguments)]
     pub(super) fn computed(
         &mut self,
@@ -860,9 +947,12 @@ impl Checker<'_, '_> {
             .budget
             .charge(body.span, region.storage_cells() + 1)?;
         self.effects.merge(&region);
-        self.program
-            .unitary_regions
-            .push((self.definition, body.span, region));
+        self.program.unitary_regions.push((
+            self.definition,
+            body.span,
+            region,
+            "with_computed body must be unitary",
+        ));
         // Exact returned-register identity and clean release remain obligations
         // for the actual circuit/evidence consumer, not type/name evidence.
         Ok(source_ty)

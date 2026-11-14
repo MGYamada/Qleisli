@@ -55,6 +55,14 @@ def Root.record {sources owner name original tree} (root : @Root sources owner n
   ⟨owner,name,root.definition,root.prepared,
     GenericTypeTrace.originalTree root.definition root.sameOriginal tree,root.outcome,root.checked⟩
 
+private def inferRechecked {sources catalogue owner name original tree}
+    (projection : @GenericCatalogue.Projection sources catalogue owner name original)
+    (root : Root original tree) : WorkM (GenericTypeTrace.Inferred catalogue.records root.record) :=
+  let original := projection.entry.inferred
+  match original.cohort with
+  | some cohort => GenericTypeTrace.inferFrom catalogue.records root.record original.prepared cohort
+  | none => GenericTypeTrace.infer catalogue.records root.record
+
 structure Checked {sources owner name} (catalogue : GenericCatalogue.Checked sources)
     (original : OrdinarySignature.Original sources owner name) (tree : SourceSyntax.Tree original.occurrence.body) where
   projection : GenericCatalogue.Projection catalogue.toRuntimeChecked original
@@ -67,8 +75,7 @@ structure Checked {sources owner name} (catalogue : GenericCatalogue.Checked sou
   quantum : root.outcome.quantumUse = projection.entry.body.outcome.quantumUse
   references : root.outcome.references = projection.entry.body.outcome.references
   inferred : GenericTypeTrace.Inferred catalogue.records root.record
-  inferredRead : ∃ before after,
-    (GenericTypeTrace.infer catalogue.records root.record).run before = (.ok inferred,after)
+  inferredRead : ∃ before after,(inferRechecked projection root).run before = (.ok inferred,after)
 
 def Checked.inferredEffect {sources owner name catalogue original tree}
     (checked : @Checked sources owner name catalogue original tree) : Semantics.Raw.Effect :=
@@ -109,7 +116,7 @@ def read {sources : Sources} {owner name : String} (catalogue : GenericCatalogue
           if references : outcome.val.references = body.outcome.references then
             let root : Root original tree :=
               ⟨definition,sameOriginal,prepared,outcome.val,by with_reducible exact outcome.property⟩
-            let inferred ← NaturalAffine.witness (GenericTypeTrace.infer catalogue.records root.record)
+            let inferred ← NaturalAffine.witness (inferRechecked projection.val root)
             pure ⟨projection.val,by with_reducible exact projection.property,root,
               definitionOf_same body sameOwner sameName,preparedOf_same body sameOwner sameName,
               effect,quantum,references,inferred.val,by with_reducible exact inferred.property⟩

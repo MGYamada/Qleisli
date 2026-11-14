@@ -341,9 +341,14 @@ and grants no visibility, operation access or execution authority. -/
 def readOriginalEnvelope (sources : Sources) (owner name : String) :
     WorkM (Original sources owner name) := do
   guard (sources.size ≤ 128) .limit
-  let bytes := (sources.toList.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize).sum
+  let rows := sources.toList
+  let bytes := (rows.map fun row => row.1.utf8ByteSize + row.2.utf8ByteSize).sum
   guard (bytes ≤ 1048576) .limit
-  exactWork (Exact.charge (512*(bytes+1)+owner.utf8ByteSize+name.utf8ByteSize+1))
+  -- Reserve the table pass and both name scans. Only the selected module
+  -- enters the lexer, declaration scan, header and byte-envelope checks.
+  exactWork (Exact.charge (16*((rows.map fun row => row.1.utf8ByteSize+owner.utf8ByteSize+1).sum+1)))
+  let selectedBytes := ((rows.find? (fun row => row.1 == owner)).map (·.2.utf8ByteSize)).getD 0
+  exactWork (Exact.charge (128*(selectedBytes+1)+owner.utf8ByteSize+name.utf8ByteSize+1))
   adapt (original sources owner name)
 
 /-- The existing closed-header consumers retain their explicit refusal of

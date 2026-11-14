@@ -352,6 +352,13 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                 | supplied => exact ()
                 | original => exact some (.computed prepared)
               return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
+          | .workspace event children =>
+            let prepared ← RuntimeWorkspace.readOriginal event children
+            let data : scope.EventData mode.preparation (.workspace event children) position before before := by
+              cases scope with
+              | supplied => exact ()
+              | original => exact some (.workspace prepared)
+            return ⟨before,⟨prepared.rows,[]⟩,[],data⟩
           | .matching .. | .registerPrimitive .. | .staticConditional .. => throw .request
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do

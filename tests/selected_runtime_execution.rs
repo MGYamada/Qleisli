@@ -44,6 +44,107 @@ fn selected_at(source: &str, entry: &str) -> qleisli::frontend::compile::Selecte
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn source_workspace_scopes_require_exact_native_restoration() {
+    let clean = "#![no_implicit_prelude]\n\
+        unitary fn gate(q:Q<Bit>)->Q<Bit>{h(q)}\n\
+        pub unitary fn main(q:Q<Bit>)->Q<Bit>{clean(q,h){|data,scratch|\
+            let (data,scratch)=controlled(gate)(data,scratch);\
+            let (data,scratch)=controlled(gate)(data,scratch);(h(data),scratch)}}";
+    let dirty = "#![no_implicit_prelude]\n\
+        pub unitary fn main(q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>){dirty(q,d,h){|data,scratch|(h(data),scratch)}}";
+    for (source, outputs) in [(clean, 1), (dirty, 2)] {
+        let accepted = selected_at(source, "main::main");
+        let program = accepted.program();
+        assert_eq!(
+            program.source_body_scope(),
+            Some("finite-source-basis-context-v5")
+        );
+        assert_eq!(program.output_ports().len(), outputs);
+        for (entry, exit) in program
+            .raw()
+            .quantum_inputs
+            .iter()
+            .zip(program.output_ports())
+        {
+            assert_eq!(entry.wires, exit.wires);
+        }
+        kernel().check_program(program).unwrap();
+    }
+    let clean_leaks = clean.replacen("let (data,scratch)=controlled(gate)(data,scratch);", "", 1);
+    let dirty_phase = dirty.replace("(h(data),scratch)", "(h(data),phase[1,1](scratch))");
+    for source in [clean_leaks, dirty_phase] {
+        let result = ParsedProgram::parse(
+            Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap()
+        .instantiate_runtime_with_types(
+            "main::main",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel());
+        let Err(error) = result else {
+            panic!("restoration must fail for {source}");
+        };
+        assert_eq!(error.code, "invalid_ir", "{error:?}\n{source}");
+        assert!(
+            error.message.contains("Lean native checker rejected"),
+            "{error:?}"
+        );
+    }
+
+    let closed = "#![no_implicit_prelude]\n\
+        unitary fn gate(q:Q<Bit>)->Q<Bit>{h(phase[1,1](h(q)))}\n\
+        isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
+        observe fn main()->(Bit,Bit,Bit){\
+            let (d,r)=controlled(gate)(h(zero()),zero());\
+            let q=clean(zero(),gate){|data,scratch|(gate(data),scratch)};\
+            let (q,d)=dirty(q,d,gate){|data,scratch|(gate(data),scratch)};\
+            let (d,r)=controlled(gate)(d,r);\
+            (measure_z(q),measure_z(h(d)),measure_z(r))}";
+    let program = compile_project(&SourceRoot::new(closed).0).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-basis-context-v5")
+    );
+    let outcomes = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert_eq!(outcomes.len(), 1);
+    assert!((outcomes[&vec![false, false, false]] - 1.0).abs() < 1e-12);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn original_workspace_examples_fit_the_shared_exact_work_limit() {
+    for (source, outputs) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/scoped-workspace-v030/attempt-01/clean-restores/main.qli"
+            ),
+            1,
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/scoped-workspace-v030/attempt-01/dirty-restores/main.qli"
+            ),
+            2,
+        ),
+    ] {
+        let checked = selected_at(source, "main::main");
+        assert_eq!(checked.program().output_ports().len(), outputs);
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_qmatch_context_checks_original_phase_parameters_and_aliases() {
     use qleisli::contract::exact::{Budget, Exact, Matrix};
     use qleisli::contract::{BasisType, Circuit};

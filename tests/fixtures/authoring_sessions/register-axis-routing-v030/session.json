@@ -1,0 +1,28 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#76 express physical register SWAP and structural axis transposition in ordinary Qleisli",
+  "author": "Codex, informed by the current library, Reference and #76",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "40c41586832590fd8e3b116f6a8e9dcb86cee229",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Write both operations before adding bundled exports.",
+      "sha256": {
+        "swap_registers.qli": "167fc904afaa6d9256f6bd0a129065526e977af3de8e165e79edb0a5176eb2ee",
+        "transpose_axes.qli": "8eadfdb78d033a4ec934cf48bffb8eea729d219589b5020d1e9a3028a1ba60ea"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "first-observation.json"
+      ],
+      "reports": [
+        "first-observations.json"
+      ]
+    }
+  ]
+}

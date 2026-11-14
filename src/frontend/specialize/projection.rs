@@ -527,6 +527,12 @@ impl Projection<'_, '_> {
                     "runtime closure values are unsupported",
                 ));
             }
+            source::ExprKind::Workspace(_) => {
+                return Err(unsupported(
+                    expr.span,
+                    "workspace scopes require finite native checking",
+                ));
+            }
             _ => return Err(unsupported(expr.span, "unsupported runtime expression")),
         };
         Ok(Expr {

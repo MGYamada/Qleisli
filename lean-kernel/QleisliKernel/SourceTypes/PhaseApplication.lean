@@ -84,12 +84,13 @@ structure Checked (sources : Sources) (caller : String) (naturals : Naturals sou
   k : LexicalNatural.Checked sources caller naturals.helpers.val naturals.environment scope denominator.expression
   coefficient : PhaseCoefficient.Checked j.result.value k.result.value
 
-def read (sources : Sources) (caller : String) (naturals : Naturals sources) (scope : List String)
+private def readWith (sources : Sources) (caller : String) (naturals : Naturals sources) (scope : List String)
+    (readCandidate : (callee : List LocatedToken) → WorkM (CallName.Checked sources caller scope callee))
     {tokens : List LocatedToken} (call : CallSyntax.Checked tokens) :
     WorkM (Checked sources caller naturals scope call) := do
   exactWork (Exact.charge (128*((tokens.map fun token => token.text.utf8ByteSize+4).sum+1)))
   let parsed ← lift ((readSyntax call).mapError fun _ => .request)
-  let candidate ← CallName.read sources caller scope parsed.staticCall.call.callee
+  let candidate ← readCandidate parsed.staticCall.call.callee
   if primitive : selected candidate = true then
     let numerator ← lift ((StaticBindings.natural parsed.numerator.tokens).mapError fun _ => .request)
     let denominator ← lift ((StaticBindings.natural parsed.denominator.tokens).mapError fun _ => .request)
@@ -104,6 +105,17 @@ def read (sources : Sources) (caller : String) (naturals : Naturals sources) (sc
       by with_reducible simpa only [numeratorUnit] using genericNumerator.property,
       by with_reducible simpa only [denominatorUnit] using genericDenominator.property,j,k,coefficient⟩
   else throw .request
+
+def read (sources : Sources) (caller : String) (naturals : Naturals sources) (scope : List String)
+    {tokens : List LocatedToken} (call : CallSyntax.Checked tokens) : WorkM (Checked sources caller naturals scope call) :=
+  readWith sources caller naturals scope (CallName.read sources caller scope) call
+
+/-- Reuse a checked candidate only for the same original callee slice. -/
+def readWithCandidate (sources : Sources) (caller : String) (naturals : Naturals sources) (scope : List String)
+    {tokens : List LocatedToken} (call : CallSyntax.Checked tokens) {callee : List LocatedToken}
+    (candidate : CallName.Checked sources caller scope callee) : WorkM (Checked sources caller naturals scope call) :=
+  readWith sources caller naturals scope (fun actual =>
+    if same : callee = actual then pure (same ▸ candidate) else throw .request) call
 
 /-- Validate every original initializer, including unused ones, before making
 its name visible. Completed runtime binders remain in the supplied lexical scope. -/

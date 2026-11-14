@@ -320,6 +320,29 @@ class CompiledAudit(unittest.TestCase):
                                 cwd=ROOT / "lean-kernel", text=True, capture_output=True, check=True)
         cls.lean = Path(result.stdout.strip()) / "bin" / "lean"
         cls.audit_source = (ROOT / "lean-kernel/Audit.lean").read_text(encoding="utf-8")
+        cls.fixture_modules = sorted(filter(test_module, lean_imports(cls.audit_source)))
+        fixture_directory = tempfile.TemporaryDirectory(prefix="qleisli-audit-fixtures-")
+        cls.addClassCleanup(fixture_directory.cleanup)
+        cls.fixture_root = Path(fixture_directory.name)
+        for name in cls.fixture_modules:
+            cls.write_fixture(cls.fixture_root, name, "Init")
+            cls.compile_module(cls.fixture_root, name)
+
+    @staticmethod
+    def write_fixture(root, name, dependency):
+        path = root / (name.replace(".", "/") + ".lean")
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(f"import {dependency}\nnamespace {name}\n"
+                        f"def fixtureMarker := true\nend {name}\n", encoding="utf-8")
+
+    @classmethod
+    def compile_module(cls, root, name):
+        relative = name.replace(".", "/")
+        result = subprocess.run([cls.lean, "-o", relative + ".olean", relative + ".lean"],
+                                cwd=root, env=dict(os.environ, LEAN_PATH=str(root)),
+                                text=True, capture_output=True)
+        if result.returncode != 0:
+            raise AssertionError(result.stdout + result.stderr)
 
     def audit(self, body, main="import QleisliKernel\ndef main : IO Unit := pure ()\n",
               *, module="QleisliKernel", transport=False, test_only=False):
@@ -336,25 +359,24 @@ class CompiledAudit(unittest.TestCase):
                     "import Init\ndef seed := true\n" if transport or test_only else f"import {module}\n",
                     encoding="utf-8")
                 modules.append("QleisliKernel")
-            # The real audit imports reduction roots separately from runtime.
-            # Supply minimal counterparts without depending on production test
-            # artifacts; mutation targets remain owned by their actual module.
-            for name in sorted(filter(test_module, lean_imports(self.audit_source))):
-                if name != module:
-                    path = root / (name.replace(".", "/") + ".lean")
-                    path.parent.mkdir(parents=True, exist_ok=True)
-                    dependency = module if test_only and module.startswith(name + ".") else "Init"
-                    path.write_text(f"import {dependency}\nnamespace {name}\n"
-                                    "def fixtureMarker := true\nend " + name + "\n", encoding="utf-8")
+            # The audit imports reduction roots separately from runtime. Only
+            # a root importing this mutation needs a new fixture build.
+            for name in self.fixture_modules:
+                if name == module:
+                    continue
+                if test_only and module.startswith(name + "."):
+                    self.write_fixture(root, name, module)
                     modules.append(name)
+                else:
+                    relative = name.replace(".", "/") + ".olean"
+                    target = root / relative
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    os.link(self.fixture_root / relative, target)
             (root / "Main.lean").write_text(
                 f"import {module}\n" + main if transport else main, encoding="utf-8")
             (root / "Audit.lean").write_text(self.audit_source, encoding="utf-8")
             for name in [*modules, "Main"]:
-                relative = name.replace(".", "/")
-                compiled = subprocess.run([self.lean, "-o", relative + ".olean", relative + ".lean"],
-                                          cwd=root, env=env, text=True, capture_output=True)
-                self.assertEqual(compiled.returncode, 0, compiled.stdout + compiled.stderr)
+                self.compile_module(root, name)
             result = subprocess.run([self.lean, "Audit.lean"], cwd=root, env=env,
                                     text=True, capture_output=True)
             return result.returncode, result.stdout + result.stderr

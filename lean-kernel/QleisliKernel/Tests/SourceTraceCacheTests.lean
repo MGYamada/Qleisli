@@ -39,11 +39,10 @@ private def calls (source : String) : Option (List Nat × List Nat) :=
 #guard (calls (RawTraceTests.zeroPair "(u,h(h(q)))")).map
   (fun (offsets,owners) => offsets.length == 2 && offsets.Pairwise (· > ·) && owners == [0,1]) = some true
 
--- The recorded 129-event source and its Raw intervals consume 21,870,757
--- units together. These successful checks each use one 22M allowance.
--- SourceTraceCost separately preserves the original 10M refusal.
-#guard ((SourceTrace.read SourceTraceCost.sources "main" "route").run 22000000).1.isOk
-#guard (SourceTraceCost.composed.run 22000000).1.toOption = some (129,129)
+-- The same 129-event source and Raw intervals now fit the shared native
+-- allowance. SourceTraceCost also checks the historical 10M refusal.
+#guard ((SourceTrace.read SourceTraceCost.sources "main" "route").run exactWorkLimit).1.isOk
+#guard (SourceTraceCost.composed.run exactWorkLimit).1.toOption = some (129,129)
 #guard (SourceTraceCost.composed.run 2000000000).1.toOption = some (129,129)
 
 -- Small composed cases retain the literal-instruction/complete-owner checks.

@@ -38,6 +38,8 @@ def NodeAligned {dependencies program block} (before after : RuntimeStructuralAc
     before = original ∧ after = RuntimeComputedPredicate.continued event original action.literal.output
   | .certifiedComputed (event := event) (before := original) _ _ _ action =>
     before = original ∧ after = RuntimeComputedPredicate.continued event original action.literal.output
+  | .workspace (before := original) _ _ _ action _ =>
+    before = original ∧ after = action.continuation
   | .operation frame .. => OperationOwnerOrder frame before after
   | .rectangularOperation (before := original) checked =>
     before = original ∧ after =

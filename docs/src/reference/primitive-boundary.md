@@ -237,7 +237,7 @@ target-realization or quantitative resource theorem.
 ## Ordinary library and module resolution
 
 `src/frontend/source.rs::BundledRegistry` embeds **eight ordinary source
-modules with twenty-five public definitions**, six transparent prelude reexports
+modules with twenty-six public definitions**, six transparent prelude reexports
 and five private helpers for
 reflection, scalar phase, parameterized phase, packed CNOT and fixed Bit identity.
 Both loaders retain all eight complete original sources
@@ -252,9 +252,9 @@ specialization:
 | `std::basis`, `stdlib/src/basis.qli` | `xor2`, `and2` | Total finite ordinary basis-label maps. Neither is injective over its two-input domain; a coherent enclosing construction must meet its own obligations. |
 | `std::transform`, `stdlib/src/transform.qli` | `hadamard2`, `qft2`, `qft3` | Ordered H tensor H; positive finite Fourier phase, first leaf least significant, output reversal included, no auxiliary or input-state promise. Fourier interfaces remain fixed-width. |
 | `std::reflection`, `stdlib/src/reflection.qli` | `reflect_uniform2` | Phase-fixed reflection `2|s><s| - I` with exact computed-auxiliary cleanup. Private `nonzero2` is a normal basis helper; Hadamard is imported from ordinary transform source. |
-| `std::gate`, `stdlib/src/gate.qli` | `id`, `t`, `s`, `sdg`, `tdg`, `z`, `x`, `controlled_phase`, `cnot`, `toffoli`, `swap` | Ordinary phase-fixed gates. T controls a scalar phase on a zero-width Unit owner; phase/Pauli and controlled gates derive through ordinary providers. SWAP uses three CNOTs. No library definition grants primitive authority or a target-cost guarantee. |
+| `std::gate`, `stdlib/src/gate.qli` | `id`, `t`, `s`, `sdg`, `tdg`, `z`, `x`, `controlled_phase`, `cnot`, `toffoli`, `swap` | Ordinary phase-fixed gates. T controls a scalar phase on a zero-width Unit owner; phase/Pauli and controlled gates derive through ordinary providers. Bit SWAP uses three CNOTs. No library definition grants primitive authority or a target-cost guarantee. |
 | `std::state`, `stdlib/src/state.qli` | `init0`, `reset` | Ordinary explicit singleton-to-Bit preparation and observing discard/preparation; original owner, phase and complete reference instrument retained. |
-| `std::structure`, `stdlib/src/structure.qli` | `permute_axes`, `empty`, `consume_empty` | Structural two-axis map `[1,0]`, exact phase +1, with reversed output axes and no physical gate instruction. Explicit zero-width Bits owner introduction/elimination use singleton basis maps. Generic register/permutation interfaces remain unsupported. |
+| `std::structure`, `stdlib/src/structure.qli` | `permute_axes`, `transpose_axes`, `empty`, `consume_empty` | Structural two-axis map `[1,0]` and statically indexed register transpositions, with exact phase +1 and no physical gate instructions. Explicit zero-width Bits owner introduction/elimination use singleton basis maps. |
 | `std::measurement`, `stdlib/src/measurement.qli` | `measure_x`, `measure_z2`, `parity_zz` | Complete destructive X/Z instruments and nondestructive data-parity measurement with their original owner/result trees and reference behavior. |
 | `std::prelude`, `stdlib/src/prelude.qli` | Reexports `id`, `x`, `z`, `t`, `cnot`, `init0` | Original ordinary declarations, not new bodies, primitives, effects or evidence authority. |
 

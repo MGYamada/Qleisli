@@ -949,13 +949,13 @@ impl Parser {
     // Two-stage operation syntax is contextual. Single-stage ordinary calls
     // and declarations with these names retain normal name resolution.
     fn transformed_application(&self, name: &str) -> bool {
-        if !(self.word(name) || name == "adjoint" && self.at(&TokenKind::Adjoint))
-            || self
-                .tokens
-                .get(self.pos + 1)
-                .is_none_or(|t| t.kind != TokenKind::LParen)
-        {
-            return false;
+        (self.word(name) || name == "adjoint" && self.at(&TokenKind::Adjoint))
+            && self.after_parenthesized_arguments() == Some(&TokenKind::LParen)
+    }
+
+    fn after_parenthesized_arguments(&self) -> Option<&TokenKind> {
+        if self.tokens.get(self.pos + 1)?.kind != TokenKind::LParen {
+            return None;
         }
         let mut depth = 0usize;
         for (index, token) in self.tokens.iter().enumerate().skip(self.pos + 1) {
@@ -964,17 +964,14 @@ impl Parser {
                 TokenKind::RParen => {
                     depth -= 1;
                     if depth == 0 {
-                        return self
-                            .tokens
-                            .get(index + 1)
-                            .is_some_and(|t| t.kind == TokenKind::LParen);
+                        return self.tokens.get(index + 1).map(|token| &token.kind);
                     }
                 }
                 TokenKind::Eof => break,
                 _ => {}
             }
         }
-        false
+        None
     }
 
     fn ty_inner(&mut self) -> Result<Type, ParseError> {
@@ -1569,6 +1566,13 @@ impl Parser {
                         }));
                     }
                 }
+                ExprKind::Workspace(workspace) => {
+                    pending.push((&workspace.data, depth + 1));
+                    if let Some(dirty) = &workspace.dirty {
+                        pending.push((dirty, depth + 1));
+                    }
+                    Self::pending_block(&workspace.body, depth + 1, &mut pending);
+                }
                 ExprKind::StaticFold {
                     initial: source,
                     body,
@@ -1577,22 +1581,26 @@ impl Parser {
                 | ExprKind::WithComputed { source, body, .. }
                 | ExprKind::CertifiedComputed { source, body, .. } => {
                     pending.push((source, depth + 1));
-                    pending.push((&body.result, depth + 1));
-                    pending.extend(body.statements.iter().filter_map(|statement| {
-                        let value = match &statement.kind {
-                            StmtKind::StaticLet { .. } => return None,
-                            StmtKind::Let { value, .. }
-                            | StmtKind::MutableLet { value, .. }
-                            | StmtKind::Assign { value, .. }
-                            | StmtKind::Expr(value) => value,
-                        };
-                        Some((value, depth + 1))
-                    }));
+                    Self::pending_block(body, depth + 1, &mut pending);
                 }
                 ExprKind::Name(_) | ExprKind::Bit(_) | ExprKind::Unit | ExprKind::Variant(_) => {}
             }
         }
         Ok(maximum)
+    }
+
+    fn pending_block<'a>(body: &'a Block, depth: usize, pending: &mut Vec<(&'a Expr, usize)>) {
+        pending.push((&body.result, depth));
+        pending.extend(body.statements.iter().filter_map(|statement| {
+            let value = match &statement.kind {
+                StmtKind::StaticLet { .. } => return None,
+                StmtKind::Let { value, .. }
+                | StmtKind::MutableLet { value, .. }
+                | StmtKind::Assign { value, .. }
+                | StmtKind::Expr(value) => value,
+            };
+            Some((value, depth))
+        }));
     }
 
     fn expr_primary(&mut self) -> Result<Expr, ParseError> {
@@ -1686,6 +1694,12 @@ impl Parser {
         }
         if let Some(with_token) = self.consume(&TokenKind::WithComputed) {
             return self.with_computed(with_token);
+        }
+        let dirty = self.word("dirty");
+        if (dirty || self.word("clean"))
+            && self.after_parenthesized_arguments() == Some(&TokenKind::LBrace)
+        {
+            return self.workspace_scope(dirty);
         }
         self.expr_atom()
     }
@@ -2051,6 +2065,46 @@ impl Parser {
             }
         };
         Ok(Expr { kind, span })
+    }
+
+    fn workspace_scope(&mut self, dirty: bool) -> Result<Expr, ParseError> {
+        let start = self.bump().span;
+        self.expect(&TokenKind::LParen)?;
+        let data = self.expr()?;
+        self.expect(&TokenKind::Comma)?;
+        let dirty = if dirty {
+            let scratch = self.expr()?;
+            self.expect(&TokenKind::Comma)?;
+            Some(scratch)
+        } else {
+            None
+        };
+        let logical = self.reference_name()?;
+        self.expect(&TokenKind::RParen)?;
+        let open = self.expect(&TokenKind::LBrace)?;
+        self.expect(&TokenKind::Pipe)?;
+        let data_binder = self.ident()?;
+        self.expect(&TokenKind::Comma)?;
+        let scratch_binder = self.ident()?;
+        if data_binder.text == scratch_binder.text {
+            return Err(ParseError {
+                message: "workspace data and scratch binders must be distinct".into(),
+                span: scratch_binder.span,
+            });
+        }
+        self.expect(&TokenKind::Pipe)?;
+        let body = self.block_contents(open.span.start)?;
+        Ok(Expr {
+            span: start.cover(body.span),
+            kind: ExprKind::Workspace(Box::new(WorkspaceScope {
+                data,
+                dirty,
+                logical,
+                data_binder,
+                scratch_binder,
+                body,
+            })),
+        })
     }
 
     fn apply_contract(&mut self, start: Span) -> Result<Expr, ParseError> {

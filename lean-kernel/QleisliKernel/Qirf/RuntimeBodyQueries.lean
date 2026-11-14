@@ -161,6 +161,19 @@ def readComputed {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.certifiedComputed prepared⟩ => pure (.inr prepared)
     | ⟨_,_,.unsupported _⟩ => throw .request
 
+def readWorkspace {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (event : SourceRuntimeContext.WorkspaceEvent artifact.sources owner)
+    (children : List (SourceRuntimeContext.Event artifact.sources owner))
+    (position : Position) (data : mode.EventData source (.workspace event children) position) :
+    WorkM (RuntimeWorkspace.Original event children) :=
+  match mode with
+  | .fresh => RuntimeWorkspace.readOriginal event children
+  | .planned _ =>
+    match data with
+    | ⟨_,_,.workspace prepared⟩ => pure prepared
+    | ⟨_,_,.unsupported impossible⟩ => nomatch impossible
+
 structure Named {artifact : Artifact} (mode : Mode artifact) {owner : String}
     (event : SourceRuntimeContext.NamedEvent artifact.sources owner) where
   context : Context

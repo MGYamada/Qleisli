@@ -9,6 +9,7 @@ import QleisliKernel.SourceTypes.SourceStaticControlSyntax
 import QleisliKernel.SourceTypes.SourceNominalSyntax
 import QleisliKernel.SourceTypes.SourceMatchSyntax
 import QleisliKernel.SourceTypes.SourceComputedSyntax
+import QleisliKernel.SourceTypes.SourceWorkspaceSyntax
 
 /-! A checked decomposition of complete original source tokens. Every child is
 bound to an exact checked argument/statement slice. Qmatch retains its existing
@@ -61,6 +62,10 @@ inductive Tree : List LocatedToken → Type where
       (input : Tree written.parts.input) (body : Tree written.parts.body) : Tree tokens
   | computed {tokens : List LocatedToken} (written : SourceComputedSyntax.Checked tokens)
       (input : Tree written.parts.source.tokens) (body : Tree written.parts.body) : Tree tokens
+  | workspace {tokens : List LocatedToken} (written : SourceWorkspaceSyntax.Checked tokens)
+      (input : Tree written.parts.data.tokens)
+      (dirty : Children (written.parts.dirty.toList.map (·.tokens)))
+      (body : Tree written.parts.body) : Tree tokens
 
 inductive Children : List (List LocatedToken) → Type where
   | nil : Children []
@@ -114,7 +119,9 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     | .matching _ scrutinee children =>
       return (← next scrutinee) ++ (← children.trees.mapM (fun child => next child.2)).flatten
     | .basis _ input body => return (← next input) ++ (← next body)
-    | .computed _ input body => return (← next input) ++ (← next body))
+    | .computed _ input body => return (← next input) ++ (← next body)
+    | .workspace _ input dirty body =>
+      return (← next input) ++ (← dirty.trees.mapM (fun child => next child.2)).flatten ++ (← next body))
 
 /-- Operation order is argument postorder, not source-byte sorting. Exhaustion
 refuses instead of silently truncating the coverage list. The bound comes from
@@ -177,6 +184,13 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
       let input ← next (depth+1) false written.parts.source.tokens
       let body ← next (depth+1) true written.parts.body
       return .computed written input body
+    if (tokens.head?.map (·.text)).any (fun name => name == "clean" || name == "dirty") &&
+        tokens.getLast?.map (·.text) == some "}" && tokens[1]?.map (·.text) == some "(" then
+      let written ← SourceWorkspaceSyntax.read tokens
+      let input ← next (depth+1) false written.parts.data.tokens
+      let dirty ← readChildren (next (depth+1) false) (written.parts.dirty.toList.map (·.tokens))
+      let body ← next (depth+1) true written.parts.body
+      return .workspace written input dirty body
     if let some written := SourceBoolean.read tokens then
       let children ← readChildren (next (depth+1) false) written.parts
       return .boolean written children

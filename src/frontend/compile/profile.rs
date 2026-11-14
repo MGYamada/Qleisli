@@ -229,6 +229,13 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
             self::expr(source)?;
             block(body)?;
         }
+        ExprKind::Workspace(workspace) => {
+            self::expr(&workspace.data)?;
+            if let Some(dirty) = &workspace.dirty {
+                self::expr(dirty)?;
+            }
+            block(&workspace.body)?;
+        }
         ExprKind::Name(_) | ExprKind::Unit | ExprKind::Bit(_) => {}
     }
     Ok(())
@@ -238,6 +245,41 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
 mod quantum_match_tests {
     use super::*;
     use std::collections::BTreeMap;
+
+    #[test]
+    fn workspace_types_require_linear_unitary_bodies() {
+        fn check_source(source: &str) -> Result<(), String> {
+            let syntax =
+                crate::frontend::parser::parse_module(source).map_err(|error| error.to_string())?;
+            check::program_with_sources(
+                BTreeMap::from([("main", &syntax)]),
+                BTreeMap::from([("main", source)]),
+                SourceLimits::finite(),
+                |_, _, _, _, _, _, _, _| Ok(()),
+            )
+            .map(|_| ())
+            .map_err(|error| error.message)
+        }
+
+        let clean = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{clean(q,h){|a,s|(h(a),s)}}";
+        let dirty =
+            "pub unitary fn f(q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>){dirty(q,d,h){|a,s|(h(a),s)}}";
+        check_source(clean).unwrap();
+        check_source(dirty).unwrap();
+        check_source(&clean.replace("clean(q,h)", "clean(q,logical)").replace(
+            "pub unitary",
+            "unitary fn logical(q:Q<Bit>)->Q<Bit>{h(q)} pub unitary",
+        ))
+        .unwrap();
+        assert!(check_source(&dirty.replace("dirty(q,d,h)", "dirty(q,q,h)")).is_err());
+        assert!(check_source(&clean.replace("(h(a),s)", "h(a)")).is_err());
+        let observing = "pub observe fn f(q:Q<Bit>)->Q<Bit>{clean(q,h){|a,s|let _=measure_z(s); (h(a),basis unit(()) as _ {0})}}";
+        let error = check_source(observing).unwrap_err();
+        assert!(
+            error.contains("clean workspace body must be unitary"),
+            "{error}"
+        );
+    }
 
     #[test]
     fn common_checked_bit_qmatch_reaches_the_finite_lowering_obligation() {

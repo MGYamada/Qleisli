@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Check finite `clean` and `dirty` scopes against the original source, exact
+  scratch-restoration equation and actual Raw owner interval.
+- Add structural `std::structure::transpose_axes` for statically sized registers.
 - Check bounded pure hierarchy `ctrl` calls on their actual replayed intervals,
   with exact ordered ports and a fresh native sector check before execution.
 - Add an actual four-qubit qmatch QROM corpus case with noncanonical arm order,
@@ -77,6 +80,9 @@ development milestones from the scope of their evidence.
   contract and an entangled reference regression. Distinguish unchanged
   reduced states from preserved correlation phase, without adding general
   clean/dirty syntax or claiming quantitative resource bounds.
+- Record live width, scratch preparation and release, cleanup passes and
+  literal circuit steps on checked source workspace intervals. Charge each
+  declaration lookup for module keys and the selected source body.
 - Route selected computed scopes through the existing common source emitter
   from their original syntax and dependency closure. Retain structured Raw
   uncomputation, local exact normalization receipts and typed native checks;

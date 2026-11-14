@@ -76,6 +76,7 @@ impl Lowerer<'_, '_> {
             ancilla_binder,
             body,
             env,
+            "certified with_computed",
         )?;
         if use_steps.len() > MAX_CONTRACT_STEPS || logical_steps.len() > MAX_CONTRACT_STEPS {
             return Err(self.error(
@@ -106,10 +107,113 @@ impl Lowerer<'_, '_> {
         if requires_source {
             self.nominal_basis_used = Some(true);
         }
-        quantum_match::nominal::record_coherent_table(self, module, span, start)?;
+        quantum_match::nominal::record_coherent_table(self, module, span, start, 1)?;
         Ok(source)
     }
 
+    pub(super) fn workspace(
+        &mut self,
+        module: &str,
+        span: Span,
+        scope: &crate::frontend::ast::WorkspaceScope,
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        if !self.uses_qmatch_v5() || self.nominal_qmatch.is_none() {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Unsupported,
+                "workspace scope requires the original source-body gate",
+            ));
+        }
+        let data = self.expr(module, &scope.data, env)?;
+        let scratch = scope
+            .dirty
+            .as_ref()
+            .map(|arg| self.expr(module, arg, env))
+            .transpose()?;
+        let data_slot = self.quantum(module, span, &data, false)?;
+        let reg = &self.raw.registers[&data_slot];
+        let bits = reg.wires.len();
+        self.compiler.charge(module, span, reg.size())?;
+        let basis = reg.basis.clone();
+        if bits >= MAX_CONTRACT_BITS {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                format!(
+                    "workspace contracts allow at most {} data bits and one scratch bit",
+                    MAX_CONTRACT_BITS - 1
+                ),
+            ));
+        }
+        let label = if scratch.is_some() {
+            "dirty workspace"
+        } else {
+            "clean workspace"
+        };
+        let steps = self.certified_body(
+            module,
+            &basis,
+            &scope.data_binder,
+            &scope.scratch_binder,
+            &scope.body,
+            env,
+            label,
+        )?;
+        if steps.len() > MAX_CONTRACT_STEPS {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                format!("{label} allows at most {MAX_CONTRACT_STEPS} circuit steps"),
+            ));
+        }
+        let start = self.raw.operations.len();
+        let result = if let Some(scratch) = scratch {
+            let packed =
+                self.primitive_call(module, span, PrimitiveId::Join, vec![data, scratch])?;
+            let slot = self.quantum(module, span, &packed, false)?;
+            self.apply_circuit(slot, steps);
+            self.primitive_call(module, span, PrimitiveId::Split, vec![packed])?
+        } else {
+            let logical_steps = self.static_steps(module, &scope.logical, &basis, env)?;
+            if logical_steps.len() > MAX_CONTRACT_STEPS {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Limit,
+                    format!("{label} allows at most {MAX_CONTRACT_STEPS} logical circuit steps"),
+                ));
+            }
+            let source = self.raw.registers[&data_slot].token;
+            let wire = self.wire();
+            let output = self.token();
+            self.raw.operations.push(RawOp::CertifiedCompute {
+                source,
+                source_out: output,
+                ancilla_wires: vec![wire],
+                function: vec![0; 1 << bits],
+                use_steps: steps,
+                logical_steps,
+            });
+            self.raw
+                .registers
+                .get_mut(&data_slot)
+                .expect("owned data")
+                .token = output;
+            data
+        };
+        // Every emitted workspace scope requires the original-source v5 checker.
+        // Raw checking alone cannot establish a dirty restoration contract.
+        self.nominal_basis_used = Some(true);
+        let count = self.raw.operations.len() - start;
+        quantum_match::nominal::record_coherent_table(self, module, span, start, count)?;
+        Ok(result)
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn certified_body(
         &mut self,
         module: &str,
@@ -118,6 +222,7 @@ impl Lowerer<'_, '_> {
         ancilla_binder: &Ident,
         body: &Block,
         env: &Env,
+        label: &str,
     ) -> Result<Vec<CircuitStep>, CompileError> {
         let joint = Ty::quantum(Ty::pair(basis.clone(), Ty::bit()));
         self.compiler
@@ -182,7 +287,7 @@ impl Lowerer<'_, '_> {
                 module,
                 body.span,
                 ErrorCode::Effect,
-                "certified with_computed body must be unitary",
+                format!("{label} body must be unitary"),
             ));
         }
         let expected = Ty::pair(Ty::quantum(basis.clone()), Ty::quantum(Ty::bit()));
@@ -191,7 +296,7 @@ impl Lowerer<'_, '_> {
                 module,
                 body.result.span,
                 ErrorCode::TypeMismatch,
-                "certified with_computed must return (Q<A>, Q<Bit>) in data/auxiliary order",
+                format!("{label} must return (Q<A>, Q<Bit>) in data/auxiliary order"),
             ));
         }
         let Value::Pair(data, ancilla) = result else {

@@ -1230,6 +1230,9 @@ impl<'ast> Validation<'_, 'ast> {
             ast::ExprKind::CertifiedComputed {
                 function, logical, ..
             } => (index.usage(function) == site || index.usage(logical) == site).then_some(&[][..]),
+            ast::ExprKind::Workspace(workspace) => {
+                (index.usage(&workspace.logical) == site).then_some(&[][..])
+            }
             ast::ExprKind::ApplyContract {
                 implementation,
                 specification,
@@ -1832,6 +1835,7 @@ pub(super) fn validate_and_finish(
                 ObligationKind::ControlSectors
                 | ObligationKind::Injectivity { .. }
                 | ObligationKind::ProtectedClean
+                | ObligationKind::WorkspaceRestoration
                 | ObligationKind::TransformedMeaning,
                 EvidenceSubject::Expression,
             ) => {}

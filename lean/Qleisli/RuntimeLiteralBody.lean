@@ -24,6 +24,7 @@ def nodeSpan {dependencies program block} : Node dependencies program block → 
   | .primitive action _ => ⟨_,_,action.interval.interval⟩
   | .structural action => ⟨_,_,action.interval⟩
   | .basis interval .. | .computed interval .. | .certifiedComputed interval .. => ⟨_,_,interval⟩
+  | .workspace interval .. => ⟨_,_,interval⟩
   | .named _ frame _ _ _ _ => ⟨_,_,frame.interval⟩
   | .operation frame .. => ⟨_,_,frame.interval⟩
   | .rectangularOperation checked => ⟨_,_,checked.frame.interval⟩

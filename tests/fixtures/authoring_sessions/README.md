@@ -108,6 +108,10 @@ The [dirty restoration study](dirty-restoration-v030/session.json) retains
 three first sources and observations: exact restoration, a contract refusal,
 and a Bell-reference phase counterexample. General clean/dirty syntax remains open.
 
+The [first clean and dirty scopes](scoped-workspace-v030/README.md) preserve
+four proposed programs and their original parser refusals, with separate
+exact restoration expectations for the positive and negative cases.
+
 The [clean-marginal study](clean-marginal-v030/README.md) preserves three first
 sources and six actual observations. Coherent uncompute and explicit reset
 return the same zero auxiliary but different live distributions; falsely
@@ -125,6 +129,10 @@ retains six unchanged first sources and eighteen actual CLI observations.
 Usage failures, unchanged refusals, revised explanations and literal QASM/QIR
 outputs remain separate from the bounded exact routing regression and the
 unfinished general source, target and resource obligations.
+
+The [register routing study](register-axis-routing-v030/context.md) retains
+the first register SWAP and axis-transposition sources and ten actual selected
+CLI observations. Independent operator and export checks use separate regressions.
 
 The [shared control order study](shared-control-order-v030/context.md) preserves
 both written orders and the first Raw and hierarchy checks. Exact native

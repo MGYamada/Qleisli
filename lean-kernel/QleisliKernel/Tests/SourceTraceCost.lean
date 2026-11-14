@@ -1,11 +1,9 @@
 import QleisliKernel.Tests.RawTraceTests
 
-/-! Actual one-bit source plus Raw component costs. The 10M composed run uses
-one shared work state, not two independent allowances. The current full source
-trace exceeds that budget; its real arithmetic.workLimit refusal is retained.
-The unchanged 2B diagnostic verifies the same source, all 129 events and Raw
-intervals, and does not authorize native acceptance. Original snapshots/source
-and actual outputs are preserved in source-raw-cost-current-first and
+/-! Actual one-bit source plus Raw component costs. The 10M refusal and
+the current 20M success each use one shared work state. The 2B diagnostic
+verifies the same 129 source events and Raw intervals. The first snapshots,
+source and outputs are preserved in source-raw-cost-current-first and
 checks/real-full-native-meter-cost-snapshots.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Tests.SourceTraceCost
@@ -35,11 +33,12 @@ def outcome {α : Type} (work : Nat) (action : Finite.WorkM α) : Except Finite.
   let (result,left) := action.run work
   (result.map (fun _ => ()),work-left)
 
-#guard measure 10000000 (SourceTypes.QuantumSignature.read sources "main" "route") = (true,6223075)
+#guard measure 10000000 (SourceTypes.QuantumSignature.read sources "main" "route") = (true,232131)
 #guard outcome 10000000 (SourceTrace.read sources "main" "route") matches
-  (.error (.arithmetic .workLimit),9928103)
-#guard measure 2000000000 (SourceTrace.read sources "main" "route") = (true,20734094)
-#guard outcome 10000000 composed matches (.error (.arithmetic .workLimit),9928103)
-#guard measure 2000000000 composed = (true,21870757)
+  (.error (.arithmetic .workLimit),9998938)
+#guard measure 2000000000 (SourceTrace.read sources "main" "route") = (true,14743150)
+#guard outcome 10000000 composed matches (.error (.arithmetic .workLimit),9998938)
+#guard measure exactWorkLimit composed = (true,15879813)
+#guard measure 2000000000 composed = (true,15879813)
 
 end QleisliKernel.Tests.SourceTraceCost
