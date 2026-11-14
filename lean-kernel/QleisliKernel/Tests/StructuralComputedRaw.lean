@@ -29,6 +29,16 @@ private def exit := ((StructuralComputedRaw.read packet initial).run 400000).1.t
 #guard status {packet with uses := [.protectedGate ⟨.ancilla,0⟩ .x]} == some .request
 #guard status {packet with uses := [.protectedGate ⟨.source,0⟩ .z]} == some .request
 
+private def usingSteps (step : Step) : StructuralComputedRaw.Packet :=
+  {packet with forward := [step],inverse := [step]}
+
+#guard status (usingSteps ⟨[⟨2,true⟩],.monomial [2] [1,0] [0,0]⟩) == some .equation
+#guard status (usingSteps ⟨[⟨0,true⟩,⟨0,false⟩],.monomial [2] [1,0] [0,0]⟩) == some .equation
+#guard status (usingSteps ⟨[⟨0,false⟩],.monomial [2] [1,0] [0,0]⟩) == none
+#guard status (usingSteps ⟨[],.monomial [2] [1,0] [4,4]⟩) == some .equation
+#guard status (usingSteps ⟨[],.contract [2] 0 false⟩) == some .equation
+
+
 private def source : String := "#![no_implicit_prelude]\n" ++
   "classical fn both((a,b):(Bit,Bit))->Bit{a and b}\n" ++
   "pub unitary fn route(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>" ++
