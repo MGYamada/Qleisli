@@ -601,9 +601,12 @@ only histories with the same final public result are summed. A coherent `qif` us
 operation and preserves coherence between selector sectors. An ordinary branch
 cannot inspect a live `Q<Bit>` or insert an implicit measurement.
 
-These are normative source obligations. Ordinary native validity currently
-checks its stated structural ownership and classical-scope properties; general
-EffectSound/CPTP and source preservation remain unfinished. The dedicated
+These are normative source obligations. The
+[target realization judgment](realization.md#observing-instruments-on-a-target)
+adds profile-specific capability and artifact evidence. Ordinary native
+validity currently checks its stated structural ownership and classical-scope
+properties. General EffectSound/CPTP and source preservation remain
+unfinished. The dedicated
 [original-artifact instrument request](production-boundary.md#original-artifact-observing-instrument-requests)
 checks both original bodies, complete Kraus sums, requested complete signature
 trees and their ordered root-port projections, and every unnormalized public
