@@ -312,6 +312,13 @@ Unitary body.
 | Generated cleanup | Retain compute, use and inverse in the ordinary structured Raw representation. The independent checker validates the rule and dependencies; the producer cannot assert successful restoration. |
 | Capacity | Missing evidence or existing source, dependency or exact-work exhaustion rejects. No reset, discard, heuristic equality or alternate acceptance path repairs the failure. |
 
+The checked Raw interval accounts for the full caller frame and one private
+auxiliary wire, including its preparation and release. The resource model
+counts a forward predicate pass and its inverse, plus the body steps actually
+emitted. The certified checker uses this same compute/body/inverse word for
+the cleanup equation. Its logical witness is checked separately. Physical
+target decompositions and routing retain their own costs.
+
 For example, the following two auxiliary bodies both qualify, with different
 exact live actions when the predicate is the identity on `Bit`:
 

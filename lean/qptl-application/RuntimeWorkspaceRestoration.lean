@@ -1,5 +1,6 @@
 import Qleisli.RawReconstructedAction
 import QleisliKernel.Qirf.RuntimeWorkspace
+import QleisliKernel.Raw.Protected
 import QPTL.Clean
 import Mathlib.CategoryTheory.Types.Basic
 
@@ -228,3 +229,69 @@ theorem clean_sequence {deps : List Dependency} {bits w₁ l₁ w₂ l₂ : Nat}
 #print axioms clean_square
 #print axioms clean_sequence
 end Qleisli.RuntimeWorkspaceRestoration
+
+namespace Qleisli.RuntimeComputedResources
+open QleisliKernel Qirf
+open Raw.WorkspaceResources (Counts readCounts)
+
+/-- The actual protected constructor accounts for one private qubit, the
+forward and inverse predicate passes, and every use in the emitted interval.
+The peak includes the whole caller frame, even when only one owner is used. -/
+theorem protected_counts {sources caller deps program block start count before}
+    {event : SourceTypes.SourceRuntimeContext.ComputedEvent sources caller}
+    {prepared : RuntimeComputedUse.Prepared event}
+    {interval : @RuntimeInterval.Checked deps program block start count}
+    (checked : RuntimeComputedUse.Checked prepared interval before) :
+    ∃ result, Raw.dispatch (deps.map (·.signature)) interval.before.quantum checked.literal.operation = .ok result ∧
+      Semantics.RawTrace.interval interval.before.quantum.reference [checked.literal.operation] =
+        some ⟨result.state.reference,result.events,interval.before.quantum.frame.length⟩ ∧
+      readCounts interval.before.quantum.frame.length result.events =
+        ⟨interval.before.quantum.frame.length+1,1,1,2,checked.literal.uses.length,0⟩ := by
+  obtain ⟨result,ran⟩ := checked.literal.dispatch
+  obtain ⟨_,_,_,_,_,events⟩ := Raw.dispatch_protected_conditions _ _ _ _ _ _ _ _ result ran
+  have traced := Raw.dispatch_reference _ _ _ _ ran
+  refine ⟨result,ran,?_,?_⟩
+  · simp only [Semantics.RawTrace.interval,Semantics.RawTrace.advance,List.foldlM_cons,
+      List.foldlM_nil,traced]
+    rfl
+  · rw [events]
+    simp [readCounts,Raw.WorkspaceResources.Counts.then_,Raw.WorkspaceResources.eventCounts]
+
+/-- The certified form has the same preparation and inverse obligations.
+Its checked logical witness adds no physical operation to the emitted body. -/
+theorem certified_counts {sources caller deps program block start count before}
+    {event : SourceTypes.SourceRuntimeContext.ComputedEvent sources caller}
+    {prepared : RuntimeCertifiedComputed.Prepared event}
+    {interval : @RuntimeInterval.Checked deps program block start count}
+    (checked : RuntimeCertifiedComputed.Checked prepared interval before)
+    {receipts : List Semantics.ObservingFunction.Receipt}
+    (resource : Raw.WorkspaceResources.Checked receipts interval.before.quantum.reference
+      interval.after.quantum.reference [checked.literal.operation]) :
+    resource.counts = ⟨interval.before.quantum.frame.length+1,1,1,2,checked.literal.useSteps.length,0⟩ :=
+  resource.clean
+
+/-- The accepted certified equation uses the emitted use word between one
+forward predicate and one inverse predicate. XOR computation is its own
+inverse. The logical witness is reconstructed in a separate checker call. -/
+theorem certified_physical_word {sources caller deps program block start count before}
+    {event : SourceTypes.SourceRuntimeContext.ComputedEvent sources caller}
+    {prepared : RuntimeCertifiedComputed.Prepared event}
+    {interval : @RuntimeInterval.Checked deps program block start count}
+    (checked : RuntimeCertifiedComputed.Checked prepared interval before) :
+    let literal := checked.literal
+    let bits := literal.input.port.bits
+    let predicate := Raw.computeStep bits bits 1 literal.table
+    ∃ encoding physical,
+      let contract : Semantics.Finite.Contract := ⟨encoding,encoding,checked.logical.emitted⟩
+      RuntimeInterval.Computed
+        (QleisliKernel.Finite.check deps (Raw.circuit (bits+1) ([predicate] ++ literal.useSteps ++ [predicate]))
+          contract contract) physical := by
+  obtain ⟨work,left,ran⟩ := checked.logical.emittedRead
+  obtain ⟨encoding,physical,_,_,_,_,checkWork,checkLeft,_,_,accepted⟩ :=
+    Raw.clean_conditions _ _ _ _ _ _ _ _ work left ran
+  exact ⟨encoding,physical,checkWork,checkLeft,accepted⟩
+
+#print axioms protected_counts
+#print axioms certified_counts
+#print axioms certified_physical_word
+end Qleisli.RuntimeComputedResources
