@@ -15,6 +15,8 @@ open scoped BigOperators
 
 variable {K A O I R : Type*}
 
+universe reference
+
 /-- The diagonal entry of the scratch marginal for one basis input. The
 family already includes the insertion of the fixed clean input. -/
 noncomputable def scratchPopulation [Fintype K] [Fintype O]
@@ -179,7 +181,7 @@ theorem scratchMarginal_eq_iff [Fintype K] [Fintype A] [Fintype O] [Fintype I]
     [DecidableEq A] [DecidableEq I] (kraus : K → A → O → I → ℂ) (clean : A)
     (preservesTrace : ∀ ρ, IsDensity ρ → (scratchMarginal kraus ρ).trace = 1) :
     (∀ ρ, IsDensity ρ → scratchMarginal kraus ρ = basisProjector clean) ↔
-    ∀ (R : Type*) (ρ : Matrix (I × R) (I × R) ℂ) a b o p r s,
+    ∀ (R : Type reference) (ρ : Matrix (I × R) (I × R) ℂ) a b o p r s,
       jointOutput kraus ρ (a,o,r) (b,p,s) =
         basisProjector clean a b * traceScratch kraus ρ o p r s := by
   constructor
@@ -206,7 +208,8 @@ theorem scratchMarginal_eq_iff [Fintype K] [Fintype A] [Fintype O] [Fintype I]
         simp
       · simp only [h,if_false]
         exact Finset.sum_eq_zero fun o _ => by
-          simpa [basisProjector_entry,h] using separates Unit (fun x y => ρ x.1 y.1) a b o o () ()
+          simpa [basisProjector_entry,h] using
+            separates (ULift.{reference} Unit) (fun x y => ρ x.1 y.1) a b o o ⟨()⟩ ⟨()⟩
     have normalized := preservesTrace ρ positive
     have cleanEntry : scratchMarginal kraus ρ clean clean = 1 := by
       change (∑ a, scratchMarginal kraus ρ a a) = 1 at normalized
