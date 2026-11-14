@@ -33,7 +33,7 @@ private def phase (value : Json) : Except String Phase := do
   | "minus_one" => pure .minusOne | "eighth_turn" => pure .eighthTurn
   | _ => throw "unknown raw phase"
 
-private def steps (value : Json) : Except String (List Step) := do
+def steps (value : Json) : Except String (List Step) := do
   let steps := (← FiniteCodec.circuit (Json.mkObj [("basis",Json.arr #[Json.str "unit"]),("steps",value)])).steps
   let bounded := steps.all fun step =>
     step.controls.all (fun control => control.index ≤ 4294967295) && match step.action with
@@ -74,7 +74,7 @@ private def controls (value : Json) : Except String (List ProtectedControl) := d
     fields c ["bit","when_one"]
     return ⟨← protectedBit (← field c "bit"),← (← field c "when_one").getBool?⟩
 
-private def usage (value : Json) : Except String Use := do
+def usage (value : Json) : Except String Use := do
   match ← text value "tag" with
   | "protected_gate" =>
     fields value ["tag","bit","gate"]

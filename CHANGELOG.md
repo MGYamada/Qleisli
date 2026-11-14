@@ -17,6 +17,8 @@ development milestones from the scope of their evidence.
   correlations and full phase for the checked structural components (#30).
 - Check the ordered Raw frame, operand and fresh private scratch of a
   circuit-backed protected packet against the original computed scope (#30).
+- Bind the decoded structural predicate circuits and ordered Raw ports to a
+  canonical internal execution view in the packet checker (#30).
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.

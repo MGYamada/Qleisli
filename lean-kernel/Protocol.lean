@@ -9,6 +9,7 @@ import Protocol.Observation
 import Protocol.EngineeringInstrument
 import Protocol.EngineeringOpenQasm
 import Protocol.EngineeringPureTensor
+import Protocol.ExecutionView.StructuralComputed
 
 /-! Compatibility import for the unproved transport adapters. The pure kernel
 never imports this module or its children.
