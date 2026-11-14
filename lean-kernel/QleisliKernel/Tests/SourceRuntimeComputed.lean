@@ -371,10 +371,12 @@ private def repeatedCleanTrace (text : String) (between : List Target.CanonicalO
   let firstMap ← Qirf.RuntimeWorkspace.readCallerMap firstLiteral #[]
   let secondMap ← Qirf.RuntimeWorkspace.readCallerMap secondLiteral #[]
   let firstSegment : Target.CanonicalOpenQasmPlacement.Segment program :=
-    ⟨sources,"main",[],body.block,1,1,first,firstBody,firstOriginal,firstInterval,firstBefore,firstLiteral,
+    ⟨sources,"main",[],program,body.block,0,1,1,first,firstBody,firstOriginal,firstInterval,rfl,
+      firstBefore,firstLiteral,
       firstMap,[.original],3,some 1⟩
   let secondSegment : Target.CanonicalOpenQasmPlacement.Segment program :=
-    ⟨sources,"main",[],body.block,2,1,second,secondBody,secondOriginal,secondInterval,secondBefore,secondLiteral,
+    ⟨sources,"main",[],program,body.block,0,2,1,second,secondBody,secondOriginal,secondInterval,rfl,
+      secondBefore,secondLiteral,
       secondMap,between,3,some 1⟩
   let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 3
   let checked ← Target.CanonicalOpenQasmPlacement.finishTrace target program (fun _ _ => true) [1]
