@@ -15,6 +15,8 @@ development milestones from the scope of their evidence.
   intervals and refuse unaccounted gates or terminal readout on that wire.
 - Derive clean/dirty workspace entry placement from literal closed Raw and
   target prefixes, including physical SWAP routing and zero-width owners.
+- Follow a single checked workspace through its literal target suffix and
+  compare the emitted terminal measurements in original classical output order.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.

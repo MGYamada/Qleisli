@@ -518,8 +518,14 @@ replaying the original prefix and the decoded target gate word. Marked
 routing operations must match connected physical SWAPs in the emitted word.
 An ordinary Raw SWAP is matched as a gate and does not move the encoding.
 The derived original frame must equal the checked workspace entry, including
-zero-width ports. General gate decompositions, earlier workspace scopes and
-the complete terminal owner/readout correspondence require further checking.
+zero-width ports. With one checked workspace interval and literal gates, the
+checker can carry the original exit owners through the target suffix and use
+the resulting placement to verify the emitted terminal measurements in
+classical output order. All original quantum owners must be consumed by the
+end. Discarded owners and measurements outside the classical outputs do not
+add to the emitted readout. The complete check requires an exclusive lifetime
+for fresh scratch. General gate decompositions and complete circuits with
+multiple workspace intervals require further checking.
 
 A physical scratch location can also be reused across ordered, disjoint,
 nonempty clean intervals. The checker

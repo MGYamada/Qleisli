@@ -160,14 +160,17 @@ private def placedWorkspace (fresh : Bool) (frame : List Nat) (scratch : Option 
 #guard !placedWorkspace false [0,2] none
 #guard !placedWorkspace false [2,0] (some 1)
 
-private def routedWorkspace (gates : String) (align : List Target.CanonicalOpenQasmPlacement.Match) :
+private def routedWorkspace (gates : String) (align : List Target.CanonicalOpenQasmPlacement.Match)
+    (suffix : Option (List Target.CanonicalOpenQasmPlacement.Match) := none) :
     Finite.WorkM (List Nat × Nat) := do
   let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ cleanScope)] "main" "route"
   let [.workspace event children] := source.events | throw .request
   let beforeOps : List Semantics.Observation.Op :=
     [.pure (.init0 10 6),.pure (.packUnit 12)]
   let body := cleanOps [hData] [hData]
-  let program : Semantics.Observation.Program := ⟨[],[],beforeOps++body,[13,12],[],.isometry⟩
+  let program : Semantics.Observation.Program := if suffix.isSome then
+    ⟨[],[],beforeOps++body++[.pure (.gate .z 13 14),.pure (.unpackUnit 12),.measure 14 3],[],[3],.observe⟩
+    else ⟨[],[],beforeOps++body,[13,12],[],.isometry⟩
   let root ← Qirf.RuntimeInterval.prepare [] program
   let interval ← Qirf.RuntimeInterval.check root.block beforeOps.length body.length
   let bindings : Qirf.RuntimeOwnerMap.Map :=
@@ -176,9 +179,15 @@ private def routedWorkspace (gates : String) (align : List Target.CanonicalOpenQ
   let original ← Qirf.RuntimeWorkspace.readOriginal event children
   let literal ← Qirf.RuntimeWorkspace.readLiteral original interval before
   let map ← Qirf.RuntimeWorkspace.readCallerMap literal #[]
-  let target ← Target.CanonicalOpenQasmResources.check (targetWorkspace 3 gates).toUTF8 3
+  let text := if suffix.isSome then
+    "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[4] q;\nbit[1] c;\nreset q;\n" ++ gates
+    else targetWorkspace 3 gates
+  let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
   let prefixCheck ← Target.CanonicalOpenQasmPlacement.check target program
     (fun a b => a+1 == b || b+1 == a) align
+  if let some suffix := suffix then
+    let finished ← Target.CanonicalOpenQasmPlacement.finishWorkspace map prefixCheck 1 (some 3) suffix
+    return (target.circuit.measurements,finished.final.gateIndex)
   let placed ← Target.CanonicalOpenQasmPlacement.workspace map prefixCheck 1 (some 0)
   pure (placed.placed.liveLayout,prefixCheck.state.gateIndex)
 
@@ -191,6 +200,37 @@ private def routedPrefix : List Target.CanonicalOpenQasmPlacement.Match := [.ori
   20000000).1.toOption.isNone
 #guard ((routedWorkspace "swap q[0], q[1];\nswap q[1], q[2];\nh q[2];\n" [.original,.route,.route]).run
   20000000).1.toOption.isNone
+
+private def terminalWorkspaceGates : String := "swap q[0], q[1];\nswap q[1], q[2];\nh q[2];\nz q[2];\n"
+private def terminalWorkspaceCase :=
+  routedWorkspace (terminalWorkspaceGates ++ "c[0] = measure q[2];\n") routedPrefix (some [.original])
+private def terminalWorkspace (tail : String) (suffix : List Target.CanonicalOpenQasmPlacement.Match) :=
+  ((routedWorkspace (terminalWorkspaceGates ++ tail) routedPrefix (some suffix)).run 20000000).1.toOption
+
+#guard (terminalWorkspaceCase.run exactWorkLimit).1.toOption == some ([2],4)
+#guard
+  let consumed := exactWorkLimit - (terminalWorkspaceCase.run exactWorkLimit).2
+  match (terminalWorkspaceCase.run (consumed-1)).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+#guard (terminalWorkspace "c[0] = measure q[1];\n" [.original]).isNone
+#guard (terminalWorkspace "c[0] = measure q[3];\n" [.original]).isNone
+#guard (terminalWorkspace "x q[2];\nc[0] = measure q[2];\n" [.original]).isNone
+#guard (terminalWorkspace "c[0] = measure q[2];\n" []).isNone
+
+private def terminalOutputOrder (measurements : String) : Finite.WorkM Unit := do
+  let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 6),.pure (.init0 11 7),
+    .pure (.init0 12 8),.measure 11 20,.discard 12,.measure 10 21],[],[21,20],.observe⟩
+  let _ ← Qirf.RuntimeInterval.prepare [] program
+  let header := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[2] c;\nreset q;\n"
+  let target ← Target.CanonicalOpenQasmResources.check (header ++ measurements).toUTF8 3
+  let prefixCheck ← Target.CanonicalOpenQasmPlacement.check target program (fun _ _ => false)
+    [.original,.original,.original]
+  let _ ← Target.CanonicalOpenQasmPlacement.checkReadout target program prefixCheck.state
+
+#guard ((terminalOutputOrder "c[0] = measure q[0];\nc[1] = measure q[1];\n").run 20000000).1.isOk
+#guard !((terminalOutputOrder "c[0] = measure q[1];\nc[1] = measure q[0];\n").run 20000000).1.isOk
+#guard !((terminalOutputOrder "c[0] = measure q[0];\nc[1] = measure q[2];\n").run 20000000).1.isOk
 
 private def reusableWorkspace (gates : String) (first second : Nat) (count : Nat := 1) : Bool :=
   ((workspaceInterval cleanScope (cleanOps [hData] [hData]) true none
