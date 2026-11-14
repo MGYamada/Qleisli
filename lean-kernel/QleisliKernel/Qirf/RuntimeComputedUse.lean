@@ -78,6 +78,20 @@ private def unary (owners : List Owner) (operand : Owner) (localAction before : 
   exactWork (Exact.charge (8*(before.rows.length+whole.rows.length+1)))
   return ⟨matrix,before.rows ++ whole.rows⟩
 
+private def registerAction {sources caller} (event : RegisterEvent sources caller) : WorkM Action := do
+  let [width,index] := event.application.arguments.map (·.value) | throw .request
+  guard (width ≤ 6 && index < width) .limit
+  let axes ← match event.kind with
+    | .takeBit => pure (index :: (List.range width).erase index)
+    | .putBit =>
+      let remainder := (List.range (width-1)).map (·+1)
+      pure (remainder.take index ++ [0] ++ remainder.drop index)
+    | _ => throw .request
+  exactWork (Exact.charge (8*(width+1)*(2^width+1)))
+  let table := (List.range (2^width)).map (Semantics.Finite.gather · axes)
+  let matrix ← Raw.mapping width width table
+  return ⟨matrix,(Event.registerPrimitive event).staticRows⟩
+
 private structure CallKey where
   caller : String
   owner : String
@@ -127,6 +141,10 @@ def sourceAction (sources : Sources) (workspace : Bool) :
           let action ← primitive kind.val operand.basis rows
           return (owners,← unary owners operand action before,cache)
         | _,_,_ => throw .request
+      | .registerPrimitive event => do
+        guard (event.consumed.all owners.contains) .request
+        let (owners,action) ← applyGroup owners event.consumed event.allocated (← registerAction event) before
+        return (owners,action,cache)
       | .named call => do
         let operands := call.arguments.flatMap valueOwners
         let returned := valueOwners call.value

@@ -568,6 +568,23 @@ inductive WorkspaceTrace {program : Semantics.Observation.Program} {bytes capaci
       WorkspaceTrace (program := program) target connected reserved synthesis (segment.exit entry bound.after)
         (fun scratch => bound.addCleanUse scratch (uses scratch))
 
+/-- Maximum Raw live width across the checked original workspace occurrences,
+including the caller's spectators and every temporary clean wire. -/
+def WorkspaceTrace.peakWires {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved synthesis state uses} :
+    WorkspaceTrace (program := program) target connected reserved synthesis state uses → Nat
+  | .start => 0
+  | .next (segment := segment) earlier _ =>
+    max earlier.peakWires segment.map.resources.counts.peakWires
+
+theorem WorkspaceTrace.peakWires_le {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved synthesis state uses}
+    (trace : WorkspaceTrace (program := program) target connected reserved synthesis state uses) :
+    trace.peakWires ≤ target.circuit.qubits := by
+  induction trace with
+  | start => exact Nat.zero_le _
+  | next _ bound ih => exact Nat.max_le.mpr ⟨ih,bound.placed.body.coversRawPeak⟩
+
 structure TraceWithUses {program : Semantics.Observation.Program} {bytes capacity}
     (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
     (reserved synthesis : List Nat) where

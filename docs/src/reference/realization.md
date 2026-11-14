@@ -566,6 +566,10 @@ ports. The exporter preserves the interval boundaries across exact
 rewrites and proposes the corresponding gate positions and scratch locations.
 Lean checks the proposal against the original source, including the clean and
 dirty intervals and terminal result order.
+For a `Q<Bits<n>>` data register, each original `take_bit` or `put_bit` index
+determines the ordered wire selection or insertion. The Raw repartition retains
+the other owners, including a distinct `Q<Bits<0>>` remainder. Repartition inside
+a workspace body is part of its independently evaluated exact operator.
 
 Use `qleisli interop emit-qasm <source> --input=qli --resources` for the
 checked resource report on a closed typed program with workspace scopes in
@@ -577,6 +581,9 @@ The internal packet binds the complete original QLV3 request and literal target
 bytes. Lean rechecks the original source, decodes the target and replays
 placement using one 20,000,000 exact-work budget. The report covers the
 supported canonical terminal profile and its declared physical register.
+Lean proves that the decoded register width bounds the maximum Raw live width
+over the workspace occurrences visited by the replay, including caller
+spectators and temporary clean wires.
 A structural basis lift updates the physical placement only when its complete
 table is an axis permutation. It contributes zero gates. A routing SWAP
 must occupy a literal gate position.

@@ -497,6 +497,10 @@ theorem Checked.target_counts {bytes : ByteArray} (checked : Checked bytes) :
   rw [checked.target.original]
   rfl
 
+theorem Checked.covers_workspace_peak {bytes : ByteArray} (checked : Checked bytes) :
+    checked.placement.trace.recorded.trace.peakWires ≤ checked.target.circuit.counts.reserved := by
+  exact checked.placement.trace.recorded.trace.peakWires_le
+
 end PlacementPacket
 
 #print axioms check_binding
@@ -506,4 +510,5 @@ end PlacementPacket
 #print axioms PlacementPacket.check_binding
 #print axioms PlacementPacket.Checked.source_bound
 #print axioms PlacementPacket.Checked.target_counts
+#print axioms PlacementPacket.Checked.covers_workspace_peak
 end QleisliKernel.Protocol.ExecutionView.CheckedQmatchV5

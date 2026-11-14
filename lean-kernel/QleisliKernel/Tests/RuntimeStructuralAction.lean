@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeStructuralAction
+import QleisliKernel.Qirf.RuntimeRegisterAction
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 
 /-! Small original-source/actual-Raw structural transports. Equal zero-width
@@ -46,5 +47,38 @@ private def splitUnitBit (wrongBoundary : Bool) := checked
   10000000 |>.1.toOption == some ([0],[0])
 #guard (checked "pub unitary fn main(u:Q<Unit>)->Q<Unit>{finish(u);unit(())}"
   [port 0 []] [.unpackUnit 0,.packUnit 1] [1]).run 10000000 |>.1.toOption == some ([0,1],[1])
+
+private def register (text : String) (inputs : List Semantics.Raw.Port)
+    (operations : List Semantics.Raw.Op) (outputs : List Nat) : WorkM (List (List Nat)) := do
+  let sources : Sources := #[("main","#![no_implicit_prelude]\n" ++ text)]
+  let signature ← SourceRuntimeContext.readSignature sources "main" "main" {}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let [.registerPrimitive event] := body.checked.events | throw .request
+  let program : Semantics.Observation.Program := ⟨inputs,[],operations.map .pure,outputs,[],.unitary⟩
+  let prepared ← RuntimeInterval.prepare [] program
+  let interval ← RuntimeInterval.check prepared.block 0 operations.length
+  let roles := body.checked.summary.parameterValues.flatMap valueOwners
+  let bindings := (roles.zip inputs).map fun (owner,port) => (⟨owner,port⟩ : RuntimeOwnerMap.Binding)
+  let before : RuntimeStructuralAction.SourceState := ⟨bindings,roles,body.checked.summary.nextOwner⟩
+  let action ← RuntimeRegisterAction.read interval event before
+  return action.outputs.map (·.wires)
+
+private def takeRegister (axis : Nat) := register
+  "pub unitary fn main(q:Q<Bits<2>>)->(Q<Bit>,Q<Bits<1>>){take_bit[2,1](q)}"
+  [port 0 [3,7]] [.split 0 1 2 axis,.split 2 3 4 1,.join 1 4 5] [3,5]
+
+#guard (takeRegister 1).run 20000000 |>.1.toOption == some [[7],[3]]
+#guard (takeRegister 0).run 20000000 |>.1.toOption.isNone
+
+private def putRegister (axis : Nat) := register
+  "pub unitary fn main(b:Q<Bit>,q:Q<Bits<1>>)->Q<Bits<2>>{put_bit[2,1](b,q)}"
+  [port 0 [7],port 1 [3]] [.split 1 2 3 axis,.join 2 0 4,.join 4 3 5] [5]
+
+#guard (putRegister 1).run 20000000 |>.1.toOption == some [[3,7]]
+#guard (putRegister 0).run 20000000 |>.1.toOption.isNone
+#guard (register
+  "pub unitary fn main(q:Q<Bits<1>>)->(Q<Bit>,Q<Bits<0>>){take_bit[1,0](q)}"
+  [port 0 [3]] [.split 0 1 2 0,.split 2 3 4 1,.join 1 4 5] [3,5]).run
+  20000000 |>.1.toOption == some [[3],[]]
 
 end QleisliKernel.Tests.RuntimeStructuralAction

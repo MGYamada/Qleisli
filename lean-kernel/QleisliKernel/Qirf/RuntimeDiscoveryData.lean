@@ -42,6 +42,9 @@ def ordinaryRows (sources : Sources) : Nat → {owner : String} →
   Nat.rec (fun {_} _ => throw .limit) (fun _ next {_} events => do
     events.foldlM (fun rows event => do
       match event with
+      | .primitive call =>
+        guard (call.kind == .emptyBits) .request
+        return rows ++ CallName.sourceRows call.candidate
       | .named event =>
         guard (event.target.signature.arguments.operations.isEmpty &&
           !event.target.signature.operations.hasMeaningRequirements) .request

@@ -45,6 +45,9 @@ development milestones from the scope of their evidence.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
+- Check `take_bit` and `put_bit` against the original register index so that
+  `clean` and `dirty` scopes can use `Q<Bits<n>>` data. The checked OpenQASM
+  register covers the maximum Raw live width over the recorded workspace scopes.
 - Add structural `std::structure::transpose_axes` for statically sized registers.
 - Check bounded pure hierarchy `ctrl` calls on their actual replayed intervals,
   with exact ordered ports and a fresh native sector check before execution.
