@@ -132,11 +132,7 @@ impl Lowerer<'_, '_> {
         let result = self.classical_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
-        for index in first_operation..self.raw.operations.len() {
-            self.operation_sources
-                .entry(vec![index])
-                .or_insert_with(|| (module.to_owned(), expr.span));
-        }
+        self.record_operation_sources(module, expr.span, first_operation);
         self.compiler
             .check_tree(module, expr.span, value.tree_size())?;
         Ok(value)

@@ -602,9 +602,13 @@ instance, requested profile and failed premise, and distinguish a proved
 obstruction from unsupported synthesis or exhausted checking capacity. An
 unsupported target operation or target-width error must not be presented as
 failure of semantic unitarity. The current exporter already reports unsupported
-operations and the synthesis-workspace capacity limit; a general specialization
-certificate, profiler and obstruction diagnostic are not implemented by those
-messages. Pending diagnostics and release evidence remain part of
+operations and the synthesis-workspace capacity limit. For source project
+exports, a failure at a Raw operation emitted inside a closed generic body
+identifies the specialization and points to the original expression. The
+terminal exporter reports its own target refusal after source checking has
+completed. Imported artifacts lack these compiler-local source diagnostics.
+The location supplies no realization or resource certificate. General
+specialization certificates and diagnostic coverage remain part of
 [#48](https://github.com/MGYamada/Qleisli/issues/48),
 [#120](https://github.com/MGYamada/Qleisli/issues/120) and
 [#127](https://github.com/MGYamada/Qleisli/issues/127).

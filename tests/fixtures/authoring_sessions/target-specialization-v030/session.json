@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#127 finite specialization and terminal target diagnostics",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "79ac120873115efbf667c3c9b389b5704a2dea84",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "The first source with the initial manifest; project loading refused the former schema key.",
+      "sha256": {
+        "n1/main.qli": "09cf347da5b32a24b51973193caf58d6fbf81caca9cb5e0f5d1fc2de525a399b"
+      },
+      "manifest_sha256": {
+        "n1/Qargo.toml": "64a825ce769d9d7d8ad79f2b742df0f8c99446d55ec26ebe46d90a9562c0769e"
+      },
+      "observations": [
+        "attempt-01-n1-emit-qasm.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "The same source with the canonical manifest. Both specializations check; the terminal profile refuses the nontrivial scalar phase.",
+      "sha256": {
+        "n0/main.qli": "d8f39ca0d246952f88db4beca3ec1c8721914062e3f2f9414fd0ecf154149b12",
+        "n1/main.qli": "09cf347da5b32a24b51973193caf58d6fbf81caca9cb5e0f5d1fc2de525a399b"
+      },
+      "manifest_sha256": {
+        "n0/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "n1/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "attempt-02-n0-check.json",
+        "attempt-02-n0-emit-qasm.json",
+        "attempt-02-n1-check.json",
+        "attempt-02-n1-emit-qasm.json"
+      ]
+    }
+  ]
+}

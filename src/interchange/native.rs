@@ -150,6 +150,7 @@ impl Prepared {
                 source_instrument_calls: Arc::from([]),
                 source_pure_equations: Arc::from([]),
                 source_computed_normalizations: Arc::from([]),
+                specialization_origins: Arc::default(),
                 source_context: None,
                 ordinary_result: None,
                 runtime_result: None,
@@ -586,6 +587,8 @@ pub struct AcceptedProgram {
     // to protected diagonal use. Native decisions precede attachment; this is
     // neither execution input nor a whole-source preservation certificate.
     source_computed_normalizations: Arc<[Arc<super::finite_leaf::SourceUnitaryEquation>]>,
+    // Source-only diagnostic metadata keyed by top-level Raw operation.
+    specialization_origins: Arc<SpecializationOrigins>,
     // Actual source lowering coordinates stay with the same prepared Raw body.
     // They are untrusted proposals consumed only by the enclosing qmatch gate.
     source_context: Option<Arc<super::qmatch::ContextSubject>>,
@@ -595,7 +598,28 @@ pub struct AcceptedProgram {
     runtime_result: Option<Arc<super::runtime_root::Request>>,
     qmatch_result: Option<Arc<super::qmatch::v5::Request>>,
 }
+pub(crate) type SpecializationOrigins =
+    std::collections::BTreeMap<usize, (String, crate::frontend::ast::Span, Arc<str>)>;
+
 impl AcceptedProgram {
+    pub(crate) fn retain_specialization_origins(mut self, origins: SpecializationOrigins) -> Self {
+        self.specialization_origins = Arc::new(origins);
+        self
+    }
+
+    /// Original module, expression span and closed specialization for a
+    /// top-level Raw operation emitted inside a generic source declaration.
+    /// Available for compiled project entry points. Imported artifacts provide
+    /// no such source diagnostic metadata.
+    pub fn specialization_origin(
+        &self,
+        operation: usize,
+    ) -> Option<(&str, crate::frontend::ast::Span, &str)> {
+        self.specialization_origins
+            .get(&operation)
+            .map(|(module, span, label)| (module.as_str(), *span, label.as_ref()))
+    }
+
     pub(crate) fn source_context(&self) -> Option<&Arc<super::qmatch::ContextSubject>> {
         self.source_context.as_ref()
     }
