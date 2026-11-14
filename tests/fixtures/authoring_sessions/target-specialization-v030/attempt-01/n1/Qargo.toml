@@ -1,6 +1,4 @@
-schema = 2
+schema-version = 2
 
 [qrate]
-name = "specialization_trial"
-version = "0.1.0"
 edition = "2026"

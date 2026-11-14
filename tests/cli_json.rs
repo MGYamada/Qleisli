@@ -404,7 +404,7 @@ fn terminal_export_locates_the_exact_rejected_source_specialization() {
     first.write(
         "Qargo.toml",
         include_str!(
-            "fixtures/authoring_sessions/target-specialization-v030/attempt-01/n1/Qargo.toml"
+            "fixtures/authoring_sessions/target-specialization-v030/attempt-01/n1/Qargo.toml.rejected"
         ),
     );
     let refused_manifest = invoke(&first, "emit-qasm");

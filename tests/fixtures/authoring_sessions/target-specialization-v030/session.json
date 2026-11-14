@@ -14,7 +14,7 @@
         "n1/main.qli": "09cf347da5b32a24b51973193caf58d6fbf81caca9cb5e0f5d1fc2de525a399b"
       },
       "manifest_sha256": {
-        "n1/Qargo.toml": "64a825ce769d9d7d8ad79f2b742df0f8c99446d55ec26ebe46d90a9562c0769e"
+        "n1/Qargo.toml.rejected": "64a825ce769d9d7d8ad79f2b742df0f8c99446d55ec26ebe46d90a9562c0769e"
       },
       "observations": [
         "attempt-01-n1-emit-qasm.json"
