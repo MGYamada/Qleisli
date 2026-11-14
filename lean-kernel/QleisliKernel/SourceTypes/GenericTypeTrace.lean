@@ -605,6 +605,7 @@ private def checkClassicalTree {sources} (modules : Option (SourceModules.Prepar
     | .boolean _ trees => children trees.trees
     | .record _ trees => children trees.trees
     | .projection _ receiver => next receiver
+    | .bitIndex _ _ _ _ _ _ _ _ receiver => next receiver
     | .conditional _ condition thenBody elseBody => do
       next condition
       next thenBody
@@ -1207,6 +1208,12 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       let value ← typedNominal state reference.field.basis
       let rows ← NaturalRows.nominalOrigins sources state.prepared.helpers fields.original.basis
       pure {result with value,rows := result.rows ++ rows}
+    | .bitIndex _ _ _ _ _ _ index _ receiver =>
+      let result ← next state scope environment receiver
+      let [.ordinary [.bits width]] := result.value | throw .request
+      let coordinate ← NaturalAffine.constant (StaticHeaders.frame state.prepared.original).binders.length index
+      let _ ← NaturalPredicates.implies state.environment.context coordinate .lt width
+      pure {result with value := [.ordinary [.fixed .bit]]}
     | .call call trees =>
       let (values,arguments) ← children trees.trees
       let transformed ← adapt (SourceRuntimeTransformSyntax.read call.call.callee)

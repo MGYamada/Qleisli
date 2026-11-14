@@ -536,6 +536,11 @@ pub enum BasisExprKind {
         receiver: Box<BasisExpr>,
         field: Ident,
     },
+    BitIndex {
+        receiver: Box<BasisExpr>,
+        index: u32,
+        index_span: Span,
+    },
     Name(Ident),
     Bit(bool),
     Unit,

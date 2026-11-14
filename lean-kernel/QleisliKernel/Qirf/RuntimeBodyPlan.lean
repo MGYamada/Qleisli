@@ -207,10 +207,13 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       {children : List (SourceRuntimeContext.Event artifact.sources owner)} {position : Position} {before : Queues}
       (prepared : RuntimeWorkspace.Original event children) :
       Event preparation source (.workspace event children) position before before
+  | registerPrimitive {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.RegisterEvent artifact.sources owner} {position : Position} {before : Queues} :
+      Event preparation source (.registerPrimitive event) position before before
   | unsupported {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before : Queues}
       (unconnected : (match event with
-        | .matching .. | .computed .. | .registerPrimitive .. => true
+        | .matching .. | .computed .. => true
         | _ => false) = true) : Event preparation source event position before before
 
 inductive Events {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :

@@ -362,7 +362,14 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               | supplied => exact ()
               | original => exact some (.workspace prepared)
             return ⟨before,⟨prepared.rows,[]⟩,[],data⟩
-          | .matching .. | .registerPrimitive .. | .staticConditional .. => throw .request
+          | .registerPrimitive event =>
+            guard (event.kind == .takeBit || event.kind == .putBit) .request
+            let data : scope.EventData mode.preparation (.registerPrimitive event) position before before := by
+              cases scope with
+              | supplied => exact ()
+              | original => exact some .registerPrimitive
+            return ⟨before,⟨(SourceRuntimeContext.Event.registerPrimitive event).staticRows,[]⟩,[],data⟩
+          | .matching .. | .staticConditional .. => throw .request
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do
           match event with

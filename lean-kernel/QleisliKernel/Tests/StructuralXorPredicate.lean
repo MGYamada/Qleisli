@@ -61,4 +61,33 @@ private def wordPredicate (width value : Nat) : Finite.WorkM (List (List Control
 #guard ((wordPredicate 3 5).run 128).1.toOption = some [[⟨0,true⟩,⟨1,false⟩,⟨2,true⟩]]
 #guard ((wordPredicate 3 8).run 128).1.toOption.isNone
 
+-- The same word equality uses one control per coordinate. Doubling the
+-- width here adds four controls and 32 work units rather than 240 table rows.
+#guard ((wordPredicate 4 5).run 128).1.toOption.map (List.map List.length) == some [4]
+#guard ((wordPredicate 8 5).run 128).1.toOption.map (List.map List.length) == some [8]
+#guard ((wordPredicate 4 5).run 128).2 = ((wordPredicate 8 5).run 128).2 + 32
+
+private def wordCoordinate (stride dimension : Nat) : Finite.WorkM (List (List Control)) := do
+  let result ← StructuralXorPredicate.compile [.bit 0,.bits 1 4] (.field stride dimension (.input 1))
+  return result.clauses
+
+#guard ((wordCoordinate 1 2).run 72).1.toOption = some [[⟨1,true⟩]]
+#guard ((wordCoordinate 8 2).run 72).1.toOption = some [[⟨4,true⟩]]
+#guard ((wordCoordinate 1 2).run 71).1.toOption.isNone
+#guard ((wordCoordinate 0 2).run 72).1.toOption.isNone
+#guard ((wordCoordinate 3 2).run 72).1.toOption.isNone
+#guard ((wordCoordinate 16 2).run 72).1.toOption.isNone
+#guard ((wordCoordinate 2 3).run 72).1.toOption.isNone
+
+private def originalWord : String := "#![no_implicit_prelude]\n" ++
+  "classical fn mark(word:Bits<3>)->Bit{word[0] and not word[1] and word[2]}\n" ++
+  "pub unitary fn route(q:Q<Bits<3>>)->Q<Bits<3>>" ++
+  "{with_computed(q,mark){|flag|phase[1,1](flag)}}"
+
+private def wordSteps : List Step := circuit 3 [0,2] ++ circuit 3 [0,1,2]
+
+#guard failure originalWord wordSteps == none
+#guard failure (originalWord.replace "word[2]" "word[0]") wordSteps == some .equation
+#guard failure (originalWord.replace "word[2]" "word[3]") wordSteps == some .request
+
 end QleisliKernel.Tests.StructuralXorPredicate

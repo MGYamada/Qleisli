@@ -1,5 +1,6 @@
 import Qleisli.RuntimeLiteralLocalRefinement
 import Qleisli.RuntimeStructuralHistory
+import Qleisli.RuntimeSparseBlockEncoding
 
 /-! Structural steps instantiate the common ordered arm induction with
 independent sparse source frames. The same representation accepts the output
@@ -68,6 +69,12 @@ private def structuralResult {dependencies program sources caller block start co
     source.owners.bindings source.operator).map fun operator =>
       [{source with owners := action.after, operator}]
 
+private noncomputable def registerResult {dependencies program sources caller block start count event before}
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (source : SourceHistory) : Option (List SourceHistory) :=
+  (Qleisli.RuntimeSparseBlockEncoding.sourceRegister action source.operator).map fun operator =>
+    [{source with owners := action.after, operator}]
+
 /-- An original ordinary gap leaves the source owner/operator state as is.
 Its SSA values are checked against the resulting actual history. -/
 def withSparseGaps {dependencies program block}
@@ -79,17 +86,18 @@ def withSparseGaps {dependencies program block}
   | .gap _ => some [source]
   | _ => other prior step source
 
-def withSparseSteps {dependencies program block}
+noncomputable def withSparseSteps {dependencies program block}
     (other : List (@Step dependencies program block) → Step dependencies program block →
       SourceHistory → Option (List SourceHistory))
     (prior : List (@Step dependencies program block)) (step : Step dependencies program block)
     (source : SourceHistory) : Option (List SourceHistory) :=
   match step with
   | .pure (.structural action) => structuralResult action source
+  | .pure (.register _ action) => registerResult action source
   | _ => withSparseGaps other prior step source
 
 def NeedsSparseSourceAction {dependencies program block} : @Step dependencies program block → Prop
-  | .pure (.structural _) | .gap _ => False
+  | .pure (.structural _) | .pure (.register ..) | .gap _ => False
   | _ => True
 
 private theorem structural_refines {dependencies program sources caller block start count event before}
@@ -112,6 +120,33 @@ private theorem structural_refines {dependencies program sources caller block st
   refine ⟨[{source with owners := action.after, operator}],?_,.cons
     ⟨rfl,hidden,bits,kept,_,action.afterFrame,action.resultBindings,output,resultRepresents⟩ .nil⟩
   simp only [structuralResult,ownerState,sourceRead,Option.map_some]
+
+private theorem register_refines {dependencies program sources caller block start count event before}
+    (location : RuntimeSourceEvent.Location (.registerPrimitive event) start count)
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (inputs : List Nat) (inherited : Option (Nat → Prop)) {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
+    (owners : Aligned ownerBefore ownerAfter (.pure (.register location action)))
+    (ordinary : OrdinaryAligned ordinaryBefore ordinaryAfter (.pure (.register location action)))
+    {chunk source history outputs}
+    (read : readOps block.fuel action.interval.before.quantum.reference ((block.operations.drop start).take count) =
+      some (action.interval.after.quantum.reference,chunk))
+    (agrees : SemanticHistoryAgreesWithInherited inherited inputs action.interval.before ownerBefore ordinaryBefore source history)
+    (executed : run dependencies block.fuel chunk history = some outputs) :
+    ∃ expected, registerResult action source = some expected ∧
+      List.Forall₂ (SemanticHistoryAgreesWithInherited inherited inputs action.interval.after ownerAfter ordinaryAfter) expected outputs := by
+  rcases owners with ⟨rfl,rfl⟩
+  cases ordinary
+  obtain ⟨_,hidden,bits,values,_,_,_,input,represented⟩ := agrees
+  obtain ⟨frames,rfl,kept⟩ := Qleisli.RuntimeLiteralHistory.register_history location action
+    inherited inputs _ history values read executed
+  obtain ⟨output,whole⟩ := Qleisli.RuntimeSparseBlockEncoding.original_register_action action input frames
+  obtain ⟨operator,sourceRead,corresponds⟩ := whole source.operator
+  refine ⟨[{source with owners := action.after, operator}],?_,.cons
+    ⟨rfl,hidden,bits,kept,_,action.afterFrame,action.sameFrame,output,?_⟩ .nil⟩
+  · simp only [registerResult,sourceRead,Option.map_some]
+  · intro column row bounded
+    have originalBound : row < 2^action.interval.before.quantum.frame.length := by simpa only [frames] using bounded
+    exact (represented column row originalBound).trans (corresponds row column)
 
 private theorem gap_refines {dependencies program block start count before ssa}
     (gap : @RuntimeOrdinaryBody.Gap dependencies program block start count before ssa)
@@ -176,6 +211,8 @@ theorem sourceStep_with_scoped_structure {dependencies program block}
     cases node
     case structural action =>
       exact structural_refines action inputs inherited owners ordinary read agrees executed
+    case register location action =>
+      exact register_refines location action inputs inherited owners ordinary read agrees executed
     all_goals
       exact ((remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read).apply writes) agrees executed
   all_goals

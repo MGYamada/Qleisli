@@ -467,6 +467,23 @@ impl finite::Context for LabelContext<'_, '_> {
     type Tuple = LabelTuple;
     type Error = CompileError;
 
+    fn bit_index(
+        &mut self,
+        span: Span,
+        value: BasisValue,
+        index: u32,
+    ) -> Result<BasisValue, CompileError> {
+        let bit = finite::label_bit_index(&value, index).ok_or_else(|| {
+            self.compiler.error(
+                self.module,
+                span,
+                ErrorCode::TypeMismatch,
+                "ordinary bit index requires a valid Bits<n> coordinate",
+            )
+        })?;
+        Ok(self.bit(bit))
+    }
+
     fn nominal_unavailable(&mut self, span: Span) -> CompileError {
         self.compiler.error(
             self.module,

@@ -988,7 +988,7 @@ private theorem recursiveBodyLeaves_refine {dependencies program block}
     case workspace => exact False.elim graph
     case selection => exact False.elim selection
     case primitive => exact False.elim primitive
-    case structural => exact False.elim structural
+    case structural | register => exact False.elim structural
     case basis => exact False.elim basis
     case computed | certifiedComputed | structuralComputed => exact False.elim computed
   | gap _ => exact False.elim structural

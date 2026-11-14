@@ -20,6 +20,10 @@ pub(crate) enum RuntimeExpression<'a> {
     Name(&'a Ident),
     Unit,
     Tuple(&'a [BasisExpr]),
+    BitIndex {
+        receiver: &'a BasisExpr,
+        index: usize,
+    },
     Call {
         callee: &'a Ident,
         args: &'a [BasisExpr],
@@ -39,6 +43,12 @@ pub(crate) fn runtime_expression(expr: &BasisExpr) -> RuntimeExpression<'_> {
         BasisExprKind::Name(name) => RuntimeExpression::Name(name),
         BasisExprKind::Unit => RuntimeExpression::Unit,
         BasisExprKind::Tuple(fields) => RuntimeExpression::Tuple(fields),
+        BasisExprKind::BitIndex {
+            receiver, index, ..
+        } => RuntimeExpression::BitIndex {
+            receiver,
+            index: *index as usize,
+        },
         BasisExprKind::Call { callee, args } => RuntimeExpression::Call { callee, args },
         BasisExprKind::Bit(value) => RuntimeExpression::Boolean {
             operation: Boolean::Constant(*value),
