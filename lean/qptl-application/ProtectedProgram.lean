@@ -4,11 +4,12 @@ import Qleisli.FiniteMatrixAction
 import Qleisli.RuntimeComputedProtectedAction
 import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import Qleisli.RuntimeForestProduct
+import Qleisli.StructuralComputedRestoration
 
 /-! Exact cleanup in the actual ordered pure Raw program. Certified scopes
 retain their original physical circuit and independently requested logical
 circuit. Table-backed protected scopes use QPTL's uncompute square. The
-source-bound structural circuit has its own literal restoration theorem in
+structural circuit reuses the literal factorization from
 `Qleisli.StructuralComputedRestoration`. Every covered physical row,
 including dirty auxiliary rows, is covered before the local action is composed.
 No source-preservation, general CPTP-marginal or quantitative resource claim is
@@ -240,8 +241,8 @@ theorem original_protected_clean_action
 #print axioms original_protected_clean_action
 
 /-- The independently requested local action, embedded on the original axes.
-Certified and table-backed protected scopes use their logical equations.
-Structural computation retains its literal action in this Raw fold. -/
+Certified, table-backed protected and structural scopes use their independently
+checked logical equations. Other events keep their literal action. -/
 noncomputable def logicalEvent (dependencies : List Dependency) (operation : Event)
     (joint : Nat → ℂ) : Nat → ℂ :=
   match operation with
@@ -253,6 +254,8 @@ noncomputable def logicalEvent (dependencies : List Dependency) (operation : Eve
       Qleisli.Semantics.Protected.logical (fun source => function[source]?.getD 0) uses
         (fun source target (_ : Unit) => input (source+target*2^sourceBits))
         (output % 2^sourceBits) (output / 2^sourceBits) ()) joint
+  | .structuralComputed _ axes forward _ uses =>
+    Qleisli.StructuralComputedRestoration.logicalAction axes forward uses joint
   | event => Qleisli.Semantics.RawAction.event dependencies event joint
 
 noncomputable def logicalEvents (dependencies : List Dependency) (operations : List Event)
@@ -265,8 +268,12 @@ theorem event_action (dependencies : List Dependency) (operation : Event) (work 
     (accepted : (eventCheck dependencies operation).run work = (.ok (),left)) (joint : Nat → ℂ) :
     Qleisli.Semantics.RawAction.event dependencies operation joint = logicalEvent dependencies operation joint := by
   cases operation with
-  | circuit _ _ | init0 _ | liftBasis _ _ _ _ _ | reorder _ _
-  | structuralComputed _ _ _ _ _ => rfl
+  | circuit _ _ | init0 _ | liftBasis _ _ _ _ _ | reorder _ _ => rfl
+  | structuralComputed bits axes forward inverse uses =>
+    obtain ⟨_,middle,_,remaining⟩ := bind_success _ _ _ _ _ accepted
+    obtain ⟨clauses,_,literal,_⟩ := bind_success _ _ _ _ _ remaining
+    exact Qleisli.StructuralComputedRestoration.raw_event_action
+      (clauses := clauses) (lift_success _ _ _ _ literal).1 dependencies bits joint
   | computed bits axes sourceBits ancillaBits function uses logicalSteps =>
     obtain ⟨logical,middle,clean,_⟩ := bind_success _ _ _ _ _ accepted
     have clean := restoration_success false

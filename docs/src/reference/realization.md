@@ -609,6 +609,11 @@ literal circuit count includes every forward step, inverse step and protected
 use. The Lean theorem `Qleisli.RuntimeComputedResources.structural_counts`
 binds these numbers to the same original source-checked Raw occurrence and
 retains caller spectators in the peak width.
+The same literal XOR factorization proves logical action for the independently
+checked Raw event, even for an arbitrary caller amplitude function. The
+source-bound theorem additionally identifies the predicate and phase from the
+original body. The complete pure Raw event fold uses the local logical action
+without constructing a global matrix.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
