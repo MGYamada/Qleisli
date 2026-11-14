@@ -87,7 +87,8 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-70-scoped-workspace",
     "refs/heads/codex/beta-70-resource-candidate",
     "refs/heads/codex/beta-70-target-routing",
-    "refs/heads/codex/beta-70-workspace-replay"))
+    "refs/heads/codex/beta-70-workspace-replay",
+    "refs/heads/codex/beta-70-openqasm-workspace"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),

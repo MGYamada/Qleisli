@@ -296,6 +296,7 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
     };
     let mut owners = BTreeMap::<TokenId, Vec<usize>>::new();
     let mut scratch = Vec::new();
+    let mut clean_workspace = None;
     let mut expansion = super::export::ExpansionBudget::for_program(program);
     let mut measured = BTreeMap::new();
     let mut observed = false;
@@ -411,6 +412,39 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                         &mut expansion,
                     )?;
                     owners.insert(*output, wires);
+                }
+                RawOp::CertifiedCompute {
+                    source,
+                    source_out,
+                    ancilla_wires,
+                    function,
+                    use_steps,
+                    ..
+                } if ancilla_wires.len() == 1 && function.iter().all(|&value| value == 0) => {
+                    let wires = owners.remove(source).expect("verified owner");
+                    // The zero predicate gives identity compute/uncompute. Emit the
+                    // physical body on the accepted data-then-scratch interface.
+                    // The verified zero return permits reuse by the next scope.
+                    let auxiliary = match clean_workspace {
+                        Some(axis) => axis,
+                        None => {
+                            let axis = circuit.allocate_zero()?;
+                            clean_workspace = Some(axis);
+                            axis
+                        }
+                    };
+                    let mut layout = wires.clone();
+                    layout.push(auxiliary);
+                    normalization_barriers[circuit.gates.len()] = true;
+                    super::export::steps(
+                        &mut circuit,
+                        &mut scratch,
+                        use_steps,
+                        &layout,
+                        &mut expansion,
+                    )?;
+                    normalization_barriers[circuit.gates.len()] = true;
+                    owners.insert(*source_out, wires);
                 }
                 RawOp::LiftBasis {
                     input,

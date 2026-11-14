@@ -594,7 +594,14 @@ maps, before merging adjacent diagonal actions. Contract expansion shares the
 existing 1,000,000-step function limit across the whole export; this is a producer
 work limit, not a target-resource bound. Flat input and emitted-gate limits remain
 unchanged. The exporter explicitly allocates and uncomputes conjunction scratch
-and rejects output exceeding its physical qubit capacity. A nontrivial
+and rejects output exceeding its physical qubit capacity. For an accepted
+single-bit certified compute with an all-zero predicate, the exporter emits
+the physical body with data axes followed by a separately reserved clean
+scratch wire. It reuses that wire after complete verified zero return. The
+Rust/Lean regression binds the same emitted OpenQASM bytes to two original
+clean intervals and checks their placement, exact restoration and readout.
+General typed-source result transport and production resource certificates
+remain outside this check. A nontrivial
 uncontrolled scalar still has no terminal-gate realization in this profile.
 The independent `scripts/test_review_v024.py` oracle checks
 emitted small QFT/control circuits, including complex phase, output axes and
