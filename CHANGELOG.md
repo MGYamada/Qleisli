@@ -13,6 +13,8 @@ development milestones from the scope of their evidence.
   target gate interval against the original clean/dirty workspace operator.
 - Check reuse of a reserved physical scratch wire across exact clean-return
   intervals and refuse unaccounted gates or terminal readout on that wire.
+- Derive clean/dirty workspace entry placement from literal closed Raw and
+  target prefixes, including physical SWAP routing and zero-width owners.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.

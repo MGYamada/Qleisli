@@ -507,13 +507,22 @@ dirty body. The comparison uses the declared ordered data/scratch placement
 and requires the physical register to cover the checked Raw peak. The checker
 can derive the workspace's ordered locations from the checked original Raw
 frame and its complete injective physical placement. A fresh scratch must
-occupy a location absent from that frame. For a fresh
-scratch wire, the checker can verify that nothing touches it between the
-initial reset and workspace entry, or after exact restoration. This profile
-keeps the physical reservation throughout. The surrounding circuit must
-establish how the complete placement follows from the preceding gates.
-A physical scratch location can also
-be reused across ordered, disjoint, nonempty clean intervals. The checker
+occupy a location absent from that frame. For a fresh scratch wire, the
+checker can verify that nothing touches it between the initial reset and
+workspace entry, or after exact restoration. This profile keeps the physical
+reservation throughout.
+
+For a closed straight-line Raw prefix with zero preparations, structural
+owner operations and literal finite gates, the checker derives this frame by
+replaying the original prefix and the decoded target gate word. Marked
+routing operations must match connected physical SWAPs in the emitted word.
+An ordinary Raw SWAP is matched as a gate and does not move the encoding.
+The derived original frame must equal the checked workspace entry, including
+zero-width ports. General gate decompositions, earlier workspace scopes and
+the complete terminal owner/readout correspondence require further checking.
+
+A physical scratch location can also be reused across ordered, disjoint,
+nonempty clean intervals. The checker
 requires an exact zero-return equation for each interval, checks that every
 gate touching that location lies in one of those intervals, and checks that
 the location is absent from terminal readout.

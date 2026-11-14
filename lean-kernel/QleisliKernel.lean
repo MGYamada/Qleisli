@@ -208,4 +208,5 @@ import QleisliKernel.Target.Routing
 import QleisliKernel.Target.CanonicalOpenQasmRouting
 import QleisliKernel.Target.CanonicalOpenQasmResources
 import QleisliKernel.Target.CanonicalOpenQasmWorkspace
+import QleisliKernel.Target.CanonicalOpenQasmPlacement
 import QleisliKernel.Qirf.EngineeringOpenQasm

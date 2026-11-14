@@ -2,6 +2,7 @@ import QleisliKernel.SourceTypes.SourceRuntimeTrace
 import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import QleisliKernel.Qirf.RuntimeWorkspace
 import QleisliKernel.Target.CanonicalOpenQasmWorkspace
+import QleisliKernel.Target.CanonicalOpenQasmPlacement
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Actual original computed scope typing, owner histories and source bodies.
@@ -158,6 +159,38 @@ private def placedWorkspace (fresh : Bool) (frame : List Nat) (scratch : Option 
 #guard !placedWorkspace true [2,0] (some 1)
 #guard !placedWorkspace false [0,2] none
 #guard !placedWorkspace false [2,0] (some 1)
+
+private def routedWorkspace (gates : String) (align : List Target.CanonicalOpenQasmPlacement.Match) :
+    Finite.WorkM (List Nat × Nat) := do
+  let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ cleanScope)] "main" "route"
+  let [.workspace event children] := source.events | throw .request
+  let beforeOps : List Semantics.Observation.Op :=
+    [.pure (.init0 10 6),.pure (.packUnit 12)]
+  let body := cleanOps [hData] [hData]
+  let program : Semantics.Observation.Program := ⟨[],[],beforeOps++body,[13,12],[],.isometry⟩
+  let root ← Qirf.RuntimeInterval.prepare [] program
+  let interval ← Qirf.RuntimeInterval.check root.block beforeOps.length body.length
+  let bindings : Qirf.RuntimeOwnerMap.Map :=
+    [⟨event.input,⟨10,[6],1⟩⟩,⟨⟨4,[.unit]⟩,⟨12,[],0⟩⟩]
+  let before : Qirf.RuntimeStructuralAction.SourceState := ⟨bindings,bindings.map (·.owner),event.nextOrdinal⟩
+  let original ← Qirf.RuntimeWorkspace.readOriginal event children
+  let literal ← Qirf.RuntimeWorkspace.readLiteral original interval before
+  let map ← Qirf.RuntimeWorkspace.readCallerMap literal #[]
+  let target ← Target.CanonicalOpenQasmResources.check (targetWorkspace 3 gates).toUTF8 3
+  let prefixCheck ← Target.CanonicalOpenQasmPlacement.check target program
+    (fun a b => a+1 == b || b+1 == a) align
+  let placed ← Target.CanonicalOpenQasmPlacement.workspace map prefixCheck 1 (some 0)
+  pure (placed.placed.liveLayout,prefixCheck.state.gateIndex)
+
+private def routedPrefix : List Target.CanonicalOpenQasmPlacement.Match := [.original,.original,.route,.route]
+#guard ((routedWorkspace "swap q[0], q[1];\nswap q[1], q[2];\nh q[2];\n" routedPrefix).run
+  20000000).1.toOption == some ([2],2)
+#guard ((routedWorkspace "swap q[0], q[1];\nswap q[1], q[2];\nh q[1];\n" routedPrefix).run
+  20000000).1.toOption.isNone
+#guard ((routedWorkspace "swap q[0], q[2];\nswap q[1], q[2];\nh q[2];\n" routedPrefix).run
+  20000000).1.toOption.isNone
+#guard ((routedWorkspace "swap q[0], q[1];\nswap q[1], q[2];\nh q[2];\n" [.original,.route,.route]).run
+  20000000).1.toOption.isNone
 
 private def reusableWorkspace (gates : String) (first second : Nat) (count : Nat := 1) : Bool :=
   ((workspaceInterval cleanScope (cleanOps [hData] [hData]) true none
