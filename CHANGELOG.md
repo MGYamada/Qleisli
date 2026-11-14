@@ -1157,6 +1157,8 @@ development milestones from the scope of their evidence.
   rules, keeping per-history bounds, ensemble work and coherent target costs
   distinct. State the separate future RUS boundary without enabling new loops
   or claiming general resource preservation or quantitative RS.
+- Specify the existing finite phase representation and the literal
+  non-Clifford instruction counts of the canonical terminal target.
 - Clarify complete Observe instruments, linear feed-forward and the separate
   postselection boundary. Retain bounded instrument/Unit conformance observations
   and original failures without claiming general source-preservation or CPTP proofs.
