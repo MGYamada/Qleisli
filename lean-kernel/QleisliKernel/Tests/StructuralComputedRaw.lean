@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.StructuralComputedRaw
 import QleisliKernel.Raw.Pure
+import QleisliKernel.Qirf.RuntimeBodyGraph
 
 /-! Circuit-backed protected packets with two data bits and private scratch.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -94,6 +95,30 @@ private def intervalProbe (text : String) (candidate : StructuralComputedRaw.Pac
 #guard ((intervalProbe (source.replace "a and b" "a xor b") packet).run
   exactWorkLimit).1.toOption.isNone
 #guard ((intervalProbe source {packet with uses := [.phase [] .minusOne] ++ packet.uses}).run
+  exactWorkLimit).1.toOption.isNone
+
+private def bodyProbe (text : String) (candidate : StructuralComputedRaw.Packet) :
+    Finite.WorkM (List Nat) := do
+  let raw : Semantics.Observation.Program :=
+    ⟨[input],[],[.pure candidate.operation],[candidate.output],[],.unitary⟩
+  let artifact : Qirf.Artifact := ⟨#[raw],#[],#[("main",text)],0,none⟩
+  let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "route" {}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let [.computed event _] := body.checked.events | throw .request
+  let context : Qirf.RuntimeContextRequest.Context :=
+    .mk [⟨SourceRuntimeComputed.offset event.written,0,1⟩] [] [] [] []
+  let runtime : RuntimeFamily.Request :=
+    ⟨.exported,"main","route",signature.parameters.map (·.tree),
+      [[.quantum ⟨input,event.input.basis⟩]],[[]],signature.result.tree,
+      [.quantum ⟨⟨candidate.output,input.wires,input.bits⟩,event.input.basis⟩],.unitary,{}⟩
+  let checked ← RuntimeBodyGraph.prepare artifact #[0] "main" "route" {} context runtime
+  let [.structuralComputed _ _ action] := checked.derivation.result.actions | throw .request
+  return action.checked.output.wires
+
+#guard ((bodyProbe source packet).run exactWorkLimit).1.toOption == some [8,2]
+#guard ((bodyProbe (source.replace "a and b" "a xor b") packet).run
+  exactWorkLimit).1.toOption.isNone
+#guard ((bodyProbe source {packet with uses := [.phase [] .minusOne] ++ packet.uses}).run
   exactWorkLimit).1.toOption.isNone
 
 end QleisliKernel.Tests.StructuralComputedRaw

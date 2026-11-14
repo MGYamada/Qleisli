@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.StructuralXor
+import QleisliKernel.Qirf.RuntimeInterval
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 
 /-! Compile the checked original predicate's ordinary expression to bounded
@@ -59,7 +60,7 @@ private theorem parity_constant (value : Bool) (label : Nat) :
     parity (constant value) label = value := by cases value <;> rfl
 
 private theorem bit_as_bool (label axis : Nat) : (bit label axis == 1).toNat = bit label axis := by
-  have small := RuntimeScatterTransport.bit_lt label axis
+  have small := FiniteRestriction.BitUpdate.bit_lt label axis
   have either : bit label axis = 0 ∨ bit label axis = 1 := by omega
   rcases either with zero | one
   · simp [zero]
@@ -106,8 +107,8 @@ private theorem wordControls_eq (label axis width expected : Nat) (bound : expec
   apply forall_congr'
   intro inside
   rw [bit_slice _ _ _ _ inside]
-  have leftSmall := RuntimeScatterTransport.bit_lt label (axis+offset)
-  have rightSmall := RuntimeScatterTransport.bit_lt expected offset
+  have leftSmall := FiniteRestriction.BitUpdate.bit_lt label (axis+offset)
+  have rightSmall := FiniteRestriction.BitUpdate.bit_lt expected offset
   have left : bit label (axis+offset) = 0 ∨ bit label (axis+offset) = 1 := by omega
   have right : bit expected offset = 0 ∨ bit expected offset = 1 := by omega
   rcases left with zero | one <;> rcases right with zero' | one' <;> simp_all

@@ -173,6 +173,14 @@ def readSource {sources caller} {event : ComputedEvent sources caller}
     | _ => throw .request
   else throw .request
 
+/-- Select the verifier by the literal operation at this source occurrence.
+The body loop cannot reinterpret a malformed structural operation as a table. -/
+def isStructuralInterval {dependencies program block start count}
+    (_interval : @RuntimeInterval.Checked dependencies program block start count) : Bool :=
+  match (block.operations.drop start).take count with
+  | [.pure (.structuralCompute ..)] => true
+  | _ => false
+
 def Packet.operation (packet : Packet) : Semantics.Raw.Op :=
   .structuralCompute packet.input packet.output packet.scratch packet.forward packet.inverse packet.uses
 

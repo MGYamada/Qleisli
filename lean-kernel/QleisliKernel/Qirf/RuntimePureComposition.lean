@@ -50,6 +50,14 @@ def region {dependencies program block} : Node dependencies program block → Lo
     let literal := action.literal
     ⟨start,count,[literal.input.port.token],[literal.output.token],[event.input],[event.input],
       interval,[literal.input.port],[literal.output],[literal.operation],literal.original,literal.spectators⟩
+  | .structuralComputed (start := start) (count := count) (event := event) interval _ action =>
+    let checked := action.checked
+    ⟨start,count,[checked.raw.input.token],[action.packet.output],[event.input],[event.input],
+      interval,[checked.raw.input],[checked.output],[action.packet.operation],action.literal,
+      by
+        have same := checked.spectators
+        rw [action.afterQuantum] at same
+        exact same⟩
   | .workspace (start := start) (count := count) (event := event) interval _ _ action _ =>
     let scratch := action.scratch.map (·.port)
     ⟨start,count,RuntimeWorkspace.outputTokens action.input.port.token (scratch.map (·.token)),

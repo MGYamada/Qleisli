@@ -289,7 +289,8 @@ theorem OperationOrigin.staged_action {artifact root}
   all_goals exact True.intro
 
 private def IntrinsicNode {dependencies program block} : Node dependencies program block → Prop
-  | .primitive .. | .structural .. | .basis .. | .computed .. | .certifiedComputed .. | .workspace .. => True
+  | .primitive .. | .structural .. | .basis .. | .computed .. | .certifiedComputed ..
+  | .structuralComputed .. | .workspace .. => True
   | _ => False
 
 private theorem intrinsic_origin {artifact root} {execution : ExecutionMode artifact root}

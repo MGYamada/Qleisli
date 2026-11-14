@@ -1,4 +1,4 @@
-import QleisliKernel.Qirf.RuntimeScatterTransport
+import QleisliKernel.FiniteRestriction.BitUpdate
 import QleisliKernel.Semantics.RawTrace
 
 /-! Phase-free controlled XOR on one actual ordered target wire.
@@ -7,7 +7,7 @@ input labels. Source predicate and owner correspondence are separate premises.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.StructuralXor
 open QleisliKernel Semantics.Finite Semantics.Exact
-open RuntimeScatterTransport (bit_lt bit_write write)
+open _root_.QleisliKernel.FiniteRestriction.BitUpdate (bit_lt bit_write write)
 
 def toggle (target : Nat) (controls : List Control) : Step :=
   {Semantics.RawTrace.gate .x target with controls}
