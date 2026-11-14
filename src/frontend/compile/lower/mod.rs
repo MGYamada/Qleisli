@@ -131,6 +131,8 @@ struct Lowerer<'c, 'p> {
     nominal_modules: std::rc::Rc<std::cell::RefCell<BTreeSet<String>>>,
     // Enabled only for a complete root that can require independent body checking.
     nominal_basis_used: Option<bool>,
+    // Root requires original-body checking before any operations are lowered.
+    source_planned: bool,
     raw: RawState<u32>,
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
@@ -1696,6 +1698,7 @@ impl Lowerer<'_, '_> {
         let mut inner = Lowerer {
             nominal_modules: std::rc::Rc::clone(&self.nominal_modules),
             nominal_basis_used: None,
+            source_planned: false,
             compiler: self.compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
@@ -1989,9 +1992,12 @@ impl Lowerer<'_, '_> {
             self.raw.registers[&source_slot].basis.tree_size().nodes,
         )?;
         let basis = self.raw.registers[&source_slot].basis.clone();
-        // Choose a representation before proposing the body or consulting a
-        // native decision. Nominal predicates keep their typed table path.
+        // Only a source-planned body or the selected entry itself opts into
+        // structural predicate evidence. An inlined table must not change the
+        // caller's verification path solely because its predicate can synthesize.
+        let selected_body = self.compiler.selected_entry == Some(owner);
         let structural = if self.uses_qmatch_v5()
+            && (self.source_planned || selected_body)
             && self.nominal_qmatch.is_some()
             && !self.compiler.concrete_context.finite_transform
             && !self.compiler.deferred_nominal_tables.contains(&key)
@@ -2189,6 +2195,7 @@ fn lower_function_in_context(
     let mut lower = Lowerer {
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         nominal_basis_used: typed_basis.then_some(false),
+        source_planned: planned_basis || require_qmatch_v5,
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),

@@ -245,6 +245,7 @@ impl Lowerer<'_, '_> {
         let mut inner = Lowerer {
             nominal_modules: std::rc::Rc::clone(&self.nominal_modules),
             nominal_basis_used: None,
+            source_planned: false,
             compiler: self.compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
