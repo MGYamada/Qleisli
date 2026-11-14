@@ -15,6 +15,34 @@ def interval (circuit : Circuit) (layout : List Nat) (start count : Nat) :
     ((circuit.gates.drop start).take count).mapM (Instruction.localStep layout)
   else none
 
+private theorem mapM_length {α β : Type} (f : α → Option β) (xs : List α) (ys : List β)
+    (ok : xs.mapM f = some ys) : ys.length = xs.length := by
+  induction xs generalizing ys with
+  | nil => simp_all
+  | cons first rest ih =>
+    cases read : f first with
+    | none => simp [List.mapM_cons,read] at ok
+    | some value =>
+      cases remaining : rest.mapM f with
+      | none => simp [List.mapM_cons,read,remaining] at ok
+      | some tail =>
+        have same : value :: tail = ys := by simpa [List.mapM_cons,read,remaining] using ok
+        subst ys
+        simp [ih tail remaining]
+
+/-- Every decoded instruction in an admitted workspace slice contributes one
+step to the checked operator, including the literal cleanup and phase gates. -/
+theorem interval_length {circuit layout start count steps}
+    (ok : interval circuit layout start count = some steps) :
+    steps.length = count ∧ start+count ≤ circuit.gates.length := by
+  unfold interval at ok
+  split at ok
+  · rename_i inside
+    have length := mapM_length _ _ _ ok
+    have remaining : count ≤ circuit.gates.length - start := by omega
+    exact ⟨by simpa [List.length_take,Nat.min_eq_left remaining] using length,inside⟩
+  · contradiction
+
 /-- Bind the target word to the independently proved raw workspace interval.
 The layout is ordered data then scratch, in the original source interface
 order. Every target operand stays in that layout. -/
@@ -238,6 +266,21 @@ theorem Reuse.accessCovered {bytes capacity} {target : CanonicalOpenQasmResource
   have found := List.all_eq_true.mp reuse.complete _ indexed
   simp [List.contains_eq_mem,usesScratch,CleanUse.covers,List.any_eq_true] at found
   exact found
+
+/-- Each reusable clean wire is in the literal reset register. Any gate that
+later uses that wire is counted inside a checked restoration interval. -/
+theorem Reuse.prepared_and_counted {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {scratch uses} (reuse : Reuse target scratch uses) :
+    scratch ∈ target.circuit.reservedLocations ∧ scratch < target.circuit.counts.reset ∧
+      (∀ index gate, target.circuit.gates[index]? = some gate → scratch ∈ gate.wires →
+        ∃ use ∈ uses, use.start ≤ index ∧ index < use.start+use.count ∧
+          use.steps.length = use.count ∧ use.start+use.count ≤ target.circuit.counts.gates) := by
+  refine ⟨List.mem_range.mpr reuse.reserved,reuse.reserved,?_⟩
+  intro index gate emitted touched
+  obtain ⟨use,member,start,stop⟩ := reuse.accessCovered index gate emitted touched
+  have ⟨count,inside⟩ := interval_length use.actual
+  exact ⟨use,member,start,stop,count,inside⟩
 
 theorem CleanUse.exactRestoration {circuit scratch} (use : CleanUse circuit scratch) :
     ∃ contract first middle work after lhs lhsWork rhs rhsWork,

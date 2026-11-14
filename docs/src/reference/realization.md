@@ -553,6 +553,14 @@ derives every entry placement from the preceding original owners and target
 word. It reserves each designated scratch location across the complete trace,
 keeping it out of ordinary preparations, routing and terminal readout. Each
 reuse interval must be bound to its own checked original workspace.
+
+For a successful native placement check, each reusable clean wire is in the
+counted reset register. Every gate that touches that wire belongs to a
+checked restoration interval, with one operator step per decoded gate in
+the interval. A routing action before a workspace or in the terminal suffix
+points to a literal SWAP on an allowed edge at a counted gate index. The
+reported SWAP total includes the literal routing gates as well as any
+ordinary SWAP instructions in the target word.
 The replay can also align a target word with several consecutive Raw circuit
 events and structural owner operations. It reads the actual owner transitions
 and checks the combined operator on the ordered support, with the same

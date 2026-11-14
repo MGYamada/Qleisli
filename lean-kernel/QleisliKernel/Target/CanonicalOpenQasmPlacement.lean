@@ -271,14 +271,69 @@ private def followSpan (original : Array Semantics.Observation.Op) (circuit : Ci
     let _ ← checkSynthesisWith circuit state.gateIndex gateCount state.locations scratch state.synthesis steps
   pure {state with raw := next,rawIndex := state.rawIndex+rawCount,gateIndex := state.gateIndex+gateCount}
 
+private def replayStep (original : Array Semantics.Observation.Op) (circuit : Circuit)
+    (connected : Nat → Nat → Bool) (reserved : List Nat) (state : State) (action : Match) : WorkM State :=
+  match action with
+  | .route => lift (readOption (followSwap circuit connected state reserved))
+  | .optimized rawCount gateCount scratch => followSpan original circuit state rawCount gateCount scratch reserved
+  | .original | .decomposed _ | .synthesized _ _ => do
+    let some (.pure operation) := original[state.rawIndex]? | throw .request
+    followRaw circuit state operation reserved action
+
 private def replayFrom (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
     (alignment : List Match) (initial : State) (reserved : List Nat := []) : WorkM State :=
-  alignment.foldlM (fun state action => match action with
-    | .route => lift (readOption (followSwap circuit connected state reserved))
-    | .optimized rawCount gateCount scratch => followSpan original circuit state rawCount gateCount scratch reserved
-    | .original | .decomposed _ | .synthesized _ _ => do
-      let some (.pure operation) := original[state.rawIndex]? | throw .request
-      followRaw circuit state operation reserved action) initial
+  alignment.foldlM (replayStep original circuit connected reserved) initial
+
+/-- A designated routing action consumes the literal SWAP at that gate index,
+and moves the live placement along its checked hardware edge. -/
+private theorem replay_route {original circuit connected reserved initial final work left}
+    (ok : (replayStep original circuit connected reserved initial .route).run work = (.ok final,left)) :
+    ∃ first second, circuit.gates[initial.gateIndex]? = some ⟨.swap,[first,second]⟩ ∧
+      connected first second = true ∧
+      final = { initial with
+        locations := initial.locations.map (Routing.Swap.mk first second).axis
+        gateIndex := initial.gateIndex+1 } := by
+  have lifted := (lift_success _ _ _ _ ok).1
+  have swap : followSwap circuit connected initial reserved = some final := by
+    change readOption (followSwap circuit connected initial reserved) = .ok final at lifted
+    cases h : followSwap circuit connected initial reserved <;> simp_all [readOption]
+  unfold followSwap at swap
+  split at swap
+  · rename_i first second literal
+    split at swap
+    · rename_i valid
+      have edge : connected first second = true := by
+        simp only [Bool.and_eq_true] at valid
+        exact valid.1.1.1.1.2
+      exact ⟨first,second,literal,edge,(Option.some.inj swap).symm⟩
+    · contradiction
+  · contradiction
+
+/-- The decoded instruction at this paid gate index is a SWAP on a checked edge. -/
+def RoutingAt (circuit : Circuit) (connected : Nat → Nat → Bool) (index : Nat) : Prop :=
+  ∃ first second, circuit.gates[index]? = some ⟨.swap,[first,second]⟩ ∧ connected first second = true
+
+theorem RoutingAt.within_count {circuit connected index} (route : RoutingAt circuit connected index) :
+    index < circuit.counts.gates ∧ 0 < circuit.counts.swaps := by
+  obtain ⟨a,b,read,_⟩ := route
+  obtain ⟨within,gate⟩ := List.getElem?_eq_some_iff.mp read
+  refine ⟨within,?_⟩
+  apply List.length_pos_iff_exists_mem.mpr
+  refine ⟨⟨.swap,[a,b]⟩,List.mem_filter.mpr ⟨?_,rfl⟩⟩
+  rw [← gate]
+  exact List.getElem_mem _
+
+private theorem replay_routing_cost {original circuit connected reserved initial final work left}
+    (beforeRoute suffix : List Match)
+    (ok : (replayFrom original circuit connected (beforeRoute ++ .route :: suffix) initial reserved).run work =
+      (.ok final,left)) :
+    ∃ prefixExit prefixLeft, (replayFrom original circuit connected beforeRoute initial reserved).run work =
+      (.ok prefixExit,prefixLeft) ∧ RoutingAt circuit connected prefixExit.gateIndex := by
+  simp only [replayFrom,List.foldlM_append,List.foldlM_cons] at ok
+  obtain ⟨prefixExit,prefixLeft,prefixRun,tail⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,routeRun,_⟩ := bind_success _ _ _ _ _ tail
+  obtain ⟨a,b,literal,edge,_⟩ := replay_route routeRun
+  exact ⟨prefixExit,prefixLeft,prefixRun,a,b,literal,edge⟩
 
 def replay (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
     (alignment : List Match) : WorkM State :=
@@ -502,6 +557,26 @@ structure BoundSegment {program : Semantics.Observation.Program} (segment : Segm
     entry.locations entry.gateIndex segment.count
   scratchUsed : placed.freshScratch = segment.scratch
 
+/-- Routing before a workspace uses actual SWAP instructions; the workspace
+proper consumes the complete decoded slice used in its clean/dirty equation. -/
+theorem BoundSegment.literal_costs {program : Semantics.Observation.Program} {segment : Segment program}
+    {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {connected reserved previous entry} (bound : BoundSegment segment target connected reserved previous entry) :
+    bound.placed.body.gates.length = segment.count ∧
+      entry.gateIndex+segment.count ≤ target.circuit.counts.gates ∧
+      ∀ beforeRoute tail, segment.alignment = beforeRoute ++ .route :: tail →
+        ∃ state, RuntimeInterval.Computed
+          (replayFrom program.operations.toArray target.circuit connected beforeRoute previous reserved) state ∧
+          RoutingAt target.circuit connected state.gateIndex ∧ state.gateIndex < target.circuit.counts.gates ∧
+          0 < target.circuit.counts.swaps := by
+  have ⟨steps,inside⟩ := CanonicalOpenQasmWorkspace.interval_length bound.placed.body.actualInterval
+  refine ⟨steps,inside,?_⟩
+  intro beforeRoute tail route
+  obtain ⟨work,left,ran⟩ := bound.replayed
+  rw [route] at ran
+  obtain ⟨state,left,prefixRun,routed⟩ := replay_routing_cost beforeRoute tail ran
+  exact ⟨state,⟨work,left,prefixRun⟩,routed,routed.within_count⟩
+
 private def segmentWork {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (program : Semantics.Observation.Program) (alignment : List Match) : WorkM Unit := do
   guard (alignment.length ≤ 65536) .limit
@@ -598,6 +673,22 @@ structure FinishedTrace (program : Semantics.Observation.Program) {bytes capacit
     (replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved) final
   readout : Readout target program final
   restored : ∀ scratch ∈ reserved, Nonempty (CanonicalOpenQasmWorkspace.Reuse target scratch (recorded.cleanUses scratch))
+
+/-- Routing in the replay after the final workspace is accounted for in the
+same literal gate word that supplies terminal resource counts. -/
+theorem FinishedTrace.suffix_routing_paid {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved synthesis suffix}
+    (trace : FinishedTrace program target connected reserved synthesis suffix) (beforeRoute tail : List Match)
+    (route : suffix = beforeRoute ++ .route :: tail) :
+    ∃ state, RuntimeInterval.Computed
+      (replayFrom program.operations.toArray target.circuit connected beforeRoute trace.recorded.exit reserved) state ∧
+      RoutingAt target.circuit connected state.gateIndex ∧ state.gateIndex < target.circuit.counts.gates ∧
+      0 < target.circuit.counts.swaps := by
+  obtain ⟨work,left,ran⟩ := trace.replayed
+  have runAt := congrArg (fun alignment =>
+    (replayFrom program.operations.toArray target.circuit connected alignment trace.recorded.exit reserved).run work) route
+  obtain ⟨state,left,prefixRun,routed⟩ := replay_routing_cost beforeRoute tail (runAt.symm.trans ran)
+  exact ⟨state,⟨work,left,prefixRun⟩,routed,routed.within_count⟩
 
 /-- Follow every original interval in order while keeping designations for
 clean scratch fixed. Ordinary preparation and routing cannot use a designated

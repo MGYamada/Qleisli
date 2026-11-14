@@ -66,6 +66,27 @@ theorem run_openqasm_placement_resources (product : String) (bytes : ByteArray)
 
 #print axioms run_openqasm_placement_resources
 
+/-- The successful native decision ties clean preparation and every later
+scratch access to the decoded register and the counted restoration slices. -/
+theorem run_openqasm_clean_costs (product : String) (bytes : ByteArray)
+    (decision : Decision .openQasmPlacement) (work left : Nat)
+    (ok : (run .openQasmPlacement product bytes).run work = (.ok decision,left)) :
+    let placed := decision.value.2
+    let circuit := placed.target.circuit
+    ∀ scratch ∈ placed.proposal.reserved,
+      scratch < circuit.counts.reset ∧
+      ∀ index gate, circuit.gates[index]? = some gate → scratch ∈ gate.wires →
+        ∃ use ∈ placed.placement.trace.recorded.cleanUses scratch,
+          use.start ≤ index ∧ index < use.start+use.count ∧
+          use.steps.length = use.count ∧ use.start+use.count ≤ circuit.counts.gates := by
+  obtain ⟨checked,_,_,rfl⟩ := run_openqasm_placement_binding product bytes decision work left ok
+  dsimp only
+  intro scratch member
+  obtain ⟨reuse⟩ := checked.placement.trace.restored scratch member
+  exact reuse.prepared_and_counted.2
+
+#print axioms run_openqasm_clean_costs
+
 theorem run_typed_ordinary_binding (product : String) (bytes : ByteArray)
     (decision : Decision .ordinaryRoot) (work left : Nat)
     (ok : (run .ordinaryRoot product bytes).run work = (.ok decision,left)) :
