@@ -369,13 +369,18 @@ pub(crate) fn operations_size(operations: &[RawOp]) -> usize {
                     targets.len().saturating_mul(2),
                     ancilla_wires.len(),
                     function.len(),
-                    total_size(use_ops.iter().map(|usage| match usage {
-                        crate::ir::ProtectedUse::ProtectedGate { .. } => 3,
-                        crate::ir::ProtectedUse::ControlledTargetGate { controls, .. }
-                        | crate::ir::ProtectedUse::ControlledPhase { controls, .. } => {
-                            3 + controls.len() * 3
-                        }
-                    })),
+                    protected_uses_size(use_ops),
+                ]),
+                RawOp::StructuralCompute {
+                    forward,
+                    inverse,
+                    uses,
+                    ..
+                } => total_size([
+                    1,
+                    total_size(forward.iter().map(circuit_size)),
+                    total_size(inverse.iter().map(circuit_size)),
+                    protected_uses_size(uses),
                 ]),
                 _ => 0,
             };
@@ -383,4 +388,12 @@ pub(crate) fn operations_size(operations: &[RawOp]) -> usize {
         }
     }
     size
+}
+
+fn protected_uses_size(uses: &[crate::ir::ProtectedUse]) -> usize {
+    total_size(uses.iter().map(|usage| match usage {
+        crate::ir::ProtectedUse::ProtectedGate { .. } => 3,
+        crate::ir::ProtectedUse::ControlledTargetGate { controls, .. }
+        | crate::ir::ProtectedUse::ControlledPhase { controls, .. } => 3 + controls.len() * 3,
+    }))
 }
