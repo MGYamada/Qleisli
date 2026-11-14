@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "97a33e2c99359e15e9afa42b5a3617206313d2491fed60accdf0c037aaeccab1",
+      "sha256": "c7306d377eed433b943b6092280ec7b8245b87b0f4d727154414d6bd0f48befc",
       "files": {
         "lean/Audit.lean": "769d64e8aa64d7e00217c3ca69857c07e86955cabc606b95621c8d068b7de87a",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -894,7 +894,7 @@
         "lean-kernel/QleisliKernel/SourceTypes.lean": "3fedb6b7022fa4fbfa1b560516727f543419864ece54420b95fd799d750eebcc",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
-        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmPlacement.lean": "c49c1433200cdc81138c5a330be86359688f39d0a9a2443a8bc986b57f977ffa",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmPlacement.lean": "32c5f478899eac818f695e9e4e131b53257d1d27fceee2f852ce79e9d919e246",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmResources.lean": "27e4b7731eafae251bc2f6d453dd9301b11091c82285d629478f0565be066ea1",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmRouting.lean": "0e89a6abd813b5e8156f1c614c690161c35802edf7c6421c551a71a6e6c8d4aa",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmWorkspace.lean": "e8e6d9182a99181a427e7a6ce6b6b017e2e1ea93ab15e9b3360d5fe68b3323d8",
@@ -1046,7 +1046,7 @@
         "lean-kernel/QleisliKernel/Tests/SourceQuantum/Sites.lean": "826b0ab045cbf33547f4aacc36c0ade7d0626f02d89178572b71c140d25e28ab",
         "lean-kernel/QleisliKernel/Tests/SourceQuantum.lean": "7a9a81d56dcc8ae36d63a05039ed3bf16f3ef686bb061e5932d0929c66a4e85e",
         "lean-kernel/QleisliKernel/Tests/SourceRuntimeBasisBindings.lean": "a63853df312f4c01e86dc2d26a2f0b7d8050329fb5ba97e829a339c362fbe628",
-        "lean-kernel/QleisliKernel/Tests/SourceRuntimeComputed.lean": "0b82ee56e64938bb805a8465259fac46805004149834cf2a3fb5d6f7cc88808c",
+        "lean-kernel/QleisliKernel/Tests/SourceRuntimeComputed.lean": "f9cc4367bae361f20539f712635f3f6558c7d99f1cfe007943503234a8f4b6ec",
         "lean-kernel/QleisliKernel/Tests/SourceRuntimeEmpty.lean": "be63a41a67b039164a2327a7cf2a4074c5ccd1917d161cd550a915d0774d9bd0",
         "lean-kernel/QleisliKernel/Tests/SourceRuntimeMatch.lean": "e1aa9580dd5ea04954d7a30d64925f8fbae9691053320081a6ee959096b7ad75",
         "lean-kernel/QleisliKernel/Tests/SourceRuntimeNominal.lean": "9419f2abc2038e6234d7a2a19c0119d346c06ac6b7187c8ee26e83f42b531f2a",
@@ -1089,12 +1089,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "12b89a6e1cb455a28cc96f23befe9330b45ba8027d823d63704418bf9a56e718",
+      "lean/schema-registry.json": "487795f06292c92e2bb3e5458e8d95cec97072ad9cba32b1cf4a47fdd4d241c2",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "1f9f1a9646772011e404de19197a809881556b93a419306960229d09a3ccac8a"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "4292dad06de3d1fa49a400a8870d6a908fbe7ac379a45d2a89c2b5e21571055f"
     },
     "commands": [
       {
@@ -1107,7 +1107,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 3.2203568100003395,
+        "seconds": 3.924159093000071,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -1121,7 +1121,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 144.39035250100005,
+        "seconds": 127.48450971700004,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -1164,7 +1164,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 2.969561644999885,
+      "seconds": 2.970951865999723,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -1180,7 +1180,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
     },
-    "source_revision_sha256": "97a33e2c99359e15e9afa42b5a3617206313d2491fed60accdf0c037aaeccab1",
+    "source_revision_sha256": "c7306d377eed433b943b6092280ec7b8245b87b0f4d727154414d6bd0f48befc",
     "command": {
       "argv": [
         "lake",

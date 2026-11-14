@@ -523,15 +523,20 @@ checker can carry the original exit owners through the target suffix and use
 the resulting placement to verify the emitted terminal measurements in
 classical output order. All original quantum owners must be consumed by the
 end. Discarded owners and measurements outside the classical outputs do not
-add to the emitted readout. The complete check requires an exclusive lifetime
-for fresh scratch. General gate decompositions and complete circuits with
-multiple workspace intervals require further checking.
+add to the emitted readout. The single-interval check requires an exclusive
+lifetime for fresh scratch.
 
 A physical scratch location can also be reused across ordered, disjoint,
 nonempty clean intervals. The checker
 requires an exact zero-return equation for each interval, checks that every
 gate touching that location lies in one of those intervals, and checks that
-the location is absent from terminal readout.
+the location is absent from terminal readout. The literal multi-interval check
+derives every entry placement from the preceding original owners and target
+word. It reserves each designated scratch location across the complete trace,
+keeping it out of ordinary preparations, routing and terminal readout. Each
+reuse interval must be bound to its own checked original workspace. General
+gate decompositions and integration with the production exporter require
+further checking.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
