@@ -102,6 +102,44 @@ fn selected_computed_predicate_checks_the_literal_xor_scope() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_finite_transforms_preserve_a_computed_predicate() {
+    use qleisli::ir::RawOp;
+
+    let source = r#"#![no_implicit_prelude]
+        classical fn marked(bit: Bit) -> Bit { bit }
+        unitary fn oracle[const N: Nat](q: Q<Bit>) -> Q<Bit> {
+            with_computed(q, marked) { |flag| phase[1,1](flag) }
+        }
+        pub unitary fn inverse(q: Q<Bit>) -> Q<Bit> { adjoint(oracle[1])(q) }
+        pub unitary fn control(c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) {
+            controlled(oracle[1])(c,q)
+        }
+        pub unitary fn twice(q: Q<Bit>) -> Q<Bit> { power(oracle[1],2)(q) }
+        pub observe fn main() -> Bit {
+            measure_z(h(inverse(h(basis unit(()) as _{0}))))
+        }
+    "#;
+
+    let inverse = selected_at(source, "main::inverse");
+    assert!(matches!(
+        inverse.program().raw().operations.as_slice(),
+        [RawOp::ApplyUnitary { .. }]
+    ));
+    for entry in ["main::control", "main::twice"] {
+        kernel()
+            .check_program(selected_at(source, entry).program())
+            .unwrap();
+    }
+    let closed = selected_at(source, "main::main");
+    let distribution = run_closed(closed.program(), SimulationLimits::default()).unwrap();
+    assert!((distribution.get(&vec![true]).copied().unwrap_or(0.0) - 1.0).abs() < 1e-12);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn project_checks_structural_computed_predicates_inside_a_source_checked_body() {
     use qleisli::ir::RawOp;
 

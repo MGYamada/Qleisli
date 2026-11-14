@@ -1993,6 +1993,7 @@ impl Lowerer<'_, '_> {
         // native decision. Nominal predicates keep their typed table path.
         let structural = if self.uses_qmatch_v5()
             && self.nominal_qmatch.is_some()
+            && !self.compiler.concrete_context.finite_transform
             && !self.compiler.deferred_nominal_tables.contains(&key)
         {
             match self.compiler.propose_structural_predicate(key, &basis) {
