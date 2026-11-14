@@ -56,6 +56,16 @@ private def checkedTrace (packet : StructuralComputedRaw.Packet) : Option Semant
 #guard (checkedTrace {packet with scratch := 2}).isNone
 #guard (checkedTrace {packet with output := spectator.token}).isNone
 
+private def emittedCoefficient (row column : Nat) : Option Semantics.Exact.Scalar := do
+  let trace ← checkedTrace packet
+  let [event,_] := trace.events | none
+  let input := fun label => pure (if label == column then Semantics.Exact.Scalar.one else Semantics.Exact.Scalar.zero)
+  ((Raw.Coefficient.event [] event input row).run exactWorkLimit).1.toOption
+
+#guard emittedCoefficient 0 0 == some Semantics.Exact.Scalar.one
+#guard emittedCoefficient 3 3 == some (Exact.Scalar.phase 4)
+#guard emittedCoefficient 2 3 == some Semantics.Exact.Scalar.zero
+
 private def source : String := "#![no_implicit_prelude]\n" ++
   "classical fn both((a,b):(Bit,Bit))->Bit{a and b}\n" ++
   "pub unitary fn route(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>" ++

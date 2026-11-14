@@ -1070,9 +1070,9 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
       change history = {history with bindings := frame.bindings}
       rw [sameBindings]
     case computed =>
-      obtain ⟨prepared,e,_source,ran⟩ := bind_success _ _ _ _ _ h
-      cases prepared
-      all_goals
+      obtain ⟨structural,e,_dispatched,ran⟩ := bind_success _ _ _ _ _ h
+      cases structural
+      case true =>
         obtain ⟨_,_,_action,returned⟩ := bind_success _ _ _ _ _ ran
         have same := (pure_success _ _ _ _ returned).1
         subst after
@@ -1080,6 +1080,17 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
           entered.2.snocPure _ rfl (fun _ => True.intro) (fun _ => True.intro)⟩
         change history = {history with bindings := frame.bindings}
         rw [sameBindings]
+      case false =>
+        obtain ⟨prepared,_,_source,ran⟩ := bind_success _ _ _ _ _ ran
+        cases prepared
+        all_goals
+          obtain ⟨_,_,_action,returned⟩ := bind_success _ _ _ _ _ ran
+          have same := (pure_success _ _ _ _ returned).1
+          subst after
+          refine ⟨entered.1.snoc ⟨?_,rfl⟩ True.intro rfl ⟨atStart.symm,rfl⟩ True.intro,
+            entered.2.snocPure _ rfl (fun _ => True.intro) (fun _ => True.intro)⟩
+          change history = {history with bindings := frame.bindings}
+          rw [sameBindings]
     case workspace =>
       obtain ⟨_,_,_source,ran⟩ := bind_success _ _ _ _ _ h
       obtain ⟨_,_,_literal,ran⟩ := bind_success _ _ _ _ _ ran

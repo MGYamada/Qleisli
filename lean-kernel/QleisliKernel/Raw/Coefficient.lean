@@ -58,7 +58,11 @@ def event (dependencies : List Dependency) (operation : Event) (state : State) (
     let localInput : State := fun target => state (scatter output axes (source+target*2^sourceBits))
     ProtectedEvaluation.run source (function[source]?.getD 0) uses localInput (row / 2^sourceBits)
 
-  | .structuralComputed .. => throw .request
+  | .structuralComputed _ axes forward inverse uses =>
+    let localInput : State := fun input =>
+      if input < 2^axes.length then state (scatter output axes input) else pure Scalar.zero
+    circuit [] (forward ++ uses.map (Semantics.Protected.physical 0 axes.length) ++ inverse)
+      localInput (gather output axes)
 
 def erased (bits : Nat) (axes : List Nat) (outcome : Nat) (state : State) (output : Nat) : WorkM Scalar :=
   let kept := (List.range bits).filter (fun axis => !axes.contains axis)

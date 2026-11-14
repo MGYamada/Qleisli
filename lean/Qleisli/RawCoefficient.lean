@@ -178,9 +178,22 @@ theorem event_meaning (dependencies : List Dependency) (operation : Event)
       source 0 (gather output axes / 2^sourceBits) ()
     rw [physical]
     exact result
-  | structuralComputed _ _ _ _ _ =>
-    change ((Except.error Error.request : Except Error Scalar), middle) = (Except.ok actual, left) at h
-    cases congrArg Prod.fst h
+  | structuralComputed _ axes forward inverse uses =>
+    apply circuit_meaning [] (forward ++ uses.map
+        (QleisliKernel.Semantics.Protected.physical 0 axes.length) ++ inverse) _
+      (fun input => if input < 2^axes.length then ψ (scatter output axes input) else 0) ?_
+      (gather output axes) actual middle left h
+    intro input value work left success
+    change (if input < 2^axes.length then state (scatter output axes input) else pure Scalar.zero).run work =
+      (.ok value,left) at success
+    change scalar value = if input < 2^axes.length then ψ (scatter output axes input) else 0
+    split at success
+    · rename_i inData
+      simpa [inData] using represented _ _ _ _ success
+    · rename_i outside
+      have same := (pure_success _ _ _ _ success).1
+      subst value
+      simpa [outside] using Exact.scalar_zero_meaning
 
 theorem erased_meaning (bits : Nat) (axes : List Nat) (outcome : Nat)
     (state : State) (ψ : Nat → ℂ) (represented : StateMeaning state ψ) :
