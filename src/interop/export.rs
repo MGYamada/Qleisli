@@ -17,8 +17,8 @@ pub(super) fn finish(
     expansion: &mut ExpansionBudget,
     barriers: &[bool; MAX_GATES + 1],
 ) -> Result<(), InteropError> {
-    expansion.normalizations.terminal(circuit, barriers)?;
-    fold_phases(circuit);
+    let barriers = expansion.normalizations.terminal(circuit, barriers)?;
+    fold_phases(circuit, &barriers);
     Ok(())
 }
 
@@ -272,7 +272,7 @@ pub(super) fn axis_permutation(
 
 /// Fold only adjacent diagonal operations on the same physical operand. Never
 /// commute across a gate, change a controlled phase, or quotient global phase.
-pub(super) fn fold_phases(circuit: &mut TerminalCircuit) {
+fn fold_phases(circuit: &mut TerminalCircuit, barriers: &[bool; MAX_GATES + 1]) {
     fn exponent(gate: Gate) -> Option<u8> {
         Some(match gate {
             Gate::T => 1,
@@ -284,16 +284,15 @@ pub(super) fn fold_phases(circuit: &mut TerminalCircuit) {
         })
     }
     let gates = std::mem::take(&mut circuit.gates);
-    let mut gates = gates.into_iter().peekable();
-    while let Some(op) = gates.next() {
+    let mut gates = gates.into_iter().enumerate().peekable();
+    while let Some((_, op)) = gates.next() {
         let Some(mut k) = exponent(op.gate) else {
             circuit.gates.push(op);
             continue;
         };
-        while let Some(next) = gates
-            .peek()
-            .filter(|next| next.wires == op.wires && exponent(next.gate).is_some())
-        {
+        while let Some((_, next)) = gates.peek().filter(|(index, next)| {
+            !barriers[*index] && next.wires == op.wires && exponent(next.gate).is_some()
+        }) {
             k = (k + exponent(next.gate).expect("diagonal")) % 8;
             gates.next();
         }
@@ -303,5 +302,29 @@ pub(super) fn fold_phases(circuit: &mut TerminalCircuit) {
                 wires: op.wires.clone(),
             });
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn adjacent_phases_fold_only_within_one_barrier_interval() {
+        let mut circuit = TerminalCircuit {
+            qubits: 1,
+            gates: vec![],
+            measurements: vec![],
+        };
+        for gate in [Gate::T, Gate::T, Gate::Sdg] {
+            circuit.push(gate, vec![0]).unwrap();
+        }
+        let mut barriers = [false; MAX_GATES + 1];
+        barriers[2] = true;
+        fold_phases(&mut circuit, &barriers);
+        assert_eq!(
+            circuit.gates.iter().map(|op| op.gate).collect::<Vec<_>>(),
+            [Gate::S, Gate::Sdg]
+        );
     }
 }
