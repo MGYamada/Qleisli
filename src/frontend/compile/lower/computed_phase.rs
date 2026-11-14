@@ -138,74 +138,14 @@ impl Lowerer<'_, '_> {
         while let Some(operations) = pending.pop() {
             for operation in operations {
                 self.compiler.tick(module, span)?;
-                size = size.saturating_add(8);
-                let extra = match operation {
-                    RawOp::ApplyUnitary { steps, .. } => steps.iter().fold(0usize, |sum, step| {
-                        sum.saturating_add(crate::frontend::raw_state::circuit_size(step))
-                    }),
-                    RawOp::CertifiedCompute {
-                        ancilla_wires,
-                        function,
-                        use_steps,
-                        logical_steps,
-                        ..
-                    } => ancilla_wires
-                        .len()
-                        .saturating_add(function.len())
-                        .saturating_add(use_steps.iter().chain(logical_steps).fold(
-                            0usize,
-                            |sum, step| {
-                                sum.saturating_add(crate::frontend::raw_state::circuit_size(step))
-                            },
-                        )),
-                    RawOp::LiftBasis {
-                        output_wires,
-                        table,
-                        ..
-                    } => output_wires.len().saturating_add(table.len()),
-                    RawOp::QuantumIf {
-                        zero_ops, one_ops, ..
-                    // These arms contain Copy UnitaryStep enums with at most
-                    // three scalar indices, not owned CircuitStep children.
-                    } => (zero_ops.len() + one_ops.len()).saturating_mul(4),
-                    RawOp::ClassicalBranch {
-                        then_ops,
-                        else_ops,
-                        quantum_phis,
-                        classical_phis,
-                        ..
-                    } => {
-                        self.compiler.charge(module, span, 2)?;
-                        pending.extend([then_ops.as_slice(), else_ops.as_slice()]);
-                        quantum_phis
-                            .iter()
-                            .fold(classical_phis.len().saturating_mul(3), |sum, phi| {
-                                sum.saturating_add(phi.output_wires.len() + 3)
-                            })
-                    }
-                    RawOp::ComputeUseUncompute {
-                        targets,
-                        ancilla_wires,
-                        function,
-                        use_ops,
-                        ..
-                    } => targets
-                        .len()
-                        .saturating_mul(2)
-                        .saturating_add(ancilla_wires.len())
-                        .saturating_add(function.len())
-                        .saturating_add(use_ops.iter().fold(0usize, |sum, usage| {
-                            sum.saturating_add(match usage {
-                                ProtectedUse::ProtectedGate { .. } => 3,
-                                ProtectedUse::ControlledTargetGate { controls, .. }
-                                | ProtectedUse::ControlledPhase { controls, .. } => {
-                                    3 + controls.len() * 3
-                                }
-                            })
-                        })),
-                    _ => 0,
-                };
-                size = size.saturating_add(extra);
+                if let RawOp::ClassicalBranch {
+                    then_ops, else_ops, ..
+                } = operation
+                {
+                    self.compiler.charge(module, span, 2)?;
+                    pending.extend([then_ops.as_slice(), else_ops.as_slice()]);
+                }
+                size = size.saturating_add(crate::frontend::raw_state::operation_size(operation));
             }
         }
         Ok(size.saturating_add(8))
@@ -823,6 +763,55 @@ mod tests {
     use super::*;
     use crate::frontend::project::{ModuleOrigin, SourceModule};
     use crate::frontend::source::{Builder, BundledRegistry, ParsePolicy, Source};
+
+    #[test]
+    fn computed_snapshot_charges_structural_circuits_in_nested_branches() {
+        use crate::ir::{BitControl, CircuitAction, CircuitStep, ClassicalId};
+
+        let project = project();
+        let mut compiler = super::super::call_state_tests::checked_compiler(&project);
+        let mut lower = lowerer(&mut compiler);
+        let flip = CircuitStep {
+            controls: vec![BitControl {
+                index: 0,
+                when_one: true,
+            }],
+            action: CircuitAction::Monomial {
+                indices: vec![1],
+                permutation: vec![1, 0],
+                phases: vec![0, 0],
+            },
+        };
+        let phase = ProtectedUse::ProtectedGate {
+            bit: ProtectedBit {
+                region: ProtectedRegion::Ancilla,
+                index: 0,
+            },
+            gate: SingleGate::Z,
+        };
+        lower.raw.operations.push(RawOp::ClassicalBranch {
+            condition: ClassicalId(0),
+            then_ops: vec![RawOp::StructuralCompute {
+                source: TokenId(0),
+                source_out: TokenId(1),
+                scratch: WireId(1),
+                forward: vec![flip.clone()],
+                inverse: vec![flip],
+                uses: vec![phase],
+            }],
+            else_ops: Vec::new(),
+            quantum_phis: Vec::new(),
+            classical_phis: Vec::new(),
+        });
+        // Two operation headers, scratch, two seven-cell steps, one use,
+        // and the snapshot header.
+        assert_eq!(
+            lower
+                .computed_snapshot_size("main", Span::default(), 0)
+                .unwrap(),
+            16 + 1 + 2 * 7 + 3 + 8
+        );
+    }
 
     fn project() -> Project {
         project_source(
