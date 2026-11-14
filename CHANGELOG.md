@@ -1160,6 +1160,8 @@ development milestones from the scope of their evidence.
 - Specify the exact target instrument correspondence for Observe, including
   conditional quantum states, retained owners and measurement/reset/feed-forward
   capability premises.
+- Specify ordered logical axes, initial/final physical placements and
+  routing workspace obligations for target realizations.
 - Clarify complete Observe instruments, linear feed-forward and the separate
   postselection boundary. Retain bounded instrument/Unit conformance observations
   and original failures without claiming general source-preservation or CPTP proofs.
