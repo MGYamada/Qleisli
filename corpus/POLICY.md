@@ -70,22 +70,6 @@ reference tests from execution of upstream frameworks and distinguish finite
 numerical validation from proof. Never label these informed translations a
 controlled model benchmark.
 
-## Register representation in QLI translations
-
-When migrating the active `.qli` corpus translations, use `Bits<n>` for
-classical bit registers and `Q<Bits<n>>` for quantum bit registers in the
-v0.3 language. Keep each logical register intact across calls and use
-explicit bit extraction or insertion where the algorithm addresses individual
-bits. Keep tuples for distinct values and registers. `Bit`, `Bits<1>` and
-`Bits<0>` have distinct types and ownership behavior.
-
-Migrate one case at a time. Preserve the bit and register order, exact phase,
-owner returns, workspace restoration and observation contract. Compare the
-rewritten translation with the existing independent oracle on small systems.
-Keep pinned upstream originals, attribution, first attempts and validation
-history. The [v0.4 spelling decision](https://github.com/MGYamada/Qleisli/issues/197)
-specifies the subsequent move to `Bit<n>`.
-
 ## Primary permission records
 
 The pinned originals are distributed with their licenses:
