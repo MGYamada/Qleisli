@@ -277,9 +277,10 @@ an original nominal predicate also uses this check. Lean evaluates the total
 classical predicate on the exact logical codes, requires zero in the padding
 rows, and checks the original one-Bit use body against both exact diagonal
 entries of the literal Raw use. The same interval retains the original data
-owner and its spectators. Selected runtime functions also support circuit
-synthesis for first-order Boolean predicates on built-in basis inputs. The
-compiler emits controlled XOR steps from constants, input bits, Boolean
+owner and its spectators. Selected runtime functions and projects that use the
+original source-body gate also support circuit synthesis for first-order
+Boolean predicates on built-in basis inputs. The compiler emits controlled
+XOR steps from constants, input bits, Boolean
 operations, tuple bindings, and supported helper calls. Lean checks the
 ordered controls and both compute passes against the original predicate, then
 checks the protected use on both auxiliary values. This path does not build a

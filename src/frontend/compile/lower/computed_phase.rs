@@ -913,7 +913,7 @@ mod tests {
         let closure = BTreeSet::from([helper, predicate, main]);
         compiler.force_typed_root = true;
         compiler
-            .classify_selected_classical_definitions(&closure)
+            .classify_classical_definitions(Some(&closure))
             .unwrap();
         assert!(compiler.basis.is_empty());
         let (parameters, _) = compiler.signature(&predicate).unwrap();

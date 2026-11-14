@@ -180,7 +180,7 @@ fn process(
             }
         }
     }
-    compiler.classify_selected_classical_definitions(&closure)?;
+    compiler.classify_classical_definitions(Some(&closure))?;
     compiler.plan_original_tables(Some(&closure))?;
     prepare_evidence_dependencies(&mut compiler, &closure, &module, span)?;
     let instance = named_instance(&mut compiler, selected, entry, &module, span)?;

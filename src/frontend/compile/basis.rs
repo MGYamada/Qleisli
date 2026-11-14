@@ -111,9 +111,7 @@ impl Compiler<'_> {
         Ok(env)
     }
 
-    /// Keep supported built-in tables eager. Nominal interfaces or intermediate
-    /// values use ordinary source bodies, including through classical callers.
-    /// Actual finite-table consumers still require a supported table.
+    #[cfg(test)]
     pub(super) fn prepare_classical_tables(&mut self) -> Result<(), CompileError> {
         self.prepare_selected_classical_tables(None)
     }
@@ -170,11 +168,11 @@ impl Compiler<'_> {
         self.prepare_classical_definitions(selected, true)
     }
 
-    pub(super) fn classify_selected_classical_definitions(
+    pub(super) fn classify_classical_definitions(
         &mut self,
-        selected: &BTreeSet<Key>,
+        selected: Option<&BTreeSet<Key>>,
     ) -> Result<(), CompileError> {
-        self.prepare_classical_definitions(Some(selected), false)
+        self.prepare_classical_definitions(selected, false)
     }
 
     fn prepare_classical_definitions(

@@ -1991,8 +1991,7 @@ impl Lowerer<'_, '_> {
         let basis = self.raw.registers[&source_slot].basis.clone();
         // Choose a representation before proposing the body or consulting a
         // native decision. Nominal predicates keep their typed table path.
-        let structural = if self.compiler.force_typed_root
-            && self.compiler.selected_entry.is_some()
+        let structural = if self.uses_qmatch_v5()
             && self.nominal_qmatch.is_some()
             && !self.compiler.deferred_nominal_tables.contains(&key)
         {

@@ -102,6 +102,92 @@ fn selected_computed_predicate_checks_the_literal_xor_scope() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn project_checks_structural_computed_predicates_inside_a_source_checked_body() {
+    use qleisli::ir::RawOp;
+
+    let source = "#![no_implicit_prelude]\n\
+        enum Toggle{Off,On}\n\
+        classical fn marked(t:Toggle)->Bit{match t{Toggle::Off=>0,Toggle::On=>1}}\n\
+        classical fn p(a:Bit)->Bit{a}\n\
+        unitary fn oracle(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|flag|phase[1,1](flag)}}\n\
+        observe fn main()->Bit{\n\
+          let t=basis unit(()) as _{Toggle::On};\n\
+          discard(with_computed(t,marked){|flag|phase[1,1](flag)});\n\
+          let q=basis unit(()) as _{0};\n\
+          measure_z(h(oracle(h(q))))}";
+    let program = compile_project(&SourceRoot::new(source).0).unwrap();
+    assert!(program.raw().operations.iter().any(|operation| matches!(
+        operation,
+        RawOp::StructuralCompute { forward, .. } if forward.len() == 1
+    )));
+    kernel().check_program(&program).unwrap();
+    let results = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert!((results.get(&vec![true]).copied().unwrap_or(0.0) - 1.0).abs() < 1e-12);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn structural_computed_carry_preserves_modulo_four_increment_and_phase() {
+    use qleisli::ir::RawOp;
+
+    let definitions = "#![no_implicit_prelude]\n\
+        enum Toggle{Off,On}\n\
+        classical fn marked(t:Toggle)->Bit{match t{Toggle::Off=>0,Toggle::On=>1}}\n\
+        classical fn carry((lo,hi):(Bit,Bit))->Bit{lo and hi}\n\
+        unitary fn flip_high(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{\n\
+          let (lo,hi)=split(q);\n\
+          let q=with_computed(join(lo,h(hi)),carry){|flag|phase[1,1](flag)};\n\
+          let (lo,hi)=split(q); join(lo,h(hi))}\n\
+        unitary fn increment(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{\n\
+          let (lo,hi)=split(flip_high(q)); join(h(phase[1,1](h(lo))),hi)}\n";
+    let check = |body: &str, expected: Vec<bool>| {
+        let source = format!(
+            "{definitions}pub observe fn main()->(Bit,Bit){{\n\
+              let t=basis unit(()) as _{{Toggle::On}};\n\
+              discard(with_computed(t,marked){{|flag|phase[1,1](flag)}});\n\
+              {body}}}"
+        );
+        let program = compile_project(&SourceRoot::new(&source).0).unwrap();
+        assert!(program.raw().operations.iter().any(|operation| matches!(
+            operation,
+            RawOp::StructuralCompute { forward, .. }
+                if forward.len() == 1 && forward[0].controls.len() == 2
+        )));
+        assert!(!program.raw().operations.iter().any(|operation| matches!(
+            operation,
+            RawOp::LiftBasis { table, .. } if table.len() > 1
+        )));
+        kernel().check_program(&program).unwrap();
+        let results = run_closed(&program, SimulationLimits::default()).unwrap();
+        assert!((results.get(&expected).copied().unwrap_or(0.0) - 1.0).abs() < 1e-12);
+    };
+
+    for input in 0..4 {
+        let lo = input & 1;
+        let hi = input >> 1;
+        let body = format!(
+            "let lo=basis unit(()) as _{{{lo}}}; let hi=basis unit(()) as _{{{hi}}};\n\
+             let (lo,hi)=split(increment(join(lo,hi))); (measure_z(lo),measure_z(hi))"
+        );
+        let expected = (input + 1) % 4;
+        check(&body, vec![expected & 1 != 0, expected & 2 != 0]);
+    }
+    check(
+        "let lo=basis unit(()) as _{0}; let hi=basis unit(()) as _{0};\n\
+         let (lo,hi)=split(flip_high(increment(join(h(lo),hi))));\n\
+         (measure_z(h(lo)),measure_z(hi))",
+        vec![false, true],
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn source_workspace_scopes_require_exact_native_restoration() {
     let clean = "#![no_implicit_prelude]\n\
         unitary fn gate(q:Q<Bit>)->Q<Bit>{h(q)}\n\
