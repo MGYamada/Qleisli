@@ -10,29 +10,35 @@ pub(super) fn workspace_intervals(
     root: &ContextSubject,
     length: usize,
 ) -> Result<Vec<WorkspaceInterval>, InteropError> {
-    let mut pending: Vec<_> = root.calls.iter().map(|(_, child)| child.as_ref()).collect();
-    let mut visits = pending.len();
-    while let Some(context) = pending.pop() {
-        if !context.workspace_intervals.is_empty() {
-            return Err(InteropError::unsupported(
-                "checked OpenQASM placement requires workspace scopes in the root body",
-            ));
-        }
-        visits += context.calls.len();
-        if visits > MAX_OPERATIONS {
+    let mut intervals = Vec::new();
+    let mut pending = vec![(0, length, root)];
+    let mut visits = 0;
+    while let Some((base, length, context)) = pending.pop() {
+        visits += 1;
+        if visits + pending.len() + context.calls.len() + context.workspace_intervals.len()
+            > MAX_OPERATIONS
+        {
             return Err(InteropError::limit(
                 "workspace alignment context exceeds operation limit",
             ));
         }
-        pending.extend(context.calls.iter().map(|(_, child)| child.as_ref()));
-    }
-
-    let mut intervals = root.workspace_intervals.clone();
-    if intervals
-        .iter()
-        .any(|interval| interval.count == 0 || interval.start + interval.count > length)
-    {
-        return Err(invalid_alignment());
+        for interval in &context.workspace_intervals {
+            if interval.count == 0 || interval.start + interval.count > length {
+                return Err(invalid_alignment());
+            }
+            intervals.push(WorkspaceInterval {
+                start: base + interval.start,
+                ..*interval
+            });
+        }
+        for (position, child) in &context.calls {
+            let start = position.start as usize;
+            let count = position.count as usize;
+            if start + count > length {
+                return Err(invalid_alignment());
+            }
+            pending.push((base + start, count, child.as_ref()));
+        }
     }
     intervals.sort_by_key(|interval| interval.start);
     if intervals

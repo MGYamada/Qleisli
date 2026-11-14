@@ -73,26 +73,25 @@ structure Placed {sources caller dependencies program block sourceStart sourceCo
       sourceStart sourceCount event events original sourceInterval sourceBefore}
     (map : RuntimeWorkspace.CallerMap literal) {bytes capacity}
     (target : CanonicalOpenQasmResources.Checked bytes capacity)
-    (targetFrame : List Nat) (start count : Nat) where
-  full : targetFrame.length = sourceInterval.before.quantum.reference.frame.length
+    (rawFrame targetFrame : List Nat) (start count : Nat) where
+  full : targetFrame.length = rawFrame.length
   declared : target.circuit.declares targetFrame
   liveLayout : List Nat
-  boundOwners : placedWires sourceInterval.before.quantum.reference.frame targetFrame
+  boundOwners : placedWires rawFrame targetFrame
     (map.selected.flatMap (·.port.wires)) = some liveLayout
   freshScratch : Option Nat
   scratchMode : freshScratch.isSome = event.fresh
   scratchFree : ∀ location ∈ freshScratch.toList, location ∉ targetFrame
   body : Checked map target (liveLayout ++ freshScratch.toList) start count
 
-def checkPlacement {sources caller dependencies program block sourceStart sourceCount event events original
+def checkPlacementInFrame {sources caller dependencies program block sourceStart sourceCount event events original
     sourceInterval sourceBefore}
     {literal : @RuntimeWorkspace.Literal sources caller dependencies program block
       sourceStart sourceCount event events original sourceInterval sourceBefore}
     (map : RuntimeWorkspace.CallerMap literal) {bytes capacity}
     (target : CanonicalOpenQasmResources.Checked bytes capacity)
-    (targetFrame : List Nat) (start count : Nat) (scratch : Option Nat) :
-    WorkM (Placed map target targetFrame start count) := do
-  let rawFrame := sourceInterval.before.quantum.reference.frame
+    (rawFrame targetFrame : List Nat) (start count : Nat) (scratch : Option Nat) :
+    WorkM (Placed map target rawFrame targetFrame start count) := do
   let wires := map.selected.flatMap (·.port.wires)
   guard (rawFrame.length ≤ 12 && targetFrame.length ≤ 12 && wires.length ≤ 12) .limit
   exactWork (Exact.charge (32*(1+wires.length)*(1+rawFrame.length+targetFrame.length)))
@@ -104,6 +103,18 @@ def checkPlacement {sources caller dependencies program block sourceStart source
       let body ← check map target (layout ++ scratch.toList) start count
       return ⟨valid.1,valid.2.1,layout,read,scratch,valid.2.2.1,valid.2.2.2,body⟩
   else throw .request
+
+/-- The direct case places the complete workspace caller frame. An enclosing
+caller can supply its own frame after binding the selected owner ports. -/
+def checkPlacement {sources caller dependencies program block sourceStart sourceCount event events original
+    sourceInterval sourceBefore}
+    {literal : @RuntimeWorkspace.Literal sources caller dependencies program block
+      sourceStart sourceCount event events original sourceInterval sourceBefore}
+    (map : RuntimeWorkspace.CallerMap literal) {bytes capacity}
+    (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (targetFrame : List Nat) (start count : Nat) (scratch : Option Nat) :
+    WorkM (Placed map target sourceInterval.before.quantum.reference.frame targetFrame start count) :=
+  checkPlacementInFrame map target sourceInterval.before.quantum.reference.frame targetFrame start count scratch
 
 /-- The declaration reserves and resets the entire target register. The two
 prefix/suffix restrictions give a sufficient static lifetime condition for a

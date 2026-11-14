@@ -559,14 +559,17 @@ and checks the combined operator on the ordered support, with the same
 zero-return check when the slice uses synthesis scratch. Preparation,
 observation and source workspace boundaries require their own alignment.
 The typed-source adapter reads workspace intervals from the original checked
-root actions. The exporter preserves the interval boundaries across exact
+root and named calls. It binds each local interval to the identical Raw
+operations at its position in the root, checks the selected and returned
+ports against the full caller frame, and retains all untouched spectator
+ports. The exporter preserves the interval boundaries across exact
 rewrites and proposes the corresponding gate positions and scratch locations.
 Lean checks the proposal against the original source, including the clean and
 dirty intervals and terminal result order.
 
 Use `qleisli interop emit-qasm <source> --input=qli --resources` for the
 checked resource report on a closed typed program with workspace scopes in
-the root body.
+its root or in a statically named call.
 The JSON result contains the emitted text, exact work spent in the placement
 check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
 measurements. Counts come from Lean's decoding of the returned text.
