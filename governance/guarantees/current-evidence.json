@@ -1094,7 +1094,7 @@
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "36fbb9a4f659df2d21676e58f292e32e79bbed506e5c8529790b3fadc03eda95"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "6aa7546f7eeb4449871324ca75bb9c7ff5b0d61f27710ce7ffa24262704c457b"
     },
     "commands": [
       {
@@ -1107,7 +1107,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 3.4736888870002076,
+        "seconds": 3.420424120000007,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -1121,7 +1121,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 153.63087394800004,
+        "seconds": 98.05304052299994,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -1164,7 +1164,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 2.6202191269999275,
+      "seconds": 2.5692046030001165,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }

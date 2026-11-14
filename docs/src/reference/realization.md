@@ -557,7 +557,8 @@ events and structural owner operations. It reads the actual owner transitions
 and checks the combined operator on the ordered support, with the same
 zero-return check when the slice uses synthesis scratch. Preparation,
 observation and source workspace boundaries require their own alignment.
-Production exporter integration requires further checking.
+Production exporter integration requires binding its actual output to the
+independent placement check at invocation time.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
@@ -621,9 +622,12 @@ the physical body with data axes followed by a separately reserved clean
 scratch wire. It reuses that wire after complete verified zero return. The
 Rust/Lean regression binds the same emitted OpenQASM bytes to two original
 clean intervals and checks their placement, exact restoration and readout.
-General typed-source result transport and production resource certificates
-remain outside this check. A nontrivial
-uncontrolled scalar still has no terminal-gate realization in this profile.
+The terminal OpenQASM exporter can consume the original accepted handle of a
+closed typed source program. It emits a wire-level projection of a Unit result
+or a positive-width product of measured bits in the verified SSA output order.
+Nominal results, zero-width components of products and source parameters are
+outside this projection. Typed QIRF transport remains a separate obligation.
+A nontrivial uncontrolled scalar has no realization in this gate vocabulary.
 The independent `scripts/test_review_v024.py` oracle checks
 emitted small QFT/control circuits, including complex phase, output axes and
 zero-return scratch. Such bounded numerical validation is distinct from a

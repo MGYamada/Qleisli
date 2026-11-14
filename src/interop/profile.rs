@@ -1,6 +1,8 @@
 use super::{InteropError, InteropErrorKind, MAX_GATES, MAX_OPERATIONS, MAX_QUBITS};
 use crate::AcceptedProgram;
+use crate::interchange::{carrier::Atom, runtime_root};
 use crate::ir::*;
+use crate::sim::ExecutableProgram;
 use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -270,12 +272,37 @@ pub(super) fn recognize(
     Ok((gate, axes.into_iter().map(|axis| wires[axis]).collect()))
 }
 
+fn terminal_result_atom(atom: &Atom) -> bool {
+    match atom {
+        Atom::Bit | Atom::Pair | Atom::Tuple(_) => true,
+        Atom::Bits(width) => *width != 0,
+        Atom::Unit | Atom::Enum(..) | Atom::Record(..) => false,
+    }
+}
+
+pub(super) fn check_openqasm_result(program: &AcceptedProgram) -> Result<(), InteropError> {
+    let supported = if let Some(request) = program.ordinary_result() {
+        request.basis.as_slice() == [Atom::Unit] || request.basis.iter().all(terminal_result_atom)
+    } else if let Some(request) = program.runtime_result() {
+        request.result.as_slice() == [runtime_root::Atom::Finite(Atom::Unit)]
+            || request.result.iter().all(|atom| {
+                matches!(atom, runtime_root::Atom::Finite(atom) if terminal_result_atom(atom))
+            })
+    } else {
+        true
+    };
+    if !supported {
+        return Err(InteropError::unsupported(
+            "terminal OpenQASM result must be Unit or a product of measured bits",
+        ));
+    }
+    Ok(())
+}
+
 pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, InteropError> {
-    program
-        .portable_artifact()
-        .map_err(|error| InteropError::unsupported(error.to_string()))?;
     let raw = program.raw();
-    if !raw.quantum_inputs.is_empty()
+    if program.has_source_parameters()
+        || !raw.quantum_inputs.is_empty()
         || !raw.classical_inputs.is_empty()
         || !raw.quantum_outputs.is_empty()
     {

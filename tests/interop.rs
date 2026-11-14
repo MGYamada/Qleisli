@@ -78,25 +78,90 @@ fn terminal_export_emits_the_checked_clean_body_and_reuses_its_wire() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
-fn terminal_export_realizes_raw_from_source_clean_and_dirty_workspaces() {
+fn terminal_export_realizes_source_clean_and_dirty_workspaces() {
     let source = "#![no_implicit_prelude]\n\
         isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
         observe fn main()->(Bit,Bit){\n\
             let q=clean(zero(),h){|data,scratch|(h(data),scratch)};\n\
-            let (q,d)=dirty(q,zero(),h){|data,scratch|(h(data),scratch)};\n\
-            (measure_z(q),measure_z(d))}";
+            let (q,d)=dirty(q,h(phase[1,1](h(zero()))),h){|data,scratch|(h(data),scratch)};\n\
+            let a=measure_z(q); let b=measure_z(d); (b,a)}";
     let root = common::SourceRoot::new(source);
     let source_program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
     assert!(source_program.portable_artifact().is_err());
-    let program = accept(source_program.raw().clone()).unwrap();
-    let emitted = export_openqasm3(&program).unwrap();
+    assert!(export_qir_base(&source_program).is_err());
+    let emitted = export_openqasm3(&source_program).unwrap();
     assert_eq!(
         emitted,
         "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[2] c;\nreset q;\n\
-         h q[0];\nh q[0];\nc[0] = measure q[0];\nc[1] = measure q[2];\n"
+         h q[0];\nx q[2];\nh q[0];\nc[0] = measure q[2];\nc[1] = measure q[0];\n"
     );
     let round_trip = import_openqasm3(qleisli::edition::Edition::E2026, &emitted).unwrap();
-    close(probability(&round_trip, &[false, false]), 1.0);
+    close(probability(&round_trip, &[true, false]), 1.0);
+    let cli = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args(["interop", "emit-qasm"])
+        .arg(&root.0)
+        .arg("--input=qli")
+        .output()
+        .unwrap();
+    assert!(
+        cli.status.success(),
+        "{}",
+        String::from_utf8_lossy(&cli.stdout)
+    );
+    let expected_text = emitted
+        .replace('\\', "\\\\")
+        .replace('"', "\\\"")
+        .replace('\n', "\\u000a");
+    let output = String::from_utf8(cli.stdout).unwrap();
+    assert!(output.contains(&expected_text), "{output}");
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_export_checks_the_retained_source_interface() {
+    use qleisli::edition::Edition;
+    use qleisli::frontend::compile::ParsedProgram;
+    use qleisli::interchange::native::Kernel;
+
+    let root = common::SourceRoot::new("struct Empty {} pub fn main() -> Empty { Empty {} }");
+    let nominal = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let error = export_openqasm3(&nominal).unwrap_err();
+    assert_eq!(error.kind, InteropErrorKind::Unsupported);
+    assert!(error.message.contains("result must be Unit or a product"));
+
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let selected = ParsedProgram::parse(
+        Edition::E2026,
+        [(
+            "main".into(),
+            "pub observe fn keep(u:Unit)->Bit{measure_z(h(init0()))}".into(),
+        )]
+        .into_iter()
+        .collect(),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::keep",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel)
+    .unwrap();
+    let program = selected.program();
+    assert!(program.raw().classical_inputs.is_empty());
+    assert!(program.raw().quantum_inputs.is_empty());
+    let error = export_openqasm3(program).unwrap_err();
+    assert_eq!(error.kind, InteropErrorKind::Unsupported);
+    assert!(
+        error
+            .message
+            .contains("closed terminal computation required")
+    );
 }
 
 #[cfg_attr(
