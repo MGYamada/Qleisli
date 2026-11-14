@@ -29,6 +29,8 @@ development milestones from the scope of their evidence.
   placement trace, with exact zero return at each slice.
 - Verify target optimizations spanning consecutive Raw circuit operations and
   structural owner transitions, with exact phase and terminal readout order.
+- Emit terminal OpenQASM directly from closed typed source with a Unit or
+  measured-bit result, retaining the verified order of the output bits.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.

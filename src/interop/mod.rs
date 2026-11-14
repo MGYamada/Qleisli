@@ -77,12 +77,18 @@ impl fmt::Display for InteropError {
 impl std::error::Error for InteropError {}
 
 /// Export a closed, verified terminal-profile program as OpenQASM 3.0.
+/// Typed classical results use the checked measurement-bit order. Unit emits
+/// no bits, and the target contains no nominal types or tuple metadata.
 pub fn export_openqasm3(program: &AcceptedProgram) -> Result<String, InteropError> {
+    profile::check_openqasm_result(program)?;
     Ok(openqasm::write(&profile::extract(program)?))
 }
 
 /// Export QIR 2.0 Base Profile text with the explicit QIS in the connection spec.
 /// Standard LLVM assembly/verification and target support remain external gates.
 pub fn export_qir_base(program: &AcceptedProgram) -> Result<String, InteropError> {
+    program
+        .portable_artifact()
+        .map_err(|error| InteropError::unsupported(error.to_string()))?;
     Ok(qir::write(&profile::extract(program)?))
 }
