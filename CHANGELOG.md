@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove the exact action of literal controlled-X sequences for future
+  table-free classical synthesis. The component checks phases and target
+  coordinates by inspecting the circuit steps and their controls (#30).
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.
