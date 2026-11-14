@@ -23,6 +23,8 @@ development milestones from the scope of their evidence.
   reuse its reserved scratch wire after verified restoration.
 - Compare bounded decomposed OpenQASM gate words with the exact operator of
   the original Raw event on its ordered live support.
+- Check zero return and the complete wire lifetime of scratch used by a
+  bounded target gate decomposition.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
