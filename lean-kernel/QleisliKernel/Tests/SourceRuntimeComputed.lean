@@ -341,6 +341,30 @@ private def terminalOutputOrder (measurements : String) : Finite.WorkM Unit := d
 #guard !((terminalOutputOrder "c[0] = measure q[1];\nc[1] = measure q[0];\n").run 20000000).1.isOk
 #guard !((terminalOutputOrder "c[0] = measure q[0];\nc[1] = measure q[2];\n").run 20000000).1.isOk
 
+private def structuralReadout (table : List Nat) (targetWord : String) :
+    Finite.WorkM (List Nat × Nat) := do
+  let program : Semantics.Observation.Program := ⟨[],[],[
+    .pure (.init0 10 6), .pure (.init0 11 7), .pure (.init0 12 8),
+    .pure (.join 12 10 13), .pure (.liftBasis 13 14 [8,6] table),
+    .pure (.split 14 15 16 1), .pure (.gate .h 15 17),
+    .measure 17 20, .measure 11 21, .measure 16 22],[],[20,21,22],.observe⟩
+  let _ ← Qirf.RuntimeInterval.prepare [] program
+  let header := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[3] c;\nreset q;\n"
+  let target ← Target.CanonicalOpenQasmResources.check (header ++ targetWord).toUTF8 3
+  let _ ← Target.CanonicalOpenQasmPlacement.finishTrace target program (fun _ _ => true) [] []
+    [.original,.original,.original,.original,.original,.original,.original]
+  return (target.circuit.measurements,target.circuit.counts.swaps)
+
+private def structuralWord :=
+  "h q[0];\nc[0] = measure q[0];\nc[1] = measure q[1];\nc[2] = measure q[2];\n"
+
+#guard ((structuralReadout [0,2,1,3] structuralWord).run exactWorkLimit).1.toOption == some ([0,1,2],0)
+#guard ((structuralReadout [0,1,3,2] structuralWord).run exactWorkLimit).1.toOption.isNone
+#guard ((structuralReadout [0,2,1,3]
+  (structuralWord.replace "h q[0]" "h q[2]")).run exactWorkLimit).1.toOption.isNone
+#guard ((structuralReadout [0,2,1,3]
+  ("swap q[0], q[2];\n" ++ structuralWord)).run exactWorkLimit).1.toOption.isNone
+
 private def repeatedCleanSource : String :=
   "#![no_implicit_prelude]\npub unitary fn route(q:Q<Bit>)->Q<Bit>{" ++
   "clean(clean(q,h){|data,scratch|(h(data),scratch)},h){|data,scratch|(h(data),scratch)}}"

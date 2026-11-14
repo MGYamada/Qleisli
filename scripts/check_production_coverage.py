@@ -1700,7 +1700,7 @@ PATHS['sized-proposal']['tests'].extend([
 
 # Exact final target-word bindings; existence is not native validation.
 _terminal_foreign_sources = {'src/interop/profile.rs': ['let mut normalization_barriers = [false; MAX_GATES + 1];',
-                            'RawOp::Init0 { .. } | RawOp::MeasureZ { .. } | RawOp::Discard { .. }',
+                            '| RawOp::LiftBasis { .. }',
                             'normalization_barriers[circuit.gates.len()] = true;',
                             'super::export::finish(&mut circuit, &mut expansion, '
                             '&normalization_barriers)?;'],

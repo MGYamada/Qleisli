@@ -38,6 +38,8 @@ development milestones from the scope of their evidence.
 - Report Lean-checked OpenQASM resources for closed typed workspace programs
   with `interop emit-qasm --resources`, bound to the emitted text. It checks
   workspace scopes in named calls with the full caller placement.
+- Check structural basis lifts against the complete axis-permutation table
+  when replaying OpenQASM resources and ordered readout.
 - Preserve allocation, workspace and observation boundaries through OpenQASM
   phase folding, including after earlier gate compaction.
 

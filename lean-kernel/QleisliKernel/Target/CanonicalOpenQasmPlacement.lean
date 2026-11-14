@@ -172,6 +172,36 @@ def checkSynthesis (circuit : Circuit) (start count : Nat) (locations scratch : 
     (steps : List Semantics.Finite.Step) : WorkM (Synthesis circuit start count locations scratch [] steps) :=
   checkSynthesisWith circuit start count locations scratch [] steps
 
+/-- A structural basis lift reorders the encoding of the same live wires.
+    Every basis label must match that wiring, including the zero-width case. -/
+private def followBasisAxes (locations inputAxes outputAxes table : List Nat) :
+    WorkM (List Nat) := do
+  let width := inputAxes.length
+  guard (width ≤ 12 && locations.length ≤ 12) .limit
+  guard (outputAxes.length == width && table.length == 2^width &&
+    inputAxes.Nodup && outputAxes.Nodup && outputAxes.all inputAxes.contains &&
+    inputAxes.all (· < locations.length)) .request
+  exactWork (Exact.charge (64*(1+width)*(1+table.length)))
+  let labels := table.toArray
+  let destinations := (List.range width).map fun axis =>
+    (List.range width).find? (fun destination => labels[2^axis]? == some (2^destination))
+  let positions ← lift (readOption (destinations.mapM id))
+  guard positions.Nodup .request
+  let inputForOutput := (List.range width).map positions.idxOf
+  guard (labels.toList.zipIdx.all fun (actual,input) =>
+    actual == Semantics.Finite.gather input inputForOutput) .request
+  let placed ← lift (readOption (inputAxes.mapM fun axis => locations[axis]?))
+  let reordered ← lift (readOption (inputForOutput.mapM fun axis => placed[axis]?))
+  return (outputAxes.zip reordered).foldl (fun frame (axis,wire) => frame.set axis wire) locations
+
+#guard ((followBasisAxes [4,7,9] [0,2] [2,0] [0,1,2,3]).run 4096).1.toOption ==
+  some [9,7,4]
+#guard ((followBasisAxes [4,7,9] [0,2] [0,2] [0,2,1,3]).run 4096).1.toOption ==
+  some [9,7,4]
+#guard ((followBasisAxes [4,7,9] [] [] [0]).run 4096).1.toOption == some [4,7,9]
+#guard ((followBasisAxes [4,7,9] [0,2] [0,2] [0,1,2,0]).run 4096).1.toOption.isNone
+#guard ((followBasisAxes [4,7,9] [0,2] [1,2] [0,2,1,3]).run 4096).1.toOption.isNone
+
 private def followRaw (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op)
     (reserved : List Nat) (alignment : Match) : WorkM State := do
   let (next,events) ← lift (readOption (Semantics.RawTrace.step state.raw operation))
@@ -183,6 +213,9 @@ private def followRaw (circuit : Circuit) (state : State) (operation : Semantics
       if after == before+1 && axis == before then
         lift (readOption ((fresh circuit.qubits state.locations (reserved ++ state.synthesis)).map (·,state.gateIndex)))
       else throw .request
+    | .original,[.liftBasis before after inputAxes outputAxes table] => do
+      guard (before == after && before == state.locations.length) .request
+      pure (← followBasisAxes state.locations inputAxes outputAxes table,state.gateIndex)
     | .original,[.circuit _ steps] =>
       lift (readOption ((gateWord circuit state.gateIndex state.locations steps).map (state.locations,·)))
     | .decomposed count,[.circuit _ steps] => do

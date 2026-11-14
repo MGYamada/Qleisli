@@ -360,7 +360,10 @@ pub(super) fn extract_with_alignment(
             }
             if matches!(
                 op,
-                RawOp::Init0 { .. } | RawOp::MeasureZ { .. } | RawOp::Discard { .. }
+                RawOp::Init0 { .. }
+                    | RawOp::MeasureZ { .. }
+                    | RawOp::Discard { .. }
+                    | RawOp::LiftBasis { .. }
             ) {
                 normalization_barriers[circuit.gates.len()] = true;
             }
@@ -496,7 +499,6 @@ pub(super) fn extract_with_alignment(
                     // supplies this case. Other owners and their axes remain live.
                     let output_axes =
                         if wires.is_empty() && output_wires.len() == 1 && table.as_slice() == [0] {
-                            normalization_barriers[circuit.gates.len()] = true;
                             vec![circuit.allocate_zero()?]
                         } else {
                             let axes = super::export::axis_permutation(
