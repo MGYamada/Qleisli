@@ -69,6 +69,8 @@ def pureOperation : Raw.Op → Value
   | .applyUnitary input output body => record "apply-unitary" [n input,n output,steps body]
   | .certifiedCompute input output ancilla function useSteps logicalSteps =>
     record "certified-compute" [n input,n output,ns ancilla,ns function,steps useSteps,steps logicalSteps]
+  | .structuralCompute input output scratch forward inverse uses =>
+    record "structural-compute" [n input,n output,n scratch,steps forward,steps inverse,.array (uses.map usage)]
   | .computeUseUncompute input output targets ancilla function uses =>
     record "compute-use-uncompute" [n input,n output,
       .array (targets.map fun t => record "target" [n t.input,n t.output]),

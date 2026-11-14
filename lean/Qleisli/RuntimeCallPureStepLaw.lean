@@ -89,6 +89,11 @@ theorem pure_step_action {dependencies : List Dependency} {parent child : Raw.St
       _ _ _ _ partition input output ancilla function uses logical _ _ pRead cRead
     let transfer : Transfer dependencies parent child spectators p c := ⟨after,pFrame,cFrame,law⟩
     exact ⟨after,transfer.pure_action⟩
+  | structuralCompute input output scratch forward inverse uses =>
+    obtain ⟨after,pFrame,cFrame,law⟩ := RuntimeCallTraceComputed.structural_compute_correlated
+      _ _ _ _ partition input output scratch forward inverse uses _ _ pRead cRead
+    let transfer : Transfer dependencies parent child spectators p c := ⟨after,pFrame,cFrame,law⟩
+    exact ⟨after,transfer.pure_action⟩
   | computeUseUncompute input output targets ancilla function uses =>
     obtain ⟨after,pFrame,cFrame,law⟩ := RuntimeCallTraceProtected.protected_compute_correlated
       _ _ _ _ partition input output targets ancilla function uses _ _ pRead cRead

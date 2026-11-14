@@ -178,6 +178,9 @@ theorem event_meaning (dependencies : List Dependency) (operation : Event)
       source 0 (gather output axes / 2^sourceBits) ()
     rw [physical]
     exact result
+  | structuralComputed _ _ _ _ _ =>
+    change ((Except.error Error.request : Except Error Scalar), middle) = (Except.ok actual, left) at h
+    cases congrArg Prod.fst h
 
 theorem erased_meaning (bits : Nat) (axes : List Nat) (outcome : Nat)
     (state : State) (ψ : Nat → ℂ) (represented : StateMeaning state ψ) :

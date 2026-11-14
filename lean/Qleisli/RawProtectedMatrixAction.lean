@@ -177,6 +177,9 @@ theorem event_action (dependencies : List Dependency) (operation : Event)
     exact computed_event_action dependencies bits axes source ancilla function uses logical actual work left read
   case protectedComputed bits axes source ancilla function uses =>
     exact protected_event_action dependencies bits axes source ancilla function uses actual work left read
+  case structuralComputed bits axes forward inverse uses =>
+    change ((Except.error Finite.Error.request : Except Finite.Error Matrix), work) = (Except.ok actual, left) at read
+    cases congrArg Prod.fst read
   all_goals exact ordinary_event_action dependencies _ actual work left read True.intro
 
 /-- The actual reconstruction and the independent reader use the same

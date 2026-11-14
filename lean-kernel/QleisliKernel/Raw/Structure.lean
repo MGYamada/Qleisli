@@ -111,7 +111,8 @@ literal gate shape before inspecting controls; arbitrary monomial payloads
 cannot cause a table-sized validation step here. -/
 def structuralXorClause (width : Nat) (step : Step) : Option (List Control) :=
   if step.action == .monomial [width] [1,0] [0,0] &&
-      Finite.axesValid width (step.controls.map (·.index)) then some step.controls else none
+      circuitStepsValid [] (width+1) [step] &&
+      step.controls.all (·.index < width) then some step.controls else none
 
 /-- The return uses the identical commuting XOR sequence. The protected use
 has access to the single scratch, with no data wire available as a target. -/
@@ -127,34 +128,35 @@ def structuralComputeClauses (width : Nat) (forward inverse : List Step) (uses :
 private theorem structuralXorClause_conditions {width step controls}
     (ok : structuralXorClause width step = some controls) :
     step = {(gateStep .x width) with controls} ∧
+      circuitStepsValid [] (width+1) [step] = true ∧
       ∀ control ∈ controls, control.index < width := by
   unfold structuralXorClause at ok
   split at ok
   next valid =>
     have h := Bool.and_eq_true_iff.mp valid
     cases ok
-    constructor
+    have shape := (Bool.and_eq_true_iff.mp h.1).1
+    refine ⟨?_,(Bool.and_eq_true_iff.mp h.1).2,?_⟩
     · cases step with
       | mk controls action =>
-        have shape : action = .monomial [width] [1,0] [0,0] := beq_iff_eq.mp h.1
-        cases shape
+        have same : action = .monomial [width] [1,0] [0,0] := beq_iff_eq.mp shape
+        cases same
         rfl
-    · have axes := h.2
-      simp only [Finite.axesValid,Bool.and_eq_true] at axes
-      intro control member
-      exact of_decide_eq_true (List.all_eq_true.mp axes.1.2 _ (List.mem_map_of_mem member))
+    · intro control member
+      exact of_decide_eq_true (List.all_eq_true.mp h.2 control member)
   next => cases ok
 
 private theorem structuralXorClauses_conditions (width : Nat) (steps : List Step)
     (clauses : List (List Control))
     (ok : steps.mapM (structuralXorClause width) = some clauses) :
     steps = clauses.map (fun controls => {(gateStep .x width) with controls}) ∧
-      ∀ controls ∈ clauses, ∀ control ∈ controls, control.index < width := by
+      (∀ controls ∈ clauses, ∀ control ∈ controls, control.index < width) ∧
+      circuitStepsValid [] (width+1) steps = true := by
   induction steps generalizing clauses with
   | nil =>
     simp at ok
     subst clauses
-    simp
+    simp [circuitStepsValid]
   | cons step rest ih =>
     cases hs : structuralXorClause width step with
     | none => simp [List.mapM_cons,hs,bind,Option.bind] at ok
@@ -168,16 +170,22 @@ private theorem structuralXorClauses_conditions (width : Nat) (steps : List Step
         have later := ih _ ht
         constructor
         · simp only [List.map_cons,first.1,later.1]
-        · intro controls present
-          rcases List.mem_cons.mp present with rfl | present
-          · exact first.2
-          · exact later.2 _ present
+        · constructor
+          · intro controls present
+            rcases List.mem_cons.mp present with rfl | present
+            · exact first.2.2
+            · exact later.2.1 _ present
+          · have front := first.2.1
+            have next := later.2.2
+            simp only [circuitStepsValid,List.all_cons,List.all_nil,Bool.and_true] at front next ⊢
+            exact Bool.and_eq_true_iff.mpr ⟨front,next⟩
 
 theorem structuralComputeClauses_conditions {width forward inverse uses clauses}
     (ok : structuralComputeClauses width forward inverse uses = .ok clauses) :
     inverse = forward ∧ usesValid 0 1 0 uses = true ∧
       forward = clauses.map (fun controls => {(gateStep .x width) with controls}) ∧
-      (∀ controls ∈ clauses, ∀ control ∈ controls, control.index < width) := by
+      (∀ controls ∈ clauses, ∀ control ∈ controls, control.index < width) ∧
+      circuitStepsValid [] (width+1) forward = true := by
   unfold structuralComputeClauses at ok
   split at ok
   · contradiction
@@ -278,6 +286,9 @@ extracted circuit is an input. Every output insertion uses global freshness. -/
 def dispatch (dependencies : List Basis) (state : State) (op : Op) : Check Transition := do
   let bits := state.frame.length
   match op with
+  | .structuralCompute input output scratch forward inverse uses =>
+    let checked ← structuralCompute state input output scratch forward inverse uses
+    return ⟨checked.after,[.structuralComputed bits (axes state checked.port.wires) forward inverse uses]⟩
   | .packUnit output => packUnit state output
   | .unpackUnit input => unpackUnit state input
   | .init0 output wire =>

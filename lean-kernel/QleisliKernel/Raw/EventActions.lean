@@ -40,5 +40,6 @@ theorem protected_event {left right event} (same : ActionAgrees left right event
   | liftBasis _ _ _ _ _ => rfl
   | reorder _ _ => rfl
   | protectedComputed _ _ _ _ _ _ => rfl
+  | structuralComputed _ _ _ _ _ => rfl
 
 end QleisliKernel.Raw.EventTransport

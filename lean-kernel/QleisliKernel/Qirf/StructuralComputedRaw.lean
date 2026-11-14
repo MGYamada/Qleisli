@@ -57,7 +57,7 @@ def read (packet : Packet) (state : Raw.State) : WorkM (Checked packet state) :=
       packet.forward packet.inverse packet.uses)
     let conditions := Raw.structuralComputeClauses_conditions transition.clausesRead
     let checked : StructuralXor.Checked transition.port.bits transition.clauses packet.forward :=
-      ⟨conditions.2.2.1,conditions.2.2.2⟩
+      ⟨conditions.2.2.1,conditions.2.2.2.1⟩
     if outputValid : Raw.stateValid transition.after = true then
       return ⟨transition.port,transition.taken,transition.takeRead,transition.reserved,
         transition.reserveRead,transition.after,transition.insertRead,inputValid,outputValid,
@@ -172,6 +172,37 @@ def readSource {sources caller} {event : ComputedEvent sources caller}
       else throw .request
     | _ => throw .request
   else throw .request
+
+def Packet.operation (packet : Packet) : Semantics.Raw.Op :=
+  .structuralCompute packet.input packet.output packet.scratch packet.forward packet.inverse packet.uses
+
+structure IntervalChecked {sources caller dependencies program block start count}
+    (event : ComputedEvent sources caller)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before : RuntimeStructuralAction.SourceState) where
+  original : StructuralXorPredicate.Original event
+  packet : Packet
+  literal : (block.operations.drop start).take count =
+    [.pure packet.operation]
+  checked : SourceChecked original packet before interval.before
+  afterQuantum : checked.raw.after = interval.after.quantum
+
+/-- The source predicate and scratch proof are tied to the exact operation in
+the enclosing checker interval and its independently checked exit state. -/
+def readInterval {sources caller dependencies program block start count}
+    (event : ComputedEvent sources caller)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before : RuntimeStructuralAction.SourceState) : WorkM (IntervalChecked event interval before) := do
+  exactWork (Exact.charge (8*(start+count+1)))
+  match literal : (block.operations.drop start).take count with
+  | [.pure (.structuralCompute input output scratch forward inverse uses)] =>
+    let original ← StructuralXorPredicate.read event
+    let packet : Packet := ⟨input,output,scratch,forward,inverse,uses⟩
+    let checked ← readSource original packet before interval.before
+    if same : checked.raw.after = interval.after.quantum then
+      return ⟨original,packet,literal,checked,same⟩
+    else throw .request
+  | _ => throw .request
 
 #print axioms readSource
 #print axioms Checked.sameFrame

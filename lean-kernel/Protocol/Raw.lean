@@ -134,6 +134,11 @@ def operation (value : Json) : Except String Op := do
     if !function.all (· ≤ 65535) then throw "computed table exceeds u16"
     return .certifiedCompute (← n value "source") (← n value "source_out") (← ns value "ancilla_wires")
       function (← steps (← field value "use_steps")) (← steps (← field value "logical_steps"))
+  | "structural_compute" =>
+    fields value ["tag","source","source_out","scratch","forward","inverse","uses"]
+    return .structuralCompute (← n value "source") (← n value "source_out") (← n value "scratch")
+      (← steps (← field value "forward")) (← steps (← field value "inverse"))
+      (← (← array (← field value "uses")).mapM usage)
   | "compute_use_uncompute" =>
     fields value ["tag","source","source_out","targets","ancilla_wires","function","use_ops"]
     let targets ← (← array (← field value "targets")).mapM fun target => do

@@ -26,7 +26,7 @@ def stepBounded (step : Step) : Bool :=
     | _ => true
 
 def operationBounded : Op → Bool
-  | .init0 _ _ => false
+  | .init0 _ _ | .structuralCompute .. => false
   | .applyUnitary _ _ steps => steps.length ≤ 1024 && steps.all stepBounded
   | .certifiedCompute _ _ ancilla function uses logical =>
     ancilla.length ≤ 6 && function.length ≤ 64 && uses.length ≤ 1024 && logical.length ≤ 1024 &&

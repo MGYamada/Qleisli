@@ -90,6 +90,59 @@ theorem certified_compute_correlated (dependencies : List Semantics.Finite.Depen
     simp only [events,List.foldl_cons,List.foldl_nil,event,axes,List.length_map]
     exact embed_partition partition.frame parentFacts.frame inside _ joint row
 
+/-- The original structural predicate acts on the same local data axes in
+both call frames, retaining arbitrary spectator correlations. -/
+theorem structural_compute_correlated (dependencies : List Semantics.Finite.Dependency)
+    (parent child : Raw.State) (spectators : List Port)
+    (partition : Partition parent.reference child.reference spectators)
+    (input output scratch : Nat) (forward inverse : List Semantics.Finite.Step) (uses : List Semantics.Raw.Use)
+    (parentAfter childAfter : Raw.Transition)
+    (parentRead : Raw.step (dependencies.map (·.signature)) parent
+      (.structuralCompute input output scratch forward inverse uses) = .ok parentAfter)
+    (childRead : Raw.step (dependencies.map (·.signature)) child
+      (.structuralCompute input output scratch forward inverse uses) = .ok childAfter) :
+    let other := WireOrder spectators
+    Partition parentAfter.state.reference childAfter.state.reference spectators ∧
+    parentAfter.state.frame = parent.frame ∧ childAfter.state.frame = child.frame ∧
+    ∀ (joint : Nat → Nat → ℂ) (row : Nat),
+    events dependencies parentAfter.events
+      (fun input => joint (gather input (child.frame.map parent.frame.idxOf))
+        (gather input (other.map parent.frame.idxOf))) row =
+      events dependencies childAfter.events
+        (fun input => joint input (gather row (other.map parent.frame.idxOf)))
+        (gather row (child.frame.map parent.frame.idxOf)) := by
+  intro other
+  have parentFacts := Raw.Ownership.valid _ (Raw.step_conditions _ _ _ _ parentRead).1
+  have childFacts := Raw.Ownership.valid _ (Raw.step_conditions _ _ _ _ childRead).1
+  have parentTrace := Raw.step_reference _ _ _ _ parentRead
+  have childTrace := Raw.step_reference _ _ _ _ childRead
+  simp only [Semantics.RawTrace.step] at childTrace
+  obtain ⟨⟨port,childTaken⟩,childTake,childResult⟩ := Option.bind_eq_some_iff.mp childTrace
+  obtain ⟨parentTaken,parentTake,live,parentFrame,childFrame,_⟩ :=
+    RuntimeTraceSpectators.take_spectators _ _ _ partition.live parentFacts.owners childTake
+  have childData := Prod.mk.inj (Option.some.inj childResult)
+  simp only [Semantics.RawTrace.step,parentTake,bind,Option.bind,pure] at parentTrace
+  have parentData := Prod.mk.inj (Option.some.inj parentTrace)
+  have inserted := RuntimeTraceSpectators.insert_spectators _ _ _ live output port.wires
+  have pFrame : parentAfter.state.frame = parent.frame :=
+    (congrArg Interface.frame parentData.1).symm.trans parentFrame
+  have cFrame : childAfter.state.frame = child.frame :=
+    (congrArg Interface.frame childData.1).symm.trans childFrame
+  have afterLive : parentAfter.state.live.Perm (childAfter.state.live ++ spectators) := by
+    change parentAfter.state.reference.live.Perm (childAfter.state.reference.live ++ spectators)
+    rw [← parentData.1,← childData.1]
+    exact inserted.1
+  have inside : port.wires ⊆ child.frame := fun wire member => childFacts.covered wire
+    (List.mem_flatMap.mpr ⟨port,RuntimeCallTraceFrames.taken_member childTake,member⟩)
+  refine ⟨⟨afterLive,?_⟩,pFrame,cFrame,?_⟩
+  · change parentAfter.state.frame.Perm (childAfter.state.frame ++ other)
+    rw [pFrame,cFrame]
+    exact partition.frame
+  · intro joint row
+    rw [← parentData.2,← childData.2]
+    simp only [events,List.foldl_cons,List.foldl_nil,event,axes,List.length_map]
+    exact embed_partition partition.frame parentFacts.frame inside _ joint row
+
 #print axioms embed_partition
 #print axioms certified_compute_correlated
 end Qleisli.RuntimeCallTraceComputed

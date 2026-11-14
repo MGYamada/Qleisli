@@ -53,7 +53,7 @@ def outputs : Raw.Op → List Nat
   | .cnot _ _ a b | .quantumIf _ _ a b _ _ | .split _ a b _ => [a,b]
   | .toffoli _ _ _ a b c => [a,b,c]
   | .computeUseUncompute _ out targets _ _ _ => out :: targets.map (·.output)
-  | .packUnit output => [output]
+  | .structuralCompute _ output _ _ _ _ | .packUnit output => [output]
   | .unpackUnit _ => []
 
 /-- Scratch identities remain issued after their scoped operation. Fresh axes
@@ -63,6 +63,7 @@ def allocated (state : State) : Raw.Op → List Nat
   | .liftBasis input _ wires _ =>
     wires.drop (((state.live.find? (fun port => port.token == input)).map (·.bits)).getD 0)
   | .certifiedCompute _ _ ancilla _ _ _ | .computeUseUncompute _ _ _ ancilla _ _ => ancilla
+  | .structuralCompute _ _ scratch _ _ _ => [scratch]
   | _ => []
 
 /-- Local coordinates must denote distinct axes within the consumed owner or
@@ -111,6 +112,8 @@ def Access (state : State) : Raw.Op → Prop
     Circuit (port.bits + scratch.length) physical ∧ Circuit port.bits logical
   | .computeUseUncompute input _ targets scratch _ uses => ∃ port, PortAt state input port ∧
     (∀ target ∈ targets, BitOwner state target.input) ∧ Uses port.bits scratch.length targets.length uses
+  | .structuralCompute input _ _ forward inverse uses => ∃ port, PortAt state input port ∧
+    Circuit (port.bits+1) forward ∧ Circuit (port.bits+1) inverse ∧ Uses 0 1 0 uses
   | .packUnit _ => True
   | .unpackUnit input => ∃ port, PortAt state input port ∧ port.bits = 0 ∧ port.wires = []
 

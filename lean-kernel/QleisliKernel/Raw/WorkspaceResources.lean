@@ -27,6 +27,8 @@ def Counts.then_ (left right : Counts) : Counts :=
 def eventCounts : RawEvent → Counts
   | .computed bits _ _ scratch _ steps _ => ⟨bits + scratch,scratch,scratch,2,steps.length,0⟩
   | .protectedComputed bits _ _ scratch _ uses => ⟨bits + scratch,scratch,scratch,2,uses.length,0⟩
+  | .structuralComputed bits _ forward inverse uses =>
+    ⟨bits+1,1,1,2,forward.length + inverse.length + uses.length,0⟩
   | .circuit bits steps => { peakWires := bits, circuitSteps := steps.length }
   | .reorder bits axes => { peakWires := bits, framePermutations := if axes == List.range bits then 0 else 1 }
   | .init0 bits => { peakWires := bits+1, preparedWires := 1 }
@@ -83,6 +85,7 @@ private def receiptFields : Nat → List Semantics.Observation.Op → Nat :=
 private def localWork : RawEvent → Nat
   | .computed .. => 2
   | .protectedComputed _ _ _ _ _ uses => 2+uses.length
+  | .structuralComputed _ _ forward inverse uses => 2 + forward.length + inverse.length + uses.length
   | .circuit .. => 0
   | .reorder bits axes => if axes == List.range bits then 0 else 1
   | .init0 .. | .liftBasis .. => 1

@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.StructuralComputedRaw
+import QleisliKernel.Raw.Pure
 
 /-! Circuit-backed protected packets with two data bits and private scratch.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
@@ -39,6 +40,21 @@ private def usingSteps (step : Step) : StructuralComputedRaw.Packet :=
 #guard status (usingSteps ⟨[],.contract [2] 0 false⟩) == some .equation
 
 
+private def program (packet : StructuralComputedRaw.Packet) : Semantics.Raw.Program :=
+  ⟨[input,spectator],
+    [.structuralCompute packet.input packet.output packet.scratch packet.forward packet.inverse packet.uses],
+    [packet.output,spectator.token],.unitary⟩
+
+private def checkedTrace (packet : StructuralComputedRaw.Packet) : Option Semantics.RawTrace.Prepared :=
+  ((Raw.Pure.verify [] (program packet)).run exactWorkLimit).1.toOption.map (·.reference)
+
+#guard (checkedTrace packet).map (·.events) ==
+  some [.structuralComputed 2 [0,1] flip flip packet.uses,.reorder 2 [0,1]]
+#guard checkedTrace packet == Semantics.RawTrace.run (program packet)
+#guard (checkedTrace {packet with inverse := []}).isNone
+#guard (checkedTrace {packet with scratch := 2}).isNone
+#guard (checkedTrace {packet with output := spectator.token}).isNone
+
 private def source : String := "#![no_implicit_prelude]\n" ++
   "classical fn both((a,b):(Bit,Bit))->Bit{a and b}\n" ++
   "pub unitary fn route(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>" ++
@@ -59,5 +75,25 @@ private def withSource (text : String) (packet : StructuralComputedRaw.Packet) (
 #guard ((withSource source packet false).run exactWorkLimit).1.toOption == some [8,2]
 #guard ((withSource source packet true).run exactWorkLimit).1.toOption.isNone
 #guard ((withSource (source.replace "a and b" "a xor b") packet false).run exactWorkLimit).1.toOption.isNone
+
+private def intervalProbe (text : String) (candidate : StructuralComputedRaw.Packet) :
+    Finite.WorkM (List Nat) := do
+  let checked ← SourceRuntimeTrace.read #[("main",text)] "main" "route"
+  let [Event.computed event _] := checked.events | throw .request
+  let auxiliary : Semantics.SourceOwners.Owner := ⟨2,[.unit]⟩
+  let history : RuntimeStructuralAction.SourceState :=
+    ⟨[⟨event.input,input⟩,⟨auxiliary,spectator⟩],[event.input,auxiliary],event.nextOrdinal⟩
+  let whole : Semantics.Observation.Program :=
+    ⟨[input,spectator],[],[.pure candidate.operation],[12,11],[],.unitary⟩
+  let prepared ← RuntimeInterval.prepare [] whole
+  let interval ← RuntimeInterval.check prepared.block 0 1
+  let action ← StructuralComputedRaw.readInterval event interval history
+  return action.checked.output.wires
+
+#guard ((intervalProbe source packet).run exactWorkLimit).1.toOption == some [8,2]
+#guard ((intervalProbe (source.replace "a and b" "a xor b") packet).run
+  exactWorkLimit).1.toOption.isNone
+#guard ((intervalProbe source {packet with uses := [.phase [] .minusOne] ++ packet.uses}).run
+  exactWorkLimit).1.toOption.isNone
 
 end QleisliKernel.Tests.StructuralComputedRaw
