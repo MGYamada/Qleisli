@@ -249,6 +249,8 @@ on the entire scratch interface, including phase and correlations with an
 external reference. Access authority, restoration and resource accounting
 are separate obligations. The finite profile checks full carriers with up to
 five data bits and one scratch bit, within the shared exact-work limit.
+Project checks and selected-entry checks report which restoration contract
+failed when the independent checker rejects its equation.
 
 The finite checker records the whole live Raw frame at scope entry and the
 peak including fresh scratch. It records preparation, clean release, the two

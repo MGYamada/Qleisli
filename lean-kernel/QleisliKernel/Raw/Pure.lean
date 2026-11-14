@@ -16,7 +16,7 @@ def eventCheck (dependencies : List Dependency) : Event → WorkM Unit
       tableValid inputAxes.length outputAxes.length table true)
   | .reorder bits axes => guard (axesValid bits axes && axes.length == bits)
   | .computed _ axes sourceBits ancillaBits function uses logical => do
-    let _ ← clean dependencies sourceBits axes.length ancillaBits function uses logical
+    let _ ← restoration false (clean dependencies sourceBits axes.length ancillaBits function uses logical)
     return ()
   | .protectedComputed _ axes sourceBits ancillaBits function uses =>
     guard (sourceBits ≤ axes.length && tableValid sourceBits ancillaBits function false &&

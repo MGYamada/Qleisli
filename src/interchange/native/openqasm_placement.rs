@@ -78,6 +78,9 @@ fn response(bytes: &[u8], edition: Edition) -> Result<OpenQasmResources> {
         match native_context::parse(bytes, edition, Mode::OpenQasmPlacement, Scope::Execution)? {
             Reply::Checked { payload, .. } => payload,
             Reply::Rejected(code) => {
+                if let Some(error) = Error::workspace_restoration(code) {
+                    return Err(error);
+                }
                 return Err(Error::new(
                     if code == "version" { "kernel" } else { code },
                     "Lean OpenQASM placement checker rejected the source, target or alignment",

@@ -56,6 +56,18 @@ impl Error {
     fn limit(message: impl Into<String>) -> Self {
         Self::new("limit", message)
     }
+    fn workspace_restoration(code: &'static str) -> Option<Self> {
+        let message = match code {
+            "clean_workspace" => {
+                "clean workspace restoration failed: expected exact zero return and the declared data action"
+            }
+            "dirty_workspace" => {
+                "dirty workspace restoration failed: expected identity on scratch for every input and reference and the declared data action"
+            }
+            _ => return None,
+        };
+        Some(Self::new("contract", message))
+    }
     fn at(mut self, pointer: impl Into<String>) -> Self {
         self.json_pointer = pointer.into();
         self

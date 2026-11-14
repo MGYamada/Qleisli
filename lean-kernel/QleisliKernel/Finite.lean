@@ -10,6 +10,7 @@ open Semantics.Exact Semantics.Finite
 
 inductive Error where
   | invalid | limit | notIsometric | equation | request
+  | workspaceRestoration (dirty : Bool)
   | arithmetic (error : Exact.Error)
   deriving BEq, DecidableEq, Repr
 abbrev WorkM := ExceptT Error (StateM Nat)
@@ -26,6 +27,21 @@ def exactWork {α : Type} (action : Exact.WorkM α) : WorkM α := fun work =>
 
 def guard (condition : Bool) (error : Error := .invalid) : WorkM Unit :=
   if condition then pure () else throw error
+
+/-- Identify a failed restoration equation while retaining its work state
+and leaving all other failures to their original diagnostic. -/
+def restoration {α : Type} (dirty : Bool) (action : WorkM α) : WorkM α := fun work =>
+  let (result,left) := action.run work
+  (result.mapError (fun error => if error == .equation then .workspaceRestoration dirty else error),left)
+
+theorem restoration_success {α : Type} (dirty : Bool) (action : WorkM α)
+    (value : α) (work left : Nat)
+    (ok : (restoration dirty action).run work = (.ok value,left)) :
+    action.run work = (.ok value,left) := by
+  change ((action.run work).1.mapError _,(action.run work).2) = (.ok value,left) at ok
+  cases h : action.run work with
+  | mk result remaining =>
+    cases result <;> simp_all [Except.mapError]
 
 /-- Validate all prefix nodes before transformations, keeping Unit and tuple arity. -/
 def treeStep (stack : Option (List Nat)) (atom : Atom) : Option (List Nat) := do
