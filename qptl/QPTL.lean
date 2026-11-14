@@ -6,6 +6,7 @@ import QPTL.Clean
 import QPTL.Tensor
 import QPTL.Dilation
 import QPTL.FiniteMatrix
+import QPTL.Control
 import QPTL.Determinant
 import QPTL.CoefficientDomain
 import QPTL.CleanMarginal

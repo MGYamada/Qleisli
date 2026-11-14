@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Specify phase-sensitive controlled target evidence and prove control of
+  exact products and powers in QPTL.
 - Specify initialized isometry dilations and prove exact recovery on their
   encoded images with arbitrary external references.
 - Prove QPTL determinant obstructions for exact same-wire gate products

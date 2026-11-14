@@ -118,6 +118,42 @@ introduces no approximate acceptance or error budget. Exact/approximate
 profile decisions remain in [#31](https://github.com/MGYamada/Qleisli/issues/31)
 and [#123](https://github.com/MGYamada/Qleisli/issues/123).
 
+## Controlled target realizations
+
+The coherent Meaning of `controlled(U)` is the ordered direct sum
+`I ⊕ U` with inactive sector zero and active sector one. Semantic unitarity
+establishes the operator property of `U`. The static `Controllable(U)`
+judgment separately governs source use under the
+[operation type rules](type-model.md#general-pure-operation-arrows).
+Target lowering additionally requires a checked realization of the exact
+direct sum on the selected target.
+
+For transparent implementations, a structural derivation must check each
+original gate or named implementation with its control, dependencies, axis
+order and exact phase. The implementation must act as identity in the
+inactive sector and implement the requested operation in the active sector.
+Composition and powers can compose those exact sector equations when the
+interfaces and control match. QPTL proves the corresponding operator
+identities in `controlled_mul` and `controlled_pow`. Provider calls and
+controlled powers used by QPE carry the same obligations.
+
+A realization certificate binds the original operation and Meaning, the
+actual emitted implementation, the target profile, and the ordered control,
+data and workspace encodings. It identifies where native controlled gates
+are used and where additional synthesis steps are needed. Physical counts
+include workspace preparation, live width, restoration, generated inverse
+steps and routing when required by that implementation. An opaque provider
+requires explicit controlled evidence bound to the requested operator and
+the emitted artifact.
+
+A scalar phase multiplying only the active block changes its phase relative
+to the inactive block. QPTL's `controlled_phase_ne` proves the change for
+any nontrivial scalar on a nonzero operator. Projective agreement or channel
+equality for the uncontrolled operation therefore cannot supply the
+controlled equation. An engineering approximation to a controlled operator
+must bound its error against the intended controlled Meaning itself and
+retain the exactness distinction below.
+
 ## Isometries and initialized target interfaces
 
 A semantic isometry `V: A -> B` satisfies `V† V = I_A`. The basis trees

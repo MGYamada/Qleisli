@@ -78,6 +78,11 @@ example (steps : List (Matrix Unit Unit ℂ))
   rw [Matrix.det_unique]
   norm_num
 
+-- A global minus sign on identity becomes a relative sign under control.
+example : controlled (-(1 : Matrix Unit Unit ℂ)) ≠ controlled (1 : Matrix Unit Unit ℂ) := by
+  simpa using controlled_phase_ne (1 : Matrix Unit Unit ℂ)
+    (phase := -1) (by norm_num) (row := ()) (col := ()) (by simp)
+
 /-- The normalized first basis vector as a rectangular matrix. -/
 private noncomputable def prepare : basis Unit ⟶ basis Bool :=
   ofMatrix (fun b _ => if b then 0 else 1)
