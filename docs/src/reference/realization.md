@@ -559,6 +559,13 @@ Consequently a target generator set restricts same-wire determinants.
 This is a necessary obstruction; sufficiency requires a separate theorem for
 that precise generator, phase and workspace profile.
 
+In QPTL, `QPTL.FiniteMatrix.det_embedded` proves this determinant formula
+for finite matrix bases and simultaneous reindexing of both interfaces.
+`QPTL.FiniteMatrix.exact_same_wire_obstruction` proves that a product of
+generators whose determinants lie in a multiplication-closed set containing
+one cannot equal a requested matrix with determinant outside that set.
+The premises retain the chosen target vocabulary, layout and exact phase.
+
 The repository retains two exact small examples:
 
 | Operator | Semantic property | Same-wire obstruction for the stated profile |
