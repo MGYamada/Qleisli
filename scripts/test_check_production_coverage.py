@@ -18,7 +18,7 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['groups'], 49)
+        self.assertEqual(result['groups'], 50)
         self.assertEqual(result['public_boundaries'], 28)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
@@ -203,7 +203,7 @@ class ProductionCoverage(unittest.TestCase):
 
     def test_provider_reuse_keeps_producer_and_native_root_profiles(self):
         for path, marker in (
-            ('src/frontend/compile/instances.rs', 'pub bodies: [BodyState; 2]'),
+            ('src/frontend/compile/instances.rs', 'pub bodies: [BodyState; 4]'),
             ('src/frontend/compile/instances/provider.rs', 'match &self.instances[record].bodies[profile]'),
             ('src/frontend/compile/instances/provider.rs', 'operations::ProviderRoot::of(&body)'),
             ('src/frontend/compile/instances/provider.rs', 'cached.body.artifact() != body.artifact()'),
