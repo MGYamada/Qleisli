@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove in QPTL that exact return of a clean scratch marginal is equivalent to
+  factorization with arbitrary references for finite trace-preserving Kraus actions.
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.
