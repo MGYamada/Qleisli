@@ -125,6 +125,7 @@ import QleisliKernel.Qirf.RuntimeScatterTransport
 import QleisliKernel.Qirf.StructuralXor
 import QleisliKernel.Qirf.StructuralXorInterval
 import QleisliKernel.Qirf.StructuralComputedUse
+import QleisliKernel.Qirf.StructuralComputedRaw
 import QleisliKernel.Qirf.RuntimeLocalEvents
 import QleisliKernel.Qirf.RuntimeSelectionWitness
 import QleisliKernel.Qirf.SourceDutySlots

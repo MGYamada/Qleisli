@@ -7,6 +7,7 @@ import QleisliKernel.Tests.ComputedSectors
 import QleisliKernel.Tests.StructuralXor
 import QleisliKernel.Tests.StructuralXorPredicate
 import QleisliKernel.Tests.StructuralComputedUse
+import QleisliKernel.Tests.StructuralComputedRaw
 import QleisliKernel.Tests.NominalSector
 import QleisliKernel.Tests.SectorArms
 import QleisliKernel.Tests.SourceQuantum
