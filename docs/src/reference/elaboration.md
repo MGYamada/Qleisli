@@ -358,8 +358,10 @@ clean state, the unwanted diagonal populations are sums of squared Kraus
 coefficients. Their vanishing on all live basis inputs forces every unwanted
 coefficient to vanish. The live output includes any declared classical
 outcome register with its original probabilities. The QPTL theorem
-`QPTL.FiniteMatrix.fixedScratch_iff` gives the separation equivalence for
-finite Kraus families. The exact requested live action, coherent phase,
+`QPTL.FiniteMatrix.scratchMarginal_eq_iff` proves the partial-trace equivalence
+for finite Kraus families on positive semidefinite unit-trace inputs. The live
+factor is the joint output with scratch traced out, retaining the reference coordinates.
+The exact requested live action, coherent phase,
 dirty-workspace identity and quantitative costs have their own contracts.
 
 ## Explicit maps and unsupported candidates

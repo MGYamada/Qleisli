@@ -104,6 +104,11 @@ properties. Lean checks the resulting proof.
   a reference. The live output basis can include the complete classical outcome
   register. For a trace-preserving family on normalized inputs, the retained
   scratch population is one.
+- `scratchMarginal_eq_iff` states the same exact contract using partial traces.
+  It equates return of the clean projector for every positive semidefinite
+  unit-trace live input with factorization for arbitrary joint inputs. Its
+  live factor retains both reference coordinates and all classical outcome
+  probabilities.
 
 The tests include a rectangular state preparation, a coherent sign change
 through a rectangular encoding, and an arbitrary joint input with a reference. [Proof examples](QPTLTests.lean)
