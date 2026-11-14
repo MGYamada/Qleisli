@@ -48,6 +48,26 @@ end Abstract
 section Concrete
 open QPTL.FiniteMatrix
 
+open scoped Kronecker
+
+-- Tensor with a spectator and swap the two axes. The determinant is unchanged
+-- by the layout and retains the square from the two-dimensional spectator.
+example (gate : Matrix Bool Bool ℂ) :
+    (Matrix.reindex (Equiv.prodComm Bool Bool) (Equiv.prodComm Bool Bool)
+      (gate ⊗ₖ (1 : Matrix Bool Bool ℂ))).det = gate.det ^ 2 := by
+  simpa using det_embedded gate (Equiv.prodComm Bool Bool)
+
+-- A requested determinant of -1 is excluded by a determinant-one gate set.
+example (steps : List (Matrix Unit Unit ℂ))
+    (generators : ∀ gate ∈ steps, gate.det = 1) :
+    steps.prod ≠ (-1 : Matrix Unit Unit ℂ) := by
+  have product {a b : ℂ} (first : a = 1) (second : b = 1) : a * b = 1 := by
+    rw [first, second, mul_one]
+  refine exact_same_wire_obstruction (allowed := fun z : ℂ => z = (1 : ℂ))
+    rfl product steps generators ?_
+  rw [Matrix.det_unique]
+  norm_num
+
 /-- The normalized first basis vector as a rectangular matrix. -/
 private noncomputable def prepare : basis Unit ⟶ basis Bool :=
   ofMatrix (fun b _ => if b then 0 else 1)
