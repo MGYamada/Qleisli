@@ -390,30 +390,58 @@ fn json_type_failure_is_located_in_the_original_source() {
 )]
 #[test]
 fn terminal_export_locates_the_exact_rejected_source_specialization() {
-    let trials = [
+    let invoke = |project: &SourceRoot, action: &str| {
+        cli(&[
+            "interop".as_ref(),
+            action.as_ref(),
+            project.0.as_os_str(),
+            "--input=qli".as_ref(),
+        ])
+    };
+    let first = SourceRoot::new(include_str!(
+        "fixtures/authoring_sessions/target-specialization-v030/attempt-01/n1/main.qli"
+    ));
+    first.write(
+        "Qargo.toml",
         include_str!(
-            "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n0/main.qli"
+            "fixtures/authoring_sessions/target-specialization-v030/attempt-01/n1/Qargo.toml"
         ),
-        include_str!(
-            "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n1/main.qli"
+    );
+    let refused_manifest = invoke(&first, "emit-qasm");
+    assert_eq!(refused_manifest.status.code(), Some(1));
+    assert!(
+        String::from_utf8(refused_manifest.stdout)
+            .unwrap()
+            .contains("requires schema-version = 2")
+    );
+
+    let trials = [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n0/main.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n0/Qargo.toml"
+            ),
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n1/main.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n1/Qargo.toml"
+            ),
         ),
     ];
-    for (actual, source) in trials.into_iter().enumerate() {
+    for (actual, (source, manifest)) in trials.into_iter().enumerate() {
         let project = SourceRoot::new(source);
-        let invoke = |action: &str| {
-            cli(&[
-                "interop".as_ref(),
-                action.as_ref(),
-                project.0.as_os_str(),
-                "--input=qli".as_ref(),
-            ])
-        };
-        assert!(invoke("check").status.success());
+        project.write("Qargo.toml", manifest);
+        assert!(invoke(&project, "check").status.success());
         for (action, target) in [
             ("emit-qasm", "OpenQASM 3"),
             ("emit-qir", "QIR 2.0 Base Profile"),
         ] {
-            let export = invoke(action);
+            let export = invoke(&project, action);
             let result = String::from_utf8(export.stdout).unwrap();
             if actual == 0 {
                 assert!(export.status.success(), "{result}");
