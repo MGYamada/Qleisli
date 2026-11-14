@@ -123,6 +123,9 @@ pub(crate) struct ContextSubject {
     pub supplies: Vec<(String, OperationSubject)>,
     pub positions: Vec<Position>,
     pub static_intervals: Vec<StaticInterval>,
+    /// Original workspace subslices in this body, used only to propose export
+    /// alignment. The verifier derives its own intervals from original source.
+    pub workspace_intervals: Vec<WorkspaceInterval>,
     pub selections: Vec<SelectionBody>,
     pub calls: Vec<(Position, std::sync::Arc<ContextSubject>)>,
     pub branches: Vec<(
@@ -166,6 +169,13 @@ impl std::fmt::Debug for ContextSubject {
             .field("branches", &self.branches.len())
             .finish()
     }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct WorkspaceInterval {
+    pub start: usize,
+    pub count: usize,
+    pub fresh: bool,
 }
 
 /// Actual local interfaces and literal positions in the complete original call.

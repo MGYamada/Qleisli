@@ -544,7 +544,8 @@ checks its own zero return. An individual slice can instead use exclusive
 scratch, which the checker verifies is untouched everywhere else.
 
 A physical scratch location can also be reused across ordered, disjoint,
-nonempty clean intervals. The checker
+clean intervals. A zero-gate interval still checks the exact zero-return
+equation and covers no gate accesses. The checker
 requires an exact zero-return equation for each interval, checks that every
 gate touching that location lies in one of those intervals, and checks that
 the location is absent from terminal readout. The literal multi-interval check
@@ -558,20 +559,21 @@ and checks the combined operator on the ordered support, with the same
 zero-return check when the slice uses synthesis scratch. Preparation,
 observation and source workspace boundaries require their own alignment.
 The typed-source adapter reads workspace intervals from the original checked
-root actions. The target plan only supplies gate alignment and scratch
-locations. The regression checks actual CLI output against its accepted
-source packet, including the clean interval, the optimized word between
-intervals, the dirty interval and terminal result order. Production invocation
-still requires transporting the actual bytes and alignment to this adapter.
+root actions. The exporter preserves the interval boundaries across exact
+rewrites and proposes the corresponding gate positions and scratch locations.
+Lean checks the proposal against the original source, including the clean and
+dirty intervals and terminal result order.
 
-The internal QTP1 checker input contains the complete original QLV3 packet,
-the exact emitted OpenQASM bytes and a placement proposal. It checks the
-packet lengths, rejects trailing bytes and precharges alignment traversal.
-Source rechecking, target decoding and placement replay share the 20,000,000
-exact-work budget. The proposal supplies target capacity, undirected routing
-edges, reserved workspace and alignment only. The checked gate and reset
-counts come from decoding the literal output. The producer still needs to
-supply alignment for the gates it emits.
+Use `qleisli interop emit-qasm <source> --input=qli --resources` for the
+checked resource report on a closed typed program with workspace scopes in
+the root body.
+The JSON result contains the emitted text, exact work spent in the placement
+check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
+measurements. Counts come from Lean's decoding of the returned text.
+The internal packet binds the complete original QLV3 request and literal target
+bytes. Lean rechecks the original source, decodes the target and replays
+placement using one 20,000,000 exact-work budget. The report covers the
+supported canonical terminal profile and its declared physical register.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.

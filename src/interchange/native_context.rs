@@ -13,6 +13,7 @@ pub(super) enum Mode {
     RuntimeRoot,
     QmatchSource,
     QmatchSourceV5,
+    OpenQasmPlacement,
     Hierarchy,
     HierarchyRequest,
     HierarchyControl,
@@ -37,6 +38,7 @@ impl Mode {
             Self::RuntimeRoot => "--runtime-root-check",
             Self::QmatchSource => "--qmatch-source-check",
             Self::QmatchSourceV5 => "--qmatch-source-v5-check",
+            Self::OpenQasmPlacement => "--openqasm-placement-check",
             Self::Hierarchy => "--hierarchy-pending",
             Self::HierarchyRequest => "--hierarchy-request-pending",
             Self::HierarchyControl => "--hierarchy-control-pending",
@@ -61,6 +63,7 @@ impl Mode {
             "--runtime-root-check" => Ok(Self::RuntimeRoot),
             "--qmatch-source-check" => Ok(Self::QmatchSource),
             "--qmatch-source-v5-check" => Ok(Self::QmatchSourceV5),
+            "--openqasm-placement-check" => Ok(Self::OpenQasmPlacement),
             "--hierarchy-pending" => Ok(Self::Hierarchy),
             "--hierarchy-request-pending" => Ok(Self::HierarchyRequest),
             "--hierarchy-control-pending" => Ok(Self::HierarchyControl),
@@ -97,6 +100,7 @@ impl Mode {
             | Self::EngineeringInstrument
             | Self::EngineeringOpenQasm => "engineering-checked",
             Self::Readout | Self::Preparation => "checked",
+            Self::OpenQasmPlacement => "placement-checked",
         }
     }
 
@@ -113,6 +117,7 @@ impl Mode {
             | Self::RuntimeRoot
             | Self::QmatchSource
             | Self::QmatchSourceV5
+            | Self::OpenQasmPlacement
             | Self::EngineeringPure
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
@@ -271,6 +276,7 @@ mod tests {
             Mode::RuntimeRoot,
             Mode::QmatchSource,
             Mode::QmatchSourceV5,
+            Mode::OpenQasmPlacement,
             Mode::Hierarchy,
             Mode::HierarchyRequest,
             Mode::HierarchyControl,
@@ -292,6 +298,7 @@ mod tests {
                     | Mode::RuntimeRoot
                     | Mode::QmatchSource
                     | Mode::QmatchSourceV5
+                    | Mode::OpenQasmPlacement
                     | Mode::EngineeringPure
                     | Mode::EngineeringPureTensor
                     | Mode::EngineeringInstrument

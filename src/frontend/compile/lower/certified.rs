@@ -171,6 +171,7 @@ impl Lowerer<'_, '_> {
             ));
         }
         let start = self.raw.operations.len();
+        let fresh = scratch.is_none();
         let result = if let Some(scratch) = scratch {
             let packed =
                 self.primitive_call(module, span, PrimitiveId::Join, vec![data, scratch])?;
@@ -209,7 +210,7 @@ impl Lowerer<'_, '_> {
         // Raw checking alone cannot establish a dirty restoration contract.
         self.nominal_basis_used = Some(true);
         let count = self.raw.operations.len() - start;
-        quantum_match::nominal::record_coherent_table(self, module, span, start, count)?;
+        quantum_match::nominal::record_workspace(self, module, span, start, count, fresh)?;
         Ok(result)
     }
 

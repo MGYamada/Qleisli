@@ -18,7 +18,7 @@ inductive Mode where
   | ordinary | contract | hierarchy (mode : CheckedHierarchy.Modes.Mode)
   | engineeringPure | engineeringPureTensor | engineeringInstrument | engineeringOpenQasm
   | readout | preparation | carrierPure | ordinaryRoot | runtimeRoot | qmatchSource
-  | qmatchSourceV5
+  | qmatchSourceV5 | openQasmPlacement
   deriving BEq, DecidableEq, Repr
 
 def Mode.workLimit (_ : Mode) : Nat := QleisliKernel.exactWorkLimit
@@ -43,6 +43,7 @@ def Mode.name : Mode → String
   | .runtimeRoot => "--runtime-root-check"
   | .qmatchSource => "--qmatch-source-check"
   | .qmatchSourceV5 => "--qmatch-source-v5-check"
+  | .openQasmPlacement => "--openqasm-placement-check"
 
 def Mode.parse : String → Option Mode
   | "--qirf-native" => some .ordinary
@@ -64,6 +65,7 @@ def Mode.parse : String → Option Mode
   | "--runtime-root-check" => some .runtimeRoot
   | "--qmatch-source-check" => some .qmatchSource
   | "--qmatch-source-v5-check" => some .qmatchSourceV5
+  | "--openqasm-placement-check" => some .openQasmPlacement
   | _ => none
 
 theorem Mode.parse_name (mode : Mode) : Mode.parse mode.name = some mode := by
@@ -94,6 +96,7 @@ def Value : Mode → Type
   | .runtimeRoot => CheckedRuntimeRoot.Checked
   | .qmatchSource => CheckedQmatch.Checked
   | .qmatchSourceV5 => Σ value : Packet.Input, CheckedQmatchV5.Original value.original
+  | .openQasmPlacement => Σ bytes : ByteArray, CheckedQmatchV5.PlacementPacket.Checked bytes
 
 def scope : (mode : Mode) → Value mode → Packet.Scope
   | .ordinary, value => value.scope
@@ -101,7 +104,7 @@ def scope : (mode : Mode) → Value mode → Packet.Scope
   | .hierarchy _, value => value.1
   | .engineeringPure, _ | .engineeringPureTensor, _
   | .engineeringInstrument, _ | .engineeringOpenQasm, _ | .carrierPure, _ | .ordinaryRoot, _
-  | .runtimeRoot, _ | .qmatchSource, _ | .qmatchSourceV5, _ => .execution
+  | .runtimeRoot, _ | .qmatchSource, _ | .qmatchSourceV5, _ | .openQasmPlacement, _ => .execution
   | .readout, _ | .preparation, _ => .inspection
 
 private def parseComponent {α : Type} (result : Except Protocol.Error α) : CheckM α :=
@@ -144,6 +147,8 @@ def check : (mode : Mode) → ByteArray → CheckM (Value mode)
   | .runtimeRoot => CheckedRuntimeRoot.run
   | .qmatchSource => CheckedQmatch.run
   | .qmatchSourceV5 => CheckedQmatchV5.run
+  | .openQasmPlacement => fun bytes => do
+    return ⟨bytes,← CheckedQmatchV5.PlacementPacket.check bytes⟩
 
 private theorem mapError_original {α ε δ : Type} (input : Except ε α) (mapping : ε → δ)
     (value : α) (ok : input.mapError mapping = .ok value) : input = .ok value := by
@@ -205,23 +210,31 @@ structure Decision (mode : Mode) where
   scope : Packet.Scope
   value : Value mode
 
-/-- Product/version checks precede parsing; successful data come only from the
-same exact envelope and existing mode-specific executable checker. -/
-def run (mode : Mode) (requestedProduct : String) (bytes : ByteArray) : CheckM (Decision mode) := do
+private def runSource (mode : Mode) (requestedProduct : String) (bytes : ByteArray) : CheckM (Decision mode) := do
   guard (requestedProduct == productVersion) .version
   let input ← lift (Packet.read bytes)
   let value ← check mode bytes
   guard (decide (scope mode value = input.scope)) .packet
   return ⟨input.edition,input.scope,value⟩
 
+/-- Placement checks the exact nested source envelope under the same work
+state as target decoding and replay. Source-only modes read QLV3 directly. -/
+def run (mode : Mode) (requestedProduct : String) (bytes : ByteArray) : CheckM (Decision mode) :=
+  if placement : mode = .openQasmPlacement then
+    placement.symm ▸ (do
+      guard (requestedProduct == productVersion) .version
+      let checked ← check .openQasmPlacement bytes
+      return ⟨checked.2.source.1.edition,.execution,checked⟩)
+  else runSource mode requestedProduct bytes
+
 theorem run_binding (mode : Mode) (requestedProduct : String) (bytes : ByteArray)
-    (decision : Decision mode) (work left : Nat)
+    (decision : Decision mode) (work left : Nat) (source : mode ≠ .openQasmPlacement)
     (ok : (run mode requestedProduct bytes).run work = (.ok decision,left)) :
     ∃ input, Packet.read bytes = .ok input ∧ requestedProduct = productVersion ∧
       decision.edition = input.edition ∧ decision.scope = input.scope ∧
       (check mode bytes).run work = (.ok decision.value,left) ∧
       scope mode decision.value = input.scope := by
-  unfold run at ok
+  simp only [run, dif_neg source, runSource] at ok
   obtain ⟨_,a,hv,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨input,b,hp,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨value,c,hc,h⟩ := bind_success _ _ _ _ _ h
@@ -240,10 +253,10 @@ theorem run_binding (mode : Mode) (requestedProduct : String) (bytes : ByteArray
   exact ⟨input,parsed.1,beq_iff_eq.mp version.1,rfl,rfl,hc,of_decide_eq_true selected.1⟩
 
 theorem run_edition (mode : Mode) (requestedProduct : String) (bytes : ByteArray)
-    (decision : Decision mode) (work left : Nat)
+    (decision : Decision mode) (work left : Nat) (source : mode ≠ .openQasmPlacement)
     (ok : (run mode requestedProduct bytes).run work = (.ok decision,left)) :
     Packet.u32 bytes 4 = decision.edition.code := by
-  obtain ⟨input,parsed,_,edition,_,_,_⟩ := run_binding _ _ _ _ _ _ ok
+  obtain ⟨input,parsed,_,edition,_,_,_⟩ := run_binding _ _ _ _ _ _ source ok
   rw [edition]
   exact Packet.read_edition bytes input parsed
 
@@ -254,6 +267,7 @@ def Mode.status : Mode → String
   | .engineeringPure | .engineeringPureTensor
   | .engineeringInstrument | .engineeringOpenQasm => "engineering-checked"
   | .readout | .preparation => "checked"
+  | .openQasmPlacement => "placement-checked"
 
 private def indices (values : List Nat) : List String :=
   toString values.length :: values.map toString
@@ -273,6 +287,10 @@ def payload : (mode : Mode) → Value mode → Nat → List String
   | .preparation, value, _ => [toString value.checked.visits]
   | .carrierPure, _, work | .ordinaryRoot, _, work | .runtimeRoot, _, work
   | .qmatchSource, _, work | .qmatchSourceV5, _, work => [toString work,"1"]
+  | .openQasmPlacement, value, work =>
+    let counts := value.2.target.circuit.counts
+    [work, counts.reserved, counts.reset, counts.gates, counts.swaps, counts.tGates,
+      counts.measurements].map toString
 
 def successLines (mode : Mode) (decision : Decision mode) (work : Nat) : List String :=
   ["qleisli.native-result 3",mode.status,toString decision.edition.code,productVersion,
@@ -285,7 +303,8 @@ structure Reply where
 def Mode.errorCode : Mode → Gate.Error → String
   | .hierarchy _, .native error => Protocol.HierarchicalFinite.errorCode error
   | .qmatchSource, .native (.arithmetic .workLimit)
-  | .qmatchSourceV5, .native (.arithmetic .workLimit) => "limit"
+  | .qmatchSourceV5, .native (.arithmetic .workLimit)
+  | .openQasmPlacement, .native (.arithmetic .workLimit) => "limit"
   | _, error => Native.errorCode error
 
 def reply (mode : Mode) (work : Nat) (result : Except Gate.Error (Decision mode)) (left : Nat) : Reply :=

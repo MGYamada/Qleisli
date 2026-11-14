@@ -35,6 +35,8 @@ development milestones from the scope of their evidence.
   placement packet, sharing exact work across both checks and the replay.
 - Reject canonical OpenQASM gate instructions with missing operands before
   exact operator comparison.
+- Report Lean-checked OpenQASM resources for closed typed workspace programs
+  with `interop emit-qasm --resources`, bound to the emitted text.
 - Preserve allocation, workspace and observation boundaries through OpenQASM
   phase folding, including after earlier gate compaction.
 

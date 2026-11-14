@@ -10,16 +10,61 @@ use super::profile::{self, Gate, GateOp, TerminalCircuit};
 use super::{InteropError, MAX_GATES, MAX_QUBITS};
 use crate::ir::{CircuitAction, CircuitStep};
 
+/// Output positions of the input gate boundaries. Interior boundaries of a
+/// rewritten word disappear even when its replacement emits zero gates.
+#[derive(Debug)]
+pub(super) struct GateBoundaries(Vec<Option<usize>>);
+
+impl GateBoundaries {
+    fn new(gates: usize) -> Self {
+        Self(vec![None; gates + 1])
+    }
+
+    fn record(&mut self, input: usize, output: usize) {
+        self.0[input] = Some(output);
+    }
+
+    fn remap(&self, limit: &[bool; MAX_GATES + 1]) -> [bool; MAX_GATES + 1] {
+        let mut remapped = [false; MAX_GATES + 1];
+        for (input, output) in self.0.iter().enumerate() {
+            if let Some(output) = output {
+                remapped[*output] |= limit[input];
+            }
+        }
+        remapped
+    }
+
+    fn then(self, next: &Self) -> Self {
+        Self(
+            self.0
+                .into_iter()
+                .map(|cut| cut.and_then(|i| next.0[i]))
+                .collect(),
+        )
+    }
+
+    pub(super) fn get(&self, before: usize) -> Option<usize> {
+        self.0.get(before).copied().flatten()
+    }
+}
+
 /// Normalize only after the complete original emitted stream obeyed its cap.
 /// Barrier indices refer to that original stream, before either final pass.
 pub(super) fn finish(
     circuit: &mut TerminalCircuit,
     expansion: &mut ExpansionBudget,
     barriers: &[bool; MAX_GATES + 1],
-) -> Result<(), InteropError> {
-    let barriers = expansion.normalizations.terminal(circuit, barriers)?;
-    fold_phases(circuit, &barriers);
-    Ok(())
+) -> Result<GateBoundaries, InteropError> {
+    let compaction = expansion.normalizations.terminal(circuit, barriers)?;
+    let phase_boundaries = fold_phases(circuit, &compaction.remap(barriers));
+    let boundaries = compaction.then(&phase_boundaries);
+    // A complete output always retains the input start and end.
+    debug_assert_eq!(boundaries.get(0), Some(0));
+    debug_assert_eq!(
+        boundaries.get(boundaries.0.len() - 1),
+        Some(circuit.gates.len())
+    );
+    Ok(boundaries)
 }
 
 fn phase_word(k: u8) -> &'static [Gate] {
@@ -272,7 +317,7 @@ pub(super) fn axis_permutation(
 
 /// Fold only adjacent diagonal operations on the same physical operand. Never
 /// commute across a gate, change a controlled phase, or quotient global phase.
-fn fold_phases(circuit: &mut TerminalCircuit, barriers: &[bool; MAX_GATES + 1]) {
+fn fold_phases(circuit: &mut TerminalCircuit, barriers: &[bool; MAX_GATES + 1]) -> GateBoundaries {
     fn exponent(gate: Gate) -> Option<u8> {
         Some(match gate {
             Gate::T => 1,
@@ -284,8 +329,11 @@ fn fold_phases(circuit: &mut TerminalCircuit, barriers: &[bool; MAX_GATES + 1]) 
         })
     }
     let gates = std::mem::take(&mut circuit.gates);
+    let end = gates.len();
+    let mut boundaries = GateBoundaries::new(end);
     let mut gates = gates.into_iter().enumerate().peekable();
-    while let Some((_, op)) = gates.next() {
+    while let Some((index, op)) = gates.next() {
+        boundaries.record(index, circuit.gates.len());
         let Some(mut k) = exponent(op.gate) else {
             circuit.gates.push(op);
             continue;
@@ -303,6 +351,8 @@ fn fold_phases(circuit: &mut TerminalCircuit, barriers: &[bool; MAX_GATES + 1]) 
             });
         }
     }
+    boundaries.record(end, circuit.gates.len());
+    boundaries
 }
 
 #[cfg(test)]
@@ -321,7 +371,8 @@ mod tests {
         }
         let mut barriers = [false; MAX_GATES + 1];
         barriers[2] = true;
-        fold_phases(&mut circuit, &barriers);
+        let boundaries = fold_phases(&mut circuit, &barriers);
+        assert_eq!(boundaries.0, [Some(0), None, Some(1), Some(2)]);
         assert_eq!(
             circuit.gates.iter().map(|op| op.gate).collect::<Vec<_>>(),
             [Gate::S, Gate::Sdg]

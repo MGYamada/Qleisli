@@ -207,17 +207,15 @@ structure Reuse {bytes capacity} (target : CanonicalOpenQasmResources.Checked by
     (scratch : Nat) (uses : List (CleanUse target.circuit scratch)) : Type where
   reserved : scratch < target.circuit.qubits
   ordered : uses.Pairwise CleanUse.before
-  nonempty : ∀ use ∈ uses, 0 < use.count
   unmeasured : scratch ∉ target.circuit.measurements
   complete : CleanUse.complete uses = true
 
 def checkReuse {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (scratch : Nat) (uses : List (CleanUse target.circuit scratch)) : WorkM (Reuse target scratch uses) := do
-  guard (uses.length ≤ target.circuit.gates.length) .limit
   exactWork (Exact.charge (32*(1+uses.length)*(1+uses.length+target.circuit.gates.length)))
   if valid : scratch < target.circuit.qubits ∧ uses.Pairwise CleanUse.before ∧
-      (∀ use ∈ uses, 0 < use.count) ∧ scratch ∉ target.circuit.measurements ∧ CleanUse.complete uses = true then
-    return ⟨valid.1,valid.2.1,valid.2.2.1,valid.2.2.2.1,valid.2.2.2.2⟩
+      scratch ∉ target.circuit.measurements ∧ CleanUse.complete uses = true then
+    return ⟨valid.1,valid.2.1,valid.2.2.1,valid.2.2.2⟩
   else throw .request
 
 theorem Reuse.accessCovered {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}

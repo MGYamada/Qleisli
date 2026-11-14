@@ -129,12 +129,14 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
     let action = args[0].to_str().ok_or_else(usage)?;
     *root = PathBuf::from(&args[1]);
     let (mut format, mut shots, mut seed, mut json) = (None, None, None, false);
+    let mut resources = false;
     let mut checker = None;
     let mut edition: Option<qleisli::edition::Edition> = None;
     let mut expected_edition: Option<qleisli::edition::Edition> = None;
     for arg in &args[2..] {
         match arg.to_str() {
             Some("--format=json") if !json => json = true,
+            Some("--resources") if !resources => resources = true,
             Some(s) if s.starts_with("--edition=") && edition.is_none() => {
                 edition = Some(s[10..].parse().map_err(
                     |e: qleisli::edition::UnsupportedEdition| failure("edition", e.to_string()),
@@ -169,6 +171,9 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
         return Err(usage());
     }
     let format = format.ok_or_else(usage)?;
+    if resources && (action != "emit-qasm" || format != "qli") {
+        return Err(usage());
+    }
     if matches!(format, "qli" | "qasm") && root != Path::new("-") {
         // Match the source loader's absolute identities for JSON source spans.
         *root = std::fs::canonicalize(&*root).unwrap_or_else(|_| root.clone());
@@ -233,6 +238,24 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
                 .to_vec(),
         )
         .map_err(|_| failure("format", "export is not UTF-8"))?,
+        "emit-qasm" if resources => {
+            let (text, counts) =
+                interop::export_openqasm3_with_resources(program).map_err(|e| adapter(e, None))?;
+            return Ok(format!(
+                concat!(
+                    "{{\"text\":{},\"resources\":{{\"exact_work\":{},\"qubits\":{},\"resets\":{},",
+                    "\"gates\":{},\"swaps\":{},\"t_gates\":{},\"measurements\":{}}}}}"
+                ),
+                quoted(&text),
+                counts.exact_work,
+                counts.qubits,
+                counts.resets,
+                counts.gates,
+                counts.swaps,
+                counts.t_gates,
+                counts.measurements,
+            ));
+        }
         "emit-qasm" => interop::export_openqasm3(program).map_err(|e| adapter(e, None))?,
         "emit-qir" => interop::export_qir_base(program).map_err(|e| adapter(e, None))?,
         _ => unreachable!(),

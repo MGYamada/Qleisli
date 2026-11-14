@@ -300,6 +300,14 @@ pub(super) fn check_openqasm_result(program: &AcceptedProgram) -> Result<(), Int
 }
 
 pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, InteropError> {
+    let (circuit, _) = extract_with_alignment(program, &[])?;
+    Ok(circuit)
+}
+
+pub(super) fn extract_with_alignment(
+    program: &AcceptedProgram,
+    intervals: &[crate::interchange::qmatch::WorkspaceInterval],
+) -> Result<(TerminalCircuit, super::placement::Alignment), InteropError> {
     let raw = program.raw();
     if program.has_source_parameters()
         || !raw.quantum_inputs.is_empty()
@@ -331,7 +339,9 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
     // allocation/observation boundaries before final target normalization;
     // duplicate zero-gate boundaries cannot grow an unbounded side table.
     let mut normalization_barriers = [false; MAX_GATES + 1];
+    let mut alignment = super::placement::AlignmentBuilder::new(intervals, raw.operations.len());
     for (index, op) in raw.operations.iter().enumerate() {
+        alignment.record(index, circuit.gates.len(), &mut normalization_barriers);
         let result = (|| {
             if observed
                 && !matches!(
@@ -531,8 +541,15 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                 .ok_or_else(|| InteropError::unsupported("output must be a measured bit"))?,
         );
     }
-    super::export::finish(&mut circuit, &mut expansion, &normalization_barriers)?;
-    Ok(circuit)
+    alignment.record(
+        raw.operations.len(),
+        circuit.gates.len(),
+        &mut normalization_barriers,
+    );
+    let gate_boundaries =
+        super::export::finish(&mut circuit, &mut expansion, &normalization_barriers)?;
+    let proposal = alignment.finish(raw, &circuit, &gate_boundaries, clean_workspace, scratch)?;
+    Ok((circuit, proposal))
 }
 
 #[cfg(test)]
