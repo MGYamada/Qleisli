@@ -302,12 +302,8 @@ private def readSwap (step : Step) : Option {move : Swap // move.step = step} :=
   | ⟨[],.monomial [first,second] [0,2,1,3] [0,0,0,0]⟩ => some ⟨⟨first,second⟩,rfl⟩
   | _ => none
 
-private def readSwaps : (steps : List Step) → Option {moves : List Swap // moves.map Swap.step = steps}
-  | [] => some ⟨[],rfl⟩
-  | step :: rest => do
-    let move ← readSwap step
-    let moves ← readSwaps rest
-    return ⟨move.val :: moves.val,by simp [move.property,moves.property]⟩
+private def readSwaps (steps : List Step) : Option (List Swap) :=
+  steps.mapM (fun step => (readSwap step).map Subtype.val)
 
 theorem Checked.gateContribution {profile occupied moves} (checked : Checked profile occupied moves)
     (move : Swap) (member : move ∈ moves) (input : Nat) (value : Semantics.Exact.Scalar)
@@ -330,8 +326,10 @@ structure Schedule (profile : Profile) (occupied : List Nat) (actual : List Step
 def read (profile : Profile) (occupied : List Nat) (actual : List Step) :
     Option (Schedule profile occupied actual) := do
   let moves ← readSwaps actual
-  let checked ← check profile occupied moves.val
-  return ⟨moves.val,moves.property,checked⟩
+  if original : moves.map Swap.step = actual then
+    let checked ← check profile occupied moves
+    return ⟨moves,original,checked⟩
+  else none
 
 def Schedule.swapCount {profile occupied actual} (schedule : Schedule profile occupied actual) : Nat :=
   schedule.moves.length

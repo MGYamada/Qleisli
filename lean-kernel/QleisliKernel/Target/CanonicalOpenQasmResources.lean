@@ -50,16 +50,14 @@ def Instruction.localStep (layout : List Nat) (gate : Instruction) : Option Sema
     some (Semantics.RawTrace.localize (gate.wires.map layout.idxOf) gate.gate.action)
   else none
 
-private def operands : Nat → List UInt8 → Option (List Nat)
-  | 0, [59] => some []
-  | 0, _ => none
-  | fuel+1, bytes => do
+private def operands : Nat → List UInt8 → Option (List Nat) :=
+  Nat.rec (fun bytes => if bytes == [59] then some [] else none) (fun fuel recurse bytes => do
     let (wire,rest) ← operand bytes
     match rest with
     | 44 :: 32 :: tail =>
-      if fuel == 0 then none else (operands fuel tail).map (wire :: ·)
+      if fuel == 0 then none else (recurse tail).map (wire :: ·)
     | [59] => if fuel == 0 then some [wire] else none
-    | _ => none
+    | _ => none)
 
 private def instruction (line : List UInt8) (width : Nat) : Option Instruction := do
   let name := line.takeWhile (· != 32)
