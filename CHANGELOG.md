@@ -8,6 +8,8 @@ development milestones from the scope of their evidence.
 
 - Prove the original Raw resource counts for structural predicates, including
   private scratch and both predicate passes.
+- Prove exact agreement between a decoded OpenQASM workspace slice and its
+  original checked Raw body on all local inputs and external references.
 - Read literal `Bits<n>` coordinates in classical functions and coherent
   basis expressions. The native source-body checker binds word predicates to
   the controls in `with_computed`, and checks the ordered register extraction

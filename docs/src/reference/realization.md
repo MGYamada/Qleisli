@@ -574,6 +574,10 @@ ports. The exporter preserves the interval boundaries across exact
 rewrites and proposes the corresponding gate positions and scratch locations.
 Lean checks the proposal against the original source, including the clean and
 dirty intervals and terminal result order.
+The application theorem `Qleisli.WorkspaceTargetAction.decoded_action`
+connects the exact action of that decoded workspace slice to the literal Raw
+body on its full ordered data and scratch interface. The equality preserves
+the original phase for arbitrary reference columns.
 For a `Q<Bits<n>>` data register, each original `take_bit` or `put_bit` index
 determines the ordered wire selection or insertion. The Raw repartition retains
 the other owners, including a distinct `Q<Bits<0>>` remainder. Repartition inside
