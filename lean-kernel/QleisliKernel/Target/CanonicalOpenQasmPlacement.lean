@@ -12,6 +12,7 @@ open CanonicalOpenQasmResources (Circuit Instruction)
 
 inductive Match where
   | original | route | decomposed (gateCount : Nat) | synthesized (gateCount : Nat) (scratch : List Nat)
+  | optimized (rawCount gateCount : Nat) (scratch : List Nat := [])
   deriving BEq, DecidableEq, Repr
 
 structure State where
@@ -206,10 +207,42 @@ private def followSwap (circuit : Circuit) (connected : Nat → Nat → Bool) (s
     some {state with locations := state.locations.map move.axis, gateIndex := state.gateIndex+1}
   else none
 
+/-- Keep the actual owner transitions of every operation in a source slice.
+Only circuit events and structural owner operations share a target word. -/
+private def readSpan (original : Array Semantics.Observation.Op) (state : State) (count : Nat) :
+    WorkM (Interface × List Semantics.Finite.Step) := do
+  guard (1 < count && count ≤ 1024 && state.rawIndex+count ≤ original.size) .limit
+  let (final,chunks,_) ← (List.range count).foldlM (fun (frame,chunks,size) offset => do
+    let some (.pure operation) := original[state.rawIndex+offset]? | throw .request
+    let fields := Raw.rawFields ⟨[],[operation],[],.unitary⟩
+    guard (fields ≤ 1025) .limit
+    exactWork (Exact.charge (32*(fields+frame.live.length+state.locations.length)))
+    let (next,events) ← lift (readOption (Semantics.RawTrace.step frame operation))
+    guard (next.frame == state.raw.frame) .request
+    match events with
+    | [] => pure (next,chunks,size)
+    | [.circuit _ steps] => do
+      let total := size + steps.length
+      guard (total ≤ 1024) .limit
+      pure (next,steps :: chunks,total)
+    | _ => throw .request) (state.raw,[],0)
+  pure (final,chunks.reverse.flatten)
+
+private def followSpan (original : Array Semantics.Observation.Op) (circuit : Circuit) (state : State)
+    (rawCount gateCount : Nat) (scratch reserved : List Nat) : WorkM State := do
+  let (next,steps) ← readSpan original state rawCount
+  if scratch.isEmpty then
+    let _ ← checkDecomposition circuit state.gateIndex gateCount state.locations steps
+  else
+    guard (scratch.all fun wire => !reserved.contains wire) .request
+    let _ ← checkSynthesisWith circuit state.gateIndex gateCount state.locations scratch state.synthesis steps
+  pure {state with raw := next,rawIndex := state.rawIndex+rawCount,gateIndex := state.gateIndex+gateCount}
+
 private def replayFrom (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
     (alignment : List Match) (initial : State) (reserved : List Nat := []) : WorkM State :=
   alignment.foldlM (fun state action => match action with
     | .route => lift (readOption (followSwap circuit connected state reserved))
+    | .optimized rawCount gateCount scratch => followSpan original circuit state rawCount gateCount scratch reserved
     | .original | .decomposed _ | .synthesized _ _ => do
       let some (.pure operation) := original[state.rawIndex]? | throw .request
       followRaw circuit state operation reserved action) initial

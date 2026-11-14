@@ -552,8 +552,12 @@ derives every entry placement from the preceding original owners and target
 word. It reserves each designated scratch location across the complete trace,
 keeping it out of ordinary preparations, routing and terminal readout. Each
 reuse interval must be bound to its own checked original workspace.
-Decompositions spanning several Raw events and integration with the
-production exporter require further checking.
+The replay can also align a target word with several consecutive Raw circuit
+events and structural owner operations. It reads the actual owner transitions
+and checks the combined operator on the ordered support, with the same
+zero-return check when the slice uses synthesis scratch. Preparation,
+observation and source workspace boundaries require their own alignment.
+Production exporter integration requires further checking.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
