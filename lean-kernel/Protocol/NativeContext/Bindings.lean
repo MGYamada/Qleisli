@@ -45,6 +45,26 @@ theorem run_openqasm_placement_binding (product : String) (bytes : ByteArray)
   cases returned
   exact ⟨checked,placed,beq_iff_eq.mp productCheck,rfl⟩
 
+/-- Relate the executable reply to the counts recovered from the original
+OpenQASM bytes and to the source workspace width those counts cover. -/
+theorem run_openqasm_placement_resources (product : String) (bytes : ByteArray)
+    (decision : Decision .openQasmPlacement) (work left : Nat)
+    (ok : (run .openQasmPlacement product bytes).run work = (.ok decision,left)) :
+    ∃ checked : CheckedQmatchV5.PlacementPacket.Checked bytes,
+      let counts := checked.target.circuit.counts
+      CheckedQmatchV5.PlacementPacket.split bytes = .ok checked.parts ∧
+      (Target.CanonicalOpenQasmResources.decode checked.parts.target).map
+        Target.CanonicalOpenQasmResources.Circuit.counts = some counts ∧
+      checked.placement.trace.recorded.trace.peakWires ≤ counts.reserved ∧
+      counts.reserved ≤ checked.proposal.capacity ∧
+      (reply .openQasmPlacement work (.ok decision) left).lines.drop 6 =
+        [work-left,counts.reserved,counts.reset,counts.gates,counts.swaps,
+          counts.tGates,counts.measurements].map toString := by
+  obtain ⟨checked,_,_,rfl⟩ := run_openqasm_placement_binding product bytes decision work left ok
+  exact ⟨checked,checked.framed,checked.target_counts,checked.covers_workspace_peak,
+    checked.target.capacityBound,rfl⟩
+
+#print axioms run_openqasm_placement_resources
 
 theorem run_typed_ordinary_binding (product : String) (bytes : ByteArray)
     (decision : Decision .ordinaryRoot) (work left : Nat)

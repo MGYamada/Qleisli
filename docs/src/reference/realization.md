@@ -584,6 +584,8 @@ supported canonical terminal profile and its declared physical register.
 Lean proves that the decoded register width bounds the maximum Raw live width
 over the workspace occurrences visited by the replay, including caller
 spectators and temporary clean wires.
+The native reply theorem binds the reported counts to those exact target bytes
+and proves that the reserved width is within the requested target capacity.
 A structural basis lift updates the physical placement only when its complete
 table is an axis permutation. It contributes zero gates. A routing SWAP
 must occupy a literal gate position.

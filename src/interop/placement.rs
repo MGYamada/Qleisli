@@ -325,6 +325,8 @@ mod tests {
         let original_gates = "h q[0];\nh q[1];\nh q[1];";
         let original_readout = "c[0] = measure q[1];\nc[1] = measure q[0];";
         for (original, wrong) in [
+            // The spare location is used only during clean scopes.
+            ("qubit[3] q;", "qubit[2] q;"),
             (original_gates, "h q[1];\nh q[0];\nh q[1];"),
             (original_gates, "h q[0];\nh q[1];\nh q[0];"),
             (original_gates, "h q[0];\nh q[2];\nh q[1];"),
