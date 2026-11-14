@@ -1,5 +1,5 @@
 import Qleisli.RuntimeComputedProtectedAction
-import QleisliKernel.Qirf.StructuralComputedUse
+import QleisliKernel.Qirf.StructuralComputedRaw
 
 /-! Exact clean return for the structurally checked source predicate and use.
 Keep the entire data/reference amplitude family through the existing
@@ -152,8 +152,28 @@ theorem literal_pair {sources caller computeSteps inverseSteps uses}
   · exact literal_xor checked.forward source aux bound small value valid nonzero
   · exact literal_xor checked.reverse source aux bound small value valid nonzero
 
+/-- The source-bound Raw transition retains the frame and keeps its newly
+issued scratch private. The same checked packet supplies the all-reference
+zero-return equation for the original phase action. -/
+theorem checked_packet {sources caller}
+    {event : SourceTypes.SourceRuntimeContext.ComputedEvent sources caller}
+    {original : StructuralXorPredicate.Original event} {packet before entry}
+    (checked : StructuralComputedRaw.SourceChecked original packet before entry)
+    {R : Type} (ψ : Logical R) :
+    packet.scratch ∉ entry.quantum.seenWires ∧
+    packet.scratch ∈ checked.raw.after.seenWires ∧
+    packet.scratch ∉ checked.raw.after.frame ∧
+    checked.raw.after.frame = entry.quantum.frame ∧
+    compute (selected original) (run packet.uses (compute (selected original) (zero ψ))) =
+      zero (fun source target reference =>
+        ψ source target reference * scalar (checked.matched.action.matrix.entry
+          (selected original source) (selected original source))) :=
+  ⟨checked.raw.scratchIssued.1,checked.raw.scratchIssued.2,checked.raw.scratchPrivate,
+    checked.raw.sameFrame,clean_return checked.matched ψ⟩
+
 #print axioms clean_return
 #print axioms literal_xor
 #print axioms literal_pair
+#print axioms checked_packet
 
 end Qleisli.StructuralComputedRestoration
