@@ -55,7 +55,7 @@ theorem run_openqasm_placement_resources (product : String) (bytes : ByteArray)
       CheckedQmatchV5.PlacementPacket.split bytes = .ok checked.parts ∧
       (Target.CanonicalOpenQasmResources.decode checked.parts.target).map
         Target.CanonicalOpenQasmResources.Circuit.counts = some counts ∧
-      checked.placement.trace.recorded.trace.peakWires ≤ counts.reserved ∧
+      checked.placement.trace.recorded.peakWires ≤ counts.reserved ∧
       counts.reserved ≤ checked.proposal.capacity ∧
       (reply .openQasmPlacement work (.ok decision) left).lines.drop 6 =
         [work-left,counts.reserved,counts.reset,counts.gates,counts.swaps,

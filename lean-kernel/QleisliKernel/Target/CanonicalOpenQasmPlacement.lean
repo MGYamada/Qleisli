@@ -559,28 +559,21 @@ abbrev CleanUses (circuit : Circuit) := (scratch : Nat) → List (CanonicalOpenQ
 
 inductive WorkspaceTrace {program : Semantics.Observation.Program} {bytes capacity}
     (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
-    (reserved synthesis : List Nat) : State → CleanUses target.circuit → Type where
+    (reserved synthesis : List Nat) : State → CleanUses target.circuit → Nat → Type where
   | start : WorkspaceTrace (program := program) target connected reserved synthesis
-      {synthesis := synthesis} (fun _ => [])
-  | next {previous entry : State} {segment : Segment program} {uses : CleanUses target.circuit}
-    (earlier : WorkspaceTrace (program := program) target connected reserved synthesis previous uses)
+      {synthesis := synthesis} (fun _ => []) 0
+  | next {previous entry : State} {segment : Segment program} {uses : CleanUses target.circuit} {peak : Nat}
+    (earlier : WorkspaceTrace (program := program) target connected reserved synthesis previous uses peak)
     (bound : BoundSegment segment target connected reserved previous entry) :
       WorkspaceTrace (program := program) target connected reserved synthesis (segment.exit entry bound.after)
-        (fun scratch => bound.addCleanUse scratch (uses scratch))
+        (fun scratch => bound.addCleanUse scratch (uses scratch)) (max peak segment.map.resources.counts.peakWires)
 
 /-- Maximum Raw live width across the checked original workspace occurrences,
 including the caller's spectators and every temporary clean wire. -/
-def WorkspaceTrace.peakWires {program : Semantics.Observation.Program} {bytes capacity}
-    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved synthesis state uses} :
-    WorkspaceTrace (program := program) target connected reserved synthesis state uses → Nat
-  | .start => 0
-  | .next (segment := segment) earlier _ =>
-    max earlier.peakWires segment.map.resources.counts.peakWires
-
 theorem WorkspaceTrace.peakWires_le {program : Semantics.Observation.Program} {bytes capacity}
-    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved synthesis state uses}
-    (trace : WorkspaceTrace (program := program) target connected reserved synthesis state uses) :
-    trace.peakWires ≤ target.circuit.qubits := by
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved synthesis state uses peak}
+    (trace : WorkspaceTrace (program := program) target connected reserved synthesis state uses peak) :
+    peak ≤ target.circuit.qubits := by
   induction trace with
   | start => exact Nat.zero_le _
   | next _ bound ih => exact Nat.max_le.mpr ⟨ih,bound.placed.body.coversRawPeak⟩
@@ -590,7 +583,8 @@ structure TraceWithUses {program : Semantics.Observation.Program} {bytes capacit
     (reserved synthesis : List Nat) where
   exit : State
   cleanUses : CleanUses target.circuit
-  trace : @WorkspaceTrace program bytes capacity target connected reserved synthesis exit cleanUses
+  peakWires : Nat
+  trace : @WorkspaceTrace program bytes capacity target connected reserved synthesis exit cleanUses peakWires
 
 structure FinishedTrace (program : Semantics.Observation.Program) {bytes capacity}
     (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
@@ -620,8 +614,9 @@ def finishTrace {bytes capacity} (target : CanonicalOpenQasmResources.Checked by
         (∀ wire ∈ synthesis, wire ∉ target.circuit.measurements) then
       let recorded ← segments.foldlM (fun (state : @TraceWithUses program bytes capacity target connected reserved synthesis) segment => do
         let ⟨entry,bound⟩ ← checkSegment segment target connected reserved state.exit
-        pure ⟨segment.exit entry bound.after,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),.next state.trace bound⟩)
-        ⟨{synthesis := synthesis},fun _ => [],.start⟩
+        pure ⟨segment.exit entry bound.after,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),
+          max state.peakWires segment.map.resources.counts.peakWires,.next state.trace bound⟩)
+        ⟨{synthesis := synthesis},fun _ => [],0,.start⟩
       segmentWork target program suffix
       let final ← SourceTypes.NaturalAffine.witness
         (replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved)
