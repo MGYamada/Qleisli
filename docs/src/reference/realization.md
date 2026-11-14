@@ -578,6 +578,11 @@ The application theorem `Qleisli.WorkspaceTargetAction.decoded_action`
 connects the exact action of that decoded workspace slice to the literal Raw
 body on its full ordered data and scratch interface. The equality preserves
 the original phase for arbitrary reference columns.
+For each reserved clean wire, `native_clean_access_counted_once` links native
+placement success to its literal reset and one unique restoration interval
+for every emitted gate that touches it. The application theorem also places
+the interval inside the counted target gates and excludes the scratch wire
+from terminal readout.
 For a `Q<Bits<n>>` data register, each original `take_bit` or `put_bit` index
 determines the ordered wire selection or insertion. The Raw repartition retains
 the other owners, including a distinct `Q<Bits<0>>` remainder. Repartition inside

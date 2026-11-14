@@ -1,6 +1,7 @@
 import Qleisli.FiniteMatrixAction
 import Qleisli.RawDenotation
 import QleisliKernel.Target.CanonicalOpenQasmWorkspace
+import Protocol.NativeContext.Bindings
 
 /-! Relate a decoded target workspace slice to the actual checked Raw body
 in its ordered data-then-scratch interface, including untouched references.
@@ -52,5 +53,62 @@ theorem decoded_action {sources caller deps program block sourceStart sourceCoun
   rw [targetOriginal] at targetAction
   exact targetAction.symm.trans rawAction
 
+private theorem unique_slice {circuit scratch}
+    {uses : List (CleanUse circuit scratch)} (ordered : uses.Pairwise CleanUse.before)
+    {first second : CleanUse circuit scratch} (firstMember : first ∈ uses) (secondMember : second ∈ uses)
+    {index : Nat} (firstStart : first.start ≤ index) (firstStop : index < first.start+first.count)
+    (secondStart : second.start ≤ index) (secondStop : index < second.start+second.count) :
+    first = second := by
+  induction ordered with
+  | nil => simp at firstMember
+  | cons separate _ recurse =>
+    simp only [List.mem_cons] at firstMember secondMember
+    rcases firstMember with rfl | firstMember <;> rcases secondMember with rfl | secondMember
+    · rfl
+    · have gap := separate second secondMember
+      unfold CleanUse.before at gap
+      omega
+    · have gap := separate first firstMember
+      unfold CleanUse.before at gap
+      omega
+    · exact recurse firstMember secondMember
+
+/-- Each gate touching a reused clean wire belongs to exactly one counted
+restoration interval. The position is in the original target word, and the
+interval contains its checked number of literal steps. -/
+theorem clean_access_counted_once {bytes capacity}
+    {target : Target.CanonicalOpenQasmResources.Checked bytes capacity}
+    {scratch uses} (reuse : Reuse target scratch uses)
+    (index : Nat) (gate : Target.CanonicalOpenQasmResources.Instruction)
+    (actual : target.circuit.gates[index]? = some gate) (touches : scratch ∈ gate.wires) :
+    ∃! use, use ∈ uses ∧ use.start ≤ index ∧ index < use.start+use.count ∧
+      use.steps.length = use.count ∧ use.start+use.count ≤ target.circuit.counts.gates := by
+  obtain ⟨use,member,start,stop,length,bounded⟩ :=
+    reuse.prepared_and_counted.2.2 index gate actual touches
+  refine ⟨use,⟨member,start,stop,length,bounded⟩,?_⟩
+  rintro other ⟨present,otherStart,otherStop,_,_⟩
+  exact unique_slice reuse.ordered present member otherStart otherStop start stop
+
+/-- Successful native placement binds each use of the reserved clean
+location to a unique restoration slice counted in the decoded artifact.
+The wire is prepared by the literal reset and absent from terminal readout. -/
+theorem native_clean_access_counted_once (product : String) (bytes : ByteArray)
+    (decision : Protocol.NativeContext.Decision .openQasmPlacement) (work left : Nat)
+    (ok : (Protocol.NativeContext.run .openQasmPlacement product bytes).run work = (.ok decision,left)) :
+    let placed := decision.value.2
+    let circuit := placed.target.circuit
+    ∀ scratch ∈ placed.proposal.reserved,
+      scratch < circuit.counts.reset ∧ scratch ∉ circuit.measurements ∧
+      ∀ index gate, circuit.gates[index]? = some gate → scratch ∈ gate.wires →
+        ∃! use, use ∈ placed.placement.trace.recorded.cleanUses scratch ∧
+          use.start ≤ index ∧ index < use.start+use.count ∧ use.steps.length = use.count ∧
+          use.start+use.count ≤ circuit.counts.gates := by
+  obtain ⟨checked,_,_,rfl⟩ := Protocol.NativeContext.run_openqasm_placement_binding product bytes decision work left ok
+  dsimp only
+  intro scratch member
+  obtain ⟨reuse⟩ := checked.placement.trace.restored scratch member
+  exact ⟨reuse.prepared_and_counted.2.1,reuse.unmeasured,clean_access_counted_once reuse⟩
+
+#print axioms native_clean_access_counted_once
 #print axioms decoded_action
 end Qleisli.WorkspaceTargetAction
