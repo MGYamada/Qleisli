@@ -531,13 +531,17 @@ compares the complete exact operators on that support, up to six axes. Gates
 on other wires and phase changes are rejected. Matrix checking spends the
 same cumulative work as the surrounding replay.
 
-A single gate decomposition may also use allocated synthesis scratch. The
-checker verifies that its physical locations are declared, separate from all
-live owners and untouched outside the slice, including at readout. It compares
-the full target word on the data and scratch with the original operator under
-the canonical zero embedding at both ends. The six-axis bound includes
-scratch. This checks the exact phase and zero return for every input column,
-so the equation also preserves correlations with external references.
+A gate decomposition may use allocated synthesis scratch. The checker
+verifies that its physical locations are declared and separate from all live
+owners. It compares the full target word on the data and scratch with the
+original operator under the canonical zero embedding at both ends. The
+six-axis bound includes scratch. This checks the exact phase and zero return
+for every input column, so the equation also preserves correlations with
+external references. A complete trace may reserve locations for several
+disjoint synthesis slices. The original allocation, routing, source
+workspace and readout cannot touch these locations. Every slice using them
+checks its own zero return. An individual slice can instead use exclusive
+scratch, which the checker verifies is untouched everywhere else.
 
 A physical scratch location can also be reused across ordered, disjoint,
 nonempty clean intervals. The checker
@@ -548,9 +552,8 @@ derives every entry placement from the preceding original owners and target
 word. It reserves each designated scratch location across the complete trace,
 keeping it out of ordinary preparations, routing and terminal readout. Each
 reuse interval must be bound to its own checked original workspace.
-Reusing synthesis scratch across disjoint decompositions, decompositions
-spanning several Raw events and integration with the production exporter
-require further checking.
+Decompositions spanning several Raw events and integration with the
+production exporter require further checking.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
