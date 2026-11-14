@@ -769,7 +769,7 @@ mod tests {
         use crate::ir::{BitControl, CircuitAction, CircuitStep, ClassicalId};
 
         let project = project();
-        let mut compiler = super::super::call_state_tests::checked_compiler(&project);
+        let mut compiler = super::super::call_state_tests::untrusted_compiler(&project);
         let mut lower = lowerer(&mut compiler);
         let flip = CircuitStep {
             controls: vec![BitControl {
