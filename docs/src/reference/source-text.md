@@ -670,6 +670,11 @@ finite function on ordinary values. Its body is one restricted label expression:
 names, `()`, `0`/`1`, ordered products, eager `not`/`and`/`xor`, and acyclic calls
 to other classical functions, plus the existing nullary ordinary
 `empty_bits()` language primitive constructor, requiring no import, with its exact `Bits<0>` signature.
+In these expressions, `word[k]` reads one ordinary `Bits<n>` coordinate and
+returns a `Bit`. The nonnegative integer literal `k` must satisfy `k < n`
+under the declared static premises. Coordinate zero is the first bit, with
+the lowest weight in the basis ordinal. The read copies the coordinate and
+does not consume the ordinary register. `Bits<0>` has no valid coordinate.
 Other quantum primitive calls remain excluded. It has no runtime statements, observation or
 quantum capture. Parameter/result trees and argument-list arity remain exact;
 noninjective functions are permitted.
@@ -695,8 +700,28 @@ native acceptance. Meaning declarations remain descriptions, not runtime
 callees. Supported Unit/Bit/product and exact closed empty-register runtime calls lower their original
 expression nodes through ordinary operations in both concrete consumers;
 ordinary execution does not evaluate a precomputed truth table. Nonzero finite
-registers and general selected hierarchy coherent-lift conversion retain their
-separate profile refusals; selected Raw supports bounded complete label maps.
+register indexing executes through the Raw profile. General selected hierarchy
+coherent-lift conversion retains its separate profile refusals; selected Raw
+supports bounded complete label maps.
+
+A `Bits<n>` word has an unsigned ordinal in `0 .. 2^n - 1`, with the
+first coordinate carrying weight one. Each Boolean operation returns an exact
+Bit. Word arithmetic written explicitly with bit operations keeps the result
+width stated by its return type. For example, the two-bit increment that
+flips the low bit and XORs the original low bit into the high bit returns
+`(x + 1) mod 4`; the carry beyond the high bit has no output coordinate.
+Static `Nat` expressions follow the separate
+[bounded natural rules](static-language.md). There is no implicit conversion
+from a static natural or an arbitrary integer to a `Bits<n>` word.
+
+Totality describes the classical declaration on its entire type. Coherent
+compilation also requires a supported reversible embedding and a successful
+check within the [finite profile's capacity](production-boundary.md).
+Structural synthesis charges original expression processing and intermediate
+and emitted control clauses. Conjunction can increase the number of clauses,
+so a total predicate can exceed the work limit. A finite consumer that needs
+a table must satisfy its own checked domain and work limits. Failed
+preparation yields a diagnostic before an execution handle is issued.
 
 The retired declaration spelling `basis fn` rejects with a located migration
 diagnostic directing authors to `classical fn`; there is no compatibility alias.

@@ -2418,7 +2418,8 @@ impl Parser {
                 BasisExprKind::Record(record) => {
                     pending.extend(record.fields.iter().map(|field| (&field.value, depth + 1)))
                 }
-                BasisExprKind::Field { receiver, .. } => pending.push((receiver, depth + 1)),
+                BasisExprKind::Field { receiver, .. }
+                | BasisExprKind::BitIndex { receiver, .. } => pending.push((receiver, depth + 1)),
                 BasisExprKind::Not(inner) => pending.push((inner, depth + 1)),
                 BasisExprKind::Tuple(fields) => {
                     pending.extend(fields.iter().map(|field| (field, depth + 1)))
@@ -2485,15 +2486,38 @@ impl Parser {
             });
         }
         let mut value = self.basis_atom()?;
-        while self.consume(&TokenKind::Dot).is_some() {
-            let field = self.ident()?;
-            self.reject_method_call()?;
-            value = BasisExpr {
-                span: value.span.cover(field.span),
-                kind: BasisExprKind::Field {
-                    receiver: Box::new(value),
-                    field,
-                },
+        loop {
+            value = if self.consume(&TokenKind::Dot).is_some() {
+                let field = self.ident()?;
+                self.reject_method_call()?;
+                BasisExpr {
+                    span: value.span.cover(field.span),
+                    kind: BasisExprKind::Field {
+                        receiver: Box::new(value),
+                        field,
+                    },
+                }
+            } else if self.consume(&TokenKind::LBracket).is_some() {
+                let index_span = self.current().span;
+                let index = match &self.current().kind {
+                    TokenKind::Zero => Ok(0),
+                    TokenKind::One => Ok(1),
+                    TokenKind::Natural(digits) => digits.parse::<u32>(),
+                    _ => return Err(self.error("expected an ordinary bit index literal")),
+                }
+                .map_err(|_| self.error("ordinary bit index exceeds u32"))?;
+                self.pos += 1;
+                let close = self.expect(&TokenKind::RBracket)?;
+                BasisExpr {
+                    span: value.span.cover(close.span),
+                    kind: BasisExprKind::BitIndex {
+                        receiver: Box::new(value),
+                        index,
+                        index_span,
+                    },
+                }
+            } else {
+                break;
             };
             Self::basis_depth(&value)?;
         }

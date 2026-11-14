@@ -325,62 +325,81 @@ pub(crate) fn operations_size(operations: &[RawOp]) -> usize {
     let mut pending = vec![operations];
     while let Some(operations) = pending.pop() {
         for operation in operations {
-            size = size.saturating_add(8);
-            let extra = match operation {
-                RawOp::ApplyUnitary { steps, .. } => total_size(steps.iter().map(circuit_size)),
-                RawOp::CertifiedCompute {
-                    ancilla_wires,
-                    function,
-                    use_steps,
-                    logical_steps,
-                    ..
-                } => total_size([
-                    ancilla_wires.len(),
-                    function.len(),
-                    total_size(use_steps.iter().map(circuit_size)),
-                    total_size(logical_steps.iter().map(circuit_size)),
-                ]),
-                RawOp::LiftBasis {
-                    output_wires,
-                    table,
-                    ..
-                } => output_wires.len() + table.len(),
-                RawOp::QuantumIf {
-                    zero_ops, one_ops, ..
-                } => 4 * (zero_ops.len() + one_ops.len()),
-                RawOp::ClassicalBranch {
-                    then_ops,
-                    else_ops,
-                    quantum_phis,
-                    classical_phis,
-                    ..
-                } => {
-                    pending.extend([then_ops.as_slice(), else_ops.as_slice()]);
-                    total_size(quantum_phis.iter().map(|phi| phi.output_wires.len() + 3))
-                        .saturating_add(classical_phis.len().saturating_mul(3))
-                }
-                RawOp::ComputeUseUncompute {
-                    targets,
-                    ancilla_wires,
-                    function,
-                    use_ops,
-                    ..
-                } => total_size([
-                    targets.len().saturating_mul(2),
-                    ancilla_wires.len(),
-                    function.len(),
-                    total_size(use_ops.iter().map(|usage| match usage {
-                        crate::ir::ProtectedUse::ProtectedGate { .. } => 3,
-                        crate::ir::ProtectedUse::ControlledTargetGate { controls, .. }
-                        | crate::ir::ProtectedUse::ControlledPhase { controls, .. } => {
-                            3 + controls.len() * 3
-                        }
-                    })),
-                ]),
-                _ => 0,
-            };
-            size = size.saturating_add(extra);
+            if let RawOp::ClassicalBranch {
+                then_ops, else_ops, ..
+            } = operation
+            {
+                pending.extend([then_ops.as_slice(), else_ops.as_slice()]);
+            }
+            size = size.saturating_add(operation_size(operation));
         }
     }
     size
+}
+
+/// Host-copy size of one operation, excluding nested branch operations.
+pub(crate) fn operation_size(operation: &RawOp) -> usize {
+    let payload = match operation {
+        RawOp::ApplyUnitary { steps, .. } => total_size(steps.iter().map(circuit_size)),
+        RawOp::CertifiedCompute {
+            ancilla_wires,
+            function,
+            use_steps,
+            logical_steps,
+            ..
+        } => total_size([
+            ancilla_wires.len(),
+            function.len(),
+            total_size(use_steps.iter().chain(logical_steps).map(circuit_size)),
+        ]),
+        RawOp::LiftBasis {
+            output_wires,
+            table,
+            ..
+        } => output_wires.len().saturating_add(table.len()),
+        RawOp::QuantumIf {
+            zero_ops, one_ops, ..
+        } => zero_ops
+            .len()
+            .saturating_add(one_ops.len())
+            .saturating_mul(4),
+        RawOp::ClassicalBranch {
+            quantum_phis,
+            classical_phis,
+            ..
+        } => total_size(quantum_phis.iter().map(|phi| phi.output_wires.len() + 3))
+            .saturating_add(classical_phis.len().saturating_mul(3)),
+        RawOp::ComputeUseUncompute {
+            targets,
+            ancilla_wires,
+            function,
+            use_ops,
+            ..
+        } => total_size([
+            targets.len().saturating_mul(2),
+            ancilla_wires.len(),
+            function.len(),
+            protected_uses_size(use_ops),
+        ]),
+        RawOp::StructuralCompute {
+            forward,
+            inverse,
+            uses,
+            ..
+        } => total_size([
+            1,
+            total_size(forward.iter().chain(inverse).map(circuit_size)),
+            protected_uses_size(uses),
+        ]),
+        _ => 0,
+    };
+    payload.saturating_add(8)
+}
+
+fn protected_uses_size(uses: &[crate::ir::ProtectedUse]) -> usize {
+    total_size(uses.iter().map(|usage| match usage {
+        crate::ir::ProtectedUse::ProtectedGate { .. } => 3,
+        crate::ir::ProtectedUse::ControlledTargetGate { controls, .. }
+        | crate::ir::ProtectedUse::ControlledPhase { controls, .. } => 3 + controls.len() * 3,
+    }))
 }

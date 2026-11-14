@@ -34,7 +34,7 @@ def step (value : Finite.Step) : Value :=
     | .contract indices dependency adjoint => record "contract" [ns indices,n dependency,.boolean adjoint]
   record "step" [controls,action]
 
-private def steps (values : List Finite.Step) : Value := .array (values.map step)
+def steps (values : List Finite.Step) : Value := .array (values.map step)
 
 def circuit (value : Finite.Circuit) : Value := record "circuit" [basis value.basis,steps value.steps]
 
@@ -48,7 +48,7 @@ private def protectedBit (value : Raw.ProtectedBit) : Value :=
   record "protected-bit" [n (match value.region with | .source => 0 | .ancilla => 1),n value.index]
 private def controls (values : List Raw.ProtectedControl) : Value := .array (values.map fun c =>
   record "protected-control" [protectedBit c.bit,.boolean c.whenOne])
-private def usage : Raw.Use → Value
+def usage : Raw.Use → Value
   | .protectedGate bit g => record "protected-gate" [protectedBit bit,gate g]
   | .targetGate cs target g => record "target-gate" [controls cs,n target,gate g]
   | .phase cs p => record "protected-phase" [controls cs,phase p]
@@ -69,6 +69,8 @@ def pureOperation : Raw.Op → Value
   | .applyUnitary input output body => record "apply-unitary" [n input,n output,steps body]
   | .certifiedCompute input output ancilla function useSteps logicalSteps =>
     record "certified-compute" [n input,n output,ns ancilla,ns function,steps useSteps,steps logicalSteps]
+  | .structuralCompute input output scratch forward inverse uses =>
+    record "structural-compute" [n input,n output,n scratch,steps forward,steps inverse,.array (uses.map usage)]
   | .computeUseUncompute input output targets ancilla function uses =>
     record "compute-use-uncompute" [n input,n output,
       .array (targets.map fun t => record "target" [n t.input,n t.output]),

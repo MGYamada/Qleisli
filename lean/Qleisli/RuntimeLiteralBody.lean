@@ -23,8 +23,9 @@ def Span.operations {dependencies program block} (span : @Span dependencies prog
 def nodeSpan {dependencies program block} : Node dependencies program block → Span block
   | .primitive action _ => ⟨_,_,action.interval.interval⟩
   | .structural action => ⟨_,_,action.interval⟩
+  | .register _ action => ⟨_,_,action.interval⟩
   | .basis interval .. | .computed interval .. | .certifiedComputed interval .. => ⟨_,_,interval⟩
-  | .workspace interval .. => ⟨_,_,interval⟩
+  | .workspace interval .. | .structuralComputed interval .. => ⟨_,_,interval⟩
   | .named _ frame _ _ _ _ => ⟨_,_,frame.interval⟩
   | .operation frame .. => ⟨_,_,frame.interval⟩
   | .rectangularOperation checked => ⟨_,_,checked.frame.interval⟩

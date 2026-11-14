@@ -212,6 +212,22 @@ impl Codec for RawOp {
                 ("function", function.write(c)?),
                 ("use_ops", use_ops.write(c)?),
             ])),
+            Self::StructuralCompute {
+                source,
+                source_out,
+                scratch,
+                forward,
+                inverse,
+                uses,
+            } => Ok(Value::object([
+                ("tag", Value::String("structural_compute".into())),
+                ("source", source.write(c)?),
+                ("source_out", source_out.write(c)?),
+                ("scratch", scratch.write(c)?),
+                ("forward", forward.write(c)?),
+                ("inverse", inverse.write(c)?),
+                ("uses", uses.write(c)?),
+            ])),
         }
     }
     fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
@@ -428,6 +444,25 @@ impl Codec for RawOp {
                     ancilla_wires: Codec::read(v.field("ancilla_wires")?, c)?,
                     function: Codec::read(v.field("function")?, c)?,
                     use_ops: Codec::read(v.field("use_ops")?, c)?,
+                })
+            }
+            "structural_compute" => {
+                v.fields(&[
+                    "tag",
+                    "source",
+                    "source_out",
+                    "scratch",
+                    "forward",
+                    "inverse",
+                    "uses",
+                ])?;
+                Ok(Self::StructuralCompute {
+                    source: Codec::read(v.field("source")?, c)?,
+                    source_out: Codec::read(v.field("source_out")?, c)?,
+                    scratch: Codec::read(v.field("scratch")?, c)?,
+                    forward: Codec::read(v.field("forward")?, c)?,
+                    inverse: Codec::read(v.field("inverse")?, c)?,
+                    uses: Codec::read(v.field("uses")?, c)?,
                 })
             }
             _ => Err(Error::format("unknown node tag")),

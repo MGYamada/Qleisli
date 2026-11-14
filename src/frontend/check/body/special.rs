@@ -39,6 +39,32 @@ impl Checker<'_, '_> {
                 let ty = self.basis_expr(receiver, scope)?;
                 self.field_value(&ty, field)?
             }
+            BasisExprKind::BitIndex {
+                receiver,
+                index,
+                index_span,
+            } => {
+                let ty = self.basis_expr(receiver, scope)?;
+                let Kind::Bits(width) = &ty.kind else {
+                    return Err(SourceError::new(
+                        "type",
+                        receiver.span,
+                        "ordinary bit indexing requires Bits<n>",
+                    ));
+                };
+                let span = *index_span;
+                let budget = &self.program.budget;
+                let mut charge = |span, cells| budget.preparation_charge(span, cells);
+                let lower = Linear::constant_budgeted(i128::from(*index) + 1, span, &mut charge)?;
+                let message = "ordinary bit index requires k < n";
+                if !scope
+                    .context
+                    .proves_le_budgeted(&lower, width, span, message, &mut charge)?
+                {
+                    return Err(SourceError::new("size", span, message));
+                }
+                Ty::bit()
+            }
             BasisExprKind::Name(name) => {
                 let key = self
                     .local(name)

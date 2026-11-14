@@ -40,5 +40,17 @@ structure Evidence where
   specification : Program
   deriving BEq, DecidableEq, Repr
 
+/-- Straight-line action data for a literal extracted trace. These are outputs
+of raw reconstruction, not accepted matrices or producer validity claims. -/
+inductive Event where
+  | circuit (bits : Nat) (steps : List Step)
+  | init0 (bits : Nat)
+  | liftBasis (inputBits outputBits : Nat) (inputAxes outputAxes table : List Nat)
+  | reorder (bits : Nat) (axes : List Nat)
+  | computed (bits : Nat) (axes : List Nat) (sourceBits ancillaBits : Nat)
+      (function : List Nat) (useSteps logicalSteps : List Step)
+  | protectedComputed (bits : Nat) (axes : List Nat) (sourceBits ancillaBits : Nat)
+      (function : List Nat) (uses : List Use)
+  deriving BEq, DecidableEq, Repr
 
 end Qleisli.Semantics.RawLegacy.Raw

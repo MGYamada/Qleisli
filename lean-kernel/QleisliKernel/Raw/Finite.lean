@@ -79,6 +79,8 @@ def eventMatrix (dependencies : List Dependency) (event : Event) : WorkM Matrix 
       (uses.map (physicalUse sourceBits axes.length)) (uses.flatMap (logicalUse sourceBits function))
     promote bits axes logical
 
+  | .structuralComputed .. => throw .request
+
 def evolve (dependencies : List Dependency) (actual : Matrix) (event : Event) : WorkM Matrix := do
   let next ← eventMatrix dependencies event
   exactWork (Exact.Matrix.composeWork next actual)
@@ -92,6 +94,14 @@ def rawFields (program : Program) : Nat :=
         ancilla.length + function.length + useSteps.length + logicalSteps.length
       | .computeUseUncompute _ _ targets ancilla function uses =>
         2*targets.length + ancilla.length + function.length + uses.length
+      | .structuralCompute _ _ _ forward inverse uses =>
+        1 + ((forward ++ inverse).map (fun step => 1 + step.controls.length + match step.action with
+          | .hadamard _ => 1
+          | .monomial targets permutation phases => targets.length + permutation.length + phases.length
+          | .contract targets _ _ => targets.length+2)).sum +
+        (uses.map (fun use => match use with
+          | .protectedGate _ _ => 3
+          | .targetGate controls _ _ | .phase controls _ => 3 + 3*controls.length)).sum
       | .quantumIf _ _ _ _ zero one => zero.length + one.length
       | .liftBasis _ _ wires table => wires.length + table.length
       | _ => 0).sum

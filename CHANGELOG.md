@@ -6,6 +6,33 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Read literal `Bits<n>` coordinates in classical functions and coherent
+  basis expressions. The native source-body checker binds word predicates to
+  the controls in `with_computed`, and checks the ordered register extraction
+  and insertion intervals used by ordinary projects (#30).
+- Prove the exact action of literal controlled-X sequences for future
+  table-free classical synthesis. The component checks phases and target
+  coordinates by inspecting the circuit steps and their controls (#30).
+- Reconstruct Boolean predicates from original typed bodies and verify the
+  matching phase-free XOR in a literal Raw interval. The checked component
+  preserves the ordered owner frame and meters clause expansion (#30).
+- Verify the matching forward and inverse XOR circuits together with the
+  original auxiliary use. Prove exact zero return with retained reference
+  correlations and full phase for the checked structural components (#30).
+- Check the ordered Raw frame, operand and fresh private scratch of a
+  circuit-backed protected packet against the original computed scope (#30).
+- Bind the decoded structural predicate circuits and ordered Raw ports to a
+  canonical internal execution view in the packet checker (#30).
+- Retain structural computed circuits in Rust's Raw codec and execution view.
+  Execute their literal compute/use/inverse sequence using the shared simulator
+  and certified zero release (#30).
+- Compile supported Boolean predicates in selected and source-checked project
+  `with_computed` scopes without enumerating inputs. The native source-body
+  gate checks the original predicate and both literal circuits before accepting
+  the root (#30).
+
+- Prove that the native placement check accounts for clean scratch reset,
+  each gate in a restoration interval, and each marked physical routing SWAP.
 - Prove exact ordered placement transport and count literal gates for a
   fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
   declared target connectivity.
@@ -17,9 +44,39 @@ development milestones from the scope of their evidence.
   target prefixes, including physical SWAP routing and zero-width owners.
 - Follow a single checked workspace through its literal target suffix and
   compare the emitted terminal measurements in original classical output order.
+- Bind exact scratch reuse across multiple workspace intervals to one complete
+  literal placement trace, including intervening routing and terminal readout.
+- Export the physical body of an accepted zero-predicate clean interval and
+  reuse its reserved scratch wire after verified restoration.
+- Compare bounded decomposed OpenQASM gate words with the exact operator of
+  the original Raw event on its ordered live support.
+- Check zero return and the complete wire lifetime of scratch used by a
+  bounded target gate decomposition.
+- Check synthesis scratch reuse across disjoint decompositions in a complete
+  placement trace, with exact zero return at each slice.
+- Verify target optimizations spanning consecutive Raw circuit operations and
+  structural owner transitions, with exact phase and terminal readout order.
+- Emit terminal OpenQASM directly from closed typed source with a Unit or
+  measured-bit result, retaining the verified order of the output bits.
+- Recheck the original source and literal OpenQASM bytes in a bounded
+  placement packet, sharing exact work across both checks and the replay.
+- Reject canonical OpenQASM gate instructions with missing operands before
+  exact operator comparison.
+- Report Lean-checked OpenQASM resources for closed typed workspace programs
+  with `interop emit-qasm --resources`, bound to the emitted text. It checks
+  workspace scopes in named calls with the full caller placement.
+- Check structural basis lifts against the complete axis-permutation table
+  when replaying OpenQASM resources and ordered readout.
+- Preserve allocation, workspace and observation boundaries through OpenQASM
+  phase folding, including after earlier gate compaction.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
+- Check `take_bit` and `put_bit` against the original register index so that
+  `clean` and `dirty` scopes can use `Q<Bits<n>>` data. The checked OpenQASM
+  register covers the maximum Raw live width over the recorded workspace scopes.
+- Route selected entries with workspace scopes through the original-source
+  checker and identify the failed clean or dirty restoration contract.
 - Add structural `std::structure::transpose_axes` for statically sized registers.
 - Check bounded pure hierarchy `ctrl` calls on their actual replayed intervals,
   with exact ordered ports and a fresh native sector check before execution.

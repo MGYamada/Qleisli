@@ -19,12 +19,19 @@ theorem event_cleanup (dependencies : List Dependency) (event : Event) (work lef
   | circuit _ _ | init0 _ | liftBasis _ _ _ _ _ | reorder _ _ => trivial
   | computed bits axes sourceBits ancillaBits function uses logicalSteps =>
     obtain ⟨logical,middle,hc,_⟩ := bind_success _ _ _ _ _ ok
-    exact ⟨logical,clean_denotes _ _ _ _ _ _ _ _ _ _ hc⟩
+    exact ⟨logical,clean_denotes _ _ _ _ _ _ _ _ _ _ (restoration_success false _ _ _ _ hc)⟩
   | protectedComputed bits axes sourceBits ancillaBits function uses =>
     have valid := (guard_success _ _ _ _ ok).1
     simp only [Bool.and_eq_true] at valid
     intro R ψ
     exact clean_factorization _ _ (uses_valid_diagonal _ _ _ _ valid.2) ψ
+
+  | structuralComputed bits axes forward inverse uses =>
+    obtain ⟨_,middle,_,tail⟩ := bind_success _ _ _ _ _ ok
+    obtain ⟨clauses,_,read,_⟩ := bind_success _ _ _ _ _ tail
+    have valid := (structuralComputeClauses_conditions (lift_success _ _ _ _ read).1).2.1
+    intro R ψ
+    exact clean_factorization _ _ (uses_valid_diagonal _ _ _ _ valid) ψ
 
 /-- Every original pure constructor preserves its full phase-sensitive complex
 action at the Rust/Lean boundary, including wide frames and scalar Unit actions.

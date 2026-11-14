@@ -1,6 +1,8 @@
 use super::{InteropError, InteropErrorKind, MAX_GATES, MAX_OPERATIONS, MAX_QUBITS};
 use crate::AcceptedProgram;
+use crate::interchange::{carrier::Atom, runtime_root};
 use crate::ir::*;
+use crate::sim::ExecutableProgram;
 use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -270,12 +272,45 @@ pub(super) fn recognize(
     Ok((gate, axes.into_iter().map(|axis| wires[axis]).collect()))
 }
 
+fn terminal_result_atom(atom: &Atom) -> bool {
+    match atom {
+        Atom::Bit | Atom::Pair | Atom::Tuple(_) => true,
+        Atom::Bits(width) => *width != 0,
+        Atom::Unit | Atom::Enum(..) | Atom::Record(..) => false,
+    }
+}
+
+pub(super) fn check_openqasm_result(program: &AcceptedProgram) -> Result<(), InteropError> {
+    let supported = if let Some(request) = program.ordinary_result() {
+        request.basis.as_slice() == [Atom::Unit] || request.basis.iter().all(terminal_result_atom)
+    } else if let Some(request) = program.runtime_result() {
+        request.result.as_slice() == [runtime_root::Atom::Finite(Atom::Unit)]
+            || request.result.iter().all(|atom| {
+                matches!(atom, runtime_root::Atom::Finite(atom) if terminal_result_atom(atom))
+            })
+    } else {
+        true
+    };
+    if !supported {
+        return Err(InteropError::unsupported(
+            "terminal OpenQASM result must be Unit or a product of measured bits",
+        ));
+    }
+    Ok(())
+}
+
 pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, InteropError> {
-    program
-        .portable_artifact()
-        .map_err(|error| InteropError::unsupported(error.to_string()))?;
+    let (circuit, _) = extract_with_alignment(program, &[])?;
+    Ok(circuit)
+}
+
+pub(super) fn extract_with_alignment(
+    program: &AcceptedProgram,
+    intervals: &[crate::interchange::qmatch::WorkspaceInterval],
+) -> Result<(TerminalCircuit, super::placement::Alignment), InteropError> {
     let raw = program.raw();
-    if !raw.quantum_inputs.is_empty()
+    if program.has_source_parameters()
+        || !raw.quantum_inputs.is_empty()
         || !raw.classical_inputs.is_empty()
         || !raw.quantum_outputs.is_empty()
     {
@@ -296,6 +331,7 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
     };
     let mut owners = BTreeMap::<TokenId, Vec<usize>>::new();
     let mut scratch = Vec::new();
+    let mut clean_workspace = None;
     let mut expansion = super::export::ExpansionBudget::for_program(program);
     let mut measured = BTreeMap::new();
     let mut observed = false;
@@ -303,7 +339,9 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
     // allocation/observation boundaries before final target normalization;
     // duplicate zero-gate boundaries cannot grow an unbounded side table.
     let mut normalization_barriers = [false; MAX_GATES + 1];
+    let mut alignment = super::placement::AlignmentBuilder::new(intervals, raw.operations.len());
     for (index, op) in raw.operations.iter().enumerate() {
+        alignment.record(index, circuit.gates.len(), &mut normalization_barriers);
         let result = (|| {
             if observed
                 && !matches!(
@@ -322,7 +360,10 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
             }
             if matches!(
                 op,
-                RawOp::Init0 { .. } | RawOp::MeasureZ { .. } | RawOp::Discard { .. }
+                RawOp::Init0 { .. }
+                    | RawOp::MeasureZ { .. }
+                    | RawOp::Discard { .. }
+                    | RawOp::LiftBasis { .. }
             ) {
                 normalization_barriers[circuit.gates.len()] = true;
             }
@@ -412,6 +453,39 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                     )?;
                     owners.insert(*output, wires);
                 }
+                RawOp::CertifiedCompute {
+                    source,
+                    source_out,
+                    ancilla_wires,
+                    function,
+                    use_steps,
+                    ..
+                } if ancilla_wires.len() == 1 && function.iter().all(|&value| value == 0) => {
+                    let wires = owners.remove(source).expect("verified owner");
+                    // The zero predicate gives identity compute/uncompute. Emit the
+                    // physical body on the accepted data-then-scratch interface.
+                    // The verified zero return permits reuse by the next scope.
+                    let auxiliary = match clean_workspace {
+                        Some(axis) => axis,
+                        None => {
+                            let axis = circuit.allocate_zero()?;
+                            clean_workspace = Some(axis);
+                            axis
+                        }
+                    };
+                    let mut layout = wires.clone();
+                    layout.push(auxiliary);
+                    normalization_barriers[circuit.gates.len()] = true;
+                    super::export::steps(
+                        &mut circuit,
+                        &mut scratch,
+                        use_steps,
+                        &layout,
+                        &mut expansion,
+                    )?;
+                    normalization_barriers[circuit.gates.len()] = true;
+                    owners.insert(*source_out, wires);
+                }
                 RawOp::LiftBasis {
                     input,
                     output,
@@ -425,7 +499,6 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                     // supplies this case. Other owners and their axes remain live.
                     let output_axes =
                         if wires.is_empty() && output_wires.len() == 1 && table.as_slice() == [0] {
-                            normalization_barriers[circuit.gates.len()] = true;
                             vec![circuit.allocate_zero()?]
                         } else {
                             let axes = super::export::axis_permutation(
@@ -470,8 +543,15 @@ pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, Inte
                 .ok_or_else(|| InteropError::unsupported("output must be a measured bit"))?,
         );
     }
-    super::export::finish(&mut circuit, &mut expansion, &normalization_barriers)?;
-    Ok(circuit)
+    alignment.record(
+        raw.operations.len(),
+        circuit.gates.len(),
+        &mut normalization_barriers,
+    );
+    let gate_boundaries =
+        super::export::finish(&mut circuit, &mut expansion, &normalization_barriers)?;
+    let proposal = alignment.finish(raw, &circuit, &gate_boundaries, clean_workspace, scratch)?;
+    Ok((circuit, proposal))
 }
 
 #[cfg(test)]

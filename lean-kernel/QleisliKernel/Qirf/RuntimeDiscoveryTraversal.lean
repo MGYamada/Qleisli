@@ -336,21 +336,24 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               | original => exact some (.basis checked)
             return ⟨before,⟨event.staticRows ++ checked.body.staticRows ++ rows,[]⟩,[],data⟩
           | .computed event children =>
-            if event.written.parts.logical.isSome then
+            if protectedScope : event.written.parts.logical = none then
+              let predicate ← SourceRuntimeTrace.readComputedPredicateBody event
+              let body ← SourceRuntimeTrace.readComputedSource event
+              let action ← RuntimeComputedUse.sourceBody body
+              let rows ← ordinaryRows artifact.sources 128 predicate.checked.events
+              let data : scope.EventData mode.preparation (.computed event children) position before before := by
+                cases scope with
+                | supplied => exact ()
+                | original => exact some (.computed protectedScope)
+              return ⟨before,⟨event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
+                predicate.checked.summary.staticRows ++ action.rows ++ rows,[]⟩,[],data⟩
+            else
               let prepared ← RuntimeCertifiedComputed.prepare event
               let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events
               let data : scope.EventData mode.preparation (.computed event children) position before before := by
                 cases scope with
                 | supplied => exact ()
                 | original => exact some (.certifiedComputed prepared)
-              return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
-            else
-              let prepared ← RuntimeComputedUse.prepare event
-              let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events
-              let data : scope.EventData mode.preparation (.computed event children) position before before := by
-                cases scope with
-                | supplied => exact ()
-                | original => exact some (.computed prepared)
               return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
           | .workspace event children =>
             let prepared ← RuntimeWorkspace.readOriginal event children
@@ -359,7 +362,14 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               | supplied => exact ()
               | original => exact some (.workspace prepared)
             return ⟨before,⟨prepared.rows,[]⟩,[],data⟩
-          | .matching .. | .registerPrimitive .. | .staticConditional .. => throw .request
+          | .registerPrimitive event =>
+            guard (event.kind == .takeBit || event.kind == .putBit) .request
+            let data : scope.EventData mode.preparation (.registerPrimitive event) position before before := by
+              cases scope with
+              | supplied => exact ()
+              | original => exact some (.register event)
+            return ⟨before,⟨(SourceRuntimeContext.Event.registerPrimitive event).staticRows,[]⟩,[],data⟩
+          | .matching .. | .staticConditional .. => throw .request
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do
           match event with

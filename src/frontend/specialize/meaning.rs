@@ -788,6 +788,15 @@ impl finite::Context for Context<'_, '_> {
     type Environment = Environment;
     type Tuple = Product;
     type Error = SourceError;
+    fn bit_index(&mut self, span: Span, value: Value, index: u32) -> Result<Value> {
+        let bit = finite::label_bit_index(&value, index).ok_or_else(|| {
+            self.error(
+                span,
+                "ordinary bit index requires a valid Bits<n> coordinate",
+            )
+        })?;
+        Ok(self.bit(bit))
+    }
     fn nominal_unavailable(&mut self, span: Span) -> SourceError {
         SourceError::new(
             "unsupported",

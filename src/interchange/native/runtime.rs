@@ -37,6 +37,9 @@ fn response_bound(
     use crate::interchange::native_context::{self, Reply};
     let (context, payload) = match native_context::parse(bytes, edition, mode, scope)? {
         Reply::Rejected(code) => {
+            if let Some(error) = Error::workspace_restoration(code) {
+                return Err(error);
+            }
             let code = if code == "version" { "kernel" } else { code };
             return Err(Error::new(
                 code,

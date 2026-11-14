@@ -4,7 +4,7 @@
 
 use std::collections::VecDeque;
 
-use super::contracts::Cursor;
+use super::{GateBoundaries, contracts::Cursor};
 use crate::AcceptedProgram;
 use crate::contract::exact::Budget;
 use crate::contract::function::RetainedIdentity;
@@ -74,7 +74,7 @@ impl State {
         &mut self,
         circuit: &mut TerminalCircuit,
         barriers: &[bool; MAX_GATES + 1],
-    ) -> Result<(), InteropError> {
+    ) -> Result<GateBoundaries, InteropError> {
         if circuit.gates.len() > MAX_GATES || circuit.qubits > MAX_QUBITS {
             return Err(InteropError::limit(
                 "terminal normalization input exceeds target limits",
@@ -118,12 +118,18 @@ impl State {
         }
         // Complete every equation check before changing the output word. A
         // failure retains the original target gates and produces no artifact.
+        let last = circuit.gates.len();
+        let mut mapped = GateBoundaries::new(last);
         if replacements.is_empty() {
-            return Ok(());
+            for index in 0..=last {
+                mapped.record(index, index);
+            }
+            return Ok(mapped);
         }
         let mut positions = replacements.into_iter().peekable();
         let mut original = std::mem::take(&mut circuit.gates).into_iter().enumerate();
         while let Some((index, mut op)) = original.next() {
+            mapped.record(index, circuit.gates.len());
             if positions.peek() == Some(&index) {
                 positions.next();
                 // The matched actual word has the same one physical operand.
@@ -134,7 +140,8 @@ impl State {
             }
             circuit.gates.push(op);
         }
-        Ok(())
+        mapped.record(last, circuit.gates.len());
+        Ok(mapped)
     }
 
     fn check(
@@ -595,9 +602,15 @@ mod tests {
             ],
             3,
         );
-        state
-            .terminal(&mut multiple, &[false; MAX_GATES + 1])
-            .unwrap();
+        let mut barriers = [false; MAX_GATES + 1];
+        barriers[3] = true;
+        barriers[6] = true;
+        let mapped = state.terminal(&mut multiple, &barriers).unwrap();
+        assert_eq!(
+            mapped.0,
+            [Some(0), None, None, Some(1), None, None, Some(2)]
+        );
+        assert_eq!(&mapped.remap(&barriers)[..3], &[false, true, true]);
         assert_eq!(
             gate_snapshot(&multiple),
             vec![(Gate::X, vec![2]), (Gate::X, vec![0])]

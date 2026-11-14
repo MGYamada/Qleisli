@@ -160,6 +160,11 @@ theorem event_combination {Index : Type} (dependencies : List Dependency) (opera
     exact congrArg (fun action : Protected.Physical Unit => action source ancilla target ())
       (protected_run_combination indices weight uses inputs)
 
+  | structuralComputed _ axes forward inverse uses =>
+    simp only [event,embed]
+    simp_rw [combination_if]
+    exact circuit_combination _ _ _ _ _ _
+
 theorem erase_combination {Index : Type} (bits : Nat) (axes : List Nat) (outcome : Nat)
     (indices : List Index) (weight : Index → ℂ) (values : Index → Nat → ℂ) (row : Nat) :
     ObservingAction.erase bits axes outcome (fun input => combination indices weight (fun index => values index input)) row =

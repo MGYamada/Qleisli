@@ -86,7 +86,28 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-29-hierarchy-ctrl",
     "refs/heads/codex/beta-70-scoped-workspace",
     "refs/heads/codex/beta-70-resource-candidate",
-    "refs/heads/codex/beta-70-target-routing"))
+    "refs/heads/codex/beta-30-structural-xor",
+    "refs/heads/codex/beta-30-original-predicate",
+    "refs/heads/codex/beta-30-computed-restoration",
+    "refs/heads/codex/beta-30-structural-raw",
+    "refs/heads/codex/beta-30-structural-transport",
+    "refs/heads/codex/beta-30-structural-rust",
+    "refs/heads/codex/beta-30-word-coordinate",
+    "refs/heads/codex/beta-70-target-routing",
+    "refs/heads/codex/beta-70-workspace-replay",
+    "refs/heads/codex/beta-70-openqasm-workspace",
+    "refs/heads/codex/beta-70-openqasm-decomposition",
+    "refs/heads/codex/beta-70-openqasm-synthesis-scratch",
+    "refs/heads/codex/beta-70-openqasm-synthesis-reuse",
+    "refs/heads/codex/beta-70-openqasm-raw-spans",
+    "refs/heads/codex/beta-70-openqasm-typed-terminal",
+    "refs/heads/codex/beta-70-openqasm-source-trace",
+    "refs/heads/codex/beta-70-openqasm-placement-packet",
+    "refs/heads/codex/beta-70-openqasm-alignment-cuts",
+    "refs/heads/codex/beta-70-nested-workspace-placement",
+    "refs/heads/codex/beta-70-workspace-structural-layout",
+    "refs/heads/codex/beta-70-bits-workspace",
+    "refs/heads/codex/beta-70-30-integration"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),
@@ -246,6 +267,7 @@ def proposed(current, ledger, revision, audit_bytes, schema_bytes, results, extr
     validation["commands"][1]["seconds"] = results["main"]["seconds"]
     fresh["binding_review"]["command"]["seconds"] = results["binding"]["seconds"]
     fresh["continuity"]["source_revision_sha256"] = revision["sha256"]
+    fresh["continuity"]["raw_transport"] = continuity.raw_transport_record()
     snapshot = compress_extraction(extraction)
     require(fresh["continuity"]["stdout"]["path"] == SNAPSHOT and
         fresh["continuity"]["stdout"]["compression"] == "xz", "unexpected current extraction destination")

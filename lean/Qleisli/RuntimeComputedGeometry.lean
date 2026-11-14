@@ -42,7 +42,7 @@ theorem literal_geometry {sources caller dependencies program block start count 
     change Raw.dispatch (dependencies.map (·.signature)) prior
       (.computeUseUncompute checked.input.port.token checked.output.token [] [checked.auxiliary]
         checked.table checked.uses) = .ok transition at dispatch
-    rw [Raw.dispatch.eq_13] at dispatch
+    simp only [Raw.dispatch] at dispatch
     obtain ⟨⟨port,taken⟩,take,rest⟩ := except_bind_success _ _ _ dispatch
     have priorPort := (Raw.Ownership.take_state prior taken checked.input.port.token port take).1
     have member := List.mem_of_find?_eq_some priorPort
@@ -101,7 +101,7 @@ theorem certified_geometry {sources caller dependencies program block start coun
     change Raw.dispatch (dependencies.map (·.signature)) prior
       (.certifiedCompute checked.input.port.token checked.output.token [checked.auxiliary]
         checked.table checked.useSteps checked.logicalSteps) = .ok transition at dispatch
-    rw [Raw.dispatch.eq_12] at dispatch
+    simp only [Raw.dispatch] at dispatch
     obtain ⟨⟨port,taken⟩,take,rest⟩ := except_bind_success _ _ _ dispatch
     have priorPort := (Raw.Ownership.take_state prior taken checked.input.port.token port take).1
     have member := List.mem_of_find?_eq_some priorPort

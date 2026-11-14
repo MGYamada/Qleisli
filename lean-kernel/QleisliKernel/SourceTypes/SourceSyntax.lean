@@ -55,6 +55,10 @@ inductive Tree : List LocatedToken → Type where
       (children : Children (written.initializers.map (·.expression))) : Tree tokens
   | projection {tokens : List LocatedToken} (written : SourceNominalSyntax.Projection tokens)
       (receiver : Tree written.receiver) : Tree tokens
+  | bitIndex {tokens : List LocatedToken} (receiver : List LocatedToken) (opening numeral closing : LocatedToken)
+      (original : tokens = receiver ++ [opening,numeral,closing])
+      (brackets : (opening.text,closing.text) = ("[","]")) (index : Nat)
+      (parsed : numeral.text.toNat? = some index) (value : Tree receiver) : Tree tokens
   | matching {tokens : List LocatedToken} (written : SourceMatchSyntax.Checked tokens)
       (scrutinee : Tree written.parts.scrutinee)
       (children : Children (written.parts.arms.map (·.body.tokens))) : Tree tokens
@@ -116,6 +120,7 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     | .variant _ => return []
     | .record _ children => return (← children.trees.mapM (fun child => next child.2)).flatten
     | .projection _ receiver => next receiver
+    | .bitIndex _ _ _ _ _ _ _ _ receiver => next receiver
     | .matching _ scrutinee children =>
       return (← next scrutinee) ++ (← children.trees.mapM (fun child => next child.2)).flatten
     | .basis _ input body => return (← next input) ++ (← next body)
@@ -207,6 +212,20 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
     if (tokens[tokens.length-2]?.map (·.text)) == some "." then
       let written ← SourceNominalSyntax.readProjection tokens
       return .projection written (← next (depth+1) false written.receiver)
+    if tokens.getLast?.map (·.text) == some "]" then
+      let receiver := tokens.take (tokens.length-3)
+      let [opening,numeral,closing] := tokens.drop (tokens.length-3) | throw "ordinary bit index shape"
+      if original : tokens = receiver ++ [opening,numeral,closing] then
+        if brackets : (opening.text,closing.text) = ("[","]") then
+          match parsed : numeral.text.toNat? with
+          | some index =>
+            if index ≤ 4294967295 then
+              return .bitIndex receiver opening numeral closing original brackets index parsed
+                (← next (depth+1) false receiver)
+            else throw "ordinary bit index exceeds u32"
+          | none => throw "ordinary bit index requires a literal"
+        else throw "ordinary bit index brackets"
+      else throw "ordinary bit index original tokens"
     if tokens.getLast?.map (·.text) == some "}" then
       let written ← SourceNominalSyntax.readRecord tokens
       let children ← readChildren (next (depth+1) false) (written.initializers.map (·.expression))

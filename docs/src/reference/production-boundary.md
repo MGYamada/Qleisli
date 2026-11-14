@@ -277,8 +277,25 @@ an original nominal predicate also uses this check. Lean evaluates the total
 classical predicate on the exact logical codes, requires zero in the padding
 rows, and checks the original one-Bit use body against both exact diagonal
 entries of the literal Raw use. The same interval retains the original data
-owner and its spectators. The three-argument certified form binds the
-original use body and logical supplier independently to their literal
+owner and its spectators. Selected runtime functions and projects that use the
+original source-body gate also support circuit synthesis for first-order
+Boolean predicates on built-in basis inputs. The compiler emits controlled
+XOR steps from constants, input bits, literal `Bits<n>` coordinates, Boolean
+operations, tuple bindings, and supported helper calls. Lean checks the
+ordered controls and both compute passes against the original predicate, then
+checks the protected use on both auxiliary values. This path checks the
+predicate and both circuits in their structural representation. Work is
+charged for the source expression, intermediate clause products, literal
+circuit fields and owner-frame checks. It uses one private scratch bit and
+the existing work and interface limits. For example, a
+two-bit increment modulo four can use the checked carry predicate
+`word[0] and word[1]` as a controlled phase between Hadamards on the high
+bit, followed by a low-bit flip. The literal `take_bit` and `put_bit`
+intervals retain the original register coordinates and arbitrary reference
+amplitudes. A finite transform such as a specialized adjoint, control or power
+selects the checked finite representation when preparing its original body.
+The three-argument certified form binds the original use body and logical
+supplier independently to their literal
 circuits on the exact data and auxiliary codes. Explicit pair splits and joins
 retain their written owner order and the exact logical axes, including padding
 in the product code. The native cleanup equation covers the complete physical
@@ -1064,7 +1081,7 @@ constitutional guarantee.
 | `qleisli doc` → `render_markdown` | Reads/parses documentation and returns before source compilation. It confers no type or semantic acceptance. |
 | Source loading, edition configuration and `Kernel::new` | Configure files or a checker path. Later checking can still fail. |
 | Checked-object accessors and `check_binding` / `check_entry` | Retain or compare the original checked identity and scope; they do not perform a fresh semantic acceptance decision. |
-| Foreign export | Consumes `AcceptedProgram` and emits target text. Input acceptance does not prove preservation of the emitted OpenQASM/QIR or target execution. QIRF export separately performs a fresh native validity check on its output; output validity alone is not a translation theorem. |
+| Foreign export | Consumes `AcceptedProgram` and emits target text. The terminal OpenQASM adapter can project a closed typed source result to its ordered measured bits, or emit no bits for Unit. Input acceptance does not prove preservation of the emitted OpenQASM/QIR or target execution. QIRF export separately performs a fresh native validity check on its output; output validity alone is not a translation theorem. |
 | `sim`, `host`, hierarchy execution and sampling | Execute already checked descriptions numerically. Acceptance and bounded reference tests do not establish runtime or floating-point preservation. |
 
 OpenQASM/QIR export may replace three adjacent actual expanded function
