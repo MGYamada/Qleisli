@@ -218,6 +218,34 @@ private def terminalWorkspace (tail : String) (suffix : List Target.CanonicalOpe
 #guard (terminalWorkspace "x q[2];\nc[0] = measure q[2];\n" [.original]).isNone
 #guard (terminalWorkspace "c[0] = measure q[2];\n" []).isNone
 
+private def decomposedSuffix (body : String) : Finite.WorkM (List Nat × Nat) :=
+  routedWorkspace ("swap q[0], q[1];\nswap q[1], q[2];\nh q[2];\n" ++ body ++
+    "c[0] = measure q[2];\n") routedPrefix (some [.decomposed 2])
+
+#guard ((decomposedSuffix "s q[2];\ns q[2];\n").run exactWorkLimit).1.toOption == some ([2],5)
+#guard ((decomposedSuffix "tdg q[2];\ntdg q[2];\n").run exactWorkLimit).1.toOption.isNone
+#guard ((decomposedSuffix "s q[2];\ns q[1];\n").run exactWorkLimit).1.toOption.isNone
+#guard
+  let request := decomposedSuffix "s q[2];\ns q[2];\n"
+  let consumed := exactWorkLimit - (request.run exactWorkLimit).2
+  match (request.run (consumed-1)).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+
+private def changeControlledPhase (word : String) : Finite.WorkM (List Nat) := do
+  let header := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[4] q;\nreset q;\n"
+  let target ← Target.CanonicalOpenQasmResources.check (header ++ word).toUTF8 4
+  let original : Semantics.Finite.Step := ⟨[⟨2,true⟩],.monomial [0] [0,1] [0,2]⟩
+  let checked ← Target.CanonicalOpenQasmPlacement.checkDecomposition target.circuit 0 5 [3,1,0] [original]
+  return checked.layout
+
+-- Controlled S on the ordered physical pair [0,3], using the exporter's
+-- half-phase, XOR, inverse half-phase and XOR sequence.
+private def controlledSWord := "t q[0];\nt q[3];\ncx q[0], q[3];\ntdg q[3];\ncx q[0], q[3];\n"
+#guard ((changeControlledPhase controlledSWord).run exactWorkLimit).1.toOption == some [0,3]
+#guard ((changeControlledPhase (controlledSWord.replace "tdg" "t")).run exactWorkLimit).1.toOption.isNone
+#guard ((changeControlledPhase (controlledSWord.replace "q[3]" "q[1]")).run exactWorkLimit).1.toOption.isNone
+
 private def terminalOutputOrder (measurements : String) : Finite.WorkM Unit := do
   let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 6),.pure (.init0 11 7),
     .pure (.init0 12 8),.measure 11 20,.discard 12,.measure 10 21],[],[21,20],.observe⟩
