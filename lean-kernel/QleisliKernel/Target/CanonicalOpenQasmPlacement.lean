@@ -2,7 +2,7 @@ import QleisliKernel.Target.CanonicalOpenQasmWorkspace
 
 /-! Derive a physical placement by replaying matched prefixes of the original
 closed Raw root and the decoded terminal gate word. A declared routing step
-must occupy an actual SWAP instruction. Ordinary Raw SWAPs match as gates and
+must occupy an actual SWAP instruction. Literal and decomposed Raw gates
 leave the placement alone. Source workspace operators are checked separately.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Target.CanonicalOpenQasmPlacement
@@ -11,7 +11,7 @@ open Semantics.RawTrace (Interface)
 open CanonicalOpenQasmResources (Circuit Instruction)
 
 inductive Match where
-  | original | route
+  | original | route | decomposed (gateCount : Nat)
   deriving BEq, DecidableEq, Repr
 
 structure State where
@@ -35,22 +35,75 @@ private def fresh (capacity : Nat) (locations reserved : List Nat) : Option (Lis
   ((List.range capacity).find? fun axis => !locations.contains axis && !reserved.contains axis).map
     (fun wire => locations ++ [wire])
 
+private def stepAxes (step : Semantics.Finite.Step) : List Nat :=
+  step.controls.map (·.index) ++ Finite.targets step.action
+
+private def localWord (width : Nat) (axes : List Nat) (steps : List Semantics.Finite.Step) :
+    List Semantics.Finite.Step :=
+  steps.map (Semantics.RawTrace.localize ((List.range width).map axes.idxOf))
+
+/-- Compare an original Raw circuit event and a decoded target slice on their
+complete common support. The target may touch only those placed live wires.
+Both words act as identity outside that support. -/
+structure Decomposition (circuit : Circuit) (start count : Nat) (locations : List Nat)
+    (steps : List Semantics.Finite.Step) where
+  axes : List Nat
+  originalAxes : axes = (steps.flatMap stepAxes).eraseDups
+  inFrame : steps.all (fun step => (stepAxes step).all (· < locations.length)) = true
+  layout : List Nat
+  placed : axes.mapM (fun axis => locations[axis]?) = some layout
+  declared : circuit.declares layout
+  actual : List Semantics.Finite.Step
+  targetWord : CanonicalOpenQasmWorkspace.interval circuit layout start count = some actual
+  matrix : Semantics.Exact.Matrix
+  originalOperator : RuntimeInterval.Computed
+    (circuitMatrix [] (Raw.circuit axes.length (localWord locations.length axes steps))) matrix
+  targetOperator : RuntimeInterval.Computed (circuitMatrix [] (Raw.circuit axes.length actual)) matrix
+
+def checkDecomposition (circuit : Circuit) (start count : Nat) (locations : List Nat)
+    (steps : List Semantics.Finite.Step) : WorkM (Decomposition circuit start count locations steps) := do
+  guard (locations.length ≤ 12 && steps.length ≤ 1024 && start+count ≤ circuit.gates.length && count ≤ 1024) .limit
+  exactWork (Exact.charge (64*(1+start+count+steps.length)*(1+locations.length)))
+  if inFrame : steps.all (fun step => (stepAxes step).all (· < locations.length)) then
+    let axes := (steps.flatMap stepAxes).eraseDups
+    guard (axes.length ≤ 6) .limit
+    match placed : axes.mapM (fun axis => locations[axis]?) with
+    | none => throw .request
+    | some layout =>
+      if declared : circuit.declares layout then
+        match targetWord : CanonicalOpenQasmWorkspace.interval circuit layout start count with
+        | none => throw .request
+        | some actual =>
+          let original ← SourceTypes.NaturalAffine.witness
+            (circuitMatrix [] (Raw.circuit axes.length (localWord locations.length axes steps)))
+          let target ← SourceTypes.NaturalAffine.witness (circuitMatrix [] (Raw.circuit axes.length actual))
+          exactWork (Exact.charge (original.val.entries.length+target.val.entries.length+1))
+          if same : target.val = original.val then
+            return ⟨axes,rfl,inFrame,layout,placed,declared,actual,targetWord,original.val,
+              by exact original.property,by simpa only [same] using target.property⟩
+          else throw .equation
+      else throw .request
+  else throw .request
+
 private def followRaw (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op)
-    (reserved : List Nat) : Option State := do
-  let (next,events) ← Semantics.RawTrace.step state.raw operation
-  let (locations,gateIndex) ← match events with
-    | [] => some (state.locations,state.gateIndex)
-    | [.init0 _] => (fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)
-    | [.liftBasis before after [] [axis] [0]] =>
+    (reserved : List Nat) (size : Option Nat := none) : WorkM State := do
+  let (next,events) ← lift (readOption (Semantics.RawTrace.step state.raw operation))
+  let (locations,gateIndex) ← match size,events with
+    | none,[] => pure (state.locations,state.gateIndex)
+    | none,[.init0 _] => lift (readOption ((fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)))
+    | none,[.liftBasis before after [] [axis] [0]] =>
       if after == before+1 && axis == before then
-        (fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)
-      else none
-    | [.circuit _ steps] =>
-      (gateWord circuit state.gateIndex state.locations steps).map (state.locations,·)
-    | _ => none
+        lift (readOption ((fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)))
+      else throw .request
+    | none,[.circuit _ steps] =>
+      lift (readOption ((gateWord circuit state.gateIndex state.locations steps).map (state.locations,·)))
+    | some count,[.circuit _ steps] => do
+      let _ ← checkDecomposition circuit state.gateIndex count state.locations steps
+      pure (state.locations,state.gateIndex+count)
+    | _,_ => throw .request
   if next.frame.length == locations.length then
-    some ⟨next,locations,state.rawIndex+1,gateIndex⟩
-  else none
+    pure ⟨next,locations,state.rawIndex+1,gateIndex⟩
+  else throw .request
 
 private def followSwap (circuit : Circuit) (connected : Nat → Nat → Bool) (state : State)
     (reserved : List Nat) : Option State := do
@@ -62,15 +115,16 @@ private def followSwap (circuit : Circuit) (connected : Nat → Nat → Bool) (s
   else none
 
 private def replayFrom (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
-    (alignment : List Match) (initial : State) (reserved : List Nat := []) : Option State :=
+    (alignment : List Match) (initial : State) (reserved : List Nat := []) : WorkM State :=
   alignment.foldlM (fun state action => match action with
-    | .route => followSwap circuit connected state reserved
-    | .original => do
-      let some (.pure operation) := original[state.rawIndex]? | none
-      followRaw circuit state operation reserved) initial
+    | .route => lift (readOption (followSwap circuit connected state reserved))
+    | .original | .decomposed _ => do
+      let some (.pure operation) := original[state.rawIndex]? | throw .request
+      let size := match action with | .decomposed count => some count | _ => none
+      followRaw circuit state operation reserved size) initial
 
 def replay (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
-    (alignment : List Match) : Option State :=
+    (alignment : List Match) : WorkM State :=
   replayFrom original circuit connected alignment {}
 
 structure Checked {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
@@ -78,7 +132,7 @@ structure Checked {bytes capacity} (target : CanonicalOpenQasmResources.Checked 
     (alignment : List Match) where
   closed : program.inputs.isEmpty = true ∧ program.classicalInputs.isEmpty = true
   state : State
-  actual : replay program.operations.toArray target.circuit connected alignment = some state
+  actual : RuntimeInterval.Computed (replay program.operations.toArray target.circuit connected alignment) state
 
 def check {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (program : Semantics.Observation.Program) (connected : Nat → Nat → Bool) (alignment : List Match) :
@@ -87,9 +141,8 @@ def check {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes ca
   exactWork (Exact.charge (32*(1+program.operations.length) +
     32*(1+alignment.length)*(1+alignment.length+target.circuit.gates.length)))
   if closed : program.inputs.isEmpty = true ∧ program.classicalInputs.isEmpty = true then
-    match original : replay program.operations.toArray target.circuit connected alignment with
-    | some state => return ⟨closed,state,original⟩
-    | none => throw .request
+    let original ← SourceTypes.NaturalAffine.witness (replay program.operations.toArray target.circuit connected alignment)
+    return ⟨closed,original.val,by exact original.property⟩
   else throw .request
 
 /-- Retain the exact original prefix coordinates used to derive placement. -/
@@ -194,9 +247,9 @@ structure FinishedWorkspace {sources caller dependencies program block sourceSta
   sameWires : sourceInterval.after.quantum.reference.frame = prefixCheck.state.raw.frame
   suffix : List Match
   final : State
-  replayed : replayFrom program.operations.toArray target.circuit connected suffix
+  replayed : RuntimeInterval.Computed (replayFrom program.operations.toArray target.circuit connected suffix
     ⟨sourceInterval.after.quantum.reference,prefixCheck.state.locations,sourceStart+sourceCount,
-      prefixCheck.state.gateIndex+count⟩ = some final
+      prefixCheck.state.gateIndex+count⟩) final
   readout : Readout target program final
 
 /-- Check a complete literal terminal placement with one checked workspace
@@ -224,11 +277,10 @@ def finishWorkspace {sources caller dependencies program block sourceStart sourc
       let entry : State :=
         ⟨sourceInterval.after.quantum.reference,prefixCheck.state.locations,sourceStart+sourceCount,
           prefixCheck.state.gateIndex+count⟩
-      match replayed : replayFrom program.operations.toArray target.circuit connected suffix entry with
-      | none => throw .request
-      | some final =>
-        let result ← checkReadout target program final
-        return ⟨binding,lifetime,same,suffix,final,replayed,result⟩
+      let final ← SourceTypes.NaturalAffine.witness
+        (replayFrom program.operations.toArray target.circuit connected suffix entry)
+      let result ← checkReadout target program final.val
+      return ⟨binding,lifetime,same,suffix,final.val,by exact final.property,result⟩
     else throw .request
   else throw .request
 
@@ -260,8 +312,8 @@ private def Segment.exit {program : Semantics.Observation.Program} (segment : Se
 structure BoundSegment {program : Semantics.Observation.Program} (segment : Segment program)
     {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (connected : Nat → Nat → Bool) (reserved : List Nat) (previous entry : State) where
-  replayed : replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved =
-    some entry
+  replayed : RuntimeInterval.Computed
+    (replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved) entry
   operations : segment.block.operations = program.operations
   offset : entry.rawIndex = segment.start
   sameEntry : entry.raw = segment.sourceInterval.before.quantum.reference
@@ -282,22 +334,23 @@ private def checkSegment {program : Semantics.Observation.Program} (segment : Se
     WorkM (Σ entry, BoundSegment segment target connected reserved previous entry) := do
   segmentWork target program segment.alignment
   exactWork (Exact.charge (16*(1+program.operations.length+segment.block.operations.length)))
-  match replayed : replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved with
-  | none => throw .request
-  | some entry =>
-    if bound : ObservationBinding.lists (ObservationBinding.operation 65)
-        segment.block.operations program.operations = true ∧ entry.rawIndex = segment.start ∧
-        entry.raw = segment.sourceInterval.before.quantum.reference ∧
-        segment.sourceInterval.after.quantum.reference.frame = entry.raw.frame ∧
-        (∀ wire ∈ segment.scratch.toList,wire ∈ reserved) then
-      let placed ← CanonicalOpenQasmWorkspace.checkPlacement segment.map target entry.locations
-        entry.gateIndex segment.count segment.scratch
-      if scratchUsed : placed.freshScratch = segment.scratch then
-        let operations := ObservationBinding.lists_sound (ObservationBinding.operation 65)
-          (ObservationBinding.operation_sound 65) _ _ bound.1
-        return ⟨entry,⟨replayed,operations,bound.2.1,bound.2.2.1,bound.2.2.2.1,bound.2.2.2.2,placed,scratchUsed⟩⟩
-      else throw .request
+  let replayed ← SourceTypes.NaturalAffine.witness
+    (replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved)
+  let entry := replayed.val
+  if bound : ObservationBinding.lists (ObservationBinding.operation 65)
+      segment.block.operations program.operations = true ∧ entry.rawIndex = segment.start ∧
+      entry.raw = segment.sourceInterval.before.quantum.reference ∧
+      segment.sourceInterval.after.quantum.reference.frame = entry.raw.frame ∧
+      (∀ wire ∈ segment.scratch.toList,wire ∈ reserved) then
+    let placed ← CanonicalOpenQasmWorkspace.checkPlacement segment.map target entry.locations
+      entry.gateIndex segment.count segment.scratch
+    if scratchUsed : placed.freshScratch = segment.scratch then
+      let operations := ObservationBinding.lists_sound (ObservationBinding.operation 65)
+        (ObservationBinding.operation_sound 65) _ _ bound.1
+      return ⟨entry,⟨by exact replayed.property,operations,bound.2.1,bound.2.2.1,
+        bound.2.2.2.1,bound.2.2.2.2,placed,scratchUsed⟩⟩
     else throw .request
+  else throw .request
 
 private def BoundSegment.addCleanUse {program : Semantics.Observation.Program} {bytes capacity}
     {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved previous entry}
@@ -340,7 +393,8 @@ structure FinishedTrace (program : Semantics.Observation.Program) {bytes capacit
   declared : target.circuit.declares reserved
   recorded : @TraceWithUses program bytes capacity target connected reserved
   final : State
-  replayed : replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved = some final
+  replayed : RuntimeInterval.Computed
+    (replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved) final
   readout : Readout target program final
   restored : ∀ scratch ∈ reserved, Nonempty (CanonicalOpenQasmWorkspace.Reuse target scratch (recorded.cleanUses scratch))
 
@@ -359,25 +413,24 @@ def finishTrace {bytes capacity} (target : CanonicalOpenQasmResources.Checked by
         pure ⟨segment.exit entry,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),.next state.trace bound⟩)
         ⟨{},fun _ => [],.start⟩
       segmentWork target program suffix
-      match replayed : replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved with
-      | none => throw .request
-      | some final =>
-        let output ← checkReadout target program final
-        exactWork (Exact.charge (32*(1+reserved.length)*(1+segments.length)*(1+segments.length)))
-        let uses ← reserved.attach.mapM fun wire => do
-          let intervals := recorded.cleanUses wire.val
-          guard (!intervals.isEmpty) .request
-          let checked ← CanonicalOpenQasmWorkspace.checkReuse target wire.val intervals
-          pure (⟨wire,checked⟩ : Σ item : { axis // axis ∈ reserved },
-            CanonicalOpenQasmWorkspace.Reuse target item.val (recorded.cleanUses item.val))
-        if covered : ∀ scratch ∈ reserved, (uses.map (fun item => item.1.val)).contains scratch then
-          have restored : ∀ scratch ∈ reserved, Nonempty (CanonicalOpenQasmWorkspace.Reuse target scratch (recorded.cleanUses scratch)) := by
-            intro scratch member
-            have listed := List.contains_iff_mem.mp (covered scratch member)
-            obtain ⟨⟨wire,checked⟩,_,rfl⟩ := List.mem_map.mp listed
-            exact ⟨checked⟩
-          return ⟨closed,declared,recorded,final,replayed,output,restored⟩
-        else throw .request
+      let final ← SourceTypes.NaturalAffine.witness
+        (replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved)
+      let output ← checkReadout target program final.val
+      exactWork (Exact.charge (32*(1+reserved.length)*(1+segments.length)*(1+segments.length)))
+      let uses ← reserved.attach.mapM fun wire => do
+        let intervals := recorded.cleanUses wire.val
+        guard (!intervals.isEmpty) .request
+        let checked ← CanonicalOpenQasmWorkspace.checkReuse target wire.val intervals
+        pure (⟨wire,checked⟩ : Σ item : { axis // axis ∈ reserved },
+          CanonicalOpenQasmWorkspace.Reuse target item.val (recorded.cleanUses item.val))
+      if covered : ∀ scratch ∈ reserved, (uses.map (fun item => item.1.val)).contains scratch then
+        have restored : ∀ scratch ∈ reserved, Nonempty (CanonicalOpenQasmWorkspace.Reuse target scratch (recorded.cleanUses scratch)) := by
+          intro scratch member
+          have listed := List.contains_iff_mem.mp (covered scratch member)
+          obtain ⟨⟨wire,checked⟩,_,rfl⟩ := List.mem_map.mp listed
+          exact ⟨checked⟩
+        return ⟨closed,declared,recorded,final.val,by exact final.property,output,restored⟩
+      else throw .request
     else throw .request
   else throw .request
 

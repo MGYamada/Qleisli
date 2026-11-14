@@ -513,7 +513,7 @@ workspace entry, or after exact restoration. This profile keeps the physical
 reservation throughout.
 
 For a closed straight-line Raw prefix with zero preparations, structural
-owner operations and literal finite gates, the checker derives this frame by
+owner operations and finite gates, the checker derives this frame by
 replaying the original prefix and the decoded target gate word. Marked
 routing operations must match connected physical SWAPs in the emitted word.
 An ordinary Raw SWAP is matched as a gate and does not move the encoding.
@@ -524,7 +524,12 @@ the resulting placement to verify the emitted terminal measurements in
 classical output order. All original quantum owners must be consumed by the
 end. Discarded owners and measurements outside the classical outputs do not
 add to the emitted readout. The single-interval check requires an exclusive
-lifetime for fresh scratch.
+lifetime for fresh scratch. Outside a workspace interval the checker can also
+compare a single original circuit event against a decomposed target word. It
+derives the ordered support from the original operands and controls and
+compares the complete exact operators on that support, up to six axes. Gates
+on other wires and phase changes are rejected. Matrix checking spends the
+same cumulative work as the surrounding replay.
 
 A physical scratch location can also be reused across ordered, disjoint,
 nonempty clean intervals. The checker
@@ -534,9 +539,9 @@ the location is absent from terminal readout. The literal multi-interval check
 derives every entry placement from the preceding original owners and target
 word. It reserves each designated scratch location across the complete trace,
 keeping it out of ordinary preparations, routing and terminal readout. Each
-reuse interval must be bound to its own checked original workspace. General
-gate decompositions and integration with the production exporter require
-further checking.
+reuse interval must be bound to its own checked original workspace.
+Decompositions that use extra synthesis scratch or span several Raw events,
+and integration with the production exporter, require further checking.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.

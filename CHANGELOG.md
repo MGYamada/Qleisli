@@ -21,6 +21,8 @@ development milestones from the scope of their evidence.
   literal placement trace, including intervening routing and terminal readout.
 - Export the physical body of an accepted zero-predicate clean interval and
   reuse its reserved scratch wire after verified restoration.
+- Compare bounded decomposed OpenQASM gate words with the exact operator of
+  the original Raw event on its ordered live support.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
