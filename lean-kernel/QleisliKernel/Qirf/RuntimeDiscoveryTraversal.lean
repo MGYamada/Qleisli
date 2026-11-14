@@ -336,21 +336,24 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               | original => exact some (.basis checked)
             return ⟨before,⟨event.staticRows ++ checked.body.staticRows ++ rows,[]⟩,[],data⟩
           | .computed event children =>
-            if event.written.parts.logical.isSome then
+            if protectedScope : event.written.parts.logical = none then
+              let predicate ← SourceRuntimeTrace.readComputedPredicateBody event
+              let body ← SourceRuntimeTrace.readComputedSource event
+              let action ← RuntimeComputedUse.sourceBody body
+              let rows ← ordinaryRows artifact.sources 128 predicate.checked.events
+              let data : scope.EventData mode.preparation (.computed event children) position before before := by
+                cases scope with
+                | supplied => exact ()
+                | original => exact some (.computed protectedScope)
+              return ⟨before,⟨event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
+                predicate.checked.summary.staticRows ++ action.rows ++ rows,[]⟩,[],data⟩
+            else
               let prepared ← RuntimeCertifiedComputed.prepare event
               let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events
               let data : scope.EventData mode.preparation (.computed event children) position before before := by
                 cases scope with
                 | supplied => exact ()
                 | original => exact some (.certifiedComputed prepared)
-              return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
-            else
-              let prepared ← RuntimeComputedUse.prepare event
-              let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events
-              let data : scope.EventData mode.preparation (.computed event children) position before before := by
-                cases scope with
-                | supplied => exact ()
-                | original => exact some (.computed prepared)
               return ⟨before,⟨prepared.rows ++ rows,[]⟩,[],data⟩
           | .workspace event children =>
             let prepared ← RuntimeWorkspace.readOriginal event children

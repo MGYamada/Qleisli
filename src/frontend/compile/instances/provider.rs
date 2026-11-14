@@ -27,6 +27,24 @@ impl Compiler<'_> {
         self.materialize_instance_with_basis_body(instance, module, span, false)
     }
 
+    pub(in crate::frontend::compile) fn materialize_finite_transform(
+        &mut self,
+        instance: Arc<ClosedInstance>,
+        module: &str,
+        span: Span,
+    ) -> Result<AcceptedProgram, CompileError> {
+        // Select the representation before preparing the provider. The finite
+        // transform and its ordinary native evidence both use this same body.
+        let previous = std::mem::replace(&mut self.concrete_context.finite_transform, true);
+        let result = self.materialize_instance(instance, module, span);
+        self.concrete_context.finite_transform = previous;
+        result
+    }
+
+    fn instance_body_profile(&self) -> usize {
+        usize::from(self.force_typed_root) + 2 * usize::from(self.concrete_context.finite_transform)
+    }
+
     fn materialize_instance_with_basis_body(
         &mut self,
         instance: Arc<ClosedInstance>,
@@ -34,7 +52,7 @@ impl Compiler<'_> {
         span: Span,
         reuse_basis_body: bool,
     ) -> Result<AcceptedProgram, CompileError> {
-        let profile = usize::from(self.force_typed_root);
+        let profile = self.instance_body_profile();
         if self.effect_in_module(module, instance.definition) != Some(instance.source_effect) {
             return Err(self.error(
                 module,
@@ -79,7 +97,8 @@ impl Compiler<'_> {
             self.validate_required_operation(requirement, operation, module, span)?;
         }
         self.check_dormant_instance(Arc::clone(&instance), module, span)?;
-        if reuse_basis_body && instance.record.is_none() {
+        if reuse_basis_body && instance.record.is_none() && !self.concrete_context.finite_transform
+        {
             if let Some(body) = self.checked.get(&instance.definition).filter(|body| {
                 body.source_body_scope() == Some(crate::interchange::qmatch::v5::BASIS_PROFILE)
             }) {
@@ -173,7 +192,7 @@ impl Compiler<'_> {
         module: &str,
         span: Span,
     ) -> Result<operations::Operation, CompileError> {
-        let profile = usize::from(self.force_typed_root);
+        let profile = self.instance_body_profile();
         if instance.source_effect > Effect::Isometry
             || self.effect_in_module(module, instance.definition) != Some(instance.source_effect)
         {

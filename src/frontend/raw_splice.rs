@@ -223,6 +223,16 @@ impl<N> Renamer<'_, N> {
                         *wire = self.wire(*wire);
                     }
                 }
+                RawOp::StructuralCompute {
+                    source,
+                    source_out,
+                    scratch,
+                    ..
+                } => {
+                    *source = self.token(*source);
+                    *source_out = self.token(*source_out);
+                    *scratch = self.wire(*scratch);
+                }
                 RawOp::ComputeUseUncompute {
                     source,
                     source_out,

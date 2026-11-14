@@ -50,6 +50,7 @@ private theorem pure_node_operations {dependencies program block}
   | basis _ _ _ action => exact ⟨[_],action.literal⟩
   | computed _ _ _ action => exact ⟨[_],action.literal.literal⟩
   | certifiedComputed _ _ _ action => exact ⟨[_],action.literal.original⟩
+  | structuralComputed _ _ action => exact ⟨[_],action.literal⟩
   | workspace _ _ _ action _ => exact ⟨_,action.originalOperations⟩
   | named _ frame _ _ _ _ => exact ⟨_,frame.literal⟩
   | operation frame _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩

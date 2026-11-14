@@ -31,30 +31,67 @@ theorem encodeRawOp_injective : Function.Injective encodeRawOp := by
   intro left right same
   cases left <;> cases right <;> simp_all [encodeRawOp]
 
-theorem rawTrace_preserved (state : RawTrace.Interface)
-    (op : Qleisli.Semantics.RawLegacy.Raw.Op) :
+def encodeRawEvent : Qleisli.Semantics.RawLegacy.Raw.Event → Raw.Event
+  | .circuit bits steps => .circuit bits steps
+  | .init0 bits => .init0 bits
+  | .liftBasis inputBits outputBits inputAxes outputAxes table =>
+    .liftBasis inputBits outputBits inputAxes outputAxes table
+  | .reorder bits axes => .reorder bits axes
+  | .computed bits axes sourceBits ancillaBits function physical logical =>
+    .computed bits axes sourceBits ancillaBits function physical logical
+  | .protectedComputed bits axes sourceBits ancillaBits function uses =>
+    .protectedComputed bits axes sourceBits ancillaBits function uses
+
+def encodeRawPrepared (prepared : Qleisli.Semantics.RawLegacy.RawTrace.Prepared) : RawTrace.Prepared :=
+  ⟨prepared.state,prepared.events.map encodeRawEvent,prepared.inputBits⟩
+
+theorem rawTrace_preserved (state : RawTrace.Interface) (op : Qleisli.Semantics.RawLegacy.Raw.Op) :
     RawTrace.step state (encodeRawOp op) =
-      Qleisli.Semantics.RawLegacy.RawTrace.step state op := by
-  cases op <;> rfl
+      (Qleisli.Semantics.RawLegacy.RawTrace.step state op).map (Prod.map id (List.map encodeRawEvent)) := by
+  cases op <;> simp [encodeRawOp,RawTrace.step,Qleisli.Semantics.RawLegacy.RawTrace.step,encodeRawEvent,Function.comp_def]
 
 def encodeRawProgram (program : Qleisli.Semantics.RawLegacy.Raw.Program) : Raw.Program :=
   ⟨program.inputs,program.operations.map encodeRawOp,program.outputs,program.effect⟩
 
-theorem rawAdvance_preserved (state : RawTrace.Prepared)
-    (op : Qleisli.Semantics.RawLegacy.Raw.Op) :
-    RawTrace.advance state (encodeRawOp op) =
-      Qleisli.Semantics.RawLegacy.RawTrace.advance state op := by
-  simp only [RawTrace.advance,Qleisli.Semantics.RawLegacy.RawTrace.advance,rawTrace_preserved]
+theorem rawAdvance_preserved (state : Qleisli.Semantics.RawLegacy.RawTrace.Prepared) (op : Qleisli.Semantics.RawLegacy.Raw.Op) :
+    RawTrace.advance (encodeRawPrepared state) (encodeRawOp op) =
+      (Qleisli.Semantics.RawLegacy.RawTrace.advance state op).map encodeRawPrepared := by
+  simp only [RawTrace.advance,Qleisli.Semantics.RawLegacy.RawTrace.advance,encodeRawPrepared,rawTrace_preserved]
+  cases Qleisli.Semantics.RawLegacy.RawTrace.step state.state op with
+  | none => rfl
+  | some value =>
+    obtain ⟨next,events⟩ := value
+    simp [encodeRawPrepared]
+
+private theorem foldOption_transport {Elt Old New : Type} (elements : List Elt)
+    (lift : Old → New) (old : Old → Elt → Option Old) (new : New → Elt → Option New)
+    (step : ∀ state elem, new (lift state) elem = (old state elem).map lift)
+    (initial : Old) :
+    elements.foldlM new (lift initial) = (elements.foldlM old initial).map lift := by
+  induction elements generalizing initial with
+  | nil => rfl
+  | cons elem elements ih =>
+    simp only [List.foldlM_cons,step]
+    cases old initial elem with
+    | none => rfl
+    | some next => exact ih next
 
 theorem rawWholeTrace_preserved (program : Qleisli.Semantics.RawLegacy.Raw.Program) :
-    RawTrace.run (encodeRawProgram program) = Qleisli.Semantics.RawLegacy.RawTrace.run program := by
-  have advance : (fun state op => RawTrace.advance state (encodeRawOp op)) =
-      Qleisli.Semantics.RawLegacy.RawTrace.advance := by
-    funext state op
-    exact rawAdvance_preserved state op
+    RawTrace.run (encodeRawProgram program) =
+      (Qleisli.Semantics.RawLegacy.RawTrace.run program).map encodeRawPrepared := by
   simp only [RawTrace.run,Qleisli.Semantics.RawLegacy.RawTrace.run,encodeRawProgram,List.foldlM_map]
-  rw [advance]
-  rfl
+  let initial := RawTrace.initial program.inputs
+  have h := foldOption_transport program.operations encodeRawPrepared
+    Qleisli.Semantics.RawLegacy.RawTrace.advance (fun state op => RawTrace.advance state (encodeRawOp op))
+    rawAdvance_preserved ⟨initial,[],initial.frame.length⟩
+  rw [show (⟨initial,[],initial.frame.length⟩ : RawTrace.Prepared) =
+    encodeRawPrepared ⟨initial,[],initial.frame.length⟩ from rfl, h]
+  cases program.operations.foldlM Qleisli.Semantics.RawLegacy.RawTrace.advance
+      ⟨initial,[],initial.frame.length⟩ with
+  | none => rfl
+  | some result =>
+    simp [RawTrace.finish,Qleisli.Semantics.RawLegacy.RawTrace.finish,encodeRawPrepared,encodeRawEvent,
+      Option.map,List.map_append]
 
 theorem outputs_preserved (op : Qleisli.Semantics.RawLegacy.Raw.Op) :
     Ownership.outputs (encodeRawOp op) = Qleisli.Semantics.RawLegacy.Ownership.outputs op := by
@@ -79,12 +116,22 @@ theorem pure_preserved (before after : Ownership.State)
   constructor
   · intro step
     exact ⟨(access_preserved _ _).mp step.access,
-      by simpa only [rawTrace_preserved] using step.action,
+      by
+        obtain ⟨events, trace⟩ := step.action
+        cases read : Qleisli.Semantics.RawLegacy.RawTrace.step before.interface op with
+        | none => simp [rawTrace_preserved,read] at trace
+        | some result =>
+          have same : result.1 = after.interface := by
+            have actual := Option.some.inj (by simpa [rawTrace_preserved,read] using trace)
+            exact congrArg Prod.fst actual
+          exact ⟨result.2,congrArg some (Prod.ext same rfl)⟩,
       by simpa only [outputs_preserved] using step.tokens,
       by simpa only [allocated_preserved] using step.wires⟩
   · intro step
     exact ⟨(access_preserved _ _).mpr step.access,
-      by simpa only [rawTrace_preserved] using step.action,
+      by
+        obtain ⟨events, trace⟩ := step.action
+        exact ⟨events.map encodeRawEvent,by simp [rawTrace_preserved,trace]⟩,
       by simpa only [outputs_preserved] using step.tokens,
       by simpa only [allocated_preserved] using step.wires⟩
 
@@ -152,37 +199,49 @@ theorem encodeProgram_injective : Function.Injective encodeProgram := by
   cases sameOps
   rfl
 
+def encodeObservationEvent : Qleisli.Semantics.RawLegacy.Observation.Event → Observation.Event
+  | .pure operation => .pure (encodeRawEvent operation)
+  | .erase bits axes output => .erase bits axes output
+  | .classical expression output => .classical expression output
+  | .branch condition left right classical =>
+    .branch condition (left.map encodeObservationEvent) (right.map encodeObservationEvent) classical
+
+def encodeObservationPrepared (prepared : Qleisli.Semantics.RawLegacy.Observation.Prepared) :
+    Observation.Prepared :=
+  ⟨prepared.state,prepared.events.map encodeObservationEvent,prepared.inputBits⟩
+
 /-- Complete literal event data, including both arms and each phi permutation,
-are preserved at every existing reader fuel, not only in tested programs. -/
+are preserved at every existing reader fuel. -/
 theorem observingTrace_preserved (fuel : Nat) (state : RawTrace.Interface)
     (ops : List Qleisli.Semantics.RawLegacy.Observation.Op) :
     Observation.readOps fuel state (ops.map encodeOp) =
-      Qleisli.Semantics.RawLegacy.Observation.readOps fuel state ops := by
+      (Qleisli.Semantics.RawLegacy.Observation.readOps fuel state ops).map
+        (Prod.map id (List.map encodeObservationEvent)) := by
   induction fuel generalizing state ops with
   | zero => rfl
   | succ fuel ih =>
-    simp only [Observation.readOps,Qleisli.Semantics.RawLegacy.Observation.readOps] at ih
     simp only [Observation.readOps,Qleisli.Semantics.RawLegacy.Observation.readOps,
       List.foldlM_map]
-    congr 1
-    funext pair op
+    simp only [Observation.readOps,Qleisli.Semantics.RawLegacy.Observation.readOps] at ih
+    refine foldOption_transport ops
+      (Prod.map id (List.map encodeObservationEvent)) _ _ ?_ (state,[])
+    intro pair op
     obtain ⟨state,events⟩ := pair
     cases op with
-    | pure op => simp only [encodeOp,rawTrace_preserved]
-    | branch condition left right quantum classical => simp only [encodeOp,ih]
-    | measure input output => simp only [encodeOp]
-    | reset input output wire => simp only [encodeOp]
-    | discard input => simp only [encodeOp]
-    | constant value output => simp only [encodeOp]
-    | not input output => simp only [encodeOp]
-    | xor left right output => simp only [encodeOp]
-    | and left right output => simp only [encodeOp]
+    | branch condition left right quantum classical =>
+      simp only [encodeOp]
+      rw [ih, ih]
+      simp [encodeObservationEvent,encodeRawEvent,Option.bind_map,Function.comp_def]
+    | _ =>
+      simp [encodeOp,rawTrace_preserved,encodeObservationEvent,encodeRawEvent,
+        Option.bind_map,List.map_map,Function.comp_def]
 
 theorem wholeTrace_preserved (program : Qleisli.Semantics.RawLegacy.Observation.Program) :
     Observation.read (encodeProgram program) =
-      Qleisli.Semantics.RawLegacy.Observation.read program := by
-  simp only [Observation.read,Qleisli.Semantics.RawLegacy.Observation.read,encodeProgram,
-    observingTrace_preserved]
+      (Qleisli.Semantics.RawLegacy.Observation.read program).map encodeObservationPrepared := by
+  simp [Observation.read,Qleisli.Semantics.RawLegacy.Observation.read,encodeProgram,
+    observingTrace_preserved,encodeObservationPrepared,encodeObservationEvent,encodeRawEvent,
+    Option.bind_map,Function.comp_def]
 
 mutual
   theorem ownershipStep_forward {before after : Ownership.State}

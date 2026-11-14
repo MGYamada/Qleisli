@@ -157,7 +157,7 @@ def readComputed {artifact : Artifact} (mode : Mode artifact) {owner name}
     else Sum.inl <$> RuntimeComputedUse.prepare event
   | .planned _ =>
     match data with
-    | ⟨_,_,.computed prepared⟩ => pure (.inl prepared)
+    | ⟨_,_,.computed _⟩ => .inl <$> RuntimeComputedUse.prepare event
     | ⟨_,_,.certifiedComputed prepared⟩ => pure (.inr prepared)
     | ⟨_,_,.unsupported _⟩ => throw .request
 

@@ -180,7 +180,7 @@ fn process(
             }
         }
     }
-    compiler.prepare_selected_classical_tables(Some(&closure))?;
+    compiler.classify_classical_definitions(Some(&closure))?;
     compiler.plan_original_tables(Some(&closure))?;
     prepare_evidence_dependencies(&mut compiler, &closure, &module, span)?;
     let instance = named_instance(&mut compiler, selected, entry, &module, span)?;
@@ -329,8 +329,9 @@ fn prepare_dormant_dependencies(
             }
         }
     }
-    // Root tables already passed their stricter selected limits. Do not
-    // replace them with a second preparation under the dormant profile.
+    // The selected lowering has already checked any tables it actually used.
+    // Do not materialize dormant tables solely because the root calls a
+    // classical definition.
     needed.retain(|key| !root_closure.contains(key));
     prepare_evidence_dependencies(compiler, &needed, module, span)
 }

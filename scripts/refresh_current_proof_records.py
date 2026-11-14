@@ -90,7 +90,8 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-30-original-predicate",
     "refs/heads/codex/beta-30-computed-restoration",
     "refs/heads/codex/beta-30-structural-raw",
-    "refs/heads/codex/beta-30-structural-transport"))
+    "refs/heads/codex/beta-30-structural-transport",
+    "refs/heads/codex/beta-30-structural-rust"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),
@@ -250,6 +251,7 @@ def proposed(current, ledger, revision, audit_bytes, schema_bytes, results, extr
     validation["commands"][1]["seconds"] = results["main"]["seconds"]
     fresh["binding_review"]["command"]["seconds"] = results["binding"]["seconds"]
     fresh["continuity"]["source_revision_sha256"] = revision["sha256"]
+    fresh["continuity"]["raw_transport"] = continuity.raw_transport_record()
     snapshot = compress_extraction(extraction)
     require(fresh["continuity"]["stdout"]["path"] == SNAPSHOT and
         fresh["continuity"]["stdout"]["compression"] == "xz", "unexpected current extraction destination")

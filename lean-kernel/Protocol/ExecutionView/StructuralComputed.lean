@@ -11,29 +11,16 @@ namespace QleisliKernel.Protocol.ExecutionView.StructuralComputed
 open Lean QleisliKernel Qirf SourceTypes SourceRuntimeContext
 open Gate
 
-private def field (value : Json) (key : String) := value.getObjVal? key
-
-private def number (value : Json) (fieldName : String) : Except String Nat := do
-  let n ← (← field value fieldName).getNat?
-  if n > 4294967295 then throw "structural computed integer exceeds u32"
-  return n
-
 def decode (bytes : ByteArray) : Except String StructuralComputedRaw.Packet := do
   let some text := String.fromUTF8? bytes | throw "invalid structural computed UTF-8"
   let value ← FiniteCodec.parseWithDepth text 128
-  let fields := (← value.getObj?).toList.map (·.1)
-  let names := ["tag","source","source_out","scratch","forward","inverse","uses"]
-  if fields.length != names.length || !fields.all names.contains then
-    throw "unexpected or missing structural computed field"
-  if (← (← field value "tag").getStr?) != "structural_compute" then
-    throw "unknown structural computed tag"
-  return ⟨← number value "source",← number value "source_out",← number value "scratch",
-    ← Raw.steps (← field value "forward"),← Raw.steps (← field value "inverse"),
-    ← (← (← field value "uses").getArr?).toList.mapM Raw.usage⟩
+  match ← Raw.operation value with
+  | .structuralCompute input output scratch forward inverse uses =>
+    return ⟨input,output,scratch,forward,inverse,uses⟩
+  | _ => throw "unknown structural computed tag"
 
 def packetView (packet : StructuralComputedRaw.Packet) : Value :=
-  .array [.text "structural-compute",.natural packet.input,.natural packet.output,.natural packet.scratch,
-    FiniteView.steps packet.forward,FiniteView.steps packet.inverse,.array (packet.uses.map FiniteView.usage)]
+  FiniteView.pureOperation packet.operation
 
 private def port (value : Semantics.Raw.Port) : Value :=
   .array [.natural value.token,.array (value.wires.map .natural),.natural value.bits]

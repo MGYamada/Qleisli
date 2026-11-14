@@ -43,14 +43,11 @@ fn protected_value(
     index: usize,
     protected: ProtectedBit,
     source_axes: &[usize],
-    function: &[u16],
+    auxiliary: impl Fn(usize, u8) -> bool,
 ) -> bool {
     match protected.region {
         ProtectedRegion::Source => bit(index, source_axes[usize::from(protected.index)]),
-        ProtectedRegion::Ancilla => {
-            let x = local_label(index, source_axes);
-            (function[x] >> protected.index) & 1 != 0
-        }
+        ProtectedRegion::Ancilla => auxiliary(index, protected.index),
     }
 }
 
@@ -58,10 +55,10 @@ fn controls_match(
     index: usize,
     controls: &[Control],
     source_axes: &[usize],
-    function: &[u16],
+    auxiliary: impl Fn(usize, u8) -> bool + Copy,
 ) -> bool {
     controls.iter().all(|control| {
-        protected_value(index, control.bit, source_axes, function) == control.when_one
+        protected_value(index, control.bit, source_axes, auxiliary) == control.when_one
     })
 }
 
@@ -69,7 +66,7 @@ pub(super) fn run_protected_use(
     component: &mut Component,
     source_axes: &[usize],
     target_wires: &[WireId],
-    function: &[u16],
+    auxiliary: impl Fn(usize, u8) -> bool + Copy,
     operations: &[ProtectedUse],
 ) -> Result<(), SimulationError> {
     for operation in operations {
@@ -88,7 +85,7 @@ pub(super) fn run_protected_use(
                     }
                 };
                 for (index, amplitude) in component.amplitudes.iter_mut().enumerate() {
-                    if protected_value(index, *bit, source_axes, function) {
+                    if protected_value(index, *bit, source_axes, auxiliary) {
                         *amplitude = *amplitude * phase;
                     }
                 }
@@ -103,7 +100,7 @@ pub(super) fn run_protected_use(
                 )?;
                 let axis = component.position(*target)?;
                 apply_gate(&mut component.amplitudes, axis, *gate, |index| {
-                    controls_match(index, controls, source_axes, function)
+                    controls_match(index, controls, source_axes, auxiliary)
                 });
             }
             ProtectedUse::ControlledPhase { controls, phase } => {
@@ -115,7 +112,7 @@ pub(super) fn run_protected_use(
                     },
                 };
                 for (index, amplitude) in component.amplitudes.iter_mut().enumerate() {
-                    if controls_match(index, controls, source_axes, function) {
+                    if controls_match(index, controls, source_axes, auxiliary) {
                         *amplitude = *amplitude * factor;
                     }
                 }

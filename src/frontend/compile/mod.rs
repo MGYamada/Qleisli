@@ -1213,9 +1213,9 @@ fn process_loaded_project_details(
             message: "expected ordinary fn main() with a closed classical result".to_owned(),
         });
     }
-    // Retain eager built-in tables and explicit refusals at their consumers.
-    // Ordinary nominal calls instead lower their checked original bodies.
-    compiler.prepare_classical_tables()?;
+    // All original classical bodies have been checked. Only finite-table
+    // consumers need to enumerate their domains.
+    compiler.classify_classical_definitions(None)?;
     compiler.plan_original_tables(None)?;
     let mut main = None;
     for ordinal in 0..compiler.source.dependency_order.len() {

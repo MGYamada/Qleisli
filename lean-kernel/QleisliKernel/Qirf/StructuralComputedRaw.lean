@@ -32,14 +32,6 @@ def Packet.fields (packet : Packet) : Nat :=
     (packet.inverse.map (fun step => 1 + stepFields step)).sum +
     (packet.uses.map useFields).sum
 
-private def controls (target : Nat) (check : Step) : Option (List Control) :=
-  if check == StructuralXor.toggle target check.controls then some check.controls else none
-
-def clauseList (target : Nat) (circuit : List Step) : Option (List (List Control)) :=
-  circuit.mapM (controls target)
-
-def protectedUseValid (uses : List Semantics.Raw.Use) : Bool := Raw.usesValid 0 1 0 uses
-
 structure Checked (packet : Packet) (state : Raw.State) where
   input : Semantics.Raw.Port
   taken : Raw.State
@@ -53,7 +45,7 @@ structure Checked (packet : Packet) (state : Raw.State) where
   clauses : List (List Control)
   forward : StructuralXor.Checked input.bits clauses packet.forward
   inverse : packet.inverse = packet.forward
-  diagonalUses : protectedUseValid packet.uses = true
+  diagonalUses : Raw.usesValid 0 1 0 packet.uses = true
 
 /-- Replay the existing Raw owner transition and check every original circuit
 step as an exact phase-free XOR. No truth table, matrix or dependency is read. -/
@@ -61,26 +53,16 @@ def read (packet : Packet) (state : Raw.State) : WorkM (Checked packet state) :=
   exactWork (Exact.charge
     (32*(packet.fields+1)*(state.live.length+state.frame.length+state.seenTokens.length+state.seenWires.length+1)^2))
   if inputValid : Raw.stateValid state = true then
-    match takeRead : Raw.take state packet.input with
-    | .error error => throw error
-    | .ok (input,taken) =>
-      guard (Raw.circuitStepsValid [] (input.bits+1) packet.forward) .request
-      let some clauses := clauseList input.bits packet.forward | throw .equation
-      let checked ← StructuralXor.check input.bits clauses packet.forward
-      if inverse : packet.inverse = packet.forward then
-        if diagonalUses : protectedUseValid packet.uses = true then
-          match reserveRead : Raw.reserve taken [packet.scratch] with
-          | .error error => throw error
-          | .ok reserved =>
-            match insertRead : Raw.insert reserved packet.output input.wires with
-            | .error error => throw error
-            | .ok after =>
-              if outputValid : Raw.stateValid after = true then
-                return ⟨input,taken,takeRead,reserved,reserveRead,after,insertRead,inputValid,outputValid,
-                  clauses,checked,inverse,diagonalUses⟩
-              else throw .request
-        else throw .request
-      else throw .equation
+    let transition ← lift (Raw.structuralCompute state packet.input packet.output packet.scratch
+      packet.forward packet.inverse packet.uses)
+    let conditions := Raw.structuralComputeClauses_conditions transition.clausesRead
+    let checked : StructuralXor.Checked transition.port.bits transition.clauses packet.forward :=
+      ⟨conditions.2.2.1,conditions.2.2.2.1⟩
+    if outputValid : Raw.stateValid transition.after = true then
+      return ⟨transition.port,transition.taken,transition.takeRead,transition.reserved,
+        transition.reserveRead,transition.after,transition.insertRead,inputValid,outputValid,
+        transition.clauses,checked,conditions.1,conditions.2.1⟩
+    else throw .request
   else throw .request
 
 theorem Checked.returnedPort {packet state} (checked : Checked packet state) :
@@ -190,6 +172,45 @@ def readSource {sources caller} {event : ComputedEvent sources caller}
       else throw .request
     | _ => throw .request
   else throw .request
+
+/-- Select the verifier by the literal operation at this source occurrence.
+The body loop cannot reinterpret a malformed structural operation as a table. -/
+def isStructuralInterval {dependencies program block start count}
+    (_interval : @RuntimeInterval.Checked dependencies program block start count) : Bool :=
+  match (block.operations.drop start).take count with
+  | [.pure (.structuralCompute ..)] => true
+  | _ => false
+
+def Packet.operation (packet : Packet) : Semantics.Raw.Op :=
+  .structuralCompute packet.input packet.output packet.scratch packet.forward packet.inverse packet.uses
+
+structure IntervalChecked {sources caller dependencies program block start count}
+    (event : ComputedEvent sources caller)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before : RuntimeStructuralAction.SourceState) where
+  original : StructuralXorPredicate.Original event
+  packet : Packet
+  literal : (block.operations.drop start).take count =
+    [.pure packet.operation]
+  checked : SourceChecked original packet before interval.before
+  afterQuantum : checked.raw.after = interval.after.quantum
+
+/-- The source predicate and scratch proof are tied to the exact operation in
+the enclosing checker interval and its independently checked exit state. -/
+def readInterval {sources caller dependencies program block start count}
+    (event : ComputedEvent sources caller)
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (before : RuntimeStructuralAction.SourceState) : WorkM (IntervalChecked event interval before) := do
+  exactWork (Exact.charge (8*(start+count+1)))
+  match literal : (block.operations.drop start).take count with
+  | [.pure (.structuralCompute input output scratch forward inverse uses)] =>
+    let original ← StructuralXorPredicate.read event
+    let packet : Packet := ⟨input,output,scratch,forward,inverse,uses⟩
+    let checked ← readSource original packet before interval.before
+    if same : checked.raw.after = interval.after.quantum then
+      return ⟨original,packet,literal,checked,same⟩
+    else throw .request
+  | _ => throw .request
 
 #print axioms readSource
 #print axioms Checked.sameFrame

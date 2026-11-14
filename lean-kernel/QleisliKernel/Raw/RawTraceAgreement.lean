@@ -160,6 +160,15 @@ theorem step (left right : List Dependency) (state : Interface) (operation : Sem
     have equal := List.mem_singleton.mp member
     subst event
     exact True.intro
+  | structuralCompute input output scratch forward inverse uses =>
+    apply bind_traced
+    intro pair
+    rcases pair with ⟨port,next⟩
+    apply returned
+    intro event member
+    have equal := List.mem_singleton.mp member
+    subst event
+    exact True.intro
   | packUnit output => exact empty left right _
   | unpackUnit input =>
     apply bind_traced

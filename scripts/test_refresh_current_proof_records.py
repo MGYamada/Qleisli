@@ -168,7 +168,8 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-30-original-predicate",
                 "refs/heads/codex/beta-30-computed-restoration",
                 "refs/heads/codex/beta-30-structural-raw",
-                "refs/heads/codex/beta-30-structural-transport")
+                "refs/heads/codex/beta-30-structural-transport",
+                "refs/heads/codex/beta-30-structural-rust")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:
@@ -239,6 +240,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
         self.assertEqual(maintenance.continuity.xz_decompressed(compressed), extraction)
         expected_continuity = copy.deepcopy(current["continuity"])
         expected_continuity["source_revision_sha256"] = "fresh"
+        expected_continuity["raw_transport"] = maintenance.continuity.raw_transport_record()
         expected_continuity["stdout"]["sha256"] = maintenance.sha(compressed)
         expected_continuity["stdout"]["uncompressed_sha256"] = maintenance.sha(extraction)
         self.assertEqual(fresh["continuity"], expected_continuity)
@@ -311,10 +313,25 @@ class MaintenanceRefusalTests(unittest.TestCase):
 class ExtractionProjectionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Saved repository data is inert input to the existing fixed projection.
-        # This exercises no Lean process, historical command or external receipt.
+        # Exercise projection independently of the current evidence refresh. In
+        # a source-only commit, the saved live extraction can predate a transport
+        # proof. Use historical declarations under the fixed legacy mapping for
+        # this synthetic snapshot. Production only uses fresh Lean output.
+        c = maintenance.continuity
         current = json.loads((maintenance.ROOT / maintenance.CURRENT).read_bytes())
-        cls.saved = maintenance.continuity.raw_snapshot(maintenance.ROOT, current["continuity"]["stdout"])
+        snapshot = json.loads(c.raw_snapshot(maintenance.ROOT, current["continuity"]["stdout"]))
+        reviewed = json.loads(c.decompressed((maintenance.ROOT / c.REVIEWED_PATH).read_bytes()))
+        rows = {c.expression_name(row["name"]): row for row in snapshot["declarations"]}
+        for row in reviewed["declarations"]:
+            original = c.expression_name(row["name"])
+            legacy = c.raw_rename(original)
+            if original != legacy:
+                mapped = c.raw_convert(row)
+                module = c.expression_name(row["module"]).rsplit(".", 1)[-1]
+                mapped["module"] = c.elaborated_name("Qleisli.Semantics.RawLegacy." + module)
+                rows[legacy] = mapped
+        snapshot["declarations"] = list(rows.values())
+        cls.saved = cls.snapshot_bytes(snapshot)
 
     @staticmethod
     def snapshot_bytes(snapshot):
@@ -322,7 +339,7 @@ class ExtractionProjectionTests(unittest.TestCase):
         # would test the size limit instead of the intended semantic mutation.
         return json.dumps(snapshot, ensure_ascii=False, separators=(",", ":")).encode() + b"\n"
 
-    def test_saved_current_extraction_uses_the_immutable_historical_projection(self):
+    def test_projection_uses_the_immutable_historical_meanings(self):
         self.assertEqual(maintenance.verify_extraction(maintenance.ROOT, self.saved, b""), {
             "independent_meaning_declarations": 292,
             "protected_bindings": 27,

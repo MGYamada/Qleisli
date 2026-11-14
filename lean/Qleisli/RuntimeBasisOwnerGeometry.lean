@@ -158,7 +158,7 @@ theorem literal_geometry {sources caller dependencies program block start count 
     have dispatch := (Raw.step_conditions _ _ _ _ step).2.1
     change Raw.dispatch (dependencies.map (·.signature)) prior
       (.liftBasis input.token output.token output.wires action.table) = .ok transition at dispatch
-    rw [Raw.dispatch.eq_10] at dispatch
+    simp only [Raw.dispatch] at dispatch
     obtain ⟨⟨port,taken⟩,take,rest⟩ := except_bind_success _ _ _ dispatch
     have lookup := (Raw.Ownership.take_state prior taken input.token port take).1
     have portMember := List.mem_of_find?_eq_some lookup

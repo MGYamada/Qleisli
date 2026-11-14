@@ -19,6 +19,13 @@ development milestones from the scope of their evidence.
   circuit-backed protected packet against the original computed scope (#30).
 - Bind the decoded structural predicate circuits and ordered Raw ports to a
   canonical internal execution view in the packet checker (#30).
+- Retain structural computed circuits in Rust's Raw codec and execution view.
+  Execute their literal compute/use/inverse sequence using the shared simulator
+  and certified zero release (#30).
+- Compile supported Boolean predicates in selected and source-checked project
+  `with_computed` scopes without enumerating inputs. The native source-body
+  gate checks the original predicate and both literal circuits before accepting
+  the root (#30).
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.

@@ -138,74 +138,14 @@ impl Lowerer<'_, '_> {
         while let Some(operations) = pending.pop() {
             for operation in operations {
                 self.compiler.tick(module, span)?;
-                size = size.saturating_add(8);
-                let extra = match operation {
-                    RawOp::ApplyUnitary { steps, .. } => steps.iter().fold(0usize, |sum, step| {
-                        sum.saturating_add(crate::frontend::raw_state::circuit_size(step))
-                    }),
-                    RawOp::CertifiedCompute {
-                        ancilla_wires,
-                        function,
-                        use_steps,
-                        logical_steps,
-                        ..
-                    } => ancilla_wires
-                        .len()
-                        .saturating_add(function.len())
-                        .saturating_add(use_steps.iter().chain(logical_steps).fold(
-                            0usize,
-                            |sum, step| {
-                                sum.saturating_add(crate::frontend::raw_state::circuit_size(step))
-                            },
-                        )),
-                    RawOp::LiftBasis {
-                        output_wires,
-                        table,
-                        ..
-                    } => output_wires.len().saturating_add(table.len()),
-                    RawOp::QuantumIf {
-                        zero_ops, one_ops, ..
-                    // These arms contain Copy UnitaryStep enums with at most
-                    // three scalar indices, not owned CircuitStep children.
-                    } => (zero_ops.len() + one_ops.len()).saturating_mul(4),
-                    RawOp::ClassicalBranch {
-                        then_ops,
-                        else_ops,
-                        quantum_phis,
-                        classical_phis,
-                        ..
-                    } => {
-                        self.compiler.charge(module, span, 2)?;
-                        pending.extend([then_ops.as_slice(), else_ops.as_slice()]);
-                        quantum_phis
-                            .iter()
-                            .fold(classical_phis.len().saturating_mul(3), |sum, phi| {
-                                sum.saturating_add(phi.output_wires.len() + 3)
-                            })
-                    }
-                    RawOp::ComputeUseUncompute {
-                        targets,
-                        ancilla_wires,
-                        function,
-                        use_ops,
-                        ..
-                    } => targets
-                        .len()
-                        .saturating_mul(2)
-                        .saturating_add(ancilla_wires.len())
-                        .saturating_add(function.len())
-                        .saturating_add(use_ops.iter().fold(0usize, |sum, usage| {
-                            sum.saturating_add(match usage {
-                                ProtectedUse::ProtectedGate { .. } => 3,
-                                ProtectedUse::ControlledTargetGate { controls, .. }
-                                | ProtectedUse::ControlledPhase { controls, .. } => {
-                                    3 + controls.len() * 3
-                                }
-                            })
-                        })),
-                    _ => 0,
-                };
-                size = size.saturating_add(extra);
+                if let RawOp::ClassicalBranch {
+                    then_ops, else_ops, ..
+                } = operation
+                {
+                    self.compiler.charge(module, span, 2)?;
+                    pending.extend([then_ops.as_slice(), else_ops.as_slice()]);
+                }
+                size = size.saturating_add(crate::frontend::raw_state::operation_size(operation));
             }
         }
         Ok(size.saturating_add(8))
@@ -823,6 +763,174 @@ mod tests {
     use super::*;
     use crate::frontend::project::{ModuleOrigin, SourceModule};
     use crate::frontend::source::{Builder, BundledRegistry, ParsePolicy, Source};
+
+    #[test]
+    fn computed_snapshot_charges_structural_circuits_in_nested_branches() {
+        use crate::ir::{BitControl, CircuitAction, CircuitStep, ClassicalId};
+
+        let project = project();
+        let mut compiler = super::super::call_state_tests::untrusted_compiler(&project);
+        let mut lower = lowerer(&mut compiler);
+        let flip = CircuitStep {
+            controls: vec![BitControl {
+                index: 0,
+                when_one: true,
+            }],
+            action: CircuitAction::Monomial {
+                indices: vec![1],
+                permutation: vec![1, 0],
+                phases: vec![0, 0],
+            },
+        };
+        let phase = ProtectedUse::ProtectedGate {
+            bit: ProtectedBit {
+                region: ProtectedRegion::Ancilla,
+                index: 0,
+            },
+            gate: SingleGate::Z,
+        };
+        lower.raw.operations.push(RawOp::ClassicalBranch {
+            condition: ClassicalId(0),
+            then_ops: vec![RawOp::StructuralCompute {
+                source: TokenId(0),
+                source_out: TokenId(1),
+                scratch: WireId(1),
+                forward: vec![flip.clone()],
+                inverse: vec![flip],
+                uses: vec![phase],
+            }],
+            else_ops: Vec::new(),
+            quantum_phis: Vec::new(),
+            classical_phis: Vec::new(),
+        });
+        // Two operation headers, scratch, two seven-cell steps, one use,
+        // and the snapshot header.
+        assert_eq!(
+            lower
+                .computed_snapshot_size("main", Span::default(), 0)
+                .unwrap(),
+            16 + 1 + 2 * 7 + 3 + 8
+        );
+    }
+
+    #[test]
+    fn structural_predicate_uses_original_helper_and_ordered_tuple_axes() {
+        let project = project_source(
+            "classical fn both(a: Bit, b: Bit) -> Bit { a and b }
+             classical fn predicate((lo, (_, hi)): (Bit, (Bits<2>, Bit))) -> Bit {
+                 not both(hi, lo) xor both(hi, hi)
+             }
+             fn main() -> Bit { 0 }",
+        );
+        let mut compiler = super::super::call_state_tests::untrusted_compiler(&project);
+        let key = compiler
+            .source
+            .resolution
+            .qualified("main::predicate")
+            .unwrap();
+        let main = compiler.source.resolution.qualified("main::main").unwrap();
+        compiler.checking = Some(main);
+        let (params, _) = compiler.signature(&key).unwrap();
+        let steps = compiler
+            .propose_structural_predicate(key, &params[0])
+            .unwrap();
+        assert_eq!(compiler.checking, Some(main));
+        assert!(compiler.basis.is_empty());
+        assert_eq!(steps.len(), 3);
+        for (step, expected) in steps.iter().zip([&[][..], &[3, 0], &[3]]) {
+            assert_eq!(
+                step.controls
+                    .iter()
+                    .map(|control| (control.index, control.when_one))
+                    .collect::<Vec<_>>(),
+                expected
+                    .iter()
+                    .map(|&axis| (axis, true))
+                    .collect::<Vec<_>>(),
+            );
+            assert_eq!(
+                step.action,
+                crate::ir::CircuitAction::Monomial {
+                    indices: vec![4],
+                    permutation: vec![1, 0],
+                    phases: vec![0, 0],
+                }
+            );
+        }
+        for label in 0..16 {
+            let lo = label & 1 != 0;
+            let hi = label & 8 != 0;
+            let result = steps.iter().fold(false, |acc, step| {
+                acc ^ step
+                    .controls
+                    .iter()
+                    .all(|control| (label >> control.index) & 1 != 0)
+            });
+            assert_eq!(result, !(hi && lo) ^ hi);
+        }
+    }
+
+    #[test]
+    fn structural_predicate_bounded_expansion_preserves_the_caller_and_allocates_no_table() {
+        let project = project_source(
+            "classical fn predicate((a, b): (Bit, Bit)) -> Bit {
+                 ((a xor b) and (a xor b)) and ((a xor b) and (a xor b))
+             }
+             fn main() -> Bit { 0 }",
+        );
+        let mut compiler = super::super::call_state_tests::untrusted_compiler(&project);
+        let key = compiler
+            .source
+            .resolution
+            .qualified("main::predicate")
+            .unwrap();
+        let main = compiler.source.resolution.qualified("main::main").unwrap();
+        let (params, _) = compiler.signature(&key).unwrap();
+        compiler.checking = Some(main);
+        compiler.work = MAX_WORK - 1024;
+        let started = compiler.work;
+        let failure = compiler
+            .propose_structural_predicate(key, &params[0])
+            .unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Limit);
+        assert!(compiler.work > started);
+        assert_eq!(compiler.checking, Some(main));
+        assert!(compiler.basis.is_empty());
+    }
+
+    #[test]
+    fn selected_classical_preparation_leaves_structural_predicates_unenumerated() {
+        let project = project_source(
+            "classical fn both(a:Bit,b:Bit)->Bit{a and b}
+             classical fn predicate((a,b):(Bit,Bit))->Bit{both(a,b)}
+             fn main()->Bit{0}",
+        );
+        let mut compiler = super::super::call_state_tests::untrusted_compiler(&project);
+        let lookup = |name| compiler.source.resolution.qualified(name).unwrap();
+        let helper = lookup("main::both");
+        let predicate = lookup("main::predicate");
+        let main = lookup("main::main");
+        let closure = BTreeSet::from([helper, predicate, main]);
+        compiler.force_typed_root = true;
+        compiler
+            .classify_classical_definitions(Some(&closure))
+            .unwrap();
+        assert!(compiler.basis.is_empty());
+        let (parameters, _) = compiler.signature(&predicate).unwrap();
+        assert_eq!(
+            compiler
+                .propose_structural_predicate(predicate, &parameters[0])
+                .unwrap()
+                .len(),
+            1
+        );
+        assert!(compiler.basis.is_empty());
+        compiler
+            .prepare_required_classical_table(predicate, "main", Span::default())
+            .unwrap();
+        assert_eq!(compiler.basis[&predicate].table, [0, 0, 0, 1]);
+        assert!(compiler.basis.contains_key(&helper));
+    }
 
     fn project() -> Project {
         project_source(

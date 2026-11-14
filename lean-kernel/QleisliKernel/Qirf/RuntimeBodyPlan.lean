@@ -195,7 +195,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
   | computed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}
       {position : Position} {before : Queues}
-      (prepared : RuntimeComputedUse.Prepared event) :
+      (protectedScope : event.written.parts.logical = none) :
       Event preparation source (.computed event children) position before before
   | certifiedComputed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}

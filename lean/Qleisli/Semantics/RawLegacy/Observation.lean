@@ -30,15 +30,24 @@ structure Program where
   classicalOutputs : List Nat
   effect : Effect
 
+/-- Erasure retains every hidden basis outcome. Measurement additionally binds
+its public SSA bit. Both branch arms include their complete phi permutation. -/
+inductive Event where
+  | pure (operation : Raw.Event)
+  | erase (bits : Nat) (axes : List Nat) (output : Option Nat)
+  | classical (expression : Expr) (output : Nat)
+  | branch (condition : Nat) (thenEvents elseEvents : List Event)
+      (classical : List ClassicalPhi)
+
 /-- A total, depth-bounded literal reader. Freshness, widths, effects and scope
 are checked independently; the bound matches the original 64 nested branches. -/
-def readOps (fuel : Nat) : QleisliKernel.Semantics.RawTrace.Interface → List Op → Option (QleisliKernel.Semantics.RawTrace.Interface × List QleisliKernel.Semantics.Observation.Event) :=
+def readOps (fuel : Nat) : QleisliKernel.Semantics.RawTrace.Interface → List Op → Option (QleisliKernel.Semantics.RawTrace.Interface × List Event) :=
   Nat.rec (fun _ _ => none) (fun _ recurse initial operations =>
     operations.foldlM (fun (state,events) op => do
       let (next,added) ← match op with
       | .pure operation => do
         let (next,added) ← RawTrace.step state operation
-        pure (next,added.map QleisliKernel.Semantics.Observation.Event.pure)
+        pure (next,added.map Event.pure)
       | .measure input output => do
         let (port,next) ← QleisliKernel.Semantics.RawTrace.take state input
         pure ({next with frame := remaining state port.wires},
@@ -60,10 +69,15 @@ def readOps (fuel : Nat) : QleisliKernel.Semantics.RawTrace.Interface → List O
         let (left,leftEvents) ← recurse state thenOps
         let (right,rightEvents) ← recurse state elseOps
         let finish := fun (arm : QleisliKernel.Semantics.RawTrace.Interface) (choice : Bool) =>
-          QleisliKernel.Semantics.Observation.Event.pure (.reorder arm.frame.length (QleisliKernel.Semantics.RawTrace.axes arm (phiWires arm quantum choice)))
+          Event.pure (.reorder arm.frame.length (QleisliKernel.Semantics.RawTrace.axes arm (phiWires arm quantum choice)))
         pure (phiInterface quantum,
           [.branch condition (leftEvents ++ [finish left true]) (rightEvents ++ [finish right false]) classical])
       pure (next,events ++ added)) (initial,[])) fuel
+
+structure Prepared where
+  state : QleisliKernel.Semantics.RawTrace.Interface
+  events : List Event
+  inputBits : Nat
 
 def read (program : Program) : Option Prepared := do
   let initial := QleisliKernel.Semantics.RawTrace.initial program.inputs

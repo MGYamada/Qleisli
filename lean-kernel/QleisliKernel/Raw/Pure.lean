@@ -22,6 +22,11 @@ def eventCheck (dependencies : List Dependency) : Event → WorkM Unit
     guard (sourceBits ≤ axes.length && tableValid sourceBits ancillaBits function false &&
       usesValid sourceBits ancillaBits (axes.length-sourceBits) uses)
 
+  | .structuralComputed bits axes forward inverse uses => do
+    guard (Finite.axesValid bits axes)
+    let _ ← lift (structuralComputeClauses axes.length forward inverse uses)
+    return ()
+
 def verify (dependencies : List Dependency) (program : Program) : WorkM Prepared := do
   exactWork (Exact.charge (rawFields program))
   let prepared ← lift (prepare (dependencies.map (·.signature)) program)
