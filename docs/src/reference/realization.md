@@ -8,6 +8,7 @@ universal gate set, synthesis algorithm or new source syntax. The current
 implementation and proof limits are stated below.
 
 The governing decisions are [#120](https://github.com/MGYamada/Qleisli/issues/120),
+[#121](https://github.com/MGYamada/Qleisli/issues/121),
 [#127](https://github.com/MGYamada/Qleisli/issues/127),
 [#280](https://github.com/MGYamada/Qleisli/issues/280) and
 [#281](https://github.com/MGYamada/Qleisli/issues/281). Their remaining
@@ -116,6 +117,46 @@ identify its boundary and compositional obligations explicitly; this chapter
 introduces no approximate acceptance or error budget. Exact/approximate
 profile decisions remain in [#31](https://github.com/MGYamada/Qleisli/issues/31)
 and [#123](https://github.com/MGYamada/Qleisli/issues/123).
+
+## Isometries and initialized target interfaces
+
+A semantic isometry `V: A -> B` satisfies `V† V = I_A`. The basis trees
+of `A` and `B` can differ, including in width. A realization of
+`Op<A -> B>`, or its refinement `Op<A -> B, M>`, retains both exact
+ports and the requested Meaning. Sequential composition matches the middle
+tree exactly. Tensor composition preserves the declared order of both ports.
+
+For a target that implements the isometry with a unitary dilation, let
+`E_in: A -> P_in` and `E_out: B -> P_out` be the exact input and output
+isometric encodings, and let `C: P_in -> P_out` be the action of the actual
+target circuit. On every joint input `ψ` with external reference `R`,
+the realization must establish
+
+```text
+(C ⊗ I_R)(E_in ⊗ I_R) ψ = (E_out ⊗ I_R)(V ⊗ I_R) ψ.
+```
+
+The input encoding specifies any initialized backend wires and their ordered
+placement. The output encoding identifies the retained logical output and
+fixes the state of every backend wire claimed to be returned clean. Other
+physical degrees of freedom require an explicit output contract. Isometry
+typing introduces no implicit discard or partial trace. Source `clean` and
+`dirty` contracts bind source owners separately. A target claim accounts for
+every physical wire used by the dilation, including initialized backend
+workspace, plus the preparation, realization, cleanup and routing required
+by the selected target model. A dilation existence theorem supplies a
+candidate. The accepted artifact still requires the displayed correspondence.
+
+The mathematical adjoint reverses `V` on its image. On the full output space,
+`V V†` is the projector onto that image. For an exact unitary dilation,
+`C† E_out V = E_in`, including under arbitrary external reference, so an
+available checked reverse circuit recovers the encoded input on that image.
+An application outside the established image needs its own contract. The
+static `Adjointable` capability and physical realization of a reverse
+operation require independent evidence under the
+[operation type rules](type-model.md#general-pure-operation-arrows).
+The QPTL theorem `dilation_recover_reference` derives the image-restricted
+equation from the exact forward square and the unitary implementation law.
 
 ## Separate engineering approximation claims
 
