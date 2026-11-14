@@ -794,7 +794,9 @@ class CheckedRawTransportProfile(unittest.TestCase):
         c = checker.continuity
         names = [c.raw_rename(name) for name in c.SEMANTIC_ROOTS]
         names += ["Qleisli.Semantics.RawLegacy.Ownership.Pure.mk",
-                  "Qleisli.Semantics.RawLegacy.Raw.Op", *c.ACTUAL_ENDPOINTS, *c.BINDING_PREFIXES]
+                  "Qleisli.Semantics.RawLegacy.Raw.Op", "Qleisli.Semantics.RawLegacy.Raw.Event",
+                  "Qleisli.Semantics.RawLegacy.Raw.Event.protectedComputed",
+                  *c.ACTUAL_ENDPOINTS, *c.BINDING_PREFIXES]
         for name in names:
             changed = copy.deepcopy(self.snapshot)
             row = next(row for row in changed["declarations"] if c.expression_name(row["name"]) == name)

@@ -12,10 +12,10 @@ example : Function.Injective encodeRawOp := encodeRawOp_injective
 example : Function.Injective encodeProgram := encodeProgram_injective
 example (program : Qleisli.Semantics.RawLegacy.Raw.Program) :
     RawTrace.run (encodeRawProgram program) =
-      Qleisli.Semantics.RawLegacy.RawTrace.run program := rawWholeTrace_preserved program
+      (Qleisli.Semantics.RawLegacy.RawTrace.run program).map encodeRawPrepared := rawWholeTrace_preserved program
 example (program : Qleisli.Semantics.RawLegacy.Observation.Program) :
     Observation.read (encodeProgram program) =
-      Qleisli.Semantics.RawLegacy.Observation.read program := wholeTrace_preserved program
+      (Qleisli.Semantics.RawLegacy.Observation.read program).map encodeObservationPrepared := wholeTrace_preserved program
 example (program : Qleisli.Semantics.RawLegacy.Observation.Program) :
     Ownership.OwnershipSafe (encodeProgram program) ↔
       Qleisli.Semantics.RawLegacy.Ownership.OwnershipSafe program := ownership_preserved program

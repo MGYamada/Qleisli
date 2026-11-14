@@ -337,20 +337,20 @@ RAW_EXTRACTOR = f"{FIXTURE}/RawExtract.lean"
 RAW_EXTRACTOR_SHA256 = "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
 RAW_ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{RAW_EXTRACTOR}"]
 RAW_REVIEW = f"{FIXTURE}/RawTransportReview.lean"
-RAW_REVIEW_SHA256 = "bb0516b40cf53966948dab152b84c8aaee220b5ada69536b36e25ab4a73f9193"
+RAW_REVIEW_SHA256 = "4e31a7e5c330f69461b06172bcf13987748e55234f79c318d8db55287cecadd4"
 RAW_REVIEW_ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{RAW_REVIEW}"]
 RAW_STDOUT = f"{FIXTURE}/raw-transport.stdout.txt"
 RAW_STDOUT_SHA256 = "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4"
 RAW_SOURCES = {
-    "lean/Qleisli/RawRepresentationTransport.lean": "6daf4e9bf20c46c298f2dd880c4a855c327e12ab9db8d4ee48a5dfdf7eecf692",
-    "lean/Qleisli/Semantics/RawLegacy/Raw.lean": "c239dd4a33b3741f05b79412933038cb619a2b9505ff30dace0d72ca0fa6506b",
-    "lean/Qleisli/Semantics/RawLegacy/RawTrace.lean": "ad7425e103c35afd9012ad54a8b4b964c98c0195d7129b8125cc32c0059ba419",
-    "lean/Qleisli/Semantics/RawLegacy/Observation.lean": "8e46dd0b075a5dec495e8b3cd0c5475282c384410d7dc77d21ff3795c67f0b7c",
+    "lean/Qleisli/RawRepresentationTransport.lean": "e1c5e8c3ca71732ba3dc3bca97f2b869dfabdd0c6e401367aecfc67f1738629a",
+    "lean/Qleisli/Semantics/RawLegacy/Raw.lean": "f3b619f251d22725772affb0a225ca2b7acf2dda0cb53a635a8e227d06769e17",
+    "lean/Qleisli/Semantics/RawLegacy/RawTrace.lean": "4c5263502ef1cf7194942501767a8165a6b147c1d2705eda596dbc48d3dc1e4b",
+    "lean/Qleisli/Semantics/RawLegacy/Observation.lean": "6eb819974ade42498ca64347e86df9d0f7e07c9380e708d1a5df1d7f13777873",
     "lean/Qleisli/Semantics/RawLegacy/Ownership.lean": "f4fa8a81779f00efab88ecd20553e712fc8fd5176f7c498e5b70357cf1cf8dde",
     "lean/Qleisli/Semantics/RawLegacy/ClassicalScope.lean": "910243bc1d616869eb3e9085ddbbbbea1c9e36d8b3b8f41537e0e65abed4c375",
 }
 RAW_PREFIXES = {
-    "Raw": ("Op", "Program"),
+    "Raw": ("Op", "Program", "Event"),
     "RawTrace": ("step",),
     "Observation": ("Op", "Program"),
     "Ownership": ("outputs", "allocated", "Access", "Pure", "Step", "Run", "OwnershipSafe"),
