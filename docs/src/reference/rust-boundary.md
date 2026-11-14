@@ -398,6 +398,17 @@ axis for any joint amplitudes, including reference correlations. The clean
 equation preserves the exact phase and composes across two accepted scopes
 with the same interface using `clean_sequence`.
 
+For the checked coherent-control case, the original Raw tape must match an
+empty tape on selector zero and the exact checked clean body on selector one.
+With the scratch Bit initialized to zero, the zero branch preserves the
+incoming data and reference amplitudes, and the one branch applies the
+requested live operator with its full scalar phase. Both branches have zero
+amplitude in every nonzero scratch coordinate. The Lean application theorem
+`Qleisli.RuntimeWorkspaceRestoration.controlled_clean_action` proves these
+equations on the same output for arbitrary joint control, data and reference
+amplitudes. Its premises require both literal sector matches and the successful
+clean-body check.
+
 Quantitative Resource Safety remains the separate obligation to produce finite,
 statically computed bounds and preserve them through compilation. Scratch
 qubits count while live, across preparation, use and cleanup. Generated inverse

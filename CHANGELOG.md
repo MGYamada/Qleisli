@@ -8,6 +8,8 @@ development milestones from the scope of their evidence.
 
 - Prove exact clean and dirty restoration for the original checked workspace
   bodies on arbitrary reference amplitudes, and compose clean scopes with QPTL.
+- Prove exact clean return for both sectors of a coherently controlled Raw
+  tape, retaining the active branch's full phase and external references.
 - Prove exact ordered placement transport and count literal gates for a
   fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
   declared target connectivity.
