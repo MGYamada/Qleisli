@@ -476,6 +476,10 @@ those measures, and checked bounds. Changing providers, layout, target,
 workspace or output bytes invalidates reuse unless checked correspondence
 establishes the new claim. A content hash establishes identity, not the bound.
 
+The [provider resource contract](functional-boundary.md#provider-selection-and-quantitative-resource-evidence)
+applies to each selected body and composition. An external, opaque or
+device-native implementation must meet the same admission requirements.
+
 Physical live width includes logical data, explicit source workspace,
 backend synthesis workspace and routing/target storage. Count actual physical
 locations once, accounting for their lifetimes and permitted reuse. Peak

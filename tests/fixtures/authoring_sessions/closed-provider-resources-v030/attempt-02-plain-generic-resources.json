@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/private/tmp/qleisli-165-phase-cli-target/debug/qleisli",
+    "interop",
+    "emit-qasm",
+    "/private/tmp/qleisli-162-provider-first.luOzli46/plain-generic",
+    "--input=qli",
+    "--format=json",
+    "--resources"
+  ],
+  "environment": {
+    "QLEISLI_KERNEL": "/private/tmp/qleisli-70-controlled-logical.9VWDpzcm/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 1,
+  "recorded_utc": "2026-11-14T23:48:45.365119+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop emit-qasm",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "Unsupported: checked OpenQASM resources require at least one source workspace",
+        "primary": null,
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

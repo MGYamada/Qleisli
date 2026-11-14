@@ -1,0 +1,10 @@
+use std::state::init0;
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn double_h(q: Q<Bit>) -> Q<Bit> { h(h(q)) }
+unitary fn apply[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) { U(q) }
+
+pub observe fn main() -> Bit {
+    let q = clean(init0(), identity) { |data, scratch| (apply[identity](data), scratch) };
+    measure_z(q)
+}

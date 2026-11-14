@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/private/tmp/qleisli-165-phase-cli-target/debug/qleisli",
+    "interop",
+    "check",
+    "/private/tmp/qleisli-162-provider-first.luOzli46/before-light",
+    "--input=qli",
+    "--format=json"
+  ],
+  "environment": {
+    "QLEISLI_KERNEL": "/private/tmp/qleisli-70-controlled-logical.9VWDpzcm/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 0,
+  "recorded_utc": "2026-11-14T23:48:53.990984+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "checker_path": "/private/tmp/qleisli-70-controlled-logical.9VWDpzcm/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "checker_identity": "unpinned",
+      "request_checked": true,
+      "ordinary_result_checked": false,
+      "runtime_result_checked": true,
+      "source_preservation_verified": false,
+      "source_body_scope": "finite-source-basis-context-v5"
+    }
+  },
+  "stderr": ""
+}

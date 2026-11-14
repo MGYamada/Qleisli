@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#162 closed provider specialization and terminal resource evidence",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "af3106789a18e0604ac9dbe55d097c29a3fced89",
+  "context": "context.md",
+  "manifest_sha256": {
+    "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Try two closed providers in a protected scope and one unresolved provider.",
+      "sha256": {
+        "identity/main.qli": "5da872205bf9f6cd354cacd8e698abe22e4e38591a9f3314a26857d220e29bbe",
+        "double_h/main.qli": "9dd10d11ca4997a72480bf6766cf384c9879772319154445b1030d4acbf3b457",
+        "unresolved/main.qli": "e82f5b1b653c4f1b1cf14c95799266318960e93ceac25a3d699a3b2eab660e2d"
+      },
+      "observations": [
+        "attempt-01-identity-first.json",
+        "attempt-01-double_h-first.json",
+        "attempt-01-unresolved-first.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Separate ordinary specialization, direct workspace calls, and specialization before a workspace.",
+      "sha256": {
+        "plain-generic/main.qli": "fe1c562ba02e7867129eb8576fa65a44e3fa75fa2cc02c20ccfd8035af758485",
+        "direct-light/main.qli": "575d1784dff54cc4c35f5c51585e78a1a96f30344c0ff6ea8a3203e5aa34774e",
+        "direct-heavy/main.qli": "a99d4c72821fd40fb6dd7ee7bed75110daf0f7b870d4e9a0701460298d26917a",
+        "before-light/main.qli": "b33864a60806ac0943a666c22b9c6e720768464860218bbf6fc020d71a3104a0",
+        "before-heavy/main.qli": "e6f48620d7c1320aff6d83f2b0eaa49779056110cb39fe10c4a10f8b189a0eeb"
+      },
+      "observations": [
+        "attempt-02-plain-generic-check.json",
+        "attempt-02-plain-generic-resources.json",
+        "attempt-02-direct-light-check.json",
+        "attempt-02-direct-light-resources.json",
+        "attempt-02-direct-heavy-check.json",
+        "attempt-02-direct-heavy-resources.json",
+        "attempt-02-before-light-check.json",
+        "attempt-02-before-light-resources.json",
+        "attempt-02-before-heavy-check.json",
+        "attempt-02-before-heavy-resources.json"
+      ]
+    }
+  ]
+}
