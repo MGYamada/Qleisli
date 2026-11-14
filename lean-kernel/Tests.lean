@@ -2014,6 +2014,8 @@ private def actualPacket := placementBytes fixturePacket emitted.toUTF8 placemen
 #guard (checkPacket (placementBytes fixturePacket emitted.toUTF8 (placementPlan.push 0))).toOption.isNone
 #guard (checkPacket (placementBytes fixturePacket
   (emitted.replace "x q[2]" "y q[2]").toUTF8 placementPlan)).toOption.isNone
+#guard (checkPacket (placementBytes fixturePacket
+  (emitted.replace "x q[2]" "cx q[2]").toUTF8 placementPlan)).toOption.isNone
 #guard (checkPacket (placementBytes (fixturePacket.set! 4 0) emitted.toUTF8 placementPlan)).toOption.isNone
 #guard match checkPacket actualPacket 100000 with
   | .error (.native (.arithmetic .workLimit)) => true
