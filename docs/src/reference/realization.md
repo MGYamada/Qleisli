@@ -577,6 +577,9 @@ The internal packet binds the complete original QLV3 request and literal target
 bytes. Lean rechecks the original source, decodes the target and replays
 placement using one 20,000,000 exact-work budget. The report covers the
 supported canonical terminal profile and its declared physical register.
+A structural basis lift updates the physical placement only when its complete
+table is an axis permutation. It contributes zero gates. A routing SWAP
+must occupy a literal gate position.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
