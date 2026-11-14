@@ -110,6 +110,21 @@ structure Checked {dependencies program sources caller}
   afterFrame : RuntimeOwnerMap.Checked (after.bindings.map (·.owner)) interval.after
   sameFrame : afterFrame.bindings = after.bindings
 
+/-- A successful literal token read identifies which original register
+operation supplied the consumed and allocated owner lists. -/
+theorem Checked.register_owners {dependencies program sources caller block start count event before}
+    (action : @Checked dependencies program sources caller block start count event before) :
+    ∀ owner ∈ event.allocated ++ event.consumed,
+      owner.basis = [.bit] ∨ ∃ width, owner.basis = [.bits width] := by
+  obtain ⟨work,left,checked⟩ := action.tokenOrder
+  have kind : event.kind = .takeBit ∨ event.kind = .putBit := by
+    unfold outputTokens at checked
+    split at checked
+    · exact .inl (by assumption)
+    · exact .inr (by assumption)
+    · cases checked
+  exact SourceRegisterApplication.apply_register_owners kind event.applied
+
 theorem Checked.take_wires {dependencies program sources caller block start count event before}
     (action : @Checked dependencies program sources caller block start count event before)
     {port : Semantics.Raw.Port} (kind : event.kind = .takeBit) (inputs : action.inputs = [port]) :

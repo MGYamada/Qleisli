@@ -2,6 +2,7 @@ import Qleisli.RuntimeSemanticForest
 import Qleisli.RuntimeNamedBlockEncoding
 import Qleisli.RuntimeNamedBlockSpectators
 import Qleisli.RuntimeNamedCarrierEncoding
+import QleisliKernel.Qirf.RuntimeRegisterAction
 
 /-! The exact sparse caller encoding decomposes around the entire selected
 owner block. Its spectator fibre retains arbitrary correlated amplitudes.
@@ -37,6 +38,94 @@ theorem product_width {bindings : Map} (available : Available bindings) :
     change (ownerLayout binding).bits + (product rest).bits =
       (binding.port.wires ++ rest.flatMap (·.port.wires)).length
     rw [List.length_append,← head,tail]
+
+/-- A block of full carriers is itself a full carrier in packed order. -/
+theorem full_product {bindings : Map} (available : Available bindings)
+    (full : ∀ binding ∈ bindings, (ownerLayout binding).labels =
+      List.range (2^(ownerLayout binding).bits)) (physicalFrame : List Nat) :
+    (product bindings).labels = List.range (2^(forestAxes physicalFrame bindings).length) := by
+  have labels : ∀ (selected : Map),
+      (∀ binding ∈ selected, (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits)) →
+      (product selected).labels = List.range (2^(product selected).bits) := by
+    intro selected
+    induction selected with
+    | nil => intro _; rfl
+    | cons first rest ih =>
+      intro all
+      have head := all first List.mem_cons_self
+      have tail := ih (fun binding member => all binding (List.mem_cons_of_mem _ member))
+      change ((product rest).labels.flatMap fun high =>
+        (ownerLayout first).labels.map fun low => low + 2^(ownerLayout first).bits * high) =
+        List.range (2^((ownerLayout first).bits + (product rest).bits))
+      rw [head,tail,Nat.pow_add,Qleisli.RuntimeNamedHeadCoefficients.range_blocks]
+  have width : (product bindings).bits = (forestAxes physicalFrame bindings).length := by
+    simpa only [forestAxes,List.length_map] using product_width available
+  rw [labels bindings full,width]
+
+/-- The literal register operation identifies every affected basis from its
+original source application. Its returned wire widths give full carriers. -/
+theorem register_layout {dependencies program sources caller block start count event before}
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (binding : Binding) (consumed : binding.owner ∈ event.consumed ∨ binding.owner ∈ event.allocated)
+    (width : binding.port.bits = RuntimeStructuralAction.basisBits binding.owner.basis)
+    (wires : binding.port.wires.length = binding.port.bits) :
+    Nonempty (Qleisli.RuntimeStructuralLayoutEvidence.SemanticOwnerLayout binding) ∧
+      (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits) := by
+  obtain bit | ⟨size,word⟩ := action.register_owners binding.owner
+    (List.mem_append.mpr consumed.symm)
+  · let code : Semantics.FiniteCarrier.Layout := ⟨1,[0,1]⟩
+    have original : layout binding.owner.basis = some code := by rw [bit]; rfl
+    have bits : binding.port.bits = code.bits := by rw [width,bit]; rfl
+    refine ⟨⟨⟨code,original,bits,wires.trans bits⟩⟩,?_⟩
+    rw [ownerLayout,original]
+    rfl
+  · let code : Semantics.FiniteCarrier.Layout := ⟨size,List.range (2^size)⟩
+    have original : layout binding.owner.basis = some code := by rw [word]; rfl
+    have bits : binding.port.bits = code.bits := by rw [width,word]; rfl
+    refine ⟨⟨⟨code,original,bits,wires.trans bits⟩⟩,?_⟩
+    rw [ownerLayout,original]
+    rfl
+
+/-- Recover the full input and output codes from the exact ordered owner read
+and the zip of freshly allocated source roles with the actual Raw ports. -/
+theorem register_blocks {dependencies program sources caller block start count event before}
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before) :
+    ∃ selected : Map,
+      selected ⊆ before.bindings ∧ selected.map (·.owner) = event.consumed ∧
+      selected.map (·.port) = action.inputs ∧
+      let returned := (action.outputs.zip event.allocated).map
+        (fun (port,owner) => (⟨owner,port⟩ : Binding))
+      Available selected ∧ Available returned ∧
+      (∀ binding ∈ selected, (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits)) ∧
+      (∀ binding ∈ returned, (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits)) := by
+  obtain ⟨work,left,read⟩ := action.inputsRead
+  change (do
+    let selected ← RuntimeOwnerMap.order event.consumed before.bindings
+    pure (selected.map Binding.port)).run work = (.ok action.inputs,left) at read
+  obtain ⟨selected,middle,ordered,ports⟩ := Finite.bind_success _ _ _ _ _ read
+  have original := RuntimeSelectionPartition.order_values _ _ selected ⟨work,middle,ordered⟩
+  have same : selected.map (·.port) = action.inputs := (Finite.pure_success _ _ _ _ ports).1.symm
+  refine ⟨selected,original.1,original.2,same,?_⟩
+  intro returned
+  have checkedLayout (ports : List Semantics.Raw.Port) (roles : List RuntimeOwnerMap.Owner)
+      (widths : RuntimeStructuralAction.widths ports roles = true)
+      (binding : Binding) (paired : (binding.port,binding.owner) ∈ ports.zip roles)
+      (role : binding.owner ∈ event.consumed ∨ binding.owner ∈ event.allocated) :=
+    let fields := Bool.and_eq_true_iff.mp (List.all_eq_true.mp
+      (Bool.and_eq_true_iff.mp widths).2 _ paired)
+    register_layout action binding role (beq_iff_eq.mp fields.1) (beq_iff_eq.mp fields.2)
+  have inputs (binding : Binding) (member : binding ∈ selected) :=
+    checkedLayout action.inputs event.consumed action.inputWidths binding
+      (by rw [← same, ← original.2, List.zip_map']; exact List.mem_map_of_mem member)
+      (.inl (original.2 ▸ List.mem_map_of_mem member))
+  have outputs (binding : Binding) (member : binding ∈ returned) :
+      Nonempty (Qleisli.RuntimeStructuralLayoutEvidence.SemanticOwnerLayout binding) ∧
+      (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits) := by
+    obtain ⟨⟨port,owner⟩,paired,equal⟩ := List.mem_map.mp member
+    subst binding
+    exact checkedLayout action.outputs event.allocated action.outputWidths _ paired (.inr (List.of_mem_zip paired).2)
+  exact ⟨fun binding member => (inputs binding member).1,fun binding member => (outputs binding member).1,
+    fun binding member => (inputs binding member).2,fun binding member => (outputs binding member).2⟩
 
 theorem product_append {selected spectators : Map} (available : Available (selected++spectators)) :
     product (selected++spectators) = tensor (product selected) (product spectators) := by
@@ -285,6 +374,9 @@ theorem full_block_repartition {before after spectators : Map}
   rw [gather_repartition physical wires unique]
 
 #print axioms block_action
+#print axioms full_product
+#print axioms register_layout
+#print axioms register_blocks
 #print axioms full_block_repartition
 #print axioms sparse_caller_input
 #print axioms caller_input
