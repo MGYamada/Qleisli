@@ -1,6 +1,8 @@
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 import QleisliKernel.Qirf.RuntimeCertifiedComputed
 import QleisliKernel.Qirf.RuntimeWorkspace
+import QleisliKernel.Target.CanonicalOpenQasmWorkspace
+import QleisliKernel.Target.CanonicalOpenQasmPlacement
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Actual original computed scope typing, owner histories and source bodies.
@@ -71,7 +73,10 @@ private def cleanControlled :=
 #guard ((readWorkspaceAction cleanControlled).run 20000000).1.toOption == some 4
 
 private def workspaceInterval (sourceText : String) (operations : List Semantics.Observation.Op)
-    (fresh : Bool) : Finite.WorkM (List Nat × List Nat × Raw.WorkspaceResources.Counts × Nat) := do
+    (fresh : Bool) (targetTest : Option (String × List Nat × Nat × Nat) := none)
+    (reuseTest : Option (String × List Nat × Nat × Nat × Nat) := none)
+    (placementTest : Option (String × List Nat × Option Nat) := none) :
+    Finite.WorkM (List Nat × List Nat × Raw.WorkspaceResources.Counts × Nat) := do
   let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ sourceText)] "main" "route"
   let [.workspace event children] := source.events | throw .request
   let data : Semantics.Raw.Port := ⟨10,[6],1⟩
@@ -90,6 +95,23 @@ private def workspaceInterval (sourceText : String) (operations : List Semantics
   let original ← Qirf.RuntimeWorkspace.readOriginal event children
   let checked ← Qirf.RuntimeWorkspace.readLiteral original interval before
   let map ← Qirf.RuntimeWorkspace.readCallerMap checked #[]
+  if let some (text,layout,start,count) := targetTest then
+    let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
+    let _ ← Target.CanonicalOpenQasmWorkspace.checkLifetime map target layout start count
+  if let some (text,frame,scratch) := placementTest then
+    let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
+    let _ ← Target.CanonicalOpenQasmWorkspace.checkPlacement map target frame 0 1 scratch
+  if let some (text,layout,first,second,count) := reuseTest then
+    let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
+    let before ← Target.CanonicalOpenQasmWorkspace.check map target layout first count
+    let after ← Target.CanonicalOpenQasmWorkspace.check map target layout second count
+    if offered : event.fresh = true then
+      match scratch : layout.getLast? with
+      | none => throw .request
+      | some wire =>
+        let _ ← Target.CanonicalOpenQasmWorkspace.checkReuse target wire
+          [before.cleanUse offered scratch,after.cleanUse offered scratch]
+    else throw .request
   return (checked.continuation.bindings.map (·.port.token),checked.continuation.issued.map (·.ordinal),
     map.resources.counts,map.resources.expandedBodySteps)
 
@@ -109,6 +131,122 @@ private def dirtyOps (steps : List Semantics.Finite.Step) (data : Nat := 10) (sc
 #guard ((workspaceInterval cleanScope (cleanOps [hData] [hData] [1,1]) true).run 20000000).1.toOption.isNone
 #guard ((workspaceInterval dirtyScope (dirtyOps [hData,zScratch]) false).run 20000000).1.toOption.isNone
 #guard ((workspaceInterval dirtyScope (dirtyOps [hData] 11 10) false).run 20000000).1.toOption.isNone
+
+private def targetWorkspace (width : Nat) (gates : String) : String :=
+  s!"OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[{width}] q;\nreset q;\n{gates}"
+
+private def targetWorkspaceAccepted (fresh : Bool) (text : String) (layout : List Nat) (start count : Nat) : Bool :=
+  let (source,operations) := if fresh then (cleanScope,cleanOps [hData] [hData]) else (dirtyScope,dirtyOps [hData])
+  ((workspaceInterval source operations fresh (some (text,layout,start,count))).run 20000000).1.isOk
+
+#guard targetWorkspaceAccepted true (targetWorkspace 3 "h q[2];\n") [2,0] 0 1
+#guard targetWorkspaceAccepted false (targetWorkspace 3 "x q[0];\nh q[2];\nz q[0];\n") [2,0] 1 1
+#guard !targetWorkspaceAccepted false (targetWorkspace 3 "h q[2];\n") [0,2] 0 1
+#guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[2];\nz q[0];\n") [2,0] 0 2
+#guard !targetWorkspaceAccepted true (targetWorkspace 3 "x q[0];\nh q[2];\n") [2,0] 1 1
+#guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[2];\nz q[0];\n") [2,0] 0 1
+#guard !targetWorkspaceAccepted true (targetWorkspace 3 "h q[1];\n") [2,0] 0 1
+#guard !targetWorkspaceAccepted true (targetWorkspace 1 "h q[0];\n") [0,0] 0 1
+
+private def placedWorkspace (fresh : Bool) (frame : List Nat) (scratch : Option Nat) : Bool :=
+  let (source,operations) := if fresh then (cleanScope,cleanOps [hData] [hData]) else (dirtyScope,dirtyOps [hData])
+  ((workspaceInterval source operations fresh none none
+    (some (targetWorkspace 3 "h q[2];\n",frame,scratch))).run 20000000).1.isOk
+
+#guard placedWorkspace true [2] (some 0)
+#guard placedWorkspace false [2,0] none
+#guard !placedWorkspace true [2] (some 2)
+#guard !placedWorkspace true [2,0] (some 1)
+#guard !placedWorkspace false [0,2] none
+#guard !placedWorkspace false [2,0] (some 1)
+
+private def routedWorkspace (gates : String) (align : List Target.CanonicalOpenQasmPlacement.Match)
+    (suffix : Option (List Target.CanonicalOpenQasmPlacement.Match) := none) :
+    Finite.WorkM (List Nat × Nat) := do
+  let source ← SourceRuntimeTrace.read #[("main","#![no_implicit_prelude]\n" ++ cleanScope)] "main" "route"
+  let [.workspace event children] := source.events | throw .request
+  let beforeOps : List Semantics.Observation.Op :=
+    [.pure (.init0 10 6),.pure (.packUnit 12)]
+  let body := cleanOps [hData] [hData]
+  let program : Semantics.Observation.Program := if suffix.isSome then
+    ⟨[],[],beforeOps++body++[.pure (.gate .z 13 14),.pure (.unpackUnit 12),.measure 14 3],[],[3],.observe⟩
+    else ⟨[],[],beforeOps++body,[13,12],[],.isometry⟩
+  let root ← Qirf.RuntimeInterval.prepare [] program
+  let interval ← Qirf.RuntimeInterval.check root.block beforeOps.length body.length
+  let bindings : Qirf.RuntimeOwnerMap.Map :=
+    [⟨event.input,⟨10,[6],1⟩⟩,⟨⟨4,[.unit]⟩,⟨12,[],0⟩⟩]
+  let before : Qirf.RuntimeStructuralAction.SourceState := ⟨bindings,bindings.map (·.owner),event.nextOrdinal⟩
+  let original ← Qirf.RuntimeWorkspace.readOriginal event children
+  let literal ← Qirf.RuntimeWorkspace.readLiteral original interval before
+  let map ← Qirf.RuntimeWorkspace.readCallerMap literal #[]
+  let text := if suffix.isSome then
+    "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[4] q;\nbit[1] c;\nreset q;\n" ++ gates
+    else targetWorkspace 3 gates
+  let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 4
+  let prefixCheck ← Target.CanonicalOpenQasmPlacement.check target program
+    (fun a b => a+1 == b || b+1 == a) align
+  if let some suffix := suffix then
+    let finished ← Target.CanonicalOpenQasmPlacement.finishWorkspace map prefixCheck 1 (some 3) suffix
+    return (target.circuit.measurements,finished.final.gateIndex)
+  let placed ← Target.CanonicalOpenQasmPlacement.workspace map prefixCheck 1 (some 0)
+  pure (placed.placed.liveLayout,prefixCheck.state.gateIndex)
+
+private def routedPrefix : List Target.CanonicalOpenQasmPlacement.Match := [.original,.original,.route,.route]
+#guard ((routedWorkspace "swap q[0], q[1];\nswap q[1], q[2];\nh q[2];\n" routedPrefix).run
+  20000000).1.toOption == some ([2],2)
+#guard ((routedWorkspace "swap q[0], q[1];\nswap q[1], q[2];\nh q[1];\n" routedPrefix).run
+  20000000).1.toOption.isNone
+#guard ((routedWorkspace "swap q[0], q[2];\nswap q[1], q[2];\nh q[2];\n" routedPrefix).run
+  20000000).1.toOption.isNone
+#guard ((routedWorkspace "swap q[0], q[1];\nswap q[1], q[2];\nh q[2];\n" [.original,.route,.route]).run
+  20000000).1.toOption.isNone
+
+private def terminalWorkspaceGates : String := "swap q[0], q[1];\nswap q[1], q[2];\nh q[2];\nz q[2];\n"
+private def terminalWorkspaceCase :=
+  routedWorkspace (terminalWorkspaceGates ++ "c[0] = measure q[2];\n") routedPrefix (some [.original])
+private def terminalWorkspace (tail : String) (suffix : List Target.CanonicalOpenQasmPlacement.Match) :=
+  ((routedWorkspace (terminalWorkspaceGates ++ tail) routedPrefix (some suffix)).run 20000000).1.toOption
+
+#guard (terminalWorkspaceCase.run exactWorkLimit).1.toOption == some ([2],4)
+#guard
+  let consumed := exactWorkLimit - (terminalWorkspaceCase.run exactWorkLimit).2
+  match (terminalWorkspaceCase.run (consumed-1)).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false
+#guard (terminalWorkspace "c[0] = measure q[1];\n" [.original]).isNone
+#guard (terminalWorkspace "c[0] = measure q[3];\n" [.original]).isNone
+#guard (terminalWorkspace "x q[2];\nc[0] = measure q[2];\n" [.original]).isNone
+#guard (terminalWorkspace "c[0] = measure q[2];\n" []).isNone
+
+private def terminalOutputOrder (measurements : String) : Finite.WorkM Unit := do
+  let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 6),.pure (.init0 11 7),
+    .pure (.init0 12 8),.measure 11 20,.discard 12,.measure 10 21],[],[21,20],.observe⟩
+  let _ ← Qirf.RuntimeInterval.prepare [] program
+  let header := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[2] c;\nreset q;\n"
+  let target ← Target.CanonicalOpenQasmResources.check (header ++ measurements).toUTF8 3
+  let prefixCheck ← Target.CanonicalOpenQasmPlacement.check target program (fun _ _ => false)
+    [.original,.original,.original]
+  let _ ← Target.CanonicalOpenQasmPlacement.checkReadout target program prefixCheck.state
+
+#guard ((terminalOutputOrder "c[0] = measure q[0];\nc[1] = measure q[1];\n").run 20000000).1.isOk
+#guard !((terminalOutputOrder "c[0] = measure q[1];\nc[1] = measure q[0];\n").run 20000000).1.isOk
+#guard !((terminalOutputOrder "c[0] = measure q[0];\nc[1] = measure q[2];\n").run 20000000).1.isOk
+
+private def reusableWorkspace (gates : String) (first second : Nat) (count : Nat := 1) : Bool :=
+  ((workspaceInterval cleanScope (cleanOps [hData] [hData]) true none
+    (some (targetWorkspace 3 gates,[2,0],first,second,count))).run 20000000).1.isOk
+
+#guard reusableWorkspace "h q[2];\nt q[1];\nh q[2];\n" 0 2
+#guard !reusableWorkspace "h q[2];\nt q[1];\nh q[2];\n" 2 0
+#guard !reusableWorkspace "h q[2];\n" 0 0
+#guard !reusableWorkspace "h q[2];\nx q[0];\nh q[2];\n" 0 2
+#guard !reusableWorkspace "x q[0];\nh q[2];\nh q[2];\n" 1 2
+#guard !reusableWorkspace "h q[2];\nh q[2];\nx q[0];\n" 0 1
+
+private def touchAndRestore : String := "h q[0];\nh q[2];\nh q[0];\n"
+#guard reusableWorkspace (touchAndRestore ++ "t q[1];\n" ++ touchAndRestore) 0 4 3
+#guard !reusableWorkspace (touchAndRestore ++ "x q[0];\n" ++ touchAndRestore) 0 4 3
+#guard !reusableWorkspace (touchAndRestore ++ "t q[1];\nh q[0];\nh q[2];\nz q[0];\n") 0 4 3
 
 private def expandedWorkspaceBody : Finite.WorkM Nat := do
   let gate : Semantics.Raw.Op := .gate .h 0 1
