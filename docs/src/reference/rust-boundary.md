@@ -312,6 +312,13 @@ Unitary body.
 | Generated cleanup | Retain compute, use and inverse in the ordinary structured Raw representation. The independent checker validates the rule and dependencies; the producer cannot assert successful restoration. |
 | Capacity | Missing evidence or existing source, dependency or exact-work exhaustion rejects. No reset, discard, heuristic equality or alternate acceptance path repairs the failure. |
 
+The checked Raw interval accounts for the full caller frame and one private
+auxiliary wire, including its preparation and release. The resource model
+counts a forward predicate pass and its inverse, plus the body steps actually
+emitted. The certified checker uses this same compute/body/inverse word for
+the cleanup equation. Its logical witness is checked separately. Physical
+target decompositions and routing retain their own costs.
+
 For example, the following two auxiliary bodies both qualify, with different
 exact live actions when the predicate is the identity on `Bit`:
 
@@ -383,6 +390,13 @@ on dirty auxiliary rows. It replaces both kinds of clean scope with their
 original logical actions in the checked event order and connects the result to
 fresh graph inspection. These Raw results do not establish general source
 composition, the CPTP marginal equivalence or quantitative resource bounds.
+
+For explicit `clean` and `dirty` scopes, `RuntimeWorkspaceRestoration.literal_action`
+uses the original checked Raw interval and the independently read logical body.
+It proves clean return on every physical row, and dirty identity on the scratch
+axis for any joint amplitudes, including reference correlations. The clean
+equation preserves the exact phase and composes across two accepted scopes
+with the same interface using `clean_sequence`.
 
 Quantitative Resource Safety remains the separate obligation to produce finite,
 statically computed bounds and preserve them through compilation. Scratch
