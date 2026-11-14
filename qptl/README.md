@@ -21,7 +21,7 @@ products used by the library and its tests before building.
 ```sh
 lake exe cache get Mathlib.CategoryTheory.CommSq Mathlib.CategoryTheory.Monoidal.Category \
   Mathlib.CategoryTheory.Preadditive.Mat Mathlib.Data.Complex.Basic Mathlib.Data.Matrix.Block \
-  Mathlib.Tactic.NormNum
+  Mathlib.LinearAlgebra.Matrix.Kronecker Mathlib.Tactic.NormNum
 ```
 
 ## API documentation
@@ -104,6 +104,10 @@ properties. Lean checks the resulting proof.
   a reference. The live output basis can include the complete classical outcome
   register. For a trace-preserving family on normalized inputs, the retained
   scratch population is one.
+
+- `QPTL.FiniteMatrix.det_embedded` and `exact_same_wire_obstruction`
+  give a necessary determinant condition for exact same-wire gate products
+  on an explicitly reindexed finite basis.
 
 The tests include a rectangular state preparation, a coherent sign change
 through a rectangular encoding, and an arbitrary joint input with a reference. [Proof examples](QPTLTests.lean)
