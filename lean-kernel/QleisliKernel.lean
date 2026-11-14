@@ -122,6 +122,7 @@ import QleisliKernel.Qirf.RuntimeDiscoveryTraversal
 import QleisliKernel.Qirf.RuntimeForestCode
 import QleisliKernel.Qirf.RuntimeCoefficientTransport
 import QleisliKernel.Qirf.RuntimeScatterTransport
+import QleisliKernel.Qirf.StructuralXor
 import QleisliKernel.Qirf.RuntimeLocalEvents
 import QleisliKernel.Qirf.RuntimeSelectionWitness
 import QleisliKernel.Qirf.SourceDutySlots
