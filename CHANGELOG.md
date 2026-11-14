@@ -12,6 +12,9 @@ development milestones from the scope of their evidence.
 - Reconstruct Boolean predicates from original typed bodies and verify the
   matching phase-free XOR in a literal Raw interval. The checked component
   preserves the ordered owner frame and meters clause expansion (#30).
+- Verify the matching forward and inverse XOR circuits together with the
+  original auxiliary use. Prove exact zero return with retained reference
+  correlations and full phase for the checked structural components (#30).
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.
