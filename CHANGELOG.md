@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Prove the original Raw resource counts for structural predicates, including
+  private scratch and both predicate passes.
 - Read literal `Bits<n>` coordinates in classical functions and coherent
   basis expressions. The native source-body checker binds word predicates to
   the controls in `with_computed`, and checks the ordered register extraction
