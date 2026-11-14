@@ -8,6 +8,18 @@ development milestones from the scope of their evidence.
 
 - Prove in QPTL that exact return of a clean scratch marginal is equivalent to
   factorization with arbitrary references for finite trace-preserving Kraus actions.
+- Prove exact ordered placement transport and count literal gates for a
+  fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
+  declared target connectivity.
+- Read complete canonical OpenQASM terminal resources and check a designated
+  target gate interval against the original clean/dirty workspace operator.
+- Check reuse of a reserved physical scratch wire across exact clean-return
+  intervals and refuse unaccounted gates or terminal readout on that wire.
+- Derive clean/dirty workspace entry placement from literal closed Raw and
+  target prefixes, including physical SWAP routing and zero-width owners.
+- Follow a single checked workspace through its literal target suffix and
+  compare the emitted terminal measurements in original classical output order.
+
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.
