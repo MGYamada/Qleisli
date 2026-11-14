@@ -31,17 +31,19 @@ private def gateWord (circuit : Circuit) (atGate : Nat) (locations : List Nat)
     some (atGate+steps.length)
   else none
 
-private def fresh (capacity : Nat) (locations : List Nat) : Option (List Nat) :=
-  ((List.range capacity).find? fun axis => !locations.contains axis).map (fun wire => locations ++ [wire])
+private def fresh (capacity : Nat) (locations reserved : List Nat) : Option (List Nat) :=
+  ((List.range capacity).find? fun axis => !locations.contains axis && !reserved.contains axis).map
+    (fun wire => locations ++ [wire])
 
-private def followRaw (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op) : Option State := do
+private def followRaw (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op)
+    (reserved : List Nat) : Option State := do
   let (next,events) ← Semantics.RawTrace.step state.raw operation
   let (locations,gateIndex) ← match events with
     | [] => some (state.locations,state.gateIndex)
-    | [.init0 _] => (fresh circuit.qubits state.locations).map (·,state.gateIndex)
+    | [.init0 _] => (fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)
     | [.liftBasis before after [] [axis] [0]] =>
       if after == before+1 && axis == before then
-        (fresh circuit.qubits state.locations).map (·,state.gateIndex)
+        (fresh circuit.qubits state.locations reserved).map (·,state.gateIndex)
       else none
     | [.circuit _ steps] =>
       (gateWord circuit state.gateIndex state.locations steps).map (state.locations,·)
@@ -50,20 +52,22 @@ private def followRaw (circuit : Circuit) (state : State) (operation : Semantics
     some ⟨next,locations,state.rawIndex+1,gateIndex⟩
   else none
 
-private def followSwap (circuit : Circuit) (connected : Nat → Nat → Bool) (state : State) : Option State := do
+private def followSwap (circuit : Circuit) (connected : Nat → Nat → Bool) (state : State)
+    (reserved : List Nat) : Option State := do
   let some ⟨.swap,[first,second]⟩ := circuit.gates[state.gateIndex]? | none
-  if first != second && first < circuit.qubits && second < circuit.qubits && connected first second then
+  if first != second && first < circuit.qubits && second < circuit.qubits && connected first second &&
+      !reserved.contains first && !reserved.contains second then
     let move : Routing.Swap := ⟨first,second⟩
     some {state with locations := state.locations.map move.axis, gateIndex := state.gateIndex+1}
   else none
 
 private def replayFrom (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
-    (alignment : List Match) (initial : State) : Option State :=
+    (alignment : List Match) (initial : State) (reserved : List Nat := []) : Option State :=
   alignment.foldlM (fun state action => match action with
-    | .route => followSwap circuit connected state
+    | .route => followSwap circuit connected state reserved
     | .original => do
       let some (.pure operation) := original[state.rawIndex]? | none
-      followRaw circuit state operation) initial
+      followRaw circuit state operation reserved) initial
 
 def replay (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
     (alignment : List Match) : Option State :=
@@ -225,6 +229,155 @@ def finishWorkspace {sources caller dependencies program block sourceStart sourc
       | some final =>
         let result ← checkReadout target program final
         return ⟨binding,lifetime,same,suffix,final,replayed,result⟩
+    else throw .request
+  else throw .request
+
+/-- One workspace request in the original Raw program. The producer can
+choose literal alignment and coordinates, and the checker derives the frame. -/
+structure Segment (program : Semantics.Observation.Program) where
+  sources : SourceTypes.Sources
+  caller : String
+  dependencies : List Semantics.Finite.Dependency
+  block : RuntimeInterval.Block dependencies program
+  start : Nat
+  length : Nat
+  event : SourceTypes.SourceRuntimeContext.WorkspaceEvent sources caller
+  events : List (SourceTypes.SourceRuntimeContext.Event sources caller)
+  original : RuntimeWorkspace.Original event events
+  sourceInterval : RuntimeInterval.Checked block start length
+  sourceBefore : RuntimeStructuralAction.SourceState
+  literal : RuntimeWorkspace.Literal original sourceInterval sourceBefore
+  map : RuntimeWorkspace.CallerMap literal
+  alignment : List Match
+  count : Nat
+  scratch : Option Nat
+
+private def Segment.exit {program : Semantics.Observation.Program} (segment : Segment program) (entry : State) :
+    State :=
+  ⟨segment.sourceInterval.after.quantum.reference,entry.locations,segment.start+segment.length,
+    entry.gateIndex+segment.count⟩
+
+structure BoundSegment {program : Semantics.Observation.Program} (segment : Segment program)
+    {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (connected : Nat → Nat → Bool) (reserved : List Nat) (previous entry : State) where
+  replayed : replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved =
+    some entry
+  operations : segment.block.operations = program.operations
+  offset : entry.rawIndex = segment.start
+  sameEntry : entry.raw = segment.sourceInterval.before.quantum.reference
+  sameWires : segment.sourceInterval.after.quantum.reference.frame = entry.raw.frame
+  reservedScratch : ∀ wire ∈ segment.scratch.toList, wire ∈ reserved
+  placed : CanonicalOpenQasmWorkspace.Placed segment.map target entry.locations entry.gateIndex segment.count
+  scratchUsed : placed.freshScratch = segment.scratch
+
+private def segmentWork {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (program : Semantics.Observation.Program) (alignment : List Match) : WorkM Unit := do
+  guard (alignment.length ≤ 65536) .limit
+  exactWork (Exact.charge (32*(1+program.operations.length) +
+    32*(1+alignment.length)*(1+alignment.length+target.circuit.gates.length)))
+
+private def checkSegment {program : Semantics.Observation.Program} (segment : Segment program)
+    {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (connected : Nat → Nat → Bool) (reserved : List Nat) (previous : State) :
+    WorkM (Σ entry, BoundSegment segment target connected reserved previous entry) := do
+  segmentWork target program segment.alignment
+  exactWork (Exact.charge (16*(1+program.operations.length+segment.block.operations.length)))
+  match replayed : replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved with
+  | none => throw .request
+  | some entry =>
+    if bound : ObservationBinding.lists (ObservationBinding.operation 65)
+        segment.block.operations program.operations = true ∧ entry.rawIndex = segment.start ∧
+        entry.raw = segment.sourceInterval.before.quantum.reference ∧
+        segment.sourceInterval.after.quantum.reference.frame = entry.raw.frame ∧
+        (∀ wire ∈ segment.scratch.toList,wire ∈ reserved) then
+      let placed ← CanonicalOpenQasmWorkspace.checkPlacement segment.map target entry.locations
+        entry.gateIndex segment.count segment.scratch
+      if scratchUsed : placed.freshScratch = segment.scratch then
+        let operations := ObservationBinding.lists_sound (ObservationBinding.operation 65)
+          (ObservationBinding.operation_sound 65) _ _ bound.1
+        return ⟨entry,⟨replayed,operations,bound.2.1,bound.2.2.1,bound.2.2.2.1,bound.2.2.2.2,placed,scratchUsed⟩⟩
+      else throw .request
+    else throw .request
+
+private def BoundSegment.addCleanUse {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved previous entry}
+    {segment : Segment program} (bound : BoundSegment segment target connected reserved previous entry) (scratch : Nat)
+    (earlier : List (CanonicalOpenQasmWorkspace.CleanUse target.circuit scratch)) :
+    List (CanonicalOpenQasmWorkspace.CleanUse target.circuit scratch) :=
+  if last : bound.placed.freshScratch = some scratch then
+    have fresh : segment.event.fresh = true := by
+      have mode := bound.placed.scratchMode
+      rw [last] at mode
+      exact mode.symm
+    have layout : (bound.placed.liveLayout ++ bound.placed.freshScratch.toList).getLast? = some scratch := by
+      simp [last]
+    earlier ++ [bound.placed.body.cleanUse fresh layout]
+  else earlier
+
+abbrev CleanUses (circuit : Circuit) := (scratch : Nat) → List (CanonicalOpenQasmWorkspace.CleanUse circuit scratch)
+
+inductive WorkspaceTrace {program : Semantics.Observation.Program} {bytes capacity}
+    (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
+    (reserved : List Nat) : State → CleanUses target.circuit → Type where
+  | start : WorkspaceTrace (program := program) target connected reserved {} (fun _ => [])
+  | next {previous entry : State} {segment : Segment program} {uses : CleanUses target.circuit}
+    (earlier : WorkspaceTrace (program := program) target connected reserved previous uses)
+    (bound : BoundSegment segment target connected reserved previous entry) :
+      WorkspaceTrace (program := program) target connected reserved (segment.exit entry)
+        (fun scratch => bound.addCleanUse scratch (uses scratch))
+
+structure TraceWithUses {program : Semantics.Observation.Program} {bytes capacity}
+    (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
+    (reserved : List Nat) where
+  exit : State
+  cleanUses : CleanUses target.circuit
+  trace : @WorkspaceTrace program bytes capacity target connected reserved exit cleanUses
+
+structure FinishedTrace (program : Semantics.Observation.Program) {bytes capacity}
+    (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
+    (reserved : List Nat) (suffix : List Match) where
+  closed : program.inputs.isEmpty = true ∧ program.classicalInputs.isEmpty = true
+  declared : target.circuit.declares reserved
+  recorded : @TraceWithUses program bytes capacity target connected reserved
+  final : State
+  replayed : replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved = some final
+  readout : Readout target program final
+  restored : ∀ scratch ∈ reserved, Nonempty (CanonicalOpenQasmWorkspace.Reuse target scratch (recorded.cleanUses scratch))
+
+/-- Follow every original interval in order while keeping designations for
+clean scratch fixed. Ordinary preparation and routing cannot use a designated
+scratch wire. Each such wire is restored by its own exact, disjoint uses. -/
+def finishTrace {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (program : Semantics.Observation.Program) (connected : Nat → Nat → Bool) (reserved : List Nat)
+    (segments : List (Segment program)) (suffix : List Match) : WorkM (FinishedTrace program target connected reserved suffix) := do
+  guard (program.operations.length ≤ 65536 && segments.length ≤ program.operations.length && reserved.length ≤ 12) .limit
+  exactWork (Exact.charge (32*(program.operations.length+segments.length+1)))
+  if closed : program.inputs.isEmpty = true ∧ program.classicalInputs.isEmpty = true then
+    if declared : target.circuit.declares reserved then
+      let recorded ← segments.foldlM (fun (state : @TraceWithUses program bytes capacity target connected reserved) segment => do
+        let ⟨entry,bound⟩ ← checkSegment segment target connected reserved state.exit
+        pure ⟨segment.exit entry,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),.next state.trace bound⟩)
+        ⟨{},fun _ => [],.start⟩
+      segmentWork target program suffix
+      match replayed : replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved with
+      | none => throw .request
+      | some final =>
+        let output ← checkReadout target program final
+        exactWork (Exact.charge (32*(1+reserved.length)*(1+segments.length)*(1+segments.length)))
+        let uses ← reserved.attach.mapM fun wire => do
+          let intervals := recorded.cleanUses wire.val
+          guard (!intervals.isEmpty) .request
+          let checked ← CanonicalOpenQasmWorkspace.checkReuse target wire.val intervals
+          pure (⟨wire,checked⟩ : Σ item : { axis // axis ∈ reserved },
+            CanonicalOpenQasmWorkspace.Reuse target item.val (recorded.cleanUses item.val))
+        if covered : ∀ scratch ∈ reserved, (uses.map (fun item => item.1.val)).contains scratch then
+          have restored : ∀ scratch ∈ reserved, Nonempty (CanonicalOpenQasmWorkspace.Reuse target scratch (recorded.cleanUses scratch)) := by
+            intro scratch member
+            have listed := List.contains_iff_mem.mp (covered scratch member)
+            obtain ⟨⟨wire,checked⟩,_,rfl⟩ := List.mem_map.mp listed
+            exact ⟨checked⟩
+          return ⟨closed,declared,recorded,final,replayed,output,restored⟩
+        else throw .request
     else throw .request
   else throw .request
 

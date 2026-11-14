@@ -17,6 +17,8 @@ development milestones from the scope of their evidence.
   target prefixes, including physical SWAP routing and zero-width owners.
 - Follow a single checked workspace through its literal target suffix and
   compare the emitted terminal measurements in original classical output order.
+- Bind exact scratch reuse across multiple workspace intervals to one complete
+  literal placement trace, including intervening routing and terminal readout.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
