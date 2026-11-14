@@ -222,7 +222,70 @@ theorem block_result {selected spectators : Map} (frame : Frame (selected++spect
   simp only [Nat.add_mul_mod_self_left,Nat.mod_eq_of_lt bounded,
     Nat.add_mul_div_left _ _ positive,Nat.div_eq_of_lt bounded,Nat.zero_add]
 
+private theorem full_block_coefficient (selected : Map) (physicalFrame : List Nat)
+    (full : (product selected).labels = List.range (2^(forestAxes physicalFrame selected).length))
+    (physical digit : Nat) (bound : digit < 2^(forestAxes physicalFrame selected).length) :
+    coefficient selected physicalFrame physical digit =
+      if gather physical (forestAxes physicalFrame selected) = digit then 1 else 0 := by
+  unfold coefficient sparseEntry
+  simp only [RuntimeForestCode.Sparse.ofLayout, full, List.getElem?_range bound,
+    beq_iff_eq, Option.some.injEq]
+  by_cases same : gather physical (forestAxes physicalFrame selected) = digit
+  · simp [same, Qleisli.Exact.scalar_one_meaning]
+  · have different := Ne.symm same
+    simp [same, different, Qleisli.Exact.scalar_zero_meaning]
+
+private theorem gather_repartition (physical : Nat) {before after : List Nat}
+    (wires : before.Perm after) (unique : after.Nodup) :
+    gather (scatter 0 after (gather physical after)) before = gather physical before := by
+  unfold gather
+  apply congrArg List.sum
+  apply List.map_congr_left
+  intro entry member
+  have inBefore : entry.1 ∈ before := List.fst_mem_of_mem_zipIdx member
+  obtain ⟨index, bound, same⟩ := List.getElem_of_mem (wires.mem_iff.mp inBefore)
+  change Semantics.Finite.bit (scatter 0 after (gather physical after)) entry.1 * 2^entry.2 =
+    Semantics.Finite.bit physical entry.1 * 2^entry.2
+  have transported := RuntimeScatterTransport.scatter_at 0 (gather physical after) after unique index bound
+  rw [RuntimeScatterTransport.gather_at _ after index bound, same] at transported
+  rw [transported]
+
+/-- Repartition an ordered full register block with the same physical wires.
+The prior digit is read in the old order, while the spectator digit and
+arbitrary reference amplitude pass through the same joint operator. -/
+theorem full_block_repartition {before after spectators : Map}
+    (input : Frame (before ++ spectators)) (output : Frame (after ++ spectators))
+    (physicalFrame : List Nat)
+    (wires : (forestAxes physicalFrame before).Perm (forestAxes physicalFrame after))
+    (unique : (forestAxes physicalFrame after).Nodup)
+    (inputFull : (product before).labels = List.range (2^(forestAxes physicalFrame before).length))
+    (outputFull : (product after).labels = List.range (2^(forestAxes physicalFrame after).length))
+    {Reference : Type} (joint : Nat → Nat → Reference → ℂ) (physical : Nat) (reference : Reference) :
+    action input physicalFrame (blockJoint (product before).labels.length joint) physical reference =
+      action output physicalFrame (blockJoint (product after).labels.length
+        (fun digit spectator ref =>
+          joint (gather (scatter 0 (forestAxes physicalFrame after) digit)
+            (forestAxes physicalFrame before)) spectator ref)) physical reference := by
+  have eval (selected : Map) (full : (product selected).labels =
+      List.range (2^(forestAxes physicalFrame selected).length))
+      (f : Nat → ℂ) :
+      ((List.range (product selected).labels.length).map fun digit =>
+        coefficient selected physicalFrame physical digit * f digit).sum =
+        f (gather physical (forestAxes physicalFrame selected)) := by
+    rw [full, List.length_range]
+    calc
+      _ = ((List.range (2^(forestAxes physicalFrame selected).length)).map fun digit =>
+          if gather physical (forestAxes physicalFrame selected) = digit then f digit else 0).sum := by
+        apply Qleisli.Exact.sum_map_congr
+        intro digit member
+        rw [full_block_coefficient selected physicalFrame full physical digit (List.mem_range.mp member)]
+        split <;> simp
+      _ = _ := Qleisli.Exact.range_delta_sum _ _ _ (gather_bound _ _)
+  rw [block_result input, block_result output, eval _ inputFull, eval _ outputFull]
+  rw [gather_repartition physical wires unique]
+
 #print axioms block_action
+#print axioms full_block_repartition
 #print axioms sparse_caller_input
 #print axioms caller_input
 end Qleisli.RuntimeSparseBlockEncoding
