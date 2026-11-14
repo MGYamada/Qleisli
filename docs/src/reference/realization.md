@@ -564,6 +564,15 @@ source packet, including the clean interval, the optimized word between
 intervals, the dirty interval and terminal result order. Production invocation
 still requires transporting the actual bytes and alignment to this adapter.
 
+The internal QTP1 checker input contains the complete original QLV3 packet,
+the exact emitted OpenQASM bytes and a placement proposal. It checks the
+packet lengths, rejects trailing bytes and precharges alignment traversal.
+Source rechecking, target decoding and placement replay share the 20,000,000
+exact-work budget. The proposal supplies target capacity, undirected routing
+edges, reserved workspace and alignment only. The checked gate and reset
+counts come from decoding the literal output. The producer still needs to
+supply alignment for the gates it emits.
+
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
 Compiler memory, checker work limits, static termination, ownership safety

@@ -1980,4 +1980,45 @@ private def emitted : String := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit
 #guard ((placement fixturePacket emitted (plans.take 1)).run exactWorkLimit).1.toOption.isNone
 #guard ((placement fixturePacket (emitted.replace "x q[2]" "y q[2]") plans).run exactWorkLimit).1.toOption.isNone
 
+
+private def encodeNaturals (values : List Nat) : ByteArray :=
+  ⟨(values.flatMap fun value =>
+    (List.range 4).map fun i => UInt8.ofNat (value / 256^i % 256)).toArray⟩
+
+private def placementBytes (source target plan : ByteArray) : ByteArray :=
+  "QTP1".toUTF8 ++ encodeNaturals [source.size,target.size,plan.size] ++ source ++ target ++ plan
+
+private def placementPlan : ByteArray :=
+  encodeNaturals [
+    3, -- capacity
+    0, -- routing edges
+    1,1, -- reserved wire 1
+    0, -- synthesis wires
+    2, -- workspace intervals
+    2,0,0,1,1, -- two original operations, one emitted gate, wire 1
+    3,0,0,4,3,1,0,1,12, -- two originals, an optimized span, one gate, no scratch
+    0 -- suffix
+  ]
+
+private def checkPacket (bytes : ByteArray) (work : Nat := exactWorkLimit) :
+    Except Gate.Error (List (Nat × Nat) × List Nat) :=
+  ((do
+    let result ← PlacementPacket.check bytes
+    return (result.placement.segments.map (fun segment => (segment.start,segment.length)),
+      result.target.circuit.measurements) : Gate.CheckM _).run work).1
+
+private def actualPacket := placementBytes fixturePacket emitted.toUTF8 placementPlan
+
+#guard (checkPacket actualPacket).toOption == some ([(2,1),(8,3)],[2,0])
+#guard (checkPacket (actualPacket.push 0)).toOption.isNone
+#guard (checkPacket (placementBytes fixturePacket emitted.toUTF8 (placementPlan.push 0))).toOption.isNone
+#guard (checkPacket (placementBytes fixturePacket
+  (emitted.replace "x q[2]" "y q[2]").toUTF8 placementPlan)).toOption.isNone
+#guard (checkPacket (placementBytes fixturePacket
+  (emitted.replace "x q[2]" "cx q[2]").toUTF8 placementPlan)).toOption.isNone
+#guard (checkPacket (placementBytes (fixturePacket.set! 4 0) emitted.toUTF8 placementPlan)).toOption.isNone
+#guard match checkPacket actualPacket 100000 with
+  | .error (.native (.arithmetic .workLimit)) => true
+  | _ => false
+
 end QleisliKernel.Tests.WorkspaceTarget

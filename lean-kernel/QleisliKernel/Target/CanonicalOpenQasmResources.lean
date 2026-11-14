@@ -64,7 +64,9 @@ private def instruction (line : List UInt8) (width : Nat) : Option Instruction :
   let 32 :: args := line.drop name.length | none
   let gate ← Gate.read name
   let wires ← operands gate.arity args
-  if wires.Nodup ∧ (∀ wire ∈ wires, wire < width) then some ⟨gate,wires⟩ else none
+  if wires.length = gate.arity ∧ wires.Nodup ∧ (∀ wire ∈ wires, wire < width) then
+    some ⟨gate,wires⟩
+  else none
 
 private def measurement (line : List UInt8) (next width : Nat) : Option Nat := do
   let 99 :: 91 :: result := line | none
@@ -174,6 +176,9 @@ private def sample := (sampleHeader ++ sampleBody).toUTF8
 #guard (decode sample).map Circuit.counts == some ⟨3,3,4,1,1,2⟩
 #guard (decode sample).map (·.measurements) == some [2,0]
 #guard (decode (sampleHeader ++ "ccx q[1], q[1], q[0];\n" ++ sampleBody).toUTF8).isNone
+#guard (decode (sampleHeader ++ "cx q[0];\n" ++ sampleBody).toUTF8).isNone
+#guard (decode (sampleHeader ++ "ccx q[0], q[1];\n" ++ sampleBody).toUTF8).isNone
+#guard (decode (sampleHeader ++ "swap q[0];\n" ++ sampleBody).toUTF8).isNone
 #guard (decode (sampleHeader ++ "h q[3];\n" ++ sampleBody).toUTF8).isNone
 #guard (decode (sampleHeader ++ sampleBody ++ "x q[2];\n").toUTF8).isNone
 #guard (decode (sampleHeader ++ sampleBody.replace "c[1]" "c[0]").toUTF8).isNone

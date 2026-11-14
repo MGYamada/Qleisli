@@ -31,6 +31,10 @@ development milestones from the scope of their evidence.
   structural owner transitions, with exact phase and terminal readout order.
 - Emit terminal OpenQASM directly from closed typed source with a Unit or
   measured-bit result, retaining the verified order of the output bits.
+- Recheck the original source and literal OpenQASM bytes in a bounded
+  placement packet, sharing exact work across both checks and the replay.
+- Reject canonical OpenQASM gate instructions with missing operands before
+  exact operator comparison.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
