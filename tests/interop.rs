@@ -229,6 +229,53 @@ fn terminal_workspace_resource_report_tracks_bits_register_axes() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_workspace_resource_report_counts_physical_clean_uncomputation() {
+    let source = r#"
+        use std::gate::x;
+        use std::state::init0;
+        use std::structure::{empty,consume_empty};
+
+        unitary fn mark(q: Q<Bits<1>>) -> Q<Bits<1>> {
+            let (bit,rest)=take_bit[1,0](q); put_bit[1,0](phase[1,1](bit),rest)
+        }
+        observe fn main() -> Bit {
+            let q=put_bit[1,0](h(init0()),empty());
+            let q=clean(q,mark) { |data,scratch|
+                let (bit,rest)=take_bit[1,0](data);
+                let (bit,scratch)=controlled(x)(bit,scratch);
+                let scratch=phase[1,1](scratch);
+                let (bit,scratch)=controlled(x)(bit,scratch);
+                (put_bit[1,0](bit,rest),scratch)
+            };
+            let (bit,rest)=take_bit[1,0](q);
+            consume_empty(rest);
+            measure_z(h(bit))
+        }
+    "#;
+    let root = common::SourceRoot::new(source);
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert_eq!(resources.qubits, 2);
+    assert_eq!(resources.resets, 2);
+    assert_eq!(resources.gates, 5);
+    assert_eq!(resources.swaps, 0);
+    assert_eq!(resources.measurements, 1);
+    assert!(
+        text.contains("cx q[0], q[1];\nz q[1];\ncx q[0], q[1];\n"),
+        "{text}"
+    );
+    assert_eq!(literal_output_axes(&text), [0]);
+    let emitted = import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
+    for execution in [&program, &emitted] {
+        close(probability(execution, &[true]), 1.0);
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_export_checks_the_retained_source_interface() {
     use qleisli::edition::Edition;
     use qleisli::frontend::compile::ParsedProgram;

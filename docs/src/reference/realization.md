@@ -598,6 +598,14 @@ A structural basis lift updates the physical placement only when its complete
 table is an axis permutation. It contributes zero gates. A routing SWAP
 must occupy a literal gate position.
 
+For a source-checked structural `with_computed` interval, the Raw resource
+read counts the full live frame plus one private scratch wire at peak. It
+counts one preparation, one clean release and both predicate passes. The
+literal circuit count includes every forward step, inverse step and protected
+use. The Lean theorem `Qleisli.RuntimeComputedResources.structural_counts`
+binds these numbers to the same original source-checked Raw occurrence and
+retains caller spectators in the peak width.
+
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
 Compiler memory, checker work limits, static termination, ownership safety
