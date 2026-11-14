@@ -43,6 +43,16 @@ example {A P S R : C} {logical : A ⟶ A} {encode : A ⟶ P}
   have clean := conjugate_square useSquare unitary
   have reference : CommSq (𝟙 R) (𝟙 R) (𝟙 R) (𝟙 R) := ⟨rfl⟩
   exact congrArg (joint ≫ ·) (tensor_square clean reference).w
+/-- A checked reverse recovers the input encoding on the forward image,
+including an arbitrary reference. -/
+example {A B P Q S R : C} {logical : A ⟶ B}
+    {i : A ⟶ P} {o : B ⟶ Q} {physical : P ⟶ Q}
+    (square : CommSq logical i o physical) (unitary : IsUnitary physical)
+    (input : S ⟶ A ⊗ R) :
+    input ≫ (((logical ≫ o) ⊗ₘ 𝟙 R) ≫ (physical† ⊗ₘ 𝟙 R)) =
+      input ≫ (i ⊗ₘ 𝟙 R) :=
+  dilation_recover_reference square unitary input
+
 end Abstract
 
 section Concrete
