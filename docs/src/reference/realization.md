@@ -483,6 +483,56 @@ width is the maximum simultaneous live count; a sum of separate peaks is a
 conservative upper bound, not necessarily the realized peak. Logical width
 alone does not bound the physical implementation width.
 
+A fixed-occupancy SWAP segment records the ordered placement of all
+occupied locations, including any source, synthesis and routing scratch
+that is live during the segment. Each literal SWAP must name two distinct
+occupied locations connected in the declared profile. It moves both
+locations in the placement, leaves every other location alone, and counts
+as one operation even when a later SWAP cancels it. The final placement
+preserves logical axis order and exact joint coefficients with any
+reference. The Lean component independently decodes the declared register
+width and the literal SWAP instructions from a designated byte interval
+of canonical OpenQASM output. It also checks the target capacity.
+A complete certificate still establishes that the interval is used for
+routing and that its entry placement is correct. It also checks the other
+target operations, allocation, release and reuse.
+
+The canonical terminal profile reserves all declared physical locations
+and resets them before its first gate. It retains the reservation through
+terminal measurement. The independent complete-artifact reader counts
+reserved and reset wires, gates, literal SWAPs, T/TDG and measurements from
+the output bytes. An exact finite workspace check can also compare a
+designated gate interval with the independently checked original clean or
+dirty body. The comparison uses the declared ordered data/scratch placement
+and requires the physical register to cover the checked Raw peak. The checker
+can derive the workspace's ordered locations from the checked original Raw
+frame and its complete injective physical placement. A fresh scratch must
+occupy a location absent from that frame. For a fresh scratch wire, the
+checker can verify that nothing touches it between the initial reset and
+workspace entry, or after exact restoration. This profile keeps the physical
+reservation throughout.
+
+For a closed straight-line Raw prefix with zero preparations, structural
+owner operations and literal finite gates, the checker derives this frame by
+replaying the original prefix and the decoded target gate word. Marked
+routing operations must match connected physical SWAPs in the emitted word.
+An ordinary Raw SWAP is matched as a gate and does not move the encoding.
+The derived original frame must equal the checked workspace entry, including
+zero-width ports. With one checked workspace interval and literal gates, the
+checker can carry the original exit owners through the target suffix and use
+the resulting placement to verify the emitted terminal measurements in
+classical output order. All original quantum owners must be consumed by the
+end. Discarded owners and measurements outside the classical outputs do not
+add to the emitted readout. The complete check requires an exclusive lifetime
+for fresh scratch. General gate decompositions and complete circuits with
+multiple workspace intervals require further checking.
+
+A physical scratch location can also be reused across ordered, disjoint,
+nonempty clean intervals. The checker
+requires an exact zero-return equation for each interval, checks that every
+gate touching that location lies in one of those intervals, and checks that
+the location is absent from terminal readout.
+
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
 Compiler memory, checker work limits, static termination, ownership safety
