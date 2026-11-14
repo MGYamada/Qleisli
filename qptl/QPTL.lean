@@ -5,5 +5,6 @@ import QPTL.Dagger
 import QPTL.Clean
 import QPTL.Tensor
 import QPTL.FiniteMatrix
+import QPTL.Control
 import QPTL.CleanMarginal
 import QPTL.Tactic
