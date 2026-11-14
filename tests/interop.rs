@@ -39,6 +39,71 @@ fn raw(ops: Vec<RawOp>, outputs: Vec<ClassicalId>) -> AcceptedProgram {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_export_emits_the_checked_clean_body_and_reuses_its_wire() {
+    let gate = |index| CircuitStep {
+        controls: vec![],
+        action: CircuitAction::Hadamard { target: index },
+    };
+    let clean = |source, source_out, wire| RawOp::CertifiedCompute {
+        source: TokenId(source),
+        source_out: TokenId(source_out),
+        ancilla_wires: vec![WireId(wire)],
+        function: vec![0, 0],
+        use_steps: vec![gate(1), gate(0), gate(1)],
+        logical_steps: vec![gate(0)],
+    };
+    let program = raw(
+        vec![
+            RawOp::Init0 {
+                output: TokenId(10),
+                wire: WireId(6),
+            },
+            clean(10, 11, 7),
+            clean(11, 13, 8),
+            RawOp::MeasureZ {
+                input: TokenId(13),
+                output: ClassicalId(20),
+            },
+        ],
+        vec![ClassicalId(20)],
+    );
+    let emitted = export_openqasm3(&program).unwrap();
+    assert_eq!(emitted, include_str!("fixtures/interop/clean-reuse.qasm"));
+    let round_trip = import_openqasm3(qleisli::edition::Edition::E2026, &emitted).unwrap();
+    close(probability(&round_trip, &[false]), 1.0);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_export_realizes_raw_from_source_clean_and_dirty_workspaces() {
+    let source = "#![no_implicit_prelude]\n\
+        isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
+        observe fn main()->(Bit,Bit){\n\
+            let q=clean(zero(),h){|data,scratch|(h(data),scratch)};\n\
+            let (q,d)=dirty(q,zero(),h){|data,scratch|(h(data),scratch)};\n\
+            (measure_z(q),measure_z(d))}";
+    let root = common::SourceRoot::new(source);
+    let source_program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    assert!(source_program.portable_artifact().is_err());
+    let program = accept(source_program.raw().clone()).unwrap();
+    let emitted = export_openqasm3(&program).unwrap();
+    assert_eq!(
+        emitted,
+        "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[2] c;\nreset q;\n\
+         h q[0];\nh q[0];\nc[0] = measure q[0];\nc[1] = measure q[2];\n"
+    );
+    let round_trip = import_openqasm3(qleisli::edition::Edition::E2026, &emitted).unwrap();
+    close(probability(&round_trip, &[false, false]), 1.0);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn independent_bell_and_gate_fixtures_are_verified() {
     let bell = import_openqasm3(qleisli::edition::Edition::E2026, BELL).unwrap();
     close(probability(&bell, &[false, false]), 0.5);

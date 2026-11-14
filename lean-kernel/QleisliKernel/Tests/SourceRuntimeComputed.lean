@@ -236,16 +236,18 @@ private def repeatedCleanSource : String :=
   "#![no_implicit_prelude]\npub unitary fn route(q:Q<Bit>)->Q<Bit>{" ++
   "clean(clean(q,h){|data,scratch|(h(data),scratch)},h){|data,scratch|(h(data),scratch)}}"
 
-private def repeatedCleanBody (input output wire : Nat) : Semantics.Observation.Op :=
-  .pure (.certifiedCompute input output [wire] [0,0] [hData] [hData])
+private def repeatedCleanBody (input output wire : Nat) (physical : List Semantics.Finite.Step) :
+    Semantics.Observation.Op :=
+  .pure (.certifiedCompute input output [wire] [0,0] physical [hData])
 
-private def repeatedCleanTrace (gates : String) (between : List Target.CanonicalOpenQasmPlacement.Match) :
+private def repeatedCleanTrace (text : String) (between : List Target.CanonicalOpenQasmPlacement.Match)
+    (sourceText : String := repeatedCleanSource) (physical : List Semantics.Finite.Step := [hData]) :
     Finite.WorkM (List Nat × Nat) := do
-  let sources := #[("main",repeatedCleanSource)]
+  let sources := #[("main",sourceText)]
   let source ← SourceRuntimeTrace.read sources "main" "route"
   let [.workspace first firstBody,.workspace second secondBody] := source.events | throw .request
   let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 6),
-    repeatedCleanBody 10 11 7,repeatedCleanBody 11 13 8,.measure 13 20],[],[20],.observe⟩
+    repeatedCleanBody 10 11 7 physical,repeatedCleanBody 11 13 8 physical,.measure 13 20],[],[20],.observe⟩
   let body ← Qirf.RuntimeInterval.prepare [] program
   let firstInterval ← Qirf.RuntimeInterval.check body.block 1 1
   let secondInterval ← Qirf.RuntimeInterval.check body.block 2 1
@@ -265,19 +267,33 @@ private def repeatedCleanTrace (gates : String) (between : List Target.Canonical
   let secondSegment : Target.CanonicalOpenQasmPlacement.Segment program :=
     ⟨sources,"main",[],body.block,2,1,second,secondBody,secondOriginal,secondInterval,secondBefore,secondLiteral,
       secondMap,between,3,some 1⟩
-  let header := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[1] c;\nreset q;\n"
-  let target ← Target.CanonicalOpenQasmResources.check (header ++ gates).toUTF8 3
+  let target ← Target.CanonicalOpenQasmResources.check text.toUTF8 3
   let checked ← Target.CanonicalOpenQasmPlacement.finishTrace target program (fun _ _ => true) [1]
     [firstSegment,secondSegment] []
   pure (target.circuit.measurements,checked.final.gateIndex)
 
 private def repeatedCleanWord (data : Nat) : String := s!"x q[1];\nh q[{data}];\nx q[1];\n"
-#guard ((repeatedCleanTrace (repeatedCleanWord 0 ++ "swap q[0], q[2];\n" ++ repeatedCleanWord 2 ++
+private def repeatedCleanHeader : String := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[1] c;\nreset q;\n"
+#guard ((repeatedCleanTrace (repeatedCleanHeader ++ repeatedCleanWord 0 ++ "swap q[0], q[2];\n" ++ repeatedCleanWord 2 ++
   "c[0] = measure q[2];\n") [.route]).run exactWorkLimit).1.toOption == some ([2],7)
-#guard ((repeatedCleanTrace (repeatedCleanWord 0 ++ "swap q[0], q[1];\n" ++ repeatedCleanWord 1 ++
+#guard ((repeatedCleanTrace (repeatedCleanHeader ++ repeatedCleanWord 0 ++ "swap q[0], q[1];\n" ++ repeatedCleanWord 1 ++
   "c[0] = measure q[1];\n") [.route]).run exactWorkLimit).1.toOption.isNone
-#guard ((repeatedCleanTrace (repeatedCleanWord 0 ++ repeatedCleanWord 0 ++ "c[0] = measure q[1];\n")
+#guard ((repeatedCleanTrace (repeatedCleanHeader ++ repeatedCleanWord 0 ++ repeatedCleanWord 0 ++ "c[0] = measure q[1];\n")
   []).run exactWorkLimit).1.toOption.isNone
+
+private def emittedCleanReuse : String :=
+  include_str "../../../tests/fixtures/interop/clean-reuse.qasm"
+
+private def emittedCleanReuseCheck (text : String) :=
+  let body := "let (a,b)=(h(data),h(scratch));(a,h(b))"
+  let source := repeatedCleanSource.replace "(h(data),scratch)" body
+  let scratch := QleisliKernel.Raw.gateStep .h 1
+  ((repeatedCleanTrace text [] source [scratch,hData,scratch]).run exactWorkLimit).1.toOption
+
+#guard emittedCleanReuseCheck emittedCleanReuse == some ([0],6)
+#guard (emittedCleanReuseCheck (emittedCleanReuse.replace "h q[1];\nh q[0];" "z q[1];\nh q[0];")).isNone
+#guard (Target.CanonicalOpenQasmResources.decode emittedCleanReuse.toUTF8).map (·.counts) ==
+  some ⟨2,2,6,0,0,1⟩
 
 private def reusableWorkspace (gates : String) (first second : Nat) (count : Nat := 1) : Bool :=
   ((workspaceInterval cleanScope (cleanOps [hData] [hData]) true none

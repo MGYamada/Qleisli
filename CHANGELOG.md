@@ -19,6 +19,8 @@ development milestones from the scope of their evidence.
   compare the emitted terminal measurements in original classical output order.
 - Bind exact scratch reuse across multiple workspace intervals to one complete
   literal placement trace, including intervening routing and terminal readout.
+- Export the physical body of an accepted zero-predicate clean interval and
+  reuse its reserved scratch wire after verified restoration.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
