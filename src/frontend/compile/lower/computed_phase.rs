@@ -813,6 +813,91 @@ mod tests {
         );
     }
 
+    #[test]
+    fn structural_predicate_uses_original_helper_and_ordered_tuple_axes() {
+        let project = project_source(
+            "classical fn both(a: Bit, b: Bit) -> Bit { a and b }
+             classical fn predicate((lo, (_, hi)): (Bit, (Bits<2>, Bit))) -> Bit {
+                 not both(hi, lo) xor both(hi, hi)
+             }
+             fn main() -> Bit { 0 }",
+        );
+        let mut compiler = super::super::call_state_tests::untrusted_compiler(&project);
+        let key = compiler
+            .source
+            .resolution
+            .qualified("main::predicate")
+            .unwrap();
+        let main = compiler.source.resolution.qualified("main::main").unwrap();
+        compiler.checking = Some(main);
+        let (params, _) = compiler.signature(&key).unwrap();
+        let steps = compiler
+            .propose_structural_predicate(key, &params[0])
+            .unwrap();
+        assert_eq!(compiler.checking, Some(main));
+        assert!(compiler.basis.is_empty());
+        assert_eq!(steps.len(), 3);
+        for (step, expected) in steps.iter().zip([&[][..], &[3, 0], &[3]]) {
+            assert_eq!(
+                step.controls
+                    .iter()
+                    .map(|control| (control.index, control.when_one))
+                    .collect::<Vec<_>>(),
+                expected
+                    .iter()
+                    .map(|&axis| (axis, true))
+                    .collect::<Vec<_>>(),
+            );
+            assert_eq!(
+                step.action,
+                crate::ir::CircuitAction::Monomial {
+                    indices: vec![4],
+                    permutation: vec![1, 0],
+                    phases: vec![0, 0],
+                }
+            );
+        }
+        for label in 0..16 {
+            let lo = label & 1 != 0;
+            let hi = label & 8 != 0;
+            let result = steps.iter().fold(false, |acc, step| {
+                acc ^ step
+                    .controls
+                    .iter()
+                    .all(|control| (label >> control.index) & 1 != 0)
+            });
+            assert_eq!(result, !(hi && lo) ^ hi);
+        }
+    }
+
+    #[test]
+    fn structural_predicate_bounded_expansion_preserves_the_caller_and_allocates_no_table() {
+        let project = project_source(
+            "classical fn predicate((a, b): (Bit, Bit)) -> Bit {
+                 ((a xor b) and (a xor b)) and ((a xor b) and (a xor b))
+             }
+             fn main() -> Bit { 0 }",
+        );
+        let mut compiler = super::super::call_state_tests::untrusted_compiler(&project);
+        let key = compiler
+            .source
+            .resolution
+            .qualified("main::predicate")
+            .unwrap();
+        let main = compiler.source.resolution.qualified("main::main").unwrap();
+        let (params, _) = compiler.signature(&key).unwrap();
+        compiler.checking = Some(main);
+        compiler.work = MAX_WORK - 1024;
+        let started = compiler.work;
+        let failure = compiler
+            .propose_structural_predicate(key, &params[0])
+            .unwrap_err();
+        assert_eq!(failure.code, ErrorCode::Limit);
+        assert!(compiler.work > started);
+        assert_eq!(compiler.checking, Some(main));
+        assert!(compiler.basis.is_empty());
+    }
+
     fn project() -> Project {
         project_source(
             "use std::gate::z;classical fn predicate(b:Bit)->Bit{b}

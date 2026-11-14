@@ -3,6 +3,7 @@ use crate::frontend::ordinary::finite::{self, NominalContext};
 
 mod nominal;
 mod planning;
+mod structural;
 
 pub(super) use finite::Label as BasisValue;
 
