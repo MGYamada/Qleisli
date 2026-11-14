@@ -165,7 +165,8 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-70-scoped-workspace",
                 "refs/heads/codex/beta-70-resource-candidate",
                 "refs/heads/codex/beta-30-structural-xor",
-                "refs/heads/codex/beta-30-original-predicate")
+                "refs/heads/codex/beta-30-original-predicate",
+                "refs/heads/codex/beta-30-computed-restoration")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:

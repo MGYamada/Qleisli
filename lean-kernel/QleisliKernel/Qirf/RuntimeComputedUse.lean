@@ -212,7 +212,7 @@ def sourceAction (sources : Sources) (workspace : Bool) :
     let matrix ← rearrange owners output action.matrix
     return {action with matrix})
 
-private def sourceBody {sources caller} {event : ComputedEvent sources caller}
+def sourceBody {sources caller} {event : ComputedEvent sources caller}
     (body : SourceRuntimeTrace.ComputedBody event) : WorkM Action := do
   let owner := event.initial.auxiliary
   guard (owner.basis == [.bit] && ownerOnly owner body.result.value && body.result.allocated.isEmpty &&
@@ -297,9 +297,16 @@ theorem RawAction.noTarget {uses} (action : RawAction uses)
   have checked := List.all_eq_true.mp action.auxiliary _ present
   contradiction
 
+theorem RawAction.diagonalGate {uses} (action : RawAction uses)
+    (location : Semantics.Raw.ProtectedBit) (gate : Semantics.Raw.Gate)
+    (present : Semantics.Raw.Use.protectedGate location gate ∈ uses) : gate = .z ∨ gate = .t := by
+  have checked := List.all_eq_true.mp action.auxiliary _ present
+  simp only [auxiliaryOnly, Bool.and_eq_true, Bool.or_eq_true, beq_iff_eq] at checked
+  exact checked.2
+
 /-- Compare the actual Raw uses on both possible auxiliary values. The
 source label is irrelevant because these uses can only inspect the auxiliary. -/
-private def rawAction (uses : List Semantics.Raw.Use) : WorkM (RawAction uses) := do
+def rawAction (uses : List Semantics.Raw.Use) : WorkM (RawAction uses) := do
   exactWork (Exact.charge (16*((uses.map fun use => match use with
     | .protectedGate .. => 1
     | .phase controls _ | .targetGate controls .. => controls.length+1).sum+1)))
