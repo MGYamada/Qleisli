@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Define target exact-domain membership and prove the sixteenth-turn
+  obstruction for eighth-root gate products, including clean workspace.
 - Prove exact ordered placement transport and count literal gates for a
   fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
   declared target connectivity.

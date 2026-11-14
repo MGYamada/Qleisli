@@ -21,7 +21,7 @@ products used by the library and its tests before building.
 ```sh
 lake exe cache get Mathlib.CategoryTheory.CommSq Mathlib.CategoryTheory.Monoidal.Category \
   Mathlib.CategoryTheory.Preadditive.Mat Mathlib.Data.Complex.Basic Mathlib.Data.Matrix.Block \
-  Mathlib.Tactic.NormNum
+  Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots Mathlib.Tactic.NormNum
 ```
 
 ## API documentation

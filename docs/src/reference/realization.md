@@ -117,6 +117,42 @@ introduces no approximate acceptance or error budget. Exact/approximate
 profile decisions remain in [#31](https://github.com/MGYamada/Qleisli/issues/31)
 and [#123](https://github.com/MGYamada/Qleisli/issues/123).
 
+## Exact target-domain membership
+
+`M ∈ ExactDomain(P)` is an abstract judgment about the requested exact
+Meaning `M` and a specified target profile `P`. Its evidence identifies the
+profile and version, literal gate vocabulary, coefficient and parameter
+domain, ordered interface, and phase convention. It also states the admitted
+initialization, encoding, workspace and restoration assumptions. Same-wire
+and clean-workspace profiles can therefore have different exact domains.
+
+Physical Realizability requires evidence of this premise for an accepted
+exact target realization. A checked exact witness for the profile can
+establish membership and bind the actual emitted artifact to the same
+Meaning. An existence theorem or coefficient test can support this judgment
+within its own hypotheses. A necessary condition alone does not authorize a
+candidate. A search failure or capacity refusal leaves the claim unproved.
+A target-domain refusal concerns the requested realization; the source
+retains its exact meaning and typing.
+
+For a profile whose gates and computational-basis coordinates have
+coefficients in `Q(ζ8)`, every entry of the gate product lies in that field.
+Appending clean zero workspace and taking the corresponding returned
+coordinate selects entries of the same product. A controlled phase of one
+sixteenth of a turn has coefficient `ζ16` at its active diagonal entry,
+which is outside `Q(ζ8)`. The obstruction applies for any number of such
+clean axes. The QPTL theorem `extracted_sixteenth_ne` proves the coefficient
+obstruction. A target with a declared native sixteenth-turn gate requires
+its own exact-domain evidence. The existing eighth-root execution profile
+reports an unsupported exact phase for such a request.
+
+Engineering approximation requires an explicit separate claim with the
+applicable metric, closed budget and actual artifact correspondence, as
+specified below. A failed exact request does not choose that path implicitly.
+This judgment is independent of any eventual QCP implementation and can be
+used by the future [target capability schema](https://github.com/MGYamada/Qleisli/issues/179).
+The domain boundary is tracked in [#123](https://github.com/MGYamada/Qleisli/issues/123).
+
 ## Separate engineering approximation claims
 
 The human-adopted **EXACT-2026-01** interpretation in
