@@ -384,6 +384,13 @@ original logical actions in the checked event order and connects the result to
 fresh graph inspection. These Raw results do not establish general source
 composition, the CPTP marginal equivalence or quantitative resource bounds.
 
+For explicit `clean` and `dirty` scopes, `RuntimeWorkspaceRestoration.literal_action`
+uses the original checked Raw interval and the independently read logical body.
+It proves clean return on every physical row, and dirty identity on the scratch
+axis for any joint amplitudes, including reference correlations. The clean
+equation preserves the exact phase and composes across two accepted scopes
+with the same interface using `clean_sequence`.
+
 Quantitative Resource Safety remains the separate obligation to produce finite,
 statically computed bounds and preserve them through compilation. Scratch
 qubits count while live, across preparation, use and cleanup. Generated inverse
