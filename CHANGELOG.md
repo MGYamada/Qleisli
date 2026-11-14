@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Specify initialized isometry dilations and prove exact recovery on their
+  encoded images with arbitrary external references.
 - Prove exact ordered placement transport and count literal gates for a
   fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
   declared target connectivity.
