@@ -251,6 +251,7 @@ def proposed(current, ledger, revision, audit_bytes, schema_bytes, results, extr
     validation["commands"][1]["seconds"] = results["main"]["seconds"]
     fresh["binding_review"]["command"]["seconds"] = results["binding"]["seconds"]
     fresh["continuity"]["source_revision_sha256"] = revision["sha256"]
+    fresh["continuity"]["raw_transport"] = continuity.raw_transport_record()
     snapshot = compress_extraction(extraction)
     require(fresh["continuity"]["stdout"]["path"] == SNAPSHOT and
         fresh["continuity"]["stdout"]["compression"] == "xz", "unexpected current extraction destination")

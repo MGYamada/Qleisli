@@ -436,6 +436,13 @@ def compare_raw_projection(output, reviewed):
     return dict(independent_meaning_declarations=len(protected), protected_bindings=len(bindings))
 
 
+def raw_transport_record():
+    return dict(sources=RAW_SOURCES, review=dict(path=RAW_REVIEW, sha256=RAW_REVIEW_SHA256),
+                stdout=dict(path=RAW_STDOUT, sha256=RAW_STDOUT_SHA256),
+                stderr=dict(path=STDERR_PATH, sha256=digest(b"")),
+                command=dict(argv=RAW_REVIEW_ARGV, cwd="lean", exit_code=0))
+
+
 def validate_raw(root, binding, revision, archive):
     exact_keys(binding, {"format", "version", "baseline", "extractor", "source_revision_sha256",
                          "command", "stdout", "stderr", "transport", "raw_transport"}, "Raw transport evidence")
@@ -452,11 +459,7 @@ def validate_raw(root, binding, revision, archive):
     adapted.update(format=BASIS_FORMAT, extractor=dict(path=EXTRACTOR_PATH, sha256=EXTRACTOR_SHA256),
                    command=dict(argv=ARGV, cwd="lean", exit_code=0))
     expected = validate_basis_record(root, adapted, revision, archive, projection=compare_raw_projection, raw_container=True)
-    require_fields(raw_transport, dict(
-        sources=RAW_SOURCES, review=dict(path=RAW_REVIEW, sha256=RAW_REVIEW_SHA256),
-        stdout=dict(path=RAW_STDOUT, sha256=RAW_STDOUT_SHA256),
-        stderr=dict(path=STDERR_PATH, sha256=digest(b"")),
-        command=dict(argv=RAW_REVIEW_ARGV, cwd="lean", exit_code=0)), "fixed checked Raw transport")
+    require_fields(raw_transport, raw_transport_record(), "fixed checked Raw transport")
     require(type(raw_transport["command"]["exit_code"]) is int, "invalid Raw transport exit code type")
     for path, sha in RAW_SOURCES.items():
         checked_file(root, path, sha)
