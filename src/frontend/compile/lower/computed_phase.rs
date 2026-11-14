@@ -898,6 +898,40 @@ mod tests {
         assert!(compiler.basis.is_empty());
     }
 
+    #[test]
+    fn selected_classical_preparation_leaves_structural_predicates_unenumerated() {
+        let project = project_source(
+            "classical fn both(a:Bit,b:Bit)->Bit{a and b}
+             classical fn predicate((a,b):(Bit,Bit))->Bit{both(a,b)}
+             fn main()->Bit{0}",
+        );
+        let mut compiler = super::super::call_state_tests::untrusted_compiler(&project);
+        let lookup = |name| compiler.source.resolution.qualified(name).unwrap();
+        let helper = lookup("main::both");
+        let predicate = lookup("main::predicate");
+        let main = lookup("main::main");
+        let closure = BTreeSet::from([helper, predicate, main]);
+        compiler.force_typed_root = true;
+        compiler
+            .classify_selected_classical_definitions(&closure)
+            .unwrap();
+        assert!(compiler.basis.is_empty());
+        let (parameters, _) = compiler.signature(&predicate).unwrap();
+        assert_eq!(
+            compiler
+                .propose_structural_predicate(predicate, &parameters[0])
+                .unwrap()
+                .len(),
+            1
+        );
+        assert!(compiler.basis.is_empty());
+        compiler
+            .prepare_required_classical_table(predicate, "main", Span::default())
+            .unwrap();
+        assert_eq!(compiler.basis[&predicate].table, [0, 0, 0, 1]);
+        assert!(compiler.basis.contains_key(&helper));
+    }
+
     fn project() -> Project {
         project_source(
             "use std::gate::z;classical fn predicate(b:Bit)->Bit{b}

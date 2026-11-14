@@ -32,13 +32,6 @@ struct Synthesis<'c, 'a> {
 }
 
 impl Compiler<'_> {
-    #[cfg_attr(
-        not(test),
-        expect(
-            dead_code,
-            reason = "the whole-program reader must be enabled before emission"
-        )
-    )]
     pub(in crate::frontend::compile) fn propose_structural_predicate(
         &mut self,
         key: Key,

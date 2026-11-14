@@ -167,6 +167,21 @@ impl Compiler<'_> {
         &mut self,
         selected: Option<&BTreeSet<Key>>,
     ) -> Result<(), CompileError> {
+        self.prepare_classical_definitions(selected, true)
+    }
+
+    pub(super) fn classify_selected_classical_definitions(
+        &mut self,
+        selected: &BTreeSet<Key>,
+    ) -> Result<(), CompileError> {
+        self.prepare_classical_definitions(Some(selected), false)
+    }
+
+    fn prepare_classical_definitions(
+        &mut self,
+        selected: Option<&BTreeSet<Key>>,
+        materialize_tables: bool,
+    ) -> Result<(), CompileError> {
         fn has_nominal(ty: &Ty) -> bool {
             match &ty.kind {
                 Kind::Nominal(_) => true,
@@ -180,7 +195,10 @@ impl Compiler<'_> {
                 continue;
             }
             self.checking = Some(key);
-            if self.declarations[&key].kind != FnKind::Classical {
+            if self.declarations[&key].kind != FnKind::Classical
+                || self.basis.contains_key(&key)
+                || self.deferred_nominal_tables.contains(&key)
+            {
                 continue;
             }
             let (params, result) = self.signature(&key)?;
@@ -219,8 +237,10 @@ impl Compiler<'_> {
                 self.deferred_nominal_tables.insert(key);
                 continue;
             }
-            let function = self.compile_basis_with_signature(&key, params, result, false)?;
-            self.basis.insert(key, function);
+            if materialize_tables {
+                let function = self.compile_basis_with_signature(&key, params, result, false)?;
+                self.basis.insert(key, function);
+            }
         }
         Ok(())
     }

@@ -90,7 +90,8 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-30-original-predicate",
     "refs/heads/codex/beta-30-computed-restoration",
     "refs/heads/codex/beta-30-structural-raw",
-    "refs/heads/codex/beta-30-structural-transport"))
+    "refs/heads/codex/beta-30-structural-transport",
+    "refs/heads/codex/beta-30-structural-rust"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),

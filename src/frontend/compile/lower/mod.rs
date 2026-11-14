@@ -63,6 +63,11 @@ struct CallSite<'a> {
 // Keys use the independent verifier's operation/branch-index path convention.
 type OperationSources = BTreeMap<Vec<usize>, (String, Span)>;
 
+enum ComputedPredicate {
+    Table(Vec<u16>, bool),
+    Circuit(Vec<CircuitStep>),
+}
+
 struct TupleBindingOrigin {
     module: String,
     span: Span,
@@ -1984,7 +1989,29 @@ impl Lowerer<'_, '_> {
             self.raw.registers[&source_slot].basis.tree_size().nodes,
         )?;
         let basis = self.raw.registers[&source_slot].basis.clone();
-        let (table, requires_source) = self.computed_table(module, function, key, &basis)?;
+        // Choose a representation before proposing the body or consulting a
+        // native decision. Nominal predicates keep their typed table path.
+        let structural = if self.compiler.force_typed_root
+            && self.compiler.selected_entry.is_some()
+            && self.nominal_qmatch.is_some()
+            && !self.compiler.deferred_nominal_tables.contains(&key)
+        {
+            match self.compiler.propose_structural_predicate(key, &basis) {
+                Ok(steps) => Some(steps),
+                Err(error) if error.code == ErrorCode::Unsupported => None,
+                Err(error) => return Err(error),
+            }
+        } else {
+            None
+        };
+        let predicate = match structural {
+            Some(steps) => ComputedPredicate::Circuit(steps),
+            None => {
+                let (table, requires_source) =
+                    self.computed_table(module, function, key, &basis)?;
+                ComputedPredicate::Table(table, requires_source)
+            }
+        };
         self.compiler.charge(module, span, 5)?;
         let wire = self.wire();
         let ancilla = self.register(Ty::bit(), vec![wire]);
@@ -2056,6 +2083,10 @@ impl Lowerer<'_, '_> {
         // All replacement storage and the retained local equation are charged
         // before changing the proposed body. Work and issued IDs never rewind.
         self.compiler.charge(module, span, 14)?;
+        if let ComputedPredicate::Circuit(steps) = &predicate {
+            let cells = total_size(steps.iter().map(|step| step.controls.len() + 8));
+            self.compiler.charge(module, span, cells)?;
+        }
         if let Some(evidence) = evidence {
             self.compiler.computed_normalizations.push(evidence);
         }
@@ -2071,18 +2102,35 @@ impl Lowerer<'_, '_> {
             .registers
             .get_mut(&source_slot)
             .expect("protected source");
-        self.raw.operations.push(RawOp::ComputeUseUncompute {
-            source: source_reg.token,
-            source_out: output,
-            targets: vec![],
-            ancilla_wires: vec![wire],
-            function: table,
-            use_ops,
-        });
+        let input = source_reg.token;
         source_reg.token = output;
-        if requires_source {
-            self.nominal_basis_used = Some(true);
-        }
+        let operation = match predicate {
+            ComputedPredicate::Circuit(forward) => {
+                self.nominal_basis_used = Some(true);
+                RawOp::StructuralCompute {
+                    source: input,
+                    source_out: output,
+                    scratch: wire,
+                    inverse: forward.clone(),
+                    forward,
+                    uses: use_ops,
+                }
+            }
+            ComputedPredicate::Table(function, requires_source) => {
+                if requires_source {
+                    self.nominal_basis_used = Some(true);
+                }
+                RawOp::ComputeUseUncompute {
+                    source: input,
+                    source_out: output,
+                    targets: vec![],
+                    ancilla_wires: vec![wire],
+                    function,
+                    use_ops,
+                }
+            }
+        };
+        self.raw.operations.push(operation);
         quantum_match::nominal::record_coherent_table(self, module, span, start, 1)?;
         Ok(source)
     }
@@ -2231,7 +2279,7 @@ fn lower_function_in_context(
             &key_name.0,
             decl.span,
             ErrorCode::Unsupported,
-            "this finite basis table needs the original source-body gate",
+            "this coherent basis operation needs the original source-body gate",
         ));
     }
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {

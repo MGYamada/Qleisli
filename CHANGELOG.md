@@ -22,6 +22,9 @@ development milestones from the scope of their evidence.
 - Retain structural computed circuits in Rust's Raw codec and execution view.
   Execute their literal compute/use/inverse sequence using the shared simulator
   and certified zero release (#30).
+- Compile supported Boolean predicates in selected `with_computed` scopes
+  without enumerating inputs. The existing native source-body gate checks the
+  original predicate and both literal circuits before accepting the root (#30).
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.
 - Add structural `std::structure::transpose_axes` for statically sized registers.

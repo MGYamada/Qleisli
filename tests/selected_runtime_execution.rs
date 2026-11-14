@@ -44,6 +44,64 @@ fn selected_at(source: &str, entry: &str) -> qleisli::frontend::compile::Selecte
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn selected_computed_predicate_checks_the_literal_xor_scope() {
+    use qleisli::ir::RawOp;
+
+    let source = "#![no_implicit_prelude]\n\
+        classical fn both(a:Bit,b:Bit)->Bit{a and b}\n\
+        classical fn predicate((a,(_,b)):(Bit,(Bits<2>,Bit)))->Bit{not both(b,a)}\n\
+        pub unitary fn keep(q:Q<(Bit,(Bits<2>,Bit))>)->Q<(Bit,(Bits<2>,Bit))>{\
+            with_computed(q,predicate){|flag|phase[1,1](flag)}}";
+    let checked = selected(source);
+    let program = checked.program();
+    let [
+        RawOp::StructuralCompute {
+            forward,
+            inverse,
+            scratch,
+            ..
+        },
+    ] = program.raw().operations.as_slice()
+    else {
+        panic!("expected the original circuit-backed scope");
+    };
+    assert_eq!(forward, inverse);
+    assert_eq!(forward.len(), 2);
+    assert!(forward[0].controls.is_empty());
+    assert_eq!(
+        forward[1]
+            .controls
+            .iter()
+            .map(|control| control.index)
+            .collect::<Vec<_>>(),
+        [3, 0]
+    );
+    assert!(!program.output_ports()[0].wires.contains(scratch));
+    assert_eq!(
+        program.raw().quantum_inputs[0].wires,
+        program.output_ports()[0].wires
+    );
+    kernel().check_program(program).unwrap();
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let request = program.request().unwrap();
+    for (original, changed) in [
+        ("not both(b,a)", "not both(a,a)"),
+        ("phase[1,1](flag)", "phase[1,2](flag)"),
+    ] {
+        assert_eq!(artifact.matches(original).count(), 1, "{original}");
+        let changed = artifact.replacen(original, changed, 1);
+        let error = kernel()
+            .check_qmatch_source_v5(changed.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn source_workspace_scopes_require_exact_native_restoration() {
     let clean = "#![no_implicit_prelude]\n\
         unitary fn gate(q:Q<Bit>)->Q<Bit>{h(q)}\n\
