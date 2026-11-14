@@ -1,4 +1,5 @@
 import Protocol.ExecutionView.QmatchV5
+import QleisliKernel.Target.CanonicalOpenQasmPlacement
 import Protocol.ExecutionView.Packet
 import QleisliKernel.Qirf.RuntimeBodyOperations
 
@@ -219,6 +220,54 @@ theorem Original.root_safe {bytes : ByteArray} (original : Original bytes) :
   obtain ⟨_,_,verified⟩ := root.verification
   exact ⟨root.original,Raw.Observation.verify_ownershipSafe _ _ _ _ _ verified,
     Raw.Observation.verify_scopeSafe _ _ _ _ _ verified⟩
+
+open Target.CanonicalOpenQasmPlacement (Match Segment FinishedTrace finishTrace)
+
+/-- Only coordinates in the emitted word are supplied by the producer. Source
+offsets, bodies, owner roles and evidence come from the checked root actions. -/
+structure WorkspaceAlignment where
+  prefixMatches : List Match
+  gateCount : Nat
+  scratch : Option Nat
+
+private def workspaceSegment {deps program block} (node : RuntimePureBody.Node deps program block) :
+    Option (WorkspaceAlignment → Segment program) :=
+  match node with
+  | .workspace (sources := sources) (caller := caller) (event := event) (children := events)
+      (start := start) (count := count) (before := before) interval _ original literal map =>
+    some fun plan => ⟨sources,caller,deps,block,start,count,event,events,original,interval,before,literal,map,
+      plan.prefixMatches,plan.gateCount,plan.scratch⟩
+  | _ => none
+
+def Original.workspaceSegments {bytes : ByteArray} (original : Original bytes) (plans : List WorkspaceAlignment) :
+    Finite.WorkM (List (Segment original.checked.root.program)) := do
+  let actions := original.checked.checked.result.actions
+  Finite.exactWork (Exact.charge (32*(actions.length+plans.length+1)))
+  let builders := actions.filterMap workspaceSegment
+  Finite.guard (builders.length == plans.length) .request
+  return List.zipWith (fun build plan => build plan) builders plans
+
+structure CheckedPlacement {bytes : ByteArray} (original : Original bytes) {targetBytes capacity}
+    (target : Target.CanonicalOpenQasmResources.Checked targetBytes capacity) (connected : Nat → Nat → Bool)
+    (reserved synthesis : List Nat) (plans : List WorkspaceAlignment) (suffix : List Match) where
+  segments : List (Segment original.checked.root.program)
+  fromSource : RuntimeInterval.Computed (original.workspaceSegments plans) segments
+  trace : FinishedTrace original.checked.root.program target connected reserved synthesis suffix
+  checkedTrace : RuntimeInterval.Computed
+    (finishTrace target original.checked.root.program connected reserved segments suffix synthesis) trace
+
+/-- Check the emitted bytes and workspace intervals from the same original
+source decision. This is the pure checker adapter, before native framing and
+producer alignment are connected. -/
+def Original.checkPlacement {bytes : ByteArray} (original : Original bytes) {targetBytes capacity}
+    (target : Target.CanonicalOpenQasmResources.Checked targetBytes capacity) (connected : Nat → Nat → Bool)
+    (reserved synthesis : List Nat) (plans : List WorkspaceAlignment) (suffix : List Match) :
+    Finite.WorkM (CheckedPlacement original target connected reserved synthesis plans suffix) := do
+  Finite.guard original.request.runtime.parameters.isEmpty .request
+  let segments ← NaturalAffine.witness (original.workspaceSegments plans)
+  let trace ← NaturalAffine.witness
+    (finishTrace target original.checked.root.program connected reserved segments.val suffix synthesis)
+  return ⟨segments.val,by exact segments.property,trace.val,by exact trace.property⟩
 
 def input (value : Packet.Input) : CheckM (Original value.original) :=
   match value.scope with

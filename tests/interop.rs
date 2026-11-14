@@ -92,8 +92,7 @@ fn terminal_export_realizes_source_clean_and_dirty_workspaces() {
     let emitted = export_openqasm3(&source_program).unwrap();
     assert_eq!(
         emitted,
-        "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[2] c;\nreset q;\n\
-         h q[0];\nx q[2];\nh q[0];\nc[0] = measure q[2];\nc[1] = measure q[0];\n"
+        include_str!("fixtures/interop/typed-workspaces.qasm")
     );
     let round_trip = import_openqasm3(qleisli::edition::Edition::E2026, &emitted).unwrap();
     close(probability(&round_trip, &[true, false]), 1.0);

@@ -93,7 +93,8 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-70-openqasm-synthesis-scratch",
     "refs/heads/codex/beta-70-openqasm-synthesis-reuse",
     "refs/heads/codex/beta-70-openqasm-raw-spans",
-    "refs/heads/codex/beta-70-openqasm-typed-terminal"))
+    "refs/heads/codex/beta-70-openqasm-typed-terminal",
+    "refs/heads/codex/beta-70-openqasm-source-trace"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),

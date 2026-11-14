@@ -557,8 +557,12 @@ events and structural owner operations. It reads the actual owner transitions
 and checks the combined operator on the ordered support, with the same
 zero-return check when the slice uses synthesis scratch. Preparation,
 observation and source workspace boundaries require their own alignment.
-Production exporter integration requires binding its actual output to the
-independent placement check at invocation time.
+The typed-source adapter reads workspace intervals from the original checked
+root actions. The target plan only supplies gate alignment and scratch
+locations. The regression checks actual CLI output against its accepted
+source packet, including the clean interval, the optimized word between
+intervals, the dirty interval and terminal result order. Production invocation
+still requires transporting the actual bytes and alignment to this adapter.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
