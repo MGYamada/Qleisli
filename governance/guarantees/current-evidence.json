@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "a54b925d11f06d1cec7285e2489d83e68d2ba9fb6cce03e9a5c81cc8ada4664e",
+      "sha256": "744a3204510f78ab4a3c4cda1e51b4afcf0a17023349f33f085582c58f8632fa",
       "files": {
         "lean/Audit.lean": "769d64e8aa64d7e00217c3ca69857c07e86955cabc606b95621c8d068b7de87a",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -423,7 +423,7 @@
         "lean-kernel/Protocol/ExecutionView/CheckedHierarchy.lean": "59128aa15dcec7be9baee956835a9a90375cc29843a99f5ad422ef0c40ff71b2",
         "lean-kernel/Protocol/ExecutionView/CheckedOrdinaryRoot.lean": "33391ea531d19b35fbfc94e4a614a2f6b5c15532f05ff5c4e7099e81dcfe777b",
         "lean-kernel/Protocol/ExecutionView/CheckedQmatch.lean": "628d2ea9f0783a35ccd13cb2fe10294dbc8fd3f3ea90289ffa6b7f76fc4e27e4",
-        "lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean": "c88ac5a810303ecbb82ec61bd117dce70bdbfa972eb41b073198060a65c6f947",
+        "lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean": "d15dc75d2176e1ba4134c37511f773ff86af2578a2d6ea4cf79eb38004ca7172",
         "lean-kernel/Protocol/ExecutionView/CheckedRuntimeRoot.lean": "cee4233385de837936eed6fd254a3f398da83c3f4a2708ba3c29a02928f449c2",
         "lean-kernel/Protocol/ExecutionView/Contracts.lean": "b1e378132131a559a784d1eca370cf3950f48de484e613930d62bd6e9d221ccc",
         "lean-kernel/Protocol/ExecutionView/EngineeringInstrument.lean": "1dfa9cc648062143483ec5ef06faeab79538f59f67ccf4b2ce843ffde834201c",
@@ -894,6 +894,11 @@
         "lean-kernel/QleisliKernel/SourceTypes.lean": "3fedb6b7022fa4fbfa1b560516727f543419864ece54420b95fd799d750eebcc",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasm.lean": "78e40640ac29aceb32357e37974c5390e8b73792300547c8b491fb3e78c62c8b",
         "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmGates.lean": "fa92e0bf3fc981e14b9bb5c51b7f4b9c9ddd05ce701801751ea398b28457ade3",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmPlacement.lean": "3912a6edfdccdc2e5994d0a2aacc9d7c7e044a35fc18640f66889c42ae08f21f",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmResources.lean": "f7e115b3aaaa91627c84aff29b7a68c89e2da2cf1f182f8d76d78bf78a8e2be9",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmRouting.lean": "0e89a6abd813b5e8156f1c614c690161c35802edf7c6421c551a71a6e6c8d4aa",
+        "lean-kernel/QleisliKernel/Target/CanonicalOpenQasmWorkspace.lean": "e8e6d9182a99181a427e7a6ce6b6b017e2e1ea93ab15e9b3360d5fe68b3323d8",
+        "lean-kernel/QleisliKernel/Target/Routing.lean": "692d082f4e993b6af81c99db02649f7a264b05d88544cc95b8c620e34914a31a",
         "lean-kernel/QleisliKernel/Tests/ArmBody.lean": "54f290515fe5e6452ac30c3d9b2d6c49d8d417076163add0bf85fa00ab5d36df",
         "lean-kernel/QleisliKernel/Tests/CallCoordinateTests.lean": "2c23b4f21d19373cd7ca7f42366a33f81eeb733a56f5ebf3937b714b9ab2c6df",
         "lean-kernel/QleisliKernel/Tests/CallNameTests.lean": "dc8d4eba93b4ff194f7a262df50dd139eb031cd5bbf17296f7fde99caa5598f3",
@@ -1041,7 +1046,7 @@
         "lean-kernel/QleisliKernel/Tests/SourceQuantum/Sites.lean": "826b0ab045cbf33547f4aacc36c0ade7d0626f02d89178572b71c140d25e28ab",
         "lean-kernel/QleisliKernel/Tests/SourceQuantum.lean": "7a9a81d56dcc8ae36d63a05039ed3bf16f3ef686bb061e5932d0929c66a4e85e",
         "lean-kernel/QleisliKernel/Tests/SourceRuntimeBasisBindings.lean": "a63853df312f4c01e86dc2d26a2f0b7d8050329fb5ba97e829a339c362fbe628",
-        "lean-kernel/QleisliKernel/Tests/SourceRuntimeComputed.lean": "d3a88962bdfcc8caf8096f1ebf8409baa9b8dc83ba536d7b546a208e505ed265",
+        "lean-kernel/QleisliKernel/Tests/SourceRuntimeComputed.lean": "35bc452564782df4bc975a74e935a3ba44ab04531d1467837d4431ed464c1811",
         "lean-kernel/QleisliKernel/Tests/SourceRuntimeEmpty.lean": "be63a41a67b039164a2327a7cf2a4074c5ccd1917d161cd550a915d0774d9bd0",
         "lean-kernel/QleisliKernel/Tests/SourceRuntimeMatch.lean": "e1aa9580dd5ea04954d7a30d64925f8fbae9691053320081a6ee959096b7ad75",
         "lean-kernel/QleisliKernel/Tests/SourceRuntimeNominal.lean": "9419f2abc2038e6234d7a2a19c0119d346c06ac6b7187c8ee26e83f42b531f2a",
@@ -1073,8 +1078,8 @@
         "lean-kernel/QleisliKernel/Tests/TypeNaturalRows.lean": "0591d67edc7ab80ebc2ff6db02fb0293546ced5a972572e0aafc772cff546b32",
         "lean-kernel/QleisliKernel/Uniform.lean": "644f331214214fa975b16ddb3672759acb5e7c922d4a540bcde8cae2140fa809",
         "lean-kernel/QleisliKernel/WorkLimit.lean": "d2e27dca03973333a0f880b729e465f406d362bc8a04cb32cd5ada843a929e33",
-        "lean-kernel/QleisliKernel.lean": "8be66f3770b45990944698a408a75d76a9b350fe269718946c9804b3b82b0b5c",
-        "lean-kernel/Tests.lean": "c0147d1478ce88e836b60225f6c1db844cd9d93e836c8d8fb2eb540a390ad7f0",
+        "lean-kernel/QleisliKernel.lean": "1df3bf72048837eab2cc670a359aaa852c9492cfc28426caa7671c8842cd4a8e",
+        "lean-kernel/Tests.lean": "7d329fc63c40a1c9415fcb6703961a11ee3253976c19d1fef4c62024123ef02d",
         "lean-kernel/lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
         "lean-kernel/lakefile.toml": "26f9918d7a1fb5655fd878deb3c9b0004d4677813d61e111d759bd5ed3d9271a",
         "lean-kernel/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",
@@ -1084,12 +1089,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "713dbbfa111dad04f99bc31d79a885c7e38bead41ad3f1dacebcc89391482af9",
+      "lean/schema-registry.json": "32353217cb6c439212f283fd805065878f6f0a6c390953e27293193ffef3f672",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "9d6f5904bee535528c79dcd53c71bda5ebfaa5d1b417a209a76cf091aa913568"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "8611a4e7c63d87b6bebb11ba17a9f74e8e5588be39d71061ae9e58960545398a"
     },
     "commands": [
       {
@@ -1102,7 +1107,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 4.121996128000319,
+        "seconds": 3.6716714799999863,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -1116,7 +1121,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 146.96103771399976,
+        "seconds": 120.36988772199993,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -1159,7 +1164,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 3.2705208080001285,
+      "seconds": 2.919914037000126,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -1175,7 +1180,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
     },
-    "source_revision_sha256": "a54b925d11f06d1cec7285e2489d83e68d2ba9fb6cce03e9a5c81cc8ada4664e",
+    "source_revision_sha256": "744a3204510f78ab4a3c4cda1e51b4afcf0a17023349f33f085582c58f8632fa",
     "command": {
       "argv": [
         "lake",
