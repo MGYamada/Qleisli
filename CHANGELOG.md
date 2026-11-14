@@ -25,6 +25,8 @@ development milestones from the scope of their evidence.
   the original Raw event on its ordered live support.
 - Check zero return and the complete wire lifetime of scratch used by a
   bounded target gate decomposition.
+- Check synthesis scratch reuse across disjoint decompositions in a complete
+  placement trace, with exact zero return at each slice.
 
 - Check finite `clean` and `dirty` scopes against the original source, exact
   scratch-restoration equation and actual Raw owner interval.

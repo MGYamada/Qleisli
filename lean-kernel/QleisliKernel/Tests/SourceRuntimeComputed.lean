@@ -275,6 +275,32 @@ private def synthesisTrace (word : String) (gateCount : Nat := 3) (scratch : Lis
   | .error (.arithmetic .workLimit) => true
   | _ => false
 
+private def reuseSynthesisTrace (word : String) (second : Target.CanonicalOpenQasmPlacement.Match)
+    (gap : List Target.CanonicalOpenQasmPlacement.Match := []) (reserved : List Nat := [2])
+    (measurement : Nat := 1) : Finite.WorkM (List Nat × Nat) := do
+  let phase : Semantics.Finite.Step := ⟨[⟨0,true⟩],.monomial [1] [0,1] [0,1]⟩
+  let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 5),.pure (.init0 11 3),
+    .pure (.join 10 11 12),.pure (.applyUnitary 12 13 [phase]),.pure (.applyUnitary 13 14 [phase]),
+    .pure (.split 14 15 16 1),.measure 16 20,.measure 15 21],[],[20,21],.observe⟩
+  let _ ← Qirf.RuntimeInterval.prepare [] program
+  let header := "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[2] c;\nreset q;\n"
+  let target ← Target.CanonicalOpenQasmResources.check
+    (header ++ word ++ s!"c[0] = measure q[{measurement}];\nc[1] = measure q[0];\n").toUTF8 3
+  let alignment := [.original,.original,.original,.synthesized 3 [2]] ++ gap ++ [second,.original]
+  let trace ← Target.CanonicalOpenQasmPlacement.finishTrace target program (fun _ _ => true) [] [] alignment reserved
+  return (target.circuit.measurements,trace.final.gateIndex)
+
+#guard ((reuseSynthesisTrace (controlledTWord ++ controlledTWord) (.synthesized 3 [2])).run
+  exactWorkLimit).1.toOption == some ([1,0],6)
+#guard ((reuseSynthesisTrace (controlledTWord ++ controlledTWord) (.synthesized 3 [2]) [] []).run
+  exactWorkLimit).1.toOption.isNone
+#guard ((reuseSynthesisTrace (controlledTWord ++ "ccx q[0], q[1], q[2];\nt q[2];\n") (.synthesized 2 [2])).run
+  exactWorkLimit).1.toOption.isNone
+#guard ((reuseSynthesisTrace (controlledTWord ++ "swap q[1], q[2];\n" ++ controlledTWord) (.synthesized 3 [2]) [.route]).run
+  exactWorkLimit).1.toOption.isNone
+#guard ((reuseSynthesisTrace (controlledTWord ++ controlledTWord) (.synthesized 3 [2]) [] [2] 2).run
+  exactWorkLimit).1.toOption.isNone
+
 private def terminalOutputOrder (measurements : String) : Finite.WorkM Unit := do
   let program : Semantics.Observation.Program := ⟨[],[],[.pure (.init0 10 6),.pure (.init0 11 7),
     .pure (.init0 12 8),.measure 11 20,.discard 12,.measure 10 21],[],[21,20],.observe⟩
