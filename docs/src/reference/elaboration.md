@@ -117,6 +117,17 @@ contracts. Current independent source replay rejects an altered gate chain
 even when its type/effect/ownership interface remains native-valid. It is not a
 general source-preservation theorem or a proof of an optimizer.
 
+The [compatible access theorem](https://github.com/MGYamada/Qleisli/issues/303)
+uses each checked call's ordered physical wires as its footprint. Any wire
+used by both calls must be `ctrl` in both. The exact local reconstruction
+preserves every shared control bit, and the remaining modified coordinates are
+disjoint. For a checked pair of adjacent calls with a structural return, the
+original Raw root and the exchanged operator composition have equal complex
+amplitudes after the same output permutation, for every input and external
+reference column. This retains conditional phase and entanglement. Source
+evaluation remains in written order. A transformation of executable code
+requires its own evidence for the changed owner flow and other contracts.
+
 ### Whole-owner exclusive calls
 
 | Field | Contract |

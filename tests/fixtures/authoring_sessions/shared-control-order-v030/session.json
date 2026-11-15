@@ -1,0 +1,32 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#303 compare written control-access order",
+  "author": "Codex, informed by the existing access specification",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "0511ee7d432d250fd30cb91a59ce81d7bad5dfa2",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Retain both original source orders and both requested lowering paths.",
+      "sha256": {
+        "noncommuting.qli": "1a915b2db0e2c65dfd274ab410c45cd85f1e08d8ad272ae492d26b9f675c6a9c",
+        "shared.qli": "7e8bac026fe3c9eecb94a97ac1cc505cec9f5b08b60d4e04714bda177e71f9af"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observation-01.json",
+        "observation-02.json",
+        "observation-03.json",
+        "observation-04.json",
+        "observation-05.json",
+        "observation-06.json",
+        "observation-07.json",
+        "observation-08.json"
+      ]
+    }
+  ]
+}
