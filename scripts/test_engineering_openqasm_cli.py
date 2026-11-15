@@ -14,18 +14,27 @@ import tempfile
 
 from test_engineering_openqasm_native import (
     FIXED, GATES, dependency_ideal, digest, dyadic, encoded,
-    hostile_targets, independent_oracle, request, retained, target, word_from_target)
+    hostile_targets, independent_oracle, request, resource_request, retained, target, word_from_target)
 
 COMMAND = 'engineering compare-openqasm3'
 UNESTABLISHED = ('pure_phase_bound_verified', 'source_preservation_verified',
     'exact_source_correspondence_verified', 'export_preservation_verified',
     'coherent_control_verified', 'inverse_capability_verified', 'cleanup_verified',
-    'resource_bound_verified', 'constitutional_pr_verified', 'constitutional_rs_verified')
+    'constitutional_pr_verified', 'constitutional_rs_verified')
 
 
 def baseline():
     retained()
     independent_oracle()
+    record = json.loads(Path('tests/fixtures/verification_v030/engineering-openqasm-resources/first-observation.json').read_text())
+    assert record['target_utf8'].encode() == target(('t', 'tdg'))
+    assert digest(record['target_utf8'].encode()) == record['target_sha256']
+    v1, v2 = record['reports']
+    for entry, expected in [(v1, 0), (v2, 1)]:
+        assert digest(entry['request_utf8'].encode()) == entry['request_sha256']
+        assert entry['exit_code'] == expected and not entry['stderr']
+    assert json.loads(v1['stdout'])['result']['resource_bound_verified'] is False
+    assert json.loads(v2['stdout'])['diagnostics'][0]['message'] == 'unknown OpenQASM engineering request claim_kind'
 
 
 def live(cli, kernel):
@@ -54,7 +63,11 @@ def live(cli, kernel):
                 assert 'OpenQASM target engineering bound checked:' in output
                 assert 'canonical one-qubit terminal target bytes and original ideal; Unit -> classical Bit' in output
                 assert 'capacity: 1024 target bytes; 8 gate lines' in output
-                assert 'source/export correspondence, pure phase agreement, coherent control, inverse, cleanup, resource bounds and constitutional PR/RS: not established' in output
+                if 'resource_limits' in data:
+                    assert 'engineering target resources checked (' + data['resource_limits']['model'] in output
+                    assert 'constitutional PR/RS: not established' in output
+                else:
+                    assert 'source/export correspondence, pure phase agreement, coherent control, inverse, cleanup, resource bounds and constitutional PR/RS: not established' in output
                 assert 'sampling, algorithmic resolution and numerical runtime error: not claimed' in output
                 assert digest(actual) in output and digest(request_bytes) in output
                 return output
@@ -77,7 +90,17 @@ def live(cli, kernel):
             assert report['request_sha256'] == digest(request_bytes)
             assert report['checker_path'] == str(Path(checker).resolve())
             assert report['checker_identity'] == 'unpinned' and 0 < report['native_exact_work'] <= 20_000_000
-            assert report['native_check_scope'] == 'canonical-target-bytes-generated-unit-instrument-original-ideal-and-complete-adjoint-bound'
+            scope = 'canonical-target-bytes-generated-unit-instrument-original-ideal-and-complete-adjoint-bound'
+            if 'resource_limits' in data:
+                scope += '-and-literal-gate-resource-limits'
+                limits = data['resource_limits']
+                assert report['engineering_resource_model'] == limits['model']
+                assert report['engineering_resource_limits'] == dict(gates=limits['gates'], t_gates=limits['t_gates'])
+                word = word_from_target(actual)
+                assert report['engineering_resource_counts'] == dict(qubits=1, resets=1, measurements=1,
+                    gates=len(word), t_gates=sum(gate in ('t', 'tdg') for gate in word))
+            assert report['native_check_scope'] == scope
+            assert report['resource_bound_verified'] is ('resource_limits' in data)
             assert report['target_capacity'] == dict(max_target_bytes=1024, max_gate_count=8)
             assert report['instrument_bound_verified'] is True and report['target_artifact_bound_verified'] is True
             for field in UNESTABLISHED:
@@ -91,6 +114,26 @@ def live(cli, kernel):
         invoke(actual, base, True)
         invoke(actual, base, True, text=True)
         invoke(actual, base, True, flags_first=True)
+        approximate = resource_request(base, 0, 0)
+        invoke(actual, approximate, True)
+        invoke(actual, dict(approximate, epsilon=dyadic(0)))
+        exact = request((), 0, (0, 0))
+        phase_word = target(('t', 'tdg'))
+        limits = resource_request(exact, 2, 2)
+        invoke(phase_word, limits, True)
+        assert '2 <= 2 literal T/TDG' in invoke(phase_word, limits, True, text=True)
+        invoke(phase_word, resource_request(exact, 1, 2))
+        invoke(phase_word, resource_request(exact, 2, 1))
+        invoke(phase_word, resource_request(exact, 'runtime', 2))
+        for field in ('epsilon', 'resource_limits', 'metric', 'target_profile', 'composition'):
+            altered = copy.deepcopy(limits)
+            del altered[field]
+            invoke(phase_word, altered)
+        altered = copy.deepcopy(limits)
+        altered['resource_limits']['model'] = 'unknown-target-resource-model'
+        invoke(phase_word, altered)
+        invoke(phase_word, dict(limits, claim_kind='constitutional-target-rs'))
+        invoke(target(('x', 'tdg')), limits)
         invoke(target(('h',)), request(epsilon=0, majorants=(0, 0)), True)
         for name in GATES:
             invoke(target((name,)), request((name,), 0, (0, 0)), True)
