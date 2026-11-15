@@ -802,3 +802,7 @@ preparation verifies its canonical three-state output.
 The [closed-provider resource study](closed-provider-resources-v030/context.md)
 keeps the first workspace and operation-selection refusals, plus direct-provider
 target counts and the separate placement refusal after source acceptance.
+
+The [derived provider resources study](provider-derived-resources-v030/README.md)
+keeps the first source and terminal reports for a composed inverse, inverse
+power, ordered tensor and a semantic provider that the target cannot realize.

@@ -290,6 +290,13 @@ for the actual inverse or controlled implementation. Reusing the forward
 count requires a profile rule that applies to the emitted inverse. Controlled
 implementations include control synthesis, routing, and additional workspace.
 Semantic equivalence and capability derivations do not establish these rules.
+The bounded OpenQASM terminal report derives gate counts from the decoded
+target word after exact checking. For a composed inverse the emitted word
+may be empty after phase cancellation. Under a tensor of unlike phases,
+the ordered physical operands distinguish the two implementations. An
+applicable provider with an uncontrolled scalar phase is accepted by source
+checking, and terminal reporting rejects that realization when the gate
+vocabulary cannot represent the phase.
 See [#161](https://github.com/MGYamada/Qleisli/issues/161),
 [#162](https://github.com/MGYamada/Qleisli/issues/162) and
 [the quantitative resource model](realization.md#quantitative-resource-claims).
