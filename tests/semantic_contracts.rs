@@ -788,32 +788,39 @@ fn raw_ir_rechecks_actual_predicate_body_and_logical_evidence() {
     if let RawOp::CertifiedCompute { use_steps, .. } = &mut changed_body.operations[0] {
         *use_steps = vec![x(1)];
     }
-    assert!(
-        accept(changed_body)
-            .unwrap_err()
-            .message
-            .contains("Lean native checker rejected")
-    );
     let mut changed_meaning = good.clone();
     if let RawOp::CertifiedCompute { logical_steps, .. } = &mut changed_meaning.operations[0] {
         logical_steps.clear();
     }
-    assert!(
-        accept(changed_meaning)
-            .unwrap_err()
-            .message
-            .contains("Lean native checker rejected")
-    );
     let mut changed_predicate = good;
     if let RawOp::CertifiedCompute { function, .. } = &mut changed_predicate.operations[0] {
         *function = vec![0, 0];
     }
-    assert!(
-        accept(changed_predicate)
-            .unwrap_err()
-            .message
-            .contains("Lean native checker rejected")
-    );
+    for (program, witness) in [
+        (
+            changed_body,
+            "output row 2 (zero-based): actual 1, expected 0",
+        ),
+        (
+            changed_meaning,
+            "output row 0 (zero-based): actual 0, expected 1",
+        ),
+        (
+            changed_predicate,
+            "output row 1 (zero-based): actual 0, expected 1",
+        ),
+    ] {
+        let error = accept(program).unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+        assert_eq!(error.json_pointer, "/operations/0", "{error}");
+        assert!(
+            error
+                .message
+                .starts_with("clean workspace restoration failed:"),
+            "{error}"
+        );
+        assert!(error.message.contains(witness), "{error}");
+    }
 }
 
 #[cfg_attr(
