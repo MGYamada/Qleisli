@@ -132,7 +132,10 @@ meanings in `lean/Qleisli/Semantics/RawLegacy/`, the bidirectional embedding in
 original-byte witness and root-selection types. Only a fixed namespace/helper
 mapping and bound-variable display names differ in the historical semantic
 comparison; binder kinds, indices, types, bodies and constructor fields remain
-protected. Live verification runs both typed transport reviews and fresh
+protected. The historical event constructors are checked in their legacy
+namespace, and the typed review checks that both readers preserve the entire
+event trace under the embedding. Live verification runs both typed transport
+reviews and fresh
 extraction. This profile does not itself enable a new opcode or establish
 source, decoder, native compiler or runtime preservation.
 

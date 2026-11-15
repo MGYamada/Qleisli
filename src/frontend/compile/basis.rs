@@ -3,6 +3,7 @@ use crate::frontend::ordinary::finite::{self, NominalContext};
 
 mod nominal;
 mod planning;
+mod structural;
 
 pub(super) use finite::Label as BasisValue;
 
@@ -110,9 +111,7 @@ impl Compiler<'_> {
         Ok(env)
     }
 
-    /// Keep supported built-in tables eager. Nominal interfaces or intermediate
-    /// values use ordinary source bodies, including through classical callers.
-    /// Actual finite-table consumers still require a supported table.
+    #[cfg(test)]
     pub(super) fn prepare_classical_tables(&mut self) -> Result<(), CompileError> {
         self.prepare_selected_classical_tables(None)
     }
@@ -166,6 +165,21 @@ impl Compiler<'_> {
         &mut self,
         selected: Option<&BTreeSet<Key>>,
     ) -> Result<(), CompileError> {
+        self.prepare_classical_definitions(selected, true)
+    }
+
+    pub(super) fn classify_classical_definitions(
+        &mut self,
+        selected: Option<&BTreeSet<Key>>,
+    ) -> Result<(), CompileError> {
+        self.prepare_classical_definitions(selected, false)
+    }
+
+    fn prepare_classical_definitions(
+        &mut self,
+        selected: Option<&BTreeSet<Key>>,
+        materialize_tables: bool,
+    ) -> Result<(), CompileError> {
         fn has_nominal(ty: &Ty) -> bool {
             match &ty.kind {
                 Kind::Nominal(_) => true,
@@ -179,7 +193,10 @@ impl Compiler<'_> {
                 continue;
             }
             self.checking = Some(key);
-            if self.declarations[&key].kind != FnKind::Classical {
+            if self.declarations[&key].kind != FnKind::Classical
+                || self.basis.contains_key(&key)
+                || self.deferred_nominal_tables.contains(&key)
+            {
                 continue;
             }
             let (params, result) = self.signature(&key)?;
@@ -218,8 +235,10 @@ impl Compiler<'_> {
                 self.deferred_nominal_tables.insert(key);
                 continue;
             }
-            let function = self.compile_basis_with_signature(&key, params, result, false)?;
-            self.basis.insert(key, function);
+            if materialize_tables {
+                let function = self.compile_basis_with_signature(&key, params, result, false)?;
+                self.basis.insert(key, function);
+            }
         }
         Ok(())
     }
@@ -447,6 +466,23 @@ impl finite::Context for LabelContext<'_, '_> {
     type Environment = BTreeMap<BinderKey, BasisValue>;
     type Tuple = LabelTuple;
     type Error = CompileError;
+
+    fn bit_index(
+        &mut self,
+        span: Span,
+        value: BasisValue,
+        index: u32,
+    ) -> Result<BasisValue, CompileError> {
+        let bit = finite::label_bit_index(&value, index).ok_or_else(|| {
+            self.compiler.error(
+                self.module,
+                span,
+                ErrorCode::TypeMismatch,
+                "ordinary bit index requires a valid Bits<n> coordinate",
+            )
+        })?;
+        Ok(self.bit(bit))
+    }
 
     fn nominal_unavailable(&mut self, span: Span) -> CompileError {
         self.compiler.error(

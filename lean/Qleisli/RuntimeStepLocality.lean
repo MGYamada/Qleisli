@@ -171,6 +171,15 @@ theorem step_locality (dependencies : List Basis) (caller selected : Raw.State)
     exact False.elim (impossible_piece _ _ _ (by
       intro steps piece
       rcases piece with same | ⟨same,_⟩ <;> cases same) related)
+  | structuralCompute input output scratch forward inverse uses =>
+    have trace := Raw.step_reference _ _ _ _ selectedRead
+    simp only [Semantics.RawTrace.step] at trace
+    obtain ⟨⟨port,next⟩,_,finished⟩ := Option.bind_eq_some_iff.mp trace
+    have events := (Prod.mk.inj (Option.some.inj finished)).2
+    rw [← events] at related
+    exact False.elim (impossible_piece _ _ _ (by
+      intro steps piece
+      rcases piece with same | ⟨same,_⟩ <;> cases same) related)
   | computeUseUncompute input output targets ancilla function uses =>
     have trace := Raw.step_reference _ _ _ _ selectedRead
     simp only [Semantics.RawTrace.step] at trace

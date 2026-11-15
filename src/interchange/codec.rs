@@ -75,6 +75,50 @@ mod tests {
     use crate::interchange::Version;
 
     #[test]
+    fn structural_compute_codec_retains_both_circuits_and_scratch() {
+        let operation = RawOp::StructuralCompute {
+            source: TokenId(10),
+            source_out: TokenId(12),
+            scratch: WireId(4),
+            forward: vec![CircuitStep {
+                controls: vec![BitControl {
+                    index: 0,
+                    when_one: false,
+                }],
+                action: CircuitAction::Monomial {
+                    indices: vec![1],
+                    permutation: vec![1, 0],
+                    phases: vec![0, 0],
+                },
+            }],
+            inverse: vec![],
+            uses: vec![ProtectedUse::ControlledPhase {
+                controls: vec![],
+                phase: ScalarPhase::EighthTurn,
+            }],
+        };
+        let mut encoder = Encoder::new(Version::V2);
+        let decoded = Decoder { evidence: &[] };
+        let value = operation.write(&mut encoder).unwrap();
+        assert_eq!(
+            value.field("tag").unwrap().text().unwrap(),
+            "structural_compute"
+        );
+        assert_eq!(RawOp::read(&value, &decoded).unwrap(), operation);
+    }
+
+    #[test]
+    fn structural_compute_codec_rejects_an_omitted_inverse() {
+        let value = super::super::json::parse(
+            br#"{"tag":"structural_compute","source":10,"source_out":12,"scratch":4,"forward":[],"uses":[]}"#,
+        )
+        .unwrap();
+        let error = RawOp::read(&value, &Decoder { evidence: &[] }).unwrap_err();
+        assert_eq!(error.code, "format");
+        assert!(error.message.contains("inverse"));
+    }
+
+    #[test]
     fn wire_integer_bounds_retain_field_range_and_u32_error_precedence() {
         let decoder = Decoder { evidence: &[] };
         assert_eq!(u8::read(&Value::Number(255), &decoder).unwrap(), 255);

@@ -32,7 +32,8 @@ argument-list arity and types, and the existing nullary ordinary
 `empty_bits()` language primitive constructor, requiring no import. The constructor produces the exact
 `Bits<0>` label; it introduces no quantum owner. Its resolved primitive identity
 and checked signature are required, so an ordinary same-spelled function gains
-no special permission. Other quantum primitive calls remain excluded. There is no `let`, statement sequence, semicolon,
+no special permission. A literal coordinate read `word[k]` uses the ordinary
+`Bits<n>` rule and requires `k < n`. Other quantum primitive calls remain excluded. There is no `let`, statement sequence, semicolon,
 measurement, ordinary runtime call or nested coherent map in this body.
 `classical fn` declares total ordinary computations. Its body can also be called
 on ordinary runtime values, including measured Bits, under the

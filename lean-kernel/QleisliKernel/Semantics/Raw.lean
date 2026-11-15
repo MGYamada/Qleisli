@@ -75,6 +75,7 @@ inductive Op where
       (useSteps logicalSteps : List Step)
   | computeUseUncompute (input output : Nat) (targets : List Target)
       (ancilla function : List Nat) (uses : List Use)
+  | structuralCompute (input output scratch : Nat) (forward inverse : List Step) (uses : List Use)
   | packUnit (output : Nat)
   | unpackUnit (input : Nat)
   deriving BEq, DecidableEq, Repr
@@ -105,6 +106,7 @@ inductive Event where
       (function : List Nat) (useSteps logicalSteps : List Step)
   | protectedComputed (bits : Nat) (axes : List Nat) (sourceBits ancillaBits : Nat)
       (function : List Nat) (uses : List Use)
+  | structuralComputed (bits : Nat) (axes : List Nat) (forward inverse : List Step) (uses : List Use)
   deriving BEq, DecidableEq, Repr
 
 def registerBasis (bits : Nat) : Basis :=

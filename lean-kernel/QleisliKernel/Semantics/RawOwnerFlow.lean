@@ -49,7 +49,8 @@ Allocation/release and splitting an atomic source owner need their source rules
 or an independently checked representation refinement before use here. -/
 def step (frame : Frame) : Op → Option Frame
   | .gate _ input output | .applyUnitary input output _
-  | .certifiedCompute input output _ _ _ _ =>
+  | .certifiedCompute input output _ _ _ _
+  | .structuralCompute input output _ _ _ _ =>
     move input output frame
   | .liftBasis input output wires _ => do
     let (tree,remaining) ← take input frame

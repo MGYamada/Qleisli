@@ -216,7 +216,8 @@ theorem event_denotes (dependencies : List Dependency) (event : Event) (actual :
     obtain ⟨_,w₁,_,h⟩ := bind_success _ _ _ _ _ ok
     obtain ⟨logical,w₂,hm,hp⟩ := bind_success _ _ _ _ _ h
     exact ⟨logical,Or.inr (matrix_meaning _ _ _ _ _ _ _ _ hm),promote_denotes _ _ _ _ _ _ hp⟩
-  | circuit _ _ | init0 _ | liftBasis _ _ _ _ _ | reorder _ _ | computed _ _ _ _ _ _ _ =>
+  | circuit _ _ | init0 _ | liftBasis _ _ _ _ _ | reorder _ _ | computed _ _ _ _ _ _ _
+  | structuralComputed _ _ _ _ _ =>
     exact Qleisli.Raw.event_denotes _ _ _ _ _ ok
 
 theorem events_denote (dependencies : List Dependency) (events : List Event) (initial actual : Matrix)

@@ -17,7 +17,7 @@ structure Original {sources caller} (event : WorkspaceEvent sources caller)
   fullCarrier : layout.labels = List.range (2^layout.bits)
   logical : RuntimeComputedUse.Action
   logicalRead : RuntimeInterval.Computed
-    (RuntimeCertifiedComputed.logicalAction event.logical layout.labels.length) logical
+    (RuntimeCertifiedComputed.logicalAction true event.logical layout.labels.length) logical
   identity : Matrix
   identityRead : RuntimeInterval.Computed
     (lift (arithmetic (Exact.Matrix.identity (2^(layout.bits+1))))) identity
@@ -32,7 +32,7 @@ def readOriginal {sources caller} (event : WorkspaceEvent sources caller)
   guard (layout.val.bits < 6) .limit
   if full : layout.val.labels = List.range (2^layout.val.bits) then
     let logical ← NaturalAffine.witness
-      (RuntimeCertifiedComputed.logicalAction event.logical layout.val.labels.length)
+      (RuntimeCertifiedComputed.logicalAction true event.logical layout.val.labels.length)
     exactWork (Exact.charge ((2^(layout.val.bits+1)+1)^2))
     let identity ← NaturalAffine.witness (lift (arithmetic (Exact.Matrix.identity (2^(layout.val.bits+1)))))
     let body ← NaturalAffine.witness (RuntimeComputedUse.sourceAction sources true (SourceTrace.sourceFuel sources)

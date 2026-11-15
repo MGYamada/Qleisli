@@ -63,16 +63,16 @@ private def restore (dirty : Bool) (steps logical : List Step) : WorkM Semantics
   let expected ← circuitMatrix [] (Raw.circuit 1 logical)
   Raw.Workspace.check [] dirty 1 steps expected
 
-private def equationFailure (result : Except Error Semantics.Exact.Matrix) : Bool :=
+private def restorationFailure (dirty : Bool) (result : Except Error Semantics.Exact.Matrix) : Bool :=
   match result with
-  | .error .equation => true
+  | .error (.workspaceRestoration actual) => actual == dirty
   | _ => false
 
 #guard ((restore false [controlledFlip,controlledFlip] []).run 20000000).1.isOk
-#guard equationFailure ((restore false [controlledFlip] []).run 20000000).1
-#guard equationFailure ((restore false [scratchX] []).run 20000000).1
+#guard restorationFailure false ((restore false [controlledFlip] []).run 20000000).1
+#guard restorationFailure false ((restore false [scratchX] []).run 20000000).1
 #guard ((restore true [controlledFlip,dataX,controlledFlip,scratchX] [dataX]).run 20000000).1.isOk
-#guard equationFailure ((restore true [dataX,scratchZ] [dataX]).run 20000000).1
+#guard restorationFailure true ((restore true [dataX,scratchZ] [dataX]).run 20000000).1
 
 #print axioms Raw.Workspace.check_conditions
 end QleisliKernel.Tests.SourceComputedSyntax

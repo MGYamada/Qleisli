@@ -6,6 +6,7 @@
 
 mod binding;
 mod carrier;
+mod openqasm_placement;
 mod ordinary_root;
 mod qmatch;
 mod reporting;
@@ -437,11 +438,10 @@ impl Kernel {
         Self::submit_subject(subject, mode, None)
     }
 
-    fn submit_subject(
-        subject: Arc<Subject>,
-        mode: &str,
+    fn encode_subject(
+        subject: &Subject,
         view: Option<super::native_packet::View<'_>>,
-    ) -> Result<NativeChecked> {
+    ) -> Result<(Vec<u8>, super::native_packet::Scope)> {
         let artifact = &subject.artifact;
         let request = &subject.request;
         let mut packet =
@@ -453,7 +453,16 @@ impl Kernel {
         if let Some(request) = request {
             packet.extend_from_slice(request);
         }
-        let (packet, scope) = super::native_packet::encode(subject.edition, &packet, view)?;
+        super::native_packet::encode(subject.edition, &packet, view)
+    }
+
+    fn submit_subject(
+        subject: Arc<Subject>,
+        mode: &str,
+        view: Option<super::native_packet::View<'_>>,
+    ) -> Result<NativeChecked> {
+        let request = &subject.request;
+        let (packet, scope) = Self::encode_subject(&subject, view)?;
         let decision = runtime::check_mode(
             subject.checker(),
             packet,

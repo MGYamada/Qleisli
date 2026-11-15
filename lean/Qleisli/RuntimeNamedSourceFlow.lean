@@ -32,12 +32,15 @@ def NodeAligned {dependencies program block} (before after : RuntimeStructuralAc
     before = original ∧ after = boundary.after
   | .primitive _ binding => before = binding.history ∧ after = binding.after
   | .structural (before := original) action => before = original ∧ after = action.after
+  | .register (before := original) _ action => before = original ∧ after = action.after
   | .basis (event := event) (before := original) _ _ _ action =>
     before = original ∧ after = RuntimeBasisAction.continued event original action.output
   | .computed (event := event) (before := original) _ _ _ action =>
     before = original ∧ after = RuntimeComputedPredicate.continued event original action.literal.output
   | .certifiedComputed (event := event) (before := original) _ _ _ action =>
     before = original ∧ after = RuntimeComputedPredicate.continued event original action.literal.output
+  | .structuralComputed (event := event) (before := original) _ _ action =>
+    before = original ∧ after = RuntimeComputedPredicate.continued event original action.checked.output
   | .workspace (before := original) _ _ _ action _ =>
     before = original ∧ after = action.continuation
   | .operation frame .. => OperationOwnerOrder frame before after

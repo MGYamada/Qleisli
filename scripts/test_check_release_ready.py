@@ -60,8 +60,8 @@ class SyntheticRelease(unittest.TestCase):
         self.git('init', '--quiet')
         self.write('Cargo.toml', b'[package]\nname="qleisli"\nversion="0.3.0-alpha"\n')
         self.write('lean/schema-registry.json', b'{}\n')
-        for name in ['archive_lean_kernel.py', 'package_lean_kernel.py', 'check_lean_kernel.py']:
-            self.write('scripts/' + name, b'# Synthetic source identity only\n')
+        for name in sorted(checker.NATIVE_BUILD_SUPPORT | {'scripts/archive_lean_kernel.py'}):
+            self.write(name, b'# Synthetic source identity only\n')
         self.write('lean-kernel/Main.lean', b'-- Synthetic artifact input; not a proof\n')
         self.write('release/issue-snapshot.txt', b'Synthetic criterion for test only.\n')
         self.write('release/review.txt', b'Synthetic review; not human authority or an Issue decision.\n')
@@ -145,7 +145,8 @@ class SyntheticRelease(unittest.TestCase):
                       commands=[dict(exit_code=0)], crate=dict(sha256=checker.digest(crate)), source_archive=dict(sha256=checker.digest(source)))
         self.payloads['check-distribution'] = {'distribution.json': encoded(report), 'package.crate': crate, 'source.tar': source}
         for job, target in checker.NATIVE_JOBS.items():
-            sources = {name: checker.digest(file.data) for name, file in tracked.items() if name.startswith('lean-kernel/') or name in ['scripts/check_lean_kernel.py', 'scripts/package_lean_kernel.py']}
+            sources = {name: checker.digest(file.data) for name, file in tracked.items()
+                       if name.startswith('lean-kernel/') or name in checker.NATIVE_BUILD_SUPPORT}
             payload = {'bin/qleisli-kernel': b'SYNTHETIC NOT EXECUTABLE', 'LICENSE': b'Apache-2.0', 'NOTICE': b'fixture', 'lean-runtime-licenses/LICENSE': b'fixture'}
             manifest = dict(format='qleisli.native-bundle', version=1, package_version='0.3.0-alpha', protocol=checker.IDENTITIES['native_protocol'],
                             validation=dict(lane='full', fresh_replay=True), sources=sources, files={name: checker.digest(raw) for name, raw in payload.items()})

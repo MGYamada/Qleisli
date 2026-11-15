@@ -294,6 +294,12 @@ def readNode {functions} (metadata : Metadata functions) (nodes : List Node)
           return ⟨result.val,by
             exact (nodeAt nodes callee fuel environment index _ present).trans
               ((bindResult receiver (project original field)).trans result.property)⟩
+        | .bitIndex bit receiver =>
+          let receiver ← child receiver
+          let result ← runPure (readBitIndex bit receiver.val)
+          return ⟨result.val,by
+            exact (nodeAt nodes callee fuel environment index _ present).trans
+              ((bindResult receiver (readBitIndex bit)).trans result.property)⟩
         | .matching scrutinee labels bodies =>
           let scrutinee ← child scrutinee
           let selected ← runPure (selectMatch labels bodies scrutinee.val)

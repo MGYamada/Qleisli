@@ -70,6 +70,7 @@ theorem eventSteps_bound (bits : Nat) (event : Event) (steps : List Step)
     simp [eventSteps,eventValid,bind,Except.bind] at ok
   | protectedComputed width axes sourceBits ancillaBits function uses =>
     simp [eventSteps,eventValid,bind,Except.bind] at ok
+  | structuralComputed _ _ _ _ _ => simp [eventSteps,eventValid,bind,Except.bind] at ok
 
 def readEvents (bits : Nat) (events : List Event) : Except Error (List Step) := do
   let pieces ← events.mapM (eventSteps bits)

@@ -171,6 +171,7 @@ inductive Node where
   | variant (basis : Basis) (ordinal : Nat)
   | record (original : Record) (written : List (String × Nat))
   | projection (original : Record) (index receiver : Nat)
+  | bitIndex (index receiver : Nat)
   | matching (scrutinee : Nat) (labels bodies : List Nat)
   | call (function : Nat) (arguments : List Nat)
   deriving BEq, DecidableEq, Repr
@@ -183,7 +184,7 @@ def Node.children : Node → List Nat
     .binding _ first second | .sequence first second => [first,second]
   | .conditional condition first second => [condition,first,second]
   | .record _ written => written.map (·.2)
-  | .projection _ _ receiver => [receiver]
+  | .projection _ _ receiver | .bitIndex _ receiver => [receiver]
   | .matching scrutinee _ bodies => scrutinee :: bodies
 
 structure Function where
@@ -228,6 +229,11 @@ def selectMatch (labels bodies : List Nat) (value : Value) : Except String Nat :
   let some selected := bodies[position]? | throw "ordinary match has no matching label"
   return selected
 
+def readBitIndex (index : Nat) (value : Value) : Except String Value := do
+  let [.ordinary [.bits width] label] := value | throw "ordinary bit indexing requires Bits<n>"
+  if index < width then return [.ordinary [.bit] (label.testBit index).toNat]
+  else throw "ordinary bit index requires k < n"
+
 def nodeAction (callee : Nat → List Value → Except String Value)
     (next : Environment → Nat → Except String Value) (environment : Environment) (node : Node) :
     Except String Value := do
@@ -270,6 +276,7 @@ def nodeAction (callee : Nat → List Value → Except String Value)
         let values ← written.mapM fun (name,index) => do return (name,← child index)
         construct original values
       | .projection original field receiver => project original field (← child receiver)
+      | .bitIndex index receiver => readBitIndex index (← child receiver)
       | .matching scrutinee labels bodies =>
         child (← selectMatch labels bodies (← child scrutinee))
       | .call function arguments => callee function (← arguments.mapM child)

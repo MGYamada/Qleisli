@@ -31,6 +31,11 @@ noncomputable def circuit (dependencies : List Dependency) (steps : List Step) (
 noncomputable def embed (axes : List Nat) (action : (Nat → ℂ) → Nat → ℂ) (ψ : Nat → ℂ) : Nat → ℂ :=
   fun output => action (fun input => ψ (scatter output axes input)) (gather output axes)
 
+/-- Clauses are literal controls on the data axes of the forward XOR circuit.
+Original structural acceptance establishes the action shape and inverse. -/
+def StructuralXorValue (forward : List Step) (source : Nat) : Nat :=
+  (forward.foldl (fun parity step => Bool.xor parity (enabled step.controls source)) false).toNat
+
 noncomputable def event (dependencies : List Dependency) (operation : Event) (ψ : Nat → ℂ) : Nat → ℂ :=
   match operation with
   | .circuit _ steps => circuit dependencies steps ψ
@@ -53,6 +58,13 @@ noncomputable def event (dependencies : List Dependency) (operation : Event) (ψ
       let logicalInput : Protected.Logical Unit := fun source target _ => input (source+target*2^sourceBits)
       let physical := Protected.compute f (Protected.run uses (Protected.compute f (Protected.zero logicalInput)))
       fun output => physical (output % 2^sourceBits) 0 (output / 2^sourceBits) ()) ψ
+
+  | .structuralComputed _ axes forward inverse uses =>
+    embed axes (fun input =>
+      let physical := circuit []
+        (forward ++ uses.map (QleisliKernel.Semantics.Protected.physical 0 axes.length) ++ inverse)
+        (fun label => if label < 2^axes.length then input label else 0)
+      fun output => physical output) ψ
 
 noncomputable def events (dependencies : List Dependency) (operations : List Event) (ψ : Nat → ℂ) : Nat → ℂ :=
   operations.foldl (fun ψ operation => event dependencies operation ψ) ψ

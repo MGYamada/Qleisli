@@ -1,0 +1,15 @@
+use std::state::init0;
+use std::gate::controlled_phase;
+
+unitary fn logical(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (c,t) = split(q);
+    let (c,t) = controlled_phase[1,2](c,t);
+    join(c,t)
+}
+
+observe fn main() -> (Bit,Bit) {
+    let q = join(h(init0()),h(init0()));
+    let q = clean(q, logical) { |data, scratch| (logical(data), scratch) };
+    let (c,t) = split(q);
+    (measure_z(h(c)),measure_z(h(t)))
+}

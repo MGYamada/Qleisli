@@ -62,6 +62,12 @@ def ordinaryRows (sources : Sources) : Nat → {owner : String} →
           exactWork (Exact.charge (collected.length+child.length+1))
           return collected ++ child) []
         return rows ++ event.labels.labels.sourceRows ++ children
+      | .registerPrimitive event =>
+        guard (event.kind == .prependBit && event.allocated.isEmpty && event.consumed.isEmpty) .request
+        return rows ++ (SourceRuntimeContext.Event.registerPrimitive event).staticRows
+      | .primitive event =>
+        guard (event.kind == .emptyBits && event.allocated.isEmpty && event.consumed.isEmpty) .request
+        return rows ++ CallName.sourceRows event.candidate
       | _ => throw .request) [] )
 
 inductive OperationMode (artifact : Artifact) where

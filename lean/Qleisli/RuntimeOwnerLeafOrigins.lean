@@ -108,6 +108,7 @@ theorem step_supported (operation : Raw.Op) {allowed before after}
   cases operation with
   | gate value input output => exact move_supported original ran
   | applyUnitary input output steps => exact move_supported original ran
+  | structuralCompute input output scratch forward inverse uses => exact move_supported original ran
   | certifiedCompute input output ancilla function uses logical => exact move_supported original ran
   | liftBasis input output wires table =>
     simp only [RawOwnerFlow.step] at ran

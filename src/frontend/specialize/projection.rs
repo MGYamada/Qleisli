@@ -190,6 +190,12 @@ impl Projection<'_, '_> {
             }
             RuntimeExpression::Name(name) => ExprKind::Name(self.ident(name)?),
             RuntimeExpression::Unit => ExprKind::Unit,
+            RuntimeExpression::BitIndex { .. } => {
+                return Err(unsupported(
+                    expression.span,
+                    "ordinary bit indexing requires the Raw profile",
+                ));
+            }
             RuntimeExpression::Tuple(fields) => {
                 self.charge(expression.span, fields.len())?;
                 ExprKind::Tuple(

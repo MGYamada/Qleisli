@@ -21,6 +21,7 @@ from check_ratification_packet import PacketError, ROOT, exact_keys, json_object
 from check_distribution import clean_candidate, read_archive, tracked_files
 from ci_profiles import SUITES, check_needs
 from maintain_release import version_plan
+from package_lean_kernel import NATIVE_BUILD_SUPPORT
 
 REQUIREMENTS = "release/requirements.json"
 ACCEPTANCE = "release/acceptance.json"
@@ -477,7 +478,7 @@ def artifacts(root, files, context, version, snapshot):
         require(bundle.get("package_version") == version and bundle.get("protocol") == IDENTITIES["native_protocol"], "native release/protocol mismatch")
         require(bundle.get("validation", {}).get("lane") == "full" and bundle["validation"].get("fresh_replay") is True, "native fresh full replay missing")
         expected_sources = {path for path in tracked if path.startswith("lean-kernel/") and (path.endswith(".lean") or Path(path).name in {"lakefile.toml", "lake-manifest.json", "lean-toolchain"})}
-        expected_sources.update({"scripts/check_lean_kernel.py", "scripts/package_lean_kernel.py"})
+        expected_sources.update(NATIVE_BUILD_SUPPORT)
         require(type(bundle.get("sources")) is dict and bundle["sources"].keys() == expected_sources, "native source inventory missing/incomplete")
         for path, sha in bundle["sources"].items():
             require(path in tracked and digest(tracked[path].data) == sha, "native source identity mismatch")

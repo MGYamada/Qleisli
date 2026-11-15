@@ -51,6 +51,12 @@ fn raw(
                 steps(use_steps, found, remaining)?;
                 steps(logical_steps, found, remaining)?;
             }
+            RawOp::StructuralCompute {
+                forward, inverse, ..
+            } => {
+                steps(forward, found, remaining)?;
+                steps(inverse, found, remaining)?;
+            }
             RawOp::ClassicalBranch {
                 then_ops, else_ops, ..
             } => {

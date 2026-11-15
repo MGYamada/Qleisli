@@ -98,4 +98,54 @@ def apply (kind : CallName.Primitive) (naturals : List Nat) (arguments : List Va
     return ([.owner output],[output],[bit,rest],nextOrdinal+1)
   | _,_,_ => throw "register primitive original runtime argument shape"
 
+/-- Every consumed or allocated quantum owner of a checked register primitive
+is a single Bit or a full Bits word, including the zero-width rest word. -/
+theorem apply_register_owners {kind naturals arguments nextOrdinal value allocated consumed afterOrdinal}
+    (register : kind = .takeBit ∨ kind = .putBit)
+    (applied : apply kind naturals arguments nextOrdinal = .ok (value,allocated,consumed,afterOrdinal)) :
+    (consumed.map (·.ordinal)).Nodup ∧
+      ∀ owner ∈ allocated ++ consumed, owner.basis = [.bit] ∨ ∃ width, owner.basis = [.bits width] := by
+  dsimp only [apply, Bind.bind, Except.bind, pure, Except.pure, Functor.map, Except.map,
+    throw, MonadExceptOf.throw] at applied
+  split at applied
+  · cases applied
+  · split at applied
+    · simp_all
+    · rename_i width _ input _
+      split at applied
+      · cases applied
+      · rename_i inputType
+        have inputBasis : input.basis = [.bits width] := by simpa using inputType
+        cases applied
+        refine ⟨by simp,?_⟩
+        intro owner member
+        simp only [List.cons_append, List.nil_append, List.mem_cons, List.not_mem_nil, or_false] at member
+        rcases member with rfl | rfl | rfl
+        · exact .inl rfl
+        · exact .inr ⟨_,rfl⟩
+        · exact .inr ⟨_,inputBasis⟩
+    · rename_i width _ bit rest _
+      split at applied
+      · cases applied
+      · rename_i inputTypes
+        simp only [Bool.or_eq_true, beq_iff_eq, bne_iff_ne] at inputTypes
+        have bitBasis : bit.basis = [.bit] := by
+          by_cases same : bit.basis = [.bit]
+          · exact same
+          · exact False.elim (inputTypes (.inl (.inr same)))
+        have restBasis : rest.basis = [.bits (width-1)] := by
+          by_cases same : rest.basis = [.bits (width-1)]
+          · exact same
+          · exact False.elim (inputTypes (.inr same))
+        have distinct : bit.ordinal ≠ rest.ordinal := fun same => inputTypes (.inl (.inl same))
+        cases applied
+        refine ⟨by simp [distinct],?_⟩
+        intro owner member
+        simp only [List.cons_append, List.nil_append, List.mem_cons, List.not_mem_nil, or_false] at member
+        rcases member with rfl | rfl | rfl
+        · exact .inr ⟨_,rfl⟩
+        · exact .inl bitBasis
+        · exact .inr ⟨_,restBasis⟩
+    · cases applied
+
 end QleisliKernel.SourceTypes.SourceRegisterApplication

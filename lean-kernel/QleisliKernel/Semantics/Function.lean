@@ -41,6 +41,8 @@ def extracted : Event → Option (List Step)
   | .protectedComputed _ axes sourceBits _ function uses =>
     some ((uses.flatMap (Protected.logical sourceBits function)).map (RawTrace.localize axes))
 
+  | .structuralComputed .. => none
+
 def stepCost (dependencies : List Nat) (step : Step) : Option Nat :=
   match step.action with | .contract _ index _ => dependencies[index]? | _ => some 1
 

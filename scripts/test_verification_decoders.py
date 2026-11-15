@@ -59,11 +59,26 @@ def qirf_cases():
                 profile='finite-v0' if version == 1 else 'finite-meaning-v1', sources=[],
                 programs=[program], evidence=[], root=0, root_interface=None)
             cases.append((case['name'] + f'-v{version}', artifact))
+    # Exercise ordered controls, the scratch ID, both circuits and the local use
+    # through each actual Lean reader. This view grants no circuit acceptance.
+    source = copy.deepcopy(dict(cases)['pure_gate_h-v1'])
+    toggle = dict(controls=[dict(index=0, when_one=False)],
+                  action=dict(tag='monomial', indices=[1], permutation=[1, 0], phases=[0, 0]))
+    plain = dict(controls=[], action=toggle['action'])
+    phase = dict(tag='protected_gate', bit=dict(region='ancilla', index=0), gate='t')
+    source['programs'][0]['operations'] = [
+        dict(tag='structural_compute', source=0, source_out=1, scratch=5,
+             forward=[toggle, plain], inverse=[plain, toggle], uses=[phase]),
+    ]
+    seen.add('structural_compute')
+    for version in (1, 2):
+        source.update(version=version, profile='finite-v0' if version == 1 else 'finite-meaning-v1')
+        cases.append((f'structural-compute-v{version}', copy.deepcopy(source)))
     expected_constructors = {
         'apply_unitary', 'certified_compute', 'classical_and', 'classical_branch',
         'classical_const', 'classical_not', 'classical_xor', 'cnot',
         'compute_use_uncompute', 'discard', 'gate', 'init0', 'join', 'lift_basis',
-        'measure_z', 'pack_unit', 'quantum_if', 'reset', 'split', 'toffoli',
+        'measure_z', 'pack_unit', 'quantum_if', 'reset', 'split', 'structural_compute', 'toffoli',
         'unpack_unit',
     }
     assert seen == expected_constructors, {
@@ -196,6 +211,8 @@ def main():
         raw_fault('wire-bound-'+field,dict(tag='apply_unitary',input=0,output=1,steps=[dict(controls=controls,action=action)]))
     raw_fault('wire-bound-computed-function',dict(tag='certified_compute',source=0,source_out=1,
         ancilla_wires=[1],function=[65536],use_steps=[],logical_steps=[]))
+    raw_fault('wire-bound-structural-scratch',dict(tag='structural_compute',source=0,
+        source_out=1,scratch=2**32,forward=[],inverse=[],uses=[]))
     for tag,table in [('permutation',[65536]),('phase8',[256])]:
         value = copy.deepcopy(example); value.update(version=2,profile='finite-meaning-v1',
             evidence=[dict(tag='meaning',signature=dict(tag='bit'),implementation=0,meaning=dict(tag=tag,table=table),

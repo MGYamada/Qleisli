@@ -343,6 +343,15 @@ pub enum RawOp {
         function: Vec<u16>,
         use_ops: Vec<ProtectedUse>,
     },
+    /// Circuit-backed protected scope with one private scratch wire.
+    StructuralCompute {
+        source: TokenId,
+        source_out: TokenId,
+        scratch: WireId,
+        forward: Vec<CircuitStep>,
+        inverse: Vec<CircuitStep>,
+        uses: Vec<ProtectedUse>,
+    },
 }
 
 // Raw IR is untrusted. A depth check in the verifier prevents recursive

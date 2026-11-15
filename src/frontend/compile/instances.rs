@@ -40,10 +40,10 @@ pub(super) enum BodyState {
 }
 pub(super) struct Record {
     identity: Identity,
-    // Evidence preparation and selected typed lowering have different producer
-    // contracts. They share source/substitution identity, not prepared bodies.
-    pub bodies: [BodyState; 2],
-    pub providers: [Vec<(Option<Key>, operations::Operation)>; 2],
+    // Body and provider caches distinguish the typed root and the required
+    // finite representation. Source/substitution identity is shared.
+    pub bodies: [BodyState; 4],
+    pub providers: [Vec<(Option<Key>, operations::Operation)>; 4],
 }
 pub(super) struct ClosedInstance {
     pub definition: Key,
@@ -55,6 +55,7 @@ pub(super) struct ClosedInstance {
 #[derive(Default)]
 pub(super) struct Context {
     pub owner: Option<Key>,
+    pub finite_transform: bool,
     pub current: Option<Arc<ClosedInstance>>,
     pub naturals: BTreeMap<BinderKey, u32>,
     active: Vec<usize>,
@@ -146,8 +147,8 @@ impl Compiler<'_> {
         let ordinal = self.instances.len();
         self.instances.push(Record {
             identity,
-            bodies: [BodyState::Unprepared, BodyState::Unprepared],
-            providers: [Vec::new(), Vec::new()],
+            bodies: std::array::from_fn(|_| BodyState::Unprepared),
+            providers: std::array::from_fn(|_| Vec::new()),
         });
         Ok(ordinal)
     }

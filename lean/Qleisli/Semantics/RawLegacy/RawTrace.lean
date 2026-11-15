@@ -14,7 +14,7 @@ open Raw
 /-- Read the meaning-bearing fields of every original pure constructor. This
 neither decides admissibility nor constructs an evidence matrix. In particular,
 computed events retain the actual body and requested logical data together. -/
-def step (state : Interface) (op : Raw.Op) : Option (Interface × List Event) := do
+def step (state : Interface) (op : Raw.Op) : Option (Interface × List Raw.Event) := do
   let bits := state.frame.length
   match op with
   | .init0 output wire =>
@@ -72,6 +72,12 @@ def step (state : Interface) (op : Raw.Op) : Option (Interface × List Event) :=
     let next := (targets.zip ports).foldl (fun next (target,port) => insert next target.output port.wires) next
     return (next,[.protectedComputed bits (axes state (source.wires ++ ports.flatMap (·.wires)))
       source.bits ancilla.length function uses])
+
+structure Prepared where
+  state : Interface
+  events : List Raw.Event := []
+  inputBits : Nat
+  deriving BEq, DecidableEq, Repr
 
 def advance (prepared : Prepared) (op : Raw.Op) : Option Prepared := do
   let (next,events) ← step prepared.state op
