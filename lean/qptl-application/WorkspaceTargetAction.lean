@@ -1,5 +1,6 @@
 import Qleisli.FiniteMatrixAction
 import Qleisli.RawDenotation
+import Qleisli.RawReconstructedAction
 import QleisliKernel.Target.CanonicalOpenQasmWorkspace
 import Protocol.NativeContext.Bindings
 import QPTL.CleanMarginal
@@ -145,6 +146,7 @@ theorem dirty_checked_promotion {dependencies bits steps logical body actual wor
       (.ok actual,left)) :
     ∃ expected before after,
       (Raw.promote (bits+1) (List.range bits) logical).run before = (.ok expected,after) ∧
+      actual.rows = 2^(bits+1) ∧ actual.cols = 2^(bits+1) ∧
       ∀ (row col : Nat), row < 2^(bits+1) → col < 2^(bits+1) →
         Qleisli.Semantics.Exact.entry actual row col = Qleisli.Semantics.Exact.entry expected row col := by
   obtain ⟨_,afterCheck,checked⟩ := Raw.Workspace.checkOriginal_bound _ _ _ _ _ _ _ _ _ ran
@@ -152,14 +154,16 @@ theorem dirty_checked_promotion {dependencies bits steps logical body actual wor
     read,circuit,actualCompose,requiredCompose,equal⟩ :=
     Raw.Workspace.check_conditions _ _ _ _ _ _ _ afterCheck checked
   obtain ⟨identity,expected,mapWork,promoteWork,after,mapped,promoted,rfl⟩ := dirtyEncoding read
-  refine ⟨expected,promoteWork,after,promoted,?_⟩
-  intro row col hr hc
   let dim := 2^(bits+1)
   have mapping := Raw.mapping_value _ _ _ _ _ _ mapped
   have mapRows : identity.rows = dim := congrArg Semantics.Exact.Matrix.rows mapping
   have mapCols : identity.cols = dim := congrArg Semantics.Exact.Matrix.cols mapping
   have literal := Qleisli.Raw.circuit_denotes dependencies (bits+1) steps actual circuitWork afterCircuit circuit
-  have rawRows : actual.rows = dim := rows literal
+  obtain ⟨_,_,shape⟩ := literal
+  have rawRows : actual.rows = dim := congrArg Semantics.Exact.Matrix.rows shape
+  have rawCols : actual.cols = dim := congrArg Semantics.Exact.Matrix.cols shape
+  refine ⟨expected,promoteWork,after,promoted,rawRows,rawCols,?_⟩
+  intro row col hr hc
   have expectedCols : expected.cols = dim :=
     congrArg Semantics.Exact.Matrix.cols (Raw.promote_value _ _ _ _ _ _ promoted)
   have idEntry (r c : Nat) (insideR : r < dim) (insideC : c < dim) :
@@ -191,6 +195,35 @@ theorem dirty_checked_promotion {dependencies bits steps logical body actual wor
     rw [idEntry row k hr (List.mem_range.mp inRange)]
     by_cases same : row = k <;> simp [same]
   exact left.symm.trans ((congrArg (fun matrix => Qleisli.Semantics.Exact.entry matrix row col) equal).trans right)
+
+/-- Dirty restoration applies the logical operator on the ordered data
+coordinates of each reference column. Changing the selected data coordinates
+in a physical label preserves its high scratch bit. The joint amplitudes
+may correlate scratch, data and an arbitrary reference. -/
+theorem dirty_checked_reference {dependencies bits steps logical body actual work left}
+    (ran : (Raw.Workspace.checkOriginal dependencies true bits steps logical body).run work =
+      (.ok actual,left)) {R : Type} (joint : Nat → R → ℂ) (row : Nat) (reference : R)
+    (inside : row < 2^(bits+1)) :
+    Qleisli.Semantics.Exact.action actual joint row reference =
+      Qleisli.Semantics.Exact.action logical
+        (fun col ref => joint (scatter row (List.range bits) col) ref)
+        (gather row (List.range bits)) reference ∧
+      ∀ col, bit (scatter row (List.range bits) col) bits =
+        bit row bits := by
+  obtain ⟨expected,before,after,promoted,_,actualCols,agrees⟩ := dirty_checked_promotion ran
+  have shape := Qleisli.Raw.promote_denotes _ _ _ _ before after promoted
+  have same : Qleisli.Semantics.Exact.action actual joint row reference =
+      Qleisli.Semantics.Exact.action expected joint row reference := by
+    unfold Qleisli.Semantics.Exact.action
+    rw [actualCols,shape.2.1]
+    apply Qleisli.Exact.sum_map_congr
+    intro col member
+    rw [agrees row col inside (List.mem_range.mp member)]
+  refine ⟨same.trans (Qleisli.Raw.ReconstructedAction.promoted_action before after promoted
+    joint row reference (shape.1.symm ▸ inside)),?_⟩
+  intro col
+  apply RuntimeScatterTransport.scatter_outside
+  simp
 
 private theorem unique_slice {circuit scratch}
     {uses : List (CleanUse circuit scratch)} (ordered : uses.Pairwise CleanUse.before)
@@ -262,6 +295,7 @@ theorem native_limit_has_no_resources (product : String) (bytes : ByteArray) (wo
 
 #print axioms native_limit_has_no_resources
 #print axioms native_clean_access_counted_once
+#print axioms dirty_checked_reference
 #print axioms dirty_checked_promotion
 #print axioms clean_checked_separates
 #print axioms decoded_action

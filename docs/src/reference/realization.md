@@ -105,8 +105,10 @@ insertion and output coefficients with QPTL's fixed-scratch law. The joint
 output density has support only in the zero-scratch block, for every input
 density on data and a reference. The companion
 `WorkspaceTargetAction.dirty_checked_promotion` binds every coefficient of
-the actual body to the logical operator promoted on the ordered data axes,
-preserving the full scratch coordinate.
+the actual body to the logical operator promoted on the ordered data axes.
+`WorkspaceTargetAction.dirty_checked_reference` then applies that action
+to each joint reference column and proves that every selected input
+coordinate retains the output's scratch bit.
 
 Dirty workspace requires the declared identity action on its unknown state
 and all reference correlations. Returning its marginal state on a few inputs
