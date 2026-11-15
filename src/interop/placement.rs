@@ -284,6 +284,60 @@ mod tests {
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
     #[test]
+    fn workspace_resources_bind_the_actual_closed_natural_specialization() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/target-specialization-v030/attempt-03");
+        let kernel = Kernel::selected(Edition::E2026).unwrap();
+        let compile = |case| {
+            Project::load(&root.join(case))
+                .unwrap()
+                .compile_with_kernel(&kernel)
+        };
+        let h = compile("n0").unwrap();
+        let t = compile("n1").unwrap();
+        let (h_target, h_resources) = crate::interop::export_openqasm3_with_resources(&h).unwrap();
+        let (t_target, t_resources) = crate::interop::export_openqasm3_with_resources(&t).unwrap();
+        assert!(h_target.contains("h q[0];"), "{h_target}");
+        assert!(t_target.contains("t q[0];"), "{t_target}");
+        assert_eq!((h_resources.qubits, h_resources.gates), (2, 1));
+        assert_eq!((t_resources.qubits, t_resources.gates), (2, 1));
+        assert_eq!((h_resources.t_gates, t_resources.t_gates), (0, 1));
+
+        for (program, other_target) in [(&h, &t_target), (&t, &h_target)] {
+            let intervals = workspace_intervals(
+                program.source_context().unwrap(),
+                program.raw().operations.len(),
+            )
+            .unwrap();
+            let (_, alignment) =
+                super::super::profile::extract_with_alignment(program, &intervals).unwrap();
+            let error = program
+                .check_openqasm_placement(other_target.as_bytes(), &alignment.encode())
+                .unwrap_err();
+            assert_eq!(error.code, "contract", "{error}");
+        }
+
+        let scalar = compile("n2").unwrap();
+        let error = crate::interop::export_openqasm3_with_resources(&scalar).unwrap_err();
+        assert_eq!(error.kind, InteropErrorKind::Unsupported);
+        assert!(
+            error.message.contains("uncontrolled scalar phase"),
+            "{error}"
+        );
+        let error = compile("n3").err().expect("out-of-domain specialization");
+        assert!(
+            error
+                .message
+                .contains("callee natural premise is not implied"),
+            "{error:?}"
+        );
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
     fn native_rejects_swapped_workspace_and_spectator_wires() {
         let source = "#![no_implicit_prelude]\n\
             isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\

@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/private/tmp/qleisli-70-check-target/debug/qleisli",
+    "interop",
+    "emit-qasm",
+    "/private/tmp/qleisli-127-checked-specialization.wEcQgeEU/v2-inside-n0",
+    "--input=qli",
+    "--resources",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-11-15T12:14:23.275831+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop emit-qasm",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "text": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[2] q;\nbit[1] c;\nreset q;\nh q[0];\nc[0] = measure q[0];\n",
+      "resources": {
+        "exact_work": 6332530,
+        "qubits": 2,
+        "resets": 2,
+        "gates": 1,
+        "swaps": 0,
+        "t_gates": 0,
+        "measurements": 1
+      }
+    }
+  },
+  "stderr": ""
+}
