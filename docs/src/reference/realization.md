@@ -135,6 +135,12 @@ tracked in [#28](https://github.com/MGYamada/Qleisli/issues/28),
 [#44](https://github.com/MGYamada/Qleisli/issues/44) and
 [#47](https://github.com/MGYamada/Qleisli/issues/47).
 
+Terminal export can identify the closed specialization and original source
+expression when a rejected operation has a single retained origin. This includes
+steps from an explicit clean or dirty workspace body. When a rewrite combines
+several expressions, the enclosing Raw operation can provide its own origin.
+Imported artifacts have no original project diagnostics.
+
 ## Logical axes and physical placement
 
 The logical interface records the ordered axes of each owner using the exact
@@ -784,11 +790,23 @@ A gate decomposition may use allocated synthesis scratch. The checker
 verifies that its physical locations are declared and separate from all live
 owners. It compares the full target word on the data and scratch with the
 original operator under the canonical zero embedding at both ends. The
-six-axis bound includes scratch. This checks the exact phase and zero return
-for every input column, so the equation also preserves correlations with
-external references. A complete trace may reserve locations for several
-disjoint synthesis slices. The original allocation, routing, source
-workspace and readout cannot touch these locations. Every slice using them
+six-axis bound includes scratch. The executable check keeps the same zero
+encoding at entry and exit. The Lean theorem
+`WorkspaceTargetAction.synthesis_action` connects the actual decoded gate
+word to the original local operator under that encoding. It proves equality
+with full phase on every external reference column, with zero amplitude
+whenever any synthesis scratch bit is nonzero. The checked placement replay
+recovers this evidence at the original Raw position and physical gate offset,
+for either a single circuit event or an optimized span.
+`WorkspaceTargetAction.bound_synthesis_action` and
+`WorkspaceTargetAction.native_suffix_synthesis_action` connect the replay
+before a source workspace and the native decision's terminal suffix to that
+exact action. The equation uses the original circuit steps on the recovered
+support with their dependencies. The literal gate interval and its synthesis
+scratch locations are within the reported gate and register counts.
+A complete trace may reserve locations for several disjoint synthesis slices.
+Original allocation, routing, source workspace and readout cannot touch
+these locations. Every slice using them
 checks its own zero return. An individual slice can instead use exclusive
 scratch, which the checker verifies is untouched everywhere else.
 

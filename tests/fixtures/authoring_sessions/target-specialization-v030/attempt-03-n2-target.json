@@ -1,0 +1,30 @@
+{
+  "command": [
+    "/private/tmp/qleisli-70-check-target/debug/qleisli",
+    "interop",
+    "emit-qasm",
+    "/private/tmp/qleisli-127-checked-specialization.wEcQgeEU/v2-inside-n2",
+    "--input=qli",
+    "--resources",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-11-15T12:14:30.509965+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop emit-qasm",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "Unsupported: OpenQASM 3 export of main::main: uncontrolled scalar phase is outside the terminal gate vocabulary at raw operation 2",
+        "primary": null,
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

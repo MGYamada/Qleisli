@@ -346,6 +346,34 @@ pub(super) fn table_xor_word(
     Ok(word)
 }
 
+/// Original flattened word positions, before contract and target rewrites.
+#[derive(Debug)]
+struct LocatedStep {
+    step: CircuitStep,
+    positions: std::ops::Range<usize>,
+}
+
+#[derive(Debug)]
+pub(super) struct StepFailure {
+    pub(super) error: InteropError,
+    pub(super) positions: Option<std::ops::Range<usize>>,
+}
+
+impl From<InteropError> for StepFailure {
+    fn from(error: InteropError) -> Self {
+        Self {
+            error,
+            positions: None,
+        }
+    }
+}
+
+impl From<StepFailure> for InteropError {
+    fn from(failure: StepFailure) -> Self {
+        failure.error
+    }
+}
+
 /// Recover diagonal words before assigning synthesis workspace. In particular
 /// adjacent controlled eighth-turn actions combine to an even exponent with
 /// an ancilla-free realization. Controls and ordered axes must
@@ -356,9 +384,9 @@ pub(super) fn steps(
     steps: &[CircuitStep],
     wires: &[usize],
     expansion: &mut ExpansionBudget,
-) -> Result<(), InteropError> {
+) -> Result<(), StepFailure> {
     let mut cursor = contracts::Cursor::new(steps, wires.len(), expansion)?;
-    let mut window = std::collections::VecDeque::with_capacity(3);
+    let mut window = normalization::Window::default();
     let mut pending = expansion.normalizations.next(&mut cursor, &mut window)?;
     while let Some(mut merged) = pending.take() {
         pending = expansion.normalizations.next(&mut cursor, &mut window)?;
@@ -366,7 +394,7 @@ pub(super) fn steps(
             indices,
             permutation,
             phases,
-        } = &mut merged.action
+        } = &mut merged.step.action
         {
             if permutation
                 .iter()
@@ -378,11 +406,11 @@ pub(super) fn steps(
                         indices: next_indices,
                         permutation: next_perm,
                         phases: next_phases,
-                    } = &next.action
+                    } = &next.step.action
                     else {
                         break;
                     };
-                    if next.controls != merged.controls
+                    if next.step.controls != merged.step.controls
                         || next_indices != indices
                         || next_perm != permutation
                     {
@@ -391,11 +419,15 @@ pub(super) fn steps(
                     for (a, b) in phases.iter_mut().zip(next_phases) {
                         *a = (*a + *b) % 8;
                     }
+                    merged.positions.end = next.positions.end;
                     pending = expansion.normalizations.next(&mut cursor, &mut window)?;
                 }
             }
         }
-        step(circuit, scratch, &merged, wires)?;
+        step(circuit, scratch, &merged.step, wires).map_err(|error| StepFailure {
+            error,
+            positions: Some(merged.positions),
+        })?;
     }
     Ok(())
 }

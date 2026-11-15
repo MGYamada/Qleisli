@@ -13,3 +13,11 @@ stored source. The second attempt uses canonical manifests for
 two successful source checks, successful H export and unsupported scalar-phase
 export. The latter reported the Raw operation index with an empty primary
 location.
+
+The third attempt exercises OpenQASM with checked resource reporting on
+`46bfd893b17172b3a570f37d9d034d33bef365a2`. Each project uses the same
+one-qubit generic definition in a clean workspace and varies the closed
+natural argument. The first two runs report one gate and two physical qubits,
+with different T counts for H and T. The exact scalar case passes source
+checking and fails target export with an empty primary location. The
+out-of-domain natural argument fails source checking at the call site.

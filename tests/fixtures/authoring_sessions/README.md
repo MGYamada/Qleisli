@@ -136,6 +136,10 @@ return the same zero auxiliary but different live distributions; falsely
 Unitary reset rejects with its actual effect diagnostic. These bounded
 observations do not prove the general channel, source or resource obligations.
 
+The [observing-branch cleanup study](clean-observing-branches-v030/session.json)
+records nested branches with checked cleanup, a direct logical comparison, and
+a missing phase that changes one measured history.
+
 The [small cross-algorithm access study](access-algorithms-v030/context.md)
 retains ten first access/explicit-owner programs, their independent mathematical
 expectations and thirty actual CLI observations. Project success, two selected
@@ -820,3 +824,7 @@ preparation verifies its canonical three-state output.
 The [closed-provider resource study](closed-provider-resources-v030/context.md)
 keeps the first workspace and operation-selection refusals, plus direct-provider
 target counts and the separate placement refusal after source acceptance.
+
+The [derived provider resources study](provider-derived-resources-v030/README.md)
+keeps the first source and terminal reports for a composed inverse, inverse
+power, ordered tensor and a semantic provider that the target cannot realize.

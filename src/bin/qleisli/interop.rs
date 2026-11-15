@@ -79,17 +79,14 @@ fn adapter(error: interop::InteropError, source: Option<(&Path, &str)>) -> Failu
 }
 
 fn export_failure(
-    mut error: interop::InteropError,
+    diagnostic: interop::TerminalExportDiagnostic<'_>,
     target: &str,
-    program: &AcceptedProgram,
     project: Option<&Project>,
 ) -> Failure {
+    let mut error = diagnostic.error;
     let mut source = None;
     if let Some(project) = project {
-        if let Some((module, span, specialization)) = error
-            .operation
-            .and_then(|index| program.specialization_origin(index))
-        {
+        if let Some((module, span, specialization)) = diagnostic.specialization {
             error.message = format!("{target} export of {specialization}: {}", error.message);
             source = project.modules.get(module).map(|module| {
                 error.span = Some(span);
@@ -266,36 +263,29 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
                 .to_vec(),
         )
         .map_err(|_| failure("format", "export is not UTF-8"))?,
-        "emit-qasm" if resources => {
-            let (text, counts) =
-                interop::export_openqasm3_with_resources(program).map_err(|error| {
-                    export_failure(error, "OpenQASM 3", program, source_project.as_ref())
-                })?;
-            return Ok(format!(
-                concat!(
-                    "{{\"text\":{},\"resources\":{{\"exact_work\":{},\"qubits\":{},\"resets\":{},",
-                    "\"gates\":{},\"swaps\":{},\"t_gates\":{},\"measurements\":{}}}}}"
-                ),
-                quoted(&text),
-                counts.exact_work,
-                counts.qubits,
-                counts.resets,
-                counts.gates,
-                counts.swaps,
-                counts.t_gates,
-                counts.measurements,
-            ));
+        "emit-qasm" => {
+            let (text, counts) = interop::export_openqasm_for_cli(program, resources)
+                .map_err(|error| export_failure(error, "OpenQASM 3", source_project.as_ref()))?;
+            if let Some(counts) = counts {
+                return Ok(format!(
+                    concat!(
+                        "{{\"text\":{},\"resources\":{{\"exact_work\":{},\"qubits\":{},\"resets\":{},",
+                        "\"gates\":{},\"swaps\":{},\"t_gates\":{},\"measurements\":{}}}}}"
+                    ),
+                    quoted(&text),
+                    counts.exact_work,
+                    counts.qubits,
+                    counts.resets,
+                    counts.gates,
+                    counts.swaps,
+                    counts.t_gates,
+                    counts.measurements,
+                ));
+            }
+            text
         }
-        "emit-qasm" => interop::export_openqasm3(program).map_err(|error| {
-            export_failure(error, "OpenQASM 3", program, source_project.as_ref())
-        })?,
-        "emit-qir" => interop::export_qir_base(program).map_err(|error| {
-            export_failure(
-                error,
-                "QIR 2.0 Base Profile",
-                program,
-                source_project.as_ref(),
-            )
+        "emit-qir" => interop::export_qir_for_cli(program).map_err(|error| {
+            export_failure(error, "QIR 2.0 Base Profile", source_project.as_ref())
         })?,
         _ => unreachable!(),
     };

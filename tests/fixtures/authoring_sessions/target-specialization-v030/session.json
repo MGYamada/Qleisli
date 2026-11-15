@@ -37,6 +37,30 @@
         "attempt-02-n1-check.json",
         "attempt-02-n1-emit-qasm.json"
       ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "Checked OpenQASM resources for two closed workspace specializations, with independently observed unsupported target and out-of-domain cases.",
+      "sha256": {
+        "n0/main.qli": "0194cfeddb78a65015dec7378474775ad79a2239de1d5c0347e4a51dcf8f08ac",
+        "n1/main.qli": "6a933c5ecbb071e02b0833b83f2b3ed9e33835178fc3b8f9f01bf99c3dfdee04",
+        "n2/main.qli": "b245d9fdbfeb7c919c433400a6c0afc5289e2f1c991e304a43960899e8488633",
+        "n3/main.qli": "3e29f28772c720efc5ede6dfd6c576f432cd351af37fb64f90103c8b5a1894da"
+      },
+      "manifest_sha256": {
+        "n0/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "n1/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "n2/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "n3/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "attempt-03-n0-target.json",
+        "attempt-03-n1-target.json",
+        "attempt-03-n2-check.json",
+        "attempt-03-n2-target.json",
+        "attempt-03-n2-target-located.json",
+        "attempt-03-n3-check.json"
+      ]
     }
   ]
 }

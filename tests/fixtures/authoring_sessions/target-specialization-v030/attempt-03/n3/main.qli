@@ -1,0 +1,16 @@
+use std::state::init0;
+
+unitary fn specialize[const n: Nat](q: Q<Bit>) -> Q<Bit> requires n <= 2 {
+    if static n == 0 {
+        h(q)
+    } else {
+        if static n == 1 { phase[1,3](q) } else { global_phase_eighth(q) }
+    }
+}
+
+unitary fn logical(q: Q<Bit>) -> Q<Bit> { specialize[3](q) }
+
+observe fn main() -> Bit {
+    let q = clean(init0(), logical) { |data,scratch| (specialize[3](data), scratch) };
+    measure_z(q)
+}

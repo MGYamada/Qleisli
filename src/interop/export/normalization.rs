@@ -33,6 +33,12 @@ impl Default for State {
     }
 }
 
+#[derive(Default)]
+pub(super) struct Window {
+    steps: VecDeque<CircuitStep>,
+    positions: VecDeque<usize>,
+}
+
 impl State {
     pub(super) fn for_program(program: &AcceptedProgram) -> Self {
         Self {
@@ -46,25 +52,43 @@ impl State {
     pub(super) fn next(
         &mut self,
         cursor: &mut Cursor<'_>,
-        window: &mut VecDeque<CircuitStep>,
-    ) -> Result<Option<CircuitStep>, InteropError> {
-        if window.len() > 3 {
-            return Err(InteropError::limit(
-                "terminal normalization window exceeds three leaves",
-            ));
+        window: &mut Window,
+    ) -> Result<Option<super::LocatedStep>, super::StepFailure> {
+        while window.steps.len() < 3 {
+            let Some(step) = cursor.next().map_err(|error| super::StepFailure {
+                error,
+                positions: cursor.root_index.map(|index| index..index + 1),
+            })?
+            else {
+                break;
+            };
+            window.steps.push_back(step);
+            window
+                .positions
+                .push_back(cursor.root_index.expect("expanded root step"));
         }
-        while window.len() < 3 {
-            let Some(step) = cursor.next()? else { break };
-            window.push_back(step);
-        }
-        let Some(replacement) = candidate(window) else {
-            return Ok(window.pop_front());
+        let Some(replacement) = candidate(&window.steps) else {
+            return Ok(window.steps.pop_front().map(|step| {
+                let index = window.positions.pop_front().expect("window step origin");
+                super::LocatedStep {
+                    step,
+                    positions: index..index + 1,
+                }
+            }));
         };
-        self.check(window, &replacement)?;
-        // No commuting or cross-Raw-operation lookahead. Only these three
-        // actual adjacent leaves are consumed; all other steps retain order.
-        drop(window.drain(..3));
-        Ok(Some(replacement))
+        let positions = window.positions[0]..window.positions[2] + 1;
+        self.check(&window.steps, &replacement)
+            .map_err(|error| super::StepFailure {
+                error,
+                positions: Some(positions.clone()),
+            })?;
+        // Only these three actual adjacent leaves are consumed.
+        window.steps.clear();
+        window.positions.clear();
+        Ok(Some(super::LocatedStep {
+            step: replacement,
+            positions,
+        }))
     }
 
     /// Final target-word pass, after every original push has obeyed the gate
@@ -685,10 +709,10 @@ mod tests {
             let mut expansion = ExpansionBudget::default();
             let mut cursor = Cursor::new(&steps, 4, &mut expansion).unwrap();
             let mut state = State::default();
-            let mut window = VecDeque::with_capacity(3);
+            let mut window = Window::default();
             let mut returned = vec![];
             while let Some(step) = state.next(&mut cursor, &mut window).unwrap() {
-                returned.push(step);
+                returned.push(step.step);
             }
             assert_eq!(returned, steps);
         }
@@ -699,23 +723,23 @@ mod tests {
         let steps = hzh(vec![], 0);
         let mut expansion = ExpansionBudget::default();
         let mut cursor = Cursor::new(&steps, 1, &mut expansion).unwrap();
-        let mut window = VecDeque::with_capacity(3);
+        let mut window = Window::default();
         let mut state = State {
             work: Budget::new(0),
             ..State::default()
         };
         assert_eq!(
-            state.next(&mut cursor, &mut window).unwrap_err().kind,
+            state.next(&mut cursor, &mut window).unwrap_err().error.kind,
             InteropErrorKind::Limit
         );
         assert_eq!(
-            window.iter().collect::<Vec<_>>(),
+            window.steps.iter().collect::<Vec<_>>(),
             steps.iter().collect::<Vec<_>>()
         );
         assert!(state.equations.is_empty());
         state.work = Budget::new(DEFAULT_EXACT_WORK);
         assert_eq!(
-            state.next(&mut cursor, &mut window).unwrap_err().kind,
+            state.next(&mut cursor, &mut window).unwrap_err().error.kind,
             InteropErrorKind::InvalidIr
         );
         assert!(state.equations.is_empty());

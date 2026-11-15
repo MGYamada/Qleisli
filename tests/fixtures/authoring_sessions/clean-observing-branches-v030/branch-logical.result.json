@@ -1,0 +1,54 @@
+{
+  "command": [
+    "/private/tmp/qleisli-29-resource-owner.opR5M97j/cli-pr599",
+    "run",
+    "--format=json",
+    "/private/tmp/qleisli-157-whole-observing.08a1YMbh/branch-logical"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-11-15T13:04:34.685182+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false,
+            false
+          ],
+          "probability": 0.2500000000000001
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true
+          ],
+          "probability": 0.2500000000000001
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true
+          ],
+          "probability": 0.2500000000000001
+        },
+        {
+          "bits": [
+            true,
+            true,
+            false
+          ],
+          "probability": 0.2500000000000001
+        }
+      ]
+    }
+  },
+  "stderr": ""
+}

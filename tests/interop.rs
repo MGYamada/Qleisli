@@ -313,6 +313,98 @@ fn terminal_workspace_resources_follow_the_selected_provider() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_workspace_reports_only_the_actual_provider_realization() {
+    use qleisli::frontend::compile::compile_project;
+    use qleisli::interop::export_openqasm3_with_resources;
+
+    // Original authoring and command scope: "fixtures/authoring_sessions/provider-derived-resources-v030/README.md".
+    let manifest =
+        include_str!("fixtures/authoring_sessions/provider-derived-resources-v030/Qargo.toml");
+    let cases: [(&str, &str, usize, &[&str]); 3] = [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/provider-derived-resources-v030/composed-inverse.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/provider-derived-resources-v030/composed-inverse-target.json"
+            ),
+            2,
+            &[],
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/provider-derived-resources-v030/inverse-power.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/provider-derived-resources-v030/inverse-power-target.json"
+            ),
+            2,
+            &["sdg q[0];"],
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/provider-derived-resources-v030/ordered-tensor.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/provider-derived-resources-v030/ordered-tensor-target.json"
+            ),
+            3,
+            &["t q[0];", "tdg q[1];"],
+        ),
+    ];
+    for (source, first_report, qubits, expected_gates) in cases {
+        assert!(first_report.contains(r#""outcome":"ok""#));
+        assert!(first_report.contains(&format!(r#""gates":{},"#, expected_gates.len())));
+        let root = common::SourceRoot::new(source);
+        root.write("Qargo.toml", manifest);
+        let program = compile_project(&root.0).unwrap();
+        let (target, resources) = export_openqasm3_with_resources(&program).unwrap();
+        assert_eq!(target, export_openqasm3(&program).unwrap());
+        assert_eq!(literal_target(&target).1.len(), expected_gates.len());
+        assert_eq!(
+            target
+                .lines()
+                .filter(|line| expected_gates.contains(line))
+                .collect::<Vec<_>>(),
+            expected_gates,
+            "{target}"
+        );
+        assert_eq!(resources.gates, expected_gates.len());
+        assert_eq!((resources.qubits, resources.resets), (qubits, qubits));
+        assert_eq!(
+            literal_output_axes(&target),
+            (0..qubits - 1).collect::<Vec<_>>()
+        );
+    }
+
+    let first_source_check = include_str!(
+        "fixtures/authoring_sessions/provider-derived-resources-v030/unsupported-phase-check.json"
+    );
+    let first_refusal = include_str!(
+        "fixtures/authoring_sessions/provider-derived-resources-v030/unsupported-phase-target.json"
+    );
+    assert!(first_source_check.contains(r#""outcome":"ok""#));
+    assert!(first_refusal.contains(r#""code":"unsupported""#));
+    assert!(first_refusal.contains(r#""result":null"#));
+
+    let root = common::SourceRoot::new(include_str!(
+        "fixtures/authoring_sessions/provider-derived-resources-v030/unsupported-phase.qli"
+    ));
+    root.write("Qargo.toml", manifest);
+    let program = compile_project(&root.0).unwrap();
+    let error = export_openqasm3_with_resources(&program).unwrap_err();
+    assert_eq!(error.kind, InteropErrorKind::Unsupported);
+    assert!(
+        error.to_string().contains("uncontrolled scalar phase"),
+        "{error}"
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_workspace_resource_report_tracks_bits_register_axes() {
     let source = "use std::state::init0;\n\
         use std::structure::{empty,consume_empty};\n\

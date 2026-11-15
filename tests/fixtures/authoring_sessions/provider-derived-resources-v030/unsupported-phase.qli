@@ -1,0 +1,15 @@
+use std::state::init0;
+
+unitary fn eighth(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }
+unitary fn apply[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) { U(q) }
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn scalar(q: Q<Unit>) -> Q<Unit> { global_phase_eighth(q) }
+unitary fn apply_unit[const U: Op<Unit>](q: Q<Unit>) -> Q<Unit> requires Applicable(U) { U(q) }
+
+pub observe fn main() -> Bit {
+    let scalar_owner = apply_unit[scalar](unit(()));
+    finish(scalar_owner);
+    let q = clean(init0(), identity) { |data,scratch| (data,scratch) };
+    measure_z(q)
+}

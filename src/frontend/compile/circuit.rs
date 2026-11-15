@@ -1,4 +1,5 @@
 //! Conversion of independently verified unitaries to ordered flat finite circuits.
+use super::lower::{CircuitSources, OperationSources};
 use super::*;
 use crate::ir::*;
 
@@ -60,6 +61,16 @@ pub(super) fn flatten(
     span: Span,
     verified: &AcceptedProgram,
 ) -> Result<Vec<CircuitStep>, CompileError> {
+    flatten_with_sources(compiler, module, span, verified, None).map(|(steps, _)| steps)
+}
+
+pub(super) fn flatten_with_sources(
+    compiler: &mut Compiler<'_>,
+    module: &str,
+    span: Span,
+    verified: &AcceptedProgram,
+    sources: Option<&OperationSources>,
+) -> Result<(Vec<CircuitStep>, CircuitSources), CompileError> {
     let raw = verified.program();
     compiler.charge(module, span, raw.quantum_inputs.len() + 1)?;
     let width = raw
@@ -99,6 +110,9 @@ pub(super) fn flatten(
         registers,
         classical: BTreeMap::new(),
         steps: Vec::new(),
+        sources,
+        path: Vec::new(),
+        circuit_sources: BTreeMap::new(),
     };
     flat.append(compiler, module, span, &raw.operations)?;
     // Rebind the result to the input axis order. Reordered ownership is part
@@ -146,18 +160,21 @@ pub(super) fn flatten(
         });
     }
     compiler.charge(module, span, total_size(flat.steps.iter().map(size)))?;
-    Ok(flat.steps)
+    Ok((flat.steps, flat.circuit_sources))
 }
 
 /// The complete working state of one flattening pass. Classical branches
 /// recurse through this same state, retaining ownership and visible constants.
-struct FlatCircuit {
+struct FlatCircuit<'a> {
     registers: BTreeMap<TokenId, Vec<usize>>,
     classical: BTreeMap<ClassicalId, bool>,
     steps: Vec<CircuitStep>,
+    sources: Option<&'a OperationSources>,
+    path: Vec<usize>,
+    circuit_sources: CircuitSources,
 }
 
-impl FlatCircuit {
+impl FlatCircuit<'_> {
     // Recursion is bounded by the independent verifier's branch-depth limit.
     fn append(
         &mut self,
@@ -166,8 +183,12 @@ impl FlatCircuit {
         span: Span,
         operations: &[RawOp],
     ) -> Result<(), CompileError> {
-        for op in operations {
+        for (index, op) in operations.iter().enumerate() {
             compiler.tick(module, span)?;
+            let begin = self.steps.len();
+            if self.sources.is_some() {
+                self.path.push(index);
+            }
             match op {
                 RawOp::PackUnit { output } => {
                     // A logical zero-width owner has no coordinate to remap.
@@ -415,7 +436,13 @@ impl FlatCircuit {
                     // deterministic. Both arms were checked before this selection.
                     let then_arm = self.classical[condition];
                     let arm = if then_arm { then_ops } else { else_ops };
+                    if self.sources.is_some() {
+                        self.path.push(usize::from(!then_arm));
+                    }
                     self.append(compiler, module, span, arm)?;
+                    if self.sources.is_some() {
+                        self.path.pop();
+                    }
                     let outputs = quantum_phis
                         .iter()
                         .map(|phi| {
@@ -448,6 +475,28 @@ impl FlatCircuit {
                         "operation is outside the finite static unitary subset",
                     ));
                 }
+            }
+            if let Some(sources) = self.sources {
+                if !matches!(op, RawOp::ClassicalBranch { .. }) {
+                    if let Some(source) = sources.get(&self.path) {
+                        for step in begin..self.steps.len() {
+                            // A flattened nested clean body contributes its logical
+                            // implementation. Its physical steps are a separate word.
+                            let site = match op {
+                                RawOp::ApplyUnitary { .. } => source
+                                    .circuit
+                                    .as_ref()
+                                    .and_then(|steps| steps.get(&(step - begin))),
+                                _ => None,
+                            }
+                            .unwrap_or(&source.site);
+                            if site.instance.is_some() {
+                                self.circuit_sources.insert(step, site.clone());
+                            }
+                        }
+                    }
+                }
+                self.path.pop();
             }
         }
         Ok(())

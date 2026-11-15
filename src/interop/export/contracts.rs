@@ -51,6 +51,7 @@ struct Frame<'a> {
 
 pub(super) struct Cursor<'a> {
     frames: Vec<Frame<'a>>,
+    pub(super) root_index: Option<usize>,
 }
 
 fn invalid(message: &'static str) -> InteropError {
@@ -120,6 +121,7 @@ impl<'a> Cursor<'a> {
         // Reject excessive transitive work before copying even the root frame.
         budget.reserve(steps)?;
         Ok(Self {
+            root_index: None,
             frames: vec![Frame {
                 body: steps,
                 consumed: 0,
@@ -145,6 +147,9 @@ impl<'a> Cursor<'a> {
             } else {
                 frame.consumed
             };
+            if depth == 1 {
+                self.root_index = Some(index);
+            }
             let step = &frame.body[index];
             frame.consumed += 1;
             let controls = mapped_controls(step, frame)?;

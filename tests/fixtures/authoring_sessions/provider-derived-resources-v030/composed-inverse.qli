@@ -1,0 +1,11 @@
+use std::state::init0;
+
+unitary fn eighth(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }
+unitary fn apply[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) { U(q) }
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+
+pub observe fn main() -> Bit {
+    let q = clean(init0(), identity) { |data, scratch| (apply[then_op(eighth,adjoint(eighth))](data), scratch) };
+    measure_z(q)
+}
