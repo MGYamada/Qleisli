@@ -95,6 +95,31 @@ fn selected_computed_predicate_checks_the_literal_xor_scope() {
             .unwrap_err();
         assert_eq!(error.code, "contract", "{error}");
     }
+
+    // Change both passes together so the circuit still satisfies the Raw
+    // restoration rule. The original source must refuse the changed polarity.
+    let mut wrong_raw = program.raw().clone();
+    let [
+        RawOp::StructuralCompute {
+            forward, inverse, ..
+        },
+    ] = wrong_raw.operations.as_mut_slice()
+    else {
+        panic!("expected the original circuit-backed scope");
+    };
+    forward[1].controls[0].when_one = false;
+    inverse[1].controls[0].when_one = false;
+    kernel()
+        .check_raw(&wrong_raw, None, qleisli::interchange::Version::V1, None)
+        .expect("alternate reversible XOR should pass standalone Raw");
+    let positive = r#"{"index":3,"when_one":true}"#;
+    let negative = r#"{"index":3,"when_one":false}"#;
+    assert_eq!(artifact.matches(positive).count(), 2);
+    let wrong_circuit = artifact.replace(positive, negative);
+    let error = kernel()
+        .check_qmatch_source_v5(wrong_circuit.as_bytes(), request)
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
 }
 
 #[test]

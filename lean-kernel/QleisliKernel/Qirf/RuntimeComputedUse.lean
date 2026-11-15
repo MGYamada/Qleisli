@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.RuntimeComputedPredicate
 import QleisliKernel.Qirf.OperationIRMeaning
+import QleisliKernel.Qirf.RuntimeProviderHeaders
 
 /-! Compare a protected one-Bit use with the exact action of the original
 scoped body, including its scalar phase and resolved forward calls.
@@ -154,7 +155,7 @@ def sourceAction (sources : Sources) (workspace : Bool) :
         guard (!operands.isEmpty && operands.map (·.basis) == returned.map (·.basis) &&
           (call.arguments.flatMap ordinary).isEmpty && (ordinary call.value).isEmpty &&
           call.effect == .unitary &&
-          call.target.signature.arguments.operations.isEmpty &&
+          (workspace || call.target.signature.arguments.operations.isEmpty) &&
           !call.target.signature.operations.hasMeaningRequirements) .request
         let key := callKey call.target
         -- The cache belongs to this original event list and source table. Only
@@ -195,6 +196,31 @@ def sourceAction (sources : Sources) (workspace : Bool) :
         | _,_ =>
           let (owners,action) ← applyGroup owners operands returned localAction before
           return (owners,action,cache)
+      | .operation call => do
+        guard (workspace && call.effect == .unitary && call.allocated.isEmpty && call.consumed.isEmpty &&
+          !call.operation.graph.hasMeaningRequirements &&
+          call.inputOwners.map (·.basis) == call.outputOwners.map (·.basis)) .request
+        let occurrences ← StaticOperation.readOccurrences call.operation.description
+        let providers := RuntimeProviderHeaders.providerIndices call.operation.description occurrences
+        let actions ← providers.mapM fun index => do
+          -- Re-read each original provider with its checked actuals and context.
+          let original ← RuntimeProviderHeader.readOriginal call.operation.graph index
+          let provider := original.supplied.provider
+          let body := original.body.checked
+          let [[.owner input]] := body.summary.parameterValues | throw .request
+          let [.owner output] := body.summary.value | throw .request
+          guard (provider.expectedEffect == .unitary && body.summary.inferredEffect == .unitary &&
+            input.basis == output.basis) .request
+          let layout ← FiniteCarrier.read input.basis
+          exactWork (Exact.charge ((layout.labels.length+1)^2))
+          let identity ← lift (arithmetic (Exact.Matrix.identity layout.labels.length))
+          let action ← next [input] [output] identity body.events
+          return {action with rows := body.summary.staticRows ++ action.rows}
+        let matrix ← OperationIRMeaning.compute call.operation.graph (actions.map (·.matrix))
+        let (owners,action) ← applyGroup owners call.inputOwners call.outputOwners
+          ⟨matrix,call.operation.rows ++ call.operation.graph.sourceRows ++ call.naturals.sourceRows ++
+            actions.flatMap (·.rows)⟩ before
+        return (owners,action,cache)
       | .transform call => do
         guard workspace .request
         let .controlled := call.written.access | throw .request

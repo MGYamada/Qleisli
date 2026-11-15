@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reconstruct controlled phases in written workspace logical operations using
+  the independently checked workspace source fragment.
+- Factor checked structural predicate circuits into their exact logical action
+  in the complete Raw event fold, preserving the independent source equation.
+- Prove the original Raw resource counts for structural predicates, including
+  private scratch and both predicate passes.
+- Prove exact agreement between a decoded OpenQASM workspace slice and its
+  original checked Raw body on all local inputs and external references.
 - Read literal `Bits<n>` coordinates in classical functions and coherent
   basis expressions. The native source-body checker binds word predicates to
   the controls in `with_computed`, and checks the ordered register extraction
@@ -38,12 +46,16 @@ development milestones from the scope of their evidence.
   declared target connectivity.
 - Read complete canonical OpenQASM terminal resources and check a designated
   target gate interval against the original clean/dirty workspace operator.
+- Check calls inside and around workspace intervals with the closed
+  providers independently resolved from the original program.
 - Check reuse of a reserved physical scratch wire across exact clean-return
   intervals and refuse unaccounted gates or terminal readout on that wire.
 - Derive clean/dirty workspace entry placement from literal closed Raw and
   target prefixes, including physical SWAP routing and zero-width owners.
 - Follow a single checked workspace through its literal target suffix and
   compare the emitted terminal measurements in original classical output order.
+- Keep corpus migration studies in the complete source archive and omit them
+  from the crates.io package to stay within its publication size limit.
 - Bind exact scratch reuse across multiple workspace intervals to one complete
   literal placement trace, including intervening routing and terminal readout.
 - Export the physical body of an accepted zero-predicate clean interval and
