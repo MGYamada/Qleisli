@@ -784,11 +784,14 @@ A gate decomposition may use allocated synthesis scratch. The checker
 verifies that its physical locations are declared and separate from all live
 owners. It compares the full target word on the data and scratch with the
 original operator under the canonical zero embedding at both ends. The
-six-axis bound includes scratch. This checks the exact phase and zero return
-for every input column, so the equation also preserves correlations with
-external references. A complete trace may reserve locations for several
-disjoint synthesis slices. The original allocation, routing, source
-workspace and readout cannot touch these locations. Every slice using them
+six-axis bound includes scratch. The executable check keeps the same zero
+encoding at entry and exit. The Lean theorem
+`WorkspaceTargetAction.synthesis_action` connects the actual decoded gate
+word to the original local operator under that encoding. It proves equality
+with full phase on every external reference column, with zero amplitude
+whenever any synthesis scratch bit is nonzero. A complete trace may reserve
+locations for several disjoint synthesis slices. The original allocation,
+routing, source workspace and readout cannot touch these locations. Every slice using them
 checks its own zero return. An individual slice can instead use exclusive
 scratch, which the checker verifies is untouched everywhere else.
 

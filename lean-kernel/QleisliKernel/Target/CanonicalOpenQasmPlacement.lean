@@ -118,15 +118,27 @@ structure Synthesis (rootDependencies : List Semantics.Finite.Dependency) (circu
   physical : Semantics.Exact.Matrix
   restored : RuntimeInterval.Computed (checkedSynthesis axes.length scratch.length actual logical) physical
 
+/-- Recover the actual finite contract check for the decoded target interval.
+The same zero encoding is used at both ends on the ordered local support. -/
+theorem Synthesis.checkedEncoding {rootDependencies circuit start count locations scratch reserved steps}
+    (checked : Synthesis rootDependencies circuit start count locations scratch reserved steps) :
+    ∃ encoding first middle left,
+      (Raw.zeroEncoding checked.axes.length scratch.length).run first = (.ok encoding,middle) ∧
+      let required : Semantics.Finite.Contract := ⟨encoding,encoding,checked.logical⟩
+      (Finite.check [] (Raw.circuit (checked.axes.length + scratch.length) checked.actual)
+        required required).run middle = (.ok checked.physical,left) := by
+  obtain ⟨first,left,ran⟩ := checked.restored
+  unfold checkedSynthesis at ran
+  obtain ⟨encoding,middle,zero,accepted⟩ := bind_success _ _ _ _ _ ran
+  exact ⟨encoding,first,middle,left,zero,accepted⟩
+
 theorem Synthesis.zeroReturn {rootDependencies circuit start count locations scratch reserved steps}
     (checked : Synthesis rootDependencies circuit start count locations scratch reserved steps) :
     ∃ encoding first middle afterCircuit lhs lhsWork rhs rhsWork,
       (Raw.zeroEncoding checked.axes.length scratch.length).run first = (.ok encoding,middle) ∧
       Exact.Matrix.compose checked.physical encoding.map afterCircuit = (.ok lhs,lhsWork) ∧
       Exact.Matrix.compose encoding.map checked.logical lhsWork = (.ok rhs,rhsWork) ∧ lhs = rhs := by
-  obtain ⟨first,left,ran⟩ := checked.restored
-  unfold checkedSynthesis at ran
-  obtain ⟨encoding,middle,zero,accepted⟩ := bind_success _ _ _ _ _ ran
+  obtain ⟨encoding,first,middle,_,zero,accepted⟩ := checked.checkedEncoding
   obtain ⟨_,afterCircuit,lhs,lhsWork,rhs,rhsWork,_,same⟩ :=
     (Finite.check_conditions _ _ _ _ _ _ _ accepted).2.2.2.2.2.2
   exact ⟨encoding,first,middle,afterCircuit,lhs,lhsWork,rhs,rhsWork,zero,same⟩

@@ -1,7 +1,7 @@
 import Qleisli.FiniteMatrixAction
 import Qleisli.RawDenotation
 import Qleisli.RawReconstructedAction
-import QleisliKernel.Target.CanonicalOpenQasmWorkspace
+import QleisliKernel.Target.CanonicalOpenQasmPlacement
 import Protocol.NativeContext.Bindings
 import QPTL.CleanMarginal
 
@@ -54,6 +54,48 @@ theorem decoded_action {sources caller deps program block sourceStart sourceCoun
   rw [rawOriginal] at rawAction
   rw [targetOriginal] at targetAction
   exact targetAction.symm.trans rawAction
+
+/-- The decoded decomposition of the original local gate word applies its
+exact logical action and returns every synthesis scratch axis to zero. The
+encoding places the original support on low axes and the scratch on high axes.
+Reference columns are arbitrary, including correlations with spectator wires. -/
+theorem synthesis_action {deps circuit start count locations scratch reserved steps}
+    (checked : Target.CanonicalOpenQasmPlacement.Synthesis deps circuit start count locations scratch reserved steps) :
+    ∃ encoding first middle,
+      (Raw.zeroEncoding checked.axes.length scratch.length).run first = (.ok encoding,middle) ∧
+      ∀ (R : Type) (joint : Nat → R → ℂ) (row : Nat) (reference : R),
+        row < 2^(checked.axes.length + scratch.length) →
+        let output := Semantics.RawAction.circuit [] checked.actual
+          (fun col => Semantics.Exact.action encoding.map joint col reference) row
+        output = Semantics.Exact.action encoding.map
+          (fun col ref => Semantics.Exact.action checked.logical joint col ref) row reference ∧
+        (2^checked.axes.length ≤ row → output = 0) := by
+  obtain ⟨encoding,first,middle,left,zero,accepted⟩ := checked.checkedEncoding
+  let word := Raw.circuit (checked.axes.length + scratch.length) checked.actual
+  let required : Contract := ⟨encoding,encoding,checked.logical⟩
+  have exactCheck : (QleisliKernel.Finite.check [] word required required).run middle =
+      (.ok checked.physical,left) := accepted
+  have encoded := (Qleisli.Finite.check_encoded _ _ _ _ _ _ _ exactCheck).2
+  obtain ⟨_,_,mapWork,mapLeft,mapped⟩ := Raw.zeroEncoding_value _ _ _ _ _ zero
+  have mapRows := congrArg QleisliKernel.Semantics.Exact.Matrix.rows
+    (Raw.mapping_value _ _ _ _ _ _ mapped)
+  obtain ⟨circuitWork,afterCircuit,_,_,_,_,circuitRead,_,_,_⟩ :=
+    (QleisliKernel.Finite.check_conditions _ _ _ _ _ _ _ exactCheck).2.2.2.2.2.2
+  refine ⟨encoding,first,middle,zero,?_⟩
+  intro R joint row reference inside
+  have encodingBound : row < encoding.map.rows := mapRows.symm ▸ inside
+  have physicalBound : row < checked.physical.rows := encoded.2.2.1.symm ▸ encodingBound
+  have emitted := Qleisli.Finite.circuitMatrix_action [] word checked.physical
+    circuitWork afterCircuit circuitRead
+    (fun col ref => Semantics.Exact.action encoding.map joint col ref) row reference physicalBound
+  change _ = Semantics.RawAction.circuit [] checked.actual
+    (fun col => Semantics.Exact.action encoding.map joint col reference) row at emitted
+  dsimp only
+  rw [← emitted]
+  refine ⟨Qleisli.Finite.check_reference _ _ _ _ _ _ _ exactCheck joint row reference physicalBound,?_⟩
+  intro dirty
+  exact Qleisli.Finite.check_clean_return _ _ _ _ _ _ _ exactCheck joint row reference physicalBound
+    (fun col inRange => Qleisli.Raw.zeroEncoding_dirty _ _ _ _ _ zero row col dirty encodingBound inRange)
 
 private theorem cleanEncoding {bits logical contract work left}
     (ran : (Raw.Workspace.required false bits logical).run work = (.ok contract,left)) :
@@ -298,5 +340,6 @@ theorem native_limit_has_no_resources (product : String) (bytes : ByteArray) (wo
 #print axioms dirty_checked_reference
 #print axioms dirty_checked_promotion
 #print axioms clean_checked_separates
+#print axioms synthesis_action
 #print axioms decoded_action
 end Qleisli.WorkspaceTargetAction

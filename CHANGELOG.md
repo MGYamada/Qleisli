@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Prove exact phase and clean synthesis scratch return for the decoded
+  OpenQASM decomposition on arbitrary reference-correlated inputs.
 - Derive clean scratch separation and dirty identity on the full local
   interface from the exact workspace checker.
 
