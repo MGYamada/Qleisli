@@ -802,8 +802,11 @@ for either a single circuit event or an optimized span.
 `WorkspaceTargetAction.native_suffix_synthesis_action` connect the replay
 before a source workspace and the native decision's terminal suffix to that
 exact action. The equation uses the original circuit steps on the recovered
-support with their dependencies. The literal gate interval and its synthesis
-scratch locations are within the reported gate and register counts.
+support with their dependencies. Reindexing the checked local steps by the
+ordered data and synthesis scratch layout recovers the same emitted instruction
+slice. The decoder establishes the arity and distinct, in-range operands of
+each instruction. The literal gate interval and its synthesis scratch locations
+are within the reported gate and register counts.
 A complete trace may reserve locations for several disjoint synthesis slices.
 Original allocation, routing, source workspace and readout cannot touch
 these locations. Every slice using them

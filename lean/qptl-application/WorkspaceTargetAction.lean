@@ -353,6 +353,9 @@ def SynthesisActionAt (dependencies : List Semantics.Finite.Dependency)
     ∃ checked : Synthesis dependencies circuit entry.gateIndex gateCount entry.locations scratch entry.synthesis steps,
       entry.gateIndex + gateCount ≤ circuit.counts.gates ∧
       (∀ wire ∈ scratch, wire < circuit.counts.reserved) ∧
+      checked.actual.map (Semantics.RawTrace.localize (checked.layout ++ scratch)) =
+        ((circuit.gates.drop entry.gateIndex).take gateCount).map
+          Target.CanonicalOpenQasmResources.Instruction.step ∧
       ∃ encoding first middle,
         (Raw.zeroEncoding checked.axes.length scratch.length).run first = (.ok encoding,middle) ∧
         ∀ (R : Type) (joint : Nat → R → ℂ) (row : Nat) (reference : R),
@@ -364,7 +367,8 @@ def SynthesisActionAt (dependencies : List Semantics.Finite.Dependency)
           output = Semantics.Exact.action encoding.map originalAction row reference ∧
             (2^checked.axes.length ≤ row → output = 0)
 
-theorem synthesis_at_action {dependencies original circuit entry rawCount gateCount scratch}
+theorem synthesis_at_action {dependencies original circuit entry rawCount gateCount scratch bytes}
+    (decoded : Target.CanonicalOpenQasmResources.decode bytes = some circuit)
     (occurrence : SynthesisAt dependencies original circuit entry rawCount gateCount scratch) :
     SynthesisActionAt dependencies original circuit entry rawCount gateCount scratch := by
   have gateBound := occurrence.within_gate_count
@@ -381,7 +385,8 @@ theorem synthesis_at_action {dependencies original circuit entry rawCount gateCo
   have scratchCounted : ∀ wire ∈ scratch, wire < circuit.counts.reserved := by
     intro wire member
     exact checked.declared.2 wire (List.mem_append_right _ member)
-  refine ⟨steps,source,checked,gateBound,scratchCounted,encoding,first,middle,zero,?_⟩
+  have physicalWord := decoded_interval_roundtrip decoded checked.targetWord
+  refine ⟨steps,source,checked,gateBound,scratchCounted,physicalWord,encoding,first,middle,zero,?_⟩
   intro R joint row reference within
   obtain ⟨target,clean⟩ := action R joint row reference within
   refine ⟨target.trans ?_,clean⟩
@@ -403,7 +408,8 @@ theorem bound_synthesis_action {program : Semantics.Observation.Program} {segmen
       SynthesisMatch program.operations.toArray occurrence action rawCount gateCount scratch →
       SynthesisActionAt dependencies program.operations.toArray target.circuit occurrence rawCount gateCount scratch := by
   intro occurrence rawCount gateCount scratch isSynthesis
-  exact synthesis_at_action ((bound.synthesis_at prior tail split).choose_spec.2 _ _ _ isSynthesis)
+  exact synthesis_at_action target.original
+    ((bound.synthesis_at prior tail split).choose_spec.2 _ _ _ isSynthesis)
 
 /-- Select a synthesis occurrence from the executable native decision's
 terminal suffix. Its exact action and cost use the decoded bytes and the
@@ -424,7 +430,8 @@ theorem native_suffix_synthesis_action (product : String) (bytes : ByteArray)
   obtain ⟨checked,_,_,rfl⟩ := Protocol.NativeContext.run_openqasm_placement_binding product bytes decision work left accepted
   refine ⟨checked.framed,checked.target.original,?_⟩
   intro action prior tail split occurrence root rawCount gateCount scratch isSynthesis
-  exact synthesis_at_action ((checked.placement.trace.suffix_synthesis prior tail split).choose_spec.2 _ _ _ isSynthesis)
+  exact synthesis_at_action checked.target.original
+    ((checked.placement.trace.suffix_synthesis prior tail split).choose_spec.2 _ _ _ isSynthesis)
 
 #print axioms native_limit_has_no_resources
 #print axioms native_clean_access_counted_once
