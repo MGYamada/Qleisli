@@ -11,11 +11,13 @@ readme = "README.crates.md"
 documentation = "https://docs.rs/qleisli"
 keywords = ["quantum", "compiler", "verification", "openqasm", "qir"]
 categories = ["compilers", "science", "command-line-utilities"]
-# Historical validation records remain in the complete GitHub source archive.
+# Historical validation records and corpus migration studies remain in the
+# complete GitHub source archive.
 # Retain executable fixture sources, migration maps and frozen native inputs.
 exclude = [
     "/assets/logo-concepts/**",
     "/experimental/**",
+    "/corpus/migrations/**",
     "/tests/fixtures/**/*.gz",
     "/tests/fixtures/**/*.tar.xz",
     "/tests/fixtures/**/*.rs",
