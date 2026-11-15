@@ -10,6 +10,7 @@ Native/source/runtime preservation and constitutional discharge remain separate.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Protocol.EngineeringOpenQasm
 open Lean Finite Semantics.Exact
+open Target.CanonicalOpenQasm (GateCounts)
 
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .invalid)
@@ -33,18 +34,34 @@ structure Decoded where
   epsilon : Coefficient
   majorants : List Coefficient
   expectedText : String
+  limits : Option GateCounts
 
-/-- Fourteen fixed fields bind the canonical target engineering profile only.
+def claimKind (limits : Option GateCounts) : String :=
+  if limits.isSome then "engineering-target-instrument-resource-bound" else "engineering-target-instrument-bound"
+
+private def gateLimits (value : Json) : WorkM GateCounts := do
+  adapt (fields value ["model","gates","t_gates"])
+  let model ← adapt ((← adapt (value.getObjVal? "model")).getStr?)
+  guard (model == "openqasm3-one-qubit-literal-gates-v1") .request
+  let gates ← adapt ((← adapt (value.getObjVal? "gates")).getNat?)
+  let tGates ← adapt ((← adapt (value.getObjVal? "t_gates")).getNat?)
+  guard (gates ≤ Target.CanonicalOpenQasm.maxGates && tGates ≤ Target.CanonicalOpenQasm.maxGates) .limit
+  return ⟨gates,tGates⟩
+
+/-- Version 2 adds finite literal gate limits to the canonical engineering profile.
 Bounds use unsquared norm units. Every majorant is canonical and nonnegative;
 the core derives and consumes the complete outcome/cell order independently. -/
 def decode (value : Json) : WorkM Decoded := do
-  adapt (fields value ["format","version","claim_kind","metric","checker_profile","target_profile",
+  let version ← adapt ((← adapt (value.getObjVal? "version")).getNat?)
+  guard (version == 1 || version == 2) .request
+  let extensions := if version == 2 then ["resource_limits"] else []
+  adapt (fields value (["format","version","claim_kind","metric","checker_profile","target_profile",
     "composition","error_category","actual_signature","expected_signature","identity","epsilon",
-    "majorants","expected_artifact"])
+    "majorants","expected_artifact"] ++ extensions))
+  let limits ← if version == 2 then some <$> (gateLimits (← adapt (value.getObjVal? "resource_limits"))) else pure none
   let profile ← adapt (do
     return (← (← value.getObjVal? "format").getStr?) == "qleisli.engineering-openqasm-request" &&
-      (← (← value.getObjVal? "version").getNat?) == 1 &&
-      (← (← value.getObjVal? "claim_kind").getStr?) == "engineering-target-instrument-bound" &&
+      (← (← value.getObjVal? "claim_kind").getStr?) == claimKind limits &&
       (← (← value.getObjVal? "metric").getStr?) == "complete-adjoint-euclidean-operator-norm-v1" &&
       (← (← value.getObjVal? "checker_profile").getStr?) == "canonical-target-choi-l1-r8-v1" &&
       (← (← value.getObjVal? "target_profile").getStr?) == "openqasm3-canonical-one-qubit-terminal-r8-v1" &&
@@ -62,11 +79,25 @@ def decode (value : Json) : WorkM Decoded := do
   let majorants ← majorantValues.toList.mapM bound
   let expectedText ← adapt ((← adapt (value.getObjVal? "expected_artifact")).getStr?)
   guard (!expectedText.isEmpty && expectedText.utf8ByteSize ≤ Validity.maxFileBytes) .limit
-  return ⟨actualSignature,expectedSignature,identity,epsilon,majorants,expectedText⟩
+  return ⟨actualSignature,expectedSignature,identity,epsilon,majorants,expectedText,limits⟩
 
 abbrev Prepared := EngineeringInstrument.Prepared
 abbrev PreparedBinding := EngineeringInstrument.PreparedBinding
 abbrev prepare := EngineeringInstrument.prepare
+
+def ResourceBound (target : Target.CanonicalOpenQasm.Decoded) : Option GateCounts → Prop
+  | none => True
+  | some limits => target.gateCounts.within limits = true
+
+def checkResources (target : Target.CanonicalOpenQasm.Decoded) (limits : Option GateCounts) :
+    WorkM (Subtype fun (_ : Unit) => ResourceBound target limits) := do
+  match limits with
+  | none => return ⟨(),trivial⟩
+  | some bounds =>
+    exactWork (Exact.charge (target.gates.length+1))
+    if fits : target.gateCounts.within bounds = true then
+      return ⟨(),fits⟩
+    else throw .request
 
 structure Retained where
   prepared : Prepared
@@ -74,6 +105,7 @@ structure Retained where
   expected : QleisliKernel.Qirf.Artifact
   expectedOrder : Array Nat
   checked : QleisliKernel.Qirf.EngineeringOpenQasm.Checked
+  resourceBound : ResourceBound checked.target decoded.limits
 
 /-- The actual target is the original inner body bytes; the ideal and its full
 indexed dependency graph are freshly decoded, never supplied as a receipt. -/
@@ -90,16 +122,19 @@ def checkRetained (bytes : ByteArray) : WorkM Retained := do
     ⟨prepared.body,expected,expectedOrder,decoded.actualSignature,decoded.expectedSignature,
       decoded.identity,decoded.epsilon,decoded.majorants⟩
   let checked ← QleisliKernel.Qirf.EngineeringOpenQasm.check request
-  return ⟨prepared,decoded,expected,expectedOrder,checked⟩
+  let resources ← checkResources checked.target decoded.limits
+  return ⟨prepared,decoded,expected,expectedOrder,checked,resources.property⟩
 
 structure Binding (bytes : ByteArray) (retained : Retained) (work left : Nat) : Prop where
   prepared : prepare bytes = .ok retained.prepared
-  stages : ∃ afterDecode afterExpected,
+  stages : ∃ afterDecode afterExpected afterInstrument,
     (decode retained.prepared.value).run work = (.ok retained.decoded,afterDecode) ∧
     (Qirf.read retained.decoded.expectedText.toUTF8).run afterDecode =
       (.ok (retained.expected,retained.expectedOrder),afterExpected) ∧
     (QleisliKernel.Qirf.EngineeringOpenQasm.check retained.request).run afterExpected =
-      (.ok retained.checked,left)
+      (.ok retained.checked,afterInstrument) ∧
+    (checkResources retained.checked.target retained.decoded.limits).run afterInstrument =
+      (.ok ⟨(),retained.resourceBound⟩,left)
 
 /-- All retained fields belong to the actual one-shot target request execution;
 the full original ideal read and target checker share the remaining work. -/
@@ -112,9 +147,10 @@ theorem checkRetained_bound (bytes : ByteArray) (retained : Retained) (work left
   obtain ⟨decoded,b,hd,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨⟨expected,expectedOrder⟩,c,he,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨checked,d,hc,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨⟨⟨⟩,bound⟩,e,hr,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨same,remaining⟩ := pure_success _ _ _ _ h
   subst retained
   subst left
-  exact ⟨preparedBound,⟨b,c,lifted.2 ▸ hd,he,hc⟩⟩
+  exact ⟨preparedBound,⟨b,c,d,lifted.2 ▸ hd,he,hc,hr⟩⟩
 
 end QleisliKernel.Protocol.EngineeringOpenQasm

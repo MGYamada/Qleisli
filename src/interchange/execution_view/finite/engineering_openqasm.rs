@@ -2,7 +2,7 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::*;
 use crate::AcceptedProgram;
-use crate::interchange::engineering_openqasm::EngineeringOpenQasmRequest;
+use crate::interchange::engineering_openqasm::{EngineeringOpenQasmRequest, RESOURCE_MODEL};
 
 pub(in crate::interchange) fn complete(
     request: &EngineeringOpenQasmRequest,
@@ -23,40 +23,53 @@ pub(in crate::interchange) fn complete(
         writer: &mut writer,
         dependencies: &indices,
     };
+    let limits = request.resource_limits();
     view.record("engineering-openqasm", 5, |w| {
-        w.record("engineering-openqasm-request", 14, |w| {
-            w.writer.text("qleisli.engineering-openqasm-request")?;
-            w.n(1)?;
-            for text in [
-                "engineering-target-instrument-bound",
-                "complete-adjoint-euclidean-operator-norm-v1",
-                "canonical-target-choi-l1-r8-v1",
-                "openqasm3-canonical-one-qubit-terminal-r8-v1",
-                "single-component-v1",
-                "implementation-distance",
-            ] {
-                w.writer.text(text)?;
-            }
-            let contract = request.contract();
-            w.signature(contract.actual_signature().inner())?;
-            w.signature(contract.expected_signature().inner())?;
-            let identity = contract.identity();
-            w.identity((
-                &identity.implementation,
-                &identity.specification,
-                crate::contract::function::SourceView::Flat(&identity.sources),
-            ))?;
-            let dyadic =
-                |w: &mut View<'_>, bound: crate::interchange::engineering_pure::DyadicBound| {
-                    w.record("dyadic", 2, |w| {
-                        w.writer.text(&bound.numerator().to_string())?;
-                        w.n(bound.denominator_bits() as usize)
-                    })
-                };
-            dyadic(w, contract.epsilon())?;
-            w.list(contract.majorants(), |w, bound| dyadic(w, *bound))?;
-            w.writer.text(ideal_text)
-        })?;
+        w.record(
+            "engineering-openqasm-request",
+            14 + usize::from(limits.is_some()),
+            |w| {
+                w.writer.text("qleisli.engineering-openqasm-request")?;
+                w.n(if limits.is_some() { 2 } else { 1 })?;
+                for text in [
+                    request.claim_kind(),
+                    "complete-adjoint-euclidean-operator-norm-v1",
+                    "canonical-target-choi-l1-r8-v1",
+                    "openqasm3-canonical-one-qubit-terminal-r8-v1",
+                    "single-component-v1",
+                    "implementation-distance",
+                ] {
+                    w.writer.text(text)?;
+                }
+                let contract = request.contract();
+                w.signature(contract.actual_signature().inner())?;
+                w.signature(contract.expected_signature().inner())?;
+                let identity = contract.identity();
+                w.identity((
+                    &identity.implementation,
+                    &identity.specification,
+                    crate::contract::function::SourceView::Flat(&identity.sources),
+                ))?;
+                let dyadic =
+                    |w: &mut View<'_>, bound: crate::interchange::engineering_pure::DyadicBound| {
+                        w.record("dyadic", 2, |w| {
+                            w.writer.text(&bound.numerator().to_string())?;
+                            w.n(bound.denominator_bits() as usize)
+                        })
+                    };
+                dyadic(w, contract.epsilon())?;
+                w.list(contract.majorants(), |w, bound| dyadic(w, *bound))?;
+                w.writer.text(ideal_text)?;
+                if let Some(limits) = limits {
+                    w.record("resource-limits", 3, |w| {
+                        w.writer.text(RESOURCE_MODEL)?;
+                        w.n(limits.gates)?;
+                        w.n(limits.t_gates)
+                    })?;
+                }
+                Ok(())
+            },
+        )?;
         w.list(target, |w, byte| w.n(usize::from(*byte)))?;
         w.list(gates, |w, gate| w.writer.text(gate))?;
         actual.write(w.writer)?;

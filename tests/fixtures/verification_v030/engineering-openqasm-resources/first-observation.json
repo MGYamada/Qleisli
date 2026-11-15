@@ -1,0 +1,42 @@
+{
+  "format": "qleisli.engineering-openqasm-resource-first-observation",
+  "version": 1,
+  "target_utf8": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[1] q;\nbit[1] c;\nreset q;\nt q[0];\ntdg q[0];\nc[0] = measure q[0];\n",
+  "target_sha256": "3de3d1d379de6c97ed774db59b4f4855c35f6a79a312f1a52c52288730e6d7ae",
+  "reports": [
+    {
+      "request_utf8": "{\"format\":\"qleisli.engineering-openqasm-request\",\"version\":1,\"claim_kind\":\"engineering-target-instrument-bound\",\"metric\":\"complete-adjoint-euclidean-operator-norm-v1\",\"checker_profile\":\"canonical-target-choi-l1-r8-v1\",\"target_profile\":\"openqasm3-canonical-one-qubit-terminal-r8-v1\",\"composition\":\"single-component-v1\",\"error_category\":\"implementation-distance\",\"actual_signature\":{\"input\":{\"tag\":\"unit\"},\"result\":{\"tag\":\"bit\"}},\"expected_signature\":{\"input\":{\"tag\":\"unit\"},\"result\":{\"tag\":\"bit\"}},\"identity\":{\"implementation\":\"emitted-canonical-target\",\"specification\":\"independent-original-ideal\",\"sources\":[{\"path\":\"target-study-𝄞.qli\",\"text\":\"Identity data only; no source/export preservation claim.\"}]},\"epsilon\":{\"numerator\":\"0\",\"denominator_bits\":0},\"majorants\":[{\"numerator\":\"0\",\"denominator_bits\":0},{\"numerator\":\"0\",\"denominator_bits\":0}],\"expected_artifact\":\"{\\\"format\\\":\\\"qleisli.finite-ir\\\",\\\"version\\\":2,\\\"profile\\\":\\\"finite-meaning-v1\\\",\\\"programs\\\":[{\\\"quantum_inputs\\\":[{\\\"token\\\":0,\\\"wires\\\":[],\\\"shape\\\":{\\\"bits\\\":0}}],\\\"classical_inputs\\\":[],\\\"operations\\\":[{\\\"tag\\\":\\\"unpack_unit\\\",\\\"input\\\":0},{\\\"tag\\\":\\\"init0\\\",\\\"output\\\":1,\\\"wire\\\":0},{\\\"tag\\\":\\\"measure_z\\\",\\\"input\\\":1,\\\"output\\\":0}],\\\"quantum_outputs\\\":[],\\\"classical_outputs\\\":[0],\\\"declared_effect\\\":\\\"observe\\\"}],\\\"evidence\\\":[],\\\"sources\\\":[],\\\"root\\\":0,\\\"root_interface\\\":null}\"}",
+      "request_sha256": "e8572db03856c97ac026102ee213e8cdd8e16ce55d77713dcb5338d8426abd45",
+      "argv": [
+        "/private/tmp/qleisli-165-phase-cli-target/debug/qleisli",
+        "engineering",
+        "compare-openqasm3",
+        "/private/tmp/qleisli-163-first-8duhw3ih/terminal.qasm",
+        "--edition=2026",
+        "--against=/private/tmp/qleisli-163-first-8duhw3ih/v1.json",
+        "--lean-kernel=/private/tmp/qleisli-30-integrated-clean.6fGLRX/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"engineering compare-openqasm3\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"claim_kind\":\"engineering-target-instrument-bound\",\"metric\":\"complete-adjoint-euclidean-operator-norm-v1\",\"checker_profile\":\"canonical-target-choi-l1-r8-v1\",\"target_profile\":\"openqasm3-canonical-one-qubit-terminal-r8-v1\",\"composition\":\"single-component-v1\",\"error_category\":\"implementation-distance\",\"epsilon\":{\"numerator\":\"0\",\"denominator_bits\":0},\"majorants\":[{\"numerator\":\"0\",\"denominator_bits\":0},{\"numerator\":\"0\",\"denominator_bits\":0}],\"gate_word\":[\"t\",\"tdg\"],\"identity_algorithm\":\"sha256\",\"target_artifact_sha256\":\"3de3d1d379de6c97ed774db59b4f4855c35f6a79a312f1a52c52288730e6d7ae\",\"ideal_artifact_sha256\":\"f57c630378e5ff754635887bc3801f1527c8e0353c7faa91d486b204da23b81b\",\"request_sha256\":\"e8572db03856c97ac026102ee213e8cdd8e16ce55d77713dcb5338d8426abd45\",\"checker_path\":\"/private/tmp/qleisli-30-integrated-clean.6fGLRX/lean-kernel/.lake/build/bin/qleisli-kernel\",\"checker_identity\":\"unpinned\",\"native_exact_work\":1401,\"native_check_scope\":\"canonical-target-bytes-generated-unit-instrument-original-ideal-and-complete-adjoint-bound\",\"target_capacity\":{\"max_target_bytes\":1024,\"max_gate_count\":8},\"target_artifact_bound_verified\":true,\"instrument_bound_verified\":true,\"pure_phase_bound_verified\":false,\"source_preservation_verified\":false,\"exact_source_correspondence_verified\":false,\"export_preservation_verified\":false,\"coherent_control_verified\":false,\"inverse_capability_verified\":false,\"cleanup_verified\":false,\"resource_bound_verified\":false,\"constitutional_pr_verified\":false,\"constitutional_rs_verified\":false,\"error_categories\":{\"implementation_distance\":\"checked-declared-bound\",\"sampling\":\"not-claimed\",\"algorithmic_resolution\":\"not-claimed\",\"numerical_runtime\":\"not-claimed\"}}}\n",
+      "stderr": ""
+    },
+    {
+      "request_utf8": "{\"format\":\"qleisli.engineering-openqasm-request\",\"version\":2,\"claim_kind\":\"engineering-target-instrument-resource-bound\",\"metric\":\"complete-adjoint-euclidean-operator-norm-v1\",\"checker_profile\":\"canonical-target-choi-l1-r8-v1\",\"target_profile\":\"openqasm3-canonical-one-qubit-terminal-r8-v1\",\"composition\":\"single-component-v1\",\"error_category\":\"implementation-distance\",\"actual_signature\":{\"input\":{\"tag\":\"unit\"},\"result\":{\"tag\":\"bit\"}},\"expected_signature\":{\"input\":{\"tag\":\"unit\"},\"result\":{\"tag\":\"bit\"}},\"identity\":{\"implementation\":\"emitted-canonical-target\",\"specification\":\"independent-original-ideal\",\"sources\":[{\"path\":\"target-study-𝄞.qli\",\"text\":\"Identity data only; no source/export preservation claim.\"}]},\"epsilon\":{\"numerator\":\"0\",\"denominator_bits\":0},\"majorants\":[{\"numerator\":\"0\",\"denominator_bits\":0},{\"numerator\":\"0\",\"denominator_bits\":0}],\"expected_artifact\":\"{\\\"format\\\":\\\"qleisli.finite-ir\\\",\\\"version\\\":2,\\\"profile\\\":\\\"finite-meaning-v1\\\",\\\"programs\\\":[{\\\"quantum_inputs\\\":[{\\\"token\\\":0,\\\"wires\\\":[],\\\"shape\\\":{\\\"bits\\\":0}}],\\\"classical_inputs\\\":[],\\\"operations\\\":[{\\\"tag\\\":\\\"unpack_unit\\\",\\\"input\\\":0},{\\\"tag\\\":\\\"init0\\\",\\\"output\\\":1,\\\"wire\\\":0},{\\\"tag\\\":\\\"measure_z\\\",\\\"input\\\":1,\\\"output\\\":0}],\\\"quantum_outputs\\\":[],\\\"classical_outputs\\\":[0],\\\"declared_effect\\\":\\\"observe\\\"}],\\\"evidence\\\":[],\\\"sources\\\":[],\\\"root\\\":0,\\\"root_interface\\\":null}\",\"resource_limits\":{\"model\":\"openqasm3-one-qubit-literal-gates-v1\",\"gates\":2,\"t_gates\":2}}",
+      "request_sha256": "7657ba346d8586b3d6787ee0de90d52d7490a33039c270ca7815a87d0594915b",
+      "argv": [
+        "/private/tmp/qleisli-165-phase-cli-target/debug/qleisli",
+        "engineering",
+        "compare-openqasm3",
+        "/private/tmp/qleisli-163-first-8duhw3ih/terminal.qasm",
+        "--edition=2026",
+        "--against=/private/tmp/qleisli-163-first-8duhw3ih/v2.json",
+        "--lean-kernel=/private/tmp/qleisli-30-integrated-clean.6fGLRX/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"engineering compare-openqasm3\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"format\",\"severity\":\"error\",\"message\":\"unknown OpenQASM engineering request claim_kind\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ]
+}

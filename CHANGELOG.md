@@ -58,6 +58,8 @@ development milestones from the scope of their evidence.
   including the requirements for future foreign execution.
 - Check calls inside and around workspace intervals with the closed
   providers independently resolved from the original program.
+- Check closed literal gate and T/TDG limits with the engineering OpenQASM
+  instrument bound on the same target artifact.
 - Check reuse of a reserved physical scratch wire across exact clean-return
   intervals and refuse unaccounted gates or terminal readout on that wire.
 - Derive clean/dirty workspace entry placement from literal closed Raw and

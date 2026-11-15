@@ -343,8 +343,8 @@ outcomes and residual outputs with arbitrary external references. Sampling,
 algorithmic resolution, synthesis and numerical-runtime information remain
 distinct; an absent claim does not mean zero error. The bounded engineering
 profiles below implement these contracts within their stated domains. They
-define no universal approximation metric; target-resource certificates remain
-separate work under #163.
+define no universal approximation metric. The bounded literal OpenQASM
+resource profile below uses its own closed engineering budget.
 
 Engineering receipts and their API/CLI claim kinds must remain mechanically
 distinct from exact correspondence and resource evidence. Neither a small
@@ -673,9 +673,34 @@ bytes, full contract and checker path. Its actual graph is data, without a Rust
 accepted-program constructor. Text/JSON report the target-bound instrument
 inequality and actual digests. Sampling, algorithmic resolution and numerical
 runtime errors remain separately unclaimed. Source/export preservation, exact
-source correspondence, pure phase agreement, inverse/control, exact cleanup,
-target resources and constitutional PR/RS remain unestablished even at epsilon
-zero. This comparison supplies no resource certificate for #163.
+source correspondence, pure phase agreement, inverse/control, exact cleanup
+and constitutional PR/RS remain unestablished even at epsilon zero. Version 1
+checks the instrument bound alone.
+
+### Literal OpenQASM engineering resource limits
+
+Version 2 of the same request uses claim kind
+`engineering-target-instrument-resource-bound` and adds one required field.
+
+```json
+"resource_limits": {"model":"openqasm3-one-qubit-literal-gates-v1","gates":2,"t_gates":2}
+```
+
+Both limits are closed integers from 0 through 8. `gates` bounds emitted gate
+lines and `t_gates` bounds the subset `t` and `tdg`. The required literal
+header, reset and terminal readout fix one reserved qubit, one reset and one
+measurement. This model charges the literal one-qubit vocabulary and excludes
+compiler work, synthesis search, hardware timing, and cross-component
+composition. The metric, epsilon and single-component contract stay required.
+
+Lean checks the limits against the independently decoded word used for the
+engineering instrument inequality. The typed execution view includes the
+model and limits. Text and JSON reports include the checked counts and limits
+with the identities of the actual artifact, original ideal and request.
+Changing any of them requires a fresh comparison. A timed-out or rejected
+check emits no certificate. The engineering receipt cannot supply exact
+cleanup, phase-sensitive coherent control, or constitutional PR/RS. See
+[#163](https://github.com/MGYamada/Qleisli/issues/163).
 
 ## Quantitative resource claims
 

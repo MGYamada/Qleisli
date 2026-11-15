@@ -8,7 +8,7 @@ use std::process::ExitCode;
 
 use qleisli::interchange::Error;
 use qleisli::interchange::engineering_openqasm::{
-    EngineeringOpenQasmReport, check_serialized_with_kernel,
+    EngineeringOpenQasmReport, RESOURCE_MODEL, check_serialized_with_kernel,
 };
 
 use super::engineering::{Options, checker_text, error, fail_for_command, parse, read};
@@ -61,6 +61,19 @@ fn json_report(report: &EngineeringOpenQasmReport) -> Result<String, Error> {
         .collect::<Vec<_>>()
         .join(",");
     let gates = report.gate_word().map(quoted).collect::<Vec<_>>().join(",");
+    let resources = report
+        .request()
+        .resource_limits()
+        .zip(report.checked_gate_counts());
+    let resource_fields = resources.map_or_else(String::new, |(limits, counts)| format!(
+        "\"engineering_resource_model\":{},\"engineering_resource_limits\":{{\"gates\":{},\"t_gates\":{}}},\"engineering_resource_counts\":{{\"qubits\":1,\"resets\":1,\"measurements\":1,\"gates\":{},\"t_gates\":{}}},",
+        quoted(RESOURCE_MODEL), limits.gates, limits.t_gates, counts.gates, counts.t_gates,
+    ));
+    let scope_extension = if resources.is_some() {
+        "-and-literal-gate-resource-limits"
+    } else {
+        ""
+    };
     Ok(format!(
         concat!(
             "{{\"claim_kind\":{},\"metric\":{},\"checker_profile\":{},\"target_profile\":{},",
@@ -70,13 +83,13 @@ fn json_report(report: &EngineeringOpenQasmReport) -> Result<String, Error> {
             "\"identity_algorithm\":\"sha256\",\"target_artifact_sha256\":{},",
             "\"ideal_artifact_sha256\":{},\"request_sha256\":{},",
             "\"checker_path\":{},\"checker_identity\":\"unpinned\",\"native_exact_work\":{},",
-            "\"native_check_scope\":\"canonical-target-bytes-generated-unit-instrument-original-ideal-and-complete-adjoint-bound\",",
+            "\"native_check_scope\":\"canonical-target-bytes-generated-unit-instrument-original-ideal-and-complete-adjoint-bound{}\",",
             "\"target_capacity\":{{\"max_target_bytes\":1024,\"max_gate_count\":8}},",
             "\"target_artifact_bound_verified\":true,\"instrument_bound_verified\":true,\"pure_phase_bound_verified\":false,",
             "\"source_preservation_verified\":false,\"exact_source_correspondence_verified\":false,",
             "\"export_preservation_verified\":false,",
             "\"coherent_control_verified\":false,\"inverse_capability_verified\":false,",
-            "\"cleanup_verified\":false,\"resource_bound_verified\":false,",
+            "\"cleanup_verified\":false,\"resource_bound_verified\":{},{}",
             "\"constitutional_pr_verified\":false,\"constitutional_rs_verified\":false,",
             "\"error_categories\":{{\"implementation_distance\":\"checked-declared-bound\",",
             "\"sampling\":\"not-claimed\",\"algorithmic_resolution\":\"not-claimed\",",
@@ -96,7 +109,10 @@ fn json_report(report: &EngineeringOpenQasmReport) -> Result<String, Error> {
         quoted(&super::digest::sha256(report.ideal_artifact())),
         quoted(&super::digest::sha256(report.request_bytes())),
         quoted(checker),
-        report.exact_work()
+        report.exact_work(),
+        scope_extension,
+        resources.is_some(),
+        resource_fields,
     ))
 }
 
@@ -128,13 +144,27 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
         }
     } else {
         let bound = report.request().contract().epsilon();
+        let resources = report
+            .request()
+            .resource_limits()
+            .zip(report.checked_gate_counts());
+        let (resource_status, remaining) = match resources {
+            Some((limits, counts)) => (
+                format!(
+                    "engineering target resources checked ({}): {} <= {} gates; {} <= {} literal T/TDG; 1 qubit, 1 reset, 1 measurement\n",
+                    RESOURCE_MODEL, counts.gates, limits.gates, counts.t_gates, limits.t_gates,
+                ),
+                "",
+            ),
+            None => (String::new(), "resource bounds and "),
+        };
         let text = format!(
             concat!(
                 "OpenQASM target engineering bound checked: {} <= {}/2^{}\n",
                 "profile: {}; {}; {}\nscope: canonical one-qubit terminal target bytes and original ideal; Unit -> classical Bit\n",
                 "capacity: 1024 target bytes; 8 gate lines\ntarget sha256: {}\nideal sha256: {}\nrequest sha256: {}\n",
                 "checker: {} (unpinned); native work: {}\n",
-                "source/export correspondence, pure phase agreement, coherent control, inverse, cleanup, resource bounds and constitutional PR/RS: not established\n",
+                "{}source/export correspondence, pure phase agreement, coherent control, inverse, cleanup, {}constitutional PR/RS: not established\n",
                 "sampling, algorithmic resolution and numerical runtime error: not claimed\n"
             ),
             report.metric(),
@@ -147,7 +177,9 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
             super::digest::sha256(report.ideal_artifact()),
             super::digest::sha256(report.request_bytes()),
             checker_text(report.checker()),
-            report.exact_work()
+            report.exact_work(),
+            resource_status,
+            remaining,
         );
         super::write_stdout(text.as_bytes(), "engineering instrument result")
     }
