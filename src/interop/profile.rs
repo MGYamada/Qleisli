@@ -300,13 +300,13 @@ pub(super) fn check_openqasm_result(program: &AcceptedProgram) -> Result<(), Int
 }
 
 pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, InteropError> {
-    let (circuit, _) = extract_with_alignment(program, &[])?;
+    let (circuit, _) = extract_with_alignment(program, None)?;
     Ok(circuit)
 }
 
 pub(super) fn extract_with_alignment(
     program: &AcceptedProgram,
-    intervals: &[crate::interchange::qmatch::WorkspaceInterval],
+    intervals: Option<&[crate::interchange::qmatch::WorkspaceInterval]>,
 ) -> Result<(TerminalCircuit, super::placement::Alignment), InteropError> {
     let raw = program.raw();
     if program.has_source_parameters()
@@ -332,6 +332,7 @@ pub(super) fn extract_with_alignment(
     let mut owners = BTreeMap::<TokenId, Vec<usize>>::new();
     let mut scratch = Vec::new();
     let mut clean_workspace = None;
+    let mut predicate_workspace = None;
     let mut expansion = super::export::ExpansionBudget::for_program(program);
     let mut measured = BTreeMap::new();
     let mut observed = false;
@@ -453,6 +454,38 @@ pub(super) fn extract_with_alignment(
                     )?;
                     owners.insert(*output, wires);
                 }
+                RawOp::StructuralCompute {
+                    source,
+                    source_out,
+                    forward,
+                    inverse,
+                    uses,
+                    ..
+                } => {
+                    let mut wires = owners.remove(source).expect("verified owner");
+                    let auxiliary = match predicate_workspace {
+                        Some(axis) => axis,
+                        None => {
+                            let axis = circuit.allocate_zero()?;
+                            predicate_workspace = Some(axis);
+                            axis
+                        }
+                    };
+                    wires.push(auxiliary);
+                    normalization_barriers[circuit.gates.len()] = true;
+                    super::export::structural_compute(
+                        &mut circuit,
+                        &mut scratch,
+                        forward,
+                        inverse,
+                        uses,
+                        &wires,
+                        &mut expansion,
+                    )?;
+                    normalization_barriers[circuit.gates.len()] = true;
+                    wires.pop();
+                    owners.insert(*source_out, wires);
+                }
                 RawOp::CertifiedCompute {
                     source,
                     source_out,
@@ -550,7 +583,14 @@ pub(super) fn extract_with_alignment(
     );
     let gate_boundaries =
         super::export::finish(&mut circuit, &mut expansion, &normalization_barriers)?;
-    let proposal = alignment.finish(raw, &circuit, &gate_boundaries, clean_workspace, scratch)?;
+    let proposal = alignment.finish(
+        raw,
+        &circuit,
+        &gate_boundaries,
+        clean_workspace,
+        predicate_workspace,
+        scratch,
+    )?;
     Ok((circuit, proposal))
 }
 

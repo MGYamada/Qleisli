@@ -8,7 +8,7 @@ pub(super) use contracts::ExpansionBudget;
 
 use super::profile::{self, Gate, GateOp, TerminalCircuit};
 use super::{InteropError, MAX_GATES, MAX_QUBITS};
-use crate::ir::{CircuitAction, CircuitStep};
+use crate::ir::{BitControl, CircuitAction, CircuitStep, ProtectedUse, ScalarPhase};
 
 /// Output positions of the input gate boundaries. Interior boundaries of a
 /// rewritten word disappear even when its replacement emits zero gates.
@@ -192,6 +192,37 @@ pub(super) fn step(
                 indices,
                 permutation,
                 phases,
+            } if controls.len() > 2
+                && indices.len() == 1
+                && permutation == &[1, 0]
+                && phases == &[0, 0] =>
+            {
+                let target = wires[indices[0]];
+                let helpers = controls.len() - 2;
+                workspace(circuit, scratch, helpers)?;
+                let mut chain = vec![vec![controls[0], controls[1], scratch[0]]];
+                for index in 1..helpers {
+                    chain.push(vec![
+                        scratch[index - 1],
+                        controls[index + 1],
+                        scratch[index],
+                    ]);
+                }
+                for operands in &chain {
+                    circuit.push(Gate::Ccx, operands.clone())?;
+                }
+                circuit.push(
+                    Gate::Ccx,
+                    vec![scratch[helpers - 1], controls[helpers + 1], target],
+                )?;
+                for operands in chain.into_iter().rev() {
+                    circuit.push(Gate::Ccx, operands)?;
+                }
+            }
+            CircuitAction::Monomial {
+                indices,
+                permutation,
+                phases,
             } if indices.is_empty() && permutation == &[0] => {
                 conditional_phase(circuit, scratch, &controls, phases[0])?;
             }
@@ -216,6 +247,62 @@ pub(super) fn step(
         circuit.push(Gate::X, vec![q])?;
     }
     Ok(())
+}
+
+/// Emit the checked predicate, protected uses and inverse on data followed by
+/// the private scratch. Placement compares this full action to the emitted word.
+pub(super) fn structural_compute(
+    circuit: &mut TerminalCircuit,
+    scratch: &mut Vec<usize>,
+    forward: &[CircuitStep],
+    inverse: &[CircuitStep],
+    uses: &[ProtectedUse],
+    wires: &[usize],
+    expansion: &mut ExpansionBudget,
+) -> Result<(), InteropError> {
+    let auxiliary = wires.len() - 1;
+    let mut word = forward.to_vec();
+    for operation in uses {
+        let (controls, indices, permutation, phases) = match operation {
+            ProtectedUse::ProtectedGate { gate, .. } => {
+                let exponent = match gate {
+                    crate::ir::SingleGate::Z => 4,
+                    crate::ir::SingleGate::T => 1,
+                    _ => return Err(InteropError::unsupported("protected gate must be diagonal")),
+                };
+                (vec![], vec![auxiliary], vec![0, 1], vec![0, exponent])
+            }
+            ProtectedUse::ControlledPhase { controls, phase } => {
+                let controls = controls
+                    .iter()
+                    .map(|control| BitControl {
+                        index: auxiliary,
+                        when_one: control.when_one,
+                    })
+                    .collect();
+                let exponent = match phase {
+                    ScalarPhase::MinusOne => 4,
+                    ScalarPhase::EighthTurn => 1,
+                };
+                (controls, vec![], vec![0], vec![exponent])
+            }
+            ProtectedUse::ControlledTargetGate { .. } => {
+                return Err(InteropError::unsupported(
+                    "structural predicate scope has no protected target owner",
+                ));
+            }
+        };
+        word.push(CircuitStep {
+            controls,
+            action: CircuitAction::Monomial {
+                indices,
+                permutation,
+                phases,
+            },
+        });
+    }
+    word.extend_from_slice(inverse);
+    steps(circuit, scratch, &word, wires, expansion)
 }
 
 /// Recover diagonal words before assigning synthesis workspace. In particular

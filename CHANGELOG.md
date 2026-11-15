@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Emit structural predicate computation, protected phases and inverse in
+  terminal OpenQASM and check the literal gate interval and its scratch costs.
 - Derive clean scratch separation and dirty identity on the full local
   interface from the exact workspace checker.
 - Prove the exact field-based work charged by both literal circuit comparisons

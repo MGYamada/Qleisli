@@ -133,7 +133,7 @@ impl Alignment {
 }
 
 pub(super) struct AlignmentBuilder<'a> {
-    intervals: &'a [WorkspaceInterval],
+    intervals: Option<&'a [WorkspaceInterval]>,
     next_boundary: usize,
     gate_offsets: Vec<usize>,
 }
@@ -146,26 +146,26 @@ fn invalid_alignment() -> InteropError {
 }
 
 impl<'a> AlignmentBuilder<'a> {
-    pub(super) fn new(intervals: &'a [WorkspaceInterval], length: usize) -> Self {
+    pub(super) fn new(intervals: Option<&'a [WorkspaceInterval]>, length: usize) -> Self {
         Self {
             intervals,
             next_boundary: 0,
-            gate_offsets: if intervals.is_empty() {
-                vec![]
-            } else {
+            gate_offsets: if intervals.is_some() {
                 Vec::with_capacity(length + 1)
+            } else {
+                vec![]
             },
         }
     }
 
     pub(super) fn record(&mut self, index: usize, gates: usize, barriers: &mut [bool]) {
-        if self.intervals.is_empty() {
+        let Some(intervals) = self.intervals else {
             return;
-        }
+        };
         self.gate_offsets.push(gates);
         // A source workspace boundary can share the same gate position as its
         // neighbor, for example when a scope emits the identity word.
-        while let Some(interval) = self.intervals.get(self.next_boundary / 2) {
+        while let Some(interval) = intervals.get(self.next_boundary / 2) {
             let cut = if self.next_boundary % 2 == 0 {
                 interval.start
             } else {
@@ -185,12 +185,14 @@ impl<'a> AlignmentBuilder<'a> {
         circuit: &TerminalCircuit,
         boundaries: &GateBoundaries,
         scratch: Option<usize>,
-        synthesis: Vec<usize>,
+        predicate_workspace: Option<usize>,
+        mut synthesis: Vec<usize>,
     ) -> Result<Alignment, InteropError> {
-        if self.next_boundary != 2 * self.intervals.len() {
+        let intervals = self.intervals.unwrap_or_default();
+        if self.next_boundary != 2 * intervals.len() {
             return Err(invalid_alignment());
         }
-        let mut workspaces = Vec::with_capacity(self.intervals.len());
+        let mut workspaces = Vec::with_capacity(intervals.len());
         let mut start = 0;
         let matches = |mut index: usize, end: usize| {
             let mut result = Vec::new();
@@ -219,6 +221,10 @@ impl<'a> AlignmentBuilder<'a> {
                 };
                 let action = if next > index + 1 {
                     Match::Optimized(next - index, gates, relevant_scratch())
+                } else if matches!(raw.operations[index], RawOp::StructuralCompute { .. }) {
+                    let predicate = predicate_workspace.ok_or_else(invalid_alignment)?;
+                    let work = std::iter::once(predicate).chain(relevant_scratch());
+                    Match::Decomposed(gates, work.collect())
                 } else if matches!(raw.operations[index], RawOp::ApplyUnitary { .. }) {
                     Match::Decomposed(gates, relevant_scratch())
                 } else {
@@ -229,8 +235,8 @@ impl<'a> AlignmentBuilder<'a> {
             }
             Ok::<_, InteropError>(result)
         };
-        if !self.intervals.is_empty() {
-            for interval in self.intervals {
+        let suffix = if self.intervals.is_some() {
+            for interval in intervals {
                 let end = interval.start + interval.count;
                 let first = boundaries
                     .get(self.gate_offsets[interval.start])
@@ -249,16 +255,15 @@ impl<'a> AlignmentBuilder<'a> {
                 });
                 start = end;
             }
-        }
-        let suffix = if self.intervals.is_empty() {
-            Vec::new()
-        } else {
             let pure = raw.operations[start..]
                 .iter()
                 .position(|op| matches!(op, RawOp::MeasureZ { .. } | RawOp::Discard { .. }))
                 .map_or(raw.operations.len(), |offset| start + offset);
             matches(start, pure)?
+        } else {
+            Vec::new()
         };
+        synthesis.extend(predicate_workspace);
         Ok(Alignment {
             capacity: circuit.qubits,
             scratch,
@@ -279,6 +284,21 @@ mod tests {
     };
     use crate::interchange::native::Kernel;
 
+    fn native_program(source: &str) -> crate::AcceptedProgram {
+        let root = std::path::PathBuf::from("/workspace-check");
+        let module = SourceModule {
+            name: "main".into(),
+            path: root.join("main.qli"),
+            source: source.into(),
+            ast: parse_module(source).unwrap(),
+            imports: Default::default(),
+            origin: ModuleOrigin::Local,
+        };
+        Project::from_modules(root, [("main".into(), module)].into(), Edition::E2026)
+            .compile_with_kernel(&Kernel::selected(Edition::E2026).unwrap())
+            .unwrap()
+    }
+
     #[cfg_attr(
         not(qleisli_native_tests),
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
@@ -292,25 +312,14 @@ mod tests {
             observe fn main()->(Bit,Bit){\n\
                 let held=h(zero()); let q=mark_twice(zero());\n\
                 let a=measure_z(held); let b=measure_z(q); (b,a)}";
-        let root = std::path::PathBuf::from("/workspace-check");
-        let module = SourceModule {
-            name: "main".into(),
-            path: root.join("main.qli"),
-            source: source.into(),
-            ast: parse_module(source).unwrap(),
-            imports: Default::default(),
-            origin: ModuleOrigin::Local,
-        };
-        let program = Project::from_modules(root, [("main".into(), module)].into(), Edition::E2026)
-            .compile_with_kernel(&Kernel::selected(Edition::E2026).unwrap())
-            .unwrap();
+        let program = native_program(source);
         let intervals = workspace_intervals(
             program.source_context().unwrap(),
             program.raw().operations.len(),
         )
         .unwrap();
         let (circuit, alignment) =
-            super::super::profile::extract_with_alignment(&program, &intervals).unwrap();
+            super::super::profile::extract_with_alignment(&program, Some(&intervals)).unwrap();
         let target = super::super::openqasm::write(&circuit);
         let encoded = alignment.encode();
         assert_eq!(alignment.workspaces.len(), 2);
@@ -355,6 +364,128 @@ mod tests {
                 .unwrap_err()
                 .code,
             "contract"
+        );
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn structural_predicate_report_binds_phase_axis_order_and_inverse() {
+        // First CLI project: "tests/fixtures/authoring_sessions/structural-predicate-target-v030/first".
+        // Procedure: "tests/fixtures/authoring_sessions/structural-predicate-target-v030/README.md".
+        let first = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/",
+            "tests/fixtures/authoring_sessions/structural-predicate-target-v030/first/main.qli"
+        ));
+        let register = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/",
+            "tests/fixtures/authoring_sessions/structural-predicate-target-v030/ordered-register.qli"
+        ));
+        let before = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/",
+            "tests/fixtures/authoring_sessions/structural-predicate-target-v030/terminal-before.stdout"
+        ));
+        assert!(before.contains("IR constructor outside the terminal profile at raw operation 3"));
+        let standalone =
+            register.replace("clean(q, h) { |data, scratch| (h(data), scratch) }", "h(q)");
+        for (source, width) in [(first, 3), (standalone.as_str(), 2)] {
+            let program = native_program(source);
+            assert!(
+                program
+                    .raw()
+                    .operations
+                    .iter()
+                    .any(|op| matches!(op, RawOp::StructuralCompute { .. }))
+            );
+            let intervals = workspace_intervals(
+                program.source_context().unwrap(),
+                program.raw().operations.len(),
+            )
+            .unwrap();
+            let (circuit, alignment) =
+                super::super::profile::extract_with_alignment(&program, Some(&intervals))
+                    .unwrap_or_else(|error| panic!("{error}: {:?}", program.raw().operations));
+            let target = super::super::openqasm::write(&circuit);
+            let encoded = alignment.encode();
+            let (exported, resources) =
+                crate::interop::export_openqasm3_with_resources(&program).unwrap();
+            assert_eq!(exported, target);
+            assert_eq!(
+                (resources.qubits, resources.resets, resources.gates),
+                (width, width, 5)
+            );
+            assert_eq!(resources.measurements, 1);
+
+            let body = "cx q[0], q[1];\nz q[1];\ncx q[0], q[1];";
+            assert!(target.contains(body), "{target}");
+            for changed in [
+                "cx q[0], q[1];\ns q[1];\ncx q[0], q[1];",
+                "cx q[1], q[0];\nz q[1];\ncx q[1], q[0];",
+                "cx q[0], q[1];\nz q[1];\nz q[1];",
+            ] {
+                let wrong = target.replace(body, changed);
+                assert_eq!(
+                    program
+                        .check_openqasm_placement(wrong.as_bytes(), &encoded)
+                        .unwrap_err()
+                        .code,
+                    "contract",
+                    "{wrong}"
+                );
+            }
+        }
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn structural_predicate_report_counts_restored_synthesis_workspace() {
+        let source = r#"#![no_implicit_prelude]
+            classical fn mark(word: Bits<3>) -> Bit {
+                word[0] and not word[1] and word[2]
+            }
+            isometry fn zero() -> Q<Bit> { basis unit(()) as _ {0} }
+            observe fn main() -> Bit {
+                let empty = basis unit(()) as _ {empty_bits()};
+                let low = h(phase[1,1](h(zero())));
+                let middle = zero();
+                let high = h(zero());
+                let word = put_bit[3,2](high, put_bit[2,1](middle, put_bit[1,0](low, empty)));
+                let word = with_computed(word, mark) { |flag| phase[1,1](flag) };
+                let (high, rest) = take_bit[3,2](word);
+                let bit = measure_z(h(high));
+                discard(rest);
+                bit
+            }"#;
+        let program = native_program(source);
+        let (target, resources) =
+            crate::interop::export_openqasm3_with_resources(&program).unwrap();
+        assert_eq!((resources.qubits, resources.resets), (5, 5));
+        assert_eq!(
+            resources.gates,
+            target
+                .lines()
+                .filter(|line| {
+                    ["h ", "x ", "z ", "ccx "]
+                        .iter()
+                        .any(|gate| line.starts_with(gate))
+                })
+                .count()
+        );
+        assert_eq!(
+            target
+                .lines()
+                .filter(|line| line.starts_with("ccx "))
+                .count(),
+            8,
+            "{target}"
         );
     }
 }

@@ -843,7 +843,7 @@ a workspace body is part of its independently evaluated exact operator.
 
 Use `qleisli interop emit-qasm <source> --input=qli --resources` for the
 checked resource report on a closed typed program with workspace scopes in
-its root or in a statically named call.
+its root or in a statically named call, or with a structural computed scope.
 The JSON result contains the emitted text, exact work spent in the placement
 check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
 measurements. Counts come from Lean's decoding of the returned text.
@@ -879,6 +879,19 @@ checked Raw event, even for an arbitrary caller amplitude function. The
 source-bound theorem additionally identifies the predicate and phase from the
 original body. The complete pure Raw event fold uses the local logical action
 without constructing a global matrix.
+
+The terminal OpenQASM placement check can read this event in a closed original
+source root, including in a pure interval before or after an explicit workspace.
+It places the ordered source wires followed by a private predicate wire and
+reconstructs the whole forward, protected-use and inverse word from the Raw
+operation. The decoded target word must agree on the complete support,
+including the predicate wire, with exact phase. If the target decomposition
+uses additional scratch, the same synthesis check requires it to start and
+return to zero. The predicate and synthesis wires are reserved from source
+allocation, routing and terminal readout. Counts include their resets, the
+physical compute and inverse gates, and any additional synthesis gates.
+This check uses the bounded terminal operator profile and its shared work
+budget.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.

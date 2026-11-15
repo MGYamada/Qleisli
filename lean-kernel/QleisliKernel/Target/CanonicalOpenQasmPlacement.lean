@@ -227,6 +227,23 @@ private def followRaw (rootDependencies : List Semantics.Finite.Dependency) (cir
       guard (scratch.all fun wire => !reserved.contains wire) .request
       let _ ← checkSynthesisWith rootDependencies circuit state.gateIndex count state.locations scratch state.synthesis steps
       pure (state.locations,state.gateIndex+count)
+    | .synthesized count (auxiliary :: scratch),[.structuralComputed bits axes forward inverse uses] => do
+      guard (bits == state.locations.length && state.synthesis.contains auxiliary &&
+        !reserved.contains auxiliary && scratch.all (fun wire => !reserved.contains wire)) .request
+      let fields := Raw.rawFields ⟨[],[operation],[],.unitary⟩
+      guard (fields ≤ 1025) .limit
+      exactWork (Exact.charge (32*(1+fields)*(1+bits)))
+      let layout := state.locations ++ [auxiliary]
+      guard (circuit.declares (layout ++ scratch) && axes.all (· < bits)) .request
+      let word := forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse
+      guard (word.all (fun step => (stepAxes step).all (· ≤ axes.length))) .request
+      let steps := word.map (Semantics.RawTrace.localize (axes ++ [bits]))
+      if scratch.isEmpty then
+        let _ ← checkDecomposition circuit state.gateIndex count layout steps rootDependencies
+        pure (state.locations,state.gateIndex+count)
+      else
+        let _ ← checkSynthesisWith rootDependencies circuit state.gateIndex count layout scratch state.synthesis steps
+        pure (state.locations,state.gateIndex+count)
     | _,_ => throw .request
   if next.frame.length == locations.length then
     pure {state with raw := next,locations,rawIndex := state.rawIndex+1,gateIndex}
