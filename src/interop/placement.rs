@@ -355,7 +355,7 @@ mod tests {
             error.message.contains("uncontrolled scalar phase"),
             "{error}"
         );
-        let error = compile("n3").err().expect("out-of-domain specialization");
+        let error = compile("n3").expect_err("out-of-domain specialization");
         assert!(
             error
                 .message
