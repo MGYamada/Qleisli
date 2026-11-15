@@ -15,9 +15,13 @@ private def identity (dimension : Nat) : WorkM Matrix := do
   exactWork (Exact.charge ((dimension+1)^2))
   lift (arithmetic (Exact.Matrix.identity dimension))
 
+/-- Reconstruct the written logical operation using the caller's source
+fragment. Workspace bodies and their logical operators share the workspace
+fragment. Certified computed scopes use their existing restricted fragment. -/
 def logicalAction {sources caller callerName} {signature : Signature sources caller callerName}
     {naturals scope basis reference}
-    (logical : ComputedLogical signature naturals scope basis reference) (dimension : Nat) : WorkM Action := do
+    (workspace : Bool) (logical : ComputedLogical signature naturals scope basis reference)
+    (dimension : Nat) : WorkM Action := do
   match reference,logical with
   | none,.protectedScope => throw .request
   | some _,.certified operation .. =>
@@ -40,7 +44,7 @@ def logicalAction {sources caller callerName} {signature : Signature sources cal
       let [.owner returned] := summary.value | throw .request
       guard (operand.basis == basis && returned.basis == operand.basis &&
         summary.inferredEffect == .unitary) .request
-      let action ← sourceAction sources false (SourceTrace.sourceFuel sources) [operand] [returned] (← identity dimension)
+      let action ← sourceAction sources workspace (SourceTrace.sourceFuel sources) [operand] [returned] (← identity dimension)
         body.checked.events
       return {action with rows := operation.rows ++ signature.sourceRows ++ summary.staticRows ++ action.rows}
     | _ => throw .request
@@ -64,14 +68,14 @@ structure Prepared {sources caller} (event : ComputedEvent sources caller) where
   used : Action
   useRead : RuntimeInterval.Computed (useAction body predicate.layout.labels.length) used
   logical : Action
-  logicalRead : RuntimeInterval.Computed (logicalAction event.logical predicate.layout.labels.length) logical
+  logicalRead : RuntimeInterval.Computed (logicalAction false event.logical predicate.layout.labels.length) logical
 
 def prepare {sources caller} (event : ComputedEvent sources caller) : WorkM (Prepared event) := do
   let predicate ← RuntimeComputedPredicate.readSource event
   guard (predicate.layout.bits < 6) .limit
   let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedSource event)
   let used ← NaturalAffine.witness (useAction body.val predicate.layout.labels.length)
-  let logical ← NaturalAffine.witness (logicalAction event.logical predicate.layout.labels.length)
+  let logical ← NaturalAffine.witness (logicalAction false event.logical predicate.layout.labels.length)
   return ⟨predicate,body.val,by with_reducible exact body.property,used.val,by with_reducible exact used.property,
     logical.val,by with_reducible exact logical.property⟩
 

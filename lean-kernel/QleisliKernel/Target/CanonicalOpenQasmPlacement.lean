@@ -47,7 +47,7 @@ private def localWord (width : Nat) (axes : List Nat) (steps : List Semantics.Fi
 /-- Compare an original Raw circuit event and a decoded target slice on their
 complete common support. The target may touch only those placed live wires.
 Both words act as identity outside that support. -/
-structure Decomposition (circuit : Circuit) (start count : Nat) (locations : List Nat)
+structure Decomposition (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit) (start count : Nat) (locations : List Nat)
     (steps : List Semantics.Finite.Step) where
   axes : List Nat
   originalAxes : axes = (steps.flatMap stepAxes).eraseDups
@@ -59,11 +59,12 @@ structure Decomposition (circuit : Circuit) (start count : Nat) (locations : Lis
   targetWord : CanonicalOpenQasmWorkspace.interval circuit layout start count = some actual
   matrix : Semantics.Exact.Matrix
   originalOperator : RuntimeInterval.Computed
-    (circuitMatrix [] (Raw.circuit axes.length (localWord locations.length axes steps))) matrix
+    (circuitMatrix rootDependencies (Raw.circuit axes.length (localWord locations.length axes steps))) matrix
   targetOperator : RuntimeInterval.Computed (circuitMatrix [] (Raw.circuit axes.length actual)) matrix
 
 def checkDecomposition (circuit : Circuit) (start count : Nat) (locations : List Nat)
-    (steps : List Semantics.Finite.Step) : WorkM (Decomposition circuit start count locations steps) := do
+    (steps : List Semantics.Finite.Step) (rootDependencies : List Semantics.Finite.Dependency := []) :
+    WorkM (Decomposition rootDependencies circuit start count locations steps) := do
   guard (locations.length ≤ 12 && steps.length ≤ 1024 && start+count ≤ circuit.gates.length && count ≤ 1024) .limit
   exactWork (Exact.charge (64*(1+start+count+steps.length)*(1+locations.length)))
   if inFrame : steps.all (fun step => (stepAxes step).all (· < locations.length)) then
@@ -77,7 +78,7 @@ def checkDecomposition (circuit : Circuit) (start count : Nat) (locations : List
         | none => throw .request
         | some actual =>
           let original ← SourceTypes.NaturalAffine.witness
-            (circuitMatrix [] (Raw.circuit axes.length (localWord locations.length axes steps)))
+            (circuitMatrix rootDependencies (Raw.circuit axes.length (localWord locations.length axes steps)))
           let target ← SourceTypes.NaturalAffine.witness (circuitMatrix [] (Raw.circuit axes.length actual))
           exactWork (Exact.charge (original.val.entries.length+target.val.entries.length+1))
           if same : target.val = original.val then
@@ -100,7 +101,7 @@ private def checkedSynthesis (axes scratch : Nat) (target : List Semantics.Finit
 /-- A temporary target register is appended above the original ordered data
 support. Its complete entry word starts in zero and the checked equation
 returns it to zero, with every original input column and exact phase retained. -/
-structure Synthesis (circuit : Circuit) (start count : Nat) (locations scratch reserved : List Nat)
+structure Synthesis (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit) (start count : Nat) (locations scratch reserved : List Nat)
     (steps : List Semantics.Finite.Step) where
   axes : List Nat
   originalAxes : axes = (steps.flatMap stepAxes).eraseDups
@@ -113,12 +114,12 @@ structure Synthesis (circuit : Circuit) (start count : Nat) (locations scratch r
   targetWord : CanonicalOpenQasmWorkspace.interval circuit (layout ++ scratch) start count = some actual
   logical : Semantics.Exact.Matrix
   originalOperator : RuntimeInterval.Computed
-    (circuitMatrix [] (Raw.circuit axes.length (localWord locations.length axes steps))) logical
+    (circuitMatrix rootDependencies (Raw.circuit axes.length (localWord locations.length axes steps))) logical
   physical : Semantics.Exact.Matrix
   restored : RuntimeInterval.Computed (checkedSynthesis axes.length scratch.length actual logical) physical
 
-theorem Synthesis.zeroReturn {circuit start count locations scratch reserved steps}
-    (checked : Synthesis circuit start count locations scratch reserved steps) :
+theorem Synthesis.zeroReturn {rootDependencies circuit start count locations scratch reserved steps}
+    (checked : Synthesis rootDependencies circuit start count locations scratch reserved steps) :
     ∃ encoding first middle afterCircuit lhs lhsWork rhs rhsWork,
       (Raw.zeroEncoding checked.axes.length scratch.length).run first = (.ok encoding,middle) ∧
       Exact.Matrix.compose checked.physical encoding.map afterCircuit = (.ok lhs,lhsWork) ∧
@@ -130,8 +131,8 @@ theorem Synthesis.zeroReturn {circuit start count locations scratch reserved ste
     (Finite.check_conditions _ _ _ _ _ _ _ accepted).2.2.2.2.2.2
   exact ⟨encoding,first,middle,afterCircuit,lhs,lhsWork,rhs,rhsWork,zero,same⟩
 
-theorem Synthesis.exclusiveScratch {circuit start count locations scratch steps}
-    (checked : Synthesis circuit start count locations scratch [] steps) {wire : Nat} (member : wire ∈ scratch) :
+theorem Synthesis.exclusiveScratch {rootDependencies circuit start count locations scratch steps}
+    (checked : Synthesis rootDependencies circuit start count locations scratch [] steps) {wire : Nat} (member : wire ∈ scratch) :
     wire ∉ circuit.measurements ∧
       ∀ gate ∈ circuit.gates.take start ++ circuit.gates.drop (start+count), wire ∉ gate.wires := by
   have exclusive := checked.lifetime.resolve_left (fun reserved => by simpa using reserved wire member)
@@ -142,8 +143,8 @@ theorem Synthesis.exclusiveScratch {circuit start count locations scratch steps}
     simpa [List.contains_eq_mem,List.all_eq_true] using untouched
   exact ⟨places.1,fun gate occurs => (List.mem_append.mp occurs).elim (places.2.1 gate) (places.2.2 gate)⟩
 
-private def checkSynthesisWith (circuit : Circuit) (start count : Nat) (locations scratch reserved : List Nat)
-    (steps : List Semantics.Finite.Step) : WorkM (Synthesis circuit start count locations scratch reserved steps) := do
+private def checkSynthesisWith (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit) (start count : Nat) (locations scratch reserved : List Nat)
+    (steps : List Semantics.Finite.Step) : WorkM (Synthesis rootDependencies circuit start count locations scratch reserved steps) := do
   guard (locations.length ≤ 12 && scratch.length ≤ 6 && !scratch.isEmpty && steps.length ≤ 1024 &&
     start+count ≤ circuit.gates.length && count ≤ 1024) .limit
   exactWork (Exact.charge (64*(1+start+count+steps.length)*(1+locations.length+scratch.length+reserved.length)))
@@ -161,7 +162,7 @@ private def checkSynthesisWith (circuit : Circuit) (start count : Nat) (location
         | none => throw .request
         | some actual =>
           let logical ← SourceTypes.NaturalAffine.witness
-            (circuitMatrix [] (Raw.circuit axes.length (localWord locations.length axes steps)))
+            (circuitMatrix rootDependencies (Raw.circuit axes.length (localWord locations.length axes steps)))
           let checked ← SourceTypes.NaturalAffine.witness (checkedSynthesis axes.length scratch.length actual logical.val)
           return ⟨axes,rfl,inFrame,layout,placed,valid.1,valid.2,actual,targetWord,logical.val,
             by exact logical.property,checked.val,by exact checked.property⟩
@@ -169,8 +170,9 @@ private def checkSynthesisWith (circuit : Circuit) (start count : Nat) (location
   else throw .request
 
 def checkSynthesis (circuit : Circuit) (start count : Nat) (locations scratch : List Nat)
-    (steps : List Semantics.Finite.Step) : WorkM (Synthesis circuit start count locations scratch [] steps) :=
-  checkSynthesisWith circuit start count locations scratch [] steps
+    (steps : List Semantics.Finite.Step) (rootDependencies : List Semantics.Finite.Dependency := []) :
+    WorkM (Synthesis rootDependencies circuit start count locations scratch [] steps) :=
+  checkSynthesisWith rootDependencies circuit start count locations scratch [] steps
 
 /-- A structural basis lift reorders the encoding of the same live wires.
     Every basis label must match that wiring, including the zero-width case. -/
@@ -202,7 +204,7 @@ private def followBasisAxes (locations inputAxes outputAxes table : List Nat) :
 #guard ((followBasisAxes [4,7,9] [0,2] [0,2] [0,1,2,0]).run 4096).1.toOption.isNone
 #guard ((followBasisAxes [4,7,9] [0,2] [1,2] [0,2,1,3]).run 4096).1.toOption.isNone
 
-private def followRaw (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op)
+private def followRaw (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op)
     (reserved : List Nat) (alignment : Match) : WorkM State := do
   let (next,events) ← lift (readOption (Semantics.RawTrace.step state.raw operation))
   let (locations,gateIndex) ← match alignment,events with
@@ -219,11 +221,11 @@ private def followRaw (circuit : Circuit) (state : State) (operation : Semantics
     | .original,[.circuit _ steps] =>
       lift (readOption ((gateWord circuit state.gateIndex state.locations steps).map (state.locations,·)))
     | .decomposed count,[.circuit _ steps] => do
-      let _ ← checkDecomposition circuit state.gateIndex count state.locations steps
+      let _ ← checkDecomposition circuit state.gateIndex count state.locations steps rootDependencies
       pure (state.locations,state.gateIndex+count)
     | .synthesized count scratch,[.circuit _ steps] => do
       guard (scratch.all fun wire => !reserved.contains wire) .request
-      let _ ← checkSynthesisWith circuit state.gateIndex count state.locations scratch state.synthesis steps
+      let _ ← checkSynthesisWith rootDependencies circuit state.gateIndex count state.locations scratch state.synthesis steps
       pure (state.locations,state.gateIndex+count)
     | _,_ => throw .request
   if next.frame.length == locations.length then
@@ -261,33 +263,33 @@ private def readSpan (original : Array Semantics.Observation.Op) (state : State)
     | _ => throw .request) (state.raw,[],0)
   pure (final,chunks.reverse.flatten)
 
-private def followSpan (original : Array Semantics.Observation.Op) (circuit : Circuit) (state : State)
+private def followSpan (rootDependencies : List Semantics.Finite.Dependency) (original : Array Semantics.Observation.Op) (circuit : Circuit) (state : State)
     (rawCount gateCount : Nat) (scratch reserved : List Nat) : WorkM State := do
   let (next,steps) ← readSpan original state rawCount
   if scratch.isEmpty then
-    let _ ← checkDecomposition circuit state.gateIndex gateCount state.locations steps
+    let _ ← checkDecomposition circuit state.gateIndex gateCount state.locations steps rootDependencies
   else
     guard (scratch.all fun wire => !reserved.contains wire) .request
-    let _ ← checkSynthesisWith circuit state.gateIndex gateCount state.locations scratch state.synthesis steps
+    let _ ← checkSynthesisWith rootDependencies circuit state.gateIndex gateCount state.locations scratch state.synthesis steps
   pure {state with raw := next,rawIndex := state.rawIndex+rawCount,gateIndex := state.gateIndex+gateCount}
 
-private def replayStep (original : Array Semantics.Observation.Op) (circuit : Circuit)
+private def replayStep (rootDependencies : List Semantics.Finite.Dependency) (original : Array Semantics.Observation.Op) (circuit : Circuit)
     (connected : Nat → Nat → Bool) (reserved : List Nat) (state : State) (action : Match) : WorkM State :=
   match action with
   | .route => lift (readOption (followSwap circuit connected state reserved))
-  | .optimized rawCount gateCount scratch => followSpan original circuit state rawCount gateCount scratch reserved
+  | .optimized rawCount gateCount scratch => followSpan rootDependencies original circuit state rawCount gateCount scratch reserved
   | .original | .decomposed _ | .synthesized _ _ => do
     let some (.pure operation) := original[state.rawIndex]? | throw .request
-    followRaw circuit state operation reserved action
+    followRaw rootDependencies circuit state operation reserved action
 
-private def replayFrom (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
+private def replayFrom (rootDependencies : List Semantics.Finite.Dependency) (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
     (alignment : List Match) (initial : State) (reserved : List Nat := []) : WorkM State :=
-  alignment.foldlM (replayStep original circuit connected reserved) initial
+  alignment.foldlM (replayStep rootDependencies original circuit connected reserved) initial
 
 /-- A designated routing action consumes the literal SWAP at that gate index,
 and moves the live placement along its checked hardware edge. -/
-private theorem replay_route {original circuit connected reserved initial final work left}
-    (ok : (replayStep original circuit connected reserved initial .route).run work = (.ok final,left)) :
+private theorem replay_route {rootDependencies original circuit connected reserved initial final work left}
+    (ok : (replayStep rootDependencies original circuit connected reserved initial .route).run work = (.ok final,left)) :
     ∃ first second, circuit.gates[initial.gateIndex]? = some ⟨.swap,[first,second]⟩ ∧
       connected first second = true ∧
       final = { initial with
@@ -323,11 +325,11 @@ theorem RoutingAt.within_count {circuit connected index} (route : RoutingAt circ
   rw [← gate]
   exact List.getElem_mem _
 
-private theorem replay_routing_cost {original circuit connected reserved initial final work left}
+private theorem replay_routing_cost {rootDependencies original circuit connected reserved initial final work left}
     (beforeRoute suffix : List Match)
-    (ok : (replayFrom original circuit connected (beforeRoute ++ .route :: suffix) initial reserved).run work =
+    (ok : (replayFrom rootDependencies original circuit connected (beforeRoute ++ .route :: suffix) initial reserved).run work =
       (.ok final,left)) :
-    ∃ prefixExit prefixLeft, (replayFrom original circuit connected beforeRoute initial reserved).run work =
+    ∃ prefixExit prefixLeft, (replayFrom rootDependencies original circuit connected beforeRoute initial reserved).run work =
       (.ok prefixExit,prefixLeft) ∧ RoutingAt circuit connected prefixExit.gateIndex := by
   simp only [replayFrom,List.foldlM_append,List.foldlM_cons] at ok
   obtain ⟨prefixExit,prefixLeft,prefixRun,tail⟩ := bind_success _ _ _ _ _ ok
@@ -337,7 +339,7 @@ private theorem replay_routing_cost {original circuit connected reserved initial
 
 def replay (original : Array Semantics.Observation.Op) (circuit : Circuit) (connected : Nat → Nat → Bool)
     (alignment : List Match) : WorkM State :=
-  replayFrom original circuit connected alignment {}
+  replayFrom [] original circuit connected alignment {}
 
 structure Checked {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (program : Semantics.Observation.Program) (connected : Nat → Nat → Bool)
@@ -460,7 +462,7 @@ structure FinishedWorkspace {sources caller dependencies program block sourceSta
   sameWires : sourceInterval.after.quantum.reference.frame = prefixCheck.state.raw.frame
   suffix : List Match
   final : State
-  replayed : RuntimeInterval.Computed (replayFrom program.operations.toArray target.circuit connected suffix
+  replayed : RuntimeInterval.Computed (replayFrom [] program.operations.toArray target.circuit connected suffix
     ⟨sourceInterval.after.quantum.reference,prefixCheck.state.locations,sourceStart+sourceCount,
       prefixCheck.state.gateIndex+count,prefixCheck.state.synthesis⟩) final
   readout : Readout target program final
@@ -491,7 +493,7 @@ def finishWorkspace {sources caller dependencies program block sourceStart sourc
         ⟨sourceInterval.after.quantum.reference,prefixCheck.state.locations,sourceStart+sourceCount,
           prefixCheck.state.gateIndex+count,prefixCheck.state.synthesis⟩
       let final ← SourceTypes.NaturalAffine.witness
-        (replayFrom program.operations.toArray target.circuit connected suffix entry)
+        (replayFrom [] program.operations.toArray target.circuit connected suffix entry)
       let result ← checkReadout target program final.val
       return ⟨binding,lifetime,same,suffix,final.val,by exact final.property,result⟩
     else throw .request
@@ -538,10 +540,11 @@ private def Segment.exit {program : Semantics.Observation.Program} (segment : Se
   ⟨after,entry.locations,segment.rootStart+segment.length,entry.gateIndex+segment.count,entry.synthesis⟩
 
 structure BoundSegment {program : Semantics.Observation.Program} (segment : Segment program)
+    (rootDependencies : List Semantics.Finite.Dependency)
     {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (connected : Nat → Nat → Bool) (reserved : List Nat) (previous entry : State) where
   replayed : RuntimeInterval.Computed
-    (replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved) entry
+    (replayFrom rootDependencies program.operations.toArray target.circuit connected segment.alignment previous reserved) entry
   offset : entry.rawIndex = segment.rootStart
   selected : PureInterval.portsOf entry.raw.live (segment.selectedPorts.map (·.token)) =
     some segment.selectedPorts
@@ -561,12 +564,12 @@ structure BoundSegment {program : Semantics.Observation.Program} (segment : Segm
 proper consumes the complete decoded slice used in its clean/dirty equation. -/
 theorem BoundSegment.literal_costs {program : Semantics.Observation.Program} {segment : Segment program}
     {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
-    {connected reserved previous entry} (bound : BoundSegment segment target connected reserved previous entry) :
+    {rootDependencies connected reserved previous entry} (bound : BoundSegment segment rootDependencies target connected reserved previous entry) :
     bound.placed.body.gates.length = segment.count ∧
       entry.gateIndex+segment.count ≤ target.circuit.counts.gates ∧
       ∀ beforeRoute tail, segment.alignment = beforeRoute ++ .route :: tail →
         ∃ state, RuntimeInterval.Computed
-          (replayFrom program.operations.toArray target.circuit connected beforeRoute previous reserved) state ∧
+          (replayFrom rootDependencies program.operations.toArray target.circuit connected beforeRoute previous reserved) state ∧
           RoutingAt target.circuit connected state.gateIndex ∧ state.gateIndex < target.circuit.counts.gates ∧
           0 < target.circuit.counts.swaps := by
   have ⟨steps,inside⟩ := CanonicalOpenQasmWorkspace.interval_length bound.placed.body.actualInterval
@@ -584,12 +587,13 @@ private def segmentWork {bytes capacity} (target : CanonicalOpenQasmResources.Ch
     32*(1+alignment.length)*(1+alignment.length+target.circuit.gates.length)))
 
 private def checkSegment {program : Semantics.Observation.Program} (segment : Segment program)
+    (rootDependencies : List Semantics.Finite.Dependency)
     {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (connected : Nat → Nat → Bool) (reserved : List Nat) (previous : State) :
-    WorkM (Σ entry, BoundSegment segment target connected reserved previous entry) := do
+    WorkM (Σ entry, BoundSegment segment rootDependencies target connected reserved previous entry) := do
   segmentWork target program segment.alignment
   let replayed ← SourceTypes.NaturalAffine.witness
-    (replayFrom program.operations.toArray target.circuit connected segment.alignment previous reserved)
+    (replayFrom rootDependencies program.operations.toArray target.circuit connected segment.alignment previous reserved)
   let entry := replayed.val
   let selected := segment.selectedPorts.map (·.token)
   let returned := segment.returnedPorts.map (·.token)
@@ -616,8 +620,8 @@ private def checkSegment {program : Semantics.Observation.Program} (segment : Se
   else throw .request
 
 private def BoundSegment.addCleanUse {program : Semantics.Observation.Program} {bytes capacity}
-    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved previous entry}
-    {segment : Segment program} (bound : BoundSegment segment target connected reserved previous entry) (scratch : Nat)
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved previous entry}
+    {segment : Segment program} (bound : BoundSegment segment rootDependencies target connected reserved previous entry) (scratch : Nat)
     (earlier : List (CanonicalOpenQasmWorkspace.CleanUse target.circuit scratch)) :
     List (CanonicalOpenQasmWorkspace.CleanUse target.circuit scratch) :=
   if last : bound.placed.freshScratch = some scratch then
@@ -633,60 +637,63 @@ private def BoundSegment.addCleanUse {program : Semantics.Observation.Program} {
 abbrev CleanUses (circuit : Circuit) := (scratch : Nat) → List (CanonicalOpenQasmWorkspace.CleanUse circuit scratch)
 
 inductive WorkspaceTrace {program : Semantics.Observation.Program} {bytes capacity}
+    (rootDependencies : List Semantics.Finite.Dependency)
     (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
     (reserved synthesis : List Nat) : State → CleanUses target.circuit → Nat → Type where
-  | start : WorkspaceTrace (program := program) target connected reserved synthesis
+  | start : WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis
       {synthesis := synthesis} (fun _ => []) 0
   | next {previous entry : State} {segment : Segment program} {uses : CleanUses target.circuit} {peak : Nat}
-    (earlier : WorkspaceTrace (program := program) target connected reserved synthesis previous uses peak)
-    (bound : BoundSegment segment target connected reserved previous entry) :
-      WorkspaceTrace (program := program) target connected reserved synthesis (segment.exit entry bound.after)
+    (earlier : WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis previous uses peak)
+    (bound : BoundSegment segment rootDependencies target connected reserved previous entry) :
+      WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis (segment.exit entry bound.after)
         (fun scratch => bound.addCleanUse scratch (uses scratch)) (max peak segment.map.resources.counts.peakWires)
 
 /-- Maximum Raw live width across the checked original workspace occurrences,
 including the caller's spectators and every temporary clean wire. -/
 theorem WorkspaceTrace.peakWires_le {program : Semantics.Observation.Program} {bytes capacity}
-    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved synthesis state uses peak}
-    (trace : WorkspaceTrace (program := program) target connected reserved synthesis state uses peak) :
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved synthesis state uses peak}
+    (trace : WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis state uses peak) :
     peak ≤ target.circuit.qubits := by
   induction trace with
   | start => exact Nat.zero_le _
   | next _ bound ih => exact Nat.max_le.mpr ⟨ih,bound.placed.body.coversRawPeak⟩
 
 structure TraceWithUses {program : Semantics.Observation.Program} {bytes capacity}
+    (rootDependencies : List Semantics.Finite.Dependency)
     (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
     (reserved synthesis : List Nat) where
   exit : State
   cleanUses : CleanUses target.circuit
   peakWires : Nat
-  trace : @WorkspaceTrace program bytes capacity target connected reserved synthesis exit cleanUses peakWires
+  trace : @WorkspaceTrace program bytes capacity rootDependencies target connected reserved synthesis exit cleanUses peakWires
 
 structure FinishedTrace (program : Semantics.Observation.Program) {bytes capacity}
+    (rootDependencies : List Semantics.Finite.Dependency)
     (target : CanonicalOpenQasmResources.Checked bytes capacity) (connected : Nat → Nat → Bool)
     (reserved synthesis : List Nat) (suffix : List Match) where
   closed : program.inputs.isEmpty = true ∧ program.classicalInputs.isEmpty = true
   declared : target.circuit.declares (reserved ++ synthesis)
   synthesisUnmeasured : ∀ wire ∈ synthesis, wire ∉ target.circuit.measurements
-  recorded : @TraceWithUses program bytes capacity target connected reserved synthesis
+  recorded : @TraceWithUses program bytes capacity rootDependencies target connected reserved synthesis
   final : State
   replayed : RuntimeInterval.Computed
-    (replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved) final
+    (replayFrom rootDependencies program.operations.toArray target.circuit connected suffix recorded.exit reserved) final
   readout : Readout target program final
   restored : ∀ scratch ∈ reserved, Nonempty (CanonicalOpenQasmWorkspace.Reuse target scratch (recorded.cleanUses scratch))
 
 /-- Routing in the replay after the final workspace is accounted for in the
 same literal gate word that supplies terminal resource counts. -/
 theorem FinishedTrace.suffix_routing_paid {program : Semantics.Observation.Program} {bytes capacity}
-    {target : CanonicalOpenQasmResources.Checked bytes capacity} {connected reserved synthesis suffix}
-    (trace : FinishedTrace program target connected reserved synthesis suffix) (beforeRoute tail : List Match)
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved synthesis suffix}
+    (trace : FinishedTrace program rootDependencies target connected reserved synthesis suffix) (beforeRoute tail : List Match)
     (route : suffix = beforeRoute ++ .route :: tail) :
     ∃ state, RuntimeInterval.Computed
-      (replayFrom program.operations.toArray target.circuit connected beforeRoute trace.recorded.exit reserved) state ∧
+      (replayFrom rootDependencies program.operations.toArray target.circuit connected beforeRoute trace.recorded.exit reserved) state ∧
       RoutingAt target.circuit connected state.gateIndex ∧ state.gateIndex < target.circuit.counts.gates ∧
       0 < target.circuit.counts.swaps := by
   obtain ⟨work,left,ran⟩ := trace.replayed
   have runAt := congrArg (fun alignment =>
-    (replayFrom program.operations.toArray target.circuit connected alignment trace.recorded.exit reserved).run work) route
+    (replayFrom rootDependencies program.operations.toArray target.circuit connected alignment trace.recorded.exit reserved).run work) route
   obtain ⟨state,left,prefixRun,routed⟩ := replay_routing_cost beforeRoute tail (runAt.symm.trans ran)
   exact ⟨state,⟨work,left,prefixRun⟩,routed,routed.within_count⟩
 
@@ -695,22 +702,23 @@ clean scratch fixed. Ordinary preparation and routing cannot use a designated
 scratch wire. Each such wire is restored by its own exact, disjoint uses. -/
 def finishTrace {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (program : Semantics.Observation.Program) (connected : Nat → Nat → Bool) (reserved : List Nat)
-    (segments : List (Segment program)) (suffix : List Match) (synthesis : List Nat := []) :
-    WorkM (FinishedTrace program target connected reserved synthesis suffix) := do
+    (segments : List (Segment program)) (suffix : List Match) (synthesis : List Nat := [])
+    (rootDependencies : List Semantics.Finite.Dependency := []) :
+    WorkM (FinishedTrace program rootDependencies target connected reserved synthesis suffix) := do
   guard (program.operations.length ≤ 65536 && segments.length ≤ program.operations.length &&
     reserved.length + synthesis.length ≤ 12) .limit
   exactWork (Exact.charge (32*(program.operations.length+segments.length+1)))
   if closed : program.inputs.isEmpty = true ∧ program.classicalInputs.isEmpty = true then
     if valid : target.circuit.declares (reserved ++ synthesis) ∧
         (∀ wire ∈ synthesis, wire ∉ target.circuit.measurements) then
-      let recorded ← segments.foldlM (fun (state : @TraceWithUses program bytes capacity target connected reserved synthesis) segment => do
-        let ⟨entry,bound⟩ ← checkSegment segment target connected reserved state.exit
+      let recorded ← segments.foldlM (fun (state : @TraceWithUses program bytes capacity rootDependencies target connected reserved synthesis) segment => do
+        let ⟨entry,bound⟩ ← checkSegment segment rootDependencies target connected reserved state.exit
         pure ⟨segment.exit entry bound.after,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),
           max state.peakWires segment.map.resources.counts.peakWires,.next state.trace bound⟩)
         ⟨{synthesis := synthesis},fun _ => [],0,.start⟩
       segmentWork target program suffix
       let final ← SourceTypes.NaturalAffine.witness
-        (replayFrom program.operations.toArray target.circuit connected suffix recorded.exit reserved)
+        (replayFrom rootDependencies program.operations.toArray target.circuit connected suffix recorded.exit reserved)
       let output ← checkReadout target program final.val
       exactWork (Exact.charge (32*(1+reserved.length)*(1+segments.length)*(1+segments.length)))
       let uses ← reserved.attach.mapM fun wire => do

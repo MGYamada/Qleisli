@@ -40,16 +40,14 @@ private theorem bit_of_packed_source (width source aux : Nat)
     simp only [Semantics.Finite.enabled, List.all_cons] at tail ⊢
     rw [head, tail]
 
-private theorem selected_packed {sources caller} {event : SourceTypes.SourceRuntimeContext.ComputedEvent sources caller}
-    {original : StructuralXorPredicate.Original event} {steps : List Semantics.Finite.Step}
-    (checked : StructuralXor.Checked original.width original.compiled.clauses steps)
-    (source aux : Nat) :
-    StructuralXor.predicate original.compiled.clauses (FiniteRestriction.pack original.width source aux) =
-      StructuralXor.predicate original.compiled.clauses source := by
+private theorem predicate_packed (width : Nat) (clauses : List (List Semantics.Finite.Control))
+    (disjoint : ∀ controls ∈ clauses, ∀ control ∈ controls, control.index < width) (source aux : Nat) :
+    StructuralXor.predicate clauses (FiniteRestriction.pack width source aux) =
+      StructuralXor.predicate clauses source := by
   have fold (clauses : List (List Semantics.Finite.Control)) (initial : Bool)
-      (inside : ∀ controls ∈ clauses, ∀ control ∈ controls, control.index < original.width) :
+      (inside : ∀ controls ∈ clauses, ∀ control ∈ controls, control.index < width) :
       clauses.foldl (fun parity controls => Bool.xor parity
-        (Semantics.Finite.enabled controls (FiniteRestriction.pack original.width source aux))) initial =
+        (Semantics.Finite.enabled controls (FiniteRestriction.pack width source aux))) initial =
       clauses.foldl (fun parity controls => Bool.xor parity
         (Semantics.Finite.enabled controls source)) initial := by
     induction clauses generalizing initial with
@@ -58,7 +56,7 @@ private theorem selected_packed {sources caller} {event : SourceTypes.SourceRunt
       simp only [List.foldl_cons]
       rw [bit_of_packed_source _ _ _ _ (inside controls List.mem_cons_self)]
       exact ih _ (fun clause member => inside clause (List.mem_cons_of_mem _ member))
-  exact fold _ false checked.disjoint
+  exact fold _ false disjoint
 
 private theorem aux_write (width source aux : Nat) (bound : source < 2^width)
     (small : aux < 2) (choice : Bool) :
@@ -148,6 +146,14 @@ private theorem raw_circuit (axis : Nat) (clauses : List (List Semantics.Finite.
         (fun control member => Nat.ne_of_lt (inside clause List.mem_cons_self control member)),
       StructuralXor.targetUpdate_xor, predicate_cons]
 
+private theorem literal_xor_circuit (width : Nat) (clauses : List (List Semantics.Finite.Control))
+    (disjoint : ∀ controls ∈ clauses, ∀ control ∈ controls, control.index < width)
+    (ψ : Nat → ℂ) (source aux : Nat) (bound : source < 2^width) (small : aux < 2) :
+    Qleisli.Semantics.RawAction.circuit [] (clauses.map (StructuralXor.toggle width)) ψ
+      (FiniteRestriction.pack width source aux) =
+    ψ (FiniteRestriction.pack width source (aux ^^^ (StructuralXor.predicate clauses source).toNat)) := by
+  rw [raw_circuit _ _ disjoint, predicate_packed _ _ disjoint, aux_write _ _ _ bound small]
+
 /-- The complex-amplitude interpreter reads the same reversible XOR action
 from the literal forward or inverse circuit, with no support or product-state
 assumption on the input function. -/
@@ -158,8 +164,7 @@ theorem literal_circuit_xor {sources caller}
     (ψ : Nat → ℂ) (source aux : Nat) (bound : source < 2^original.width) (small : aux < 2) :
     Qleisli.Semantics.RawAction.circuit [] steps ψ (FiniteRestriction.pack original.width source aux) =
       ψ (FiniteRestriction.pack original.width source (aux ^^^ selected original source)) := by
-  rw [checked.literal, raw_circuit _ _ checked.disjoint, selected_packed checked source aux,
-    aux_write _ _ _ bound small]
+  rw [checked.literal, literal_xor_circuit _ _ checked.disjoint _ _ _ bound small]
   simp only [selected, original.compiled.evaluates, Option.getD_some]
 
 private theorem packed_aux_bit (width source aux : Nat) (bound : source < 2^width) :
@@ -288,7 +293,7 @@ theorem literal_xor {sources caller} {event : SourceTypes.SourceRuntimeContext.C
   have output : StructuralXor.targetUpdate original.width (FiniteRestriction.pack original.width source aux)
       (StructuralXor.predicate original.compiled.clauses (FiniteRestriction.pack original.width source aux)) =
       FiniteRestriction.pack original.width source (aux ^^^ selected original source) := by
-    rw [selected_packed checked source aux, aux_write _ _ _ bound small]
+    rw [predicate_packed _ _ checked.disjoint, aux_write _ _ _ bound small]
     simp only [selected, original.compiled.evaluates, Option.getD_some]
   rw [output] at literal
   exact literal
@@ -321,6 +326,55 @@ theorem clean_return {sources caller computeSteps inverseSteps uses}
   · simpa [off, RuntimeComputedUse.RawAction.matrix, Semantics.Exact.Matrix.entry] using parts.1
   · simpa [on, RuntimeComputedUse.RawAction.matrix, Semantics.Exact.Matrix.entry] using parts.2
 
+private theorem literal_factorization (width : Nat) (clauses : List (List Semantics.Finite.Control))
+    (disjoint : ∀ controls ∈ clauses, ∀ control ∈ controls, control.index < width)
+    (uses : List Semantics.Raw.Use) (valid : Raw.usesValid 0 1 0 uses = true) (ψ : Nat → ℂ)
+    (source aux : Nat) (bound : source < 2^width) (small : aux < 2) :
+    let steps := clauses.map (StructuralXor.toggle width)
+    Qleisli.Semantics.RawAction.circuit []
+      (steps ++ uses.map (Semantics.Protected.physical 0 width) ++ steps)
+      (fun label => if label < 2^width then ψ label else 0)
+      (FiniteRestriction.pack width source aux) =
+    if aux = 0 then blocks source (StructuralXor.predicate clauses source).toNat uses
+      (fun _ (_ : Unit) => ψ source) 0 () else 0 := by
+  dsimp only
+  let choice := (StructuralXor.predicate clauses source).toNat
+  have chosen : choice < 2 := by
+    dsimp [choice]
+    cases StructuralXor.predicate clauses source <;> decide
+  have xorSmall {left right : Nat} (leftBit : left < 2) (rightBit : right < 2) : left ^^^ right < 2 := by
+    have leftCases : left = 0 ∨ left = 1 := by omega
+    have rightCases : right = 0 ∨ right = 1 := by omega
+    rcases leftCases with rfl | rfl <;> rcases rightCases with rfl | rfl <;> decide
+  have append (before after : List Semantics.Finite.Step) (values : Nat → ℂ) :
+      Qleisli.Semantics.RawAction.circuit [] (before ++ after) values =
+        Qleisli.Semantics.RawAction.circuit [] after
+          (Qleisli.Semantics.RawAction.circuit [] before values) := by
+    simp only [Qleisli.Semantics.RawAction.circuit, List.foldl_append]
+  rw [append, append, literal_xor_circuit _ _ disjoint _ source aux bound small,
+    physical_uses _ source _ bound uses valid]
+  have beforeUse := literal_xor_circuit _ _ disjoint
+    (fun label => if label < 2^width then ψ label else 0) source _
+    bound (xorSmall small chosen)
+  rw [beforeUse, Nat.xor_assoc, Nat.xor_self, Nat.xor_zero]
+  have initial :
+      (if FiniteRestriction.pack width source aux < 2^width
+        then ψ (FiniteRestriction.pack width source aux) else 0) =
+      if aux = 0 then ψ source else 0 := by
+    by_cases zero : aux = 0
+    · simpa [zero, FiniteRestriction.pack] using
+        (if_pos bound : (if source < 2^width then ψ source else 0) = ψ source)
+    · have tooLarge : ¬ FiniteRestriction.pack width source aux < 2^width := by
+        unfold FiniteRestriction.pack
+        have atLeast := Nat.mul_le_mul_left (2^width) (Nat.one_le_iff_ne_zero.mpr zero)
+        simp only [Nat.mul_one] at atLeast
+        omega
+      simp [zero, tooLarge]
+  simp only [initial]
+  by_cases zero : aux = 0
+  · simp [zero]
+  · simp only [if_neg zero, blocks_zero]
+
 /-- The actual emitted forward, use, and inverse circuit implements the
 original phase and returns the private auxiliary to zero. Each reference
 slice may be an arbitrary amplitude function of the live data. -/
@@ -336,46 +390,51 @@ theorem literal_clean_return {sources caller computeSteps inverseSteps uses}
       (FiniteRestriction.pack original.width source aux) =
       if aux = 0 then ψ source * scalar (checked.action.matrix.entry
         (selected original source) (selected original source)) else 0 := by
-  have chosen : selected original source < 2 := by
-    rcases selected_bit original source with off | on <;> omega
-  have xorSmall {left right : Nat} (leftBit : left < 2) (rightBit : right < 2) : left ^^^ right < 2 := by
-    have leftCases : left = 0 ∨ left = 1 := by omega
-    have rightCases : right = 0 ∨ right = 1 := by omega
-    rcases leftCases with rfl | rfl <;> rcases rightCases with rfl | rfl <;> decide
-  have append (before after : List Semantics.Finite.Step) (values : Nat → ℂ) :
-      Qleisli.Semantics.RawAction.circuit [] (before ++ after) values =
-        Qleisli.Semantics.RawAction.circuit [] after
-          (Qleisli.Semantics.RawAction.circuit [] before values) := by
-    simp only [Qleisli.Semantics.RawAction.circuit, List.foldl_append]
-  rw [append, append, literal_circuit_xor checked.reverse _ source aux bound small,
-    physical_uses _ source _ bound uses valid]
-  have beforeUse := literal_circuit_xor checked.forward
-    (fun label => if label < 2^original.width then ψ label else 0) source _
-    bound (xorSmall small chosen)
-  rw [beforeUse, Nat.xor_assoc, Nat.xor_self, Nat.xor_zero]
-  have initial :
-      (if FiniteRestriction.pack original.width source aux < 2^original.width
-        then ψ (FiniteRestriction.pack original.width source aux) else 0) =
-      if aux = 0 then ψ source else 0 := by
-    by_cases zero : aux = 0
-    · simpa [zero, FiniteRestriction.pack] using
-        (if_pos bound : (if source < 2^original.width then ψ source else 0) = ψ source)
-    · have tooLarge : ¬ FiniteRestriction.pack original.width source aux < 2^original.width := by
-        unfold FiniteRestriction.pack
-        have atLeast := Nat.mul_le_mul_left (2^original.width) (Nat.one_le_iff_ne_zero.mpr zero)
-        simp only [Nat.mul_one] at atLeast
-        omega
-      simp [zero, tooLarge]
-  simp only [initial]
+  have action := literal_factorization _ _ checked.forward.disjoint uses valid ψ source aux bound small
+  have choice : (StructuralXor.predicate original.compiled.clauses source).toNat = selected original source := by
+    simp only [selected, original.compiled.evaluates, Option.getD_some]
+  conv => lhs; rw [checked.forward.literal, checked.reverse.literal]
+  rw [action, choice]
   by_cases zero : aux = 0
-  · subst aux
-    simp only [Nat.zero_xor, ← checked.equation]
+  · simp only [if_pos zero, ← checked.equation]
     have parts := RuntimeComputedProtectedAction.auxiliary_fibres checked.emitted source
       (fun _ (_ : Unit) => ψ source) 0 ()
     rcases selected_bit original source with off | on
     · simpa [off, RuntimeComputedUse.RawAction.matrix, Semantics.Exact.Matrix.entry] using parts.1
     · simpa [on, RuntimeComputedUse.RawAction.matrix, Semantics.Exact.Matrix.entry] using parts.2
-  · simp only [if_neg zero, blocks_zero]
+  · simp only [if_neg zero]
+
+/-- The logical action of a structurally checked Raw predicate uses the ordered
+controls in its literal forward circuit. The result multiplies the original
+data amplitude by the exact local protected action at the selected bit. -/
+noncomputable def logicalAction (axes : List Nat) (forward : List Semantics.Finite.Step)
+    (uses : List Semantics.Raw.Use) (ψ : Nat → ℂ) : Nat → ℂ :=
+  Qleisli.Semantics.RawAction.embed axes
+    (fun input output => blocks output (Qleisli.Semantics.RawAction.StructuralXorValue forward output)
+      uses (fun _ (_ : Unit) => input output) 0 ()) ψ
+
+/-- The actual Raw circuit reading suffices for the local logical replacement.
+The same literal factorization underlies the separate source predicate equation. -/
+theorem raw_event_action {axes forward inverse uses clauses}
+    (checked : Raw.structuralComputeClauses axes.length forward inverse uses = .ok clauses)
+    (dependencies : List Semantics.Finite.Dependency) (bits : Nat) (ψ : Nat → ℂ) :
+    Qleisli.Semantics.RawAction.event dependencies
+      (.structuralComputed bits axes forward inverse uses) ψ =
+      logicalAction axes forward uses ψ := by
+  have facts := Raw.structuralComputeClauses_conditions checked
+  funext row
+  have bounded := Qleisli.RuntimeForestProduct.gather_bound row axes
+  have action := literal_factorization axes.length clauses facts.2.2.2.1 uses facts.2.1
+    (fun input => ψ (Semantics.Finite.scatter row axes input))
+    (Semantics.Finite.gather row axes) 0 bounded (by decide)
+  have choice : Qleisli.Semantics.RawAction.StructuralXorValue forward (Semantics.Finite.gather row axes) =
+      (StructuralXor.predicate clauses (Semantics.Finite.gather row axes)).toNat := by
+    rw [facts.2.2.1]
+    simp [Qleisli.Semantics.RawAction.StructuralXorValue, StructuralXor.predicate,
+      List.foldl_map]
+  simp only [Qleisli.Semantics.RawAction.event, logicalAction, Qleisli.Semantics.RawAction.embed, choice]
+  rw [facts.1, facts.2.2.1]
+  simpa only [FiniteRestriction.pack, Nat.mul_zero, Nat.add_zero, if_pos rfl, StructuralXor.toggle] using action
 
 /-- The same phase acts on the literal selected axes of the caller frame.
 An arbitrary caller amplitude function retains all spectator correlations. -/
@@ -468,6 +527,7 @@ theorem checked_packet {sources caller}
 #print axioms clean_return
 #print axioms literal_circuit_xor
 #print axioms literal_clean_return
+#print axioms raw_event_action
 #print axioms literal_event
 #print axioms interval_trace
 #print axioms literal_xor

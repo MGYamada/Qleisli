@@ -787,6 +787,19 @@ ports. The exporter preserves the interval boundaries across exact
 rewrites and proposes the corresponding gate positions and scratch locations.
 Lean checks the proposal against the original source, including the clean and
 dirty intervals and terminal result order.
+The written logical operation and the workspace body use the same admitted
+workspace source fragment. This lets an independently checked controlled
+phase appear in the declared logical operation and in the body; their exact
+restoration equation still checks the complete data and scratch action.
+The application theorem `Qleisli.WorkspaceTargetAction.decoded_action`
+connects the exact action of that decoded workspace slice to the literal Raw
+body on its full ordered data and scratch interface. The equality preserves
+the original phase for arbitrary reference columns.
+For each reserved clean wire, `native_clean_access_counted_once` links native
+placement success to its literal reset and one unique restoration interval
+for every emitted gate that touches it. The application theorem also places
+the interval inside the counted target gates and excludes the scratch wire
+from terminal readout.
 For a `Q<Bits<n>>` data register, each original `take_bit` or `put_bit` index
 determines the ordered wire selection or insertion. The Raw repartition retains
 the other owners, including a distinct `Q<Bits<0>>` remainder. Repartition inside
@@ -800,7 +813,8 @@ check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
 measurements. Counts come from Lean's decoding of the returned text.
 The internal packet binds the complete original QLV3 request and literal target
 bytes. Lean rechecks the original source, decodes the target and replays
-placement using one 20,000,000 exact-work budget. The report covers the
+placement using one 20,000,000 exact-work budget. Exhausting it returns a
+limit rejection with no resource payload. The report covers the
 supported canonical terminal profile and its declared physical register.
 Lean proves that the decoded register width bounds the maximum Raw live width
 over the workspace occurrences visited by the replay, including caller
@@ -810,6 +824,19 @@ and proves that the reserved width is within the requested target capacity.
 A structural basis lift updates the physical placement only when its complete
 table is an axis permutation. It contributes zero gates. A routing SWAP
 must occupy a literal gate position.
+
+For a source-checked structural `with_computed` interval, the Raw resource
+read counts the full live frame plus one private scratch wire at peak. It
+counts one preparation, one clean release and both predicate passes. The
+literal circuit count includes every forward step, inverse step and protected
+use. The Lean theorem `Qleisli.RuntimeComputedResources.structural_counts`
+binds these numbers to the same original source-checked Raw occurrence and
+retains caller spectators in the peak width.
+The same literal XOR factorization proves logical action for the independently
+checked Raw event, even for an arbitrary caller amplitude function. The
+source-bound theorem additionally identifies the predicate and phase from the
+original body. The complete pure Raw event fold uses the local logical action
+without constructing a global matrix.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.

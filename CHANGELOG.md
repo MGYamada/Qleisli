@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## 0.3.0-beta — 2026-10-12
 
+- Reconstruct controlled phases in written workspace logical operations using
+  the independently checked workspace source fragment.
+- Factor checked structural predicate circuits into their exact logical action
+  in the complete Raw event fold, preserving the independent source equation.
+- Prove the original Raw resource counts for structural predicates, including
+  private scratch and both predicate passes.
+- Prove exact agreement between a decoded OpenQASM workspace slice and its
+  original checked Raw body on all local inputs and external references.
 - Read literal `Bits<n>` coordinates in classical functions and coherent
   basis expressions. The native source-body checker binds word predicates to
   the controls in `with_computed`, and checks the ordered register extraction
@@ -48,6 +56,8 @@ development milestones from the scope of their evidence.
   target gate interval against the original clean/dirty workspace operator.
 - Specify independent evidence for provider costs and closed provider selection,
   including the requirements for future foreign execution.
+- Check calls inside and around workspace intervals with the closed
+  providers independently resolved from the original program.
 - Check reuse of a reserved physical scratch wire across exact clean-return
   intervals and refuse unaccounted gates or terminal readout on that wire.
 - Derive clean/dirty workspace entry placement from literal closed Raw and

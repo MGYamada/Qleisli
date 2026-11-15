@@ -107,7 +107,9 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-70-nested-workspace-placement",
     "refs/heads/codex/beta-70-workspace-structural-layout",
     "refs/heads/codex/beta-70-bits-workspace",
-    "refs/heads/codex/beta-70-30-integration"))
+    "refs/heads/codex/beta-70-30-integration",
+    "refs/heads/codex/beta-30-structural-resources",
+    "refs/heads/codex/beta-162-checked-provider-placement"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),

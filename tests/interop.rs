@@ -191,6 +191,67 @@ fn terminal_workspace_resource_report_replays_named_scopes_with_caller_spectator
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_workspace_resources_follow_the_selected_provider() {
+    let definitions = "use std::state::init0;
+        unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+        unitary fn double_h(q: Q<Bit>) -> Q<Bit> { h(h(q)) }
+        unitary fn apply[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) { U(q) }";
+    for (body, invocations) in [
+        (
+            "let q = apply[PROVIDER](init0());
+             let q = clean(q, identity) { |data, scratch| (data, scratch) };
+             measure_z(apply[PROVIDER](q))",
+            2,
+        ),
+        (
+            "let q = clean(init0(), identity) { |data, scratch| (apply[PROVIDER](data), scratch) };
+             measure_z(q)",
+            1,
+        ),
+    ] {
+        for (provider, gates_per_call) in [("identity", 0), ("double_h", 2)] {
+            let body = body.replace("PROVIDER", provider);
+            let root = common::SourceRoot::new(&format!(
+                "{definitions}\npub observe fn main() -> Bit {{ {body} }}"
+            ));
+            let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+            let (text, resources) =
+                qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+            assert_eq!(text, export_openqasm3(&program).unwrap());
+            assert_eq!(literal_target(&text).1.len(), gates_per_call * invocations);
+            assert_eq!(resources.gates, gates_per_call * invocations);
+            assert_eq!(resources.qubits, 2);
+            assert_eq!(resources.measurements, 1);
+        }
+    }
+
+    let phased = format!(
+        "{definitions}
+         unitary fn eighth(q: Q<Bit>) -> Q<Bit> {{ phase[1,3](q) }}
+         pub observe fn main() -> Bit {{
+             let q = clean(init0(), LOGICAL) {{ |data, scratch| (apply[eighth](data), scratch) }};
+             measure_z(q)
+         }}"
+    );
+    let accepted = common::SourceRoot::new(&phased.replace("LOGICAL", "eighth"));
+    let program = qleisli::frontend::compile::compile_project(&accepted.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert_eq!(resources.t_gates, 1);
+    exact_target(&text, &[0, 1]).unwrap();
+
+    let changed = common::SourceRoot::new(&phased.replace("LOGICAL", "identity"));
+    let error = qleisli::frontend::compile::compile_project(&changed.0).unwrap_err();
+    assert!(
+        error.message.contains("clean workspace restoration failed"),
+        "{error}"
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_workspace_resource_report_tracks_bits_register_axes() {
     let source = "use std::state::init0;\n\
         use std::structure::{empty,consume_empty};\n\
@@ -222,6 +283,114 @@ fn terminal_workspace_resource_report_tracks_bits_register_axes() {
         ),
         (4, 4, 2, 3)
     );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_workspace_resources_bind_the_declared_controlled_phase() {
+    let source = include_str!(
+        "fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-02/main.qli"
+    );
+    let root = common::SourceRoot::new(source);
+    root.write(
+        "Qargo.toml",
+        include_str!(
+            "fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-02/Qargo.toml"
+        ),
+    );
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert!(
+        text.contains("t q[0];\nt q[1];\ncx q[0], q[1];\ntdg q[1];\ncx q[0], q[1];\n"),
+        "{text}"
+    );
+    assert_eq!(resources.qubits, 3);
+    assert_eq!(resources.resets, 3);
+    assert_eq!(resources.gates, 9);
+    assert_eq!(resources.t_gates, 3);
+    assert_eq!(resources.measurements, 2);
+    assert!(resources.exact_work <= qleisli::contract::DEFAULT_EXACT_WORK);
+
+    let emitted = import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
+    for item in [&program, &emitted] {
+        let distribution = run_closed(item, SimulationLimits::default()).unwrap();
+        for (bits, expected) in [
+            ([false, false], 0.625),
+            ([true, false], 0.125),
+            ([false, true], 0.125),
+            ([true, true], 0.125),
+        ] {
+            close(
+                distribution.get(bits.as_slice()).copied().unwrap_or(0.0),
+                expected,
+            );
+        }
+    }
+
+    let changed = common::SourceRoot::new(include_str!(
+        "fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-03/main.qli"
+    ));
+    changed.write(
+        "Qargo.toml",
+        include_str!(
+            "fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-03/Qargo.toml"
+        ),
+    );
+    let error = qleisli::frontend::compile::compile_project(&changed.0).unwrap_err();
+    assert!(
+        error.message.contains("clean workspace restoration failed"),
+        "{error}"
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_workspace_resource_report_counts_physical_clean_uncomputation() {
+    let source = r#"
+        use std::gate::x;
+        use std::state::init0;
+        use std::structure::{empty,consume_empty};
+
+        unitary fn mark(q: Q<Bits<1>>) -> Q<Bits<1>> {
+            let (bit,rest)=take_bit[1,0](q); put_bit[1,0](phase[1,1](bit),rest)
+        }
+        observe fn main() -> Bit {
+            let q=put_bit[1,0](h(init0()),empty());
+            let q=clean(q,mark) { |data,scratch|
+                let (bit,rest)=take_bit[1,0](data);
+                let (bit,scratch)=controlled(x)(bit,scratch);
+                let scratch=phase[1,1](scratch);
+                let (bit,scratch)=controlled(x)(bit,scratch);
+                (put_bit[1,0](bit,rest),scratch)
+            };
+            let (bit,rest)=take_bit[1,0](q);
+            consume_empty(rest);
+            measure_z(h(bit))
+        }
+    "#;
+    let root = common::SourceRoot::new(source);
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert_eq!(resources.qubits, 2);
+    assert_eq!(resources.resets, 2);
+    assert_eq!(resources.gates, 5);
+    assert_eq!(resources.swaps, 0);
+    assert_eq!(resources.measurements, 1);
+    assert!(
+        text.contains("cx q[0], q[1];\nz q[1];\ncx q[0], q[1];\n"),
+        "{text}"
+    );
+    assert_eq!(literal_output_axes(&text), [0]);
+    let emitted = import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
+    for execution in [&program, &emitted] {
+        close(probability(execution, &[true]), 1.0);
+    }
 }
 
 #[cfg_attr(

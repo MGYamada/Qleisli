@@ -1,0 +1,34 @@
+{
+  "command": [
+    "/private/tmp/qleisli-165-phase-cli-target/debug/qleisli",
+    "interop",
+    "check",
+    "/private/tmp/qleisli-70-controlled-mismatch.ftGN1Q1t",
+    "--input=qli"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-11-14T23:28:10.215745+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "invalid_ir",
+        "severity": "error",
+        "message": "contract: clean workspace restoration failed: expected exact zero return and the declared data action while checking main::main",
+        "primary": {
+          "path": "main.qli",
+          "start": 340,
+          "end": 578,
+          "line": 16,
+          "column": 1
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}
