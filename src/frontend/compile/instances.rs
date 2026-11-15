@@ -110,6 +110,29 @@ impl Identity {
 }
 
 impl Compiler<'_> {
+    pub(super) fn specialization_label(&self, record: usize) -> Arc<str> {
+        let identity = &self.instances[record].identity;
+        let arguments = identity
+            .arguments
+            .iter()
+            .map(|argument| match argument {
+                Argument::Natural(value) => value.to_string(),
+                Argument::Basis(ty) => ty.to_string(),
+                Argument::Operation(operation) => operation.source_origin.as_ref().map_or_else(
+                    || "Op".to_owned(),
+                    |origin| self.source.resolution.path(origin.definition),
+                ),
+            })
+            .collect::<Vec<_>>();
+        let path = self.source.resolution.path(identity.definition);
+        format!(
+            "{path}[{}] (specialization {})",
+            arguments.join(", "),
+            record + 1
+        )
+        .into()
+    }
+
     pub(super) fn record_instance_identity(
         &mut self,
         identity: Identity,

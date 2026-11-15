@@ -1227,6 +1227,8 @@ development milestones from the scope of their evidence.
   capability premises.
 - Specify ordered logical axes, initial/final physical placements and
   routing workspace obligations for target realizations.
+- Locate terminal target-lowering refusals in the original closed specialization
+  when a failed Raw operation came from a generic source body.
 - Clarify complete Observe instruments, linear feed-forward and the separate
   postselection boundary. Retain bounded instrument/Unit conformance observations
   and original failures without claiming general source-preservation or CPTP proofs.

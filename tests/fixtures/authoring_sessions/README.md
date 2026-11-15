@@ -443,6 +443,11 @@ split/merge, `n+1` low-bit peeling and doubled-size source before checking.
 The actual parser rejects `+` in `Bits<n+m>`. This records the adopted next
 design obligation, not an executable adapter or algorithm proof.
 
+The [terminal specialization study](target-specialization-v030/session.json)
+retains the initial manifest refusal and both exact source checks. Only the
+H specialization exports to the terminal target. The unchanged scalar-phase
+specialization originally produced a Raw operation index without a source span.
+
 Each `session.json` names the task, kind, baseline commit/version, context,
 ordered attempts and observations. Each attempt contains a complete project,
 source hashes and a reason; observations retain argument lists, exit codes and
