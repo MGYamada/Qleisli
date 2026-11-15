@@ -522,7 +522,9 @@ PATHS = {
             'self.prepare_selected_classical_tables(Some(&needed))',
             '.prepare_required_classical_table(key, self.module, callee.span)?']),
         ('src/frontend/compile/lower/mod.rs', ['.prepare_required_classical_table(key, module, function.span)?']),
-        ('src/frontend/compile/lower/certified.rs', ['self.computed_table(module, function, key, &source_reg.basis)?']),
+        ('src/frontend/compile/lower/certified.rs', [
+            'self.computed_predicate_instance(module, function, key, static_args)?',
+            'self.computed_table(module, function, key, &source_reg.basis, instance)?']),
         ('src/frontend/compile/operations.rs', ['self.prepare_required_classical_table(fkey, &key_name.0, function.span)?']),
         ('src/frontend/compile/originals.rs', ['enum Originals', 'Selected(&\'a SourceCollection)',
             'ast: source.syntax()', 'source: source.text()']),

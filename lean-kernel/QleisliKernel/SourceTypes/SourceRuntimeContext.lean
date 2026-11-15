@@ -489,7 +489,7 @@ structure WorkspaceEvent (sources : Sources) (caller : String) where
   freshMode : fresh = !written.parts.dirty.isSome
   scratchType : scratch.basis = [.bit]
   logical : ComputedLogical signature naturals scope input.basis
-    (some ⟨written.parts.logical,written.parts.logicalName⟩)
+    (some ⟨written.parts.logical,.name written.parts.logicalName⟩)
   bodyInitial : Environment
   seeded : (do
     let data ← SourceRuntimeValues.bind [written.parts.dataBinder.text] [.owner input] []

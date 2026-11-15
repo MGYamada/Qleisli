@@ -551,9 +551,9 @@ impl ParsedProgram {
         !self.checked.nominals.is_empty()
     }
 
-    /// Select the original-source runtime emitter for nominal declarations or
-    /// a qmatch, computed scope or workspace in this entry's lexical closure. Unsupported
-    /// syntax refuses at its actual checking boundary; no projection-error retry is used.
+    /// Select the original-source runtime emitter for nominal declarations,
+    /// word coordinates, qmatch, computed scopes or workspace in this entry's
+    /// lexical closure. Unsupported syntax refuses at its checking boundary.
     pub fn requires_typed_runtime_transport(&self, entry: &str) -> Result<bool> {
         let id = self.checked.resolution.qualified(entry).map_err(|kind| {
             Self::resolution_error(Failure {

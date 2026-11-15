@@ -1,5 +1,5 @@
 import QleisliKernel.SourceTypes.SourceControlSyntax
-import QleisliKernel.SourceTypes.CallName
+import QleisliKernel.SourceTypes.StaticApplication
 
 /-! Exact original scoped compute/use/uncompute syntax. This is neither a
 closure nor a synthetic function call. Predicate, logical reference and body
@@ -9,7 +9,7 @@ namespace QleisliKernel.SourceTypes.SourceComputedSyntax
 
 structure Reference where
   argument : CallSyntax.Argument
-  name : CallName.Name argument.tokens
+  written : StaticApplication.Syntax argument.tokens
 
 structure Parts where
   headerTokens : List LocatedToken
@@ -49,15 +49,18 @@ structure Checked (tokens : List LocatedToken) where
     [parts.source,parts.predicate.argument] ++ (parts.logical.toList.map (·.argument))
   spelling : parts.spelling = true
 
-private def reference (argument : CallSyntax.Argument) : Except String Reference := do
-  return ⟨argument,← CallName.readName argument.tokens⟩
+private def predicateReference (argument : CallSyntax.Argument) : Except String Reference := do
+  return ⟨argument,← StaticApplication.readSyntax argument.tokens⟩
+
+private def logicalReference (argument : CallSyntax.Argument) : Except String Reference := do
+  return ⟨argument,.name (← CallName.readName argument.tokens)⟩
 
 private def parse (tokens : List LocatedToken) : Except String Parts := do
   let (headerTokens,opening,rest) ← SourceControlSyntax.delimiter "{" tokens
   let header ← CallSyntax.read headerTokens
   let (source,predicate,logical) ← match header.call.arguments with
-    | [source,predicate] => pure (source,← reference predicate,none)
-    | [source,predicate,logical] => pure (source,← reference predicate,some (← reference logical))
+    | [source,predicate] => pure (source,← predicateReference predicate,none)
+    | [source,predicate,logical] => pure (source,← predicateReference predicate,some (← logicalReference logical))
     | _ => throw "computed scope requires source, predicate and optional logical reference"
   let firstPipe :: rest := rest | throw "missing original computed binder pipe"
   let (binders,lastPipe,rest) ← SourceControlSyntax.delimiter "|" rest

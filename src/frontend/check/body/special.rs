@@ -795,6 +795,7 @@ impl Checker<'_, '_> {
         &mut self,
         source: &Expr,
         function: &Ident,
+        static_args: &[StaticOp],
         logical: Option<&Ident>,
         data: Option<&Ident>,
         ancilla: &Ident,
@@ -831,7 +832,11 @@ impl Checker<'_, '_> {
                 "predicate must be a classical function",
             ));
         }
-        let (params, result, _) = self.specialize(predicate, &[], scope, function.span, false)?;
+        let (params, result, available) =
+            self.specialize(predicate, static_args, scope, function.span, false)?;
+        if !static_args.is_empty() {
+            self.record_static_call(function, static_args, scope, &params, &result, available)?;
+        }
         if params.len() != 1 {
             return Err(SourceError::new(
                 "arity",

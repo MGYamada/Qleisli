@@ -58,7 +58,7 @@ private def groups (angles : Bool) (tokens : List String) : Except String (List 
 
 private def formals (header : OrdinarySignature.Header) : Except String (List Formal) := do
   let some tokens := header.staticTokens | return []
-  if header.ordinaryOnly || tokens.isEmpty then throw "invalid static parameter clause"
+  if tokens.isEmpty then throw "invalid static parameter clause"
   let parts ← groups true (tokens.map (·.text))
   if parts.length > 32 then throw "static formal capacity"
   parts.foldlM (fun parsed tokens => do
@@ -71,6 +71,8 @@ private def formals (header : OrdinarySignature.Header) : Except String (List Fo
         if rest.length < 2 || rest.getLast? != some ">" then throw "incomplete operation kind"
         pure (Kind.operation rest.dropLast)
       | _ => throw "unknown static kind"
+    if header.ordinaryOnly && kind != .natural then
+      throw "classical functions require Nat compile-time parameters"
     if !(if kind == .natural then NaturalSyntax.isName name else identifier name) then
       throw "invalid static formal name"
     return parsed ++ [⟨name,parsed.length,kind⟩]) []
@@ -93,7 +95,7 @@ def parse (header : OrdinarySignature.Header) : Except String Parsed := do
   let requirements ← match header.requiresTokens with
     | none => pure []
     | some tokens =>
-      if tokens.isEmpty then throw "empty requires clause"
+      if tokens.isEmpty || (header.ordinaryOnly && formals.isEmpty) then throw "invalid requires clause"
       groups false (tokens.map (·.text))
   if requirements.length > 64 then throw "static premise capacity"
   requirements.foldlM requirement ⟨formals,[],[]⟩

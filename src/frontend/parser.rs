@@ -425,11 +425,6 @@ impl Parser {
         let name = self.ident()?;
         let mut static_params = Vec::new();
         if self.consume(&TokenKind::LBracket).is_some() {
-            if kind == FnKind::Classical {
-                return Err(
-                    self.error("classical functions cannot have static operation parameters")
-                );
-            }
             loop {
                 // Compile-time parameter markers are contextual: ordinary
                 // functions and locals named `const` remain ordinary names.
@@ -454,7 +449,7 @@ impl Parser {
                     self.ident()?
                 };
                 self.expect(&TokenKind::Colon)?;
-                let kind = if self.word("Nat") {
+                let formal_kind = if self.word("Nat") {
                     self.bump();
                     StaticParamKind::Natural
                 } else if self.word("Basis") {
@@ -481,7 +476,18 @@ impl Parser {
                         meaning,
                     }
                 };
-                static_params.push(StaticParam { name, kind });
+                if kind == FnKind::Classical && !matches!(formal_kind, StaticParamKind::Natural) {
+                    return Err(ParseError {
+                        message:
+                            "classical functions cannot have Basis or Op compile-time parameters"
+                                .into(),
+                        span: name.span,
+                    });
+                }
+                static_params.push(StaticParam {
+                    name,
+                    kind: formal_kind,
+                });
                 if self.consume(&TokenKind::Comma).is_none() {
                     break;
                 }
@@ -524,7 +530,7 @@ impl Parser {
         };
         let mut requires = Vec::new();
         if let Some(requires_token) = self.consume(&TokenKind::Requires) {
-            if kind == FnKind::Classical {
+            if kind == FnKind::Classical && static_params.is_empty() {
                 return Err(ParseError {
                     message: "classical functions cannot have requires clauses".into(),
                     span: requires_token.span,
@@ -2029,6 +2035,11 @@ impl Parser {
         let source = self.expr()?;
         self.expect(&TokenKind::Comma)?;
         let function = self.reference_name()?;
+        let static_args = if self.consume(&TokenKind::LBracket).is_some() {
+            self.static_arguments()?
+        } else {
+            Vec::new()
+        };
         let logical = if self.consume(&TokenKind::Comma).is_some() {
             Some(self.reference_name()?)
         } else {
@@ -2051,6 +2062,7 @@ impl Parser {
             ExprKind::CertifiedComputed {
                 source: Box::new(source),
                 function,
+                static_args,
                 logical: Box::new(logical),
                 data_binder: Box::new(binder),
                 ancilla_binder: Box::new(ancilla_binder.expect("certified binder")),
@@ -2060,6 +2072,7 @@ impl Parser {
             ExprKind::WithComputed {
                 source: Box::new(source),
                 function,
+                static_args,
                 binder,
                 body,
             }

@@ -77,9 +77,8 @@ private def readComputedPredicate {sources owner name} (signature : Signature so
     (reference : SourceComputedSyntax.Reference) (basis : Semantics.FiniteCarrier.Basis)
     (readCallee : {callee calleeName : String} → (target : Signature sources callee calleeName) →
       Finite.WorkM (Summary target)) : Finite.WorkM (ComputedPredicate sources owner scope reference basis) := do
-  let written ← adapt (StaticApplication.readSyntax reference.argument.tokens)
-  let candidate ← CallName.read sources owner scope written.callee
-  let target ← readTarget signature naturals written candidate
+  let candidate ← CallName.read sources owner scope reference.written.callee
+  let target ← readTarget signature naturals reference.written candidate
   if classical : target.signature.original.parsedHeader.ordinaryOnly = true then
     if input : target.signature.parameters.map (·.tree) = [Semantics.RuntimeType.ordinary basis] then
       if output : target.signature.result.tree = Semantics.RuntimeType.ordinary [.bit] then
@@ -155,7 +154,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         Finite.guard (![dataName,scratchName].any signature.staticNames.contains) .request
         Finite.guard (input != scratch && !(held ++ owners remaining).contains scratch) .request
         let logical ← readComputedLogical signature naturals scope input.basis
-          (some ⟨written.parts.logical,written.parts.logicalName⟩)
+          (some ⟨written.parts.logical,.name written.parts.logicalName⟩)
         if freshMode : fresh = !written.parts.dirty.isSome then
           if scratchType : scratch.basis = [.bit] then
             let seed : Except String Environment := do
