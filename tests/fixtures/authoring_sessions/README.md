@@ -794,3 +794,7 @@ retains two first projects and their actual refusals. The original
 and [selected manifest](standalone-nominal-basis-v030/attempt-01/output/Qargo.toml)
 are retained. The unchanged project now returns Bit 1 and the selected
 preparation verifies its canonical three-state output.
+
+The [closed-provider resource study](closed-provider-resources-v030/context.md)
+keeps the first workspace and operation-selection refusals, plus direct-provider
+target counts and the separate placement refusal after source acceptance.

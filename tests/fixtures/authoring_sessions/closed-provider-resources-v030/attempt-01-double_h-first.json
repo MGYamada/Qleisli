@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-165-phase-cli-target/debug/qleisli",
+    "interop",
+    "emit-qasm",
+    "/private/tmp/qleisli-162-provider-first.luOzli46/double_h",
+    "--input=qli",
+    "--format=json",
+    "--resources"
+  ],
+  "environment": {
+    "QLEISLI_KERNEL": "/private/tmp/qleisli-70-controlled-logical.9VWDpzcm/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 1,
+  "recorded_utc": "2026-11-14T23:48:01.228328+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop emit-qasm",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "invalid_ir",
+        "severity": "error",
+        "message": "contract: Lean native checker rejected the artifact/request; no fallback while checking main::main",
+        "primary": {
+          "path": "main.qli",
+          "start": 213,
+          "end": 353,
+          "line": 7,
+          "column": 1
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}
