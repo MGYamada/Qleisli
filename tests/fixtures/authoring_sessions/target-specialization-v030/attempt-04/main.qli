@@ -1,0 +1,26 @@
+use std::state::init0;
+
+unitary fn wrapped_phase(data: Q<(Unit, Bit)>) -> Q<(Unit, Bit)> {
+    let (tag, wire) = split(data);
+    join(tag, phase[1,3](wire))
+}
+
+unitary fn tag_identity(tag: Q<Unit>) -> Q<Unit> { tag }
+
+unitary fn apply_pair[const A: Basis, const B: Basis, const U: Op<A>, const V: Op<B>](
+    left: Q<A>, right: Q<B>,
+) -> (Q<A>, Q<B>) requires Applicable(U), Applicable(V) {
+    (U(left), V(right))
+}
+
+pub observe fn main() -> Bit {
+    let input = join(unit(()), init0());
+    let output = clean(input, wrapped_phase) { |data, scratch|
+        let (data, tag) = apply_pair[type((Unit, Bit)), type(Unit), wrapped_phase, tag_identity](data, unit(()));
+        finish(tag);
+        (data, scratch)
+    };
+    let (tag, bit) = split(output);
+    finish(tag);
+    measure_z(bit)
+}

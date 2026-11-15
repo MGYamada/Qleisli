@@ -21,3 +21,22 @@ natural argument. The first two runs report one gate and two physical qubits,
 with different T counts for H and T. The exact scalar case passes source
 checking and fails target export with an empty primary location. The
 out-of-domain natural argument fails source checking at the call site.
+
+The fourth and fifth attempts use the reviewed #601 tree merged at
+`df968ad1c8fdd8a63f668f9b6ddcc5482cdba210`. The [first ordered-basis program](attempt-04/main.qli)
+uses the [edition-2026 manifest](attempt-04/Qargo.toml) and
+creates and consumes a `Q<Unit>` inside `clean`. The original source checker
+rejects it during workspace body discovery. In a separate local reduction,
+adding `finish(unit(()))` also caused a plain Bit workspace to fail. A tuple
+data owner with its Unit factor created and consumed outside the scope passed.
+
+The [two-live-input program](attempt-05/ordered/main.qli) keeps ordered
+`(Unit, Bit)` and `Bit` owners of the same physical width. The emitted T and
+adjoint-T gates and the measured bits keep that order. The [swapped type program](attempt-05/swapped/main.qli)
+fails with the provider type mismatch at the original call. Two separate
+bounded native replays used the accepted placement request. Replacing the
+written basis order while retaining the previous Raw artifact was rejected
+with `contract`. Changing only the target operands while preserving both gate
+counts was rejected with `clean_workspace`. The native replies record the
+packet hashes and have no operation location. The regression checks the live
+programs and reruns the changed target through the actual placement checker.

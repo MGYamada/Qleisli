@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-70-check-target/debug/qleisli",
+    "interop",
+    "emit-qasm",
+    "/private/tmp/qleisli-127-ordered-specialization.T54g8Xaw/two-live-bases",
+    "--input=qli",
+    "--resources",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-11-15T16:12:15.560415+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "interop emit-qasm",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "text": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[3] q;\nbit[2] c;\nreset q;\nt q[0];\ntdg q[1];\nc[0] = measure q[0];\nc[1] = measure q[1];\n",
+      "resources": {
+        "exact_work": 17166770,
+        "qubits": 3,
+        "resets": 3,
+        "gates": 2,
+        "swaps": 0,
+        "t_gates": 2,
+        "measurements": 2
+      }
+    }
+  },
+  "stderr": "",
+  "environment": {
+    "QLEISLI_KERNEL": "/private/tmp/qleisli-30-reviewed-base.HroRh8AW/lean-kernel/.lake/build/bin/qleisli-kernel"
+  }
+}
