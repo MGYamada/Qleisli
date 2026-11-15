@@ -503,6 +503,43 @@ fn source_workspace_scopes_require_exact_native_restoration() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn native_workspace_rejects_observation_in_an_observing_export() {
+    let imports = "use std::state::{init0,reset};";
+    let clean =
+        "pub observe fn main(q:Q<Bit>)->Q<Bit>{clean(q,h){|data,scratch|(h(data),scratch)}}";
+    let dirty = "pub observe fn main(q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>){dirty(q,d,h){|data,scratch|(h(data),scratch)}}";
+    let kernel = kernel();
+    for source in [clean, dirty] {
+        let source = format!("{imports}{source}");
+        let accepted = selected_at(&source, "main::main");
+        let program = accepted.program();
+        let artifact = std::str::from_utf8(program.artifact()).unwrap();
+        let request = program.request().unwrap();
+        kernel
+            .check_qmatch_source_v5(artifact.as_bytes(), request)
+            .unwrap();
+        for replacement in [
+            "let scratch=reset(scratch);(h(data),scratch)",
+            "let _=measure_z(scratch);(h(data),init0())",
+            "discard(scratch);(h(data),init0())",
+        ] {
+            // Keep the valid coherent circuit and substitute only its original
+            // source. The native checker must reread the workspace's effect.
+            let changed = artifact.replacen("(h(data),scratch)", replacement, 1);
+            assert_ne!(changed, artifact);
+            let error = kernel
+                .check_qmatch_source_v5(changed.as_bytes(), request)
+                .unwrap_err();
+            assert_eq!(error.code, "contract", "{replacement}: {error}");
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn original_workspace_examples_fit_the_shared_exact_work_limit() {
     for (source, outputs) in [
         (
