@@ -4,6 +4,9 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Compose exact checked cleanup through the whole observing Raw program,
+  including nested branches and their original outcome and return order.
+
 - Compose exact checked cleanup with the original observation histories,
   continuation and output order of an accepted Raw program (#157).
 - Emit structural predicate computation, protected phases and inverse in

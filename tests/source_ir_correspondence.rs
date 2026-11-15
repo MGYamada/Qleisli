@@ -727,3 +727,30 @@ observe fn main() -> Bit { measure_z(basis init0() as b { not b }) }
     // Source meaning requires NOT. Acceptance of a well-formed identity table
     // is therefore insufficient evidence for this source-to-IR obligation.
 }
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn nested_checked_cleanup_preserves_the_observing_histories() {
+    let study = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/clean-observing-branches-v030/attempt-01");
+    for (case, missing_inner_phase) in [
+        ("branch-checked", false),
+        ("branch-logical", false),
+        ("branch-wrong-phase", true),
+    ] {
+        let program = compile_project(&study.join(case)).unwrap();
+        // Two independent observations select the phases on a third plus state.
+        // Its X readout is their XOR, with the extra flip only in the mutated arm.
+        let mut expected = Distribution::new();
+        for outer in [false, true] {
+            for inner in [false, true] {
+                let final_readout = outer ^ inner ^ (missing_inner_phase && outer && inner);
+                expected.insert(vec![final_readout, inner, outer], 0.25);
+            }
+        }
+        assert_distribution(&program, &expected);
+    }
+}

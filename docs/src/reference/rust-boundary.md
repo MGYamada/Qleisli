@@ -401,6 +401,13 @@ and hidden outcomes. The literal suffix and actual return permutation
 then act on the updated histories. The theorem covers an original top-level
 interval and uses the existing exact cleanup checks.
 
+`Qleisli.Raw.ProtectedObserving.original_program` composes the checked logical
+replacements throughout the original observing root, including both arms of a
+nested classical branch. It follows the native checker's actual branch checks
+and the independent reader, preserving each selected history, the quantum
+owner permutation at each branch join, the classical phi outputs, and the
+program's return order. Each pure event uses the exact check of that event.
+
 For explicit `clean` and `dirty` scopes, `RuntimeWorkspaceRestoration.literal_action`
 uses the original checked Raw interval and the independently read logical body.
 It proves clean return on every physical row, and dirty identity on the scratch

@@ -1,0 +1,17 @@
+#![no_implicit_prelude]
+classical fn marked(bit: Bit) -> Bit { bit }
+isometry fn zero() -> Q<Bit> { basis unit(()) as _ { 0 } }
+
+observe fn main() -> (Bit, Bit, Bit) {
+    let earlier = measure_z(h(zero()));
+    let choice = measure_z(h(zero()));
+    let q = h(zero());
+    let q = if earlier {
+        let q = with_computed(q, marked) { |flag| phase[1,1](flag) };
+        if choice { with_computed(q, marked) { |flag| phase[1,1](flag) } } else { q }
+    } else {
+        if choice { with_computed(q, marked) { |flag| phase[1,1](flag) } } else { q }
+    };
+    let later = measure_z(h(q));
+    (later, choice, earlier)
+}
