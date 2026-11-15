@@ -27,7 +27,7 @@ pub(super) fn roots(
         let direct = nodes.iter().any(|node| {
             matches!(node,
             OriginalNode::Expression(expr) if matches!(expr.kind,
-                ExprKind::QuantumMatch(_) | ExprKind::WithComputed { .. }))
+                ExprKind::QuantumMatch(_) | ExprKind::WithComputed { .. } | ExprKind::Workspace(_)))
         });
         let dependency = uses.iter().any(|usage| {
             matches!(usage.target,

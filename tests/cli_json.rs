@@ -297,6 +297,7 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
             "  interop always returns JSON; qli input takes a project directory.\n",
             concat!(
                 "  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <source> --input=qli [--expect-edition=2026] [--shots=N --seed=S] [--lean-kernel=PATH]\n",
+                "  qleisli interop emit-qasm <source> --input=qli --resources [--expect-edition=2026] [--lean-kernel=PATH]\n",
                 "  interop always returns JSON; qli input takes a project directory.\n",
                 "  Raw qirf/qasm interop requires --edition=2026; source projects select it in Qargo.toml.\n",
                 "  Edition selects the constitutional regime, independently of the compiler release.\n"
@@ -382,4 +383,105 @@ fn json_type_failure_is_located_in_the_original_source() {
     assert!(output.contains("\"code\":\"type_mismatch\""), "{output}");
     assert!(output.contains("\"path\":\"main.qli\""), "{output}");
     assert!(!output.contains(&root.0.display().to_string()), "{output}");
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_export_locates_the_exact_rejected_source_specialization() {
+    let invoke = |project: &SourceRoot, action: &str| {
+        cli(&[
+            "interop".as_ref(),
+            action.as_ref(),
+            project.0.as_os_str(),
+            "--input=qli".as_ref(),
+        ])
+    };
+    let first = SourceRoot::new(include_str!(
+        "fixtures/authoring_sessions/target-specialization-v030/attempt-01/n1/main.qli"
+    ));
+    first.write(
+        "Qargo.toml",
+        include_str!(
+            "fixtures/authoring_sessions/target-specialization-v030/attempt-01/n1/Qargo.toml.rejected"
+        ),
+    );
+    let refused_manifest = invoke(&first, "emit-qasm");
+    assert_eq!(refused_manifest.status.code(), Some(1));
+    assert!(
+        String::from_utf8(refused_manifest.stdout)
+            .unwrap()
+            .contains("requires schema-version = 2")
+    );
+
+    let trials = [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n0/main.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n0/Qargo.toml"
+            ),
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n1/main.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/target-specialization-v030/attempt-02/n1/Qargo.toml"
+            ),
+        ),
+    ];
+    for (actual, (source, manifest)) in trials.into_iter().enumerate() {
+        let project = SourceRoot::new(source);
+        project.write("Qargo.toml", manifest);
+        assert!(invoke(&project, "check").status.success());
+        for (action, target) in [
+            ("emit-qasm", "OpenQASM 3"),
+            ("emit-qir", "QIR 2.0 Base Profile"),
+        ] {
+            let export = invoke(&project, action);
+            let result = String::from_utf8(export.stdout).unwrap();
+            if actual == 0 {
+                assert!(export.status.success(), "{result}");
+                continue;
+            }
+            assert_eq!(export.status.code(), Some(1));
+            assert!(result.contains("\"code\":\"unsupported\""), "{result}");
+            assert!(
+                result.contains(&format!("{target} export of main::specialize[1]")),
+                "{result}"
+            );
+            assert!(result.contains("uncontrolled scalar phase"), "{result}");
+            let failing = "global_phase_eighth(q)";
+            let start = source.find(failing).unwrap();
+            assert!(
+                result.contains(&format!(
+                    "\"primary\":{{\"path\":\"main.qli\",\"start\":{start},\"end\":{}",
+                    start + failing.len()
+                )),
+                "{result}"
+            );
+            assert!(result.contains("\"result\":null"), "{result}");
+        }
+
+        if actual == 1 {
+            let program = qleisli::frontend::compile::compile_project(&project.0).unwrap();
+            let path = project.0.join("accepted.qirf");
+            std::fs::write(&path, program.portable_artifact().unwrap()).unwrap();
+            let imported = cli(&[
+                "interop".as_ref(),
+                "emit-qasm".as_ref(),
+                path.as_os_str(),
+                "--input=qirf".as_ref(),
+                "--edition=2026".as_ref(),
+            ]);
+            let result = String::from_utf8(imported.stdout).unwrap();
+            assert_eq!(imported.status.code(), Some(1));
+            assert!(result.contains("uncontrolled scalar phase"), "{result}");
+            assert!(result.contains("\"primary\":null"), "{result}");
+        }
+    }
 }

@@ -1599,6 +1599,26 @@ fn rejected_before_native(source: &str, selected: &str, finite: &str) {
     assert!(location.span.end <= source.len());
 }
 
+#[test]
+fn ordinary_bit_index_requires_a_register_and_an_in_range_literal() {
+    for (parameter, expression, code) in [
+        ("Bits<0>", "word[0]", "size"),
+        ("Bits<3>", "word[3]", "size"),
+        ("Bit", "word[0]", "type"),
+        ("Bits<3>", "word[i]", "parse"),
+    ] {
+        let source = format!(
+            "classical fn test(word:{parameter})->Bit{{{expression}}} fn main()->Unit{{()}}"
+        );
+        let project_code = if code == "parse" {
+            "parse"
+        } else {
+            "type_mismatch"
+        };
+        rejected_before_native(&source, code, project_code);
+    }
+}
+
 fn selected_elaboration_rejected(source: &str, entry: &str, code: &str, message: &str) {
     // Original source formation is separate from concrete injectivity/profile
     // checking. A valid total classical body need not define a coherent map.

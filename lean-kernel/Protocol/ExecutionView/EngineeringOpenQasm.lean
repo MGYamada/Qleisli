@@ -16,13 +16,17 @@ private def engineeringBound (value : Semantics.Exact.Coefficient) : Value :=
 /-- Fixed profiles and the complete typed interfaces remain bound alongside
 the original expected text, before either retained graph is described. -/
 def engineeringOpenQasmRequest (value : Protocol.EngineeringOpenQasm.Decoded) : Value :=
-  engineeringRecord "engineering-openqasm-request" [
-    .text "qleisli.engineering-openqasm-request",.natural 1,.text "engineering-target-instrument-bound",
+  let limits := value.limits.toList.map fun limits =>
+    engineeringRecord "resource-limits"
+      [.text "openqasm3-one-qubit-literal-gates-v1",.natural limits.gates,.natural limits.tGates]
+  engineeringRecord "engineering-openqasm-request" ([
+    .text "qleisli.engineering-openqasm-request",.natural (if value.limits.isSome then 2 else 1),
+    .text (Protocol.EngineeringOpenQasm.claimKind value.limits),
     .text "complete-adjoint-euclidean-operator-norm-v1",.text "canonical-target-choi-l1-r8-v1",
     .text "openqasm3-canonical-one-qubit-terminal-r8-v1",.text "single-component-v1",.text "implementation-distance",
     instrumentSignature value.actualSignature,instrumentSignature value.expectedSignature,
     contractIdentity value.identity,engineeringBound value.epsilon,
-    .array (value.majorants.map engineeringBound),.text value.expectedText]
+    .array (value.majorants.map engineeringBound),.text value.expectedText] ++ limits)
 
 def engineeringOpenQasm (value : Protocol.EngineeringOpenQasm.Retained) : Finite.WorkM Value := do
   let actual ← graph (Qirf.EngineeringOpenQasm.actualArtifact value.checked.target)

@@ -90,6 +90,10 @@ theorem event_denotes (dependencies : List Dependency) (event : Event) (actual :
     simpa only [physicalUse_reference,logicalUse_reference] using
       clean_denotes _ _ _ _ _ _ _ _ _ _ hc
 
+  | structuralComputed bits axes forward inverse uses =>
+    change ((Except.error Error.request : Except Error Matrix), work) = (Except.ok actual, left) at ok
+    cases congrArg Prod.fst ok
+
 theorem events_denote (dependencies : List Dependency) (events : List Event) (initial actual : Matrix)
     (work left : Nat) (ok : (events.foldlM (evolve dependencies) initial).run work = (.ok actual,left)) :
     EventsMeaning dependencies events initial actual := by

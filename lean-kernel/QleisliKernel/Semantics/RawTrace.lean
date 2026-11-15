@@ -107,6 +107,10 @@ def step (state : Interface) (op : Op) : Option (Interface × List Event) := do
     return (next,[.protectedComputed bits (axes state (source.wires ++ ports.flatMap (·.wires)))
       source.bits ancilla.length function uses])
 
+  | .structuralCompute input output _ forward inverse uses =>
+    let (port,next) ← take state input
+    return (insert next output port.wires,
+      [.structuralComputed bits (axes state port.wires) forward inverse uses])
   | .packUnit output => pure (insert state output [],[])
   | .unpackUnit input =>
     let (port,next) ← take state input

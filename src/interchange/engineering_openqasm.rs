@@ -18,6 +18,8 @@ use crate::contract::{BasisType, InstrumentResult};
 
 const FORMAT: &str = "qleisli.engineering-openqasm-request";
 const CLAIM_KIND: &str = "engineering-target-instrument-bound";
+const RESOURCE_CLAIM_KIND: &str = "engineering-target-instrument-resource-bound";
+pub const RESOURCE_MODEL: &str = "openqasm3-one-qubit-literal-gates-v1";
 const METRIC: &str = "complete-adjoint-euclidean-operator-norm-v1";
 const CHECKER_PROFILE: &str = "canonical-target-choi-l1-r8-v1";
 const TARGET_PROFILE: &str = "openqasm3-canonical-one-qubit-terminal-r8-v1";
@@ -25,12 +27,20 @@ const COMPOSITION: &str = "single-component-v1";
 const ERROR_CATEGORY: &str = "implementation-distance";
 const MAX_FILE_BYTES: usize = 16 << 20;
 
+/// Total literal gate lines and the T/TDG subset in the one-qubit terminal model.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct GateCounts {
+    pub gates: usize,
+    pub t_gates: usize,
+}
+
 /// Closed request data, with the exact Unit input owner and one classical Bit
 /// result. The underlying instrument signature, identity and dyadic witnesses
 /// are data, not a semantic receipt or an assertion of source correspondence.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct EngineeringOpenQasmRequest {
     contract: EngineeringInstrumentRequest,
+    resource_limits: Option<GateCounts>,
 }
 
 impl EngineeringOpenQasmRequest {
@@ -44,11 +54,37 @@ impl EngineeringOpenQasmRequest {
                 ));
             }
         }
-        Ok(Self { contract })
+        Ok(Self {
+            contract,
+            resource_limits: None,
+        })
     }
 
     pub fn contract(&self) -> &EngineeringInstrumentRequest {
         &self.contract
+    }
+
+    /// Require Lean to check finite gate limits on the same decoded target.
+    pub fn with_resource_limits(mut self, limits: GateCounts) -> Result<Self> {
+        if limits.gates > target::MAX_TARGET_GATES || limits.t_gates > target::MAX_TARGET_GATES {
+            return Err(Error::limit(
+                "OpenQASM resource limits must be at most eight",
+            ));
+        }
+        self.resource_limits = Some(limits);
+        Ok(self)
+    }
+
+    pub fn resource_limits(&self) -> Option<GateCounts> {
+        self.resource_limits
+    }
+
+    pub(crate) fn claim_kind(&self) -> &'static str {
+        if self.resource_limits.is_some() {
+            RESOURCE_CLAIM_KIND
+        } else {
+            CLAIM_KIND
+        }
     }
 }
 
@@ -122,7 +158,18 @@ impl EngineeringOpenQasmReport {
         METRIC
     }
     pub fn claim_kind(&self) -> &'static str {
-        CLAIM_KIND
+        self.request().claim_kind()
+    }
+    /// Count the retained literal word compared with Lean's independently
+    /// decoded word. This receipt exists only when Lean also checked the limits.
+    pub fn checked_gate_counts(&self) -> Option<GateCounts> {
+        self.request().resource_limits().map(|_| GateCounts {
+            gates: self.gate_word().len(),
+            t_gates: self
+                .gate_word()
+                .filter(|gate| matches!(*gate, "t" | "tdg"))
+                .count(),
+        })
     }
     pub fn composition(&self) -> &'static str {
         COMPOSITION
@@ -286,9 +333,8 @@ fn check_input(bytes: &[u8]) -> Result<()> {
     Ok(())
 }
 
-const PROFILES: [(&str, &str, &str); 7] = [
+const PROFILES: [(&str, &str, &str); 6] = [
     ("format", FORMAT, "qleisli.engineering-instrument-request"),
-    ("claim_kind", CLAIM_KIND, "engineering-instrument-bound"),
     (
         "metric",
         METRIC,
@@ -314,6 +360,21 @@ fn encode_request(request: &EngineeringOpenQasmRequest, ideal: &[u8]) -> Result<
     for (name, profile, _) in PROFILES {
         fields.insert(name.into(), Value::String(profile.into()));
     }
+    fields.insert(
+        "claim_kind".into(),
+        Value::String(request.claim_kind().into()),
+    );
+    if let Some(limits) = request.resource_limits() {
+        fields.insert("version".into(), Value::Number(2));
+        fields.insert(
+            "resource_limits".into(),
+            Value::object([
+                ("model", Value::String(RESOURCE_MODEL.into())),
+                ("gates", Value::Number(limits.gates as u64)),
+                ("t_gates", Value::Number(limits.t_gates as u64)),
+            ]),
+        );
+    }
     json::encode(&value)
 }
 
@@ -327,6 +388,30 @@ fn decode_request(bytes: &[u8]) -> Result<(EngineeringOpenQasmRequest, String)> 
             )));
         }
     }
+    let limits = match value.field("version")?.number()? {
+        1 if value.field("claim_kind")?.text()? == CLAIM_KIND => None,
+        2 if value.field("claim_kind")?.text()? == RESOURCE_CLAIM_KIND => {
+            let limits = value.field("resource_limits")?;
+            limits.fields(&["model", "gates", "t_gates"])?;
+            if limits.field("model")?.text()? != RESOURCE_MODEL {
+                return Err(Error::format("unknown OpenQASM engineering resource model"));
+            }
+            let count = |field| -> Result<usize> {
+                let count = limits.field(field)?.number()?;
+                usize::try_from(count)
+                    .map_err(|_| Error::limit("OpenQASM resource limit out of range"))
+            };
+            Some(GateCounts {
+                gates: count("gates")?,
+                t_gates: count("t_gates")?,
+            })
+        }
+        _ => {
+            return Err(Error::format(
+                "unknown OpenQASM engineering request version or claim",
+            ));
+        }
+    };
     let Value::Object(fields) = &mut value else {
         return Err(Error::format("expected engineering request object"));
     };
@@ -336,8 +421,23 @@ fn decode_request(bytes: &[u8]) -> Result<(EngineeringOpenQasmRequest, String)> 
     for (name, _, profile) in PROFILES {
         fields.insert(name.into(), Value::String(profile.into()));
     }
+    fields.insert(
+        "claim_kind".into(),
+        Value::String("engineering-instrument-bound".into()),
+    );
+    if limits.is_some() {
+        fields.insert("version".into(), Value::Number(1));
+        fields.remove("resource_limits");
+    }
     let (contract, ideal) = engineering_instrument::decode_request(&json::encode(&value)?)?;
-    Ok((EngineeringOpenQasmRequest::new(contract)?, ideal))
+    let request = EngineeringOpenQasmRequest::new(contract)?;
+    Ok((
+        match limits {
+            Some(limits) => request.with_resource_limits(limits)?,
+            None => request,
+        },
+        ideal,
+    ))
 }
 
 #[cfg(test)]

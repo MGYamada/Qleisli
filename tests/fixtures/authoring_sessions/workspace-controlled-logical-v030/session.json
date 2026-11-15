@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#70 reconstruct a controlled phase as the written clean workspace logical action",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "08b0e4a5316c5469f14a4f0d2023ee1a6a86cf0c",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "First source with the controlled phase as the exact logical workspace operator.",
+      "sha256": {
+        "main.qli": "c10b101ac5b0f5da27ba975fda277df69011589417191092bfa688e69f087be6"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "attempt-01-refusal.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Move both final Hadamards before terminal measurement; the same source-side workspace refusal persists.",
+      "sha256": {
+        "main.qli": "901afb5fec3f952bbd479f87997d49101e0b3b789fe8ccffc9210d6bc722f146"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "attempt-02-refusal.json",
+        "attempt-02-checked.json"
+      ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "Keep the original declared logical action and change only the implementation to controlled S adjoint.",
+      "sha256": {
+        "main.qli": "0ee90f8accd0726555763120ba210d7cc0f2b3d3d148b38422c1552b2d1fc978"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "attempt-03-wrong-phase.json"
+      ]
+    }
+  ]
+}

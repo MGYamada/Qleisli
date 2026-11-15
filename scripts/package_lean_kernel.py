@@ -21,6 +21,12 @@ from check_lean_kernel import check_kernel, lean_imports
 
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_VERSION = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
+NATIVE_BUILD_SUPPORT = {
+    "scripts/check_lean_kernel.py",
+    "scripts/native_packet.py",
+    "scripts/package_lean_kernel.py",
+    "tests/fixtures/interop/clean-reuse.qasm",
+}
 
 
 def digest(path):
@@ -94,9 +100,7 @@ def main(argv=None):
                for path in (ROOT / "lean-kernel").rglob("*")
                if path.is_file() and ".lake" not in path.parts and
                (path.suffix == ".lean" or path.name in ("lakefile.toml", "lake-manifest.json", "lean-toolchain"))}
-    sources["scripts/check_lean_kernel.py"] = digest(ROOT / "scripts/check_lean_kernel.py")
-    sources["scripts/package_lean_kernel.py"] = digest(Path(__file__))
-    sources["scripts/native_packet.py"] = digest(ROOT / "scripts/native_packet.py")
+    sources.update((relative, digest(ROOT / relative)) for relative in sorted(NATIVE_BUILD_SUPPORT))
     with tempfile.TemporaryDirectory(prefix="qleisli-kernel-build-") as temporary:
         staged = Path(temporary)
         for relative in sources:

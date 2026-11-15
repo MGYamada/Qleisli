@@ -157,14 +157,17 @@ ENGINEERING_OPENQASM_PROOF = {'proof_scope': 'NativeContext.run_engineering_targ
                 'NativeEngineeringOpenQasmProtocol.run_meaning/run_complete_adjoint_bound bind both actual '
                 'original bodies/dependencies, exact Kraus completeness, full Unit -> classical Bit '
                 'signatures and ordered public outcomes to CompleteAdjointBound on every finite reference '
-                "and observable at the caller's literal epsilon. The immutable private Rust report retains "
+                "and observable at the caller's literal epsilon. NativeEngineeringOpenQasmProtocol.run_literal_gate_limits "
+                'binds the version 2 gate and T/TDG bounds to the same original target bytes and decoded word. '
+                'The immutable private Rust report retains '
                 'original target, ideal, request and selected checker path without an accepted-program '
                 'conversion, including at epsilon zero.',
  'gaps': 'Engineering-only canonical closed one-qubit target profile; the declared standard-gate '
-         'mathematical meaning is an explicit specification assumption. This checks the target-bound '
-         'complete-adjoint relation, not source/export preservation, exact source correspondence, general '
-         'OpenQASM, hardware, coherent control/inverse, cleanup, target resources or constitutional '
-         'admission. Composition and synthesis/resource certificates, source/compiler/export correctness, '
+         'mathematical meaning is an explicit specification assumption. The checked claims cover the target-bound '
+         'complete-adjoint relation and the version 2 closed literal gate profile. Source/export preservation, '
+         'exact source correspondence, general OpenQASM, hardware, coherent control/inverse, cleanup, broader resource '
+         'claims and constitutional admission remain open. Composition and synthesis resource certificates, '
+         'source/compiler/export correctness, '
          'decoder/walker/native-compiler/deployed-binary/runtime correspondence remain separate. '
          'Checker-path retention is not binary attestation. Sampling, algorithmic-resolution and '
          'numerical-runtime errors are not claimed. This route does not inherit NativeValidity.check_sound '
@@ -533,7 +536,8 @@ PATHS = {
             'instantiation.compile_runtime_with_kernel(', 'compiled.runtime_parameters() != 0',
             'fn runtime_execute(', 'finite-ordinary-root-v2']),
         ('src/frontend/specialize/runtime_selection.rs', ['fn roots(', 'index.original_nodes()',
-            'ExprKind::QuantumMatch(_)', 'index.table.resolved_uses()', 'roots.contains(&callee)']),
+            'ExprKind::QuantumMatch(_)', 'ExprKind::Workspace(_)',
+            'index.table.resolved_uses()', 'roots.contains(&callee)']),
         ('lean-kernel/Protocol/OrdinaryRoot.lean', ['def check ', 'Qirf.OrdinaryFamily.check artifact order request',
             'theorem check_binding ']),
         ('lean-kernel/QleisliKernel/Qirf/OrdinaryFamily.lean', ['TypedSourceRoot.read artifact order',
@@ -574,7 +578,8 @@ PATHS = {
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_prepares_meanings_for_unused_refined_and_zero_repeat_operations'),
         ('tests/selected_ordinary_execution.rs', 'selected_main_uses_exported_eligibility_while_project_main_keeps_its_contract'),
         ('tests/selected_ordinary_execution.rs', 'selected_ordinary_prepares_only_tables_demanded_by_dormant_operations'),
-        ('tests/selected_source_cli.rs', 'selected_qmatch_calls_preserve_interference_and_choose_original_runtime_lowering')]),
+        ('tests/selected_source_cli.rs', 'selected_qmatch_calls_preserve_interference_and_choose_original_runtime_lowering'),
+        ('tests/selected_source_cli.rs', 'selected_workspace_checks_the_original_restoration_contract')]),
     'ordinary-result-views': path_rule('checked-view', 'ordinary-result', '', [
         ('src/interchange/native.rs', ['ordinary_result: Option<Arc<super::ordinary_root::Request>>',
             'pub fn ordinary_result(', 'pub fn portable_artifact(', 'self.ordinary_result.is_some()']),
@@ -1137,7 +1142,9 @@ PATHS['engineering-openqasm-check'] = path_rule(
    'pub fn check_serialized_with_kernel(',
    'Arc::ptr_eq(&self, &decision.subject)',
    'target::Decoded::new(target)?',
-   'const CLAIM_KIND: &str = "engineering-target-instrument-bound"']),
+   'const CLAIM_KIND: &str = "engineering-target-instrument-bound"',
+   'const RESOURCE_CLAIM_KIND: &str = "engineering-target-instrument-resource-bound"',
+   'pub fn with_resource_limits(']),
  ('src/interchange/engineering_openqasm/runtime.rs',
   ['fn invoke_bound(', 'Mode::EngineeringOpenQasm',
    'mode.argument()', 'native_context::engineering_response(bytes, edition, mode)']),
@@ -1145,7 +1152,9 @@ PATHS['engineering-openqasm-check'] = path_rule(
   ['const MAX_TARGET_BYTES: usize = 1024', 'const MAX_TARGET_GATES: usize = 8', 'fn operation(']),
  ('src/interchange/execution_view/finite/engineering_openqasm.rs',
   ['pub(in crate::interchange) fn complete(',
-   '"engineering-openqasm-request", 14',
+   '"engineering-openqasm-request"',
+   '14 + usize::from(limits.is_some())',
+   'w.record("resource-limits", 3',
    'w.list(target,',
    'w.list(gates,',
    'actual.write(w.writer)?',
@@ -1153,7 +1162,7 @@ PATHS['engineering-openqasm-check'] = path_rule(
  ('src/bin/qleisli/engineering.rs', ['arg == "compare-openqasm3"']),
  ('src/bin/qleisli/engineering_openqasm.rs',
   ['fn execute(', 'target_artifact_sha256', 'source_preservation_verified']),
- ('scripts/test_engineering_openqasm_native.py', ['def retained(', 'def live(', 'def independent_oracle(']),
+ ('scripts/test_engineering_openqasm_native.py', ['def retained(', 'def live(', 'def independent_oracle(', 'same-instrument-exceeds-t-limit']),
  ('scripts/test_engineering_openqasm_cli.py', ['def baseline(', 'def live(']),
  ('lean-kernel/Cli/EngineeringOpenQasm.lean',
   ['def runEngineeringOpenQasm ',
@@ -1186,10 +1195,12 @@ PATHS['engineering-openqasm-check'] = path_rule(
    'def Retained.request ',
    'def checkRetained ',
    'theorem checkRetained_bound',
+   'checkResources checked.target decoded.limits',
    'Qirf.read decoded.expectedText.toUTF8']),
  ('lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean',
   ['def engineeringOpenQasmRequest ',
    'def engineeringOpenQasm ',
+   'engineeringRecord "resource-limits"',
    'value.checked.target.original.data.toList',
    'value.checked.target.gates.map',
    'graph (Qirf.EngineeringOpenQasm.actualArtifact value.checked.target)',
@@ -1203,7 +1214,7 @@ PATHS['engineering-openqasm-check'] = path_rule(
  ('lean/Qleisli/CanonicalOpenQasmGates.lean', ['theorem gate_meaning']),
  ('lean/Qleisli/NativeEngineeringOpenQasm.lean', ['structure Meaning ', 'theorem check_meaning']),
  ('lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean',
-  ['theorem run_meaning', 'theorem run_complete_adjoint_bound'])],
+  ['theorem run_meaning', 'theorem run_complete_adjoint_bound', 'theorem run_literal_gate_limits'])],
     [('src/interchange/engineering_openqasm/tests.rs',
   'native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering'),
  ('src/interchange/engineering_openqasm/tests.rs',
@@ -1339,6 +1350,7 @@ NATIVE_DISPATCH = {
     '--runtime-root-check': '.runtimeRoot',
     '--qmatch-source-check': '.qmatchSource',
     '--qmatch-source-v5-check': '.qmatchSourceV5',
+    '--openqasm-placement-check': '.openQasmPlacement',
     '--ordinary-root-check': '.ordinaryRoot',
     '--qirf-native': '.ordinary',
     '--qirf-contract': '.contract',
@@ -1458,7 +1470,8 @@ for _path, _extension in {'ordinary-acceptance': {'source_bindings': [{'path': '
                                                           'table)']},
                                              {'path': 'src/frontend/compile/instances.rs',
                                               'markers': ['fn prepare_instance(',
-                                                          'pub bodies: [BodyState; 2]',
+                                                          'pub bodies: [BodyState; 4]',
+                                                          'pub finite_transform: bool',
                                                           'conditional_naturals',
                                                           'fn enter_instance(']},
                                              {'path': 'src/frontend/compile/instances/bindings.rs',
@@ -1466,6 +1479,8 @@ for _path, _extension in {'ordinary-acceptance': {'source_bindings': [{'path': '
                                                           'fn evaluate_source_static(']},
                                              {'path': 'src/frontend/compile/instances/provider.rs',
                                               'markers': ['fn materialize_instance(',
+                                                          'fn materialize_finite_transform(',
+                                                          'fn instance_body_profile(',
                                                           'self.check_dormant_instance',
                                                           'BodyState::Ready',
                                                           'match &self.instances[record].bodies[profile]',
@@ -1699,13 +1714,13 @@ PATHS['sized-proposal']['tests'].extend([
 
 # Exact final target-word bindings; existence is not native validation.
 _terminal_foreign_sources = {'src/interop/profile.rs': ['let mut normalization_barriers = [false; MAX_GATES + 1];',
-                            'RawOp::Init0 { .. } | RawOp::MeasureZ { .. } | RawOp::Discard { .. }',
+                            '| RawOp::LiftBasis { .. }',
                             'normalization_barriers[circuit.gates.len()] = true;',
                             'super::export::finish(&mut circuit, &mut expansion, '
                             '&normalization_barriers)?;'],
  'src/interop/export.rs': ['pub(super) fn finish(',
-                           'expansion.normalizations.terminal(circuit, barriers)?;',
-                           'fold_phases(circuit);'],
+                           'let compaction = expansion.normalizations.terminal(circuit, barriers)?;',
+                           'let phase_boundaries = fold_phases(circuit, &compaction.remap(barriers));', '!barriers[*index] && next.wires == op.wires'],
  'src/interop/export/normalization.rs': ['pub(super) fn terminal(',
                                          'if circuit.gates.len() > MAX_GATES || circuit.qubits > '
                                          'MAX_QUBITS {',
@@ -1979,6 +1994,26 @@ PATHS['contract-acceptance']['tests'].extend([
     dict(path='tests/static_semantics.rs',
          test='qmatch_keeps_full_target_tuple_tree_with_zero_width_children'),
 ])
+
+PATHS['openqasm-placement'] = path_rule(
+    'lean-component', 'foreign', '--openqasm-placement-check', [
+        ('src/bin/qleisli/interop.rs', ['Some("--resources") if !resources', 'interop::export_openqasm3_with_resources(program)']),
+        ('src/interop/mod.rs', ['pub fn export_openqasm3_with_resources(', 'check_openqasm_placement(text.as_bytes(), &alignment.encode())']),
+        ('src/interop/placement.rs', ['fn workspace_intervals(', 'enum Match', 'pub(super) fn encode(']),
+        ('src/interchange/native/openqasm_placement.rs', ['qmatch_v5::complete(self.execution_view_graph(), request)?',
+            'Kernel::encode_subject(', 'b"QTP1"', 'Mode::OpenQasmPlacement.argument()', 'Scope::Execution']),
+        ('lean-kernel/Protocol/NativeContext.lean', ['if placement : mode = .openQasmPlacement then',
+            'CheckedQmatchV5.PlacementPacket.check bytes', 'value.2.target.circuit.counts',
+            'guard (requestedProduct == productVersion) .version\n      let checked ← check .openQasmPlacement bytes']),
+        ('lean-kernel/Protocol/NativeContext/Bindings.lean',
+            ['theorem run_openqasm_placement_binding ', 'theorem run_openqasm_placement_resources ']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean',
+            ['let source ← CheckedQmatchV5.run parts.source', 'theorem Checked.target_counts ',
+             'theorem Checked.covers_workspace_peak ']),
+    ], [('tests/interop.rs', 'terminal_export_realizes_source_clean_and_dirty_workspaces'),
+        ('tests/interop.rs', 'terminal_workspace_resource_report_replays_named_scopes_with_caller_spectators'),
+        ('tests/interop.rs', 'terminal_workspace_resource_report_tracks_bits_register_axes'),
+        ('src/interop/placement.rs', 'native_rejects_swapped_workspace_and_spectator_wires')])
 
 # Main routes all native modes through this common adapter. The retained older
 # IO modules above remain in the source/audit inventory; their existence is not

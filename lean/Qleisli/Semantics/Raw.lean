@@ -67,6 +67,8 @@ noncomputable def EventMeaning (dependencies : List Dependency) (event : Event) 
       ProtectedMatrix.Meaning sourceBits axes.length function uses logical) ∧
       Embedded bits axes logical actual
 
+  | .structuralComputed .. => False
+
 noncomputable def Composition (localMap input output : Matrix) : Prop :=
   localMap.cols = input.rows ∧ output.rows = localMap.rows ∧ output.cols = input.cols ∧
     ∀ row col, row < localMap.rows → col < input.cols →

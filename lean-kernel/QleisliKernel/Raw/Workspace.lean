@@ -24,7 +24,7 @@ def required (dirty : Bool) (dataBits : Nat) (logical : Matrix) : WorkM Contract
 def check (dependencies : List Dependency) (dirty : Bool) (dataBits : Nat)
     (steps : List Step) (logical : Matrix) : WorkM Matrix := do
   let contract ← required dirty dataBits logical
-  Finite.check dependencies (Raw.circuit (dataBits+1) steps) contract contract
+  restoration dirty (Finite.check dependencies (Raw.circuit (dataBits+1) steps) contract contract)
 
 def checkOriginal (dependencies : List Dependency) (dirty : Bool) (dataBits : Nat)
     (steps : List Step) (logical original : Matrix) : WorkM Matrix := do
@@ -44,7 +44,7 @@ theorem check_conditions (dependencies : List Dependency) (dirty : Bool) (dataBi
       Exact.Matrix.compose contract.output.map contract.logical lhsWork = (.ok rhs,rhsWork) ∧ lhs = rhs := by
   obtain ⟨contract,middle,prepared,checked⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨circuitWork,afterCircuit,lhs,lhsWork,rhs,rhsWork,conditions⟩ :=
-    (Finite.check_conditions _ _ _ _ _ _ _ checked).2.2.2.2.2.2
+    (Finite.check_conditions _ _ _ _ _ _ _ (restoration_success _ _ _ _ _ checked)).2.2.2.2.2.2
   exact ⟨contract,middle,circuitWork,afterCircuit,lhs,lhsWork,rhs,rhsWork,prepared,conditions⟩
 
 theorem checkOriginal_bound (dependencies : List Dependency) (dirty : Bool) (dataBits : Nat)

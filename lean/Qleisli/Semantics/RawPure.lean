@@ -1,4 +1,5 @@
 import Qleisli.Semantics.Raw
+import Qleisli.Semantics.RawAction
 import Qleisli.Semantics.Protected
 
 /-! Independent original physical clean-scope obligations.
@@ -15,6 +16,9 @@ noncomputable def CleanupMeaning (dependencies : List Dependency) (event : Event
     compute (fun source => function[source]?.getD 0)
       (run uses (compute (fun source => function[source]?.getD 0) (zero ψ))) =
       zero (logical (fun source => function[source]?.getD 0) uses ψ)
+  | .structuralComputed _ _ forward _ uses => ∀ (R : Type) (ψ : Logical R),
+    let f := Qleisli.Semantics.RawAction.StructuralXorValue forward
+    compute f (run uses (compute f (zero ψ))) = zero (logical f uses ψ)
   | _ => True
 
 end Qleisli.Raw.Pure

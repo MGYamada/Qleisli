@@ -155,6 +155,7 @@ theorem step_extension (operation : Raw.Op)
   cases operation with
   | gate value input output => exact move_extension context unique partRead wholeRead
   | applyUnitary input output steps => exact move_extension context unique partRead wholeRead
+  | structuralCompute input output scratch forward inverse uses => exact move_extension context unique partRead wholeRead
   | certifiedCompute input output ancilla function uses logical =>
     exact move_extension context unique partRead wholeRead
   | liftBasis input output wires table =>

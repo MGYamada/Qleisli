@@ -61,7 +61,18 @@ struct CallSite<'a> {
 
 // Diagnostic metadata only: acceptance still depends solely on raw IR.
 // Keys use the independent verifier's operation/branch-index path convention.
-type OperationSources = BTreeMap<Vec<usize>, (String, Span)>;
+type OperationSources = BTreeMap<Vec<usize>, OperationSource>;
+
+struct OperationSource {
+    module: String,
+    span: Span,
+    instance: Option<usize>,
+}
+
+enum ComputedPredicate {
+    Table(Vec<u16>, bool),
+    Circuit(Vec<CircuitStep>),
+}
 
 struct TupleBindingOrigin {
     module: String,
@@ -92,7 +103,9 @@ fn verification_error(
     let (module, span) = (1..=path.len())
         .rev()
         .find_map(|length| sources.get(&path[..length]))
-        .map_or((module, span), |(module, span)| (module.as_str(), *span));
+        .map_or((module, span), |source| {
+            (source.module.as_str(), source.span)
+        });
     compiler.error(
         module,
         span,
@@ -126,6 +139,8 @@ struct Lowerer<'c, 'p> {
     nominal_modules: std::rc::Rc<std::cell::RefCell<BTreeSet<String>>>,
     // Enabled only for a complete root that can require independent body checking.
     nominal_basis_used: Option<bool>,
+    // Root requires original-body checking before any operations are lowered.
+    source_planned: bool,
     raw: RawState<u32>,
     operation_sources: OperationSources,
     instrument_calls: Vec<crate::contract::instrument::InstrumentCall>,
@@ -1324,19 +1339,32 @@ impl Lowerer<'_, '_> {
         let result = self.expr_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
-        // Nested expressions/callees already supplied more precise positions.
-        // Fill only the operations emitted directly by this expression.
-        for index in first_operation..self.raw.operations.len() {
-            self.operation_sources
-                .entry(vec![index])
-                .or_insert_with(|| (module.to_owned(), expr.span));
-        }
+        self.record_operation_sources(module, expr.span, first_operation);
         // Values entering an environment are bounded before they can be reused.
         // Constructors combine only previously checked children, so even an
         // over-limit temporary adds at most one layer before being rejected.
         self.compiler
             .check_tree(module, expr.span, value.tree_size())?;
         Ok(value)
+    }
+
+    fn record_operation_sources(&mut self, module: &str, span: Span, first_operation: usize) {
+        // Nested expressions/callees already supplied more precise positions.
+        // Fill only the operations emitted directly by this expression.
+        for index in first_operation..self.raw.operations.len() {
+            self.operation_sources
+                .entry(vec![index])
+                .or_insert_with(|| OperationSource {
+                    module: module.to_owned(),
+                    span,
+                    instance: self
+                        .compiler
+                        .concrete_context
+                        .current
+                        .as_ref()
+                        .and_then(|instance| instance.record),
+                });
+        }
     }
 
     fn prefer_runtime_root(&mut self) {
@@ -1691,6 +1719,7 @@ impl Lowerer<'_, '_> {
         let mut inner = Lowerer {
             nominal_modules: std::rc::Rc::clone(&self.nominal_modules),
             nominal_basis_used: None,
+            source_planned: false,
             compiler: self.compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
@@ -1984,7 +2013,32 @@ impl Lowerer<'_, '_> {
             self.raw.registers[&source_slot].basis.tree_size().nodes,
         )?;
         let basis = self.raw.registers[&source_slot].basis.clone();
-        let (table, requires_source) = self.computed_table(module, function, key, &basis)?;
+        // Only a source-planned body or the selected entry itself opts into
+        // structural predicate evidence. An inlined table must not change the
+        // caller's verification path solely because its predicate can synthesize.
+        let selected_body = self.compiler.selected_entry == Some(owner);
+        let structural = if self.uses_qmatch_v5()
+            && (self.source_planned || selected_body)
+            && self.nominal_qmatch.is_some()
+            && !self.compiler.concrete_context.finite_transform
+            && !self.compiler.deferred_nominal_tables.contains(&key)
+        {
+            match self.compiler.propose_structural_predicate(key, &basis) {
+                Ok(steps) => Some(steps),
+                Err(error) if error.code == ErrorCode::Unsupported => None,
+                Err(error) => return Err(error),
+            }
+        } else {
+            None
+        };
+        let predicate = match structural {
+            Some(steps) => ComputedPredicate::Circuit(steps),
+            None => {
+                let (table, requires_source) =
+                    self.computed_table(module, function, key, &basis)?;
+                ComputedPredicate::Table(table, requires_source)
+            }
+        };
         self.compiler.charge(module, span, 5)?;
         let wire = self.wire();
         let ancilla = self.register(Ty::bit(), vec![wire]);
@@ -2056,6 +2110,10 @@ impl Lowerer<'_, '_> {
         // All replacement storage and the retained local equation are charged
         // before changing the proposed body. Work and issued IDs never rewind.
         self.compiler.charge(module, span, 14)?;
+        if let ComputedPredicate::Circuit(steps) = &predicate {
+            let cells = total_size(steps.iter().map(|step| step.controls.len() + 8));
+            self.compiler.charge(module, span, cells)?;
+        }
         if let Some(evidence) = evidence {
             self.compiler.computed_normalizations.push(evidence);
         }
@@ -2071,18 +2129,35 @@ impl Lowerer<'_, '_> {
             .registers
             .get_mut(&source_slot)
             .expect("protected source");
-        self.raw.operations.push(RawOp::ComputeUseUncompute {
-            source: source_reg.token,
-            source_out: output,
-            targets: vec![],
-            ancilla_wires: vec![wire],
-            function: table,
-            use_ops,
-        });
+        let input = source_reg.token;
         source_reg.token = output;
-        if requires_source {
-            self.nominal_basis_used = Some(true);
-        }
+        let operation = match predicate {
+            ComputedPredicate::Circuit(forward) => {
+                self.nominal_basis_used = Some(true);
+                RawOp::StructuralCompute {
+                    source: input,
+                    source_out: output,
+                    scratch: wire,
+                    inverse: forward.clone(),
+                    forward,
+                    uses: use_ops,
+                }
+            }
+            ComputedPredicate::Table(function, requires_source) => {
+                if requires_source {
+                    self.nominal_basis_used = Some(true);
+                }
+                RawOp::ComputeUseUncompute {
+                    source: input,
+                    source_out: output,
+                    targets: vec![],
+                    ancilla_wires: vec![wire],
+                    function,
+                    use_ops,
+                }
+            }
+        };
+        self.raw.operations.push(operation);
         quantum_match::nominal::record_coherent_table(self, module, span, start, 1)?;
         Ok(source)
     }
@@ -2141,6 +2216,7 @@ fn lower_function_in_context(
     let mut lower = Lowerer {
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         nominal_basis_used: typed_basis.then_some(false),
+        source_planned: planned_basis || require_qmatch_v5,
         compiler,
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
@@ -2231,7 +2307,7 @@ fn lower_function_in_context(
             &key_name.0,
             decl.span,
             ErrorCode::Unsupported,
-            "this finite basis table needs the original source-body gate",
+            "this coherent basis operation needs the original source-body gate",
         ));
     }
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {
@@ -2344,7 +2420,27 @@ fn lower_function_in_context(
             context,
         )?;
     }
+    let mut labels = BTreeMap::new();
+    let specialization_origins = if key_name.0 == "main" && key_name.1 == "main" {
+        lower
+            .operation_sources
+            .into_iter()
+            .filter_map(|(path, source)| {
+                let [index] = path.as_slice() else {
+                    return None;
+                };
+                let instance = source.instance?;
+                let label = labels
+                    .entry(instance)
+                    .or_insert_with(|| lower.compiler.specialization_label(instance));
+                Some((*index, (source.module, source.span, Arc::clone(label))))
+            })
+            .collect()
+    } else {
+        BTreeMap::new()
+    };
     Ok(program
+        .retain_specialization_origins(specialization_origins)
         .retain_source_context(lower.source_context)
         .retain_instrument_calls(lower.instrument_calls))
 }

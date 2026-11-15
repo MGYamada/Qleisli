@@ -15,6 +15,34 @@ def interval (circuit : Circuit) (layout : List Nat) (start count : Nat) :
     ((circuit.gates.drop start).take count).mapM (Instruction.localStep layout)
   else none
 
+private theorem mapM_length {α β : Type} (f : α → Option β) (xs : List α) (ys : List β)
+    (ok : xs.mapM f = some ys) : ys.length = xs.length := by
+  induction xs generalizing ys with
+  | nil => simp_all
+  | cons first rest ih =>
+    cases read : f first with
+    | none => simp [List.mapM_cons,read] at ok
+    | some value =>
+      cases remaining : rest.mapM f with
+      | none => simp [List.mapM_cons,read,remaining] at ok
+      | some tail =>
+        have same : value :: tail = ys := by simpa [List.mapM_cons,read,remaining] using ok
+        subst ys
+        simp [ih tail remaining]
+
+/-- Every decoded instruction in an admitted workspace slice contributes one
+step to the checked operator, including the literal cleanup and phase gates. -/
+theorem interval_length {circuit layout start count steps}
+    (ok : interval circuit layout start count = some steps) :
+    steps.length = count ∧ start+count ≤ circuit.gates.length := by
+  unfold interval at ok
+  split at ok
+  · rename_i inside
+    have length := mapM_length _ _ _ ok
+    have remaining : count ≤ circuit.gates.length - start := by omega
+    exact ⟨by simpa [List.length_take,Nat.min_eq_left remaining] using length,inside⟩
+  · contradiction
+
 /-- Bind the target word to the independently proved raw workspace interval.
 The layout is ordered data then scratch, in the original source interface
 order. Every target operand stays in that layout. -/
@@ -73,26 +101,25 @@ structure Placed {sources caller dependencies program block sourceStart sourceCo
       sourceStart sourceCount event events original sourceInterval sourceBefore}
     (map : RuntimeWorkspace.CallerMap literal) {bytes capacity}
     (target : CanonicalOpenQasmResources.Checked bytes capacity)
-    (targetFrame : List Nat) (start count : Nat) where
-  full : targetFrame.length = sourceInterval.before.quantum.reference.frame.length
+    (rawFrame targetFrame : List Nat) (start count : Nat) where
+  full : targetFrame.length = rawFrame.length
   declared : target.circuit.declares targetFrame
   liveLayout : List Nat
-  boundOwners : placedWires sourceInterval.before.quantum.reference.frame targetFrame
+  boundOwners : placedWires rawFrame targetFrame
     (map.selected.flatMap (·.port.wires)) = some liveLayout
   freshScratch : Option Nat
   scratchMode : freshScratch.isSome = event.fresh
   scratchFree : ∀ location ∈ freshScratch.toList, location ∉ targetFrame
   body : Checked map target (liveLayout ++ freshScratch.toList) start count
 
-def checkPlacement {sources caller dependencies program block sourceStart sourceCount event events original
+def checkPlacementInFrame {sources caller dependencies program block sourceStart sourceCount event events original
     sourceInterval sourceBefore}
     {literal : @RuntimeWorkspace.Literal sources caller dependencies program block
       sourceStart sourceCount event events original sourceInterval sourceBefore}
     (map : RuntimeWorkspace.CallerMap literal) {bytes capacity}
     (target : CanonicalOpenQasmResources.Checked bytes capacity)
-    (targetFrame : List Nat) (start count : Nat) (scratch : Option Nat) :
-    WorkM (Placed map target targetFrame start count) := do
-  let rawFrame := sourceInterval.before.quantum.reference.frame
+    (rawFrame targetFrame : List Nat) (start count : Nat) (scratch : Option Nat) :
+    WorkM (Placed map target rawFrame targetFrame start count) := do
   let wires := map.selected.flatMap (·.port.wires)
   guard (rawFrame.length ≤ 12 && targetFrame.length ≤ 12 && wires.length ≤ 12) .limit
   exactWork (Exact.charge (32*(1+wires.length)*(1+rawFrame.length+targetFrame.length)))
@@ -104,6 +131,18 @@ def checkPlacement {sources caller dependencies program block sourceStart source
       let body ← check map target (layout ++ scratch.toList) start count
       return ⟨valid.1,valid.2.1,layout,read,scratch,valid.2.2.1,valid.2.2.2,body⟩
   else throw .request
+
+/-- The direct case places the complete workspace caller frame. An enclosing
+caller can supply its own frame after binding the selected owner ports. -/
+def checkPlacement {sources caller dependencies program block sourceStart sourceCount event events original
+    sourceInterval sourceBefore}
+    {literal : @RuntimeWorkspace.Literal sources caller dependencies program block
+      sourceStart sourceCount event events original sourceInterval sourceBefore}
+    (map : RuntimeWorkspace.CallerMap literal) {bytes capacity}
+    (target : CanonicalOpenQasmResources.Checked bytes capacity)
+    (targetFrame : List Nat) (start count : Nat) (scratch : Option Nat) :
+    WorkM (Placed map target sourceInterval.before.quantum.reference.frame targetFrame start count) :=
+  checkPlacementInFrame map target sourceInterval.before.quantum.reference.frame targetFrame start count scratch
 
 /-- The declaration reserves and resets the entire target register. The two
 prefix/suffix restrictions give a sufficient static lifetime condition for a
@@ -207,17 +246,15 @@ structure Reuse {bytes capacity} (target : CanonicalOpenQasmResources.Checked by
     (scratch : Nat) (uses : List (CleanUse target.circuit scratch)) : Type where
   reserved : scratch < target.circuit.qubits
   ordered : uses.Pairwise CleanUse.before
-  nonempty : ∀ use ∈ uses, 0 < use.count
   unmeasured : scratch ∉ target.circuit.measurements
   complete : CleanUse.complete uses = true
 
 def checkReuse {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (scratch : Nat) (uses : List (CleanUse target.circuit scratch)) : WorkM (Reuse target scratch uses) := do
-  guard (uses.length ≤ target.circuit.gates.length) .limit
   exactWork (Exact.charge (32*(1+uses.length)*(1+uses.length+target.circuit.gates.length)))
   if valid : scratch < target.circuit.qubits ∧ uses.Pairwise CleanUse.before ∧
-      (∀ use ∈ uses, 0 < use.count) ∧ scratch ∉ target.circuit.measurements ∧ CleanUse.complete uses = true then
-    return ⟨valid.1,valid.2.1,valid.2.2.1,valid.2.2.2.1,valid.2.2.2.2⟩
+      scratch ∉ target.circuit.measurements ∧ CleanUse.complete uses = true then
+    return ⟨valid.1,valid.2.1,valid.2.2.1,valid.2.2.2⟩
   else throw .request
 
 theorem Reuse.accessCovered {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
@@ -229,6 +266,21 @@ theorem Reuse.accessCovered {bytes capacity} {target : CanonicalOpenQasmResource
   have found := List.all_eq_true.mp reuse.complete _ indexed
   simp [List.contains_eq_mem,usesScratch,CleanUse.covers,List.any_eq_true] at found
   exact found
+
+/-- Each reusable clean wire is in the literal reset register. Any gate that
+later uses that wire is counted inside a checked restoration interval. -/
+theorem Reuse.prepared_and_counted {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {scratch uses} (reuse : Reuse target scratch uses) :
+    scratch ∈ target.circuit.reservedLocations ∧ scratch < target.circuit.counts.reset ∧
+      (∀ index gate, target.circuit.gates[index]? = some gate → scratch ∈ gate.wires →
+        ∃ use ∈ uses, use.start ≤ index ∧ index < use.start+use.count ∧
+          use.steps.length = use.count ∧ use.start+use.count ≤ target.circuit.counts.gates) := by
+  refine ⟨List.mem_range.mpr reuse.reserved,reuse.reserved,?_⟩
+  intro index gate emitted touched
+  obtain ⟨use,member,start,stop⟩ := reuse.accessCovered index gate emitted touched
+  have ⟨count,inside⟩ := interval_length use.actual
+  exact ⟨use,member,start,stop,count,inside⟩
 
 theorem CleanUse.exactRestoration {circuit scratch} (use : CleanUse circuit scratch) :
     ∃ contract first middle work after lhs lhsWork rhs rhsWork,

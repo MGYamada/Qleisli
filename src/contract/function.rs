@@ -674,6 +674,11 @@ fn preflight_ports(
                         targets.len() + ancilla_wires.len() + function.len() + use_ops.len(),
                     )?;
                 }
+                RawOp::StructuralCompute { .. } => {
+                    return Err(ContractError::Type(
+                        "structural computed scopes require a checked source execution view",
+                    ));
+                }
                 RawOp::Init0 { .. } if prepare => (),
                 RawOp::Init0 { .. }
                 | RawOp::MeasureZ { .. }

@@ -132,11 +132,7 @@ impl Lowerer<'_, '_> {
         let result = self.classical_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
-        for index in first_operation..self.raw.operations.len() {
-            self.operation_sources
-                .entry(vec![index])
-                .or_insert_with(|| (module.to_owned(), expr.span));
-        }
+        self.record_operation_sources(module, expr.span, first_operation);
         self.compiler
             .check_tree(module, expr.span, value.tree_size())?;
         Ok(value)
@@ -187,6 +183,27 @@ impl Lowerer<'_, '_> {
             )),
             RuntimeExpression::Name(name) => self.read_name(module, name, env),
             RuntimeExpression::Unit => Ok(Value::Unit),
+            RuntimeExpression::BitIndex { receiver, index } => {
+                let Value::Bits(bits) = self.classical_expr(module, receiver, env)? else {
+                    return Err(self.error(
+                        module,
+                        expr.span,
+                        ErrorCode::TypeMismatch,
+                        "ordinary bit indexing requires Bits<n>",
+                    ));
+                };
+                bits.get(index)
+                    .copied()
+                    .map(Value::Classical)
+                    .ok_or_else(|| {
+                        self.error(
+                            module,
+                            expr.span,
+                            ErrorCode::TypeMismatch,
+                            "ordinary bit index requires k < n",
+                        )
+                    })
+            }
             RuntimeExpression::Tuple(fields) => {
                 self.compiler.charge(module, expr.span, fields.len())?;
                 Ok(Value::tuple(

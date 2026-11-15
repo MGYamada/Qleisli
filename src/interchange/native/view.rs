@@ -32,6 +32,9 @@ pub(super) fn metadata(program: &RawProgram) -> Result<(Effect, Vec<QuantumPort>
                 }
                 RawOp::CertifiedCompute {
                     source, source_out, ..
+                }
+                | RawOp::StructuralCompute {
+                    source, source_out, ..
                 } => {
                     map.insert(*source_out, wires(map, *source)?);
                 }

@@ -43,10 +43,45 @@ example {A P S R : C} {logical : A ⟶ A} {encode : A ⟶ P}
   have clean := conjugate_square useSquare unitary
   have reference : CommSq (𝟙 R) (𝟙 R) (𝟙 R) (𝟙 R) := ⟨rfl⟩
   exact congrArg (joint ≫ ·) (tensor_square clean reference).w
+/-- A checked reverse recovers the input encoding on the forward image,
+including an arbitrary reference. -/
+example {A B P Q S R : C} {logical : A ⟶ B}
+    {i : A ⟶ P} {o : B ⟶ Q} {physical : P ⟶ Q}
+    (square : CommSq logical i o physical) (unitary : IsUnitary physical)
+    (input : S ⟶ A ⊗ R) :
+    input ≫ (((logical ≫ o) ⊗ₘ 𝟙 R) ≫ (physical† ⊗ₘ 𝟙 R)) =
+      input ≫ (i ⊗ₘ 𝟙 R) :=
+  dilation_recover_reference square unitary input
+
 end Abstract
 
 section Concrete
 open QPTL.FiniteMatrix
+
+open scoped Kronecker
+
+-- Tensor with a spectator and swap the two axes. The determinant is unchanged
+-- by the layout and retains the square from the two-dimensional spectator.
+example (gate : Matrix Bool Bool ℂ) :
+    (Matrix.reindex (Equiv.prodComm Bool Bool) (Equiv.prodComm Bool Bool)
+      (gate ⊗ₖ (1 : Matrix Bool Bool ℂ))).det = gate.det ^ 2 := by
+  simpa using det_embedded gate (Equiv.prodComm Bool Bool)
+
+-- A requested determinant of -1 is excluded by a determinant-one gate set.
+example (steps : List (Matrix Unit Unit ℂ))
+    (generators : ∀ gate ∈ steps, gate.det = 1) :
+    steps.prod ≠ (-1 : Matrix Unit Unit ℂ) := by
+  have product {a b : ℂ} (first : a = 1) (second : b = 1) : a * b = 1 := by
+    rw [first, second, mul_one]
+  refine exact_same_wire_obstruction (allowed := fun z : ℂ => z = (1 : ℂ))
+    rfl product steps generators ?_
+  rw [Matrix.det_unique]
+  norm_num
+
+-- A global minus sign on identity becomes a relative sign under control.
+example : controlled (-(1 : Matrix Unit Unit ℂ)) ≠ controlled (1 : Matrix Unit Unit ℂ) := by
+  simpa using controlled_phase_ne (1 : Matrix Unit Unit ℂ)
+    (phase := -1) (by norm_num) (row := ()) (col := ()) (by simp)
 
 /-- The normalized first basis vector as a rectangular matrix. -/
 private noncomputable def prepare : basis Unit ⟶ basis Bool :=

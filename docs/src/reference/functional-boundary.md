@@ -253,6 +253,69 @@ The [type model](type-model.md#direct-runtime-transforms-and-opaque-operations)
 also distinguishes existing direct runtime-group transforms from opaque
 single-owner `Q<A> -> Q<A>` operations; this chapter does not merge them.
 
+## Provider selection and quantitative resource evidence
+
+An operation has three independent contracts.
+
+| Contract | Question it answers |
+| --- | --- |
+| Exact Meaning and interface | What action does the provider implement on the declared ordered inputs and outputs? |
+| Operation capabilities | May the caller apply, invert or coherently control that action using the available implementations? |
+| Resource contract | What checked finite bound holds for the selected implementation under the specified target and cost model? |
+
+`Applicable(U)` permits the evidenced call. A quantitative claim additionally
+requires a bound for the implementation that will run. A generic definition
+can use capability premises and leave the implementation open. Before issuing
+a concrete certificate, resolve every cost-relevant actual, including an
+operation returned by a static builder or selected through a trait. The
+[closed specialization](realization.md#closed-specialization) fixes the
+actuals and provider dependencies before lowering and accounting. An
+ambiguous or unresolved choice makes the quantitative request fail.
+
+The independent check binds the provider and its retained implementation
+to the specialization, emitted artifact, versioned target and cost model,
+counted quantities, input and scheduling premises, and layout and workspace
+requirements. It checks a finite bound and the declared composition premises.
+The provider selected by lowering and execution must be the one used in the
+check. Replacing the provider, its dependencies, or the emitted implementation
+requires revalidation for the new subject, even when the two providers have
+the same Meaning or the same name. A capability witness, producer annotation
+or identity hash alone does not supply the bound.
+
+Composition and tensor require checked accounting for the resulting order,
+lifetimes and target schedule. A tensor cannot assume shared scratch or
+parallel depth without evidence. Repetition requires a closed count and a
+checked composition rule for that count. Adjoint and control need a bound
+for the actual inverse or controlled implementation. Reusing the forward
+count requires a profile rule that applies to the emitted inverse. Controlled
+implementations include control synthesis, routing, and additional workspace.
+Semantic equivalence and capability derivations do not establish these rules.
+See [#161](https://github.com/MGYamada/Qleisli/issues/161),
+[#162](https://github.com/MGYamada/Qleisli/issues/162) and
+[the quantitative resource model](realization.md#quantitative-resource-claims).
+
+### Foreign execution
+
+A foreign call is outside quantitative Resource Safety unless it re-enters
+through a closed operation/provider contract whose finite implementation,
+effects, ordered ownership and exact workspace obligations are independently
+checked. A resource claim must include its explicit target costs. Depending
+on the model these include hidden allocation and scratch, measurements and
+feed-forward, bounded branches or retries, and scheduling or duration.
+An opaque device instruction receives neither a default zero cost nor a
+constant cost based on its spelling. An unknown or unbounded behavior causes
+certification to fail. The current source profile rejects arbitrary runtime
+callbacks into host code. Future callbacks claiming coverage must resolve
+to a closed, checked provider before certification. Host orchestration can
+invoke foreign work outside the certified region.
+
+A plugin or compiler extension supplies proposals as an ordinary producer.
+Its installation and annotations do not grant authority to accept source,
+IR, implementations, resources or target mappings. A future FFI must declare
+which side of the boundary each call occupies and use the existing independent
+checks for anything inside. These are admission requirements for future
+foreign execution. See [#164](https://github.com/MGYamada/Qleisli/issues/164).
+
 ## Patterns, observation and Unit
 
 Ordinary tuple and Unit patterns inspect the shape of an ordinary value. A

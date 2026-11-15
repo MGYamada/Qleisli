@@ -90,6 +90,10 @@ inductive BoundedEvent : Nat → Event → Nat → Prop
       (uses : List Semantics.Raw.Use) (bounded : ∀ axis ∈ axes, axis < bits) :
       BoundedEvent bits (.protectedComputed bits axes source ancilla function uses) bits
 
+  | structuralComputed (bits : Nat) (axes : List Nat) (forward inverse : List Step)
+      (uses : List Semantics.Raw.Use) (bounded : ∀ axis ∈ axes, axis < bits) :
+      BoundedEvent bits (.structuralComputed bits axes forward inverse uses) bits
+
 private theorem embed_congr (bits : Nat) (axes : List Nat) (bounded : ∀ axis ∈ axes, axis < bits)
     (action : (Nat → ℂ) → Nat → ℂ) (left right : Nat → ℂ) (same : OnRows bits left right) :
     OnRows bits (embed axes action left) (embed axes action right) := by
@@ -131,6 +135,10 @@ theorem BoundedEvent.congr {before after operation}
   | protectedComputed axes source ancilla function uses bounded =>
     simp only [event]
     apply embed_congr before axes bounded _ left right same
+
+  | structuralComputed axes forward inverse uses bounded =>
+    simp only [event]
+    exact embed_congr before axes bounded _ left right same
 
 inductive BoundedEvents : Nat → List Event → Nat → Prop where
   | nil (bits : Nat) : BoundedEvents bits [] bits
@@ -303,6 +311,13 @@ theorem read_step_bounded (dependencies : List Dependency) {state final : Interf
     change BoundedEvents state.frame.length _ next.frame.length
     rw [(take_facts taken).1]
     exact .cons (.computed _ _ _ _ _ _ _ (axes_inside (covered _ (take_facts taken).2.1))) (.nil _)
+  | structuralCompute input output scratch forward inverse uses =>
+    obtain ⟨⟨port,next⟩,taken,rest⟩ := Option.bind_eq_some_iff.mp read
+    rcases Prod.mk.inj (Option.some.inj rest) with ⟨rfl,rfl⟩
+    change BoundedEvents state.frame.length _ next.frame.length
+    rw [(take_facts taken).1]
+    exact .cons (.structuralComputed _ _ _ _ _ (axes_inside
+      (covered _ (take_facts taken).2.1))) (.nil _)
   | computeUseUncompute input output targets ancilla function uses =>
     obtain ⟨⟨source,one⟩,taken,rest⟩ := Option.bind_eq_some_iff.mp read
     obtain ⟨⟨ports,two⟩,targetRead,rest⟩ := Option.bind_eq_some_iff.mp rest

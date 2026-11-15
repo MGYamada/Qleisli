@@ -40,10 +40,10 @@ pub(super) enum BodyState {
 }
 pub(super) struct Record {
     identity: Identity,
-    // Evidence preparation and selected typed lowering have different producer
-    // contracts. They share source/substitution identity, not prepared bodies.
-    pub bodies: [BodyState; 2],
-    pub providers: [Vec<(Option<Key>, operations::Operation)>; 2],
+    // Body and provider caches distinguish the typed root and the required
+    // finite representation. Source/substitution identity is shared.
+    pub bodies: [BodyState; 4],
+    pub providers: [Vec<(Option<Key>, operations::Operation)>; 4],
 }
 pub(super) struct ClosedInstance {
     pub definition: Key,
@@ -55,6 +55,7 @@ pub(super) struct ClosedInstance {
 #[derive(Default)]
 pub(super) struct Context {
     pub owner: Option<Key>,
+    pub finite_transform: bool,
     pub current: Option<Arc<ClosedInstance>>,
     pub naturals: BTreeMap<BinderKey, u32>,
     active: Vec<usize>,
@@ -109,6 +110,29 @@ impl Identity {
 }
 
 impl Compiler<'_> {
+    pub(super) fn specialization_label(&self, record: usize) -> Arc<str> {
+        let identity = &self.instances[record].identity;
+        let arguments = identity
+            .arguments
+            .iter()
+            .map(|argument| match argument {
+                Argument::Natural(value) => value.to_string(),
+                Argument::Basis(ty) => ty.to_string(),
+                Argument::Operation(operation) => operation.source_origin.as_ref().map_or_else(
+                    || "Op".to_owned(),
+                    |origin| self.source.resolution.path(origin.definition),
+                ),
+            })
+            .collect::<Vec<_>>();
+        let path = self.source.resolution.path(identity.definition);
+        format!(
+            "{path}[{}] (specialization {})",
+            arguments.join(", "),
+            record + 1
+        )
+        .into()
+    }
+
     pub(super) fn record_instance_identity(
         &mut self,
         identity: Identity,
@@ -146,8 +170,8 @@ impl Compiler<'_> {
         let ordinal = self.instances.len();
         self.instances.push(Record {
             identity,
-            bodies: [BodyState::Unprepared, BodyState::Unprepared],
-            providers: [Vec::new(), Vec::new()],
+            bodies: std::array::from_fn(|_| BodyState::Unprepared),
+            providers: std::array::from_fn(|_| Vec::new()),
         });
         Ok(ordinal)
     }

@@ -140,6 +140,80 @@ fn assert_numeric_matrix(circuit: &Circuit, expected: &Matrix) {
     }
 }
 
+#[test]
+fn structural_compute_preserves_spectators_and_exact_phase() {
+    use crate::ir::{ProtectedBit, ProtectedRegion, ProtectedUse};
+
+    let forward = vec![CircuitStep {
+        controls: vec![
+            BitControl {
+                index: 0,
+                when_one: true,
+            },
+            BitControl {
+                index: 1,
+                when_one: false,
+            },
+        ],
+        action: CircuitAction::Monomial {
+            indices: vec![2],
+            permutation: vec![1, 0],
+            phases: vec![0, 0],
+        },
+    }];
+    let operation = RawOp::StructuralCompute {
+        source: TokenId(10),
+        source_out: TokenId(12),
+        scratch: WireId(4),
+        inverse: forward.clone(),
+        forward,
+        uses: vec![ProtectedUse::ProtectedGate {
+            bit: ProtectedBit {
+                region: ProtectedRegion::Ancilla,
+                index: 0,
+            },
+            gate: SingleGate::Z,
+        }],
+    };
+    let input = Component {
+        axes: vec![WireId(9), WireId(2), WireId(8)],
+        amplitudes: (0..8)
+            .map(|index| Complex {
+                re: index as f64 / 16.0,
+                im: 0.25,
+            })
+            .collect(),
+        tokens: BTreeMap::from([
+            (TokenId(10), vec![WireId(8), WireId(2)]),
+            (TokenId(11), vec![WireId(9)]),
+            (TokenId(13), vec![]),
+        ]),
+        classical: BTreeMap::new(),
+    };
+    let mut actual = execute_op(
+        input.clone(),
+        &operation,
+        SimulationLimits::default(),
+        &mut execution_budget(),
+    )
+    .unwrap();
+    assert_eq!(actual.len(), 1);
+    let result = actual.pop().unwrap();
+    assert_eq!(result.axes, input.axes);
+    assert_eq!(
+        result.tokens,
+        BTreeMap::from([
+            (TokenId(12), vec![WireId(8), WireId(2)]),
+            (TokenId(11), vec![WireId(9)]),
+            (TokenId(13), vec![]),
+        ])
+    );
+    for (index, original) in input.amplitudes.into_iter().enumerate() {
+        let sign = if index & 0b110 == 0b100 { -1.0 } else { 1.0 };
+        close(result.amplitudes[index], original.scaled(sign));
+    }
+}
+
 fn assert_qif_matches_independent_extraction(
     target_width: usize,
     zero_ops: Vec<UnitaryStep>,

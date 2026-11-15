@@ -78,6 +78,30 @@ fn adapter(error: interop::InteropError, source: Option<(&Path, &str)>) -> Failu
     })
 }
 
+fn export_failure(
+    mut error: interop::InteropError,
+    target: &str,
+    program: &AcceptedProgram,
+    project: Option<&Project>,
+) -> Failure {
+    let mut source = None;
+    if let Some(project) = project {
+        if let Some((module, span, specialization)) = error
+            .operation
+            .and_then(|index| program.specialization_origin(index))
+        {
+            error.message = format!("{target} export of {specialization}: {}", error.message);
+            source = project.modules.get(module).map(|module| {
+                error.span = Some(span);
+                (module.path.as_path(), module.source.as_str())
+            });
+        } else {
+            error.message = format!("{target} export of main::main: {}", error.message);
+        }
+    }
+    adapter(error, source)
+}
+
 fn artifact(error: interchange::Error) -> Failure {
     Failure::Artifact(error)
 }
@@ -129,12 +153,14 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
     let action = args[0].to_str().ok_or_else(usage)?;
     *root = PathBuf::from(&args[1]);
     let (mut format, mut shots, mut seed, mut json) = (None, None, None, false);
+    let mut resources = false;
     let mut checker = None;
     let mut edition: Option<qleisli::edition::Edition> = None;
     let mut expected_edition: Option<qleisli::edition::Edition> = None;
     for arg in &args[2..] {
         match arg.to_str() {
             Some("--format=json") if !json => json = true,
+            Some("--resources") if !resources => resources = true,
             Some(s) if s.starts_with("--edition=") && edition.is_none() => {
                 edition = Some(s[10..].parse().map_err(
                     |e: qleisli::edition::UnsupportedEdition| failure("edition", e.to_string()),
@@ -169,6 +195,9 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
         return Err(usage());
     }
     let format = format.ok_or_else(usage)?;
+    if resources && (action != "emit-qasm" || format != "qli") {
+        return Err(usage());
+    }
     if matches!(format, "qli" | "qasm") && root != Path::new("-") {
         // Match the source loader's absolute identities for JSON source spans.
         *root = std::fs::canonicalize(&*root).unwrap_or_else(|_| root.clone());
@@ -179,6 +208,7 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
             None => Kernel::selected(edition).map_err(artifact),
         }
     };
+    let source_project;
     let loaded = if format == "qli" {
         if edition.is_some() || root == Path::new("-") {
             return Err(usage());
@@ -197,13 +227,16 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
             ));
         }
         let kernel = selected_kernel(project.edition())?;
-        project.compile_with_kernel(&kernel)?
+        let program = project.compile_with_kernel(&kernel)?;
+        source_project = Some(project);
+        program
     } else if matches!(format, "qasm" | "qirf") {
         if expected_edition.is_some() {
             return Err(usage());
         }
         let edition = edition.ok_or_else(|| failure("edition",
             "raw/foreign input requires --edition=2026; edition selects the constitutional regime, independently of the compiler release"))?;
+        source_project = None;
         load(format, root, &selected_kernel(edition)?)?
     } else {
         return Err(usage());
@@ -233,8 +266,37 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
                 .to_vec(),
         )
         .map_err(|_| failure("format", "export is not UTF-8"))?,
-        "emit-qasm" => interop::export_openqasm3(program).map_err(|e| adapter(e, None))?,
-        "emit-qir" => interop::export_qir_base(program).map_err(|e| adapter(e, None))?,
+        "emit-qasm" if resources => {
+            let (text, counts) =
+                interop::export_openqasm3_with_resources(program).map_err(|error| {
+                    export_failure(error, "OpenQASM 3", program, source_project.as_ref())
+                })?;
+            return Ok(format!(
+                concat!(
+                    "{{\"text\":{},\"resources\":{{\"exact_work\":{},\"qubits\":{},\"resets\":{},",
+                    "\"gates\":{},\"swaps\":{},\"t_gates\":{},\"measurements\":{}}}}}"
+                ),
+                quoted(&text),
+                counts.exact_work,
+                counts.qubits,
+                counts.resets,
+                counts.gates,
+                counts.swaps,
+                counts.t_gates,
+                counts.measurements,
+            ));
+        }
+        "emit-qasm" => interop::export_openqasm3(program).map_err(|error| {
+            export_failure(error, "OpenQASM 3", program, source_project.as_ref())
+        })?,
+        "emit-qir" => interop::export_qir_base(program).map_err(|error| {
+            export_failure(
+                error,
+                "QIR 2.0 Base Profile",
+                program,
+                source_project.as_ref(),
+            )
+        })?,
         _ => unreachable!(),
     };
     Ok(format!("{{\"text\":{}}}", quoted(&text)))

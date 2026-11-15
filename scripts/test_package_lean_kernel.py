@@ -13,7 +13,7 @@ import unittest
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
-from package_lean_kernel import ROOT, library_builds, parse_args, validate
+from package_lean_kernel import NATIVE_BUILD_SUPPORT, ROOT, library_builds, main, parse_args, validate
 
 
 class NativeBundleLanes(unittest.TestCase):
@@ -103,6 +103,36 @@ class NativeBundleLanes(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     validate(package, "full")
                 run.assert_not_called()
+
+    def test_relocated_build_stages_shared_openqasm_fixture_and_binds_its_bytes(self):
+        fixture = "tests/fixtures/interop/clean-reuse.qasm"
+        source = ROOT / fixture
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary) / "source"
+            for name in NATIVE_BUILD_SUPPORT:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes((ROOT / name).read_bytes())
+            module = root / "lean-kernel/QleisliKernel/Tests/SourceRuntimeComputed.lean"
+            module.parent.mkdir(parents=True)
+            module.write_text(f'def fixture : String := include_str "../../../{fixture}"\n')
+
+            def inspect(package, _lane):
+                relocated = package / "QleisliKernel/Tests" / "../../../" / fixture
+                self.assertEqual(relocated.read_bytes(), source.read_bytes())
+                relocated.write_bytes(b"changed during validation")
+                return []
+
+            bundle = Path(temporary) / "bundle"
+            with (
+                patch("package_lean_kernel.ROOT", root),
+                patch("package_lean_kernel.check_kernel", return_value=([], [])),
+                patch("package_lean_kernel.validate", side_effect=inspect),
+                patch("package_lean_kernel.subprocess.check_output", return_value="/lean"),
+                self.assertRaisesRegex(ValueError, f"source changed during packaging: {re.escape(fixture)}"),
+            ):
+                main(["--output", str(bundle)])
+            self.assertFalse(bundle.exists())
 
     def test_both_platforms_forward_the_selected_lane_and_keep_relocation_tests(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()

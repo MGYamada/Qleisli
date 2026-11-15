@@ -76,7 +76,7 @@ theorem ordinary_event_action (dependencies : List Dependency) (operation : Even
     (actual : Matrix) (work left : Nat)
     (read : (Raw.ProtectedEvaluation.eventMatrix dependencies operation).run work = (.ok actual,left))
     (ordinary : match operation with
-      | .computed .. | .protectedComputed .. => False
+      | .computed .. | .protectedComputed .. | .structuralComputed .. => False
       | _ => True) :
     EventAction dependencies operation actual := by
   intro Reference joint row reference bound
@@ -97,7 +97,8 @@ theorem ordinary_event_action (dependencies : List Dependency) (operation : Even
     obtain ⟨_,middle,_,mapping⟩ := bind_success _ _ _ _ _ read
     exact mapped_action _ (Qleisli.Raw.mapping_denotes _ _ _ _ middle left mapping)
       joint row reference bound
-  | computed _ _ _ _ _ _ _ | protectedComputed _ _ _ _ _ _ => exact False.elim ordinary
+  | computed _ _ _ _ _ _ _ | protectedComputed _ _ _ _ _ _ | structuralComputed _ _ _ _ _ =>
+    exact False.elim ordinary
 
 private theorem scatter_fibre (axes : List Nat) (unique : axes.Nodup) (row col : Nat) :
     scatter col axes (gather row axes) = row ↔ scatter row axes (gather col axes) = col := by

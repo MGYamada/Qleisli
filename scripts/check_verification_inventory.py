@@ -189,11 +189,11 @@ ENGINEERING_PURE_TENSOR_BOUNDARY = {
 
 ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
  'group': 'engineering-openqasm',
- 'entry_points': ['interchange::engineering_openqasm::EngineeringOpenQasmRequest',
+ 'entry_points': ['interchange::engineering_openqasm::{EngineeringOpenQasmRequest,GateCounts}',
                   'interchange::engineering_openqasm::{check,check_with_kernel,check_serialized_with_kernel}',
-                  'EngineeringOpenQasmReport original-target/ideal/request/profile accessors',
+                  'EngineeringOpenQasmReport original-target/ideal/request/profile/checked-resource accessors',
                   'qleisli engineering compare-openqasm3 TARGET --against=REQUEST'],
- 'status': 'Separate native target-bound engineering instrument check only; no exact source/export or '
+ 'status': 'Separate native target-bound engineering instrument and literal gate limits; no exact source/export or '
            'constitutional acceptance',
  'request': 'Strict 14-field qleisli.engineering-openqasm-request v1: engineering-target-instrument-bound '
             'claim, complete-adjoint-euclidean-operator-norm-v1 metric, canonical-target-choi-l1-r8-v1 '
@@ -201,14 +201,17 @@ ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
             'composition and implementation-distance category. Both full signature trees must be exactly '
             'Unit -> classical Bit. Original independent ideal QIRF text, source identity, canonical '
             'nonnegative closed dyadic epsilon and ordered unsquared coefficient majorants remain explicit; '
-            'no producer matrices or success flags.',
+            'no producer matrices or success flags. The strict 15-field v2 request uses '
+            'engineering-target-instrument-resource-bound and adds the closed gates and T/TDG '
+            'limits of openqasm3-one-qubit-literal-gates-v1.',
  'binding': 'The original QLV1 body contains literal target bytes. One explicit-edition execution-only QLV3 invocation '
             'independently decodes that canonical byte sequence, constructs its actual Raw graph with an '
             'explicit zero-width Unit input owner consumed before preparation, freshly reads/checks the '
             'original ideal and dependencies, and checks both complete Kraus instruments and the coefficient '
-            'bound in one work chain. QDV1 compares the full typed request, literal target bytes, ordered '
+            'bound in one work chain. Version 2 checks both limits against that same decoded word. '
+            'QDV1 compares the full typed request including any literal limits, literal target bytes, ordered '
             'gate word, generated actual graph and original ideal graph. A private allocation-bound report '
-            'grants no exact accepted-program, source/export, control/inverse, cleanup, resource or '
+            'grants no exact accepted-program, source/export, control/inverse, cleanup, general resource or '
             'constitutional conversion, including epsilon zero.',
  'encoding': 'QLV3 execution scope and explicit edition with original QLV1 literal target body/request and QDV1 '
              'engineering-openqasm record containing typed request, literal byte array, ordered gate-name '
@@ -227,11 +230,12 @@ ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
            'terminal Bit; precharge precedes byte traversal. Existing 16 MiB ideal/request, 64 MiB '
            'envelope/view, six-bit dense R8 reconstruction, canonical i128 dyadics, one shared 20,000,000-unit '
            'native checker-work budget and 60s process timeout apply. Checker work is not a program or '
-           'target resource certificate.',
+           'target resource certificate. Both v2 literal limits are integers from zero through eight.',
  'failure': 'Reject unsupported or noncanonical target bytes, includes, statements, gates, operands, missing '
             'reset, post-readout gates, extra readouts, exceeded target-profile capacity, substituted full '
             'signatures, noncanonical/open/negative budgets, missing/extra/reordered majorants, false '
-            'original ideal/dependencies/Gram, tight bounds, changed literal bytes/word/typed '
+            'original ideal/dependencies/Gram, tight error or gate bounds, invalid literal resource model/version, '
+            'changed literal bytes/word/typed '
             'context/generated or ideal graph, wrong framing/scope/version/reply and '
             'missing/failed/timed-out checker. No fallback or epsilon-zero promotion; ordinary exact and '
             'instrument contracts remain unchanged.',

@@ -222,6 +222,16 @@ theorem dispatch_reference (dependencies : List Basis) (state : State) (op : Op)
       exact good.1.1.1
     simp only [Semantics.RawTrace.step,take_reference _ _ _ _ ht,bind,Option.bind,← same,length]
     rfl
+  | structuralCompute input output scratch forward inverse uses =>
+    obtain ⟨checked,_,resultRead⟩ := Finite.except_bind_success _ _ _ ok
+    cases Except.ok.inj resultRead
+    have taken := take_reference _ _ _ _ checked.takeRead
+    have reserved := reserve_reference _ _ _ checked.reserveRead
+    have inserted := insert_reference _ _ _ _ checked.insertRead
+    have after := inserted.trans
+      (congrArg (fun frame => Semantics.RawTrace.insert frame output checked.port.wires) reserved)
+    simp only [Semantics.RawTrace.step,taken,bind,Option.bind,← after]
+    rfl
   | computeUseUncompute input output targets ancilla function uses =>
     obtain ⟨⟨source,next⟩,ht,h⟩ := Finite.except_bind_success _ _ _ ok
     obtain ⟨⟨ports,next'⟩,hp,h⟩ := Finite.except_bind_success _ _ _ h
