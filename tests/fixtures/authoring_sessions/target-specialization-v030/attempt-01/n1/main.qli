@@ -1,0 +1,8 @@
+use std::state::init0;
+
+unitary fn specialize[const n: Nat](q: Q<Bit>) -> Q<Bit> {
+    if static n == 0 { h(q) } else { global_phase_eighth(q) }
+}
+observe fn main() -> Bit {
+    measure_z(specialize[1](init0()))
+}

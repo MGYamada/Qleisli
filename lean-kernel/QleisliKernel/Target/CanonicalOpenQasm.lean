@@ -15,6 +15,16 @@ structure Decoded where
   gates : List Gate
   deriving BEq
 
+structure GateCounts where
+  gates : Nat
+  tGates : Nat
+
+def Decoded.gateCounts (target : Decoded) : GateCounts :=
+  ⟨target.gates.length,(target.gates.filter fun gate => gate == .t || gate == .tdg).length⟩
+
+def GateCounts.within (actual limits : GateCounts) : Bool :=
+  actual.gates ≤ limits.gates && actual.tGates ≤ limits.tGates
+
 private def ascii (text : String) : List UInt8 := text.toUTF8.data.toList
 
 private def gate (line : List UInt8) : Except String Gate :=

@@ -4,6 +4,9 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Derive clean scratch separation and dirty identity on the full local
+  interface from the exact workspace checker.
+
 ## 0.3.0-beta — 2026-10-12
 
 - Reconstruct controlled phases in written workspace logical operations using
@@ -41,13 +44,25 @@ development milestones from the scope of their evidence.
 
 - Prove that the native placement check accounts for clean scratch reset,
   each gate in a restoration interval, and each marked physical routing SWAP.
+- Specify phase-sensitive controlled target evidence and prove control of
+  exact products and powers in QPTL.
+- Specify initialized isometry dilations and prove exact recovery on their
+  encoded images with arbitrary external references.
+- Prove QPTL determinant obstructions for exact same-wire gate products
+  under arbitrary finite axis reindexing.
+- Define target exact-domain membership and prove the sixteenth-turn
+  obstruction for eighth-root gate products, including clean workspace.
 - Prove exact ordered placement transport and count literal gates for a
   fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
   declared target connectivity.
 - Read complete canonical OpenQASM terminal resources and check a designated
   target gate interval against the original clean/dirty workspace operator.
+- Specify independent evidence for provider costs and closed provider selection,
+  including the requirements for future foreign execution.
 - Check calls inside and around workspace intervals with the closed
   providers independently resolved from the original program.
+- Check closed literal gate and T/TDG limits with the engineering OpenQASM
+  instrument bound on the same target artifact.
 - Check reuse of a reserved physical scratch wire across exact clean-return
   intervals and refuse unaccounted gates or terminal readout on that wire.
 - Derive clean/dirty workspace entry placement from literal closed Raw and
@@ -1226,6 +1241,15 @@ development milestones from the scope of their evidence.
   rules, keeping per-history bounds, ensemble work and coherent target costs
   distinct. State the separate future RUS boundary without enabling new loops
   or claiming general resource preservation or quantitative RS.
+- Specify the exact target instrument correspondence for Observe, including
+  conditional quantum states, retained owners and measurement/reset/feed-forward
+  capability premises.
+- Specify ordered logical axes, initial/final physical placements and
+  routing workspace obligations for target realizations.
+- Locate terminal target-lowering refusals in the original closed specialization
+  when a failed Raw operation came from a generic source body.
+- Specify the existing finite phase representation and the literal
+  non-Clifford instruction counts of the canonical terminal target.
 - Clarify complete Observe instruments, linear feed-forward and the separate
   postselection boundary. Retain bounded instrument/Unit conformance observations
   and original failures without claiming general source-preservation or CPTP proofs.

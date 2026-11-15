@@ -8,6 +8,7 @@ universal gate set, synthesis algorithm or new source syntax. The current
 implementation and proof limits are stated below.
 
 The governing decisions are [#120](https://github.com/MGYamada/Qleisli/issues/120),
+[#121](https://github.com/MGYamada/Qleisli/issues/121),
 [#127](https://github.com/MGYamada/Qleisli/issues/127),
 [#280](https://github.com/MGYamada/Qleisli/issues/280) and
 [#281](https://github.com/MGYamada/Qleisli/issues/281). Their remaining
@@ -42,6 +43,65 @@ Clifford+T synthesis with at most one clean ancilla for `2^n × 2^n` unitary mat
 neither grants arbitrary dirty workspace nor verifies a particular compiler's
 output. See the [original theorem](https://arxiv.org/html/1212.0506v3#S2).
 
+## Observing instruments on a target
+
+The [source instrument judgment](source-text.md#instruments-and-ordinary-feed-forward)
+defines the complete outcome maps of an `Observe` expression. Realization
+requires a separate judgment for its closed instance, the selected target
+profile and the actual emitted artifact. The judgment fixes the ordered quantum
+and classical interfaces, logical encodings and projection of target records to
+source outcomes. It accounts for the initialization and disposition of every
+additional physical owner.
+
+For each ordinary input `x` and declared outcome `c`, let `Φ[x,c]` be the
+source map and `Ψ[x,c]` the emitted instrument's map after the declared record
+projection. The projection assigns every target history to exactly one source
+outcome, including histories with records hidden from the source. With the
+declared input and output encoding channels `E_in` and `E_out`, the exact
+obligation is
+
+```text
+(Ψ[x,c] ⊗ id_R)((E_in ⊗ id_R)(ρ)) =
+(E_out ⊗ id_R)((Φ[x,c] ⊗ id_R)(ρ)).
+```
+
+It holds for every finite external reference `R` and every joint input
+`ρ` at the complete source interface. The unnormalized maps fix both outcome
+probabilities and the residual quantum state on the declared retained owners.
+The correspondence includes consumed owners, the order of all remaining
+owners and the action of every branch that contributes to a public outcome.
+
+The evidence states how the profile realizes each required measurement basis,
+where measurements can occur, which owners remain live, and how reset or
+repreparation obtains its stated output. For feed-forward it identifies the
+available classical outcome, conditional operations and any dynamic control,
+scheduling or latency assumptions needed for the branch to execute with the
+specified live owners. Classical feed-forward selects a branch using a
+classical outcome. Coherent control instead acts on a live quantum selector and
+must preserve coherence between its sectors. Each needs its own realization
+evidence.
+
+Destructive readout accounts for the consumed owner. A retaining instrument
+requires the declared output owners and their conditional quantum state.
+A readout-and-prepare implementation qualifies only if the full correspondence
+equation holds. For example, measuring both data qubits in Z and reporting
+their parity has the same classical distribution as
+[`std::measurement::parity_zz`](stdlib.md) on an even Bell state. The two
+readouts lose the coherence between `00` and `11`, whereas the retaining parity
+projector preserves it. Preparing computational-basis replacements leaves
+that difference in the even outcome map.
+
+A terminal-readout-only profile may refuse a target claim that requires
+mid-circuit measurement and conditional quantum action. Missing capability or
+missing evidence is a target-lowering failure, so the source retains its
+instrument, type and effect. Any engineering approximation requires the
+[explicit separate claim below](#separate-engineering-approximation-claims)
+under [#31](https://github.com/MGYamada/Qleisli/issues/31). This abstract
+obligation from [#124](https://github.com/MGYamada/Qleisli/issues/124) is an
+input to the future [target capability schema](https://github.com/MGYamada/Qleisli/issues/179).
+QCP or another backend can express the premises using its own profile
+vocabulary. Source semantics are defined independently of that vocabulary.
+
 ## Closed specialization
 
 A generic definition describes a family. A **closed specialization** fixes
@@ -75,6 +135,43 @@ tracked in [#28](https://github.com/MGYamada/Qleisli/issues/28),
 [#44](https://github.com/MGYamada/Qleisli/issues/44) and
 [#47](https://github.com/MGYamada/Qleisli/issues/47).
 
+## Logical axes and physical placement
+
+The logical interface records the ordered axes of each owner using the exact
+[source type trees](type-model.md#structural-equality-coherence-and-physical-maps).
+A physical layout assigns the live axes to target locations. For example,
+the ordered pair of logical axes can occupy physical locations `(17,4)`.
+The first axis remains the first logical axis. Nested products and `Bits<n>`
+retain their declared axis and owner order. A zero-width owner retains its
+interface identity and contributes no physical location.
+
+A target realization records the initial and final placement or their
+equivalent ordered encodings. For a pure instance with semantic action `U`
+and actual target action `C`, a correspondence with encodings `E_in` and
+`E_out` has the form `C ∘ E_in = E_out ∘ U`. The encodings include the
+specified workspace and its boundary state where required. The equation
+extends to arbitrary joint inputs with an untouched reference. Observing
+realizations use the [outcome maps above](#observing-instruments-on-a-target)
+and record the placement and disposition of the owners still live at each
+interface, including any retired locations where the profile supports them.
+
+Routing may change the placement from `(17,4)` to `(4,17)` by an emitted
+physical SWAP, provided the evidence tracks each logical axis into its
+new location. The SWAP contributes to the target cost. A metadata relabeling
+changes the description of the layout and leaves the physical state in place.
+The encoding evidence must justify that relabeling. A source-level axis
+permutation changes the logical action and must be included in `U` with its
+specified order and phase. An emitted implementation of a logical SWAP must
+realize that action under its declared encodings.
+
+The placement evidence identifies each routing step and accounts for the
+live locations used by routing and synthesis workspace. The target model
+may expose this relation to QCP routing analysis. The [future target capability
+schema](https://github.com/MGYamada/Qleisli/issues/179) consumes the abstract
+correspondence required by [#126](https://github.com/MGYamada/Qleisli/issues/126).
+The current [bounded routing checker](#quantitative-resource-claims)
+covers literal physical SWAP intervals and their stated placement premises.
+
 ## Workspace and exact correspondence
 
 Source `clean`/`dirty` workspace is part of the author's program contract and
@@ -99,6 +196,17 @@ state. A type width, owner name or an example input does not prove this
 equation. For other encodings or differing input/output interfaces, the
 realization must state its corresponding typed equation explicitly.
 
+For the finite one-scratch checker, the application proof
+`WorkspaceTargetAction.clean_checked_separates` uses the exact checked
+insertion and output coefficients with QPTL's fixed-scratch law. The joint
+output density has support only in the zero-scratch block, for every input
+density on data and a reference. The companion
+`WorkspaceTargetAction.dirty_checked_promotion` binds every coefficient of
+the actual body to the logical operator promoted on the ordered data axes.
+`WorkspaceTargetAction.dirty_checked_reference` then applies that action
+to each joint reference column and proves that every selected input
+coordinate retains the output's scratch bit.
+
 Dirty workspace requires the declared identity action on its unknown state
 and all reference correlations. Returning its marginal state on a few inputs
 is insufficient. Observing implementations require the complete unnormalized,
@@ -117,6 +225,118 @@ introduces no approximate acceptance or error budget. Exact/approximate
 profile decisions remain in [#31](https://github.com/MGYamada/Qleisli/issues/31)
 and [#123](https://github.com/MGYamada/Qleisli/issues/123).
 
+## Controlled target realizations
+
+The coherent Meaning of `controlled(U)` is the ordered direct sum
+`I ⊕ U` with inactive sector zero and active sector one. Semantic unitarity
+establishes the operator property of `U`. The static `Controllable(U)`
+judgment separately governs source use under the
+[operation type rules](type-model.md#general-pure-operation-arrows).
+Target lowering additionally requires a checked realization of the exact
+direct sum on the selected target.
+
+For transparent implementations, a structural derivation must check each
+original gate or named implementation with its control, dependencies, axis
+order and exact phase. The implementation must act as identity in the
+inactive sector and implement the requested operation in the active sector.
+Composition and powers can compose those exact sector equations when the
+interfaces and control match. QPTL proves the corresponding operator
+identities in `controlled_mul` and `controlled_pow`. Provider calls and
+controlled powers used by QPE carry the same obligations.
+
+A realization certificate binds the original operation and Meaning, the
+actual emitted implementation, the target profile, and the ordered control,
+data and workspace encodings. It identifies where native controlled gates
+are used and where additional synthesis steps are needed. Physical counts
+include workspace preparation, live width, restoration, generated inverse
+steps and routing when required by that implementation. An opaque provider
+requires explicit controlled evidence bound to the requested operator and
+the emitted artifact.
+
+A scalar phase multiplying only the active block changes its phase relative
+to the inactive block. QPTL's `controlled_phase_ne` proves the change for
+any nontrivial scalar on a nonzero operator. Projective agreement or channel
+equality for the uncontrolled operation therefore cannot supply the
+controlled equation. An engineering approximation to a controlled operator
+must bound its error against the intended controlled Meaning itself and
+retain the exactness distinction below.
+
+## Isometries and initialized target interfaces
+
+A semantic isometry `V: A -> B` satisfies `V† V = I_A`. The basis trees
+of `A` and `B` can differ, including in width. A realization of
+`Op<A -> B>`, or its refinement `Op<A -> B, M>`, retains both exact
+ports and the requested Meaning. Sequential composition matches the middle
+tree exactly. Tensor composition preserves the declared order of both ports.
+
+For a target that implements the isometry with a unitary dilation, let
+`E_in: A -> P_in` and `E_out: B -> P_out` be the exact input and output
+isometric encodings, and let `C: P_in -> P_out` be the action of the actual
+target circuit. On every joint input `ψ` with external reference `R`,
+the realization must establish
+
+```text
+(C ⊗ I_R)(E_in ⊗ I_R) ψ = (E_out ⊗ I_R)(V ⊗ I_R) ψ.
+```
+
+The input encoding specifies any initialized backend wires and their ordered
+placement. The output encoding identifies the retained logical output and
+fixes the state of every backend wire claimed to be returned clean. Other
+physical degrees of freedom require an explicit output contract. Isometry
+typing introduces no implicit discard or partial trace. Source `clean` and
+`dirty` contracts bind source owners separately. A target claim accounts for
+every physical wire used by the dilation, including initialized backend
+workspace, plus the preparation, realization, cleanup and routing required
+by the selected target model. A dilation existence theorem supplies a
+candidate. The accepted artifact still requires the displayed correspondence.
+
+The mathematical adjoint reverses `V` on its image. On the full output space,
+`V V†` is the projector onto that image. For an exact unitary dilation,
+`C† E_out V = E_in`, including under arbitrary external reference, so an
+available checked reverse circuit recovers the encoded input on that image.
+An application outside the established image needs its own contract. The
+static `Adjointable` capability and physical realization of a reverse
+operation require independent evidence under the
+[operation type rules](type-model.md#general-pure-operation-arrows).
+The QPTL theorem `dilation_recover_reference` derives the image-restricted
+equation from the exact forward square and the unitary implementation law.
+
+## Exact target-domain membership
+
+`M ∈ ExactDomain(P)` is an abstract judgment about the requested exact
+Meaning `M` and a specified target profile `P`. Its evidence identifies the
+profile and version, literal gate vocabulary, coefficient and parameter
+domain, ordered interface, and phase convention. It also states the admitted
+initialization, encoding, workspace and restoration assumptions. Same-wire
+and clean-workspace profiles can therefore have different exact domains.
+
+Physical Realizability requires evidence of this premise for an accepted
+exact target realization. A checked exact witness for the profile can
+establish membership and bind the actual emitted artifact to the same
+Meaning. An existence theorem or coefficient test can support this judgment
+within its own hypotheses. A necessary condition alone does not authorize a
+candidate. A search failure or capacity refusal leaves the claim unproved.
+A target-domain refusal concerns the requested realization; the source
+retains its exact meaning and typing.
+
+For a profile whose gates and computational-basis coordinates have
+coefficients in `Q(ζ8)`, every entry of the gate product lies in that field.
+Appending clean zero workspace and taking the corresponding returned
+coordinate selects entries of the same product. A controlled phase of one
+sixteenth of a turn has coefficient `ζ16` at its active diagonal entry,
+which is outside `Q(ζ8)`. The obstruction applies for any number of such
+clean axes. The QPTL theorem `extracted_sixteenth_ne` proves the coefficient
+obstruction. A target with a declared native sixteenth-turn gate requires
+its own exact-domain evidence. The existing eighth-root execution profile
+reports an unsupported exact phase for such a request.
+
+Engineering approximation requires an explicit separate claim with the
+applicable metric, closed budget and actual artifact correspondence, as
+specified below. A failed exact request does not choose that path implicitly.
+This judgment is independent of any eventual QCP implementation and can be
+used by the future [target capability schema](https://github.com/MGYamada/Qleisli/issues/179).
+The domain boundary is tracked in [#123](https://github.com/MGYamada/Qleisli/issues/123).
+
 ## Separate engineering approximation claims
 
 The human-adopted **EXACT-2026-01** interpretation in
@@ -134,8 +354,8 @@ outcomes and residual outputs with arbitrary external references. Sampling,
 algorithmic resolution, synthesis and numerical-runtime information remain
 distinct; an absent claim does not mean zero error. The bounded engineering
 profiles below implement these contracts within their stated domains. They
-define no universal approximation metric; target-resource certificates remain
-separate work under #163.
+define no universal approximation metric. The bounded literal OpenQASM
+resource profile below uses its own closed engineering budget.
 
 Engineering receipts and their API/CLI claim kinds must remain mechanically
 distinct from exact correspondence and resource evidence. Neither a small
@@ -464,9 +684,34 @@ bytes, full contract and checker path. Its actual graph is data, without a Rust
 accepted-program constructor. Text/JSON report the target-bound instrument
 inequality and actual digests. Sampling, algorithmic resolution and numerical
 runtime errors remain separately unclaimed. Source/export preservation, exact
-source correspondence, pure phase agreement, inverse/control, exact cleanup,
-target resources and constitutional PR/RS remain unestablished even at epsilon
-zero. This comparison supplies no resource certificate for #163.
+source correspondence, pure phase agreement, inverse/control, exact cleanup
+and constitutional PR/RS remain unestablished even at epsilon zero. Version 1
+checks the instrument bound alone.
+
+### Literal OpenQASM engineering resource limits
+
+Version 2 of the same request uses claim kind
+`engineering-target-instrument-resource-bound` and adds one required field.
+
+```json
+"resource_limits": {"model":"openqasm3-one-qubit-literal-gates-v1","gates":2,"t_gates":2}
+```
+
+Both limits are closed integers from 0 through 8. `gates` bounds emitted gate
+lines and `t_gates` bounds the subset `t` and `tdg`. The required literal
+header, reset and terminal readout fix one reserved qubit, one reset and one
+measurement. This model charges the literal one-qubit vocabulary and excludes
+compiler work, synthesis search, hardware timing, and cross-component
+composition. The metric, epsilon and single-component contract stay required.
+
+Lean checks the limits against the independently decoded word used for the
+engineering instrument inequality. The typed execution view includes the
+model and limits. Text and JSON reports include the checked counts and limits
+with the identities of the actual artifact, original ideal and request.
+Changing any of them requires a fresh comparison. A timed-out or rejected
+check emits no certificate. The engineering receipt cannot supply exact
+cleanup, phase-sensitive coherent control, or constitutional PR/RS. See
+[#163](https://github.com/MGYamada/Qleisli/issues/163).
 
 ## Quantitative resource claims
 
@@ -475,6 +720,10 @@ artifact, target/profile, resource measures, schedule or interpretation of
 those measures, and checked bounds. Changing providers, layout, target,
 workspace or output bytes invalidates reuse unless checked correspondence
 establishes the new claim. A content hash establishes identity, not the bound.
+
+The [provider resource contract](functional-boundary.md#provider-selection-and-quantitative-resource-evidence)
+applies to each selected body and composition. An external, opaque or
+device-native implementation must meet the same admission requirements.
 
 Physical live width includes logical data, explicit source workspace,
 backend synthesis workspace and routing/target storage. Count actual physical
@@ -643,6 +892,55 @@ target schemas retain their separately scheduled scope in
 implementation. Phase-aware target cost is tracked in
 [#165](https://github.com/MGYamada/Qleisli/issues/165).
 
+## Phase words and target-dependent costs
+
+In the eighth-root finite profile, let `ω = exp(2πi/8)`. The one-axis phase
+with residue `r` is exactly `diag(1,ω^r)` on the declared axis, including
+when it acts on an input entangled with a reference. A supported source
+`phase[j,d]` has `r = 8j / 2^d` when this quotient is an integer. The
+[primitive contract](primitive-boundary.md) specifies the source and profile
+limits. Adjoint changes the exponent to `-r` modulo eight. Repetition
+adds the residue on each action. A scalar `ω^r I` differs from a one-axis
+phase and can become a relative phase under coherent control.
+
+The existing finite format represents the one-axis phase by a monomial with
+the chosen axis, identity permutation `[0,1]` and phase exponents `[0,r]`.
+The action of the historical word of `r` T gates is the same diagonal.
+Keep decoding the existing gate and circuit constructors in their versioned
+profiles. This equivalent monomial representation requires no dedicated Phase
+constructor or change to the established encoding of a T word.
+
+For the canonical terminal OpenQASM vocabulary, the selected one-axis words
+and their literal `t` or `tdg` counts are
+
+| Residue | Emitted word | Literal T/TDG |
+| --- | --- | ---: |
+| 0 | empty | 0 |
+| 1 | T | 1 |
+| 2 | S | 0 |
+| 3 | S, T | 1 |
+| 4 | Z | 0 |
+| 5 | S†, T† | 1 |
+| 6 | S† | 0 |
+| 7 | T† | 1 |
+
+These counts apply to the specified one-axis words. A coherent branch or
+control requires the complete ordered action on each sector with its original
+phase. For example, the terminal export uses two T instructions, one T† and
+two CX instructions for controlled S. A negative control can introduce
+additional X gates. A conjunction-based lowering includes its live scratch,
+preparation, computation and full reverse
+chain. A model that decomposes CCX must include that decomposition. In the
+canonical terminal profile CCX is a single literal gate and is outside the
+`t_gates` counter, which counts exactly the emitted T and T† instructions.
+
+Literal source-IR word counts, optimized target instruction counts and resource
+bounds are separate claims. A certificate binds the actual emitted word and
+checked decomposition to its profile and includes the required workspace and
+routing. An exponent, operation name, or normalized phase word supplies no
+bound for a different target or an optimal cost claim. See
+[#165](https://github.com/MGYamada/Qleisli/issues/165).
+
 ## Small obstruction examples
 
 Embedding a `k`-qubit gate `G` into `n` wires, under a fixed ordered basis,
@@ -650,6 +948,13 @@ gives determinant `det(G)^(2^(n-k))`. Determinants multiply under composition.
 Consequently a target generator set restricts same-wire determinants.
 This is a necessary obstruction; sufficiency requires a separate theorem for
 that precise generator, phase and workspace profile.
+
+In QPTL, `QPTL.FiniteMatrix.det_embedded` proves this determinant formula
+for finite matrix bases and simultaneous reindexing of both interfaces.
+`QPTL.FiniteMatrix.exact_same_wire_obstruction` proves that a product of
+generators whose determinants lie in a multiplication-closed set containing
+one cannot equal a requested matrix with determinant outside that set.
+The premises retain the chosen target vocabulary, layout and exact phase.
 
 The repository retains two exact small examples:
 
@@ -704,9 +1009,13 @@ instance, requested profile and failed premise, and distinguish a proved
 obstruction from unsupported synthesis or exhausted checking capacity. An
 unsupported target operation or target-width error must not be presented as
 failure of semantic unitarity. The current exporter already reports unsupported
-operations and the synthesis-workspace capacity limit; a general specialization
-certificate, profiler and obstruction diagnostic are not implemented by those
-messages. Pending diagnostics and release evidence remain part of
+operations and the synthesis-workspace capacity limit. For source project
+exports, a failure at a Raw operation emitted inside a closed generic body
+identifies the specialization and points to the original expression. The
+terminal exporter reports its own target refusal after source checking has
+completed. Imported artifacts lack these compiler-local source diagnostics.
+The location supplies no realization or resource certificate. General
+specialization certificates and diagnostic coverage remain part of
 [#48](https://github.com/MGYamada/Qleisli/issues/48),
 [#120](https://github.com/MGYamada/Qleisli/issues/120) and
 [#127](https://github.com/MGYamada/Qleisli/issues/127).

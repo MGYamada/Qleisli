@@ -295,6 +295,11 @@ def request(word=('h',), epsilon=1, majorants=(Fraction(1, 2), Fraction(1, 2))):
         epsilon=dyadic(epsilon), majorants=[dyadic(v) for v in majorants], expected_artifact=encoded(ideal(word)).decode())
 
 
+def resource_request(data, gates, t_gates):
+    return dict(data, version=2, claim_kind='engineering-target-instrument-resource-bound',
+        resource_limits=dict(model='openqasm3-one-qubit-literal-gates-v1', gates=gates, t_gates=t_gates))
+
+
 def dependency_ideal(data):
     data = copy.deepcopy(data)
     pure = dict(quantum_inputs=[port(0, [0])], classical_inputs=[],
@@ -383,6 +388,9 @@ def complete_view(target_bytes, data):
         signature_view(data['actual_signature']), signature_view(data['expected_signature']),
         identity_view(data['identity']), dyadic_view(data['epsilon']),
         [dyadic_view(v) for v in data['majorants']], data['expected_artifact']]
+    if 'resource_limits' in data:
+        limits = data['resource_limits']
+        context.append(['resource-limits', limits['model'], limits['gates'], limits['t_gates']])
     return ['engineering-openqasm', context, list(target_bytes), list(word),
             graph_view(ideal(word)), graph_view(json.loads(data['expected_artifact']))]
 
@@ -438,6 +446,19 @@ def live(kernel, record=None):
     good = complete_view(actual, base)
     invoke('emitted-zero-versus-original-H-epsilon-one', actual, base, True)
     invoke('H-original-exactzero-engineering', target(('h',)), request(epsilon=0, majorants=(0, 0)), True)
+    phase_word = target(('t', 'tdg'))
+    exact = request((), 0, (0, 0))
+    limit = resource_request(exact, 2, 2)
+    invoke('literal-phase-pair-within-both-limits', phase_word, limit, True)
+    invoke('same-instrument-exceeds-gate-limit', phase_word, resource_request(exact, 1, 2))
+    invoke('same-instrument-exceeds-t-limit', phase_word, resource_request(exact, 2, 1))
+    invoke('same-instrument-empty-word-within-zero-limits', target(), resource_request(exact, 0, 0), True)
+    stale = complete_view(phase_word, limit)
+    stale[1][-1] = ['resource-limits', limit['resource_limits']['model'], 3, 2]
+    invoke('stale-limit-view', phase_word, limit, view=stale, error='decoded_view')
+    stale = complete_view(phase_word, limit)
+    stale[1].pop()
+    invoke('resource-limit-omitted-from-view', phase_word, limit, view=stale, error='decoded_view')
     for name in GATES:
         invoke('single-gate-' + name, target((name,)), request((name,), 0, (0, 0)), True)
     invoke('eight-gates', target(('h',) * 8), request((), 0, (0, 0)), True)
@@ -530,7 +551,8 @@ def live(kernel, record=None):
     assert digest(kernel.read_bytes()) == kernel_sha
     summary = dict(status='passed', kernel_sha256=kernel_sha, comparison_script_sha256=digest(Path(__file__).read_bytes()),
         native_cases=len(rows), maximum_physical_qubits=1, retention=retention, independent_exact_oracle=oracle,
-        source_export_preservation_verified=False, target_resources_verified=False, issue_completion_credit=False, records=rows)
+        source_export_preservation_verified=False, literal_gate_resource_limits_checked=True,
+        constitutional_rs_verified=False, issue_completion_credit=False, records=rows)
     if record:
         (record / 'validation.json').write_text(json.dumps(summary, indent=2) + '\n')
     print(json.dumps({k: v for k, v in summary.items() if k != 'records'}))

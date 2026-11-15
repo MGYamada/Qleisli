@@ -157,14 +157,17 @@ ENGINEERING_OPENQASM_PROOF = {'proof_scope': 'NativeContext.run_engineering_targ
                 'NativeEngineeringOpenQasmProtocol.run_meaning/run_complete_adjoint_bound bind both actual '
                 'original bodies/dependencies, exact Kraus completeness, full Unit -> classical Bit '
                 'signatures and ordered public outcomes to CompleteAdjointBound on every finite reference '
-                "and observable at the caller's literal epsilon. The immutable private Rust report retains "
+                "and observable at the caller's literal epsilon. NativeEngineeringOpenQasmProtocol.run_literal_gate_limits "
+                'binds the version 2 gate and T/TDG bounds to the same original target bytes and decoded word. '
+                'The immutable private Rust report retains '
                 'original target, ideal, request and selected checker path without an accepted-program '
                 'conversion, including at epsilon zero.',
  'gaps': 'Engineering-only canonical closed one-qubit target profile; the declared standard-gate '
-         'mathematical meaning is an explicit specification assumption. This checks the target-bound '
-         'complete-adjoint relation, not source/export preservation, exact source correspondence, general '
-         'OpenQASM, hardware, coherent control/inverse, cleanup, target resources or constitutional '
-         'admission. Composition and synthesis/resource certificates, source/compiler/export correctness, '
+         'mathematical meaning is an explicit specification assumption. The checked claims cover the target-bound '
+         'complete-adjoint relation and the version 2 closed literal gate profile. Source/export preservation, '
+         'exact source correspondence, general OpenQASM, hardware, coherent control/inverse, cleanup, broader resource '
+         'claims and constitutional admission remain open. Composition and synthesis resource certificates, '
+         'source/compiler/export correctness, '
          'decoder/walker/native-compiler/deployed-binary/runtime correspondence remain separate. '
          'Checker-path retention is not binary attestation. Sampling, algorithmic-resolution and '
          'numerical-runtime errors are not claimed. This route does not inherit NativeValidity.check_sound '
@@ -1139,7 +1142,9 @@ PATHS['engineering-openqasm-check'] = path_rule(
    'pub fn check_serialized_with_kernel(',
    'Arc::ptr_eq(&self, &decision.subject)',
    'target::Decoded::new(target)?',
-   'const CLAIM_KIND: &str = "engineering-target-instrument-bound"']),
+   'const CLAIM_KIND: &str = "engineering-target-instrument-bound"',
+   'const RESOURCE_CLAIM_KIND: &str = "engineering-target-instrument-resource-bound"',
+   'pub fn with_resource_limits(']),
  ('src/interchange/engineering_openqasm/runtime.rs',
   ['fn invoke_bound(', 'Mode::EngineeringOpenQasm',
    'mode.argument()', 'native_context::engineering_response(bytes, edition, mode)']),
@@ -1147,7 +1152,9 @@ PATHS['engineering-openqasm-check'] = path_rule(
   ['const MAX_TARGET_BYTES: usize = 1024', 'const MAX_TARGET_GATES: usize = 8', 'fn operation(']),
  ('src/interchange/execution_view/finite/engineering_openqasm.rs',
   ['pub(in crate::interchange) fn complete(',
-   '"engineering-openqasm-request", 14',
+   '"engineering-openqasm-request"',
+   '14 + usize::from(limits.is_some())',
+   'w.record("resource-limits", 3',
    'w.list(target,',
    'w.list(gates,',
    'actual.write(w.writer)?',
@@ -1155,7 +1162,7 @@ PATHS['engineering-openqasm-check'] = path_rule(
  ('src/bin/qleisli/engineering.rs', ['arg == "compare-openqasm3"']),
  ('src/bin/qleisli/engineering_openqasm.rs',
   ['fn execute(', 'target_artifact_sha256', 'source_preservation_verified']),
- ('scripts/test_engineering_openqasm_native.py', ['def retained(', 'def live(', 'def independent_oracle(']),
+ ('scripts/test_engineering_openqasm_native.py', ['def retained(', 'def live(', 'def independent_oracle(', 'same-instrument-exceeds-t-limit']),
  ('scripts/test_engineering_openqasm_cli.py', ['def baseline(', 'def live(']),
  ('lean-kernel/Cli/EngineeringOpenQasm.lean',
   ['def runEngineeringOpenQasm ',
@@ -1188,10 +1195,12 @@ PATHS['engineering-openqasm-check'] = path_rule(
    'def Retained.request ',
    'def checkRetained ',
    'theorem checkRetained_bound',
+   'checkResources checked.target decoded.limits',
    'Qirf.read decoded.expectedText.toUTF8']),
  ('lean-kernel/Protocol/ExecutionView/EngineeringOpenQasm.lean',
   ['def engineeringOpenQasmRequest ',
    'def engineeringOpenQasm ',
+   'engineeringRecord "resource-limits"',
    'value.checked.target.original.data.toList',
    'value.checked.target.gates.map',
    'graph (Qirf.EngineeringOpenQasm.actualArtifact value.checked.target)',
@@ -1205,7 +1214,7 @@ PATHS['engineering-openqasm-check'] = path_rule(
  ('lean/Qleisli/CanonicalOpenQasmGates.lean', ['theorem gate_meaning']),
  ('lean/Qleisli/NativeEngineeringOpenQasm.lean', ['structure Meaning ', 'theorem check_meaning']),
  ('lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean',
-  ['theorem run_meaning', 'theorem run_complete_adjoint_bound'])],
+  ['theorem run_meaning', 'theorem run_complete_adjoint_bound', 'theorem run_literal_gate_limits'])],
     [('src/interchange/engineering_openqasm/tests.rs',
   'native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering'),
  ('src/interchange/engineering_openqasm/tests.rs',

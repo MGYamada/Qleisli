@@ -447,6 +447,11 @@ split/merge, `n+1` low-bit peeling and doubled-size source before checking.
 The actual parser rejects `+` in `Bits<n+m>`. This records the adopted next
 design obligation, not an executable adapter or algorithm proof.
 
+The [terminal specialization study](target-specialization-v030/session.json)
+retains the initial manifest refusal and both exact source checks. Only the
+H specialization exports to the terminal target. The unchanged scalar-phase
+specialization originally produced a Raw operation index without a source span.
+
 Each `session.json` names the task, kind, baseline commit/version, context,
 ordered attempts and observations. Each attempt contains a complete project,
 source hashes and a reason; observations retain argument lists, exit codes and
@@ -793,3 +798,7 @@ retains two first projects and their actual refusals. The original
 and [selected manifest](standalone-nominal-basis-v030/attempt-01/output/Qargo.toml)
 are retained. The unchanged project now returns Bit 1 and the selected
 preparation verifies its canonical three-state output.
+
+The [closed-provider resource study](closed-provider-resources-v030/context.md)
+keeps the first workspace and operation-selection refusals, plus direct-provider
+target counts and the separate placement refusal after source acceptance.

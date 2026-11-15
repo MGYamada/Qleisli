@@ -61,7 +61,13 @@ struct CallSite<'a> {
 
 // Diagnostic metadata only: acceptance still depends solely on raw IR.
 // Keys use the independent verifier's operation/branch-index path convention.
-type OperationSources = BTreeMap<Vec<usize>, (String, Span)>;
+type OperationSources = BTreeMap<Vec<usize>, OperationSource>;
+
+struct OperationSource {
+    module: String,
+    span: Span,
+    instance: Option<usize>,
+}
 
 enum ComputedPredicate {
     Table(Vec<u16>, bool),
@@ -97,7 +103,9 @@ fn verification_error(
     let (module, span) = (1..=path.len())
         .rev()
         .find_map(|length| sources.get(&path[..length]))
-        .map_or((module, span), |(module, span)| (module.as_str(), *span));
+        .map_or((module, span), |source| {
+            (source.module.as_str(), source.span)
+        });
     compiler.error(
         module,
         span,
@@ -1331,19 +1339,32 @@ impl Lowerer<'_, '_> {
         let result = self.expr_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
-        // Nested expressions/callees already supplied more precise positions.
-        // Fill only the operations emitted directly by this expression.
-        for index in first_operation..self.raw.operations.len() {
-            self.operation_sources
-                .entry(vec![index])
-                .or_insert_with(|| (module.to_owned(), expr.span));
-        }
+        self.record_operation_sources(module, expr.span, first_operation);
         // Values entering an environment are bounded before they can be reused.
         // Constructors combine only previously checked children, so even an
         // over-limit temporary adds at most one layer before being rejected.
         self.compiler
             .check_tree(module, expr.span, value.tree_size())?;
         Ok(value)
+    }
+
+    fn record_operation_sources(&mut self, module: &str, span: Span, first_operation: usize) {
+        // Nested expressions/callees already supplied more precise positions.
+        // Fill only the operations emitted directly by this expression.
+        for index in first_operation..self.raw.operations.len() {
+            self.operation_sources
+                .entry(vec![index])
+                .or_insert_with(|| OperationSource {
+                    module: module.to_owned(),
+                    span,
+                    instance: self
+                        .compiler
+                        .concrete_context
+                        .current
+                        .as_ref()
+                        .and_then(|instance| instance.record),
+                });
+        }
     }
 
     fn prefer_runtime_root(&mut self) {
@@ -2399,7 +2420,27 @@ fn lower_function_in_context(
             context,
         )?;
     }
+    let mut labels = BTreeMap::new();
+    let specialization_origins = if key_name.0 == "main" && key_name.1 == "main" {
+        lower
+            .operation_sources
+            .into_iter()
+            .filter_map(|(path, source)| {
+                let [index] = path.as_slice() else {
+                    return None;
+                };
+                let instance = source.instance?;
+                let label = labels
+                    .entry(instance)
+                    .or_insert_with(|| lower.compiler.specialization_label(instance));
+                Some((*index, (source.module, source.span, Arc::clone(label))))
+            })
+            .collect()
+    } else {
+        BTreeMap::new()
+    };
     Ok(program
+        .retain_specialization_origins(specialization_origins)
         .retain_source_context(lower.source_context)
         .retain_instrument_calls(lower.instrument_calls))
 }

@@ -1023,9 +1023,15 @@ fn literal_target(text: &str) -> (usize, Vec<CircuitStep>) {
 }
 
 fn exact_target(text: &str, logical_phases: &[u8]) -> Result<(), qleisli::contract::ContractError> {
+    exact_target_matrix(text, exact_diagonal(logical_phases)?)
+}
+
+fn exact_diagonal(
+    logical_phases: &[u8],
+) -> Result<qleisli::contract::exact::Matrix, qleisli::contract::exact::ExactError> {
     use qleisli::contract::exact::{Exact, Matrix};
     let logical_dim = logical_phases.len();
-    let meaning = Matrix::new(
+    Matrix::new(
         logical_dim,
         logical_dim,
         (0..logical_dim * logical_dim)
@@ -1037,8 +1043,7 @@ fn exact_target(text: &str, logical_phases: &[u8]) -> Result<(), qleisli::contra
                 }
             })
             .collect(),
-    )?;
-    exact_target_matrix(text, meaning)
+    )
 }
 
 fn exact_target_matrix(
@@ -1251,6 +1256,123 @@ fn controlled_ordinary_contract_export_returns_scratch_exactly() {
             );
         }
     }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn legacy_conditional_phase_words_and_monomials_realize_the_same_operator() {
+    use qleisli::contract::exact::Budget;
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
+    use qleisli::edition::Edition;
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
+    use qleisli::interchange::native::{Kernel, Proposal};
+    use qleisli::interchange::{RootInterface, Version};
+
+    let ty = BasisType::Pair(Box::new(BasisType::Bit), Box::new(BasisType::Bit));
+    let port = |id| QuantumPort {
+        token: TokenId(id),
+        wires: vec![WireId(0), WireId(1)],
+        shape: BasisShape { bits: 2 },
+    };
+    let boundary = UnitaryBoundary::new(ty.clone(), port(0), port(5)).unwrap();
+    let interface = RootInterface {
+        input: ty.clone(),
+        output: ty,
+    };
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let t_word = |residue| {
+        vec![
+            UnitaryStep::Gate {
+                gate: SingleGate::T,
+                target_index: 0,
+            };
+            usize::from(residue)
+        ]
+    };
+    for zero_phase in 0..8u8 {
+        let one_phase = (zero_phase + 3) % 8;
+        let legacy = vec![
+            RawOp::Split {
+                input: TokenId(0),
+                left: TokenId(1),
+                right: TokenId(2),
+                left_bits: 1,
+            },
+            RawOp::QuantumIf {
+                control: TokenId(1),
+                target: TokenId(2),
+                control_out: TokenId(3),
+                target_out: TokenId(4),
+                zero_ops: t_word(zero_phase),
+                one_ops: t_word(one_phase),
+            },
+            RawOp::Join {
+                left: TokenId(3),
+                right: TokenId(4),
+                output: TokenId(5),
+            },
+        ];
+        let phases = [(false, zero_phase), (true, one_phase)];
+        let monomial = vec![RawOp::ApplyUnitary {
+            input: TokenId(0),
+            output: TokenId(5),
+            steps: phases
+                .into_iter()
+                .map(|(when_one, residue)| CircuitStep {
+                    controls: vec![BitControl { index: 0, when_one }],
+                    action: CircuitAction::Monomial {
+                        indices: vec![1],
+                        permutation: vec![0, 1],
+                        phases: vec![0, residue],
+                    },
+                })
+                .collect(),
+        }];
+        let required = exact_diagonal(&[0, 0, zero_phase, one_phase]).unwrap();
+        for (encoding, operations) in [("T word", legacy), ("monomial", monomial)] {
+            let raw = RawProgram {
+                quantum_inputs: vec![port(0)],
+                classical_inputs: vec![],
+                operations,
+                quantum_outputs: vec![TokenId(5)],
+                classical_outputs: vec![],
+                declared_effect: Effect::Unitary,
+            };
+            let legacy_profile = kernel.check_raw(&raw, None, Version::V1, None).unwrap();
+            let proposal = Proposal::from_raw(&raw, Some(&interface), Version::V2, None).unwrap();
+            let checked = check_unitary(
+                Edition::E2026,
+                proposal.artifact(),
+                &boundary,
+                &required,
+                &mut Budget::new(DEFAULT_EXACT_WORK),
+            )
+            .unwrap_or_else(|error| panic!("{encoding} phases {phases:?}: {error}"));
+            assert_eq!(legacy_profile.program().raw(), checked.program().raw());
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn conditional_phase_and_adjoint_export_with_a_reference_axis() {
+    let program = ordinary_terminal(
+        "let a=init0();let b=init0();let r=init0();
+         let(a,b)=qif(a,b){0=>wrapper,1=>inverse};
+         (measure_z(a),(measure_z(b),measure_z(r)))",
+        "unitary fn inverse(q:Q<Bit>)->Q<Bit>{adjoint(wrapper)(q)}",
+        "(Bit,(Bit,Bit))",
+    );
+    assert!(has_contract(&program));
+    let text = export_openqasm3(&program).unwrap();
+    exact_target(&text, &[0, 0, 1, 7, 0, 0, 1, 7]).unwrap();
+    assert!(exact_target(&text, &[0, 0, 7, 1, 0, 0, 7, 1]).is_err());
 }
 
 #[cfg_attr(
