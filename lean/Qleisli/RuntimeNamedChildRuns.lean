@@ -1073,6 +1073,7 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
       obtain ⟨structural,e,_dispatched,ran⟩ := bind_success _ _ _ _ _ h
       cases structural
       case true =>
+        obtain ⟨_,_,_prepared,ran⟩ := bind_success _ _ _ _ _ ran
         obtain ⟨_,_,_action,returned⟩ := bind_success _ _ _ _ _ ran
         have same := (pure_success _ _ _ _ returned).1
         subst after
