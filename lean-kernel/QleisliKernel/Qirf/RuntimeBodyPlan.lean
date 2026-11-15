@@ -4,6 +4,7 @@ import QleisliKernel.Qirf.RuntimeTransformRequest
 import QleisliKernel.Qirf.RuntimeBranchAction
 import QleisliKernel.Qirf.RuntimeBasisAction
 import QleisliKernel.Qirf.RuntimeCertifiedComputed
+import QleisliKernel.Qirf.RuntimeComputedUse
 import QleisliKernel.Qirf.RuntimeWorkspace
 import QleisliKernel.SourceTypes.QuantumArms
 
@@ -198,7 +199,8 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
   | computed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}
       {position : Position} {before : Queues}
-      (protectedScope : event.written.parts.logical = none) :
+      (protectedScope : event.written.parts.logical = none)
+      (prepared : RuntimeComputedUse.OriginalSource event) :
       Event preparation source (.computed event children) position before before
   | certifiedComputed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}

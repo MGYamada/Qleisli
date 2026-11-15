@@ -23,6 +23,13 @@ private def status (packet : StructuralComputedRaw.Packet) : Option Finite.Error
 
 private def exit := ((StructuralComputedRaw.read packet initial).run 400000).1.toOption.map (·.after)
 
+private def metered := StructuralComputedRaw.readCharge packet initial
+#guard ((StructuralComputedRaw.read packet initial).run metered).1.toOption.isSome
+#guard ((StructuralComputedRaw.read packet initial).run metered).2 == 0
+#guard (match ((StructuralComputedRaw.read packet initial).run (metered-1)).1 with
+  | .error (.arithmetic .workLimit) => true
+  | _ => false)
+
 #guard exit.map (·.live) == some [spectator,⟨12,[8,2],2⟩]
 #guard exit.map (·.frame) == some [2,8]
 #guard exit.map (·.seenWires) == some [8,2,6,4]

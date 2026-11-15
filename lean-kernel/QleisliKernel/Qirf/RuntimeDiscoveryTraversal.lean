@@ -337,16 +337,14 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
             return ⟨before,⟨event.staticRows ++ checked.body.staticRows ++ rows,[]⟩,[],data⟩
           | .computed event children =>
             if protectedScope : event.written.parts.logical = none then
-              let predicate ← SourceRuntimeTrace.readComputedPredicateBody event
-              let body ← SourceRuntimeTrace.readComputedSource event
-              let action ← RuntimeComputedUse.sourceBody body
-              let rows ← ordinaryRows artifact.sources 128 predicate.checked.events
+              let prepared ← RuntimeComputedUse.prepareOriginal event
+              let rows ← ordinaryRows artifact.sources 128 prepared.predicate.checked.events
               let data : scope.EventData mode.preparation (.computed event children) position before before := by
                 cases scope with
                 | supplied => exact ()
-                | original => exact some (.computed protectedScope)
+                | original => exact some (.computed protectedScope prepared)
               return ⟨before,⟨event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
-                predicate.checked.summary.staticRows ++ action.rows ++ rows,[]⟩,[],data⟩
+                prepared.predicate.checked.summary.staticRows ++ prepared.action.rows ++ rows,[]⟩,[],data⟩
             else
               let prepared ← RuntimeCertifiedComputed.prepare event
               let rows ← ordinaryRows artifact.sources 128 prepared.predicate.body.checked.events

@@ -868,12 +868,20 @@ literal circuit count includes every forward step, inverse step and protected
 use. The Lean theorem `Qleisli.RuntimeComputedResources.structural_counts`
 binds these numbers to the same original source-checked Raw occurrence and
 retains caller spectators in the peak width.
+The Raw interval reader charges owner and issuance-history checks separately
+from literal circuit validation. Its circuit charge covers the full forward
+and inverse fields and the operand checks in each forward step and protected
+use. `QleisliKernel.Qirf.StructuralComputedRaw.read_work` proves the debit of
+the executable reader. Both charges consume the same shared work budget.
 The source-bound compute and inverse comparisons consume exactly
 `16 * (1 + sum(2 * control_count + 7))`, summing over the predicate clauses.
 The Lean theorem
 `QleisliKernel.Qirf.StructuralComputedUse.read_circuit_work` identifies the
-work state after both comparisons, before the source and auxiliary use-body
-checks. This charge depends on the literal circuit fields.
+work state after both comparisons and before checking the emitted auxiliary
+action. This charge depends on the literal circuit fields. The original
+runtime plan retains the predicate and auxiliary action computed by Lean for
+the exact source occurrence. Both the structural and finite-table paths use
+those source results and check the actual literal action independently.
 The same literal XOR factorization proves logical action for the independently
 checked Raw event, even for an arbitrary caller amplitude function. The
 source-bound theorem additionally identifies the predicate and phase from the

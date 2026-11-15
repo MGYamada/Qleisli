@@ -418,21 +418,27 @@ structure Original {sources caller} (event : SourceRuntimeContext.ComputedEvent 
 
 /-- The predicate and input coordinate map are derived from the same original
 typed body, including its already resolved ordinary callees. -/
-def read {sources caller} (event : SourceRuntimeContext.ComputedEvent sources caller) :
+def readFromBody {sources caller} {event : SourceRuntimeContext.ComputedEvent sources caller}
+    (body : SourceRuntimeTrace.Body event.predicate.target.signature)
+    (original : RuntimeInterval.Computed (SourceRuntimeTrace.readComputedPredicateBody event) body) :
     Finite.WorkM (Original event) := do
-  let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedPredicateBody event)
-  match parameters : body.val.checked.summary.parameterValues with
+  match parameters : body.checked.summary.parameterValues with
   | [parameter] =>
     Finite.guard (SourceRuntimeValues.typeOf parameter == Semantics.RuntimeType.ordinary event.input.basis) .request
     let fields ← NaturalAffine.witness (inputFields parameter)
-    match result : body.val.checked.summary.value with
+    match result : body.checked.summary.value with
     | [.ordinary [.bit] expression] =>
       let compiled ← NaturalAffine.witness (compile fields.val.1 expression)
-      return ⟨body.val, by with_reducible exact body.property, fields.val.1, fields.val.2,
+      return ⟨body,original,fields.val.1,fields.val.2,
         ⟨parameter,parameters,by with_reducible exact fields.property⟩, expression, result, compiled.val,
         by with_reducible exact compiled.property⟩
     | _ => throw .request
   | _ => throw .request
+
+def read {sources caller} (event : SourceRuntimeContext.ComputedEvent sources caller) :
+    Finite.WorkM (Original event) := do
+  let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedPredicateBody event)
+  readFromBody body.val (by with_reducible exact body.property)
 
 /-- Verify the original source's compiled predicate against the supplied
 literal steps. The target follows the original data in local wire order. -/

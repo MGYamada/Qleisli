@@ -32,6 +32,18 @@ def Packet.fields (packet : Packet) : Nat :=
     (packet.inverse.map (fun step => 1 + stepFields step)).sum +
     (packet.uses.map useFields).sum
 
+/-- Validate the frame and issuance history before and after the one owner
+transition. The transition issues one token and one scratch wire. Circuit
+fields are compared independently, with quadratic checks on each individual
+step or use's operands. Equality of the inverse and forward words scans
+their literal fields and does not visit owner history. -/
+def readCharge (packet : Packet) (state : Raw.State) : Nat :=
+  let stateFields := state.live.length + (state.live.map (·.wires.length)).sum +
+    state.frame.length + state.seenTokens.length + state.seenWires.length
+  32*((stateFields+4)^2 + packet.fields + 1 +
+    (packet.forward.map fun step => (stepFields step+1)^2).sum +
+    (packet.uses.map fun use => (useFields use+1)^2).sum)
+
 structure Checked (packet : Packet) (state : Raw.State) where
   input : Semantics.Raw.Port
   taken : Raw.State
@@ -50,8 +62,7 @@ structure Checked (packet : Packet) (state : Raw.State) where
 /-- Replay the existing Raw owner transition and check every original circuit
 step as an exact phase-free XOR. No truth table, matrix or dependency is read. -/
 def read (packet : Packet) (state : Raw.State) : WorkM (Checked packet state) := do
-  exactWork (Exact.charge
-    (32*(packet.fields+1)*(state.live.length+state.frame.length+state.seenTokens.length+state.seenWires.length+1)^2))
+  exactWork (Exact.charge (readCharge packet state))
   if inputValid : Raw.stateValid state = true then
     let transition ← lift (Raw.structuralCompute state packet.input packet.output packet.scratch
       packet.forward packet.inverse packet.uses)
@@ -64,6 +75,30 @@ def read (packet : Packet) (state : Raw.State) : WorkM (Checked packet state) :=
         transition.clauses,checked,conditions.1,conditions.2.1⟩
     else throw .request
   else throw .request
+
+theorem read_work {packet state checked work left}
+    (ok : (read packet state).run work = (.ok checked,left)) :
+    work = left + readCharge packet state := by
+  unfold read at ok
+  obtain ⟨paid,middle,charge,validation⟩ := Finite.bind_success _ _ _ _ _ ok
+  cases paid
+  have exactCharge := Finite.exactWork_success _ _ _ _ charge
+  have enough : readCharge packet state ≤ work := by
+    by_cases short : work < readCharge packet state
+    · rw [Exact.charge_failure _ _ short] at exactCharge
+      cases exactCharge
+    · exact Nat.le_of_not_gt short
+  rw [Exact.charge_success _ _ enough] at exactCharge
+  have remaining : middle = work - readCharge packet state := (congrArg Prod.snd exactCharge).symm
+  have unchanged : left = middle := by
+    split at validation
+    · obtain ⟨_,_,transition,final⟩ := Finite.bind_success _ _ _ _ _ validation
+      have ownerWork := (Finite.lift_success _ _ _ _ transition).2
+      split at final
+      · exact (Finite.pure_success _ _ _ _ final).2.trans ownerWork
+      · cases final
+    · cases validation
+  omega
 
 theorem Checked.returnedPort {packet state} (checked : Checked packet state) :
     ∃ port ∈ checked.after.live, port.token = packet.output ∧ port.wires = checked.input.wires :=
@@ -150,7 +185,8 @@ Raw checker consumed. The enclosing body still supplies packet decoding and
 the literal occurrence, including the fresh execution view comparison. -/
 def readSource {sources caller} {event : ComputedEvent sources caller}
     (original : StructuralXorPredicate.Original event) (packet : Packet)
-    (before : RuntimeStructuralAction.SourceState) (entry : RuntimeOwnerMap.State) :
+    (before : RuntimeStructuralAction.SourceState) (entry : RuntimeOwnerMap.State)
+    (prepared : Option (RuntimeComputedUse.OriginalSource event) := none) :
     WorkM (SourceChecked original packet before entry) := do
   let raw ← read packet entry.quantum
   let frame ← RuntimeOwnerMap.checkBindings (before.bindings.map (·.owner)) entry before.bindings
@@ -159,7 +195,7 @@ def readSource {sources caller} {event : ComputedEvent sources caller}
   if bound : owner.port = raw.input ∧ raw.input.bits = original.width ∧
       event.initial.auxiliary ∉ before.issued ∧ event.nextOrdinal = before.nextOrdinal ∧
       event.returned.data = event.input then
-    let matched ← StructuralComputedUse.read original packet.forward packet.inverse packet.uses
+    let matched ← StructuralComputedUse.read original packet.forward packet.inverse packet.uses prepared
     let exit := {entry with quantum := raw.after}
     match returned : PureInterval.ports exit [packet.output] with
     | some [output] =>
@@ -200,19 +236,24 @@ the enclosing checker interval and its independently checked exit state. -/
 def readInterval {sources caller dependencies program block start count}
     (event : ComputedEvent sources caller)
     (interval : @RuntimeInterval.Checked dependencies program block start count)
-    (before : RuntimeStructuralAction.SourceState) : WorkM (IntervalChecked event interval before) := do
+    (before : RuntimeStructuralAction.SourceState)
+    (prepared : Option (RuntimeComputedUse.OriginalSource event) := none) :
+    WorkM (IntervalChecked event interval before) := do
   exactWork (Exact.charge (8*(start+count+1)))
   match literal : (block.operations.drop start).take count with
   | [.pure (.structuralCompute input output scratch forward inverse uses)] =>
-    let original ← StructuralXorPredicate.read event
+    let original ← match prepared with
+      | some source => StructuralXorPredicate.readFromBody source.predicate source.predicateRead
+      | none => StructuralXorPredicate.read event
     let packet : Packet := ⟨input,output,scratch,forward,inverse,uses⟩
-    let checked ← readSource original packet before interval.before
+    let checked ← readSource original packet before interval.before prepared
     if same : checked.raw.after = interval.after.quantum then
       return ⟨original,packet,literal,checked,same⟩
     else throw .request
   | _ => throw .request
 
 #print axioms readSource
+#print axioms read_work
 #print axioms Checked.sameFrame
 #print axioms Checked.scratchIssued
 

@@ -42,13 +42,19 @@ structure Source {sources caller} (event : SourceRuntimeContext.ComputedEvent so
 
 /-- Only the canonical logical codes are evaluated. The physical table has a
 fixed zero value at each padding code. -/
+def readSourceFromBody {sources caller} {event : SourceRuntimeContext.ComputedEvent sources caller}
+    (body : SourceRuntimeTrace.Body event.predicate.target.signature)
+    (original : RuntimeInterval.Computed (SourceRuntimeTrace.readComputedPredicateBody event) body) :
+    WorkM (Source event) := do
+  let layout ← NaturalAffine.witness (FiniteCarrier.read event.input.basis)
+  let table ← NaturalAffine.witness (readTable event body layout.val)
+  return ⟨body,original,layout.val,by with_reducible exact layout.property,
+    table.val,by with_reducible exact table.property⟩
+
 def readSource {sources caller} (event : SourceRuntimeContext.ComputedEvent sources caller) :
     WorkM (Source event) := do
   let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedPredicateBody event)
-  let layout ← NaturalAffine.witness (FiniteCarrier.read event.input.basis)
-  let table ← NaturalAffine.witness (readTable event body.val layout.val)
-  return ⟨body.val,by with_reducible exact body.property,layout.val,by with_reducible exact layout.property,
-    table.val,by with_reducible exact table.property⟩
+  readSourceFromBody body.val (by with_reducible exact body.property)
 
 def checkTable {sources caller} {event : SourceRuntimeContext.ComputedEvent sources caller}
     (original : Source event) (table : List Nat) : WorkM (PLift (table = original.table)) := do

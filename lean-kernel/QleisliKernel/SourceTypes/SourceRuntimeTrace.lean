@@ -1018,8 +1018,7 @@ no protected diagonal or certified computed-relation equation. -/
 def readComputedSource {sources caller} (event : ComputedEvent sources caller) :
     Finite.WorkM (ComputedBody event) := do
   let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
-  let computed ← SourceComputedBindings.prepare event.signature.instantiation event.generic.computedObligations
-  let (result,_) ← evalWithReader event.signature event.generic basis computed
+  let (result,_) ← evalWithReader event.signature event.generic basis event.bindings
     (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
       [callFrame event.signature] callee).summary)
     (event.written.parts.body.length+1) event.naturals
@@ -1037,7 +1036,7 @@ basis parameter. Its complete finite table still needs independent agreement
 with the actual native compute/uncompute operation. -/
 def readComputedPredicateBody {sources caller} (event : ComputedEvent sources caller) :
     Finite.WorkM (Body event.predicate.target.signature) := do
-  let body ← readBodyWithSignature event.predicate.target.signature
+  let body ← readBodyWithOriginalSetup event.predicate.target.signature (originalSetup event.predicate.canonical)
   Finite.exactWork (Exact.charge (32*(valueFields body.checked.summary.value+
     valueFields event.predicate.canonical.value+body.checked.events.length+1)))
   Finite.guard (body.checked.summary.value == event.predicate.canonical.value &&

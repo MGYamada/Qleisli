@@ -33,19 +33,24 @@ The eventual enclosing Raw operation still supplies literal ownership,
 scratch allocation and release, and its position in the whole program. -/
 def read {sources caller} {event : ComputedEvent sources caller}
     (original : StructuralXorPredicate.Original event)
-    (compute inverse : List Step) (uses : List Semantics.Raw.Use) :
+    (compute inverse : List Step) (uses : List Semantics.Raw.Use)
+    (prepared : Option (RuntimeComputedUse.OriginalSource event) := none) :
     WorkM (Checked original compute inverse uses) := do
   if supported : event.written.parts.logical = none then
     let forward ← StructuralXorPredicate.check original compute
     let reverse ← StructuralXorPredicate.check original inverse
-    let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedSource event)
-    let action ← NaturalAffine.witness (RuntimeComputedUse.sourceBody body.val)
+    let source ← match prepared with
+      | some source => pure source
+      | none => do
+        let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedSource event)
+        let action ← NaturalAffine.witness (RuntimeComputedUse.sourceBody body.val)
+        pure (⟨original.body,original.original,body.val,by with_reducible exact body.property,
+          action.val,by with_reducible exact action.property⟩ : RuntimeComputedUse.OriginalSource event)
     let emitted ← NaturalAffine.witness (RuntimeComputedUse.rawAction uses)
-    exactWork (Exact.charge (emitted.val.matrix.entries.length + action.val.matrix.entries.length + 1))
-    if equation : emitted.val.matrix = action.val.matrix then
-      return ⟨supported,forward,reverse,body.val,by with_reducible exact body.property,
-        action.val,by with_reducible exact action.property,emitted.val,
-        by with_reducible exact emitted.property,equation⟩
+    exactWork (Exact.charge (emitted.val.matrix.entries.length + source.action.matrix.entries.length + 1))
+    if equation : emitted.val.matrix = source.action.matrix then
+      return ⟨supported,forward,reverse,source.body,source.bodyRead,source.action,source.actionRead,
+        emitted.val,by with_reducible exact emitted.property,equation⟩
     else throw .equation
   else throw .request
 
@@ -55,7 +60,8 @@ the caller's work state with the subsequent source and auxiliary checks. -/
 theorem read_circuit_work {sources caller compute inverse uses work left}
     {event : ComputedEvent sources caller} {original : StructuralXorPredicate.Original event}
     {checked : Checked original compute inverse uses}
-    (ok : (read original compute inverse uses).run work = (.ok checked,left)) :
+    {prepared : Option (RuntimeComputedUse.OriginalSource event)}
+    (ok : (read original compute inverse uses prepared).run work = (.ok checked,left)) :
     ∃ forward reverse middle afterCircuits,
       (StructuralXorPredicate.check original compute).run work = (.ok forward,middle) ∧
       (StructuralXorPredicate.check original inverse).run middle = (.ok reverse,afterCircuits) ∧

@@ -52,6 +52,9 @@ original Raw computed scope.
 The [finite predicate target study](finite-predicate-target-v030/README.md)
 preserves the first resource-report refusal and the source-checked enum case.
 
+The [Grover predicate work study](grover-predicate-meter-v030/README.md)
+preserves the two small first programs and their original work-limit refusals.
+
 The [controlled workspace study](workspace-controlled-logical-v030/session.json)
 retains the first controlled-S source and the reordered terminal derivative.
 Both originally failed during native source checking of the logical operation.

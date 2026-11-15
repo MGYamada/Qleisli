@@ -129,6 +129,70 @@ fn width_parameterized_predicate_has_one_original_circuit_and_ordinary_definitio
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn grover_iteration_checks_both_structural_predicates_in_one_original_root() {
+    use qleisli::ir::RawOp;
+
+    // First projects: "tests/fixtures/authoring_sessions/grover-predicate-meter-v030/width-2"
+    // and "tests/fixtures/authoring_sessions/grover-predicate-meter-v030/width-3".
+    // Scope and expected distributions: "tests/fixtures/authoring_sessions/grover-predicate-meter-v030/README.md".
+    for (source, before, expected) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/grover-predicate-meter-v030/width-2/main.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/grover-predicate-meter-v030/width-2.before.stdout"
+            ),
+            vec![(vec![true, false], 1.0)],
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/grover-predicate-meter-v030/width-3/main.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/grover-predicate-meter-v030/width-3.before.stdout"
+            ),
+            vec![
+                (vec![true, false, false], 0.5),
+                (vec![true, false, true], 0.5),
+            ],
+        ),
+    ] {
+        assert!(before.contains(r#""code":"limit""#));
+        let program = compile_project(&SourceRoot::new(source).0).unwrap();
+        assert_eq!(
+            program.source_body_scope(),
+            Some("finite-source-basis-context-v5")
+        );
+        let mut scope_count = 0;
+        for operation in &program.raw().operations {
+            match operation {
+                RawOp::StructuralCompute {
+                    forward, inverse, ..
+                } => {
+                    assert!(!forward.is_empty());
+                    assert_eq!(forward, inverse);
+                    scope_count += 1;
+                }
+                RawOp::LiftBasis { table, .. } => assert_eq!(table.len(), 1),
+                RawOp::ComputeUseUncompute { .. } => panic!("expected structural synthesis"),
+                _ => {}
+            }
+        }
+        assert_eq!(scope_count, 2);
+        let actual = run_closed(&program, SimulationLimits::default()).unwrap();
+        assert_eq!(actual.len(), expected.len());
+        for (output, probability) in expected {
+            assert!((actual[&output] - probability).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_computed_predicate_checks_the_literal_xor_scope() {
     use qleisli::ir::RawOp;
 
