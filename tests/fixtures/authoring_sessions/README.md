@@ -96,6 +96,10 @@ works through XOR embedding and is reused after measurement; a separate
 two-bit increment has explicit modulo-four semantics. These finite-table
 observations do not establish scalable synthesis or source preservation.
 
+The [first width-parameterized predicate](classical-synthesis-v030/word-coordinate-generic-first/README.md)
+records the generic classical header refusal and the predicate type check
+when the same binding is supplied by an ordinary-result operation.
+
 The [signal-interface study](signal-interface-v030/session.json) preserves
 three first sources and six actual observations. Returning an entangled signal
 is permitted, silently losing it rejects, and explicit discard retains its

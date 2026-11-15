@@ -49,6 +49,26 @@ def read {sources caller} {event : ComputedEvent sources caller}
     else throw .equation
   else throw .request
 
+/-- The two comparisons that actually run before the original use-body
+check consume twice the literal predicate-circuit charge. This prefix shares
+the caller's work state with the subsequent source and auxiliary checks. -/
+theorem read_circuit_work {sources caller compute inverse uses work left}
+    {event : ComputedEvent sources caller} {original : StructuralXorPredicate.Original event}
+    {checked : Checked original compute inverse uses}
+    (ok : (read original compute inverse uses).run work = (.ok checked,left)) :
+    ∃ forward reverse middle afterCircuits,
+      (StructuralXorPredicate.check original compute).run work = (.ok forward,middle) ∧
+      (StructuralXorPredicate.check original inverse).run middle = (.ok reverse,afterCircuits) ∧
+      work = afterCircuits + 16 * ((original.compiled.clauses.map fun controls =>
+        2 * controls.length + 7).sum + 1) := by
+  simp only [read, checked.protectedScope, dite_true] at ok
+  obtain ⟨forward,middle,first,ok⟩ := Finite.bind_success _ _ _ _ _ ok
+  obtain ⟨reverse,afterCircuits,second,_⟩ := Finite.bind_success _ _ _ _ _ ok
+  have paidForward := StructuralXor.check_circuit_work first
+  have paidReverse := StructuralXor.check_circuit_work second
+  exact ⟨forward,reverse,middle,afterCircuits,first,second,by omega⟩
+
+#print axioms read_circuit_work
 #print axioms read
 
 end QleisliKernel.Qirf.StructuralComputedUse
