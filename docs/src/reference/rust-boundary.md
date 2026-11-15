@@ -393,6 +393,14 @@ original logical actions in the checked event order and connects the result to
 fresh graph inspection. These Raw results do not establish general source
 composition, the CPTP marginal equivalence or quantitative resource bounds.
 
+In an accepted observing Raw program,
+`Qleisli.Raw.ProtectedObserving.original_interval` identifies a checked pure
+instruction and its events in the independently read root. Each inherited
+operator column can use the checked logical action, retaining its recorded
+and hidden outcomes. The literal suffix and actual return permutation
+then act on the updated histories. The theorem covers an original top-level
+interval and uses the existing exact cleanup checks.
+
 For explicit `clean` and `dirty` scopes, `RuntimeWorkspaceRestoration.literal_action`
 uses the original checked Raw interval and the independently read logical body.
 It proves clean return on every physical row, and dirty identity on the scratch

@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Compose exact checked cleanup with the original observation histories,
+  continuation and output order of an accepted Raw program (#157).
 - Emit structural predicate computation, protected phases and inverse in
   terminal OpenQASM and check the literal gate interval and its scratch costs.
 - Emit finite-table protected scopes in terminal OpenQASM, including ordered
