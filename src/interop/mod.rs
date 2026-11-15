@@ -101,14 +101,16 @@ pub fn export_openqasm3_with_resources(
     })?;
     let intervals = placement::workspace_intervals(context, program.raw().operations.len())?;
     if intervals.is_empty()
-        && !program
-            .raw()
-            .operations
-            .iter()
-            .any(|op| matches!(op, crate::ir::RawOp::StructuralCompute { .. }))
+        && !program.raw().operations.iter().any(|op| {
+            matches!(
+                op,
+                crate::ir::RawOp::StructuralCompute { .. }
+                    | crate::ir::RawOp::ComputeUseUncompute { .. }
+            )
+        })
     {
         return Err(InteropError::unsupported(
-            "checked OpenQASM resources require a source workspace or structural computed scope",
+            "checked OpenQASM resources require a source workspace or protected computed scope",
         ));
     }
     let (circuit, alignment) = profile::extract_with_alignment(program, Some(&intervals))?;

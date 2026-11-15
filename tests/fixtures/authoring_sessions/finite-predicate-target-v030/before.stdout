@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"interop emit-qasm","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"Unsupported: OpenQASM 3 export of main::main: checked OpenQASM resources require a source workspace or structural computed scope","primary":null,"related":[]}],"result":null}

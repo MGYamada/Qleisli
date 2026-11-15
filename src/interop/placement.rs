@@ -185,7 +185,7 @@ impl<'a> AlignmentBuilder<'a> {
         circuit: &TerminalCircuit,
         boundaries: &GateBoundaries,
         scratch: Option<usize>,
-        predicate_workspace: Option<usize>,
+        predicate_workspace: Vec<usize>,
         mut synthesis: Vec<usize>,
     ) -> Result<Alignment, InteropError> {
         let intervals = self.intervals.unwrap_or_default();
@@ -221,14 +221,24 @@ impl<'a> AlignmentBuilder<'a> {
                 };
                 let action = if next > index + 1 {
                     Match::Optimized(next - index, gates, relevant_scratch())
-                } else if matches!(raw.operations[index], RawOp::StructuralCompute { .. }) {
-                    let predicate = predicate_workspace.ok_or_else(invalid_alignment)?;
-                    let work = std::iter::once(predicate).chain(relevant_scratch());
-                    Match::Decomposed(gates, work.collect())
-                } else if matches!(raw.operations[index], RawOp::ApplyUnitary { .. }) {
-                    Match::Decomposed(gates, relevant_scratch())
                 } else {
-                    Match::Original
+                    let predicate_width = match &raw.operations[index] {
+                        RawOp::StructuralCompute { .. } => Some(1),
+                        RawOp::ComputeUseUncompute { ancilla_wires, .. } => {
+                            Some(ancilla_wires.len())
+                        }
+                        RawOp::ApplyUnitary { .. } => Some(0),
+                        _ => None,
+                    };
+                    if let Some(width) = predicate_width {
+                        let predicate = predicate_workspace
+                            .get(..width)
+                            .ok_or_else(invalid_alignment)?;
+                        let work = predicate.iter().copied().chain(relevant_scratch());
+                        Match::Decomposed(gates, work.collect())
+                    } else {
+                        Match::Original
+                    }
                 };
                 result.push(action);
                 index = next;
@@ -487,5 +497,72 @@ mod tests {
             8,
             "{target}"
         );
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn finite_predicate_export_binds_retained_table_and_protected_phase() {
+        // CLI projects: "tests/fixtures/authoring_sessions/finite-predicate-target-v030/first"
+        // and "tests/fixtures/authoring_sessions/finite-predicate-target-v030/typed".
+        // Procedure: "tests/fixtures/authoring_sessions/finite-predicate-target-v030/README.md".
+        let first = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/",
+            "tests/fixtures/authoring_sessions/finite-predicate-target-v030/first/main.qli"
+        ));
+        let typed = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/",
+            "tests/fixtures/authoring_sessions/finite-predicate-target-v030/typed/main.qli"
+        ));
+        let before = include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/",
+            "tests/fixtures/authoring_sessions/finite-predicate-target-v030/before.stdout"
+        ));
+        assert!(before.contains("checked OpenQASM resources require a source workspace"));
+
+        let body = "cx q[0], q[1];\nz q[1];\ncx q[0], q[1];";
+        let first = native_program(first);
+        let text = crate::interop::export_openqasm3(&first).unwrap();
+        assert!(text.contains(body), "{text}");
+        let imported = crate::interop::import_openqasm3(Edition::E2026, &text).unwrap();
+        let output = crate::sim::run_closed(&imported, Default::default()).unwrap();
+        assert!((output[&vec![true]] - 1.0).abs() < 1e-12);
+        assert_eq!(
+            crate::interop::export_openqasm3_with_resources(&first)
+                .unwrap_err()
+                .kind,
+            InteropErrorKind::Unsupported
+        );
+
+        let typed = native_program(typed);
+        assert!(typed.raw().operations.iter().any(|op| matches!(op,
+            RawOp::ComputeUseUncompute { function, .. } if function == &[0, 1])));
+        let (target, resources) = crate::interop::export_openqasm3_with_resources(&typed).unwrap();
+        assert!(target.contains(body), "{target}");
+        assert_eq!(
+            (resources.qubits, resources.resets, resources.gates),
+            (2, 2, 3)
+        );
+        let (_, alignment) =
+            super::super::profile::extract_with_alignment(&typed, Some(&[])).unwrap();
+        for replacement in [
+            "cx q[0], q[1];\ns q[1];\ncx q[0], q[1];",
+            "cx q[0], q[1];\nz q[1];\nx q[1];",
+        ] {
+            let wrong = target.replace(body, replacement);
+            assert_eq!(
+                typed
+                    .check_openqasm_placement(wrong.as_bytes(), &alignment.encode())
+                    .unwrap_err()
+                    .code,
+                "contract",
+                "{wrong}"
+            );
+        }
     }
 }

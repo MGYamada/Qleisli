@@ -49,6 +49,9 @@ The [structural predicate target study](structural-predicate-target-v030/README.
 preserves the first closed source and the terminal export refusal at its
 original Raw computed scope.
 
+The [finite predicate target study](finite-predicate-target-v030/README.md)
+preserves the first resource-report refusal and the source-checked enum case.
+
 The [controlled workspace study](workspace-controlled-logical-v030/session.json)
 retains the first controlled-S source and the reordered terminal derivative.
 Both originally failed during native source checking of the logical operation.

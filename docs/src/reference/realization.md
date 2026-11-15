@@ -843,7 +843,7 @@ a workspace body is part of its independently evaluated exact operator.
 
 Use `qleisli interop emit-qasm <source> --input=qli --resources` for the
 checked resource report on a closed typed program with workspace scopes in
-its root or in a statically named call, or with a structural computed scope.
+its root or in a statically named call, or with a protected computed scope.
 The JSON result contains the emitted text, exact work spent in the placement
 check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
 measurements. Counts come from Lean's decoding of the returned text.
@@ -896,6 +896,17 @@ budget.
 recover the checked placement and gate interval from the executable replay.
 `StructuralPlacement.literal_costs` binds that interval and the distinct data
 and scratch locations to the decoded gate and reset counts.
+
+For an admitted finite-table computed scope, the exporter uses the retained
+table rows to emit controlled XOR flips of the private auxiliary bits. It
+emits the protected operations on the ordered source, target and auxiliary
+coordinates, then repeats the XOR flips to restore the auxiliary bits. For
+resource reporting the source program must retain its original checked typed
+request. Lean builds the original table permutation and protected word from
+that request's checked Raw event and compares them to the complete decoded
+target interval. The same bounded operator profile covers these comparisons.
+`ProtectedTablePlacement.literal_costs` ties the decoded interval and its
+distinct physical locations to the reported gate and reset counts.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.

@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 - Emit structural predicate computation, protected phases and inverse in
   terminal OpenQASM and check the literal gate interval and its scratch costs.
+- Emit finite-table protected scopes in terminal OpenQASM, including ordered
+  target owners and scratch, and check the gate interval for typed source.
 - Derive clean scratch separation and dirty identity on the full local
   interface from the exact workspace checker.
 - Prove the exact field-based work charged by both literal circuit comparisons

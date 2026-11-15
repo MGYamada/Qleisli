@@ -209,6 +209,29 @@ private def structuralWord (bits : Nat) (axes : List Nat) (forward inverse : Lis
   (forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse).map
     (Semantics.RawTrace.localize (axes ++ [bits]))
 
+private abbrev CheckedWord (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (start count : Nat) (layout scratch reserved : List Nat) (steps : List Semantics.Finite.Step) :=
+  if scratch.isEmpty then Decomposition rootDependencies circuit start count layout steps
+  else Synthesis rootDependencies circuit start count layout scratch reserved steps
+
+private def checkWord (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (start count : Nat) (layout scratch reserved : List Nat) (steps : List Semantics.Finite.Step) :
+    WorkM (CheckedWord rootDependencies circuit start count layout scratch reserved steps) := do
+  if empty : scratch.isEmpty then
+    let checked ← checkDecomposition circuit start count layout steps rootDependencies
+    pure (by simpa only [CheckedWord,if_pos empty] using checked)
+  else
+    let checked ← checkSynthesisWith rootDependencies circuit start count layout scratch reserved steps
+    pure (by simpa only [CheckedWord,if_neg empty] using checked)
+
+private theorem checkedWord_within {rootDependencies circuit start count layout scratch reserved steps}
+    (checked : CheckedWord rootDependencies circuit start count layout scratch reserved steps) :
+    start+count ≤ circuit.gates.length := by
+  unfold CheckedWord at checked
+  split at checked
+  · exact (CanonicalOpenQasmWorkspace.interval_length checked.targetWord).2
+  · exact (CanonicalOpenQasmWorkspace.interval_length checked.targetWord).2
+
 /-- The predicate wire is part of the original operator. Extra synthesis
 wires, when present, have their own checked zero-return equation. -/
 structure StructuralPlacement (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
@@ -217,11 +240,8 @@ structure StructuralPlacement (rootDependencies : List Semantics.Finite.Dependen
   inFrame : bits = state.locations.length ∧ axes.all (· < bits) = true
   predicateReserved : state.synthesis.contains auxiliary = true ∧ reserved.contains auxiliary = false
   declared : circuit.declares (state.locations ++ [auxiliary] ++ scratch)
-  action : if scratch.isEmpty then
-      Decomposition rootDependencies circuit state.gateIndex count (state.locations ++ [auxiliary])
-        (structuralWord bits axes forward inverse uses)
-    else Synthesis rootDependencies circuit state.gateIndex count (state.locations ++ [auxiliary])
-      scratch state.synthesis (structuralWord bits axes forward inverse uses)
+  action : CheckedWord rootDependencies circuit state.gateIndex count (state.locations ++ [auxiliary])
+    scratch state.synthesis (structuralWord bits axes forward inverse uses)
 
 private def checkStructural (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
     (state : State) (operation : Semantics.Raw.Op) (reserved : List Nat) (count auxiliary : Nat) (scratch : List Nat)
@@ -238,12 +258,7 @@ private def checkStructural (rootDependencies : List Semantics.Finite.Dependency
       let word := forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse
       guard (word.all (fun step => (stepAxes step).all (· ≤ axes.length))) .request
       let steps := word.map (Semantics.RawTrace.localize (axes ++ [bits]))
-      let action ← if empty : scratch.isEmpty then do
-        let checked ← checkDecomposition circuit state.gateIndex count layout steps rootDependencies
-        pure (by simpa only [if_pos empty] using checked)
-      else do
-        let checked ← checkSynthesisWith rootDependencies circuit state.gateIndex count layout scratch state.synthesis steps
-        pure (by simpa only [if_neg empty] using checked)
+      let action ← checkWord rootDependencies circuit state.gateIndex count layout scratch state.synthesis steps
       return ⟨⟨header.1,valid.2⟩,⟨header.2.1,header.2.2.1⟩,valid.1,action⟩
     else throw .request
   else throw .request
@@ -258,13 +273,56 @@ theorem StructuralPlacement.literal_costs {rootDependencies circuit state count 
       ((circuit.gates.drop state.gateIndex).take count).length = count ∧
       (state.locations ++ [auxiliary] ++ scratch).Nodup ∧
       ∀ wire ∈ state.locations ++ [auxiliary] ++ scratch, wire < circuit.counts.reset := by
-  have inside : state.gateIndex+count ≤ circuit.gates.length := by
-    have actual := checked.action
-    split at actual
-    · exact (CanonicalOpenQasmWorkspace.interval_length actual.targetWord).2
-    · exact (CanonicalOpenQasmWorkspace.interval_length actual.targetWord).2
+  have inside := checkedWord_within checked.action
   have enough : count ≤ circuit.gates.length - state.gateIndex := by omega
   exact ⟨inside,by simp [List.length_take,Nat.min_eq_left enough],checked.declared⟩
+
+private def protectedTableWord (sourceBits dataBits auxiliaryBits : Nat) (function : List Nat)
+    (uses : List Semantics.Raw.Use) : List Semantics.Finite.Step :=
+  let compute := Raw.computeStep sourceBits dataBits auxiliaryBits function
+  [compute] ++ uses.map (Raw.physicalUse sourceBits dataBits) ++ [compute]
+
+/-- The checked table action uses the original reversible embedding and
+protected operations on their complete ordered carrier. -/
+structure ProtectedTablePlacement (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (state : State) (count : Nat) (workspace : List Nat) (bits : Nat) (axes : List Nat)
+    (sourceBits auxiliaryBits : Nat) (function : List Nat) (uses : List Semantics.Raw.Use) where
+  declared : circuit.declares (state.locations ++ workspace.take auxiliaryBits ++ workspace.drop auxiliaryBits)
+  action : CheckedWord rootDependencies circuit state.gateIndex count (state.locations ++ workspace.take auxiliaryBits)
+    (workspace.drop auxiliaryBits) state.synthesis
+    ((protectedTableWord sourceBits axes.length auxiliaryBits function uses).map
+      (Semantics.RawTrace.localize (axes ++ (List.range auxiliaryBits).map (bits+·))))
+
+private def checkProtectedTable (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (state : State) (operation : Semantics.Raw.Op) (reserved : List Nat) (count : Nat)
+    (workspace : List Nat) (bits : Nat) (axes : List Nat) (sourceBits auxiliaryBits : Nat)
+    (function : List Nat) (uses : List Semantics.Raw.Use) : WorkM
+      (ProtectedTablePlacement rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits function uses) := do
+  guard (bits == state.locations.length && sourceBits ≤ axes.length && auxiliaryBits ≤ workspace.length &&
+    axes.all (· < bits) && workspace.all (fun wire => !reserved.contains wire)) .request
+  let auxiliary := workspace.take auxiliaryBits
+  let scratch := workspace.drop auxiliaryBits
+  guard (auxiliary.all state.synthesis.contains) .request
+  let layout := state.locations ++ auxiliary
+  if declared : circuit.declares (layout ++ scratch) then
+    let fields := Raw.rawFields ⟨[],[operation],[],.unitary⟩
+    let width := axes.length + auxiliaryBits
+    guard (width ≤ 6 && fields ≤ 1025) .limit
+    exactWork (Exact.charge (32*(1+fields)*(1+bits)+4*(2^width)))
+    let word := protectedTableWord sourceBits axes.length auxiliaryBits function uses
+    guard (word.all (fun step => (stepAxes step).all (· < width))) .request
+    let steps := word.map (Semantics.RawTrace.localize (axes ++ (List.range auxiliaryBits).map (bits+·)))
+    let action ← checkWord rootDependencies circuit state.gateIndex count layout scratch state.synthesis steps
+    return ⟨declared,action⟩
+  else throw .request
+
+theorem ProtectedTablePlacement.literal_costs {rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits function uses}
+    (checked : ProtectedTablePlacement rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits function uses) :
+    state.gateIndex+count ≤ circuit.counts.gates ∧
+      (state.locations ++ workspace.take auxiliaryBits ++ workspace.drop auxiliaryBits).Nodup ∧
+      ∀ wire ∈ state.locations ++ workspace.take auxiliaryBits ++ workspace.drop auxiliaryBits,
+        wire < circuit.counts.reset :=
+  ⟨checkedWord_within checked.action,checked.declared⟩
 
 private def followRaw (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op)
     (reserved : List Nat) (alignment : Match) : WorkM State := do
@@ -292,6 +350,12 @@ private def followRaw (rootDependencies : List Semantics.Finite.Dependency) (cir
     | .synthesized count (auxiliary :: scratch),[.structuralComputed bits axes forward inverse uses] => do
       let _ ← checkStructural rootDependencies circuit state operation reserved count auxiliary scratch
         bits axes forward inverse uses
+      pure (state.locations,state.gateIndex+count)
+    | .decomposed count,[.protectedComputed bits axes sourceBits 0 function uses] => do
+      let _ ← checkProtectedTable rootDependencies circuit state operation reserved count [] bits axes sourceBits 0 function uses
+      pure (state.locations,state.gateIndex+count)
+    | .synthesized count workspace,[.protectedComputed bits axes sourceBits auxiliaryBits function uses] => do
+      let _ ← checkProtectedTable rootDependencies circuit state operation reserved count workspace bits axes sourceBits auxiliaryBits function uses
       pure (state.locations,state.gateIndex+count)
     | _,_ => throw .request
   if next.frame.length == locations.length then

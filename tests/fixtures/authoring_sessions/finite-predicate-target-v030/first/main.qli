@@ -1,0 +1,7 @@
+#![no_implicit_prelude]
+classical fn mark(bit: Bit) -> Bit { bit }
+isometry fn zero() -> Q<Bit> { basis unit(()) as _ {0} }
+observe fn main() -> Bit {
+    let q = with_computed(h(zero()), mark) { |flag| phase[1,1](flag) };
+    measure_z(h(q))
+}
