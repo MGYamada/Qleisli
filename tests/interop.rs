@@ -191,6 +191,34 @@ fn terminal_workspace_resource_report_replays_named_scopes_with_caller_spectator
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_workspace_resources_follow_the_selected_provider() {
+    let source = "use std::state::init0;
+        unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+        unitary fn double_h(q: Q<Bit>) -> Q<Bit> { h(h(q)) }
+        unitary fn apply[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) { U(q) }
+        pub observe fn main() -> Bit {
+            let q = apply[PROVIDER](init0());
+            let q = clean(q, identity) { |data, scratch| (data, scratch) };
+            measure_z(apply[PROVIDER](q))
+        }";
+    for (provider, gates) in [("identity", 0), ("double_h", 4)] {
+        let root = common::SourceRoot::new(&source.replace("PROVIDER", provider));
+        let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+        let (text, resources) =
+            qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+        assert_eq!(text, export_openqasm3(&program).unwrap());
+        assert_eq!(literal_target(&text).1.len(), gates, "{provider}: {text}");
+        assert_eq!(resources.gates, gates, "{provider}");
+        assert_eq!(resources.qubits, 2);
+        assert_eq!(resources.measurements, 1);
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_workspace_resource_report_tracks_bits_register_axes() {
     let source = "use std::state::init0;\n\
         use std::structure::{empty,consume_empty};\n\
