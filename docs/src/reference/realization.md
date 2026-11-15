@@ -892,6 +892,10 @@ allocation, routing and terminal readout. Counts include their resets, the
 physical compute and inverse gates, and any additional synthesis gates.
 This check uses the bounded terminal operator profile and its shared work
 budget.
+`BoundSegment.structural_paid` and `FinishedTrace.suffix_structural_paid`
+recover the checked placement and gate interval from the executable replay.
+`StructuralPlacement.literal_costs` binds that interval and the distinct data
+and scratch locations to the decoded gate and reset counts.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.
