@@ -1,5 +1,6 @@
 import Qleisli.FiniteMatrixAction
 import Qleisli.RawDenotation
+import Qleisli.RawActionLocality
 import Qleisli.RawReconstructedAction
 import QleisliKernel.Target.CanonicalOpenQasmPlacement
 import Protocol.NativeContext.Bindings
@@ -339,6 +340,109 @@ open Target.CanonicalOpenQasmPlacement (BoundSegment Match Segment Synthesis
   SynthesisAt SynthesisMatch SynthesisSource)
 
 /-- Express the original circuit on the ordered support recovered by replay. -/
+private theorem distinct_dedup (indices : List Nat) : indices.eraseDups.Nodup := by
+  cases indices with
+  | nil => simp
+  | cons axis rest =>
+    rw [List.eraseDups_cons]
+    refine List.nodup_cons.mpr ⟨?_, distinct_dedup _⟩
+    intro member
+    have filtered := List.mem_eraseDups.mp member
+    simp at filtered
+termination_by indices.length
+decreasing_by exact Nat.lt_succ_of_le (List.length_filter_le _ _)
+
+private theorem layout_facts {locations axes layout : List Nat}
+    (axesUnique : axes.Nodup) (locationsUnique : locations.Nodup)
+    (placed : axes.mapM (fun axis => locations[axis]?) = some layout) :
+    layout.length = axes.length ∧ layout.Nodup ∧
+      ∀ wire ∈ layout, ∃ axis ∈ axes, locations[axis]? = some wire := by
+  induction axes generalizing layout with
+  | nil => simp_all
+  | cons axis rest ih =>
+    cases found : locations[axis]? with
+    | none => simp [List.mapM_cons,found] at placed
+    | some wire =>
+      cases remaining : rest.mapM (fun axis => locations[axis]?) with
+      | none => simp [List.mapM_cons,found,remaining] at placed
+      | some tail =>
+        have same : wire :: tail = layout := by simpa [List.mapM_cons,found,remaining] using placed
+        subst layout
+        obtain ⟨firstFresh,restUnique⟩ := List.nodup_cons.mp axesUnique
+        obtain ⟨length,distinct,origin⟩ := ih restUnique remaining
+        have newWire : wire ∉ tail := by
+          intro member
+          obtain ⟨other,occurs,matched⟩ := origin wire member
+          have bound := (List.getElem?_eq_some_iff.mp found).choose
+          have equal := (List.getElem?_inj bound locationsUnique).mp (found.trans matched.symm)
+          exact firstFresh (equal.symm ▸ occurs)
+        refine ⟨by simp [length],List.nodup_cons.mpr ⟨newWire,distinct⟩,?_⟩
+        intro location member
+        rcases List.mem_cons.mp member with first | restMember
+        · exact ⟨axis,List.mem_cons_self,first.symm ▸ found⟩
+        · obtain ⟨other,occurs,matched⟩ := origin location restMember
+          exact ⟨other,List.mem_cons_of_mem _ occurs,matched⟩
+
+private theorem register_width (bits : Nat) : width (QleisliKernel.Raw.registerBasis bits) = bits := by
+  induction bits with
+  | zero => rfl
+  | succ bits ih =>
+    cases bits with
+    | zero => rfl
+    | succ bits =>
+      simp [QleisliKernel.Raw.registerBasis, QleisliKernel.Semantics.Raw.registerBasis, width] at ih ⊢
+      omega
+
+/-- Each spectator slice of the exact decoded physical word applies the checked
+local synthesis word. An arbitrary amplitude can carry any spectator and
+reference correlations. -/
+theorem physical_synthesis_slice {deps bytes circuit start count locations scratch reserved steps}
+    (decoded : Target.CanonicalOpenQasmResources.decode bytes = some circuit)
+    (checked : Synthesis deps circuit start count locations scratch reserved steps)
+    {R : Type} (amplitudes : Nat → R → ℂ) (row : Nat) (reference : R) :
+    let layout := checked.layout ++ scratch
+    let literal := ((circuit.gates.drop start).take count).map
+      Target.CanonicalOpenQasmResources.Instruction.step
+    Semantics.RawAction.circuit [] literal (fun input => amplitudes input reference) row =
+      Semantics.RawAction.circuit [] checked.actual
+        (Semantics.RawAction.Locality.pull row layout (fun input => amplitudes input reference))
+        (gather row layout) := by
+  dsimp only
+  have axesUnique : checked.axes.Nodup := by rw [checked.originalAxes]; exact distinct_dedup _
+  obtain ⟨locationsUnique,scratchUnique,separate⟩ := List.nodup_append.mp checked.declared.1
+  obtain ⟨length,layoutUnique,origins⟩ := layout_facts axesUnique locationsUnique checked.placed
+  have unique : (checked.layout ++ scratch).Nodup := by
+    apply List.nodup_append.mpr
+    refine ⟨layoutUnique,scratchUnique,?_⟩
+    intro wire inLayout auxiliary inScratch
+    obtain ⟨axis,_,read⟩ := origins wire inLayout
+    exact separate wire (List.mem_of_getElem? read) auxiliary inScratch
+  have layoutWidth : (checked.layout ++ scratch).length = checked.axes.length+scratch.length := by simp [length]
+  obtain ⟨encoding,_,middle,left,_,accepted⟩ := checked.checkedEncoding
+  let word := QleisliKernel.Raw.circuit (checked.axes.length+scratch.length) checked.actual
+  let required : Contract := ⟨encoding,encoding,checked.logical⟩
+  have exactCheck : (QleisliKernel.Finite.check [] word required required).run middle =
+      (.ok checked.physical,left) := accepted
+  obtain ⟨work,after,_,_,_,_,read,_,_,_⟩ :=
+    (QleisliKernel.Finite.check_conditions _ _ _ _ _ _ _ exactCheck).2.2.2.2.2.2
+  have valid := (QleisliKernel.Finite.circuitMatrix_columns [] word checked.physical work after read).1
+  have within (op : Step) (member : op ∈ checked.actual) :
+      ∀ axis ∈ op.controls.map (·.index) ++ QleisliKernel.Finite.targets op.action,
+        axis < (checked.layout ++ scratch).length := by
+    have wordValid := (Bool.and_eq_true_iff.mp valid).2
+    have stepValid := List.all_eq_true.mp wordValid op member
+    have axesValid := (Bool.and_eq_true_iff.mp (Bool.and_eq_true_iff.mp stepValid).1).2
+    have bounds := (Bool.and_eq_true_iff.mp (Bool.and_eq_true_iff.mp axesValid).1).2
+    intro axis occurs
+    have inWord := of_decide_eq_true (List.all_eq_true.mp bounds axis occurs)
+    simpa only [word, QleisliKernel.Raw.circuit, register_width, layoutWidth] using inWord
+  rw [← decoded_interval_roundtrip decoded checked.targetWord]
+  apply Semantics.RawAction.Locality.circuit_output [] row _ unique
+  · intro op member control held
+    exact within op member control.index (List.mem_append_left _ (List.mem_map_of_mem held))
+  · intro op member axis held
+    exact within op member axis (List.mem_append_right _ held)
+
 private def onSupport (locations axes : List Nat) (steps : List Semantics.Finite.Step) :
     List Semantics.Finite.Step :=
   steps.map (Semantics.RawTrace.localize ((List.range locations.length).map axes.idxOf))
@@ -356,6 +460,14 @@ def SynthesisActionAt (dependencies : List Semantics.Finite.Dependency)
       checked.actual.map (Semantics.RawTrace.localize (checked.layout ++ scratch)) =
         ((circuit.gates.drop entry.gateIndex).take gateCount).map
           Target.CanonicalOpenQasmResources.Instruction.step ∧
+      (∀ (R : Type) (amplitudes : Nat → R → ℂ) (row : Nat) (reference : R),
+        let layout := checked.layout ++ scratch
+        let literal := ((circuit.gates.drop entry.gateIndex).take gateCount).map
+          Target.CanonicalOpenQasmResources.Instruction.step
+        Semantics.RawAction.circuit [] literal (fun input => amplitudes input reference) row =
+          Semantics.RawAction.circuit [] checked.actual
+            (Semantics.RawAction.Locality.pull row layout (fun input => amplitudes input reference))
+            (gather row layout)) ∧
       ∃ encoding first middle,
         (Raw.zeroEncoding checked.axes.length scratch.length).run first = (.ok encoding,middle) ∧
         ∀ (R : Type) (joint : Nat → R → ℂ) (row : Nat) (reference : R),
@@ -386,7 +498,9 @@ theorem synthesis_at_action {dependencies original circuit entry rawCount gateCo
     intro wire member
     exact checked.declared.2 wire (List.mem_append_right _ member)
   have physicalWord := decoded_interval_roundtrip decoded checked.targetWord
-  refine ⟨steps,source,checked,gateBound,scratchCounted,physicalWord,encoding,first,middle,zero,?_⟩
+  refine ⟨steps,source,checked,gateBound,scratchCounted,physicalWord,
+    fun _ amplitudes row reference => physical_synthesis_slice decoded checked amplitudes row reference,
+    encoding,first,middle,zero,?_⟩
   intro R joint row reference within
   obtain ⟨target,clean⟩ := action R joint row reference within
   refine ⟨target.trans ?_,clean⟩
@@ -440,6 +554,7 @@ theorem native_suffix_synthesis_action (product : String) (bytes : ByteArray)
 #print axioms clean_checked_separates
 #print axioms synthesis_action
 #print axioms decoded_action
+#print axioms physical_synthesis_slice
 #print axioms synthesis_at_action
 #print axioms bound_synthesis_action
 #print axioms native_suffix_synthesis_action

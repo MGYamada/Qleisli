@@ -5,7 +5,8 @@ The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture record
 development milestones from the scope of their evidence.
 
 - Prove that the localized OpenQASM synthesis steps recover the literal
-  target instruction slice under the checked physical layout (#120).
+  target instruction slice and agree with its action on each spectator slice
+  of the full physical register (#120).
 - Check that terminal resource evidence preserves ordered basis and provider
   actuals, including distinct basis types of equal physical width (#127).
 - Compose exact checked cleanup through the whole observing Raw program,
