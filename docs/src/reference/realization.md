@@ -43,6 +43,65 @@ Clifford+T synthesis with at most one clean ancilla for `2^n × 2^n` unitary mat
 neither grants arbitrary dirty workspace nor verifies a particular compiler's
 output. See the [original theorem](https://arxiv.org/html/1212.0506v3#S2).
 
+## Observing instruments on a target
+
+The [source instrument judgment](source-text.md#instruments-and-ordinary-feed-forward)
+defines the complete outcome maps of an `Observe` expression. Realization
+requires a separate judgment for its closed instance, the selected target
+profile and the actual emitted artifact. The judgment fixes the ordered quantum
+and classical interfaces, logical encodings and projection of target records to
+source outcomes. It accounts for the initialization and disposition of every
+additional physical owner.
+
+For each ordinary input `x` and declared outcome `c`, let `Φ[x,c]` be the
+source map and `Ψ[x,c]` the emitted instrument's map after the declared record
+projection. The projection assigns every target history to exactly one source
+outcome, including histories with records hidden from the source. With the
+declared input and output encoding channels `E_in` and `E_out`, the exact
+obligation is
+
+```text
+(Ψ[x,c] ⊗ id_R)((E_in ⊗ id_R)(ρ)) =
+(E_out ⊗ id_R)((Φ[x,c] ⊗ id_R)(ρ)).
+```
+
+It holds for every finite external reference `R` and every joint input
+`ρ` at the complete source interface. The unnormalized maps fix both outcome
+probabilities and the residual quantum state on the declared retained owners.
+The correspondence includes consumed owners, the order of all remaining
+owners and the action of every branch that contributes to a public outcome.
+
+The evidence states how the profile realizes each required measurement basis,
+where measurements can occur, which owners remain live, and how reset or
+repreparation obtains its stated output. For feed-forward it identifies the
+available classical outcome, conditional operations and any dynamic control,
+scheduling or latency assumptions needed for the branch to execute with the
+specified live owners. Classical feed-forward selects a branch using a
+classical outcome. Coherent control instead acts on a live quantum selector and
+must preserve coherence between its sectors. Each needs its own realization
+evidence.
+
+Destructive readout accounts for the consumed owner. A retaining instrument
+requires the declared output owners and their conditional quantum state.
+A readout-and-prepare implementation qualifies only if the full correspondence
+equation holds. For example, measuring both data qubits in Z and reporting
+their parity has the same classical distribution as
+[`std::measurement::parity_zz`](stdlib.md) on an even Bell state. The two
+readouts lose the coherence between `00` and `11`, whereas the retaining parity
+projector preserves it. Preparing computational-basis replacements leaves
+that difference in the even outcome map.
+
+A terminal-readout-only profile may refuse a target claim that requires
+mid-circuit measurement and conditional quantum action. Missing capability or
+missing evidence is a target-lowering failure, so the source retains its
+instrument, type and effect. Any engineering approximation requires the
+[explicit separate claim below](#separate-engineering-approximation-claims)
+under [#31](https://github.com/MGYamada/Qleisli/issues/31). This abstract
+obligation from [#124](https://github.com/MGYamada/Qleisli/issues/124) is an
+input to the future [target capability schema](https://github.com/MGYamada/Qleisli/issues/179).
+QCP or another backend can express the premises using its own profile
+vocabulary. Source semantics are defined independently of that vocabulary.
+
 ## Closed specialization
 
 A generic definition describes a family. A **closed specialization** fixes
@@ -75,6 +134,43 @@ properties. The static language and specialization implementation remain
 tracked in [#28](https://github.com/MGYamada/Qleisli/issues/28),
 [#44](https://github.com/MGYamada/Qleisli/issues/44) and
 [#47](https://github.com/MGYamada/Qleisli/issues/47).
+
+## Logical axes and physical placement
+
+The logical interface records the ordered axes of each owner using the exact
+[source type trees](type-model.md#structural-equality-coherence-and-physical-maps).
+A physical layout assigns the live axes to target locations. For example,
+the ordered pair of logical axes can occupy physical locations `(17,4)`.
+The first axis remains the first logical axis. Nested products and `Bits<n>`
+retain their declared axis and owner order. A zero-width owner retains its
+interface identity and contributes no physical location.
+
+A target realization records the initial and final placement or their
+equivalent ordered encodings. For a pure instance with semantic action `U`
+and actual target action `C`, a correspondence with encodings `E_in` and
+`E_out` has the form `C ∘ E_in = E_out ∘ U`. The encodings include the
+specified workspace and its boundary state where required. The equation
+extends to arbitrary joint inputs with an untouched reference. Observing
+realizations use the [outcome maps above](#observing-instruments-on-a-target)
+and record the placement and disposition of the owners still live at each
+interface, including any retired locations where the profile supports them.
+
+Routing may change the placement from `(17,4)` to `(4,17)` by an emitted
+physical SWAP, provided the evidence tracks each logical axis into its
+new location. The SWAP contributes to the target cost. A metadata relabeling
+changes the description of the layout and leaves the physical state in place.
+The encoding evidence must justify that relabeling. A source-level axis
+permutation changes the logical action and must be included in `U` with its
+specified order and phase. An emitted implementation of a logical SWAP must
+realize that action under its declared encodings.
+
+The placement evidence identifies each routing step and accounts for the
+live locations used by routing and synthesis workspace. The target model
+may expose this relation to QCP routing analysis. The [future target capability
+schema](https://github.com/MGYamada/Qleisli/issues/179) consumes the abstract
+correspondence required by [#126](https://github.com/MGYamada/Qleisli/issues/126).
+The current [bounded routing checker](#quantitative-resource-claims)
+covers literal physical SWAP intervals and their stated placement premises.
 
 ## Workspace and exact correspondence
 
