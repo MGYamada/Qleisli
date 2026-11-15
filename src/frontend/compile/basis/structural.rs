@@ -147,10 +147,7 @@ impl Synthesis<'_, '_> {
         let FnBody::Basis(body) = &decl.body else {
             return Err(self.unsupported(module, decl.span));
         };
-        if decl.kind != FnKind::Classical
-            || !decl.static_params.is_empty()
-            || decl.params.len() != args.len()
-        {
+        if decl.kind != FnKind::Classical || decl.params.len() != args.len() {
             return Err(self.unsupported(module, decl.span));
         }
         let mut bindings = Bindings::new();

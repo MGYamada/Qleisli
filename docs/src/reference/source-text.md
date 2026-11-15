@@ -682,6 +682,29 @@ Other quantum primitive calls remain excluded. It has no runtime statements, obs
 quantum capture. Parameter/result trees and argument-list arity remain exact;
 noninjective functions are permitted.
 
+Classical declarations may take compile-time parameters of kind Nat and
+declare natural premises with `requires`. The premises must establish
+every coordinate bound in the original body. An ordinary runtime call
+supplies its exact actuals in brackets. A `with_computed` predicate
+reference uses the same syntax and must match the complete input basis
+and Bit result at that specialization. For example:
+
+```qli
+classical fn marked[const width: Nat](word: Bits<width>) -> Bit requires width>=3 {
+    word[0] and not word[1] and word[2]
+}
+
+pub unitary fn oracle[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n>=3 {
+    with_computed(q, marked[n]) { |flag| phase[1,1](flag) }
+}
+```
+
+The selected Raw route checks the original declaration and its actual Nat
+arguments before use. The supported structural predicate path synthesizes
+its literal control clauses directly. After collecting three measurement
+results in `word: Bits<3>`, an ordinary call can instantiate the same
+declaration with width 3 and pass `word` as its argument.
+
 The same checked body may be called in ordinary runtime expressions, existing
 Meaning/predicate construction and coherent `basis` expressions. Runtime
 arguments evaluate once, left to right, before parameter binding. Their effects

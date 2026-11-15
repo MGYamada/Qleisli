@@ -379,12 +379,14 @@ pub enum ExprKind {
     WithComputed {
         source: Box<Expr>,
         function: Ident,
+        static_args: Vec<StaticOp>,
         binder: Ident,
         body: Block,
     },
     CertifiedComputed {
         source: Box<Expr>,
         function: Ident,
+        static_args: Vec<StaticOp>,
         // Keep the expression enum small: the parser bounds nesting, and
         // adding several inline identifiers would inflate every stack frame.
         logical: Box<Ident>,

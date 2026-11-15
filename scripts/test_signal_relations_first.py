@@ -34,11 +34,17 @@ STUDIES = (
       'hash-zero', 'classical-static', 'explicit-coherent', 'declared-hash',
       'imported-qualified-hash')),
 )
-WORD_COORDINATE_FILES = {
-    'Qargo.toml': '680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37',
-    'README.md': '580f50966bbe616a288044c13cfabcb16977694585a2e9e582ab435c1c35dac8',
-    'first.qli': '8bafec96582a8920c3311b704e693e74834b1bd3f56314769c49c7b86e47248d',
-    'parse-stdout.json': '9eec3f109dbe6c6622d30c68256fd32da3b14f4dd31aa3b18609fdac57b370e6',
+CLASSICAL_FOLLOWUP_FILES = {
+    'word-coordinate-first/Qargo.toml': '680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37',
+    'word-coordinate-first/README.md': '580f50966bbe616a288044c13cfabcb16977694585a2e9e582ab435c1c35dac8',
+    'word-coordinate-first/first.qli': '8bafec96582a8920c3311b704e693e74834b1bd3f56314769c49c7b86e47248d',
+    'word-coordinate-first/parse-stdout.json': '9eec3f109dbe6c6622d30c68256fd32da3b14f4dd31aa3b18609fdac57b370e6',
+    'word-coordinate-generic-first/Qargo.toml': '680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37',
+    'word-coordinate-generic-first/README.md': '16e1489ab2b17781c39b5908e122638491b82dfe7700aec7c47084b3be3540ff',
+    'word-coordinate-generic-first/generic.json': '90ac9ca05ba564b9cee31f904d3363fc78e3ae773e1240b90b71a785323ef45d',
+    'word-coordinate-generic-first/generic.qli': '4c77e41c8cf006624e583671bc4d7f557d3ad96e0f9b25bac5305bfc86433cef',
+    'word-coordinate-generic-first/operation-constant.json': 'e670058279f8ff5fefc750b367fb21250a256b15221ddaa511ce89716d77b53b',
+    'word-coordinate-generic-first/operation-constant.qli': 'f4f184fc5a123a338068a6fe7b44d5bc89fd56726462ea1d2b58f29f401310bb',
 }
 BINARY_HASHES = {
     'cli': 'ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1',
@@ -82,12 +88,8 @@ def read_files(pattern, count, byte_count, session_sha):
         assert len(data) <= 32 * 1024
         files[path.relative_to(study).as_posix()] = data
     if pattern == MEMBERS[0]:
-        prefix = 'word-coordinate-first/'
-        word_coordinate = {
-            name.removeprefix(prefix): digest(files.pop(name))
-            for name in list(files) if name.startswith(prefix)
-        }
-        assert word_coordinate == WORD_COORDINATE_FILES
+        for name, expected in CLASSICAL_FOLLOWUP_FILES.items():
+            assert name in files and digest(files.pop(name)) == expected
     assert len(files) == count and sum(map(len, files.values())) == byte_count
     assert digest(files['session.json']) == session_sha
     session = read_json(files['session.json'])
@@ -258,7 +260,7 @@ def main():
             assert argv[3:] == ['--format=json', '--lean-kernel=' + binaries['kernel']['path']]
             assert stderr == '' and event['stdout'] == read_json(stdout)
             check_outcome(event['stdout'], case, action, code)
-    print('First histories: 106 frozen files and 4 word-coordinate files; no history executed.')
+    print(f'First histories: 106 frozen files and {len(CLASSICAL_FOLLOWUP_FILES)} follow-up files checked.')
 
 
 if __name__ == '__main__':

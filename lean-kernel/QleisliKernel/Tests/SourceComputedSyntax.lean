@@ -19,7 +19,10 @@ private def read (source : String) : Except String (Sigma QleisliKernel.SourceTy
   (fun written => written.2.parts.body.map (·.text)) = some ["z","(","aux",")"]
 #guard (read "with_computed(q,p,logical){|data,aux|(data,aux)}").toOption.map
   (fun written => written.2.parts.data.map (·.text)) = some (some "data")
-#guard (read "with_computed(q,p[2]){|aux|aux}").toOption.isNone
+#guard (read "with_computed(q,lib::p[n+1,2]){|aux|aux}").toOption.map
+  (fun written => written.2.parts.predicate.written.arguments.map (fun arg => arg.tokens.map (·.text))) =
+    some [["n","+","1"],["2"]]
+#guard (read "with_computed(q,p(2)){|aux|aux}").toOption.isNone
 #guard (read "with_computed(q,p,logical()){|data,aux|(data,aux)}").toOption.isNone
 #guard (read "with_computed(q,p){|data,aux|aux}").toOption.isNone
 #guard (read "with_computed(q,p,logical){|aux|aux}").toOption.isNone

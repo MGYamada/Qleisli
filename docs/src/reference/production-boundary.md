@@ -286,8 +286,11 @@ ordered controls and both compute passes against the original predicate, then
 checks the protected use on both auxiliary values. This path checks the
 predicate and both circuits in their structural representation. Work is
 charged for the source expression, intermediate clause products, literal
-circuit fields and owner-frame checks. It uses one private scratch bit and
-the existing work and interface limits. For example, a
+circuit fields and owner-frame checks. Lean proves the exact work debited by
+the predicate compiler and by both circuit comparisons. The synthesis charge
+includes intermediate conjunction products, even when the final circuit is
+smaller. This path uses one private scratch bit and the existing work and
+interface limits. For example, a
 two-bit increment modulo four can use the checked carry predicate
 `word[0] and word[1]` as a controlled phase between Hadamards on the high
 bit, followed by a low-bit flip. The literal `take_bit` and `put_bit`

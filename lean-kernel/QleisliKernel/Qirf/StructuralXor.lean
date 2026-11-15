@@ -167,23 +167,87 @@ theorem Checked.involution {target clauses steps} (checked : Checked target clau
   rw [predicate_update _ _ _ _ checked.distinct, targetUpdate_xor]
   cases predicate clauses label <;> rfl
 
-/-- Bind a nominated Boolean representation to literal circuit actions. The
-caller separately establishes where the clauses came from and which owner
-actually occupies each coordinate. The result carries no handle. -/
-def check (target : Nat) (clauses : List (List Control)) (steps : List Step) :
-    Finite.WorkM (Checked target clauses steps) := do
+/-- Charge the fields of the clauses and actual circuit, independent of the
+cardinality of the data carrier. Count invalidly shaped proposed steps too. -/
+def comparisonCharge (clauses : List (List Control)) (steps : List Step) : Nat :=
   let clauseFields := (clauses.map fun controls => controls.length + 1).sum
   let stepFields := (steps.map fun step => step.controls.length + 1 + match step.action with
     | .monomial axes permutation phases => axes.length + permutation.length + phases.length
     | .hadamard _ => 1
     | .contract axes _ _ => axes.length + 2).sum
-  Finite.exactWork (Exact.charge (8 * (clauseFields + stepFields + 1)))
+  8 * (clauseFields + stepFields + 1)
+
+/-- Bind a nominated Boolean representation to literal circuit actions. The
+caller separately establishes where the clauses came from and which owner
+actually occupies each coordinate. The result carries no handle. -/
+def check (target : Nat) (clauses : List (List Control)) (steps : List Step) :
+    Finite.WorkM (Checked target clauses steps) := do
+  Finite.exactWork (Exact.charge (comparisonCharge clauses steps))
   if literal : steps = clauses.map (toggle target) then
     if inside : (clauses.all fun controls => controls.all (·.index < target)) = true then
       return ⟨literal, fun controls member control present =>
         of_decide_eq_true (List.all_eq_true.mp (List.all_eq_true.mp inside controls member) control present)⟩
     else throw .request
   else throw .equation
+
+/-- A short budget fails at the field precharge, retaining the work count. -/
+theorem check_work_limit (target : Nat) (clauses : List (List Control)) (steps : List Step)
+    (work : Nat) (short : work < comparisonCharge clauses steps) :
+    (check target clauses steps).run work = (.error (.arithmetic .workLimit),work) := by
+  unfold check
+  rw [Finite.bind_run]
+  have unpaid :
+      (Finite.exactWork (Exact.charge (comparisonCharge clauses steps))).run work =
+        (.error (.arithmetic .workLimit),work) := by
+    let result := (Exact.charge (comparisonCharge clauses steps)).run work
+    change (Finite.arithmetic result.1,result.2) = _
+    dsimp only [result]
+    rw [Exact.charge_failure _ _ short]
+    rfl
+  rw [unpaid]
+
+/-- The actual successful checker consumes exactly a linear charge in literal
+flips and their controls. No carrier cardinality enters the equation. -/
+theorem check_circuit_work {target clauses steps} {checked : Checked target clauses steps}
+    {work left : Nat} (ok : (check target clauses steps).run work = (.ok checked,left)) :
+    work = left + 8 * ((clauses.map fun controls => 2 * controls.length + 7).sum + 1) := by
+  have compared := ok
+  unfold check at compared
+  obtain ⟨_,middle,charged,comparison⟩ := Finite.bind_success _ _ _ _ _ compared
+  have paid := Finite.exactWork_success _ _ _ _ charged
+  have enough : comparisonCharge clauses steps ≤ work := by
+    by_cases short : work < comparisonCharge clauses steps
+    · rw [check_work_limit target clauses steps work short] at ok
+      cases ok
+    · exact Nat.le_of_not_gt short
+  rw [Exact.charge_success _ _ enough] at paid
+  have remaining : middle = work - comparisonCharge clauses steps := (congrArg Prod.snd paid).symm
+  have unchanged : left = middle := by
+    split at comparison
+    next =>
+      split at comparison
+      next => exact (Finite.pure_success _ _ _ _ comparison).2
+      next => cases comparison
+    next => cases comparison
+  have fields : comparisonCharge clauses steps =
+      8 * ((clauses.map fun controls => 2 * controls.length + 7).sum + 1) := by
+    rw [checked.literal, comparisonCharge]
+    congr 1
+    have sumFields (clauses : List (List Control)) :
+        (clauses.map fun controls => controls.length + 1).sum +
+          ((clauses.map (toggle target)).map fun step => step.controls.length + 1 + match step.action with
+            | .monomial axes permutation phases => axes.length + permutation.length + phases.length
+            | .hadamard _ => 1
+            | .contract axes _ _ => axes.length + 2).sum =
+          (clauses.map fun controls => 2 * controls.length + 7).sum := by
+      induction clauses with
+      | nil => rfl
+      | cons controls rest ih =>
+        simp only [List.map_cons, List.sum_cons, toggle, Semantics.RawTrace.gate, List.length_cons,
+          List.length_nil, Nat.reduceAdd]
+        omega
+    rw [sumFields]
+  omega
 
 /-- Every accepted literal step retains its coefficient and the composition
 preserves the input coordinates. The only updated bit is the nominated target. -/
@@ -206,6 +270,7 @@ theorem Checked.action {target clauses steps} (checked : Checked target clauses 
       exact ih _
   rw [checked.literal, evaluate, run_predicate _ _ _ checked.distinct]
 
+#print axioms check_circuit_work
 #print axioms Checked.action
 
 end QleisliKernel.Qirf.StructuralXor

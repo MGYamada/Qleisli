@@ -868,6 +868,12 @@ literal circuit count includes every forward step, inverse step and protected
 use. The Lean theorem `Qleisli.RuntimeComputedResources.structural_counts`
 binds these numbers to the same original source-checked Raw occurrence and
 retains caller spectators in the peak width.
+The source-bound compute and inverse comparisons consume exactly
+`16 * (1 + sum(2 * control_count + 7))`, summing over the predicate clauses.
+The Lean theorem
+`QleisliKernel.Qirf.StructuralComputedUse.read_circuit_work` identifies the
+work state after both comparisons, before the source and auxiliary use-body
+checks. This charge depends on the literal circuit fields.
 The same literal XOR factorization proves logical action for the independently
 checked Raw event, even for an arbitrary caller amplitude function. The
 source-bound theorem additionally identifies the predicate and phase from the

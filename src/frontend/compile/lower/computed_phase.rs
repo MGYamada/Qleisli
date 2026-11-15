@@ -1363,6 +1363,7 @@ mod tests {
                     original.span,
                     source,
                     function,
+                    &[],
                     binder,
                     body,
                     &Env::new(),

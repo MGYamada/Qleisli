@@ -104,6 +104,22 @@ private def predicate : String := "classical fn predicate(b:Bit)->Bit{b} "
 #guard summary (program (predicate ++
     "pub observe fn root(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|let m=measure_z(a);let u=unit(());basis u as _ {m}}}")) = none
 
+private def widthPredicate :=
+  "classical fn mark[const width:Nat](b:Bits<width>)->Bit requires width>=3{b[0] and not b[1] and b[2]} "
+
+private def genericPredicate :=
+  widthPredicate ++ "pub unitary fn root[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires n>=3" ++
+    "{with_computed(q,mark[n]){|a|phase[1,1](a)}}"
+
+#guard summary (program genericPredicate) {naturals := [("n",3)]} = some (.unitary,true,0,0)
+#guard summary (program genericPredicate) {naturals := [("n",4)]} = some (.unitary,true,0,0)
+#guard summary (program (genericPredicate.replace "mark[n]" "mark[n+1]"))
+    {naturals := [("n",3)]} = none
+#guard summary (program (genericPredicate.replace " requires n>=3" ""))
+    {naturals := [("n",3)]} = none
+#guard summary (program (genericPredicate.replace "mark[n]" "mark"))
+    {naturals := [("n",3)]} = none
+
 private def computedCount : Option Nat :=
   let sources := program (predicate ++
     "pub unitary fn root(q:Q<Bit>)->Q<Bit>{with_computed(q,predicate){|a|a}}")

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 - Derive clean scratch separation and dirty identity on the full local
   interface from the exact workspace checker.
+- Prove the exact field-based work charged by both literal circuit comparisons
+  for an original structural computed predicate.
+- Instantiate classical Nat predicates for structural computed scopes and
+  reuse the same source declaration in ordinary Raw calls.
 
 ## 0.3.0-beta — 2026-10-12
 

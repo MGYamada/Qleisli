@@ -156,8 +156,10 @@ private theorem parity_dedup (label : Nat) (clauses : List (List Control)) :
 private def clauseFields (clauses : List (List Control)) : Nat :=
   (clauses.map (·.length + 1)).sum
 
+private def synthesisCharge (amount : Nat) : Nat := 8 * (amount + 1)
+
 private def charged (amount : Nat) : Finite.WorkM Unit :=
-  Finite.exactWork (Exact.charge (8 * (amount + 1)))
+  Finite.exactWork (Exact.charge (synthesisCharge amount))
 
 private def join {fields a b} (left : Compiled fields a) (right : Compiled fields b) :
     Finite.WorkM (Compiled fields (.and a b)) := do
@@ -247,6 +249,141 @@ private def compileStep (fields : List Field) : (expression : Expression) →
 def compile (fields : List Field) : (expression : Expression) → Finite.WorkM (Compiled fields expression) :=
   Expression.descend (compileStep fields)
 
+/-- The charge for the actual visited expression and intermediate control
+clauses. A word operation charges its width. Conjunction charges the product
+of its two clause lists before expanding it. -/
+inductive SynthesisCost (fields : List Field) : Expression → List (List Control) → Nat → Prop where
+  | bit (value : Bool) : SynthesisCost fields (.bit value) (constant value) (synthesisCharge 1)
+  | input {ordinal axis : Nat} (found : fields[ordinal]? = some (.bit axis)) :
+      SynthesisCost fields (.input ordinal) [[⟨axis,true⟩]] (synthesisCharge (fields.length + 1))
+  | not {child controls cost} (used : SynthesisCost fields child controls cost) :
+      SynthesisCost fields (.not child) ([] :: controls) (cost + synthesisCharge 1)
+  | xor {a b left right costA costB}
+      (first : SynthesisCost fields a left costA) (second : SynthesisCost fields b right costB) :
+      SynthesisCost fields (.xor a b) (left ++ right)
+        (costA + costB + synthesisCharge (clauseFields left + clauseFields right))
+  | and {a b left right costA costB}
+      (first : SynthesisCost fields a left costA) (second : SynthesisCost fields b right costB) :
+      SynthesisCost fields (.and a b)
+        ((left.flatMap (fun controls => right.map (controls ++ ·))).map List.eraseDups)
+        (costA + costB + synthesisCharge
+          ((clauseFields left + 1) * (clauseFields right + 1) *
+            ((clauseFields left + 1) + (clauseFields right + 1))))
+  | field {ordinal axis width stride : Nat} (found : fields[ordinal]? = some (.bits axis width))
+      (inside : stride.log2 < width ∧ stride = 2^stride.log2) :
+      SynthesisCost fields (.field stride 2 (.input ordinal)) [[⟨axis+stride.log2,true⟩]]
+        (synthesisCharge (fields.length + 1) + synthesisCharge width)
+  | equal {ordinal axis width expected : Nat} (found : fields[ordinal]? = some (.bits axis width))
+      (inside : expected < 2^width) :
+      SynthesisCost fields (.equalsOrdinal expected (.input ordinal)) [wordControls axis width expected]
+        (synthesisCharge (fields.length + 1) + synthesisCharge width)
+
+private theorem charged_work {amount work left} (ok : (charged amount).run work = (.ok (),left)) :
+    work = left + synthesisCharge amount := by
+  have paid := Finite.exactWork_success _ _ _ _ ok
+  by_cases short : work < synthesisCharge amount
+  · rw [Exact.charge_failure _ _ short] at paid
+    cases paid
+  · rw [Exact.charge_success _ _ (Nat.le_of_not_gt short)] at paid
+    have balance := congrArg Prod.snd paid
+    omega
+
+private theorem compile_unfold (fields : List Field) (expression : Expression) :
+    compile fields expression = compileStep fields expression (fun child _ => compile fields child) :=
+  Expression.descend_eq _ expression
+
+/-- Every successful execution spends exactly the charge of its source and
+intermediate circuit representation, with the remaining work in the same
+state. The charge uses the number of visited fields and clauses. -/
+theorem compile_work (fields : List Field) (expression : Expression)
+    {work left : Nat} {compiled : Compiled fields expression}
+    (ran : (compile fields expression).run work = (.ok compiled,left)) :
+    ∃ cost, SynthesisCost fields expression compiled.clauses cost ∧ work = left + cost := by
+  rw [compile_unfold] at ran
+  cases expression with
+  | bit value =>
+    obtain ⟨⟨⟩,middle,paid,ret⟩ := Finite.bind_success _ _ _ _ _ ran
+    obtain ⟨same,rest⟩ := Finite.pure_success _ _ _ _ ret
+    subst compiled
+    exact ⟨_,.bit value,(charged_work paid).trans (by rw [rest])⟩
+  | input ordinal =>
+    obtain ⟨⟨⟩,middle,paid,ret⟩ := Finite.bind_success _ _ _ _ _ ran
+    split at ret
+    · rename_i axis found
+      obtain ⟨same,rest⟩ := Finite.pure_success _ _ _ _ ret
+      subst compiled
+      exact ⟨_,.input found,(charged_work paid).trans (by rw [rest])⟩
+    · cases ret
+  | not child =>
+    obtain ⟨inner,middle,visited,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+    obtain ⟨⟨⟩,after,paid,ret⟩ := Finite.bind_success _ _ _ _ _ ran
+    obtain ⟨same,rest⟩ := Finite.pure_success _ _ _ _ ret
+    obtain ⟨cost,metered,balance⟩ := compile_work fields child visited
+    subst compiled
+    have last := charged_work paid
+    exact ⟨_,.not metered,by omega⟩
+  | xor first second =>
+    obtain ⟨a,w₁,visitedA,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+    obtain ⟨b,w₂,visitedB,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+    obtain ⟨⟨⟩,w₃,paid,ret⟩ := Finite.bind_success _ _ _ _ _ ran
+    obtain ⟨same,rest⟩ := Finite.pure_success _ _ _ _ ret
+    obtain ⟨costA,meteredA,balanceA⟩ := compile_work fields first visitedA
+    obtain ⟨costB,meteredB,balanceB⟩ := compile_work fields second visitedB
+    subst compiled
+    have last := charged_work paid
+    exact ⟨_,.xor meteredA meteredB,by omega⟩
+  | and first second =>
+    obtain ⟨a,w₁,visitedA,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+    obtain ⟨b,w₂,visitedB,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+    unfold join at ran
+    obtain ⟨⟨⟩,w₃,paid,ret⟩ := Finite.bind_success _ _ _ _ _ ran
+    obtain ⟨same,rest⟩ := Finite.pure_success _ _ _ _ ret
+    obtain ⟨costA,meteredA,balanceA⟩ := compile_work fields first visitedA
+    obtain ⟨costB,meteredB,balanceB⟩ := compile_work fields second visitedB
+    subst compiled
+    have last := charged_work paid
+    exact ⟨_,.and meteredA meteredB,by omega⟩
+  | field stride radix child =>
+    match radix with
+    | 2 =>
+      cases child <;> try (cases ran; done)
+      rename_i ordinal
+      obtain ⟨⟨⟩,w₁,lookup,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+      split at ran
+      · rename_i axis width found
+        obtain ⟨⟨⟩,w₂,paid,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+        obtain ⟨⟨⟩,w₃,bound,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+        dsimp only at ran
+        split at ran
+        · rename_i inside
+          obtain ⟨same,rest⟩ := Finite.pure_success _ _ _ _ ran
+          subst compiled
+          have first := charged_work lookup
+          have last := charged_work paid
+          have checked := (Finite.guard_success _ _ _ _ bound).2
+          exact ⟨_,.field found inside,by omega⟩
+        · cases ran
+      · cases ran
+    | 0 | 1 | _+3 => cases child <;> cases ran
+  | equalsOrdinal expected child =>
+    cases child <;> try (cases ran; done)
+    rename_i ordinal
+    obtain ⟨⟨⟩,w₁,lookup,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+    split at ran
+    · rename_i axis width found
+      obtain ⟨⟨⟩,w₂,paid,ran⟩ := Finite.bind_success _ _ _ _ _ ran
+      split at ran
+      · rename_i bound
+        obtain ⟨same,rest⟩ := Finite.pure_success _ _ _ _ ran
+        subst compiled
+        have first := charged_work lookup
+        have last := charged_work paid
+        exact ⟨_,.equal found bound,by omega⟩
+      · cases ran
+    · cases ran
+  | _ => cases ran
+termination_by sizeOf expression
+
 theorem Compiled.evaluates {fields expression} (compiled : Compiled fields expression) (label : Nat) :
     evaluate (valuation fields label) expression = some (predicate compiled.clauses label).toNat := by
   rw [predicate_parity]
@@ -277,6 +414,7 @@ structure Original {sources caller} (event : SourceRuntimeContext.ComputedEvent 
   expression : Expression
   result : body.checked.summary.value = [.ordinary [.bit] expression]
   compiled : Compiled fields expression
+  compiledFrom : RuntimeInterval.Computed (compile fields expression) compiled
 
 /-- The predicate and input coordinate map are derived from the same original
 typed body, including its already resolved ordinary callees. -/
@@ -289,9 +427,10 @@ def read {sources caller} (event : SourceRuntimeContext.ComputedEvent sources ca
     let fields ← NaturalAffine.witness (inputFields parameter)
     match result : body.val.checked.summary.value with
     | [.ordinary [.bit] expression] =>
-      let compiled ← compile fields.val.1 expression
+      let compiled ← NaturalAffine.witness (compile fields.val.1 expression)
       return ⟨body.val, by with_reducible exact body.property, fields.val.1, fields.val.2,
-        ⟨parameter,parameters,by with_reducible exact fields.property⟩, expression, result, compiled⟩
+        ⟨parameter,parameters,by with_reducible exact fields.property⟩, expression, result, compiled.val,
+        by with_reducible exact compiled.property⟩
     | _ => throw .request
   | _ => throw .request
 
@@ -319,6 +458,7 @@ theorem Original.action {sources caller} {event : SourceRuntimeContext.ComputedE
   cases originalValue : predicate original.compiled.clauses label <;>
     simpa only [originalValue] using checked.action label value valid nonzero
 
+#print axioms compile_work
 #print axioms Compiled.evaluates
 #print axioms read
 #print axioms Original.action
