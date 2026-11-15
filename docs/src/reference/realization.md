@@ -797,9 +797,13 @@ word to the original local operator under that encoding. It proves equality
 with full phase on every external reference column, with zero amplitude
 whenever any synthesis scratch bit is nonzero. The checked placement replay
 recovers this evidence at the original Raw position and physical gate offset,
-for either a single circuit event or an optimized span. Both the replay
-leading to a source workspace and the terminal suffix retain that binding.
-The gate interval lies within the count read from the emitted circuit.
+for either a single circuit event or an optimized span.
+`WorkspaceTargetAction.bound_synthesis_action` and
+`WorkspaceTargetAction.native_suffix_synthesis_action` connect the replay
+before a source workspace and the native decision's terminal suffix to that
+exact action. The equation uses the original circuit steps on the recovered
+support with their dependencies. The literal gate interval and its synthesis
+scratch locations are within the reported gate and register counts.
 A complete trace may reserve locations for several disjoint synthesis slices.
 Original allocation, routing, source workspace and readout cannot touch
 these locations. Every slice using them

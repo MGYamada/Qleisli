@@ -335,6 +335,97 @@ theorem native_limit_has_no_resources (product : String) (bytes : ByteArray) (wo
   rw [ran]
   exact ⟨rfl,rfl⟩
 
+open Target.CanonicalOpenQasmPlacement (BoundSegment Match Segment Synthesis
+  SynthesisAt SynthesisMatch SynthesisSource)
+
+/-- Express the original circuit on the ordered support recovered by replay. -/
+private def onSupport (locations axes : List Nat) (steps : List Semantics.Finite.Step) :
+    List Semantics.Finite.Step :=
+  steps.map (Semantics.RawTrace.localize ((List.range locations.length).map axes.idxOf))
+
+/-- The original Raw occurrence, exact operator, and gate cost refer to the
+same literal interval of the independently decoded target. -/
+def SynthesisActionAt (dependencies : List Semantics.Finite.Dependency)
+    (original : Array Semantics.Observation.Op) (circuit : Target.CanonicalOpenQasmResources.Circuit)
+    (entry : Target.CanonicalOpenQasmPlacement.State) (rawCount gateCount : Nat)
+    (scratch : List Nat) : Prop :=
+  ∃ steps, SynthesisSource original entry rawCount steps ∧
+    ∃ checked : Synthesis dependencies circuit entry.gateIndex gateCount entry.locations scratch entry.synthesis steps,
+      entry.gateIndex + gateCount ≤ circuit.counts.gates ∧
+      (∀ wire ∈ scratch, wire < circuit.counts.reserved) ∧
+      ∃ encoding first middle,
+        (Raw.zeroEncoding checked.axes.length scratch.length).run first = (.ok encoding,middle) ∧
+        ∀ (R : Type) (joint : Nat → R → ℂ) (row : Nat) (reference : R),
+          row < 2^(checked.axes.length + scratch.length) →
+          let output := Semantics.RawAction.circuit [] checked.actual
+            (fun col => Semantics.Exact.action encoding.map joint col reference) row
+          let originalAction := fun col ref => Semantics.RawAction.circuit dependencies
+            (onSupport entry.locations checked.axes steps) (fun input => joint input ref) col
+          output = Semantics.Exact.action encoding.map originalAction row reference ∧
+            (2^checked.axes.length ≤ row → output = 0)
+
+theorem synthesis_at_action {dependencies original circuit entry rawCount gateCount scratch}
+    (occurrence : SynthesisAt dependencies original circuit entry rawCount gateCount scratch) :
+    SynthesisActionAt dependencies original circuit entry rawCount gateCount scratch := by
+  have gateBound := occurrence.within_gate_count
+  obtain ⟨steps,source,⟨checked⟩⟩ := occurrence
+  obtain ⟨encoding,first,middle,zero,action⟩ := synthesis_action checked
+  obtain ⟨_,_,mapWork,mapLeft,mapped⟩ := Raw.zeroEncoding_value _ _ _ _ _ zero
+  let originalWord := Raw.circuit checked.axes.length (onSupport entry.locations checked.axes steps)
+  obtain ⟨originalWork,originalLeft,originalRun⟩ := checked.originalOperator
+  have accepted : (QleisliKernel.Finite.circuitMatrix dependencies originalWord).run originalWork =
+      (.ok checked.logical,originalLeft) := originalRun
+  have originalRows := rows (Qleisli.Raw.circuit_denotes _ _ _ _ _ _ accepted)
+  have inputCols : encoding.map.cols = 2^checked.axes.length :=
+    congrArg Semantics.Exact.Matrix.cols (Raw.mapping_value _ _ _ _ _ _ mapped)
+  have scratchCounted : ∀ wire ∈ scratch, wire < circuit.counts.reserved := by
+    intro wire member
+    exact checked.declared.2 wire (List.mem_append_right _ member)
+  refine ⟨steps,source,checked,gateBound,scratchCounted,encoding,first,middle,zero,?_⟩
+  intro R joint row reference within
+  obtain ⟨target,clean⟩ := action R joint row reference within
+  refine ⟨target.trans ?_,clean⟩
+  apply Qleisli.Exact.sum_map_congr
+  intro col member
+  have known : col < checked.logical.rows := by
+    rw [originalRows, ← inputCols]
+    exact List.mem_range.mp member
+  exact congrArg (fun value : ℂ => Semantics.Exact.entry encoding.map row col * value)
+    (Qleisli.Finite.circuitMatrix_action _ _ _ _ _ accepted joint col reference known)
+
+theorem bound_synthesis_action {program : Semantics.Observation.Program} {segment : Segment program}
+    {bytes capacity} {target : Target.CanonicalOpenQasmResources.Checked bytes capacity}
+    {dependencies connected reserved previous entry}
+    (bound : BoundSegment segment dependencies target connected reserved previous entry)
+    {action : Match} (prior tail : List Match) (split : segment.alignment = prior ++ action :: tail) :
+    let occurrence := (bound.synthesis_at prior tail split).choose
+    ∀ rawCount gateCount scratch,
+      SynthesisMatch program.operations.toArray occurrence action rawCount gateCount scratch →
+      SynthesisActionAt dependencies program.operations.toArray target.circuit occurrence rawCount gateCount scratch := by
+  intro occurrence rawCount gateCount scratch isSynthesis
+  exact synthesis_at_action ((bound.synthesis_at prior tail split).choose_spec.2 _ _ _ isSynthesis)
+
+/-- Select a synthesis occurrence from the executable native decision's
+terminal suffix. Its exact action and cost use the decoded bytes and the
+original typed root from that same packet. -/
+theorem native_suffix_synthesis_action (product : String) (bytes : ByteArray)
+    (decision : Protocol.NativeContext.Decision .openQasmPlacement) (work left : Nat)
+    (accepted : (Protocol.NativeContext.run .openQasmPlacement product bytes).run work = (.ok decision,left)) :
+    let placed := decision.value.2
+    Protocol.ExecutionView.CheckedQmatchV5.PlacementPacket.split bytes = .ok placed.parts ∧
+    Target.CanonicalOpenQasmResources.decode placed.parts.target = some placed.target.circuit ∧
+    ∀ {action : Match} (prior tail : List Match) (split : placed.proposal.suffix = prior ++ action :: tail),
+      let occurrence := (placed.placement.trace.suffix_synthesis prior tail split).choose
+      let root := placed.source.2.checked.root
+      ∀ rawCount gateCount scratch,
+        SynthesisMatch root.program.operations.toArray occurrence action rawCount gateCount scratch →
+        SynthesisActionAt root.dependencies root.program.operations.toArray placed.target.circuit
+          occurrence rawCount gateCount scratch := by
+  obtain ⟨checked,_,_,rfl⟩ := Protocol.NativeContext.run_openqasm_placement_binding product bytes decision work left accepted
+  refine ⟨checked.framed,checked.target.original,?_⟩
+  intro action prior tail split occurrence root rawCount gateCount scratch isSynthesis
+  exact synthesis_at_action ((checked.placement.trace.suffix_synthesis prior tail split).choose_spec.2 _ _ _ isSynthesis)
+
 #print axioms native_limit_has_no_resources
 #print axioms native_clean_access_counted_once
 #print axioms dirty_checked_reference
@@ -342,4 +433,7 @@ theorem native_limit_has_no_resources (product : String) (bytes : ByteArray) (wo
 #print axioms clean_checked_separates
 #print axioms synthesis_action
 #print axioms decoded_action
+#print axioms synthesis_at_action
+#print axioms bound_synthesis_action
+#print axioms native_suffix_synthesis_action
 end Qleisli.WorkspaceTargetAction

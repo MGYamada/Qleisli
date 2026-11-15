@@ -6,8 +6,9 @@ development milestones from the scope of their evidence.
 
 - Locate terminal export failures inside a workspace body at the original
   specialized expression, including failed OpenQASM resource requests.
-- Prove exact phase and clean synthesis scratch return for the decoded
-  OpenQASM decomposition on arbitrary reference-correlated inputs.
+- Bind decoded OpenQASM synthesis intervals to their original Raw circuit and
+  counted target resources. Prove exact phase and clean synthesis scratch
+  return on arbitrary reference-correlated inputs.
 - Emit structural predicate computation, protected phases and inverse in
   terminal OpenQASM and check the literal gate interval and its scratch costs.
 - Emit finite-table protected scopes in terminal OpenQASM, including ordered
