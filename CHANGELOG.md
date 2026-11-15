@@ -1229,6 +1229,8 @@ development milestones from the scope of their evidence.
   routing workspace obligations for target realizations.
 - Locate terminal target-lowering refusals in the original closed specialization
   when a failed Raw operation came from a generic source body.
+- Specify the existing finite phase representation and the literal
+  non-Clifford instruction counts of the canonical terminal target.
 - Clarify complete Observe instruments, linear feed-forward and the separate
   postselection boundary. Retain bounded instrument/Unit conformance observations
   and original failures without claiming general source-preservation or CPTP proofs.

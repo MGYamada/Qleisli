@@ -825,6 +825,55 @@ target schemas retain their separately scheduled scope in
 implementation. Phase-aware target cost is tracked in
 [#165](https://github.com/MGYamada/Qleisli/issues/165).
 
+## Phase words and target-dependent costs
+
+In the eighth-root finite profile, let `ω = exp(2πi/8)`. The one-axis phase
+with residue `r` is exactly `diag(1,ω^r)` on the declared axis, including
+when it acts on an input entangled with a reference. A supported source
+`phase[j,d]` has `r = 8j / 2^d` when this quotient is an integer. The
+[primitive contract](primitive-boundary.md) specifies the source and profile
+limits. Adjoint changes the exponent to `-r` modulo eight. Repetition
+adds the residue on each action. A scalar `ω^r I` differs from a one-axis
+phase and can become a relative phase under coherent control.
+
+The existing finite format represents the one-axis phase by a monomial with
+the chosen axis, identity permutation `[0,1]` and phase exponents `[0,r]`.
+The action of the historical word of `r` T gates is the same diagonal.
+Keep decoding the existing gate and circuit constructors in their versioned
+profiles. This equivalent monomial representation requires no dedicated Phase
+constructor or change to the established encoding of a T word.
+
+For the canonical terminal OpenQASM vocabulary, the selected one-axis words
+and their literal `t` or `tdg` counts are
+
+| Residue | Emitted word | Literal T/TDG |
+| --- | --- | ---: |
+| 0 | empty | 0 |
+| 1 | T | 1 |
+| 2 | S | 0 |
+| 3 | S, T | 1 |
+| 4 | Z | 0 |
+| 5 | S†, T† | 1 |
+| 6 | S† | 0 |
+| 7 | T† | 1 |
+
+These counts apply to the specified one-axis words. A coherent branch or
+control requires the complete ordered action on each sector with its original
+phase. For example, the terminal export uses two T instructions, one T† and
+two CX instructions for controlled S. A negative control can introduce
+additional X gates. A conjunction-based lowering includes its live scratch,
+preparation, computation and full reverse
+chain. A model that decomposes CCX must include that decomposition. In the
+canonical terminal profile CCX is a single literal gate and is outside the
+`t_gates` counter, which counts exactly the emitted T and T† instructions.
+
+Literal source-IR word counts, optimized target instruction counts and resource
+bounds are separate claims. A certificate binds the actual emitted word and
+checked decomposition to its profile and includes the required workspace and
+routing. An exponent, operation name, or normalized phase word supplies no
+bound for a different target or an optimal cost claim. See
+[#165](https://github.com/MGYamada/Qleisli/issues/165).
+
 ## Small obstruction examples
 
 Embedding a `k`-qubit gate `G` into `n` wires, under a fixed ordered basis,
