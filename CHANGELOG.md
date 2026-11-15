@@ -33,6 +33,14 @@ development milestones from the scope of their evidence.
 
 - Prove that the native placement check accounts for clean scratch reset,
   each gate in a restoration interval, and each marked physical routing SWAP.
+- Specify phase-sensitive controlled target evidence and prove control of
+  exact products and powers in QPTL.
+- Specify initialized isometry dilations and prove exact recovery on their
+  encoded images with arbitrary external references.
+- Prove QPTL determinant obstructions for exact same-wire gate products
+  under arbitrary finite axis reindexing.
+- Define target exact-domain membership and prove the sixteenth-turn
+  obstruction for eighth-root gate products, including clean workspace.
 - Prove exact ordered placement transport and count literal gates for a
   fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
   declared target connectivity.

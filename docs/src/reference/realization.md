@@ -8,6 +8,7 @@ universal gate set, synthesis algorithm or new source syntax. The current
 implementation and proof limits are stated below.
 
 The governing decisions are [#120](https://github.com/MGYamada/Qleisli/issues/120),
+[#121](https://github.com/MGYamada/Qleisli/issues/121),
 [#127](https://github.com/MGYamada/Qleisli/issues/127),
 [#280](https://github.com/MGYamada/Qleisli/issues/280) and
 [#281](https://github.com/MGYamada/Qleisli/issues/281). Their remaining
@@ -116,6 +117,118 @@ identify its boundary and compositional obligations explicitly; this chapter
 introduces no approximate acceptance or error budget. Exact/approximate
 profile decisions remain in [#31](https://github.com/MGYamada/Qleisli/issues/31)
 and [#123](https://github.com/MGYamada/Qleisli/issues/123).
+
+## Controlled target realizations
+
+The coherent Meaning of `controlled(U)` is the ordered direct sum
+`I ⊕ U` with inactive sector zero and active sector one. Semantic unitarity
+establishes the operator property of `U`. The static `Controllable(U)`
+judgment separately governs source use under the
+[operation type rules](type-model.md#general-pure-operation-arrows).
+Target lowering additionally requires a checked realization of the exact
+direct sum on the selected target.
+
+For transparent implementations, a structural derivation must check each
+original gate or named implementation with its control, dependencies, axis
+order and exact phase. The implementation must act as identity in the
+inactive sector and implement the requested operation in the active sector.
+Composition and powers can compose those exact sector equations when the
+interfaces and control match. QPTL proves the corresponding operator
+identities in `controlled_mul` and `controlled_pow`. Provider calls and
+controlled powers used by QPE carry the same obligations.
+
+A realization certificate binds the original operation and Meaning, the
+actual emitted implementation, the target profile, and the ordered control,
+data and workspace encodings. It identifies where native controlled gates
+are used and where additional synthesis steps are needed. Physical counts
+include workspace preparation, live width, restoration, generated inverse
+steps and routing when required by that implementation. An opaque provider
+requires explicit controlled evidence bound to the requested operator and
+the emitted artifact.
+
+A scalar phase multiplying only the active block changes its phase relative
+to the inactive block. QPTL's `controlled_phase_ne` proves the change for
+any nontrivial scalar on a nonzero operator. Projective agreement or channel
+equality for the uncontrolled operation therefore cannot supply the
+controlled equation. An engineering approximation to a controlled operator
+must bound its error against the intended controlled Meaning itself and
+retain the exactness distinction below.
+
+## Isometries and initialized target interfaces
+
+A semantic isometry `V: A -> B` satisfies `V† V = I_A`. The basis trees
+of `A` and `B` can differ, including in width. A realization of
+`Op<A -> B>`, or its refinement `Op<A -> B, M>`, retains both exact
+ports and the requested Meaning. Sequential composition matches the middle
+tree exactly. Tensor composition preserves the declared order of both ports.
+
+For a target that implements the isometry with a unitary dilation, let
+`E_in: A -> P_in` and `E_out: B -> P_out` be the exact input and output
+isometric encodings, and let `C: P_in -> P_out` be the action of the actual
+target circuit. On every joint input `ψ` with external reference `R`,
+the realization must establish
+
+```text
+(C ⊗ I_R)(E_in ⊗ I_R) ψ = (E_out ⊗ I_R)(V ⊗ I_R) ψ.
+```
+
+The input encoding specifies any initialized backend wires and their ordered
+placement. The output encoding identifies the retained logical output and
+fixes the state of every backend wire claimed to be returned clean. Other
+physical degrees of freedom require an explicit output contract. Isometry
+typing introduces no implicit discard or partial trace. Source `clean` and
+`dirty` contracts bind source owners separately. A target claim accounts for
+every physical wire used by the dilation, including initialized backend
+workspace, plus the preparation, realization, cleanup and routing required
+by the selected target model. A dilation existence theorem supplies a
+candidate. The accepted artifact still requires the displayed correspondence.
+
+The mathematical adjoint reverses `V` on its image. On the full output space,
+`V V†` is the projector onto that image. For an exact unitary dilation,
+`C† E_out V = E_in`, including under arbitrary external reference, so an
+available checked reverse circuit recovers the encoded input on that image.
+An application outside the established image needs its own contract. The
+static `Adjointable` capability and physical realization of a reverse
+operation require independent evidence under the
+[operation type rules](type-model.md#general-pure-operation-arrows).
+The QPTL theorem `dilation_recover_reference` derives the image-restricted
+equation from the exact forward square and the unitary implementation law.
+
+## Exact target-domain membership
+
+`M ∈ ExactDomain(P)` is an abstract judgment about the requested exact
+Meaning `M` and a specified target profile `P`. Its evidence identifies the
+profile and version, literal gate vocabulary, coefficient and parameter
+domain, ordered interface, and phase convention. It also states the admitted
+initialization, encoding, workspace and restoration assumptions. Same-wire
+and clean-workspace profiles can therefore have different exact domains.
+
+Physical Realizability requires evidence of this premise for an accepted
+exact target realization. A checked exact witness for the profile can
+establish membership and bind the actual emitted artifact to the same
+Meaning. An existence theorem or coefficient test can support this judgment
+within its own hypotheses. A necessary condition alone does not authorize a
+candidate. A search failure or capacity refusal leaves the claim unproved.
+A target-domain refusal concerns the requested realization; the source
+retains its exact meaning and typing.
+
+For a profile whose gates and computational-basis coordinates have
+coefficients in `Q(ζ8)`, every entry of the gate product lies in that field.
+Appending clean zero workspace and taking the corresponding returned
+coordinate selects entries of the same product. A controlled phase of one
+sixteenth of a turn has coefficient `ζ16` at its active diagonal entry,
+which is outside `Q(ζ8)`. The obstruction applies for any number of such
+clean axes. The QPTL theorem `extracted_sixteenth_ne` proves the coefficient
+obstruction. A target with a declared native sixteenth-turn gate requires
+its own exact-domain evidence. The existing eighth-root execution profile
+reports an unsupported exact phase for such a request.
+
+Engineering approximation requires an explicit separate claim with the
+applicable metric, closed budget and actual artifact correspondence, as
+specified below. A failed exact request does not choose that path implicitly.
+This judgment is independent of any eventual QCP implementation and can be
+used by the future [target capability schema](https://github.com/MGYamada/Qleisli/issues/179).
+The domain boundary is tracked in [#123](https://github.com/MGYamada/Qleisli/issues/123).
 
 ## Separate engineering approximation claims
 
@@ -623,6 +736,13 @@ gives determinant `det(G)^(2^(n-k))`. Determinants multiply under composition.
 Consequently a target generator set restricts same-wire determinants.
 This is a necessary obstruction; sufficiency requires a separate theorem for
 that precise generator, phase and workspace profile.
+
+In QPTL, `QPTL.FiniteMatrix.det_embedded` proves this determinant formula
+for finite matrix bases and simultaneous reindexing of both interfaces.
+`QPTL.FiniteMatrix.exact_same_wire_obstruction` proves that a product of
+generators whose determinants lie in a multiplication-closed set containing
+one cannot equal a requested matrix with determinant outside that set.
+The premises retain the chosen target vocabulary, layout and exact phase.
 
 The repository retains two exact small examples:
 
