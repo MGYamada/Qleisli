@@ -4,6 +4,9 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Derive clean scratch separation and dirty identity on the full local
+  interface from the exact workspace checker.
+
 ## 0.3.0-beta — 2026-10-12
 
 - Reconstruct controlled phases in written workspace logical operations using
