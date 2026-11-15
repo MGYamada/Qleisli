@@ -1,5 +1,6 @@
 import QleisliKernel.Qirf.StructuralComputedRaw
 import QleisliKernel.Raw.Pure
+import QleisliKernel.Raw.WorkspaceResources
 import QleisliKernel.Qirf.RuntimeBodyGraph
 
 /-! Circuit-backed protected packets with two data bits and private scratch.
@@ -52,6 +53,15 @@ private def checkedTrace (packet : StructuralComputedRaw.Packet) : Option Semant
 #guard (checkedTrace packet).map (·.events) ==
   some [.structuralComputed 2 [0,1] flip flip packet.uses,.reorder 2 [0,1]]
 #guard checkedTrace packet == Semantics.RawTrace.run (program packet)
+
+private def countedSteps : Option (Nat × Nat) := do
+  let trace ← checkedTrace packet
+  let count := (Raw.WorkspaceResources.readCounts 2 trace.events).circuitSteps
+  let expanded ← ((Raw.WorkspaceResources.bodyExpansion [] trace.events).run exactWorkLimit).1.toOption
+  return (count,expanded)
+
+-- The accepted forward flip, protected phase and inverse flip each cost one step.
+#guard countedSteps == some (3,3)
 #guard (checkedTrace {packet with inverse := []}).isNone
 #guard (checkedTrace {packet with scratch := 2}).isNone
 #guard (checkedTrace {packet with output := spectator.token}).isNone

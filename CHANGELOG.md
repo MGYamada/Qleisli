@@ -14,7 +14,8 @@ development milestones from the scope of their evidence.
 - Factor checked structural predicate circuits into their exact logical action
   in the complete Raw event fold, preserving the independent source equation.
 - Prove the original Raw resource counts for structural predicates, including
-  private scratch and both predicate passes.
+  private scratch and both predicate passes. Expanded body counts include the
+  literal forward circuit, protected uses and inverse circuit.
 - Prove exact agreement between a decoded OpenQASM workspace slice and its
   original checked Raw body on all local inputs and external references.
 - Read literal `Bits<n>` coordinates in classical functions and coherent

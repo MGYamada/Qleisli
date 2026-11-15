@@ -256,9 +256,11 @@ The finite checker records the whole live Raw frame at scope entry and the
 peak including fresh scratch. It records preparation, clean release, the two
 predicate passes in the clean packet, and the literal body steps. Dirty
 scratch is already live at entry. Circuit references are counted through their
-checked physical implementations, including nested predicate passes. A target
-resource certificate also needs the actual routing
-schedule and costs under that target's gate set.
+checked physical implementations, including nested predicate passes. For a
+circuit-backed `with_computed`, expanded body counts include the literal
+forward circuit, protected uses and inverse circuit. A target resource
+certificate also needs the actual routing schedule and costs under that
+target's gate set.
 
 ## Checked cleanup is a separate contract
 

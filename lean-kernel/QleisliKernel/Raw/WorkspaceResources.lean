@@ -1,4 +1,5 @@
 import QleisliKernel.Raw.BranchFunction
+import QleisliKernel.Qirf.StructuralXor
 import QleisliKernel.SourceTypes.NaturalAffine
 
 /-! Resources of the emitted finite workspace interval. The model counts
@@ -85,7 +86,7 @@ private def receiptFields : Nat → List Semantics.Observation.Op → Nat :=
 private def localWork : RawEvent → Nat
   | .computed .. => 2
   | .protectedComputed _ _ _ _ _ uses => 2+uses.length
-  | .structuralComputed _ _ forward inverse uses => 2 + forward.length + inverse.length + uses.length
+  | .structuralComputed .. => 2
   | .circuit .. => 0
   | .reorder bits axes => if axes == List.range bits then 0 else 1
   | .init0 .. | .liftBasis .. => 1
@@ -100,6 +101,16 @@ private def countSteps
       let (expanded,costs) ← resolve index costs
       pure (sum+expanded,costs)
     | _ => pure (sum+1,costs)) initial
+
+private def countEvent (resolve : Nat → Costs → WorkM (Nat × Costs))
+    (overhead : RawEvent → Nat) (initial : Nat × Costs) (event : RawEvent) : WorkM (Nat × Costs) :=
+  let (sum,costs) := initial
+  match event with
+  | .structuralComputed _ _ forward inverse uses => do
+    let (sum,costs) ← countSteps resolve forward (sum+overhead event,costs)
+    exactWork (Exact.charge (8*uses.length))
+    countSteps resolve inverse (sum+uses.length,costs)
+  | _ => countSteps resolve (physicalSteps event) (sum+overhead event,costs)
 
 /-- Count a dependency's literal, selected implementation. The stored logical
 expansion may omit the computed auxiliary and is used by other callers.
@@ -118,17 +129,65 @@ private def countReceipt (receipts : Receipts) :
       exactWork (Exact.charge (16*(fields+1)))
       let prepared ← lift (readOption (Semantics.Observation.read program))
       let (_,events) ← Raw.BranchFunction.selected 65 prepared.events []
-      let (expanded,costs) ← events.foldlM (fun (sum,costs) event =>
-        countSteps recurse (physicalSteps event) (sum+localWork event,costs)) (0,costs)
+      let (expanded,costs) ← events.foldlM (countEvent recurse localWork) (0,costs)
       return (expanded,costs.set! index (some expanded)))
 
-/-- Top-level predicate passes are reported by Counts. Nested physical
-expansion additionally includes the preparation/cleanup work in dependencies. -/
+/-- Count literal structural predicate steps, protected uses and ordinary
+body steps, expanding referenced circuits. Counts records top-level table
+predicate passes separately. Nested expansion includes dependency overhead. -/
 def bodyExpansion (receipts : List Semantics.ObservingFunction.Receipt) (events : List RawEvent) : WorkM Nat := do
   exactWork (Exact.charge (16*(events.length+receipts.length+1)))
-  let (expanded,_) ← countSteps (countReceipt receipts.toArray 32) (events.flatMap physicalSteps)
+  let (expanded,_) ← events.foldlM (countEvent (countReceipt receipts.toArray 32) (fun _ => 0))
     (0,Array.replicate receipts.length none)
   return expanded
+
+private theorem countSteps_toggles (resolve : Nat → Costs → WorkM (Nat × Costs))
+    (target : Nat) (clauses : List (List Semantics.Finite.Control))
+    {sum work left : Nat} {costs : Costs} {result : Nat × Costs}
+    (ran : (countSteps resolve (clauses.map (Qirf.StructuralXor.toggle target)) (sum,costs)).run
+      work = (.ok result,left)) : result.1 = sum + clauses.length := by
+  induction clauses generalizing sum costs work with
+  | nil =>
+    have same := (pure_success _ _ _ _ ran).1
+    rw [same]
+    rfl
+  | cons controls rest recur =>
+    simp only [countSteps,List.map_cons,List.foldlM_cons,Qirf.StructuralXor.toggle,
+      Semantics.RawTrace.gate] at ran
+    obtain ⟨updated,_,counted,tail⟩ := bind_success _ _ _ _ _ ran
+    obtain ⟨_,_,_,returned⟩ := bind_success _ _ _ _ _ counted
+    have same := (pure_success _ _ _ _ returned).1
+    subst updated
+    simpa [Nat.add_assoc,Nat.add_comm 1] using recur tail
+
+/-- Successful expansion counts the actual forward, use and inverse word.
+The checked XOR comparison fixes the forward word to literal toggles, and
+the checked inverse equality identifies the second pass. -/
+theorem bodyExpansion_structural (receipts : List Semantics.ObservingFunction.Receipt)
+    {bits target work left spent : Nat} {axes : List Nat} {clauses : List (List Semantics.Finite.Control)}
+    {forward inverse : List Semantics.Finite.Step} {uses : List Semantics.Raw.Use}
+    (checked : Qirf.StructuralXor.Checked target clauses forward) (inverseRead : inverse = forward)
+    (ran : (bodyExpansion receipts [.structuralComputed bits axes forward inverse uses]).run work =
+      (.ok spent,left)) : spent = forward.length + uses.length + inverse.length := by
+  subst inverse
+  rw [checked.literal] at ran ⊢
+  simp only [bodyExpansion,List.foldlM_cons,List.foldlM_nil] at ran
+  obtain ⟨_,start,_,ran⟩ := bind_success _ _ _ _ _ ran
+  obtain ⟨result,after,counted,returned⟩ := bind_success _ _ _ _ _ ran
+  have same := (pure_success _ _ _ _ returned).1
+  obtain ⟨eventSum,_,eventRead,eventReturn⟩ := bind_success _ _ _ _ _ counted
+  have sameEvent := (pure_success _ _ _ _ eventReturn).1
+  subst result
+  simp only [countEvent] at eventRead
+  obtain ⟨⟨forwardSum,forwardCosts⟩,forwardLeft,forwardRead,next⟩ := bind_success _ _ _ _ _ eventRead
+  obtain ⟨_,useLeft,_,inverseRead⟩ := bind_success _ _ _ _ _ next
+  have first := countSteps_toggles _ _ _ forwardRead
+  have last := countSteps_toggles _ _ _ inverseRead
+  simp only [List.length_map] at ⊢
+  change forwardSum = _ at first
+  omega
+
+#print axioms bodyExpansion_structural
 
 structure Checked (receipts : List Semantics.ObservingFunction.Receipt)
     (before after : Semantics.RawTrace.Interface) (operations : List Semantics.Raw.Op) where
