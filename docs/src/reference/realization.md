@@ -789,9 +789,14 @@ encoding at entry and exit. The Lean theorem
 `WorkspaceTargetAction.synthesis_action` connects the actual decoded gate
 word to the original local operator under that encoding. It proves equality
 with full phase on every external reference column, with zero amplitude
-whenever any synthesis scratch bit is nonzero. A complete trace may reserve
-locations for several disjoint synthesis slices. The original allocation,
-routing, source workspace and readout cannot touch these locations. Every slice using them
+whenever any synthesis scratch bit is nonzero. The checked placement replay
+recovers this evidence at the original Raw position and physical gate offset,
+for either a single circuit event or an optimized span. Both the replay
+leading to a source workspace and the terminal suffix retain that binding.
+The gate interval lies within the count read from the emitted circuit.
+A complete trace may reserve locations for several disjoint synthesis slices.
+Original allocation, routing, source workspace and readout cannot touch
+these locations. Every slice using them
 checks its own zero return. An individual slice can instead use exclusive
 scratch, which the checker verifies is untouched everywhere else.
 

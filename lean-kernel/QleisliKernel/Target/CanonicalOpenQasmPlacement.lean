@@ -298,6 +298,95 @@ private def replayFrom (rootDependencies : List Semantics.Finite.Dependency) (or
     (alignment : List Match) (initial : State) (reserved : List Nat := []) : WorkM State :=
   alignment.foldlM (replayStep rootDependencies original circuit connected reserved) initial
 
+/-- Original ordered steps for one circuit event or for a successfully read
+optimized span, with the owner frame recorded at the occurrence. -/
+inductive SynthesisSource (original : Array Semantics.Observation.Op) (entry : State) :
+    Nat → List Semantics.Finite.Step → Prop where
+  | single {operation next bits steps}
+      (occurrence : original[entry.rawIndex]? = some (.pure operation))
+      (event : Semantics.RawTrace.step entry.raw operation = some (next,[.circuit bits steps])) :
+      SynthesisSource original entry 1 steps
+  | span {count next steps}
+      (read : RuntimeInterval.Computed (readSpan original entry count) (next,steps)) :
+      SynthesisSource original entry count steps
+
+/-- The original steps and checked decomposition share the actual ordered
+locations and literal gate offset of the replay. -/
+def SynthesisAt (dependencies : List Semantics.Finite.Dependency) (original : Array Semantics.Observation.Op)
+    (circuit : Circuit) (entry : State) (rawCount gateCount : Nat) (scratch : List Nat) : Prop :=
+  ∃ steps, SynthesisSource original entry rawCount steps ∧
+    Nonempty (Synthesis dependencies circuit entry.gateIndex gateCount entry.locations scratch entry.synthesis steps)
+
+theorem SynthesisAt.within_gate_count {dependencies original circuit entry rawCount gateCount scratch}
+    (atSlice : SynthesisAt dependencies original circuit entry rawCount gateCount scratch) :
+    entry.gateIndex + gateCount ≤ circuit.counts.gates := by
+  obtain ⟨_,_,⟨checked⟩⟩ := atSlice
+  exact (CanonicalOpenQasmWorkspace.interval_length checked.targetWord).2
+
+private theorem replay_synthesized {dependencies original circuit connected reserved entry final count scratch work left}
+    (ok : (replayStep dependencies original circuit connected reserved entry
+      (.synthesized count scratch)).run work = (.ok final,left)) :
+    SynthesisAt dependencies original circuit entry 1 count scratch := by
+  change ((match original[entry.rawIndex]? with
+    | some (.pure operation) => followRaw dependencies circuit entry operation reserved (.synthesized count scratch)
+    | _ => throw Error.request).run work) = (.ok final,left) at ok
+  split at ok
+  · rename_i operation occurrence
+    unfold followRaw at ok
+    obtain ⟨result,beforeMatch,rawRead,checked⟩ := bind_success _ _ _ _ _ ok
+    rcases result with ⟨next,events⟩
+    have rawRead := (lift_success _ _ _ _ rawRead).1
+    cases trace : Semantics.RawTrace.step entry.raw operation with
+    | none => simp [trace,readOption] at rawRead
+    | some result =>
+      have matching : result = (next,events) := by simpa [trace,readOption] using rawRead
+      rw [matching] at trace
+      cases events with
+      | nil => cases checked
+      | cons event remainder =>
+        cases remainder with
+        | cons _ _ => cases event <;> cases checked
+        | nil =>
+          cases event
+          case circuit =>
+            obtain ⟨_,_,_,ran⟩ := bind_success _ _ _ _ _ checked
+            obtain ⟨synthesis,_,_,_⟩ := bind_success _ _ _ _ _ ran
+            exact ⟨_,.single occurrence trace,⟨synthesis⟩⟩
+          all_goals cases checked
+  · cases ok
+
+private theorem replay_optimized_synthesis {dependencies original circuit connected reserved entry final rawCount gateCount scratch work left}
+    (nonempty : scratch.isEmpty = false)
+    (ok : (replayStep dependencies original circuit connected reserved entry
+      (.optimized rawCount gateCount scratch)).run work = (.ok final,left)) :
+    SynthesisAt dependencies original circuit entry rawCount gateCount scratch := by
+  change (followSpan dependencies original circuit entry rawCount gateCount scratch reserved).run work =
+    (.ok final,left) at ok
+  unfold followSpan at ok
+  obtain ⟨originalResult,beforeSpan,read,checked⟩ := bind_success _ _ _ _ _ ok
+  rcases originalResult with ⟨next,steps⟩
+  simp only [nonempty,Bool.false_eq_true,if_false] at checked
+  obtain ⟨_,_,_,ran⟩ := bind_success _ _ _ _ _ checked
+  obtain ⟨synthesis,_,_,_⟩ := bind_success _ _ _ _ _ ran
+  exact ⟨steps,.span ⟨work,beforeSpan,read⟩,⟨synthesis⟩⟩
+
+private theorem replay_synthesis_at {dependencies original circuit connected reserved initial final work left
+    action rawCount gateCount scratch} (prior tail : List Match)
+    (kind : (action = .synthesized gateCount scratch ∧ rawCount = 1) ∨
+      (action = .optimized rawCount gateCount scratch ∧ scratch.isEmpty = false))
+    (ok : (replayFrom dependencies original circuit connected (prior ++ action :: tail)
+      initial reserved).run work = (.ok final,left)) :
+    ∃ entry, RuntimeInterval.Computed
+      (replayFrom dependencies original circuit connected prior initial reserved) entry ∧
+      SynthesisAt dependencies original circuit entry rawCount gateCount scratch := by
+  simp only [replayFrom,List.foldlM_append,List.foldlM_cons] at ok
+  obtain ⟨entry,before,prefixRun,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,sliceRun,_⟩ := bind_success _ _ _ _ _ rest
+  refine ⟨entry,⟨work,before,prefixRun⟩,?_⟩
+  rcases kind with ⟨rfl,rfl⟩ | ⟨rfl,nonempty⟩
+  · exact replay_synthesized sliceRun
+  · exact replay_optimized_synthesis nonempty sliceRun
+
 /-- A designated routing action consumes the literal SWAP at that gate index,
 and moves the live placement along its checked hardware edge. -/
 private theorem replay_route {rootDependencies original circuit connected reserved initial final work left}
@@ -592,6 +681,24 @@ theorem BoundSegment.literal_costs {program : Semantics.Observation.Program} {se
   obtain ⟨state,left,prefixRun,routed⟩ := replay_routing_cost beforeRoute tail ran
   exact ⟨state,⟨work,left,prefixRun⟩,routed,routed.within_count⟩
 
+/-- Recover the checked synthesis evidence from the actual prefix replay
+leading to a source workspace. Both a single Raw event and an optimized span
+retain the exact original steps and decoded physical interval. -/
+theorem BoundSegment.synthesis_at {program : Semantics.Observation.Program} {segment : Segment program}
+    {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {rootDependencies connected reserved previous entry}
+    (bound : BoundSegment segment rootDependencies target connected reserved previous entry)
+    {action rawCount gateCount scratch} (prior tail : List Match)
+    (split : segment.alignment = prior ++ action :: tail)
+    (kind : (action = .synthesized gateCount scratch ∧ rawCount = 1) ∨
+      (action = .optimized rawCount gateCount scratch ∧ scratch.isEmpty = false)) :
+    ∃ occurrence, RuntimeInterval.Computed
+      (replayFrom rootDependencies program.operations.toArray target.circuit connected prior previous reserved) occurrence ∧
+      SynthesisAt rootDependencies program.operations.toArray target.circuit occurrence rawCount gateCount scratch := by
+  obtain ⟨work,left,ran⟩ := bound.replayed
+  rw [split] at ran
+  exact replay_synthesis_at prior tail kind ran
+
 private def segmentWork {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (program : Semantics.Observation.Program) (alignment : List Match) : WorkM Unit := do
   guard (alignment.length ≤ 65536) .limit
@@ -709,6 +816,25 @@ theorem FinishedTrace.suffix_routing_paid {program : Semantics.Observation.Progr
   obtain ⟨state,left,prefixRun,routed⟩ := replay_routing_cost beforeRoute tail (runAt.symm.trans ran)
   exact ⟨state,⟨work,left,prefixRun⟩,routed,routed.within_count⟩
 
+/-- Recover the actual synthesis slice selected after the final source
+workspace, from the same replay that determines the terminal readout. -/
+theorem FinishedTrace.suffix_synthesis {program : Semantics.Observation.Program}
+    {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {rootDependencies connected reserved synthesis suffix}
+    (trace : FinishedTrace program rootDependencies target connected reserved synthesis suffix)
+    {action rawCount gateCount scratch} (prior tail : List Match)
+    (split : suffix = prior ++ action :: tail)
+    (kind : (action = .synthesized gateCount scratch ∧ rawCount = 1) ∨
+      (action = .optimized rawCount gateCount scratch ∧ scratch.isEmpty = false)) :
+    ∃ occurrence, RuntimeInterval.Computed
+      (replayFrom rootDependencies program.operations.toArray target.circuit connected prior trace.recorded.exit reserved) occurrence ∧
+      SynthesisAt rootDependencies program.operations.toArray target.circuit occurrence rawCount gateCount scratch := by
+  obtain ⟨work,left,ran⟩ := trace.replayed
+  have runAt := congrArg (fun alignment =>
+    (replayFrom rootDependencies program.operations.toArray target.circuit connected alignment
+      trace.recorded.exit reserved).run work) split
+  exact replay_synthesis_at prior tail kind (runAt.symm.trans ran)
+
 /-- Follow every original interval in order while keeping designations for
 clean scratch fixed. Ordinary preparation and routing cannot use a designated
 scratch wire. Each such wire is restored by its own exact, disjoint uses. -/
@@ -749,5 +875,9 @@ def finishTrace {bytes capacity} (target : CanonicalOpenQasmResources.Checked by
       else throw .request
     else throw .request
   else throw .request
+
+#print axioms BoundSegment.synthesis_at
+#print axioms FinishedTrace.suffix_synthesis
+#print axioms SynthesisAt.within_gate_count
 
 end QleisliKernel.Target.CanonicalOpenQasmPlacement
