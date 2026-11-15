@@ -293,13 +293,16 @@ structure CheckedPlacement {bytes : ByteArray} (original : Original bytes) {targ
     (reserved synthesis : List Nat) (plans : List WorkspaceAlignment) (suffix : List Match) where
   segments : List (Segment original.checked.root.program)
   fromSource : RuntimeInterval.Computed (original.workspaceSegments plans) segments
-  trace : FinishedTrace original.checked.root.program target connected reserved synthesis suffix
+  trace : FinishedTrace original.checked.root.program original.checked.root.dependencies
+    target connected reserved synthesis suffix
   checkedTrace : RuntimeInterval.Computed
-    (finishTrace target original.checked.root.program connected reserved segments suffix synthesis) trace
+    (finishTrace target original.checked.root.program connected reserved segments suffix synthesis
+      original.checked.root.dependencies) trace
 
 /-- Check the emitted bytes and workspace intervals from the same original
 source decision. The alignment supplies target coordinates only. The
-checker derives original source intervals from the accepted root. -/
+checker derives source intervals and provider dependencies from the accepted
+root. The literal target word has no provider references. -/
 def Original.checkPlacement {bytes : ByteArray} (original : Original bytes) {targetBytes capacity}
     (target : Target.CanonicalOpenQasmResources.Checked targetBytes capacity) (connected : Nat → Nat → Bool)
     (reserved synthesis : List Nat) (plans : List WorkspaceAlignment) (suffix : List Match) :
@@ -307,7 +310,8 @@ def Original.checkPlacement {bytes : ByteArray} (original : Original bytes) {tar
   Finite.guard original.request.runtime.parameters.isEmpty .request
   let segments ← NaturalAffine.witness (original.workspaceSegments plans)
   let trace ← NaturalAffine.witness
-    (finishTrace target original.checked.root.program connected reserved segments.val suffix synthesis)
+    (finishTrace target original.checked.root.program connected reserved segments.val suffix synthesis
+      original.checked.root.dependencies)
   return ⟨segments.val,by exact segments.property,trace.val,by exact trace.property⟩
 
 def input (value : Packet.Input) : CheckM (Original value.original) :=

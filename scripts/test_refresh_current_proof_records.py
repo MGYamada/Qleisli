@@ -187,6 +187,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-70-bits-workspace",
                 "refs/heads/codex/beta-70-30-integration",
                 "refs/heads/codex/beta-30-structural-resources",
+                "refs/heads/codex/beta-162-checked-provider-placement",
                 "refs/heads/codex/beta-30-xor-circuit-work")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
