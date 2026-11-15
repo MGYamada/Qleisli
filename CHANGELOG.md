@@ -52,6 +52,8 @@ development milestones from the scope of their evidence.
   target prefixes, including physical SWAP routing and zero-width owners.
 - Follow a single checked workspace through its literal target suffix and
   compare the emitted terminal measurements in original classical output order.
+- Keep corpus migration studies in the complete source archive and omit them
+  from the crates.io package to stay within its publication size limit.
 - Bind exact scratch reuse across multiple workspace intervals to one complete
   literal placement trace, including intervening routing and terminal readout.
 - Export the physical body of an accepted zero-predicate clean interval and
