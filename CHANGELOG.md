@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Locate terminal export failures inside a workspace body at the original
+  specialized expression, including failed OpenQASM resource requests.
 - Prove exact phase and clean synthesis scratch return for the decoded
   OpenQASM decomposition on arbitrary reference-correlated inputs.
 - Emit structural predicate computation, protected phases and inverse in

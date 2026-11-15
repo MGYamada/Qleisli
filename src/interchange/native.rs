@@ -596,7 +596,7 @@ pub struct AcceptedProgram {
     // to protected diagonal use. Native decisions precede attachment; this is
     // neither execution input nor a whole-source preservation certificate.
     source_computed_normalizations: Arc<[Arc<super::finite_leaf::SourceUnitaryEquation>]>,
-    // Source-only diagnostic metadata keyed by top-level Raw operation.
+    // Source-only diagnostics for top-level Raw operations and their circuit steps.
     specialization_origins: Arc<SpecializationOrigins>,
     // Actual source lowering coordinates stay with the same prepared Raw body.
     // They are untrusted proposals consumed only by the enclosing qmatch gate.
@@ -607,8 +607,15 @@ pub struct AcceptedProgram {
     runtime_result: Option<Arc<super::runtime_root::Request>>,
     qmatch_result: Option<Arc<super::qmatch::v5::Request>>,
 }
-pub(crate) type SpecializationOrigins =
-    std::collections::BTreeMap<usize, (String, crate::frontend::ast::Span, Arc<str>)>;
+type SpecializationOrigin = (String, crate::frontend::ast::Span, Arc<str>);
+
+#[derive(Debug)]
+pub(crate) struct SpecializationSource {
+    pub(crate) operation: Option<SpecializationOrigin>,
+    pub(crate) steps: std::collections::BTreeMap<usize, SpecializationOrigin>,
+}
+
+pub(crate) type SpecializationOrigins = std::collections::BTreeMap<usize, SpecializationSource>;
 
 impl AcceptedProgram {
     pub(crate) fn retain_specialization_origins(mut self, origins: SpecializationOrigins) -> Self {
@@ -624,9 +631,29 @@ impl AcceptedProgram {
         &self,
         operation: usize,
     ) -> Option<(&str, crate::frontend::ast::Span, &str)> {
-        self.specialization_origins
-            .get(&operation)
-            .map(|(module, span, label)| (module.as_str(), *span, label.as_ref()))
+        let (module, span, label) = self
+            .specialization_origins
+            .get(&operation)?
+            .operation
+            .as_ref()?;
+        Some((module.as_str(), *span, label.as_ref()))
+    }
+
+    pub(crate) fn circuit_specialization_origin(
+        &self,
+        operation: usize,
+        steps: std::ops::Range<usize>,
+    ) -> Option<(&str, crate::frontend::ast::Span, &str)> {
+        let origins = &self.specialization_origins.get(&operation)?.steps;
+        let origin = origins.get(&steps.start)?;
+        if steps.is_empty()
+            || !steps
+                .into_iter()
+                .all(|index| origins.get(&index) == Some(origin))
+        {
+            return None;
+        }
+        Some((origin.0.as_str(), origin.1, origin.2.as_ref()))
     }
 
     pub(crate) fn source_context(&self) -> Option<&Arc<super::qmatch::ContextSubject>> {

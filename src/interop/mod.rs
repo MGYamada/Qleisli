@@ -95,6 +95,13 @@ pub struct OpenQasmResources {
 pub fn export_openqasm3_with_resources(
     program: &AcceptedProgram,
 ) -> Result<(String, OpenQasmResources), InteropError> {
+    openqasm_with_resources(program, &mut None)
+}
+
+fn openqasm_with_resources(
+    program: &AcceptedProgram,
+    failed_steps: &mut Option<std::ops::Range<usize>>,
+) -> Result<(String, OpenQasmResources), InteropError> {
     profile::check_openqasm_result(program)?;
     let context = program.source_context().ok_or_else(|| {
         InteropError::unsupported("checked OpenQASM resources require original typed source")
@@ -113,7 +120,8 @@ pub fn export_openqasm3_with_resources(
             "checked OpenQASM resources require a source workspace or protected computed scope",
         ));
     }
-    let (circuit, alignment) = profile::extract_with_alignment(program, Some(&intervals))?;
+    let (circuit, alignment) =
+        profile::extract_with_alignment(program, Some(&intervals), failed_steps)?;
     let text = openqasm::write(&circuit);
     let resources = program
         .check_openqasm_placement(text.as_bytes(), &alignment.encode())
@@ -132,15 +140,79 @@ pub fn export_openqasm3_with_resources(
 /// Typed classical results use the checked measurement-bit order. Unit emits
 /// no bits, and the target contains no nominal types or tuple metadata.
 pub fn export_openqasm3(program: &AcceptedProgram) -> Result<String, InteropError> {
+    openqasm_text(program, &mut None)
+}
+
+fn openqasm_text(
+    program: &AcceptedProgram,
+    failed_steps: &mut Option<std::ops::Range<usize>>,
+) -> Result<String, InteropError> {
     profile::check_openqasm_result(program)?;
-    Ok(openqasm::write(&profile::extract(program)?))
+    Ok(openqasm::write(&profile::extract(program, failed_steps)?))
 }
 
 /// Export QIR 2.0 Base Profile text with the explicit QIS in the connection spec.
 /// Standard LLVM assembly/verification and target support remain external gates.
 pub fn export_qir_base(program: &AcceptedProgram) -> Result<String, InteropError> {
+    qir_text(program, &mut None)
+}
+
+fn qir_text(
+    program: &AcceptedProgram,
+    failed_steps: &mut Option<std::ops::Range<usize>>,
+) -> Result<String, InteropError> {
     program
         .portable_artifact()
         .map_err(|error| InteropError::unsupported(error.to_string()))?;
-    Ok(qir::write(&profile::extract(program)?))
+    Ok(qir::write(&profile::extract(program, failed_steps)?))
+}
+
+/// An export failure with optional original module, byte range and instance.
+#[derive(Debug)]
+#[doc(hidden)]
+pub struct TerminalExportDiagnostic<'a> {
+    pub error: InteropError,
+    pub specialization: Option<(&'a str, Span, &'a str)>,
+}
+
+fn export_diagnostic(
+    program: &AcceptedProgram,
+    error: InteropError,
+    failed_steps: Option<std::ops::Range<usize>>,
+) -> TerminalExportDiagnostic<'_> {
+    let specialization = error.operation.and_then(|operation| {
+        failed_steps
+            .and_then(|steps| program.circuit_specialization_origin(operation, steps))
+            .or_else(|| program.specialization_origin(operation))
+    });
+    TerminalExportDiagnostic {
+        error,
+        specialization,
+    }
+}
+
+/// Export OpenQASM for the source-aware CLI.
+#[doc(hidden)]
+pub fn export_openqasm_for_cli(
+    program: &AcceptedProgram,
+    resources: bool,
+) -> Result<(String, Option<OpenQasmResources>), TerminalExportDiagnostic<'_>> {
+    let mut failed_steps = None;
+    let result = if resources {
+        openqasm_with_resources(program, &mut failed_steps)
+            .map(|(text, resources)| (text, Some(resources)))
+    } else {
+        openqasm_text(program, &mut failed_steps).map(|text| (text, None))
+    };
+    result.map_err(|error| export_diagnostic(program, error, failed_steps))
+}
+
+/// Export QIR for the source-aware CLI.
+#[doc(hidden)]
+pub fn export_qir_for_cli(
+    program: &AcceptedProgram,
+) -> Result<String, TerminalExportDiagnostic<'_>> {
+    let mut failed_steps = None;
+    qir_text(program, &mut failed_steps)
+        .map_err(|error| export_diagnostic(program, error, failed_steps))
 }

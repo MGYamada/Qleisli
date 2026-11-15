@@ -299,8 +299,11 @@ pub(super) fn check_openqasm_result(program: &AcceptedProgram) -> Result<(), Int
     Ok(())
 }
 
-pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, InteropError> {
-    let (circuit, _) = extract_with_alignment(program, None)?;
+pub(super) fn extract(
+    program: &AcceptedProgram,
+    failed_steps: &mut Option<std::ops::Range<usize>>,
+) -> Result<TerminalCircuit, InteropError> {
+    let (circuit, _) = extract_with_alignment(program, None, failed_steps)?;
     Ok(circuit)
 }
 
@@ -320,6 +323,7 @@ fn append_compute_workspace(
 pub(super) fn extract_with_alignment(
     program: &AcceptedProgram,
     intervals: Option<&[crate::interchange::qmatch::WorkspaceInterval]>,
+    failed_steps: &mut Option<std::ops::Range<usize>>,
 ) -> Result<(TerminalCircuit, super::placement::Alignment), InteropError> {
     let raw = program.raw();
     if program.has_source_parameters()
@@ -464,13 +468,11 @@ pub(super) fn extract_with_alignment(
                     steps,
                 } => {
                     let wires = owners.remove(input).expect("verified owner");
-                    super::export::steps(
-                        &mut circuit,
-                        &mut scratch,
-                        steps,
-                        &wires,
-                        &mut expansion,
-                    )?;
+                    super::export::steps(&mut circuit, &mut scratch, steps, &wires, &mut expansion)
+                        .map_err(|failure| {
+                            *failed_steps = failure.positions;
+                            failure.error
+                        })?;
                     owners.insert(*output, wires);
                 }
                 RawOp::StructuralCompute {
@@ -580,7 +582,11 @@ pub(super) fn extract_with_alignment(
                         use_steps,
                         &layout,
                         &mut expansion,
-                    )?;
+                    )
+                    .map_err(|failure| {
+                        *failed_steps = failure.positions;
+                        failure.error
+                    })?;
                     normalization_barriers[circuit.gates.len()] = true;
                     owners.insert(*source_out, wires);
                 }

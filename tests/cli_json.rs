@@ -485,3 +485,50 @@ fn terminal_export_locates_the_exact_rejected_source_specialization() {
         }
     }
 }
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_workspace_failure_locates_the_original_specialization() {
+    let source = include_str!(
+        "fixtures/authoring_sessions/target-specialization-v030/attempt-03/n2/main.qli"
+    );
+    let project = SourceRoot::new(source);
+    project.write(
+        "Qargo.toml",
+        include_str!(
+            "fixtures/authoring_sessions/target-specialization-v030/attempt-03/n2/Qargo.toml"
+        ),
+    );
+    for resources in [false, true] {
+        let mut args = vec![
+            "interop".as_ref(),
+            "emit-qasm".as_ref(),
+            project.0.as_os_str(),
+            "--input=qli".as_ref(),
+        ];
+        if resources {
+            args.push("--resources".as_ref());
+        }
+        let export = cli(&args);
+        assert_eq!(export.status.code(), Some(1));
+        let result = String::from_utf8(export.stdout).unwrap();
+        assert!(
+            result.contains("OpenQASM 3 export of main::specialize[2]"),
+            "{result}"
+        );
+        assert!(result.contains("uncontrolled scalar phase"), "{result}");
+        let expression = "global_phase_eighth(q)";
+        let start = source.find(expression).unwrap();
+        assert!(
+            result.contains(&format!(
+                "\"primary\":{{\"path\":\"main.qli\",\"start\":{start},\"end\":{}",
+                start + expression.len()
+            )),
+            "{result}"
+        );
+        assert!(result.contains("\"result\":null"), "{result}");
+    }
+}

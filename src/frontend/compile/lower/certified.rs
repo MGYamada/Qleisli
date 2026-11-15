@@ -71,7 +71,7 @@ impl Lowerer<'_, '_> {
             ));
         }
         let logical_steps = self.static_steps(module, logical, &source_reg.basis, env)?;
-        let use_steps = self.certified_body(
+        let (use_steps, circuit) = self.certified_body(
             module,
             &source_reg.basis,
             data_binder,
@@ -106,6 +106,7 @@ impl Lowerer<'_, '_> {
             .get_mut(&source_slot)
             .expect("owned source")
             .token = output;
+        self.record_circuit_sources(module, span, start, circuit);
         if requires_source {
             self.nominal_basis_used = Some(true);
         }
@@ -155,7 +156,7 @@ impl Lowerer<'_, '_> {
         } else {
             "clean workspace"
         };
-        let steps = self.certified_body(
+        let (steps, circuit) = self.certified_body(
             module,
             &basis,
             &scope.data_binder,
@@ -174,10 +175,12 @@ impl Lowerer<'_, '_> {
         }
         let start = self.raw.operations.len();
         let fresh = scratch.is_none();
+        let operation;
         let result = if let Some(scratch) = scratch {
             let packed =
                 self.primitive_call(module, span, PrimitiveId::Join, vec![data, scratch])?;
             let slot = self.quantum(module, span, &packed, false)?;
+            operation = self.raw.operations.len();
             self.apply_circuit(slot, steps);
             self.primitive_call(module, span, PrimitiveId::Split, vec![packed])?
         } else {
@@ -193,6 +196,7 @@ impl Lowerer<'_, '_> {
             let source = self.raw.registers[&data_slot].token;
             let wire = self.wire();
             let output = self.token();
+            operation = start;
             self.raw.operations.push(RawOp::CertifiedCompute {
                 source,
                 source_out: output,
@@ -208,12 +212,36 @@ impl Lowerer<'_, '_> {
                 .token = output;
             data
         };
+        self.record_circuit_sources(module, span, operation, circuit);
         // Every emitted workspace scope requires the original-source v5 checker.
         // Raw checking alone cannot establish a dirty restoration contract.
         self.nominal_basis_used = Some(true);
         let count = self.raw.operations.len() - start;
         quantum_match::nominal::record_workspace(self, module, span, start, count, fresh)?;
         Ok(result)
+    }
+
+    fn record_circuit_sources(
+        &mut self,
+        module: &str,
+        span: Span,
+        index: usize,
+        circuit: CircuitSources,
+    ) {
+        if !circuit.is_empty() {
+            let site = OperationSite {
+                module: module.to_owned(),
+                span,
+                instance: self.specialization_record(),
+            };
+            self.operation_sources.insert(
+                vec![index],
+                OperationSource {
+                    site,
+                    circuit: Some(Box::new(circuit)),
+                },
+            );
+        }
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -226,7 +254,7 @@ impl Lowerer<'_, '_> {
         body: &Block,
         env: &Env,
         label: &str,
-    ) -> Result<Vec<CircuitStep>, CompileError> {
+    ) -> Result<(Vec<CircuitStep>, CircuitSources), CompileError> {
         let joint = Ty::quantum(Ty::pair(basis.clone(), Ty::bit()));
         self.compiler
             .check_tree(module, body.span, joint.tree_size())?;
@@ -332,6 +360,12 @@ impl Lowerer<'_, '_> {
                     limit,
                 )
             })?;
-        super::super::circuit::flatten(inner.compiler, module, body.span, &checked)
+        super::super::circuit::flatten_with_sources(
+            inner.compiler,
+            module,
+            body.span,
+            &checked,
+            Some(&inner.operation_sources),
+        )
     }
 }

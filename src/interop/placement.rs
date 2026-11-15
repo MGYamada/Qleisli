@@ -340,7 +340,8 @@ mod tests {
             )
             .unwrap();
             let (_, alignment) =
-                super::super::profile::extract_with_alignment(program, Some(&intervals)).unwrap();
+                super::super::profile::extract_with_alignment(program, Some(&intervals), &mut None)
+                    .unwrap();
             let error = program
                 .check_openqasm_placement(other_target.as_bytes(), &alignment.encode())
                 .unwrap_err();
@@ -383,7 +384,8 @@ mod tests {
         )
         .unwrap();
         let (circuit, alignment) =
-            super::super::profile::extract_with_alignment(&program, Some(&intervals)).unwrap();
+            super::super::profile::extract_with_alignment(&program, Some(&intervals), &mut None)
+                .unwrap();
         let target = super::super::openqasm::write(&circuit);
         let encoded = alignment.encode();
         assert_eq!(alignment.workspaces.len(), 2);
@@ -471,9 +473,12 @@ mod tests {
                 program.raw().operations.len(),
             )
             .unwrap();
-            let (circuit, alignment) =
-                super::super::profile::extract_with_alignment(&program, Some(&intervals))
-                    .unwrap_or_else(|error| panic!("{error}: {:?}", program.raw().operations));
+            let (circuit, alignment) = super::super::profile::extract_with_alignment(
+                &program,
+                Some(&intervals),
+                &mut None,
+            )
+            .unwrap_or_else(|error| panic!("{error}: {:?}", program.raw().operations));
             let target = super::super::openqasm::write(&circuit);
             let encoded = alignment.encode();
             let (exported, resources) =
@@ -603,7 +608,7 @@ mod tests {
             (2, 2, 3)
         );
         let (_, alignment) =
-            super::super::profile::extract_with_alignment(&typed, Some(&[])).unwrap();
+            super::super::profile::extract_with_alignment(&typed, Some(&[]), &mut None).unwrap();
         for replacement in [
             "cx q[0], q[1];\ns q[1];\ncx q[0], q[1];",
             "cx q[0], q[1];\nz q[1];\nx q[1];",

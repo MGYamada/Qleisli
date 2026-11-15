@@ -62,12 +62,19 @@ struct CallSite<'a> {
 
 // Diagnostic metadata only: acceptance still depends solely on raw IR.
 // Keys use the independent verifier's operation/branch-index path convention.
-type OperationSources = BTreeMap<Vec<usize>, OperationSource>;
+pub(super) type OperationSources = BTreeMap<Vec<usize>, OperationSource>;
+pub(super) type CircuitSources = BTreeMap<usize, OperationSite>;
 
-struct OperationSource {
+pub(super) struct OperationSource {
+    pub(super) site: OperationSite,
+    pub(super) circuit: Option<Box<CircuitSources>>,
+}
+
+#[derive(Clone)]
+pub(super) struct OperationSite {
     module: String,
     span: Span,
-    instance: Option<usize>,
+    pub(super) instance: Option<usize>,
 }
 
 enum ComputedPredicate {
@@ -105,7 +112,7 @@ fn verification_error(
         .rev()
         .find_map(|length| sources.get(&path[..length]))
         .map_or((module, span), |source| {
-            (source.module.as_str(), source.span)
+            (source.site.module.as_str(), source.site.span)
         });
     compiler.error(
         module,
@@ -1349,21 +1356,28 @@ impl Lowerer<'_, '_> {
         Ok(value)
     }
 
+    fn specialization_record(&self) -> Option<usize> {
+        self.compiler
+            .concrete_context
+            .current
+            .as_ref()
+            .and_then(|i| i.record)
+    }
+
     fn record_operation_sources(&mut self, module: &str, span: Span, first_operation: usize) {
         // Nested expressions/callees already supplied more precise positions.
         // Fill only the operations emitted directly by this expression.
+        let instance = self.specialization_record();
         for index in first_operation..self.raw.operations.len() {
             self.operation_sources
                 .entry(vec![index])
                 .or_insert_with(|| OperationSource {
-                    module: module.to_owned(),
-                    span,
-                    instance: self
-                        .compiler
-                        .concrete_context
-                        .current
-                        .as_ref()
-                        .and_then(|instance| instance.record),
+                    site: OperationSite {
+                        module: module.to_owned(),
+                        span,
+                        instance,
+                    },
+                    circuit: None,
                 });
         }
     }
@@ -2493,6 +2507,13 @@ fn lower_function_in_context(
         )?;
     }
     let mut labels = BTreeMap::new();
+    let mut resolve = |site: OperationSite| {
+        let instance = site.instance?;
+        let label = labels
+            .entry(instance)
+            .or_insert_with(|| lower.compiler.specialization_label(instance));
+        Some((site.module, site.span, Arc::clone(label)))
+    };
     let specialization_origins = if key_name.0 == "main" && key_name.1 == "main" {
         lower
             .operation_sources
@@ -2501,11 +2522,17 @@ fn lower_function_in_context(
                 let [index] = path.as_slice() else {
                     return None;
                 };
-                let instance = source.instance?;
-                let label = labels
-                    .entry(instance)
-                    .or_insert_with(|| lower.compiler.specialization_label(instance));
-                Some((*index, (source.module, source.span, Arc::clone(label))))
+                let operation = resolve(source.site);
+                let steps: BTreeMap<_, _> = source.circuit.map_or_else(BTreeMap::new, |circuit| {
+                    circuit
+                        .into_iter()
+                        .filter_map(|(index, site)| Some((index, resolve(site)?)))
+                        .collect()
+                });
+                (operation.is_some() || !steps.is_empty()).then_some((
+                    *index,
+                    crate::interchange::native::SpecializationSource { operation, steps },
+                ))
             })
             .collect()
     } else {

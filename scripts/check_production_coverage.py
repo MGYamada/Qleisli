@@ -759,11 +759,13 @@ PATHS = {
         ('src/frontend/documentation.rs', ['pub fn render_markdown(']),
     ], [('tests/cli.rs', 'doc_reads_one_file_and_does_not_claim_type_checking')]),
     'foreign-export': path_rule('host-transformation', 'foreign', '', [
-        ('src/interop/mod.rs', ['pub fn export_openqasm3(program: &AcceptedProgram)', 'pub fn export_qir_base(program: &AcceptedProgram)']),
+        ('src/interop/mod.rs', ['pub fn export_openqasm3(program: &AcceptedProgram)', 'pub fn export_qir_base(program: &AcceptedProgram)',
+         'program.circuit_specialization_origin(operation, steps)']),
         ('src/interop/profile.rs', ['pub(super) fn extract(', 'ExpansionBudget::for_program(program)',
          'super::export::steps(', '&mut expansion']),
         ('src/interop/export.rs', ['pub(super) fn steps(',
-         'contracts::Cursor::new(steps, wires.len(), expansion)?', 'step(circuit, scratch, &merged, wires)?']),
+         'contracts::Cursor::new(steps, wires.len(), expansion)?', 'step(circuit, scratch, &merged.step, wires)',
+         'positions: Some(merged.positions)']),
         ('src/interop/export/contracts.rs', ['pub(in crate::interop) struct ExpansionBudget', 'fn reserve(',
          'evidence.expanded_steps()', 'budget.reserve(steps)?', 'body: evidence.circuit().steps()',
          'inverse: frame.inverse ^ *adjoint', 'crate::contract::invert_steps(']),
@@ -778,6 +780,7 @@ PATHS = {
         ('tests/interop.rs', 'controlled_ordinary_contract_export_returns_scratch_exactly'),
         ('tests/interop.rs', 'adjacent_contract_phases_merge_before_assigning_workspace'),
         ('tests/interop.rs', 'uncontrolled_unit_contract_phase_is_not_erased_by_export'),
+        ('tests/cli_json.rs', 'terminal_workspace_failure_locates_the_original_specialization'),
         ('tests/interop.rs', 'ordinary_contract_adjoint_reverses_noncommuting_body_order'),
         ('src/interop/export/contracts.rs', 'expansion_reservation_is_shared_across_raw_operations'),
         ('src/interop/export/contracts.rs', 'malformed_mapping_of_checked_dependency_returns_an_error'),
@@ -1999,8 +2002,9 @@ PATHS['contract-acceptance']['tests'].extend([
 
 PATHS['openqasm-placement'] = path_rule(
     'lean-component', 'foreign', '--openqasm-placement-check', [
-        ('src/bin/qleisli/interop.rs', ['Some("--resources") if !resources', 'interop::export_openqasm3_with_resources(program)']),
-        ('src/interop/mod.rs', ['pub fn export_openqasm3_with_resources(', 'check_openqasm_placement(text.as_bytes(), &alignment.encode())']),
+        ('src/bin/qleisli/interop.rs', ['Some("--resources") if !resources', 'interop::export_openqasm_for_cli(program, resources)']),
+        ('src/interop/mod.rs', ['pub fn export_openqasm3_with_resources(', 'openqasm_with_resources(program, &mut failed_steps)',
+         'check_openqasm_placement(text.as_bytes(), &alignment.encode())']),
         ('src/interop/placement.rs', ['fn workspace_intervals(', 'enum Match', 'pub(super) fn encode(']),
         ('src/interchange/native/openqasm_placement.rs', ['qmatch_v5::complete(self.execution_view_graph(), request)?',
             'Kernel::encode_subject(', 'b"QTP1"', 'Mode::OpenQasmPlacement.argument()', 'Scope::Execution']),

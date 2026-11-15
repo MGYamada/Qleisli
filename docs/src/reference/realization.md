@@ -135,6 +135,12 @@ tracked in [#28](https://github.com/MGYamada/Qleisli/issues/28),
 [#44](https://github.com/MGYamada/Qleisli/issues/44) and
 [#47](https://github.com/MGYamada/Qleisli/issues/47).
 
+Terminal export can identify the closed specialization and original source
+expression when a rejected operation has a single retained origin. This includes
+steps from an explicit clean or dirty workspace body. When a rewrite combines
+several expressions, the enclosing Raw operation can provide its own origin.
+Imported artifacts have no original project diagnostics.
+
 ## Logical axes and physical placement
 
 The logical interface records the ordered axes of each owner using the exact
