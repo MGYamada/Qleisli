@@ -9,8 +9,8 @@ open scoped Matrix
 
 variable {A : Type*} [DecidableEq A]
 
-/-- On the first coordinate, the inactive block is identity and the active
-block is the supplied operator. -/
+/-- The Boolean coordinate selects the block. The inactive block is identity
+and the active block is the supplied operator. -/
 noncomputable def controlled (op : Matrix A A ℂ) : Matrix (A × Bool) (A × Bool) ℂ :=
   Matrix.blockDiagonal (fun b => if b then op else 1)
 
