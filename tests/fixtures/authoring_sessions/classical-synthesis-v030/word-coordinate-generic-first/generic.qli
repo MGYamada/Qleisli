@@ -1,0 +1,7 @@
+#![no_implicit_prelude]
+classical fn marked[const n: Nat](word: Bits<n>) -> Bit {
+    word[0] and not word[1] and word[2]
+}
+pub unitary fn oracle[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {
+    with_computed(q, marked) { |flag| phase[1,1](flag) }
+}

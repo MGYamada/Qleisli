@@ -24,11 +24,12 @@ pub(super) fn roots(
         let nodes = index.original_nodes();
         let uses = index.table.resolved_uses();
         budget.charge(Default::default(), nodes.len() + uses.len() + 2)?;
-        let direct = nodes.iter().any(|node| {
-            matches!(node,
+        let direct = index.table.reads_word_coordinate()
+            || nodes.iter().any(|node| {
+                matches!(node,
             OriginalNode::Expression(expr) if matches!(expr.kind,
                 ExprKind::QuantumMatch(_) | ExprKind::WithComputed { .. } | ExprKind::Workspace(_)))
-        });
+            });
         let dependency = uses.iter().any(|usage| {
             matches!(usage.target,
             ResolvedUse::Global(Target::Declaration(callee)) if roots.contains(&callee))

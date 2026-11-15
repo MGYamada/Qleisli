@@ -216,6 +216,126 @@ private def followBasisAxes (locations inputAxes outputAxes table : List Nat) :
 #guard ((followBasisAxes [4,7,9] [0,2] [0,2] [0,1,2,0]).run 4096).1.toOption.isNone
 #guard ((followBasisAxes [4,7,9] [0,2] [1,2] [0,2,1,3]).run 4096).1.toOption.isNone
 
+private def structuralWord (bits : Nat) (axes : List Nat) (forward inverse : List Semantics.Finite.Step)
+    (uses : List Semantics.Raw.Use) : List Semantics.Finite.Step :=
+  (forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse).map
+    (Semantics.RawTrace.localize (axes ++ [bits]))
+
+private abbrev CheckedWord (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (start count : Nat) (layout scratch reserved : List Nat) (steps : List Semantics.Finite.Step) :=
+  if scratch.isEmpty then Decomposition rootDependencies circuit start count layout steps
+  else Synthesis rootDependencies circuit start count layout scratch reserved steps
+
+private def checkWord (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (start count : Nat) (layout scratch reserved : List Nat) (steps : List Semantics.Finite.Step) :
+    WorkM (CheckedWord rootDependencies circuit start count layout scratch reserved steps) := do
+  if empty : scratch.isEmpty then
+    let checked ← checkDecomposition circuit start count layout steps rootDependencies
+    pure (by simpa only [CheckedWord,if_pos empty] using checked)
+  else
+    let checked ← checkSynthesisWith rootDependencies circuit start count layout scratch reserved steps
+    pure (by simpa only [CheckedWord,if_neg empty] using checked)
+
+private theorem checkedWord_within {rootDependencies circuit start count layout scratch reserved steps}
+    (checked : CheckedWord rootDependencies circuit start count layout scratch reserved steps) :
+    start+count ≤ circuit.gates.length := by
+  unfold CheckedWord at checked
+  split at checked
+  · exact (CanonicalOpenQasmWorkspace.interval_length checked.targetWord).2
+  · exact (CanonicalOpenQasmWorkspace.interval_length checked.targetWord).2
+
+/-- The predicate wire is part of the original operator. Extra synthesis
+wires, when present, have their own checked zero-return equation. -/
+structure StructuralPlacement (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (state : State) (count auxiliary : Nat) (scratch reserved : List Nat) (bits : Nat) (axes : List Nat)
+    (forward inverse : List Semantics.Finite.Step) (uses : List Semantics.Raw.Use) where
+  inFrame : bits = state.locations.length ∧ axes.all (· < bits) = true
+  predicateReserved : state.synthesis.contains auxiliary = true ∧ reserved.contains auxiliary = false
+  declared : circuit.declares (state.locations ++ [auxiliary] ++ scratch)
+  action : CheckedWord rootDependencies circuit state.gateIndex count (state.locations ++ [auxiliary])
+    scratch state.synthesis (structuralWord bits axes forward inverse uses)
+
+private def checkStructural (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (state : State) (operation : Semantics.Raw.Op) (reserved : List Nat) (count auxiliary : Nat) (scratch : List Nat)
+    (bits : Nat) (axes : List Nat) (forward inverse : List Semantics.Finite.Step) (uses : List Semantics.Raw.Use) :
+    WorkM (StructuralPlacement rootDependencies circuit state count auxiliary scratch reserved
+      bits axes forward inverse uses) := do
+  if header : bits = state.locations.length ∧ state.synthesis.contains auxiliary = true ∧
+      reserved.contains auxiliary = false ∧ scratch.all (fun wire => !reserved.contains wire) = true then
+    let fields := Raw.rawFields ⟨[],[operation],[],.unitary⟩
+    guard (fields ≤ 1025) .limit
+    exactWork (Exact.charge (32*(1+fields)*(1+bits)))
+    let layout := state.locations ++ [auxiliary]
+    if valid : circuit.declares (layout ++ scratch) ∧ axes.all (· < bits) = true then
+      let word := forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse
+      guard (word.all (fun step => (stepAxes step).all (· ≤ axes.length))) .request
+      let steps := word.map (Semantics.RawTrace.localize (axes ++ [bits]))
+      let action ← checkWord rootDependencies circuit state.gateIndex count layout scratch state.synthesis steps
+      return ⟨⟨header.1,valid.2⟩,⟨header.2.1,header.2.2.1⟩,valid.1,action⟩
+    else throw .request
+  else throw .request
+
+/-- The entire decoded compute-use-inverse interval occupies counted gate
+positions, including any physical synthesis and uncomputation. -/
+theorem StructuralPlacement.literal_costs {rootDependencies circuit state count auxiliary scratch reserved
+    bits axes forward inverse uses}
+    (checked : StructuralPlacement rootDependencies circuit state count auxiliary scratch reserved
+      bits axes forward inverse uses) :
+    state.gateIndex+count ≤ circuit.counts.gates ∧
+      ((circuit.gates.drop state.gateIndex).take count).length = count ∧
+      (state.locations ++ [auxiliary] ++ scratch).Nodup ∧
+      ∀ wire ∈ state.locations ++ [auxiliary] ++ scratch, wire < circuit.counts.reset := by
+  have inside := checkedWord_within checked.action
+  have enough : count ≤ circuit.gates.length - state.gateIndex := by omega
+  exact ⟨inside,by simp [List.length_take,Nat.min_eq_left enough],checked.declared⟩
+
+private def protectedTableWord (sourceBits dataBits auxiliaryBits : Nat) (function : List Nat)
+    (uses : List Semantics.Raw.Use) : List Semantics.Finite.Step :=
+  let compute := Raw.computeStep sourceBits dataBits auxiliaryBits function
+  [compute] ++ uses.map (Raw.physicalUse sourceBits dataBits) ++ [compute]
+
+/-- The checked table action uses the original reversible embedding and
+protected operations on their complete ordered carrier. -/
+structure ProtectedTablePlacement (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (state : State) (count : Nat) (workspace : List Nat) (bits : Nat) (axes : List Nat)
+    (sourceBits auxiliaryBits : Nat) (function : List Nat) (uses : List Semantics.Raw.Use) where
+  declared : circuit.declares (state.locations ++ workspace.take auxiliaryBits ++ workspace.drop auxiliaryBits)
+  action : CheckedWord rootDependencies circuit state.gateIndex count (state.locations ++ workspace.take auxiliaryBits)
+    (workspace.drop auxiliaryBits) state.synthesis
+    ((protectedTableWord sourceBits axes.length auxiliaryBits function uses).map
+      (Semantics.RawTrace.localize (axes ++ (List.range auxiliaryBits).map (bits+·))))
+
+private def checkProtectedTable (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit)
+    (state : State) (operation : Semantics.Raw.Op) (reserved : List Nat) (count : Nat)
+    (workspace : List Nat) (bits : Nat) (axes : List Nat) (sourceBits auxiliaryBits : Nat)
+    (function : List Nat) (uses : List Semantics.Raw.Use) : WorkM
+      (ProtectedTablePlacement rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits function uses) := do
+  guard (bits == state.locations.length && sourceBits ≤ axes.length && auxiliaryBits ≤ workspace.length &&
+    axes.all (· < bits) && workspace.all (fun wire => !reserved.contains wire)) .request
+  let auxiliary := workspace.take auxiliaryBits
+  let scratch := workspace.drop auxiliaryBits
+  guard (auxiliary.all state.synthesis.contains) .request
+  let layout := state.locations ++ auxiliary
+  if declared : circuit.declares (layout ++ scratch) then
+    let fields := Raw.rawFields ⟨[],[operation],[],.unitary⟩
+    let width := axes.length + auxiliaryBits
+    guard (width ≤ 6 && fields ≤ 1025) .limit
+    exactWork (Exact.charge (32*(1+fields)*(1+bits)+4*(2^width)))
+    let word := protectedTableWord sourceBits axes.length auxiliaryBits function uses
+    guard (word.all (fun step => (stepAxes step).all (· < width))) .request
+    let steps := word.map (Semantics.RawTrace.localize (axes ++ (List.range auxiliaryBits).map (bits+·)))
+    let action ← checkWord rootDependencies circuit state.gateIndex count layout scratch state.synthesis steps
+    return ⟨declared,action⟩
+  else throw .request
+
+theorem ProtectedTablePlacement.literal_costs {rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits function uses}
+    (checked : ProtectedTablePlacement rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits function uses) :
+    state.gateIndex+count ≤ circuit.counts.gates ∧
+      (state.locations ++ workspace.take auxiliaryBits ++ workspace.drop auxiliaryBits).Nodup ∧
+      ∀ wire ∈ state.locations ++ workspace.take auxiliaryBits ++ workspace.drop auxiliaryBits,
+        wire < circuit.counts.reset :=
+  ⟨checkedWord_within checked.action,checked.declared⟩
+
 private def followRaw (rootDependencies : List Semantics.Finite.Dependency) (circuit : Circuit) (state : State) (operation : Semantics.Raw.Op)
     (reserved : List Nat) (alignment : Match) : WorkM State := do
   let (next,events) ← lift (readOption (Semantics.RawTrace.step state.raw operation))
@@ -239,10 +359,38 @@ private def followRaw (rootDependencies : List Semantics.Finite.Dependency) (cir
       guard (scratch.all fun wire => !reserved.contains wire) .request
       let _ ← checkSynthesisWith rootDependencies circuit state.gateIndex count state.locations scratch state.synthesis steps
       pure (state.locations,state.gateIndex+count)
+    | .synthesized count (auxiliary :: scratch),[.structuralComputed bits axes forward inverse uses] => do
+      let _ ← checkStructural rootDependencies circuit state operation reserved count auxiliary scratch
+        bits axes forward inverse uses
+      pure (state.locations,state.gateIndex+count)
+    | .decomposed count,[.protectedComputed bits axes sourceBits 0 function uses] => do
+      let _ ← checkProtectedTable rootDependencies circuit state operation reserved count [] bits axes sourceBits 0 function uses
+      pure (state.locations,state.gateIndex+count)
+    | .synthesized count workspace,[.protectedComputed bits axes sourceBits auxiliaryBits function uses] => do
+      let _ ← checkProtectedTable rootDependencies circuit state operation reserved count workspace bits axes sourceBits auxiliaryBits function uses
+      pure (state.locations,state.gateIndex+count)
     | _,_ => throw .request
   if next.frame.length == locations.length then
     pure {state with raw := next,locations,rawIndex := state.rawIndex+1,gateIndex}
   else throw .request
+
+private theorem followRaw_structural {rootDependencies circuit state operation reserved count auxiliary scratch
+    bits axes forward inverse uses next final work left}
+    (read : Semantics.RawTrace.step state.raw operation = some
+      (next,[.structuralComputed bits axes forward inverse uses]))
+    (ok : (followRaw rootDependencies circuit state operation reserved
+      (.synthesized count (auxiliary :: scratch))).run work = (.ok final,left)) :
+    Nonempty (StructuralPlacement rootDependencies circuit state count auxiliary scratch reserved
+      bits axes forward inverse uses) ∧
+    final = {state with raw := next,rawIndex := state.rawIndex+1,gateIndex := state.gateIndex+count} := by
+  have loaded : (lift (readOption (Semantics.RawTrace.step state.raw operation)) : WorkM _) =
+      pure (next,[Semantics.Raw.Event.structuralComputed bits axes forward inverse uses]) := by rw [read]; rfl
+  simp only [followRaw,loaded,pure_bind] at ok
+  obtain ⟨checked,_,_,finish⟩ := bind_success _ _ _ _ _ ok
+  refine ⟨⟨checked⟩,?_⟩
+  split at finish
+  · exact (pure_success _ _ _ _ finish).1
+  · cases finish
 
 private def followSwap (circuit : Circuit) (connected : Nat → Nat → Bool) (state : State)
     (reserved : List Nat) : Option State := do
@@ -323,37 +471,28 @@ theorem SynthesisAt.within_gate_count {dependencies original circuit entry rawCo
   obtain ⟨_,_,⟨checked⟩⟩ := atSlice
   exact (CanonicalOpenQasmWorkspace.interval_length checked.targetWord).2
 
+/-- A synthesized marker can carry a circuit, a structural predicate, or a
+protected table. The original Raw event determines which proof applies. -/
+def CircuitAt (original : Array Semantics.Observation.Op) (entry : State) : Prop :=
+  ∃ operation next bits steps,
+    original[entry.rawIndex]? = some (.pure operation) ∧
+    Semantics.RawTrace.step entry.raw operation = some (next,[.circuit bits steps])
+
 private theorem replay_synthesized {dependencies original circuit connected reserved entry final count scratch work left}
+    (source : CircuitAt original entry)
     (ok : (replayStep dependencies original circuit connected reserved entry
       (.synthesized count scratch)).run work = (.ok final,left)) :
     SynthesisAt dependencies original circuit entry 1 count scratch := by
-  change ((match original[entry.rawIndex]? with
-    | some (.pure operation) => followRaw dependencies circuit entry operation reserved (.synthesized count scratch)
-    | _ => throw Error.request).run work) = (.ok final,left) at ok
-  split at ok
-  · rename_i operation occurrence
-    unfold followRaw at ok
-    obtain ⟨result,beforeMatch,rawRead,checked⟩ := bind_success _ _ _ _ _ ok
-    rcases result with ⟨next,events⟩
-    have rawRead := (lift_success _ _ _ _ rawRead).1
-    cases trace : Semantics.RawTrace.step entry.raw operation with
-    | none => simp [trace,readOption] at rawRead
-    | some result =>
-      have matching : result = (next,events) := by simpa [trace,readOption] using rawRead
-      rw [matching] at trace
-      cases events with
-      | nil => cases checked
-      | cons event remainder =>
-        cases remainder with
-        | cons _ _ => cases event <;> cases checked
-        | nil =>
-          cases event
-          case circuit =>
-            obtain ⟨_,_,_,ran⟩ := bind_success _ _ _ _ _ checked
-            obtain ⟨synthesis,_,_,_⟩ := bind_success _ _ _ _ _ ran
-            exact ⟨_,.single occurrence trace,⟨synthesis⟩⟩
-          all_goals cases checked
-  · cases ok
+  obtain ⟨operation,next,bits,steps,occurrence,event⟩ := source
+  have originalCheck : (followRaw dependencies circuit entry operation reserved
+      (.synthesized count scratch)).run work = (.ok final,left) := by
+    simpa only [replayStep,occurrence] using ok
+  have loaded : (lift (readOption (Semantics.RawTrace.step entry.raw operation)) : WorkM _) =
+      pure (next,[Semantics.Raw.Event.circuit bits steps]) := by rw [event]; rfl
+  simp only [followRaw,loaded,pure_bind] at originalCheck
+  obtain ⟨_,_,_,ran⟩ := bind_success _ _ _ _ _ originalCheck
+  obtain ⟨synthesis,_,_,_⟩ := bind_success _ _ _ _ _ ran
+  exact ⟨steps,.single occurrence event,⟨synthesis⟩⟩
 
 private theorem replay_optimized_synthesis {dependencies original circuit connected reserved entry final rawCount gateCount scratch work left}
     (nonempty : scratch.isEmpty = false)
@@ -370,22 +509,90 @@ private theorem replay_optimized_synthesis {dependencies original circuit connec
   obtain ⟨synthesis,_,_,_⟩ := bind_success _ _ _ _ _ ran
   exact ⟨steps,.span ⟨work,beforeSpan,read⟩,⟨synthesis⟩⟩
 
+/-- Identify the original kind of a circuit synthesis occurrence after
+replaying its prefix. -/
+def SynthesisMatch (original : Array Semantics.Observation.Op) (entry : State)
+    (action : Match) (rawCount gateCount : Nat) (scratch : List Nat) : Prop :=
+  (action = .synthesized gateCount scratch ∧ rawCount = 1 ∧ CircuitAt original entry) ∨
+    (action = .optimized rawCount gateCount scratch ∧ scratch.isEmpty = false)
+
 private theorem replay_synthesis_at {dependencies original circuit connected reserved initial final work left
-    action rawCount gateCount scratch} (prior tail : List Match)
-    (kind : (action = .synthesized gateCount scratch ∧ rawCount = 1) ∨
-      (action = .optimized rawCount gateCount scratch ∧ scratch.isEmpty = false))
+    action} (prior tail : List Match)
     (ok : (replayFrom dependencies original circuit connected (prior ++ action :: tail)
       initial reserved).run work = (.ok final,left)) :
     ∃ entry, RuntimeInterval.Computed
       (replayFrom dependencies original circuit connected prior initial reserved) entry ∧
-      SynthesisAt dependencies original circuit entry rawCount gateCount scratch := by
+      ∀ rawCount gateCount scratch, SynthesisMatch original entry action rawCount gateCount scratch →
+        SynthesisAt dependencies original circuit entry rawCount gateCount scratch := by
   simp only [replayFrom,List.foldlM_append,List.foldlM_cons] at ok
   obtain ⟨entry,before,prefixRun,rest⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,_,sliceRun,_⟩ := bind_success _ _ _ _ _ rest
   refine ⟨entry,⟨work,before,prefixRun⟩,?_⟩
-  rcases kind with ⟨rfl,rfl⟩ | ⟨rfl,nonempty⟩
-  · exact replay_synthesized sliceRun
+  intro rawCount gateCount scratch kind
+  rcases kind with ⟨rfl,rfl,circuitSource⟩ | ⟨rfl,nonempty⟩
+  · exact replay_synthesized circuitSource sliceRun
   · exact replay_optimized_synthesis nonempty sliceRun
+
+private theorem replayStep_structural {rootDependencies original circuit connected reserved state count
+    auxiliary scratch input output rawScratch forward inverse uses final work left}
+    (source : original[state.rawIndex]? = some (.pure (.structuralCompute input output rawScratch forward inverse uses)))
+    (ok : (replayStep rootDependencies original circuit connected reserved state
+      (.synthesized count (auxiliary :: scratch))).run work = (.ok final,left)) :
+    ∃ port taken, Semantics.RawTrace.take state.raw input = some (port,taken) ∧
+      Nonempty (StructuralPlacement rootDependencies circuit state count auxiliary scratch reserved
+        state.raw.frame.length (Semantics.RawTrace.axes state.raw port.wires) forward inverse uses) ∧
+      final = { state with
+        raw := Semantics.RawTrace.insert taken output port.wires
+        rawIndex := state.rawIndex+1
+        gateIndex := state.gateIndex+count } := by
+  simp only [replayStep,source] at ok
+  cases taken : Semantics.RawTrace.take state.raw input with
+  | none =>
+    have noEvent : Semantics.RawTrace.step state.raw (.structuralCompute input output rawScratch forward inverse uses) = none := by
+      simp [Semantics.RawTrace.step,taken,bind,Option.bind]
+    simp only [followRaw,noEvent] at ok
+    obtain ⟨loaded,_,first,_⟩ := bind_success _ _ _ _ _ ok
+    have invalid : readOption (none : Option (Interface × List Semantics.Raw.Event)) = .ok loaded :=
+      (lift_success _ _ _ _ first).1
+    cases invalid
+  | some originalPort =>
+    obtain ⟨port,afterTake⟩ := originalPort
+    have sourceEvent : Semantics.RawTrace.step state.raw (.structuralCompute input output rawScratch forward inverse uses) =
+        some (Semantics.RawTrace.insert afterTake output port.wires,[.structuralComputed state.raw.frame.length
+          (Semantics.RawTrace.axes state.raw port.wires) forward inverse uses]) := by
+      simp [Semantics.RawTrace.step,taken,bind,Option.bind]
+    obtain ⟨placed,after⟩ := followRaw_structural sourceEvent ok
+    exact ⟨port,afterTake,rfl,placed,after⟩
+
+/-- An admitted synthesized segment whose original operation is a structural
+computed scope has an exact placement and consumes its full gate interval. -/
+def StructuralAt (rootDependencies : List Semantics.Finite.Dependency) (original : Array Semantics.Observation.Op)
+    (circuit : Circuit) (reserved : List Nat) (state next : State) (count auxiliary : Nat) (scratch : List Nat) : Prop :=
+  ∀ input output rawScratch forward inverse uses,
+    original[state.rawIndex]? = some (.pure (.structuralCompute input output rawScratch forward inverse uses)) →
+    ∃ port taken, Semantics.RawTrace.take state.raw input = some (port,taken) ∧
+      Nonempty (StructuralPlacement rootDependencies circuit state count auxiliary scratch reserved
+        state.raw.frame.length (Semantics.RawTrace.axes state.raw port.wires) forward inverse uses) ∧
+      state.gateIndex+count ≤ circuit.counts.gates ∧
+      next = { state with
+        raw := Semantics.RawTrace.insert taken output port.wires
+        rawIndex := state.rawIndex+1
+        gateIndex := state.gateIndex+count }
+
+private theorem replay_structural_cost {rootDependencies original circuit connected reserved initial final work left
+    count auxiliary scratch} (before tail : List Match)
+    (ok : (replayFrom rootDependencies original circuit connected
+      (before ++ .synthesized count (auxiliary :: scratch) :: tail) initial reserved).run work = (.ok final,left)) :
+    ∃ state next, RuntimeInterval.Computed
+      (replayFrom rootDependencies original circuit connected before initial reserved) state ∧
+      StructuralAt rootDependencies original circuit reserved state next count auxiliary scratch := by
+  simp only [replayFrom,List.foldlM_append,List.foldlM_cons] at ok
+  obtain ⟨state,middle,prefixRun,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨next,_,stepRun,_⟩ := bind_success _ _ _ _ _ rest
+  refine ⟨state,next,⟨work,middle,prefixRun⟩,?_⟩
+  intro input output rawScratch forward inverse uses source
+  obtain ⟨port,taken,takeRead,⟨placed⟩,after⟩ := replayStep_structural source stepRun
+  exact ⟨port,taken,takeRead,⟨placed⟩,placed.literal_costs.1,after⟩
 
 /-- A designated routing action consumes the literal SWAP at that gate index,
 and moves the live placement along its checked hardware edge. -/
@@ -688,16 +895,28 @@ theorem BoundSegment.synthesis_at {program : Semantics.Observation.Program} {seg
     {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
     {rootDependencies connected reserved previous entry}
     (bound : BoundSegment segment rootDependencies target connected reserved previous entry)
-    {action rawCount gateCount scratch} (prior tail : List Match)
-    (split : segment.alignment = prior ++ action :: tail)
-    (kind : (action = .synthesized gateCount scratch ∧ rawCount = 1) ∨
-      (action = .optimized rawCount gateCount scratch ∧ scratch.isEmpty = false)) :
+    {action} (prior tail : List Match)
+    (split : segment.alignment = prior ++ action :: tail) :
     ∃ occurrence, RuntimeInterval.Computed
       (replayFrom rootDependencies program.operations.toArray target.circuit connected prior previous reserved) occurrence ∧
-      SynthesisAt rootDependencies program.operations.toArray target.circuit occurrence rawCount gateCount scratch := by
+      ∀ rawCount gateCount scratch,
+        SynthesisMatch program.operations.toArray occurrence action rawCount gateCount scratch →
+        SynthesisAt rootDependencies program.operations.toArray target.circuit occurrence rawCount gateCount scratch := by
   obtain ⟨work,left,ran⟩ := bound.replayed
   rw [split] at ran
-  exact replay_synthesis_at prior tail kind ran
+  exact replay_synthesis_at prior tail ran
+
+theorem BoundSegment.structural_paid {program : Semantics.Observation.Program} {segment : Segment program}
+    {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {rootDependencies connected reserved previous entry count auxiliary scratch}
+    (bound : BoundSegment segment rootDependencies target connected reserved previous entry) (before tail : List Match)
+    (splitAt : segment.alignment = before ++ .synthesized count (auxiliary :: scratch) :: tail) :
+    ∃ state next, RuntimeInterval.Computed
+      (replayFrom rootDependencies program.operations.toArray target.circuit connected before previous reserved) state ∧
+      StructuralAt rootDependencies program.operations.toArray target.circuit reserved state next count auxiliary scratch := by
+  obtain ⟨_,_,ran⟩ := bound.replayed
+  rw [splitAt] at ran
+  exact replay_structural_cost before tail ran
 
 private def segmentWork {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
     (program : Semantics.Observation.Program) (alignment : List Match) : WorkM Unit := do
@@ -822,18 +1041,31 @@ theorem FinishedTrace.suffix_synthesis {program : Semantics.Observation.Program}
     {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
     {rootDependencies connected reserved synthesis suffix}
     (trace : FinishedTrace program rootDependencies target connected reserved synthesis suffix)
-    {action rawCount gateCount scratch} (prior tail : List Match)
-    (split : suffix = prior ++ action :: tail)
-    (kind : (action = .synthesized gateCount scratch ∧ rawCount = 1) ∨
-      (action = .optimized rawCount gateCount scratch ∧ scratch.isEmpty = false)) :
+    {action} (prior tail : List Match)
+    (split : suffix = prior ++ action :: tail) :
     ∃ occurrence, RuntimeInterval.Computed
       (replayFrom rootDependencies program.operations.toArray target.circuit connected prior trace.recorded.exit reserved) occurrence ∧
-      SynthesisAt rootDependencies program.operations.toArray target.circuit occurrence rawCount gateCount scratch := by
+      ∀ rawCount gateCount scratch,
+        SynthesisMatch program.operations.toArray occurrence action rawCount gateCount scratch →
+        SynthesisAt rootDependencies program.operations.toArray target.circuit occurrence rawCount gateCount scratch := by
   obtain ⟨work,left,ran⟩ := trace.replayed
   have runAt := congrArg (fun alignment =>
     (replayFrom rootDependencies program.operations.toArray target.circuit connected alignment
       trace.recorded.exit reserved).run work) split
-  exact replay_synthesis_at prior tail kind (runAt.symm.trans ran)
+  exact replay_synthesis_at prior tail (runAt.symm.trans ran)
+
+theorem FinishedTrace.suffix_structural_paid {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {rootDependencies connected reserved synthesis suffix count auxiliary scratch}
+    (trace : FinishedTrace program rootDependencies target connected reserved synthesis suffix) (before tail : List Match)
+    (splitAt : suffix = before ++ .synthesized count (auxiliary :: scratch) :: tail) :
+    ∃ state next, RuntimeInterval.Computed
+      (replayFrom rootDependencies program.operations.toArray target.circuit connected before trace.recorded.exit reserved) state ∧
+      StructuralAt rootDependencies program.operations.toArray target.circuit reserved state next count auxiliary scratch := by
+  obtain ⟨work,_,ran⟩ := trace.replayed
+  have runAt := congrArg (fun alignment =>
+    (replayFrom rootDependencies program.operations.toArray target.circuit connected alignment trace.recorded.exit reserved).run work) splitAt
+  exact replay_structural_cost before tail (runAt.symm.trans ran)
 
 /-- Follow every original interval in order while keeping designations for
 clean scratch fixed. Ordinary preparation and routing cannot use a designated

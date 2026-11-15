@@ -44,6 +44,155 @@ fn selected_at(source: &str, entry: &str) -> qleisli::frontend::compile::Selecte
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn width_parameterized_predicate_has_one_original_circuit_and_ordinary_definition() {
+    use qleisli::ir::RawOp;
+
+    let source = r#"#![no_implicit_prelude]
+        classical fn mark[const width: Nat](word: Bits<width>) -> Bit requires width>=3 {
+            word[0] and not word[1] and word[2]
+        }
+        pub unitary fn oracle[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n>=3 {
+            with_computed(q, mark[n]) { |flag| phase[1,1](flag) }
+        }
+        pub observe fn measured() -> Bit {
+            let a = measure_z(basis unit(()) as _ {1});
+            let b = measure_z(basis unit(()) as _ {0});
+            let c = measure_z(basis unit(()) as _ {1});
+            let word = prepend_bit[2](a, prepend_bit[1](b, prepend_bit[0](c, empty_bits())));
+            mark[3](word)
+        }
+    "#;
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    let kernel = kernel();
+    for n in [3, 4] {
+        let checked = parsed
+            .instantiate_runtime_with_types(
+                "main::oracle",
+                Default::default(),
+                BTreeMap::from([("n".into(), n)]),
+                Default::default(),
+            )
+            .unwrap()
+            .compile_runtime_with_kernel(&kernel)
+            .unwrap();
+        let program = checked.program();
+        let [
+            RawOp::StructuralCompute {
+                forward, inverse, ..
+            },
+        ] = program.raw().operations.as_slice()
+        else {
+            panic!("expected the literal circuit for width {n}");
+        };
+        assert_eq!(forward, inverse);
+        assert_eq!(
+            forward
+                .iter()
+                .map(|step| step.controls.len())
+                .collect::<Vec<_>>(),
+            [2, 3]
+        );
+        assert_eq!(program.output_ports()[0].wires.len(), n as usize);
+        let artifact = std::str::from_utf8(program.artifact()).unwrap();
+        let wrong = artifact.replacen("mark[n]", "mark[n+1]", 1);
+        assert_ne!(artifact, wrong);
+        let error = kernel
+            .check_qmatch_source_v5(wrong.as_bytes(), program.request().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+    assert!(
+        parsed
+            .requires_typed_runtime_transport("main::measured")
+            .unwrap()
+    );
+    let checked = parsed
+        .instantiate_runtime_with_types(
+            "main::measured",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel)
+        .unwrap();
+    let values = run_closed(checked.program(), SimulationLimits::default()).unwrap();
+    assert_eq!(values.get(&vec![true]), Some(&1.0));
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn grover_iteration_checks_both_structural_predicates_in_one_original_root() {
+    use qleisli::ir::RawOp;
+
+    // First projects: "tests/fixtures/authoring_sessions/grover-predicate-meter-v030/width-2"
+    // and "tests/fixtures/authoring_sessions/grover-predicate-meter-v030/width-3".
+    // Scope and expected distributions: "tests/fixtures/authoring_sessions/grover-predicate-meter-v030/README.md".
+    for (source, before, expected) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/grover-predicate-meter-v030/width-2/main.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/grover-predicate-meter-v030/width-2.before.stdout"
+            ),
+            vec![(vec![true, false], 1.0)],
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/grover-predicate-meter-v030/width-3/main.qli"
+            ),
+            include_str!(
+                "fixtures/authoring_sessions/grover-predicate-meter-v030/width-3.before.stdout"
+            ),
+            vec![
+                (vec![true, false, false], 0.5),
+                (vec![true, false, true], 0.5),
+            ],
+        ),
+    ] {
+        assert!(before.contains(r#""code":"limit""#));
+        let program = compile_project(&SourceRoot::new(source).0).unwrap();
+        assert_eq!(
+            program.source_body_scope(),
+            Some("finite-source-basis-context-v5")
+        );
+        let mut scope_count = 0;
+        for operation in &program.raw().operations {
+            match operation {
+                RawOp::StructuralCompute {
+                    forward, inverse, ..
+                } => {
+                    assert!(!forward.is_empty());
+                    assert_eq!(forward, inverse);
+                    scope_count += 1;
+                }
+                RawOp::LiftBasis { table, .. } => assert_eq!(table.len(), 1),
+                RawOp::ComputeUseUncompute { .. } => panic!("expected structural synthesis"),
+                _ => {}
+            }
+        }
+        assert_eq!(scope_count, 2);
+        let actual = run_closed(&program, SimulationLimits::default()).unwrap();
+        assert_eq!(actual.len(), expected.len());
+        for (output, probability) in expected {
+            assert!((actual[&output] - probability).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn selected_computed_predicate_checks_the_literal_xor_scope() {
     use qleisli::ir::RawOp;
 

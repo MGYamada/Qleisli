@@ -1,0 +1,7 @@
+#![no_implicit_prelude]
+unitary fn marked[const n: Nat](word: Bits<n>) -> Bit requires n>=3 {
+    1
+}
+pub unitary fn oracle[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n>=3 {
+    with_computed(q, marked) { |flag| phase[1,1](flag) }
+}

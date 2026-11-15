@@ -637,17 +637,28 @@ private def computedPredicate {sources} (reader : DefinitionReader sources)
     (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (input : Code) (reference : SourceComputedSyntax.Reference) :
     WorkM (ComputedPredicate sources) := do
-  let (resolution,rows) ← named reader.context.modules state scope reference.argument.tokens
-  let prepared ← readDefinitionUsing reader resolution.moduleName resolution.declaration.name
-  let definition := prepared.value
-  guard (definition.original.header.formals.isEmpty &&
-    definition.original.envelope.parsedHeader.ordinaryOnly) .request
-  let [parameter] := definition.parameters | throw .request
+  let (resolution,rows) ← named reader.context.modules state scope reference.written.callee
+  let (definition,parameters,result,predicateRows) ← match reference.written with
+    | .name _ => do
+      let definition := (← readDefinitionUsing reader resolution.moduleName resolution.declaration.name).value
+      guard definition.original.header.formals.isEmpty .request
+      pure (definition,definition.parameters,definition.result,definition.rows)
+    | .application _ => do
+      let application ← instantiateWithReader state scope reference.written
+        resolution.moduleName resolution.declaration.name (fun _ => throw .request) false reader
+      let definition := application.definition
+      if sameOwner : application.owner = resolution.moduleName then
+        if sameName : application.name = resolution.declaration.name then
+          pure (sameName ▸ sameOwner ▸ definition,application.parameters,application.result,application.rows)
+        else throw .request
+      else throw .request
+  guard definition.original.envelope.parsedHeader.ordinaryOnly .request
+  let [parameter] := parameters | throw .request
   GenericValues.expect state parameter (← adapt (GenericValues.ordinaryValue input))
-  GenericValues.expect state definition.result [.ordinary [.fixed .bit]]
+  GenericValues.expect state result [.ordinary [.fixed .bit]]
   if original : definition.original.envelope.source = resolution.source ∧
       definition.original.envelope.declaration = resolution.declaration then
-    pure ⟨resolution,definition,original,rows ++ definition.rows⟩
+    pure ⟨resolution,definition,original,rows ++ predicateRows⟩
   else throw .request
 
 /-- Original scoped typing is retained separately from the actual finite

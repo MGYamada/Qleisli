@@ -1,0 +1,10 @@
+#![no_implicit_prelude]
+enum Flag { Off, On }
+classical fn mark(tag: Flag) -> Bit {
+    match tag { Flag::Off => 0, Flag::On => 1 }
+}
+observe fn main() -> Unit {
+    let q = basis unit(()) as _ { Flag::Off };
+    let q = with_computed(q, mark) { |flag| phase[1,1](flag) };
+    discard(q)
+}

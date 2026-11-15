@@ -29,5 +29,24 @@ theorem structural_counts {sources caller deps program block start count before 
   simp [readCounts, Raw.WorkspaceResources.Counts.then_, Raw.WorkspaceResources.eventCounts,
     entryWidth]
 
+/-- The expanded body count uses the same original interval as the semantic
+restoration proof. Both checked XOR passes and the protected uses contribute
+their full literal lengths. -/
+theorem structural_expanded_steps {sources caller deps program block start count before receipts}
+    {event : SourceTypes.SourceRuntimeContext.ComputedEvent sources caller}
+    {interval : @RuntimeInterval.Checked deps program block start count}
+    (checked : StructuralComputedRaw.IntervalChecked event interval before)
+    (resource : Checked receipts interval.before.quantum.reference interval.after.quantum.reference
+      [checked.packet.operation]) :
+    resource.expandedBodySteps =
+      checked.packet.forward.length + checked.packet.uses.length + checked.packet.inverse.length := by
+  have original := (StructuralComputedRestoration.interval_trace checked).2
+  have trace := Option.some.inj (resource.originalTrace.symm.trans original)
+  obtain ⟨work,left,ran⟩ := resource.expansionRead
+  rw [trace] at ran
+  exact Raw.WorkspaceResources.bodyExpansion_structural receipts
+    checked.checked.raw.forward checked.checked.raw.inverse ran
+
 #print axioms structural_counts
+#print axioms structural_expanded_steps
 end Qleisli.RuntimeComputedResources

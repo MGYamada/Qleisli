@@ -30,6 +30,7 @@ mod value;
 use value::{Binding, Env, Register, Slot, Value, env_size};
 
 use super::*;
+use crate::frontend::compile::instances::ClosedInstance;
 use crate::frontend::core::PrimitiveId;
 use crate::frontend::pattern::{self, BindingContext};
 use crate::frontend::raw_state::RawState;
@@ -1587,6 +1588,7 @@ impl Lowerer<'_, '_> {
             ExprKind::WithComputed {
                 source,
                 function,
+                static_args,
                 binder,
                 body,
             } => {
@@ -1605,11 +1607,22 @@ impl Lowerer<'_, '_> {
                         "with_computed requires a classical function name",
                     ));
                 }
-                self.computed(module, expr.span, source, function, binder, body, env, expr)
+                self.computed(
+                    module,
+                    expr.span,
+                    source,
+                    function,
+                    static_args,
+                    binder,
+                    body,
+                    env,
+                    expr,
+                )
             }
             ExprKind::CertifiedComputed {
                 source,
                 function,
+                static_args,
                 logical,
                 data_binder,
                 ancilla_binder,
@@ -1621,6 +1634,7 @@ impl Lowerer<'_, '_> {
                     expr.span,
                     source,
                     function,
+                    static_args,
                     logical,
                     data_binder,
                     ancilla_binder,
@@ -1926,16 +1940,57 @@ impl Lowerer<'_, '_> {
         self.compiler.basis_codes(module, span, ty)
     }
 
+    fn computed_predicate_instance(
+        &mut self,
+        module: &str,
+        function: &Ident,
+        key: Key,
+        static_args: &[StaticOp],
+    ) -> Result<Option<Arc<ClosedInstance>>, CompileError> {
+        if static_args.is_empty() {
+            return Ok(None);
+        }
+        let span = function.span;
+        let lookup = self.compiler.locals();
+        let plan = lookup
+            .try_reference_site(function)
+            .and_then(|site| self.compiler.source.static_calls.get(&site))
+            .filter(|plan| plan.target == key && Some(plan.owner) == self.compiler.checking)
+            .ok_or_else(|| {
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::InvalidIr,
+                    "computed predicate lacks its original specialization",
+                )
+            })?;
+        let cells = plan.arguments.iter().fold(2usize, |cells, actual| {
+            cells.saturating_add(actual.formal.name.len() + 2)
+        });
+        let site = plan.callee.site;
+        self.compiler.charge(module, span, cells)?;
+        let plan = &self.compiler.source.static_calls[&site];
+        let actuals = plan.arguments.clone();
+        let environment = Arc::clone(&plan.environment);
+        self.compiler
+            .bind_runtime_source_instance(key, &actuals, &environment, &self.bindings, module, span)
+            .map(Some)
+    }
+
     fn computed_table(
         &mut self,
         module: &str,
         function: &Ident,
         key: Key,
         basis: &Ty,
+        instance: Option<Arc<ClosedInstance>>,
     ) -> Result<(Vec<u16>, bool), CompileError> {
-        self.compiler
-            .prepare_required_classical_table(key, module, function.span)?;
-        let requires_source = self.compiler.deferred_nominal_tables.contains(&key);
+        if instance.is_none() {
+            self.compiler
+                .prepare_required_classical_table(key, module, function.span)?;
+        }
+        let requires_source =
+            instance.is_some() || self.compiler.deferred_nominal_tables.contains(&key);
         let predicate = if requires_source {
             if self.nominal_qmatch.is_none() {
                 return Err(self.computed_refusal(
@@ -1945,7 +2000,10 @@ impl Lowerer<'_, '_> {
                     "this finite basis table needs the original source-body gate",
                 )?);
             }
-            self.compiler.original_classical_table(key)?
+            match instance {
+                Some(instance) => self.compiler.original_classical_table_instance(instance)?,
+                None => self.compiler.original_classical_table(key)?,
+            }
         } else {
             let Some(predicate) = self.compiler.basis.get(&key) else {
                 let (code, message) = self
@@ -1992,6 +2050,7 @@ impl Lowerer<'_, '_> {
         span: Span,
         source: Value,
         function: &Ident,
+        static_args: &[StaticOp],
         binder: &Ident,
         body: &Block,
         env: &Env,
@@ -2013,6 +2072,7 @@ impl Lowerer<'_, '_> {
             self.raw.registers[&source_slot].basis.tree_size().nodes,
         )?;
         let basis = self.raw.registers[&source_slot].basis.clone();
+        let instance = self.computed_predicate_instance(module, function, key, static_args)?;
         // Only a source-planned body or the selected entry itself opts into
         // structural predicate evidence. An inlined table must not change the
         // caller's verification path solely because its predicate can synthesize.
@@ -2023,7 +2083,19 @@ impl Lowerer<'_, '_> {
             && !self.compiler.concrete_context.finite_transform
             && !self.compiler.deferred_nominal_tables.contains(&key)
         {
-            match self.compiler.propose_structural_predicate(key, &basis) {
+            let instance_frame = match &instance {
+                Some(instance) => Some(self.compiler.enter_instance(
+                    Arc::clone(instance),
+                    module,
+                    function.span,
+                )?),
+                None => None,
+            };
+            let proposal = self.compiler.propose_structural_predicate(key, &basis);
+            if let Some(frame) = instance_frame {
+                self.compiler.leave_instance(frame);
+            }
+            match proposal {
                 Ok(steps) => Some(steps),
                 Err(error) if error.code == ErrorCode::Unsupported => None,
                 Err(error) => return Err(error),
@@ -2035,7 +2107,7 @@ impl Lowerer<'_, '_> {
             Some(steps) => ComputedPredicate::Circuit(steps),
             None => {
                 let (table, requires_source) =
-                    self.computed_table(module, function, key, &basis)?;
+                    self.computed_table(module, function, key, &basis, instance)?;
                 ComputedPredicate::Table(table, requires_source)
             }
         };

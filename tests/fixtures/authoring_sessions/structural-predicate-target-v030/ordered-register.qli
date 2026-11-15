@@ -1,0 +1,13 @@
+#![no_implicit_prelude]
+classical fn mark(word: Bits<1>) -> Bit { word[0] }
+isometry fn zero() -> Q<Bit> { basis unit(()) as _ {0} }
+observe fn main() -> Bit {
+    let empty = basis unit(()) as _ {empty_bits()};
+    let word = put_bit[1,0](h(zero()), empty);
+    let word = with_computed(word, mark) { |flag| phase[1,1](flag) };
+    let (q, empty) = take_bit[1,0](word);
+    let q = clean(q, h) { |data, scratch| (h(data), scratch) };
+    let read = measure_z(q);
+    discard(empty);
+    read
+}

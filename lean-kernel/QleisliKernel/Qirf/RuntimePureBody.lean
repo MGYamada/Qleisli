@@ -743,7 +743,8 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           if ← (do
               exactWork (Exact.charge (8*(position.start+position.count+1)))
               pure (StructuralComputedRaw.isStructuralInterval interval)) then
-            let action ← StructuralComputedRaw.readInterval event interval before
+            let prepared ← RuntimeBodyQueries.readProtectedOriginal execution.queries source event children position data
+            let action ← StructuralComputedRaw.readInterval event interval before prepared
             finish action.checked.output (.structuralComputed interval ⟨position,rfl,rfl,origin⟩ action)
           else
             let prepared ← RuntimeBodyQueries.readComputed execution.queries source event children position data

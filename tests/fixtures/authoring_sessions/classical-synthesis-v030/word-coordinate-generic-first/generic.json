@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"classical functions cannot have static operation parameters","primary":{"module":"main","path":"/private/tmp/qleisli-30-generic-audit.3UNii7/generic.qli","start":44,"end":49},"related":[]}],"result":null}

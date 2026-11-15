@@ -45,6 +45,16 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [structural predicate target study](structural-predicate-target-v030/README.md)
+preserves the first closed source and the terminal export refusal at its
+original Raw computed scope.
+
+The [finite predicate target study](finite-predicate-target-v030/README.md)
+preserves the first resource-report refusal and the source-checked enum case.
+
+The [Grover predicate work study](grover-predicate-meter-v030/README.md)
+preserves the two small first programs and their original work-limit refusals.
+
 The [controlled workspace study](workspace-controlled-logical-v030/session.json)
 retains the first controlled-S source and the reordered terminal derivative.
 Both originally failed during native source checking of the logical operation.
@@ -96,6 +106,10 @@ works through XOR embedding and is reused after measurement; a separate
 two-bit increment has explicit modulo-four semantics. These finite-table
 observations do not establish scalable synthesis or source preservation.
 
+The [first width-parameterized predicate](classical-synthesis-v030/word-coordinate-generic-first/README.md)
+records the generic classical header refusal and the predicate type check
+when the same binding is supplied by an ordinary-result operation.
+
 The [signal-interface study](signal-interface-v030/session.json) preserves
 three first sources and six actual observations. Returning an entangled signal
 is permitted, silently losing it rejects, and explicit discard retains its
@@ -137,6 +151,10 @@ unfinished general source, target and resource obligations.
 The [register routing study](register-axis-routing-v030/context.md) retains
 the first register SWAP and axis-transposition sources and ten actual selected
 CLI observations. Independent operator and export checks use separate regressions.
+
+The [shared control order study](shared-control-order-v030/context.md) preserves
+both written orders and the first Raw and hierarchy checks. Exact native
+comparisons distinguish the disjoint targets from the shared-target phase case.
 
 The [linked std descriptor study](linked-std-descriptor-v030/README.md) preserves
 two one-qubit user versions, actual API absence, old qargo import failures,

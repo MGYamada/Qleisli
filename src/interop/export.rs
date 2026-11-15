@@ -8,7 +8,10 @@ pub(super) use contracts::ExpansionBudget;
 
 use super::profile::{self, Gate, GateOp, TerminalCircuit};
 use super::{InteropError, MAX_GATES, MAX_QUBITS};
-use crate::ir::{CircuitAction, CircuitStep};
+use crate::ir::{
+    BitControl, CircuitAction, CircuitStep, ProtectedBit, ProtectedRegion, ProtectedUse,
+    ScalarPhase, SingleGate,
+};
 
 /// Output positions of the input gate boundaries. Interior boundaries of a
 /// rewritten word disappear even when its replacement emits zero gates.
@@ -192,6 +195,37 @@ pub(super) fn step(
                 indices,
                 permutation,
                 phases,
+            } if controls.len() > 2
+                && indices.len() == 1
+                && permutation == &[1, 0]
+                && phases == &[0, 0] =>
+            {
+                let target = wires[indices[0]];
+                let helpers = controls.len() - 2;
+                workspace(circuit, scratch, helpers)?;
+                let mut chain = vec![vec![controls[0], controls[1], scratch[0]]];
+                for index in 1..helpers {
+                    chain.push(vec![
+                        scratch[index - 1],
+                        controls[index + 1],
+                        scratch[index],
+                    ]);
+                }
+                for operands in &chain {
+                    circuit.push(Gate::Ccx, operands.clone())?;
+                }
+                circuit.push(
+                    Gate::Ccx,
+                    vec![scratch[helpers - 1], controls[helpers + 1], target],
+                )?;
+                for operands in chain.into_iter().rev() {
+                    circuit.push(Gate::Ccx, operands)?;
+                }
+            }
+            CircuitAction::Monomial {
+                indices,
+                permutation,
+                phases,
             } if indices.is_empty() && permutation == &[0] => {
                 conditional_phase(circuit, scratch, &controls, phases[0])?;
             }
@@ -216,6 +250,100 @@ pub(super) fn step(
         circuit.push(Gate::X, vec![q])?;
     }
     Ok(())
+}
+
+fn gate_at(gate: SingleGate, axis: usize) -> CircuitStep {
+    let mut step = Gate::single(gate).step();
+    match &mut step.action {
+        CircuitAction::Hadamard { target } => *target = axis,
+        CircuitAction::Monomial { indices, .. } => indices[0] = axis,
+        CircuitAction::Contract { .. } => unreachable!("a single gate has no contract"),
+    }
+    step
+}
+
+/// Form the checked predicate, protected uses and inverse on data followed by
+/// private scratch. Placement compares this full action to the emitted word.
+pub(super) fn protected_compute_word(
+    forward: &[CircuitStep],
+    inverse: &[CircuitStep],
+    uses: &[ProtectedUse],
+    source_bits: usize,
+    data_bits: usize,
+) -> Vec<CircuitStep> {
+    let axis = |bit: ProtectedBit| match bit.region {
+        ProtectedRegion::Source => usize::from(bit.index),
+        ProtectedRegion::Ancilla => data_bits + usize::from(bit.index),
+    };
+    let mapped_controls = |controls: &[crate::ir::Control]| {
+        controls
+            .iter()
+            .map(|control| BitControl {
+                index: axis(control.bit),
+                when_one: control.when_one,
+            })
+            .collect()
+    };
+    let mut word = forward.to_vec();
+    for operation in uses {
+        word.push(match operation {
+            ProtectedUse::ProtectedGate { bit, gate } => gate_at(*gate, axis(*bit)),
+            ProtectedUse::ControlledTargetGate {
+                controls,
+                target_index,
+                gate,
+            } => {
+                let mut step = gate_at(*gate, source_bits + target_index);
+                step.controls = mapped_controls(controls);
+                step
+            }
+            ProtectedUse::ControlledPhase { controls, phase } => CircuitStep {
+                controls: mapped_controls(controls),
+                action: CircuitAction::Monomial {
+                    indices: vec![],
+                    permutation: vec![0],
+                    phases: vec![match phase {
+                        ScalarPhase::MinusOne => 4,
+                        ScalarPhase::EighthTurn => 1,
+                    }],
+                },
+            },
+        });
+    }
+    word.extend_from_slice(inverse);
+    word
+}
+
+/// Each retained table row flips exactly the indicated auxiliary bits, under
+/// controls on the complete input label. All of these flips commute.
+pub(super) fn table_xor_word(
+    function: &[u16],
+    source_bits: usize,
+    data_bits: usize,
+    auxiliary_bits: usize,
+) -> Result<Vec<CircuitStep>, InteropError> {
+    let mut word = Vec::new();
+    for (label, &value) in function.iter().enumerate() {
+        for auxiliary in 0..auxiliary_bits {
+            if (value >> auxiliary) & 1 == 0 {
+                continue;
+            }
+            if word.len() == MAX_GATES / 2 {
+                return Err(InteropError::limit(
+                    "computed table exceeds the terminal gate limit",
+                ));
+            }
+            let mut step = gate_at(SingleGate::X, data_bits + auxiliary);
+            step.controls = (0..source_bits)
+                .map(|index| BitControl {
+                    index,
+                    when_one: (label >> index) & 1 != 0,
+                })
+                .collect();
+            word.push(step);
+        }
+    }
+    Ok(word)
 }
 
 /// Recover diagonal words before assigning synthesis workspace. In particular

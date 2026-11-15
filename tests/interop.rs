@@ -78,6 +78,67 @@ fn terminal_export_emits_the_checked_clean_body_and_reuses_its_wire() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn exported_finite_predicate_uses_ordered_targets_and_two_scratch_bits() {
+    let program = raw(
+        vec![
+            RawOp::Init0 {
+                output: TokenId(0),
+                wire: WireId(4),
+            },
+            RawOp::Init0 {
+                output: TokenId(1),
+                wire: WireId(2),
+            },
+            RawOp::Gate {
+                gate: SingleGate::H,
+                input: TokenId(0),
+                output: TokenId(2),
+            },
+            RawOp::ComputeUseUncompute {
+                source: TokenId(2),
+                source_out: TokenId(3),
+                targets: vec![TargetTransition {
+                    input: TokenId(1),
+                    output: TokenId(4),
+                }],
+                ancilla_wires: vec![WireId(8), WireId(9)],
+                function: vec![0, 3],
+                use_ops: vec![ProtectedUse::ControlledTargetGate {
+                    controls: vec![Control {
+                        bit: ProtectedBit {
+                            region: ProtectedRegion::Ancilla,
+                            index: 1,
+                        },
+                        when_one: true,
+                    }],
+                    target_index: 0,
+                    gate: SingleGate::X,
+                }],
+            },
+            RawOp::MeasureZ {
+                input: TokenId(4),
+                output: ClassicalId(0),
+            },
+            RawOp::MeasureZ {
+                input: TokenId(3),
+                output: ClassicalId(1),
+            },
+        ],
+        vec![ClassicalId(0), ClassicalId(1)],
+    );
+    let text = export_openqasm3(&program).unwrap();
+    assert!(text.contains("qubit[4] q;"), "{text}");
+    assert!(text.contains("cx q[3], q[1];"), "{text}");
+    let imported = import_openqasm3(qleisli::edition::Edition::E2026, &text).unwrap();
+    close(probability(&imported, &[false, false]), 0.5);
+    close(probability(&imported, &[true, true]), 0.5);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_export_realizes_source_clean_and_dirty_workspaces() {
     let source = "#![no_implicit_prelude]\n\
         isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\

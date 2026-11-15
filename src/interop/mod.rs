@@ -89,7 +89,7 @@ pub struct OpenQasmResources {
     pub measurements: usize,
 }
 
-/// Export a closed typed workspace program and check the placement of the
+/// Export a closed typed workspace or computed scope and check the placement of the
 /// emitted gates against its original source before returning resource counts.
 /// The checked terminal subset includes workspace intervals in named calls.
 pub fn export_openqasm3_with_resources(
@@ -97,15 +97,23 @@ pub fn export_openqasm3_with_resources(
 ) -> Result<(String, OpenQasmResources), InteropError> {
     profile::check_openqasm_result(program)?;
     let context = program.source_context().ok_or_else(|| {
-        InteropError::unsupported("checked OpenQASM resources require original workspace source")
+        InteropError::unsupported("checked OpenQASM resources require original typed source")
     })?;
     let intervals = placement::workspace_intervals(context, program.raw().operations.len())?;
-    if intervals.is_empty() {
+    if intervals.is_empty()
+        && !program.raw().operations.iter().any(|op| {
+            matches!(
+                op,
+                crate::ir::RawOp::StructuralCompute { .. }
+                    | crate::ir::RawOp::ComputeUseUncompute { .. }
+            )
+        })
+    {
         return Err(InteropError::unsupported(
-            "checked OpenQASM resources require at least one source workspace",
+            "checked OpenQASM resources require a source workspace or protected computed scope",
         ));
     }
-    let (circuit, alignment) = profile::extract_with_alignment(program, &intervals)?;
+    let (circuit, alignment) = profile::extract_with_alignment(program, Some(&intervals))?;
     let text = openqasm::write(&circuit);
     let resources = program
         .check_openqasm_placement(text.as_bytes(), &alignment.encode())
