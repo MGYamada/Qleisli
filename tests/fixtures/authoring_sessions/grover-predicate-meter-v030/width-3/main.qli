@@ -1,0 +1,37 @@
+#![no_implicit_prelude]
+classical fn marked[const width: Nat](word: Bits<width>) -> Bit requires width >= 2 {
+    word[0] and not word[1]
+}
+
+isometry fn zero() -> Q<Bit> { basis unit(()) as _ { 0 } }
+
+unitary fn h2(word: Q<Bits<2>>) -> Q<Bits<2>> {
+    let (high, rest) = take_bit[2,1](word);
+    let (low, empty) = take_bit[1,0](rest);
+    put_bit[2,1](h(high), put_bit[1,0](h(low), empty))
+}
+
+classical fn nonzero(word: Bits<3>) -> Bit {
+    not ((not word[0]) and (not word[1]) and (not word[2]))
+}
+
+unitary fn h3(word: Q<Bits<3>>) -> Q<Bits<3>> {
+    let (top, rest) = take_bit[3,2](word);
+    put_bit[3,2](h(top), h2(rest))
+}
+
+observe fn main() -> (Bit, Bit, Bit) {
+    let empty = basis unit(()) as _ { empty_bits() };
+    let bottom = put_bit[2,1](zero(), put_bit[1,0](zero(), empty));
+    let word = put_bit[3,2](zero(), bottom);
+    let word = with_computed(h3(word), marked[3]) { |flag| phase[1,1](flag) };
+    let word = with_computed(h3(word), nonzero) { |flag| phase[1,1](flag) };
+    let (top, rest) = take_bit[3,2](h3(word));
+    let (high, rest) = take_bit[2,1](rest);
+    let (low, empty) = take_bit[1,0](rest);
+    let low = measure_z(low);
+    let high = measure_z(high);
+    let top = measure_z(top);
+    discard(empty);
+    (low, high, top)
+}

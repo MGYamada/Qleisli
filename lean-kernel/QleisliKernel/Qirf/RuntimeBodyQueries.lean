@@ -157,9 +157,23 @@ def readComputed {artifact : Artifact} (mode : Mode artifact) {owner name}
     else Sum.inl <$> RuntimeComputedUse.prepare event
   | .planned _ =>
     match data with
-    | ⟨_,_,.computed _⟩ => .inl <$> RuntimeComputedUse.prepare event
+    | ⟨_,_,.computed _ prepared⟩ => .inl <$> prepared.finiteTable
     | ⟨_,_,.certifiedComputed prepared⟩ => pure (.inr prepared)
     | ⟨_,_,.unsupported _⟩ => throw .request
+
+/-- Only the plan for this exact original event can supply a prepared source body. -/
+def readProtectedOriginal {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (event : SourceRuntimeContext.ComputedEvent artifact.sources owner)
+    (children : List (SourceRuntimeContext.Event artifact.sources owner))
+    (position : Position) (data : mode.EventData source (.computed event children) position) :
+    WorkM (Option (RuntimeComputedUse.OriginalSource event)) :=
+  match mode with
+  | .fresh => pure none
+  | .planned _ =>
+    match data with
+    | ⟨_,_,.computed _ prepared⟩ => pure (some prepared)
+    | ⟨_,_,.certifiedComputed _⟩ | ⟨_,_,.unsupported _⟩ => throw .request
 
 def readWorkspace {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)

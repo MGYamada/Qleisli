@@ -4,8 +4,19 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Emit structural predicate computation, protected phases and inverse in
+  terminal OpenQASM and check the literal gate interval and its scratch costs.
+- Emit finite-table protected scopes in terminal OpenQASM, including ordered
+  target owners and scratch, and check the gate interval for typed source.
+- Charge structural predicate circuit validation separately from owner-history
+  checking and reuse the verified source results for each computed scope.
+  Both small Grover programs fit the unchanged shared exact-work budget.
 - Derive clean scratch separation and dirty identity on the full local
   interface from the exact workspace checker.
+- Prove the exact field-based work charged by both literal circuit comparisons
+  for an original structural computed predicate.
+- Instantiate classical Nat predicates for structural computed scopes and
+  reuse the same source declaration in ordinary Raw calls.
 
 ## 0.3.0-beta — 2026-10-12
 
@@ -14,7 +25,8 @@ development milestones from the scope of their evidence.
 - Factor checked structural predicate circuits into their exact logical action
   in the complete Raw event fold, preserving the independent source equation.
 - Prove the original Raw resource counts for structural predicates, including
-  private scratch and both predicate passes.
+  private scratch and both predicate passes. Expanded body counts include the
+  literal forward circuit, protected uses and inverse circuit.
 - Prove exact agreement between a decoded OpenQASM workspace slice and its
   original checked Raw body on all local inputs and external references.
 - Read literal `Bits<n>` coordinates in classical functions and coherent
@@ -52,6 +64,12 @@ development milestones from the scope of their evidence.
   under arbitrary finite axis reindexing.
 - Define target exact-domain membership and prove the sixteenth-turn
   obstruction for eighth-root gate products, including clean workspace.
+- Prove exact clean and dirty restoration for the original checked workspace
+  bodies on arbitrary reference amplitudes, and compose clean scopes with QPTL.
+- Prove exact clean return for both sectors of a coherently controlled Raw
+  tape, retaining the active branch's full phase and external references.
+- Prove in QPTL that exact return of a clean scratch marginal is equivalent to
+  factorization with arbitrary references for finite trace-preserving Kraus actions.
 - Prove exact ordered placement transport and count literal gates for a
   fixed-occupancy SWAP segment decoded from canonical OpenQASM bytes, with
   declared target connectivity.

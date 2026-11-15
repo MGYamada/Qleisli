@@ -1,4 +1,5 @@
 use super::*;
+use crate::frontend::compile::instances::ClosedInstance;
 use crate::frontend::ordinary::finite::{self, NominalContext};
 
 mod nominal;
@@ -194,6 +195,7 @@ impl Compiler<'_> {
             }
             self.checking = Some(key);
             if self.declarations[&key].kind != FnKind::Classical
+                || !self.declarations[&key].static_params.is_empty()
                 || self.basis.contains_key(&key)
                 || self.deferred_nominal_tables.contains(&key)
             {
@@ -291,6 +293,16 @@ impl Compiler<'_> {
             &module,
             span,
         )?;
+        self.original_classical_table_instance(instance)
+    }
+
+    pub(super) fn original_classical_table_instance(
+        &mut self,
+        instance: Arc<ClosedInstance>,
+    ) -> Result<BasisFunction, CompileError> {
+        let key = instance.definition;
+        let span = self.declarations[&key].span;
+        let module = self.dormant_module(key, span)?;
         let frame = self.enter_instance(instance, &module, span)?;
         let result = (|| {
             let (params, result) = self.signature(&key)?;

@@ -256,9 +256,11 @@ The finite checker records the whole live Raw frame at scope entry and the
 peak including fresh scratch. It records preparation, clean release, the two
 predicate passes in the clean packet, and the literal body steps. Dirty
 scratch is already live at entry. Circuit references are counted through their
-checked physical implementations, including nested predicate passes. A target
-resource certificate also needs the actual routing
-schedule and costs under that target's gate set.
+checked physical implementations, including nested predicate passes. For a
+circuit-backed `with_computed`, expanded body counts include the literal
+forward circuit, protected uses and inverse circuit. A target resource
+certificate also needs the actual routing schedule and costs under that
+target's gate set.
 
 ## Checked cleanup is a separate contract
 
@@ -314,6 +316,13 @@ Unitary body.
 | Generated cleanup | Retain compute, use and inverse in the ordinary structured Raw representation. The independent checker validates the rule and dependencies; the producer cannot assert successful restoration. |
 | Capacity | Missing evidence or existing source, dependency or exact-work exhaustion rejects. No reset, discard, heuristic equality or alternate acceptance path repairs the failure. |
 
+The checked Raw interval accounts for the full caller frame and one private
+auxiliary wire, including its preparation and release. The resource model
+counts a forward predicate pass and its inverse, plus the body steps actually
+emitted. The certified checker uses this same compute/body/inverse word for
+the cleanup equation. Its logical witness is checked separately. Physical
+target decompositions and routing retain their own costs.
+
 For example, the following two auxiliary bodies both qualify, with different
 exact live actions when the predicate is the identity on `Bit`:
 
@@ -345,11 +354,9 @@ auxiliary in a different pure state is separable but has not returned to its
 declared state. One known-input test, approximate zero probability or an
 unchanged unknown marginal is insufficient. Dirty workspace instead needs
 restoration of its arbitrary state
-and reference correlations. General `clean`/`dirty` grammar and automatic
-cleanup rules remain work in
-[#70](https://github.com/MGYamada/Qleisli/issues/70) and
-[#72](https://github.com/MGYamada/Qleisli/issues/72); this existing scoped
-implementation does not complete those decisions.
+and reference correlations. The explicit clean and dirty scopes use the
+finite profile described above. The structured uncomputation obligations are
+tracked in [#72](https://github.com/MGYamada/Qleisli/issues/72).
 
 ## Clean discharge, live action and Resource Safety
 
@@ -385,6 +392,24 @@ on dirty auxiliary rows. It replaces both kinds of clean scope with their
 original logical actions in the checked event order and connects the result to
 fresh graph inspection. These Raw results do not establish general source
 composition, the CPTP marginal equivalence or quantitative resource bounds.
+
+For explicit `clean` and `dirty` scopes, `RuntimeWorkspaceRestoration.literal_action`
+uses the original checked Raw interval and the independently read logical body.
+It proves clean return on every physical row, and dirty identity on the scratch
+axis for any joint amplitudes, including reference correlations. The clean
+equation preserves the exact phase and composes across two accepted scopes
+with the same interface using `clean_sequence`.
+
+For the checked coherent-control case, the original Raw tape must match an
+empty tape on selector zero and the exact checked clean body on selector one.
+With the scratch Bit initialized to zero, the zero branch preserves the
+incoming data and reference amplitudes, and the one branch applies the
+requested live operator with its full scalar phase. Both branches have zero
+amplitude in every nonzero scratch coordinate. The Lean application theorem
+`Qleisli.RuntimeWorkspaceRestoration.controlled_clean_action` proves these
+equations on the same output for arbitrary joint control, data and reference
+amplitudes. Its premises require both literal sector matches and the successful
+clean-body check.
 
 Quantitative Resource Safety remains the separate obligation to produce finite,
 statically computed bounds and preserve them through compilation. Scratch

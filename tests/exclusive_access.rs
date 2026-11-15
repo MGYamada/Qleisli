@@ -1737,6 +1737,100 @@ fn selected_place_control_rechecks_bound_provider_and_shared_work() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn shared_control_order_preserves_exact_action_only_for_compatible_calls() {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
+
+    let edition = qleisli::edition::Edition::E2026;
+    let kernel = Kernel::selected(edition).unwrap();
+    for (text, shared) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/shared-control-order-v030/attempt-01/shared.qli"
+            ),
+            true,
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/shared-control-order-v030/attempt-01/noncommuting.qli"
+            ),
+            false,
+        ),
+    ] {
+        let parsed = selected(text);
+        let equation = |reverse: bool| {
+            Matrix::new(
+                8,
+                8,
+                (0..64)
+                    .map(|entry| {
+                        let input = entry % 8;
+                        let flip = if input & 2 == 0 {
+                            0
+                        } else if shared {
+                            5
+                        } else {
+                            1
+                        };
+                        let output = input ^ flip;
+                        let z_input = if reverse { input } else { output };
+                        if entry / 8 != output {
+                            Exact::zero()
+                        } else if !shared && z_input & 1 != 0 {
+                            Exact::phase(4)
+                        } else {
+                            Exact::one()
+                        }
+                    })
+                    .collect(),
+            )
+            .unwrap()
+        };
+        for (entry, reverse) in [("main::forward", false), ("main::reverse", true)] {
+            let source = parsed
+                .instantiate(entry, BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap();
+            let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+            let proposal = source.lower_raw_with_kernel(&kernel, &mut budget).unwrap();
+            let accepted = kernel.accept(proposal.proposal()).unwrap();
+            proposal.validate_source_steps(&accepted).unwrap();
+            let boundary = UnitaryBoundary::new(
+                BasisType::Bits(3),
+                accepted.raw().quantum_inputs[0].clone(),
+                accepted.output_ports()[0].clone(),
+            )
+            .unwrap();
+            check_unitary(
+                edition,
+                proposal.payload(),
+                &boundary,
+                &equation(reverse),
+                &mut budget,
+            )
+            .unwrap();
+            if !shared {
+                let error = check_unitary(
+                    edition,
+                    proposal.payload(),
+                    &boundary,
+                    &equation(!reverse),
+                    &mut budget,
+                )
+                .unwrap_err();
+                assert_eq!(error.code, "contract", "{error}");
+            }
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn selected_places_thread_updated_parents_through_static_branches_and_folds() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     let text = "use std::gate::x;pub unitary fn main[const R:Nat](q:Q<Bits<3>>)->Q<Bits<3>> requires R<=3 {x(excl q[2]);qfor static k in 0..R carry r=q {x(excl r[k]);let u=if static k==0 {x(excl r[2]);()}else{()};yield r;}}";

@@ -843,7 +843,7 @@ a workspace body is part of its independently evaluated exact operator.
 
 Use `qleisli interop emit-qasm <source> --input=qli --resources` for the
 checked resource report on a closed typed program with workspace scopes in
-its root or in a statically named call.
+its root or in a statically named call, or with a protected computed scope.
 The JSON result contains the emitted text, exact work spent in the placement
 check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
 measurements. Counts come from Lean's decoding of the returned text.
@@ -868,11 +868,53 @@ literal circuit count includes every forward step, inverse step and protected
 use. The Lean theorem `Qleisli.RuntimeComputedResources.structural_counts`
 binds these numbers to the same original source-checked Raw occurrence and
 retains caller spectators in the peak width.
+The Raw interval reader charges owner and issuance-history checks separately
+from literal circuit validation. Its circuit charge covers the full forward
+and inverse fields and the operand checks in each forward step and protected
+use. `QleisliKernel.Qirf.StructuralComputedRaw.read_work` proves the debit of
+the executable reader. Both charges consume the same shared work budget.
+The source-bound compute and inverse comparisons consume exactly
+`16 * (1 + sum(2 * control_count + 7))`, summing over the predicate clauses.
+The Lean theorem
+`QleisliKernel.Qirf.StructuralComputedUse.read_circuit_work` identifies the
+work state after both comparisons and before checking the emitted auxiliary
+action. This charge depends on the literal circuit fields. The original
+runtime plan retains the predicate and auxiliary action computed by Lean for
+the exact source occurrence. Both the structural and finite-table paths use
+those source results and check the actual literal action independently.
 The same literal XOR factorization proves logical action for the independently
 checked Raw event, even for an arbitrary caller amplitude function. The
 source-bound theorem additionally identifies the predicate and phase from the
 original body. The complete pure Raw event fold uses the local logical action
 without constructing a global matrix.
+
+The terminal OpenQASM placement check can read this event in a closed original
+source root, including in a pure interval before or after an explicit workspace.
+It places the ordered source wires followed by a private predicate wire and
+reconstructs the whole forward, protected-use and inverse word from the Raw
+operation. The decoded target word must agree on the complete support,
+including the predicate wire, with exact phase. If the target decomposition
+uses additional scratch, the same synthesis check requires it to start and
+return to zero. The predicate and synthesis wires are reserved from source
+allocation, routing and terminal readout. Counts include their resets, the
+physical compute and inverse gates, and any additional synthesis gates.
+This check uses the bounded terminal operator profile and its shared work
+budget.
+`BoundSegment.structural_paid` and `FinishedTrace.suffix_structural_paid`
+recover the checked placement and gate interval from the executable replay.
+`StructuralPlacement.literal_costs` binds that interval and the distinct data
+and scratch locations to the decoded gate and reset counts.
+
+For an admitted finite-table computed scope, the exporter uses the retained
+table rows to emit controlled XOR flips of the private auxiliary bits. It
+emits the protected operations on the ordered source, target and auxiliary
+coordinates, then repeats the XOR flips to restore the auxiliary bits. For
+resource reporting the source program must retain its original checked typed
+request. Lean builds the original table permutation and protected word from
+that request's checked Raw event and compares them to the complete decoded
+target interval. The same bounded operator profile covers these comparisons.
+`ProtectedTablePlacement.literal_costs` ties the decoded interval and its
+distinct physical locations to the reported gate and reset counts.
 
 Gate count, depth and non-Clifford cost require declared target conventions.
 Literal IR T-word counts are not automatically physical or optimal T counts.

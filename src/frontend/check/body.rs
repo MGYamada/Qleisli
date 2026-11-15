@@ -1157,12 +1157,24 @@ impl Checker<'_, '_> {
             ExprKind::WithComputed {
                 source,
                 function,
+                static_args,
                 binder,
                 body,
-            } => self.computed(source, function, None, None, binder, body, scope, span)?,
+            } => self.computed(
+                source,
+                function,
+                static_args,
+                None,
+                None,
+                binder,
+                body,
+                scope,
+                span,
+            )?,
             ExprKind::CertifiedComputed {
                 source,
                 function,
+                static_args,
                 logical,
                 data_binder,
                 ancilla_binder,
@@ -1170,6 +1182,7 @@ impl Checker<'_, '_> {
             } => self.computed(
                 source,
                 function,
+                static_args,
                 Some(logical),
                 Some(data_binder),
                 ancilla_binder,

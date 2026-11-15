@@ -13,6 +13,7 @@ import Qleisli.RawEventLinear
 import Qleisli.ObservingActionLinear
 import Qleisli.FiniteMatrixAction
 import Qleisli.RawActionLocality
+import Qleisli.RawAccessCommutation
 import Qleisli.CodeSpaceAction
 import Qleisli.RawActionSector
 import Qleisli.RuntimeTapeAction

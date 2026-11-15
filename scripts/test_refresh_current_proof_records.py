@@ -162,6 +162,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-64-certified-computed",
                 "refs/heads/codex/beta-64-computed-product-action",
                 "refs/heads/codex/beta-29-hierarchy-ctrl",
+                "refs/heads/codex/beta-303-ordered-access",
                 "refs/heads/codex/beta-70-scoped-workspace",
                 "refs/heads/codex/beta-70-resource-candidate",
                 "refs/heads/codex/beta-30-structural-xor",
@@ -188,7 +189,9 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-70-30-integration",
                 "refs/heads/codex/beta-30-structural-resources",
                 "refs/heads/codex/beta-162-checked-provider-placement",
-                "refs/heads/codex/beta-163-engineering-resource-bounds")
+                "refs/heads/codex/beta-163-engineering-resource-bounds",
+                "refs/heads/codex/beta-30-xor-circuit-work",
+                "refs/heads/codex/beta-30-72-integration")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:

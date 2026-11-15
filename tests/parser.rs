@@ -425,6 +425,7 @@ observe fn feedback(q: Q<Bit>, r: Q<Bit>) -> (Bit, Q<Bit>) {
     let ExprKind::WithComputed {
         source,
         function,
+        static_args,
         binder,
         body,
     } = &body.result.kind
@@ -433,6 +434,7 @@ observe fn feedback(q: Q<Bit>, r: Q<Bit>) -> (Bit, Q<Bit>) {
     };
     assert!(matches!(source.kind, ExprKind::Name(_)));
     assert_eq!(function.text, "predicate");
+    assert!(static_args.is_empty());
     assert_eq!(binder.text, "a");
     assert!(matches!(body.result.kind, ExprKind::Call { .. }));
 

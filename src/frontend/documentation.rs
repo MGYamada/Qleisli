@@ -80,7 +80,14 @@ pub(crate) fn attach(
                 | super::ast::FnBody::MeaningCompose { .. }
                 | super::ast::FnBody::MeaningTensor { .. } => return None,
                 super::ast::FnBody::Quantum(body) => body.span.start,
-                super::ast::FnBody::Basis(_) => decl.return_type.span.end,
+                super::ast::FnBody::Basis(_) => {
+                    let first = tokens
+                        .partition_point(|token| token.span.start < decl.return_type.span.end);
+                    let body = tokens[first..]
+                        .iter()
+                        .position(|token| token.kind == TokenKind::LBrace)?;
+                    return Some((first + body, index));
+                }
             };
             let opening = tokens.partition_point(|token| token.span.start < start);
             debug_assert!(matches!(tokens[opening].kind, TokenKind::LBrace));

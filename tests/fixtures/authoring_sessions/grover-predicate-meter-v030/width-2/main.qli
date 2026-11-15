@@ -1,0 +1,29 @@
+#![no_implicit_prelude]
+classical fn marked[const width: Nat](word: Bits<width>) -> Bit requires width >= 2 {
+    word[0] and not word[1]
+}
+
+isometry fn zero() -> Q<Bit> { basis unit(()) as _ { 0 } }
+
+unitary fn h2(word: Q<Bits<2>>) -> Q<Bits<2>> {
+    let (high, rest) = take_bit[2,1](word);
+    let (low, empty) = take_bit[1,0](rest);
+    put_bit[2,1](h(high), put_bit[1,0](h(low), empty))
+}
+
+classical fn nonzero(word: Bits<2>) -> Bit {
+    not ((not word[0]) and (not word[1]))
+}
+
+observe fn main() -> (Bit, Bit) {
+    let empty = basis unit(()) as _ { empty_bits() };
+    let word = put_bit[2,1](zero(), put_bit[1,0](zero(), empty));
+    let word = with_computed(h2(word), marked[2]) { |flag| phase[1,1](flag) };
+    let word = with_computed(h2(word), nonzero) { |flag| phase[1,1](flag) };
+    let (high, rest) = take_bit[2,1](h2(word));
+    let (low, empty) = take_bit[1,0](rest);
+    let low = measure_z(low);
+    let high = measure_z(high);
+    discard(empty);
+    (low, high)
+}

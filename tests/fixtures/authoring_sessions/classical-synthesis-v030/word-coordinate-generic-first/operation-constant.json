@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type","severity":"error","message":"predicate must be a classical function","primary":{"module":"main","path":"/private/tmp/qleisli-30-generic-audit.3UNii7/operation-constant.qli","start":204,"end":210},"related":[]}],"result":null}

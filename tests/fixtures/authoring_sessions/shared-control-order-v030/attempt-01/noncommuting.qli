@@ -1,0 +1,11 @@
+use std::gate::{cnot, z};
+pub unitary fn forward(q: Q<Bits<3>>) -> Q<Bits<3>> {
+    cnot(ctrl q[1], excl q[0]);
+    z(excl q[0]);
+    q
+}
+pub unitary fn reverse(q: Q<Bits<3>>) -> Q<Bits<3>> {
+    z(excl q[0]);
+    cnot(ctrl q[1], excl q[0]);
+    q
+}

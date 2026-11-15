@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"limit","severity":"error","message":"Lean native checker rejected the artifact/request; no fallback while checking main::main","primary":{"path":"main.qli","start":485,"end":986,"line":18,"column":1},"related":[]}],"result":null}

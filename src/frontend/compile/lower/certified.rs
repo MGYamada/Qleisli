@@ -15,6 +15,7 @@ impl Lowerer<'_, '_> {
         span: Span,
         source: Value,
         function: &Ident,
+        static_args: &[StaticOp],
         logical: &Ident,
         data_binder: &Ident,
         ancilla_binder: &Ident,
@@ -58,8 +59,9 @@ impl Lowerer<'_, '_> {
                 "predicate must be a classical function",
             ));
         };
+        let instance = self.computed_predicate_instance(module, function, key, static_args)?;
         let (table, requires_source) =
-            self.computed_table(module, function, key, &source_reg.basis)?;
+            self.computed_table(module, function, key, &source_reg.basis, instance)?;
         if data_binder.text == ancilla_binder.text {
             return Err(self.error(
                 module,

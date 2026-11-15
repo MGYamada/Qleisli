@@ -1,0 +1,41 @@
+{
+  "command": [
+    "/private/tmp/qleisli-516-provider-followup/target/debug/qleisli",
+    "check",
+    "--entry=main::forward",
+    "--module=main=/private/tmp/qleisli-303-source-order.8fRq0v/noncommuting.qli",
+    "--ir-profile=raw",
+    "--lean-kernel=/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "checker_path": "/private/tmp/qleisli-516-provider-followup/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "checker_identity": "unpinned",
+      "request_checked": false,
+      "ordinary_result_checked": false,
+      "runtime_result_checked": false,
+      "source_preservation_verified": false,
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::forward",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stderr": "",
+  "recorded_utc": "2026-11-13T05:43:55.454499+00:00"
+}

@@ -367,6 +367,27 @@ structure Prepared {sources caller} (event : ComputedEvent sources caller) where
   action : Action
   originalAction : RuntimeInterval.Computed (sourceBody body) action
 
+structure OriginalSource {sources caller} (event : ComputedEvent sources caller) where
+  predicate : SourceRuntimeTrace.Body event.predicate.target.signature
+  predicateRead : RuntimeInterval.Computed (SourceRuntimeTrace.readComputedPredicateBody event) predicate
+  body : SourceRuntimeTrace.ComputedBody event
+  bodyRead : RuntimeInterval.Computed (SourceRuntimeTrace.readComputedSource event) body
+  action : Action
+  actionRead : RuntimeInterval.Computed (sourceBody body) action
+
+def prepareOriginal {sources caller} (event : ComputedEvent sources caller) : WorkM (OriginalSource event) := do
+  guard (event.written.parts.logical.isNone) .request
+  let predicate ← NaturalAffine.witness (SourceRuntimeTrace.readComputedPredicateBody event)
+  let body ← NaturalAffine.witness (SourceRuntimeTrace.readComputedSource event)
+  let action ← NaturalAffine.witness (sourceBody body.val)
+  return ⟨predicate.val,by with_reducible exact predicate.property,
+    body.val,by with_reducible exact body.property,action.val,by with_reducible exact action.property⟩
+
+def OriginalSource.finiteTable {sources caller} {event : ComputedEvent sources caller}
+    (original : OriginalSource event) : WorkM (Prepared event) := do
+  let predicate ← RuntimeComputedPredicate.readSourceFromBody original.predicate original.predicateRead
+  return ⟨predicate,original.body,original.bodyRead,original.action,original.actionRead⟩
+
 def Prepared.rows {sources caller} {event : ComputedEvent sources caller} (prepared : Prepared event) : Rows :=
   event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
     prepared.predicate.body.checked.summary.staticRows ++ prepared.action.rows

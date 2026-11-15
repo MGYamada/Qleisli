@@ -1575,33 +1575,39 @@ where
                     ExprKind::WithComputed {
                         source,
                         function,
+                        static_args,
                         binder,
                         body,
-                    } => tasks.extend([
-                        Task::Leave,
-                        Task::Block(body),
-                        Task::Bind(binder, BindingKind::Runtime),
-                        Task::Enter,
-                        Task::Reference(function),
-                        Task::Expression(source),
-                    ]),
+                    } => {
+                        tasks.extend([
+                            Task::Leave,
+                            Task::Block(body),
+                            Task::Bind(binder, BindingKind::Runtime),
+                            Task::Enter,
+                        ]);
+                        tasks.extend(static_args.iter().rev().map(Task::Operation));
+                        tasks.extend([Task::Reference(function), Task::Expression(source)]);
+                    }
                     ExprKind::CertifiedComputed {
                         source,
                         function,
+                        static_args,
                         logical,
                         data_binder,
                         ancilla_binder,
                         body,
-                    } => tasks.extend([
-                        Task::Leave,
-                        Task::Block(body),
-                        Task::Bind(ancilla_binder, BindingKind::Runtime),
-                        Task::Bind(data_binder, BindingKind::Runtime),
-                        Task::Enter,
-                        Task::Reference(logical),
-                        Task::Reference(function),
-                        Task::Expression(source),
-                    ]),
+                    } => {
+                        tasks.extend([
+                            Task::Leave,
+                            Task::Block(body),
+                            Task::Bind(ancilla_binder, BindingKind::Runtime),
+                            Task::Bind(data_binder, BindingKind::Runtime),
+                            Task::Enter,
+                            Task::Reference(logical),
+                        ]);
+                        tasks.extend(static_args.iter().rev().map(Task::Operation));
+                        tasks.extend([Task::Reference(function), Task::Expression(source)]);
+                    }
                     ExprKind::ApplyContract {
                         implementation,
                         specification,

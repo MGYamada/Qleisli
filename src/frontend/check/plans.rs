@@ -1223,13 +1223,26 @@ impl<'ast> Validation<'_, 'ast> {
             | ast::ExprKind::Controlled { operation, .. } => {
                 self.call_in_operation(owner, operation, site, 1)?
             }
-            ast::ExprKind::WithComputed { function, .. }
-            | ast::ExprKind::RepeatStatic { function, .. } => {
+            ast::ExprKind::WithComputed {
+                function,
+                static_args,
+                ..
+            } => (index.usage(function) == site).then_some(static_args.as_slice()),
+            ast::ExprKind::RepeatStatic { function, .. } => {
                 (index.usage(function) == site).then_some(&[][..])
             }
             ast::ExprKind::CertifiedComputed {
-                function, logical, ..
-            } => (index.usage(function) == site || index.usage(logical) == site).then_some(&[][..]),
+                function,
+                static_args,
+                logical,
+                ..
+            } => {
+                if index.usage(function) == site {
+                    Some(static_args.as_slice())
+                } else {
+                    (index.usage(logical) == site).then_some(&[][..])
+                }
+            }
             ast::ExprKind::Workspace(workspace) => {
                 (index.usage(&workspace.logical) == site).then_some(&[][..])
             }

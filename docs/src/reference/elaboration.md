@@ -117,6 +117,17 @@ contracts. Current independent source replay rejects an altered gate chain
 even when its type/effect/ownership interface remains native-valid. It is not a
 general source-preservation theorem or a proof of an optimizer.
 
+The [compatible access theorem](https://github.com/MGYamada/Qleisli/issues/303)
+uses each checked call's ordered physical wires as its footprint. Any wire
+used by both calls must be `ctrl` in both. The exact local reconstruction
+preserves every shared control bit, and the remaining modified coordinates are
+disjoint. For a checked pair of adjacent calls with a structural return, the
+original Raw root and the exchanged operator composition have equal complex
+amplitudes after the same output permutation, for every input and external
+reference column. This retains conditional phase and entanglement. Source
+evaluation remains in written order. A transformation of executable code
+requires its own evidence for the changed owner flow and other contracts.
+
 ### Whole-owner exclusive calls
 
 | Field | Contract |
@@ -358,8 +369,10 @@ clean state, the unwanted diagonal populations are sums of squared Kraus
 coefficients. Their vanishing on all live basis inputs forces every unwanted
 coefficient to vanish. The live output includes any declared classical
 outcome register with its original probabilities. The QPTL theorem
-`QPTL.FiniteMatrix.fixedScratch_iff` gives the separation equivalence for
-finite Kraus families. The exact requested live action, coherent phase,
+`QPTL.FiniteMatrix.scratchMarginal_eq_iff` proves the partial-trace equivalence
+for finite Kraus families on positive semidefinite unit-trace inputs. The live
+factor is the joint output with scratch traced out, retaining the reference coordinates.
+The exact requested live action, coherent phase,
 dirty-workspace identity and quantitative costs have their own contracts.
 
 ## Explicit maps and unsupported candidates
