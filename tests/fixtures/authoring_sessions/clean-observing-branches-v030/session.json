@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#157 exact cleanup through nested observing branches",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "798ba8a0274e37681358aecb0b7ec907d47d4603",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "First source and direct phase comparison through both original Boolean branches, with one omitted phase as the distinguishing control.",
+      "sha256": {
+        "branch-checked/main.qli": "94295441f661b4df9a99dea1df445301f0f5b35767e9c28ee208edc38ba6ae42",
+        "branch-logical/main.qli": "d68d4c4266ed8a04b6b58f5ed27e3e6e667d9763798519d00c042a1c8b10fc20",
+        "branch-wrong-phase/main.qli": "2a5c08b094939de938d915695901931a423516dbe6f1308d147989f8a1093a7b"
+      },
+      "manifest_sha256": {
+        "branch-checked/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "branch-logical/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "branch-wrong-phase/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "branch-checked.result.json",
+        "branch-logical.result.json",
+        "branch-wrong-phase.result.json"
+      ]
+    }
+  ]
+}

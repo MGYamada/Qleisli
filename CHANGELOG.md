@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Compose exact checked cleanup through the whole observing Raw program,
+  including nested branches, observation histories and original output order (#157).
 - Locate terminal export failures inside a workspace body at the original
   specialized expression, including failed OpenQASM resource requests.
 - Bind decoded OpenQASM synthesis intervals to their original Raw circuit and
