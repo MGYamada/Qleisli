@@ -34,6 +34,12 @@ STUDIES = (
       'hash-zero', 'classical-static', 'explicit-coherent', 'declared-hash',
       'imported-qualified-hash')),
 )
+WORD_COORDINATE_FILES = {
+    'Qargo.toml': '680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37',
+    'README.md': '580f50966bbe616a288044c13cfabcb16977694585a2e9e582ab435c1c35dac8',
+    'first.qli': '8bafec96582a8920c3311b704e693e74834b1bd3f56314769c49c7b86e47248d',
+    'parse-stdout.json': '9eec3f109dbe6c6622d30c68256fd32da3b14f4dd31aa3b18609fdac57b370e6',
+}
 BINARY_HASHES = {
     'cli': 'ecf902d664448a5a07bca43d01cb1739f81ee07e4d3cd6d7a378b7eabed438d1',
     'kernel': 'abbce360dbb4dcf9425872c93e16456b576623f46bd9daeef25b7bdf841658ae',
@@ -75,6 +81,13 @@ def read_files(pattern, count, byte_count, session_sha):
         data = path.read_bytes()
         assert len(data) <= 32 * 1024
         files[path.relative_to(study).as_posix()] = data
+    if pattern == MEMBERS[0]:
+        prefix = 'word-coordinate-first/'
+        word_coordinate = {
+            name.removeprefix(prefix): digest(files.pop(name))
+            for name in list(files) if name.startswith(prefix)
+        }
+        assert word_coordinate == WORD_COORDINATE_FILES
     assert len(files) == count and sum(map(len, files.values())) == byte_count
     assert digest(files['session.json']) == session_sha
     session = read_json(files['session.json'])
@@ -245,7 +258,7 @@ def main():
             assert argv[3:] == ['--format=json', '--lean-kernel=' + binaries['kernel']['path']]
             assert stderr == '' and event['stdout'] == read_json(stdout)
             check_outcome(event['stdout'], case, action, code)
-    print('First histories: 106 files, 16 unchanged sources, 20 observations; no history executed.')
+    print('First histories: 106 frozen files and 4 word-coordinate files; no history executed.')
 
 
 if __name__ == '__main__':

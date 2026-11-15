@@ -217,6 +217,11 @@ def readTree {sources owner name} (catalogue : GenericCatalogue.Checked sources)
         let rows ← NaturalRows.nominalOrigins sources naturals.helpers.val basis
         add {accumulator with rows := accumulator.rows ++ rows}
           (.projection original reference.index index) reference.field.basis
+      | .bitIndex _ _ _ _ _ _ bit _ receiver =>
+        let (accumulator,index,basis) ← next naturals environment receiver accumulator
+        let [.bits width] := basis | throw .request
+        guard (bit < width) .request
+        add accumulator (.bitIndex bit index) [.bit]
       | .matching written scrutinee trees =>
         let (accumulator,scrutinee,basis) ← next naturals environment scrutinee accumulator
         let labels ← SourceMatchLabels.read sources owner naturals.helpers.val scope written basis

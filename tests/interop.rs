@@ -39,6 +39,244 @@ fn raw(ops: Vec<RawOp>, outputs: Vec<ClassicalId>) -> AcceptedProgram {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_export_emits_the_checked_clean_body_and_reuses_its_wire() {
+    let gate = |index| CircuitStep {
+        controls: vec![],
+        action: CircuitAction::Hadamard { target: index },
+    };
+    let clean = |source, source_out, wire| RawOp::CertifiedCompute {
+        source: TokenId(source),
+        source_out: TokenId(source_out),
+        ancilla_wires: vec![WireId(wire)],
+        function: vec![0, 0],
+        use_steps: vec![gate(1), gate(0), gate(1)],
+        logical_steps: vec![gate(0)],
+    };
+    let program = raw(
+        vec![
+            RawOp::Init0 {
+                output: TokenId(10),
+                wire: WireId(6),
+            },
+            clean(10, 11, 7),
+            clean(11, 13, 8),
+            RawOp::MeasureZ {
+                input: TokenId(13),
+                output: ClassicalId(20),
+            },
+        ],
+        vec![ClassicalId(20)],
+    );
+    let emitted = export_openqasm3(&program).unwrap();
+    assert_eq!(emitted, include_str!("fixtures/interop/clean-reuse.qasm"));
+    let round_trip = import_openqasm3(qleisli::edition::Edition::E2026, &emitted).unwrap();
+    close(probability(&round_trip, &[false]), 1.0);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_export_realizes_source_clean_and_dirty_workspaces() {
+    let source = "#![no_implicit_prelude]\n\
+        isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
+        observe fn main()->(Bit,Bit){\n\
+            let q=clean(zero(),h){|data,scratch|(h(data),scratch)};\n\
+            let (q,d)=dirty(q,h(phase[1,1](h(zero()))),h){|data,scratch|(h(data),scratch)};\n\
+            let a=measure_z(q); let b=measure_z(d); (b,a)}";
+    let root = common::SourceRoot::new(source);
+    let source_program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    assert!(source_program.portable_artifact().is_err());
+    assert!(export_qir_base(&source_program).is_err());
+    let emitted = export_openqasm3(&source_program).unwrap();
+    assert_eq!(
+        emitted,
+        include_str!("fixtures/interop/typed-workspaces.qasm")
+    );
+    let round_trip = import_openqasm3(qleisli::edition::Edition::E2026, &emitted).unwrap();
+    close(probability(&round_trip, &[true, false]), 1.0);
+    let cli = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args(["interop", "emit-qasm"])
+        .arg(&root.0)
+        .arg("--input=qli")
+        .output()
+        .unwrap();
+    assert!(
+        cli.status.success(),
+        "{}",
+        String::from_utf8_lossy(&cli.stdout)
+    );
+    let expected_text = emitted
+        .replace('\\', "\\\\")
+        .replace('"', "\\\"")
+        .replace('\n', "\\u000a");
+    let output = String::from_utf8(cli.stdout).unwrap();
+    assert!(output.contains(&expected_text), "{output}");
+    let checked = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args(["interop", "emit-qasm"])
+        .arg(&root.0)
+        .args(["--input=qli", "--resources"])
+        .output()
+        .unwrap();
+    let json = String::from_utf8(checked.stdout).unwrap();
+    assert!(checked.status.success(), "{json}");
+    assert!(json.contains(&expected_text), "{json}");
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&source_program)
+        .expect("Lean checks the actual workspace target");
+    assert_eq!(text, emitted);
+    assert!(resources.exact_work > 0);
+    assert!(resources.exact_work <= qleisli::contract::DEFAULT_EXACT_WORK);
+    assert_eq!(resources.qubits, 3);
+    assert_eq!(resources.resets, 3);
+    assert_eq!(resources.gates, 3);
+    assert_eq!(resources.swaps, 0);
+    assert_eq!(resources.t_gates, 0);
+    assert_eq!(resources.measurements, 2);
+    assert!(
+        json.contains(
+            "\"qubits\":3,\"resets\":3,\"gates\":3,\"swaps\":0,\"t_gates\":0,\"measurements\":2"
+        ),
+        "{json}",
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_workspace_resource_report_retains_zero_gate_scopes() {
+    let source = "#![no_implicit_prelude]\n\
+        isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
+        unitary fn same(q:Q<Bit>)->Q<Bit>{q}\n\
+        observe fn main()->Bit{measure_z(clean(zero(),same){|data,scratch|(data,scratch)})}";
+    let root = common::SourceRoot::new(source);
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert_eq!(text, export_openqasm3(&program).unwrap());
+    assert_eq!(resources.qubits, 2);
+    assert_eq!(resources.resets, 2);
+    assert_eq!(resources.gates, 0);
+    assert_eq!(resources.measurements, 1);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_workspace_resource_report_replays_named_scopes_with_caller_spectators() {
+    let source = "#![no_implicit_prelude]\n\
+        isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
+        unitary fn mark(q:Q<Bit>)->Q<Bit>{clean(q,h){|data,scratch|(h(data),scratch)}}\n\
+        unitary fn mark_twice(q:Q<Bit>)->Q<Bit>{mark(mark(q))}\n\
+        observe fn main()->(Bit,Bit){\n\
+            let held=h(zero()); let q=mark_twice(zero());\n\
+            let a=measure_z(held); let b=measure_z(q); (b,a)}";
+    let root = common::SourceRoot::new(source);
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert!(
+        text.contains("h q[0];\nh q[1];\nh q[1];\nc[0] = measure q[1];\nc[1] = measure q[0];\n")
+    );
+    assert_eq!(resources.qubits, 3);
+    assert_eq!(resources.resets, 3);
+    assert_eq!(resources.gates, 3);
+    assert_eq!(resources.measurements, 2);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_workspace_resource_report_tracks_bits_register_axes() {
+    let source = "use std::state::init0;\n\
+        use std::structure::{empty,consume_empty};\n\
+        unitary fn mark(q:Q<Bits<2>>)->Q<Bits<2>>{\n\
+            let (bit,rest)=take_bit[2,1](q); put_bit[2,1](h(bit),rest)}\n\
+        observe fn main()->(Bit,Bit,Bit){\n\
+            let low=init0(); let high=init0();\n\
+            let q=put_bit[2,1](high,put_bit[1,0](low,empty()));\n\
+            let q=clean(q,mark){|data,scratch|(mark(data),scratch)};\n\
+            let (q,s)=dirty(q,init0(),mark){|data,scratch|(mark(data),scratch)};\n\
+            let (upper,q)=take_bit[2,1](q); let (lower,q)=take_bit[1,0](q);\n\
+            consume_empty(q); (measure_z(lower),measure_z(upper),measure_z(s))}";
+    let root = common::SourceRoot::new(source);
+    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    assert_eq!(
+        text.lines()
+            .filter(|line| line.starts_with("h "))
+            .collect::<Vec<_>>(),
+        ["h q[1];", "h q[1];"]
+    );
+    assert_eq!(literal_output_axes(&text), [0, 1, 3]);
+    assert_eq!(
+        (
+            resources.qubits,
+            resources.resets,
+            resources.gates,
+            resources.measurements
+        ),
+        (4, 4, 2, 3)
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn terminal_export_checks_the_retained_source_interface() {
+    use qleisli::edition::Edition;
+    use qleisli::frontend::compile::ParsedProgram;
+    use qleisli::interchange::native::Kernel;
+
+    let root = common::SourceRoot::new("struct Empty {} pub fn main() -> Empty { Empty {} }");
+    let nominal = qleisli::frontend::compile::compile_project(&root.0).unwrap();
+    let error = export_openqasm3(&nominal).unwrap_err();
+    assert_eq!(error.kind, InteropErrorKind::Unsupported);
+    assert!(error.message.contains("result must be Unit or a product"));
+
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    let selected = ParsedProgram::parse(
+        Edition::E2026,
+        [(
+            "main".into(),
+            "pub observe fn keep(u:Unit)->Bit{measure_z(h(init0()))}".into(),
+        )]
+        .into_iter()
+        .collect(),
+    )
+    .unwrap()
+    .instantiate_runtime_with_types(
+        "main::keep",
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .unwrap()
+    .compile_runtime_with_kernel(&kernel)
+    .unwrap();
+    let program = selected.program();
+    assert!(program.raw().classical_inputs.is_empty());
+    assert!(program.raw().quantum_inputs.is_empty());
+    let error = export_openqasm3(program).unwrap_err();
+    assert_eq!(error.kind, InteropErrorKind::Unsupported);
+    assert!(
+        error
+            .message
+            .contains("closed terminal computation required")
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn independent_bell_and_gate_fixtures_are_verified() {
     let bell = import_openqasm3(qleisli::edition::Edition::E2026, BELL).unwrap();
     close(probability(&bell, &[false, false]), 0.5);

@@ -210,7 +210,7 @@ impl Lowerer<'_, '_> {
         // its dormant contracts. No result is admitted by a host cache alone.
         let body = self
             .compiler
-            .materialize_instance(instance, module, original.span)?;
+            .materialize_finite_transform(instance, module, original.span)?;
         if body.raw().declared_effect != Effect::Unitary {
             return Err(self.static_refusal(
                 module,

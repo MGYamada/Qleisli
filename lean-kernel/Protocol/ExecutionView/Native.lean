@@ -73,6 +73,8 @@ def errorCode : Gate.Error → String
   | .decodedView => "decoded_view"
   | .native .limit | .hierarchy .limit _ => "limit"
   | .native .request | .native .equation | .hierarchy .contract _ => "contract"
+  | .native (.workspaceRestoration false) => "clean_workspace"
+  | .native (.workspaceRestoration true) => "dirty_workspace"
   | .native _ | .hierarchy .invalidIr _ => "invalid_ir"
 
 /-- Outer framing preserves the exact original-packet witness in every ordinary

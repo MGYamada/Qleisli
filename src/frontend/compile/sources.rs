@@ -637,6 +637,11 @@ impl<'a> Collector<'a, '_> {
                         use_steps,
                         logical_steps,
                         ..
+                    }
+                    | RawOp::StructuralCompute {
+                        forward: use_steps,
+                        inverse: logical_steps,
+                        ..
                     } => {
                         self.steps(use_steps)?;
                         self.steps(logical_steps)?;

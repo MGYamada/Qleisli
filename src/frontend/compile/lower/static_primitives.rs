@@ -152,7 +152,10 @@ impl Lowerer<'_, '_> {
         }
         let start = self.raw.operations.len();
         let value = self.primitive_naturals(module, source.span, primitive, &naturals, args)?;
-        if primitive == Primitive::Phase {
+        if matches!(
+            primitive,
+            Primitive::Phase | Primitive::TakeBit | Primitive::PutBit
+        ) {
             super::quantum_match::nominal::record_primitive(self, module, supplied_callee, start)?;
         }
         Ok(value)
@@ -384,6 +387,7 @@ mod tests {
         Lowerer {
             nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
             nominal_basis_used: None,
+            source_planned: false,
             compiler,
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),

@@ -114,6 +114,9 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
   | primitive {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name} {position : Position} {queues : Queues}
       (event : SourceRuntimeContext.PrimitiveEvent artifact.sources owner) :
       Event preparation source (.primitive event) position queues queues
+  | register {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {position : Position} {queues : Queues} (event : SourceRuntimeContext.RegisterEvent artifact.sources owner) :
+      Event preparation source (.registerPrimitive event) position queues queues
   | phase {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name} {position : Position} {queues : Queues}
       (event : SourceRuntimeContext.PhaseEvent artifact.sources owner) :
       Event preparation source (.phase event) position queues queues
@@ -195,7 +198,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
   | computed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}
       {position : Position} {before : Queues}
-      (prepared : RuntimeComputedUse.Prepared event) :
+      (protectedScope : event.written.parts.logical = none) :
       Event preparation source (.computed event children) position before before
   | certifiedComputed {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.ComputedEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}
@@ -210,7 +213,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
   | unsupported {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before : Queues}
       (unconnected : (match event with
-        | .matching .. | .computed .. | .registerPrimitive .. => true
+        | .matching .. | .computed .. => true
         | _ => false) = true) : Event preparation source event position before before
 
 inductive Events {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :

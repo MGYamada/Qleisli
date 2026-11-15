@@ -61,6 +61,7 @@ fn retained_primitive(source: &str, kind: OperationPrimitive, target_atoms: &[At
         instrument_calls: Vec::new(),
         nominal_modules: std::rc::Rc::new(std::cell::RefCell::new(BTreeSet::new())),
         nominal_basis_used: None,
+        source_planned: false,
         nominal_qmatch: None,
         source_context: None,
         tuple_binding_origins: vec![BTreeMap::new()],

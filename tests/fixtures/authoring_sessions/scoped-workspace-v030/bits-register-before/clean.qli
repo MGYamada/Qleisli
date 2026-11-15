@@ -1,0 +1,4 @@
+use std::state::init0;
+use std::structure::{empty,consume_empty};
+unitary fn keep(q:Q<Bits<2>>)->Q<Bits<2>>{q}
+observe fn main()->(Bit,Bit){let q=put_bit[2,0](h(init0()),put_bit[1,0](init0(),empty())); let q=clean(q,keep){|data,scratch|(data,scratch)}; let (a,q)=take_bit[2,0](q); let (b,rest)=take_bit[1,0](q); consume_empty(rest); (measure_z(a),measure_z(b))}

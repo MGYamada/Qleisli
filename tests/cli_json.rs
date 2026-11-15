@@ -297,6 +297,7 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
             "  interop always returns JSON; qli input takes a project directory.\n",
             concat!(
                 "  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <source> --input=qli [--expect-edition=2026] [--shots=N --seed=S] [--lean-kernel=PATH]\n",
+                "  qleisli interop emit-qasm <source> --input=qli --resources [--expect-edition=2026] [--lean-kernel=PATH]\n",
                 "  interop always returns JSON; qli input takes a project directory.\n",
                 "  Raw qirf/qasm interop requires --edition=2026; source projects select it in Qargo.toml.\n",
                 "  Edition selects the constitutional regime, independently of the compiler release.\n"

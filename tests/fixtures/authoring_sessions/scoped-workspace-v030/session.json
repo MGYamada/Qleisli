@@ -6,6 +6,11 @@
   "project_version": "0.3.0-beta",
   "baseline_commit": "5534b6d981bac363a6d89db3c5ca0569fe713770",
   "context": "README.md",
+  "register_follow_up_sources": [
+    "bits-register-before/clean.qli",
+    "bits-register-before/dirty.qli",
+    "bits-register-before/Qargo.toml"
+  ],
   "attempts": [
     {
       "id": "attempt-01",
@@ -29,7 +34,9 @@
         "dirty-alters-reference.json"
       ],
       "reports": [
-        "first-observations.json"
+        "first-observations.json",
+        "bits-register-before/clean.json",
+        "bits-register-before/dirty.json"
       ]
     }
   ]

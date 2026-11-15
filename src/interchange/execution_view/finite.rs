@@ -368,6 +368,21 @@ impl View<'_> {
                 w.numbers(function)?;
                 w.list(use_ops, Self::usage)
             }),
+            RawOp::StructuralCompute {
+                source,
+                source_out,
+                scratch,
+                forward,
+                inverse,
+                uses,
+            } => self.record("structural-compute", 6, |w| {
+                w.n(source.0 as usize)?;
+                w.n(source_out.0 as usize)?;
+                w.n(scratch.0 as usize)?;
+                w.list(forward, Self::step)?;
+                w.list(inverse, Self::step)?;
+                w.list(uses, Self::usage)
+            }),
             RawOp::MeasureZ { input, output } => self.record("measure", 2, |w| {
                 w.n(input.0 as usize)?;
                 w.n(output.0 as usize)

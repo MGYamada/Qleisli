@@ -78,6 +78,20 @@ private def unary (owners : List Owner) (operand : Owner) (localAction before : 
   exactWork (Exact.charge (8*(before.rows.length+whole.rows.length+1)))
   return ⟨matrix,before.rows ++ whole.rows⟩
 
+private def registerAction {sources caller} (event : RegisterEvent sources caller) : WorkM Action := do
+  let [width,index] := event.application.arguments.map (·.value) | throw .request
+  guard (width ≤ 6 && index < width) .limit
+  let axes ← match event.kind with
+    | .takeBit => pure (index :: (List.range width).erase index)
+    | .putBit =>
+      let remainder := (List.range (width-1)).map (·+1)
+      pure (remainder.take index ++ [0] ++ remainder.drop index)
+    | _ => throw .request
+  exactWork (Exact.charge (8*(width+1)*(2^width+1)))
+  let table := (List.range (2^width)).map (Semantics.Finite.gather · axes)
+  let matrix ← Raw.mapping width width table
+  return ⟨matrix,(Event.registerPrimitive event).staticRows⟩
+
 private structure CallKey where
   caller : String
   owner : String
@@ -127,6 +141,10 @@ def sourceAction (sources : Sources) (workspace : Bool) :
           let action ← primitive kind.val operand.basis rows
           return (owners,← unary owners operand action before,cache)
         | _,_,_ => throw .request
+      | .registerPrimitive event => do
+        guard (event.consumed.all owners.contains) .request
+        let (owners,action) ← applyGroup owners event.consumed event.allocated (← registerAction event) before
+        return (owners,action,cache)
       | .named call => do
         let operands := call.arguments.flatMap valueOwners
         let returned := valueOwners call.value
@@ -212,7 +230,7 @@ def sourceAction (sources : Sources) (workspace : Bool) :
     let matrix ← rearrange owners output action.matrix
     return {action with matrix})
 
-private def sourceBody {sources caller} {event : ComputedEvent sources caller}
+def sourceBody {sources caller} {event : ComputedEvent sources caller}
     (body : SourceRuntimeTrace.ComputedBody event) : WorkM Action := do
   let owner := event.initial.auxiliary
   guard (owner.basis == [.bit] && ownerOnly owner body.result.value && body.result.allocated.isEmpty &&
@@ -297,9 +315,16 @@ theorem RawAction.noTarget {uses} (action : RawAction uses)
   have checked := List.all_eq_true.mp action.auxiliary _ present
   contradiction
 
+theorem RawAction.diagonalGate {uses} (action : RawAction uses)
+    (location : Semantics.Raw.ProtectedBit) (gate : Semantics.Raw.Gate)
+    (present : Semantics.Raw.Use.protectedGate location gate ∈ uses) : gate = .z ∨ gate = .t := by
+  have checked := List.all_eq_true.mp action.auxiliary _ present
+  simp only [auxiliaryOnly, Bool.and_eq_true, Bool.or_eq_true, beq_iff_eq] at checked
+  exact checked.2
+
 /-- Compare the actual Raw uses on both possible auxiliary values. The
 source label is irrelevant because these uses can only inspect the auxiliary. -/
-private def rawAction (uses : List Semantics.Raw.Use) : WorkM (RawAction uses) := do
+def rawAction (uses : List Semantics.Raw.Use) : WorkM (RawAction uses) := do
   exactWork (Exact.charge (16*((uses.map fun use => match use with
     | .protectedGate .. => 1
     | .phase controls _ | .targetGate controls .. => controls.length+1).sum+1)))

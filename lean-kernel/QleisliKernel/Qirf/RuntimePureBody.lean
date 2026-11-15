@@ -2,6 +2,7 @@ import QleisliKernel.Qirf.RuntimeOwnerTransition
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimePrimitiveSource
 import QleisliKernel.Qirf.RuntimeStructuralAction
+import QleisliKernel.Qirf.RuntimeRegisterAction
 import QleisliKernel.Qirf.RuntimeStaticPrimitive
 import QleisliKernel.Qirf.RuntimeNamedBoundary
 import QleisliKernel.Qirf.RuntimeCallScope
@@ -12,6 +13,8 @@ import QleisliKernel.Qirf.RuntimeContextRequest
 import QleisliKernel.Qirf.RuntimeOperationPaths
 import QleisliKernel.Qirf.RuntimeGraphOperation
 import QleisliKernel.Qirf.RuntimeBodyQueries
+import QleisliKernel.Qirf.RuntimeRegisterAction
+import QleisliKernel.Qirf.StructuralComputedRaw
 import QleisliKernel.Qirf.RuntimeTransformAction
 import QleisliKernel.Qirf.RuntimeRectangularOperation
 import QleisliKernel.Qirf.OperationIRMeaning
@@ -118,6 +121,10 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       {start count sources caller event before}
       (action : RuntimeStructuralAction.Checked (sources := sources) (caller := caller) block start count event before) :
       Node dependencies program block
+  | register {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {start count sources caller} {event : SourceRuntimeContext.RegisterEvent sources caller} {before}
+      (location : RuntimeSourceEvent.Location (.registerPrimitive event) start count)
+      (action : RuntimeRegisterAction.Checked block start count event before) : Node dependencies program block
   | basis {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count sources caller} {event : SourceRuntimeContext.BasisEvent sources caller} {before}
       (interval : RuntimeInterval.Checked block start count)
@@ -138,6 +145,12 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (location : RuntimeSourceEvent.Location (.computed event children) start count)
       (prepared : RuntimeCertifiedComputed.Prepared event)
       (action : RuntimeCertifiedComputed.Checked prepared interval before) : Node dependencies program block
+  | structuralComputed {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {start count sources caller} {event : SourceRuntimeContext.ComputedEvent sources caller}
+      {children : List (SourceRuntimeContext.Event sources caller)} {before}
+      (interval : RuntimeInterval.Checked block start count)
+      (location : RuntimeSourceEvent.Location (.computed event children) start count)
+      (action : StructuralComputedRaw.IntervalChecked event interval before) : Node dependencies program block
   | workspace {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count sources caller} {event : SourceRuntimeContext.WorkspaceEvent sources caller}
       {children : List (SourceRuntimeContext.Event sources caller)} {before}
@@ -708,6 +721,11 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let (after,node) ← primitiveAt interval history boundFrame (.phase event) (some ⟨position,rfl,rfl,origin⟩)
           return (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
             obligations,position.start+position.count,sourceCursor,receipts)
+        | .registerPrimitive event,data,origin =>
+          let action ← RuntimeRegisterAction.read interval event before
+          let node : Node dependencies program block := .register ⟨position,rfl,rfl,origin⟩ action
+          return (action.after,retired ++ event.consumed,ordinary,actions ++ [node],steps ++ [.pure node],
+            obligations,position.start+position.count,sourceCursor,receipts)
         | .basis event,data,origin =>
           let sourceBody ← RuntimeBodyQueries.readBasis execution.queries source event position data
           let action ← RuntimeBasisAction.read event interval before
@@ -718,18 +736,24 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           return (after,retired ++ consumed,ordinary,actions ++ [node],steps ++ [.pure node],
             obligations,position.start+position.count,sourceCursor,receipts)
         | .computed event children,data,origin =>
-          let prepared ← RuntimeBodyQueries.readComputed execution.queries source event children position data
           let finish output node :=
             let after := RuntimeComputedPredicate.continued event before output
             pure (after,retired ++ event.body.consumed ++ [event.returned.auxiliary],ordinary,actions ++ [node],steps ++ [.pure node],
               obligations,position.start+position.count,sourceCursor,receipts)
-          match prepared with
-          | .inl prepared =>
-            let action ← RuntimeComputedUse.read prepared interval before
-            finish action.literal.output (.computed interval ⟨position,rfl,rfl,origin⟩ prepared action)
-          | .inr prepared =>
-            let action ← RuntimeCertifiedComputed.read prepared interval before
-            finish action.literal.output (.certifiedComputed interval ⟨position,rfl,rfl,origin⟩ prepared action)
+          if ← (do
+              exactWork (Exact.charge (8*(position.start+position.count+1)))
+              pure (StructuralComputedRaw.isStructuralInterval interval)) then
+            let action ← StructuralComputedRaw.readInterval event interval before
+            finish action.checked.output (.structuralComputed interval ⟨position,rfl,rfl,origin⟩ action)
+          else
+            let prepared ← RuntimeBodyQueries.readComputed execution.queries source event children position data
+            match prepared with
+            | .inl prepared =>
+              let action ← RuntimeComputedUse.read prepared interval before
+              finish action.literal.output (.computed interval ⟨position,rfl,rfl,origin⟩ prepared action)
+            | .inr prepared =>
+              let action ← RuntimeCertifiedComputed.read prepared interval before
+              finish action.literal.output (.certifiedComputed interval ⟨position,rfl,rfl,origin⟩ prepared action)
         | .workspace event children,data,origin =>
           let prepared ← RuntimeBodyQueries.readWorkspace execution.queries source event children position data
           let action ← RuntimeWorkspace.readLiteral prepared interval before

@@ -284,6 +284,32 @@ fn execute_op(
             component = component.remove_certified_zero(auxiliary, budget)?;
             component.tokens.insert(*source_out, wires);
         }
+        RawOp::StructuralCompute {
+            source,
+            source_out,
+            scratch,
+            forward,
+            inverse,
+            uses,
+        } => {
+            budget.charge(uses.len())?;
+            let wires = component.take(*source)?;
+            let mut axes = component.positions(&wires)?;
+            component.add_zero_wire(*scratch, limits)?;
+            let scratch_axis = component.position(*scratch)?;
+            axes.push(scratch_axis);
+            run_circuit(&mut component, &axes, forward, budget)?;
+            run_protected_use(
+                &mut component,
+                &axes[..wires.len()],
+                &[],
+                |index, auxiliary_index| auxiliary_index == 0 && bit(index, scratch_axis),
+                uses,
+            )?;
+            run_circuit(&mut component, &axes, inverse, budget)?;
+            component = component.remove_certified_zero(*scratch, budget)?;
+            component.tokens.insert(*source_out, wires);
+        }
         RawOp::ApplyUnitary {
             input,
             output,
@@ -543,7 +569,7 @@ fn execute_op(
                 &mut component,
                 &source_axes,
                 &target_wires,
-                function,
+                |index, bit| (function[local_label(index, &source_axes)] >> bit) & 1 != 0,
                 use_ops,
             )?;
             component.tokens.insert(*source_out, source_wires);

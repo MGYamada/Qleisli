@@ -18,6 +18,42 @@ fn write(body: impl FnOnce(&mut View<'_>) -> Result<()>) -> Vec<u8> {
     writer.bytes
 }
 
+#[test]
+fn structural_compute_view_matches_canonical_operation_fields() {
+    let operation = RawOp::StructuralCompute {
+        source: TokenId(10),
+        source_out: TokenId(12),
+        scratch: WireId(4),
+        forward: vec![CircuitStep {
+            controls: vec![BitControl {
+                index: 0,
+                when_one: false,
+            }],
+            action: CircuitAction::Monomial {
+                indices: vec![1],
+                permutation: vec![1, 0],
+                phases: vec![0, 0],
+            },
+        }],
+        inverse: vec![],
+        uses: vec![ProtectedUse::ProtectedGate {
+            bit: ProtectedBit {
+                region: ProtectedRegion::Ancilla,
+                index: 0,
+            },
+            gate: SingleGate::Z,
+        }],
+    };
+    let ordered = json::parse(
+        br#"["structural-compute",10,12,4,
+        [["step",[["control",0,false]],["monomial",[1],[1,0],[0,0]]]],
+        [],[["protected-gate",["protected-bit",1,0],2]]]"#,
+    )
+    .unwrap();
+    let expected = super::super::encode(&super::super::tests::vector_value(&ordered)).unwrap();
+    assert_eq!(write(|view| view.operation(&operation)), expected);
+}
+
 fn vectors() -> json::Value {
     json::parse(include_bytes!(
         "../../../../tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json"

@@ -147,6 +147,13 @@ theorem dispatch_histories (dependencies : List Basis) (state : Raw.State) (op :
     result.state.seenTokens = state.seenTokens ++ Semantics.Ownership.outputs op ∧
     result.state.seenWires = state.seenWires ++ Semantics.Ownership.allocated (view state) op := by
   cases op with
+  | structuralCompute input output scratch forward inverse uses =>
+    obtain ⟨checked,_,resultRead⟩ := except_bind_success _ _ _ ok
+    cases Except.ok.inj resultRead
+    have taken := take_state _ _ _ _ checked.takeRead
+    have reserved := reserve_state _ _ _ checked.reserveRead
+    have inserted := insert_state _ _ _ _ checked.insertRead
+    simp_all [Semantics.Ownership.outputs,Semantics.Ownership.allocated]
   | packUnit output =>
     obtain ⟨_,_,h⟩ := except_bind_success _ _ _ ok
     obtain ⟨next,inserted,h⟩ := except_bind_success _ _ _ h
@@ -366,6 +373,14 @@ it consumes, including protected source/target/scratch regions. -/
 theorem dispatch_access (dependencies : List Basis) (state : Raw.State) (op : Op) (result : Raw.Transition)
     (ok : Raw.dispatch dependencies state op = .ok result) : Semantics.Ownership.Access (view state) op := by
   cases op with
+  | structuralCompute input output scratch forward inverse uses =>
+    obtain ⟨checked,_,_⟩ := except_bind_success _ _ _ ok
+    have accepted := Raw.structuralComputeClauses_conditions checked.clausesRead
+    have steps := accepted.2.2.2.2
+    refine ⟨checked.port,(take_access _ _ _ _ checked.takeRead).1,
+      circuit_access _ _ _ steps,?_,uses_access _ _ _ _ accepted.2.1⟩
+    exact Eq.mpr (congrArg (Semantics.Ownership.Circuit _) accepted.1)
+      (circuit_access _ _ _ steps)
   | packUnit output => trivial
   | unpackUnit input =>
     obtain ⟨_,_,h⟩ := except_bind_success _ _ _ ok

@@ -100,6 +100,13 @@ private theorem step_frame {before after : Semantics.RawTrace.Interface} {operat
     simp only [Semantics.RawTrace.step] at ran
     obtain ⟨⟨port,next⟩,_taken,returned⟩ := Option.bind_eq_some_iff.mp ran
     exact False.elim (singleton_bad (congrArg Prod.snd (Option.some.inj returned)) only (fun impossible => impossible))
+  | structuralCompute input output scratch forward inverse uses =>
+    simp only [Semantics.RawTrace.step] at ran
+    obtain ⟨⟨port,next⟩,taken,returned⟩ := Option.bind_eq_some_iff.mp ran
+    have same : next.frame = after.frame :=
+      congrArg (fun pair : Semantics.RawTrace.Interface × List Semantics.Raw.Event => pair.1.frame)
+        (Option.some.inj returned)
+    exact same.symm.trans (take_frame taken)
   | computeUseUncompute input output targets ancilla function uses =>
     simp only [Semantics.RawTrace.step] at ran
     obtain ⟨⟨source,next⟩,_taken,tail⟩ := Option.bind_eq_some_iff.mp ran

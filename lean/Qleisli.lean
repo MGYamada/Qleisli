@@ -192,6 +192,7 @@ import Qleisli.RawProtectedEvaluation
 import Qleisli.RawReconstructedAction
 import Qleisli.RawProtectedMatrixAction
 import Qleisli.RawProtectedCommutation
+import Qleisli.StructuralComputedRestoration
 import Qleisli.RawFunction
 import Qleisli.RawPure
 import Qleisli.RawInstrument
