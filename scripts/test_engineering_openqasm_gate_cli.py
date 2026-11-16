@@ -10,10 +10,14 @@ import subprocess
 import sys
 import tempfile
 
-from test_engineering_openqasm_native import ONE, ZERO, digest, dyadic, encoded, gate_matrix, gate_op, port
+from native_packet import envelope, parse_reply
+from test_engineering_openqasm_native import ONE, VERSION, ZERO, digest, dyadic, encoded, gate_matrix, gate_op, inner, port
+from test_engineering_pure_tensor_native import dyadic_view, graph_view, leaf_view
+from test_native_execution_protocol import qdv
 
 COMMAND = "engineering compare-openqasm3-gate"
 RESOURCE_MODEL = "openqasm3-ordered-gate-literal-gates-v1"
+MODE = "--engineering-openqasm-gate-check"
 PROFILES = dict(
     format="qleisli.engineering-openqasm-gate-request",
     version=1,
@@ -54,6 +58,47 @@ def ideal(gate=None):
         leaf=dict(input=port(0, [7]), output=port(finish, [7]), matrix=matrix),
         expected_artifact=encoded(artifact).decode() + "\n",
     )
+
+
+def check_native_binding(kernel, target, request):
+    expected = request["ideal"]
+    exact_leaf = expected["leaf"]
+    limits = request["resource_limits"]
+    context = [
+        "engineering-openqasm-gate-request", request["format"], request["version"],
+        request["claim_kind"], request["metric"], request["checker_profile"], request["target_profile"],
+        request["error_category"], dyadic_view(request["epsilon"]),
+        [request["composition"], ["ideal", leaf_view(exact_leaf), expected["expected_artifact"]]],
+        ["resource-limits", limits["model"], limits["gates"], limits["t_gates"]],
+    ]
+    tape = ["gate-tape", list(target), [["pair"], ["bit"], ["bit"]], [["gate", "t", [0]]]]
+    graph = graph_view(json.loads(expected["expected_artifact"]), exact_leaf)
+    original = inner(target, request)
+
+    def invoke(mode, packet, *, scope="execution", error=None):
+        result = subprocess.run(
+            [kernel, mode, VERSION], input=packet, capture_output=True, timeout=60, check=False,
+        )
+        assert not result.stderr, result
+        reply = parse_reply(result.stdout, edition="2026", product=VERSION, mode=mode, scope=scope)
+        if error:
+            assert result.returncode == 1 and reply.error in error, result
+        else:
+            assert result.returncode == 0 and reply.claim == "engineering-checked", result
+            work, wires, gates, t_gates = map(int, reply.payload)
+            assert 0 < work <= 20_000_000 and (wires, gates, t_gates) == (2, 1, 1)
+
+    def packet(tape, graph):
+        view = qdv(["engineering-openqasm-gate", context, tape, [graph]])
+        return envelope("2026", original, view)
+
+    invoke(MODE, packet(tape, graph))
+    invoke(MODE, packet([*tape[:3], [["gate", "tdg", [0]]]], graph), error={"decoded_view"})
+    other = ideal("x")
+    invoke(MODE, packet(tape, graph_view(json.loads(other["expected_artifact"]), other["leaf"])),
+           error={"decoded_view"})
+    invoke(MODE, envelope("2026", original), scope="inspection", error={"format"})
+    invoke("--qirf-native", packet(tape, graph), error={"format", "invalid_ir", "contract", "decoded_view"})
 
 
 def run(cli, kernel, directory):
@@ -157,6 +202,7 @@ def run(cli, kernel, directory):
     invoke(target_phase, phase, counts=dict(wires=2, gates=1, t_gates=1))
     invoke(gate_definition("a, b", "tdg a;"), phase, status=1)
     invoke(target_phase, dict(phase, claim_kind="constitutional-target-rs"), status=1)
+    check_native_binding(kernel, target_phase, phase)
 
 
 if __name__ == "__main__":

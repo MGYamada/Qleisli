@@ -37,6 +37,7 @@ MODES = {
     '--engineering-pure-tensor-check': ('engineering-checked', ('execution',)),
     '--qirf-engineering-instrument-native': ('engineering-checked', ('execution',)),
     '--engineering-openqasm-check': ('engineering-checked', ('execution',)),
+    '--engineering-openqasm-gate-check': ('engineering-checked', ('execution',)),
     '--readout-check': ('checked', ('inspection',)),
     '--preparation-check': ('checked', ('inspection',)),
 }
