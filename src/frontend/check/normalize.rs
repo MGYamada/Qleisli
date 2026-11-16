@@ -511,6 +511,26 @@ pub(super) fn expect(
         ))
     }
 }
+
+pub(super) fn expect_static_operand(
+    comparison: Result<bool>,
+    actual: &Ty,
+    expected: &Ty,
+    span: Span,
+    basis: bool,
+) -> Result<()> {
+    // Comparison can fail on the original budget or source location. Only a
+    // completed comparison that found unequal types gets the operand hint.
+    if comparison? {
+        return Ok(());
+    }
+    Err(SourceError::new(
+        "type",
+        span,
+        crate::frontend::diagnostic::static_operand_mismatch(expected, actual, basis),
+    ))
+}
+
 pub(super) fn equivalent(
     actual: &Ty,
     expected: &Ty,

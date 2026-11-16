@@ -1,0 +1,5 @@
+unitary fn mismatched[const U:Op<((Bit,Bit),Bit)>](
+    control: Q<Bit>, operand: Q<(Bit,(Bit,Bit))>,
+) -> (Q<Bit>,Q<(Bit,(Bit,Bit))>) requires Controllable(U) {
+    controlled(U)(control, operand)
+}

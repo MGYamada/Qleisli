@@ -283,6 +283,93 @@ fn argument_types_reach_text_and_json_without_moving_the_callers_span() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn static_operand_shape_diagnostics_snapshot() {
+    let formal =
+        include_str!("fixtures/authoring_sessions/static-operand-shape-v030/attempt-01/main.qli");
+    let named = "use std::transform::qft3;
+unitary fn bad(operand: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
+    adjoint(qft3)(operand)
+}";
+    let constructed = "unitary fn keep(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> { q }
+unitary fn bad(operand: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
+    adjoint(then_op(keep,keep))(operand)
+}";
+    let qif = "unitary fn keep(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> { q }
+unitary fn bad(control: Q<Bit>, operand: Q<(Bit,(Bit,Bit))>) -> (Q<Bit>,Q<(Bit,(Bit,Bit))>) {
+    qif(control,operand) {0=>keep, 1=>keep}
+}";
+    let qmatch = "unitary fn keep(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> { q }
+unitary fn bad(control: Q<Bit>, operand: Q<(Bit,(Bit,Bit))>) -> (Q<Bit>,Q<(Bit,(Bit,Bit))>) {
+    qmatch(control,operand) {0=>then_op(keep,keep), 1=>keep}
+}";
+    let flat = "unitary fn keep(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> { q }
+unitary fn bad(operand: Q<(Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit)> {
+    adjoint(keep)(operand)
+}";
+    let binary_message = concat!(
+        "static operation argument type mismatch: expected `Q<((Bit,Bit),Bit)>`, ",
+        "found `Q<(Bit,(Bit,Bit))>`. Tuple nesting is significant. ",
+        "Regroup the register with `split` and `join`."
+    );
+    let flat_message = concat!(
+        "static operation argument type mismatch: expected `Q<((Bit,Bit),Bit)>`, ",
+        "found `Q<(Bit,Bit,Bit)>`. Tuple nesting is significant. ",
+        "Reshape with a supported explicit basis map that preserves leaf order, ",
+        "or use a matching declared interface."
+    );
+    for (source, message) in [
+        (named, binary_message),
+        (formal, binary_message),
+        (constructed, binary_message),
+        (qif, binary_message),
+        (qmatch, binary_message),
+        (flat, flat_message),
+    ] {
+        let root = SourceRoot::new(source);
+        let start = source.rfind("operand").unwrap();
+        let end = start + "operand".len();
+        let before = &source[..start];
+        let line = before.bytes().filter(|&byte| byte == b'\n').count() + 1;
+        let column = before.rsplit('\n').next().unwrap().chars().count() + 1;
+        let path = root.0.join("main.qli").canonicalize().unwrap();
+
+        let run = |flags: &[&str]| {
+            let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+                .arg("check")
+                .arg(&root.0)
+                .args(flags)
+                .output()
+                .unwrap();
+            assert_eq!(output.status.code(), Some(1), "{source}: {output:?}");
+            output
+        };
+        let text = run(&[]);
+        assert!(text.stdout.is_empty());
+        assert_eq!(
+            String::from_utf8(text.stderr).unwrap(),
+            format!(
+                "{}:{line}:{column}: type_mismatch: {message}\n",
+                path.display()
+            ),
+            "{source}"
+        );
+        let json = run(&["--format=json"]);
+        assert!(json.stderr.is_empty());
+        assert_eq!(
+            String::from_utf8(json.stdout).unwrap(),
+            format!(
+                "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"{message}\",\"primary\":{{\"path\":\"main.qli\",\"start\":{start},\"end\":{end},\"line\":{line},\"column\":{column}}},\"related\":[]}}],\"result\":null}}\n"
+            ),
+            "{source}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
     let original = fs::read_to_string(current_namespace_fixture(
         &Path::new(env!("CARGO_MANIFEST_DIR")).join(
