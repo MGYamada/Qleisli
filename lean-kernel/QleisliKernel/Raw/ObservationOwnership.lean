@@ -264,4 +264,92 @@ theorem checkOps_projection (dependencies : List Dependency) (fuel : Nat) :
   funext state op
   cases op <;> simp only [checkStep,checkAction,bind_assoc,pure_bind]
 
+/-- A successful original closed root checker exposes the actual check of a
+selected instruction and the owner derivation of the exact preceding prefix. -/
+theorem verify_closed_step {dependencies : List Dependency} {program : Semantics.Observation.Program}
+    {checked : Checked} {work left cursor : Nat} {operation : Semantics.Observation.Op}
+    (closed : program.inputs = []) (noClassical : program.classicalInputs = [])
+    (source : program.operations[cursor]? = some operation)
+    (ran : (verify dependencies program).run work = (.ok checked,left)) :
+    ∃ entry after first last,
+      Semantics.Ownership.Run {} (program.operations.take cursor) (view entry.quantum) ∧
+      (checkStep dependencies (checkOps dependencies 64) entry operation).run first = (.ok after,last) := by
+  unfold verify at ran
+  obtain ⟨_,_,_,charged⟩ := bind_success _ _ _ _ _ ran
+  obtain ⟨quantum,_,quantumRead,started⟩ := bind_success _ _ _ _ _ charged
+  have emptyQuantum := (lift_success _ _ _ _ quantumRead).1
+  simp only [closed,List.foldlM_nil] at emptyQuantum
+  obtain rfl := Except.ok.inj emptyQuantum
+  obtain ⟨initial,_,inputRead,body⟩ := bind_success _ _ _ _ _ started
+  have emptyInput := (lift_success _ _ _ _ inputRead).1
+  simp only [noClassical,List.foldlM_nil] at emptyInput
+  obtain rfl := Except.ok.inj emptyInput
+  obtain ⟨_,_,checkedBody,_⟩ := bind_success _ _ _ _ _ body
+  obtain ⟨inside,found⟩ := List.getElem?_eq_some_iff.mp source
+  have cut : program.operations = program.operations.take cursor ++ operation :: program.operations.drop (cursor+1) := by
+    rw [← found,← List.drop_eq_getElem_cons inside,List.take_append_drop]
+  unfold checkOps at checkedBody
+  obtain ⟨_,_,folded,_⟩ := bind_success _ _ _ _ _ checkedBody
+  rw [cut,List.foldlM_append] at folded
+  obtain ⟨entry,first,before,rest⟩ := bind_success _ _ _ _ _ folded
+  change ((operation :: program.operations.drop (cursor+1)).foldlM
+    (checkStep dependencies (checkOps dependencies 64)) entry).run first = _ at rest
+  rw [List.foldlM_cons] at rest
+  obtain ⟨after,last,actual,_⟩ := bind_success _ _ _ _ _ rest
+  have sound := fun state ops next => checkOps_ownership dependencies 64 state next ops
+  have valid := (checkStep_ownership dependencies _ sound _ _ _ _ _ actual).1
+  exact ⟨entry,after,first,last,fold_ownership dependencies _ sound _ _ _ _ _ valid before,actual⟩
+
+#print axioms verify_closed_step
+
+/-- The original executable pure step validates the event obtained by the
+independent Raw reader, with the same ordered checkpoint and dependencies. -/
+theorem checkStep_pure_event {dependencies : List Dependency}
+    {recurse : State → List Semantics.Observation.Op → WorkM State} {state next : State}
+    {operation : Semantics.Raw.Op} {work left : Nat}
+    {nextRaw : Semantics.RawTrace.Interface} {event : Semantics.Raw.Event}
+    (read : Semantics.RawTrace.step state.quantum.reference operation = some (nextRaw,[event]))
+    (accepted : (checkStep dependencies recurse state (.pure operation)).run work = (.ok next,left)) :
+    next.quantum.reference = nextRaw ∧ ∃ before after,
+      (Raw.Pure.eventCheck dependencies event).run before = (.ok (),after) := by
+  unfold checkStep at accepted
+  obtain ⟨_,_,_,valid⟩ := bind_success _ _ _ _ _ accepted
+  obtain ⟨_,_,_,action⟩ := bind_success _ _ _ _ _ valid
+  obtain ⟨checked,_,actionCheck,historyCheck⟩ := bind_success _ _ _ _ _ action
+  obtain ⟨_,_,_,finish⟩ := bind_success _ _ _ _ _ historyCheck
+  obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finish
+  simp only [checkAction] at actionCheck
+  obtain ⟨_,_,_,advanced⟩ := bind_success _ _ _ _ _ actionCheck
+  obtain ⟨transition,_,lifted,eventFold⟩ := bind_success _ _ _ _ _ advanced
+  have actual := Raw.step_reference _ _ _ _ (lift_success _ _ _ _ lifted).1
+  rw [read] at actual
+  obtain ⟨sameState,sameEvents⟩ := Prod.mk.inj (Option.some.inj actual)
+  rw [← sameEvents] at eventFold
+  obtain ⟨_,_,folded,finish⟩ := bind_success _ _ _ _ _ eventFold
+  obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finish
+  obtain ⟨_,_,checkedEvent,_⟩ := bind_success _ _ _ _ _ folded
+  exact ⟨sameState.symm,_,_,checkedEvent⟩
+
+/-- Successful original observing execution gives the exact table and use
+bounds for the independently read protected action. -/
+theorem checkStep_protected_table {dependencies : List Dependency}
+    {recurse : State → List Semantics.Observation.Op → WorkM State} {state next : State}
+    {operation : Semantics.Raw.Op} {work left : Nat}
+    {nextRaw : Semantics.RawTrace.Interface} {bits sourceBits auxiliaryBits : Nat}
+    {axes function : List Nat} {uses : List Semantics.Raw.Use}
+    (read : Semantics.RawTrace.step state.quantum.reference operation =
+      some (nextRaw,[.protectedComputed bits axes sourceBits auxiliaryBits function uses]))
+    (accepted : (checkStep dependencies recurse state (.pure operation)).run work = (.ok next,left)) :
+    next.quantum.reference = nextRaw ∧ sourceBits ≤ axes.length ∧
+    Raw.tableValid sourceBits auxiliaryBits function false = true ∧
+    Raw.usesValid sourceBits auxiliaryBits (axes.length-sourceBits) uses = true := by
+  obtain ⟨interface,_,_,ok⟩ := checkStep_pure_event read accepted
+  simp only [Raw.Pure.eventCheck] at ok
+  have valid := (guard_success _ _ _ _ ok).1
+  simp only [Bool.and_eq_true,decide_eq_true_eq] at valid
+  exact ⟨interface,valid.1.1,valid.1.2,valid.2⟩
+
+#print axioms checkStep_pure_event
+#print axioms checkStep_protected_table
+
 end QleisliKernel.Raw.Observation

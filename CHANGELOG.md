@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Prove that accepted terminal OpenQASM packets preserve every original Raw
+  output probability from register reset through the decoded measurement word (#120).
 - Bind terminal OpenQASM output order to the original Raw measurements and
   recover original workspace order and provider dependencies from replay (#120).
 - Prove exact physical-register correspondence for terminal OpenQASM preparation,

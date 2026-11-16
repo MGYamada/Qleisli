@@ -534,4 +534,104 @@ theorem checked_packet {sources caller}
 #print axioms literal_pair
 #print axioms checked_packet
 
+/-- The executable Raw clause check alone gives the exact full carrier
+coefficient of its literal compute/use/inverse word, including every dirty
+auxiliary row. It applies to an arbitrary live amplitude slice. -/
+theorem raw_word_clean_return {width forward inverse uses clauses}
+    (checked : Raw.structuralComputeClauses width forward inverse uses = .ok clauses)
+    (ψ : Nat → ℂ) (source aux : Nat) (bound : source < 2^width) (small : aux < 2) :
+    Qleisli.Semantics.RawAction.circuit []
+      (forward ++ uses.map (Semantics.Protected.physical 0 width) ++ inverse)
+      (fun label => if label < 2^width then ψ label else 0)
+      (FiniteRestriction.pack width source aux) =
+    if aux = 0 then blocks source (Qleisli.Semantics.RawAction.StructuralXorValue forward source)
+      uses (fun _ (_ : Unit) => ψ source) 0 () else 0 := by
+  have facts := Raw.structuralComputeClauses_conditions checked
+  have choice : Qleisli.Semantics.RawAction.StructuralXorValue forward source =
+      (StructuralXor.predicate clauses source).toNat := by
+    rw [facts.2.2.1]
+    simp [Qleisli.Semantics.RawAction.StructuralXorValue,StructuralXor.predicate,List.foldl_map]
+  rw [choice,facts.1,facts.2.2.1]
+  simpa only [StructuralXor.toggle] using
+    literal_factorization width clauses facts.2.2.2.1 uses facts.2.1 ψ source aux bound small
+
+#print axioms raw_word_clean_return
+
+open Semantics.Finite (Step Dependency)
+open Semantics.Raw (Use)
+
+private theorem circuit_no_contract (operations : List Step)
+    (localOnly : ∀ step ∈ operations, match step.action with | .contract .. => False | _ => True)
+    (dependencies : List Dependency) (data : Nat → ℂ) :
+    Qleisli.Semantics.RawAction.circuit dependencies operations data =
+      Qleisli.Semantics.RawAction.circuit [] operations data := by
+  induction operations generalizing data with
+  | nil => rfl
+  | cons first later ih =>
+    have literal := localOnly first List.mem_cons_self
+    have same : Qleisli.Semantics.RawAction.step dependencies first data =
+        Qleisli.Semantics.RawAction.step [] first data := by
+      obtain ⟨controls,action⟩ := first
+      cases action <;> first | rfl | contradiction
+    simp only [Qleisli.Semantics.RawAction.circuit,List.foldl_cons]
+    rw [same]
+    exact ih (fun step inside => localOnly step (List.mem_cons_of_mem _ inside)) _
+
+private theorem physical_use_reference (source data : Nat) (operation : Use) :
+    Raw.physicalUse source data operation = Semantics.Protected.physical source data operation := by
+  cases operation with
+  | protectedGate location gate => cases gate <;> rfl
+  | targetGate controls target gate => cases gate <;> rfl
+  | phase controls phase => cases phase <;> rfl
+
+/-- On the full finite carrier, the checked structural computation restores its
+borrowed predicate axis to zero and preserves the actual Raw logical action. -/
+theorem raw_structural_clean {width forward inverse uses clauses}
+    (verified : Raw.structuralComputeClauses width forward inverse uses = .ok clauses)
+    (dependencies : List Dependency) (data : Nat → ℂ) (row : Nat) (inside : row < 2^(width+1)) :
+    let steps := forward ++ uses.map (Raw.physicalUse 0 width) ++ inverse
+    let localAction := fun values => Qleisli.Semantics.RawAction.circuit []
+      (forward ++ uses.map (Semantics.Protected.physical 0 width) ++ inverse)
+      (Qleisli.Semantics.RawAction.event [] (.init0 width) values)
+    Qleisli.Semantics.RawAction.circuit dependencies steps (Qleisli.Semantics.RawAction.event [] (.init0 width) data) row =
+      Qleisli.Semantics.RawAction.event [] (.init0 width) (localAction data) row := by
+  dsimp only
+  have conditions := Raw.structuralComputeClauses_conditions verified
+  have computeNoContract : ∀ step ∈ forward, match step.action with | .contract .. => False | _ => True := by
+    rw [conditions.2.2.1]
+    rintro step member
+    obtain ⟨controls,_,rfl⟩ := List.mem_map.mp member
+    trivial
+  have noContract (step : Step) (member : step ∈ forward ++ uses.map (Raw.physicalUse 0 width) ++ inverse) :
+      match step.action with | .contract .. => False | _ => True := by
+    rw [conditions.1,List.mem_append,List.mem_append] at member
+    rcases member with (inForward | inUses) | inInverse
+    · exact computeNoContract step inForward
+    · obtain ⟨action,_,rfl⟩ := List.mem_map.mp inUses
+      cases action with
+      | protectedGate location gate => cases gate <;> trivial
+      | targetGate controls target gate => cases gate <;> trivial
+      | phase controls phase => trivial
+    · exact computeNoContract step inInverse
+  rw [circuit_no_contract _ noContract dependencies]
+  rw [show Raw.physicalUse 0 width = Semantics.Protected.physical 0 width from funext (physical_use_reference 0 width)]
+  by_cases low : row < 2^width
+  · simp only [Qleisli.Semantics.RawAction.event,low,if_true]
+  · let source := row % 2^width
+    let auxiliary := row / 2^width
+    have sourceIn : source < 2^width := Nat.mod_lt _ (Nat.two_pow_pos _)
+    have auxIn : auxiliary < 2 := by
+      apply (Nat.div_lt_iff_lt_mul (Nat.two_pow_pos width)).mpr
+      simpa [Nat.pow_succ,Nat.mul_comm] using inside
+    have nonzero : auxiliary ≠ 0 := by
+      intro zero
+      have before := Nat.div_eq_zero_iff.mp zero
+      exact low (before.resolve_left (Nat.ne_of_gt (Nat.two_pow_pos _)))
+    have original : FiniteRestriction.pack width source auxiliary = row := Nat.mod_add_div row (2^width)
+    have restored := raw_word_clean_return verified data source auxiliary sourceIn auxIn
+    rw [original,if_neg nonzero] at restored
+    simpa only [Qleisli.Semantics.RawAction.event,low,if_false] using restored
+
+#print axioms raw_structural_clean
+
 end Qleisli.StructuralComputedRestoration

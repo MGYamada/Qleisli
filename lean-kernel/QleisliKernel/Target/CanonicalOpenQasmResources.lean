@@ -329,4 +329,65 @@ theorem decode_instruction_shape {bytes : ByteArray} {circuit : Circuit}
 
 #print axioms decode_instruction_shape
 
+/-- Where the register is initialized in the actual accepted terminal bytes.
+The header-only artifact has no register. A declared register has either a
+reset line immediately after its declaration or a result declaration followed
+by the reset line. The same body yields the actual gate and measurement lists. -/
+inductive ResetRead (bytes : ByteArray) : Circuit → Prop where
+  | headerOnly (size : bytes.size = header.length) : ResetRead bytes ⟨0,[],[]⟩
+  | noResults {circuit : Circuit} {width after : Nat} {body : List (List UInt8)}
+      (declared : CanonicalOpenQasmRouting.declaration bytes = some (width,after))
+      (reads : lines (bytes.extract after bytes.size).data.toList = some (ascii "reset q;" :: body))
+      (decoded : gatesAndMeasurements width 0 body = some circuit) : ResetRead bytes circuit
+  | withResults {circuit : Circuit} {width after resultCount : Nat} {result : List UInt8}
+      {body : List (List UInt8)}
+      (declared : CanonicalOpenQasmRouting.declaration bytes = some (width,after))
+      (reads : lines (bytes.extract after bytes.size).data.toList = some (result :: ascii "reset q;" :: body))
+      (resultSize : resultWidth result = some resultCount)
+      (decoded : gatesAndMeasurements width resultCount body = some circuit) : ResetRead bytes circuit
+
+theorem decode_reset {bytes : ByteArray} {circuit : Circuit}
+    (decoded : decode bytes = some circuit) : ResetRead bytes circuit := by
+  unfold decode at decoded
+  split at decoded
+  · cases decoded
+  · split at decoded
+    · rename_i size
+      have equal := Option.some.inj decoded
+      subst circuit
+      exact .headerOnly (by simpa using size)
+    · cases declared : CanonicalOpenQasmRouting.declaration bytes with
+      | none => rw [declared] at decoded; cases decoded
+      | some result =>
+        obtain ⟨width,after⟩ := result
+        simp only [declared, bind, Option.bind] at decoded
+        cases reads : lines (bytes.extract after bytes.size).data.toList with
+        | none => rw [reads] at decoded; cases decoded
+        | some read =>
+          cases read with
+          | nil => rw [reads] at decoded; cases decoded
+          | cons first rest =>
+            rw [reads] at decoded
+            dsimp only at decoded
+            split at decoded
+            · rename_i reset
+              have line : first = ascii "reset q;" := eq_of_beq reset
+              exact .noResults declared (by simpa only [line] using reads) decoded
+            · cases widthCheck : resultWidth first with
+              | none => rw [widthCheck] at decoded; cases decoded
+              | some expected =>
+                rw [widthCheck] at decoded
+                dsimp only at decoded
+                cases rest with
+                | nil => cases decoded
+                | cons reset tail =>
+                  dsimp only at decoded
+                  split at decoded
+                  · rename_i resetLine
+                    have line : reset = ascii "reset q;" := eq_of_beq resetLine
+                    exact .withResults declared (by simpa only [line] using reads) widthCheck decoded
+                  · cases decoded
+
+#print axioms decode_reset
+
 end QleisliKernel.Target.CanonicalOpenQasmResources
