@@ -41,9 +41,10 @@ structured output are unavailable. The phase report preserves a diagnostic
 excerpt but does not give the original source.
 
 [Session record](session.json) indexes the complete edition-2026 projects
-by their source and manifest hashes. The project snapshots use the exact
-manifest bytes written for the initial reproduction and preserve the
-unchanged CLI test source bytes.
+by their source and manifest hashes. The [permutation manifest](attempt-01/permutation/Qargo.toml)
+and [phase manifest](attempt-01/phase/Qargo.toml) preserve the exact bytes
+written for the initial reproduction. Both project snapshots also preserve
+the unchanged CLI test sources.
 
 ## Observed edition-2026 baseline
 
