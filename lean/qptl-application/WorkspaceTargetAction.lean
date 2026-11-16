@@ -393,6 +393,22 @@ private theorem register_width (bits : Nat) : width (QleisliKernel.Raw.registerB
       simp [QleisliKernel.Raw.registerBasis, QleisliKernel.Semantics.Raw.registerBasis, width] at ih ⊢
       omega
 
+/-- The checked ordered support retains distinct original axes and a
+separate ordered physical scratch suffix. -/
+theorem synthesis_layout {deps circuit start count locations scratch reserved steps}
+    (checked : Synthesis deps circuit start count locations scratch reserved steps) :
+    checked.axes.Nodup ∧ checked.layout.length = checked.axes.length ∧ (checked.layout ++ scratch).Nodup := by
+  have axesUnique : checked.axes.Nodup := by rw [checked.originalAxes]; exact distinct_dedup _
+  obtain ⟨locationsUnique,scratchUnique,separate⟩ := List.nodup_append.mp checked.declared.1
+  obtain ⟨length,layoutUnique,origins⟩ := layout_facts axesUnique locationsUnique checked.placed
+  have unique : (checked.layout ++ scratch).Nodup := by
+    apply List.nodup_append.mpr
+    refine ⟨layoutUnique,scratchUnique,?_⟩
+    intro wire inLayout auxiliary inScratch
+    obtain ⟨axis,_,read⟩ := origins wire inLayout
+    exact separate wire (List.mem_of_getElem? read) auxiliary inScratch
+  exact ⟨axesUnique,length,unique⟩
+
 /-- Each spectator slice of the exact decoded physical word applies the checked
 local synthesis word. An arbitrary amplitude can carry any spectator and
 reference correlations. -/
@@ -408,15 +424,7 @@ theorem physical_synthesis_slice {deps bytes circuit start count locations scrat
         (Semantics.RawAction.Locality.pull row layout (fun input => amplitudes input reference))
         (gather row layout) := by
   dsimp only
-  have axesUnique : checked.axes.Nodup := by rw [checked.originalAxes]; exact distinct_dedup _
-  obtain ⟨locationsUnique,scratchUnique,separate⟩ := List.nodup_append.mp checked.declared.1
-  obtain ⟨length,layoutUnique,origins⟩ := layout_facts axesUnique locationsUnique checked.placed
-  have unique : (checked.layout ++ scratch).Nodup := by
-    apply List.nodup_append.mpr
-    refine ⟨layoutUnique,scratchUnique,?_⟩
-    intro wire inLayout auxiliary inScratch
-    obtain ⟨axis,_,read⟩ := origins wire inLayout
-    exact separate wire (List.mem_of_getElem? read) auxiliary inScratch
+  obtain ⟨_,length,unique⟩ := synthesis_layout checked
   have layoutWidth : (checked.layout ++ scratch).length = checked.axes.length+scratch.length := by simp [length]
   obtain ⟨encoding,_,middle,left,_,accepted⟩ := checked.checkedEncoding
   let word := QleisliKernel.Raw.circuit (checked.axes.length+scratch.length) checked.actual

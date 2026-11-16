@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Prove exact physical-register correspondence for terminal OpenQASM preparation,
+  routing, circuit spans, and checked clean or dirty workspace slices (#120).
 - Locate failed native OpenQASM workspace equations in the original Raw scope
   and report the corresponding source specialization when available (#127).
 - Check exact zero-width `Q<Unit>` creation and consumption inside a workspace
