@@ -80,6 +80,7 @@ fn call<'ast>(
 
 fn error(span: Span, code: ErrorCode, message: &'static str) -> CompileError {
     CompileError {
+        counterexample: None,
         code,
         path: PathBuf::from("main.qli"),
         span,

@@ -487,6 +487,11 @@ retains the first wrong-tree controlled application and the original text and
 JSON diagnostics. The exact argument type and range remain separate from the
 provider's own interface checks.
 
+The [contract counterexample session](contract-counterexample-v030/session.json)
+retains the historical report and both edition-2026 permutation and complex
+phase reproductions. It preserves the prior CLI's actual diagnostics and the
+commands for byte-identical replays.
+
 Each `session.json` names the task, kind, baseline commit/version, context,
 ordered attempts and observations. Each attempt contains a complete project,
 source hashes and a reason; observations retain argument lists, exit codes and

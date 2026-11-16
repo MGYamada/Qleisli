@@ -10,6 +10,11 @@ development milestones from the scope of their evidence.
 - Point static operation type mismatches at the operand in text and JSON.
   Show both declared types and explain how to reshape equal-leaf product
   trees without changing their order (#272).
+- Label exact contract counterexamples by their declared input and output
+  basis trees. JSON retains numeric matrix coordinates and text prints exact
+  coefficients such as `i` (#270). Public Rust error structs carry an optional
+  `counterexample` field. Set it to `None` on ordinary error literals and use
+  `..` in patterns that only need the previous fields.
 - Prove that accepted terminal OpenQASM packets preserve every original Raw
   output probability from register reset through the decoded measurement word.
   The same native decision binds the pre-readout complex column, the selected

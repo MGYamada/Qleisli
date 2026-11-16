@@ -81,7 +81,15 @@ class JsonCliTests(unittest.TestCase):
         else:
             self.assertEqual(result["diagnostics"], [])
         for diagnostic in result["diagnostics"]:
-            self.assertEqual(set(diagnostic), {"code", "severity", "message", "primary", "related"})
+            fields = {"code", "severity", "message", "primary", "related"}
+            if "counterexample" in diagnostic:
+                fields.add("counterexample")
+                coordinates = diagnostic["counterexample"]
+                self.assertEqual(set(coordinates), {"input_column", "output_row"})
+                for index in coordinates.values():
+                    self.assertIs(type(index), int)
+                    self.assertGreaterEqual(index, 0)
+            self.assertEqual(set(diagnostic), fields)
             self.assertEqual(diagnostic["severity"], "error")
             for related in diagnostic["related"]:
                 self.assertEqual(set(related), {"message", "location"})

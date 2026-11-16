@@ -13,7 +13,7 @@ use qleisli::interop::{self, InteropErrorKind};
 use qleisli::sim::{SimulationLimits, run_closed};
 
 use super::json::{
-    artifact_diagnostic_json, diagnostic_json, distribution_json, envelope, quoted, samples_json,
+    artifact_error_json, diagnostic_json, distribution_json, envelope, quoted, samples_json,
     simulation_failure,
 };
 use super::options::natural;
@@ -31,6 +31,7 @@ impl From<Diagnostic> for Failure {
 
 fn failure(code: &'static str, message: impl Into<String>) -> Failure {
     Failure::Diagnostic(Diagnostic {
+        counterexample: None,
         code,
         message: message.into(),
         primary: None,
@@ -67,6 +68,7 @@ fn adapter(error: interop::InteropError, source: Option<(&Path, &str)>) -> Failu
         })
     });
     Failure::Diagnostic(Diagnostic {
+        counterexample: None,
         code: match error.kind {
             InteropErrorKind::Parse => "parse",
             InteropErrorKind::Unsupported => "unsupported",
@@ -300,10 +302,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
         Ok(result) => (envelope(&command, None, &result), ExitCode::SUCCESS),
         Err(error) => {
             let (diagnostic, status) = match error {
-                Failure::Artifact(error) => (
-                    artifact_diagnostic_json(error.code, &error.message, &error.json_pointer),
-                    1,
-                ),
+                Failure::Artifact(error) => (artifact_error_json(&error), 1),
                 Failure::Diagnostic(error) => {
                     let source_root = if error.primary.as_ref().is_some_and(|p| p.path == root) {
                         root.parent().unwrap_or(Path::new(""))

@@ -90,6 +90,17 @@ fn v1_code(code: &str) -> &str {
     }
 }
 
+fn counterexample_json(
+    counterexample: Option<&qleisli::contract::EquationCounterexample>,
+) -> String {
+    counterexample.map_or_else(String::new, |counterexample| {
+        format!(
+            ",\"counterexample\":{{\"input_column\":{},\"output_row\":{}}}",
+            counterexample.input_column, counterexample.output_row,
+        )
+    })
+}
+
 fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str) -> String {
     let primary = diagnostic
         .primary
@@ -101,25 +112,46 @@ fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str)
         diagnostic.code
     };
     format!(
-        "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]}}",
+        "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]{}}}",
         quoted(v1_code(code)),
         quoted(severity),
         quoted(&diagnostic.message),
-        primary.as_deref().unwrap_or("null")
+        primary.as_deref().unwrap_or("null"),
+        counterexample_json(diagnostic.counterexample.as_deref()),
+    )
+}
+
+fn artifact_diagnostic_with_counterexample_json(
+    code: &str,
+    message: &str,
+    pointer: &str,
+    counterexample: Option<&qleisli::contract::EquationCounterexample>,
+) -> String {
+    format!(
+        "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":null,\"related\":[{{\"message\":{},\"location\":null}}]{}}}",
+        quoted(v1_code(code)),
+        quoted(message),
+        quoted(&format!("json_pointer: {pointer}")),
+        counterexample_json(counterexample),
     )
 }
 
 pub(super) fn artifact_diagnostic_json(code: &str, message: &str, pointer: &str) -> String {
-    format!(
-        "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":null,\"related\":[{{\"message\":{},\"location\":null}}]}}",
-        quoted(v1_code(code)),
-        quoted(message),
-        quoted(&format!("json_pointer: {pointer}"))
+    artifact_diagnostic_with_counterexample_json(code, message, pointer, None)
+}
+
+pub(super) fn artifact_error_json(error: &qleisli::interchange::Error) -> String {
+    artifact_diagnostic_with_counterexample_json(
+        error.code,
+        &error.message,
+        &error.json_pointer,
+        error.counterexample.as_deref(),
     )
 }
 
 fn failure(code: &'static str, message: impl Into<String>) -> Diagnostic {
     Diagnostic {
+        counterexample: None,
         code,
         message: message.into(),
         primary: None,
@@ -254,7 +286,9 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
                         Err(super::artifacts::Failure::Source(error)) => Err(error),
                         Err(super::artifacts::Failure::Artifact(error)) => {
                             artifact_pointer = Some(error.json_pointer);
-                            Err(failure(error.code, error.message))
+                            let mut diagnostic = failure(error.code, error.message);
+                            diagnostic.counterexample = error.counterexample;
+                            Err(diagnostic)
                         }
                     }
                 } else {
@@ -284,7 +318,12 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
             let status = if error.code == "usage" { 2 } else { 1 };
             let diagnostic = match artifact_pointer {
                 None => diagnostic_json(&root, &error),
-                Some(pointer) => artifact_diagnostic_json(error.code, &error.message, &pointer),
+                Some(pointer) => artifact_diagnostic_with_counterexample_json(
+                    error.code,
+                    &error.message,
+                    &pointer,
+                    error.counterexample.as_deref(),
+                ),
             };
             (
                 envelope(&command, Some(&diagnostic), "null"),

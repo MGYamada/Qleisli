@@ -349,6 +349,19 @@ impl Exact {
             if coefficient.numerator == 0 {
                 continue;
             }
+            if coefficient.denominator_bits == 0 && !basis.is_empty() {
+                match coefficient.numerator {
+                    1 => {
+                        terms.push(basis.to_owned());
+                        continue;
+                    }
+                    -1 => {
+                        terms.push(format!("-{basis}"));
+                        continue;
+                    }
+                    _ => {}
+                }
+            }
             let mut term = coefficient.numerator.to_string();
             if coefficient.denominator_bits != 0 {
                 term = format!("({term}/2^{})", coefficient.denominator_bits);

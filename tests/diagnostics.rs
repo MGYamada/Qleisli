@@ -105,7 +105,7 @@ fn invalid_computed_contract_points_to_its_expression_including_nested_branches(
         assert_eq!(failure.line, source[..start].lines().count(), "{failure}");
         assert!(failure.message.contains("U E_in = E_out u"), "{failure}");
         assert!(
-            failure.message.contains("input column 0, output row 0"),
+            failure.message.contains("input |0⟩, output |(0, 0)⟩"),
             "{failure}"
         );
         assert!(
@@ -133,7 +133,7 @@ unitary fn candidate(q: Q<Bit>) -> Q<Bit> {{
     assert_eq!(failure.code, ErrorCode::Contract, "{failure}");
     assert_eq!(failure.span.start, source.find("apply_contract").unwrap());
     assert!(
-        failure.message.contains("input column 0, output row 0"),
+        failure.message.contains("input |0⟩, output |0⟩"),
         "{failure}"
     );
     assert!(

@@ -77,6 +77,7 @@ fn main() -> ExitCode {
             let diagnostic = json::diagnostic_json(
                 std::path::Path::new("."),
                 &Diagnostic {
+                    counterexample: None,
                     code: "usage",
                     message: message.into(),
                     primary: None,
