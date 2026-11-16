@@ -443,11 +443,12 @@ theorem CheckedPlacement.workspaceDependencies {bytes : ByteArray} {original : O
     {targetBytes capacity} {target : Target.CanonicalOpenQasmResources.Checked targetBytes capacity}
     {connected reserved synthesis plans suffix}
     (checked : CheckedPlacement original target connected reserved synthesis plans suffix) :
-    ∀ segment ∈ checked.trace.recorded.trace.segments, segment.dependencies = original.checked.root.dependencies := by
+    ∃ segments, checked.trace.recorded.trace.RecordsSegments segments ∧
+      ∀ segment ∈ segments, segment.dependencies = original.checked.root.dependencies := by
   obtain ⟨_,_,checkedTrace⟩ := checked.checkedTrace
   obtain ⟨_,_,fromSource⟩ := checked.fromSource
-  rw [Target.CanonicalOpenQasmPlacement.finishTrace_segments checkedTrace]
-  exact original.workspaceDependencies fromSource
+  exact ⟨_,Target.CanonicalOpenQasmPlacement.finishTrace_segments checkedTrace,
+    original.workspaceDependencies fromSource⟩
 
 #print axioms CheckedPlacement.workspaceDependencies
 

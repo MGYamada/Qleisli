@@ -1733,34 +1733,39 @@ theorem dirty_packet_source {bits data scratch operations emitted work left}
 #print axioms dirty_packet_source
 
 /-- The segments stored by the actual placement trace, in source visit order. -/
-def WorkspaceTrace.segments {program : Semantics.Observation.Program} {bytes capacity}
-    {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved synthesis state uses peak}
-    (trace : WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis state uses peak) :
-    List (Segment program) :=
-  match trace with
-  | .start => []
-  | .next (segment := segment) earlier _ => earlier.segments ++ [segment]
+inductive WorkspaceTrace.RecordsSegments {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved synthesis} :
+    {state : State} → {uses : CleanUses target.circuit} → {peak : Nat} →
+    WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis state uses peak →
+    List (Segment program) → Prop where
+  | start : RecordsSegments .start []
+  | next {previous entry : State} {segment : Segment program} {uses : CleanUses target.circuit} {peak : Nat}
+      {earlier : WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis previous uses peak}
+      {segments : List (Segment program)}
+      (bound : BoundSegment segment rootDependencies target connected reserved previous entry)
+      (recorded : RecordsSegments earlier segments) :
+      RecordsSegments (.next earlier bound) (segments ++ [segment])
 
 private theorem recordWorkspace_segments {program : Semantics.Observation.Program} {bytes capacity}
     {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved synthesis}
     (segments : List (Segment program))
     {initial final : @TraceWithUses program bytes capacity rootDependencies target connected reserved synthesis}
-    {work left : Nat}
+    {work left : Nat} {prior : List (Segment program)}
+    (priorRecorded : initial.trace.RecordsSegments prior)
     (ok : (segments.foldlM recordWorkspace initial).run work = (.ok final,left)) :
-    final.trace.segments = initial.trace.segments ++ segments := by
-  induction segments generalizing initial work with
+    final.trace.RecordsSegments (prior ++ segments) := by
+  induction segments generalizing initial work prior with
   | nil =>
     obtain ⟨rfl,_⟩ := pure_success _ _ _ _ ok
-    simp
+    simpa using priorRecorded
   | cons segment rest ih =>
     obtain ⟨middle,_,first,tail⟩ := bind_success _ _ _ _ _ ok
-    have recorded : middle.trace.segments = initial.trace.segments ++ [segment] := by
+    have recorded : middle.trace.RecordsSegments (prior ++ [segment]) := by
       unfold recordWorkspace at first
       obtain ⟨⟨entry,bound⟩,_,_,finished⟩ := bind_success _ _ _ _ _ first
       obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finished
-      rfl
-    rw [ih tail,recorded,List.append_assoc]
-    rfl
+      exact .next bound priorRecorded
+    simpa only [List.append_assoc,List.singleton_append] using ih recorded tail
 
 /-- The returned trace contains exactly the ordered workspace spans passed to
 its executable fold. Every span retains the real bound source and placement. -/
@@ -1768,7 +1773,7 @@ theorem finishTrace_segments {bytes capacity} {target : CanonicalOpenQasmResourc
     {program connected reserved synthesis rootDependencies segments suffix work left}
     {trace : FinishedTrace program rootDependencies target connected reserved synthesis suffix}
     (checked : (finishTrace target program connected reserved segments suffix synthesis rootDependencies).run work =
-      (.ok trace,left)) : trace.recorded.trace.segments = segments := by
+      (.ok trace,left)) : trace.recorded.trace.RecordsSegments segments := by
   unfold finishTrace at checked
   obtain ⟨_,_,_,limited⟩ := bind_success _ _ _ _ _ checked
   obtain ⟨_,_,_,charged⟩ := bind_success _ _ _ _ _ limited
@@ -1782,7 +1787,7 @@ theorem finishTrace_segments {bytes capacity} {target : CanonicalOpenQasmResourc
       obtain ⟨_,_,_,finish⟩ := bind_success _ _ _ _ _ checkedUses
       split at finish
       · obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finish
-        exact recordWorkspace_segments segments folded
+        simpa using recordWorkspace_segments segments .start folded
       · cases finish
     · cases charged
   · cases charged
