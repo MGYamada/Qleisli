@@ -26,6 +26,7 @@ fn collect_with_budget(
         };
         let sample = sample_closed(program, &mut random, limits).map_err(|e| Diagnostic {
             counterexample: None,
+            ownership_boundary: None,
             code: match &e {
                 SampleError::Limit(_) => "limit",
                 SampleError::RandomSource(_) => "random_source",

@@ -77,6 +77,29 @@ pub struct SourceLocation {
     pub column: usize,
 }
 
+/// Why a diagnostic teaches the boundary between affine and linear ownership.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum QuantumOwnershipBoundary {
+    /// An unresolved Rust disposal spelling. No argument type was inferred.
+    UnresolvedDisposal,
+    ImplicitDisposal,
+    CleanWorkspaceReturn,
+    DirtyWorkspaceReturn,
+    ComputedWorkspaceReturn,
+}
+
+impl QuantumOwnershipBoundary {
+    pub fn reason(self) -> &'static str {
+        match self {
+            Self::UnresolvedDisposal => "unresolved_disposal",
+            Self::ImplicitDisposal => "implicit_quantum_disposal",
+            Self::CleanWorkspaceReturn => "clean_workspace_return",
+            Self::DirtyWorkspaceReturn => "dirty_workspace_return",
+            Self::ComputedWorkspaceReturn => "computed_workspace_return",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Diagnostic {
     /// A snake_case category from version 1 of `qleisli.result`.
@@ -86,6 +109,7 @@ pub struct Diagnostic {
     pub primary: Option<SourceLocation>,
     /// Exact equation detail, when bounded reconstruction found a mismatch.
     pub counterexample: Option<Box<crate::contract::EquationCounterexample>>,
+    pub ownership_boundary: Option<QuantumOwnershipBoundary>,
 }
 
 impl Diagnostic {
@@ -102,6 +126,7 @@ impl Diagnostic {
             message: without_repeated_category(code, error.message),
             primary,
             counterexample: error.counterexample,
+            ownership_boundary: error.ownership_boundary,
         }
     }
 }
@@ -166,6 +191,7 @@ mod tests {
             };
             let source = CompileError {
                 counterexample: None,
+                ownership_boundary: None,
                 code: ErrorCode::InvalidIr,
                 path: "module.qli".into(),
                 span: Span::new(8, 12),

@@ -114,6 +114,7 @@ pub struct CompileError {
     pub message: String,
     /// Exact equation detail, when bounded reconstruction found a mismatch.
     pub counterexample: Option<Box<crate::contract::EquationCounterexample>>,
+    pub ownership_boundary: Option<super::diagnostic::QuantumOwnershipBoundary>,
 }
 
 impl fmt::Display for CompileError {
@@ -310,6 +311,7 @@ impl<'a> Compiler<'a> {
         let (line, column) = coordinates(source.source, span);
         CompileError {
             counterexample: None,
+            ownership_boundary: None,
             code,
             path: source
                 .path
@@ -666,6 +668,7 @@ fn process_project(
         let (line, column) = failure.coordinates.unwrap_or((1, 1));
         CompileError {
             counterexample: None,
+            ownership_boundary: None,
             code: ErrorCode::Project,
             path: failure.error.path,
             span: failure.error.span,
@@ -937,6 +940,7 @@ fn validate_original_edition(project: &Project) -> Result<(), CompileError> {
         let (line, column) = failure.coordinates.unwrap_or((1, 1));
         CompileError {
             counterexample: None,
+            ownership_boundary: None,
             code: ErrorCode::Project,
             path: failure.error.path,
             span: failure.error.span,
@@ -1133,6 +1137,7 @@ fn process_loaded_project_details(
         .unwrap_or_else(|| crate::interchange::native::Kernel::selected(project.edition()))
         .map_err(|error| CompileError {
             counterexample: None,
+            ownership_boundary: None,
             code: ErrorCode::Project,
             path: root.into(),
             span: Span::default(),
@@ -1143,6 +1148,7 @@ fn process_loaded_project_details(
     if kernel.edition() != project.edition() {
         return Err(CompileError {
             counterexample: None,
+            ownership_boundary: None,
             code: ErrorCode::Project,
             path: root.into(),
             span: Span::default(),
@@ -1213,6 +1219,7 @@ fn process_loaded_project_details(
     } else if require_entry {
         return Err(CompileError {
             counterexample: None,
+            ownership_boundary: None,
             code: ErrorCode::InvalidEntry,
             path: root.join("main.qli"),
             span: Span::default(),
@@ -1318,6 +1325,7 @@ fn source_error<'a>(
         );
     CompileError {
         counterexample: None,
+        ownership_boundary: error.ownership_boundary,
         code,
         path,
         span: error.span,

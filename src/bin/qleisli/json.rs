@@ -6,7 +6,7 @@ use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use qleisli::frontend::diagnostic::{Diagnostic, SourceLocation};
+use qleisli::frontend::diagnostic::{Diagnostic, QuantumOwnershipBoundary, SourceLocation};
 use qleisli::sim::{Sample, SimulationError};
 
 use super::source_commands::{Failure, Success};
@@ -101,6 +101,21 @@ fn counterexample_json(
     })
 }
 
+pub(super) fn ownership_boundary_json(boundary: Option<QuantumOwnershipBoundary>) -> String {
+    boundary.map_or_else(String::new, |boundary| {
+        let applies_to = if boundary == QuantumOwnershipBoundary::UnresolvedDisposal {
+            "if_live_quantum_owner"
+        } else {
+            "live_quantum_owner"
+        };
+        format!(
+            ",\"ownership_boundary\":{{\"boundary\":\"affine_to_linear\",\"reason\":{},\"applies_to\":{}}}",
+            quoted(boundary.reason()),
+            quoted(applies_to),
+        )
+    })
+}
+
 fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str) -> String {
     let primary = diagnostic
         .primary
@@ -112,12 +127,13 @@ fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str)
         diagnostic.code
     };
     format!(
-        "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]{}}}",
+        "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]{}{}}}",
         quoted(v1_code(code)),
         quoted(severity),
         quoted(&diagnostic.message),
         primary.as_deref().unwrap_or("null"),
         counterexample_json(diagnostic.counterexample.as_deref()),
+        ownership_boundary_json(diagnostic.ownership_boundary),
     )
 }
 
@@ -152,6 +168,7 @@ pub(super) fn artifact_error_json(error: &qleisli::interchange::Error) -> String
 fn failure(code: &'static str, message: impl Into<String>) -> Diagnostic {
     Diagnostic {
         counterexample: None,
+        ownership_boundary: None,
         code,
         message: message.into(),
         primary: None,

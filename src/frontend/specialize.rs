@@ -53,6 +53,7 @@ impl From<super::check::SourceError> for Error {
             module: error.module,
             span: error.span,
             message: error.message,
+            ownership_boundary: error.ownership_boundary,
         }
     }
 }

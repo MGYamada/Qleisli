@@ -89,6 +89,7 @@ pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failu
         .kernel(project.edition())
         .map_err(|error| Diagnostic {
             counterexample: error.counterexample,
+            ownership_boundary: None,
             code: error.code,
             message: error.message,
             primary: None,

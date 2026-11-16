@@ -15,6 +15,96 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn ownership_boundary_json_preserves_rejection_scope_and_locations() {
+    for (source, rejected, name_error, reason) in [
+        (
+            "pub unitary fn client(q:Q<Bit>)->Q<Bit>{drop(q);q}",
+            "drop",
+            true,
+            Some(("unresolved_disposal", "if_live_quantum_owner")),
+        ),
+        (
+            "pub unitary fn client(q:Q<Bit>)->Q<Bit>{drop(0);q}",
+            "drop",
+            true,
+            Some(("unresolved_disposal", "if_live_quantum_owner")),
+        ),
+        (
+            "pub unitary fn client(q:Q<Bit>)->Q<Bit>{missing(not q);q}",
+            "missing",
+            true,
+            None,
+        ),
+        (
+            "pub unitary fn client(owner:Q<Unit>)->Unit{()}",
+            "owner",
+            false,
+            Some(("implicit_quantum_disposal", "live_quantum_owner")),
+        ),
+        (
+            "use std::state::init0; pub unitary fn client(q:Q<Bit>)->Q<Bit>{clean(q,h){|a,scratch|(h(a),init0())}}",
+            "scratch",
+            false,
+            Some(("clean_workspace_return", "live_quantum_owner")),
+        ),
+        (
+            "use std::state::init0; pub unitary fn client(q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>){dirty(q,d,h){|a,scratch|(h(a),init0())}}",
+            "scratch",
+            false,
+            Some(("dirty_workspace_return", "live_quantum_owner")),
+        ),
+        (
+            "use std::state::init0; classical fn p(b:Bit)->Bit{b} pub unitary fn client(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|scratch|init0()}}",
+            "scratch",
+            false,
+            Some(("computed_workspace_return", "live_quantum_owner")),
+        ),
+    ] {
+        let root = SourceRoot::new(source);
+        let module = format!("--module=main={}", root.0.join("main.qli").display());
+        for selected in [false, true] {
+            let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+            command.args(["check", "--format=json"]);
+            if selected {
+                command.args(["--entry=main::client", &module]);
+            } else {
+                command.arg(&root.0);
+            }
+            let output = command.output().unwrap();
+            assert_eq!(output.status.code(), Some(1), "{source}: {output:?}");
+            assert!(output.stderr.is_empty(), "{output:?}");
+            let json = String::from_utf8(output.stdout).unwrap();
+            let code = match (name_error, selected) {
+                (true, true) => "name",
+                (true, false) => "unknown_name",
+                (false, _) => "ownership",
+            };
+            assert!(json.contains(&format!("\"code\":\"{code}\"")), "{json}");
+            let start = source.find(rejected).unwrap();
+            let end = start + rejected.len();
+            assert!(
+                json.contains(&format!("\"start\":{start},\"end\":{end}")),
+                "{json}"
+            );
+            if let Some((reason, applies_to)) = reason {
+                assert!(
+                    json.contains(&format!(
+                        "\"ownership_boundary\":{{\"boundary\":\"affine_to_linear\",\"reason\":\"{reason}\",\"applies_to\":\"{applies_to}\"}}"
+                    )),
+                    "{json}"
+                );
+            } else {
+                assert!(!json.contains("\"ownership_boundary\""), "{json}");
+            }
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn native_transport_failures_use_the_closed_v1_project_code() {
     let root = SourceRoot::new("observe fn main()->Bit{1}");
     let artifact = root.0.join("valid.qirf");

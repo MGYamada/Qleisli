@@ -149,6 +149,9 @@ obligation. Such a value cannot be implicitly copied, ignored by `_`, abandoned
 as an expression statement, overwritten by shadowing a live binding, or lost
 at function or local scope exit.
 
+The [disposal diagnostics](#conditional-teaching-diagnostics) explain this
+obligation at the original binder or use that triggered the rejection.
+
 Ordinary `let` still means binding. `let q = h(q);` is valid when the right-hand
 side consumes the preceding owner and returns the replacement before the new
 binder is introduced. `let q = init0();` cannot shadow a preceding live `q`.
@@ -251,6 +254,9 @@ are separate obligations. The finite profile checks full carriers with up to
 five data bits and one scratch bit, within the shared exact-work limit.
 Project checks and selected-entry checks report which restoration contract
 failed when the independent checker rejects its equation.
+
+The [disposal diagnostics](#conditional-teaching-diagnostics) identify a
+still-live data or scratch owner and explain the scope's return contract.
 
 Inside a checked workspace body, `unit(())` creates a logical `Q<Unit>` owner
 and `finish` consumes the exact owner. Both actions have coefficient +1 and
@@ -445,6 +451,14 @@ source, realization and resource proofs are complete; see
 
 ## Conditional teaching diagnostics
 
+The [diagnostic design rule](https://github.com/MGYamada/Qleisli/issues/225)
+uses familiar ownership intuition to explain the
+[#226 distinction](https://github.com/MGYamada/Qleisli/issues/226).
+Rust's ordinary owned values are affine and may be left unused. Qleisli
+ordinary values such as `Bit` and `Unit` remain unrestricted. Qleisli values
+containing a live `Q<T>` require linear accounting under their resource
+contracts, including at scope exit.
+
 The source checker adds an explanation only after its existing unresolved-name
 or implicit-owner-loss rejection. It preserves the original diagnostic code,
 source span, checking order and limits. It does not inspect or evaluate call
@@ -464,6 +478,20 @@ failures retain their own categories. Text and JSON diagnostics describe
 rejections; neither carries semantic evidence or grants acceptance. External
 qlippy integration is outside this work; actual Qleisli diagnostics remain
 part of the source interface.
+
+Clean and dirty scopes that leave a live owner behind describe their distinct
+scratch-return contracts. A `with_computed` scope explains which owners its
+body must return for checked cleanup. The resource checks still establish the
+restoration equation against the actual scope body.
+
+The version-1 CLI reports the optional `ownership_boundary` object for these
+diagnostics in both project and selected-entry mode. Its `boundary` is
+`affine_to_linear`. The `reason` identifies `unresolved_disposal`,
+`implicit_quantum_disposal`, `clean_workspace_return`,
+`dirty_workspace_return` or `computed_workspace_return`. `applies_to` is
+`if_live_quantum_owner` for unresolved disposal and `live_quantum_owner` for
+an ownership or workspace rejection where the checker has identified a live
+owner.
 
 ## False-friend audit
 

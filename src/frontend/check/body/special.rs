@@ -769,9 +769,24 @@ impl Checker<'_, '_> {
         let region = std::mem::replace(&mut self.effects, surrounding);
         checked?;
         if let Some(key) = self.live_owner(&inner, body.span)? {
+            let (boundary, contract) = if workspace.dirty.is_some() {
+                (
+                    QuantumOwnershipBoundary::DirtyWorkspaceReturn,
+                    "Return the data and scratch owners in that order and restore the scratch's original state and correlations",
+                )
+            } else {
+                (
+                    QuantumOwnershipBoundary::CleanWorkspaceReturn,
+                    "Return the data and scratch owners in that order and restore the scratch to its required fixed zero state, separate from the rest of the system",
+                )
+            };
             return Err(disposal_error(
                 self.index().table.binder(key.id).span,
-                format!("workspace owner `{}` must be returned", key.name),
+                format!(
+                    "workspace owner `{}` must be returned. {contract}",
+                    key.name
+                ),
+                boundary,
             ));
         }
         self.program
@@ -962,13 +977,18 @@ impl Checker<'_, '_> {
             }
         };
         if let Some(key) = self.live_owner(&inner, body.span)? {
-            return Err(SourceError::new(
-                "ownership",
+            let contract = if data.is_some() {
+                "The body must return the data and computed auxiliary owners in that order for checked cleanup"
+            } else {
+                "The body must return the computed auxiliary owner for checked cleanup"
+            };
+            return Err(disposal_error(
                 self.index().table.binder(key.id).span,
                 format!(
-                    "quantum ownership `{}` was not returned or explicitly consumed",
+                    "quantum ownership `{}` was not returned or explicitly consumed. {contract}",
                     key.name
                 ),
+                QuantumOwnershipBoundary::ComputedWorkspaceReturn,
             ));
         }
         normalize::expect(

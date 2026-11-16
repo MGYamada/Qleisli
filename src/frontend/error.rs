@@ -11,6 +11,7 @@ pub struct Error {
     pub(super) module: Option<String>,
     pub(super) span: Span,
     pub(super) message: String,
+    pub(super) ownership_boundary: Option<super::diagnostic::QuantumOwnershipBoundary>,
 }
 impl Error {
     pub(in crate::frontend) fn new(
@@ -23,6 +24,7 @@ impl Error {
             module: None,
             span,
             message: message.into(),
+            ownership_boundary: None,
         }
     }
     pub(super) fn in_module(mut self, module: &str) -> Self {
@@ -42,6 +44,9 @@ impl Error {
     }
     pub fn message(&self) -> &str {
         &self.message
+    }
+    pub fn ownership_boundary(&self) -> Option<super::diagnostic::QuantumOwnershipBoundary> {
+        self.ownership_boundary
     }
 }
 impl fmt::Display for Error {

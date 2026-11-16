@@ -9,7 +9,7 @@ use qleisli::{
             OperationBinding, ParsedProgram, QpeBindingProposal, RawSourceProposal,
             SelectedRuntimeProgram, SourceType,
         },
-        diagnostic::Diagnostic,
+        diagnostic::{Diagnostic, QuantumOwnershipBoundary},
     },
     interchange::{self, hierarchical, native},
     sim::{SimulationLimits, SplitMix64, run_closed},
@@ -23,7 +23,7 @@ use std::{
 
 #[path = "source_plan/options.rs"]
 mod options;
-use super::json::quoted;
+use super::json::{ownership_boundary_json, quoted};
 use options::{IrProfile, Options};
 
 type Result<T> = std::result::Result<T, Failure>;
@@ -39,6 +39,7 @@ struct Failure {
     text: String,
     site: Option<Box<SourceSite>>,
     pointer: Option<String>,
+    ownership_boundary: Option<QuantumOwnershipBoundary>,
 }
 impl Failure {
     fn new(code: &str, message: impl Into<String>) -> Self {
@@ -49,6 +50,7 @@ impl Failure {
             message,
             site: None,
             pointer: None,
+            ownership_boundary: None,
         }
     }
     fn at_root(source: &ElaboratedProgram, message: &str) -> Self {
@@ -108,11 +110,12 @@ impl Failure {
             )
         });
         format!(
-            "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":{},\"related\":[{}]}}",
+            "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":{},\"related\":[{}]{}}}",
             quoted(&self.code),
             quoted(&self.message),
             primary.as_deref().unwrap_or("null"),
-            related.as_deref().unwrap_or("")
+            related.as_deref().unwrap_or(""),
+            ownership_boundary_json(self.ownership_boundary),
         )
     }
 }
@@ -130,6 +133,7 @@ impl From<compile::Error> for Failure {
                 })
             }),
             pointer: None,
+            ownership_boundary: error.ownership_boundary(),
         }
     }
 }
@@ -142,12 +146,14 @@ impl From<interchange::Error> for Failure {
             text,
             site: None,
             pointer: (!error.json_pointer.is_empty()).then_some(error.json_pointer),
+            ownership_boundary: None,
         }
     }
 }
 impl From<Diagnostic> for Failure {
     fn from(error: Diagnostic) -> Self {
         let mut failure = Self::new(error.code, error.message);
+        failure.ownership_boundary = error.ownership_boundary;
         failure.site = error.primary.map(|location| {
             Box::new(SourceSite {
                 module: None,

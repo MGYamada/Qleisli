@@ -6,29 +6,45 @@ use super::super::resolve::Target;
 use super::super::resolve::locals::{BindingKind, ResolvedUse};
 use super::super::types::Stage;
 use super::*;
+use crate::frontend::diagnostic::QuantumOwnershipBoundary;
 use crate::ir::Effect;
 use std::borrow::Cow;
 
 // These explanations are attached only after an existing rejection. They do
 // not select a physical operation, inspect arguments or change acceptance.
-fn disposal_error(span: Span, message: impl std::fmt::Display) -> SourceError {
+const RUST_AFFINE_OWNERSHIP: &str =
+    "Rust's ordinary ownership is affine. An owned value may be left unused.";
+
+fn disposal_error(
+    span: Span,
+    message: impl std::fmt::Display,
+    boundary: QuantumOwnershipBoundary,
+) -> SourceError {
     SourceError::new(
         "ownership",
         span,
         format!(
-            "{message}; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner."
+            "{message}. In Qleisli, implicit quantum destruction is forbidden. {RUST_AFFINE_OWNERSHIP} Qleisli ownership is linear for values containing live `Q<T>`. Scope exit leaves that obligation open. Account for the value according to its resource contract. Measurement, discard, reset and checked clean discharge are distinct. Reset returns a fresh quantum owner."
         ),
     )
+    .with_ownership_boundary(boundary)
 }
 
-fn unresolved_function_message(name: &str) -> String {
-    let mut message = format!("unresolved function {name}");
-    let explanation = match name {
+fn unresolved_function_error(name: &Ident) -> SourceError {
+    let mut message = format!("unresolved function {}", name.text);
+    let explanation = match name.text.as_str() {
         "phase_eighth" => {
             "; use language primitive global_phase_eighth without an import for the exact global scalar; import std::gate::t for the derived relative phase gate."
         }
         "drop" | "forget" => {
-            "; there is no built-in Rust drop or forget operation. Ordinary Bit/Unit may be unused or matched by _. If a value contains live Q<T>, it must be returned or explicitly consumed; scope exit is not destruction. Measurement, discard, reset and checked clean discharge have distinct meanings; reset returns a fresh owner."
+            return SourceError::new(
+                "name",
+                name.span,
+                format!(
+                    "{message}. In Qleisli, there is no built-in Rust drop or forget operation. {RUST_AFFINE_OWNERSHIP} Ordinary Bit/Unit may be unused or matched by _. If a value contains live Q<T>, Qleisli's linear ownership requires returning it or explicitly consuming it as permitted by its resource contract. Scope exit leaves that obligation open. Measurement, discard, reset and checked clean discharge have distinct meanings. Reset returns a fresh owner."
+                ),
+            )
+            .with_ownership_boundary(QuantumOwnershipBoundary::UnresolvedDisposal);
         }
         "clone" | "copy" => {
             "; there is no built-in Rust Clone/Copy operation. Ordinary data such as Bit/Unit is reusable; if a value contains live Q<T>, reusing a description or a basis label does not duplicate that owner."
@@ -39,10 +55,10 @@ fn unresolved_function_message(name: &str) -> String {
         "hash" => {
             "; there is no built-in ordinary hash operation. Ordinary values may use explicitly defined classical functions. If a value contains live Q<T>, it has no ordinary Eq/Ord/Hash, including nested and zero-width owners. Owner/provenance identity and wire identity are not quantum-state equality. Coherent basis comparison needs an explicit reversible operation; quantum-state testing or tomography needs its own protocol with declared effects. A resolved function named hash retains its ordinary type, ownership and effect checks."
         }
-        _ => return message,
+        _ => "",
     };
     message.push_str(explanation);
-    message
+    SourceError::new("name", name.span, message)
 }
 
 mod aggregate;
@@ -77,7 +93,11 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_> {
         bind_name(name, value, self.index, self.scope, self.budget, span)
     }
     fn wildcard_error(&self, span: Span) -> SourceError {
-        disposal_error(span, "wildcard would discard quantum ownership")
+        disposal_error(
+            span,
+            "wildcard would discard quantum ownership",
+            QuantumOwnershipBoundary::ImplicitDisposal,
+        )
     }
     fn duplicate_error(&self, span: Span) -> SourceError {
         SourceError::new("binding", span, "duplicate name in binding pattern")
@@ -188,6 +208,7 @@ fn bind_name(
             return Err(disposal_error(
                 span,
                 format!("binding `{}` would drop a live quantum owner", name.text),
+                QuantumOwnershipBoundary::ImplicitDisposal,
             ));
         }
     }
@@ -347,6 +368,7 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
                         "quantum ownership `{}` was not returned or explicitly consumed",
                         key.name
                     ),
+                    QuantumOwnershipBoundary::ImplicitDisposal,
                 ));
             }
         }
@@ -467,11 +489,7 @@ impl Checker<'_, '_> {
                 name.span,
                 "a local value is not callable",
             )),
-            ResolvedUse::Unresolved => Err(SourceError::new(
-                "name",
-                name.span,
-                unresolved_function_message(&name.text),
-            )),
+            ResolvedUse::Unresolved => Err(unresolved_function_error(name)),
         }
     }
     fn edge(&mut self, id: DefId, span: Span) -> Result<()> {
@@ -849,6 +867,7 @@ impl Checker<'_, '_> {
                         return Err(disposal_error(
                             expr.span,
                             "expression statement would discard quantum ownership",
+                            QuantumOwnershipBoundary::ImplicitDisposal,
                         ));
                     }
                 }
@@ -866,6 +885,7 @@ impl Checker<'_, '_> {
                         "local quantum ownership `{}` escapes neither through the result nor an explicit discard",
                         key.name
                     ),
+                    QuantumOwnershipBoundary::ImplicitDisposal,
                 ));
             }
         }

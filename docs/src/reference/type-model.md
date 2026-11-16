@@ -153,6 +153,9 @@ An ordinary binding operation on `Q<A>` does not require a `qlet` spelling.
 Effects cannot be inferred from ownership alone, and an annotation cannot
 downgrade the effect of its body.
 
+The [ownership diagnostics](rust-boundary.md#conditional-teaching-diagnostics)
+explain the linear obligation at the rejected source location.
+
 The conceptual typing judgment is `Γ ; Δ ⊢ e : T ! ε`. Here `Γ` contains
 ordinary values and the separately classified static environment; `Δ` contains
 live linear quantum ownership, including quantum fields of ordinary products.

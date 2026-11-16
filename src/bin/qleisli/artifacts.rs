@@ -25,6 +25,7 @@ impl From<interchange::Error> for Failure {
 fn io_error(error: impl std::fmt::Display) -> Failure {
     Failure::Source(Diagnostic {
         counterexample: None,
+        ownership_boundary: None,
         code: "project",
         message: error.to_string(),
         primary: None,

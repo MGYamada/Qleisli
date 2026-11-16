@@ -4,6 +4,13 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Explain Rust's affine ownership and Qleisli's linear quantum ownership at
+  implicit disposal errors, with specific return guidance for clean, dirty
+  and computed workspace. Unresolved `drop` and `forget` calls receive
+  conditional guidance at the original callee (#226). JSON includes an
+  optional `ownership_boundary` object. Rust callers constructing
+  `CompileError` or `Diagnostic` use `ownership_boundary: None` for unrelated
+  errors and `..` in patterns that only need the previous fields.
 - Reject Unicode 17.0.0 default-ignorable and format characters throughout
   source, including comments and documentation input. Report the code point
   and its original UTF-8 byte span (#245).
