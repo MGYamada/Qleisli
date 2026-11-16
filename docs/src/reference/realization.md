@@ -885,6 +885,15 @@ over the workspace occurrences visited by the replay, including caller
 spectators and temporary clean wires.
 The native reply theorem binds the reported counts to those exact target bytes
 and proves that the reserved width is within the requested target capacity.
+`Qleisli.TerminalPlacement.native_terminal_correspondence` relates that same
+successful native decision to the selected original Raw root. From reset to
+the last decoded gate, the entire physical complex column agrees with the
+original Raw prefix under its ordered placement, including phase and restored
+scratch. The final measurement distribution agrees for every public result
+word after summing the original hidden outcomes. The theorem also binds the
+reply's resource counts and workspace peak bound to that same checked packet.
+For `--resources`, the terminal emitter supplies the emitted register width as
+the packet's capacity.
 A structural basis lift updates the physical placement only when its complete
 table is an axis permutation. It contributes zero gates. A routing SWAP
 must occupy a literal gate position.

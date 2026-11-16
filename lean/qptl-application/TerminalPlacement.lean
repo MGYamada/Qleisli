@@ -2868,7 +2868,8 @@ private theorem run_final_reorder (dependencies : List Dependency) (fuel : Nat)
   | nil => rfl
   | cons first later ih => simp [ih]
 
-private noncomputable def rawOutcomeWeight (program : Observation.Program)
+/-- Select an original history by its ordered public result. -/
+noncomputable def rawOutcomeWeight (program : Observation.Program)
     (outcome : List Bool) (writes : List (Nat × Bool)) : ℂ :=
   if program.classicalOutputs.mapM (RawInstrument.value writes) = some outcome then 1 else 0
 
@@ -2998,22 +2999,35 @@ theorem FinishedTrace.exact_verified_terminal_output {bytes capacity}
 
 
 open QleisliKernel.Protocol.ExecutionView.CheckedQmatchV5
+open QleisliKernel.Protocol.NativeContext (Decision)
 
-/-- Bind the complete terminal comparison to the bytes actually read by the
-placement checker. The source root and target begin at the two slices of
-the same accepted QTP1 packet. The accepted replay establishes the literal source/target actions in order. -/
-theorem PlacementPacket.Checked.exact_verified_terminal_output {bytes : ByteArray}
-    (checked : PlacementPacket.Checked bytes) {work left : Nat}
-    (ran : (PlacementPacket.check bytes).run work = (.ok checked,left))
-    (classical outcome : List Bool) :
-    let original := checked.source.2
-    let root := original.checked.root
-    let circuit := checked.target.circuit
-    PlacementPacket.split bytes = .ok checked.parts ∧
+/-- Exact realization of the original selected root in one accepted terminal
+packet. The complex column before measurement retains phase and physical
+scratch, and the final marginal keeps all original hidden outcomes. -/
+structure TerminalCorrespondence {bytes : ByteArray} (checked : PlacementPacket.Checked bytes)
+    (classical outcome : List Bool) : Prop where
+  framed : PlacementPacket.split bytes = .ok checked.parts
+  source : ∃ afterPlan afterSource,
     QleisliKernel.Protocol.ExecutionView.Packet.read checked.parts.source = .ok checked.source.1 ∧
-    original.artifact.programs[original.artifact.root]? = some root.program ∧
-    QleisliKernel.Target.CanonicalOpenQasmResources.decode checked.parts.target = some circuit ∧
-    QleisliKernel.Target.CanonicalOpenQasmResources.ResetRead checked.parts.target circuit ∧
+    checked.source.1.scope = .execution ∧
+    Nonempty (QleisliKernel.Protocol.ExecutionView.CheckedQmatchV5.Binding
+      checked.source.1.original checked.source.1.graph checked.source.2 afterPlan afterSource)
+  root : checked.source.2.artifact.programs[checked.source.2.artifact.root]? =
+    some checked.source.2.checked.root.program
+  decoded : decode checked.parts.target = some checked.target.circuit
+  reset : QleisliKernel.Target.CanonicalOpenQasmResources.ResetRead checked.parts.target checked.target.circuit
+  column :
+    let root := checked.source.2.checked.root
+    let state := checked.placement.trace.final
+    let circuit := checked.target.circuit
+    ∃ events : List Event,
+      Observation.readOps 65 (RawTrace.initial root.program.inputs) (root.program.operations.take state.rawIndex) =
+        some (state.raw,events.map Observation.Event.pure) ∧
+      resetPrefix circuit circuit.gates.length = physicalColumn state.locations
+        (RawAction.events root.dependencies events (fun row => (ObservingAction.initial []).operator row 0))
+  outcomes :
+    let root := checked.source.2.checked.root
+    let circuit := checked.target.circuit
     ∃ histories, ObservingAction.program root.dependencies root.program classical = some histories ∧
       ((histories.map fun history =>
         history.operator 0 0 * star (history.operator 0 0) *
@@ -3021,13 +3035,17 @@ theorem PlacementPacket.Checked.exact_verified_terminal_output {bytes : ByteArra
       ∑ physical ∈ Finset.range (2^circuit.qubits),
         if circuit.measurements.map (fun axis => bit physical axis == 1) = outcome then
           resetPrefix circuit circuit.gates.length physical * star (resetPrefix circuit circuit.gates.length physical)
-        else 0 := by
-  obtain ⟨_,_,sourceBytes,_,_⟩ := checked.source_bound work left ran
+        else 0
+
+/-- The original source check and each accepted replay step give the exact
+column and final distribution of these same decoded target bytes. -/
+theorem PlacementPacket.Checked.exact_verified_terminal_output {bytes : ByteArray}
+    (checked : PlacementPacket.Checked bytes) {work left : Nat}
+    (ran : (PlacementPacket.check bytes).run work = (.ok checked,left))
+    (classical outcome : List Bool) : TerminalCorrespondence checked classical outcome := by
   let original := checked.source.2
   obtain ⟨_,_,fresh⟩ := original.checked.fresh
   have actual := QleisliKernel.Qirf.Validity.checkRootFromRoots_postcondition _ _ _ _ _ _ _ fresh
-  refine ⟨checked.framed,sourceBytes,actual.original,checked.target.original,
-    QleisliKernel.Target.CanonicalOpenQasmResources.decode_reset checked.target.original,?_⟩
   obtain ⟨_,_,verified⟩ := actual.verification
   have closed := List.isEmpty_iff.mp checked.placement.trace.closed.1
   have noClassical := List.isEmpty_iff.mp checked.placement.trace.closed.2
@@ -3035,9 +3053,37 @@ theorem PlacementPacket.Checked.exact_verified_terminal_output {bytes : ByteArra
     PrefixAlignment.extend_replay checked.target.original occurrence alignedPrefix width declared
       (structural_replay_sound checked.target.original closed noClassical verified)
       (protected_replay_sound checked.target.original closed noClassical verified))
-  exact Qleisli.TerminalPlacement.FinishedTrace.exact_verified_terminal_output checked.placement.trace aligned
-    actual.verification classical outcome
+  refine ⟨checked.framed,checked.source_bound work left ran,actual.original,checked.target.original,
+    QleisliKernel.Target.CanonicalOpenQasmResources.decode_reset checked.target.original,?_,?_⟩
+  · refine ⟨events,aligned.read_prefix closed,?_⟩
+    rw [← checked.placement.trace.readout.allGates]
+    exact aligned.reset_column
+  · exact Qleisli.TerminalPlacement.FinishedTrace.exact_verified_terminal_output checked.placement.trace aligned
+      actual.verification classical outcome
 
 #print axioms PlacementPacket.Checked.exact_verified_terminal_output
+
+/-- The actual native placement decision returns the decoded counts for the
+same checked specialization and target whose behavior is verified above. -/
+theorem native_terminal_correspondence (product : String) (bytes : ByteArray)
+    (decision : Decision .openQasmPlacement) (work left : Nat)
+    (ran : (QleisliKernel.Protocol.NativeContext.run .openQasmPlacement product bytes).run work =
+      (.ok decision,left)) (classical outcome : List Bool) :
+    ∃ checked : PlacementPacket.Checked bytes,
+      (PlacementPacket.check bytes).run work = (.ok checked,left) ∧
+      TerminalCorrespondence checked classical outcome ∧
+      let counts := checked.target.circuit.counts
+      (decode checked.parts.target).map QleisliKernel.Target.CanonicalOpenQasmResources.Circuit.counts = some counts ∧
+      checked.placement.trace.recorded.peakWires ≤ counts.reserved ∧
+      counts.reserved ≤ checked.proposal.capacity ∧
+      (QleisliKernel.Protocol.NativeContext.reply .openQasmPlacement work (.ok decision) left).lines.drop 6 =
+        [work-left,counts.reserved,counts.reset,counts.gates,counts.swaps,
+          counts.tGates,counts.measurements].map toString := by
+  obtain ⟨checked,accepted,_,rfl⟩ :=
+    QleisliKernel.Protocol.NativeContext.run_openqasm_placement_binding product bytes decision work left ran
+  exact ⟨checked,accepted,PlacementPacket.Checked.exact_verified_terminal_output checked accepted classical outcome,
+    checked.target_counts,checked.covers_workspace_peak,checked.target.capacityBound,rfl⟩
+
+#print axioms native_terminal_correspondence
 
 end Qleisli.TerminalPlacement

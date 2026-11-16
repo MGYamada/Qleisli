@@ -5,7 +5,9 @@ The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture record
 development milestones from the scope of their evidence.
 
 - Prove that accepted terminal OpenQASM packets preserve every original Raw
-  output probability from register reset through the decoded measurement word (#120).
+  output probability from register reset through the decoded measurement word.
+  The same native decision binds the pre-readout complex column, the selected
+  original specialization and its reported resources (#120, #127).
 - Bind terminal OpenQASM output order to the original Raw measurements and
   recover original workspace order and provider dependencies from replay (#120).
 - Prove exact physical-register correspondence for terminal OpenQASM preparation,
