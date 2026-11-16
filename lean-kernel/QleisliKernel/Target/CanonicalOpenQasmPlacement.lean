@@ -722,24 +722,29 @@ def workspace {sources caller dependencies program block sourceStart sourceCount
     return ⟨bound.1,bound.2.1,bound.2.2,placed⟩
   else throw .request
 
+private def readoutStep (frame : Interface) (locations : List Nat)
+    (entry : Interface × List (Nat × Nat)) (operation : Semantics.Observation.Op) :
+    Option (Interface × List (Nat × Nat)) := do
+  let (state,measured) := entry
+  match operation with
+  | .measure input output =>
+    let (port,next) ← Semantics.RawTrace.take state input
+    let [wire] := port.wires | none
+    let [location] ← CanonicalOpenQasmWorkspace.placedWires frame.frame locations [wire] | none
+    if measured.any (fun pair => pair.1 == output || pair.2 == location) then none else
+      some (next,(output,location) :: measured)
+  | .discard input =>
+    let (_,next) ← Semantics.RawTrace.take state input
+    some (next,measured)
+  | .pure (original@(.packUnit _)) | .pure (original@(.unpackUnit _)) |
+    .pure (original@(.split _ _ _ _)) | .pure (original@(.join _ _ _)) => do
+    let (next,[]) ← Semantics.RawTrace.step state original | none
+    some (next,measured)
+  | _ => none
+
 private def followObservation (frame : Interface) (locations : List Nat)
     (operations : List Semantics.Observation.Op) : Option (Interface × List (Nat × Nat)) :=
-  operations.foldlM (fun (state,measured) operation => do
-    match operation with
-    | .measure input output =>
-      let (port,next) ← Semantics.RawTrace.take state input
-      let [wire] := port.wires | none
-      let [location] ← CanonicalOpenQasmWorkspace.placedWires frame.frame locations [wire] | none
-      if measured.any (fun pair => pair.1 == output || pair.2 == location) then none else
-        some (next,(output,location) :: measured)
-    | .discard input =>
-      let (_,next) ← Semantics.RawTrace.take state input
-      some (next,measured)
-    | .pure (original@(.packUnit _)) | .pure (original@(.unpackUnit _)) |
-      .pure (original@(.split _ _ _ _)) | .pure (original@(.join _ _ _)) => do
-      let (next,[]) ← Semantics.RawTrace.step state original | none
-      some (next,measured)
-    | _ => none) (frame,[])
+  operations.foldlM (readoutStep frame locations) (frame,[])
 
 /-- Read the original terminal observations in SSA result order. Hidden
 measurements and explicit discards consume owners, and no quantum owner
@@ -1085,6 +1090,15 @@ theorem FinishedTrace.suffix_structural_paid {program : Semantics.Observation.Pr
     (replayFrom rootDependencies program.operations.toArray target.circuit connected alignment trace.recorded.exit reserved).run work) splitAt
   exact replay_structural_cost before tail (runAt.symm.trans ran)
 
+private def recordWorkspace {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved synthesis}
+    (state : @TraceWithUses program bytes capacity rootDependencies target connected reserved synthesis)
+    (segment : Segment program) :
+    WorkM (@TraceWithUses program bytes capacity rootDependencies target connected reserved synthesis) := do
+  let ⟨entry,bound⟩ ← checkSegment segment rootDependencies target connected reserved state.exit
+  pure ⟨segment.exit entry bound.after,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),
+    max state.peakWires segment.map.resources.counts.peakWires,.next state.trace bound⟩
+
 /-- Follow every original interval in order while keeping designations for
 clean scratch fixed. Ordinary preparation and routing cannot use a designated
 scratch wire. Each such wire is restored by its own exact, disjoint uses. -/
@@ -1099,10 +1113,7 @@ def finishTrace {bytes capacity} (target : CanonicalOpenQasmResources.Checked by
   if closed : program.inputs.isEmpty = true ∧ program.classicalInputs.isEmpty = true then
     if valid : target.circuit.declares (reserved ++ synthesis) ∧
         (∀ wire ∈ synthesis, wire ∉ target.circuit.measurements) then
-      let recorded ← segments.foldlM (fun (state : @TraceWithUses program bytes capacity rootDependencies target connected reserved synthesis) segment => do
-        let ⟨entry,bound⟩ ← checkSegment segment rootDependencies target connected reserved state.exit
-        pure ⟨segment.exit entry bound.after,fun scratch => bound.addCleanUse scratch (state.cleanUses scratch),
-          max state.peakWires segment.map.resources.counts.peakWires,.next state.trace bound⟩)
+      let recorded ← segments.foldlM recordWorkspace
         ⟨{synthesis := synthesis},fun _ => [],0,.start⟩
       segmentWork target program suffix
       let final ← SourceTypes.NaturalAffine.witness
@@ -1617,5 +1628,1422 @@ theorem readSpan_trace {original : Array Semantics.Observation.Op} {state : Stat
   exact ⟨events,chunks,trace,congrArg List.flatten ordered⟩
 
 #print axioms readSpan_trace
+
+private theorem followWorkspace_fold_state (operations : List Semantics.Raw.Op) (initial : Semantics.RawTrace.Prepared) :
+    (operations.foldlM Semantics.RawTrace.advance initial).map Semantics.RawTrace.Prepared.state =
+      followWorkspace initial.state operations := by
+  induction operations generalizing initial with
+  | nil => rfl
+  | cons first rest ih =>
+    have unfoldFollow : followWorkspace initial.state (first :: rest) =
+        (Semantics.RawTrace.step initial.state first).map Prod.fst >>= fun middle => followWorkspace middle rest := rfl
+    rw [unfoldFollow]
+    cases read : Semantics.RawTrace.step initial.state first with
+    | none => simp [List.foldlM_cons,Semantics.RawTrace.advance,read,bind,Option.bind]
+    | some packet =>
+      obtain ⟨middle,events⟩ := packet
+      simpa [List.foldlM_cons,Semantics.RawTrace.advance,read,bind,Option.bind] using
+        ih {initial with state := middle,events := initial.events ++ events}
+
+/-- A successful bound workspace retains the exact Raw interval in the root,
+its independently re-read event list, and the actual returned owner frame. -/
+theorem BoundSegment.original_workspace_trace {program : Semantics.Observation.Program} {segment : Segment program}
+    {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {rootDependencies connected reserved previous entry}
+    (bound : BoundSegment segment rootDependencies target connected reserved previous entry) :
+    ((program.operations.drop entry.rawIndex).take segment.length =
+        segment.literal.operations.map Semantics.Observation.Op.pure) ∧
+    ∃ traced,
+      Semantics.RawTrace.interval entry.raw segment.literal.operations = some traced ∧
+      traced.state = bound.after ∧ traced.state.frame = entry.raw.frame := by
+  refine ⟨?_,?_⟩
+  · rw [bound.offset]
+    exact segment.literalRoot.trans segment.literal.originalOperations
+  · have linked := followWorkspace_fold_state segment.literal.operations
+      ⟨entry.raw,[],entry.raw.frame.length⟩
+    change (Semantics.RawTrace.interval entry.raw segment.literal.operations).map Semantics.RawTrace.Prepared.state =
+      followWorkspace entry.raw segment.literal.operations at linked
+    rw [bound.continued] at linked
+    cases observed : Semantics.RawTrace.interval entry.raw segment.literal.operations with
+    | none => simp [observed] at linked
+    | some traced =>
+      have frame : traced.state = bound.after := by simpa [observed] using linked
+      exact ⟨traced,rfl,frame,frame ▸ bound.sameWires⟩
+
+/-- The start and end coordinates used to compose the workspace on the
+original replay. Carry the actual source continuation and literal gate count. -/
+theorem BoundSegment.exit_coordinates {program : Semantics.Observation.Program} {segment : Segment program}
+    {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {rootDependencies connected reserved previous entry}
+    (bound : BoundSegment segment rootDependencies target connected reserved previous entry) :
+    (segment.exit entry bound.after).raw = bound.after ∧
+    (segment.exit entry bound.after).locations = entry.locations ∧
+    (segment.exit entry bound.after).rawIndex = entry.rawIndex+segment.length ∧
+    (segment.exit entry bound.after).gateIndex = entry.gateIndex+
+      ((target.circuit.gates.drop entry.gateIndex).take segment.count).length := by
+  have inside := (CanonicalOpenQasmWorkspace.interval_length bound.placed.body.actualInterval).2
+  change entry.gateIndex+segment.count ≤ target.circuit.gates.length at inside
+  have length : ((target.circuit.gates.drop entry.gateIndex).take segment.count).length = segment.count := by
+    simp only [List.length_take,List.length_drop]
+    omega
+  simp [Segment.exit,bound.offset,length]
+
+#print axioms BoundSegment.original_workspace_trace
+#print axioms BoundSegment.exit_coordinates
+
+/-- The accepted clean packet reads the actual single `certifiedCompute`.
+The zero table and the original action fields are retained verbatim. -/
+theorem clean_packet_source {bits data scratch operations emitted work left}
+    (checked : (RuntimeWorkspace.packet true bits data scratch operations).run work = (.ok emitted,left)) :
+    ∃ wire logical, scratch = none ∧ emitted.logicalSteps = some logical ∧
+      operations = [.pure (.certifiedCompute data emitted.dataOut [wire] (List.replicate (2^bits) 0) emitted.steps logical)] := by
+  unfold RuntimeWorkspace.packet at checked
+  split at checked
+  · rename_i input output wire table steps logical _
+    obtain ⟨_,_,guarded,finish⟩ := bind_success _ _ _ _ _ checked
+    have authorized := (guard_success _ _ _ _ guarded).1
+    simp only [Bool.and_eq_true,beq_iff_eq] at authorized
+    obtain ⟨rfl,rfl⟩ := authorized
+    obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finish
+    exact ⟨wire,logical,rfl,rfl,rfl⟩
+  · contradiction
+  · cases checked
+
+
+/-- The accepted dirty packet uses the original data and scratch, joins
+before the ordered gate word, and splits the same packed output. -/
+theorem dirty_packet_source {bits data scratch operations emitted work left}
+    (checked : (RuntimeWorkspace.packet false bits data scratch operations).run work = (.ok emitted,left)) :
+    ∃ auxiliary joined packed returned, scratch = some auxiliary ∧ emitted.scratchOut = some returned ∧
+      operations = [.pure (.join data auxiliary joined),.pure (.applyUnitary joined packed emitted.steps),
+        .pure (.split packed emitted.dataOut returned bits)] := by
+  unfold RuntimeWorkspace.packet at checked
+  split at checked
+  · contradiction
+  · rename_i requested input auxiliary joined applied packed steps split output returned leftBits _
+    obtain ⟨_,_,guarded,finish⟩ := bind_success _ _ _ _ _ checked
+    have authorized := (guard_success _ _ _ _ guarded).1
+    simp only [Bool.and_eq_true,beq_iff_eq] at authorized
+    obtain ⟨⟨⟨⟨rfl,rfl⟩,rfl⟩,rfl⟩,rfl⟩ := authorized
+    obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finish
+    exact ⟨_,_,_,_,rfl,rfl,rfl⟩
+  · cases checked
+
+#print axioms clean_packet_source
+#print axioms dirty_packet_source
+
+/-- The segments stored by the actual placement trace, in source visit order. -/
+inductive WorkspaceTrace.RecordsSegments {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved synthesis} :
+    {state : State} → {uses : CleanUses target.circuit} → {peak : Nat} →
+    WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis state uses peak →
+    List (Segment program) → Prop where
+  | start : RecordsSegments .start []
+  | next {previous entry : State} {segment : Segment program} {uses : CleanUses target.circuit} {peak : Nat}
+      {earlier : WorkspaceTrace (program := program) rootDependencies target connected reserved synthesis previous uses peak}
+      {segments : List (Segment program)}
+      (bound : BoundSegment segment rootDependencies target connected reserved previous entry)
+      (recorded : RecordsSegments earlier segments) :
+      RecordsSegments (.next earlier bound) (segments ++ [segment])
+
+private theorem recordWorkspace_segments {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {rootDependencies connected reserved synthesis}
+    (segments : List (Segment program))
+    {initial final : @TraceWithUses program bytes capacity rootDependencies target connected reserved synthesis}
+    {work left : Nat} {prior : List (Segment program)}
+    (priorRecorded : initial.trace.RecordsSegments prior)
+    (ok : (segments.foldlM recordWorkspace initial).run work = (.ok final,left)) :
+    final.trace.RecordsSegments (prior ++ segments) := by
+  induction segments generalizing initial work prior with
+  | nil =>
+    obtain ⟨rfl,_⟩ := pure_success _ _ _ _ ok
+    simpa using priorRecorded
+  | cons segment rest ih =>
+    obtain ⟨middle,_,first,tail⟩ := bind_success _ _ _ _ _ ok
+    have recorded : middle.trace.RecordsSegments (prior ++ [segment]) := by
+      unfold recordWorkspace at first
+      obtain ⟨⟨entry,bound⟩,_,_,finished⟩ := bind_success _ _ _ _ _ first
+      obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finished
+      exact .next bound priorRecorded
+    simpa only [List.append_assoc,List.singleton_append] using ih recorded tail
+
+/-- The returned trace contains exactly the ordered workspace spans passed to
+its executable fold. Every span retains the real bound source and placement. -/
+theorem finishTrace_segments {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {program connected reserved synthesis rootDependencies segments suffix work left}
+    {trace : FinishedTrace program rootDependencies target connected reserved synthesis suffix}
+    (checked : (finishTrace target program connected reserved segments suffix synthesis rootDependencies).run work =
+      (.ok trace,left)) : trace.recorded.trace.RecordsSegments segments := by
+  unfold finishTrace at checked
+  obtain ⟨_,_,_,limited⟩ := bind_success _ _ _ _ _ checked
+  obtain ⟨_,_,_,charged⟩ := bind_success _ _ _ _ _ limited
+  split at charged
+  · split at charged
+    · obtain ⟨recorded,_,folded,continued⟩ := bind_success _ _ _ _ _ charged
+      obtain ⟨_,_,_,prefixWork⟩ := bind_success _ _ _ _ _ continued
+      obtain ⟨_,_,_,replayed⟩ := bind_success _ _ _ _ _ prefixWork
+      obtain ⟨_,_,_,readout⟩ := bind_success _ _ _ _ _ replayed
+      obtain ⟨_,_,_,checkedUses⟩ := bind_success _ _ _ _ _ readout
+      obtain ⟨_,_,_,finish⟩ := bind_success _ _ _ _ _ checkedUses
+      split at finish
+      · obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finish
+        simpa using recordWorkspace_segments segments .start folded
+      · cases finish
+    · cases charged
+  · cases charged
+
+#print axioms finishTrace_segments
+
+/-- The terminal checker retains the original frame coordinates while it
+consumes owners. Measured identifiers are bound to actual physical wires. -/
+inductive ReadoutStep (frame locations : List Nat) :
+    (Interface × List (Nat × Nat)) → Semantics.Observation.Op → (Interface × List (Nat × Nat)) → Prop where
+  | measure {state next : Interface} {measured : List (Nat × Nat)} {input output wire location : Nat}
+      {port : Semantics.Raw.Port}
+      (consume : Semantics.RawTrace.take state input = some (port,next))
+      (single : port.wires = [wire])
+      (placed : CanonicalOpenQasmWorkspace.placedWires frame locations [wire] = some [location])
+      (fresh : measured.any (fun pair => pair.1 == output || pair.2 == location) = false) :
+      ReadoutStep frame locations (state,measured) (.measure input output) (next,(output,location) :: measured)
+  | discard {state next : Interface} {measured : List (Nat × Nat)} {input : Nat} {port : Semantics.Raw.Port}
+      (consume : Semantics.RawTrace.take state input = some (port,next)) :
+      ReadoutStep frame locations (state,measured) (.discard input) (next,measured)
+  | structural {state next : Interface} {measured : List (Nat × Nat)} {operation : Semantics.Raw.Op}
+      (transition : Semantics.RawTrace.step state operation = some (next,[])) :
+      ReadoutStep frame locations (state,measured) (.pure operation) (next,measured)
+
+inductive ReadoutTrace (frame locations : List Nat) :
+    (Interface × List (Nat × Nat)) → List Semantics.Observation.Op → (Interface × List (Nat × Nat)) → Prop where
+  | empty (state : Interface × List (Nat × Nat)) : ReadoutTrace frame locations state [] state
+  | cons {before middle final : Interface × List (Nat × Nat)} {operation : Semantics.Observation.Op}
+      {rest : List Semantics.Observation.Op}
+      (step : ReadoutStep frame locations before operation middle)
+      (tail : ReadoutTrace frame locations middle rest final) :
+      ReadoutTrace frame locations before (operation :: rest) final
+
+private theorem readout_structural {frame locations state measured operation result}
+    (ok : (do
+      let (next,[]) ← Semantics.RawTrace.step state operation | none
+      some (next,measured)) = some result) :
+    ReadoutStep frame locations (state,measured) (.pure operation) result := by
+  cases read : Semantics.RawTrace.step state operation with
+  | none => simp [read,bind,Option.bind] at ok
+  | some transition =>
+    obtain ⟨next,events⟩ := transition
+    cases events with
+    | nil =>
+      have same : (next,measured) = result := by simpa [read,bind,Option.bind] using ok
+      subst result
+      exact .structural read
+    | cons _ _ => simp [read,bind,Option.bind] at ok
+
+private theorem readoutStep_success {frame : Interface} {locations : List Nat}
+    {before after : Interface × List (Nat × Nat)} {operation : Semantics.Observation.Op}
+    (ok : readoutStep frame locations before operation = some after) :
+    ReadoutStep frame.frame locations before operation after := by
+  obtain ⟨state,measured⟩ := before
+  cases operation with
+  | measure input output =>
+    cases consumed : Semantics.RawTrace.take state input with
+    | none => simp [readoutStep,consumed,bind,Option.bind] at ok
+    | some taken =>
+      obtain ⟨port,next⟩ := taken
+      cases single : port.wires with
+      | nil => simp [readoutStep,consumed,single,bind,Option.bind] at ok
+      | cons wire extra =>
+        cases extra with
+        | cons _ _ => simp [readoutStep,consumed,single,bind,Option.bind] at ok
+        | nil =>
+          cases placed : CanonicalOpenQasmWorkspace.placedWires frame.frame locations [wire] with
+          | none => simp [readoutStep,consumed,single,placed,bind,Option.bind] at ok
+          | some wires =>
+            cases wires with
+            | nil => simp [readoutStep,consumed,single,placed,bind,Option.bind] at ok
+            | cons location extra =>
+              cases extra with
+              | cons _ _ => simp [readoutStep,consumed,single,placed,bind,Option.bind] at ok
+              | nil =>
+                by_cases fresh : measured.any (fun pair => pair.1 == output || pair.2 == location) = false
+                · have same : (next,(output,location) :: measured) = after := by
+                    simpa [readoutStep,consumed,single,placed,bind,Option.bind,fresh] using ok
+                  subst after
+                  exact .measure consumed single placed fresh
+                · have seen : measured.any (fun pair => pair.1 == output || pair.2 == location) = true := by
+                    cases seen : measured.any (fun pair => pair.1 == output || pair.2 == location) with
+                    | false => exact False.elim (fresh seen)
+                    | true => rfl
+                  simp [readoutStep,consumed,single,placed,bind,Option.bind,seen] at ok
+  | discard input =>
+    cases consumed : Semantics.RawTrace.take state input with
+    | none => simp [readoutStep,consumed,bind,Option.bind] at ok
+    | some taken =>
+      obtain ⟨port,next⟩ := taken
+      have same : (next,measured) = after := by simpa [readoutStep,consumed,bind,Option.bind] using ok
+      subst after
+      exact .discard consumed
+  | pure operation =>
+    cases operation <;> first | exact readout_structural ok | cases ok
+  | reset _ _ _ | constant _ _ | not _ _ | xor _ _ _ | and _ _ _ | branch _ _ _ _ _ => cases ok
+
+private theorem followObservation_trace {frame : Interface} {locations : List Nat}
+    (operations : List Semantics.Observation.Op) {initial final : Interface × List (Nat × Nat)}
+    (ok : operations.foldlM (readoutStep frame locations) initial = some final) :
+    ReadoutTrace frame.frame locations initial operations final := by
+  induction operations generalizing initial with
+  | nil => cases ok; exact .empty _
+  | cons operation rest ih =>
+    cases read : readoutStep frame locations initial operation with
+    | none => simp [List.foldlM_cons,read,bind,Option.bind] at ok
+    | some middle =>
+      have tail : rest.foldlM (readoutStep frame locations) middle = some final := by
+        simpa [List.foldlM_cons,read,bind,Option.bind] using ok
+      exact .cons (readoutStep_success read) (ih tail)
+
+/-- Every measured SSA identifier and physical coordinate is unique throughout
+an accepted terminal trace. Discard and structural ownership changes leave
+that association intact. -/
+theorem ReadoutTrace.unique_measurements {frame locations before operations final}
+    (trace : ReadoutTrace frame locations before operations final)
+    (initial : (before.2.map Prod.fst).Nodup ∧ (before.2.map Prod.snd).Nodup) :
+    (final.2.map Prod.fst).Nodup ∧ (final.2.map Prod.snd).Nodup := by
+  induction trace with
+  | empty _ => exact initial
+  | cons head _ ih =>
+    apply ih
+    cases head with
+    | @measure _ _ measured _ output _ wire _ _ _ _ fresh =>
+      have excludes (entry : Nat × Nat) (member : entry ∈ measured) : entry.1 ≠ output ∧ entry.2 ≠ wire := by
+        have no : (entry.1 == output || entry.2 == wire) = false := by
+          cases matched : (entry.1 == output || entry.2 == wire) with
+          | false => rfl
+          | true =>
+            have duplicate : measured.any (fun pair => pair.1 == output || pair.2 == wire) = true :=
+              List.any_eq_true.mpr ⟨entry,member,matched⟩
+            rw [duplicate] at fresh
+            cases fresh
+        exact ⟨fun equal => by simp [equal] at no,fun equal => by simp [equal] at no⟩
+      have absentId : output ∉ measured.map Prod.fst := by
+        intro duplicate
+        obtain ⟨entry,member,equal⟩ := List.mem_map.mp duplicate
+        exact (excludes entry member).1 equal
+      have absentWire : wire ∉ measured.map Prod.snd := by
+        intro duplicate
+        obtain ⟨entry,member,equal⟩ := List.mem_map.mp duplicate
+        exact (excludes entry member).2 equal
+      exact ⟨List.nodup_cons.mpr ⟨absentId,initial.1⟩,List.nodup_cons.mpr ⟨absentWire,initial.2⟩⟩
+    | discard _ | structural _ => exact initial
+
+private theorem lookup_terminal_output {measured : List (Nat × Nat)} {results measurements : List Nat}
+    (read : results.mapM (fun id => (measured.find? (fun pair => pair.1 == id)).map (·.2)) = some measurements) :
+    measurements.length = results.length ∧
+    ∀ index id : Nat, results[index]? = some id →
+      ∃ wire, measurements[index]? = some wire ∧ (id,wire) ∈ measured := by
+  induction results generalizing measurements with
+  | nil => cases read; simp
+  | cons result rest ih =>
+    cases found : measured.find? (fun pair => pair.1 == result) with
+    | none => simp [List.mapM_cons,found,bind,Option.bind] at read
+    | some entry =>
+      cases remaining : rest.mapM (fun id => (measured.find? (fun pair => pair.1 == id)).map (·.2)) with
+      | none => simp [List.mapM_cons,found,remaining,bind,Option.bind] at read
+      | some tail =>
+        have same : entry.2 :: tail = measurements := by
+          simpa [List.mapM_cons,found,remaining,bind,Option.bind] using read
+        subst measurements
+        refine ⟨by simp [(ih remaining).1],?_⟩
+        intro index id named
+        cases index with
+        | zero =>
+          have equal : result = id := by simpa using named
+          have boundId : entry.1 = result := by simpa using List.find?_some found
+          have member := List.mem_of_find?_eq_some found
+          exact ⟨entry.2,rfl,by simpa only [← equal,← boundId,Prod.eta] using member⟩
+        | succ index => exact (ih remaining).2 index id named
+
+/-- Whole terminal acceptance binds each public classical result in written
+order to the measured wire in the actual decoded circuit. The original
+terminal suffix is consumed once and no quantum owner remains. -/
+theorem Readout.original_trace {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {program : Semantics.Observation.Program} {state : State} (checked : Readout target program state) :
+    program.outputs = [] ∧ state.rawIndex ≤ program.operations.length ∧
+      ∃ finished measured,
+        ReadoutTrace state.raw.frame state.locations (state.raw,[]) (program.operations.drop state.rawIndex) (finished,measured) ∧
+        finished.live = [] ∧ program.classicalOutputs.Nodup ∧
+        (measured.map Prod.fst).Nodup ∧ (measured.map Prod.snd).Nodup ∧
+        target.circuit.measurements.length = program.classicalOutputs.length ∧
+        (∀ index id : Nat, program.classicalOutputs[index]? = some id →
+          ∃ wire, target.circuit.measurements[index]? = some wire ∧ (id,wire) ∈ measured) := by
+  have accepted := checked.original
+  unfold readout at accepted
+  split at accepted
+  · cases accepted
+  · rename_i header
+    have bound : program.outputs = [] ∧ state.rawIndex ≤ program.operations.length := by
+      simpa [Bool.or_eq_true] using header
+    refine ⟨bound.1,bound.2,?_⟩
+    cases followed : followObservation state.raw state.locations (program.operations.drop state.rawIndex) with
+    | none => simp [followed,bind,Option.bind] at accepted
+    | some pair =>
+      obtain ⟨finished,measured⟩ := pair
+      simp only [followed,bind,Option.bind] at accepted
+      split at accepted
+      · cases accepted
+      · rename_i exhausted
+        have done : finished.live = [] ∧ program.classicalOutputs.Nodup := by
+          simpa [Bool.or_eq_true] using exhausted
+        have trace := followObservation_trace _ followed
+        have fresh := trace.unique_measurements (by simp)
+        exact ⟨finished,measured,trace,done.1,done.2,fresh.1,fresh.2,lookup_terminal_output accepted⟩
+
+#print axioms Readout.original_trace
+
+/-- An emitted result can be traced through the original successful suffix
+to its actual measurement and owner consumption. -/
+inductive ReadoutOccurrence (frame locations : List Nat) (id location : Nat) :
+    (Interface × List (Nat × Nat)) → List Semantics.Observation.Op → Prop where
+  | first {state next : Interface} {earlier : List (Nat × Nat)} {input : Nat}
+      {rest : List Semantics.Observation.Op}
+      (measurement : ReadoutStep frame locations (state,earlier) (.measure input id) (next,(id,location) :: earlier)) :
+      ReadoutOccurrence frame locations id location (state,earlier) (.measure input id :: rest)
+  | later {before middle : Interface × List (Nat × Nat)} {first : Semantics.Observation.Op}
+      {rest : List Semantics.Observation.Op}
+      (advance : ReadoutStep frame locations before first middle)
+      (measurement : ReadoutOccurrence frame locations id location middle rest) :
+      ReadoutOccurrence frame locations id location before (first :: rest)
+
+private theorem ReadoutTrace.measured_occurrence {frame locations initial final operations id location}
+    (trace : ReadoutTrace frame locations initial operations final) (member : (id,location) ∈ final.2) :
+    (id,location) ∈ initial.2 ∨ ReadoutOccurrence frame locations id location initial operations := by
+  induction trace with
+  | empty _ => exact .inl member
+  | cons step _ ih =>
+    rcases ih member with prior | occurrence
+    · cases step with
+      | @measure _ _ _ _ output _ wire _ consume single placed fresh =>
+        rcases List.mem_cons.mp prior with eq | earlier
+        · obtain ⟨rfl,rfl⟩ := Prod.mk.inj eq
+          exact .inr (.first (.measure consume single placed fresh))
+        · exact .inl earlier
+      | discard _ | structural _ => exact .inl prior
+    · exact .inr (.later step occurrence)
+
+/-- Each public result position names the wire of a concrete original
+measurement in the accepted Raw suffix. -/
+theorem Readout.measured_at {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {program : Semantics.Observation.Program} {state : State} (checked : Readout target program state)
+    {index id : Nat} (output : program.classicalOutputs[index]? = some id) :
+    ∃ location, target.circuit.measurements[index]? = some location ∧
+      ReadoutOccurrence state.raw.frame state.locations id location (state.raw,[]) (program.operations.drop state.rawIndex) := by
+  obtain ⟨_,_,_,_,trace,_,_,_,_,_,read⟩ := checked.original_trace
+  obtain ⟨wire,named,member⟩ := read index id output
+  exact ⟨wire,named,(trace.measured_occurrence member).resolve_left (by simp)⟩
+
+#print axioms Readout.measured_at
+
+private theorem placed_readout_wire {frame locations : List Nat} {wire location : Nat}
+    (placed : CanonicalOpenQasmWorkspace.placedWires frame locations [wire] = some [location]) :
+    wire ∈ frame ∧ locations[frame.idxOf wire]? = some location := by
+  by_cases present : wire ∈ frame
+  · refine ⟨present,?_⟩
+    cases found : locations[frame.idxOf wire]? with
+    | none => simp [CanonicalOpenQasmWorkspace.placedWires,present,found,List.mapM_cons,bind,Option.bind] at placed
+    | some actual =>
+      have same : actual = location := by
+        simpa [CanonicalOpenQasmWorkspace.placedWires,present,found,List.mapM_cons,bind,Option.bind] using placed
+      rw [same]
+  · simp [CanonicalOpenQasmWorkspace.placedWires,present,List.mapM_cons,bind,Option.bind] at placed
+
+/-- The measurement selected by the decoded terminal output reads exactly
+its original Raw bit in the ordered live-frame basis, for every basis label. -/
+theorem ReadoutOccurrence.source_coordinate {frame locations start operations id location}
+    (occurrence : ReadoutOccurrence frame locations id location start operations) :
+    ∃ wire ∈ frame, locations[frame.idxOf wire]? = some location ∧
+      ∀ row : Nat, Semantics.Finite.bit (Semantics.Finite.gather row locations) (frame.idxOf wire) =
+        Semantics.Finite.bit row location := by
+  induction occurrence with
+  | first measurement =>
+    cases measurement with
+    | @measure _ _ _ _ _ wire _ _ _ _ placed _ =>
+      obtain ⟨member,physical⟩ := placed_readout_wire placed
+      obtain ⟨inside,equal⟩ := List.getElem?_eq_some_iff.mp physical
+      refine ⟨wire,member,physical,?_⟩
+      intro row
+      have bit := RuntimeScatterTransport.gather_at row locations (frame.idxOf wire) inside
+      rw [equal] at bit
+      exact bit
+  | later _ _ ih => exact ih
+
+#print axioms ReadoutOccurrence.source_coordinate
+
+/-- The public bit at the accepted output position is the same evaluation
+of the same original measurement, under the checked layout. -/
+theorem Readout.measured_axis {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {program : Semantics.Observation.Program} {state : State} (checked : Readout target program state)
+    {index id : Nat} (output : program.classicalOutputs[index]? = some id) :
+    ∃ location, target.circuit.measurements[index]? = some location ∧
+      ReadoutOccurrence state.raw.frame state.locations id location (state.raw,[]) (program.operations.drop state.rawIndex) ∧
+      ∃ wire ∈ state.raw.frame, state.locations[state.raw.frame.idxOf wire]? = some location ∧
+        ∀ row : Nat, Semantics.Finite.bit (Semantics.Finite.gather row state.locations) (state.raw.frame.idxOf wire) =
+          Semantics.Finite.bit row location := by
+  obtain ⟨location,atPosition,occurrence⟩ := checked.measured_at output
+  exact ⟨location,atPosition,occurrence,occurrence.source_coordinate⟩
+
+#print axioms Readout.measured_axis
+
+/-- Read the complete terminal result in the original SSA order. Each
+physical wire has already been tied to the corresponding Raw measurement. -/
+theorem Readout.measurement_word {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity}
+    {program : Semantics.Observation.Program} {state : State} (checked : Readout target program state)
+    (unique : state.locations.Nodup) (row : Nat) :
+    target.circuit.measurements.map (Semantics.Finite.bit row) =
+      (target.circuit.measurements.map state.locations.idxOf).map
+        (Semantics.Finite.bit (Semantics.Finite.gather row state.locations)) := by
+  obtain ⟨_,_,_,_,_,_,_,_,_,sameLength,_⟩ := checked.original_trace
+  rw [List.map_map]
+  apply List.map_congr_left
+  intro physical member
+  obtain ⟨index,inside,same⟩ := List.getElem_of_mem member
+  have sourceIndex : index < program.classicalOutputs.length := sameLength ▸ inside
+  obtain ⟨location,emitted,_,wire,_,lookup,bits⟩ := checked.measured_axis (List.getElem?_eq_getElem sourceIndex)
+  have actual : physical = location := by
+    rw [List.getElem?_eq_getElem inside,same] at emitted
+    exact Option.some.inj emitted
+  have located := List.mem_of_getElem? lookup
+  have locatedOnce := RuntimeNamedFrameAxes.wireLookup state.locations located
+  have recovered : state.locations.idxOf location = state.raw.frame.idxOf wire :=
+    (List.getElem?_inj (List.idxOf_lt_length_of_mem located) unique).mp (locatedOnce.trans lookup.symm)
+  rw [actual]
+  change Semantics.Finite.bit row location =
+    Semantics.Finite.bit (Semantics.Finite.gather row state.locations) (state.locations.idxOf location)
+  rw [recovered,bits]
+
+#print axioms Readout.measurement_word
+
+private theorem optionMapM_success {α β : Type} {f : α → Option β}
+    {inputs : List α} {outputs : List β} (read : inputs.mapM f = some outputs) :
+    outputs.length = inputs.length ∧
+    ∀ index : Nat, outputs[index]? = (inputs[index]?).bind f := by
+  induction inputs generalizing outputs with
+  | nil =>
+    have eq : [] = outputs := Option.some.inj read
+    subst outputs
+    simp
+  | cons head tail ih =>
+    cases found : f head with
+    | none => simp [List.mapM_cons,found] at read
+    | some first =>
+      cases restRead : tail.mapM f with
+      | none => simp [List.mapM_cons,found,restRead] at read
+      | some rest =>
+        have eq : first :: rest = outputs := by simpa [List.mapM_cons,found,restRead] using read
+        subst outputs
+        obtain ⟨length,atIndex⟩ := ih restRead
+        refine ⟨by simp [length],?_⟩
+        intro index
+        cases index <;> simp [found,atIndex]
+
+private theorem axisPerm_of_subset {left right : List Nat} (leftUnique : left.Nodup)
+    (rightUnique : right.Nodup) (inside : left ⊆ right) (size : left.length = right.length) :
+    left.Perm right := by
+  induction left generalizing right with
+  | nil =>
+    have empty : right = [] := List.length_eq_zero_iff.mp size.symm
+    subst right
+    exact .nil
+  | cons head tail ih =>
+    obtain ⟨fresh,tailUnique⟩ := List.nodup_cons.mp leftUnique
+    obtain ⟨member,tailInside⟩ := List.cons_subset.mp inside
+    have eraseInside : tail ⊆ right.erase head := by
+      intro axis found
+      exact rightUnique.mem_erase_iff.mpr ⟨fun same => fresh (same ▸ found),tailInside found⟩
+    have eraseSize : tail.length = (right.erase head).length := by
+      rw [List.length_erase_of_mem member]
+      simp only [List.length_cons] at size
+      omega
+    exact ((ih tailUnique (rightUnique.erase head) eraseInside eraseSize).cons head).trans
+      (List.perm_cons_erase member).symm
+
+private theorem mappedIdxOf_nodup (frame axes : List Nat) (unique : axes.Nodup)
+    (inside : axes ⊆ frame) : (axes.map frame.idxOf).Nodup := by
+  induction axes with
+  | nil => simp
+  | cons first rest ih =>
+    obtain ⟨fresh,tailUnique⟩ := List.nodup_cons.mp unique
+    obtain ⟨present,tailInside⟩ := List.cons_subset.mp inside
+    apply List.nodup_cons.mpr
+    refine ⟨?_,ih tailUnique tailInside⟩
+    intro found
+    obtain ⟨axis,member,same⟩ := List.mem_map.mp found
+    have atAxis := RuntimeNamedFrameAxes.wireLookup frame (tailInside member)
+    rw [same] at atAxis
+    have eq := Option.some.inj (atAxis.symm.trans (RuntimeNamedFrameAxes.wireLookup frame present))
+    exact fresh (eq ▸ member)
+
+private theorem mapRange_lookup (values : List Nat) :
+    (List.range values.length).map (fun axis => values[axis]?.getD 0) = values := by
+  apply List.ext_getElem?
+  intro axis
+  rw [List.getElem?_map]
+  by_cases bound : axis < values.length
+  · rw [List.getElem?_range bound,List.getElem?_eq_getElem bound]
+    simp [List.getElem?_eq_getElem bound]
+  · rw [List.getElem?_eq_none (by simpa using Nat.le_of_not_gt bound),
+      List.getElem?_eq_none (Nat.le_of_not_gt bound)]
+    rfl
+
+private theorem lookupMap_eq_map {frame axes selected : List Nat}
+    (read : axes.mapM (fun axis => frame[axis]?) = some selected) :
+    selected = axes.map (fun axis => frame[axis]?.getD 0) := by
+  obtain ⟨size,atIndex⟩ := optionMapM_success read
+  apply List.ext_getElem?
+  intro index
+  rw [List.getElem?_map]
+  cases found : axes[index]? with
+  | none => simp [atIndex,found]
+  | some axis =>
+    have bound : index < selected.length := size ▸ (List.getElem?_eq_some_iff.mp found).1
+    have paired := atIndex index
+    have known := List.getElem?_eq_getElem bound
+    rw [found] at paired
+    change selected[index]? = frame[axis]? at paired
+    change selected[index]? = some (frame[axis]?.getD 0)
+    rw [← paired,known]
+    rfl
+
+private theorem setAxis_count (frame : List Nat) {axis wire value : Nat}
+    (bound : axis < frame.length) :
+    (frame.set axis wire).count value + (if frame[axis]?.getD 0 = value then 1 else 0) =
+      frame.count value + (if wire = value then 1 else 0) := by
+  induction frame generalizing axis with
+  | nil => simp at bound
+  | cons first rest ih =>
+    cases axis with
+    | zero =>
+      simp only [List.set_cons_zero,List.getElem?_cons_zero,Option.getD_some,List.count_cons,beq_iff_eq]
+      by_cases same : first = value <;> simp [same,Nat.add_comm,Nat.add_left_comm]
+    | succ axis =>
+      have smaller : axis < rest.length := by simpa using bound
+      have counted := ih smaller
+      simp only [List.set_cons_succ,List.getElem?_cons_succ,List.count_cons,beq_iff_eq]
+      by_cases same : rest[axis]?.getD 0 = value <;> simp [same] at counted ⊢ <;> omega
+
+private theorem replaceAxes_count (updates : List (Nat × Nat)) (frame : List Nat) (value : Nat)
+    (unique : (updates.map Prod.fst).Nodup)
+    (bounded : ∀ axis ∈ updates.map Prod.fst, axis < frame.length) :
+    ((updates.foldl (fun frame item => frame.set item.1 item.2) frame).count value) +
+        ((updates.map Prod.fst).map (fun axis => frame[axis]?.getD 0)).count value =
+      frame.count value + (updates.map Prod.snd).count value := by
+  induction updates generalizing frame with
+  | nil => simp
+  | cons first rest ih =>
+    obtain ⟨axis,wire⟩ := first
+    simp only [List.map_cons,List.nodup_cons] at unique
+    have bound : axis < frame.length := bounded axis (by simp)
+    have counted := setAxis_count (wire := wire) (value := value) frame bound
+    have remaining := ih (frame.set axis wire) unique.2 (by
+      intro later member
+      rw [List.length_set]
+      exact bounded later (by simpa using Or.inr member))
+    have same : (rest.map Prod.fst).map (fun a => (frame.set axis wire)[a]?.getD 0) =
+        (rest.map Prod.fst).map (fun a => frame[a]?.getD 0) :=
+      List.map_congr_left fun other present => by
+        rw [List.getElem?_set_ne (l := frame) (a := wire) (i := axis) (j := other)
+          (fun eq => unique.1 (eq ▸ present))]
+    rw [same] at remaining
+    simp only [List.foldl_cons,List.map_cons,List.count_cons,beq_iff_eq]
+    omega
+
+private theorem replaceAxes_spectator {updates : List (Nat × Nat)}
+    (frame : List Nat) {axis : Nat} (outside : axis ∉ updates.map Prod.fst) :
+    (updates.foldl (fun frame item => frame.set item.1 item.2) frame)[axis]? = frame[axis]? := by
+  induction updates generalizing frame with
+  | nil => rfl
+  | cons first rest ih =>
+    obtain ⟨other,wire⟩ := first
+    simp only [List.map_cons,List.mem_cons,not_or] at outside
+    rw [List.foldl_cons,ih _ outside.2,List.getElem?_set_ne (Ne.symm outside.1)]
+
+private theorem replaceAxes_selected {updates : List (Nat × Nat)}
+    (frame : List Nat) {axis wire : Nat} (member : (axis,wire) ∈ updates)
+    (unique : (updates.map Prod.fst).Nodup) (bound : axis < frame.length) :
+    (updates.foldl (fun frame item => frame.set item.1 item.2) frame)[axis]? = some wire := by
+  induction updates generalizing frame with
+  | nil => cases member
+  | cons first rest ih =>
+    obtain ⟨other,placed⟩ := first
+    simp only [List.map_cons,List.nodup_cons] at unique
+    rcases List.mem_cons.mp member with same | tail
+    · obtain ⟨rfl,rfl⟩ := Prod.mk.inj same
+      rw [List.foldl_cons,replaceAxes_spectator _ unique.1,List.getElem?_set_self bound]
+    · exact ih _ tail unique.2 (by simpa using bound)
+
+/-- Evidence for the accepted placement change of a structural basis lift.
+Every output port selects the original wire at its discovered input port,
+untouched axes retain their wire, and the physical layout is a permutation. -/
+structure BasisLayout (locations inputAxes outputAxes table final : List Nat) where
+  inputForOutput : List Nat
+  axes : outputAxes.Perm inputAxes
+  ports : inputForOutput.Perm (List.range inputAxes.length)
+  outputUnique : outputAxes.Nodup
+  outputBounds : ∀ axis ∈ outputAxes, axis < locations.length
+  tableSize : table.length = 2^inputAxes.length
+  labels : table.zipIdx.all (fun (actual,input) =>
+    actual == Semantics.Finite.gather input inputForOutput) = true
+  selected : ∀ {outputPort outputAxis inputPort inputAxis : Nat},
+    outputAxes[outputPort]? = some outputAxis →
+    inputForOutput[outputPort]? = some inputPort → inputAxes[inputPort]? = some inputAxis →
+    final[outputAxis]? = locations[inputAxis]?
+  spectator : ∀ {axis : Nat}, axis ∉ outputAxes → final[axis]? = locations[axis]?
+  permutation : final.Perm locations
+
+private theorem followBasisAxes_success {locations inputAxes outputAxes table final : List Nat}
+    {work left : Nat} (ok : (followBasisAxes locations inputAxes outputAxes table).run work =
+      (.ok final,left)) : Nonempty (BasisLayout locations inputAxes outputAxes table final) := by
+  dsimp only [followBasisAxes] at ok
+  obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,valid,rest⟩ := bind_success _ _ _ _ _ rest
+  have packed := (guard_success _ _ _ _ valid).1
+  simp only [Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq,List.all_eq_true,
+    List.contains_iff_mem] at packed
+  obtain ⟨⟨⟨⟨⟨outputSize,tableSize⟩,inputUnique⟩,outputUnique⟩,inside⟩,bounded⟩ := packed
+  have axisOrder := axisPerm_of_subset outputUnique inputUnique inside outputSize
+  obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨positions,_,discovered,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,_,labels,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨placed,_,put,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨reordered,_,permute,finish⟩ := bind_success _ _ _ _ _ rest
+  have positionsRead := optionMapM_success (readOption_success (lift_success _ _ _ _ discovered).1)
+  have putRead := readOption_success (lift_success _ _ _ _ put).1
+  have permuteRead := readOption_success (lift_success _ _ _ _ permute).1
+  rw [(pure_success _ _ _ _ finish).1]
+  let targets := List.range inputAxes.length
+  let inverse := targets.map positions.idxOf
+  have positionsSize : positions.length = inputAxes.length := by simpa using positionsRead.1
+  have placedSize := (optionMapM_success putRead).1
+  have reorderedSize := (optionMapM_success permuteRead).1
+  have inverseInside : targets ⊆ positions := by
+    intro destination member
+    have bound := List.mem_range.mp member
+    have entry : inverse[destination]? = some (positions.idxOf destination) := by
+      simp [inverse,targets,List.getElem?_range bound]
+    have read := (optionMapM_success permuteRead).2 destination
+    change reordered[destination]? = (inverse[destination]?).bind (fun axis => placed[axis]?) at read
+    rw [entry] at read
+    have outputBound : destination < reordered.length := by
+      simpa [inverse,targets,reorderedSize] using bound
+    rw [List.getElem?_eq_getElem outputBound] at read
+    have inputBound := (List.getElem?_eq_some_iff.mp read.symm).1
+    apply List.idxOf_lt_length_iff.mp
+    simpa [positionsSize,placedSize] using inputBound
+  have inverseOrder : inverse.Perm targets := by
+    apply axisPerm_of_subset (mappedIdxOf_nodup positions targets List.nodup_range inverseInside)
+      List.nodup_range
+    · intro axis member
+      obtain ⟨destination,present,rfl⟩ := List.mem_map.mp member
+      exact List.mem_range.mpr (positionsSize ▸ List.idxOf_lt_length_of_mem (inverseInside present))
+    · simp [targets]
+  have wireOrder : reordered.Perm placed := by
+    have mapped := inverseOrder.map (fun axis => placed[axis]?.getD 0)
+    rw [← lookupMap_eq_map permuteRead] at mapped
+    change reordered.Perm ((List.range inputAxes.length).map _) at mapped
+    rwa [← placedSize,mapRange_lookup] at mapped
+  have mappedOutput : (outputAxes.map (fun axis => locations[axis]?.getD 0)).Perm placed := by
+    rw [lookupMap_eq_map putRead]
+    exact axisOrder.map _
+  have samePhysical := wireOrder.trans mappedOutput.symm
+  have size : outputAxes.length = reordered.length := by
+    rw [outputSize,reorderedSize]
+    simp
+  have fstEq : ((outputAxes.zip reordered).map Prod.fst) = outputAxes := List.map_fst_zip (by omega)
+  have sndEq : ((outputAxes.zip reordered).map Prod.snd) = reordered := List.map_snd_zip (by omega)
+  have outputBounds : ∀ axis ∈ outputAxes, axis < locations.length :=
+    fun axis member => bounded axis (axisOrder.mem_iff.mp member)
+  refine ⟨⟨inverse,axisOrder,inverseOrder,outputUnique,outputBounds,tableSize,?_,?_,?_,?_⟩⟩
+  · simpa [inverse,targets] using (guard_success _ _ _ _ labels).1
+  · intro outputPort outputAxis inputPort inputAxis outAxis inPort inAxis
+    have before := (optionMapM_success putRead).2 inputPort
+    rw [inAxis] at before
+    have after := (optionMapM_success permuteRead).2 outputPort
+    change reordered[outputPort]? = (inverse[outputPort]?).bind (fun axis => placed[axis]?) at after
+    rw [inPort] at after
+    change reordered[outputPort]? = placed[inputPort]? at after
+    have inBound := bounded inputAxis (List.mem_of_getElem? inAxis)
+    rw [List.getElem?_eq_getElem inBound]
+    have member : (outputAxis,locations[inputAxis]) ∈ outputAxes.zip reordered := by
+      apply List.mem_of_getElem?
+      exact List.getElem?_zip_eq_some.mpr ⟨outAxis,after.trans (before.trans (List.getElem?_eq_getElem inBound))⟩
+    exact replaceAxes_selected locations member (fstEq.symm ▸ outputUnique)
+      (outputBounds outputAxis (List.mem_of_getElem? outAxis))
+  · intro axis outside
+    exact replaceAxes_spectator locations (fstEq.symm ▸ outside)
+  · apply List.perm_iff_count.mpr
+    intro wire
+    have counted := replaceAxes_count (outputAxes.zip reordered) locations wire
+      (fstEq.symm ▸ outputUnique) (fstEq.symm ▸ outputBounds)
+    rw [fstEq,sndEq,samePhysical.count_eq wire] at counted
+    omega
+
+private theorem followBasisAxes_declares {locations inputAxes outputAxes table final : List Nat}
+    {circuit : Circuit} {work left : Nat} (declared : circuit.declares locations)
+    (ok : (followBasisAxes locations inputAxes outputAxes table).run work = (.ok final,left)) :
+    circuit.declares final := by
+  obtain ⟨layout⟩ := followBasisAxes_success ok
+  exact ⟨layout.permutation.nodup_iff.mpr declared.1,
+    fun wire member => declared.2 wire (layout.permutation.mem_iff.mp member)⟩
+
+#print axioms followBasisAxes_success
+#print axioms followBasisAxes_declares
+
+/-- The checked span records the same ordered Raw frame at each visit. -/
+theorem CircuitSpan.preserves_frame {original start frame offsets initial final events chunks}
+    (trace : CircuitSpan original start frame offsets initial final events chunks)
+    (entry : initial.frame = frame) : final.frame = frame := by
+  induction trace with
+  | empty _ => exact entry
+  | cons _ _ same _ _ ih => exact ih same
+
+private theorem followSpan_frame {deps original circuit state rawCount gateCount scratch reserved final work left}
+    (accepted : (followSpan deps original circuit state rawCount gateCount scratch reserved).run work = (.ok final,left)) :
+    final.raw.frame = state.raw.frame ∧ final.locations = state.locations := by
+  unfold followSpan at accepted
+  obtain ⟨⟨next,steps⟩,afterSpan,read,compared⟩ := bind_success _ _ _ _ _ accepted
+  obtain ⟨_,_,trace,_⟩ := readSpan_trace ⟨work,afterSpan,read⟩
+  have frame := trace.preserves_frame rfl
+  by_cases empty : scratch.isEmpty = true
+  · simp only [empty,if_true] at compared
+    obtain ⟨_,_,_,finished⟩ := bind_success _ _ _ _ _ compared
+    obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finished
+    exact ⟨frame,rfl⟩
+  · simp only [if_neg empty] at compared
+    obtain ⟨_,_,_,allowed⟩ := bind_success _ _ _ _ _ compared
+    obtain ⟨_,_,_,finished⟩ := bind_success _ _ _ _ _ allowed
+    obtain ⟨rfl,_⟩ := pure_success _ _ _ _ finished
+    exact ⟨frame,rfl⟩
+
+/-- Optimizing an original circuit span preserves the entire ordered Raw and
+physical placement frames, regardless of the checked scratch path. -/
+theorem ReplayOccurrence.optimized_frame {deps original circuit connected reserved initial final prior suffix rawCount gateCount scratch}
+    (occurrence : ReplayOccurrence deps original circuit connected reserved initial final prior
+      (.optimized rawCount gateCount scratch) suffix) :
+    occurrence.exit.raw.frame = occurrence.entry.raw.frame ∧
+      occurrence.exit.locations = occurrence.entry.locations :=
+  followSpan_frame occurrence.stepRun
+
+/-- A structural owner transition with no Raw action consumes no gate and
+keeps the current ordered placement. -/
+theorem ReplayOccurrence.structural_empty {deps original circuit connected reserved initial final prior suffix}
+    (occurrence : ReplayOccurrence deps original circuit connected reserved initial final prior .original suffix)
+    {operation : Semantics.Raw.Op} {next : Interface}
+    (source : original[occurrence.entry.rawIndex]? = some (.pure operation))
+    (raw : Semantics.RawTrace.step occurrence.entry.raw operation = some (next,[])) :
+    occurrence.exit = {occurrence.entry with raw := next,rawIndex := occurrence.entry.rawIndex+1} ∧
+      next.frame.length = occurrence.entry.locations.length := by
+  have loaded : (lift (readOption (Semantics.RawTrace.step occurrence.entry.raw operation)) : WorkM _) =
+      pure (next,([] : List Semantics.Raw.Event)) := by rw [raw]; rfl
+  have accepted := occurrence.stepRun
+  simp only [replayStep,source,followRaw,loaded,pure_bind] at accepted
+  split at accepted
+  · rename_i same
+    exact ⟨(pure_success _ _ _ _ accepted).1,by simpa using same⟩
+  · cases accepted
+
+#print axioms ReplayOccurrence.optimized_frame
+#print axioms ReplayOccurrence.structural_empty
+
+private theorem finishRaw_preserves_width {state : State} {next : Interface}
+    {locations : List Nat} {gateIndex : Nat} {final : State} {work left : Nat}
+    (accepted : (if next.frame.length == locations.length then
+      pure {state with raw := next,locations,rawIndex := state.rawIndex+1,gateIndex}
+      else throw .request : WorkM State).run work = (.ok final,left)) :
+    final.raw.frame.length = final.locations.length := by
+  split at accepted
+  · rename_i aligned
+    obtain ⟨rfl,_⟩ := pure_success _ _ _ _ accepted
+    exact eq_of_beq aligned
+  · cases accepted
+
+private theorem followRaw_preserves_width {dependencies circuit state operation reserved action final work left}
+    (accepted : (followRaw dependencies circuit state operation reserved action).run work =
+      (.ok final,left)) : final.raw.frame.length = final.locations.length := by
+  unfold followRaw at accepted
+  obtain ⟨⟨next,events⟩,_,_,placed⟩ := bind_success _ _ _ _ _ accepted
+  dsimp only at placed
+  split at placed
+  all_goals repeat first
+    | exact finishRaw_preserves_width placed
+    | cases placed
+    | obtain ⟨_,_,_,placed⟩ := bind_success _ _ _ _ _ placed
+    | split at placed
+
+private theorem replayStep_preserves_width {dependencies original circuit connected reserved state action final work left}
+    (entry : state.raw.frame.length = state.locations.length)
+    (accepted : (replayStep dependencies original circuit connected reserved state action).run work = (.ok final,left)) :
+    final.raw.frame.length = final.locations.length := by
+  cases action with
+  | route =>
+    obtain ⟨_,_,_,_,_,rfl⟩ := replay_route accepted
+    simpa only [List.length_map] using entry
+  | optimized rawCount gateCount scratch =>
+    obtain ⟨frame,layout⟩ := followSpan_frame accepted
+    rw [frame,layout,entry]
+  | original | decomposed | synthesized =>
+    simp only [replayStep] at accepted
+    split at accepted
+    · exact followRaw_preserves_width accepted
+    · cases accepted
+
+private theorem replayFrom_preserves_width {dependencies original circuit connected reserved alignment state final}
+    (entry : state.raw.frame.length = state.locations.length)
+    (accepted : RuntimeInterval.Computed (replayFrom dependencies original circuit connected alignment state reserved) final) :
+    final.raw.frame.length = final.locations.length := by
+  obtain ⟨work,left,ran⟩ := accepted
+  induction alignment generalizing state work with
+  | nil =>
+    change (pure state : WorkM State).run work = (.ok final,left) at ran
+    exact (pure_success _ _ _ _ ran).1 ▸ entry
+  | cons action tail ih =>
+    simp only [replayFrom,List.foldlM_cons] at ran
+    obtain ⟨next,middle,step,finish⟩ := bind_success _ _ _ _ _ ran
+    exact ih (replayStep_preserves_width entry step) middle finish
+
+/-- Every accepted workspace replay keeps one physical location per ordered Raw wire. -/
+theorem WorkspaceTrace.preserves_width {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {dependencies connected reserved synthesis state uses peak}
+    (trace : WorkspaceTrace (program := program) dependencies target connected reserved synthesis state uses peak) :
+    state.raw.frame.length = state.locations.length := by
+  induction trace with
+  | start => rfl
+  | next _ bound ih =>
+    change bound.after.frame.length = _
+    rw [bound.sameWires]
+    exact replayFrom_preserves_width ih bound.replayed
+
+/-- The final readout enters with its original Raw frame and physical layout
+of equal width, including all preceding workspace segments. -/
+theorem FinishedTrace.readout_width {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {dependencies connected reserved synthesis suffix}
+    (finished : FinishedTrace program dependencies target connected reserved synthesis suffix) :
+    finished.final.raw.frame.length = finished.final.locations.length :=
+  replayFrom_preserves_width finished.recorded.trace.preserves_width finished.replayed
+
+#print axioms WorkspaceTrace.preserves_width
+#print axioms FinishedTrace.readout_width
+
+private theorem finishRaw_declares {circuit : Circuit} {state : State} {next : Interface}
+    {locations : List Nat} {gateIndex : Nat} {final : State} {work left : Nat}
+    (declared : circuit.declares locations)
+    (accepted : (if next.frame.length == locations.length then
+      pure {state with raw := next,locations,rawIndex := state.rawIndex+1,gateIndex}
+      else throw .request : WorkM State).run work = (.ok final,left)) :
+    circuit.declares final.locations := by
+  split at accepted
+  · obtain ⟨rfl,_⟩ := pure_success _ _ _ _ accepted
+    exact declared
+  · cases accepted
+
+private theorem finish_zero_allocation_declares {circuit : Circuit} {state : State} {reserved : List Nat}
+    {next : Interface} {final : State} {work left : Nat} (declared : circuit.declares state.locations)
+    (accepted : (do
+      let (locations,gateIndex) ← lift (readOption ((fresh circuit.qubits state.locations
+        (reserved ++ state.synthesis)).map (·,state.gateIndex)))
+      if next.frame.length == locations.length then
+        pure {state with raw := next,locations,rawIndex := state.rawIndex+1,gateIndex}
+      else throw .request : WorkM State).run work = (.ok final,left)) : circuit.declares final.locations := by
+  obtain ⟨wire,within,unused,_,rfl,_,_⟩ := finish_zero_allocation accepted
+  show circuit.declares (state.locations ++ [wire])
+  constructor
+  · refine List.nodup_append.mpr ⟨declared.1,by simp,?_⟩
+    intro axis member other singleton same
+    obtain rfl := List.mem_singleton.mp singleton
+    exact unused (same ▸ member)
+  · intro axis member
+    rcases List.mem_append.mp member with member | member
+    · exact declared.2 axis member
+    · obtain rfl := List.mem_singleton.mp member
+      exact within
+
+private theorem followRaw_declares {dependencies circuit state operation reserved action final work left}
+    (declared : circuit.declares state.locations)
+    (accepted : (followRaw dependencies circuit state operation reserved action).run work =
+      (.ok final,left)) : circuit.declares final.locations := by
+  unfold followRaw at accepted
+  obtain ⟨⟨next,events⟩,_,_,placed⟩ := bind_success _ _ _ _ _ accepted
+  dsimp only at placed
+  split at placed
+  · exact finishRaw_declares declared placed
+  · exact finish_zero_allocation_declares declared placed
+  · split at placed
+    · exact finish_zero_allocation_declares declared placed
+    · cases placed
+  · obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ placed
+    obtain ⟨_,_,permuted,finish⟩ := bind_success _ _ _ _ _ rest
+    exact finishRaw_declares (followBasisAxes_declares declared permuted) finish
+  · obtain ⟨⟨wires,stop⟩,_,gates,finish⟩ := bind_success _ _ _ _ _ placed
+    have read := readOption_success (lift_success _ _ _ _ gates).1
+    obtain ⟨index,_,equal⟩ := Option.map_eq_some_iff.mp read
+    obtain ⟨rfl,rfl⟩ := Prod.mk.inj equal
+    exact finishRaw_declares declared finish
+  all_goals repeat first
+    | exact finishRaw_declares declared placed
+    | cases placed
+    | obtain ⟨_,_,_,placed⟩ := bind_success _ _ _ _ _ placed
+
+private theorem replayStep_declares {bytes dependencies original circuit connected reserved state action final work left}
+    (decoded : CanonicalOpenQasmResources.decode bytes = some circuit)
+    (declared : circuit.declares state.locations)
+    (accepted : (replayStep dependencies original circuit connected reserved state action).run work = (.ok final,left)) :
+    circuit.declares final.locations := by
+  cases action with
+  | route =>
+    obtain ⟨first,second,_,literal,_,rfl⟩ := replay_route accepted
+    have shape := CanonicalOpenQasmResources.decode_instruction_shape decoded
+      ⟨.swap,[first,second]⟩ (List.mem_of_getElem? literal)
+    let move : Routing.Swap := ⟨first,second⟩
+    change circuit.declares (state.locations.map move.axis)
+    refine ⟨List.Pairwise.map _ (fun {a b} ne same =>
+      ne (by simpa only [move.axis_involutive] using congrArg move.axis same)) declared.1,?_⟩
+    intro axis present
+    obtain ⟨before,inLayout,rfl⟩ := List.mem_map.mp present
+    exact List.mem_range.mp (move.axis_mem _ (List.mem_range.mpr (shape.2.2 first (by simp)))
+      (List.mem_range.mpr (shape.2.2 second (by simp))) before (List.mem_range.mpr (declared.2 before inLayout)))
+  | optimized rawCount gateCount scratch =>
+    rw [(followSpan_frame accepted).2]
+    exact declared
+  | original | decomposed | synthesized =>
+    simp only [replayStep] at accepted
+    split at accepted
+    · exact followRaw_declares declared accepted
+    · cases accepted
+
+private theorem replayFrom_declares {bytes dependencies original circuit connected reserved alignment state final}
+    (decoded : CanonicalOpenQasmResources.decode bytes = some circuit)
+    (declared : circuit.declares state.locations)
+    (accepted : RuntimeInterval.Computed (replayFrom dependencies original circuit connected alignment state reserved) final) :
+    circuit.declares final.locations := by
+  obtain ⟨work,left,ran⟩ := accepted
+  induction alignment generalizing state work with
+  | nil =>
+    change (pure state : WorkM State).run work = (.ok final,left) at ran
+    exact (pure_success _ _ _ _ ran).1 ▸ declared
+  | cons action tail ih =>
+    simp only [replayFrom,List.foldlM_cons] at ran
+    obtain ⟨next,middle,step,finish⟩ := bind_success _ _ _ _ _ ran
+    exact ih (replayStep_declares decoded declared step) middle finish
+
+/-- Every accepted workspace replay stays within the decoded wire declaration. -/
+theorem WorkspaceTrace.declares_locations {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {dependencies connected reserved synthesis state uses peak}
+    (trace : WorkspaceTrace (program := program) dependencies target connected reserved synthesis state uses peak) :
+    target.circuit.declares state.locations := by
+  induction trace with
+  | start => simp [Circuit.declares]
+  | next _ bound ih =>
+    have entry := replayFrom_declares target.original ih bound.replayed
+    exact entry
+
+/-- Every physical readout coordinate is in the declared register, and distinct
+Raw wires reach distinct physical coordinates. -/
+theorem FinishedTrace.readout_declares {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {dependencies connected reserved synthesis suffix}
+    (finished : FinishedTrace program dependencies target connected reserved synthesis suffix) :
+    target.circuit.declares finished.final.locations :=
+  replayFrom_declares target.original finished.recorded.trace.declares_locations finished.replayed
+
+#print axioms WorkspaceTrace.declares_locations
+#print axioms FinishedTrace.readout_declares
+
+/-- The original same-width basis event runs the checked wiring and consumes no target gate. -/
+theorem ReplayOccurrence.basis_layout
+    {rootDependencies original circuit connected reserved initial final prior suffix}
+    (occurrence : ReplayOccurrence rootDependencies original circuit connected reserved initial final prior .original suffix)
+    {operation : Semantics.Raw.Op} {next : Interface} {bits : Nat} {inputAxes outputAxes table : List Nat}
+    (occurs : original[occurrence.entry.rawIndex]? = some (.pure operation))
+    (raw : Semantics.RawTrace.step occurrence.entry.raw operation =
+      some (next,[.liftBasis bits bits inputAxes outputAxes table])) :
+    Nonempty (BasisLayout occurrence.entry.locations inputAxes outputAxes table occurrence.exit.locations) ∧
+    occurrence.exit = {occurrence.entry with raw := next,locations := occurrence.exit.locations,rawIndex := occurrence.entry.rawIndex+1} ∧ bits = occurrence.entry.locations.length := by
+  have loaded : (lift (readOption (Semantics.RawTrace.step occurrence.entry.raw operation)) : WorkM _) =
+      pure (next,[Semantics.Raw.Event.liftBasis bits bits inputAxes outputAxes table]) := by
+    rw [raw]
+    rfl
+  have run := occurrence.stepRun
+  simp only [replayStep,occurs,followRaw,loaded,pure_bind] at run
+  have noAllocation : (bits == bits+1) = false :=
+    beq_false_of_ne (Nat.ne_of_lt (Nat.lt_succ_self bits))
+  have regular {work : Nat} (accepted : (do
+      guard (bits == bits && bits == occurrence.entry.locations.length) .request
+      let location ← followBasisAxes occurrence.entry.locations inputAxes outputAxes table
+      if next.frame.length == location.length then
+        pure {occurrence.entry with raw := next,locations := location,rawIndex := occurrence.entry.rawIndex+1}
+      else throw .request : WorkM State).run work = (.ok occurrence.exit,occurrence.exitWork)) :
+      Nonempty (BasisLayout occurrence.entry.locations inputAxes outputAxes table occurrence.exit.locations) ∧
+      occurrence.exit = {occurrence.entry with raw := next,locations := occurrence.exit.locations,rawIndex := occurrence.entry.rawIndex+1} ∧ bits = occurrence.entry.locations.length := by
+    obtain ⟨_,_,sameWidth,remaining⟩ := bind_success _ _ _ _ _ accepted
+    obtain ⟨layout,_,permuted,finished⟩ := bind_success _ _ _ _ _ remaining
+    have width := (guard_success _ _ _ _ sameWidth).1
+    simp only [Bool.and_eq_true] at width
+    split at finished
+    · have equal := (pure_success _ _ _ _ finished).1
+      rw [equal]
+      exact ⟨followBasisAxes_success permuted,rfl,eq_of_beq width.2⟩
+    · cases finished
+  split at run
+  case h_3 =>
+    rename_i matched
+    have coordinates := Semantics.Raw.Event.liftBasis.inj (List.cons.inj matched).1
+    simp only [← coordinates.1,← coordinates.2.1,noAllocation,Bool.false_and,Bool.false_eq_true,if_false] at run
+    cases run
+  case h_4 =>
+    rename_i matched
+    obtain ⟨rfl,rfl,rfl,rfl,rfl⟩ := Semantics.Raw.Event.liftBasis.inj (List.cons.inj matched).1
+    exact regular run
+  case h_2 =>
+    rename_i matched
+    cases (List.cons.inj matched).1
+  case h_5 =>
+    rename_i matched
+    cases (List.cons.inj matched).1
+  all_goals first | contradiction | cases run
+
+#print axioms ReplayOccurrence.basis_layout
+
+/-- Consecutive single actions from the actual replay, including exact
+entry and exit states and the literal Raw and physical alignment cursors. -/
+inductive ReplaySteps (rootDependencies : List Semantics.Finite.Dependency)
+    (original : Array Semantics.Observation.Op) (circuit : Circuit)
+    (connected : Nat → Nat → Bool) (reserved : List Nat) : List Match → State → State → Prop where
+  | empty (state : State) : ReplaySteps rootDependencies original circuit connected reserved [] state state
+  | next {entry middle exit : State} {action : Match} {remaining : List Match}
+      (occurrence : ReplayOccurrence rootDependencies original circuit connected reserved
+        entry middle [] action [])
+      (atEntry : occurrence.entry = entry) (atExit : occurrence.exit = middle)
+      (tail : ReplaySteps rootDependencies original circuit connected reserved remaining middle exit) :
+      ReplaySteps rootDependencies original circuit connected reserved (action :: remaining) entry exit
+
+private theorem replayFrom_steps {rootDependencies original circuit connected reserved initial final actions}
+    (ran : RuntimeInterval.Computed (replayFrom rootDependencies original circuit connected actions initial reserved) final) :
+    ReplaySteps rootDependencies original circuit connected reserved actions initial final := by
+  obtain ⟨work,left,accepted⟩ := ran
+  induction actions generalizing initial work with
+  | nil =>
+    change (pure initial : WorkM State).run work = (.ok final,left) at accepted
+    obtain ⟨rfl,_⟩ := pure_success _ _ _ _ accepted
+    exact .empty _
+  | cons action remaining ih =>
+    simp only [replayFrom,List.foldlM_cons] at accepted
+    obtain ⟨middle,beforeTail,step,tail⟩ := bind_success _ _ _ _ _ accepted
+    let actual : ReplayOccurrence rootDependencies original circuit connected reserved initial middle [] action [] :=
+      ⟨initial,middle,work,work,beforeTail,beforeTail,rfl,step,rfl⟩
+    exact .next actual rfl rfl (ih beforeTail tail)
+
+/-- Expose every placement action that preceded the actual original workspace. -/
+theorem BoundSegment.prefix_steps {program : Semantics.Observation.Program} {segment : Segment program}
+    {bytes capacity} {target : CanonicalOpenQasmResources.Checked bytes capacity} {dependencies connected reserved previous entry}
+    (bound : BoundSegment segment dependencies target connected reserved previous entry) :
+    ReplaySteps dependencies program.operations.toArray target.circuit connected reserved segment.alignment previous entry :=
+  replayFrom_steps bound.replayed
+
+/-- Expose every placement action after the last original workspace and before
+its checked terminal readout. -/
+theorem FinishedTrace.suffix_steps {program : Semantics.Observation.Program} {bytes capacity}
+    {target : CanonicalOpenQasmResources.Checked bytes capacity} {dependencies connected reserved synthesis suffix}
+    (trace : FinishedTrace program dependencies target connected reserved synthesis suffix) :
+    ReplaySteps dependencies program.operations.toArray target.circuit connected reserved suffix trace.recorded.exit trace.final :=
+  replayFrom_steps trace.replayed
+
+#print axioms BoundSegment.prefix_steps
+#print axioms FinishedTrace.suffix_steps
+
+/-- Recover the checked protected-table word at its original Raw occurrence.
+The logical layout is preserved and both cursors advance by the spans actually
+used by replay. -/
+theorem ReplayOccurrence.protected_table {rootDependencies original circuit connected reserved initial final prior suffix
+    action count workspace}
+    (occurrence : ReplayOccurrence rootDependencies original circuit connected reserved initial final prior action suffix)
+    {operation : Semantics.Raw.Op} {next : Interface} {bits sourceBits auxiliaryBits : Nat}
+    {axes function : List Nat} {uses : List Semantics.Raw.Use}
+    (occurs : original[occurrence.entry.rawIndex]? = some (.pure operation))
+    (raw : Semantics.RawTrace.step occurrence.entry.raw operation =
+      some (next,[.protectedComputed bits axes sourceBits auxiliaryBits function uses]))
+    (kind : action = .synthesized count workspace ∨
+      (action = .decomposed count ∧ workspace = [] ∧ auxiliaryBits = 0)) :
+    Nonempty (ProtectedTablePlacement rootDependencies circuit occurrence.entry count workspace
+      bits axes sourceBits auxiliaryBits function uses) ∧
+    occurrence.exit = {occurrence.entry with
+      raw := next
+      rawIndex := occurrence.entry.rawIndex+1
+      gateIndex := occurrence.entry.gateIndex+count } ∧
+    next.frame.length = occurrence.entry.locations.length := by
+  have loaded : (lift (readOption (Semantics.RawTrace.step occurrence.entry.raw operation)) : WorkM _) =
+      pure (next,[Semantics.Raw.Event.protectedComputed bits axes sourceBits auxiliaryBits function uses]) := by
+    rw [raw]
+    rfl
+  rcases kind with rfl | ⟨rfl,rfl,rfl⟩ <;>
+    have run := occurrence.stepRun <;>
+    simp only [replayStep,occurs,followRaw,loaded,pure_bind] at run <;>
+    obtain ⟨checked,_,_,finish⟩ := bind_success _ _ _ _ _ run <;>
+    split at finish
+  all_goals first
+    | rename_i matched
+      exact ⟨⟨checked⟩,(pure_success _ _ _ _ finish).1,by simpa using matched⟩
+    | cases finish
+
+/-- Recover the structural computation compared at this actual replay
+occurrence, including its auxiliary predicate and comparison interval. -/
+theorem ReplayOccurrence.structural_computed {rootDependencies original circuit connected reserved initial final prior suffix
+    count auxiliary scratch}
+    (occurrence : ReplayOccurrence rootDependencies original circuit connected reserved initial final prior
+      (.synthesized count (auxiliary :: scratch)) suffix)
+    {operation : Semantics.Raw.Op} {next : Interface} {bits : Nat} {axes : List Nat}
+    {forward inverse : List Semantics.Finite.Step} {uses : List Semantics.Raw.Use}
+    (occurs : original[occurrence.entry.rawIndex]? = some (.pure operation))
+    (raw : Semantics.RawTrace.step occurrence.entry.raw operation =
+      some (next,[.structuralComputed bits axes forward inverse uses])) :
+    Nonempty (StructuralPlacement rootDependencies circuit occurrence.entry count auxiliary scratch reserved
+      bits axes forward inverse uses) ∧
+    occurrence.exit = {occurrence.entry with
+      raw := next
+      rawIndex := occurrence.entry.rawIndex+1
+      gateIndex := occurrence.entry.gateIndex+count } := by
+  have run := occurrence.stepRun
+  simp only [replayStep,occurs] at run
+  exact followRaw_structural raw run
+
+/-- When there is no extra synthesis scratch, the exact decomposition check
+compares the decoded target gates with the literal compute/use/uncompute word.
+Auxiliary wires already belonging to the original operator remain in the word. -/
+theorem ProtectedTablePlacement.decomposed_word {rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits
+    function uses}
+    (checked : ProtectedTablePlacement rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits function uses)
+    (empty : (workspace.drop auxiliaryBits).isEmpty = true) :
+    Nonempty (Decomposition rootDependencies circuit state.gateIndex count (state.locations ++ workspace.take auxiliaryBits)
+      (([Raw.computeStep sourceBits axes.length auxiliaryBits function] ++
+        uses.map (Raw.physicalUse sourceBits axes.length) ++ [Raw.computeStep sourceBits axes.length auxiliaryBits function]).map
+        (Semantics.RawTrace.localize (axes ++ (List.range auxiliaryBits).map (bits+·))))) := by
+  exact ⟨by simpa only [CheckedWord,protectedTableWord,empty,if_true] using checked.action⟩
+
+/-- Additional synthesis wires have their own zero-return check, on the
+same original protected operation and decoded gate interval. -/
+theorem ProtectedTablePlacement.synthesized_word {rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits
+    function uses}
+    (checked : ProtectedTablePlacement rootDependencies circuit state count workspace bits axes sourceBits auxiliaryBits function uses)
+    (nonempty : (workspace.drop auxiliaryBits).isEmpty = false) :
+    Nonempty (Synthesis rootDependencies circuit state.gateIndex count (state.locations ++ workspace.take auxiliaryBits)
+      (workspace.drop auxiliaryBits) state.synthesis
+      (([Raw.computeStep sourceBits axes.length auxiliaryBits function] ++
+        uses.map (Raw.physicalUse sourceBits axes.length) ++ [Raw.computeStep sourceBits axes.length auxiliaryBits function]).map
+        (Semantics.RawTrace.localize (axes ++ (List.range auxiliaryBits).map (bits+·))))) := by
+  exact ⟨by simpa only [CheckedWord,protectedTableWord,nonempty,Bool.false_eq_true,if_false] using checked.action⟩
+
+#print axioms ReplayOccurrence.protected_table
+#print axioms ReplayOccurrence.structural_computed
+#print axioms ProtectedTablePlacement.decomposed_word
+#print axioms ProtectedTablePlacement.synthesized_word
+
+/-- These are the literal original event shapes accepted by single-operation
+placement replay. The optimized and routing branches have separate traces. -/
+inductive RawReplayKind : Match → List Semantics.Raw.Event → Prop where
+  | structural : RawReplayKind .original []
+  | init0 (bits : Nat) : RawReplayKind .original [.init0 bits]
+  | prepZero (bits : Nat) : RawReplayKind .original [.liftBasis bits (bits+1) [] [bits] [0]]
+  | basis (bits : Nat) (inputAxes outputAxes table : List Nat) :
+      RawReplayKind .original [.liftBasis bits bits inputAxes outputAxes table]
+  | literal (bits : Nat) (steps : List Semantics.Finite.Step) : RawReplayKind .original [.circuit bits steps]
+  | decomposition (count bits : Nat) (steps : List Semantics.Finite.Step) :
+      RawReplayKind (.decomposed count) [.circuit bits steps]
+  | synthesis (count bits : Nat) (scratch : List Nat) (steps : List Semantics.Finite.Step) :
+      RawReplayKind (.synthesized count scratch) [.circuit bits steps]
+  | structuralCompute (count bits auxiliary : Nat) (scratch axes : List Nat)
+      (forward inverse : List Semantics.Finite.Step) (uses : List Semantics.Raw.Use) :
+      RawReplayKind (.synthesized count (auxiliary :: scratch)) [.structuralComputed bits axes forward inverse uses]
+  | protectedDecomposition (count bits sourceBits : Nat) (axes table : List Nat) (uses : List Semantics.Raw.Use) :
+      RawReplayKind (.decomposed count) [.protectedComputed bits axes sourceBits 0 table uses]
+  | protectedSynthesis (count bits sourceBits auxiliaryBits : Nat) (workspace axes table : List Nat)
+      (uses : List Semantics.Raw.Use) :
+      RawReplayKind (.synthesized count workspace) [.protectedComputed bits axes sourceBits auxiliaryBits table uses]
+
+private theorem followRaw_kind {dependencies circuit state operation reserved action final work left}
+    (checked : (followRaw dependencies circuit state operation reserved action).run work = (.ok final,left)) :
+    ∃ next events, Semantics.RawTrace.step state.raw operation = some (next,events) ∧ RawReplayKind action events := by
+  unfold followRaw at checked
+  obtain ⟨⟨next,events⟩,_,read,continued⟩ := bind_success _ _ _ _ _ checked
+  refine ⟨next,events,readOption_success (lift_success _ _ _ _ read).1,?_⟩
+  dsimp only at continued
+  split at continued
+  · exact .structural
+  · exact .init0 _
+  · split at continued
+    · rename_i valid
+      simp only [Bool.and_eq_true,beq_iff_eq] at valid
+      obtain ⟨rfl,rfl⟩ := valid
+      exact .prepZero _
+    · cases continued
+  · obtain ⟨_,_,valid,_⟩ := bind_success _ _ _ _ _ continued
+    have width := (guard_success _ _ _ _ valid).1
+    simp only [Bool.and_eq_true,beq_iff_eq] at width
+    rcases width with ⟨rfl,_⟩
+    exact .basis _ _ _ _
+  · exact .literal _ _
+  · exact .decomposition _ _ _
+  · exact .synthesis _ _ _ _
+  · exact .structuralCompute _ _ _ _ _ _ _ _
+  · exact .protectedDecomposition _ _ _ _ _ _
+  · exact .protectedSynthesis _ _ _ _ _ _ _ _
+  · cases continued
+
+/-- Each non-routing single-operation replay reads the original Raw event at
+its real cursor and certifies its alignment kind. -/
+theorem ReplayOccurrence.raw_event {dependencies original circuit connected reserved initial final prior action suffix}
+    (checked : ReplayOccurrence dependencies original circuit connected reserved initial final prior action suffix)
+    (matched : action = .original ∨ (∃ count, action = .decomposed count) ∨
+      (∃ count scratch, action = .synthesized count scratch)) :
+    ∃ operation next events, original[checked.entry.rawIndex]? = some (.pure operation) ∧
+      Semantics.RawTrace.step checked.entry.raw operation = some (next,events) ∧ RawReplayKind action events := by
+  have ran := checked.stepRun
+  rcases matched with rfl | ⟨count,rfl⟩ | ⟨count,scratch,rfl⟩ <;>
+    simp only [replayStep] at ran <;> split at ran
+  all_goals first
+    | obtain ⟨next,events,read,kind⟩ := followRaw_kind ran
+      exact ⟨_,next,events,by assumption,read,kind⟩
+    | cases ran
+
+#print axioms ReplayOccurrence.raw_event
+
+/-- Each successful transition preserves the exact wire count and membership
+of its ordered physical locations in the decoded circuit declaration. -/
+theorem ReplayOccurrence.exit_geometry {bytes dependencies original circuit connected reserved initial final prior action suffix}
+    (occurrence : ReplayOccurrence dependencies original circuit connected reserved initial final prior action suffix)
+    (decoded : CanonicalOpenQasmResources.decode bytes = some circuit)
+    (width : occurrence.entry.raw.frame.length = occurrence.entry.locations.length)
+    (declared : circuit.declares occurrence.entry.locations) :
+    occurrence.exit.raw.frame.length = occurrence.exit.locations.length ∧
+    circuit.declares occurrence.exit.locations :=
+  ⟨replayStep_preserves_width width occurrence.stepRun,replayStep_declares decoded declared occurrence.stepRun⟩
+
+#print axioms ReplayOccurrence.exit_geometry
+
+private theorem checkProtectedTable_geometry {deps circuit state operation reserved count workspace bits axes sourceBits auxiliaryBits function uses checked work left}
+    (ok : (checkProtectedTable deps circuit state operation reserved count workspace bits axes sourceBits auxiliaryBits
+      function uses).run work = (.ok checked,left)) :
+    bits = state.locations.length ∧ auxiliaryBits ≤ workspace.length ∧ (∀ axis ∈ axes, axis < bits) ∧
+      ∀ step ∈ protectedTableWord sourceBits axes.length auxiliaryBits function uses,
+        (∀ control ∈ step.controls, control.index < axes.length+auxiliaryBits) ∧
+        (∀ axis ∈ Finite.targets step.action, axis < axes.length+auxiliaryBits) := by
+  unfold checkProtectedTable at ok
+  obtain ⟨_,_,header,rest⟩ := bind_success _ _ _ _ _ ok
+  have fields := (guard_success _ _ _ _ header).1
+  simp only [Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq,List.all_eq_true] at fields
+  obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+  dsimp only at rest
+  split at rest
+  · obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+    obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+    obtain ⟨_,_,bounds,_⟩ := bind_success _ _ _ _ _ rest
+    have confined := (guard_success _ _ _ _ bounds).1
+    refine ⟨fields.1.1.1.1,fields.1.1.2,fields.1.2,?_⟩
+    intro step member
+    have steps := List.all_eq_true.mp confined step member
+    refine ⟨?_,?_⟩
+    · intro control included
+      exact of_decide_eq_true (List.all_eq_true.mp steps control.index
+        (List.mem_append_left _ (List.mem_map_of_mem included)))
+    · intro axis included
+      exact of_decide_eq_true (List.all_eq_true.mp steps axis (List.mem_append_right _ included))
+  · cases rest
+
+/-- Carriers and bounds from the actual accepted placement guard for the
+original protected operation, before either comparison branch. -/
+theorem ReplayOccurrence.protected_geometry {deps original circuit connected reserved initial final prior suffix
+    action count workspace}
+    (occurrence : ReplayOccurrence deps original circuit connected reserved initial final prior action suffix)
+    {operation : Semantics.Raw.Op} {next : Interface} {bits sourceBits auxiliaryBits : Nat}
+    {axes function : List Nat} {uses : List Semantics.Raw.Use}
+    (occurs : original[occurrence.entry.rawIndex]? = some (.pure operation))
+    (raw : Semantics.RawTrace.step occurrence.entry.raw operation =
+      some (next,[.protectedComputed bits axes sourceBits auxiliaryBits function uses]))
+    (kind : action = .synthesized count workspace ∨
+      (action = .decomposed count ∧ workspace = [] ∧ auxiliaryBits = 0)) :
+    bits = occurrence.entry.locations.length ∧ auxiliaryBits ≤ workspace.length ∧ (∀ axis ∈ axes, axis < bits) ∧
+      ∀ step ∈ ([Raw.computeStep sourceBits axes.length auxiliaryBits function] ++
+        uses.map (Raw.physicalUse sourceBits axes.length) ++ [Raw.computeStep sourceBits axes.length auxiliaryBits function]),
+        (∀ control ∈ step.controls, control.index < axes.length+auxiliaryBits) ∧
+        (∀ axis ∈ Finite.targets step.action, axis < axes.length+auxiliaryBits) := by
+  have loaded : (lift (readOption (Semantics.RawTrace.step occurrence.entry.raw operation)) : WorkM _) =
+      pure (next,[Semantics.Raw.Event.protectedComputed bits axes sourceBits auxiliaryBits function uses]) := by rw [raw]; rfl
+  rcases kind with rfl | ⟨rfl,rfl,rfl⟩ <;>
+    have run := occurrence.stepRun <;>
+    simp only [replayStep,occurs,followRaw,loaded,pure_bind] at run <;>
+    obtain ⟨_,_,read,_⟩ := bind_success _ _ _ _ _ run <;>
+    exact checkProtectedTable_geometry read
+
+#print axioms ReplayOccurrence.protected_geometry
+
+private theorem checkStructural_bounds {deps circuit state operation reserved count auxiliary scratch bits axes forward inverse uses checked work left}
+    (ok : (checkStructural deps circuit state operation reserved count auxiliary scratch bits axes forward inverse uses).run
+      work = (.ok checked,left)) :
+    ∀ step ∈ forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse,
+      (∀ control ∈ step.controls, control.index < axes.length+1) ∧
+      (∀ axis ∈ Finite.targets step.action, axis < axes.length+1) := by
+  unfold checkStructural at ok
+  split at ok
+  · obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ ok
+    obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+    dsimp only at rest
+    split at rest
+    · obtain ⟨_,_,bounded,_⟩ := bind_success _ _ _ _ _ rest
+      intro step member
+      have bounds := List.all_eq_true.mp (guard_success _ _ _ _ bounded).1 step member
+      refine ⟨?_,?_⟩
+      · intro control inside
+        exact Nat.lt_succ_of_le (of_decide_eq_true (List.all_eq_true.mp bounds control.index
+          (List.mem_append_left _ (List.mem_map_of_mem inside))))
+      · intro coordinate inside
+        exact Nat.lt_succ_of_le (of_decide_eq_true (List.all_eq_true.mp bounds coordinate
+          (List.mem_append_right _ inside)))
+    · cases rest
+  · cases ok
+
+/-- Every source coordinate used by the actual structural comparison is in
+its live-plus-predicate carrier before localization. -/
+theorem ReplayOccurrence.structural_geometry {deps original circuit connected reserved initial final prior suffix count auxiliary scratch}
+    (occurrence : ReplayOccurrence deps original circuit connected reserved initial final prior
+      (.synthesized count (auxiliary :: scratch)) suffix)
+    {operation : Semantics.Raw.Op} {next : Interface} {bits : Nat} {axes : List Nat}
+    {forward inverse : List Semantics.Finite.Step} {uses : List Semantics.Raw.Use}
+    (occurs : original[occurrence.entry.rawIndex]? = some (.pure operation))
+    (raw : Semantics.RawTrace.step occurrence.entry.raw operation =
+      some (next,[.structuralComputed bits axes forward inverse uses])) :
+    ∀ step ∈ forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse,
+      (∀ control ∈ step.controls, control.index < axes.length+1) ∧
+      (∀ axis ∈ Finite.targets step.action, axis < axes.length+1) := by
+  have loaded : (lift (readOption (Semantics.RawTrace.step occurrence.entry.raw operation)) : WorkM _) =
+      pure (next,[Semantics.Raw.Event.structuralComputed bits axes forward inverse uses]) := by rw [raw]; rfl
+  have accepted := occurrence.stepRun
+  simp only [replayStep,occurs,followRaw,loaded,pure_bind] at accepted
+  obtain ⟨_,_,checked,_⟩ := bind_success _ _ _ _ _ accepted
+  exact checkStructural_bounds checked
+
+/-- Unpack the exact compared source word without changing its auxiliary role. -/
+theorem StructuralPlacement.decomposed_word {deps circuit state count auxiliary scratch reserved bits axes forward inverse uses}
+    (placed : StructuralPlacement deps circuit state count auxiliary scratch reserved bits axes forward inverse uses)
+    (empty : scratch.isEmpty = true) :
+    Nonempty (Decomposition deps circuit state.gateIndex count (state.locations ++ [auxiliary])
+      ((forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse).map
+        (Semantics.RawTrace.localize (axes ++ [bits])))) :=
+  ⟨by simpa only [CheckedWord,structuralWord,empty,if_true] using placed.action⟩
+
+/-- Unpack the exact comparison with synthesis scratch beyond the predicate. -/
+theorem StructuralPlacement.synthesized_word {deps circuit state count auxiliary scratch reserved bits axes forward inverse uses}
+    (placed : StructuralPlacement deps circuit state count auxiliary scratch reserved bits axes forward inverse uses)
+    (nonempty : scratch.isEmpty = false) :
+    Nonempty (Synthesis deps circuit state.gateIndex count (state.locations ++ [auxiliary]) scratch state.synthesis
+      ((forward ++ uses.map (Raw.physicalUse 0 axes.length) ++ inverse).map
+        (Semantics.RawTrace.localize (axes ++ [bits])))) :=
+  ⟨by simpa only [CheckedWord,structuralWord,nonempty,Bool.false_eq_true,if_false] using placed.action⟩
+
+#print axioms ReplayOccurrence.structural_geometry
+#print axioms StructuralPlacement.decomposed_word
+#print axioms StructuralPlacement.synthesized_word
 
 end QleisliKernel.Target.CanonicalOpenQasmPlacement

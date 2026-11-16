@@ -314,6 +314,144 @@ def Original.checkPlacement {bytes : ByteArray} (original : Original bytes) {tar
       original.checked.root.dependencies)
   return ⟨segments.val,by exact segments.property,trace.val,by exact trace.property⟩
 
+private def workspaceStep {deps root} (traverse : WorkspaceTraversal deps root)
+    {program block} (base : Nat) (first : RuntimePureBody.Step deps program block) :
+    Finite.WorkM (List (WorkspaceBuilder root)) :=
+  match first with
+  | .pure node => pure ((workspaceSegment root base node).toList)
+  | .named (start := start) _ _ _ _ _ _ children => traverse (base+start) children
+  | .conditional .. => throw .request
+  | _ => pure []
+
+private theorem workspaceSteps_visit {deps root program block} (fuel base : Nat)
+    (first : RuntimePureBody.Step deps program block) (rest : RuntimePureBody.Steps deps program block) :
+    workspaceSteps root (fuel+1) base (.cons first rest) = (do
+      Finite.exactWork (Exact.charge 32)
+      let here ← workspaceStep (workspaceSteps root fuel) base first
+      let tail ← workspaceSteps root fuel base rest
+      Finite.exactWork (Exact.charge here.length)
+      pure (here ++ tail)) := by
+  cases first <;> rfl
+
+private def WorkspaceBuilder.keepsDependencies {root : Semantics.Observation.Program}
+    (builder : WorkspaceBuilder root) (dependencies : List Semantics.Finite.Dependency) : Prop :=
+  ∀ plan segment work left,
+    (builder plan).run work = (.ok segment,left) → segment.dependencies = dependencies
+
+private theorem workspaceSegment_dependencies {deps program block} {root : Semantics.Observation.Program}
+    {base : Nat} {node : RuntimePureBody.Node deps program block} {builder : WorkspaceBuilder root}
+    (built : workspaceSegment root base node = some builder) : builder.keepsDependencies deps := by
+  unfold workspaceSegment at built
+  split at built
+  · obtain rfl := Option.some.inj built
+    intro plan segment work left checked
+    obtain ⟨_,_,_,completed⟩ := Finite.bind_success _ _ _ _ _ checked
+    dsimp only at completed
+    split at completed
+    · obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ completed
+      rfl
+    · cases completed
+  · cases built
+
+private theorem workspaceSteps_dependencies {deps : List Semantics.Finite.Dependency}
+    (root : Semantics.Observation.Program) (fuel : Nat)
+    {program : Semantics.Observation.Program} {block : RuntimeInterval.Block deps program}
+    {base work left : Nat} {steps : RuntimePureBody.Steps deps program block}
+    {builders : List (WorkspaceBuilder root)}
+    (checked : (workspaceSteps root fuel base steps).run work = (.ok builders,left)) :
+    ∀ builder ∈ builders, builder.keepsDependencies deps := by
+  induction fuel generalizing program block base work left builders with
+  | zero =>
+    cases steps with
+    | nil =>
+      obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ checked
+      simp
+    | cons _ _ => cases checked
+  | succ fuel ih =>
+    cases steps with
+    | nil =>
+      obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ checked
+      simp
+    | cons first rest =>
+      rw [workspaceSteps_visit] at checked
+      obtain ⟨_,_,_,afterCharge⟩ := Finite.bind_success _ _ _ _ _ checked
+      obtain ⟨here,_,head,afterHead⟩ := Finite.bind_success _ _ _ _ _ afterCharge
+      obtain ⟨tail,_,tailRead,afterTail⟩ := Finite.bind_success _ _ _ _ _ afterHead
+      obtain ⟨_,_,_,finished⟩ := Finite.bind_success _ _ _ _ _ afterTail
+      obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ finished
+      intro builder member
+      rcases List.mem_append.mp member with chosen | later
+      · cases first with
+        | pure node =>
+          simp only [workspaceStep] at head
+          obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ head
+          cases selected : workspaceSegment root base node with
+          | none => simp [selected] at chosen
+          | some found =>
+            have same : builder = found := by simpa [selected] using chosen
+            subst builder
+            exact workspaceSegment_dependencies selected
+        | named _ _ _ _ _ _ children => exact ih head builder chosen
+        | conditional _ _ _ _ _ _ _ _ => cases head
+        | gap _ | observation _ =>
+          simp only [workspaceStep] at head
+          obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ head
+          cases chosen
+      · exact ih tailRead builder later
+
+private theorem buildWorkspaceDependencies {root : Semantics.Observation.Program}
+    {deps : List Semantics.Finite.Dependency} (builders : List (WorkspaceBuilder root))
+    (all : ∀ builder ∈ builders, builder.keepsDependencies deps)
+    (plans : List WorkspaceAlignment) {segments : List (Segment root)} {work left : Nat}
+    (checked : ((List.zipWith (fun (build : WorkspaceBuilder root) plan => build plan) builders plans).mapM id).run work = (.ok segments,left)) :
+    ∀ segment ∈ segments, segment.dependencies = deps := by
+  induction builders generalizing plans segments work left with
+  | nil =>
+    obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ checked
+    simp
+  | cons builder rest ih =>
+    cases plans with
+    | nil =>
+      obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ checked
+      simp
+    | cons plan later =>
+      simp only [List.zipWith_cons_cons,List.mapM_cons,id] at checked
+      obtain ⟨first,_,head,continuation⟩ := Finite.bind_success _ _ _ _ _ checked
+      obtain ⟨tail,_,tailRead,finish⟩ := Finite.bind_success _ _ _ _ _ continuation
+      obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ finish
+      intro segment member
+      rcases List.mem_cons.mp member with rfl | inTail
+      · exact all builder List.mem_cons_self _ _ _ _ head
+      · exact ih (fun _ member => all _ (List.mem_cons_of_mem _ member)) later tailRead segment inTail
+
+/-- Every source workspace builder uses the original root's checked
+provider dependencies. The alignment supplies coordinates only. -/
+theorem Original.workspaceDependencies {bytes : ByteArray} (original : Original bytes)
+    {plans : List WorkspaceAlignment} {segments : List (Segment original.checked.root.program)} {work left : Nat}
+    (checked : (original.workspaceSegments plans).run work = (.ok segments,left)) :
+    ∀ segment ∈ segments, segment.dependencies = original.checked.root.dependencies := by
+  unfold Original.workspaceSegments at checked
+  obtain ⟨_,_,_,charged⟩ := Finite.bind_success _ _ _ _ _ checked
+  obtain ⟨_,_,_,bounded⟩ := Finite.bind_success _ _ _ _ _ charged
+  obtain ⟨builders,_,read,afterRead⟩ := Finite.bind_success _ _ _ _ _ bounded
+  obtain ⟨_,_,_,filled⟩ := Finite.bind_success _ _ _ _ _ afterRead
+  exact buildWorkspaceDependencies builders (workspaceSteps_dependencies _ _ read) plans filled
+
+/-- In the actual complete placement trace each workspace interprets
+contract references using the same dependency table as the root replay. -/
+theorem CheckedPlacement.workspaceDependencies {bytes : ByteArray} {original : Original bytes}
+    {targetBytes capacity} {target : Target.CanonicalOpenQasmResources.Checked targetBytes capacity}
+    {connected reserved synthesis plans suffix}
+    (checked : CheckedPlacement original target connected reserved synthesis plans suffix) :
+    ∃ segments, checked.trace.recorded.trace.RecordsSegments segments ∧
+      ∀ segment ∈ segments, segment.dependencies = original.checked.root.dependencies := by
+  obtain ⟨_,_,checkedTrace⟩ := checked.checkedTrace
+  obtain ⟨_,_,fromSource⟩ := checked.fromSource
+  exact ⟨_,Target.CanonicalOpenQasmPlacement.finishTrace_segments checkedTrace,
+    original.workspaceDependencies fromSource⟩
+
+#print axioms CheckedPlacement.workspaceDependencies
+
 def input (value : Packet.Input) : CheckM (Original value.original) :=
   match value.scope with
   | .execution => check value.original value.graph

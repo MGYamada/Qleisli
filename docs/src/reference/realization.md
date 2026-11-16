@@ -885,6 +885,16 @@ over the workspace occurrences visited by the replay, including caller
 spectators and temporary clean wires.
 The native reply theorem binds the reported counts to those exact target bytes
 and proves that the reserved width is within the requested target capacity.
+`Qleisli.TerminalPlacement.native_terminal_correspondence` relates that same
+successful native decision to the selected original Raw root. Immediately
+before terminal measurement, after all decoded gates have run from reset, the
+entire physical complex column agrees with the corresponding pure Raw prefix
+under its ordered placement, including phase and restored scratch. The final
+measurement distribution agrees for every public result word after summing
+the original hidden outcomes. The theorem also binds the reply's resource
+counts and workspace peak bound to that same checked packet.
+For `--resources`, the terminal emitter supplies the emitted register width as
+the packet's capacity.
 A structural basis lift updates the physical placement only when its complete
 table is an axis permutation. It contributes zero gates. A routing SWAP
 must occupy a literal gate position.
@@ -1016,8 +1026,12 @@ bound for a different target or an optimal cost claim. See
 Embedding a `k`-qubit gate `G` into `n` wires, under a fixed ordered basis,
 gives determinant `det(G)^(2^(n-k))`. Determinants multiply under composition.
 Consequently a target generator set restricts same-wire determinants.
-This is a necessary obstruction; sufficiency requires a separate theorem for
+This gives a necessary condition. Sufficiency requires a separate theorem for
 that precise generator, phase and workspace profile.
+For a basis-permutation vocabulary, signs multiply under composition.
+An even-only vocabulary therefore excludes odd permutations on the same wires.
+Precomputed generator determinant classes or the parity of an available
+permutation table can reject a candidate before synthesis.
 
 In QPTL, `QPTL.FiniteMatrix.det_embedded` proves this determinant formula
 for finite matrix bases and simultaneous reindexing of both interfaces.
@@ -1036,10 +1050,12 @@ The repository retains two exact small examples:
 Both programs remain semantically accepted. The regression
 `tests/static_semantics.rs::review_same_wire_obstructions_do_not_reject_semantic_unitaries`
 checks the original four-bit table, the complete exact F8 operator and the
-embedded-generator determinant calculation. Its retained source is
-`tests/fixtures/review_v023/c3x.qli`. These examples do not establish a universal
-obstruction for other target vocabularies, arbitrary controlled gates or a
-profile that permits additional workspace.
+embedded-generator determinant calculation. The original source is retained at
+`tests/fixtures/review_v023/c3x.qli`. The regression reads the corresponding
+current fixture at
+`tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/review_v023/c3x.qli`.
+The obstructions use the stated generator vocabulary, controls and workspace
+premises.
 
 ## Current production status and diagnostics
 
