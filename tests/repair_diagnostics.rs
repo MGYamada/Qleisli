@@ -370,6 +370,32 @@ unitary fn bad(operand: Q<(Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit)> {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn qmatch_static_arm_with_different_ports_keeps_the_arm_diagnostic() {
+    let source = "unitary fn keep(q: Q<((Bit,Bit),Bit)>) -> Q<((Bit,Bit),Bit)> { q }
+unitary fn regroup(q: Q<((Bit,Bit),Bit)>) -> Q<(Bit,(Bit,Bit))> {
+    basis q as ((a,b),c) { (a,(b,c)) }
+}
+unitary fn bad(control: Q<Bit>, operand: Q<(Bit,(Bit,Bit))>) -> (Q<Bit>,Q<(Bit,(Bit,Bit))>) {
+    qmatch(control,operand) {0=>then_op(keep,regroup), 1=>i}
+}";
+    let error = check_project_diagnostic(&SourceRoot::new(source).0).unwrap_err();
+    assert_eq!(error.code, "type_mismatch");
+    assert_eq!(
+        error.message,
+        "type or tuple/size shape mismatch: expected `(Bit,(Bit,Bit))`, found `((Bit,Bit),Bit)`"
+    );
+    let location = error.primary.unwrap();
+    assert_eq!(
+        &source[location.span.start..location.span.end],
+        "then_op(keep,regroup)"
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
     let original = fs::read_to_string(current_namespace_fixture(
         &Path::new(env!("CARGO_MANIFEST_DIR")).join(

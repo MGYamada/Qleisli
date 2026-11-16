@@ -31,7 +31,7 @@ For the phase case, the issue reports the following detail from replacing
 input column 3, output row 3 (zero-based): actual -1, expected 1*i
 ```
 
-The adjacent files are separate edition-2026 reproductions. The two-CNOT
+The saved projects are separate edition-2026 reproductions. The two-CNOT
 case replaces the removed coherent syntax with the standard structural
 permutation. The one-bit case isolates the same `-1` versus `i` coefficient.
 The native-backed CLI test checks both current text and JSON. The historical

@@ -91,23 +91,24 @@ fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
 )]
 #[test]
 fn equation_counterexample_text_and_json_preserve_axis_order_and_phase() {
-    for (source, message, input_column, output_row) in [
+    let attempts = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/contract-counterexample-v030/attempt-01");
+    for (project, message, input_column, output_row) in [
         (
-            include_str!(
-                "fixtures/authoring_sessions/contract-counterexample-v030/permutation.qli"
-            ),
+            "permutation",
             "input |(0, 1)⟩, output |(1, 0)⟩: actual 0, expected 1",
             2,
             1,
         ),
         (
-            include_str!("fixtures/authoring_sessions/contract-counterexample-v030/phase.qli"),
+            "phase",
             "input |1⟩, output |1⟩: actual -1, expected i",
             1,
             1,
         ),
     ] {
-        let root = SourceRoot::new(source);
+        let root = attempts.join(project);
+        let source = std::fs::read_to_string(root.join("main.qli")).unwrap();
         let start = source.find("apply_contract(").unwrap();
         let end = start + source[start..].find('\n').unwrap();
         let line = source[..start]
@@ -115,7 +116,7 @@ fn equation_counterexample_text_and_json_preserve_axis_order_and_phase() {
             .filter(|&byte| byte == b'\n')
             .count()
             + 1;
-        let output = cli(&["check".as_ref(), root.0.as_os_str()]);
+        let output = cli(&["check".as_ref(), root.as_os_str()]);
         assert_eq!(output.status.code(), Some(1), "{output:?}");
         assert!(output.stdout.is_empty(), "{output:?}");
         let text = String::from_utf8(output.stderr).unwrap();
@@ -129,11 +130,7 @@ fn equation_counterexample_text_and_json_preserve_axis_order_and_phase() {
             "{text}"
         );
 
-        let output = cli(&[
-            "check".as_ref(),
-            root.0.as_os_str(),
-            "--format=json".as_ref(),
-        ]);
+        let output = cli(&["check".as_ref(), root.as_os_str(), "--format=json".as_ref()]);
         assert_eq!(output.status.code(), Some(1), "{output:?}");
         assert!(output.stderr.is_empty(), "{output:?}");
         let json = String::from_utf8(output.stdout).unwrap();

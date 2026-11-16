@@ -500,16 +500,20 @@ pub(super) fn expect(
     if same {
         Ok(())
     } else {
-        Err(SourceError::new(
-            "type",
-            span,
-            format!(
-                "type or tuple/size shape mismatch: expected `{}`, found `{}`",
-                expected.display(Stage::Runtime),
-                actual.display(Stage::Runtime)
-            ),
-        ))
+        Err(type_shape_mismatch(actual, expected, span))
     }
+}
+
+pub(super) fn type_shape_mismatch(actual: &Ty, expected: &Ty, span: Span) -> SourceError {
+    SourceError::new(
+        "type",
+        span,
+        format!(
+            "type or tuple/size shape mismatch: expected `{}`, found `{}`",
+            expected.display(Stage::Runtime),
+            actual.display(Stage::Runtime)
+        ),
+    )
 }
 
 pub(super) fn expect_static_operand(

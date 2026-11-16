@@ -1174,19 +1174,33 @@ impl Checker<'_, '_> {
                 ..OperationMode::ENDO
             },
         )?;
-        normalize::expect_static_operand(
-            normalize::equivalent(
+        let input_matches = normalize::equivalent(
+            &checked.basis,
+            basis,
+            &scope.context,
+            operation.span,
+            &self.program.budget,
+        )?;
+        if !input_matches {
+            // The interface is already rejected. Use the operand only for an
+            // arm with identical declared ports, without another size proof.
+            if &checked.basis == checked.output() {
+                return Err(SourceError::new(
+                    "type",
+                    operand_span,
+                    crate::frontend::diagnostic::static_operand_mismatch(
+                        &checked.basis,
+                        basis,
+                        true,
+                    ),
+                ));
+            }
+            return Err(normalize::type_shape_mismatch(
                 &checked.basis,
                 basis,
-                &scope.context,
                 operation.span,
-                &self.program.budget,
-            ),
-            basis,
-            &checked.basis,
-            operand_span,
-            true,
-        )?;
+            ));
+        }
         normalize::expect(
             checked.output(),
             basis,
