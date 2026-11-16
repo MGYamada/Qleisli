@@ -1,7 +1,7 @@
 name = "qleisli_qptl_application"
 defaultTargets = ["RuntimeTapeDirectSum", "ProtectedClean", "ProtectedProgram",
   "StructuralComputedResources", "WorkspaceTargetAction", "RuntimeWorkspaceRestoration",
-  "ControlledWorkspace", "ProtectedObserving"]
+  "ControlledWorkspace", "ProtectedObserving", "TerminalPlacement"]
 
 [leanOptions]
 autoImplicit = false
@@ -38,3 +38,6 @@ name = "ControlledWorkspace"
 
 [[lean_lib]]
 name = "ProtectedObserving"
+
+[[lean_lib]]
+name = "TerminalPlacement"
