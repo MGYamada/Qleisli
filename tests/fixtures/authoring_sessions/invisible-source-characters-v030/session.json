@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Reject invisible Unicode source characters in the common lexer and documentation command under #245",
+  "author": "Codex assistant; informed maintenance; no external model invoked",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "a844010fcfb4db023f60da02350d21c672c96366",
+  "context": "README.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Retain one non-instructional source tag scalar and the actual source-only documentation behavior before changing the scanner.",
+      "sha256": {
+        "main.qli": "521bba01c5b36214824b276d722f5cd6af77c4f1268e50e03c3283ab25466f39"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before-doc.json"
+      ]
+    }
+  ]
+}

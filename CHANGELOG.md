@@ -4,6 +4,9 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Reject Unicode 17.0.0 default-ignorable and format characters throughout
+  source, including comments and documentation input. Report the code point
+  and its original UTF-8 byte span (#245).
 - Prove that accepted terminal OpenQASM packets preserve every original Raw
   output probability from register reset through the decoded measurement word.
   The same native decision binds the pre-readout complex column, the selected

@@ -49,6 +49,10 @@ The [parser surface diagnostics study](parser-surface-diagnostics-v030/README.md
 preserves the initial messages on invented quantum statements and malformed
 quantum headers before locally recognized forms gained syntax guidance.
 
+The [invisible source character study](invisible-source-characters-v030/README.md)
+retains the original source bytes and the pre-change `doc` transcript. It
+records the prior binary separately from the reviewed source baseline.
+
 The [structural predicate target study](structural-predicate-target-v030/README.md)
 preserves the first closed source and the terminal export refusal at its
 original Raw computed scope.

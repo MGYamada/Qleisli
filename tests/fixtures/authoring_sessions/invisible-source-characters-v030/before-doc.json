@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/private/tmp/qleisli-165-phase-cli-target/debug/qleisli",
+    "doc",
+    "/private/tmp/qleisli-245-unicode.tyUyjSKl/tests/fixtures/authoring_sessions/invisible-source-characters-v030/attempt-01/main.qli"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-11-16T22:07:52.146934+00:00",
+  "cli_sha256_before": "216446c475da59c60f5d8c982cbb53f0946ace55cb7954fbf9c05951c74a7535",
+  "cli_sha256_after": "216446c475da59c60f5d8c982cbb53f0946ace55cb7954fbf9c05951c74a7535",
+  "transcript": "# Module documentation\n\nSource documentation only; no type, ownership or contract verification is implied.\n\n## main (private)\n\n```qli\nclassical fn main() -> Bit\n```\n\n```text\nA retained lexical probe: \udb40\udc61.\n```\n\n",
+  "stderr": ""
+}
