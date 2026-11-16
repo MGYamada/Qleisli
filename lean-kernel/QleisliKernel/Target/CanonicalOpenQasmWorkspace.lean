@@ -294,4 +294,85 @@ theorem CleanUse.exactRestoration {circuit scratch} (use : CleanUse circuit scra
     Raw.Workspace.check_conditions _ _ _ _ _ _ work left ran
   exact ⟨contract,work,middle,circuitWork,after,lhs,lhsWork,rhs,rhsWork,facts⟩
 
+open Semantics
+open CanonicalOpenQasmResources (Gate)
+
+private theorem lookup_idxOf {layout : List Nat} {wire : Nat} (member : wire ∈ layout) :
+    layout[layout.idxOf wire]? = some wire := by
+  rw [List.idxOf, ← List.find?_eq_getElem?_findIdx]
+  have found : (layout.find? (· == wire)).isSome = true :=
+    List.find?_isSome.mpr ⟨wire, member, by simp⟩
+  cases read : layout.find? (· == wire) with
+  | none => simp [read] at found
+  | some value =>
+    have equal := List.find?_some read
+    simp only [beq_iff_eq] at equal
+    rw [equal]
+
+private theorem instruction_roundtrip {layout : List Nat} {instruction : Instruction}
+    {step : Semantics.Finite.Step} (arity : instruction.wires.length = instruction.gate.arity)
+    (localized : instruction.localStep layout = some step) :
+    RawTrace.localize layout step = instruction.step := by
+  obtain ⟨gate, wires⟩ := instruction
+  simp only [Instruction.localStep] at localized
+  split at localized
+  · rename_i inside
+    simp only [List.all_eq_true, List.contains_iff_mem] at inside
+    simp only [Option.some.injEq] at localized
+    subst step
+    have atWire (i : Nat) (valid : i < wires.length) :
+        (layout[(wires[i]?.map layout.idxOf).getD 0]?).getD 0 = wires[i]?.getD 0 := by
+      rw [List.getElem?_eq_getElem valid]
+      simp [lookup_idxOf (inside _ (List.getElem_mem valid))]
+    cases gate <;>
+      simp [Instruction.step, Gate.action, RawTrace.unitary, RawTrace.gate,
+        RawTrace.localize, Routing.Swap.step, Gate.arity] at arity ⊢
+    all_goals (repeat' apply And.intro) <;> apply atWire <;> omega
+  · cases localized
+
+private theorem word_roundtrip {layout : List Nat} {word : List Instruction}
+    {steps : List Semantics.Finite.Step} (valid : ∀ instruction ∈ word, instruction.wires.length = instruction.gate.arity)
+    (localized : word.mapM (Instruction.localStep layout) = some steps) :
+    steps.map (RawTrace.localize layout) = word.map Instruction.step := by
+  induction word generalizing steps with
+  | nil => simp_all
+  | cons first rest ih =>
+    cases one : first.localStep layout with
+    | none => simp [List.mapM_cons, one] at localized
+    | some step =>
+      cases others : rest.mapM (Instruction.localStep layout) with
+      | none => simp [List.mapM_cons, one, others] at localized
+      | some tail =>
+        simp [List.mapM_cons, one, others] at localized
+        subst steps
+        simp [instruction_roundtrip (valid first (by simp)) one,
+          ih (fun instruction member => valid instruction (by simp [member])) others]
+
+private theorem interval_roundtrip {circuit : Circuit} {layout : List Nat} {start count : Nat}
+    {steps : List Semantics.Finite.Step}
+    (valid : ∀ instruction ∈ (circuit.gates.drop start).take count,
+      instruction.wires.length = instruction.gate.arity)
+    (localized : interval circuit layout start count = some steps) :
+    steps.map (RawTrace.localize layout) =
+      ((circuit.gates.drop start).take count).map Instruction.step := by
+  unfold interval at localized
+  split at localized
+  · exact word_roundtrip valid localized
+  · cases localized
+
+/-- Reindex a checked local word into the original physical positions of the
+literal decoded instruction slice, preserving the order of every operand. -/
+theorem decoded_interval_roundtrip {bytes : ByteArray} {circuit : Circuit} {layout : List Nat}
+    {start count : Nat} {steps : List Semantics.Finite.Step}
+    (decoded : CanonicalOpenQasmResources.decode bytes = some circuit)
+    (localized : interval circuit layout start count = some steps) :
+    steps.map (RawTrace.localize layout) =
+      ((circuit.gates.drop start).take count).map Instruction.step := by
+  apply interval_roundtrip _ localized
+  intro instruction member
+  exact (CanonicalOpenQasmResources.decode_instruction_shape decoded instruction
+    (List.mem_of_mem_drop (List.mem_of_mem_take member))).1
+
+#print axioms decoded_interval_roundtrip
+
 end QleisliKernel.Target.CanonicalOpenQasmWorkspace

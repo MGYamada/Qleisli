@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/private/tmp/qleisli-30-reviewed-base.HroRh8AW/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--openqasm-placement-check",
+    "0.3.0-beta"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-11-15T16:14:14.199529+00:00",
+  "transcript": "qleisli.native-result 3\nerror\ncontract\n",
+  "stderr": "",
+  "stdin_sha256": "5d1bcd5cd97a1cdfe568c2f11fcdd329ee3cc9bff757988db7f41a89713d0314"
+}

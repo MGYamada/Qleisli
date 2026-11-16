@@ -61,6 +61,38 @@
         "attempt-03-n2-target-located.json",
         "attempt-03-n3-check.json"
       ]
+    },
+    {
+      "id": "attempt-04",
+      "reason": "First ordered-basis program with creation and consumption of a Unit owner inside clean. The native source gate rejects it.",
+      "sha256": {
+        "main.qli": "0830d97aaa28bff154cec0a1fdb2606d542e1444d9674a42c7e91778a2066f30"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "attempt-04-inside-scope-check.json",
+        "attempt-04-inside-scope-target.json"
+      ]
+    },
+    {
+      "id": "attempt-05",
+      "reason": "The two quantum inputs retain distinct exact same-width basis types. Exchanging the actuals violates the first provider type.",
+      "sha256": {
+        "ordered/main.qli": "fcc8efb9385050047c6d32036c8e73b6016fc0fac0af809b734abcb39917f257",
+        "swapped/main.qli": "8c3cde5c051e96a0e179eef7ca5eadfa1a68cf1e22942b23ae4381ff0b61080d"
+      },
+      "manifest_sha256": {
+        "ordered/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "swapped/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "attempt-05-ordered-target.json",
+        "attempt-05-swapped-target.json",
+        "attempt-05-swapped-target-operands-native.json",
+        "attempt-05-swapped-written-types-native.json"
+      ]
     }
   ]
 }

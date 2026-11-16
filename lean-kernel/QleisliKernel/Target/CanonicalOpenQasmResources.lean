@@ -98,16 +98,20 @@ structure Circuit where
   measurements : List Nat
   deriving BEq, DecidableEq, Repr
 
-private def gatesAndMeasurements (width : Nat) (expected : Nat)
-    (lines : List (List UInt8)) : Option Circuit := do
-  let result ← lines.foldlM (fun (gates,measured,count) line => do
+private def scanLine (width expected : Nat) :
+    (List Instruction × List Nat × Nat) → List UInt8 → Option (List Instruction × List Nat × Nat) :=
+  fun (gates,measured,count) line => do
     if line.head? == some 99 && line[1]? == some 91 then
       let wire ← measurement line count width
       if count < expected && !measured.contains wire then some (gates,wire :: measured,count+1) else none
     else
       if count != 0 then none else
       let gate ← instruction line width
-      some (gate :: gates,measured,count)) (([],[],0) : List Instruction × List Nat × Nat)
+      some (gate :: gates,measured,count)
+
+private def gatesAndMeasurements (width : Nat) (expected : Nat)
+    (lines : List (List UInt8)) : Option Circuit := do
+  let result ← lines.foldlM (scanLine width expected) ([],[],0)
   let (gates,measured,count) := result
   if count == expected && gates.length ≤ 4096 then some ⟨width,gates.reverse,measured.reverse⟩ else none
 
@@ -189,5 +193,140 @@ private def sample := (sampleHeader ++ sampleBody).toUTF8
   ++ "ccx q[10], q[11], q[0];\n").toUTF8).map Circuit.counts == some ⟨12,12,1,0,0,0⟩
 #guard ((check sample 2).run 100000).1.isOk == false
 #guard ((check sample 3).run 0).1.isOk == false
+
+private def instructionShape (width : Nat) (gate : Instruction) : Prop :=
+  gate.wires.length = gate.gate.arity ∧ gate.wires.Nodup ∧ ∀ wire ∈ gate.wires, wire < width
+
+private theorem instruction_shape {line : List UInt8} {width : Nat} {gate : Instruction}
+    (decoded : instruction line width = some gate) : instructionShape width gate := by
+  unfold instruction at decoded
+  dsimp only at decoded
+  split at decoded
+  · rename_i args layout
+    cases name : Gate.read (line.takeWhile (· != 32)) with
+    | none => simp only [name, bind, Option.bind] at decoded
+              cases decoded
+    | some action =>
+      simp only [name, bind, Option.bind] at decoded
+      cases wireList : operands action.arity args with
+      | none => rw [wireList] at decoded
+                cases decoded
+      | some wires =>
+        rw [wireList] at decoded
+        dsimp only at decoded
+        split at decoded
+        · rename_i shape
+          have parsed := Option.some.inj decoded
+          subst gate
+          exact shape
+        · cases decoded
+  · cases decoded
+
+private theorem foldlM_preserves {α β : Type} (step : β → α → Option β) (valid : β → Prop)
+    (advance : ∀ prior line next, valid prior → step prior line = some next → valid next)
+    {lines : List α} {initial final : β} (starts : valid initial)
+    (computed : lines.foldlM step initial = some final) : valid final := by
+  induction lines generalizing initial with
+  | nil => simpa using (show initial = final from Option.some.inj computed) ▸ starts
+  | cons line rest ih =>
+    rw [List.foldlM_cons] at computed
+    cases advanced : step initial line with
+    | none => simp [advanced, Option.bind] at computed
+    | some next =>
+      exact ih (advance initial line next starts advanced) (by simpa [advanced, Option.bind] using computed)
+
+private theorem gatesAndMeasurements_shape {width expected lines circuit}
+    (decoded : gatesAndMeasurements width expected lines = some circuit) :
+    circuit.qubits = width ∧ ∀ gate ∈ circuit.gates, instructionShape width gate := by
+  unfold gatesAndMeasurements at decoded
+  match input : lines.foldlM (scanLine width expected) ([],[],0) with
+  | none => rw [input] at decoded
+            cases decoded
+  | some (gates, measured, count) =>
+    have valid := foldlM_preserves _ (fun state : List Instruction × List Nat × Nat =>
+      ∀ gate ∈ state.1, instructionShape width gate) (fun prior line next before computed => by
+        obtain ⟨gates,measured,count⟩ := prior
+        dsimp only [scanLine] at before computed
+        split at computed
+        · cases wire : measurement line count width with
+          | none => rw [wire] at computed
+                    cases computed
+          | some axis =>
+            simp only [wire, bind, Option.bind] at computed
+            split at computed
+            · have same := Option.some.inj computed
+              subst next
+              exact before
+            · cases computed
+        · split at computed
+          · cases computed
+          · cases parsed : instruction line width with
+            | none => rw [parsed] at computed
+                      cases computed
+            | some added =>
+              simp only [parsed, bind, Option.bind] at computed
+              have same := Option.some.inj computed
+              subst next
+              intro gate member
+              rcases List.mem_cons.mp member with same | tail
+              · subst gate
+                exact instruction_shape parsed
+              · exact before _ tail)
+      (by simp) input
+    simp only [input, bind, Option.bind] at decoded
+    split at decoded
+    · have parsed := Option.some.inj decoded
+      subst circuit
+      exact ⟨rfl, fun gate member => valid gate (List.mem_reverse.mp member)⟩
+    · cases decoded
+
+/-- The literal decoder checks the arity and distinct, in-range coordinates
+of every actual gate, before any resource or placement claim. -/
+theorem decode_instruction_shape {bytes : ByteArray} {circuit : Circuit}
+    (decoded : decode bytes = some circuit) (gate : Instruction) (member : gate ∈ circuit.gates) :
+    gate.wires.length = gate.gate.arity ∧ gate.wires.Nodup ∧ ∀ wire ∈ gate.wires, wire < circuit.qubits := by
+  have finish {width expected lines} (accepted : gatesAndMeasurements width expected lines = some circuit) :
+      instructionShape circuit.qubits gate := by
+    obtain ⟨same, shape⟩ := gatesAndMeasurements_shape accepted
+    rw [same]
+    exact shape gate member
+  unfold decode at decoded
+  split at decoded
+  · cases decoded
+  · split at decoded
+    · have empty := Option.some.inj decoded
+      subst circuit
+      cases member
+    · cases source : CanonicalOpenQasmRouting.declaration bytes with
+      | none => rw [source] at decoded
+                cases decoded
+      | some result =>
+        obtain ⟨width,after⟩ := result
+        simp only [source, bind, Option.bind] at decoded
+        cases body : lines (bytes.extract after bytes.size).data.toList with
+        | none => rw [body] at decoded; cases decoded
+        | some read =>
+          cases read with
+          | nil => rw [body] at decoded; cases decoded
+          | cons first rest =>
+            rw [body] at decoded
+            dsimp only at decoded
+            split at decoded
+            · exact finish decoded
+            · cases widthCheck : resultWidth first with
+              | none => rw [widthCheck] at decoded
+                        cases decoded
+              | some expected =>
+                rw [widthCheck] at decoded
+                dsimp only at decoded
+                cases rest with
+                | nil => cases decoded
+                | cons reset tail =>
+                  dsimp only at decoded
+                  split at decoded
+                  · exact finish decoded
+                  · cases decoded
+
+#print axioms decode_instruction_shape
 
 end QleisliKernel.Target.CanonicalOpenQasmResources

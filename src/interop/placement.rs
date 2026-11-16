@@ -369,6 +369,58 @@ mod tests {
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
     #[test]
+    fn workspace_resources_bind_ordered_basis_and_provider_actuals() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/target-specialization-v030/attempt-05");
+        let kernel = Kernel::selected(Edition::E2026).unwrap();
+        let compile = |case| {
+            Project::load(&root.join(case))
+                .unwrap()
+                .compile_with_kernel(&kernel)
+        };
+        let program = compile("ordered").unwrap();
+        let (target, resources) =
+            crate::interop::export_openqasm3_with_resources(&program).unwrap();
+        assert!(target.contains("t q[0];\ntdg q[1];"), "{target}");
+        assert_eq!(
+            (resources.qubits, resources.gates, resources.t_gates),
+            (3, 2, 2)
+        );
+        assert!(target.ends_with("c[0] = measure q[0];\nc[1] = measure q[1];\n"));
+
+        let intervals = workspace_intervals(
+            program.source_context().unwrap(),
+            program.raw().operations.len(),
+        )
+        .unwrap();
+        let (_, alignment) =
+            super::super::profile::extract_with_alignment(&program, Some(&intervals), &mut None)
+                .unwrap();
+        let swapped = target.replace("t q[0];\ntdg q[1];", "t q[1];\ntdg q[0];");
+        let error = program
+            .check_openqasm_placement(swapped.as_bytes(), &alignment.encode())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+        assert!(
+            error.message.contains("clean workspace restoration failed"),
+            "{error}"
+        );
+
+        let error =
+            compile("swapped").expect_err("equal wire counts cannot substitute basis types");
+        assert!(
+            error
+                .message
+                .contains("expected `Op<Bit>`, found `Op<(Unit,Bit)>`"),
+            "{error:?}"
+        );
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
     fn native_rejects_swapped_workspace_and_spectator_wires() {
         let source = "#![no_implicit_prelude]\n\
             isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
