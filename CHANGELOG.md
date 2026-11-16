@@ -4,6 +4,10 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Locate failed native OpenQASM workspace equations in the original Raw scope
+  and report the corresponding source specialization when available (#127).
+- Check exact zero-width `Q<Unit>` creation and consumption inside a workspace
+  body while preserving the live owner list, phase and target resources (#127).
 - Prove that the localized OpenQASM synthesis steps recover the literal
   target instruction slice and agree with its action on each spectator slice
   of the full physical register (#120).

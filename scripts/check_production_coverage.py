@@ -2003,13 +2003,17 @@ PATHS['contract-acceptance']['tests'].extend([
 PATHS['openqasm-placement'] = path_rule(
     'lean-component', 'foreign', '--openqasm-placement-check', [
         ('src/bin/qleisli/interop.rs', ['Some("--resources") if !resources', 'interop::export_openqasm_for_cli(program, resources)']),
-        ('src/interop/mod.rs', ['pub fn export_openqasm3_with_resources(', 'openqasm_with_resources(program, &mut failed_steps)',
-         'check_openqasm_placement(text.as_bytes(), &alignment.encode())']),
-        ('src/interop/placement.rs', ['fn workspace_intervals(', 'enum Match', 'pub(super) fn encode(']),
+        ('src/interop/mod.rs', ['pub fn export_openqasm3_with_resources(', 'openqasm_with_resources(program)',
+         'placement::checked_resources(program, text.as_bytes(), &alignment, &intervals)?']),
+        ('src/interop/placement.rs', ['fn workspace_intervals(', 'enum Match', 'pub(super) fn encode(',
+            'pub(super) fn checked_resources', 'check_openqasm_placement(target, &alignment.encode())',
+            'program.workspace_specialization_origin(operation, steps)']),
         ('src/interchange/native/openqasm_placement.rs', ['qmatch_v5::complete(self.execution_view_graph(), request)?',
-            'Kernel::encode_subject(', 'b"QTP1"', 'Mode::OpenQasmPlacement.argument()', 'Scope::Execution']),
+            'Kernel::encode_subject(', 'b"QTP1"', 'Mode::OpenQasmPlacement.argument()', 'Scope::Execution',
+            'fn located_rejection(', 'operations - start']),
         ('lean-kernel/Protocol/NativeContext.lean', ['if placement : mode = .openQasmPlacement then',
             'CheckedQmatchV5.PlacementPacket.check bytes', 'value.2.target.circuit.counts',
+            '.workspacePlacementRestoration dirty start count',
             'guard (requestedProduct == productVersion) .version\n      let checked ← check .openQasmPlacement bytes']),
         ('lean-kernel/Protocol/NativeContext/Bindings.lean',
             ['theorem run_openqasm_placement_binding ', 'theorem run_openqasm_placement_resources ']),
@@ -2019,7 +2023,11 @@ PATHS['openqasm-placement'] = path_rule(
     ], [('tests/interop.rs', 'terminal_export_realizes_source_clean_and_dirty_workspaces'),
         ('tests/interop.rs', 'terminal_workspace_resource_report_replays_named_scopes_with_caller_spectators'),
         ('tests/interop.rs', 'terminal_workspace_resource_report_tracks_bits_register_axes'),
-        ('src/interop/placement.rs', 'native_rejects_swapped_workspace_and_spectator_wires')])
+        ('src/interop/placement.rs', 'native_rejects_swapped_workspace_and_spectator_wires'),
+        ('src/interop/placement.rs', 'dirty_target_rejection_locates_the_specialized_body'),
+        ('src/interop/placement.rs', 'workspace_zero_width_owner_keeps_the_exact_target_word_and_counts'),
+        ('src/interchange/native/openqasm_placement.rs',
+         'only_a_context_bound_nonempty_raw_interval_locates_a_workspace_rejection')])
 
 # Main routes all native modes through this common adapter. The retained older
 # IO modules above remain in the source/audit inventory; their existence is not

@@ -309,7 +309,11 @@ def Mode.errorCode : Mode → Gate.Error → String
 
 def reply (mode : Mode) (work : Nat) (result : Except Gate.Error (Decision mode)) (left : Nat) : Reply :=
   match result with
-  | .error error => ⟨false,["qleisli.native-result 3","error",mode.errorCode error]⟩
+  | .error error => match mode,error with
+    | .openQasmPlacement,.native (.workspacePlacementRestoration dirty start count) =>
+      ⟨false,["qleisli.native-result 3","error",mode.errorCode (.native (.workspaceRestoration dirty)),
+        "2026",productVersion,mode.name,"execution",toString start,toString count]⟩
+    | _,_ => ⟨false,["qleisli.native-result 3","error",mode.errorCode error]⟩
   | .ok decision => ⟨true,successLines mode decision (work-left)⟩
 
 theorem reply_hierarchy_native_error (mode : CheckedHierarchy.Modes.Mode)

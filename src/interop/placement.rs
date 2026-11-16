@@ -2,7 +2,10 @@
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 use super::export::GateBoundaries;
 use super::profile::TerminalCircuit;
-use super::{InteropError, InteropErrorKind, MAX_OPERATIONS};
+use super::{
+    InteropError, InteropErrorKind, MAX_OPERATIONS, OpenQasmResources, TerminalExportDiagnostic,
+};
+use crate::AcceptedProgram;
 use crate::interchange::qmatch::{ContextSubject, WorkspaceInterval};
 use crate::ir::{RawOp, RawProgram};
 
@@ -48,6 +51,60 @@ pub(super) fn workspace_intervals(
         return Err(invalid_alignment());
     }
     Ok(intervals)
+}
+
+pub(super) fn checked_resources<'a>(
+    program: &'a AcceptedProgram,
+    target: &[u8],
+    alignment: &Alignment,
+    intervals: &[WorkspaceInterval],
+) -> Result<OpenQasmResources, TerminalExportDiagnostic<'a>> {
+    program
+        .check_openqasm_placement(target, &alignment.encode())
+        .map_err(|failure| {
+            let kind = match failure.error.code {
+                "limit" => InteropErrorKind::Limit,
+                "unsupported" => InteropErrorKind::Unsupported,
+                _ => InteropErrorKind::InvalidIr,
+            };
+            let mut diagnostic = TerminalExportDiagnostic {
+                error: InteropError::new(kind, failure.error.to_string()),
+                specialization: None,
+            };
+            let Some(workspace) = failure.workspace else {
+                return diagnostic;
+            };
+            let scope = workspace.operations;
+            let original = intervals.iter().find(|interval| {
+                interval.start == scope.start
+                    && interval.count == scope.len()
+                    && interval.fresh == workspace.fresh
+            });
+            let operations = program.raw().operations.get(scope.clone());
+            let body = match (original, operations) {
+                (
+                    Some(WorkspaceInterval { fresh: true, .. }),
+                    Some([RawOp::CertifiedCompute { use_steps, .. }]),
+                ) => Some((scope.start, use_steps.len())),
+                (
+                    Some(WorkspaceInterval { fresh: false, .. }),
+                    Some(
+                        [
+                            RawOp::Join { .. },
+                            RawOp::ApplyUnitary { steps, .. },
+                            RawOp::Split { .. },
+                        ],
+                    ),
+                ) => Some((scope.start + 1, steps.len())),
+                _ => None,
+            };
+            if let Some((operation, steps)) = body {
+                diagnostic.error.operation = Some(operation);
+                diagnostic.specialization =
+                    program.workspace_specialization_origin(operation, steps);
+            }
+            diagnostic
+        })
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -333,7 +390,7 @@ mod tests {
         assert_eq!((t_resources.qubits, t_resources.gates), (2, 1));
         assert_eq!((h_resources.t_gates, t_resources.t_gates), (0, 1));
 
-        for (program, other_target) in [(&h, &t_target), (&t, &h_target)] {
+        for (program, other_target, instance) in [(&h, &t_target, "[0]"), (&t, &h_target, "[1]")] {
             let intervals = workspace_intervals(
                 program.source_context().unwrap(),
                 program.raw().operations.len(),
@@ -342,10 +399,18 @@ mod tests {
             let (_, alignment) =
                 super::super::profile::extract_with_alignment(program, Some(&intervals), &mut None)
                     .unwrap();
-            let error = program
-                .check_openqasm_placement(other_target.as_bytes(), &alignment.encode())
-                .unwrap_err();
-            assert_eq!(error.code, "contract", "{error}");
+            let failure =
+                checked_resources(program, other_target.as_bytes(), &alignment, &intervals)
+                    .unwrap_err();
+            assert_eq!(failure.error.kind, InteropErrorKind::InvalidIr);
+            assert_eq!(failure.error.operation, Some(intervals[0].start));
+            let (module, span, label) = failure.specialization.expect("original specialization");
+            assert_eq!(module, "main");
+            assert!(span.start < span.end);
+            assert!(
+                label.contains(&format!("main::specialize{instance}")),
+                "{label}"
+            );
         }
 
         let scalar = compile("n2").unwrap();
@@ -397,13 +462,22 @@ mod tests {
             super::super::profile::extract_with_alignment(&program, Some(&intervals), &mut None)
                 .unwrap();
         let swapped = target.replace("t q[0];\ntdg q[1];", "t q[1];\ntdg q[0];");
-        let error = program
+        let failure = program
             .check_openqasm_placement(swapped.as_bytes(), &alignment.encode())
             .unwrap_err();
-        assert_eq!(error.code, "contract", "{error}");
+        assert_eq!(failure.error.code, "contract", "{failure:?}");
         assert!(
-            error.message.contains("clean workspace restoration failed"),
-            "{error}"
+            failure
+                .error
+                .message
+                .contains("clean workspace restoration failed"),
+            "{failure:?}"
+        );
+        let workspace = failure.workspace.expect("failed restoration's Raw range");
+        assert!(workspace.fresh);
+        assert_eq!(
+            workspace.operations,
+            intervals[0].start..intervals[0].start + 1
         );
 
         let error =
@@ -414,6 +488,82 @@ mod tests {
                 .contains("expected `Op<Bit>`, found `Op<(Unit,Bit)>`"),
             "{error:?}"
         );
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn workspace_zero_width_owner_keeps_the_exact_target_word_and_counts() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/target-specialization-v030/attempt-04");
+        let kernel = Kernel::selected(Edition::E2026).unwrap();
+        let program = Project::load(&root)
+            .unwrap()
+            .compile_with_kernel(&kernel)
+            .unwrap();
+        let (target, resources) =
+            crate::interop::export_openqasm3_with_resources(&program).unwrap();
+        assert_eq!(
+            target,
+            "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[2] q;\nbit[1] c;\nreset q;\nt q[0];\nc[0] = measure q[0];\n"
+        );
+        assert_eq!(
+            (resources.qubits, resources.resets, resources.gates),
+            (2, 2, 1)
+        );
+        assert_eq!(
+            (resources.swaps, resources.t_gates, resources.measurements),
+            (0, 1, 1)
+        );
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn dirty_target_rejection_locates_the_specialized_body() {
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/target-specialization-v030/attempt-06");
+        let kernel = Kernel::selected(Edition::E2026).unwrap();
+        let program = Project::load(&root)
+            .unwrap()
+            .compile_with_kernel(&kernel)
+            .unwrap();
+        let intervals = workspace_intervals(
+            program.source_context().unwrap(),
+            program.raw().operations.len(),
+        )
+        .unwrap();
+        assert_eq!(intervals.len(), 1);
+        assert!(!intervals[0].fresh);
+        let (circuit, alignment) =
+            super::super::profile::extract_with_alignment(&program, Some(&intervals), &mut None)
+                .unwrap();
+        let target = super::super::openqasm::write(&circuit);
+        let changed = target.replace("t q[0];", "t q[1];");
+        assert_ne!(target, changed);
+        let refusal = checked_resources(&program, changed.as_bytes(), &alignment, &intervals)
+            .expect_err("applying the data phase to scratch must fail");
+        assert!(
+            refusal
+                .error
+                .message
+                .contains("dirty workspace restoration failed")
+        );
+        assert_eq!(refusal.error.operation, Some(intervals[0].start + 1));
+        let (module, _, label) = refusal
+            .specialization
+            .expect("original dirty specialization");
+        assert_eq!(module, "main");
+        assert!(label.contains("main::turn[1]"), "{label}");
+
+        let unbound = checked_resources(&program, changed.as_bytes(), &alignment, &[])
+            .expect_err("a reported interval must match the retained workspace");
+        assert_eq!(unbound.error.operation, None);
+        assert_eq!(unbound.specialization, None);
     }
 
     #[cfg_attr(
@@ -468,8 +618,8 @@ mod tests {
                 .check_openqasm_placement(changed.as_bytes(), &encoded)
                 .unwrap_err();
             assert!(
-                matches!(refusal.code, "contract" | "invalid_ir"),
-                "{refusal}: {changed}"
+                matches!(refusal.error.code, "contract" | "invalid_ir"),
+                "{refusal:?}: {changed}"
             );
         }
 
@@ -480,6 +630,7 @@ mod tests {
             program
                 .check_openqasm_placement(target.as_bytes(), &shifted.encode())
                 .unwrap_err()
+                .error
                 .code,
             "contract"
         );
@@ -554,6 +705,7 @@ mod tests {
                     program
                         .check_openqasm_placement(wrong.as_bytes(), &encoded)
                         .unwrap_err()
+                        .error
                         .code,
                     "contract",
                     "{wrong}"
@@ -670,6 +822,7 @@ mod tests {
                 typed
                     .check_openqasm_placement(wrong.as_bytes(), &alignment.encode())
                     .unwrap_err()
+                    .error
                     .code,
                 "contract",
                 "{wrong}"

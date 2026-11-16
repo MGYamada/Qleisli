@@ -252,6 +252,11 @@ five data bits and one scratch bit, within the shared exact-work limit.
 Project checks and selected-entry checks report which restoration contract
 failed when the independent checker rejects its equation.
 
+Inside a checked workspace body, `unit(())` creates a logical `Q<Unit>` owner
+and `finish` consumes the exact owner. Both actions have coefficient +1 and
+use zero physical axes. The source checker still records their owner history
+and checks the ordered returned owners.
+
 The finite checker records the whole live Raw frame at scope entry and the
 peak including fresh scratch. It records preparation, clean release, the two
 predicate passes in the clean packet, and the literal body steps. Dirty
