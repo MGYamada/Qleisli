@@ -179,6 +179,8 @@ access, effect or evidence. Ordinary `match` and the bounded exact-label
 `qmatch` form follow the same rule under their distinct owner and checking
 contracts. Their current execution limits do not admit additional pattern forms.
 Supported folds are specified in [static control](static-language.md).
+The [control boundary diagnostics](source-text.md#diagnostics-at-control-boundaries)
+use these three roles when explaining a rejection.
 
 ## Structural equality, coherence and physical maps
 

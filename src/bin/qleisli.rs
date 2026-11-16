@@ -78,7 +78,7 @@ fn main() -> ExitCode {
                 std::path::Path::new("."),
                 &Diagnostic {
                     counterexample: None,
-                    ownership_boundary: None,
+                    boundary: None,
                     code: "usage",
                     message: message.into(),
                     primary: None,

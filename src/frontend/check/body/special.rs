@@ -459,7 +459,12 @@ impl Checker<'_, '_> {
         span: Span,
     ) -> Result<Ty> {
         let control_ty = Ty::quantum(Ty::bit());
-        self.expr(control, scope, Some(&control_ty))?;
+        self.expr_with_diagnostic_boundary(
+            control,
+            scope,
+            Some(&control_ty),
+            Some(ControlFlowBoundary::QifControl),
+        )?;
         let target_ty = self.expr(target, scope, None)?;
         let basis = target_ty.quantum_basis().ok_or_else(|| {
             SourceError::new("type", target.span, "qif target requires one Q<A> owner")

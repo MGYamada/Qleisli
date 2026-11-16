@@ -100,6 +100,37 @@ impl QuantumOwnershipBoundary {
     }
 }
 
+/// The construct where a classical or coherent quantum control contract failed.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ControlFlowBoundary {
+    IfCondition,
+    QifControl,
+    MatchSelector,
+    QmatchSelector,
+    ForCarry,
+    QforCarry,
+}
+
+impl ControlFlowBoundary {
+    pub fn reason(self) -> &'static str {
+        match self {
+            Self::IfCondition => "if_condition",
+            Self::QifControl => "qif_control",
+            Self::MatchSelector => "match_selector",
+            Self::QmatchSelector => "qmatch_selector",
+            Self::ForCarry => "for_carry",
+            Self::QforCarry => "qfor_carry",
+        }
+    }
+}
+
+/// A typed explanation attached to an existing source rejection.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum DiagnosticBoundary {
+    QuantumOwnership(QuantumOwnershipBoundary),
+    ControlFlow(ControlFlowBoundary),
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Diagnostic {
     /// A snake_case category from version 1 of `qleisli.result`.
@@ -109,7 +140,8 @@ pub struct Diagnostic {
     pub primary: Option<SourceLocation>,
     /// Exact equation detail, when bounded reconstruction found a mismatch.
     pub counterexample: Option<Box<crate::contract::EquationCounterexample>>,
-    pub ownership_boundary: Option<QuantumOwnershipBoundary>,
+    /// The source rule explained by this diagnostic, when one was identified.
+    pub boundary: Option<DiagnosticBoundary>,
 }
 
 impl Diagnostic {
@@ -126,7 +158,7 @@ impl Diagnostic {
             message: without_repeated_category(code, error.message),
             primary,
             counterexample: error.counterexample,
-            ownership_boundary: error.ownership_boundary,
+            boundary: error.boundary,
         }
     }
 }
@@ -191,7 +223,7 @@ mod tests {
             };
             let source = CompileError {
                 counterexample: None,
-                ownership_boundary: None,
+                boundary: None,
                 code: ErrorCode::InvalidIr,
                 path: "module.qli".into(),
                 span: Span::new(8, 12),

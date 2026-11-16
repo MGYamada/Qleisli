@@ -6,7 +6,7 @@ use super::super::resolve::Target;
 use super::super::resolve::locals::{BindingKind, ResolvedUse};
 use super::super::types::Stage;
 use super::*;
-use crate::frontend::diagnostic::QuantumOwnershipBoundary;
+use crate::frontend::diagnostic::{ControlFlowBoundary, QuantumOwnershipBoundary};
 use crate::ir::Effect;
 use std::borrow::Cow;
 
@@ -896,7 +896,18 @@ impl Checker<'_, '_> {
             .collect();
         Ok(result)
     }
+    #[inline]
     fn expr(&mut self, expr: &Expr, scope: &mut Scope, expected: Option<&Ty>) -> Result<Ty> {
+        self.expr_with_diagnostic_boundary(expr, scope, expected, None)
+    }
+
+    fn expr_with_diagnostic_boundary(
+        &mut self,
+        expr: &Expr,
+        scope: &mut Scope,
+        expected: Option<&Ty>,
+        boundary: Option<ControlFlowBoundary>,
+    ) -> Result<Ty> {
         if self.depth >= 64 {
             return Err(SourceError::new(
                 "limit",
@@ -907,7 +918,7 @@ impl Checker<'_, '_> {
         self.depth += 1;
         let node = self.index().node_id_expr(expr);
         let previous_node = self.current_node.replace(node);
-        let result = self.expr_inner(expr, scope, expected);
+        let result = self.expr_inner(expr, scope, expected, boundary);
         let result = result.and_then(|ty| {
             self.retain_expression_statics(expr, scope)?;
             Ok(ty)
@@ -916,7 +927,13 @@ impl Checker<'_, '_> {
         self.depth -= 1;
         result
     }
-    fn expr_inner(&mut self, expr: &Expr, scope: &mut Scope, expected: Option<&Ty>) -> Result<Ty> {
+    fn expr_inner(
+        &mut self,
+        expr: &Expr,
+        scope: &mut Scope,
+        expected: Option<&Ty>,
+        boundary: Option<ControlFlowBoundary>,
+    ) -> Result<Ty> {
         let span = expr.span;
         self.tick(span)?;
         let result = match &expr.kind {
@@ -1116,7 +1133,12 @@ impl Checker<'_, '_> {
                 then_branch,
                 else_branch,
             } => {
-                self.expr(condition, scope, Some(&Ty::bit()))?;
+                self.expr_with_diagnostic_boundary(
+                    condition,
+                    scope,
+                    Some(&Ty::bit()),
+                    Some(ControlFlowBoundary::IfCondition),
+                )?;
                 self.branches(None, then_branch, else_branch, scope, expected, span)?
             }
             ExprKind::StaticIf {
@@ -1215,16 +1237,54 @@ impl Checker<'_, '_> {
         if result.linear() {
             self.effects.mark_quantum();
         }
-        if let Some(expected) = expected {
-            normalize::expect(
-                &result,
-                expected,
-                &scope.context,
-                span,
-                &self.program.budget,
-            )?;
+        let Some(expected) = expected else {
+            return Ok(result);
+        };
+        if normalize::equivalent(
+            &result,
+            expected,
+            &scope.context,
+            span,
+            &self.program.budget,
+        )? {
+            return Ok(result);
         }
-        Ok(result)
+        // Only the failed comparison of this expression's result can
+        // identify a selector boundary. Inner failures already returned.
+        let mut error = normalize::type_shape_mismatch(&result, expected, span);
+        match boundary {
+            Some(ControlFlowBoundary::IfCondition) if result.is_quantum_owner() => {
+                error
+                    .message
+                    .push_str(". Ordinary `if` branches on an ordinary `Bit`.");
+                if result
+                    .quantum_basis()
+                    .is_some_and(|basis| matches!(basis.kind, Kind::Bit))
+                {
+                    error.message.push_str(
+                        " For coherent control of a separate target, consider `qif(control, target) { 0 => first, 1 => second }` with checked controlled arms. It preserves coherence between control sectors.",
+                    );
+                } else {
+                    error.message.push_str(
+                        " Coherent `qif` requires a `Q<Bit>` control and a separate target with checked controlled arms. `qmatch` supports additional selector bases.",
+                    );
+                }
+                error = error.with_control_flow_boundary(ControlFlowBoundary::IfCondition);
+            }
+            Some(ControlFlowBoundary::QifControl) => {
+                error.message.push_str(
+                    ". Coherent `qif` requires a live `Q<Bit>` control and checked controlled arms.",
+                );
+                if matches!(result.kind, Kind::Bit) {
+                    error
+                        .message
+                        .push_str(" To branch on an ordinary `Bit`, use ordinary `if`.");
+                }
+                error = error.with_control_flow_boundary(ControlFlowBoundary::QifControl);
+            }
+            _ => {}
+        }
+        Err(error)
     }
     fn boolean(
         &mut self,
@@ -1430,15 +1490,20 @@ impl Checker<'_, '_> {
         }
         let carry_ty = self.expr(initial, scope, expected)?;
         if quantum != carry_ty.linear() {
-            return Err(SourceError::new(
-                "type",
-                span,
-                if quantum {
-                    "qfor carry must contain a quantum owner; use for static for ordinary values"
-                } else {
-                    "for static cannot thread quantum owners; use qfor static with explicit carry and yield"
-                },
-            ));
+            let (boundary, message) = if quantum {
+                (
+                    ControlFlowBoundary::QforCarry,
+                    "qfor carry must contain a quantum owner, so use for static for ordinary values. The form is `for static i in 0..count carry value = input { yield value; }`.",
+                )
+            } else {
+                (
+                    ControlFlowBoundary::ForCarry,
+                    "for static cannot thread quantum owners, so use qfor static with explicit carry and yield. The form is `qfor static i in 0..count carry owner = input { yield owner; }`.",
+                )
+            };
+            return Err(
+                SourceError::new("type", span, message).with_control_flow_boundary(boundary)
+            );
         }
         let mut inner = scope.copy(&self.program.budget, span)?;
         inner.values.retain(|_, binding| !binding.ty.linear());

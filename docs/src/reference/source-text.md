@@ -771,6 +771,33 @@ location. A grammar example supplies a syntactic form. Name resolution,
 typing, effects and ownership still determine whether a program using that
 form is valid. See [the roles of quantum syntax and types](type-model.md).
 
+## Diagnostics at control boundaries
+
+At a source rejection, name the language rule and the nearby valid construct
+so authors and coding agents can revise the program using the diagnostic.
+An ordinary `if` evaluates a `Bit`, and ordinary `match` discriminates among
+ordinary enum alternatives. Coherent `qif` and `qmatch` apply checked
+controlled arms to a separate target and return the selector and target.
+For example, `qif(control, target) { 0 => h, 1 => h }` is a coherent selection
+when both arguments are `Q<Bit>` and the arm operation supports control.
+For a nominal selector, the `qmatch` arms use its exact checked labels.
+
+An explicit `measure_z` consumes a `Q<Bit>` and returns an ordinary `Bit`
+in an `observe` context. That bit can direct ordinary branching. Coherent
+selection retains the relative phase of the selector sectors. See
+[ordinary feed-forward](#instruments-and-ordinary-feed-forward) and
+[static folds and carry](static-language.md#static-branches-folds-and-termination).
+
+The common checker adds the control explanation at an existing direct
+selector or carry rejection. A nested name, ownership, type or limit error
+keeps its original diagnostic. Text and `--format=json` preserve the category
+and location. The optional `control_flow_boundary` object is available in
+both project and selected-entry mode. Its `boundary` is
+`classical_quantum_control`. Its `reason` is `if_condition`, `qif_control`,
+`match_selector`, `qmatch_selector`, `for_carry` or `qfor_carry`.
+An ordinary binding of a quantum owner continues to use `let` and follow
+the [linear ownership rules](type-model.md).
+
 ## Bytes, characters and positions
 
 Source is UTF-8. Every source span is a half-open byte interval in the original

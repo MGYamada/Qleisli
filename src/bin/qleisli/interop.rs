@@ -32,7 +32,7 @@ impl From<Diagnostic> for Failure {
 fn failure(code: &'static str, message: impl Into<String>) -> Failure {
     Failure::Diagnostic(Diagnostic {
         counterexample: None,
-        ownership_boundary: None,
+        boundary: None,
         code,
         message: message.into(),
         primary: None,
@@ -70,7 +70,7 @@ fn adapter(error: interop::InteropError, source: Option<(&Path, &str)>) -> Failu
     });
     Failure::Diagnostic(Diagnostic {
         counterexample: None,
-        ownership_boundary: None,
+        boundary: None,
         code: match error.kind {
             InteropErrorKind::Parse => "parse",
             InteropErrorKind::Unsupported => "unsupported",

@@ -9,7 +9,7 @@ use qleisli::{
             OperationBinding, ParsedProgram, QpeBindingProposal, RawSourceProposal,
             SelectedRuntimeProgram, SourceType,
         },
-        diagnostic::{Diagnostic, QuantumOwnershipBoundary},
+        diagnostic::{Diagnostic, DiagnosticBoundary},
     },
     interchange::{self, hierarchical, native},
     sim::{SimulationLimits, SplitMix64, run_closed},
@@ -23,7 +23,7 @@ use std::{
 
 #[path = "source_plan/options.rs"]
 mod options;
-use super::json::{ownership_boundary_json, quoted};
+use super::json::{boundary_json, quoted};
 use options::{IrProfile, Options};
 
 type Result<T> = std::result::Result<T, Failure>;
@@ -39,7 +39,7 @@ struct Failure {
     text: String,
     site: Option<Box<SourceSite>>,
     pointer: Option<String>,
-    ownership_boundary: Option<QuantumOwnershipBoundary>,
+    boundary: Option<DiagnosticBoundary>,
 }
 impl Failure {
     fn new(code: &str, message: impl Into<String>) -> Self {
@@ -50,7 +50,7 @@ impl Failure {
             message,
             site: None,
             pointer: None,
-            ownership_boundary: None,
+            boundary: None,
         }
     }
     fn at_root(source: &ElaboratedProgram, message: &str) -> Self {
@@ -115,7 +115,7 @@ impl Failure {
             quoted(&self.message),
             primary.as_deref().unwrap_or("null"),
             related.as_deref().unwrap_or(""),
-            ownership_boundary_json(self.ownership_boundary),
+            boundary_json(self.boundary),
         )
     }
 }
@@ -133,7 +133,7 @@ impl From<compile::Error> for Failure {
                 })
             }),
             pointer: None,
-            ownership_boundary: error.ownership_boundary(),
+            boundary: error.boundary(),
         }
     }
 }
@@ -146,14 +146,14 @@ impl From<interchange::Error> for Failure {
             text,
             site: None,
             pointer: (!error.json_pointer.is_empty()).then_some(error.json_pointer),
-            ownership_boundary: None,
+            boundary: None,
         }
     }
 }
 impl From<Diagnostic> for Failure {
     fn from(error: Diagnostic) -> Self {
         let mut failure = Self::new(error.code, error.message);
-        failure.ownership_boundary = error.ownership_boundary;
+        failure.boundary = error.boundary;
         failure.site = error.primary.map(|location| {
             Box::new(SourceSite {
                 module: None,

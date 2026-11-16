@@ -1,0 +1,5 @@
+pub enum Choice { Left, Right }
+
+pub unitary fn branch(selector: Q<Choice>) -> Bit {
+    match selector { Choice::Left => 0, Choice::Right => 1 }
+}

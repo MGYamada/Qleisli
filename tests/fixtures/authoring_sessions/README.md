@@ -49,6 +49,10 @@ The [parser surface diagnostics study](parser-surface-diagnostics-v030/README.md
 preserves the initial messages on invented quantum statements and malformed
 quantum headers before locally recognized forms gained syntax guidance.
 
+The [classical and coherent control study](classical-quantum-control-diagnostics-v030/README.md)
+preserves the original diagnostics when `if`, `match`, `qif`, or `qmatch`
+receives a condition or selector of the wrong ownership type.
+
 The [invisible source character study](invisible-source-characters-v030/README.md)
 retains the original source bytes and the pre-change `doc` transcript. It
 records the prior binary separately from the reviewed source baseline.

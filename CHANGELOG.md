@@ -8,9 +8,12 @@ development milestones from the scope of their evidence.
   implicit disposal errors, with specific return guidance for clean, dirty
   and computed workspace. Unresolved `drop` and `forget` calls receive
   conditional guidance at the original callee (#226). JSON includes an
-  optional `ownership_boundary` object. Rust callers constructing
-  `CompileError` or `Diagnostic` use `ownership_boundary: None` for unrelated
-  errors and `..` in patterns that only need the previous fields.
+  optional `ownership_boundary` object.
+- Explain ordinary and coherent control where selector or carry types fail
+  their source contracts. Text names the relevant construct and JSON includes
+  an optional `control_flow_boundary` object (#224). Rust callers constructing
+  `CompileError` or `Diagnostic` use `boundary: None` for unrelated errors and
+  `..` in patterns that only need the previous fields.
 - Reject Unicode 17.0.0 default-ignorable and format characters throughout
   source, including comments and documentation input. Report the code point
   and its original UTF-8 byte span (#245).

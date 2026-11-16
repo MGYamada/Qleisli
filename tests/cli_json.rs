@@ -10,6 +10,26 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
         .unwrap()
 }
 
+fn source_check_json(root: &std::path::Path, entry: &str, selected: bool, status: i32) -> String {
+    let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+    command.args(["check", "--format=json"]);
+    if selected {
+        command
+            .arg(format!("--entry=main::{entry}"))
+            .arg(format!("--module=main={}", root.join("main.qli").display()));
+    } else {
+        command.arg(root);
+    }
+    let output = command.output().unwrap();
+    assert_eq!(
+        output.status.code(),
+        Some(status),
+        "{root:?}, entry {entry}, selected {selected}: {output:?}"
+    );
+    assert!(output.stderr.is_empty(), "{output:?}");
+    String::from_utf8(output.stdout).unwrap()
+}
+
 #[cfg_attr(
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
@@ -61,19 +81,8 @@ fn ownership_boundary_json_preserves_rejection_scope_and_locations() {
         ),
     ] {
         let root = SourceRoot::new(source);
-        let module = format!("--module=main={}", root.0.join("main.qli").display());
         for selected in [false, true] {
-            let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
-            command.args(["check", "--format=json"]);
-            if selected {
-                command.args(["--entry=main::client", &module]);
-            } else {
-                command.arg(&root.0);
-            }
-            let output = command.output().unwrap();
-            assert_eq!(output.status.code(), Some(1), "{source}: {output:?}");
-            assert!(output.stderr.is_empty(), "{output:?}");
-            let json = String::from_utf8(output.stdout).unwrap();
+            let json = source_check_json(&root.0, "client", selected, 1);
             let code = match (name_error, selected) {
                 (true, true) => "name",
                 (true, false) => "unknown_name",
@@ -96,6 +105,137 @@ fn ownership_boundary_json_preserves_rejection_scope_and_locations() {
             } else {
                 assert!(!json.contains("\"ownership_boundary\""), "{json}");
             }
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn control_flow_diagnostics_teach_the_original_boundary() {
+    let attempts = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/classical-quantum-control-diagnostics-v030/attempt-01",
+    );
+    for (case, rejected, reason, guidance) in [
+        (
+            "ordinary-if",
+            "condition",
+            "if_condition",
+            "It preserves coherence between control sectors.",
+        ),
+        (
+            "ordinary-match",
+            "match selector { Choice::Left => 0, Choice::Right => 1 }",
+            "match_selector",
+            "Coherent `qmatch` selects checked controlled arms",
+        ),
+        (
+            "coherent-qif",
+            "condition",
+            "qif_control",
+            "To branch on an ordinary `Bit`, use ordinary `if`.",
+        ),
+        (
+            "coherent-qmatch",
+            "qmatch(selector, target) { 0 => h, 1 => h }",
+            "qmatch_selector",
+            "To branch on an ordinary `Bit`, use ordinary `if`.",
+        ),
+    ] {
+        let project = attempts.join(case);
+        let source = std::fs::read_to_string(project.join("main.qli")).unwrap();
+        let start = source.rfind(rejected).unwrap();
+        let end = start + rejected.len();
+        let text = cli(&["check".as_ref(), project.as_os_str()]);
+        assert_eq!(text.status.code(), Some(1), "{text:?}");
+        assert!(text.stdout.is_empty(), "{text:?}");
+        let text = String::from_utf8(text.stderr).unwrap();
+        assert!(text.contains(guidance), "{text}");
+        assert!(!text.contains("measure_z"), "{text}");
+        for selected in [false, true] {
+            let json = source_check_json(&project, "branch", selected, 1);
+            let code = if selected { "type" } else { "type_mismatch" };
+            assert!(json.contains(&format!("\"code\":\"{code}\"")), "{json}");
+            assert!(
+                json.contains(&format!("\"start\":{start},\"end\":{end}")),
+                "{json}"
+            );
+            assert!(json.contains(guidance), "{json}");
+            assert!(
+                json.contains(&format!(
+                    "\"control_flow_boundary\":{{\"boundary\":\"classical_quantum_control\",\"reason\":\"{reason}\"}}"
+                )),
+                "{json}"
+            );
+        }
+    }
+    let source = "pub fn branch() -> Bit { if h(0) { 1 } else { 0 } }";
+    let inner = SourceRoot::new(source);
+    let start = source.find("h(0)").unwrap();
+    let end = start + "h(0)".len();
+    for selected in [false, true] {
+        let json = source_check_json(&inner.0, "branch", selected, 1);
+        assert!(!json.contains("\"control_flow_boundary\""), "{json}");
+        assert!(
+            json.contains(&format!("\"start\":{start},\"end\":{end}")),
+            "{json}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn control_flow_corrections_check_with_explicit_observation_or_owner_threading() {
+    let observed = SourceRoot::new(
+        "use std::state::init0; observe fn main() -> Bit { let condition = measure_z(h(init0())); if condition { 1 } else { 0 } }",
+    );
+    assert!(source_check_json(&observed.0, "main", false, 0).contains("\"outcome\":\"ok\""));
+
+    let coherent = SourceRoot::new(
+        "use std::state::init0;
+         unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+         observe fn main() -> (Bit,Bit,Bit,Bit) {
+             let (c,q) = qif(init0(),init0()) {0=>keep,1=>h};
+             let (s,q) = qmatch(init0(),q) {0=>keep,1=>h};
+             let q = qfor static i in 0..1 carry owner=q { yield owner; };
+             let bit = for static i in 0..1 carry value=0 { yield not value; };
+             (measure_z(c),measure_z(s),measure_z(q),bit)
+         }",
+    );
+    let result = cli(&[
+        "run".as_ref(),
+        coherent.0.as_os_str(),
+        "--format=json".as_ref(),
+    ]);
+    assert!(result.status.success(), "{result:?}");
+    let json = String::from_utf8(result.stdout).unwrap();
+    assert!(
+        json.contains("\"distribution\":[{\"bits\":[false,false,false,true],\"probability\":1}]"),
+        "{json}"
+    );
+
+    for (source, reason, guidance) in [
+        (
+            "pub unitary fn branch(q:Q<Bit>)->Q<Bit>{for static i in 0..1 carry owner=q{yield owner;}}",
+            "for_carry",
+            "use qfor static with explicit carry and yield",
+        ),
+        (
+            "pub fn branch(x:Bit)->Bit{qfor static i in 0..1 carry value=x{yield value;}}",
+            "qfor_carry",
+            "use for static for ordinary values",
+        ),
+    ] {
+        let root = SourceRoot::new(source);
+        for selected in [false, true] {
+            let json = source_check_json(&root.0, "branch", selected, 1);
+            assert!(json.contains(guidance), "{json}");
+            assert!(json.contains(&format!("\"reason\":\"{reason}\"")), "{json}");
         }
     }
 }
