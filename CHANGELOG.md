@@ -4,6 +4,11 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Label exact contract counterexamples by their declared input and output
+  basis trees. JSON retains numeric matrix coordinates and text prints exact
+  coefficients such as `i` (#270). Public Rust error structs carry an optional
+  `counterexample` field. Set it to `None` on ordinary error literals and use
+  `..` in patterns that only need the previous fields.
 - Prove that accepted terminal OpenQASM packets preserve every original Raw
   output probability from register reset through the decoded measurement word.
   The same native decision binds the pre-readout complex column, the selected

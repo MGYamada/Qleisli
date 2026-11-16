@@ -796,18 +796,13 @@ fn raw_ir_rechecks_actual_predicate_body_and_logical_evidence() {
     if let RawOp::CertifiedCompute { function, .. } = &mut changed_predicate.operations[0] {
         *function = vec![0, 0];
     }
-    for (program, witness) in [
-        (
-            changed_body,
-            "output row 2 (zero-based): actual 1, expected 0",
-        ),
-        (
-            changed_meaning,
-            "output row 0 (zero-based): actual 0, expected 1",
-        ),
+    for (program, row, witness) in [
+        (changed_body, 2, "output |(0, 1)⟩: actual 1, expected 0"),
+        (changed_meaning, 0, "output |(0, 0)⟩: actual 0, expected 1"),
         (
             changed_predicate,
-            "output row 1 (zero-based): actual 0, expected 1",
+            1,
+            "output |(1, 0)⟩: actual 0, expected 1",
         ),
     ] {
         let error = accept(program).unwrap_err();
@@ -820,6 +815,11 @@ fn raw_ir_rechecks_actual_predicate_body_and_logical_evidence() {
             "{error}"
         );
         assert!(error.message.contains(witness), "{error}");
+        let counterexample = error.counterexample.unwrap();
+        assert_eq!(
+            (counterexample.input_column, counterexample.output_row),
+            (0, row)
+        );
     }
 }
 
@@ -831,24 +831,29 @@ fn raw_ir_rechecks_actual_predicate_body_and_logical_evidence() {
 fn raw_ir_contract_diagnostic_identifies_an_exact_counterexample() {
     let leakage = certified_program(1, vec![0, 1], vec![x(1)], vec![]);
     let error = accept(leakage).unwrap_err();
-    assert!(
-        error
-            .message
-            .contains("input column 0, output row 0 (zero-based)")
-    );
+    assert!(error.message.contains("input |0⟩, output |(0, 0)⟩"));
     assert!(error.message.contains("actual 0, expected 1"));
+    let leakage_coordinates = error.counterexample.unwrap();
+    assert_eq!(
+        (
+            leakage_coordinates.input_column,
+            leakage_coordinates.output_row
+        ),
+        (0, 0)
+    );
 
     let phase_error = certified_program(1, vec![0, 1], vec![phase(1, 1)], vec![phase(0, 4)]);
     let error = accept(phase_error).unwrap_err();
-    assert!(
-        error
-            .message
-            .contains("input column 1, output row 3 (zero-based)")
-    );
+    assert!(error.message.contains("input |1⟩, output |(1, 1)⟩"));
     assert!(
         error
             .message
             .contains("actual (1/2^1)*sqrt(2) + (1/2^1)*i*sqrt(2), expected -1")
+    );
+    let phase_coordinates = error.counterexample.unwrap();
+    assert_eq!(
+        (phase_coordinates.input_column, phase_coordinates.output_row),
+        (1, 3)
     );
 }
 

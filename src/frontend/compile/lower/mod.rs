@@ -114,7 +114,7 @@ fn verification_error(
         .map_or((module, span), |source| {
             (source.site.module.as_str(), source.site.span)
         });
-    compiler.error(
+    let mut error = compiler.error(
         module,
         span,
         if limit {
@@ -133,7 +133,9 @@ fn verification_error(
             ),
             None => failure.to_string(),
         },
-    )
+    );
+    error.counterexample = failure.counterexample;
+    error
 }
 
 // The register store includes quantum values held by pending arguments and

@@ -608,6 +608,14 @@ implementation with the independently selected function or Meaning through
 fresh native evidence. A declared Meaning supplies the request; it is never
 projected as a runtime function.
 
+When a rejected exact equation yields a mismatched coefficient within the
+diagnostic work limit, the diagnostic shows input and output basis values
+with the declared tree shapes. The first bit leaf is the least significant
+coordinate. Unit contributes no bit and remains visible in the printed value.
+For an encoded equation the labels use the logical input and physical output
+types. JSON also reports zero-based `counterexample.input_column` and
+`counterexample.output_row` as integers.
+
 The adopted observing overload compares two closed ordinary functions with
 caller-visible Observe effects, one `Q<A>` argument and the same complete finite
 result type. The current native instrument profile additionally requires

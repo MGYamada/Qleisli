@@ -562,7 +562,7 @@ impl Compiler<'_> {
                 budget,
             )
             .map_err(|error| {
-                self.error(
+                let mut failure = self.error(
                     module,
                     span,
                     if error.error.is_capacity() {
@@ -576,7 +576,9 @@ impl Compiler<'_> {
                         crate::contract::ContractError::Arithmetic(crate::contract::exact::ExactError::ArithmeticCapacity)) {
                         " (bounded i128 coefficients or dyadic denominator exponent above 126); no approximate fallback is used"
                     } else { "" }),
-                )
+                );
+                failure.counterexample = error.counterexample;
+                failure
             })?;
             let evidence = Arc::new(evidence);
             self.function_evidence

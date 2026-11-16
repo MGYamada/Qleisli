@@ -29,6 +29,8 @@ pub struct Diagnostic {
     pub message: String,
     /// None for failures without a source span, including missing entry points.
     pub primary: Option<SourceLocation>,
+    /// Exact equation detail, when bounded reconstruction found a mismatch.
+    pub counterexample: Option<Box<crate::contract::EquationCounterexample>>,
 }
 
 impl Diagnostic {
@@ -44,6 +46,7 @@ impl Diagnostic {
             code,
             message: without_repeated_category(code, error.message),
             primary,
+            counterexample: error.counterexample,
         }
     }
 }
@@ -101,11 +104,13 @@ mod tests {
             ("contract", "/request", "contract at /request: rejected"),
         ] {
             let native = crate::interchange::Error {
+                counterexample: None,
                 code: native_code,
                 message: "rejected".into(),
                 json_pointer: pointer.into(),
             };
             let source = CompileError {
+                counterexample: None,
                 code: ErrorCode::InvalidIr,
                 path: "module.qli".into(),
                 span: Span::new(8, 12),

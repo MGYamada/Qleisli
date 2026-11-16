@@ -88,6 +88,7 @@ pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failu
     let kernel = options
         .kernel(project.edition())
         .map_err(|error| Diagnostic {
+            counterexample: error.counterexample,
             code: error.code,
             message: error.message,
             primary: None,

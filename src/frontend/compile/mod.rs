@@ -112,6 +112,8 @@ pub struct CompileError {
     pub line: usize,
     pub column: usize,
     pub message: String,
+    /// Exact equation detail, when bounded reconstruction found a mismatch.
+    pub counterexample: Option<Box<crate::contract::EquationCounterexample>>,
 }
 
 impl fmt::Display for CompileError {
@@ -307,6 +309,7 @@ impl<'a> Compiler<'a> {
         let source = self.originals.module(module).expect("original module");
         let (line, column) = coordinates(source.source, span);
         CompileError {
+            counterexample: None,
             code,
             path: source
                 .path
@@ -662,6 +665,7 @@ fn process_project(
     let project = Project::load_detailed(root).map_err(|failure| {
         let (line, column) = failure.coordinates.unwrap_or((1, 1));
         CompileError {
+            counterexample: None,
             code: ErrorCode::Project,
             path: failure.error.path,
             span: failure.error.span,
@@ -932,6 +936,7 @@ fn validate_original_edition(project: &Project) -> Result<(), CompileError> {
     project.validate_edition_context().map_err(|failure| {
         let (line, column) = failure.coordinates.unwrap_or((1, 1));
         CompileError {
+            counterexample: None,
             code: ErrorCode::Project,
             path: failure.error.path,
             span: failure.error.span,
@@ -1127,6 +1132,7 @@ fn process_loaded_project_details(
         .map(Ok)
         .unwrap_or_else(|| crate::interchange::native::Kernel::selected(project.edition()))
         .map_err(|error| CompileError {
+            counterexample: None,
             code: ErrorCode::Project,
             path: root.into(),
             span: Span::default(),
@@ -1136,6 +1142,7 @@ fn process_loaded_project_details(
         })?;
     if kernel.edition() != project.edition() {
         return Err(CompileError {
+            counterexample: None,
             code: ErrorCode::Project,
             path: root.into(),
             span: Span::default(),
@@ -1205,6 +1212,7 @@ fn process_loaded_project_details(
         }
     } else if require_entry {
         return Err(CompileError {
+            counterexample: None,
             code: ErrorCode::InvalidEntry,
             path: root.join("main.qli"),
             span: Span::default(),
@@ -1309,6 +1317,7 @@ fn source_error<'a>(
             },
         );
     CompileError {
+        counterexample: None,
         code,
         path,
         span: error.span,

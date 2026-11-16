@@ -24,6 +24,7 @@ impl From<interchange::Error> for Failure {
 }
 fn io_error(error: impl std::fmt::Display) -> Failure {
     Failure::Source(Diagnostic {
+        counterexample: None,
         code: "project",
         message: error.to_string(),
         primary: None,
@@ -41,6 +42,7 @@ fn read(path: &Path) -> Result<Vec<u8>, Failure> {
         .map_err(io_error)?;
     if bytes.len() > 16 << 20 {
         return Err(interchange::Error {
+            counterexample: None,
             code: "limit",
             message: "artifact exceeds 16 MiB".into(),
             json_pointer: String::new(),

@@ -90,6 +90,75 @@ fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn equation_counterexample_text_and_json_preserve_axis_order_and_phase() {
+    for (source, message, input_column, output_row) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/contract-counterexample-v030/permutation.qli"
+            ),
+            "input |(0, 1)⟩, output |(1, 0)⟩: actual 0, expected 1",
+            2,
+            1,
+        ),
+        (
+            include_str!("fixtures/authoring_sessions/contract-counterexample-v030/phase.qli"),
+            "input |1⟩, output |1⟩: actual -1, expected i",
+            1,
+            1,
+        ),
+    ] {
+        let root = SourceRoot::new(source);
+        let start = source.find("apply_contract(").unwrap();
+        let end = start + source[start..].find('\n').unwrap();
+        let line = source[..start]
+            .bytes()
+            .filter(|&byte| byte == b'\n')
+            .count()
+            + 1;
+        let output = cli(&["check".as_ref(), root.0.as_os_str()]);
+        assert_eq!(output.status.code(), Some(1), "{output:?}");
+        assert!(output.stdout.is_empty(), "{output:?}");
+        let text = String::from_utf8(output.stderr).unwrap();
+        assert!(
+            text.contains(&format!("main.qli:{line}:5: contract:")),
+            "{text}"
+        );
+        assert!(text.contains(message), "{text}");
+        assert!(
+            !text.contains("input column") && !text.contains("1*i"),
+            "{text}"
+        );
+
+        let output = cli(&[
+            "check".as_ref(),
+            root.0.as_os_str(),
+            "--format=json".as_ref(),
+        ]);
+        assert_eq!(output.status.code(), Some(1), "{output:?}");
+        assert!(output.stderr.is_empty(), "{output:?}");
+        let json = String::from_utf8(output.stdout).unwrap();
+        assert!(json.contains("\"code\":\"contract\""), "{json}");
+        assert!(json.contains(message), "{json}");
+        assert!(
+            json.contains(&format!(
+                "\"primary\":{{\"path\":\"main.qli\",\"start\":{start},\"end\":{end},\"line\":{line},\"column\":5}}"
+            )),
+            "{json}"
+        );
+        assert!(
+            json.contains(&format!(
+                "\"counterexample\":{{\"input_column\":{input_column},\"output_row\":{output_row}}}"
+            )),
+            "{json}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn truncated_static_arguments_emit_one_located_json_parse_error() {
     for source in [
         "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[",

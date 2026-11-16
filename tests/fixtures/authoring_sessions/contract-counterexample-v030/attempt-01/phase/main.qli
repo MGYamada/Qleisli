@@ -1,0 +1,8 @@
+// Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
+use std::gate::{s,z};
+
+unitary fn actual(q: Q<Bit>) -> Q<Bit> { z(q) }
+unitary fn expected(q: Q<Bit>) -> Q<Bit> { s(q) }
+unitary fn client(q: Q<Bit>) -> Q<Bit> {
+    apply_contract(actual, expected, q)
+}

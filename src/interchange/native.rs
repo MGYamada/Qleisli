@@ -355,8 +355,9 @@ impl Kernel {
             if failure.code == "contract" {
                 if let Some((pointer, detail)) = rejected_contract_detail(self.edition, program) {
                     failure.message.push_str(": ");
-                    failure.message.push_str(&detail);
+                    failure.message.push_str(&detail.to_string());
                     failure.json_pointer = pointer;
+                    failure.counterexample = detail.counterexample;
                 }
             }
             failure
@@ -925,14 +926,18 @@ impl Kernel {
     }
 }
 
-fn rejected_contract_detail(edition: Edition, raw: &RawProgram) -> Option<(String, String)> {
+fn rejected_contract_detail(
+    edition: Edition,
+    raw: &RawProgram,
+) -> Option<(String, crate::contract::ContractDiagnostic)> {
+    use crate::contract::ContractDiagnostic;
     use crate::ir::RawOp;
     fn visit(
         edition: Edition,
         ops: &[RawOp],
         prefix: &str,
         budget: &mut crate::contract::exact::Budget,
-    ) -> Option<(String, String)> {
+    ) -> Option<(String, ContractDiagnostic)> {
         for (index, op) in ops.iter().enumerate() {
             if budget.charge(1).is_err() {
                 return None;
@@ -955,7 +960,7 @@ fn rejected_contract_detail(edition: Edition, raw: &RawProgram) -> Option<(Strin
                         budget,
                     ) {
                         if diagnostic.error == crate::contract::ContractError::EquationMismatch {
-                            return Some((pointer, diagnostic.to_string()));
+                            return Some((pointer, diagnostic));
                         }
                     }
                 }

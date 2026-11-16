@@ -371,6 +371,7 @@ impl LoadFailure {
         // with the documented empty span, at the start of the file.
         let (line, column) = self.coordinates.unwrap_or((1, 1));
         Diagnostic {
+            counterexample: None,
             code: self.code,
             // The legacy ProjectError has no category field and retains its
             // parse context. Structured diagnostics carry that category once.

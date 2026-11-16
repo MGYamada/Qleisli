@@ -108,6 +108,7 @@ impl Options {
         &self,
     ) -> Result<qleisli::edition::Edition, qleisli::interchange::Error> {
         self.edition.ok_or_else(|| qleisli::interchange::Error {
+            counterexample: None,
             code: "edition",
             message: "raw verification requires --edition=2026; edition selects the constitutional regime, independently of the compiler release".into(),
             json_pointer: String::new(),
