@@ -12,6 +12,7 @@ inductive Error where
   | invalid | limit | notIsometric | equation | request
   | workspaceRestoration (dirty : Bool)
   | arithmetic (error : Exact.Error)
+  | workspacePlacementRestoration (dirty : Bool) (start count : Nat)
   deriving BEq, DecidableEq, Repr
 abbrev WorkM := ExceptT Error (StateM Nat)
 

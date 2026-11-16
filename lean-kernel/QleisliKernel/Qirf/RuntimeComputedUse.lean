@@ -135,6 +135,17 @@ def sourceAction (sources : Sources) (workspace : Bool) :
           let rest := owners.filter (fun owner => owner != left && owner != right)
           let matrix ← rearrange owners (left::right::rest) before.matrix
           return (joined::rest,⟨matrix,before.rows ++ rows⟩,cache)
+        -- A Unit owner has one basis label and no physical axes. Its creation
+        -- and consumption change the logical owner list, with coefficient +1.
+        | .unit,[[.ordinary _ _]],[.owner created] =>
+          guard (workspace && RuntimeStructuralAction.sourceShape call .unit &&
+            call.allocated == [created] && call.consumed.isEmpty &&
+            !(owners.any (fun live => live.ordinal == created.ordinal))) .request
+          return (owners ++ [created],{before with rows := before.rows ++ rows},cache)
+        | .finish,[[.owner operand]],[.ordinary _ _] =>
+          guard (workspace && RuntimeStructuralAction.sourceShape call .finish &&
+            call.allocated.isEmpty && call.consumed == [operand] && owners.contains operand) .request
+          return (owners.filter (· != operand),{before with rows := before.rows ++ rows},cache)
         | _,[[.owner operand]],[.owner returned] =>
           guard (owners.contains operand && returned == operand &&
             call.allocated.isEmpty && call.consumed.isEmpty) .request

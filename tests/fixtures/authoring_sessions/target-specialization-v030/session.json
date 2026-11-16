@@ -93,6 +93,19 @@
         "attempt-05-swapped-target-operands-native.json",
         "attempt-05-swapped-written-types-native.json"
       ]
+    },
+    {
+      "id": "attempt-06",
+      "reason": "The first file-backed dirty workspace applies one exact T phase to data while returning arbitrary scratch. The baseline export succeeds.",
+      "sha256": {
+        "main.qli": "2dac6c75fccfe46878fc35b74bd8746f74598bf022829e44dd9518208fffa059"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "attempt-06-dirty-first-target.json"
+      ]
     }
   ]
 }

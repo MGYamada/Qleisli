@@ -924,6 +924,14 @@ private def segmentWork {bytes capacity} (target : CanonicalOpenQasmResources.Ch
   exactWork (Exact.charge (32*(1+program.operations.length) +
     32*(1+alignment.length)*(1+alignment.length+target.circuit.gates.length)))
 
+/-- A failed workspace equation is located by the selected original Raw interval.
+Early placement and shared work failures keep their ordinary rejection. -/
+private def workspaceFailure {α : Type} (start count : Nat) (action : WorkM α) : WorkM α := fun work =>
+  let (result,left) := action.run work
+  (result.mapError (fun error => match error with
+    | .workspaceRestoration dirty => .workspacePlacementRestoration dirty start count
+    | other => other),left)
+
 private def checkSegment {program : Semantics.Observation.Program} (segment : Segment program)
     (rootDependencies : List Semantics.Finite.Dependency)
     {bytes capacity} (target : CanonicalOpenQasmResources.Checked bytes capacity)
@@ -948,8 +956,9 @@ private def checkSegment {program : Semantics.Observation.Program} (segment : Se
           after.frame = entry.raw.frame ∧
           entry.raw.live.filter (fun port => !selected.contains port.token) =
             after.live.filter (fun port => !returned.contains port.token) then
-        let placed ← CanonicalOpenQasmWorkspace.checkPlacementInFrame segment.map target entry.raw.frame
-          entry.locations entry.gateIndex segment.count segment.scratch
+        let placed ← workspaceFailure segment.rootStart segment.length
+          (CanonicalOpenQasmWorkspace.checkPlacementInFrame segment.map target entry.raw.frame
+            entry.locations entry.gateIndex segment.count segment.scratch)
         if scratchUsed : placed.freshScratch = segment.scratch then
           return ⟨entry,⟨by exact replayed.property,before.1,before.2.1,after,continued,
             exit.1,exit.2.1,exit.2.2,before.2.2,placed,scratchUsed⟩⟩

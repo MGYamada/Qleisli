@@ -58,6 +58,13 @@ flag; hierarchy payloads retain structural/exact work and ordered obligations;
 engineering payloads retain exact work. Component payloads retain their
 original fields. These claims remain distinct.
 
+An internal `--openqasm-placement-check` restoration rejection can also carry
+the original Raw workspace interval. After `error` and `clean_workspace` or
+`dirty_workspace`, the located form contains the checked edition, product,
+mode, execution scope, zero-based Raw start and positive operation count.
+Packet-wide rejections keep the ordinary error framing. The host uses a valid
+located form only for diagnostics and returns a rejection with no resources.
+
 The internal `--carrier-pure-check` mode requires execution scope. Its
 `finite-carrier-pure-v1` QDV1 record compares the actual graph, attached and
 required ordered owner forests, public effects and exact logical matrix.

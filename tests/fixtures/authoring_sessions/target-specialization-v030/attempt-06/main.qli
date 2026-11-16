@@ -1,0 +1,7 @@
+isometry fn zero()->Q<Bit>{basis unit(()) as _{0}}
+unitary fn turn[const n:Nat](q:Q<Bit>)->Q<Bit> requires n<=1 { phase[n,3](q) }
+unitary fn logical(q:Q<Bit>)->Q<Bit>{turn[1](q)}
+observe fn main()->(Bit,Bit){
+    let(q,s)=dirty(zero(),zero(),logical){|data,scratch|(turn[1](data),scratch)};
+    (measure_z(q),measure_z(s))
+}

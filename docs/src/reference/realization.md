@@ -139,6 +139,11 @@ Terminal export can identify the closed specialization and original source
 expression when a rejected operation has a single retained origin. This includes
 steps from an explicit clean or dirty workspace body. When a rewrite combines
 several expressions, the enclosing Raw operation can provide its own origin.
+For a failed native workspace equation, the checker supplies the original Raw
+interval and the host checks it against the retained workspace. The diagnostic
+can name the enclosing specialization or a single specialization shared by
+all steps in the checked body. Packet-wide errors and ambiguous bodies leave
+the specialization unspecified.
 Imported artifacts have no original project diagnostics.
 
 ## Logical axes and physical placement

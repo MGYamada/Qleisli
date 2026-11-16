@@ -40,3 +40,10 @@ with `contract`. Changing only the target operands while preserving both gate
 counts was rejected with `clean_workspace`. The native replies record the
 packet hashes and have no operation location. The regression checks the live
 programs and reruns the changed target through the actual placement checker.
+
+The [dirty workspace program](attempt-06/main.qli) applies the same exact
+data-only phase through a closed natural specialization. The first terminal
+report emits one T and measures both returned owners in order. The diagnostic
+regression moves the phase to the original dirty scratch and checks that the
+native refusal identifies the specialized body. It also verifies that the
+host requires the returned interval to match its retained source workspace.

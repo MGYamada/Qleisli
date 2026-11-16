@@ -656,6 +656,33 @@ impl AcceptedProgram {
         Some((origin.0.as_str(), origin.1, origin.2.as_ref()))
     }
 
+    /// A failed workspace equation concerns the whole circuit. Only attach a
+    /// nested instance when every step has that same original specialization.
+    pub(crate) fn workspace_specialization_origin(
+        &self,
+        operation: usize,
+        step_count: usize,
+    ) -> Option<(&str, crate::frontend::ast::Span, &str)> {
+        if let Some(origin) = self.specialization_origin(operation) {
+            return Some(origin);
+        }
+        let origins = &self.specialization_origins.get(&operation)?.steps;
+        if step_count == 0 || origins.len() != step_count {
+            return None;
+        }
+        let (module, first_span, label) = origins.get(&0)?;
+        let mut span = *first_span;
+        for index in 1..step_count {
+            let (other_module, other_span, other_label) = origins.get(&index)?;
+            if other_module != module || other_label != label {
+                return None;
+            }
+            span.start = span.start.min(other_span.start);
+            span.end = span.end.max(other_span.end);
+        }
+        Some((module.as_str(), span, label.as_ref()))
+    }
+
     pub(crate) fn source_context(&self) -> Option<&Arc<super::qmatch::ContextSubject>> {
         self.source_context.as_ref()
     }

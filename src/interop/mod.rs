@@ -95,18 +95,22 @@ pub struct OpenQasmResources {
 pub fn export_openqasm3_with_resources(
     program: &AcceptedProgram,
 ) -> Result<(String, OpenQasmResources), InteropError> {
-    openqasm_with_resources(program, &mut None)
+    openqasm_with_resources(program).map_err(|diagnostic| diagnostic.error)
 }
 
 fn openqasm_with_resources(
     program: &AcceptedProgram,
-    failed_steps: &mut Option<std::ops::Range<usize>>,
-) -> Result<(String, OpenQasmResources), InteropError> {
-    profile::check_openqasm_result(program)?;
-    let context = program.source_context().ok_or_else(|| {
-        InteropError::unsupported("checked OpenQASM resources require original typed source")
-    })?;
-    let intervals = placement::workspace_intervals(context, program.raw().operations.len())?;
+) -> Result<(String, OpenQasmResources), TerminalExportDiagnostic<'_>> {
+    let locate = |error| export_diagnostic(program, error, None);
+    profile::check_openqasm_result(program).map_err(locate)?;
+    let context = program
+        .source_context()
+        .ok_or_else(|| {
+            InteropError::unsupported("checked OpenQASM resources require original typed source")
+        })
+        .map_err(locate)?;
+    let intervals =
+        placement::workspace_intervals(context, program.raw().operations.len()).map_err(locate)?;
     if intervals.is_empty()
         && !program.raw().operations.iter().any(|op| {
             matches!(
@@ -116,23 +120,16 @@ fn openqasm_with_resources(
             )
         })
     {
-        return Err(InteropError::unsupported(
+        return Err(locate(InteropError::unsupported(
             "checked OpenQASM resources require a source workspace or protected computed scope",
-        ));
+        )));
     }
+    let mut failed_steps = None;
     let (circuit, alignment) =
-        profile::extract_with_alignment(program, Some(&intervals), failed_steps)?;
+        profile::extract_with_alignment(program, Some(&intervals), &mut failed_steps)
+            .map_err(|error| export_diagnostic(program, error, failed_steps))?;
     let text = openqasm::write(&circuit);
-    let resources = program
-        .check_openqasm_placement(text.as_bytes(), &alignment.encode())
-        .map_err(|error| {
-            let kind = match error.code {
-                "limit" => InteropErrorKind::Limit,
-                "unsupported" => InteropErrorKind::Unsupported,
-                _ => InteropErrorKind::InvalidIr,
-            };
-            InteropError::new(kind, error.to_string())
-        })?;
+    let resources = placement::checked_resources(program, text.as_bytes(), &alignment, &intervals)?;
     Ok((text, resources))
 }
 
@@ -197,14 +194,13 @@ pub fn export_openqasm_for_cli(
     program: &AcceptedProgram,
     resources: bool,
 ) -> Result<(String, Option<OpenQasmResources>), TerminalExportDiagnostic<'_>> {
+    if resources {
+        return openqasm_with_resources(program).map(|(text, resources)| (text, Some(resources)));
+    }
     let mut failed_steps = None;
-    let result = if resources {
-        openqasm_with_resources(program, &mut failed_steps)
-            .map(|(text, resources)| (text, Some(resources)))
-    } else {
-        openqasm_text(program, &mut failed_steps).map(|text| (text, None))
-    };
-    result.map_err(|error| export_diagnostic(program, error, failed_steps))
+    openqasm_text(program, &mut failed_steps)
+        .map(|text| (text, None))
+        .map_err(|error| export_diagnostic(program, error, failed_steps))
 }
 
 /// Export QIR for the source-aware CLI.
