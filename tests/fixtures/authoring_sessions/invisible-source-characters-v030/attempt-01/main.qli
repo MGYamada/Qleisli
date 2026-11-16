@@ -1,0 +1,2 @@
+/// A retained lexical probe: 󠁡.
+classical fn main() -> Bit { 0 }

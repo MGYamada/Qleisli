@@ -24,6 +24,7 @@ pub(super) struct Token {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum ErrorKind {
     Forbidden(&'static str),
+    ForbiddenScalar(&'static str, char),
     Unexpected(char),
     UnterminatedComment,
     CommentDepth(usize),
@@ -86,9 +87,9 @@ impl<'a> Scanner<'a> {
         }
         let start = self.pos;
         let ch = self.peek().expect("nonempty after trivia");
-        if let Some(message) = forbidden_character(ch) {
+        if let Some(kind) = forbidden_character(ch) {
             return Err(ScanError {
-                kind: ErrorKind::Forbidden(message),
+                kind,
                 span: Span::new(start, start + ch.len_utf8()),
             });
         }
@@ -156,7 +157,7 @@ impl<'a> Scanner<'a> {
                 if ch == '\n' {
                     break;
                 }
-                self.comment_character(ch, style.is_some())?;
+                self.comment_character(ch)?;
                 self.bump();
             }
             // CRLF is one line ending, but all source offsets stay original.
@@ -183,7 +184,7 @@ impl<'a> Scanner<'a> {
                     depth -= 1;
                     self.pos += 2;
                 } else if let Some(ch) = self.peek() {
-                    self.comment_character(ch, style.is_some())?;
+                    self.comment_character(ch)?;
                     self.bump();
                 } else {
                     return Err(ScanError {
@@ -206,17 +207,19 @@ impl<'a> Scanner<'a> {
         })
     }
 
-    fn comment_character(&self, ch: char, _doc: bool) -> Result<(), ScanError> {
-        let message = if ch == '\r' && !self.source[self.pos..].starts_with("\r\n") {
-            Some("bare carriage return is forbidden; use LF or CRLF")
+    fn comment_character(&self, ch: char) -> Result<(), ScanError> {
+        let kind = if ch == '\r' && !self.source[self.pos..].starts_with("\r\n") {
+            Some(ErrorKind::Forbidden(
+                "bare carriage return is forbidden; use LF or CRLF",
+            ))
         } else if matches!(ch, ' ' | '\t' | '\n' | '\r') {
             None
         } else {
             forbidden_character(ch)
         };
-        if let Some(message) = message {
+        if let Some(kind) = kind {
             Err(ScanError {
-                kind: ErrorKind::Forbidden(message),
+                kind,
                 span: Span::new(self.pos, self.pos + ch.len_utf8()),
             })
         } else {
@@ -235,22 +238,68 @@ impl<'a> Scanner<'a> {
     }
 }
 
-fn forbidden_character(ch: char) -> Option<&'static str> {
+fn forbidden_character(ch: char) -> Option<ErrorKind> {
     if matches!(
         ch,
         '\u{061c}' | '\u{200e}' | '\u{200f}' | '\u{202a}'..='\u{202e}' | '\u{2066}'..='\u{2069}'
     ) {
-        Some("bidirectional control character is forbidden")
+        Some(ErrorKind::ForbiddenScalar(
+            "bidirectional control character is forbidden",
+            ch,
+        ))
+    } else if is_default_ignorable_or_format(ch) {
+        Some(ErrorKind::ForbiddenScalar(
+            "default-ignorable or format character is forbidden",
+            ch,
+        ))
     } else if matches!(
         ch,
         '\u{000b}' | '\u{000c}' | '\u{0085}' | '\u{2028}' | '\u{2029}'
     ) {
-        Some("unsupported line separator is forbidden")
+        Some(ErrorKind::Forbidden(
+            "unsupported line separator is forbidden",
+        ))
     } else if ch.is_whitespace() {
-        Some("unsupported whitespace; use ASCII space, tab, LF, or CRLF")
+        Some(ErrorKind::Forbidden(
+            "unsupported whitespace; use ASCII space, tab, LF, or CRLF",
+        ))
     } else if ch.is_control() {
-        Some("control character is forbidden")
+        Some(ErrorKind::Forbidden("control character is forbidden"))
     } else {
         None
     }
+}
+
+// Unicode 17.0.0: union of Default_Ignorable_Code_Point in DerivedCoreProperties.txt
+// and General_Category=Cf in extracted/DerivedGeneralCategory.txt. See NOTICE.
+// The fixed table keeps behavior independent of the Rust toolchain's Unicode version.
+fn is_default_ignorable_or_format(ch: char) -> bool {
+    matches!(
+        ch,
+        '\u{00ad}'
+            | '\u{034f}'
+            | '\u{0600}'..='\u{0605}'
+            | '\u{061c}'
+            | '\u{06dd}'
+            | '\u{070f}'
+            | '\u{0890}'..='\u{0891}'
+            | '\u{08e2}'
+            | '\u{115f}'..='\u{1160}'
+            | '\u{17b4}'..='\u{17b5}'
+            | '\u{180b}'..='\u{180f}'
+            | '\u{200b}'..='\u{200f}'
+            | '\u{202a}'..='\u{202e}'
+            | '\u{2060}'..='\u{206f}'
+            | '\u{3164}'
+            | '\u{fe00}'..='\u{fe0f}'
+            | '\u{feff}'
+            | '\u{ffa0}'
+            | '\u{fff0}'..='\u{fffb}'
+            | '\u{110bd}'
+            | '\u{110cd}'
+            | '\u{13430}'..='\u{1343f}'
+            | '\u{1bca0}'..='\u{1bca3}'
+            | '\u{1d173}'..='\u{1d17a}'
+            | '\u{e0000}'..='\u{e0fff}'
+    )
 }

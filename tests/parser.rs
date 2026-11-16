@@ -672,39 +672,57 @@ fn reserved_std_module_keywords_allow_further_identifier_components() {
 }
 
 #[test]
-fn unicode_format_characters_are_comment_text_but_not_source_tokens() {
+fn invisible_unicode_scalars_reject_with_original_bytes_in_every_comment_style() {
     let declaration = "classical fn visible() -> Bit { 0 }";
-    for format_character in ['\u{200b}', '\u{feff}'] {
-        for line_ending in ["\n", "\r\n"] {
-            let source = format!(
-                "// note{format_character}classical fn hidden() -> Bit {{ 1 }}{line_ending}{declaration}"
-            );
-            let module = parse_module(&source).unwrap();
-            assert_eq!(module.decls.len(), 1);
-            assert_eq!(module.decls[0].name.text, "visible");
+    // Includes a Format scalar outside Default_Ignorable_Code_Point, both
+    // variation-selector planes, and assigned and reserved tag scalars.
+    for scalar in [
+        '\u{00ad}',
+        '\u{0600}',
+        '\u{180e}',
+        '\u{200b}',
+        '\u{2060}',
+        '\u{fe0f}',
+        '\u{feff}',
+        '\u{e0000}',
+        '\u{e0061}',
+        '\u{e0100}',
+    ] {
+        for (open, close) in [
+            ("", ""),
+            ("// ", "\r\n"),
+            ("/// ", "\n"),
+            ("//! ", "\n"),
+            ("/* ", " */"),
+            ("/** ", " */"),
+            ("/*! ", " */"),
+            ("/* outer /* ", " */ */"),
+        ] {
+            let prefix = format!("// 日本語\r\n{open}");
+            let source = format!("{prefix}{scalar}{close}{declaration}");
+            let error = parse_module(&source).unwrap_err();
             assert_eq!(
-                module.decls[0].span.start,
-                source.find(declaration).unwrap()
+                error.message,
+                format!(
+                    "default-ignorable or format character is forbidden (U+{:04X})",
+                    u32::from(scalar)
+                )
+            );
+            assert_eq!(
+                error.span,
+                Span::new(prefix.len(), prefix.len() + scalar.len_utf8())
             );
         }
-        let trailing_comment = format!("{declaration} // note{format_character}");
-        assert_eq!(parse_module(&trailing_comment).unwrap().decls.len(), 1);
-        // Bare CR can hide displayed code, so the 0.2.0 source profile rejects it.
-        let bare_cr = format!("// note{format_character}\r{declaration}");
-        assert!(
-            parse_module(&bare_cr)
-                .unwrap_err()
-                .message
-                .contains("bare carriage return")
-        );
-
-        // In particular, a leading U+FEFF is not stripped as a BOM.
-        let source = format!("{format_character}{declaration}");
-        let error = parse_module(&source).unwrap_err();
-        assert!(error.message.contains("unexpected character"), "{error}");
-        assert_eq!(error.span.start, 0);
-        assert_eq!(error.span.end, format_character.len_utf8());
     }
+
+    let leading_bom = format!("\u{feff}{declaration}");
+    let error = parse_module(&leading_bom).unwrap_err();
+    assert!(error.message.contains("U+FEFF"), "{error}");
+    assert_eq!(error.span, Span::new(0, '\u{feff}'.len_utf8()));
+
+    let ordinary_unicode = format!("/* 日本語 cafe\u{0301} */\r\n/// λ\n{declaration}");
+    let module = parse_module(&ordinary_unicode).unwrap();
+    assert_eq!(module.decls[0].name.text, "visible");
 }
 
 #[test]

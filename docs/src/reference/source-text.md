@@ -762,12 +762,23 @@ Source is UTF-8. Every source span is a half-open byte interval in the original
 input. Source loading, scanning and diagnostics must not normalize those bytes.
 LF and CRLF are accepted line endings. Ordinary whitespace is ASCII space or
 tab; bare CR, vertical tab, form feed and non-ASCII whitespace reject. Bidi
-control characters and other control characters reject, including in comments.
+controls and other control characters reject, including in comments.
 A rejected Unicode scalar's span covers its complete UTF-8 encoding.
 
+The scanner also rejects every scalar with `Default_Ignorable_Code_Point` or
+`General_Category=Format (Cf)` in Unicode 17.0.0. This covers Unicode tags,
+variation selectors, U+200B ZERO WIDTH SPACE and U+FEFF, including a leading
+U+FEFF. The diagnostic prints the offending `U+XXXX` code point and its
+original byte span. This rule applies inside all comments, to documentation
+input such as `qleisli doc`, and to bundled and project sources. Remove the
+offending scalar to migrate existing source; the scanner preserves the original
+bytes and rejects it. The pinned properties come from the Unicode 17.0.0
+[derived core properties](https://www.unicode.org/Public/17.0.0/ucd/DerivedCoreProperties.txt)
+and [general categories](https://www.unicode.org/Public/17.0.0/ucd/extracted/DerivedGeneralCategory.txt).
+
 Identifiers use ASCII letters or underscore initially, followed by ASCII
-letters, digits or underscore. Comment prose may contain other ordinary Unicode
-characters. This does not admit Unicode identifiers or alternate whitespace.
+letters, digits or underscore. Comments can contain ordinary Unicode prose
+that satisfies the same scalar rules.
 
 The existing finite keywords are reserved in the common grammar, including
 identifier positions formerly treated contextually by the sized parser:
