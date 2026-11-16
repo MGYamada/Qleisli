@@ -1937,7 +1937,8 @@ PATHS['ordinary-acceptance']['source_bindings'].extend([
         'if let StaticOpKind::Name(name) = &operation.kind {\n            return self.target_operation(name, basis, operand_span, scope);',
         'let checked = self.operation_with(\n            operation,\n            scope,\n            OperationMode {\n'
         '                arrows: true,\n                ..OperationMode::ENDO',
-        'normalize::equivalent(\n                &checked.basis,\n                basis,\n                &scope.context,\n                operation.span,',
+        'let input_matches = normalize::equivalent(\n            &checked.basis,\n            basis,\n'
+        '            &scope.context,\n            operation.span,',
         'normalize::expect(\n            checked.output(),\n            basis,\n            &scope.context,\n            operation.span,',
     ]),
     dict(path='src/frontend/specialize/projection.rs', markers=[
