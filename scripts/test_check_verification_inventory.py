@@ -45,6 +45,7 @@ class InventoryTests(unittest.TestCase):
         limits = {row['id']: row['limits'] for row in self.data['boundaries']}
         current = ('finite-leaf', 'hierarchy-inspect', 'qirf-native-v028', 'engineering-pure',
                    'engineering-instrument', 'engineering-pure-tensor', 'engineering-openqasm',
+                   'engineering-openqasm-gate',
                    'finite-carrier', 'qmatch-component', 'runtime-result', 'ordinary-result')
         for boundary in current:
             with self.subTest(boundary=boundary):

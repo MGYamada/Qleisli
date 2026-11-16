@@ -169,6 +169,31 @@ theorem run_engineering_target_binding (product : String) (bytes : ByteArray)
   obtain ⟨_,_,_,_,_,checked,_⟩ := run_binding _ _ _ _ _ _ (by decide) ok
   exact CheckedEngineeringOpenQasm.run_binding bytes decision.value work left checked
 
+/-- The actual native decision binds the original execution envelope to the
+checked gate word, exact QDV1 comparison, and the resource counts in its reply. -/
+theorem run_engineering_gate_binding (product : String) (bytes : ByteArray)
+    (decision : Decision .engineeringOpenQasmGate) (work left : Nat)
+    (ok : (run .engineeringOpenQasmGate product bytes).run work = (.ok decision,left)) :
+    let checked := decision.value
+    Packet.read bytes = .ok checked.packet ∧ checked.packet.scope = .execution ∧
+    decision.edition = checked.packet.edition ∧ decision.scope = .execution ∧
+    product = productVersion ∧
+    Nonempty (CheckedEngineeringOpenQasmGate.Binding checked.packet.original checked.packet.graph
+      checked.retained work left) ∧
+    Qirf.EngineeringOpenQasmGate.decode checked.retained.prepared.body = some checked.block ∧
+    checked.block.counts.within checked.retained.decoded.limits = true ∧
+    (reply .engineeringOpenQasmGate work (.ok decision) left).lines.drop 6 =
+      [work-left,Semantics.Finite.width checked.block.ports.basis,checked.block.counts.gates,
+        checked.block.counts.tGates].map toString := by
+  obtain ⟨input,read,version,edition,scope,checked,_⟩ := run_binding _ _ _ _ _ _ (by decide) ok
+  obtain ⟨packet,execution,bound⟩ := CheckedEngineeringOpenQasmGate.run_binding _ _ _ _ checked
+  have same : input = decision.value.packet := Except.ok.inj (read.symm.trans packet)
+  subst input
+  exact ⟨packet,execution,edition,scope.trans execution,version,bound,
+    decision.value.block_read,decision.value.block_bounds,rfl⟩
+
+#print axioms run_engineering_gate_binding
+
 theorem run_readout_binding (product : String) (bytes : ByteArray)
     (decision : Decision .readout) (work left : Nat)
     (ok : (run .readout product bytes).run work = (.ok decision,left)) :

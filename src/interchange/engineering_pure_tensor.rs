@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use super::codec::Codec;
-use super::engineering_pure::{DyadicBound, EngineeringPureRequest};
+use super::engineering_pure::{DyadicBound, EngineeringPureRequest, decode_dyadic};
 use super::json::{self, Value};
 use super::native::Kernel;
 use super::pure_leaf::PureBoundary;
@@ -414,25 +414,6 @@ fn encode_request(
         ("right", right),
         ("expected_artifact", Value::String(text(artifacts[1])?)),
     ]))
-}
-
-fn decode_dyadic(value: &Value) -> Result<DyadicBound> {
-    value.fields(&["numerator", "denominator_bits"])?;
-    let numerator = value.field("numerator")?.text()?;
-    if numerator.is_empty()
-        || !numerator.bytes().all(|b| b.is_ascii_digit())
-        || numerator.len() > 1 && numerator.starts_with('0')
-    {
-        return Err(Error::format(
-            "noncanonical nonnegative engineering numerator",
-        ));
-    }
-    let numerator = numerator
-        .parse()
-        .map_err(|_| Error::limit("engineering numerator exceeds i128"))?;
-    let denominator_bits = u32::try_from(value.field("denominator_bits")?.number()?)
-        .map_err(|_| Error::limit("engineering denominator exponent exceeds u32"))?;
-    DyadicBound::new(numerator, denominator_bits)
 }
 
 fn decode_pair(

@@ -24,7 +24,7 @@ class ProductionCoverage(unittest.TestCase):
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
         self.assertEqual(result['production_paths'], 42)
-        self.assertEqual(result['native_modes'], 20)
+        self.assertEqual(result['native_modes'], 21)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])

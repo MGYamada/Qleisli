@@ -24,6 +24,7 @@ pub(super) enum Mode {
     EngineeringPureTensor,
     EngineeringInstrument,
     EngineeringOpenQasm,
+    EngineeringOpenQasmGate,
     Readout,
     Preparation,
 }
@@ -49,6 +50,7 @@ impl Mode {
             Self::EngineeringPureTensor => "--engineering-pure-tensor-check",
             Self::EngineeringInstrument => "--qirf-engineering-instrument-native",
             Self::EngineeringOpenQasm => "--engineering-openqasm-check",
+            Self::EngineeringOpenQasmGate => "--engineering-openqasm-gate-check",
             Self::Readout => "--readout-check",
             Self::Preparation => "--preparation-check",
         }
@@ -74,6 +76,7 @@ impl Mode {
             "--engineering-pure-tensor-check" => Ok(Self::EngineeringPureTensor),
             "--qirf-engineering-instrument-native" => Ok(Self::EngineeringInstrument),
             "--engineering-openqasm-check" => Ok(Self::EngineeringOpenQasm),
+            "--engineering-openqasm-gate-check" => Ok(Self::EngineeringOpenQasmGate),
             "--readout-check" => Ok(Self::Readout),
             "--preparation-check" => Ok(Self::Preparation),
             _ => Err(Error::format("unknown native mode")),
@@ -98,7 +101,8 @@ impl Mode {
             Self::EngineeringPure
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
-            | Self::EngineeringOpenQasm => "engineering-checked",
+            | Self::EngineeringOpenQasm
+            | Self::EngineeringOpenQasmGate => "engineering-checked",
             Self::Readout | Self::Preparation => "checked",
             Self::OpenQasmPlacement => "placement-checked",
         }
@@ -122,6 +126,7 @@ impl Mode {
             | Self::EngineeringPureTensor
             | Self::EngineeringInstrument
             | Self::EngineeringOpenQasm
+            | Self::EngineeringOpenQasmGate
             | Self::HierarchyControl => scope == Scope::Execution,
             Self::Readout | Self::Preparation => scope == Scope::Inspection,
         }
@@ -217,51 +222,67 @@ pub(super) fn engineering_response(
     edition: Edition,
     mode: Mode,
 ) -> Result<WorkDecision> {
+    let (context, payload) = engineering_payload(bytes, edition, mode)?;
+    let [work] = payload.as_slice() else {
+        return Err(Error::format("malformed/trailing engineering response"));
+    };
+    let exact_work = engineering_count(work, "work count", crate::contract::DEFAULT_EXACT_WORK)?;
+    Ok(WorkDecision {
+        context,
+        exact_work,
+    })
+}
+
+pub(super) fn engineering_payload(
+    bytes: &[u8],
+    edition: Edition,
+    mode: Mode,
+) -> Result<(CheckedContext, Vec<&str>)> {
     if !matches!(
         mode,
         Mode::EngineeringPure
             | Mode::EngineeringPureTensor
             | Mode::EngineeringInstrument
             | Mode::EngineeringOpenQasm
+            | Mode::EngineeringOpenQasmGate
     ) {
         return Err(Error::format(
             "engineering comparison requires an engineering native mode",
         ));
     }
-    let (context, payload) = match parse(bytes, edition, mode, Scope::Execution)? {
-        Reply::Checked { context, payload } => (context, payload),
+    match parse(bytes, edition, mode, Scope::Execution)? {
+        Reply::Checked { context, payload } => Ok((context, payload)),
         Reply::Rejected(code) => {
             let code = if code == "version" { "kernel" } else { code };
-            return Err(Error::new(
+            Err(Error::new(
                 code,
                 if code == "kernel" {
                     "native checker product version differs from the Rust package"
                 } else {
                     "Lean engineering checker rejected the artifact/request; no fallback"
                 },
-            ));
+            ))
         }
-    };
-    let [work] = payload.as_slice() else {
-        return Err(Error::format("malformed/trailing engineering response"));
-    };
-    if work.is_empty()
-        || work.len() > 8
-        || !work.bytes().all(|b| b.is_ascii_digit())
-        || work.len() > 1 && work.starts_with('0')
+    }
+}
+
+pub(super) fn engineering_count(value: &str, field: &str, max: usize) -> Result<usize> {
+    if value.is_empty()
+        || value.len() > 8
+        || !value.bytes().all(|b| b.is_ascii_digit())
+        || value.len() > 1 && value.starts_with('0')
     {
-        return Err(Error::format("noncanonical engineering work count"));
+        return Err(Error::format(format!("noncanonical engineering {field}")));
     }
-    let exact_work = work
+    let count = value
         .parse()
-        .map_err(|_| Error::format("invalid engineering work count"))?;
-    if exact_work > crate::contract::DEFAULT_EXACT_WORK {
-        return Err(Error::format("engineering work bound disagrees"));
+        .map_err(|_| Error::format(format!("invalid engineering {field}")))?;
+    if count > max {
+        return Err(Error::format(format!(
+            "engineering {field} exceeds profile"
+        )));
     }
-    Ok(WorkDecision {
-        context,
-        exact_work,
-    })
+    Ok(count)
 }
 
 #[cfg(test)]
@@ -289,6 +310,7 @@ mod tests {
             Mode::EngineeringPureTensor,
             Mode::EngineeringInstrument,
             Mode::EngineeringOpenQasm,
+            Mode::EngineeringOpenQasmGate,
             Mode::Readout,
             Mode::Preparation,
         ] {
@@ -305,6 +327,7 @@ mod tests {
                     | Mode::EngineeringPureTensor
                     | Mode::EngineeringInstrument
                     | Mode::EngineeringOpenQasm
+                    | Mode::EngineeringOpenQasmGate
                     | Mode::HierarchyControl
             ) {
                 Scope::Execution

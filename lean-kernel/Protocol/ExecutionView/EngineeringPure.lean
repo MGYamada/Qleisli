@@ -12,7 +12,7 @@ private def engineeringRecord (name : String) (fields : List Value) : Value :=
 private def engineeringPort (value : Semantics.Raw.Port) : Value :=
   engineeringRecord "port" [.natural value.token,.array (value.wires.map Value.natural),.natural value.bits]
 
-private def engineeringLeaf (value : Protocol.EngineeringPure.Leaf) : Value :=
+def engineeringLeaf (value : Protocol.EngineeringPure.Leaf) : Value :=
   engineeringRecord "leaf" [engineeringPort value.input,engineeringPort value.output,matrix value.required]
 
 /-- Fixed profile names are included explicitly after independent decoding has

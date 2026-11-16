@@ -664,6 +664,7 @@ pub(in crate::interchange) mod carrier;
 pub(in crate::interchange) mod contracts;
 pub(in crate::interchange) mod engineering_instrument;
 pub(in crate::interchange) mod engineering_openqasm;
+pub(in crate::interchange) mod engineering_openqasm_gate;
 pub(in crate::interchange) mod engineering_pure;
 pub(in crate::interchange) mod engineering_pure_tensor;
 pub(in crate::interchange) mod ordinary_root;

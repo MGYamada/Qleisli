@@ -371,6 +371,74 @@ mod tests {
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
     )]
     #[test]
+    fn numerically_selected_controlled_phase_requires_exact_target_check() {
+        // Reuse the saved controlled-S source and the corresponding initial
+        // refusal and checked export in this authoring session.
+        let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/workspace-controlled-logical-v030/attempt-02");
+        let kernel = Kernel::selected(Edition::E2026).unwrap();
+        let program = Project::load(&root)
+            .unwrap()
+            .compile_with_kernel(&kernel)
+            .unwrap();
+        let intervals = workspace_intervals(
+            program.source_context().unwrap(),
+            program.raw().operations.len(),
+        )
+        .unwrap();
+        let (circuit, alignment) =
+            super::super::profile::extract_with_alignment(&program, Some(&intervals), &mut None)
+                .unwrap();
+        let template = super::super::openqasm::write(&circuit);
+        let (prefix, suffix) = template
+            .split_once("t q[0];\nt q[1];\ncx q[0], q[1];\ntdg q[1];\ncx q[0], q[1];\n")
+            .expect("ordered controlled-phase block");
+
+        // Both candidates restore the basis coordinates. Their diagonal
+        // phases are signed multiples of a + b - (a xor b), which is zero
+        // except in the |11> entry. Score that entry against the requested +i.
+        let mut proposals = [(-1.0, "tdg", "t"), (1.0, "t", "tdg")].map(
+            |(sign, phase, inverse)| {
+                let (imaginary, real) = (sign * std::f64::consts::FRAC_PI_2).sin_cos();
+                let score = real.powi(2) + (imaginary - 1.0).powi(2);
+                let target = format!(
+                    "{prefix}{phase} q[0];\n{phase} q[1];\ncx q[0], q[1];\n{inverse} q[1];\ncx q[0], q[1];\n{suffix}"
+                );
+                (score, target)
+            },
+        );
+        proposals.sort_by(|a, b| a.0.total_cmp(&b.0));
+        let [(score, selected), (_, wrong_phase)] = proposals;
+        assert!(score < 1e-12);
+
+        // Pass only the selected bytes, original source and placement to the
+        // native checker. Its resource reply also requires exact realization.
+        let alignment = alignment.encode();
+        let resources = program
+            .check_openqasm_placement(selected.as_bytes(), &alignment)
+            .unwrap();
+        assert_eq!(
+            (
+                resources.qubits,
+                resources.resets,
+                resources.gates,
+                resources.swaps,
+                resources.t_gates,
+                resources.measurements,
+            ),
+            (3, 3, 9, 0, 3, 2),
+        );
+        let failure = program
+            .check_openqasm_placement(wrong_phase.as_bytes(), &alignment)
+            .expect_err("equal gate counts cannot establish the requested coherent phase");
+        assert_eq!(failure.error.code, "contract", "{failure:?}");
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
     fn workspace_resources_bind_the_actual_closed_natural_specialization() {
         let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/authoring_sessions/target-specialization-v030/attempt-03");

@@ -36,6 +36,7 @@ pub(super) const USAGE: &str = "usage:
   qleisli engineering compare-pure-tensor ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
   qleisli engineering compare-instrument ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
   qleisli engineering compare-openqasm3 TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+  qleisli engineering compare-openqasm3-gate TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
   qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]
   qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf> --edition=2026 [--shots=N --seed=S] [--lean-kernel=PATH]

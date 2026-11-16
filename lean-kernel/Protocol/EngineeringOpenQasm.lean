@@ -39,10 +39,10 @@ structure Decoded where
 def claimKind (limits : Option GateCounts) : String :=
   if limits.isSome then "engineering-target-instrument-resource-bound" else "engineering-target-instrument-bound"
 
-private def gateLimits (value : Json) : WorkM GateCounts := do
+def gateLimits (expectedModel : String) (value : Json) : WorkM GateCounts := do
   adapt (fields value ["model","gates","t_gates"])
   let model ← adapt ((← adapt (value.getObjVal? "model")).getStr?)
-  guard (model == "openqasm3-one-qubit-literal-gates-v1") .request
+  guard (model == expectedModel) .request
   let gates ← adapt ((← adapt (value.getObjVal? "gates")).getNat?)
   let tGates ← adapt ((← adapt (value.getObjVal? "t_gates")).getNat?)
   guard (gates ≤ Target.CanonicalOpenQasm.maxGates && tGates ≤ Target.CanonicalOpenQasm.maxGates) .limit
@@ -58,7 +58,9 @@ def decode (value : Json) : WorkM Decoded := do
   adapt (fields value (["format","version","claim_kind","metric","checker_profile","target_profile",
     "composition","error_category","actual_signature","expected_signature","identity","epsilon",
     "majorants","expected_artifact"] ++ extensions))
-  let limits ← if version == 2 then some <$> (gateLimits (← adapt (value.getObjVal? "resource_limits"))) else pure none
+  let limits ← if version == 2 then
+    some <$> (gateLimits "openqasm3-one-qubit-literal-gates-v1" (← adapt (value.getObjVal? "resource_limits")))
+    else pure none
   let profile ← adapt (do
     return (← (← value.getObjVal? "format").getStr?) == "qleisli.engineering-openqasm-request" &&
       (← (← value.getObjVal? "claim_kind").getStr?) == claimKind limits &&

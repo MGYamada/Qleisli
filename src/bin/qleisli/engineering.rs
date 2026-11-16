@@ -74,17 +74,26 @@ pub(super) fn kernel(options: &Options) -> Result<Kernel, Error> {
 }
 
 pub(super) fn read(path: &Path) -> Result<Vec<u8>, Error> {
+    read_bounded(
+        path,
+        16 << 20,
+        "engineering input must contain 1..16777216 bytes per file",
+    )
+}
+
+pub(super) fn read_bounded(
+    path: &Path,
+    max_bytes: usize,
+    limit_message: &'static str,
+) -> Result<Vec<u8>, Error> {
     let mut bytes = Vec::new();
     File::open(path)
         .map_err(|e| error("io", format!("{}: {e}", path.display())))?
-        .take((16 << 20) + 1)
+        .take(max_bytes as u64 + 1)
         .read_to_end(&mut bytes)
         .map_err(|e| error("io", e.to_string()))?;
-    if bytes.is_empty() || bytes.len() > 16 << 20 {
-        return Err(error(
-            "limit",
-            "engineering input must contain 1..16777216 bytes per file",
-        ));
+    if bytes.is_empty() || bytes.len() > max_bytes {
+        return Err(error("limit", limit_message));
     }
     Ok(bytes)
 }
@@ -138,26 +147,16 @@ fn execute(options: Options) -> Result<EngineeringPureReport, Error> {
 }
 
 pub(super) fn run(args: &[OsString]) -> ExitCode {
-    if args
+    match args
         .iter()
         .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
-        .is_some_and(|arg| arg == "compare-openqasm3")
+        .and_then(|arg| arg.to_str())
     {
-        return super::engineering_openqasm::run(args);
-    }
-    if args
-        .iter()
-        .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
-        .is_some_and(|arg| arg == "compare-pure-tensor")
-    {
-        return super::engineering_pure_tensor::run(args);
-    }
-    if args
-        .iter()
-        .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
-        .is_some_and(|arg| arg == "compare-instrument")
-    {
-        return super::engineering_instrument::run(args);
+        Some("compare-openqasm3") => return super::engineering_openqasm::run(args),
+        Some("compare-openqasm3-gate") => return super::engineering_openqasm_gate::run(args),
+        Some("compare-pure-tensor") => return super::engineering_pure_tensor::run(args),
+        Some("compare-instrument") => return super::engineering_instrument::run(args),
+        _ => {}
     }
     let json = args.iter().any(|arg| arg == "--format=json");
     let Some(options) = parse(args, "compare-pure") else {
