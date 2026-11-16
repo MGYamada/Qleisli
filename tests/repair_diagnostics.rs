@@ -375,8 +375,9 @@ fn qmatch_static_arm_with_different_ports_keeps_the_arm_diagnostic() {
 unitary fn regroup(q: Q<((Bit,Bit),Bit)>) -> Q<(Bit,(Bit,Bit))> {
     basis q as ((a,b),c) { (a,(b,c)) }
 }
+unitary fn keep_target(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> { q }
 unitary fn bad(control: Q<Bit>, operand: Q<(Bit,(Bit,Bit))>) -> (Q<Bit>,Q<(Bit,(Bit,Bit))>) {
-    qmatch(control,operand) {0=>then_op(keep,regroup), 1=>i}
+    qmatch(control,operand) {0=>then_op(keep,regroup), 1=>keep_target}
 }";
     let error = check_project_diagnostic(&SourceRoot::new(source).0).unwrap_err();
     assert_eq!(error.code, "type_mismatch");
