@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Bind terminal OpenQASM output order to the original Raw measurements and
+  recover original workspace order and provider dependencies from replay (#120).
 - Prove exact physical-register correspondence for terminal OpenQASM preparation,
   routing, circuit spans, and checked clean or dirty workspace slices (#120).
 - Locate failed native OpenQASM workspace equations in the original Raw scope

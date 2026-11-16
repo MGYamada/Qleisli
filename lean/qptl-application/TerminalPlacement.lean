@@ -1175,4 +1175,96 @@ theorem clean_workspace_frame {sources caller deps program block sourceStart sou
 
 #print axioms clean_workspace_frame
 
+private theorem reinstate_reset_frame (layout : List Nat) (unique : layout.Nodup)
+    (row : Nat) (reset : OutsideZero layout row) : scatter 0 layout (gather row layout) = row := by
+  apply Nat.eq_of_testBit_eq
+  intro axis
+  have bits : bit (scatter 0 layout (gather row layout)) axis = bit row axis := by
+    by_cases selected : axis ∈ layout
+    · obtain ⟨index,bound,rfl⟩ := List.getElem_of_mem selected
+      rw [scatter_at 0 (gather row layout) layout unique index bound,gather_at row layout index bound]
+    · rw [scatter_outside 0 (gather row layout) axis layout selected,reset axis selected]
+      simp [bit]
+  simp only [bit] at bits
+  rw [← Nat.toNat_testBit _ axis,← Nat.toNat_testBit row axis] at bits
+  cases placed : (scatter 0 layout (gather row layout)).testBit axis <;>
+    cases logical : row.testBit axis <;> simp_all
+
+open scoped Classical in
+/-- Sum over the complete physical terminal register and retain the two
+arbitrary external reference coordinates. The exact reset-frame embedding
+preserves the resulting measurement marginal, including off-diagonal entries
+in the external reference. -/
+theorem reference_marginal_on_placed_frame {R : Type} (layout : List Nat) (physicalBits : Nat)
+    (unique : layout.Nodup) (declared : ∀ axis ∈ layout, axis < physicalBits)
+    (physicalOutcome rawOutcome : Nat → Prop) [DecidablePred physicalOutcome] [DecidablePred rawOutcome]
+    (sameOutcome : ∀ row, OutsideZero layout row → (physicalOutcome row ↔ rawOutcome (gather row layout)))
+    (amplitudes : Nat → R → ℂ) (referenceLeft referenceRight : R) :
+    (∑ row ∈ Finset.range (2^physicalBits),
+      if physicalOutcome row then
+        physicalColumn layout (fun logical => amplitudes logical referenceLeft) row *
+          star (physicalColumn layout (fun logical => amplitudes logical referenceRight) row)
+      else 0) =
+    ∑ logical ∈ Finset.range (2^layout.length),
+      if rawOutcome logical then amplitudes logical referenceLeft * star (amplitudes logical referenceRight) else 0 := by
+  classical
+  let full := Finset.range (2^physicalBits)
+  let support := full.filter (OutsideZero layout)
+  let term := fun row => if physicalOutcome row then
+    physicalColumn layout (fun logical => amplitudes logical referenceLeft) row *
+      star (physicalColumn layout (fun logical => amplitudes logical referenceRight) row) else 0
+  change (∑ row ∈ full, term row) = _
+  have discardZero : (∑ row ∈ support, term row) = ∑ row ∈ full, term row := by
+    apply Finset.sum_subset (Finset.filter_subset _ _)
+    intro row domain absent
+    have reset : ¬OutsideZero layout row := fun yes => absent (Finset.mem_filter.mpr ⟨domain,yes⟩)
+    simp [term,physicalColumn,reset]
+  rw [← discardZero]
+  refine Finset.sum_nbij' (fun row => gather row layout) (fun logical => scatter 0 layout logical) ?_ ?_ ?_ ?_ ?_
+  · intro row _
+    exact Finset.mem_range.mpr (gather_bound row layout)
+  · intro logical _
+    apply Finset.mem_filter.mpr
+    refine ⟨Finset.mem_range.mpr (Qleisli.Finite.Pull.scatter_bound 0 physicalBits logical layout
+      (Nat.two_pow_pos _) declared),?_⟩
+    intro axis unused
+    rw [scatter_outside 0 logical axis layout unused]
+    simp [bit]
+  · intro row member
+    exact reinstate_reset_frame layout unique row (Finset.mem_filter.mp member).2
+  · intro logical member
+    exact Qleisli.RuntimeFiniteTargetScatter.gather_scatter 0 logical layout unique (Finset.mem_range.mp member)
+  · intro row member
+    have reset := (Finset.mem_filter.mp member).2
+    simp only [term,physicalColumn,reset,if_true,sameOutcome row reset]
+
+#print axioms reference_marginal_on_placed_frame
+
+open scoped Classical in
+/-- Exact terminal marginal for the written classical result word of a
+successful native readout. The raw indices in the right side are those of
+its actual owner-consuming measurements. -/
+theorem readout_reference_marginal {R : Type} {bytes capacity}
+    {target : QleisliKernel.Target.CanonicalOpenQasmResources.Checked bytes capacity}
+    {program : QleisliKernel.Semantics.Observation.Program}
+    {state : QleisliKernel.Target.CanonicalOpenQasmPlacement.State}
+    (checked : QleisliKernel.Target.CanonicalOpenQasmPlacement.Readout target program state)
+    (declared : target.circuit.declares state.locations) (outcome : List Nat)
+    (amplitudes : Nat → R → ℂ) (referenceLeft referenceRight : R) :
+    (∑ row ∈ Finset.range (2^target.circuit.qubits),
+      if target.circuit.measurements.map (bit row) = outcome then
+        physicalColumn state.locations (fun logical => amplitudes logical referenceLeft) row *
+          star (physicalColumn state.locations (fun logical => amplitudes logical referenceRight) row)
+      else 0) =
+    ∑ logical ∈ Finset.range (2^state.locations.length),
+      if (target.circuit.measurements.map state.locations.idxOf).map (bit logical) = outcome then
+        amplitudes logical referenceLeft * star (amplitudes logical referenceRight)
+      else 0 := by
+  exact reference_marginal_on_placed_frame state.locations target.circuit.qubits declared.1 declared.2
+    (fun row => target.circuit.measurements.map (bit row) = outcome)
+    (fun logical => (target.circuit.measurements.map state.locations.idxOf).map (bit logical) = outcome)
+    (fun row _ => by simp only [checked.measurement_word declared.1 row]) amplitudes referenceLeft referenceRight
+
+#print axioms readout_reference_marginal
+
 end Qleisli.TerminalPlacement
