@@ -4,6 +4,9 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Point static operation type mismatches at the operand in text and JSON.
+  Show both declared types and explain how to reshape equal-leaf product
+  trees without changing their order (#272).
 - Prove that accepted terminal OpenQASM packets preserve every original Raw
   output probability from register reset through the decoded measurement word.
   The same native decision binds the pre-readout complex column, the selected

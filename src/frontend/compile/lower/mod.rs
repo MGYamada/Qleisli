@@ -27,6 +27,8 @@ mod statics;
 mod transforms;
 mod value;
 
+use crate::frontend::diagnostic::static_operand_mismatch;
+
 use value::{Binding, Env, Register, Slot, Value, env_size};
 
 use super::*;
@@ -895,7 +897,7 @@ impl Lowerer<'_, '_> {
                 }
             };
             if let Some(op) = op {
-                return self.apply_operation(module, span, &op, value, Access::Adjoint);
+                return self.apply_operation(module, span, input.span, &op, value, Access::Adjoint);
             }
         }
         let slot = self.quantum(module, input.span, &value, false)?;
@@ -905,11 +907,11 @@ impl Lowerer<'_, '_> {
         } else {
             Access::Apply
         };
-        let operation = self.operation_steps(module, function, &basis, env, access)?;
+        let operation = self.operation_steps(module, function, &basis, env, access, input.span)?;
         let is_operation = operation.is_some();
         let mut steps = match operation {
             Some(steps) => steps,
-            None => self.static_steps(module, function, &basis, env)?,
+            None => self.static_steps(module, function, &basis, env, input.span)?,
         };
         let cost = total_size(steps.iter().map(super::circuit::size));
         let mut expected = self.target_meaning(module, function, &basis)?;
@@ -1251,7 +1253,8 @@ impl Lowerer<'_, '_> {
             let op = self
                 .retained_bound_operation(module, callee)?
                 .expect("bound operation");
-            return self.apply_operation(module, span, &op, value, Access::Apply);
+            let operand_span = args.first().map_or(span, |argument| argument.span);
+            return self.apply_operation(module, span, operand_span, &op, value, Access::Apply);
         }
         let site = CallSite {
             module,
@@ -1499,7 +1502,7 @@ impl Lowerer<'_, '_> {
                 }
                 let value = self.expr(module, input, env)?;
                 let op = self.operation(module, operation, env)?;
-                self.apply_operation(module, expr.span, &op, value, Access::Apply)
+                self.apply_operation(module, expr.span, input.span, &op, value, Access::Apply)
             }
             ExprKind::Adjoint { operation, input } => {
                 if let Some(value) =
@@ -1676,6 +1679,7 @@ impl Lowerer<'_, '_> {
         name: &Ident,
         basis: &Ty,
         env: &Env,
+        operand_span: Span,
     ) -> Result<Vec<CircuitStep>, CompileError> {
         if self
             .compiler
@@ -1715,6 +1719,17 @@ impl Lowerer<'_, '_> {
                 }
                 let (params, result) = self.compiler.signature(key)?;
                 if params != [ty.clone()] || result != ty {
+                    if params.len() == 1
+                        && params.first() == Some(&result)
+                        && result.quantum_basis().is_some()
+                    {
+                        return Err(self.error(
+                            module,
+                            operand_span,
+                            ErrorCode::TypeMismatch,
+                            static_operand_mismatch(&result, &ty, false),
+                        ));
+                    }
                     return Err(self.error(
                         module,
                         name.span,
@@ -1735,9 +1750,9 @@ impl Lowerer<'_, '_> {
                 if *primitive == PrimitiveId::H && *basis != Ty::bit() {
                     return Err(self.error(
                         module,
-                        name.span,
+                        operand_span,
                         ErrorCode::TypeMismatch,
-                        "h requires Q<Bit>",
+                        static_operand_mismatch(&Ty::bit(), basis, true),
                     ));
                 }
             }

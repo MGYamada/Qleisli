@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#272 retain the whole static control operand types and original argument location",
+  "author": "Informed Codex probe",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "a844010fcfb4db023f60da02350d21c672c96366",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "First wrong-tree control application using the current source syntax.",
+      "sha256": {
+        "main.qli": "f63d67dd7606d36a6728f2c26e28437f358097f7917589adb866c11540bc230f"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before-text.json",
+        "before-json.json"
+      ]
+    }
+  ]
+}

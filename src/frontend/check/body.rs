@@ -1039,9 +1039,9 @@ impl Checker<'_, '_> {
                 });
                 if let Some((function, _, _)) = sealed_target {
                     let basis = target.quantum_basis().ok_or_else(|| {
-                        SourceError::new("type", span, "repetition requires one Q<A> owner")
+                        SourceError::new("type", input.span, "repetition requires one Q<A> owner")
                     })?;
-                    let op = self.target_operation(function, basis, scope)?;
+                    let op = self.target_operation(function, basis, input.span, scope)?;
                     access(&op, Access::Apply, span)?;
                 } else {
                     self.transformed_operation(
@@ -1134,14 +1134,14 @@ impl Checker<'_, '_> {
                 function,
                 input,
             } => {
-                let input = self.expr(input, scope, None)?;
-                let basis = input.quantum_basis().ok_or_else(|| {
-                    SourceError::new("type", span, "repetition requires one Q<A> owner")
+                let target = self.expr(input, scope, None)?;
+                let basis = target.quantum_basis().ok_or_else(|| {
+                    SourceError::new("type", input.span, "repetition requires one Q<A> owner")
                 })?;
-                let op = self.target_operation(function, basis, scope)?;
+                let op = self.target_operation(function, basis, input.span, scope)?;
                 access(&op, Access::Apply, span)?;
                 self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
-                input
+                target
             }
             ExprKind::ApplyContract {
                 implementation,

@@ -1929,15 +1929,15 @@ PATHS['ordinary-acceptance']['source_bindings'].extend([
     dict(path='src/frontend/check/body/quantum_matching.rs', markers=[
         'fn qmatch_labels(',
         'fn qmatch(',
-        'let operation = self.qmatch_operation(&arm.operation, target_basis, scope)?;',
+        'self.qmatch_operation(&arm.operation, target_basis, selection.target.span, scope)?;',
         'access(&operation, Access::Controlled, arm.operation.span)?',
         'self.obligation(span, ObligationKind::TransformedMeaning, scope)?',
     ]),
     dict(path='src/frontend/check/body/operations.rs', markers=[
-        'if let StaticOpKind::Name(name) = &operation.kind {\n            return self.target_operation(name, basis, scope);',
+        'if let StaticOpKind::Name(name) = &operation.kind {\n            return self.target_operation(name, basis, operand_span, scope);',
         'let checked = self.operation_with(\n            operation,\n            scope,\n            OperationMode {\n'
         '                arrows: true,\n                ..OperationMode::ENDO',
-        'normalize::expect(\n            &checked.basis,\n            basis,\n            &scope.context,\n            operation.span,',
+        'normalize::equivalent(\n                &checked.basis,\n                basis,\n                &scope.context,\n                operation.span,',
         'normalize::expect(\n            checked.output(),\n            basis,\n            &scope.context,\n            operation.span,',
     ]),
     dict(path='src/frontend/specialize/projection.rs', markers=[

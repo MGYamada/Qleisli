@@ -80,6 +80,7 @@ fn retained_primitive(source: &str, kind: OperationPrimitive, target_atoms: &[At
             target,
             bits,
             &Env::new(),
+            selection.target.span,
         )
         .expect("untrusted direct primitive preparation");
         let ArmBody::Program(raw) = body else {

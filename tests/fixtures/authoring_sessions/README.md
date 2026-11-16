@@ -474,6 +474,11 @@ retains the initial manifest refusal and both exact source checks. Only the
 H specialization exports to the terminal target. The unchanged scalar-phase
 specialization originally produced a Raw operation index without a source span.
 
+The [static operand shape study](static-operand-shape-v030/session.json)
+retains the first wrong-tree controlled application and the original text and
+JSON diagnostics. The exact argument type and range remain separate from the
+provider's own interface checks.
+
 Each `session.json` names the task, kind, baseline commit/version, context,
 ordered attempts and observations. Each attempt contains a complete project,
 source hashes and a reason; observations retain argument lists, exit codes and

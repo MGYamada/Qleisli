@@ -156,12 +156,18 @@ impl Checker<'_, '_> {
                         },
                     )?;
                     access(&operation, requested, span)?;
-                    normalize::expect(
+                    normalize::expect_static_operand(
+                        normalize::equivalent(
+                            target,
+                            &result,
+                            &scope.context,
+                            target_span,
+                            &self.program.budget,
+                        ),
                         target,
                         &result,
-                        &scope.context,
                         target_span,
-                        &self.program.budget,
+                        false,
                     )?;
                     return Ok(group);
                 }
@@ -188,12 +194,18 @@ impl Checker<'_, '_> {
                     error
                 })?;
                 access_mask(&mask, requested, span)?;
-                normalize::expect(
+                normalize::expect_static_operand(
+                    normalize::equivalent(
+                        target,
+                        &group,
+                        &scope.context,
+                        target_span,
+                        &self.program.budget,
+                    ),
                     target,
                     &group,
-                    &scope.context,
                     target_span,
-                    &self.program.budget,
+                    false,
                 )?;
                 self.tick(name.span)?;
                 self.effects.require_unitary(id, name.span);
@@ -236,7 +248,7 @@ impl Checker<'_, '_> {
             {
                 self.named_operation_with(name, &[], scope, false, adjoint_mode)?
             } else {
-                self.target_operation(name, basis, scope)?
+                self.target_operation(name, basis, target_span, scope)?
             }
         } else if requested == Access::Adjoint {
             self.operation_inner_with(op, scope, adjoint_mode)?
@@ -244,16 +256,17 @@ impl Checker<'_, '_> {
             self.operation_inner(op, scope)?
         };
         access(&operation, requested, span)?;
-        normalize::expect(
-            if requested == Access::Adjoint {
-                operation.output()
-            } else {
-                &operation.basis
-            },
+        let expected = if requested == Access::Adjoint {
+            operation.output()
+        } else {
+            &operation.basis
+        };
+        normalize::expect_static_operand(
+            normalize::equivalent(expected, basis, &scope.context, span, &self.program.budget),
             basis,
-            &scope.context,
-            span,
-            &self.program.budget,
+            expected,
+            target_span,
+            true,
         )?;
         Ok(Ty::quantum(operation.basis))
     }
@@ -1147,10 +1160,11 @@ impl Checker<'_, '_> {
         &mut self,
         operation: &StaticOp,
         basis: &Ty,
+        operand_span: Span,
         scope: &Scope,
     ) -> Result<Operation> {
         if let StaticOpKind::Name(name) = &operation.kind {
-            return self.target_operation(name, basis, scope);
+            return self.target_operation(name, basis, operand_span, scope);
         }
         let checked = self.operation_with(
             operation,
@@ -1160,12 +1174,18 @@ impl Checker<'_, '_> {
                 ..OperationMode::ENDO
             },
         )?;
-        normalize::expect(
-            &checked.basis,
+        normalize::expect_static_operand(
+            normalize::equivalent(
+                &checked.basis,
+                basis,
+                &scope.context,
+                operation.span,
+                &self.program.budget,
+            ),
             basis,
-            &scope.context,
-            operation.span,
-            &self.program.budget,
+            &checked.basis,
+            operand_span,
+            true,
         )?;
         normalize::expect(
             checked.output(),

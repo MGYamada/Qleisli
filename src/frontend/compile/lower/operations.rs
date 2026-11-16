@@ -7,22 +7,24 @@ impl Lowerer<'_, '_> {
         &mut self,
         module: &str,
         span: Span,
+        operand_span: Span,
         op: &Operation,
         value: Value,
         access: Access,
     ) -> Result<Value, CompileError> {
-        let slot = self.quantum(module, span, &value, false)?;
+        let slot = self.quantum(module, operand_span, &value, false)?;
         let (domain, codomain) = if access == Access::Adjoint {
             (&op.codomain, &op.basis)
         } else {
             (&op.basis, &op.codomain)
         };
-        if self.raw.registers[&slot].basis != *domain {
+        let actual = &self.raw.registers[&slot].basis;
+        if actual != domain {
             return Err(self.error(
                 module,
-                span,
+                operand_span,
                 ErrorCode::TypeMismatch,
-                "operation and argument have different exact basis trees",
+                static_operand_mismatch(domain, actual, true),
             ));
         }
         let start = self.raw.operations.len();
@@ -118,7 +120,7 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let value = self.expr(module, input, env)?;
         let op = self.operation(module, operation, env)?;
-        self.apply_operation(module, span, &op, value, Access::Adjoint)
+        self.apply_operation(module, span, input.span, &op, value, Access::Adjoint)
     }
 
     pub(super) fn controlled_application(
@@ -142,12 +144,13 @@ impl Lowerer<'_, '_> {
         let q = self.expr(module, target, env)?;
         let slot = self.quantum(module, target.span, &q, false)?;
         let op = self.operation(module, operation, env)?;
-        if op.basis != self.raw.registers[&slot].basis {
+        let actual = &self.raw.registers[&slot].basis;
+        if &op.basis != actual {
             return Err(self.error(
                 module,
-                span,
+                target.span,
                 ErrorCode::TypeMismatch,
-                "controlled operation and target have different exact basis trees",
+                static_operand_mismatch(&op.basis, actual, true),
             ));
         }
         let steps = op.steps(module, span, Access::Controlled, self.compiler)?;
@@ -314,6 +317,7 @@ impl Lowerer<'_, '_> {
         basis: &Ty,
         env: &Env,
         access: Access,
+        operand_span: Span,
     ) -> Result<Option<Vec<CircuitStep>>, CompileError> {
         let Some(op) = self.bound_operation(name) else {
             return Ok(None);
@@ -328,9 +332,9 @@ impl Lowerer<'_, '_> {
         if op.basis != *basis {
             return Err(self.error(
                 module,
-                name.span,
+                operand_span,
                 ErrorCode::TypeMismatch,
-                format!("operation and input have different exact basis trees: expected `Q<{}>`, found `Q<{basis}>`", op.basis),
+                static_operand_mismatch(&op.basis, basis, true),
             ));
         }
         self.add_contract_effect(module, name.span, op.effect);
