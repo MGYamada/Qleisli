@@ -45,6 +45,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [parser surface diagnostics study](parser-surface-diagnostics-v030/README.md)
+preserves the initial messages on invented quantum statements and malformed
+quantum headers before locally recognized forms gained syntax guidance.
+
 The [structural predicate target study](structural-predicate-target-v030/README.md)
 preserves the first closed source and the terminal export refusal at its
 original Raw computed scope.

@@ -41,6 +41,9 @@ development milestones from the scope of their evidence.
   for an original structural computed predicate.
 - Instantiate classical Nat predicates for structural computed scopes and
   reuse the same source declaration in ordinary Raw calls.
+- Teach ordinary binding and ownership syntax after invented quantum statements.
+  Show canonical local forms for malformed quantum headers in text and JSON
+  diagnostics (#237).
 
 ## 0.3.0-beta — 2026-10-12
 

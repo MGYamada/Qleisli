@@ -506,6 +506,106 @@ fn malformed_syntax_has_precise_error_spans() {
 }
 
 #[test]
+fn invented_quantum_statements_teach_surface_forms_without_reserving_names() {
+    for (source, spelling, guidance) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qlet/main.qli"
+            ),
+            "qlet",
+            "ordinary binding",
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qreturn/main.qli"
+            ),
+            "qreturn",
+            "final expression",
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qmove/main.qli"
+            ),
+            "qmove",
+            "ordinary expression",
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qmut/main.qli"
+            ),
+            "qmut",
+            "temporary exclusive access",
+        ),
+    ] {
+        let error = parse_module(source).unwrap_err();
+        let start = source.find(spelling).unwrap();
+        assert_eq!(error.span, Span::new(start, start + spelling.len()));
+        assert!(
+            error
+                .message
+                .contains(&format!("Unexpected `{spelling}` statement form"))
+        );
+        assert!(
+            error.message.contains(guidance) && error.message.contains("Q<A>"),
+            "{error}"
+        );
+
+        let ordinary_identifiers = format!(
+            "fn {spelling}(q: Q<Bit>) -> Q<Bit> {{ let {spelling} = q; {spelling} }} \
+             fn invoke(q: Q<Bit>) -> Q<Bit> {{ {spelling}(q) }}"
+        );
+        parse_module(&ordinary_identifiers).unwrap();
+    }
+}
+
+#[test]
+fn malformed_quantum_headers_teach_examples_from_the_common_grammar() {
+    for (source, keyword, bad) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qif/main.qli"
+            ),
+            "qif",
+            "c",
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qmatch/main.qli"
+            ),
+            "qmatch",
+            "s",
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qfor/main.qli"
+            ),
+            "qfor",
+            "i",
+        ),
+    ] {
+        let error = parse_module(source).unwrap_err();
+        let start = source.find(&format!("{keyword} {bad}")).unwrap() + keyword.len() + 1;
+        assert_eq!(error.span, Span::new(start, start + bad.len()));
+
+        // Parse the example retrieved from the diagnostic itself. No assumed
+        // type, resolved provider, or semantic result is needed for this test.
+        let (_, guidance) = error.message.split_once("Use the form `").unwrap();
+        let form = guidance.strip_suffix("`.").unwrap();
+        let example = format!("fn example() -> Unit {{ {form} }}");
+        let parsed = parse_module(&example).unwrap_or_else(|error| panic!("{example}: {error}"));
+        let FnBody::Quantum(body) = &parsed.decls[0].body else {
+            panic!("expected a function body");
+        };
+        assert!(matches!(
+            (keyword, &body.result.kind),
+            ("qif", ExprKind::QuantumIf { .. })
+                | ("qmatch", ExprKind::QuantumMatch(_))
+                | ("qfor", ExprKind::StaticFold { quantum: true, .. })
+        ));
+    }
+}
+
+#[test]
 fn deep_syntax_is_rejected_without_exhausting_the_stack() {
     // macOS otherwise gives test threads more stack than the Linux CI lane.
     std::thread::Builder::new()

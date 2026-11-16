@@ -756,6 +756,21 @@ The coherent expression `basis q as pattern { expression }` and static
 and validation records retain their original spelling; current replay selects
 explicitly recorded derivatives.
 
+## Parser guidance for surface syntax
+
+The parser may explain the canonical local form when it recognizes a Qleisli
+surface rule at a syntax error. For example, `qlet owner = value;` is an
+invalid binding statement. Use `let owner = value;` for an ordinary binding,
+including a binding to a `Q<A>` owner. `qlet` remains an ordinary identifier.
+When a `qif` or `qmatch` header is missing its opening parenthesis or a
+`qfor` header is missing `static`, the diagnostic can show the corresponding
+construct as written in the grammar.
+
+Text and structured diagnostics carry the same guidance and original source
+location. A grammar example supplies a syntactic form. Name resolution,
+typing, effects and ownership still determine whether a program using that
+form is valid. See [the roles of quantum syntax and types](type-model.md).
+
 ## Bytes, characters and positions
 
 Source is UTF-8. Every source span is a half-open byte interval in the original

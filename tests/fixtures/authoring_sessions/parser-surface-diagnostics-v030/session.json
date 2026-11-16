@@ -1,0 +1,58 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#237 parser teaching for recognized surface errors",
+  "author": "Codex assistant",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "a844010fcfb4db023f60da02350d21c672c96366",
+  "context": "README.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve the first invalid sources and actual diagnostic text before teaching guidance changes.",
+      "sha256": {
+        "qlet/main.qli": "64eecaf60cce13f972195c44bdac392dcf3a8f474c37a280095ed09c385f6c1f",
+        "qreturn/main.qli": "cf768ed16a9437ff88fe8adc1474a4a3e427f2d134a9057f3b56016daba499e8",
+        "qmove/main.qli": "9e54830e18a481db613df3c33aa54ee4827b4c761abcc65a22092fb913169286",
+        "qmut/main.qli": "2a7c847d317febb288975b9954df90d4da704665e7009f84029910b3a0f357a2",
+        "qif/main.qli": "1196a5502471369cd8e08b472b26633c13222722655a19647cb93308323aa17f",
+        "qmatch/main.qli": "26df498e01928964e466c618f6aae97cf1f50ce5a5ff9959f9ac320ccd82585f",
+        "qfor/main.qli": "b91736c9c606c19482a7a16c643108c4fe78db0beceaa7d4bca2115158ebfc1d"
+      },
+      "manifest_sha256": {
+        "qlet/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qreturn/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qmove/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qmut/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qif/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qmatch/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "qfor/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before/qlet.json",
+        "before/qreturn.json",
+        "before/qmove.json",
+        "before/qmut.json",
+        "before/qif.json",
+        "before/qmatch.json",
+        "before/qfor.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "project-manifests",
+      "reason": "Bind the edition manifests used by the recorded checks.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qlet/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qreturn/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qmove/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qmut/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qif/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qmatch/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qfor/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    }
+  ],
+  "scope": "Historical observations from the existing #245 scanner build of the common parser at the listed source baseline. The binary hash records the executable actually invoked. Each source failed before native setup."
+}

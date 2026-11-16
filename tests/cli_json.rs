@@ -183,6 +183,74 @@ fn retired_operation_diagnostics_preserve_utf8_crlf_spans_without_native_setup()
     }
 }
 
+#[test]
+fn quantum_surface_guidance_reaches_text_and_json_with_original_locations() {
+    for (source, at, offset, width, guidance) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qlet/main.qli"
+            ),
+            "qlet next",
+            0,
+            "qlet".len(),
+            "let owner = value;",
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qif/main.qli"
+            ),
+            "qif c",
+            "qif ".len(),
+            1,
+            "qif(control, target) { 0 => first, 1 => second }",
+        ),
+    ] {
+        let source = format!("// 位相\r\n{}", source.replace('\n', "\r\n"));
+        let root = SourceRoot::new(&source);
+        let start = source.find(at).unwrap() + offset;
+        let end = start + width;
+        let line = source[..start]
+            .bytes()
+            .filter(|&byte| byte == b'\n')
+            .count()
+            + 1;
+        let column = source[..start].rsplit('\n').next().unwrap().chars().count() + 1;
+        let missing_kernel = format!("--lean-kernel={}", root.0.join("absent").display());
+        for command in ["check", "run"] {
+            for json in [false, true] {
+                let mut process = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+                process.arg(command).arg(&root.0).arg(&missing_kernel);
+                if json {
+                    process.arg("--format=json");
+                }
+                let output = process.output().unwrap();
+                assert_eq!(output.status.code(), Some(1), "{output:?}");
+                if json {
+                    assert!(output.stderr.is_empty(), "{output:?}");
+                    let text = String::from_utf8(output.stdout).unwrap();
+                    assert_eq!(text.matches("\"code\":\"parse\"").count(), 1, "{text}");
+                    assert!(text.contains(guidance), "{text}");
+                    let location = format!(
+                        "\"path\":\"main.qli\",\"start\":{start},\"end\":{end},\"line\":{line},\"column\":{column}"
+                    );
+                    assert!(
+                        text.contains(&location) && text.ends_with("\"result\":null}\n"),
+                        "{text}"
+                    );
+                } else {
+                    assert!(output.stdout.is_empty(), "{output:?}");
+                    let text = String::from_utf8(output.stderr).unwrap();
+                    let location = format!("main.qli:{line}:{column}: parse:");
+                    assert!(
+                        text.contains(&location) && text.contains(guidance),
+                        "{text}"
+                    );
+                }
+            }
+        }
+    }
+}
+
 #[cfg_attr(
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
