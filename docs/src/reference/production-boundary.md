@@ -1158,6 +1158,37 @@ comparison and numerical execution observations retain their separate scopes.
 General source preservation and the complete native analytic/operator and
 runtime correspondence duties remain pending.
 
+## Numerical result presentation
+
+Closed-project `run` reports a numerical reference distribution. Text uses
+scientific notation with twelve digits after the decimal point. JSON retains
+numeric probabilities under the existing output range policy. Sampling uses
+the numerical execution model. A small floating-point residue can appear at
+a mathematically zero outcome.
+
+For project-mode text `run`, `--show-exact-zeros` appends `[exact zero]` to a
+displayed row when a bounded calculation finds its exact amplitude equal to
+zero. Each numerical value and output word stays in the original order.
+The formatter uses no probability threshold and leaves unlisted rows absent.
+The option is exclusive to project-mode text `run`.
+
+The calculation uses the retained Raw of a closed, already accepted program.
+The profile permits vacuum preparation, structural register and Unit operations,
+injective `LiftBasis`, exact Hadamard and monomial steps, and sealed coherent
+selection with its full phase. Each `LiftBasis` appends fresh zero axes and
+uses the actual table in declared axis order. Terminal Z measurement reads
+each axis once and the result contains each measured bit once. The bounds are
+six allocated axes, 2,048 Raw operations, 1,024 expanded steps, and a separate
+one-million-unit exact evaluation budget with the finite dyadic complex
+arithmetic used for circuit proposals.
+
+A program outside this profile or an exhausted resource or arithmetic limit
+prints the numeric distribution and reports why the exact annotation is
+unavailable. Default text, JSON and seeded sampling keep their numerical
+behavior. The annotation is presentation evidence within this bounded Raw
+profile. The native checker remains the authority for exact contracts and
+accepted handles.
+
 ## Durable coverage check
 
 `tests/fixtures/verification_v029/coverage.json.xz` separates current implementation,

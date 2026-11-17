@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "#270 exact equation counterexample display and JSON coordinates",
+  "author": "Codex assistant; informed repository maintenance, no external model invoked",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "a844010fcfb4db023f60da02350d21c672c96366",
+  "context": "README.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Separate edition-2026 reproductions of the original permutation and complex phase mismatches. Both first sources were kept byte-for-byte and the recorded replays preserve the original outcomes.",
+      "sha256": {
+        "permutation/main.qli": "a67aee1339a874afe9058704ac783303b3ac86273e087aec963ecfb526f068f4",
+        "phase/main.qli": "a51dbdc8663ebb94ffd3ab1a316eb2c226f6d344f47f5bcbee4a3be4a58b8f02"
+      },
+      "manifest_sha256": {
+        "permutation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "phase/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "replay-permutation.json",
+        "replay-phase.json"
+      ]
+    }
+  ]
+}

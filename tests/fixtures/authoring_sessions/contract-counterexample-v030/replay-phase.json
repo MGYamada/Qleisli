@@ -1,0 +1,43 @@
+{
+  "recorded_utc": "2026-11-16T23:00:28.929040+00:00",
+  "command": [
+    "/private/tmp/qleisli-163-rust.yd6bpSln/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/contract-counterexample-v030/attempt-01/phase",
+    "--lean-kernel=/private/tmp/qleisli-163-engineering-resources.oeu7geXP/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--format=json"
+  ],
+  "working_directory": "repository root",
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "contract",
+        "severity": "error",
+        "message": "function semantic contract: exact equation U E_in = E_out u does not hold; input column 1, output row 1 (zero-based): actual -1, expected 1*i",
+        "primary": {
+          "path": "main.qli",
+          "start": 251,
+          "end": 286,
+          "line": 7,
+          "column": 5
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stdout_utf8": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"function semantic contract: exact equation U E_in = E_out u does not hold; input column 1, output row 1 (zero-based): actual -1, expected 1*i\",\"primary\":{\"path\":\"main.qli\",\"start\":251,\"end\":286,\"line\":7,\"column\":5},\"related\":[]}],\"result\":null}\n",
+  "stderr_utf8": "",
+  "binary_sha256": {
+    "cli": "ce61a87617b2730e220604948df33c153f6cb92620580b420ad1ebc69171ac8f",
+    "kernel": "0b86efa7c112cbecd1ca31c2fa619b94428806a9a975203dfe8997c6c096af3d"
+  },
+  "source_sha256": "a51dbdc8663ebb94ffd3ab1a316eb2c226f6d344f47f5bcbee4a3be4a58b8f02",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "observation": "Recorded replay of the saved pre-change diagnostic with the same prior binaries."
+}

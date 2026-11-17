@@ -6,29 +6,45 @@ use super::super::resolve::Target;
 use super::super::resolve::locals::{BindingKind, ResolvedUse};
 use super::super::types::Stage;
 use super::*;
+use crate::frontend::diagnostic::{ControlFlowBoundary, QuantumOwnershipBoundary};
 use crate::ir::Effect;
 use std::borrow::Cow;
 
 // These explanations are attached only after an existing rejection. They do
 // not select a physical operation, inspect arguments or change acceptance.
-fn disposal_error(span: Span, message: impl std::fmt::Display) -> SourceError {
+const RUST_AFFINE_OWNERSHIP: &str =
+    "Rust's ordinary ownership is affine. An owned value may be left unused.";
+
+fn disposal_error(
+    span: Span,
+    message: impl std::fmt::Display,
+    boundary: QuantumOwnershipBoundary,
+) -> SourceError {
     SourceError::new(
         "ownership",
         span,
         format!(
-            "{message}; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner."
+            "{message}. In Qleisli, implicit quantum destruction is forbidden. {RUST_AFFINE_OWNERSHIP} Qleisli ownership is linear for values containing live `Q<T>`. Scope exit leaves that obligation open. Account for the value according to its resource contract. Measurement, discard, reset and checked clean discharge are distinct. Reset returns a fresh quantum owner."
         ),
     )
+    .with_ownership_boundary(boundary)
 }
 
-fn unresolved_function_message(name: &str) -> String {
-    let mut message = format!("unresolved function {name}");
-    let explanation = match name {
+fn unresolved_function_error(name: &Ident) -> SourceError {
+    let mut message = format!("unresolved function {}", name.text);
+    let explanation = match name.text.as_str() {
         "phase_eighth" => {
             "; use language primitive global_phase_eighth without an import for the exact global scalar; import std::gate::t for the derived relative phase gate."
         }
         "drop" | "forget" => {
-            "; there is no built-in Rust drop or forget operation. Ordinary Bit/Unit may be unused or matched by _. If a value contains live Q<T>, it must be returned or explicitly consumed; scope exit is not destruction. Measurement, discard, reset and checked clean discharge have distinct meanings; reset returns a fresh owner."
+            return SourceError::new(
+                "name",
+                name.span,
+                format!(
+                    "{message}. In Qleisli, there is no built-in Rust drop or forget operation. {RUST_AFFINE_OWNERSHIP} Ordinary Bit/Unit may be unused or matched by _. If a value contains live Q<T>, Qleisli's linear ownership requires returning it or explicitly consuming it as permitted by its resource contract. Scope exit leaves that obligation open. Measurement, discard, reset and checked clean discharge have distinct meanings. Reset returns a fresh owner."
+                ),
+            )
+            .with_ownership_boundary(QuantumOwnershipBoundary::UnresolvedDisposal);
         }
         "clone" | "copy" => {
             "; there is no built-in Rust Clone/Copy operation. Ordinary data such as Bit/Unit is reusable; if a value contains live Q<T>, reusing a description or a basis label does not duplicate that owner."
@@ -39,10 +55,10 @@ fn unresolved_function_message(name: &str) -> String {
         "hash" => {
             "; there is no built-in ordinary hash operation. Ordinary values may use explicitly defined classical functions. If a value contains live Q<T>, it has no ordinary Eq/Ord/Hash, including nested and zero-width owners. Owner/provenance identity and wire identity are not quantum-state equality. Coherent basis comparison needs an explicit reversible operation; quantum-state testing or tomography needs its own protocol with declared effects. A resolved function named hash retains its ordinary type, ownership and effect checks."
         }
-        _ => return message,
+        _ => "",
     };
     message.push_str(explanation);
-    message
+    SourceError::new("name", name.span, message)
 }
 
 mod aggregate;
@@ -77,7 +93,11 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_> {
         bind_name(name, value, self.index, self.scope, self.budget, span)
     }
     fn wildcard_error(&self, span: Span) -> SourceError {
-        disposal_error(span, "wildcard would discard quantum ownership")
+        disposal_error(
+            span,
+            "wildcard would discard quantum ownership",
+            QuantumOwnershipBoundary::ImplicitDisposal,
+        )
     }
     fn duplicate_error(&self, span: Span) -> SourceError {
         SourceError::new("binding", span, "duplicate name in binding pattern")
@@ -188,6 +208,7 @@ fn bind_name(
             return Err(disposal_error(
                 span,
                 format!("binding `{}` would drop a live quantum owner", name.text),
+                QuantumOwnershipBoundary::ImplicitDisposal,
             ));
         }
     }
@@ -347,6 +368,7 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
                         "quantum ownership `{}` was not returned or explicitly consumed",
                         key.name
                     ),
+                    QuantumOwnershipBoundary::ImplicitDisposal,
                 ));
             }
         }
@@ -467,11 +489,7 @@ impl Checker<'_, '_> {
                 name.span,
                 "a local value is not callable",
             )),
-            ResolvedUse::Unresolved => Err(SourceError::new(
-                "name",
-                name.span,
-                unresolved_function_message(&name.text),
-            )),
+            ResolvedUse::Unresolved => Err(unresolved_function_error(name)),
         }
     }
     fn edge(&mut self, id: DefId, span: Span) -> Result<()> {
@@ -849,6 +867,7 @@ impl Checker<'_, '_> {
                         return Err(disposal_error(
                             expr.span,
                             "expression statement would discard quantum ownership",
+                            QuantumOwnershipBoundary::ImplicitDisposal,
                         ));
                     }
                 }
@@ -866,6 +885,7 @@ impl Checker<'_, '_> {
                         "local quantum ownership `{}` escapes neither through the result nor an explicit discard",
                         key.name
                     ),
+                    QuantumOwnershipBoundary::ImplicitDisposal,
                 ));
             }
         }
@@ -876,7 +896,18 @@ impl Checker<'_, '_> {
             .collect();
         Ok(result)
     }
+    #[inline]
     fn expr(&mut self, expr: &Expr, scope: &mut Scope, expected: Option<&Ty>) -> Result<Ty> {
+        self.expr_with_diagnostic_boundary(expr, scope, expected, None)
+    }
+
+    fn expr_with_diagnostic_boundary(
+        &mut self,
+        expr: &Expr,
+        scope: &mut Scope,
+        expected: Option<&Ty>,
+        boundary: Option<ControlFlowBoundary>,
+    ) -> Result<Ty> {
         if self.depth >= 64 {
             return Err(SourceError::new(
                 "limit",
@@ -887,7 +918,7 @@ impl Checker<'_, '_> {
         self.depth += 1;
         let node = self.index().node_id_expr(expr);
         let previous_node = self.current_node.replace(node);
-        let result = self.expr_inner(expr, scope, expected);
+        let result = self.expr_inner(expr, scope, expected, boundary);
         let result = result.and_then(|ty| {
             self.retain_expression_statics(expr, scope)?;
             Ok(ty)
@@ -896,7 +927,13 @@ impl Checker<'_, '_> {
         self.depth -= 1;
         result
     }
-    fn expr_inner(&mut self, expr: &Expr, scope: &mut Scope, expected: Option<&Ty>) -> Result<Ty> {
+    fn expr_inner(
+        &mut self,
+        expr: &Expr,
+        scope: &mut Scope,
+        expected: Option<&Ty>,
+        boundary: Option<ControlFlowBoundary>,
+    ) -> Result<Ty> {
         let span = expr.span;
         self.tick(span)?;
         let result = match &expr.kind {
@@ -1039,9 +1076,9 @@ impl Checker<'_, '_> {
                 });
                 if let Some((function, _, _)) = sealed_target {
                     let basis = target.quantum_basis().ok_or_else(|| {
-                        SourceError::new("type", span, "repetition requires one Q<A> owner")
+                        SourceError::new("type", input.span, "repetition requires one Q<A> owner")
                     })?;
-                    let op = self.target_operation(function, basis, scope)?;
+                    let op = self.target_operation(function, basis, input.span, scope)?;
                     access(&op, Access::Apply, span)?;
                 } else {
                     self.transformed_operation(
@@ -1096,7 +1133,12 @@ impl Checker<'_, '_> {
                 then_branch,
                 else_branch,
             } => {
-                self.expr(condition, scope, Some(&Ty::bit()))?;
+                self.expr_with_diagnostic_boundary(
+                    condition,
+                    scope,
+                    Some(&Ty::bit()),
+                    Some(ControlFlowBoundary::IfCondition),
+                )?;
                 self.branches(None, then_branch, else_branch, scope, expected, span)?
             }
             ExprKind::StaticIf {
@@ -1134,14 +1176,14 @@ impl Checker<'_, '_> {
                 function,
                 input,
             } => {
-                let input = self.expr(input, scope, None)?;
-                let basis = input.quantum_basis().ok_or_else(|| {
-                    SourceError::new("type", span, "repetition requires one Q<A> owner")
+                let target = self.expr(input, scope, None)?;
+                let basis = target.quantum_basis().ok_or_else(|| {
+                    SourceError::new("type", input.span, "repetition requires one Q<A> owner")
                 })?;
-                let op = self.target_operation(function, basis, scope)?;
+                let op = self.target_operation(function, basis, input.span, scope)?;
                 access(&op, Access::Apply, span)?;
                 self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
-                input
+                target
             }
             ExprKind::ApplyContract {
                 implementation,
@@ -1195,16 +1237,54 @@ impl Checker<'_, '_> {
         if result.linear() {
             self.effects.mark_quantum();
         }
-        if let Some(expected) = expected {
-            normalize::expect(
-                &result,
-                expected,
-                &scope.context,
-                span,
-                &self.program.budget,
-            )?;
+        let Some(expected) = expected else {
+            return Ok(result);
+        };
+        if normalize::equivalent(
+            &result,
+            expected,
+            &scope.context,
+            span,
+            &self.program.budget,
+        )? {
+            return Ok(result);
         }
-        Ok(result)
+        // Only the failed comparison of this expression's result can
+        // identify a selector boundary. Inner failures already returned.
+        let mut error = normalize::type_shape_mismatch(&result, expected, span);
+        match boundary {
+            Some(ControlFlowBoundary::IfCondition) if result.is_quantum_owner() => {
+                error
+                    .message
+                    .push_str(". Ordinary `if` branches on an ordinary `Bit`.");
+                if result
+                    .quantum_basis()
+                    .is_some_and(|basis| matches!(basis.kind, Kind::Bit))
+                {
+                    error.message.push_str(
+                        " For coherent control of a separate target, consider `qif(control, target) { 0 => first, 1 => second }` with checked controlled arms. It preserves coherence between control sectors.",
+                    );
+                } else {
+                    error.message.push_str(
+                        " Coherent `qif` requires a `Q<Bit>` control and a separate target with checked controlled arms. `qmatch` supports additional selector bases.",
+                    );
+                }
+                error = error.with_control_flow_boundary(ControlFlowBoundary::IfCondition);
+            }
+            Some(ControlFlowBoundary::QifControl) => {
+                error.message.push_str(
+                    ". Coherent `qif` requires a live `Q<Bit>` control and checked controlled arms.",
+                );
+                if matches!(result.kind, Kind::Bit) {
+                    error
+                        .message
+                        .push_str(" To branch on an ordinary `Bit`, use ordinary `if`.");
+                }
+                error = error.with_control_flow_boundary(ControlFlowBoundary::QifControl);
+            }
+            _ => {}
+        }
+        Err(error)
     }
     fn boolean(
         &mut self,
@@ -1410,15 +1490,20 @@ impl Checker<'_, '_> {
         }
         let carry_ty = self.expr(initial, scope, expected)?;
         if quantum != carry_ty.linear() {
-            return Err(SourceError::new(
-                "type",
-                span,
-                if quantum {
-                    "qfor carry must contain a quantum owner; use for static for ordinary values"
-                } else {
-                    "for static cannot thread quantum owners; use qfor static with explicit carry and yield"
-                },
-            ));
+            let (boundary, message) = if quantum {
+                (
+                    ControlFlowBoundary::QforCarry,
+                    "qfor carry must contain a quantum owner, so use for static for ordinary values. The form is `for static i in 0..count carry value = input { yield value; }`.",
+                )
+            } else {
+                (
+                    ControlFlowBoundary::ForCarry,
+                    "for static cannot thread quantum owners, so use qfor static with explicit carry and yield. The form is `qfor static i in 0..count carry owner = input { yield owner; }`.",
+                )
+            };
+            return Err(
+                SourceError::new("type", span, message).with_control_flow_boundary(boundary)
+            );
         }
         let mut inner = scope.copy(&self.program.budget, span)?;
         inner.values.retain(|_, binding| !binding.ty.linear());

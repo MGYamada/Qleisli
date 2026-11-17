@@ -151,10 +151,14 @@ fn named_selection_steps(
     name: &Ident,
     basis: &Ty,
     env: &Env,
+    operand_span: Span,
 ) -> Result<(Vec<CircuitStep>, bool), CompileError> {
-    match lower.operation_steps(module, name, basis, env, Access::Controlled)? {
+    match lower.operation_steps(module, name, basis, env, Access::Controlled, operand_span)? {
         Some(steps) => Ok((steps, true)),
-        None => Ok((lower.static_steps(module, name, basis, env)?, false)),
+        None => Ok((
+            lower.static_steps(module, name, basis, env, operand_span)?,
+            false,
+        )),
     }
 }
 
@@ -194,7 +198,7 @@ impl Lowerer<'_, '_> {
         let mut expectations = [None, None];
         for (label, name) in names.into_iter().enumerate() {
             let (mut arm, already_controlled) =
-                named_selection_steps(self, module, name, &basis, env)?;
+                named_selection_steps(self, module, name, &basis, env, target.span)?;
             operation_arm |= already_controlled;
             if width < MAX_CONTRACT_BITS {
                 expectations[label] = self.target_meaning(module, name, &basis)?;
@@ -356,8 +360,14 @@ impl Lowerer<'_, '_> {
             }
             let (mut body, already_controlled, expected, operation) = match &arm.operation.kind {
                 StaticOpKind::Name(name) => {
-                    let (body, controlled) =
-                        named_selection_steps(self, module, name, &target_basis, env)?;
+                    let (body, controlled) = named_selection_steps(
+                        self,
+                        module,
+                        name,
+                        &target_basis,
+                        env,
+                        selection.target.span,
+                    )?;
                     (
                         body,
                         controlled,
@@ -371,6 +381,16 @@ impl Lowerer<'_, '_> {
                         || operation.codomain != target_basis
                         || operation.effect != Effect::Unitary
                     {
+                        if operation.basis == operation.codomain
+                            && operation.effect == Effect::Unitary
+                        {
+                            return Err(self.error(
+                                module,
+                                selection.target.span,
+                                ErrorCode::TypeMismatch,
+                                static_operand_mismatch(&operation.basis, &target_basis, true),
+                            ));
+                        }
                         return Err(self.error(
                             module,
                             arm.span,

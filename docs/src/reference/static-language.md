@@ -260,6 +260,8 @@ Its carry must contain at least one quantum owner, including a zero-width
 `Q<Unit>` owner. Mixed ordinary/quantum products are permitted. Ordinary-only
 carry uses `for static` with the same header and tail; that spelling rejects
 quantum carry with a located suggestion to use `qfor static`.
+The [control boundary diagnostic](source-text.md#diagnostics-at-control-boundaries)
+identifies both carry mismatches and names the corresponding fold syntax.
 The range is half-open and must be nonnegative: `end >= start`. The carried
 value has the same exact type/tree across iterations. Each iteration receives
 its declared carry owners; unrelated live owners cannot be captured as hidden

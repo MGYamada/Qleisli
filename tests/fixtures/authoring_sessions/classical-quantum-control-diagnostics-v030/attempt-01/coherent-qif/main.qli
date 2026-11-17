@@ -1,0 +1,3 @@
+pub unitary fn branch(condition: Bit, target: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    qif(condition, target) { 0 => h, 1 => h }
+}

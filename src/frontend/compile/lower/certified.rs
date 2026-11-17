@@ -70,7 +70,8 @@ impl Lowerer<'_, '_> {
                 "certified data and auxiliary binders must be distinct",
             ));
         }
-        let logical_steps = self.static_steps(module, logical, &source_reg.basis, env)?;
+        let logical_steps =
+            self.static_steps(module, logical, &source_reg.basis, env, logical.span)?;
         let (use_steps, circuit) = self.certified_body(
             module,
             &source_reg.basis,
@@ -184,7 +185,8 @@ impl Lowerer<'_, '_> {
             self.apply_circuit(slot, steps);
             self.primitive_call(module, span, PrimitiveId::Split, vec![packed])?
         } else {
-            let logical_steps = self.static_steps(module, &scope.logical, &basis, env)?;
+            let logical_steps =
+                self.static_steps(module, &scope.logical, &basis, env, scope.logical.span)?;
             if logical_steps.len() > MAX_CONTRACT_STEPS {
                 return Err(self.error(
                     module,

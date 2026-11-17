@@ -1136,6 +1136,7 @@ pub(super) fn emit(
             &target_basis,
             target_bits,
             env,
+            selection.target.span,
         )?;
         lower.compiler.charge(
             module,

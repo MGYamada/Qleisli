@@ -5,7 +5,9 @@ use qleisli::ir::{
     ProtectedUse, QuantumPhi, QuantumPort, RawOp, RawProgram, ScalarPhase, SingleGate, TokenId,
     UnitaryStep, WireId,
 };
-use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
+use qleisli::sim::{
+    ExactZeroUnavailable, SimulationError, SimulationLimits, run_closed, terminal_exact_zeros,
+};
 
 fn t(id: u32) -> TokenId {
     TokenId(id)
@@ -352,9 +354,11 @@ fn repeated_t_phase_can_leave_a_tiny_floating_point_outcome() {
             output: c(0),
         },
     ]);
-    let distribution = run(&closed(operations, vec![c(0)]));
+    let program = closed(operations, vec![c(0)]);
+    let distribution = run(&program);
     close(distribution[&vec![false]], 1.0);
     assert!(distribution.get(&vec![true]).copied().unwrap_or(0.0) < 1e-28);
+    assert_eq!(terminal_exact_zeros(&program), Ok([vec![true]].into()));
 }
 
 #[cfg_attr(
@@ -401,6 +405,60 @@ fn bell_lift_split_and_measure_has_only_matching_outcomes() {
     assert_eq!(distribution.len(), 2);
     close(distribution[&vec![false, false]], 0.5);
     close(distribution[&vec![true, true]], 0.5);
+    assert_eq!(
+        terminal_exact_zeros(&program),
+        Ok([vec![false, true], vec![true, false]].into())
+    );
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn exact_zero_capacity_and_arithmetic_limits_leave_numeric_execution_available() {
+    let allocations = (0..7).map(|i| RawOp::Init0 {
+        output: t(i),
+        wire: w(i),
+    });
+    let readout = (0..7).map(|i| RawOp::MeasureZ {
+        input: t(i),
+        output: c(i),
+    });
+    let wide = closed(
+        allocations.chain(readout).collect(),
+        (0..7).map(c).collect(),
+    );
+    assert_eq!(
+        terminal_exact_zeros(&wide),
+        Err(ExactZeroUnavailable::Limit)
+    );
+    assert_eq!(run(&wide), [(vec![false; 7], 1.0)].into());
+
+    let mut operations = vec![RawOp::Init0 {
+        output: t(0),
+        wire: w(0),
+    }];
+    // 508 H/T pairs on one axis produce a coefficient whose reduced
+    // denominator needs 128 bits, above the exact scalar's limit of 126.
+    let gate_count = 2 * 508;
+    for (i, gate) in (0..gate_count).zip([SingleGate::H, SingleGate::T].into_iter().cycle()) {
+        operations.push(RawOp::Gate {
+            gate,
+            input: t(i),
+            output: t(i + 1),
+        });
+    }
+    operations.push(RawOp::MeasureZ {
+        input: t(gate_count),
+        output: c(0),
+    });
+    let deep = closed(operations, vec![c(0)]);
+    assert_eq!(
+        terminal_exact_zeros(&deep),
+        Err(ExactZeroUnavailable::Arithmetic)
+    );
+    assert!(run(&deep).values().all(|p| *p > 0.0));
 }
 
 fn bell_cnot_prefix() -> Vec<RawOp> {
@@ -729,6 +787,10 @@ fn join_and_permutation_lift_use_register_bit_order() {
     let distribution = run(&program);
     assert_eq!(distribution.len(), 1);
     close(distribution[&vec![true, true]], 1.0);
+    assert_eq!(
+        terminal_exact_zeros(&program),
+        Ok([vec![false, false], vec![false, true], vec![true, false]].into())
+    );
 }
 
 #[cfg_attr(
@@ -963,4 +1025,5 @@ fn unit_target_scalar_phase_becomes_relative_control_phase() {
     let distribution = run(&program);
     assert_eq!(distribution.len(), 1);
     close(distribution[&vec![true]], 1.0);
+    assert_eq!(terminal_exact_zeros(&program), Ok([vec![false]].into()));
 }

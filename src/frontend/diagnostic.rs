@@ -7,10 +7,65 @@ use std::path::PathBuf;
 
 use super::ast::Span;
 use super::compile::CompileError;
+use super::types::{Stage, Type};
 
 pub(crate) const CONTROL_ACCESS_EXPLANATION: &str = "ctrl requires computational-basis sector preservation, not read-only access; phase kickback is permitted; use excl for arbitrary coherent access";
 
 pub(crate) const UNSUPPORTED_REFERENCE_EXPLANATION: &str = "Rust-style references are not supported; for quantum access, excl grants arbitrary coherent access, while ctrl requires computational-basis sector preservation, not an unchanged quantum state. Phase kickback and entanglement are permitted; do not mechanically replace & with ctrl";
+
+pub(super) fn static_operand_mismatch<N: std::fmt::Display + PartialEq>(
+    expected: &Type<N>,
+    actual: &Type<N>,
+    basis: bool,
+) -> String {
+    let shown = |ty: &Type<N>| {
+        if basis {
+            format!("Q<{}>", ty.display(Stage::Basis))
+        } else {
+            ty.display(Stage::Runtime).to_string()
+        }
+    };
+    let mut message = format!(
+        "static operation argument type mismatch: expected `{}`, found `{}`",
+        shown(expected),
+        shown(actual)
+    );
+    let bases = if basis {
+        Some((expected, actual))
+    } else {
+        expected.quantum_basis().zip(actual.quantum_basis())
+    };
+    if let Some((expected, actual)) = bases {
+        let (expected_leaves, expected_binary) = product_leaves(expected);
+        let (actual_leaves, actual_binary) = product_leaves(actual);
+        if expected_leaves.len() > 1 && expected_leaves == actual_leaves {
+            message.push_str(". Tuple nesting is significant.");
+            if expected_binary && actual_binary {
+                message.push_str(" Regroup the register with `split` and `join`.");
+            } else {
+                message.push_str(
+                    " Reshape with a supported explicit basis map that preserves leaf order, or use a matching declared interface.",
+                );
+            }
+        }
+    }
+    message
+}
+
+fn product_leaves<N>(basis: &Type<N>) -> (Vec<&Type<N>>, bool) {
+    let mut pending = vec![basis];
+    let mut leaves = Vec::new();
+    let mut binary = true;
+    while let Some(node) = pending.pop() {
+        if let Some(fields) = node.tuple_fields() {
+            binary &= fields.len() == 2;
+            pending.extend(fields.iter().rev());
+        } else {
+            leaves.push(node);
+        }
+    }
+    (leaves, binary)
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SourceLocation {
@@ -22,6 +77,60 @@ pub struct SourceLocation {
     pub column: usize,
 }
 
+/// Why a diagnostic teaches the boundary between affine and linear ownership.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum QuantumOwnershipBoundary {
+    /// An unresolved Rust disposal spelling. No argument type was inferred.
+    UnresolvedDisposal,
+    ImplicitDisposal,
+    CleanWorkspaceReturn,
+    DirtyWorkspaceReturn,
+    ComputedWorkspaceReturn,
+}
+
+impl QuantumOwnershipBoundary {
+    pub fn reason(self) -> &'static str {
+        match self {
+            Self::UnresolvedDisposal => "unresolved_disposal",
+            Self::ImplicitDisposal => "implicit_quantum_disposal",
+            Self::CleanWorkspaceReturn => "clean_workspace_return",
+            Self::DirtyWorkspaceReturn => "dirty_workspace_return",
+            Self::ComputedWorkspaceReturn => "computed_workspace_return",
+        }
+    }
+}
+
+/// The construct where a classical or coherent quantum control contract failed.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ControlFlowBoundary {
+    IfCondition,
+    QifControl,
+    MatchSelector,
+    QmatchSelector,
+    ForCarry,
+    QforCarry,
+}
+
+impl ControlFlowBoundary {
+    pub fn reason(self) -> &'static str {
+        match self {
+            Self::IfCondition => "if_condition",
+            Self::QifControl => "qif_control",
+            Self::MatchSelector => "match_selector",
+            Self::QmatchSelector => "qmatch_selector",
+            Self::ForCarry => "for_carry",
+            Self::QforCarry => "qfor_carry",
+        }
+    }
+}
+
+/// A typed explanation attached to an existing source rejection.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum DiagnosticBoundary {
+    QuantumOwnership(QuantumOwnershipBoundary),
+    ControlFlow(ControlFlowBoundary),
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Diagnostic {
     /// A snake_case category from version 1 of `qleisli.result`.
@@ -29,6 +138,10 @@ pub struct Diagnostic {
     pub message: String,
     /// None for failures without a source span, including missing entry points.
     pub primary: Option<SourceLocation>,
+    /// Exact equation detail, when bounded reconstruction found a mismatch.
+    pub counterexample: Option<Box<crate::contract::EquationCounterexample>>,
+    /// The source rule explained by this diagnostic, when one was identified.
+    pub boundary: Option<DiagnosticBoundary>,
 }
 
 impl Diagnostic {
@@ -44,6 +157,8 @@ impl Diagnostic {
             code,
             message: without_repeated_category(code, error.message),
             primary,
+            counterexample: error.counterexample,
+            boundary: error.boundary,
         }
     }
 }
@@ -101,11 +216,14 @@ mod tests {
             ("contract", "/request", "contract at /request: rejected"),
         ] {
             let native = crate::interchange::Error {
+                counterexample: None,
                 code: native_code,
                 message: "rejected".into(),
                 json_pointer: pointer.into(),
             };
             let source = CompileError {
+                counterexample: None,
+                boundary: None,
                 code: ErrorCode::InvalidIr,
                 path: "module.qli".into(),
                 span: Span::new(8, 12),

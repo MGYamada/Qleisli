@@ -11,6 +11,7 @@ pub struct Error {
     pub(super) module: Option<String>,
     pub(super) span: Span,
     pub(super) message: String,
+    pub(super) boundary: Option<super::diagnostic::DiagnosticBoundary>,
 }
 impl Error {
     pub(in crate::frontend) fn new(
@@ -23,6 +24,7 @@ impl Error {
             module: None,
             span,
             message: message.into(),
+            boundary: None,
         }
     }
     pub(super) fn in_module(mut self, module: &str) -> Self {
@@ -42,6 +44,9 @@ impl Error {
     }
     pub fn message(&self) -> &str {
         &self.message
+    }
+    pub fn boundary(&self) -> Option<super::diagnostic::DiagnosticBoundary> {
+        self.boundary
     }
 }
 impl fmt::Display for Error {

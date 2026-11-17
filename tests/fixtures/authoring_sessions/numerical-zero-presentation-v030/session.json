@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#133 numerical residue and a genuinely small terminal outcome",
+  "author": "Codex assistant; informed repository maintenance, no external model invoked",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "0d2c0acf7f26b4cdbd9f4b85ec1ac5150177acee",
+  "context": "README.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Separate a mathematically cancelled outcome from a small nonzero product probability.",
+      "sha256": {
+        "main.qli": "b7ff5c6a0226844983f6ee733698d08328acd3d66bacc0313c19776f46b85775"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "before-run.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "recorded_utc": "2026-11-16T23:37:27.283404+00:00",
+  "command": [
+    "/private/tmp/qleisli-237-rust.mn65iFGf/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/classical-quantum-control-diagnostics-v030/attempt-01/coherent-qmatch",
+    "--lean-kernel=/private/tmp/qleisli-30-reviewed-base.HroRh8AW/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--format=json"
+  ],
+  "working_directory": "/private/tmp/qleisli-224-control-diagnostic.PUcSfMd9",
+  "exit_code": 1,
+  "stdout_utf8": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"qmatch selector requires one Q<A> owner\",\"primary\":{\"path\":\"main.qli\",\"start\":79,\"end\":122,\"line\":2,\"column\":5},\"related\":[]}],\"result\":null}\n",
+  "stderr_utf8": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type_mismatch",
+        "severity": "error",
+        "message": "qmatch selector requires one Q<A> owner",
+        "primary": {
+          "path": "main.qli",
+          "start": 79,
+          "end": 122,
+          "line": 2,
+          "column": 5
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "binary_sha256": {
+    "cli": "2a86b70f3d76ff3c495581d1530582f62a15a584478b43c31e7dbbbbd2e558d6",
+    "kernel": "e0c38e5f65bb2d6983197d7e1642259d5e3a81f779b416d4faab5065e73df94f"
+  },
+  "source_sha256": "980f69c47b170a016b3ea1d133090786a199e19e911ec6a937f9da8b3f39b380",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "text_observation": {
+    "recorded_utc": "2026-11-16T23:37:27.292807+00:00",
+    "command": [
+      "/private/tmp/qleisli-237-rust.mn65iFGf/debug/qleisli",
+      "check",
+      "tests/fixtures/authoring_sessions/classical-quantum-control-diagnostics-v030/attempt-01/coherent-qmatch",
+      "--lean-kernel=/private/tmp/qleisli-30-reviewed-base.HroRh8AW/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "working_directory": "/private/tmp/qleisli-224-control-diagnostic.PUcSfMd9",
+    "exit_code": 1,
+    "stdout_utf8": "",
+    "stderr_utf8": "/private/tmp/qleisli-224-control-diagnostic.PUcSfMd9/tests/fixtures/authoring_sessions/classical-quantum-control-diagnostics-v030/attempt-01/coherent-qmatch/main.qli:2:5: type_mismatch: qmatch selector requires one Q<A> owner\n"
+  }
+}

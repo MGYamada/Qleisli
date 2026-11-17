@@ -68,9 +68,18 @@ fn implicit_loss(message: &str) {
         "{message}"
     );
     assert!(
-        message.contains("reset returns a fresh quantum owner"),
+        message.contains("Reset returns a fresh quantum owner"),
         "{message}"
     );
+    assert!(
+        message.contains("Rust's ordinary ownership is affine"),
+        "{message}"
+    );
+    assert!(
+        message.contains("Qleisli ownership is linear for values containing live `Q<T>`"),
+        "{message}"
+    );
+    assert!(message.contains("its resource contract"), "{message}");
 }
 
 fn no_rust_name_hint(message: &str) {
@@ -314,41 +323,49 @@ fn method_receivers_never_infer_access_or_guess_the_receiver_type() {
 }
 
 #[test]
-fn unresolved_drop_keeps_callee_priority_without_inspecting_its_argument() {
-    let mut messages = Vec::new();
+fn unresolved_disposal_keeps_callee_priority_without_inspecting_its_argument() {
     // The Unicode/CRLF prefix also keeps the common and filesystem locations
     // accountable to source byte offsets. `not q` would be a type error if its
     // argument were checked, but unresolved callee lookup must win first.
-    for argument in ["0", "q", "not q"] {
-        let source =
-            format!("// 日本語\r\npub unitary fn client(q:Q<Bit>)->Q<Bit>{{drop({argument});q}}");
-        let message = shared_rejection(
-            &source,
-            "name",
-            "unknown_name",
-            at(&source, "drop(", 0, 4),
-            "unresolved function drop",
-        );
-        assert!(
-            message.contains("there is no built-in Rust drop or forget operation"),
-            "{message}"
-        );
-        assert!(
-            message.contains("Ordinary Bit/Unit may be unused or matched by _"),
-            "{message}"
-        );
-        assert!(
-            message.contains("If a value contains live Q<T>"),
-            "{message}"
-        );
-        assert!(
-            message.contains("scope exit is not destruction"),
-            "{message}"
-        );
-        messages.push(message);
+    for name in ["drop", "forget"] {
+        let prefix = format!("unresolved function {name}");
+        let mut messages = Vec::new();
+        for argument in ["0", "q", "not q"] {
+            let source = format!(
+                "// 日本語\r\npub unitary fn client(q:Q<Bit>)->Q<Bit>{{{name}({argument});q}}"
+            );
+            let message = shared_rejection(
+                &source,
+                "name",
+                "unknown_name",
+                at(&source, &format!("{name}("), 0, name.len()),
+                &prefix,
+            );
+            assert!(
+                message.contains("there is no built-in Rust drop or forget operation"),
+                "{message}"
+            );
+            assert!(
+                message.contains("Rust's ordinary ownership is affine"),
+                "{message}"
+            );
+            assert!(
+                message.contains("Ordinary Bit/Unit may be unused or matched by _"),
+                "{message}"
+            );
+            assert!(
+                message.contains("If a value contains live Q<T>, Qleisli's linear ownership"),
+                "{message}"
+            );
+            assert!(
+                message.contains("Scope exit leaves that obligation open"),
+                "{message}"
+            );
+            messages.push(message);
+        }
+        assert_eq!(messages[0], messages[1]);
+        assert_eq!(messages[1], messages[2]);
     }
-    assert_eq!(messages[0], messages[1]);
-    assert_eq!(messages[1], messages[2]);
 
     let ordinary = "pub unitary fn client(q:Q<Bit>)->Q<Bit>{missing(not q);q}";
     let message = shared_rejection(
@@ -359,6 +376,72 @@ fn unresolved_drop_keeps_callee_priority_without_inspecting_its_argument() {
         "unresolved function missing",
     );
     assert_eq!(message, "unresolved function missing");
+}
+
+#[test]
+fn workspace_must_return_the_existing_owner_under_its_own_contract() {
+    for (signature, scope, contract) in [
+        (
+            "q:Q<Bit>)->Q<Bit>",
+            "clean(q,h)",
+            "restore the scratch to its required fixed zero state",
+        ),
+        (
+            "q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>)",
+            "dirty(q,d,h)",
+            "restore the scratch's original state and correlations",
+        ),
+    ] {
+        // The fresh replacement has the required type, but the original
+        // scratch remains live. The existing owner refusal precedes effects.
+        let source = format!(
+            "use std::state::init0;\n\
+             pub unitary fn client({signature}{{{scope}{{|a,s|(h(a),init0())}}}}"
+        );
+        let message = shared_rejection(
+            &source,
+            "ownership",
+            "ownership",
+            at(&source, "a,s|", 2, 1),
+            "workspace owner `s` must be returned",
+        );
+        assert!(message.contains("Return the data and scratch owners in that order"));
+        assert!(message.contains(contract), "{message}");
+        implicit_loss(&message);
+    }
+}
+
+#[test]
+fn computed_cleanup_requires_the_auxiliary_owner_to_be_returned() {
+    for (call, binders, result, contract) in [
+        (
+            "with_computed(q,p)",
+            "|a|",
+            "init0()",
+            "The body must return the computed auxiliary owner for checked cleanup",
+        ),
+        (
+            "with_computed(q,p,h)",
+            "|d,a|",
+            "(h(d),init0())",
+            "The body must return the data and computed auxiliary owners in that order",
+        ),
+    ] {
+        let source = format!(
+            "use std::state::init0;\n\
+             classical fn p(b:Bit)->Bit{{b}}\n\
+             pub unitary fn client(q:Q<Bit>)->Q<Bit>{{{call}{{{binders}{result}}}}}"
+        );
+        let message = shared_rejection(
+            &source,
+            "ownership",
+            "ownership",
+            at(&source, binders, binders.len() - 2, 1),
+            "quantum ownership `a` was not returned or explicitly consumed",
+        );
+        assert!(message.contains(contract), "{message}");
+        implicit_loss(&message);
+    }
 }
 
 #[cfg_attr(

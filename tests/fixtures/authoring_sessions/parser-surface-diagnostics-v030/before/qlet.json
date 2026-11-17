@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-245-rust.jZSZFs3N/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qlet",
+    "--format=json",
+    "--lean-kernel=tests/fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qlet/missing-checker"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-11-16T22:41:48.871986+00:00",
+  "cli_sha256_before": "9e7073ab45effda45df258ddcbc195db66410331b7d5cb926b7efe9212ce7fdc",
+  "cli_sha256_after": "9e7073ab45effda45df258ddcbc195db66410331b7d5cb926b7efe9212ce7fdc",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected `}`, found identifier",
+        "primary": {
+          "path": "main.qli",
+          "start": 118,
+          "end": 122,
+          "line": 2,
+          "column": 34
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "raw_stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"expected `}`, found identifier\",\"primary\":{\"path\":\"main.qli\",\"start\":118,\"end\":122,\"line\":2,\"column\":34},\"related\":[]}],\"result\":null}\n",
+  "stderr": ""
+}

@@ -1,0 +1,3 @@
+pub unitary fn branch(condition: Q<Bit>) -> Bit {
+    if condition { 1 } else { 0 }
+}

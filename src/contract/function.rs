@@ -311,21 +311,26 @@ impl FunctionEvidence {
             )
             .map_err(|failure| {
                 let error = native_error(failure);
-                let detail = if error == ContractError::EquationMismatch {
+                let counterexample = if error == ContractError::EquationMismatch {
                     (|| {
                         let bits = signature.bits()?;
                         preflight(&implementation, bits, budget)?;
                         preflight(&specification, bits, budget)?;
                         let a = extract(&implementation, &signature, budget)?.matrix(budget)?;
                         let b = extract(&specification, &signature, budget)?.matrix(budget)?;
-                        Ok::<_, ContractError>(super::equation_counterexample(&a, &b))
+                        Ok::<_, ContractError>(super::equation_counterexample(
+                            &a, &b, &signature, &signature,
+                        ))
                     })()
                     .ok()
                     .flatten()
                 } else {
                     None
                 };
-                ContractDiagnostic { error, detail }
+                ContractDiagnostic {
+                    error,
+                    counterexample,
+                }
             })
     }
 

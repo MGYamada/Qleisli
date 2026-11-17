@@ -45,9 +45,21 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [parser surface diagnostics study](parser-surface-diagnostics-v030/README.md)
+preserves the initial messages on invented quantum statements and malformed
+quantum headers before locally recognized forms gained syntax guidance.
+
+The [classical and coherent control study](classical-quantum-control-diagnostics-v030/README.md)
+preserves the original diagnostics when `if`, `match`, `qif`, or `qmatch`
+receives a condition or selector of the wrong ownership type.
+
 The [invisible source character study](invisible-source-characters-v030/README.md)
 retains the original source bytes and the pre-change `doc` transcript. It
 records the prior binary separately from the reviewed source baseline.
+
+The [numerical zero presentation study](numerical-zero-presentation-v030/README.md)
+preserves the first source and original numerical outputs for interference
+roundoff and a separate small positive outcome.
 
 The [structural predicate target study](structural-predicate-target-v030/README.md)
 preserves the first closed source and the terminal export refusal at its
@@ -477,6 +489,16 @@ The [terminal specialization study](target-specialization-v030/session.json)
 retains the initial manifest refusal and both exact source checks. Only the
 H specialization exports to the terminal target. The unchanged scalar-phase
 specialization originally produced a Raw operation index without a source span.
+
+The [static operand shape study](static-operand-shape-v030/session.json)
+retains the first wrong-tree controlled application and the original text and
+JSON diagnostics. The exact argument type and range remain separate from the
+provider's own interface checks.
+
+The [contract counterexample session](contract-counterexample-v030/session.json)
+retains the historical report and both edition-2026 permutation and complex
+phase reproductions. It preserves the prior CLI's actual diagnostics and the
+commands for byte-identical replays.
 
 Each `session.json` names the task, kind, baseline commit/version, context,
 ordered attempts and observations. Each attempt contains a complete project,

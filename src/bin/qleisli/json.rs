@@ -6,7 +6,9 @@ use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use qleisli::frontend::diagnostic::{Diagnostic, SourceLocation};
+use qleisli::frontend::diagnostic::{
+    Diagnostic, DiagnosticBoundary, QuantumOwnershipBoundary, SourceLocation,
+};
 use qleisli::sim::{Sample, SimulationError};
 
 use super::source_commands::{Failure, Success};
@@ -90,6 +92,39 @@ fn v1_code(code: &str) -> &str {
     }
 }
 
+fn counterexample_json(
+    counterexample: Option<&qleisli::contract::EquationCounterexample>,
+) -> String {
+    counterexample.map_or_else(String::new, |counterexample| {
+        format!(
+            ",\"counterexample\":{{\"input_column\":{},\"output_row\":{}}}",
+            counterexample.input_column, counterexample.output_row,
+        )
+    })
+}
+
+pub(super) fn boundary_json(boundary: Option<DiagnosticBoundary>) -> String {
+    match boundary {
+        Some(DiagnosticBoundary::QuantumOwnership(ownership)) => {
+            let applies_to = if ownership == QuantumOwnershipBoundary::UnresolvedDisposal {
+                "if_live_quantum_owner"
+            } else {
+                "live_quantum_owner"
+            };
+            format!(
+                ",\"ownership_boundary\":{{\"boundary\":\"affine_to_linear\",\"reason\":{},\"applies_to\":{}}}",
+                quoted(ownership.reason()),
+                quoted(applies_to),
+            )
+        }
+        Some(DiagnosticBoundary::ControlFlow(control)) => format!(
+            ",\"control_flow_boundary\":{{\"boundary\":\"classical_quantum_control\",\"reason\":{}}}",
+            quoted(control.reason()),
+        ),
+        None => String::new(),
+    }
+}
+
 fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str) -> String {
     let primary = diagnostic
         .primary
@@ -101,25 +136,48 @@ fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str)
         diagnostic.code
     };
     format!(
-        "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]}}",
+        "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]{}{}}}",
         quoted(v1_code(code)),
         quoted(severity),
         quoted(&diagnostic.message),
-        primary.as_deref().unwrap_or("null")
+        primary.as_deref().unwrap_or("null"),
+        counterexample_json(diagnostic.counterexample.as_deref()),
+        boundary_json(diagnostic.boundary),
+    )
+}
+
+fn artifact_diagnostic_with_counterexample_json(
+    code: &str,
+    message: &str,
+    pointer: &str,
+    counterexample: Option<&qleisli::contract::EquationCounterexample>,
+) -> String {
+    format!(
+        "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":null,\"related\":[{{\"message\":{},\"location\":null}}]{}}}",
+        quoted(v1_code(code)),
+        quoted(message),
+        quoted(&format!("json_pointer: {pointer}")),
+        counterexample_json(counterexample),
     )
 }
 
 pub(super) fn artifact_diagnostic_json(code: &str, message: &str, pointer: &str) -> String {
-    format!(
-        "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":null,\"related\":[{{\"message\":{},\"location\":null}}]}}",
-        quoted(v1_code(code)),
-        quoted(message),
-        quoted(&format!("json_pointer: {pointer}"))
+    artifact_diagnostic_with_counterexample_json(code, message, pointer, None)
+}
+
+pub(super) fn artifact_error_json(error: &qleisli::interchange::Error) -> String {
+    artifact_diagnostic_with_counterexample_json(
+        error.code,
+        &error.message,
+        &error.json_pointer,
+        error.counterexample.as_deref(),
     )
 }
 
 fn failure(code: &'static str, message: impl Into<String>) -> Diagnostic {
     Diagnostic {
+        counterexample: None,
+        boundary: None,
         code,
         message: message.into(),
         primary: None,
@@ -202,7 +260,7 @@ fn execute(
         Failure::Simulation(error) => simulation_failure(error),
     })? {
         Success::Checked(report) => super::check_report::project_json(&report),
-        Success::Distribution(distribution) => distribution_json(distribution),
+        Success::Distribution { probabilities, .. } => distribution_json(probabilities),
         Success::Samples {
             shots,
             seed,
@@ -254,7 +312,9 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
                         Err(super::artifacts::Failure::Source(error)) => Err(error),
                         Err(super::artifacts::Failure::Artifact(error)) => {
                             artifact_pointer = Some(error.json_pointer);
-                            Err(failure(error.code, error.message))
+                            let mut diagnostic = failure(error.code, error.message);
+                            diagnostic.counterexample = error.counterexample;
+                            Err(diagnostic)
                         }
                     }
                 } else {
@@ -284,7 +344,12 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
             let status = if error.code == "usage" { 2 } else { 1 };
             let diagnostic = match artifact_pointer {
                 None => diagnostic_json(&root, &error),
-                Some(pointer) => artifact_diagnostic_json(error.code, &error.message, &pointer),
+                Some(pointer) => artifact_diagnostic_with_counterexample_json(
+                    error.code,
+                    &error.message,
+                    &pointer,
+                    error.counterexample.as_deref(),
+                ),
             };
             (
                 envelope(&command, Some(&diagnostic), "null"),
