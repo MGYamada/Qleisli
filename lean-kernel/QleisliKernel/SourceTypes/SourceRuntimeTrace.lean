@@ -167,6 +167,141 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           (first.events ++ last.events ++ [.selection ⟨originalTokens,parsed,original,selector,target,scope,naturals,
             held,last.remaining,name,signature,generic,basis,computed,last.nextOrdinal,offsets⟩])
           (first.staticRows ++ last.staticRows ++ naturals.sourceRows),context)
+      let executeCall {callTokens : List LocatedToken} (call : CallSyntax.Checked callTokens)
+          (readArguments : SourceContext.Context sources owner → Finite.WorkM
+            (List Value × Environment × List Semantics.SourceOwners.Owner × List Semantics.SourceOwners.Owner ×
+              Nat × List (Event sources owner) × List (String × String) × SourceContext.Context sources owner)) :
+          Finite.WorkM (Outcome sources owner environment × SourceContext.Context sources owner) := do
+        if let some written ← adapt (SourceRuntimeTransformSyntax.read call.call.callee) then
+          let lookup ← SourceContext.read sources owner context scope written.base.2.callee (sourceModules signature)
+          let candidate ← Finite.lift lookup.answer.checked
+          -- Classification uses the original resolved name. Primitive and
+          -- opaque-formal applications retain their separate unary Op rule.
+          if (QuantumSignature.candidateResolution candidate).isSome then
+            let bound ← readTargetWithWritten signature naturals written.base.2 candidate
+            let target := bound.target
+            let (values,remaining,allocated,consumed,ordinal,events,rows,context) ←
+              readArguments lookup.context
+            -- The child is checked even when one of the original powers is
+            -- zero. No selected-body effect is inferred from the prefix.
+            let _ ← SourceRecursion.read generic scope written.base.1 target.signature.original
+            let forward ← readCallee target.signature
+            if visibleUnitary : SourceEffect.visible owner target.resolution.moduleName
+                target.signature.original.declaration.isPublic target.signature.original.parsedHeader.effect
+                forward.generic.inferredEffect = .unitary then
+              let counts ← written.counts.mapM fun argument => do
+                let checked ← SourceOperation.readCount signature.instantiation naturals.helpers.val
+                  naturals.environment scope argument.tokens naturals.generic
+                pure (⟨argument,checked⟩ : TransformCount signature naturals scope)
+              if originalCounts : counts.map (·.argument) = written.counts then
+                match multiplied : SourceRuntimeTransformPorts.product (counts.map (·.checked.value)) with
+                | .error _ => throw .request
+                | .ok copies =>
+                  if access : (match written.access with
+                      | .forward => true
+                      | .adjoint => target.signature.operations.actuals.all (fun actual =>
+                          actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable)
+                      | .controlled => target.signature.operations.actuals.all (fun actual =>
+                          actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable &&
+                            actual.2.graph.root.paths.controllable)) = true then
+                    let fields := (values.map valueFields).sum+
+                      (target.signature.parameters.map fun part => SourceRuntimeTransformPorts.typeFields part.tree).sum+
+                      SourceRuntimeTransformPorts.typeFields target.signature.result.tree
+                    Finite.exactWork (Exact.charge (32*(fields+1)))
+                    match portsRead : SourceRuntimeTransformPorts.read (target.signature.parameters.map (·.tree))
+                        target.signature.result.tree written.access (!written.counts.isEmpty) with
+                    | .error _ => throw .request
+                    | .ok ports =>
+                      match applied : SourceRuntimeTransformPorts.apply ports written.access values ordinal with
+                      | .error _ => throw .request
+                      | .ok (value,new,used,after) =>
+                        let event : TransformEvent sources owner :=
+                          ⟨callTokens,call,name,signature,naturals,scope,written,target,bound.originalWritten,forward,
+                            visibleUnitary,counts,originalCounts,copies,multiplied,access,ports,portsRead,
+                            values,ordinal,value,new,used,after,applied,held,remaining⟩
+                        return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
+                          after (events ++ [.transform event]) (rows ++ (Event.transform event).staticRows),context)
+                  else throw .request
+              else throw .request
+            else throw .request
+        if SourceOperationApplication.selected signature.operationNames call.call.callee then
+          let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← readArguments context
+          let targetBasis ← adapt (SourceOperationApplication.targetBasis call.call.callee values)
+          let application ← SourceOperation.readWithInstantiation signature.instantiation naturals.helpers.val
+            naturals.environment scope call.call.callee naturals.generic (some targetBasis) (some signature.supply)
+          if applicable : application.graph.root.paths.applicable = true then
+            Finite.exactWork (Exact.charge (16*((values.map valueFields).sum+
+              Raw.OwnerFlow.fields [⟨0,application.graph.root.input⟩,⟨0,application.graph.root.output⟩]+1)))
+            match applied : SourceOperationApplication.apply application.graph.root.input application.graph.root.output
+                (SourceOperationApplication.controlled call.call.callee) values ordinal with
+            | .error _ => throw .request
+            | .ok (value,new,used,after) =>
+              let event : SourceOperationApplication.Event sources owner :=
+                ⟨callTokens,call,name,signature.original,signature.instantiation,naturals,scope,application,applicable,
+                  values,ordinal,value,new,used,after,applied,held,owners remaining⟩
+              return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
+                (events ++ [.operation event]) (rows ++ (Event.operation event).staticRows),context)
+          else throw .request
+        let written ← adapt (StaticApplication.readSyntax call.call.callee)
+        let lookup ← SourceContext.read sources owner context scope written.callee (sourceModules signature)
+        let candidate ← Finite.lift lookup.answer.checked
+        let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← readArguments lookup.context
+        match selected : primitive candidate with
+        | some .phase =>
+          let application ← PhaseApplication.readWithCandidate sources owner naturals scope call candidate
+          let [[.owner operand]] := values | throw .request
+          if bit : operand.basis = [.bit] then
+            let phase : PhaseEvent sources owner :=
+              ⟨callTokens,call,scope,naturals,application,operand,bit,held,remaining⟩
+            return (← outcome environment [.owner operand] remaining allocated consumed ordinal
+              (events ++ [.phase phase]) (rows ++ (Event.phase phase).staticRows),context)
+          else throw .request
+        | some kind =>
+          if SourceRegisterApplication.selected kind then
+            let application ← SourceRegisterApplication.read sources owner naturals scope written kind
+            Finite.exactWork (Exact.charge (64*((values.map valueFields).sum+
+              (application.arguments.map (·.value)).sum+1)))
+            match applied : SourceRegisterApplication.apply kind (application.arguments.map (·.value)) values ordinal with
+            | .error _ => throw .request
+            | .ok (value,new,used,after) =>
+              let event : RegisterEvent sources owner :=
+                ⟨callTokens,call,scope,naturals,written,candidate,kind,selected,application,values,ordinal,
+                  value,new,used,after,applied,held,remaining⟩
+              return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
+                after (events ++ [.registerPrimitive event]) (rows ++ (Event.registerPrimitive event).staticRows),context)
+          Finite.guard written.arguments.isEmpty .request
+          match applied : SourceRuntimePrimitive.apply kind ⟨owner,name,call.calleeOffset⟩ values ordinal with
+          | .error _ => throw .request
+          | .ok (value,new,used,after) =>
+            let event : PrimitiveEvent sources owner :=
+              ⟨callTokens,call,scope,written,candidate,kind,selected,values,value,new,used,after,held,remaining,
+                ⟨name,ordinal,applied⟩⟩
+            return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
+              (events ++ [.primitive event]) rows,context)
+        | none =>
+          let target ← readTarget signature naturals written candidate
+          if matched : values.map typeOf = target.signature.parameters.map (·.tree) then
+            let _ ← SourceRecursion.read generic scope call.call.callee target.signature.original
+            let canonical ← readCallee target.signature
+            let inputOwners := values.flatMap valueOwners
+            let fresh := canonical.allocated.zipIdx.map fun (owner,index) =>
+              (⟨ordinal+index,owner.basis⟩ : Semantics.SourceOwners.Owner)
+            let mapping := inputOwners ++ fresh
+            Finite.exactWork (Exact.charge (32*(canonical.value.length+1)*
+              ((values.map valueFields).sum+valueFields canonical.value+1)))
+            match transported : transport ⟨owner,target.callerName,call.calleeOffset⟩ mapping
+                (values.flatMap ordinary) canonical.value with
+            | .error _ => throw .request
+            | .ok value =>
+              match consumedRead : canonical.consumed.mapM (mappedOwner mapping) with
+              | .error _ => throw .request
+              | .ok used =>
+                let event : NamedEvent sources owner :=
+                  ⟨callTokens,call,scope,target,canonical,values,matched,inputOwners,rfl,fresh,mapping,rfl,
+                    value,transported,used,consumedRead,held,remaining⟩
+                return (← outcome environment value remaining (allocated ++ fresh) (consumed ++ used)
+                  (ordinal+fresh.length) (events ++ [.named event]) (rows ++ (Event.named event).staticRows),context)
+          else throw .request
       match tree with
       | .empty .. =>
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
@@ -538,137 +673,31 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     (condition.consumed ++ retired) (right.nextOrdinal+phis.length)
                     (condition.events ++ [.conditional event left.events right.events])
                     (condition.staticRows ++ left.staticRows ++ right.staticRows ++ naturals.sourceRows),context)
-      | .call call children =>
-        if let some written ← adapt (SourceRuntimeTransformSyntax.read call.call.callee) then
-          let lookup ← SourceContext.read sources owner context scope written.base.2.callee (sourceModules signature)
-          let candidate ← Finite.lift lookup.answer.checked
-          -- Classification uses the original resolved name. Primitive and
-          -- opaque-formal applications retain their separate unary Op rule.
-          if (QuantumSignature.candidateResolution candidate).isSome then
-            let bound ← readTargetWithWritten signature naturals written.base.2 candidate
-            let target := bound.target
-            let (values,remaining,allocated,consumed,ordinal,events,rows,context) ←
-              evaluateChildren children.trees lookup.context
-            -- The child is checked even when one of the original powers is
-            -- zero. No selected-body effect is inferred from the prefix.
-            let _ ← SourceRecursion.read generic scope written.base.1 target.signature.original
-            let forward ← readCallee target.signature
-            if visibleUnitary : SourceEffect.visible owner target.resolution.moduleName
-                target.signature.original.declaration.isPublic target.signature.original.parsedHeader.effect
-                forward.generic.inferredEffect = .unitary then
-              let counts ← written.counts.mapM fun argument => do
-                let checked ← SourceOperation.readCount signature.instantiation naturals.helpers.val
-                  naturals.environment scope argument.tokens naturals.generic
-                pure (⟨argument,checked⟩ : TransformCount signature naturals scope)
-              if originalCounts : counts.map (·.argument) = written.counts then
-                match multiplied : SourceRuntimeTransformPorts.product (counts.map (·.checked.value)) with
-                | .error _ => throw .request
-                | .ok copies =>
-                  if access : (match written.access with
-                      | .forward => true
-                      | .adjoint => target.signature.operations.actuals.all (fun actual =>
-                          actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable)
-                      | .controlled => target.signature.operations.actuals.all (fun actual =>
-                          actual.2.graph.root.paths.applicable && actual.2.graph.root.paths.adjointable &&
-                            actual.2.graph.root.paths.controllable)) = true then
-                    let fields := (values.map valueFields).sum+
-                      (target.signature.parameters.map fun part => SourceRuntimeTransformPorts.typeFields part.tree).sum+
-                      SourceRuntimeTransformPorts.typeFields target.signature.result.tree
-                    Finite.exactWork (Exact.charge (32*(fields+1)))
-                    match portsRead : SourceRuntimeTransformPorts.read (target.signature.parameters.map (·.tree))
-                        target.signature.result.tree written.access (!written.counts.isEmpty) with
-                    | .error _ => throw .request
-                    | .ok ports =>
-                      match applied : SourceRuntimeTransformPorts.apply ports written.access values ordinal with
-                      | .error _ => throw .request
-                      | .ok (value,new,used,after) =>
-                        let event : TransformEvent sources owner :=
-                          ⟨tokens,call,name,signature,naturals,scope,written,target,bound.originalWritten,forward,
-                            visibleUnitary,counts,originalCounts,copies,multiplied,access,ports,portsRead,
-                            values,ordinal,value,new,used,after,applied,held,remaining⟩
-                        return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
-                          after (events ++ [.transform event]) (rows ++ (Event.transform event).staticRows),context)
-                  else throw .request
-              else throw .request
-            else throw .request
-        if SourceOperationApplication.selected signature.operationNames call.call.callee then
-          let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← evaluateChildren children.trees context
-          let targetBasis ← adapt (SourceOperationApplication.targetBasis call.call.callee values)
-          let application ← SourceOperation.readWithInstantiation signature.instantiation naturals.helpers.val
-            naturals.environment scope call.call.callee naturals.generic (some targetBasis) (some signature.supply)
-          if applicable : application.graph.root.paths.applicable = true then
-            Finite.exactWork (Exact.charge (16*((values.map valueFields).sum+
-              Raw.OwnerFlow.fields [⟨0,application.graph.root.input⟩,⟨0,application.graph.root.output⟩]+1)))
-            match applied : SourceOperationApplication.apply application.graph.root.input application.graph.root.output
-                (SourceOperationApplication.controlled call.call.callee) values ordinal with
-            | .error _ => throw .request
-            | .ok (value,new,used,after) =>
-              let event : SourceOperationApplication.Event sources owner :=
-                ⟨tokens,call,name,signature.original,signature.instantiation,naturals,scope,application,applicable,
-                  values,ordinal,value,new,used,after,applied,held,owners remaining⟩
-              return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
-                (events ++ [.operation event]) (rows ++ (Event.operation event).staticRows),context)
-          else throw .request
-        let written ← adapt (StaticApplication.readSyntax call.call.callee)
-        let lookup ← SourceContext.read sources owner context scope written.callee (sourceModules signature)
-        let candidate ← Finite.lift lookup.answer.checked
-        let (values,remaining,allocated,consumed,ordinal,events,rows,context) ← evaluateChildren children.trees lookup.context
-        match selected : primitive candidate with
-        | some .phase =>
-          let application ← PhaseApplication.readWithCandidate sources owner naturals scope call candidate
-          let [[.owner operand]] := values | throw .request
-          if bit : operand.basis = [.bit] then
-            let phase : PhaseEvent sources owner :=
-              ⟨tokens,call,scope,naturals,application,operand,bit,held,remaining⟩
-            return (← outcome environment [.owner operand] remaining allocated consumed ordinal
-              (events ++ [.phase phase]) (rows ++ (Event.phase phase).staticRows),context)
-          else throw .request
-        | some kind =>
-          if SourceRegisterApplication.selected kind then
-            let application ← SourceRegisterApplication.read sources owner naturals scope written kind
-            Finite.exactWork (Exact.charge (64*((values.map valueFields).sum+
-              (application.arguments.map (·.value)).sum+1)))
-            match applied : SourceRegisterApplication.apply kind (application.arguments.map (·.value)) values ordinal with
-            | .error _ => throw .request
-            | .ok (value,new,used,after) =>
-              let event : RegisterEvent sources owner :=
-                ⟨tokens,call,scope,naturals,written,candidate,kind,selected,application,values,ordinal,
-                  value,new,used,after,applied,held,remaining⟩
-              return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
-                after (events ++ [.registerPrimitive event]) (rows ++ (Event.registerPrimitive event).staticRows),context)
-          Finite.guard written.arguments.isEmpty .request
-          match applied : SourceRuntimePrimitive.apply kind ⟨owner,name,call.calleeOffset⟩ values ordinal with
-          | .error _ => throw .request
-          | .ok (value,new,used,after) =>
-            let event : PrimitiveEvent sources owner :=
-              ⟨tokens,call,scope,written,candidate,kind,selected,values,value,new,used,after,held,remaining,
-                ⟨name,ordinal,applied⟩⟩
-            return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
-              (events ++ [.primitive event]) rows,context)
-        | none =>
-          let target ← readTarget signature naturals written candidate
-          if matched : values.map typeOf = target.signature.parameters.map (·.tree) then
-            let _ ← SourceRecursion.read generic scope call.call.callee target.signature.original
-            let canonical ← readCallee target.signature
-            let inputOwners := values.flatMap valueOwners
-            let fresh := canonical.allocated.zipIdx.map fun (owner,index) =>
-              (⟨ordinal+index,owner.basis⟩ : Semantics.SourceOwners.Owner)
-            let mapping := inputOwners ++ fresh
-            Finite.exactWork (Exact.charge (32*(canonical.value.length+1)*
-              ((values.map valueFields).sum+valueFields canonical.value+1)))
-            match transported : transport ⟨owner,target.callerName,call.calleeOffset⟩ mapping
-                (values.flatMap ordinary) canonical.value with
-            | .error _ => throw .request
-            | .ok value =>
-              match consumedRead : canonical.consumed.mapM (mappedOwner mapping) with
-              | .error _ => throw .request
-              | .ok used =>
-                let event : NamedEvent sources owner :=
-                  ⟨tokens,call,scope,target,canonical,values,matched,inputOwners,rfl,fresh,mapping,rfl,
-                    value,transported,used,consumedRead,held,remaining⟩
-                return (← outcome environment value remaining (allocated ++ fresh) (consumed ++ used)
-                  (ordinal+fresh.length) (events ++ [.named event]) (rows ++ (Event.named event).staticRows),context)
-          else throw .request)
+      | .call call children => executeCall call (evaluateChildren children.trees)
+      | .exclusive written _ =>
+        let names := written.ownerNames
+        Finite.exactWork (Exact.charge (16*(names.length+1)*(environmentCells environment+1)))
+        Finite.guard (decide names.Nodup) .request
+        let (values,remaining) ← names.foldlM (fun (values,remaining) key => do
+          let (value,remaining) ← adapt (SourceRuntimeValues.take key remaining)
+          let [.owner _] := value | throw .request
+          return (values ++ [value],remaining)) (([] : List Value),environment)
+        let (call,context) ← executeCall written.parsed (fun context =>
+          pure (values,remaining,[],[],nextOrdinal,[],[],context))
+        let outputs ← if values.length == 1 then pure [call.value] else do
+          let .tuple count :: fields := call.value | throw .request
+          Finite.guard (count == values.length && fields.length == count) .request
+          pure (fields.map fun field => [field])
+        Finite.exactWork (Exact.charge (16*(names.length+1)*
+          (environmentCells call.remaining+valueFields call.value+1)))
+        Finite.guard (call.remaining == remaining && outputs.map typeOf == values.map typeOf) .request
+        let updated := names.zip outputs
+        let restored := environment.map fun cell =>
+          match updated.find? (fun entry => entry.1 == cell.name) with
+          | some (_,value) => {cell with value}
+          | none => cell
+        return (← outcome environment [.ordinary [.unit] .unit] restored call.allocated call.consumed
+          call.nextOrdinal call.events call.staticRows,context))
 
 def quantumUse {sources owner name} (signature : Signature sources owner name)
     (events : List (Event sources owner)) : Bool :=
@@ -864,6 +893,14 @@ def readInlineArmBody {sources owner} (site : SelectionEvent sources owner) (ind
       (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
         [callFrame site.signature] callee).summary)
       (arm.block.body.length+1) site.naturals reference site.scope site.nextOrdinal (inlineFrame arm site.target) arm.tree {}
+    let result ← if arm.implicitResult then do
+      Finite.guard (result.value == [.ordinary [.unit] .unit]) .request
+      let some cell := result.remaining.find? (fun cell => cell.name == arm.targetName) | throw .request
+      Finite.guard (cell.origin == .coherentArmTarget arm.block.opening.span.startByte) .request
+      let (value,remaining) ← adapt (SourceRuntimeValues.take arm.targetName result.remaining)
+      outcome (inlineFrame arm site.target) value remaining result.allocated result.consumed
+        result.nextOrdinal result.events result.staticRows
+    else pure result
     match outputValue : result.value, originalCalls : arm.tree.calls with
     | [.owner output], .ok offsets =>
       if checked : output.basis = site.target.basis ∧ owners result.remaining = [] ∧

@@ -778,6 +778,12 @@ private def selection {sources} (reader : DefinitionReader sources)
       let inline ← adapt (SourceSyntax.readInlineArm parsed index)
       let initial := [⟨inline.targetName,[.owner target],inline.block.opening.span.startByte+1⟩]
       let body ← readBody initial inline.tree
+      let body ← if inline.implicitResult then do
+        let some cell := body.remaining.find? (fun cell => cell.name == inline.targetName) | throw .request
+        guard (cell.binding == inline.block.opening.span.startByte+1) .request
+        let (value,remaining) ← adapt (GenericValues.take inline.targetName body.remaining)
+        pure {body with value,remaining}
+      else pure body
       GenericValues.expect state body.value [.owner target]
       guard (body.remaining.all fun cell => !hasOwner cell.value) .request
       -- Keep the inferred effect as an independent requirement for the arm body.
@@ -1034,6 +1040,60 @@ private def evaluator {sources owner name} (definition : Definition sources owne
         let result ← next state scope previous.remaining child.2
         pure (values ++ [result.value],append previous result))
         ([],{value := [],remaining := environment})
+    let checkCall {callTokens : List LocatedToken} (call : CallSyntax.Checked callTokens)
+        (values : List Value) (arguments : Outcome sources) : WorkM (Outcome sources) := do
+      let transformed ← adapt (SourceRuntimeTransformSyntax.read call.call.callee)
+      let transformedNamed ← match transformed with
+        | none => pure false
+        | some transformed =>
+          let base := transformed.base
+          let candidate ← CallName.readWithModules sources definition.modules owner scope base.2.callee
+          pure (match candidate.decision with | .lexical .. => false | _ => true)
+      if transformedNamed then
+        let some transformed := transformed | throw .request
+        pure (append arguments (← runtimeTransform reader state scope definition.operations transformed values
+          arguments.remaining underControl))
+      else if SourceOperationSyntax.selected (definition.operations.map (·.1)) call.call.callee then
+        pure (append arguments (← applyOperation reader state scope definition.operations call.call.callee values
+          arguments.remaining underControl))
+      else
+        let written ← adapt (StaticApplication.readSyntax call.call.callee)
+        let candidate ← CallName.readWithModules sources definition.modules owner scope written.callee
+        match candidate.decision with
+        | .primitive _ _ _ _ _ _ .phase _ =>
+          let .application staticCall := written | throw .request
+          guard (staticCall.call.arguments.length == 2) .request
+          let rows ← staticCall.call.arguments.mapM fun argument => do
+            let expression ← adapt (StaticBindings.natural argument.tokens)
+            let _ ← GenericLexicalNatural.read state.prepared state.environment scope expression.expression
+            NaturalRows.expression sources owner state.prepared.helpers scope expression.expression
+          let [value] := values | throw .request
+          GenericValues.expect state value [.owner [.fixed .bit]]
+          pure (append arguments {
+            value,remaining := arguments.remaining,quantumUse := true,
+            rows := CallName.sourceRows candidate ++ rows.flatten})
+        | .primitive _ _ _ _ _ _ kind _ =>
+          let result ← primitiveApplication state scope kind written.arguments values arguments.remaining
+          pure (append arguments {result with rows := CallName.sourceRows candidate ++ result.rows})
+        | _ =>
+          let some resolution := CallName.candidateResolution candidate | throw .request
+          let application ← instantiateWithReader state scope written resolution.moduleName resolution.declaration.name
+            (operationWithModules reader state scope definition.operations 65 none) true reader
+          guard (!underControl || application.operations.all
+            (fun (_,actual) => actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable)) .request
+          guard (values.length == application.parameters.length) .request
+          for (actual,expected) in values.zip application.parameters do GenericValues.expect state actual expected
+          let externalPermission := owner != application.owner &&
+            !application.definition.original.envelope.parsedHeader.ordinaryOnly &&
+            application.definition.original.envelope.parsedHeader.effect.isSome
+          let result : Outcome sources := {
+            value := application.result,remaining := arguments.remaining,
+            effect := functionEffect owner application.definition,quantumUse := externalPermission,
+            references := application.references,needs := application.needs,meanings := application.meanings,
+            activities := application.activities,
+            recursions := application.recursion.toList,
+            rows := CallName.sourceRows candidate ++ application.rows}
+          pure (append arguments result)
     match tree with
     | .empty .. => pure {value := [.ordinary [.fixed .unit]],remaining := environment}
     | .literal .. => pure {value := [.ordinary [.fixed .bit]],remaining := environment}
@@ -1245,58 +1305,19 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       pure {result with value := [.ordinary [.fixed .bit]]}
     | .call call trees =>
       let (values,arguments) ← children trees.trees
-      let transformed ← adapt (SourceRuntimeTransformSyntax.read call.call.callee)
-      let transformedNamed ← match transformed with
-        | none => pure false
-        | some transformed =>
-          let base := transformed.base
-          let candidate ← CallName.readWithModules sources definition.modules owner scope base.2.callee
-          pure (match candidate.decision with | .lexical .. => false | _ => true)
-      if transformedNamed then
-        let some transformed := transformed | throw .request
-        pure (append arguments (← runtimeTransform reader state scope definition.operations transformed values
-          arguments.remaining underControl))
-      else if SourceOperationSyntax.selected (definition.operations.map (·.1)) call.call.callee then
-        pure (append arguments (← applyOperation reader state scope definition.operations call.call.callee values
-          arguments.remaining underControl))
-      else
-        let written ← adapt (StaticApplication.readSyntax call.call.callee)
-        let candidate ← CallName.readWithModules sources definition.modules owner scope written.callee
-        match candidate.decision with
-        | .primitive _ _ _ _ _ _ .phase _ =>
-          let .application staticCall := written | throw .request
-          guard (staticCall.call.arguments.length == 2) .request
-          let rows ← staticCall.call.arguments.mapM fun argument => do
-            let expression ← adapt (StaticBindings.natural argument.tokens)
-            let _ ← GenericLexicalNatural.read state.prepared state.environment scope expression.expression
-            NaturalRows.expression sources owner state.prepared.helpers scope expression.expression
-          let [value] := values | throw .request
-          GenericValues.expect state value [.owner [.fixed .bit]]
-          pure (append arguments {
-            value,remaining := arguments.remaining,quantumUse := true,
-            rows := CallName.sourceRows candidate ++ rows.flatten})
-        | .primitive _ _ _ _ _ _ kind _ =>
-          let result ← primitiveApplication state scope kind written.arguments values arguments.remaining
-          pure (append arguments {result with rows := CallName.sourceRows candidate ++ result.rows})
-        | _ =>
-          let some resolution := CallName.candidateResolution candidate | throw .request
-          let application ← instantiateWithReader state scope written resolution.moduleName resolution.declaration.name
-            (operationWithModules reader state scope definition.operations 65 none) true reader
-          guard (!underControl || application.operations.all
-            (fun (_,actual) => actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable)) .request
-          guard (values.length == application.parameters.length) .request
-          for (actual,expected) in values.zip application.parameters do GenericValues.expect state actual expected
-          let externalPermission := owner != application.owner &&
-            !application.definition.original.envelope.parsedHeader.ordinaryOnly &&
-            application.definition.original.envelope.parsedHeader.effect.isSome
-          let result : Outcome sources := {
-            value := application.result,remaining := arguments.remaining,
-            effect := functionEffect owner application.definition,quantumUse := externalPermission,
-            references := application.references,needs := application.needs,meanings := application.meanings,
-            activities := application.activities,
-            recursions := application.recursion.toList,
-            rows := CallName.sourceRows candidate ++ application.rows}
-          pure (append arguments result))
+      checkCall call values arguments
+    | .exclusive written _ =>
+      let names := written.ownerNames
+      guard (decide names.Nodup) .request
+      exactWork (Exact.charge (16*(names.length+1)*(environment.length+1)))
+      let values ← names.mapM fun name => do
+        let some cell := environment.find? (fun cell => cell.name == name) | throw .request
+        let [.owner _] := cell.value | throw .request
+        pure cell.value
+      let expected := if values.length == 1 then values.flatten else .tuple values.length :: values.flatten
+      let checked ← checkCall written.parsed values {value := [],remaining := environment}
+      GenericValues.expect state checked.value expected
+      pure {checked with value := [.ordinary [.fixed .unit]]})
 
 def checkTree {sources owner name} (definition : Definition sources owner name)
     (tree : SourceSyntax.Tree definition.original.envelope.occurrence.body)

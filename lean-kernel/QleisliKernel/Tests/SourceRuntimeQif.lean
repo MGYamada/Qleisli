@@ -56,6 +56,14 @@ private def inlineProduct := "#![no_implicit_prelude] " ++
 #guard inlineBody inlineUnit 0 = some ([.unit],1,["primitive"])
 #guard inlineBody inlineProduct 0 = some ([.pair,.unit,.bit],4,["primitive","phase 1 3","primitive"])
 
+private def inlineExclusive := "#![no_implicit_prelude] " ++
+  "pub unitary fn route(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
+  "qif(c,q){0=>{h(excl q);h(excl q);},1=>{h(excl q);q}}}"
+
+#guard inlineBody inlineExclusive 0 = some ([.bit],1,["primitive","primitive"])
+#guard inlineBody inlineExclusive 1 = some ([.bit],1,["primitive"])
+#guard inlineBody (inlineExclusive.replace "h(excl q);h(excl q);" "let q=h(q);h(excl q);") 0 = none
+
 private def runtimeTable (source : String) (shift : Nat := 0) : Option (List (Nat × Bool)) :=
   let action : Finite.WorkM _ := do
     let signature ← readSignature #[("main",source)] "main" "route" {}

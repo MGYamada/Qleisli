@@ -85,6 +85,14 @@ def readCall (tokens : List LocatedToken) : Except String (CheckedCall tokens) :
   if original : checked.map Sigma.fst = arguments then return ⟨parsed,callee,checked,original⟩
   else throw "original access argument order changed"
 
+/-- Whole exclusive arguments have one original lexical owner each. -/
+def CheckedCall.wholeExclusive {tokens : List LocatedToken} (call : CheckedCall tokens) : Bool :=
+  call.arguments.all fun arg => arg.2.role == .excl &&
+    match arg.2.selection with | .whole => true | _ => false
+
+def CheckedCall.ownerNames {tokens : List LocatedToken} (call : CheckedCall tokens) : List String :=
+  call.arguments.map fun arg => arg.2.owner.text
+
 structure Adjacent (tokens : List LocatedToken) where
   first : StatementSyntax.Cut ";" tokens
   second : StatementSyntax.Cut ";" first.suffix

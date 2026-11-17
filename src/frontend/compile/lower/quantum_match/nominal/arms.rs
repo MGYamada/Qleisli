@@ -86,8 +86,26 @@ pub(super) fn inline_arm(
         &mut quantum_inputs,
         &mut classical_inputs,
     )?;
-    let mut isolated = BTreeMap::from([(target_key, Binding::Live(input))]);
-    let result = inner.block(module, block, &mut isolated)?;
+    inner
+        .compiler
+        .charge(module, name.span, target_key.name.len() + 1)?;
+    let mut isolated = BTreeMap::from([(target_key.clone(), Binding::Live(input))]);
+    let value = inner.block(module, block, &mut isolated)?;
+    let result = if block.implicit_result && !block.statements.is_empty() {
+        match isolated.remove(&target_key) {
+            Some(Binding::Live(value)) => value,
+            _ => {
+                return Err(inner.error(
+                    module,
+                    block.result.span,
+                    ErrorCode::Ownership,
+                    "implicit return requires the original target owner to remain live",
+                ));
+            }
+        }
+    } else {
+        value
+    };
     inner.no_owned_bindings(module, block.span, &isolated, [name])?;
     if result.ty() != expected {
         return Err(inner.error(

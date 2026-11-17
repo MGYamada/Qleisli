@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.CallSyntax
+import QleisliKernel.SourceTypes.AccessSyntax
 import QleisliKernel.SourceTypes.StatementSyntax
 import QleisliKernel.SourceTypes.QuantumMatch
 import QleisliKernel.SourceTypes.QuantumMoves
@@ -36,6 +37,8 @@ inductive Tree : List LocatedToken → Type where
       (children : Children (parsed.group.arguments.map (·.tokens))) : Tree tokens
   | call {tokens : List LocatedToken} (parsed : CallSyntax.Checked tokens)
       (children : Children (parsed.call.arguments.map (·.tokens))) : Tree tokens
+  | exclusive {tokens : List LocatedToken} (written : AccessSyntax.CheckedCall tokens)
+      (whole : written.wholeExclusive = true) : Tree tokens
   | binding {tokens : List LocatedToken} (parsed : StatementSyntax.Checked tokens)
       (expression : Tree parsed.statement.expression)
       (rest : Tree parsed.statement.rest) : Tree tokens
@@ -109,6 +112,7 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
       return (← children.trees.mapM (fun child => next child.2)).flatten
     | .call parsed children =>
       return (← children.trees.mapM (fun child => next child.2)).flatten ++ [parsed.calleeOffset]
+    | .exclusive call _ => return [call.parsed.calleeOffset]
     | .binding _ expression rest => return (← next expression) ++ (← next rest)
     | .staticBindings _ _ rest => next rest
     | .sequence _ expression rest => return (← next expression) ++ (← next rest)
@@ -241,6 +245,11 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
       | .ok term => return .move tokens term parsed
       | .error error => throw error
     let call ← CallSyntax.read tokens
+    if call.call.arguments.any (fun arg => arg.tokens.head?.map (·.text) == some "excl") then
+      let written ← AccessSyntax.readCall tokens
+      if whole : written.wholeExclusive = true then
+        return .exclusive written whole
+      else throw "coherent source access requires whole exclusive arguments"
     let children ← readChildren (next (depth+1) false) (call.call.arguments.map (·.tokens))
     return .call call children)
 
@@ -254,6 +263,10 @@ structure InlineArm (parsed : QuantumMatch.Parsed) (index : Fin parsed.arms.leng
   targetName : String
   originalTarget : QuantumMoves.parse 65 (parsed.target.map (·.text)) = .ok [.name targetName]
   tree : Tree block.body
+
+def InlineArm.implicitResult {parsed : QuantumMatch.Parsed} {index : Fin parsed.arms.length}
+    (arm : InlineArm parsed index) : Bool :=
+  arm.block.body.getLast?.map (·.text) == some ";"
 
 /-- Read the indexed arm with the same grammar as an ordinary source body.
 The result retains its exact occurrence, the name of the original target

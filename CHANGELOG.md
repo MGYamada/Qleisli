@@ -7,7 +7,8 @@ development milestones from the scope of their evidence.
 - Check inline and mixed coherent selection arms against their original source
   blocks, literal Raw bodies and controlled sectors in the native checker (#215).
   The bounded arms retain original basis lifts, computed predicates and
-  workspace restoration obligations.
+  workspace restoration obligations, and return the live target after
+  statement blocks using whole-owner `excl` calls.
 - Document the diagnostic categories, structured output and source recovery
   contract in the Language Reference (#225).
 - Document the constitutional theorem boundary, its actual ordinary native

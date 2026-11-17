@@ -156,6 +156,70 @@ observe fn main()->Bit{
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn coherent_block_arm_replays_excl_and_returns_the_original_binding() {
+    let binary = r#"#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{h(excl q);h(excl q);},1=>{h(excl q);}}
+}
+"#;
+    let nominal = r#"#![no_implicit_prelude]
+pub enum Tag { A, B }
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+pub unitary fn route(s:Q<Tag>,q:Q<Bit>)->(Q<Tag>,Q<Bit>){
+    qmatch(s,q){Tag::B=>{sign(excl q);},Tag::A=>{sign(excl q);q}}
+}
+"#;
+    let pair = r#"#![no_implicit_prelude]
+unitary fn turn(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){(h(a),phase[1,1](b))}
+pub unitary fn route(s:Q<Bit>,q:Q<(Bit,Bit)>)->(Q<Bit>,Q<(Bit,Bit)>){
+    qif(s,q){0=>{q},1=>{let (a,b)=split(q);turn(excl a,excl b);join(a,b)}}
+}
+"#;
+    for (source, original, changed) in [
+        (binary, "excl q", "excl s"),
+        (nominal, "excl q", "excl s"),
+        (pair, "excl b", "excl a"),
+    ] {
+        let checked = selected_at(source, "main::route");
+        let program = checked.program();
+        assert!(program.qmatch_source_checked());
+        kernel().check_program(program).unwrap();
+        let request = program.request().unwrap();
+        let artifact = std::str::from_utf8(program.artifact()).unwrap();
+        let wrong = artifact.replacen(original, changed, 1);
+        assert_ne!(artifact, wrong);
+        let error = kernel()
+            .check_qmatch_source_v5(wrong.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+
+    let closed = format!(
+        "{binary}
+        observe fn main()->(Bit,Bit){{
+            let s=basis unit(()) as _ {{0}};
+            let q=basis unit(()) as _ {{1}};
+            let (s,q)=route(s,q);
+            (measure_z(s),measure_z(q))
+        }}"
+    );
+    let program = compile_project(&SourceRoot::new(&closed).0).unwrap();
+    assert!(program.qmatch_source_checked());
+    let values = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert!((values[&vec![false, true]] - 1.0).abs() < 1e-12);
+
+    let consumed = binary.replacen("h(excl q);h(excl q);", "let q=h(q);h(excl q);", 1);
+    let error = ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), consumed)]))
+        .err()
+        .expect("a shadowing owner cannot supply the implicit return");
+    assert_eq!(error.code(), "ownership", "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn coherent_block_arm_checks_the_original_static_continuation() {
     let primitive = recorded_inline_arm(
         "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02",

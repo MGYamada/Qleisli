@@ -104,6 +104,10 @@ fn block(block: &Block) -> Result<(), Failure> {
             "finite profile requires an explicit final expression",
         ));
     }
+    block_contents(block)
+}
+
+fn block_contents(block: &Block) -> Result<(), Failure> {
     for statement in &block.statements {
         match &statement.kind {
             StmtKind::StaticLet { .. } => {}
@@ -126,7 +130,7 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
             self::expr(&selection.target)?;
             for arm in &selection.arms {
                 if let CoherentArm::Block(body) = &arm.body {
-                    block(body)?;
+                    block_contents(body)?;
                 }
             }
         }
@@ -204,7 +208,7 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
             self::expr(target)?;
             for arm in [zero, one] {
                 if let CoherentArm::Block(body) = arm {
-                    block(body)?;
+                    block_contents(body)?;
                 }
             }
         }

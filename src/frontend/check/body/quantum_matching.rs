@@ -191,17 +191,30 @@ impl Checker<'_, '_> {
                 SourceError::new("limit", block.span, "binding identity overflow")
             })?,
         );
+        let key = self.program.budget.key(name.span, key)?;
+        self.program.budget.charge(name.span, key.name.len() + 1)?;
         inner.values.insert(
-            self.program.budget.key(name.span, key)?,
+            key.clone(),
             Binding {
                 identity,
                 ty: self.program.budget.copy_ty(block.span, &expected)?,
             },
         );
+        let implicit = block.implicit_result && !block.statements.is_empty();
         let surrounding = std::mem::replace(&mut self.effects, BodyEffects::new(block.span));
-        let checked = self.block(block, &mut inner, Some(&expected));
+        let checked = self.block(block, &mut inner, (!implicit).then_some(&expected));
         let region = std::mem::replace(&mut self.effects, surrounding);
         checked?;
+        if implicit {
+            let returned = inner.values.remove(&key).ok_or_else(|| {
+                SourceError::new(
+                    "ownership",
+                    block.result.span,
+                    "implicit return requires the original target owner to remain live",
+                )
+            })?;
+            inner.moved.insert(returned.identity);
+        }
         if self.live_owner(&inner, block.span)?.is_some() {
             return Err(disposal_error(
                 block.result.span,

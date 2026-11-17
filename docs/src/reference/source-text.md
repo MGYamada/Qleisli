@@ -194,9 +194,20 @@ Within the finite profile, an inline arm can use `basis`, `with_computed`,
 predicate and applies the same scratch restoration checks as for a named
 body. A `dirty` scratch owner must come from the branch's local target.
 
+An `excl` call in a block arm can update a whole local owner. The checker
+requires the callee to return the same ordered owner types and restores each
+result to its original binding. A block arm ending in a semicolon returns
+its original target binding, which must still be live at the end of the
+block. An explicit final expression can return a target reassembled from
+local owners.
+
 ```qli
 pub unitary fn select_bit(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
     qif(s, q) { 0 => h, 1 => { let r = h(q); phase[1,1](r) } }
+}
+
+pub unitary fn select_exclusive(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    qif(s, q) { 0 => { h(excl q); h(excl q); }, 1 => { h(excl q); } }
 }
 ```
 
