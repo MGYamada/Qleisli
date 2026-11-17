@@ -224,6 +224,9 @@ QMATCH_V5_PROOF = {
         'and the exact QDV comparison. CheckedQmatchV5.check_binding binds the actual source-context '
         'read and description to the complete compared execution view. Original.covers and '
         'Original.root_safe retain the original duty queue and fresh Raw root in the bounded checker. '
+        'RuntimePureBody.readInlineArm checks the written arm and its actual Raw body in the original '
+        'target frame. RuntimePureBody.selectionNode compares both arm forms against the exact controlled '
+        'action and caller Raw sector. '
         'The sourceScope field requires checked selections, a basis event, or a discharged application. '
         'Rust retains the compared runtime request and uses it for recheck.'),
     'gaps': (
@@ -442,6 +445,8 @@ PATHS = {
         ('src/interchange/execution_view/finite/qmatch_v5.rs', ['graph.write(&mut writer)?',
             'source(&mut view, &request.source)?', 'runtime(&mut view, &request.runtime)?',
             'context(&mut view, &request.context)?']),
+        ('src/interchange/qmatch/context.rs', ['pub struct InlineBody', 'pub inline_bodies: Vec<InlineBody>',
+            'context.check_inline_anchors()?']),
         ('lean-kernel/Protocol/NativeContext.lean', ['| .qmatchSourceV5 => CheckedQmatchV5.run']),
         ('lean-kernel/Protocol/ExecutionView/CheckedQmatchV5.lean', ['Protocol.Qirf.readAll body',
             'Protocol.QmatchV5.readRequest requestBytes', 'RuntimeBodyOperations.prepare artifact.val.1',
@@ -466,7 +471,10 @@ PATHS = {
             ['SourceRuntimeTrace.readComputedSource event', 'emitted.val.matrix = prepared.action.matrix']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimePureBody.lean',
             ['RuntimeComputedUse.read prepared interval before',
-             'RuntimeCertifiedComputed.read prepared interval before']),
+             'RuntimeCertifiedComputed.read prepared interval before',
+             'def readInlineArm ', 'RuntimeBodyQueries.foldMixedArms execution.queries position table',
+             'guard (actual.logical == logical) .equation',
+             'NominalSector.checkLogicals inputCode.val outputCode.val restriction.val.sectors']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeCertifiedComputed.lean',
             ['SourceRuntimeTrace.readComputedSource event',
              'Raw.clean dependencies bits bits 1 literal.table literal.useSteps literal.logicalSteps',
@@ -487,6 +495,10 @@ PATHS = {
         ('src/frontend/compile/lower/mod.rs', ['if lower.nominal_basis_used == Some(true) && (qmatch.is_none() || runtime_inputs.is_none())',
             'eval_typed_basis(module, basis, &env, &mut nominal)?']),
     ], [('src/interchange/native/qmatch/tests.rs', 'v5_checks_the_original_context_and_refuses_a_divergent_view'),
+        ('src/interchange/qmatch/context.rs', 'inline_context_rejects_unused_duplicate_and_unordered_slots'),
+        ('tests/selected_runtime_execution.rs', 'coherent_block_arms_use_the_original_native_gate'),
+        ('tests/selected_runtime_execution.rs', 'coherent_block_arm_replays_excl_and_returns_the_original_binding'),
+        ('tests/selected_runtime_execution.rs', 'project_coherent_block_arm_preserves_relative_phase'),
         ('src/frontend/compile/lower/quantum_match/nominal/tests.rs', 'original_general_nested_meaning_proposal'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_wide_interfaces_in_separate_sectors'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_nominal_basis_rows_and_rejects_padding_leaks'),
@@ -1981,12 +1993,15 @@ PATHS['ordinary-acceptance']['source_bindings'].extend([
         'QuantumLabel::Variant(self.variant_value(name, self.pos))',
         'ExprKind::QuantumMatch',
     ]),
-    dict(path='src/frontend/ast.rs', markers=['pub struct QuantumMatchArm {', 'pub operation: StaticOp,']),
+    dict(path='src/frontend/ast.rs', markers=['pub enum CoherentArm {', 'Operation(StaticOp),',
+        'Block(Box<Block>),', 'pub struct QuantumMatchArm {', 'pub body: CoherentArm,']),
     dict(path='src/frontend/check/body/quantum_matching.rs', markers=[
         'fn qmatch_labels(',
         'fn qmatch(',
-        'self.qmatch_operation(&arm.operation, target_basis, selection.target.span, scope)?;',
-        'access(&operation, Access::Controlled, arm.operation.span)?',
+        'self.coherent_arm(&arm.body, &selection.target, target_basis, scope)?;',
+        'self.qmatch_operation(operation, basis, target.span, scope)?;',
+        'access(&checked, Access::Controlled, operation.span)',
+        'inline coherent arm body must be unitary',
         'self.obligation(span, ObligationKind::TransformedMeaning, scope)?',
     ]),
     dict(path='src/frontend/check/body/operations.rs', markers=[
@@ -2020,7 +2035,7 @@ PATHS['ordinary-acceptance']['tests'].extend([
     dict(path='src/frontend/parser/quantum_match_tests.rs',
          test='quantum_match_preserves_written_labels_operations_and_original_spans'),
     dict(path='src/frontend/parser/quantum_match_tests.rs',
-         test='convenience_patterns_and_dynamic_arm_bodies_are_not_silently_desugared'),
+         test='convenience_patterns_and_unbraced_dynamic_arms_are_rejected'),
     dict(path='src/frontend/check/body/quantum_matching/tests.rs',
          test='original_enum_identity_survives_aliases_and_rejects_alias_duplicates'),
     dict(path='src/frontend/check/body/quantum_matching/tests.rs',

@@ -150,7 +150,7 @@ records finish this bootstrap workflow at that point. Stale records and manual
 dispatches run the complete fresh verification and proposal generation below.
 Required ordinary CI retains its own executable checks and proof-lane policy.
 When regeneration is required, the runner compiles the
-native package from that checkout in a separate 15-minute preparation step and
+native package from that checkout in a separate 25-minute preparation step and
 retains the build log with its commit. The registry then checks the native
 build, compiles the mathematical package, audits both packages and runs its
 fresh kernel replay and schema export within its existing deadline.

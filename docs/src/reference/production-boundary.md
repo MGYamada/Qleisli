@@ -369,6 +369,11 @@ basis lift or computed interval earns the report
 original duties and retains pending positions belonging to other invocations.
 Checked selections use
 `finite-source-qmatch-context-v5`.
+For `qif` and `qmatch`, a written inline arm submits its original arm index,
+source positions and literal Raw body. Lean replays the original block in
+the isolated target frame and compares the resulting exact action with its
+controlled implementation and with the caller's Raw sector. Mixed named and
+inline arms use that same sector check.
 Nonstructural bodies and the full twelve-bit profile remain pending.
 A selected coherent arm can use an original classical Meaning helper with
 nominal intermediate values when the Meaning's ports are supported built-in
