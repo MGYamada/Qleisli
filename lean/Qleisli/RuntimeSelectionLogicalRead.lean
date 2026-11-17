@@ -9,19 +9,19 @@ open QleisliKernel QleisliKernel.Finite QleisliKernel.Qirf QleisliKernel.SourceT
 open RuntimePureBody
 open Semantics.Exact (Matrix)
 
-def FromArms {sources owner name offset selector target dependencies program block}
-    (table : QuantumArms.Table sources owner name offset selector target)
+def FromArms {sources owner name offset selector target dependencies program block Arm written armOrdinal}
+    (table : QuantumArms.TableWith sources owner name offset selector target Arm written armOrdinal)
     (produced : Fin table.arms.length → Matrix → Prop) :
     Node dependencies program block → Prop
   | .selection (selector := actualSelector) (target := actualTarget) _ _ _ _ _ _ _ labels expected .. =>
     actualSelector.basis = selector ∧ actualTarget.basis = target ∧
       labels = table.layout.labels ∧ Exact.ListRel
-      (fun ordinal logical => ∃ index, table.arms[index].label.ordinal = ordinal ∧ produced index logical)
+      (fun ordinal logical => ∃ index, armOrdinal table.arms[index] = ordinal ∧ produced index logical)
       (List.range table.layout.labels.length) expected
   | _ => False
 
-theorem FromArms.weaken {sources owner name offset selector target dependencies program block}
-    {table : QuantumArms.Table sources owner name offset selector target}
+theorem FromArms.weaken {sources owner name offset selector target dependencies program block Arm written armOrdinal}
+    {table : QuantumArms.TableWith sources owner name offset selector target Arm written armOrdinal}
     {first second : Fin table.arms.length → Matrix → Prop} {node : Node dependencies program block}
     (read : FromArms table first node)
     (implies : ∀ index matrix, first index matrix → second index matrix) :
@@ -30,10 +30,10 @@ theorem FromArms.weaken {sources owner name offset selector target dependencies 
   | selection _ _ _ _ _ _ _ labels expected _ _ _ _ =>
     have map (ordinals : List Nat) (matrices : List Matrix)
         (related : Exact.ListRel
-          (fun ordinal matrix => ∃ index, table.arms[index].label.ordinal = ordinal ∧ first index matrix)
+          (fun ordinal matrix => ∃ index, armOrdinal table.arms[index] = ordinal ∧ first index matrix)
           ordinals matrices) :
         Exact.ListRel
-          (fun ordinal matrix => ∃ index, table.arms[index].label.ordinal = ordinal ∧ second index matrix)
+          (fun ordinal matrix => ∃ index, armOrdinal table.arms[index] = ordinal ∧ second index matrix)
           ordinals matrices := by
       induction ordinals generalizing matrices with
       | nil => exact related
@@ -46,13 +46,13 @@ theorem FromArms.weaken {sources owner name offset selector target dependencies 
     exact ⟨read.1,read.2.1,read.2.2.1,map _ _ read.2.2.2⟩
   | _ => exact read
 
-theorem FromArms.at_ordinal {sources owner name offset selector target dependencies program block}
-    {table : QuantumArms.Table sources owner name offset selector target}
+theorem FromArms.at_ordinal {sources owner name offset selector target dependencies program block Arm written armOrdinal}
+    {table : QuantumArms.TableWith sources owner name offset selector target Arm written armOrdinal}
     {produced : Fin table.arms.length → Matrix → Prop} {node : Node dependencies program block}
     (read : FromArms table produced node) (ordinal : Fin table.layout.labels.length) :
     match node with
     | .selection _ _ _ _ _ _ _ _ expected .. =>
-      ∃ index matrix, table.arms[index].label.ordinal = ordinal.val ∧
+      ∃ index matrix, armOrdinal table.arms[index] = ordinal.val ∧
         expected[ordinal.val]? = some matrix ∧ produced index matrix
     | _ => False := by
   cases node with
@@ -123,22 +123,22 @@ private theorem map_relation {Item Value : Type} (step : Item → WorkM Value)
 
 /-- The logical table read by the literal sector checker is assembled from
 the original arm callbacks, in semantic selector order. -/
-theorem selectionNode_from_arms {α : Type} (artifact : Artifact)
+theorem selectionNode_from_arms {α Arm : Type} (artifact : Artifact)
     {dependencies program block start count roles}
     (interval : @RuntimeInterval.Checked dependencies program block start count)
     (frame : RuntimeOwnerMap.Checked roles interval.before)
     (owners : RuntimeOwnerTransition.Checked interval frame.bindings)
-    (selector target : RuntimeOwnerMap.Owner) {owner name offset}
-    (table : QuantumArms.Table artifact.sources owner name offset selector.basis target.basis)
+    (selector target : RuntimeOwnerMap.Owner) {owner name offset written armOrdinal}
+    (table : QuantumArms.TableWith artifact.sources owner name offset selector.basis target.basis Arm written armOrdinal)
     (site : RuntimeContextRequest.Site) (initial : α)
-    (realize : Fin table.arms.length →
-      QuantumArms.BoundArm artifact.sources owner selector.basis target.basis → α → WorkM (Matrix × α))
+    (realize : Fin table.arms.length → Arm → α → WorkM (Matrix × α))
     (produced : Fin table.arms.length → Matrix → Prop)
     (preserve : ∀ index before logical after work left,
       (realize index table.arms[index] before).run work = (.ok (logical,after),left) → produced index logical)
+    (structural : Arm → Bool)
     (result : Node dependencies program block × α)
     (checked : RuntimeInterval.Computed
-      (selectionNode artifact interval frame owners selector target table site initial realize) result) :
+      (selectionNode artifact interval frame owners selector target table site initial realize structural) result) :
     FromArms table produced result.1 := by
   obtain ⟨work,left,ran⟩ := checked
   unfold selectionNode at ran
@@ -162,7 +162,7 @@ theorem selectionNode_from_arms {α : Type} (artifact : Artifact)
   obtain ⟨sw,sl,slayout⟩ := selectorRead.property
   have layout := Option.some.inj ((FiniteCarrier.read_reference _ _ _ _ slayout).symm.trans table.selectorLayout)
   let Origin (ordinal : Nat) (logical : Matrix) : Prop :=
-    ∃ index, table.arms[index].label.ordinal = ordinal ∧ produced index logical
+    ∃ index, armOrdinal table.arms[index] = ordinal ∧ produced index logical
   let Valid (state : List (Nat × Matrix) × α) : Prop :=
     ∀ entry ∈ state.1, Origin entry.1 entry.2
   have valid : Valid (meanings,remaining) := by
@@ -239,7 +239,8 @@ theorem selectionNode_from_fold {artifact : Artifact}
   have stored : project final = values := by
     simpa only [empty,List.nil_append] using collected
   subst values
-  apply selectionNode_from_arms artifact interval frame owners selector target table site () _ _ _ result checked
+  apply selectionNode_from_arms artifact interval frame owners selector target table site () _ _ _
+    (fun _ => false) result checked
   intro index before matrix after work left read
   obtain ⟨_,budget,_,read⟩ := bind_success _ _ _ _ _ read
   obtain ⟨value,remaining,looked,read⟩ := bind_success _ _ _ _ _ read
