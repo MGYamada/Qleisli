@@ -32,6 +32,66 @@ theorem automatically discharges a guarantee in the constitutional ledger.
 Edition 2026 identifies the constitutional regime, independently of release
 and syntax compatibility.
 
+## Constitutional theorem boundary
+
+The following boundary applies to the current release candidate under
+[the adopted interpretations](../design/initial-interpretations.md) and
+[the single-verifier decision](https://github.com/MGYamada/Qleisli/issues/276).
+
+```text
+Source or external artifact, with its requested contract when present
+    |
+    v
+Elaboration or adaptation proposes artifact and evidence bytes
+    |
+    v
+------------ independent production acceptance boundary ------------
+Native Lean gate checks the actual bytes, profile and applicable evidence
+    |
+    v
+Accepted judgment binds the decoded artifact, contract and evidence
+    |
+    +--> QS  Independent semantics of the accepted artifact
+    +--> PR  Checked correspondence of an admitted target artifact
+    +--> RS  Checked bounds on accepted behavior and admitted realization
+```
+
+For ordinary QIRF the production judgment is successful
+`QleisliKernel.Protocol.ExecutionView.Native.ordinary` on the QLV3 payload at
+its requested scope, reached through `Protocol.NativeContext.run`. The
+`ordinary_original` theorem binds this judgment to
+`Protocol.Validity.Acceptance` for the original QLV1 packet. That witness
+identifies the decoded `Qirf.Artifact`, order and optional independent request,
+and the success of `Qirf.Validity.inspect` on those exact values. Execution
+also requires comparison of the retained view against Lean's decoded view.
+For other modes the table below identifies the specific judgment and checked
+representation. The two [admitted scoped guarantees](../design/initial-guarantees.md)
+concern ownership and classical scope of the original decoded ordinary root.
+
+Under the adopted interpretations, QS concerns the declared typing, ownership,
+effect and exact semantic contracts of the actual accepted object. PR concerns
+forward correspondence from that meaning to the actual admitted target
+artifact under its target and workspace premises. RS concerns finite, checked
+bounds for the accepted behavior and applicable realization under the stated
+resource model. Their broader proof obligations and the strict exactness
+obligations remain pending.
+
+Elaboration must preserve the specified source meaning for every claimed
+source scope. Its evidence links the original source and dependency contracts
+to the checked artifact, including its owners, ordered axes, effects and
+exact phase. A successful artifact check establishes the covered artifact
+properties. A preservation theorem or independent validation must establish
+the source correspondence separately. The same rule applies to an adapter
+claiming preservation of a foreign input or to a backend claiming
+preservation in emitted output.
+
+New source syntax can elaborate under the same edition whenever it preserves
+the adopted contracts. A replacement checked representation must carry the
+applicable current guarantees through justified semantic transport. Every
+frontend and backend claiming constitutional acceptance must use the applicable
+native gate and its current evidence. Missing evidence or a failed check
+rejects the claimed scope.
+
 ## Entrypoints and actual checked representations
 
 `native::Kernel` below means `interchange::native::Kernel`. Its ordinary
@@ -51,6 +111,7 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | `pure_leaf::check_pure` | QIRF root, separate domain/codomain type trees, ordered owner ports and exact rectangular matrix | `Kernel::check_pure_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.PureLeaf.check` | `pure_leaf_meaning` binds fresh graph/root checking to the original body and exact Gram identity. `pure_leaf_reference` preserves inner products for arbitrary joint reference amplitudes. This grants neither inverse nor control access, source/runtime correspondence, target realization or quantitative resource evidence. |
 | `Kernel::check_carrier`; explicit `Instantiation::check_carrier` source adapter | Original QIRF/dependencies, both ordered nominal owner forests, original declaration sources and an independent exact logical matrix | `--carrier-pure-check` → `ExecutionView.CheckedCarrier.run` → `Protocol.Carrier.check` → original source checks and `Qirf.Carrier.check` | The binding retains the original packet and exact QDV1 comparison; the core postcondition binds actual body/code and Gram equations. The source adapter adds retained-step replay, without ordinary runtime, inverse/control access or an AST-preservation theorem. |
 | `engineering_openqasm::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-openqasm3` | Literal canonical target bytes, original ideal/dependencies, exact Unit/Bit signatures, closed epsilon/majorants and the complete retained QDV1 view | `--engineering-openqasm-check` → `CheckedEngineeringOpenQasm.run` → independent byte decode and unchanged complete instrument checks | `NativeEngineeringOpenQasmProtocol.run_meaning` binds the literal target and original ideal to the actual checking execution. `run_complete_adjoint_bound` covers every finite reference. The private report is engineering-only, without an actual `AcceptedProgram`, source/export-preservation, pure/control, cleanup, hardware, resources or constitutional PR/RS claim. |
+| `engineering_openqasm_gate::compare_serialized_with_kernel` and `engineering compare-openqasm3-gate` | Literal OpenQASM gate definition, exact ideal slices and the requested sequential or controlled approximation with resource accounting | `--engineering-openqasm-gate-check` → `CheckedEngineeringOpenQasmGate.run` → `Protocol.EngineeringOpenQasmGate.checkRetained` and retained QDV1 comparison | `NativeEngineeringOpenQasmGate.sequential_reference_bound` and `controlled_reference_bound` bound the literal operator difference on arbitrary finite references. Report authority is limited to the checked engineering request. |
 | `hierarchical::Kernel::{inspect,inspect_native}` | Dedicated hierarchy payload and all required finite leaves | `--hierarchy-pending` → `Conditional.checkAll` and `HierarchicalFinite.checkLeaves` | `NativeHierarchy.conditional_derives` and `checkLeaves_semantics` bind structural derivation and finite meaning. Full analytic meaning-to-Operator composition remains open. |
 | `hierarchical::Kernel::{check_against,check_against_native}`, ordinary request branch | Hierarchy payload and composition request | `--hierarchy-request-pending` → `Root.checkAll`, `checkLeaves` and `checkPairs` | `NativeHierarchy.requested_pairs` and finite-leaf results retain their stated premises; a producer comparison request proves consistency, not source preservation. |
 | Selected pure hierarchy source with `ctrl` | One hierarchy composition, compared plan and each original call's replayed node index, ordered basis forest and control roles | `--hierarchy-control-pending` → `Root.checkAll`, finite leaves and pairs, and `HierarchicalFinite.checkControls` | `ControlAccess.check_bound` binds the native sector predicate to the executable action of the selected node. Source occurrence replay and the general source/resource correspondence have separate scopes. |
@@ -61,8 +122,8 @@ protocol reports are not ordinary `AcceptedProgram` handles.
 | Phase-word, phase DAG, layout, layout DAG and phase-layout file protocols | Separate component artifacts and requirements | `Cli.Finite` → `verify`, `Hierarchy.check`, `Layout.check`, `LayoutDag.check`, `PhaseLayout.check` | Existing phase/layout component results do not extend automatically to ordinary production programs. |
 | `Finite.check` / `checkAll`, `circuitMatrix`, `FiniteCodec.readMatrix` | Finite circuits, contracts or serialized matrices | Finite checking, evaluation or decoding, respectively | Finite component theorems have explicit inputs. Evaluation and decoding alone are not acceptance; composition with each actual production root is required. |
 
-`lean-kernel/Main.lean` dispatches nineteen explicitly versioned native modes,
-including four mechanically separate engineering-only comparisons.
+`lean-kernel/Main.lean` dispatches the explicitly versioned native modes,
+including mechanically separate engineering comparisons.
 `lean-kernel/Cli/NativeContext.lean` invokes the pure
 `Protocol.NativeContext.run` dispatcher and its single reply projection. It
 checks the original QLV3 edition and compiled product before applying each
@@ -1193,16 +1254,15 @@ accepted handles.
 
 `tests/fixtures/verification_v029/coverage.json.xz` separates current implementation,
 published 0.2.9 validation, unpublished development and open proof obligations.
-It retains 46 coverage groups, 25 boundary entry lists, current constructor
-variants and the 19 RawOp variants. The original groups and boundary lists are
-preserved; engineering-only comparisons and the check-only nominal carrier
-component have distinct classifications. There are 30 classified paths.
+It records the current coverage groups, boundary entry lists, constructor
+variants and classified paths. Engineering comparisons and the check-only
+nominal carrier component have distinct classifications.
 Mixed boundary rows refer to individually
 classified paths; a public surface containing a constructor or `doc` is not
 counted wholesale as native acceptance.
 
 `scripts/check_production_coverage.py` checks the reviewed public surface,
-complete path classifications, all fourteen native modes and dispatch targets,
+complete path classifications, all native modes and dispatch targets,
 named source/declaration bindings and existing regression functions. It fails
 on an omitted route, a newly exposed boundary, changed dispatch, missing binding
 or a proposal misclassified as acceptance. The native-contract proof scope also

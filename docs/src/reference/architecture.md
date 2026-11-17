@@ -77,7 +77,8 @@ successful or advertising an unproved scope as constitutionally certified.
 The language and ecosystem are the executable surface of these constraints.
 Parsing, name resolution, type/effect/ownership preparation, evidence generation
 and lowering apply the authorized contracts. Native Lean checking supplies new
-semantic accepted handles under the [production boundary](production-boundary.md).
+semantic accepted handles under the
+[constitutional theorem boundary](production-boundary.md#constitutional-theorem-boundary).
 Rust proposals, authored source and external IR all remain subject to the
 applicable independent checks. Native absence, incompatibility or failure rejects
 without fallback to another acceptance authority.

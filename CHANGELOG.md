@@ -4,6 +4,10 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Document the diagnostic categories, structured output and source recovery
+  contract in the Language Reference (#225).
+- Document the constitutional theorem boundary, its actual ordinary native
+  judgment and the separate source-preservation obligation (#136).
 - Add opt-in `run --show-exact-zeros` annotations for bounded terminal
   distributions, including `LiftBasis` initialization and ordered readout.
   Keep numerical values, JSON and sampling unchanged (#133).
