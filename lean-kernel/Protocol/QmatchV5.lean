@@ -188,12 +188,11 @@ private def anchoredInlineBodies (sites : List Site)
       | (parent,armIndex,_) :: rest => if parent == site.position && armIndex == index then rest else pending
       | [] => []) pending) inline).isEmpty
 
-private def readInlineBodies (readChild : Json → WorkM Context) (enabled : Bool) (sites : List Site)
+private def readInlineBodies (readChild : Json → WorkM Context) (sites : List Site)
     (value : Json) : WorkM (List (Qirf.SourceSequence.Position × Nat × Context)) := do
   match field value "inline_bodies" with
   | .error _ => return []
   | .ok value =>
-    guard enabled .request
     let bodies ← adapt value.getArr?
     guard (!bodies.isEmpty) .request
     exactWork (Exact.charge (16*(sites.length^2+(sites.map (·.arms.length)).sum+bodies.size+1)))
@@ -207,7 +206,7 @@ private def readInlineBodies (readChild : Json → WorkM Context) (enabled : Boo
     guard (anchoredInlineBodies sites inline) .request
     return inline
 
-private def context (inlineEnabled : Bool) : Nat → Json → WorkM Context :=
+private def context : Nat → Json → WorkM Context :=
   Nat.rec (fun _ => throw .limit) (fun _ readChild value => do
     let positions ← adapt ((← adapt (field value "positions")).getArr?)
     let sites ← adapt ((← adapt (field value "sites")).getArr?)
@@ -244,14 +243,14 @@ private def context (inlineEnabled : Bool) : Nat → Json → WorkM Context :=
     let staticIntervals ← readStaticIntervals value
     unless staticIntervals.isEmpty do
       guard (anchoredStatics positions staticIntervals) .request
-    let inline ← readInlineBodies readChild inlineEnabled sites value
+    let inline ← readInlineBodies readChild sites value
     return .withReferences positions sites calls branches bodies references staticIntervals inline)
 
 /-- Inspect a context's transport structure. Actual source arm kind, source
 order and the corresponding Raw subject remain obligations of the native check. -/
 def inspectContext (value : Json) : WorkM Context := do
   adapt (contextFields value)
-  context true 129 value
+  context 129 value
 
 /-- The profile is determined by sites in the compared runtime context.
 Provider evidence bodies do not supply a root selection occurrence. -/
@@ -291,9 +290,7 @@ def decode (value : Json) : WorkM Request := do
     ((source.arguments.naturals ++ runtime.staticArguments.naturals).map fun (name,_) => name.utf8ByteSize).sum
   exactWork (Exact.charge (16*(names+Raw.OwnerFlow.fields
     ((source.arguments.bases ++ runtime.staticArguments.bases).map fun (_,basis) => ⟨0,basis⟩)+1)))
-  -- Keep the native gate closed until every inline body is consumed by the
-  -- source-indexed runtime plan and the exact Raw check.
-  let body ← context false 129 value
+  let body ← context 129 value
   let hasSelection ← usesSelection 129 body
   let scope ← if hasSelection then pure profile else do
     pure (if ← hasMeaningGroup 129 body then meaningProfile else basisProfile)

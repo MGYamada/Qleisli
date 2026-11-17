@@ -44,6 +44,74 @@ fn selected_at(source: &str, entry: &str) -> qleisli::frontend::compile::Selecte
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn coherent_block_arms_use_the_original_native_gate() {
+    let binary = r#"#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>h,1=>{let r=h(q);phase[1,1](r)}}
+}"#;
+    let nominal = r#"#![no_implicit_prelude]
+pub enum Tag { A, B }
+pub unitary fn route(s:Q<Tag>,q:Q<(Unit,Bit)>)->(Q<Tag>,Q<(Unit,Bit)>){
+    qmatch(s,q){Tag::B=>{let (u,b)=split(q);join(u,h(b))},Tag::A=>{q}}
+}"#;
+    for source in [binary, nominal] {
+        let accepted = selected_at(source, "main::route");
+        let program = accepted.program();
+        assert!(program.qmatch_source_checked());
+        let raw = program.raw();
+        assert_eq!(raw.quantum_inputs.len(), 2);
+        assert_eq!(raw.quantum_outputs.len(), 2);
+        assert_eq!(raw.declared_effect, qleisli::ir::Effect::Unitary);
+        kernel().check_program(program).unwrap();
+        let mut request =
+            qleisli::interchange::qmatch::v5::Request::decode(program.request().unwrap()).unwrap();
+        let position = request
+            .context
+            .inline_bodies
+            .iter_mut()
+            .find_map(|arm| arm.body.positions.first_mut())
+            .expect("original primitive position within an inline arm");
+        position.offset += 1;
+        let error = kernel()
+            .check_qmatch_source_v5(program.artifact(), &request.encode().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_coherent_block_arm_preserves_relative_phase() {
+    let source = r#"#![no_implicit_prelude]
+unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>idle,1=>{phase[1,1](q)}}
+}
+observe fn main()->Bit{
+    let s=h(basis unit(()) as _ {0});
+    let q=basis unit(()) as _ {1};
+    let (s,q)=route(s,q);
+    discard(q);
+    measure_z(h(s))
+}"#;
+    let program = compile_project(&SourceRoot::new(source).0).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-qmatch-context-v5")
+    );
+    let values = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert!((values[&vec![true]] - 1.0).abs() < 1e-12);
+    assert!(values.get(&vec![false]).copied().unwrap_or(0.0) < 1e-12);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn width_parameterized_predicate_has_one_original_circuit_and_ordinary_definition() {
     use qleisli::ir::RawOp;
 

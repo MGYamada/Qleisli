@@ -215,6 +215,7 @@ impl Checker<'_, '_> {
         self.program
             .budget
             .charge(block.span, region.storage_cells() + 1)?;
+        self.program.inline_coherent_bodies.insert(self.definition);
         self.effects.merge(&region);
         self.program.unitary_regions.push((
             self.definition,

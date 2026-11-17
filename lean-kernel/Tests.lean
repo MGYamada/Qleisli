@@ -2155,6 +2155,6 @@ private def nativePreparation (slots : Option (Array Json)) : WorkM Protocol.Qma
     ("profile",.str Protocol.QmatchV5.profile),("source",source),("runtime",runtime)])
 
 #guard ((nativePreparation none).run 1000000).1.isOk
-#guard ((nativePreparation (some #[inlineSlot 20 1 63])).run 1000000).1 matches .error .request
+#guard ((nativePreparation (some #[inlineSlot 20 1 63])).run 1000000).1.isOk
 
 end QleisliKernel.Tests.InlineBodyTransport

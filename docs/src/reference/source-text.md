@@ -160,10 +160,10 @@ The coherent exact-label form has the separate checking and execution limits bel
 
 ## Exact-label coherent selection
 
-`qmatch(selector, target) { label => operation, ... }` selects a coherent
-operation without measuring its selector. Each arm names one resolved static
-operation; it is not an ordinary expression or block. Labels may be written in
-any order, but must cover the selector's logical basis exactly once. Wildcards,
+`qmatch(selector, target) { label => arm, ... }` selects a coherent operation
+without measuring its selector. An arm is a resolved static operation or an
+inline block. Labels may be written in any order, but must cover the selector's
+logical basis exactly once. Wildcards,
 ranges, payloads, guards and dynamic arm calls are outside this form.
 
 Common preparation requires one `Q<A>` selector and one distinct `Q<B>` target,
@@ -179,6 +179,19 @@ Controlled access under the existing operation rules. A generic earlier arm,
 a constant selector or an unused declaration cannot skip a later arm's type,
 effect, access or dependency obligations. Unitarity alone grants neither
 control nor inverse access. All arm phases remain exact.
+
+A block arm binds to the written target name and must return one owner of its
+exact quantum type. Other quantum and ordinary runtime owners from the enclosing
+scope are unavailable in the block. The producer submits the literal arm Raw
+and positions of events within the original block. The native v5 check follows
+those events in the arm Raw, checks control evidence for their operations, and
+checks the resulting sector against the enclosing Raw interval.
+
+```qli
+pub unitary fn select_bit(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    qif(s, q) { 0 => h, 1 => { let r = h(q); phase[1,1](r) } }
+}
+```
 
 If arm `s` denotes the exact operator `U_s`, the operation maps each basis
 vector `|s,y>` to `sum_z U_s[z,y] |s,z>` and extends linearly to every input,

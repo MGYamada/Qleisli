@@ -185,8 +185,8 @@ impl Lowerer<'_, '_> {
             self.error(
                 module,
                 arm.span(),
-                ErrorCode::Unsupported,
-                "inline coherent arm awaits independent controlled-body checking",
+                ErrorCode::InvalidIr,
+                "inline coherent arm reached lowering without its original-body gate",
             )
         })
     }
@@ -201,9 +201,31 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         let selector = self.expr(module, control, env)?;
-        self.quantum(module, control.span, &selector, true)?;
+        let selector_slot = self.quantum(module, control.span, &selector, true)?;
         let value = self.expr(module, target, env)?;
         let slot = self.quantum(module, target.span, &value, false)?;
+        if bodies
+            .iter()
+            .any(|arm| matches!(arm, CoherentArm::Block(_)))
+        {
+            let labels = [QuantumLabel::Ordinal(0), QuantumLabel::Ordinal(1)];
+            return nominal::emit(
+                self,
+                module,
+                span,
+                span.start,
+                target,
+                labels
+                    .iter()
+                    .zip(bodies)
+                    .map(|(label, arm)| (label, arm, arm.span())),
+                env,
+                selector,
+                selector_slot,
+                value,
+                slot,
+            );
+        }
         let basis = self.raw.registers[&slot].basis.clone();
         let width = self.circuit_width(module, span, &basis)?;
         let record_source = self.uses_qmatch_v5() && self.nominal_qmatch.is_some();
@@ -298,6 +320,10 @@ impl Lowerer<'_, '_> {
             .nominal_qmatch
             .as_ref()
             .is_some_and(nominal::Frame::requires_source_gate)
+            || selection
+                .arms
+                .iter()
+                .any(|arm| matches!(&arm.body, CoherentArm::Block(_)))
             || selector_basis.basis_bits().is_none()
             || self.raw.registers[&target_slot]
                 .basis
@@ -308,7 +334,12 @@ impl Lowerer<'_, '_> {
                 self,
                 module,
                 span,
-                selection,
+                selection.keyword.start,
+                &selection.target,
+                selection
+                    .arms
+                    .iter()
+                    .map(|arm| (&arm.label, &arm.body, arm.span)),
                 env,
                 selector,
                 selector_slot,

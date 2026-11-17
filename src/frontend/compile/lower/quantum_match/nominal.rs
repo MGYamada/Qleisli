@@ -5,7 +5,7 @@ use super::*;
 use crate::frontend::types::nominal::Body;
 use crate::interchange::carrier::{Interface, Owner};
 use crate::interchange::qmatch::{
-    ArmSubject, ContextSubject, Position, SelectionBody, SelectionSubject, SourceSite,
+    ArmBody, ArmSubject, ContextSubject, Position, SelectionBody, SelectionSubject, SourceSite,
     StaticInterval, WorkspaceInterval,
 };
 
@@ -776,6 +776,13 @@ pub(in crate::frontend::compile::lower) fn retain_checked_calls(
         for (_, then_body, else_body) in &context.branches {
             pending.extend([then_body.as_ref(), else_body.as_ref()]);
         }
+        for selection in &context.selections {
+            compiler.charge(module, span, selection.arms.len() + 1)?;
+            pending.extend(selection.arms.iter().filter_map(|arm| match &arm.body {
+                ArmBody::Inline { context, .. } => Some(context.as_ref()),
+                _ => None,
+            }));
+        }
     }
     Ok(())
 }
@@ -1026,11 +1033,13 @@ fn controlled(steps: Vec<CircuitStep>, bits: usize) -> RawProgram {
 }
 
 #[allow(clippy::too_many_arguments)]
-pub(super) fn emit(
+pub(super) fn emit<'a>(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
     span: Span,
-    selection: &QuantumMatch,
+    offset: usize,
+    target_expression: &Expr,
+    written_arms: impl IntoIterator<Item = (&'a QuantumLabel, &'a CoherentArm, Span)>,
     env: &mut Env,
     selector: Value,
     selector_slot: Slot,
@@ -1104,8 +1113,8 @@ pub(super) fn emit(
     let mut seen = BTreeSet::new();
     let mut steps = Vec::new();
     let mut arms = Vec::new();
-    for arm in &selection.arms {
-        let (label_basis, ordinal) = match (&basis.kind, &arm.label) {
+    for (label, arm, arm_span) in written_arms {
+        let (label_basis, ordinal) = match (&basis.kind, label) {
             (Kind::Nominal(_), QuantumLabel::Variant(label)) => {
                 lower.compiler.enum_label(module, label)?
             }
@@ -1115,7 +1124,7 @@ pub(super) fn emit(
             _ => {
                 return Err(lower.error(
                     module,
-                    arm.span,
+                    arm_span,
                     ErrorCode::TypeMismatch,
                     "qmatch requires labels from the exact original selector type",
                 ));
@@ -1124,34 +1133,47 @@ pub(super) fn emit(
         if label_basis != basis || ordinal >= count || !seen.insert(ordinal) {
             return Err(lower.error(
                 module,
-                arm.span,
+                arm_span,
                 ErrorCode::TypeMismatch,
                 "qmatch labels must cover the exact selector declaration once",
             ));
         }
-        let static_arm = lower.require_static_arm(module, &arm.body)?;
-        let (subject, mut body, original) = arms::prepare(
-            lower,
-            module,
-            static_arm,
-            &target_basis,
-            target_bits,
-            env,
-            selection.target.span,
-        )?;
+        let (subject, mut body) = match arm {
+            CoherentArm::Block(block) => arms::inline_arm(
+                lower,
+                module,
+                block,
+                target_expression,
+                &target_basis,
+                target_bits,
+            )?,
+            CoherentArm::Operation(operation) => {
+                let (body, steps, original) = arms::prepare(
+                    lower,
+                    module,
+                    operation,
+                    &target_basis,
+                    target_bits,
+                    env,
+                    target_expression.span,
+                )?;
+                let subject = ArmSubject {
+                    body,
+                    controlled: controlled(steps.clone(), target_bits),
+                    operation: Some(original),
+                };
+                (subject, steps)
+            }
+        };
         lower.compiler.charge(
             module,
             span,
             total_size(body.iter().map(super::super::super::circuit::size)).saturating_mul(2)
                 + body.len() * (selector_bits + 1),
         )?;
-        arms.push(ArmSubject {
-            body: subject,
-            controlled: controlled(body.clone(), target_bits),
-            operation: Some(original),
-        });
+        arms.push(subject);
         lift_arm(&mut body, selector_bits, target_bits, ordinal, true)
-            .map_err(|e| lower.compiler.op_error(module, arm.span, e))?;
+            .map_err(|e| lower.compiler.op_error(module, arm_span, e))?;
         if steps.len().saturating_add(body.len()) > crate::contract::MAX_CONTRACT_STEPS {
             return Err(lower.error(
                 module,
@@ -1170,15 +1192,7 @@ pub(super) fn emit(
             "qmatch requires every exact enum label",
         ));
     }
-    apply_selection(
-        lower,
-        module,
-        span,
-        selection.keyword.start,
-        [selector, target],
-        steps,
-        arms,
-    )
+    apply_selection(lower, module, span, offset, [selector, target], steps, arms)
 }
 
 /// Retain the same original source event and literal interval for each lowering profile.
@@ -1217,6 +1231,13 @@ pub(super) fn apply_selection(
     for original in arms.iter().filter_map(|arm| arm.operation.as_ref()) {
         for body in original.original_contexts() {
             frame.include_qmatch_profile(body);
+        }
+    }
+    for arm in &arms {
+        if let ArmBody::Inline { context, .. } = &arm.body {
+            frame.require_qmatch_v5();
+            frame.contains_meaning_applications |= context.contains_meaning_applications;
+            frame.include_qmatch_profile(context);
         }
     }
     frame.selections.push(Selection {
