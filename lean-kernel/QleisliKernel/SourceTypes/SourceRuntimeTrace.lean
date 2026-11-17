@@ -821,6 +821,72 @@ def read (sources : Sources) (owner name : String) (arguments : StaticTypes.Argu
     Finite.WorkM (Checked sources owner name) := do
   readWithSignature (← readSignature sources owner name arguments)
 
+private def inlineFrame {parsed : QuantumMatch.Parsed} {index : Fin parsed.arms.length}
+    (arm : SourceSyntax.InlineArm parsed index) (target : Semantics.SourceOwners.Owner) : Environment :=
+  [⟨arm.targetName,[.owner target],.coherentArmTarget arm.block.opening.span.startByte⟩]
+
+structure InlineArmBody {sources owner name} {signature : Signature sources owner name}
+    (body : Body signature) (site : Fin body.checked.events.length) (index : Nat) where
+  tokens : List LocatedToken
+  parsed : QuantumMatch.Parsed
+  original : QuantumMatch.parse tokens = .ok (parsed,[])
+  selector : Semantics.SourceOwners.Owner
+  target : Semantics.SourceOwners.Owner
+  scope : List String
+  naturals : PhaseApplication.Naturals sources
+  held : List Semantics.SourceOwners.Owner
+  remaining : Environment
+  selected : body.checked.events[site] = .selection tokens parsed original selector target scope naturals held remaining
+  armIndex : index < parsed.arms.length
+  arm : SourceSyntax.InlineArm parsed ⟨index,armIndex⟩
+  result : Outcome sources owner (inlineFrame arm target)
+  output : Semantics.SourceOwners.Owner
+  outputValue : result.value = [.owner output]
+  outputType : output.basis = target.basis
+  complete : owners result.remaining = []
+  allocated : result.allocated.map (·.ordinal) = (List.range result.allocated.length).map (body.checked.summary.nextOrdinal+·)
+  nextOrdinal : result.nextOrdinal = body.checked.summary.nextOrdinal+result.allocated.length
+  unitary : inferredEffect result.events = .unitary
+  calls : arm.tree.calls = .ok (result.events.flatMap Event.callOffsets)
+  selections : result.events.flatMap Event.qmatchOffsets = QuantumSequence.originalOffsets arm.block.body
+
+/-- Re-evaluate a written arm of an actual selection event under its original
+static context and isolated target frame. Other live owners remain held.
+The returned source trace supplies the arm-body obligation to the IR gate. -/
+def readInlineArmBody {sources owner name} {signature : Signature sources owner name}
+    (body : Body signature) (site : Fin body.checked.events.length) (index : Nat) :
+    Finite.WorkM (InlineArmBody body site index) := do
+  match selected : body.checked.events[site] with
+  | .selection tokens parsed original selector target scope naturals held remaining =>
+    if armIndex : index < parsed.arms.length then
+      let written := parsed.arms[index]
+      Finite.exactWork (Exact.charge (SourceTrace.Meter.syntaxWork written.operation))
+      let arm ← adapt (SourceSyntax.readInlineArm parsed ⟨index,armIndex⟩)
+      let summary := body.checked.summary
+      let reference := selector :: held ++ owners remaining
+      Finite.guard (target.ordinal < summary.nextOrdinal &&
+        reference.all (fun owner => owner.ordinal < summary.nextOrdinal && owner.ordinal != target.ordinal)) .request
+      let (result,_) ← evalWithReader body.checked.signature summary.generic summary.basis summary.computed
+        (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
+          [callFrame body.checked.signature] callee).summary)
+        (arm.block.body.length+1) naturals reference scope summary.nextOrdinal (inlineFrame arm target) arm.tree {}
+      match outputValue : result.value, originalCalls : arm.tree.calls with
+      | [.owner output], .ok offsets =>
+        if checked : output.basis = target.basis ∧ owners result.remaining = [] ∧
+            result.allocated.map (·.ordinal) = (List.range result.allocated.length).map (summary.nextOrdinal+·) ∧
+            result.nextOrdinal = summary.nextOrdinal+result.allocated.length ∧
+            inferredEffect result.events = .unitary ∧
+            offsets = result.events.flatMap Event.callOffsets ∧
+            result.events.flatMap Event.qmatchOffsets = QuantumSequence.originalOffsets arm.block.body then
+          let ⟨outputType,complete,allocated,nextOrdinal,unitary,calls,selections⟩ := checked
+          return ⟨tokens,parsed,original,selector,target,scope,naturals,held,remaining,selected,
+            armIndex,arm,result,output,outputValue,outputType,complete,allocated,nextOrdinal,unitary,
+            originalCalls.trans (congrArg Except.ok calls),selections⟩
+        else throw .request
+      | _,_ => throw .request
+    else throw .request
+  | _ => throw .request
+
 /-- A native continuation must freshly recover each original callee, using this
 same reader and its own nested source coordinates. No flattened event list or
 caller-supplied history can stand in for that independent traversal. -/

@@ -49,6 +49,7 @@ inductive BindingOrigin where
   | computedAuxiliary (offset : Nat)
   | workspaceData (offset : Nat)
   | workspaceScratch (offset : Nat)
+  | coherentArmTarget (offset : Nat)
   deriving BEq, DecidableEq, Repr
 
 structure Cell where
