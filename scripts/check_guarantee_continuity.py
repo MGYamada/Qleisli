@@ -334,7 +334,7 @@ def replay(root, binding, revision, archive):
 # The existing identity and Basis profiles retain their original checks.
 RAW_FORMAT = "qleisli.current-artifact-raw-basis-transport"
 RAW_EXTRACTOR = f"{FIXTURE}/RawExtract.lean"
-RAW_EXTRACTOR_SHA256 = "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
+RAW_EXTRACTOR_SHA256 = "451005a53ca4e5879d8c434fe037559d2d9791cb8f72e93d47e045eb32bde525"
 RAW_ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{RAW_EXTRACTOR}"]
 RAW_REVIEW = f"{FIXTURE}/RawTransportReview.lean"
 RAW_REVIEW_SHA256 = "4e31a7e5c330f69461b06172bcf13987748e55234f79c318d8db55287cecadd4"
