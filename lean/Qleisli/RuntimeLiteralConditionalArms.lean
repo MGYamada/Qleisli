@@ -130,18 +130,18 @@ theorem conditional_arms {artifact root mode fuel program block step}
     ConditionalArms (runBlockCore artifact root mode fuel) step := by
   cases call with
   | @checked offset rootOwner rootName caller name path event source sameName actual actualRead
-      leftRequest rightRequest leftPlan rightPlan before ordinary left right leftReceipts rightReceipts
+      leftRequest rightRequest controlled leftPlan rightPlan before ordinary left right leftReceipts rightReceipts
       action beforeThen afterThen afterElse afterJoin thenRead elseRead joinRead =>
     intro trace
     constructor
     · simpa only [stepList_ofList] using
         checked_arm (mode := mode) (fuel := fuel) (block := actual.thenBlock)
-          (.arm event sameName source.bodies source.original true) path leftRequest leftPlan before ordinary
+          (.arm event sameName source.bodies source.original true controlled) path leftRequest leftPlan before ordinary
           (left,leftReceipts) ⟨beforeThen,afterThen,thenRead⟩ action.thenFrame action.thenMap
           (parent := actual.interval.before) rfl rfl (fun _ found => found) actual.thenRead trace.leftRead
     · simpa only [stepList_ofList] using
         checked_arm (mode := mode) (fuel := fuel) (block := actual.elseBlock)
-          (.arm event sameName source.bodies source.original false) path rightRequest rightPlan before ordinary
+          (.arm event sameName source.bodies source.original false controlled) path rightRequest rightPlan before ordinary
           (right,rightReceipts) ⟨afterThen,afterElse,elseRead⟩ action.elseFrame action.elseMap
           (parent := actual.interval.before) rfl rfl (else_keeps_issued actual) actual.elseRead trace.rightRead
 

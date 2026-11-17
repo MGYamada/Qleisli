@@ -186,7 +186,8 @@ theorem original_pure_step_refines {artifact : Artifact} {root : Validity.Root}
     (body : SourceTypes.SourceRuntimeTrace.Body event.target.signature)
     (bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body)
     {rootOwner rootName} (parent : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName caller event.target.callerName)
-    (request : RuntimeContextRequest.Context) (plan : mode.queries.BodyData (.whole body) request)
+    {controlled : Bool} (request : RuntimeContextRequest.Context)
+    (plan : mode.queries.BodyData (.whole body controlled) request)
     {assigned : RuntimeOwnerMap.Map}
     {result : RuntimePureBody.BlockResult root.dependencies scope.program scope.prepared.block}
     {receipts : List mode.Receipt}
@@ -197,7 +198,7 @@ theorem original_pure_step_refines {artifact : Artifact} {root : Validity.Root}
       ((scope.selected.zip event.inputOwners).map fun (port,role) =>
         (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner))) assigned)
     (childRead : RuntimeInterval.Computed
-      (runBlockCore artifact root mode (fuel+1) .pureBody .localScope (.whole body)
+      (runBlockCore artifact root mode (fuel+1) .pureBody .localScope (.whole body controlled)
         (.named event body bodyRead parent) scope.program request plan
         ⟨assigned,(SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles,body.checked.summary.nextOwner⟩
         {} scope.prepared.block) (result,receipts))
@@ -212,7 +213,7 @@ theorem original_pure_step_refines {artifact : Artifact} {root : Validity.Root}
   obtain ⟨entry,entryRead,last,flow,returned,sameOrdinary⟩ :=
     Qleisli.RuntimeNamedChildRuns.step_flow_mode artifact root mode (runBlockCore artifact root mode fuel)
       .pureBody .localScope (Qleisli.RuntimeNamedChildRuns.core_pure_preserves_ordinary artifact root mode fuel)
-      (.whole body) (.named event body bodyRead parent) scope.program request plan _ {} scope.prepared.block
+      (.whole body controlled) (.named event body bodyRead parent) scope.program request plan _ {} scope.prepared.block
       (result,receipts) childRead
   have ordinaryEq : result.ordinary = ({} : RuntimeOrdinaryBody.State) := (sameOrdinary.pure rfl).ordinary
   let original : @OriginalChildFlow artifact root mode fuel origin _ _ _ body assigned result.history
@@ -313,7 +314,7 @@ theorem pure_named_successor {artifact : Artifact} {root : Validity.Root}
             List.Forall₂ (Qleisli.RuntimeCallHistory.SourceAgreementWithin (some (· = {})) inherited inputs
               (nodeSpan node).checked.after ownerAfter ordinaryAfter) expectedOutputs outputs) := by
   cases call with
-  | @named start count args caller before event scope body bodyRead rootOwner rootName parent request plan
+  | @named start count args caller before event scope body bodyRead rootOwner rootName parent controlled request plan
       assigned result receipts boundary beforeInput afterInput afterChild unitary inputRead childRead rootRead =>
     intro ownerBefore ownerAfter ordinaryBefore ordinaryAfter owners ordinary chunk read
     refine WithChunkWriteBound.of_trace ?_
@@ -329,7 +330,7 @@ theorem pure_named_successor {artifact : Artifact} {root : Validity.Root}
     obtain ⟨_,_,_,_,_,facts⟩ := Qleisli.RuntimeNamedChildRuns.step_flow_mode artifact root mode
       (runBlockCore artifact root mode fuel) .pureBody .localScope
       (Qleisli.RuntimeNamedChildRuns.core_pure_preserves_ordinary artifact root mode fuel)
-      (.whole body) (.named event body bodyRead parent) scope.program request plan _ {} scope.prepared.block
+      (.whole body controlled) (.named event body bodyRead parent) scope.program request plan _ {} scope.prepared.block
       (result,receipts) actualRead
     have literal : result.steps = result.actions.map Step.pure := (facts.pure rfl).literal
     obtain ⟨law,shape,allPure,calls⟩ := original_pure_step_refines (mode := mode) (fuel := fuel)

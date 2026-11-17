@@ -122,10 +122,10 @@ theorem actual_named_entry {artifact root execution fuel program block step}
     NamedEntry step := by
   cases call with
   | @named start count inputs caller before ordinary event scope body bodyRead
-      rootOwner rootName path request plan assigned result receipts boundary
+      rootOwner rootName path controlled request plan assigned result receipts boundary
       beforeInput afterInput afterChild inputRead childRead =>
     obtain ⟨input,inputOrdered,_,_,_⟩ := core_flow artifact root execution fuel
-      .localScope (.whole body) path scope.program request plan _ scope.visible.ssa
+      .localScope (.whole body controlled) path scope.program request plan _ scope.visible.ssa
       scope.prepared.block (result,receipts) ⟨afterInput,afterChild,childRead⟩
     have read : RuntimeInterval.Computed _ assigned := ⟨beforeInput,afterInput,inputRead⟩
     exact named_entry_of_bindings input read inputOrdered

@@ -33,7 +33,7 @@ private theorem named_primitive_ordinary {artifact root execution fuel program b
     NamedPrimitiveOrdinary step := by
   cases call with
   | @named start count inputs caller before ordinary event scope body bodyRead
-      rootOwner rootName path request plan assigned result receipts boundary beforeInput afterInput afterChild inputRead childRead =>
+      rootOwner rootName path controlled request plan assigned result receipts boundary beforeInput afterInput afterChild inputRead childRead =>
     cases emitted : result.steps with
     | nil => trivial
     | cons first rest =>
@@ -49,7 +49,7 @@ private theorem named_primitive_ordinary {artifact root execution fuel program b
           case primitive action binding =>
             simp only [NamedPrimitiveOrdinary,RuntimePureBody.Steps.ofList,List.foldr_cons,List.foldr_nil]
             obtain ⟨_,_,_,flow,_⟩ := RuntimeNamedChildRuns.core_flow artifact root execution fuel
-              .localScope (.whole body) path scope.program request plan _ scope.visible.ssa
+              .localScope (.whole body controlled) path scope.program request plan _ scope.visible.ssa
               scope.prepared.block (result,receipts) ⟨afterInput,afterChild,childRead⟩
             have values := flow.ordinary
             change RuntimeNamedChildRuns.OrdinaryRun scope.visible.ssa result.steps result.ordinary at values

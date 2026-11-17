@@ -359,11 +359,11 @@ theorem actual_named_source_traversal {artifact root mode fuel origin program bl
     NamedSourceTraversal (artifact := artifact) (mode := mode) fuel origin step := by
   cases call with
   | @named start count inputs caller before ordinary event scope body bodyRead
-      rootOwner rootName path request plan originalAssigned result receipts boundary
+      rootOwner rootName path controlled request plan originalAssigned result receipts boundary
       beforeInput afterInput afterChild inputRead childRead rootRead =>
     obtain ⟨initial,initialOrdered,finish,flow,returned⟩ :=
       Qleisli.RuntimeNamedChildRuns.core_flow artifact root mode fuel
-        .localScope (.whole body) path scope.program request plan _ scope.visible.ssa
+        .localScope (.whole body controlled) path scope.program request plan _ scope.visible.ssa
         scope.prepared.block (result,receipts) ⟨afterInput,afterChild,childRead⟩
     have sourceRead : RuntimeInterval.Computed _ originalAssigned := ⟨beforeInput,afterInput,inputRead⟩
     apply named_source_traversal_of_flow initial sourceRead initialOrdered _ returned
