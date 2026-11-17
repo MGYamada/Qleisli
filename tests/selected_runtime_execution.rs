@@ -23,20 +23,44 @@ fn selected(source: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram 
 }
 
 fn selected_at(source: &str, entry: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram {
-    ParsedProgram::parse(
+    let parsed = ParsedProgram::parse(
         Edition::E2026,
         BTreeMap::from([("main".into(), source.into())]),
     )
-    .unwrap()
-    .instantiate_runtime_with_types(
-        entry,
-        Default::default(),
-        Default::default(),
-        Default::default(),
-    )
-    .unwrap()
-    .compile_runtime_with_kernel(&kernel())
-    .unwrap_or_else(|error| panic!("{error:?}\nOriginal test source:\n{source}"))
+    .unwrap();
+    compile_selected(&parsed, entry, Some(source))
+}
+
+fn compile_selected(
+    parsed: &ParsedProgram,
+    entry: &str,
+    source: Option<&str>,
+) -> qleisli::frontend::compile::SelectedRuntimeProgram {
+    parsed
+        .instantiate_runtime_with_types(
+            entry,
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap_or_else(|error| {
+            if let Some(source) = source {
+                panic!("{error:?}\nOriginal test source:\n{source}");
+            }
+            panic!("{error:?}");
+        })
+}
+
+fn recorded_inline_arm(project: &str, first_diagnostic: &str) -> ParsedProgram {
+    assert!(first_diagnostic.contains(r#""outcome":"error""#));
+    assert!(first_diagnostic.contains(r#""code":"invalid_ir""#));
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join(project)
+        .join("main.qli");
+    ParsedProgram::load(BTreeMap::from([("main".into(), path)])).unwrap()
 }
 
 #[test]
@@ -55,20 +79,27 @@ pub enum Tag { A, B }
 pub unitary fn route(s:Q<Tag>,q:Q<(Unit,Bit)>)->(Q<Tag>,Q<(Unit,Bit)>){
     qmatch(s,q){Tag::B=>{let (u,b)=split(q);join(u,h(b))},Tag::A=>{q}}
 }"#;
-    let nested = include_str!(
-        "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-01/main.qli"
+    let nested = recorded_inline_arm(
+        "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-01",
+        include_str!(
+            "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-01.before.json"
+        ),
     );
-    for source in [binary, nominal, nested] {
+    let basic = [binary, nominal].map(|source| {
+        let parsed = ParsedProgram::parse(
+            Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap();
+        (parsed, Some(source))
+    });
+    for (parsed, source) in basic.into_iter().chain([(nested, None)]) {
         assert!(
-            ParsedProgram::parse(
-                Edition::E2026,
-                BTreeMap::from([("main".into(), source.into())]),
-            )
-            .unwrap()
-            .requires_typed_runtime_transport("main::route")
-            .unwrap()
+            parsed
+                .requires_typed_runtime_transport("main::route")
+                .unwrap()
         );
-        let accepted = selected_at(source, "main::route");
+        let accepted = compile_selected(&parsed, "main::route", source);
         let program = accepted.program();
         assert!(program.qmatch_source_checked());
         let raw = program.raw();
@@ -126,14 +157,12 @@ observe fn main()->Bit{
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn coherent_block_arm_checks_the_original_static_continuation() {
-    let source = include_str!(
-        "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02/main.qli"
+    let parsed = recorded_inline_arm(
+        "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02",
+        include_str!(
+            "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02.before.json"
+        ),
     );
-    let parsed = ParsedProgram::parse(
-        Edition::E2026,
-        BTreeMap::from([("main".into(), source.into())]),
-    )
-    .unwrap();
     let kernel = kernel();
     let checked = [0, 1].map(|n| {
         parsed
@@ -163,9 +192,13 @@ fn coherent_block_arm_checks_the_original_static_continuation() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn coherent_block_arm_checks_the_original_basis_table() {
-    let source =
-        include_str!("fixtures/authoring_sessions/inline-coherent-basis-v030/attempt-01/main.qli");
-    let accepted = selected_at(source, "main::route");
+    let parsed = recorded_inline_arm(
+        "fixtures/authoring_sessions/inline-coherent-basis-v030/attempt-01",
+        include_str!(
+            "fixtures/authoring_sessions/inline-coherent-basis-v030/attempt-01.before.json"
+        ),
+    );
+    let accepted = compile_selected(&parsed, "main::route", None);
     let program = accepted.program();
     assert!(program.qmatch_source_checked());
     let artifact = std::str::from_utf8(program.artifact()).unwrap();
