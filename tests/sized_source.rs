@@ -2061,7 +2061,17 @@ fn common_scanner_applies_the_finite_character_policy_to_sized_source() {
     use qleisli::frontend::lexer::lex;
     let declaration = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }";
     for bad in [
-        '\r', '\u{000b}', '\u{000c}', '\0', '\u{202e}', '\u{2028}', '\u{0085}', '\u{00a0}',
+        '\r',
+        '\u{000b}',
+        '\u{000c}',
+        '\0',
+        '\u{202e}',
+        '\u{2028}',
+        '\u{0085}',
+        '\u{00a0}',
+        '\u{200b}',
+        '\u{feff}',
+        '\u{e0061}',
     ] {
         for (open, close) in [
             ("", ""),
@@ -2087,7 +2097,6 @@ fn common_scanner_applies_the_finite_character_policy_to_sized_source() {
     }
     for source in [
         format!("// 日本語\r\n/* α /* β */ γ */{declaration}\r\n"),
-        format!("/* \u{200b} \u{feff} */{declaration}"),
         format!("{}λ{}{declaration}", "/*".repeat(64), "*/".repeat(64)),
     ] {
         let parsed =
