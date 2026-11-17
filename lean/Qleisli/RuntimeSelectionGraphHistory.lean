@@ -36,13 +36,15 @@ def OrderedCoefficients {artifact : Artifact} (catalogue : GenericCatalogue.Chec
   List.Forall₂ (fun ordinal pair => ∃ index, table.arms[index].label.ordinal = ordinal ∧
     ArmEvaluatedWith catalogue root scope table index pair.1 pair.2) ordinals (matrices.zip sources)
 
-theorem ordered_coefficients {artifact : Artifact} {catalogue root scope owner name offset selector target}
-    {table : QuantumArms.Table artifact.sources owner name offset selector target}
-    {ordinals : List Nat} {matrices : List Matrix}
-    (original : QleisliKernel.Exact.ListRel (fun ordinal matrix =>
-      ∃ index, table.arms[index].label.ordinal = ordinal ∧ ArmEvaluated catalogue root scope table index matrix)
+/-- Pair semantic coefficients with the exact checked matrices in selector
+order, preserving the source witness at every ordinal. -/
+theorem ordered_coefficients_from {ordinals : List Nat} {matrices : List Matrix}
+    (source : Nat → Matrix → Coefficient → Prop)
+    (agrees : ∀ ordinal matrix coefficient, source ordinal matrix coefficient → Coefficients matrix coefficient)
+    (original : QleisliKernel.Exact.ListRel (fun ordinal matrix => ∃ coefficient, source ordinal matrix coefficient)
       ordinals matrices) :
-    ∃ sources, OrderedCoefficients catalogue root scope table ordinals matrices sources := by
+    ∃ sources, List.Forall₂ Coefficients matrices sources ∧
+      List.Forall₂ (fun ordinal pair => source ordinal pair.1 pair.2) ordinals (matrices.zip sources) := by
   induction ordinals generalizing matrices with
   | nil =>
     cases matrices with
@@ -51,11 +53,31 @@ theorem ordered_coefficients {artifact : Artifact} {catalogue root scope owner n
   | cons ordinal rest ih =>
     cases matrices with
     | nil => cases original
-    | cons matrix tail =>
-      obtain ⟨index,same,source,evaluated⟩ := original.1
+    | cons matrix remaining =>
+      obtain ⟨coefficient,origin⟩ := original.1
       obtain ⟨sources,related,ordered⟩ := ih original.2
-      exact ⟨source::sources,.cons (ArmEvaluatedWith.coefficients evaluated) related,
-        .cons ⟨index,same,evaluated⟩ ordered⟩
+      exact ⟨coefficient::sources,.cons (agrees _ _ _ origin) related,.cons origin ordered⟩
+
+theorem ordered_coefficients {artifact : Artifact} {catalogue root scope owner name offset selector target}
+    {table : QuantumArms.Table artifact.sources owner name offset selector target}
+    {ordinals : List Nat} {matrices : List Matrix}
+    (original : QleisliKernel.Exact.ListRel (fun ordinal matrix =>
+      ∃ index, table.arms[index].label.ordinal = ordinal ∧ ArmEvaluated catalogue root scope table index matrix)
+      ordinals matrices) :
+    ∃ sources, OrderedCoefficients catalogue root scope table ordinals matrices sources := by
+  let source ordinal matrix coefficient := ∃ index, table.arms[index].label.ordinal = ordinal ∧
+    ArmEvaluatedWith catalogue root scope table index matrix coefficient
+  have origins : QleisliKernel.Exact.ListRel (fun ordinal matrix => ∃ coefficient, source ordinal matrix coefficient)
+      ordinals matrices := by
+    induction ordinals generalizing matrices with
+    | nil => exact original
+    | cons ordinal rest ih =>
+      cases matrices with
+      | nil => exact original
+      | cons matrix remaining =>
+        obtain ⟨index,written,coefficient,law⟩ := original.1
+        exact ⟨⟨coefficient,index,written,law⟩,ih original.2⟩
+  exact ordered_coefficients_from source (fun _ _ _ ⟨_,_,checked⟩ => ArmEvaluatedWith.coefficients checked) origins
 
 theorem table_coefficients {artifact : Artifact} {catalogue root scope owner name offset selector target}
     {table : QuantumArms.Table artifact.sources owner name offset selector target}

@@ -57,14 +57,14 @@ noncomputable def pureRecursiveSourceStepsAt {dependencies}
 frame and original checked steps through every pure named call. -/
 theorem pureRecursiveSourceStepsAt_refine {artifact : Artifact} {root : Validity.Root}
     {mode : RuntimePureBody.ExecutionMode artifact root}
-    (leaves : Nat → ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs)
-    (localLeaves : ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)), PureBlock block →
+    (leaves : Nat → ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs) (limit : Nat)
+    (localLeaves : ∀ depth, depth ≤ limit → ∀ {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)), PureBlock block →
       ∀ inherited,
       StepRefinement steps
         (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧ NeedsPureLeaf step)
         (leaves depth scope) (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
         (inherited.map (fun holds id => ¬ holds id))) :
-    ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)), PureBlock block →
+    ∀ depth, depth ≤ limit → ∀ {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)), PureBlock block →
       (∀ first ∈ steps, IsPureLiteral first) → ∀ inherited,
       StepRefinement steps
         (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧
@@ -75,7 +75,7 @@ theorem pureRecursiveSourceStepsAt_refine {artifact : Artifact} {root : Validity
   intro depth
   induction depth with
   | zero =>
-    intro program block scope steps shape allPure inherited prior first later position checked
+    intro within program block scope steps shape allPure inherited prior first later position checked
       ownerBefore ownerAfter ordinaryBefore ordinaryAfter owners ordinary chunk read
     have purity := allPure first (position ▸ List.mem_append_right prior List.mem_cons_self)
     cases first
@@ -83,11 +83,11 @@ theorem pureRecursiveSourceStepsAt_refine {artifact : Artifact} {root : Validity
       cases node
       case named => exact False.elim (pure_named_zero_impossible checked.2)
       all_goals
-        exact localLeaves 0 scope steps shape inherited prior _ later position ⟨checked.1,trivial⟩
+        exact localLeaves 0 within scope steps shape inherited prior _ later position ⟨checked.1,trivial⟩
           owners ordinary read
     all_goals exact False.elim purity
   | succ depth ih =>
-    intro program block scope steps shape allPure inherited prior first later position checked
+    intro within program block scope steps shape allPure inherited prior first later position checked
       ownerBefore ownerAfter ordinaryBefore ordinaryAfter owners ordinary chunk read
     have purity := allPure first (position ▸ List.mem_append_right prior List.mem_cons_self)
     cases first
@@ -97,11 +97,11 @@ theorem pureRecursiveSourceStepsAt_refine {artifact : Artifact} {root : Validity
         exact pure_named_successor checked.2 shape
           inputs inherited (pureRecursiveSourceStepsAt leaves depth) scope prior.length
           (fun {childProgram childBlock} childScope childSteps childShape childPure childInherited =>
-            ih (program := childProgram) (block := childBlock) childScope childSteps
+            ih (Nat.le_trans (Nat.le_succ depth) within) (program := childProgram) (block := childBlock) childScope childSteps
               childShape childPure childInherited)
           owners ordinary read
       all_goals
-        exact localLeaves (depth+1) scope steps shape inherited prior _ later position ⟨checked.1,trivial⟩
+        exact localLeaves (depth+1) within scope steps shape inherited prior _ later position ⟨checked.1,trivial⟩
           owners ordinary read
     all_goals exact False.elim purity
 
@@ -126,8 +126,10 @@ theorem pureRecursiveSourceSteps_refine {artifact : Artifact} {root : Validity.R
           PureCallAt (runBlockCore artifact root mode depth) origin {} step)
         (pureRecursiveSourceSteps leaves depth scope)
         (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
-        (inherited.map (fun holds id => ¬ holds id)) :=
-  pureRecursiveSourceStepsAt_refine (fun _ => leaves) inputs origin localLeaves
+        (inherited.map (fun holds id => ¬ holds id)) := by
+  intro depth
+  exact pureRecursiveSourceStepsAt_refine (fun _ => leaves) inputs origin depth
+    (fun fuel _ => localLeaves fuel) depth (Nat.le_refl _)
 
 #print axioms pureLeafRefinement_of_semantic
 #print axioms pureRecursiveSourceStepsAt_refine
