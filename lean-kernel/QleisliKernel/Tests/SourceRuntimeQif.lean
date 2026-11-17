@@ -1,4 +1,4 @@
-import QleisliKernel.SourceTypes.SourceRuntimeTrace
+import QleisliKernel.SourceTypes.QuantumArms
 import QleisliKernel.Tests.SourceTraceOriginals
 
 /-! Original qif syntax uses its shared Bit-only coherent selection judgment.
@@ -56,5 +56,27 @@ private def inlineProduct := "#![no_implicit_prelude] " ++
 #guard inlineBody (inlineBit.replace "let r=h(q)" "let r=h(c)") 1 = none
 #guard inlineBody inlineUnit 0 = some ([.unit],1,["primitive"])
 #guard inlineBody inlineProduct 0 = some ([.pair,.unit,.bit],4,["primitive","phase 1 3","primitive"])
+
+private def runtimeTable (source : String) (shift : Nat := 0) : Option (List (Nat × Bool)) :=
+  let action : Finite.WorkM _ := do
+    let signature ← readSignature #[("main",source)] "main" "route" {}
+    let body ← SourceRuntimeTrace.readBodyWithSignature signature
+    if first : 0 < body.checked.events.length then
+      let event : Fin body.checked.events.length := ⟨0,first⟩
+      let .selection _ parsed _ selector target .. := body.checked.events[event] | throw .request
+      let table ← QuantumArms.readRuntimeArms body event (parsed.keyword.span.startByte+shift) selector.basis target.basis
+      pure (table.arms.map fun arm => (arm.ordinal,match arm with | .inline .. => true | .operation _ => false))
+    else throw .request
+  (action.run 10000000).1.toOption
+
+private def inlineEnum := "#![no_implicit_prelude] pub enum Choice{A,B} " ++
+  "pub unitary fn route(c:Q<Choice>,q:Q<Bit>)->(Q<Choice>,Q<Bit>){qmatch(c,q){Choice::B=>{h(q)},Choice::A=>h}}"
+
+#guard runtimeTable inlineBit = some [(0,false),(1,true)]
+#guard runtimeTable inlineUnit = some [(1,true),(0,false)]
+#guard runtimeTable inlineEnum = some [(1,true),(0,false)]
+#guard runtimeTable (inlineEnum.replace "Choice::A=>h" "Choice::B=>h") = none
+#guard runtimeTable inlineBit 1 = none
+#guard runtimeTable (inlineBit.replace "{let r=h(q);stamp(r)}" "stamp") = some [(0,false),(1,false)]
 
 end QleisliKernel.Tests.SourceRuntimeQif
