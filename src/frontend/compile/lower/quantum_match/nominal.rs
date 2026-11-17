@@ -5,8 +5,8 @@ use super::*;
 use crate::frontend::types::nominal::Body;
 use crate::interchange::carrier::{Interface, Owner};
 use crate::interchange::qmatch::{
-    ArmBody, ArmSubject, ContextSubject, Position, SelectionBody, SelectionSubject, SourceSite,
-    StaticInterval, WorkspaceInterval,
+    ArmBody, ArmSubject, ContextSubject, OperationNode, OperationSubject, Position, SelectionBody,
+    SelectionSubject, SourceSite, StaticInterval, WorkspaceInterval,
 };
 
 mod arms;
@@ -797,7 +797,7 @@ pub(in crate::frontend::compile::lower) fn record_operation(
     operation: &crate::frontend::compile::operations::Operation,
     access: Access,
 ) -> Result<(), CompileError> {
-    let Some(frame) = lower.nominal_qmatch.as_ref() else {
+    if lower.nominal_qmatch.is_none() {
         if operation.uses_carrier() {
             return Err(lower.error(
                 module,
@@ -807,7 +807,47 @@ pub(in crate::frontend::compile::lower) fn record_operation(
             ));
         }
         return Ok(());
-    };
+    }
+    let original = lower
+        .compiler
+        .qmatch_operation_application(operation, access, module, span)?;
+    record_operation_subject(lower, module, span, start, original)
+}
+
+/// A bare primitive inverse uses the original operation graph in the source
+/// reader, even when the compiler emits its inverse with shared circuit steps.
+pub(in crate::frontend::compile::lower) fn record_primitive_adjoint(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+    primitive: &Ident,
+    target: &Ty,
+) -> Result<(), CompileError> {
+    if lower.nominal_qmatch.is_none() {
+        return Ok(());
+    }
+    let mut subject = arms::builtin_named_origin(lower, module, primitive, target)?;
+    let child = subject.description.root;
+    subject.description.root = subject.description.nodes.len() as u32;
+    subject
+        .description
+        .nodes
+        .push(OperationNode::Inverse(child));
+    record_operation_subject(lower, module, span, start, subject)
+}
+
+fn record_operation_subject(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    span: Span,
+    start: usize,
+    original: OperationSubject,
+) -> Result<(), CompileError> {
+    let frame = lower
+        .nominal_qmatch
+        .as_ref()
+        .expect("original operation context");
     let relative = start.checked_sub(frame.start).ok_or_else(|| {
         lower.error(
             module,
@@ -830,9 +870,6 @@ pub(in crate::frontend::compile::lower) fn record_operation(
             )
         })?;
     let position = position(lower, module, span, span.start, relative, count)?;
-    let original = lower
-        .compiler
-        .qmatch_operation_application(operation, access, module, span)?;
     lower.compiler.charge(module, span, 12)?;
     let frame = lower
         .nominal_qmatch

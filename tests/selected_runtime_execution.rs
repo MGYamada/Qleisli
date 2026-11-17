@@ -54,7 +54,19 @@ pub enum Tag { A, B }
 pub unitary fn route(s:Q<Tag>,q:Q<(Unit,Bit)>)->(Q<Tag>,Q<(Unit,Bit)>){
     qmatch(s,q){Tag::B=>{let (u,b)=split(q);join(u,h(b))},Tag::A=>{q}}
 }"#;
-    for source in [binary, nominal] {
+    let nested = include_str!(
+        "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-01/main.qli"
+    );
+    for source in [binary, nominal, nested] {
+        assert!(
+            ParsedProgram::parse(
+                Edition::E2026,
+                BTreeMap::from([("main".into(), source.into())]),
+            )
+            .unwrap()
+            .requires_typed_runtime_transport("main::route")
+            .unwrap()
+        );
         let accepted = selected_at(source, "main::route");
         let program = accepted.program();
         assert!(program.qmatch_source_checked());

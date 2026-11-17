@@ -876,6 +876,7 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         let value = self.expr(module, input, env)?;
+        let mut primitive_adjoint = false;
         if count.is_none() {
             let op = if let Some(op) = self.retained_bound_operation(module, function)? {
                 Some(op)
@@ -895,7 +896,11 @@ impl Lowerer<'_, '_> {
                             None
                         }
                     }
-                    Callee::Primitive(..) => None,
+                    Callee::Primitive(primitive) => {
+                        primitive_adjoint =
+                            matches!(primitive, PrimitiveId::H | PrimitiveId::GlobalPhaseEighth);
+                        None
+                    }
                 }
             };
             if let Some(op) = op {
@@ -956,7 +961,13 @@ impl Lowerer<'_, '_> {
             }
         }
         self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
+        let start = self.raw.operations.len();
         self.apply_circuit(slot, steps);
+        if primitive_adjoint {
+            quantum_match::nominal::record_primitive_adjoint(
+                self, module, span, start, function, &basis,
+            )?;
+        }
         Ok(value)
     }
 

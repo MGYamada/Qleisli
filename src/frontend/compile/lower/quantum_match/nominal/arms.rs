@@ -225,7 +225,7 @@ pub(in crate::frontend::compile::lower::quantum_match) fn builtin_arm(
     })
 }
 
-fn builtin_named_origin(
+pub(super) fn builtin_named_origin(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
     name: &Ident,
@@ -282,13 +282,14 @@ fn builtin_named_origin(
             lower
                 .compiler
                 .charge(module, name.span, 2 * target.tree_size().nodes + 1)?;
-            (
-                OperationNode::Primitive {
-                    kind,
-                    target: super::builtin_basis_description(target),
-                },
-                vec![],
-            )
+            let target = if target.basis_bits().is_some() {
+                super::builtin_basis_description(target)
+            } else {
+                lower
+                    .compiler
+                    .carrier_description(module, name.span, target)?
+            };
+            (OperationNode::Primitive { kind, target }, vec![])
         }
     };
     Ok(OperationSubject {
