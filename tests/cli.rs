@@ -242,6 +242,29 @@ fn doc_reports_io_and_comment_errors_without_partial_output() {
     assert_eq!(output.status.code(), Some(2));
 }
 
+#[test]
+fn doc_rejects_unicode_tags_before_writing_markdown() {
+    let source = include_str!(
+        "fixtures/authoring_sessions/invisible-source-characters-v030/attempt-01/main.qli"
+    );
+    let tag = '\u{e0061}';
+    let start = source.find(tag).unwrap();
+    let end = start + tag.len_utf8();
+    let root = SourceRoot::new(source);
+    let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .arg("doc")
+        .arg(root.0.join("main.qli"))
+        .output()
+        .unwrap();
+
+    assert_eq!(output.status.code(), Some(1), "{output:?}");
+    assert!(output.stdout.is_empty());
+    let error = String::from_utf8(output.stderr).unwrap();
+    assert!(error.contains("U+E0061"), "{error}");
+    assert!(error.contains(&format!("byte {start}..{end}")), "{error}");
+    assert!(!error.contains(tag), "{error:?}");
+}
+
 // Linux filesystems permit non-UTF-8 directory names; macOS may reject them.
 #[cfg(target_os = "linux")]
 #[cfg_attr(

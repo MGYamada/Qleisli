@@ -290,6 +290,9 @@ fn scan(
         let mut token = scanner.next().map_err(|error| LexError {
             message: match error.kind {
                 ErrorKind::Forbidden(message) => message.into(),
+                ErrorKind::ForbiddenScalar(message, scalar) => {
+                    format!("{message} (U+{:04X})", u32::from(scalar))
+                }
                 ErrorKind::Unexpected('?') => "`?` residual propagation is unsupported in the verified quantum core; use a final expression and explicit branches that preserve every quantum owner".into(),
                 ErrorKind::Unexpected('&') => format!(
                     "unexpected character `&`; {}",
