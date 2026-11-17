@@ -130,6 +130,8 @@ inductive EligibleEvents {sources caller} : List (SourceRuntimeContext.Event sou
       (single : events = [.named call]) (actuals : BasisNatActuals call) : EligibleEvents events
   | selection (event : SourceRuntimeContext.Event sources caller)
       (written : event.qmatchOffset.isSome = true) : EligibleEvents [event]
+  | basis (event : SourceRuntimeContext.BasisEvent sources caller)
+      (preserved : event.output = event.input) : EligibleEvents [.basis event]
   | cons {first : SourceRuntimeContext.Event sources caller} {rest : List (SourceRuntimeContext.Event sources caller)}
       (head : EligibleEvents [first]) (tail : EligibleEvents rest) :
       EligibleEvents (first :: rest)
@@ -154,6 +156,10 @@ private def readEventEligibility {sources caller} (coherent : Bool)
   | .selection selected =>
     if coherent then
       return .selection (.selection selected) rfl
+    else throw .request
+  | .basis basis =>
+    if preserved : coherent = true ∧ basis.output = basis.input then
+      return .basis basis preserved.2
     else throw .request
   | other =>
     match classified : classifyEvent other with
@@ -312,7 +318,7 @@ private def compoundPositions {sources caller} (events : List (SourceRuntimeCont
       | .selection .. =>
         let position :: sites := sites | throw .request
         pure (position,calls,sites)
-      | .primitive _ | .phase _ =>
+      | .primitive _ | .phase _ | .basis _ =>
         pure (child.getD ⟨event.offset,cursor,1⟩,calls,sites)
       | _ => throw .request
     let (position,calls,sites) := located

@@ -188,7 +188,7 @@ those events in the arm Raw, checks control evidence for their operations, and
 checks the resulting sector against the enclosing Raw interval.
 An `if static` inside the block checks the selected branch's original Raw
 interval and its local owner frame when the branch leaves the owner history
-unchanged.
+unchanged, including a `basis` lift that preserves the exact target owner.
 Within the finite profile, an inline arm can use `basis`, `with_computed`,
 `clean` and `dirty`. The checker reads the original basis table or computed
 predicate and applies the same scratch restoration checks as for a named

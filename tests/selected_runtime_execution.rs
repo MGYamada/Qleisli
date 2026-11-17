@@ -157,32 +157,44 @@ observe fn main()->Bit{
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 fn coherent_block_arm_checks_the_original_static_continuation() {
-    let parsed = recorded_inline_arm(
+    let primitive = recorded_inline_arm(
         "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02",
         include_str!(
             "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02.before.json"
         ),
     );
+    let basis = r#"#![no_implicit_prelude]
+pub unitary fn route[const n:Nat](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{if static n==0 {basis q as b {not b}} else {q}},1=>h}
+}
+"#;
+    let basis = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), basis.into())]),
+    )
+    .unwrap();
     let kernel = kernel();
-    let checked = [0, 1].map(|n| {
-        parsed
-            .instantiate_runtime_with_types(
-                "main::route",
-                Default::default(),
-                BTreeMap::from([("n".into(), n)]),
-                Default::default(),
-            )
-            .unwrap()
-            .compile_runtime_with_kernel(&kernel)
-            .unwrap()
-    });
-    let [zero, one] = checked.each_ref().map(|checked| checked.program());
-    assert!(zero.qmatch_source_checked() && one.qmatch_source_checked());
-    assert_ne!(zero.raw(), one.raw());
-    let error = kernel
-        .check_qmatch_source_v5(zero.artifact(), one.request().unwrap())
-        .unwrap_err();
-    assert_eq!(error.code, "contract", "{error}");
+    for parsed in [primitive, basis] {
+        let checked = [0, 1].map(|n| {
+            parsed
+                .instantiate_runtime_with_types(
+                    "main::route",
+                    Default::default(),
+                    BTreeMap::from([("n".into(), n)]),
+                    Default::default(),
+                )
+                .unwrap()
+                .compile_runtime_with_kernel(&kernel)
+                .unwrap()
+        });
+        let [zero, one] = checked.each_ref().map(|checked| checked.program());
+        assert!(zero.qmatch_source_checked() && one.qmatch_source_checked());
+        assert_ne!(zero.raw(), one.raw());
+        let error = kernel
+            .check_qmatch_source_v5(zero.artifact(), one.request().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
 }
 
 #[test]

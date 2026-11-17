@@ -12,6 +12,13 @@ source. It then replaces the arm's literal lift table and changes the
 corresponding controlled and parent permutations to the same identity.
 The table derived from the written `not b` still rejects that proposal.
 
+The first static-branch probe is retained in
+`coherent_block_arm_checks_the_original_static_continuation`. At draft head
+`7fb68b833d8d3ee9f3f7aca12166326e0338dcf3`, `n=0` selected the basis lift and
+returned `invalid_ir` with the native source comparison error at bytes
+`24..167`. The same source passed at `n=1`, which selects the identity arm.
+The regression checks both bodies and rejects a mismatched specialization.
+
 The first computed-predicate probe is retained unchanged in
 `coherent_block_arm_checks_the_original_computed_predicate` in the same Rust
 test file. At the original compiler baseline it refused byte range
