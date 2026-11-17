@@ -290,4 +290,5 @@ import Qleisli.NativeEngineeringInstrument
 import Qleisli.NativeEngineeringInstrumentProtocol
 import Qleisli.CanonicalOpenQasmGates
 import Qleisli.NativeEngineeringOpenQasm
+import Qleisli.NativeEngineeringOpenQasmGate
 import Qleisli.NativeEngineeringOpenQasmProtocol

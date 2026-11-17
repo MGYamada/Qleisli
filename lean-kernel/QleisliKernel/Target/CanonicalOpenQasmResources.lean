@@ -13,7 +13,7 @@ inductive Gate where
   | h | x | y | z | s | sdg | t | tdg | cx | cz | swap | ccx
   deriving BEq, DecidableEq, Repr
 
-private def Gate.read (name : List UInt8) : Option Gate :=
+def Gate.read (name : List UInt8) : Option Gate :=
   ([("h",.h),("x",.x),("y",.y),("z",.z),("s",.s),("sdg",.sdg),("t",.t),
     ("tdg",.tdg),("cx",.cx),("cz",.cz),("swap",.swap),("ccx",.ccx)] : List (String × Gate)).findSome?
       fun (spelling,gate) => if name == ascii spelling then some gate else none
@@ -84,7 +84,7 @@ private structure Lines where
   completed : List (List UInt8) := []
   count : Nat := 0
 
-private def lines (bytes : List UInt8) : Option (List (List UInt8)) := do
+def lines (bytes : List UInt8) : Option (List (List UInt8)) := do
   let scanned ← bytes.foldlM (fun (state : Lines) byte =>
     if byte == 10 then
       if state.count < 4111 then some ⟨[],state.partialLine.reverse :: state.completed,state.count+1⟩ else none

@@ -153,7 +153,7 @@ class SourceChecksTests(unittest.TestCase):
             import check_rust_test_partition as partition
             heavy, rest = partition.selection(group, checks.definition(group)['commands'])
             self.assertEqual(heavy, ['frontend_ownership_differential', 'input_corpus', 'source_ir_correspondence'])
-            self.assertEqual(len(rest), 124)
+            self.assertEqual(len(rest), 125)
             self.assertIn('access_algorithms', rest)
             self.assertIn('ordinary_nominal_execution', rest)
             self.assertIn('selected_ordinary_execution', rest)

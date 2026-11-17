@@ -242,6 +242,56 @@ ENGINEERING_OPENQASM_BOUNDARY = {'id': 'engineering-openqasm',
  'replacement': ['VM-23', 'VM-24', 'VM-28', 'VM-29']}
 
 
+ENGINEERING_OPENQASM_GATE_BOUNDARY = {
+    'id': 'engineering-openqasm-gate',
+    'group': 'engineering-openqasm-gate',
+    'entry_points': [
+        'interchange::engineering_openqasm_gate::compare_serialized_with_kernel',
+        'EngineeringOpenQasmGateReport original artifact/request and checked literal resource accessors',
+        'qleisli engineering compare-openqasm3-gate ACTUAL --against=REQUEST',
+    ],
+    'status': 'Native operator-distance and literal-resource engineering comparison',
+    'request': (
+        'Version 1 qleisli.engineering-openqasm-gate-request, engineering-target-operator-resource-bound, '
+        'pure-euclidean-operator-norm-v1, canonical-gate-frobenius-r8-v1, '
+        'openqasm3-canonical-ordered-gate-r8-v1, implementation-distance and '
+        'openqasm3-ordered-gate-literal-gates-v1 limits. The ordered sequential variant binds '
+        'a split, both original ideal leaves and both closed component budgets to their explicit sum. '
+        'The controlled variant supplies the original one-bit ideal and a closed budget on its full controlled action.'
+    ),
+    'binding': (
+        'The independent gate reader supplies the ordered literal bytes, wire operands and exact R8 action. '
+        'PureLeaf checks bind the original ideal QIRF and requested matrices; the finite-reference norm bound '
+        'and wire, gate and T/TDG counts concern the same literal artifact. One execution compares '
+        'the full typed request, ordered literal tape and each independent original ideal graph. '
+        'The report retains its engineering kind including at zero budget.'
+    ),
+    'encoding': (
+        'Execution-only QLV3 with explicit edition, original QLV1 gate definition and typed JSON request, '
+        'and exact QDV1 engineering-openqasm-gate comparison. Native result 3 engineering-checked '
+        'under --engineering-openqasm-gate-check carries exact work, wires, gates and T/TDG count.'
+    ),
+    'domain': (
+        'Canonical OpenQASM 3.0 named gate definition with one Bit or ordered (Bit, Bit) ports and '
+        'literal standard R8 gates. Open ordered sequential slices share their port tree. Control '
+        'selects the low bit and compares identity on selector zero and the exact ideal on selector one, '
+        'using the complete complex matrix including relative phase and arbitrary finite references.'
+    ),
+    'limits': (
+        'At most 1024 bytes, eight gates, two formal wires, and integer gate/T limits from zero through eight. '
+        'The original ideal/request files retain 16 MiB bounds and the native envelope retains its 64 MiB bound. '
+        'One 20,000,000-unit native checker-work state and a separate process timeout apply.'
+    ),
+    'failure': (
+        'Reject wrong literal operand order, stale split/sum, false original ideal, invalid closed budget, '
+        'incompatible metric/model/profile, excess literal resources, wrong view, scope, protocol or claim kind, '
+        'and missing, failed or timed-out checker. Exact correspondence, source access and constitutional '
+        'PR/RS require their own evidence.'
+    ),
+    'replacement': ['VM-23', 'VM-24', 'VM-28', 'VM-29'],
+}
+
+
 # Existing #64 bounded component only; descriptions and source preparation do
 # not inherit the fresh native decision or establish original-source meaning.
 FINITE_CARRIER_BOUNDARY = {
@@ -561,6 +611,8 @@ def check(root=ROOT, data=None):
                 raise ValueError('unreviewed engineering-instrument boundary contract')
             if boundary['id'] == 'engineering-openqasm' and boundary != ENGINEERING_OPENQASM_BOUNDARY:
                 raise ValueError('unreviewed engineering-openqasm boundary contract')
+            if boundary['id'] == 'engineering-openqasm-gate' and boundary != ENGINEERING_OPENQASM_GATE_BOUNDARY:
+                raise ValueError('unreviewed engineering-openqasm-gate boundary contract')
             if boundary['id'] == 'engineering-pure-tensor' and boundary != ENGINEERING_PURE_TENSOR_BOUNDARY:
                 raise ValueError('unreviewed engineering-pure-tensor boundary contract')
             if boundary['id'] == 'finite-carrier' and boundary != FINITE_CARRIER_BOUNDARY:
@@ -579,6 +631,9 @@ def check(root=ROOT, data=None):
         if ('src/interchange/engineering_openqasm.rs' in paths and
                 'engineering-openqasm' not in {b['id'] for b in data['boundaries']}):
             raise ValueError('missing engineering-openqasm public boundary')
+        if ('src/interchange/engineering_openqasm_gate.rs' in paths and
+                'engineering-openqasm-gate' not in {b['id'] for b in data['boundaries']}):
+            raise ValueError('missing engineering-openqasm-gate public boundary')
         if ('src/interchange/engineering_pure_tensor.rs' in paths and
                 'engineering-pure-tensor' not in {b['id'] for b in data['boundaries']}):
             raise ValueError('missing engineering-pure-tensor public boundary')

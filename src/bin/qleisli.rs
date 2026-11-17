@@ -17,6 +17,8 @@ mod engineering;
 mod engineering_instrument;
 #[path = "qleisli/engineering_openqasm.rs"]
 mod engineering_openqasm;
+#[path = "qleisli/engineering_openqasm_gate.rs"]
+mod engineering_openqasm_gate;
 #[path = "qleisli/engineering_pure_tensor.rs"]
 mod engineering_pure_tensor;
 #[path = "qleisli/interop.rs"]

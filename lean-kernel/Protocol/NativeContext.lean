@@ -2,6 +2,7 @@ import Protocol.ExecutionView.Native
 import Protocol.ExecutionView.CheckedEngineeringPure
 import Protocol.ExecutionView.CheckedEngineeringPureTensor
 import Protocol.ExecutionView.CheckedEngineeringOpenQasm
+import Protocol.ExecutionView.CheckedEngineeringOpenQasmGate
 import Protocol.ExecutionView.CheckedCarrier
 import Protocol.ExecutionView.CheckedRuntimeRoot
 import Protocol.ExecutionView.CheckedQmatch
@@ -18,7 +19,7 @@ inductive Mode where
   | ordinary | contract | hierarchy (mode : CheckedHierarchy.Modes.Mode)
   | engineeringPure | engineeringPureTensor | engineeringInstrument | engineeringOpenQasm
   | readout | preparation | carrierPure | ordinaryRoot | runtimeRoot | qmatchSource
-  | qmatchSourceV5 | openQasmPlacement
+  | qmatchSourceV5 | openQasmPlacement | engineeringOpenQasmGate
   deriving BEq, DecidableEq, Repr
 
 def Mode.workLimit (_ : Mode) : Nat := QleisliKernel.exactWorkLimit
@@ -36,6 +37,7 @@ def Mode.name : Mode → String
   | .engineeringPureTensor => "--engineering-pure-tensor-check"
   | .engineeringInstrument => "--qirf-engineering-instrument-native"
   | .engineeringOpenQasm => "--engineering-openqasm-check"
+  | .engineeringOpenQasmGate => "--engineering-openqasm-gate-check"
   | .readout => "--readout-check"
   | .preparation => "--preparation-check"
   | .carrierPure => "--carrier-pure-check"
@@ -58,6 +60,7 @@ def Mode.parse : String → Option Mode
   | "--engineering-pure-tensor-check" => some .engineeringPureTensor
   | "--qirf-engineering-instrument-native" => some .engineeringInstrument
   | "--engineering-openqasm-check" => some .engineeringOpenQasm
+  | "--engineering-openqasm-gate-check" => some .engineeringOpenQasmGate
   | "--readout-check" => some .readout
   | "--preparation-check" => some .preparation
   | "--carrier-pure-check" => some .carrierPure
@@ -89,6 +92,7 @@ def Value : Mode → Type
   | .engineeringPureTensor => CheckedEngineeringPureTensor.Checked
   | .engineeringInstrument => CheckedEngineeringInstrument.Checked
   | .engineeringOpenQasm => CheckedEngineeringOpenQasm.Checked
+  | .engineeringOpenQasmGate => CheckedEngineeringOpenQasmGate.Checked
   | .readout => Readout
   | .preparation => Preparation
   | .carrierPure => CheckedCarrier.Checked
@@ -103,7 +107,8 @@ def scope : (mode : Mode) → Value mode → Packet.Scope
   | .contract, value => value.1
   | .hierarchy _, value => value.1
   | .engineeringPure, _ | .engineeringPureTensor, _
-  | .engineeringInstrument, _ | .engineeringOpenQasm, _ | .carrierPure, _ | .ordinaryRoot, _
+  | .engineeringInstrument, _ | .engineeringOpenQasm, _ | .engineeringOpenQasmGate, _
+  | .carrierPure, _ | .ordinaryRoot, _
   | .runtimeRoot, _ | .qmatchSource, _ | .qmatchSourceV5, _ | .openQasmPlacement, _ => .execution
   | .readout, _ | .preparation, _ => .inspection
 
@@ -140,6 +145,7 @@ def check : (mode : Mode) → ByteArray → CheckM (Value mode)
   | .engineeringPureTensor => CheckedEngineeringPureTensor.run
   | .engineeringInstrument => Native.engineeringInstrument
   | .engineeringOpenQasm => CheckedEngineeringOpenQasm.run
+  | .engineeringOpenQasmGate => CheckedEngineeringOpenQasmGate.run
   | .readout => readout
   | .preparation => preparation
   | .carrierPure => CheckedCarrier.run
@@ -265,7 +271,7 @@ def Mode.status : Mode → String
   | .qmatchSource | .qmatchSourceV5 => "accepted"
   | .hierarchy _ => "pending"
   | .engineeringPure | .engineeringPureTensor
-  | .engineeringInstrument | .engineeringOpenQasm => "engineering-checked"
+  | .engineeringInstrument | .engineeringOpenQasm | .engineeringOpenQasmGate => "engineering-checked"
   | .readout | .preparation => "checked"
   | .openQasmPlacement => "placement-checked"
 
@@ -283,6 +289,10 @@ def payload : (mode : Mode) → Value mode → Nat → List String
       (if mode == .qpeInstrument then indices core.hadamards else [])
   | .engineeringPure, _, work | .engineeringPureTensor, _, work
   | .engineeringInstrument, _, work | .engineeringOpenQasm, _, work => [toString work]
+  | .engineeringOpenQasmGate, value, work =>
+    let block := value.block
+    let counts := block.counts
+    [work,Semantics.Finite.width block.ports.basis,counts.gates,counts.tGates].map toString
   | .readout, value, _ => [toString value.checked.visits]
   | .preparation, value, _ => [toString value.checked.visits]
   | .carrierPure, _, work | .ordinaryRoot, _, work | .runtimeRoot, _, work
@@ -304,6 +314,7 @@ def Mode.errorCode : Mode → Gate.Error → String
   | .hierarchy _, .native error => Protocol.HierarchicalFinite.errorCode error
   | .qmatchSource, .native (.arithmetic .workLimit)
   | .qmatchSourceV5, .native (.arithmetic .workLimit)
+  | .engineeringOpenQasmGate, .native (.arithmetic .workLimit)
   | .openQasmPlacement, .native (.arithmetic .workLimit) => "limit"
   | _, error => Native.errorCode error
 

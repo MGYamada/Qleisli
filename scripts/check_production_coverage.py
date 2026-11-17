@@ -234,6 +234,25 @@ QMATCH_V5_PROOF = {
 }
 
 
+ENGINEERING_OPENQASM_GATE_PROOF = {
+    'proof_scope': (
+        'NativeContext.run_engineering_gate_binding binds the successful execution-scope result and '
+        'literal resource payload to the exact original request and independently reconstructed QDV1. '
+        'EngineeringOpenQasmGate.checkRetained_bound gives the actual parser and checker work chain. '
+        'NativeEngineeringOpenQasmGate.sequential_literal_action and sequential_reference_bound '
+        'bind the complete decoded word to the ordered checked slices and their additive bound. '
+        'controlled_literal_action and controlled_reference_bound connect the literal phase-sensitive '
+        'gate word, original ideal and checked literal counts for every finite reference.'
+    ),
+    'gaps': (
+        'This route establishes engineering operator-distance and literal gate/resource bounds '
+        'for the named gate profile. General OpenQASM execution, compiler/export preservation, '
+        'hardware scheduling, binary attestation, source inverse and control access, exact cleanup, '
+        'exact PR and target RS require separate evidence. No new guarantee or S05-C1-C5 discharge.'
+    ),
+}
+
+
 def path_rule(classification, boundaries, modes, sources, tests):
     return dict(classification=classification, boundaries=boundaries.split(),
                 native_modes=modes.split(),
@@ -1042,7 +1061,8 @@ PATHS = {
         ('src/interchange/execution_view/finite/engineering_instrument.rs', ['pub(in crate::interchange) fn complete(',
          '"engineering-instrument-request", 14', 'actual.execution_view_graph().write(w.writer)',
          'expected.execution_view_graph().write(w.writer)']),
-        ('src/bin/qleisli/engineering.rs', ['arg == "compare-instrument"', 'super::engineering_instrument::run(args)']),
+        ('src/bin/qleisli/engineering.rs', [
+            'Some("compare-instrument") => return super::engineering_instrument::run(args)']),
         ('src/bin/qleisli/engineering_instrument.rs', ['fn execute(',
          'check_serialized_with_kernel(&kernel, &actual, &request)',
          'pure phase agreement, coherent control, inverse, clean release and target resource bounds: not established']),
@@ -1103,7 +1123,8 @@ PATHS['engineering-pure-tensor-check'] = path_rule(
         ('src/interchange/execution_view/finite/engineering_pure_tensor.rs', [
             'pub(in crate::interchange) fn complete(', '"engineering-pure-tensor-request", 16',
             'program.execution_view_graph().write(w.writer)']),
-        ('src/bin/qleisli/engineering.rs', ['arg == "compare-pure-tensor"']),
+        ('src/bin/qleisli/engineering.rs', [
+            'Some("compare-pure-tensor") => return super::engineering_pure_tensor::run(args)']),
         ('src/bin/qleisli/engineering_pure_tensor.rs', ['fn execute(']),
         ('scripts/test_engineering_pure_tensor_native.py', ['def retained(', 'def live(']),
         ('lean-kernel/Cli/EngineeringPureTensor.lean', [
@@ -1164,7 +1185,8 @@ PATHS['engineering-openqasm-check'] = path_rule(
    'w.list(gates,',
    'actual.write(w.writer)?',
    'ideal.execution_view_graph().write(w.writer)']),
- ('src/bin/qleisli/engineering.rs', ['arg == "compare-openqasm3"']),
+ ('src/bin/qleisli/engineering.rs', [
+   'Some("compare-openqasm3") => return super::engineering_openqasm::run(args)']),
  ('src/bin/qleisli/engineering_openqasm.rs',
   ['fn execute(', 'target_artifact_sha256', 'source_preservation_verified']),
  ('scripts/test_engineering_openqasm_native.py', ['def retained(', 'def live(', 'def independent_oracle(', 'same-instrument-exceeds-t-limit']),
@@ -1351,6 +1373,38 @@ PATHS['hierarchy-qpe']['tests'].extend(
       'test': 'qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations'}]
 )
 
+ENGINEERING_OPENQASM_GATE_TEST = (
+    'tests/engineering_openqasm_gate_cli.rs',
+    'openqasm_gate_cli_checks_ordered_and_controlled_resource_bounds',
+)
+PATHS['engineering-openqasm-gate-check'] = path_rule(
+    'engineering-check', 'engineering-openqasm-gate', '--engineering-openqasm-gate-check', [
+        ('src/interchange/mod.rs', ['pub mod engineering_openqasm_gate;']),
+        ('src/interchange/engineering_openqasm_gate.rs', ['compare_serialized_with_kernel']),
+        ('src/interchange/execution_view/finite/engineering_openqasm_gate.rs', [
+            'engineering-openqasm-gate-request', 'gate-tape']),
+        ('src/bin/qleisli/engineering.rs', [
+            'Some("compare-openqasm3-gate") => return super::engineering_openqasm_gate::run(args)']),
+        ('src/bin/qleisli/engineering_openqasm_gate.rs', [
+            'engineering_resource_counts', 'target_artifact_sha256']),
+        ('lean-kernel/Protocol/EngineeringOpenQasmGate.lean', [
+            'def decode ', 'ordered-sequential-two-v1', 'controlled-low-selector-v1',
+            'def checkRetained ', 'theorem checkRetained_bound ']),
+        ('lean-kernel/Protocol/ExecutionView/CheckedEngineeringOpenQasmGate.lean', [
+            'supplied.data == expected.data', 'theorem run_binding ']),
+        ('lean-kernel/Protocol/ExecutionView/EngineeringOpenQasmGate.lean', [
+            'engineeringOpenQasmGateRequest', 'engineeringOpenQasmGateTape', 'let idealGraph ← graph']),
+        ('lean-kernel/QleisliKernel/Qirf/EngineeringOpenQasmGate.lean', [
+            'def checkBlock ', 'def checkSequential ', 'def checkControlled ',
+            'target.block.instructions.take request.split', 'target.block.instructions.drop request.split',
+            'OperationIRMeaning.controlled ideal.val.actual']),
+        ('lean/Qleisli/NativeEngineeringOpenQasmGate.lean', [
+            'theorem sequential_literal_action ', 'theorem sequential_reference_bound ',
+            'theorem controlled_literal_action ', 'theorem controlled_reference_bound ']),
+    ], [ENGINEERING_OPENQASM_GATE_TEST,
+        ('src/interop/placement.rs', 'numerically_selected_controlled_phase_requires_exact_target_check')])
+
+
 NATIVE_DISPATCH = {
     '--runtime-root-check': '.runtimeRoot',
     '--qmatch-source-check': '.qmatchSource',
@@ -1361,6 +1415,7 @@ NATIVE_DISPATCH = {
     '--qirf-contract': '.contract',
     '--carrier-pure-check': '.carrierPure',
     '--engineering-openqasm-check': '.engineeringOpenQasm',
+    '--engineering-openqasm-gate-check': '.engineeringOpenQasmGate',
     '--engineering-pure-check': '.engineeringPure',
     '--engineering-pure-tensor-check': '.engineeringPureTensor',
     '--qirf-engineering-instrument-native': '.engineeringInstrument',
@@ -1860,6 +1915,7 @@ ROUTES['engineering-pure-tensor'] = ('src/interchange/engineering_pure_tensor/te
                                     'native_tensor_composes_component_bounds_without_parent_frobenius')
 
 ROUTES['engineering-openqasm'] = ('src/interchange/engineering_openqasm/tests.rs', 'native_checks_actual_backend_target_bytes_against_an_original_ideal_and_zero_stays_engineering')
+ROUTES['engineering-openqasm-gate'] = ENGINEERING_OPENQASM_GATE_TEST
 ROUTES['source-edition-configuration'] = ('tests/editions.rs', 'qrate_selection_retains_its_exact_manifest_without_reselecting_later_edits')
 ROUTES['finite-carrier'] = ('src/interchange/native/carrier/tests.rs',
                             'original_carrier_body_source_and_logical_phase_are_bound')
@@ -2084,6 +2140,7 @@ for _id, _binding in {
     'engineering-instrument-check': 'run_engineering_instrument_binding',
     'engineering-pure-tensor-check': 'run_engineering_tensor_binding',
     'engineering-openqasm-check': 'run_engineering_target_binding',
+    'engineering-openqasm-gate-check': 'run_engineering_gate_binding',
     'readout-component': 'run_readout_binding',
     'preparation-component': 'run_preparation_binding',
 }.items():
@@ -2140,7 +2197,8 @@ def check(root, data=None, inventory=None):
         require(row['status'] in {'untrusted-host', 'lean-component', 'native-execution', 'mixed-boundary',
                                  'engineering-check'}, 'unknown migration status')
         require((row['status'] == 'engineering-check') == (row['id'] in {
-            'engineering-pure', 'engineering-instrument', 'engineering-pure-tensor', 'engineering-openqasm'}),
+            'engineering-pure', 'engineering-instrument', 'engineering-pure-tensor', 'engineering-openqasm',
+            'engineering-openqasm-gate'}),
                 'engineering-only status must remain separate from exact production acceptance')
         require(isinstance(row['blocker'], str) and row['blocker'].strip(), 'missing explicit migration blocker')
         require(set(row['proof_gates']) == GATES, 'incomplete proof obligations')
@@ -2188,6 +2246,9 @@ def check(root, data=None, inventory=None):
         if row['id'] == 'engineering-openqasm-check':
             require({key: row[key] for key in ENGINEERING_OPENQASM_PROOF} == ENGINEERING_OPENQASM_PROOF,
                     'unreviewed engineering-openqasm proof scope')
+        if row['id'] == 'engineering-openqasm-gate-check':
+            require({key: row[key] for key in ENGINEERING_OPENQASM_GATE_PROOF} == ENGINEERING_OPENQASM_GATE_PROOF,
+                    'unreviewed engineering-openqasm-gate proof scope')
         if row['id'] == 'engineering-pure-tensor-check':
             require({key: row[key] for key in ENGINEERING_PURE_TENSOR_PROOF} == ENGINEERING_PURE_TENSOR_PROOF,
                     'unreviewed engineering-pure-tensor proof scope')

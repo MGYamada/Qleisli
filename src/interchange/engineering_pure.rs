@@ -501,23 +501,7 @@ fn decode_request(bytes: &[u8]) -> Result<(EngineeringPureRequest, String)> {
     };
     let (actual_boundary, actual_meaning) = leaf("actual")?;
     let (ideal_boundary, ideal_meaning) = leaf("ideal")?;
-    let epsilon = value.field("epsilon")?;
-    epsilon.fields(&["numerator", "denominator_bits"])?;
-    let numerator = epsilon.field("numerator")?.text()?;
-    if numerator.is_empty()
-        || !numerator.bytes().all(|b| b.is_ascii_digit())
-        || numerator.len() > 1 && numerator.starts_with('0')
-    {
-        return Err(Error::format(
-            "noncanonical nonnegative engineering numerator",
-        ));
-    }
-    let numerator = numerator
-        .parse()
-        .map_err(|_| Error::limit("engineering numerator exceeds i128"))?;
-    let denominator_bits = u32::try_from(epsilon.field("denominator_bits")?.number()?)
-        .map_err(|_| Error::limit("engineering denominator exponent exceeds u32"))?;
-    let epsilon = DyadicBound::new(numerator, denominator_bits)?;
+    let epsilon = decode_dyadic(value.field("epsilon")?)?;
     let expected_artifact = value.field("expected_artifact")?.text()?;
     if expected_artifact.is_empty() || expected_artifact.len() > MAX_FILE_BYTES {
         return Err(Error::limit(
@@ -534,6 +518,25 @@ fn decode_request(bytes: &[u8]) -> Result<(EngineeringPureRequest, String)> {
         )?,
         expected_artifact.to_owned(),
     ))
+}
+
+pub(super) fn decode_dyadic(value: &Value) -> Result<DyadicBound> {
+    value.fields(&["numerator", "denominator_bits"])?;
+    let numerator = value.field("numerator")?.text()?;
+    if numerator.is_empty()
+        || !numerator.bytes().all(|b| b.is_ascii_digit())
+        || numerator.len() > 1 && numerator.starts_with('0')
+    {
+        return Err(Error::format(
+            "noncanonical nonnegative engineering numerator",
+        ));
+    }
+    let numerator = numerator
+        .parse()
+        .map_err(|_| Error::limit("engineering numerator exceeds i128"))?;
+    let denominator_bits = u32::try_from(value.field("denominator_bits")?.number()?)
+        .map_err(|_| Error::limit("engineering denominator exponent exceeds u32"))?;
+    DyadicBound::new(numerator, denominator_bits)
 }
 
 #[cfg(test)]

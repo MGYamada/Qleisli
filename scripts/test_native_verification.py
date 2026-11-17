@@ -419,7 +419,7 @@ def main():
                          "--readout-check", "--preparation-check", "--instrument-pending",
                          "--qpe-instrument-pending", "--engineering-pure-check",
                          "--engineering-pure-tensor-check", "--qirf-engineering-instrument-native",
-                         "--engineering-openqasm-check"]:
+                         "--engineering-openqasm-check", "--engineering-openqasm-gate-check"]:
                 wrong_version = run([kernel, mode, "0.0.0"], 1, b"")
                 assert wrong_version == b"qleisli.native-result 3\nerror\nversion\n"
                 # A missing version is not an implicit match for any native mode.

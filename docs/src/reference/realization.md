@@ -724,6 +724,80 @@ check emits no certificate. The engineering receipt cannot supply exact
 cleanup, phase-sensitive coherent control, or constitutional PR/RS. See
 [#163](https://github.com/MGYamada/Qleisli/issues/163).
 
+### Literal OpenQASM gate comparison with resource limits
+
+```text
+qleisli engineering compare-openqasm3-gate ACTUAL --against=REQUEST --edition=2026 --lean-kernel=PATH --format=json
+```
+
+`ACTUAL` is a complete canonical OpenQASM 3.0 gate definition. The header and
+include line have the literal spellings below. The declaration is either
+`gate implementation a {` or `gate implementation a, b {`. Body instructions
+start at the first column, use one space after the mnemonic and after a comma,
+and end with a semicolon and LF. The closing brace occupies its own line
+with an LF. The admitted mnemonics are `h`, `x`, `y`, `z`, `s`, `sdg`, `t`,
+`tdg`, `cx`, `cz` and `swap` with their exact ordered formal operands. The
+body may be empty. The fixed include selects the profile's standard gate
+meanings. The checker reads at most 1,024 bytes and eight gate lines. For
+the general definition syntax, see the [OpenQASM 3.0 specification](https://openqasm.com/versions/3.0/language/gates.html#hierarchical-gates-definitions).
+
+```openqasm
+OPENQASM 3.0;
+include "stdgates.inc";
+gate implementation a, b {
+cx a, b;
+}
+```
+
+The ports are `Bit` or the ordered pair `(Bit, Bit)`. Formal `a` is the
+low coordinate and formal `b` is the high coordinate. The resource report
+counts formal wires, literal gate lines, and the `t`/`tdg` subset. Hardware
+scheduling and compiler/search work use separate measures. The required
+request fields common to both variants are:
+
+| Field | Value |
+| --- | --- |
+| `format`, `version` | `qleisli.engineering-openqasm-gate-request`, `1` |
+| `claim_kind` | `engineering-target-operator-resource-bound` |
+| `metric` | `pure-euclidean-operator-norm-v1` |
+| `checker_profile` | `canonical-gate-frobenius-r8-v1` |
+| `target_profile` | `openqasm3-canonical-ordered-gate-r8-v1` |
+| `composition` | `ordered-sequential-two-v1` or `controlled-low-selector-v1` |
+| `error_category` | `implementation-distance` |
+| `epsilon` | Closed canonical nonnegative dyadic with `numerator` and `denominator_bits` |
+| `resource_limits` | Object with model `openqasm3-ordered-gate-literal-gates-v1` and integer `gates` and `t_gates` ceilings from 0 through 8 |
+
+An ideal description has exactly `expected_artifact` and `leaf`. The former
+is the original UTF-8 QIRF text; the latter contains exactly `input`, `output`
+and `matrix` in the finite pure-leaf format. The checker verifies each
+original ideal independently against that exact port and matrix request. The
+canonical dyadic and finite coefficient encodings match `compare-pure` above.
+
+- `ordered-sequential-two-v1` additionally requires `split`, `first` and
+  `second`. `split` is the number of literal instructions in the first slice.
+  `first` and `second` each have exactly `ideal` and `epsilon`. The two
+  comparisons use the same full port tree. The checked dyadic sum of the
+  component budgets equals the requested total. The same decoded slices
+  constitute the whole word, in first-then-second order. The additive bound
+  applies to this composition for every finite external reference.
+- `controlled-low-selector-v1` additionally requires `ideal` over one `Bit`.
+  The desired action on `a, b` is identity on selector zero and exactly the
+  ideal operator on selector one. The checker compares the entire literal
+  two-wire matrix with that controlled operator. Scalar phase in the active
+  sector enters the metric as a relative phase. The norm bound extends to
+  arbitrary finite external references.
+
+The native checker reconstructs the literal actions over the exact R8 carrier
+and uses the sufficient Frobenius comparison for the selected operator metric.
+It checks the reported literal counts under the same request and remaining-work
+counter. The execution view contains the original bytes, the decoded ordered
+instructions, the closed budgets and the fresh ideal graphs. Changing any of
+the artifact, profile, metric, budget, split or ideal requires a fresh check.
+Timeouts and refusals return an error. The engineering result is scoped to the
+named approximation and literal resource bounds. Exact target correspondence,
+source capabilities and constitutional PR/RS require their own checks, including
+when a numerical search selected the circuit or the engineering epsilon is zero.
+
 ## Quantitative resource claims
 
 A resource certificate must identify the actual closed instance, emitted

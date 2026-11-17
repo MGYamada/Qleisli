@@ -8,10 +8,10 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Protocol.EngineeringPure
 open Lean Finite Semantics.Exact
 
-private def adapt {α : Type} (value : Except String α) : WorkM α :=
+def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .invalid)
 
-private def fields (value : Json) (names : List String) : Except String Unit := do
+def fields (value : Json) (names : List String) : Except String Unit := do
   let actual := (← value.getObj?).toList.map (·.1)
   if actual.length != names.length || !actual.all names.contains then throw "unexpected engineering fields"
 
@@ -28,12 +28,20 @@ structure Leaf where
   output : Semantics.Raw.Port
   required : Matrix
 
-private def leaf (value : Json) : WorkM Leaf := do
+def leaf (value : Json) : WorkM Leaf := do
   adapt (fields value ["input","output","matrix"])
   let input ← adapt (port (← adapt (value.getObjVal? "input")))
   let output ← adapt (port (← adapt (value.getObjVal? "output")))
   let required ← FiniteCodec.readMatrixValue (← adapt (value.getObjVal? "matrix"))
   return ⟨input,output,required⟩
+
+def readBound (value : Json) : WorkM Coefficient := do
+  adapt (fields value ["numerator","denominator_bits"])
+  let numerator ← adapt ((← adapt (value.getObjVal? "numerator")).getStr?)
+  let exponent ← adapt ((← adapt (value.getObjVal? "denominator_bits")).getNat?)
+  let epsilon ← lift (dyadicRead ⟨numerator,exponent⟩)
+  guard (epsilon.numerator ≥ 0) .request
+  return epsilon
 
 structure Decoded where
   domain : Semantics.Finite.Basis
@@ -62,12 +70,7 @@ def decode (value : Json) : WorkM Decoded := do
   let codomain ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "codomain")))
   let actual ← leaf (← adapt (value.getObjVal? "actual"))
   let ideal ← leaf (← adapt (value.getObjVal? "ideal"))
-  let epsilonValue ← adapt (value.getObjVal? "epsilon")
-  adapt (fields epsilonValue ["numerator","denominator_bits"])
-  let numerator ← adapt ((← adapt (epsilonValue.getObjVal? "numerator")).getStr?)
-  let exponent ← adapt ((← adapt (epsilonValue.getObjVal? "denominator_bits")).getNat?)
-  let epsilon ← lift (dyadicRead ⟨numerator,exponent⟩)
-  guard (epsilon.numerator ≥ 0) .request
+  let epsilon ← readBound (← adapt (value.getObjVal? "epsilon"))
   let expectedText ← adapt ((← adapt (value.getObjVal? "expected_artifact")).getStr?)
   guard (!expectedText.isEmpty && expectedText.utf8ByteSize ≤ Validity.maxFileBytes) .limit
   return ⟨domain,codomain,actual,ideal,epsilon,expectedText⟩

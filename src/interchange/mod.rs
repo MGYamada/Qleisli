@@ -4,6 +4,7 @@ pub mod carrier;
 mod codec;
 pub mod engineering_instrument;
 pub mod engineering_openqasm;
+pub mod engineering_openqasm_gate;
 pub mod engineering_pure;
 pub mod engineering_pure_tensor;
 mod execution_view;

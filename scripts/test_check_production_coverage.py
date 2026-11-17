@@ -18,13 +18,13 @@ class ProductionCoverage(unittest.TestCase):
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
         self.assertEqual(result['groups'], len(self.inventory['groups']))
-        self.assertEqual(result['groups'], 50)
-        self.assertEqual(result['public_boundaries'], 28)
+        self.assertEqual(result['groups'], 51)
+        self.assertEqual(result['public_boundaries'], 29)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 42)
-        self.assertEqual(result['native_modes'], 20)
+        self.assertEqual(result['production_paths'], 43)
+        self.assertEqual(result['native_modes'], 21)
         self.assertEqual(result['published_baseline'], '0.2.9')
         product = tomllib.loads((coverage.ROOT / 'Cargo.toml').read_text())['package']
         self.assertEqual(result['development_version'], product['version'])
