@@ -71,6 +71,25 @@ private theorem root_entry_empty {dependencies program}
   change prepared.entry.classical = []
   rw [(pure_success _ _ _ _ returned).1]
 
+/-- The actual pure runner and the prepared Raw block determine the literal
+instruction shape and the empty classical entry. -/
+theorem replayed_pure_shape {artifact root execution rootOwner rootName owner name}
+    (next : BlockRunner artifact root execution) (boundary : OutputBoundary)
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
+    {program : Semantics.Observation.Program} (request : Context)
+    (plan : execution.queries.BodyData source request)
+    (history : RuntimeStructuralAction.SourceState) (ordinary : RuntimeOrdinaryBody.State)
+    (prepared : RuntimeInterval.Prepared root.dependencies program)
+    (result : BlockResult root.dependencies program prepared.block × List execution.Receipt)
+    (checked : RuntimeInterval.Computed
+      (runBlockStep artifact root execution next .pureBody boundary source path program request
+        plan history ordinary prepared.block) result) :
+    PureBlock prepared.block := by
+  obtain ⟨empty,literal⟩ := pure_guard_shape artifact root execution next boundary
+    source path program request plan history ordinary prepared.block result checked
+  exact ⟨root_entry_empty prepared empty,literal⟩
+
 /-- Pure mode supplies the literal instruction shape and empty ordinary
 entry on the actual provider block, from its own successful preparation. -/
 theorem checked_pure_shape {artifact root owner name signature program request bindings}
@@ -91,10 +110,8 @@ theorem checked_pure_shape {artifact root owner name signature program request b
       (runBlockStep artifact root (.fresh .strict) (runBlockCore artifact root (.fresh .strict) 127)
         .pureBody .rootOrder (.whole body) (.root body) program request () history {} native.block) actual :=
     ⟨work,afterCore,coreRead⟩
-  obtain ⟨empty,literal⟩ := pure_guard_shape artifact root (.fresh .strict)
-    (runBlockCore artifact root (.fresh .strict) 127)
-    .rootOrder (.whole body) (.root body) program request () history {} native.block actual original
-  exact ⟨root_entry_empty native empty,literal⟩
+  exact replayed_pure_shape (runBlockCore artifact root (.fresh .strict) 127)
+    .rootOrder (.whole body) (.root body) request () history {} native actual original
 
 /-- The exact no-leak receipt intertwines physical and logical actions on
 all joint input/reference coefficients, including rectangular port codes. -/
@@ -129,6 +146,7 @@ theorem checked_native_action {artifact context description graph index request 
       native.prepared.ports.noClassical.1 native.prepared.physical work left reconstructed,
     fun joint row reference bounded => code_action native.prepared.equations joint row reference bounded⟩
 
+#print axioms replayed_pure_shape
 #print axioms checked_pure_shape
 #print axioms checked_native_action
 end Qleisli.RuntimePureProviderNative

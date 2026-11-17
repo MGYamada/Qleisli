@@ -8,7 +8,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace Qleisli.RuntimeSelectionGraphSource
 open QleisliKernel QleisliKernel.Qirf QleisliKernel.SourceTypes
 open RuntimeSelectionSteps (Edge)
-open RuntimeSelectionLogicalRead (FromArms GraphData GraphLogical)
+open RuntimeSelectionLogicalRead (FromArms GraphData GraphLogical NamedArmLogical)
 open Qleisli.RuntimeNamedChildRuns (SelectionOrigin)
 open RuntimeGraphCoefficients (Agrees Coefficient)
 
@@ -17,14 +17,15 @@ abbrev execution (artifact : Artifact) (catalogue : GenericCatalogue.Checked art
   .planned (RuntimeBodyOperations.preparation artifact catalogue)
     (RuntimeBodyOperations.stagedConsumption artifact catalogue root)
 
-def ArmEvaluatedWith {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
-    (root : Validity.Root) (scope : List Edge) {owner name offset selector target}
-    (table : QuantumArms.Table artifact.sources owner name offset selector target)
-    (index : Fin table.arms.length) (matrix : Semantics.Exact.Matrix) (source : Coefficient) : Prop :=
-  ∃ data : GraphData (execution artifact catalogue root).queries table index,
+def NamedArmEvaluatedWith {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (scope : List Edge) {owner selector target}
+    (arm : QuantumArms.BoundArm artifact.sources owner selector target)
+    (matrix : Semantics.Exact.Matrix) (source : Coefficient) : Prop :=
+  ∃ data : (execution artifact catalogue root).queries.GraphData arm.operation.graph
+      OperationAccess.controllable (.arm arm.operation),
     match data with
     | ⟨implementations,references,plan⟩ =>
-      let operation := (table.arms[index]).operation
+      let operation := arm.operation
       let request : RuntimeGraphOperation.Request artifact :=
         ⟨_,_,operation.graph,OperationAccess.controllable,implementations,references,.arm operation⟩
       let continuation := RuntimeBodyOperations.stagedConsumption artifact catalogue root
@@ -34,22 +35,37 @@ def ArmEvaluatedWith {artifact : Artifact} (catalogue : GenericCatalogue.Checked
         evidence.checked.outcome.records.foldlM (RuntimeGraphSourceEvaluation.advance scope) [] = some [source] ∧
         Agrees evidence.checked.value source
 
+abbrev ArmEvaluatedWith {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (scope : List Edge) {owner name offset selector target}
+    (table : QuantumArms.Table artifact.sources owner name offset selector target)
+    (index : Fin table.arms.length) (matrix : Semantics.Exact.Matrix) (source : Coefficient) : Prop :=
+  NamedArmEvaluatedWith catalogue root scope table.arms[index] matrix source
+
 def ArmEvaluated {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
     (root : Validity.Root) (scope : List Edge) {owner name offset selector target}
     (table : QuantumArms.Table artifact.sources owner name offset selector target)
     (index : Fin table.arms.length) (matrix : Semantics.Exact.Matrix) : Prop :=
   ∃ source, ArmEvaluatedWith catalogue root scope table index matrix source
 
+/-- The same staged graph evaluation is used for a named operation in either arm table. -/
+theorem named_arm_evaluated {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (scope : List Edge) {owner selector target}
+    (arm : QuantumArms.BoundArm artifact.sources owner selector target)
+    (matrix : Semantics.Exact.Matrix)
+    (original : ∃ data, NamedArmLogical (execution artifact catalogue root) arm data matrix) :
+    ∃ source, NamedArmEvaluatedWith catalogue root scope arm matrix source := by
+  obtain ⟨⟨implementations,references,plan⟩,original⟩ := original
+  obtain ⟨evidence,read,same⟩ := original
+  obtain ⟨source,ran,related⟩ := RuntimeGraphSourceEvaluation.checked_graph evidence.checked scope
+  exact ⟨source,⟨implementations,references,plan⟩,evidence,read,same,ran,related⟩
+
 theorem arm_evaluated {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
     (root : Validity.Root) (scope : List Edge) {owner name offset selector target}
     (table : QuantumArms.Table artifact.sources owner name offset selector target)
     (index : Fin table.arms.length) (matrix : Semantics.Exact.Matrix)
     (original : ∃ data, GraphLogical (execution artifact catalogue root) table index data matrix) :
-    ArmEvaluated catalogue root scope table index matrix := by
-  obtain ⟨⟨implementations,references,plan⟩,original⟩ := original
-  obtain ⟨evidence,read,same⟩ := original
-  obtain ⟨source,ran,related⟩ := RuntimeGraphSourceEvaluation.checked_graph evidence.checked scope
-  exact ⟨source,⟨implementations,references,plan⟩,evidence,read,same,ran,related⟩
+    ArmEvaluated catalogue root scope table index matrix :=
+  named_arm_evaluated catalogue root scope table.arms[index] matrix original
 
 /-- The literal selection's original arm table is related in selector order
 to the independently evaluated source graphs, using the same planned reader. -/
@@ -67,6 +83,7 @@ theorem planned_selection_sources {artifact : Artifact} (catalogue : GenericCata
   exact ⟨owner,name,source,offset,selector,target,naturals,writtenScope,table,read,
     arms.weaken (arm_evaluated catalogue root scope table)⟩
 
+#print axioms named_arm_evaluated
 #print axioms arm_evaluated
 #print axioms planned_selection_sources
 end Qleisli.RuntimeSelectionGraphSource

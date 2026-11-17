@@ -44,32 +44,32 @@ theorem pureLeafRefinement_of_semantic {dependencies program block}
 
 /-- Pure named children recurse at their written occurrence. The child
 operator receives the same original source history in each spectator column. -/
-noncomputable def pureRecursiveSourceSteps {dependencies}
-    (leaves : ScopedSourceSteps dependencies) : Nat → ScopedSourceSteps dependencies
-  | 0 => leaves
+noncomputable def pureRecursiveSourceStepsAt {dependencies}
+    (leaves : Nat → ScopedSourceSteps dependencies) : Nat → ScopedSourceSteps dependencies
+  | 0 => leaves 0
   | depth+1 => fun scope prior step source =>
     match step with
     | .pure (.named ..) =>
-      evaluateOriginalPureNamed (pureRecursiveSourceSteps leaves depth) scope prior.length step source
-    | _ => leaves scope prior step source
+      evaluateOriginalPureNamed (pureRecursiveSourceStepsAt leaves depth) scope prior.length step source
+    | _ => leaves (depth+1) scope prior step source
 
 /-- Induct on the real callback fuel and retain the exact empty ordinary
 frame and original checked steps through every pure named call. -/
-theorem pureRecursiveSourceSteps_refine {artifact : Artifact} {root : Validity.Root}
+theorem pureRecursiveSourceStepsAt_refine {artifact : Artifact} {root : Validity.Root}
     {mode : RuntimePureBody.ExecutionMode artifact root}
-    (leaves : ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs)
+    (leaves : Nat → ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs)
     (localLeaves : ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)), PureBlock block →
       ∀ inherited,
       StepRefinement steps
         (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧ NeedsPureLeaf step)
-        (leaves scope) (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
+        (leaves depth scope) (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
         (inherited.map (fun holds id => ¬ holds id))) :
     ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)), PureBlock block →
       (∀ first ∈ steps, IsPureLiteral first) → ∀ inherited,
       StepRefinement steps
         (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧
           PureCallAt (runBlockCore artifact root mode depth) origin {} step)
-        (pureRecursiveSourceSteps leaves depth scope)
+        (pureRecursiveSourceStepsAt leaves depth scope)
         (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
         (inherited.map (fun holds id => ¬ holds id)) := by
   intro depth
@@ -95,7 +95,7 @@ theorem pureRecursiveSourceSteps_refine {artifact : Artifact} {root : Validity.R
       cases node
       case named =>
         exact pure_named_successor checked.2 shape
-          inputs inherited (pureRecursiveSourceSteps leaves depth) scope prior.length
+          inputs inherited (pureRecursiveSourceStepsAt leaves depth) scope prior.length
           (fun {childProgram childBlock} childScope childSteps childShape childPure childInherited =>
             ih (program := childProgram) (block := childBlock) childScope childSteps
               childShape childPure childInherited)
@@ -105,6 +105,31 @@ theorem pureRecursiveSourceSteps_refine {artifact : Artifact} {root : Validity.R
           owners ordinary read
     all_goals exact False.elim purity
 
+/-- Use one shared leaf evaluator at every level. -/
+noncomputable abbrev pureRecursiveSourceSteps {dependencies}
+    (leaves : ScopedSourceSteps dependencies) : Nat → ScopedSourceSteps dependencies :=
+  pureRecursiveSourceStepsAt (fun _ => leaves)
+
+theorem pureRecursiveSourceSteps_refine {artifact : Artifact} {root : Validity.Root}
+    {mode : RuntimePureBody.ExecutionMode artifact root}
+    (leaves : ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs)
+    (localLeaves : ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)), PureBlock block →
+      ∀ inherited,
+      StepRefinement steps
+        (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧ NeedsPureLeaf step)
+        (leaves scope) (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
+        (inherited.map (fun holds id => ¬ holds id))) :
+    ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block)), PureBlock block →
+      (∀ first ∈ steps, IsPureLiteral first) → ∀ inherited,
+      StepRefinement steps
+        (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧
+          PureCallAt (runBlockCore artifact root mode depth) origin {} step)
+        (pureRecursiveSourceSteps leaves depth scope)
+        (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
+        (inherited.map (fun holds id => ¬ holds id)) :=
+  pureRecursiveSourceStepsAt_refine (fun _ => leaves) inputs origin localLeaves
+
 #print axioms pureLeafRefinement_of_semantic
+#print axioms pureRecursiveSourceStepsAt_refine
 #print axioms pureRecursiveSourceSteps_refine
 end Qleisli.RuntimeLiteralBody

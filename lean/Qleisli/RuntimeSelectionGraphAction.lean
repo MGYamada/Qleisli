@@ -18,6 +18,44 @@ open RuntimeLiteralBody
 open RuntimeNamedSourceFlow (Aligned)
 open RuntimeNamedChildRuns (OrdinaryAligned)
 
+/-- At each selector ordinal, link the actual written arm's action to the
+parent's independently evaluated Raw sector on arbitrary reference columns. -/
+theorem written_arm_sector_action {sources owner name offset selectorBasis targetBasis Arm written armOrdinal}
+    (source : QuantumArms.TableWith sources owner name offset selectorBasis targetBasis Arm written armOrdinal)
+    (produced : Fin source.arms.length → Matrix → Prop)
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode : Matrix} {selectorBits targetBits : Nat} {retained : Raw.Sector.Retained}
+    (restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits targetBits]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained)
+    {labels : List Nat} {arms logical : List Matrix}
+    (equations : RuntimeInterval.Computed
+      (NominalSector.checkLogicals inputCode outputCode retained.sectors labels arms) logical)
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
+    (origin : RuntimeSelectionLogicalRead.FromArms source produced
+      (.selection frame selectorBits targetBits retained restricted inputCode outputCode labels arms logical equations codes layouts))
+    (ordinal : Fin labels.length) :
+    ∃ index matrix, armOrdinal source.arms[index] = ordinal.val ∧ produced index matrix ∧
+      ∀ {Reference : Type} (joint : Nat → Nat → Reference → ℂ) (row : Nat) (ref : Reference), row < outputCode.rows →
+        let label := labels[ordinal.val]
+        let action := Qleisli.Semantics.Exact.action
+        Qleisli.Semantics.RawAction.circuit dependencies retained.steps
+            (fun coordinate => Qleisli.NominalSector.encodedTargets selectorBits inputCode joint coordinate ref)
+            (FiniteRestriction.pack selectorBits label row) =
+          action outputCode (fun output reference => action matrix (joint label) output reference) row ref := by
+  have length := congrArg List.length origin.2.2.1
+  obtain ⟨index,matrix,written,found,fromArm⟩ := origin.at_ordinal ⟨ordinal.val,length ▸ ordinal.isLt⟩
+  obtain ⟨_,table⟩ := RuntimeMultiwayGram.ordinal_table equations
+  have requested : arms[ordinal.val]? = some (table.arm ordinal) := List.getElem?_eq_getElem (table.count.symm ▸ ordinal.isLt)
+  have actionEq := Option.some.inj (requested.symm.trans found)
+  obtain ⟨work,left,read⟩ := restricted
+  have literal := Raw.Sector.read_bound _ _ _ _ _ work left read
+  refine ⟨index,matrix,written,fromArm,?_⟩
+  intro Reference joint row ref bounded
+  simpa only [actionEq] using
+    Qleisli.NominalSector.read_logical_sector_action literal (table.arm_checked ordinal) joint row ref bounded
+
 private theorem target_shapes
     {dependencies program block start count inputs outputs selector target}
     (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
@@ -227,6 +265,7 @@ theorem planned_selection_history {artifact : Artifact} (catalogue : GenericCata
   exact ⟨coefficients,expected,ordered.2.2.2.1,evaluated,paired⟩
 
 #print axioms original_coefficients
+#print axioms written_arm_sector_action
 #print axioms planned_selection_history
 #print axioms planned_selection_action
 end Qleisli.RuntimeSelectionGraphAction
