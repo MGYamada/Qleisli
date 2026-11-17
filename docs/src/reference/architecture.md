@@ -77,7 +77,8 @@ successful or advertising an unproved scope as constitutionally certified.
 The language and ecosystem are the executable surface of these constraints.
 Parsing, name resolution, type/effect/ownership preparation, evidence generation
 and lowering apply the authorized contracts. Native Lean checking supplies new
-semantic accepted handles under the [production boundary](production-boundary.md).
+semantic accepted handles under the
+[constitutional theorem boundary](production-boundary.md#constitutional-theorem-boundary).
 Rust proposals, authored source and external IR all remain subject to the
 applicable independent checks. Native absence, incompatibility or failure rejects
 without fallback to another acceptance authority.
@@ -110,7 +111,9 @@ likely classical assumption, the canonical Qleisli construct where available,
 and a recovery that preserves the contract. For example, a missing explicit
 Op provider names the unresolved binding; it does not search for a convenient
 implementation. A quantum wildcard must not silently consume an owner.
-Text and JSON describe the same failure and source location.
+Text and JSON describe the same failure and source location. The
+[diagnostic reference](diagnostics.md) lists categories, recovery guidance,
+and conformance cases.
 
 An unfamiliar derived stdlib abstraction should have an inspectable recovery
 path: read its signature, inspect the ordinary checked `.qli` implementation,
