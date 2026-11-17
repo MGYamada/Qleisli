@@ -1,12 +1,15 @@
 //! Shared source execution for the text and JSON CLI transports.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 
 use qleisli::frontend::compile::ProjectCheckReport;
 use qleisli::frontend::diagnostic::Diagnostic;
 use qleisli::frontend::project::{Project, QrateSource, SourcePolicy};
-use qleisli::sim::{Sample, SimulationError, SimulationLimits, run_closed};
+use qleisli::sim::{
+    ExactZeroUnavailable, Sample, SimulationError, SimulationLimits, run_closed,
+    terminal_exact_zeros,
+};
 
 use super::options::Options;
 
@@ -64,7 +67,10 @@ impl Input {
 
 pub(super) enum Success {
     Checked(ProjectCheckReport),
-    Distribution(BTreeMap<Vec<bool>, f64>),
+    Distribution {
+        probabilities: BTreeMap<Vec<bool>, f64>,
+        exact_zeros: Option<Result<BTreeSet<Vec<bool>>, ExactZeroUnavailable>>,
+    },
     Samples {
         shots: Vec<Sample>,
         seed: u64,
@@ -88,6 +94,8 @@ pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failu
     let kernel = options
         .kernel(project.edition())
         .map_err(|error| Diagnostic {
+            counterexample: error.counterexample,
+            boundary: None,
             code: error.code,
             message: error.message,
             primary: None,
@@ -108,5 +116,11 @@ pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failu
     }
     let distribution =
         run_closed(&program, SimulationLimits::default()).map_err(Failure::Simulation)?;
-    Ok(Success::Distribution(distribution))
+    let exact_zeros = options
+        .show_exact_zeros
+        .then(|| terminal_exact_zeros(&program));
+    Ok(Success::Distribution {
+        probabilities: distribution,
+        exact_zeros,
+    })
 }

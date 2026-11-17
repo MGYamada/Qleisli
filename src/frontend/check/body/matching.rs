@@ -16,11 +16,29 @@ impl Checker<'_, '_> {
         span: Span,
     ) -> Result<()> {
         let Kind::Nominal(nominal) = &scrutinee.kind else {
-            return Err(SourceError::new(
+            let mut error = SourceError::new(
                 "type",
                 span,
                 "ordinary match requires an ordinary enum; a live Q<T> cannot be inspected or implicitly measured",
-            ));
+            );
+            if let Some(basis) = scrutinee.quantum_basis() {
+                error.message.push_str(
+                    ". Coherent `qmatch` selects checked controlled arms on a separate target while preserving coherence between selector sectors.",
+                );
+                match &basis.kind {
+                    Kind::Bit => error.message.push_str(
+                        " For a `Q<Bit>` selector, the form is `qmatch(selector, target) { 0 => first, 1 => second }`.",
+                    ),
+                    Kind::Nominal(nominal) if matches!(&nominal.body, Body::Enum(_)) => {
+                        error.message.push_str(
+                            " Use the exact enum variant labels, for example `qmatch(selector, target) { Tag::A => first, Tag::B => second }` for a two-variant `Tag`.",
+                        );
+                    }
+                    _ => error.message.push_str(" The selector basis must support exact labels."),
+                }
+                error = error.with_control_flow_boundary(ControlFlowBoundary::MatchSelector);
+            }
+            return Err(error);
         };
         let Body::Enum(variants) = &nominal.body else {
             return Err(SourceError::new(

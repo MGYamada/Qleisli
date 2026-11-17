@@ -81,7 +81,36 @@ class JsonCliTests(unittest.TestCase):
         else:
             self.assertEqual(result["diagnostics"], [])
         for diagnostic in result["diagnostics"]:
-            self.assertEqual(set(diagnostic), {"code", "severity", "message", "primary", "related"})
+            fields = {"code", "severity", "message", "primary", "related"}
+            if "counterexample" in diagnostic:
+                fields.add("counterexample")
+                coordinates = diagnostic["counterexample"]
+                self.assertEqual(set(coordinates), {"input_column", "output_row"})
+                for index in coordinates.values():
+                    self.assertIs(type(index), int)
+                    self.assertGreaterEqual(index, 0)
+            boundary_fields = {"ownership_boundary", "control_flow_boundary"} & diagnostic.keys()
+            self.assertLessEqual(len(boundary_fields), 1)
+            fields.update(boundary_fields)
+            if "ownership_boundary" in diagnostic:
+                boundary = diagnostic["ownership_boundary"]
+                self.assertEqual(set(boundary), {"boundary", "reason", "applies_to"})
+                self.assertEqual(boundary["boundary"], "affine_to_linear")
+                self.assertIn(boundary["reason"], {
+                    "unresolved_disposal", "implicit_quantum_disposal", "clean_workspace_return",
+                    "dirty_workspace_return", "computed_workspace_return",
+                })
+                expected_scope = ("if_live_quantum_owner" if boundary["reason"] == "unresolved_disposal"
+                                  else "live_quantum_owner")
+                self.assertEqual(boundary["applies_to"], expected_scope)
+            if "control_flow_boundary" in diagnostic:
+                boundary = diagnostic["control_flow_boundary"]
+                self.assertEqual(set(boundary), {"boundary", "reason"})
+                self.assertEqual(boundary["boundary"], "classical_quantum_control")
+                self.assertIn(boundary["reason"], {
+                    "if_condition", "qif_control", "match_selector", "qmatch_selector", "for_carry", "qfor_carry",
+                })
+            self.assertEqual(set(diagnostic), fields)
             self.assertEqual(diagnostic["severity"], "error")
             for related in diagnostic["related"]:
                 self.assertEqual(set(related), {"message", "location"})
@@ -90,6 +119,21 @@ class JsonCliTests(unittest.TestCase):
             if diagnostic["primary"] is not None:
                 self.assertEqual(set(diagnostic["primary"]), {"path", "start", "end", "line", "column"})
         return result
+
+    def test_source_boundary_reasons_keep_the_existing_error_code(self):
+        self.source("unitary fn f(q:Q<Bit>)->Q<Bit>{drop(0);q}")
+        disposal = self.invoke("check", self.root, "--format=json", status=1)["diagnostics"][0]
+        self.assertEqual(disposal["code"], "unknown_name")
+        self.assertEqual(disposal["ownership_boundary"], {
+            "boundary": "affine_to_linear", "reason": "unresolved_disposal", "applies_to": "if_live_quantum_owner",
+        })
+
+        self.source("unitary fn f(q:Q<Bit>)->Bit{if q {1} else {0}}")
+        control = self.invoke("check", self.root, "--format=json", status=1)["diagnostics"][0]
+        self.assertEqual(control["code"], "type_mismatch")
+        self.assertEqual(control["control_flow_boundary"], {
+            "boundary": "classical_quantum_control", "reason": "if_condition",
+        })
 
     def test_check_run_and_distribution_order(self):
         self.source("use std::state::init0;  \n"

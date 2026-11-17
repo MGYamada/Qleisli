@@ -108,6 +108,10 @@ const MAX_TUPLE_FIELDS: usize = 64;
 const MAX_IMPORT_PREFIX_IDENTIFIERS: usize = 65_536;
 const MAX_IMPORT_PREFIX_BYTES: usize = 1_048_576;
 
+const QIF_FORM: &str = "qif(control, target) { 0 => first, 1 => second }";
+const QMATCH_FORM: &str = "qmatch(selector, target) { 0 => first, 1 => second }";
+const QFOR_FORM: &str = "qfor static i in 0..count carry owner = input { yield owner; }";
+
 struct Parser {
     tokens: Vec<Token>,
     pos: usize,
@@ -1220,6 +1224,9 @@ impl Parser {
             } else {
                 self.expr()?
             };
+            if let Some(error) = self.invented_quantum_statement(&expr) {
+                return Err(error);
+            }
             if !yielded && self.consume(&TokenKind::Equals).is_some() {
                 let ExprKind::Name(target) = expr.kind else {
                     return Err(ParseError {
@@ -1268,6 +1275,43 @@ impl Parser {
                 span: Span::new(start, close.span.end),
             });
         }
+    }
+
+    fn invented_quantum_statement(&self, expression: &Expr) -> Option<ParseError> {
+        // Adjacent bare names cannot complete a valid block expression. Keep
+        // these spellings available as ordinary names, including call targets.
+        let ExprKind::Name(name) = &expression.kind else {
+            return None;
+        };
+        if expression.span != name.span || !matches!(self.current().kind, TokenKind::Ident(_)) {
+            return None;
+        }
+        let guidance = match name.text.as_str() {
+            "qlet" => {
+                "Use an ordinary binding such as `let owner = value;`. A `Q<A>` value carries quantum ownership."
+            }
+            "qreturn" => {
+                "Use the final expression of the block to return a value. The same syntax returns a `Q<A>` owner."
+            }
+            "qmove" => {
+                "Use an ordinary expression such as `let next = owner;`. Ownership follows from the `Q<A>` type."
+            }
+            "qmut" => {
+                "Use ordinary binding syntax for `Q<A>` values. A function argument can specify temporary exclusive access with `excl owner` where the function admits it."
+            }
+            _ => return None,
+        };
+        Some(ParseError {
+            message: format!("Unexpected `{}` statement form. {guidance}", name.text),
+            span: name.span,
+        })
+    }
+
+    fn expect_form(&mut self, expected: &TokenKind, form: &str) -> Result<Token, ParseError> {
+        self.expect(expected).map_err(|error| ParseError {
+            message: format!("{}. Use the form `{form}`.", error.message),
+            span: error.span,
+        })
     }
 
     fn pattern(&mut self) -> Result<Pattern, ParseError> {
@@ -1845,7 +1889,11 @@ impl Parser {
     #[inline(never)]
     fn static_fold(&mut self, quantum_fold: bool) -> Result<Expr, ParseError> {
         let open = self.bump();
-        self.expect(&TokenKind::Static)?;
+        if quantum_fold {
+            self.expect_form(&TokenKind::Static, QFOR_FORM)?;
+        } else {
+            self.expect(&TokenKind::Static)?;
+        }
         let index = self.natural_ident()?;
         self.expect_word("in")?;
         let start = self.natural()?;
@@ -1872,7 +1920,7 @@ impl Parser {
 
     #[inline(never)]
     fn quantum_match(&mut self, start: Token) -> Result<Expr, ParseError> {
-        self.expect(&TokenKind::LParen)?;
+        self.expect_form(&TokenKind::LParen, QMATCH_FORM)?;
         let selector = Box::new(self.expr()?);
         self.expect(&TokenKind::Comma)?;
         let target = Box::new(self.expr()?);
@@ -1918,7 +1966,7 @@ impl Parser {
                     QuantumLabel::Variant(self.variant_value(name, self.pos))
                 }
             };
-            self.expect(&TokenKind::FatArrow)?;
+            self.expect_form(&TokenKind::FatArrow, QMATCH_FORM)?;
             let operation = self.static_op()?;
             let span = label_start.cover(operation.span);
             arms.push(QuantumMatchArm {
@@ -1943,17 +1991,17 @@ impl Parser {
     }
 
     fn quantum_if(&mut self, start: Token) -> Result<Expr, ParseError> {
-        self.expect(&TokenKind::LParen)?;
+        self.expect_form(&TokenKind::LParen, QIF_FORM)?;
         let control = Box::new(self.expr()?);
         self.expect(&TokenKind::Comma)?;
         let target = Box::new(self.expr()?);
         self.expect(&TokenKind::RParen)?;
         self.expect(&TokenKind::LBrace)?;
-        self.expect(&TokenKind::Zero)?;
+        self.expect_form(&TokenKind::Zero, QIF_FORM)?;
         self.expect(&TokenKind::FatArrow)?;
         let zero = self.reference_name()?;
         self.expect(&TokenKind::Comma)?;
-        self.expect(&TokenKind::One)?;
+        self.expect_form(&TokenKind::One, QIF_FORM)?;
         self.expect(&TokenKind::FatArrow)?;
         let one = self.reference_name()?;
         let end = self.expect(&TokenKind::RBrace)?;

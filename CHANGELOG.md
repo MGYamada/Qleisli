@@ -4,12 +4,33 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Add opt-in `run --show-exact-zeros` annotations for bounded terminal
+  distributions, including `LiftBasis` initialization and ordered readout.
+  Keep numerical values, JSON and sampling unchanged (#133).
+- Explain Rust's affine ownership and Qleisli's linear quantum ownership at
+  implicit disposal errors, with specific return guidance for clean, dirty
+  and computed workspace. Unresolved `drop` and `forget` calls receive
+  conditional guidance at the original callee (#226). JSON includes an
+  optional `ownership_boundary` object.
+- Explain ordinary and coherent control where selector or carry types fail
+  their source contracts. Text names the relevant construct and JSON includes
+  an optional `control_flow_boundary` object (#224). Rust callers constructing
+  `CompileError` or `Diagnostic` use `boundary: None` for unrelated errors and
+  `..` in patterns that only need the previous fields.
 - Check closed sequential and phase-sensitive controlled approximation
   budgets against literal OpenQASM gate definitions, with the formal wire
   and gate counts bound to the same engineering request (#163).
 - Reject Unicode 17.0.0 default-ignorable and format characters throughout
   source, including comments and documentation input. Report the code point
   and its original UTF-8 byte span (#245).
+- Point static operation type mismatches at the operand in text and JSON.
+  Show both declared types and explain how to reshape equal-leaf product
+  trees without changing their order (#272).
+- Label exact contract counterexamples by their declared input and output
+  basis trees. JSON retains numeric matrix coordinates and text prints exact
+  coefficients such as `i` (#270). Public Rust error structs carry an optional
+  `counterexample` field. Set it to `None` on ordinary error literals and use
+  `..` in patterns that only need the previous fields.
 - Prove that accepted terminal OpenQASM packets preserve every original Raw
   output probability from register reset through the decoded measurement word.
   The same native decision binds the pre-readout complex column, the selected
@@ -47,6 +68,9 @@ development milestones from the scope of their evidence.
   for an original structural computed predicate.
 - Instantiate classical Nat predicates for structural computed scopes and
   reuse the same source declaration in ordinary Raw calls.
+- Teach ordinary binding and ownership syntax after invented quantum statements.
+  Show canonical local forms for malformed quantum headers in text and JSON
+  diagnostics (#237).
 
 ## 0.3.0-beta — 2026-10-12
 

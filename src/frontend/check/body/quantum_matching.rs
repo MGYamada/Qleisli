@@ -127,7 +127,21 @@ impl Checker<'_, '_> {
         // including reuse of a logical owner whose physical width is zero.
         let selector = self.expr(&selection.selector, scope, None)?;
         let basis = selector.quantum_basis().ok_or_else(|| {
-            SourceError::new("type", span, "qmatch selector requires one Q<A> owner")
+            let mut error = SourceError::new(
+                "type",
+                span,
+                "qmatch selector requires one Q<A> owner for coherent selection on a separate target",
+            );
+            match &selector.kind {
+                Kind::Bit => error
+                    .message
+                    .push_str(". To branch on an ordinary `Bit`, use ordinary `if`."),
+                Kind::Nominal(nominal) if matches!(&nominal.body, Body::Enum(_)) => error
+                    .message
+                    .push_str(". To distinguish ordinary enum variants, use ordinary `match`."),
+                _ => {}
+            }
+            error.with_control_flow_boundary(ControlFlowBoundary::QmatchSelector)
         })?;
         self.qmatch_labels(basis, &selection.arms, scope, span)?;
         let target = self.expr(&selection.target, scope, None)?;
@@ -137,7 +151,8 @@ impl Checker<'_, '_> {
         for arm in &selection.arms {
             // Reuse qif's full type, Unitary provider and actual access path.
             // This also records every original arm's dependency/obligation.
-            let operation = self.qmatch_operation(&arm.operation, target_basis, scope)?;
+            let operation =
+                self.qmatch_operation(&arm.operation, target_basis, selection.target.span, scope)?;
             access(&operation, Access::Controlled, arm.operation.span)?;
         }
         self.obligation(span, ObligationKind::TransformedMeaning, scope)?;

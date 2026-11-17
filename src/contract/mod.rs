@@ -69,18 +69,42 @@ impl From<ExactError> for ContractError {
     }
 }
 
+/// The first mismatched coefficient of a rejected exact equation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct EquationCounterexample {
+    pub input_column: usize,
+    pub output_row: usize,
+    pub input_basis: String,
+    pub output_basis: String,
+    pub actual: Exact,
+    pub expected: Exact,
+}
+
+impl fmt::Display for EquationCounterexample {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "input |{}⟩, output |{}⟩: actual {}, expected {}",
+            self.input_basis,
+            self.output_basis,
+            self.actual.diagnostic(),
+            self.expected.diagnostic()
+        )
+    }
+}
+
 /// Internal diagnostic detail; the public error variants remain unchanged.
 #[derive(Debug)]
 pub(crate) struct ContractDiagnostic {
     pub(crate) error: ContractError,
-    detail: Option<String>,
+    pub(crate) counterexample: Option<Box<EquationCounterexample>>,
 }
 
 impl From<ContractError> for ContractDiagnostic {
     fn from(error: ContractError) -> Self {
         Self {
             error,
-            detail: None,
+            counterexample: None,
         }
     }
 }
@@ -94,8 +118,8 @@ impl From<ExactError> for ContractDiagnostic {
 impl fmt::Display for ContractDiagnostic {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.error)?;
-        if let Some(detail) = &self.detail {
-            write!(f, "; {detail}")?;
+        if let Some(counterexample) = &self.counterexample {
+            write!(f, "; {counterexample}")?;
         }
         Ok(())
     }
@@ -103,21 +127,38 @@ impl fmt::Display for ContractDiagnostic {
 
 // Diagnostic only, called after a native rejection. Equality here can neither
 // issue evidence nor change a rejection to acceptance.
-pub(crate) fn equation_counterexample(actual: &Matrix, expected: &Matrix) -> Option<String> {
-    if actual.rows() != expected.rows() || actual.cols() != expected.cols() {
+pub(crate) fn equation_counterexample(
+    actual: &Matrix,
+    expected: &Matrix,
+    input: &BasisType,
+    output: &BasisType,
+) -> Option<Box<EquationCounterexample>> {
+    // Validate both type trees before recursively rendering an untrusted label.
+    let input_width = input.bits().ok()?;
+    let output_width = output.bits().ok()?;
+    if actual.rows() != expected.rows()
+        || actual.cols() != expected.cols()
+        || actual.cols() != 1 << input_width
+        || actual.rows() != 1 << output_width
+    {
         return None;
     }
-    for column in 0..actual.cols() {
-        for row in 0..actual.rows() {
-            let index = row * actual.cols() + column;
-            let a = actual.entries()[index];
-            let b = expected.entries()[index];
-            if a != b {
-                return Some(format!(
-                    "input column {column}, output row {row} (zero-based): actual {}, expected {}",
-                    a.diagnostic(),
-                    b.diagnostic()
-                ));
+    for input_column in 0..actual.cols() {
+        for output_row in 0..actual.rows() {
+            let index = output_row * actual.cols() + input_column;
+            let actual = actual.entries()[index];
+            let expected = expected.entries()[index];
+            if actual != expected {
+                let mut input_index = input_column;
+                let mut output_index = output_row;
+                return Some(Box::new(EquationCounterexample {
+                    input_column,
+                    output_row,
+                    input_basis: input.basis_label(&mut input_index),
+                    output_basis: output.basis_label(&mut output_index),
+                    actual,
+                    expected,
+                }));
             }
         }
     }
@@ -216,6 +257,39 @@ impl BasisType {
             ));
         }
         Ok(bits)
+    }
+
+    // Read each declared leaf from the low end in source order. Unit consumes
+    // no coordinate, and Bits remains a distinct printed register.
+    fn basis_label(&self, index: &mut usize) -> String {
+        fn next_bit(index: &mut usize) -> &'static str {
+            let bit = *index & 1;
+            *index >>= 1;
+            if bit == 0 { "0" } else { "1" }
+        }
+
+        match self {
+            Self::Unit => "()".into(),
+            Self::Bit => next_bit(index).into(),
+            Self::Bits(width) => {
+                let bits: Vec<_> = (0..*width).map(|_| next_bit(index)).collect();
+                format!("Bits<{width}>[{}]", bits.join(", "))
+            }
+            Self::Pair(left, right) => {
+                format!(
+                    "({}, {})",
+                    left.basis_label(index),
+                    right.basis_label(index)
+                )
+            }
+            Self::Tuple(fields) => {
+                let values: Vec<_> = fields
+                    .iter()
+                    .map(|field| field.basis_label(index))
+                    .collect();
+                format!("({})", values.join(", "))
+            }
+        }
     }
 
     fn register(bits: usize) -> Result<Self, ContractError> {
@@ -346,95 +420,114 @@ impl Circuit {
     /// Direct exact column evaluation, independent of the frontend and simulator.
     pub fn matrix(&self, budget: &mut Budget) -> Result<Matrix, ContractError> {
         let dimension = 1usize << self.basis.bits()?;
-        for step in &self.steps {
-            let cost = match &step.action {
-                CircuitAction::Contract { evidence, .. } => 3 * evidence.meaning().rows(),
-                _ => 6,
-            };
-            budget.charge(dimension * dimension * cost)?;
-        }
+        self.charge_columns(dimension, dimension, budget)?;
         let mut matrix = vec![Exact::zero(); dimension * dimension];
         for column in 0..dimension {
-            let mut values = vec![Exact::zero(); dimension];
-            values[column] = Exact::one();
-            for step in &self.steps {
-                let mut next = vec![Exact::zero(); dimension];
-                for (label, value) in values.iter().copied().enumerate() {
-                    if value == Exact::zero() {
-                        continue;
-                    }
-                    let enabled = step
-                        .controls
-                        .iter()
-                        .all(|c| ((label >> c.index) & 1 != 0) == c.when_one);
-                    if !enabled {
-                        next[label] = next[label].add(value)?;
-                        continue;
-                    }
-                    match &step.action {
-                        CircuitAction::Contract {
-                            indices,
-                            evidence,
-                            adjoint,
-                        } => {
-                            let input =
-                                indices.iter().enumerate().fold(0usize, |n, (place, axis)| {
-                                    n | (((label >> axis) & 1) << place)
-                                });
-                            let meaning = evidence.meaning();
-                            let local_dim = meaning.rows();
-                            for output in 0..local_dim {
-                                let entry = if *adjoint {
-                                    meaning.entries()[input * local_dim + output].conjugate()?
-                                } else {
-                                    meaning.entries()[output * local_dim + input]
-                                };
-                                if entry == Exact::zero() {
-                                    continue;
-                                }
-                                let mut target = label;
-                                for (place, axis) in indices.iter().enumerate() {
-                                    target =
-                                        (target & !(1 << axis)) | (((output >> place) & 1) << axis);
-                                }
-                                next[target] = next[target].add(value.mul(entry)?)?;
-                            }
-                        }
-                        CircuitAction::Hadamard { target } => {
-                            let low = label & !(1 << target);
-                            let high = low | (1 << target);
-                            let scaled = value.mul(Exact::inv_sqrt2())?;
-                            next[low] = next[low].add(scaled)?;
-                            let signed = if label == high { scaled.neg()? } else { scaled };
-                            next[high] = next[high].add(signed)?;
-                        }
-                        CircuitAction::Monomial {
-                            indices,
-                            permutation,
-                            phases,
-                        } => {
-                            let input =
-                                indices.iter().enumerate().fold(0usize, |n, (place, axis)| {
-                                    n | (((label >> axis) & 1) << place)
-                                });
-                            let output = usize::from(permutation[input]);
-                            let mut target = label;
-                            for (place, axis) in indices.iter().enumerate() {
-                                target =
-                                    (target & !(1 << axis)) | (((output >> place) & 1) << axis);
-                            }
-                            next[target] = next[target]
-                                .add(value.mul(Exact::phase(i32::from(phases[input])))?)?;
-                        }
-                    }
-                }
-                values = next;
-            }
+            let values = self.column(dimension, column)?;
             for (row, value) in values.into_iter().enumerate() {
                 matrix[row * dimension + column] = value;
             }
         }
         Ok(Matrix::new(dimension, dimension, matrix)?)
+    }
+
+    /// Evaluate only the column needed for a circuit starting in vacuum.
+    pub(crate) fn vacuum_column(&self, budget: &mut Budget) -> Result<Vec<Exact>, ContractError> {
+        let dimension = 1usize << self.basis.bits()?;
+        self.charge_columns(dimension, 1, budget)?;
+        self.column(dimension, 0)
+    }
+
+    fn charge_columns(
+        &self,
+        dimension: usize,
+        columns: usize,
+        budget: &mut Budget,
+    ) -> Result<(), ContractError> {
+        for step in &self.steps {
+            let cost = match &step.action {
+                CircuitAction::Contract { evidence, .. } => 3 * evidence.meaning().rows(),
+                _ => 6,
+            };
+            budget.charge(dimension * columns * cost)?;
+        }
+        Ok(())
+    }
+
+    fn column(&self, dimension: usize, column: usize) -> Result<Vec<Exact>, ContractError> {
+        let mut values = vec![Exact::zero(); dimension];
+        values[column] = Exact::one();
+        for step in &self.steps {
+            let mut next = vec![Exact::zero(); dimension];
+            for (label, value) in values.iter().copied().enumerate() {
+                if value == Exact::zero() {
+                    continue;
+                }
+                let enabled = step
+                    .controls
+                    .iter()
+                    .all(|c| ((label >> c.index) & 1 != 0) == c.when_one);
+                if !enabled {
+                    next[label] = next[label].add(value)?;
+                    continue;
+                }
+                match &step.action {
+                    CircuitAction::Contract {
+                        indices,
+                        evidence,
+                        adjoint,
+                    } => {
+                        let input = indices.iter().enumerate().fold(0usize, |n, (place, axis)| {
+                            n | (((label >> axis) & 1) << place)
+                        });
+                        let meaning = evidence.meaning();
+                        let local_dim = meaning.rows();
+                        for output in 0..local_dim {
+                            let entry = if *adjoint {
+                                meaning.entries()[input * local_dim + output].conjugate()?
+                            } else {
+                                meaning.entries()[output * local_dim + input]
+                            };
+                            if entry == Exact::zero() {
+                                continue;
+                            }
+                            let mut target = label;
+                            for (place, axis) in indices.iter().enumerate() {
+                                target =
+                                    (target & !(1 << axis)) | (((output >> place) & 1) << axis);
+                            }
+                            next[target] = next[target].add(value.mul(entry)?)?;
+                        }
+                    }
+                    CircuitAction::Hadamard { target } => {
+                        let low = label & !(1 << target);
+                        let high = low | (1 << target);
+                        let scaled = value.mul(Exact::inv_sqrt2())?;
+                        next[low] = next[low].add(scaled)?;
+                        let signed = if label == high { scaled.neg()? } else { scaled };
+                        next[high] = next[high].add(signed)?;
+                    }
+                    CircuitAction::Monomial {
+                        indices,
+                        permutation,
+                        phases,
+                    } => {
+                        let input = indices.iter().enumerate().fold(0usize, |n, (place, axis)| {
+                            n | (((label >> axis) & 1) << place)
+                        });
+                        let output = usize::from(permutation[input]);
+                        let mut target = label;
+                        for (place, axis) in indices.iter().enumerate() {
+                            target = (target & !(1 << axis)) | (((output >> place) & 1) << axis);
+                        }
+                        next[target] =
+                            next[target].add(value.mul(Exact::phase(i32::from(phases[input])))?)?;
+                    }
+                }
+            }
+            values = next;
+        }
+        Ok(values)
     }
 }
 
@@ -564,7 +657,7 @@ impl CheckedContract {
             Ok(native) => native,
             Err(error) => {
                 let error = native_error(error);
-                let detail = if error == ContractError::EquationMismatch {
+                let counterexample = if error == ContractError::EquationMismatch {
                     (|| {
                         let actual = proposal
                             .circuit
@@ -575,14 +668,22 @@ impl CheckedContract {
                             .output
                             .map
                             .compose(&proposal.contract.logical, budget)?;
-                        Ok::<_, ContractError>(equation_counterexample(&actual, &expected))
+                        Ok::<_, ContractError>(equation_counterexample(
+                            &actual,
+                            &expected,
+                            proposal.contract.input.logical(),
+                            proposal.contract.output.physical(),
+                        ))
                     })()
                     .ok()
                     .flatten()
                 } else {
                     None
                 };
-                return Err(ContractDiagnostic { error, detail });
+                return Err(ContractDiagnostic {
+                    error,
+                    counterexample,
+                });
             }
         };
         budget.charge(native.exact_work())?;
@@ -982,6 +1083,24 @@ pub(crate) fn invert_steps(steps: &mut [CircuitStep]) {
 mod tests {
     use super::*;
 
+    #[test]
+    fn counterexample_keeps_nested_owners_and_zero_width_factors_in_order() {
+        let input = BasisType::Tuple(vec![
+            BasisType::Unit,
+            BasisType::Bits(2),
+            BasisType::pair(BasisType::Bit, BasisType::Unit),
+        ]);
+        let output = BasisType::pair(BasisType::Bit, BasisType::Bits(0));
+        let mut entries = vec![Exact::zero(); 16];
+        let actual = Matrix::new(2, 8, entries.clone()).unwrap();
+        entries[8 + 5] = Exact::one();
+        let expected = Matrix::new(2, 8, entries).unwrap();
+        let example = equation_counterexample(&actual, &expected, &input, &output).unwrap();
+        assert_eq!((example.input_column, example.output_row), (5, 1));
+        assert_eq!(example.input_basis, "((), Bits<2>[1, 0], (1, ()))");
+        assert_eq!(example.output_basis, "(1, Bits<0>[])");
+    }
+
     #[cfg_attr(
         not(qleisli_native_tests),
         ignore = "native-kernel gate: requires QLEISLI_KERNEL"
@@ -1018,7 +1137,7 @@ mod tests {
         assert!(
             diagnostic
                 .to_string()
-                .contains("input column 0, output row 0")
+                .contains("input |0⟩, output |(0, 0)⟩")
         );
 
         let mut exhausted = Budget::new(0);
@@ -1035,7 +1154,7 @@ mod tests {
             diagnostic.error,
             ContractError::Arithmetic(ExactError::WorkLimit)
         );
-        assert!(diagnostic.detail.is_none());
+        assert!(diagnostic.counterexample.is_none());
         assert_eq!(exhausted.remaining(), 0);
     }
 }

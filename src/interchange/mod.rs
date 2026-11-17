@@ -42,6 +42,8 @@ pub struct Error {
     pub code: &'static str,
     pub message: String,
     pub json_pointer: String,
+    /// Exact equation detail, when bounded reconstruction found a mismatch.
+    pub counterexample: Option<Box<crate::contract::EquationCounterexample>>,
 }
 impl Error {
     pub(crate) fn new(code: &'static str, message: impl Into<String>) -> Self {
@@ -49,6 +51,7 @@ impl Error {
             code,
             message: message.into(),
             json_pointer: String::new(),
+            counterexample: None,
         }
     }
     fn format(message: impl Into<String>) -> Self {

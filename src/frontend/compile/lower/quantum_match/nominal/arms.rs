@@ -163,6 +163,7 @@ fn primitive(
     primitive: PrimitiveId,
     target: &Ty,
     bits: usize,
+    operand_span: Span,
 ) -> Result<
     (
         ArmBody,
@@ -177,9 +178,9 @@ fn primitive(
     if primitive == PrimitiveId::H && *target != Ty::bit() {
         return Err(lower.error(
             module,
-            name.span,
+            operand_span,
             ErrorCode::TypeMismatch,
-            "h requires Q<Bit>",
+            static_operand_mismatch(&Ty::bit(), target, true),
         ));
     }
     lower
@@ -260,6 +261,7 @@ pub(super) fn prepare(
     target: &Ty,
     bits: usize,
     env: &Env,
+    operand_span: Span,
 ) -> Result<
     (
         ArmBody,
@@ -281,7 +283,7 @@ pub(super) fn prepare(
             if let Callee::Primitive(id @ (PrimitiveId::H | PrimitiveId::GlobalPhaseEighth)) =
                 lower.compiler.resolve(module, name)?
             {
-                return primitive(lower, module, name, id, target, bits);
+                return primitive(lower, module, name, id, target, bits, operand_span);
             }
         }
     }
@@ -313,6 +315,14 @@ pub(super) fn prepare(
             || operation.codomain != *target
             || operation.effect != Effect::Unitary
         {
+            if operation.basis == operation.codomain && operation.effect == Effect::Unitary {
+                return Err(lower.error(
+                    module,
+                    operand_span,
+                    ErrorCode::TypeMismatch,
+                    static_operand_mismatch(&operation.basis, target, true),
+                ));
+            }
             return Err(lower.error(
                 module,
                 expression.span,

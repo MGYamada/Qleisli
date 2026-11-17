@@ -61,6 +61,7 @@ pub(super) fn error(code: &'static str, message: impl Into<String>) -> Error {
         code,
         message: message.into(),
         json_pointer: String::new(),
+        counterexample: None,
     }
 }
 

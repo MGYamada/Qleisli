@@ -382,21 +382,36 @@ impl Checker<'_, '_> {
         &mut self,
         name: &Ident,
         basis: &Ty,
+        operand_span: Span,
         scope: &Scope,
     ) -> Result<Operation> {
+        let check = |checker: &Self, expected: &Ty, expected_first| {
+            let (left, right) = if expected_first {
+                (expected, basis)
+            } else {
+                (basis, expected)
+            };
+            normalize::expect_static_operand(
+                normalize::equivalent(
+                    left,
+                    right,
+                    &scope.context,
+                    name.span,
+                    &checker.program.budget,
+                ),
+                basis,
+                expected,
+                operand_span,
+                true,
+            )
+        };
         if self
             .local(name)
             .and_then(|key| scope.operations.get(key))
             .is_some()
         {
             let op = self.named_operation(name, &[], scope, false)?;
-            normalize::expect(
-                &op.basis,
-                basis,
-                &scope.context,
-                name.span,
-                &self.program.budget,
-            )?;
+            check(self, &op.basis, true)?;
             return Ok(op);
         }
         if self.local(name).is_some() {
@@ -420,13 +435,7 @@ impl Checker<'_, '_> {
                 ));
             }
             if primitive != GlobalPhaseEighth {
-                normalize::expect(
-                    basis,
-                    &Ty::bit(),
-                    &scope.context,
-                    name.span,
-                    &self.program.budget,
-                )?;
+                check(self, &Ty::bit(), false)?;
             }
             return Ok(Operation {
                 basis: self.program.budget.copy_ty(name.span, basis)?,
@@ -437,13 +446,7 @@ impl Checker<'_, '_> {
             });
         }
         let op = self.named_operation(name, &[], scope, false)?;
-        normalize::expect(
-            &op.basis,
-            basis,
-            &scope.context,
-            name.span,
-            &self.program.budget,
-        )?;
+        check(self, &op.basis, true)?;
         Ok(op)
     }
     pub(super) fn qif(
@@ -456,13 +459,18 @@ impl Checker<'_, '_> {
         span: Span,
     ) -> Result<Ty> {
         let control_ty = Ty::quantum(Ty::bit());
-        self.expr(control, scope, Some(&control_ty))?;
+        self.expr_with_diagnostic_boundary(
+            control,
+            scope,
+            Some(&control_ty),
+            Some(ControlFlowBoundary::QifControl),
+        )?;
         let target_ty = self.expr(target, scope, None)?;
         let basis = target_ty.quantum_basis().ok_or_else(|| {
             SourceError::new("type", target.span, "qif target requires one Q<A> owner")
         })?;
         for name in [zero, one] {
-            let op = self.target_operation(name, basis, scope)?;
+            let op = self.target_operation(name, basis, target.span, scope)?;
             access(&op, Access::Controlled, name.span)?;
         }
         self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
@@ -721,7 +729,8 @@ impl Checker<'_, '_> {
         if let Some(dirty) = &workspace.dirty {
             self.expr(dirty, scope, Some(&scratch))?;
         }
-        let logical = self.target_operation(&workspace.logical, basis, scope)?;
+        let logical =
+            self.target_operation(&workspace.logical, basis, workspace.logical.span, scope)?;
         access(&logical, Access::Apply, workspace.logical.span)?;
         normalize::expect(
             logical.output(),
@@ -765,9 +774,24 @@ impl Checker<'_, '_> {
         let region = std::mem::replace(&mut self.effects, surrounding);
         checked?;
         if let Some(key) = self.live_owner(&inner, body.span)? {
+            let (boundary, contract) = if workspace.dirty.is_some() {
+                (
+                    QuantumOwnershipBoundary::DirtyWorkspaceReturn,
+                    "Return the data and scratch owners in that order and restore the scratch's original state and correlations",
+                )
+            } else {
+                (
+                    QuantumOwnershipBoundary::CleanWorkspaceReturn,
+                    "Return the data and scratch owners in that order and restore the scratch to its required fixed zero state, separate from the rest of the system",
+                )
+            };
             return Err(disposal_error(
                 self.index().table.binder(key.id).span,
-                format!("workspace owner `{}` must be returned", key.name),
+                format!(
+                    "workspace owner `{}` must be returned. {contract}",
+                    key.name
+                ),
+                boundary,
             ));
         }
         self.program
@@ -884,7 +908,7 @@ impl Checker<'_, '_> {
                     "certified data and auxiliary binders must be distinct",
                 ));
             }
-            let operation = self.target_operation(logical, basis, scope)?;
+            let operation = self.target_operation(logical, basis, logical.span, scope)?;
             access(&operation, Access::Apply, logical.span)?;
             let identity = match self.index().table.usage(self.index().usage(logical)).target {
                 ResolvedUse::Global(target) => OperationIdentity::Global(target),
@@ -958,13 +982,18 @@ impl Checker<'_, '_> {
             }
         };
         if let Some(key) = self.live_owner(&inner, body.span)? {
-            return Err(SourceError::new(
-                "ownership",
+            let contract = if data.is_some() {
+                "The body must return the data and computed auxiliary owners in that order for checked cleanup"
+            } else {
+                "The body must return the computed auxiliary owner for checked cleanup"
+            };
+            return Err(disposal_error(
                 self.index().table.binder(key.id).span,
                 format!(
-                    "quantum ownership `{}` was not returned or explicitly consumed",
+                    "quantum ownership `{}` was not returned or explicitly consumed. {contract}",
                     key.name
                 ),
+                QuantumOwnershipBoundary::ComputedWorkspaceReturn,
             ));
         }
         normalize::expect(

@@ -50,8 +50,10 @@ impl ExecutableProgram for AcceptedProgram {
 }
 
 mod circuit;
+mod exact_zero;
 mod state;
 use circuit::{apply_gate, run_circuit, run_protected_use, run_qif_arm};
+pub use exact_zero::{ExactZeroUnavailable, terminal_exact_zeros};
 use state::{Complex, Component};
 
 mod sampling;

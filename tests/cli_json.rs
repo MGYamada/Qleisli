@@ -15,6 +15,326 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn exact_zero_presentation_keeps_the_numerical_distribution() {
+    let project = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/numerical-zero-presentation-v030/attempt-01");
+    let numerical = cli(&["run".as_ref(), project.as_os_str()]);
+    assert!(numerical.status.success(), "{numerical:?}");
+    let annotated = cli(&[
+        "run".as_ref(),
+        project.as_os_str(),
+        "--show-exact-zeros".as_ref(),
+    ]);
+    assert!(annotated.status.success(), "{annotated:?}");
+    assert_eq!(annotated.stderr, numerical.stderr);
+    let annotated = String::from_utf8(annotated.stdout).unwrap();
+    let numerical = String::from_utf8(numerical.stdout).unwrap();
+    assert_eq!(annotated.replace(" [exact zero]", ""), numerical);
+    assert_eq!(annotated.matches(" [exact zero]").count(), 16);
+    let residue = annotated
+        .lines()
+        .find_map(|line| line.strip_prefix("00001: "))
+        .and_then(|value| value.strip_suffix(" [exact zero]"))
+        .unwrap()
+        .parse::<f64>()
+        .unwrap();
+    assert!(0.0 < residue && residue < 1e-28, "{residue}");
+    let small = annotated
+        .lines()
+        .find_map(|line| line.strip_prefix("11110: "))
+        .unwrap()
+        .parse::<f64>()
+        .unwrap();
+    let expected = ((2.0 - std::f64::consts::SQRT_2) / 4.0).powi(4);
+    assert!((small - expected).abs() < 1e-14, "{small}");
+
+    let machine = cli(&[
+        "run".as_ref(),
+        project.as_os_str(),
+        "--format=json".as_ref(),
+    ]);
+    assert!(machine.status.success(), "{machine:?}");
+    let json = String::from_utf8(machine.stdout).unwrap();
+    assert!(!json.contains("exact zero"), "{json}");
+    let json_residue = json
+        .split_once("\"bits\":[false,false,false,false,true],\"probability\":")
+        .unwrap()
+        .1
+        .split_once('}')
+        .unwrap()
+        .0
+        .parse::<f64>()
+        .unwrap();
+    assert!((json_residue - residue).abs() <= residue * 1e-12);
+
+    let invalid = cli(&[
+        "run".as_ref(),
+        project.as_os_str(),
+        "--show-exact-zeros".as_ref(),
+        "--format=json".as_ref(),
+    ]);
+    assert_eq!(invalid.status.code(), Some(2), "{invalid:?}");
+    assert!(String::from_utf8_lossy(&invalid.stdout).contains("\"code\":\"usage\""));
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn exact_zero_presentation_keeps_numeric_output_when_branching_is_outside_its_profile() {
+    let root = SourceRoot::new(
+        "use std::state::init0; observe fn main() -> Bit { let b = measure_z(h(init0())); if b { 1 } else { 0 } }",
+    );
+    let numerical = cli(&["run".as_ref(), root.0.as_os_str()]);
+    let requested = cli(&[
+        "run".as_ref(),
+        root.0.as_os_str(),
+        "--show-exact-zeros".as_ref(),
+    ]);
+    assert!(numerical.status.success(), "{numerical:?}");
+    assert!(requested.status.success(), "{requested:?}");
+    assert_eq!(requested.stdout, numerical.stdout);
+    assert!(String::from_utf8_lossy(&requested.stderr).contains(
+        "exact-zero classification unavailable: outside the exact-zero terminal profile"
+    ));
+}
+
+fn source_check_json(root: &std::path::Path, entry: &str, selected: bool, status: i32) -> String {
+    let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+    command.args(["check", "--format=json"]);
+    if selected {
+        command
+            .arg(format!("--entry=main::{entry}"))
+            .arg(format!("--module=main={}", root.join("main.qli").display()));
+    } else {
+        command.arg(root);
+    }
+    let output = command.output().unwrap();
+    assert_eq!(
+        output.status.code(),
+        Some(status),
+        "{root:?}, entry {entry}, selected {selected}: {output:?}"
+    );
+    assert!(output.stderr.is_empty(), "{output:?}");
+    String::from_utf8(output.stdout).unwrap()
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn ownership_boundary_json_preserves_rejection_scope_and_locations() {
+    for (source, rejected, name_error, reason) in [
+        (
+            "pub unitary fn client(q:Q<Bit>)->Q<Bit>{drop(q);q}",
+            "drop",
+            true,
+            Some(("unresolved_disposal", "if_live_quantum_owner")),
+        ),
+        (
+            "pub unitary fn client(q:Q<Bit>)->Q<Bit>{drop(0);q}",
+            "drop",
+            true,
+            Some(("unresolved_disposal", "if_live_quantum_owner")),
+        ),
+        (
+            "pub unitary fn client(q:Q<Bit>)->Q<Bit>{missing(not q);q}",
+            "missing",
+            true,
+            None,
+        ),
+        (
+            "pub unitary fn client(owner:Q<Unit>)->Unit{()}",
+            "owner",
+            false,
+            Some(("implicit_quantum_disposal", "live_quantum_owner")),
+        ),
+        (
+            "use std::state::init0; pub unitary fn client(q:Q<Bit>)->Q<Bit>{clean(q,h){|a,scratch|(h(a),init0())}}",
+            "scratch",
+            false,
+            Some(("clean_workspace_return", "live_quantum_owner")),
+        ),
+        (
+            "use std::state::init0; pub unitary fn client(q:Q<Bit>,d:Q<Bit>)->(Q<Bit>,Q<Bit>){dirty(q,d,h){|a,scratch|(h(a),init0())}}",
+            "scratch",
+            false,
+            Some(("dirty_workspace_return", "live_quantum_owner")),
+        ),
+        (
+            "use std::state::init0; classical fn p(b:Bit)->Bit{b} pub unitary fn client(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|scratch|init0()}}",
+            "scratch",
+            false,
+            Some(("computed_workspace_return", "live_quantum_owner")),
+        ),
+    ] {
+        let root = SourceRoot::new(source);
+        for selected in [false, true] {
+            let json = source_check_json(&root.0, "client", selected, 1);
+            let code = match (name_error, selected) {
+                (true, true) => "name",
+                (true, false) => "unknown_name",
+                (false, _) => "ownership",
+            };
+            assert!(json.contains(&format!("\"code\":\"{code}\"")), "{json}");
+            let start = source.find(rejected).unwrap();
+            let end = start + rejected.len();
+            assert!(
+                json.contains(&format!("\"start\":{start},\"end\":{end}")),
+                "{json}"
+            );
+            if let Some((reason, applies_to)) = reason {
+                assert!(
+                    json.contains(&format!(
+                        "\"ownership_boundary\":{{\"boundary\":\"affine_to_linear\",\"reason\":\"{reason}\",\"applies_to\":\"{applies_to}\"}}"
+                    )),
+                    "{json}"
+                );
+            } else {
+                assert!(!json.contains("\"ownership_boundary\""), "{json}");
+            }
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn control_flow_diagnostics_teach_the_original_boundary() {
+    let attempts = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/authoring_sessions/classical-quantum-control-diagnostics-v030/attempt-01",
+    );
+    for (case, rejected, reason, guidance) in [
+        (
+            "ordinary-if",
+            "condition",
+            "if_condition",
+            "It preserves coherence between control sectors.",
+        ),
+        (
+            "ordinary-match",
+            "match selector { Choice::Left => 0, Choice::Right => 1 }",
+            "match_selector",
+            "Coherent `qmatch` selects checked controlled arms",
+        ),
+        (
+            "coherent-qif",
+            "condition",
+            "qif_control",
+            "To branch on an ordinary `Bit`, use ordinary `if`.",
+        ),
+        (
+            "coherent-qmatch",
+            "qmatch(selector, target) { 0 => h, 1 => h }",
+            "qmatch_selector",
+            "To branch on an ordinary `Bit`, use ordinary `if`.",
+        ),
+    ] {
+        let project = attempts.join(case);
+        let source = std::fs::read_to_string(project.join("main.qli")).unwrap();
+        let start = source.rfind(rejected).unwrap();
+        let end = start + rejected.len();
+        let text = cli(&["check".as_ref(), project.as_os_str()]);
+        assert_eq!(text.status.code(), Some(1), "{text:?}");
+        assert!(text.stdout.is_empty(), "{text:?}");
+        let text = String::from_utf8(text.stderr).unwrap();
+        assert!(text.contains(guidance), "{text}");
+        assert!(!text.contains("measure_z"), "{text}");
+        for selected in [false, true] {
+            let json = source_check_json(&project, "branch", selected, 1);
+            let code = if selected { "type" } else { "type_mismatch" };
+            assert!(json.contains(&format!("\"code\":\"{code}\"")), "{json}");
+            assert!(
+                json.contains(&format!("\"start\":{start},\"end\":{end}")),
+                "{json}"
+            );
+            assert!(json.contains(guidance), "{json}");
+            assert!(
+                json.contains(&format!(
+                    "\"control_flow_boundary\":{{\"boundary\":\"classical_quantum_control\",\"reason\":\"{reason}\"}}"
+                )),
+                "{json}"
+            );
+        }
+    }
+    let source = "pub fn branch() -> Bit { if h(0) { 1 } else { 0 } }";
+    let inner = SourceRoot::new(source);
+    let start = source.find("h(0)").unwrap();
+    let end = start + "h(0)".len();
+    for selected in [false, true] {
+        let json = source_check_json(&inner.0, "branch", selected, 1);
+        assert!(!json.contains("\"control_flow_boundary\""), "{json}");
+        assert!(
+            json.contains(&format!("\"start\":{start},\"end\":{end}")),
+            "{json}"
+        );
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn control_flow_corrections_check_with_explicit_observation_or_owner_threading() {
+    let observed = SourceRoot::new(
+        "use std::state::init0; observe fn main() -> Bit { let condition = measure_z(h(init0())); if condition { 1 } else { 0 } }",
+    );
+    assert!(source_check_json(&observed.0, "main", false, 0).contains("\"outcome\":\"ok\""));
+
+    let coherent = SourceRoot::new(
+        "use std::state::init0;
+         unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+         observe fn main() -> (Bit,Bit,Bit,Bit) {
+             let (c,q) = qif(init0(),init0()) {0=>keep,1=>h};
+             let (s,q) = qmatch(init0(),q) {0=>keep,1=>h};
+             let q = qfor static i in 0..1 carry owner=q { yield owner; };
+             let bit = for static i in 0..1 carry value=0 { yield not value; };
+             (measure_z(c),measure_z(s),measure_z(q),bit)
+         }",
+    );
+    let result = cli(&[
+        "run".as_ref(),
+        coherent.0.as_os_str(),
+        "--format=json".as_ref(),
+    ]);
+    assert!(result.status.success(), "{result:?}");
+    let json = String::from_utf8(result.stdout).unwrap();
+    assert!(
+        json.contains("\"distribution\":[{\"bits\":[false,false,false,true],\"probability\":1}]"),
+        "{json}"
+    );
+
+    for (source, reason, guidance) in [
+        (
+            "pub unitary fn branch(q:Q<Bit>)->Q<Bit>{for static i in 0..1 carry owner=q{yield owner;}}",
+            "for_carry",
+            "use qfor static with explicit carry and yield",
+        ),
+        (
+            "pub fn branch(x:Bit)->Bit{qfor static i in 0..1 carry value=x{yield value;}}",
+            "qfor_carry",
+            "use for static for ordinary values",
+        ),
+    ] {
+        let root = SourceRoot::new(source);
+        for selected in [false, true] {
+            let json = source_check_json(&root.0, "branch", selected, 1);
+            assert!(json.contains(guidance), "{json}");
+            assert!(json.contains(&format!("\"reason\":\"{reason}\"")), "{json}");
+        }
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn native_transport_failures_use_the_closed_v1_project_code() {
     let root = SourceRoot::new("observe fn main()->Bit{1}");
     let artifact = root.0.join("valid.qirf");
@@ -82,6 +402,72 @@ fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
             "{text}"
         );
         assert!(text.contains("function semantic contract"), "{text}");
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn equation_counterexample_text_and_json_preserve_axis_order_and_phase() {
+    let attempts = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/contract-counterexample-v030/attempt-01");
+    for (project, message, input_column, output_row) in [
+        (
+            "permutation",
+            "input |(0, 1)⟩, output |(1, 0)⟩: actual 0, expected 1",
+            2,
+            1,
+        ),
+        (
+            "phase",
+            "input |1⟩, output |1⟩: actual -1, expected i",
+            1,
+            1,
+        ),
+    ] {
+        let root = attempts.join(project);
+        let source = std::fs::read_to_string(root.join("main.qli")).unwrap();
+        let start = source.find("apply_contract(").unwrap();
+        let end = start + source[start..].find('\n').unwrap();
+        let line = source[..start]
+            .bytes()
+            .filter(|&byte| byte == b'\n')
+            .count()
+            + 1;
+        let output = cli(&["check".as_ref(), root.as_os_str()]);
+        assert_eq!(output.status.code(), Some(1), "{output:?}");
+        assert!(output.stdout.is_empty(), "{output:?}");
+        let text = String::from_utf8(output.stderr).unwrap();
+        assert!(
+            text.contains(&format!("main.qli:{line}:5: contract:")),
+            "{text}"
+        );
+        assert!(text.contains(message), "{text}");
+        assert!(
+            !text.contains("input column") && !text.contains("1*i"),
+            "{text}"
+        );
+
+        let output = cli(&["check".as_ref(), root.as_os_str(), "--format=json".as_ref()]);
+        assert_eq!(output.status.code(), Some(1), "{output:?}");
+        assert!(output.stderr.is_empty(), "{output:?}");
+        let json = String::from_utf8(output.stdout).unwrap();
+        assert!(json.contains("\"code\":\"contract\""), "{json}");
+        assert!(json.contains(message), "{json}");
+        assert!(
+            json.contains(&format!(
+                "\"primary\":{{\"path\":\"main.qli\",\"start\":{start},\"end\":{end},\"line\":{line},\"column\":5}}"
+            )),
+            "{json}"
+        );
+        assert!(
+            json.contains(&format!(
+                "\"counterexample\":{{\"input_column\":{input_column},\"output_row\":{output_row}}}"
+            )),
+            "{json}"
+        );
     }
 }
 
@@ -183,6 +569,74 @@ fn retired_operation_diagnostics_preserve_utf8_crlf_spans_without_native_setup()
     }
 }
 
+#[test]
+fn quantum_surface_guidance_reaches_text_and_json_with_original_locations() {
+    for (source, at, offset, width, guidance) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qlet/main.qli"
+            ),
+            "qlet next",
+            0,
+            "qlet".len(),
+            "let owner = value;",
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/parser-surface-diagnostics-v030/attempt-01/qif/main.qli"
+            ),
+            "qif c",
+            "qif ".len(),
+            1,
+            "qif(control, target) { 0 => first, 1 => second }",
+        ),
+    ] {
+        let source = format!("// 位相\r\n{}", source.replace('\n', "\r\n"));
+        let root = SourceRoot::new(&source);
+        let start = source.find(at).unwrap() + offset;
+        let end = start + width;
+        let line = source[..start]
+            .bytes()
+            .filter(|&byte| byte == b'\n')
+            .count()
+            + 1;
+        let column = source[..start].rsplit('\n').next().unwrap().chars().count() + 1;
+        let missing_kernel = format!("--lean-kernel={}", root.0.join("absent").display());
+        for command in ["check", "run"] {
+            for json in [false, true] {
+                let mut process = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+                process.arg(command).arg(&root.0).arg(&missing_kernel);
+                if json {
+                    process.arg("--format=json");
+                }
+                let output = process.output().unwrap();
+                assert_eq!(output.status.code(), Some(1), "{output:?}");
+                if json {
+                    assert!(output.stderr.is_empty(), "{output:?}");
+                    let text = String::from_utf8(output.stdout).unwrap();
+                    assert_eq!(text.matches("\"code\":\"parse\"").count(), 1, "{text}");
+                    assert!(text.contains(guidance), "{text}");
+                    let location = format!(
+                        "\"path\":\"main.qli\",\"start\":{start},\"end\":{end},\"line\":{line},\"column\":{column}"
+                    );
+                    assert!(
+                        text.contains(&location) && text.ends_with("\"result\":null}\n"),
+                        "{text}"
+                    );
+                } else {
+                    assert!(output.stdout.is_empty(), "{output:?}");
+                    let text = String::from_utf8(output.stderr).unwrap();
+                    let location = format!("main.qli:{line}:{column}: parse:");
+                    assert!(
+                        text.contains(&location) && text.contains(guidance),
+                        "{text}"
+                    );
+                }
+            }
+        }
+    }
+}
+
 #[cfg_attr(
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
@@ -278,8 +732,14 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
     assert_eq!(historical.matches(retired_documentation).count(), 1);
     let verify_ir = "  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n";
     assert_eq!(historical.matches(verify_ir).count(), 1);
+    let run = "  qleisli run <source-root> [--format=json] [source-options]\n";
+    assert_eq!(historical.matches(run).count(), 1);
     let usage = historical
         .replace(retired, "")
+        .replace(
+            run,
+            "  qleisli run <source-root> [--format=json | --show-exact-zeros] [source-options]\n",
+        )
         .replace(
             verify_ir,
             &format!(concat!(

@@ -1,0 +1,364 @@
+{
+  "recorded_utc": "2026-11-17T00:01:52.402561+00:00",
+  "command": [
+    "/private/tmp/qleisli-237-rust.mn65iFGf/debug/qleisli",
+    "run",
+    "/private/tmp/qleisli-133-first.2t99N7yN",
+    "--lean-kernel=/private/tmp/qleisli-30-reviewed-base.HroRh8AW/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--format=json"
+  ],
+  "working_directory": "/private/tmp/qleisli-133-exact-display.gAmWA6fF",
+  "exit_code": 0,
+  "stdout_utf8": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false,false],\"probability\":0.5307900429449561},{\"bits\":[false,false,false,false,true],\"probability\":0.0000000000000000000000000000000032712462012488886},{\"bits\":[false,false,false,true,false],\"probability\":0.09106917382415931},{\"bits\":[false,false,false,true,true],\"probability\":0.000000000000000000000000000000000561257116411375},{\"bits\":[false,false,true,false,false],\"probability\":0.09106917382415938},{\"bits\":[false,false,true,false,true],\"probability\":0.0000000000000000000000000000000005612571164113752},{\"bits\":[false,false,true,true,false],\"probability\":0.015625000000000007},{\"bits\":[false,false,true,true,true],\"probability\":0.00000000000000000000000000000000009629649721936184},{\"bits\":[false,true,false,false,false],\"probability\":0.09106917382415938},{\"bits\":[false,true,false,false,true],\"probability\":0.0000000000000000000000000000000005612571164113756},{\"bits\":[false,true,false,true,false],\"probability\":0.015625000000000007},{\"bits\":[false,true,false,true,true],\"probability\":0.00000000000000000000000000000000009629649721936184},{\"bits\":[false,true,true,false,false],\"probability\":0.01562500000000002},{\"bits\":[false,true,true,false,true],\"probability\":0.00000000000000000000000000000000009629649721936199},{\"bits\":[false,true,true,true,false],\"probability\":0.002680826175840781},{\"bits\":[false,true,true,true,true],\"probability\":0.00000000000000000000000000000000001652186690479642},{\"bits\":[true,false,false,false,false],\"probability\":0.09106917382415938},{\"bits\":[true,false,false,false,true],\"probability\":0.0000000000000000000000000000000005612571164113752},{\"bits\":[true,false,false,true,false],\"probability\":0.01562500000000002},{\"bits\":[true,false,false,true,true],\"probability\":0.0000000000000000000000000000000000962964972193619},{\"bits\":[true,false,true,false,false],\"probability\":0.01562500000000002},{\"bits\":[true,false,true,false,true],\"probability\":0.00000000000000000000000000000000009629649721936192},{\"bits\":[true,false,true,true,false],\"probability\":0.002680826175840781},{\"bits\":[true,false,true,true,true],\"probability\":0.00000000000000000000000000000000001652186690479642},{\"bits\":[true,true,false,false,false],\"probability\":0.015625000000000028},{\"bits\":[true,true,false,false,true],\"probability\":0.00000000000000000000000000000000009629649721936199},{\"bits\":[true,true,false,true,false],\"probability\":0.002680826175840781},{\"bits\":[true,true,false,true,true],\"probability\":0.00000000000000000000000000000000001652186690479642},{\"bits\":[true,true,true,false,false],\"probability\":0.002680826175840783},{\"bits\":[true,true,true,false,true],\"probability\":0.00000000000000000000000000000000001652186690479644},{\"bits\":[true,true,true,true,false],\"probability\":0.00045995705504467865},{\"bits\":[true,true,true,true,true],\"probability\":0.000000000000000000000000000000000002834704209416687}]}}\n",
+  "stderr_utf8": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false,
+            false,
+            false,
+            false
+          ],
+          "probability": 0.5307900429449561
+        },
+        {
+          "bits": [
+            false,
+            false,
+            false,
+            false,
+            true
+          ],
+          "probability": 3.2712462012488886e-33
+        },
+        {
+          "bits": [
+            false,
+            false,
+            false,
+            true,
+            false
+          ],
+          "probability": 0.09106917382415931
+        },
+        {
+          "bits": [
+            false,
+            false,
+            false,
+            true,
+            true
+          ],
+          "probability": 5.61257116411375e-34
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true,
+            false,
+            false
+          ],
+          "probability": 0.09106917382415938
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true,
+            false,
+            true
+          ],
+          "probability": 5.612571164113752e-34
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true,
+            true,
+            false
+          ],
+          "probability": 0.015625000000000007
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true,
+            true,
+            true
+          ],
+          "probability": 9.629649721936184e-35
+        },
+        {
+          "bits": [
+            false,
+            true,
+            false,
+            false,
+            false
+          ],
+          "probability": 0.09106917382415938
+        },
+        {
+          "bits": [
+            false,
+            true,
+            false,
+            false,
+            true
+          ],
+          "probability": 5.612571164113756e-34
+        },
+        {
+          "bits": [
+            false,
+            true,
+            false,
+            true,
+            false
+          ],
+          "probability": 0.015625000000000007
+        },
+        {
+          "bits": [
+            false,
+            true,
+            false,
+            true,
+            true
+          ],
+          "probability": 9.629649721936184e-35
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true,
+            false,
+            false
+          ],
+          "probability": 0.01562500000000002
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true,
+            false,
+            true
+          ],
+          "probability": 9.629649721936199e-35
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true,
+            true,
+            false
+          ],
+          "probability": 0.002680826175840781
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true,
+            true,
+            true
+          ],
+          "probability": 1.652186690479642e-35
+        },
+        {
+          "bits": [
+            true,
+            false,
+            false,
+            false,
+            false
+          ],
+          "probability": 0.09106917382415938
+        },
+        {
+          "bits": [
+            true,
+            false,
+            false,
+            false,
+            true
+          ],
+          "probability": 5.612571164113752e-34
+        },
+        {
+          "bits": [
+            true,
+            false,
+            false,
+            true,
+            false
+          ],
+          "probability": 0.01562500000000002
+        },
+        {
+          "bits": [
+            true,
+            false,
+            false,
+            true,
+            true
+          ],
+          "probability": 9.62964972193619e-35
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true,
+            false,
+            false
+          ],
+          "probability": 0.01562500000000002
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true,
+            false,
+            true
+          ],
+          "probability": 9.629649721936192e-35
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true,
+            true,
+            false
+          ],
+          "probability": 0.002680826175840781
+        },
+        {
+          "bits": [
+            true,
+            false,
+            true,
+            true,
+            true
+          ],
+          "probability": 1.652186690479642e-35
+        },
+        {
+          "bits": [
+            true,
+            true,
+            false,
+            false,
+            false
+          ],
+          "probability": 0.015625000000000028
+        },
+        {
+          "bits": [
+            true,
+            true,
+            false,
+            false,
+            true
+          ],
+          "probability": 9.629649721936199e-35
+        },
+        {
+          "bits": [
+            true,
+            true,
+            false,
+            true,
+            false
+          ],
+          "probability": 0.002680826175840781
+        },
+        {
+          "bits": [
+            true,
+            true,
+            false,
+            true,
+            true
+          ],
+          "probability": 1.652186690479642e-35
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true,
+            false,
+            false
+          ],
+          "probability": 0.002680826175840783
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true,
+            false,
+            true
+          ],
+          "probability": 1.652186690479644e-35
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true,
+            true,
+            false
+          ],
+          "probability": 0.00045995705504467865
+        },
+        {
+          "bits": [
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "probability": 2.834704209416687e-36
+        }
+      ]
+    }
+  },
+  "binary_sha256": {
+    "/private/tmp/qleisli-237-rust.mn65iFGf/debug/qleisli": "508f3bcc327360c66de257968c4dde8375873c099d8d4af3b956e74ee0fc6f10",
+    "/private/tmp/qleisli-30-reviewed-base.HroRh8AW/lean-kernel/.lake/build/bin/qleisli-kernel": "e0c38e5f65bb2d6983197d7e1642259d5e3a81f779b416d4faab5065e73df94f"
+  },
+  "source_sha256": "b7ff5c6a0226844983f6ee733698d08328acd3d66bacc0313c19776f46b85775",
+  "manifest_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+  "text_observation": {
+    "recorded_utc": "2026-11-17T00:01:49.603274+00:00",
+    "command": [
+      "/private/tmp/qleisli-237-rust.mn65iFGf/debug/qleisli",
+      "run",
+      "/private/tmp/qleisli-133-first.2t99N7yN",
+      "--lean-kernel=/private/tmp/qleisli-30-reviewed-base.HroRh8AW/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "working_directory": "/private/tmp/qleisli-133-exact-display.gAmWA6fF",
+    "exit_code": 0,
+    "stdout_utf8": "00000: 5.307900429450e-1\n00001: 3.271246201249e-33\n00010: 9.106917382416e-2\n00011: 5.612571164114e-34\n00100: 9.106917382416e-2\n00101: 5.612571164114e-34\n00110: 1.562500000000e-2\n00111: 9.629649721936e-35\n01000: 9.106917382416e-2\n01001: 5.612571164114e-34\n01010: 1.562500000000e-2\n01011: 9.629649721936e-35\n01100: 1.562500000000e-2\n01101: 9.629649721936e-35\n01110: 2.680826175841e-3\n01111: 1.652186690480e-35\n10000: 9.106917382416e-2\n10001: 5.612571164114e-34\n10010: 1.562500000000e-2\n10011: 9.629649721936e-35\n10100: 1.562500000000e-2\n10101: 9.629649721936e-35\n10110: 2.680826175841e-3\n10111: 1.652186690480e-35\n11000: 1.562500000000e-2\n11001: 9.629649721936e-35\n11010: 2.680826175841e-3\n11011: 1.652186690480e-35\n11100: 2.680826175841e-3\n11101: 1.652186690480e-35\n11110: 4.599570550447e-4\n11111: 2.834704209417e-36\n",
+    "stderr_utf8": ""
+  }
+}

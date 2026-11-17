@@ -153,6 +153,9 @@ An ordinary binding operation on `Q<A>` does not require a `qlet` spelling.
 Effects cannot be inferred from ownership alone, and an annotation cannot
 downgrade the effect of its body.
 
+The [ownership diagnostics](rust-boundary.md#conditional-teaching-diagnostics)
+explain the linear obligation at the rejected source location.
+
 The conceptual typing judgment is `Γ ; Δ ⊢ e : T ! ε`. Here `Γ` contains
 ordinary values and the separately classified static environment; `Δ` contains
 live linear quantum ownership, including quantum fields of ordinary products.
@@ -176,6 +179,8 @@ access, effect or evidence. Ordinary `match` and the bounded exact-label
 `qmatch` form follow the same rule under their distinct owner and checking
 contracts. Their current execution limits do not admit additional pattern forms.
 Supported folds are specified in [static control](static-language.md).
+The [control boundary diagnostics](source-text.md#diagnostics-at-control-boundaries)
+use these three roles when explaining a rejection.
 
 ## Structural equality, coherence and physical maps
 
@@ -607,6 +612,14 @@ concrete evidence gates discharge them. Both concrete adapters compare the
 implementation with the independently selected function or Meaning through
 fresh native evidence. A declared Meaning supplies the request; it is never
 projected as a runtime function.
+
+When a rejected exact equation yields a mismatched coefficient within the
+diagnostic work limit, the diagnostic shows input and output basis values
+with the declared tree shapes. The first bit leaf is the least significant
+coordinate. Unit contributes no bit and remains visible in the printed value.
+For an encoded equation the labels use the logical input and physical output
+types. JSON also reports zero-based `counterexample.input_column` and
+`counterexample.output_row` as integers.
 
 The adopted observing overload compares two closed ordinary functions with
 caller-visible Observe effects, one `Q<A>` argument and the same complete finite

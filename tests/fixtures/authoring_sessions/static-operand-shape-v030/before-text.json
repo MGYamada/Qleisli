@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/private/tmp/qleisli-585-package-size-target/debug/qleisli",
+    "check",
+    "/private/tmp/qleisli-272-static-operand.QdKyYx3h/tests/fixtures/authoring_sessions/static-operand-shape-v030/attempt-01",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-11-16T22:42:12.564520+00:00",
+  "cli_sha256": "216446c475da59c60f5d8c982cbb53f0946ace55cb7954fbf9c05951c74a7535",
+  "kernel_sha256": "cb796afe700a63005f9bb52cfac5ac321b591412eae40c79c3b253355fb69312",
+  "stdout_empty": true,
+  "transcript": "/private/tmp/qleisli-272-static-operand.QdKyYx3h/tests/fixtures/authoring_sessions/static-operand-shape-v030/attempt-01/main.qli:4:16: type_mismatch: type or tuple/size shape mismatch: expected `(Bit,(Bit,Bit))`, found `((Bit,Bit),Bit)`\n"
+}

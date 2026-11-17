@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#224 teaching diagnostics for classical and coherent branch boundaries",
+  "author": "Codex assistant; informed repository maintenance, no external model invoked",
+  "project_version": "0.3.0-beta",
+  "baseline_commit": "1b538039d2b499fde0de0ced123c027c5a8fdaf5",
+  "context": "README.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Four bounded first negative projects isolate one condition or selector type at each control construct.",
+      "sha256": {
+        "ordinary-if/main.qli": "0c2c7e0bbdb15d06bfdc5513c7c69c0d950a66761ae2836916471b7bd940bb1a",
+        "ordinary-match/main.qli": "ea30bb6d5132ad23e90072bb6696688a252d3fd927eb61b4b4dad40fe5cd2c82",
+        "coherent-qif/main.qli": "800f335796b62dbba286cb586ce749477c74bb55e33f8fa6215786c910a2329a",
+        "coherent-qmatch/main.qli": "980f69c47b170a016b3ea1d133090786a199e19e911ec6a937f9da8b3f39b380"
+      },
+      "manifest_sha256": {
+        "ordinary-if/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "ordinary-match/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "coherent-qif/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "coherent-qmatch/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before-ordinary-if.json",
+        "before-ordinary-match.json",
+        "before-coherent-qif.json",
+        "before-coherent-qmatch.json"
+      ]
+    }
+  ]
+}

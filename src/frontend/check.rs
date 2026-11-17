@@ -132,6 +132,7 @@ pub(super) struct SourceError {
     pub module: Option<String>,
     pub span: Span,
     pub message: String,
+    pub boundary: Option<super::diagnostic::DiagnosticBoundary>,
     // Diagnostic provenance only; outer primitive calls must not move an
     // already located inner argument failure to their own call span.
     pub(super) primitive_argument_located: bool,
@@ -143,8 +144,25 @@ impl SourceError {
             module: None,
             span,
             message: message.into(),
+            boundary: None,
             primitive_argument_located: false,
         }
+    }
+    pub(super) fn with_ownership_boundary(
+        mut self,
+        reason: super::diagnostic::QuantumOwnershipBoundary,
+    ) -> Self {
+        self.boundary = Some(super::diagnostic::DiagnosticBoundary::QuantumOwnership(
+            reason,
+        ));
+        self
+    }
+    pub(super) fn with_control_flow_boundary(
+        mut self,
+        reason: super::diagnostic::ControlFlowBoundary,
+    ) -> Self {
+        self.boundary = Some(super::diagnostic::DiagnosticBoundary::ControlFlow(reason));
+        self
     }
     pub fn in_module(mut self, module: &str) -> Self {
         if self.module.is_none() {
@@ -177,6 +195,7 @@ impl From<super::error::Error> for SourceError {
             module: error.module().map(str::to_owned),
             span: error.span(),
             message: error.message().into(),
+            boundary: error.boundary(),
             primitive_argument_located: false,
         }
     }
