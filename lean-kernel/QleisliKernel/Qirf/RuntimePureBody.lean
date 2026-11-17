@@ -990,22 +990,51 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let target := event.target
           let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
           let selected ← RuntimeBodyQueries.readSelection execution.queries source position sourceCursor data
-          let table := selected.table
-          let (logicals,checked,sourceCursor,receipts) ← RuntimeBodyQueries.foldArms execution.queries table
-            (fun index data (logicals,checked,cursor,receipts) => do
-              exactWork (Exact.charge (16*(logicals.length+receipts.length+1)))
-              let (logical,children,cursor,performed) ← consumeGraph (table.arms[index]).operation.graph
-                OperationAccess.controllable (.arm (table.arms[index]).operation) path (.arm table index)
-                cursor data (!request.references.isEmpty)
-              return (logicals ++ [logical],checked ++ children,cursor,receipts ++ performed)) selected.arms
-            (([] : List Semantics.Exact.Matrix),([] : List (Island dependencies)),selected.cursor,receipts)
-          let (node,_) ← selectionNode artifact interval callerFrame owners selector target table selected.site ()
-            fun index _ _ => do
+          let initial (cursor : execution.queries.Cursor) :=
+            (([] : List Semantics.Exact.Matrix),([] : List (Island dependencies)),cursor,receipts)
+          let finish {Arm : Type} {tableName offset written ordinal}
+              (table : QuantumArms.TableWith artifact.sources owner tableName offset selector.basis target.basis Arm written ordinal)
+              (site : RuntimeContextRequest.Site)
+              (result : List Semantics.Exact.Matrix × List (Island dependencies) × execution.queries.Cursor × List execution.Receipt) := do
+            let (logicals,checked,sourceCursor,receipts) := result
+            let (node,_) ← selectionNode artifact interval callerFrame owners selector target table site () fun index _ _ => do
               exactWork (Exact.charge (index.val+1))
               let logical ← lift (readOption logicals[index.val]?)
               pure (logical,())
-          pure ({before with bindings := owners.after.bindings},retired,ordinary,actions ++ [node],steps ++ [.pure node],
-            obligations ++ checked,position.start+position.count,sourceCursor,receipts)
+            pure ({before with bindings := owners.after.bindings},retired,ordinary,actions ++ [node],steps ++ [.pure node],
+              obligations ++ checked,position.start+position.count,sourceCursor,receipts)
+          match selected with
+          | .inl named =>
+            let table := named.table
+            let result ← RuntimeBodyQueries.foldArms execution.queries table
+              (fun index data (logicals,checked,cursor,receipts) => do
+                exactWork (Exact.charge (16*(logicals.length+receipts.length+1)))
+                let arm := table.arms[index]
+                let (logical,children,cursor,performed) ← consumeGraph arm.operation.graph
+                  OperationAccess.controllable (.arm arm.operation) path (.arm arm (.named table index rfl))
+                  cursor data (!request.references.isEmpty)
+                return (logicals ++ [logical],checked ++ children,cursor,receipts ++ performed))
+              named.arms (initial named.cursor)
+            finish table named.site result
+          | .inr mixed =>
+            let table := mixed.table
+            let result ← RuntimeBodyQueries.foldMixedArms execution.queries position table
+              (fun index arm selected data (logicals,checked,cursor,receipts) => do
+                exactWork (Exact.charge (16*(logicals.length+receipts.length+1)))
+                let (logical,children,cursor,performed) ← consumeGraph arm.operation.graph
+                  OperationAccess.controllable (.arm arm.operation) path (.arm arm (.mixed event mixed.sameName table index selected))
+                  cursor data (!request.references.isEmpty)
+                return (logicals ++ [logical],checked ++ children,cursor,receipts ++ performed))
+              (fun {index} arm replay child plan (logicals,checked,cursor,receipts) => do
+                exactWork (Exact.charge (16*(logicals.length+receipts.length+index+1)))
+                let subject ← lift (readOption mixed.site.arms[index]?)
+                let childPath : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName :=
+                  mixed.sameName.symm ▸ path
+                let inlineCheck ← readInlineArm (execution := execution) rfl arm replay subject.implementation child plan childPath before next
+                return (logicals ++ [inlineCheck.action.code.logical],checked ++ inlineCheck.result.islands,
+                  cursor,receipts ++ inlineCheck.receipts))
+              mixed.arms (initial mixed.cursor)
+            finish table mixed.site result
         | _,_,_ =>
           let _ ← readOwners
           throw .request

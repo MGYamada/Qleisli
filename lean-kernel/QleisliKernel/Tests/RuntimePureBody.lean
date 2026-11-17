@@ -163,18 +163,23 @@ private def inlineSelection (fault : InlineFault) (shape : InlineShape := .qmatc
 #guard ((inlineSelection .ordinal).run 10000000).1 matches .error .request
 
 private inductive InlinePlanFault where
-  | none | missing | extra | wrongArm | wrongBody | missingRoot
+  | none | missing | extra | wrongArm | wrongBody | missingRoot | forward | control | parent
   deriving BEq
 
-private def inlinePlan (fault : InlinePlanFault) : WorkM (List Nat × Nat) := do
+private def inlinePlan (fault : InlinePlanFault) (checkRaw : Bool := false) : WorkM (List Nat × Nat) := do
   let text := "#![no_implicit_prelude] pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
     "qmatch(s,q){1=>{h(q)},0=>h}}"
   let port := fun token wire => (⟨token,[wire],1⟩ : Semantics.Raw.Port)
-  let arm : Semantics.Observation.Program := ⟨[port 0 0],[],[.pure (.gate .h 0 1)],[1],[],.unitary⟩
+  let standalone := fun gate => (⟨[port 0 0],[],[.pure (.gate gate 0 1)],[1],[],.unitary⟩ : Semantics.Observation.Program)
   let controlled (zero one : List Semantics.Raw.UnitaryStep) : Semantics.Observation.Program :=
     ⟨[port 0 0,port 1 1],[],[.pure (.quantumIf 0 1 2 3 zero one)],[2,3],[],.unitary⟩
   let h := [.gate .h 0]
-  let artifact : Artifact := ⟨#[controlled h h,arm,controlled [] h,arm,controlled [] h],#[],#[("main",text)],0,none⟩
+  let written := if fault == .forward then .z else .h
+  let physical := [.gate written 0]
+  let parent := if fault == .parent then .phase .minusOne :: physical else physical
+  let active := if fault == .control then .phase .minusOne :: physical else physical
+  let artifact : Artifact :=
+    ⟨#[controlled h parent,standalone written,controlled [] active,standalone .h,controlled [] h],#[],#[("main",text)],0,none⟩
   let body ← SourceRuntimeTrace.read artifact.sources "main" "route"
   let [.selection event] := body.events | throw .request
   let replay ← SourceRuntimeTrace.readInlineArmBody event 0
@@ -191,11 +196,21 @@ private def inlinePlan (fault : InlinePlanFault) : WorkM (List Nat × Nat) := do
     | _ => [(position,0,child)]
   let request := RuntimeContextRequest.Context.withReferences [position] [site] [] [] [] [[]] [] slots
   let plan ← RuntimeBodyOperations.prepare artifact "main" "route" {} request
+  if checkRaw then
+    let tree := Semantics.RuntimeType.owner [.bit]
+    let runtime : RuntimeFamily.Request := ⟨.exported,"main","route",[tree,tree],
+      interface.inputs.map fun value => [.quantum value],[[]],Semantics.RuntimeType.tuple 2 [tree,tree],
+      .tuple 2 :: interface.outputs.map (· |> .quantum),.unitary,{}⟩
+    let checked ← RuntimeBodyOperations.read plan #[1,2,3,4,0] runtime
+    return (plan.roots,checked.selections.count)
   return (plan.roots,plan.receipts.length)
 
 #guard ((inlinePlan .none).run 10000000).1.toOption == some ([0,1,2,3,4],1)
 #guard [InlinePlanFault.missing,.extra,.wrongArm,.wrongBody,.missingRoot].all fun fault =>
   ((inlinePlan fault).run 10000000).1.toOption.isNone
+#guard ((inlinePlan .none true).run 10000000).1.toOption == some ([0,1,2,3,4],1)
+#guard [InlinePlanFault.forward,.control,.parent].all fun fault =>
+  ((inlinePlan fault true).run 10000000).1 matches .error .equation
 
 private def structural (text : String) (inputs : List Semantics.Raw.Port)
     (operations : List Semantics.Raw.Op) (outputs : List Nat) : WorkM (List Nat × List Nat × List Nat) := do
