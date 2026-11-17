@@ -165,7 +165,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (callerName : event.target.callerName = name)
       (body : SourceRuntimeTrace.Body event.target.signature)
       (original : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body)
-      (nested : Body preparation (.whole body) child) :
+      (nested : Body preparation (.whole body source.requiresControl) child) :
       Event preparation source (.named event) position before {before with calls := remaining}
   | operation {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceOperationApplication.Event artifact.sources owner} {position : Position} {before : Queues}
@@ -175,7 +175,8 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (childEmpty : child.positions.isEmpty = true ∧ child.sites.isEmpty = true ∧
         child.calls.isEmpty = true ∧ child.branches.isEmpty = true)
       (references : List (List BodyRequest)) (groups : child.references = [references])
-      (graph : Graph preparation event.operation.graph OperationAccess.applicable child.bodies references (.application event)) :
+      (graph : Graph preparation event.operation.graph (SourceRuntimeScope.applicationDemand source.requiresControl)
+        child.bodies references (.application event)) :
       Event preparation source (.operation event) position before {before with calls := remaining}
   | transform {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.TransformEvent artifact.sources owner} {position : Position} {before : Queues}
@@ -183,7 +184,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (call : before.calls = (position,child) :: remaining)
       (request : RuntimeTransformRequest.Checked event position child)
       (original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position child) request)
-      (nested : Body preparation (.whole request.source) request.context) :
+      (nested : Body preparation (.whole request.source source.requiresControl) request.context) :
       Event preparation source (.transform event) position before {before with calls := remaining}
   | selection {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {position : Position} {before : Queues}
@@ -222,8 +223,8 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (callerName : event.callerName = name)
       (branches : RuntimeBranchAction.Source event)
       (original : RuntimeInterval.Computed (RuntimeBranchAction.readSource event) branches)
-      (thenPlan : Body preparation (.arm event callerName branches.bodies branches.original true) left)
-      (elsePlan : Body preparation (.arm event callerName branches.bodies branches.original false) right) :
+      (thenPlan : Body preparation (.arm event callerName branches.bodies branches.original true source.requiresControl) left)
+      (elsePlan : Body preparation (.arm event callerName branches.bodies branches.original false source.requiresControl) right) :
       Event preparation source (.conditional event thenEvents elseEvents) position before {before with branches := rest}
   | staticConditional {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.StaticEvent artifact.sources owner} {children : List (SourceRuntimeContext.Event artifact.sources owner)}

@@ -482,11 +482,11 @@ def ExecutionMode.exhausted {artifact root} (mode : ExecutionMode artifact root)
 its indexed source query through one dependent match. No graph comparison or
 transport chooses staged evidence. -/
 private def consumeOperationChild {artifact : Artifact} {root : Validity.Root} {owner : String}
-    (execution : ExecutionMode artifact root) (event : SourceOperationApplication.Event artifact.sources owner)
+    (execution : ExecutionMode artifact root) (event : SourceOperationApplication.Event artifact.sources owner) (controlled : Bool)
     (consume : (cursor : execution.queries.Cursor) →
-      execution.queries.GraphData event.operation.graph OperationAccess.applicable (.application event) → Bool →
+      execution.queries.GraphData event.operation.graph (SourceRuntimeScope.applicationDemand controlled) (.application event) → Bool →
       WorkM (Semantics.Exact.Matrix × List (Island root.dependencies) × execution.queries.Cursor × List execution.Receipt))
-    (operation : RuntimeBodyQueries.Operation execution.queries event) :
+    (operation : RuntimeBodyQueries.Operation execution.queries event controlled) :
     WorkM (Semantics.Exact.Matrix × List (Island root.dependencies) × List execution.Receipt) := do
   match execution,consume,operation with
   | .fresh _,consume,operation =>
@@ -748,7 +748,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
         let childRun := fun {owner name : String} {signature : SourceRuntimeContext.Signature artifact.sources owner name}
             (body : SourceRuntimeTrace.Body signature) (program : Semantics.Observation.Program) (child : Context)
             (initial : RuntimeStructuralAction.SourceState) (prepared : RuntimeInterval.Prepared dependencies program) =>
-          next .pureBody .rootOrder (.whole body) (.root body) program child () initial {} prepared.block
+          next .pureBody .rootOrder (.whole body requested.controllable) (.root body) program child () initial {} prepared.block
         let (logical,checked,receipts) ← checkFreshOperation operations childRun graph requested origin sitePath site
           (cursor.bodies.take count) group
         pure (logical,checked,{cursor with bodies := cursor.bodies.drop count, references},receipts)
@@ -899,7 +899,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
               let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
               let childHistory : RuntimeStructuralAction.SourceState :=
                 ⟨childInitial,childRoles,original.checked.summary.nextOwner⟩
-              let (nested,childReceipts) ← next .pureBody .localScope (.whole original) childPath frame.program child named.nested childHistory
+              let (nested,childReceipts) ← next .pureBody .localScope (.whole original source.requiresControl) childPath frame.program child named.nested childHistory
                 ordinary frame.prepared.block
               let boundary ← RuntimeNamedBoundary.readWithInputs frame.interval tokens
                 event before nested.history nested.retired original.checked.summary.value bound
@@ -916,7 +916,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
               let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
               let childHistory : RuntimeStructuralAction.SourceState :=
                 ⟨childInitial,childRoles,original.checked.summary.nextOwner⟩
-              let (nested,childReceipts) ← next .runtimeBody .localScope (.whole original) childPath frame.program child named.nested childHistory
+              let (nested,childReceipts) ← next .runtimeBody .localScope (.whole original source.requiresControl) childPath frame.program child named.nested childHistory
                 frame.visible.ssa frame.prepared.block
               let boundary ← RuntimeNamedBoundary.readWithInputs frame.interval tokens
                 event before nested.history nested.retired original.checked.summary.value bound
@@ -935,9 +935,9 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
             let actual := actualRead.val
             if sameName : event.callerName = name then
               let thenSource : SourceRuntimeScope.Subject artifact.sources owner name :=
-                .arm event sameName selected.source.bodies selected.source.original true
+                .arm event sameName selected.source.bodies selected.source.original true source.requiresControl
               let elseSource : SourceRuntimeScope.Subject artifact.sources owner name :=
-                .arm event sameName selected.source.bodies selected.source.original false
+                .arm event sameName selected.source.bodies selected.source.original false source.requiresControl
               let (left,leftReceipts) ← next .runtimeBody .frame thenSource path program selected.left selected.thenPlan
                 before ordinary actual.thenBlock
               let (right,rightReceipts) ← next .runtimeBody .frame elseSource path program selected.right selected.elsePlan
@@ -954,8 +954,8 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
         | .operation event,data,_ =>
           let operation ← RuntimeBodyQueries.readOperation execution.queries source event position sourceCursor data
           if caller : event.callerName = name then
-            let (expected,children,performed) ← consumeOperationChild execution event
-              (consumeGraph event.operation.graph OperationAccess.applicable
+            let (expected,children,performed) ← consumeOperationChild execution event source.requiresControl
+              (consumeGraph event.operation.graph (SourceRuntimeScope.applicationDemand source.requiresControl)
                 (.application event) path (.application event caller)) operation
             let finish after retired node :=
               pure (after,retired,ordinary,actions ++ [node],steps ++ [.pure node],
@@ -976,7 +976,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let body := transformed.request.source
           let initial : RuntimeStructuralAction.SourceState :=
             ⟨forward.initial,forward.roles,body.checked.summary.nextOwner⟩
-          let (child,performed) ← next .pureBody .rootOrder (.whole body) (.root body) forward.program
+          let (child,performed) ← next .pureBody .rootOrder (.whole body source.requiresControl) (.root body) forward.program
             transformed.request.context transformed.nested initial {} forward.prepared.block
           let logical ← RuntimeTransformAction.readForwardMap forward child.history.bindings
           let owners ← RuntimeTransformOwners.read interval event before

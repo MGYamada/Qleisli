@@ -33,6 +33,11 @@ def Scope.prefixRequired {artifact owner name} : Scope artifact owner name → B
   | .supplied _ _ _ required => required
   | .original source _ => source.prefixRequired
 
+def Scope.operationDemand {artifact owner name} (scope : Scope artifact owner name) : StaticOperation.Paths :=
+  match scope with
+  | .supplied .. => SourceRuntimeScope.applicationDemand false
+  | .original source _ => SourceRuntimeScope.applicationDemand source.requiresControl
+
 def Scope.incoming {artifact owner name} (scope : Scope artifact owner name) :
     Option (RuntimeGraphOperation.Incoming artifact.sources scope.signature) :=
   match scope with
@@ -45,7 +50,7 @@ def Scope.named {artifact owner name} (scope : Scope artifact owner name) {calle
     Scope artifact caller callee :=
   match scope with
   | .supplied .. => .supplied body.checked.signature body.checked.events body.checked.summary.staticRows true
-  | .original _ _ => .original (.whole body) incoming
+  | .original source _ => .original (.whole body source.requiresControl) incoming
 
 private def emptyPreparation (artifact : Artifact) : RuntimeGraphOperation.Preparation artifact where
   Evidence _ := Empty
@@ -148,12 +153,12 @@ def Scope.branchLeft {artifact owner name} (scope : Scope artifact owner name)
     {event : SourceRuntimeContext.BranchEvent artifact.sources owner} (read : scope.BranchData event) : Scope artifact owner name :=
   match scope with
   | .supplied signature _ _ _ => .supplied signature read.bodies.thenResult.events read.bodies.thenResult.staticRows false
-  | .original _ _ => .original (.arm event read.callerName read.source.bodies read.source.original true)
+  | .original source _ => .original (.arm event read.callerName read.source.bodies read.source.original true source.requiresControl)
 
 def Scope.branchRight {artifact owner name} (scope : Scope artifact owner name)
     {event : SourceRuntimeContext.BranchEvent artifact.sources owner} (read : scope.BranchData event) : Scope artifact owner name :=
   match scope with
   | .supplied signature _ _ _ => .supplied signature read.bodies.elseResult.events read.bodies.elseResult.staticRows false
-  | .original _ _ => .original (.arm event read.callerName read.source.bodies read.source.original false)
+  | .original source _ => .original (.arm event read.callerName read.source.bodies read.source.original false source.requiresControl)
 
 end QleisliKernel.Qirf.RuntimeBodyDiscovery

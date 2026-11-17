@@ -325,7 +325,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                     child.calls.isEmpty = true ∧ child.branches.isEmpty = true then
                   guard child.inlineBodies.isEmpty .request
                   let childQueues := Queues.ofContext child
-                  let graph ← graphRead mode next event.operation.graph OperationAccess.applicable childQueues
+                  let graph ← graphRead mode next event.operation.graph scope.operationDemand childQueues
                     (!child.references.isEmpty) (.application event)
                   if consumed : graph.after.bodies.isEmpty = true ∧ graph.after.references.isEmpty = true then
                     let after := {before with calls := remaining}
@@ -355,7 +355,8 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                             simpa only [childQueues,Queues.ofContext,bodiesEmpty,List.append_nil] using bound.symm
                           have groups : child.references = [planned.cut.references] := by
                             simpa only [childQueues,Queues.ofContext,refsEmpty] using planned.cut.groups
-                          have ownGraph : RuntimeBodyPlan.Graph mode.preparation event.operation.graph OperationAccess.applicable
+                          have ownGraph : RuntimeBodyPlan.Graph mode.preparation event.operation.graph
+                              (SourceRuntimeScope.applicationDemand source.requiresControl)
                               child.bodies planned.cut.references (.application event) := by
                             rw [← bodies]
                             exact planned.graphPlan

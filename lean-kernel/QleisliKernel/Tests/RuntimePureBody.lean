@@ -166,9 +166,12 @@ private inductive InlinePlanFault where
   | none | missing | extra | wrongArm | wrongBody | missingRoot | forward | control | parent
   deriving BEq
 
-private def inlinePlan (fault : InlinePlanFault) (checkRaw : Bool := false) : WorkM (List Nat × Nat) := do
-  let text := "#![no_implicit_prelude] pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
-    "qmatch(s,q){1=>{h(q)},0=>h}}"
+private def inlinePlan (fault : InlinePlanFault) (checkRaw : Bool := false) (viaHelper : Bool := false) :
+    WorkM (List Nat × Nat) := do
+  let helperSource := if viaHelper then "unitary fn helper(q:Q<Bit>)->Q<Bit>{adjoint(h)(q)} " else ""
+  let block := if viaHelper then "helper(q)" else "h(q)"
+  let text := "#![no_implicit_prelude] " ++ helperSource ++ "pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
+    "qmatch(s,q){1=>{" ++ block ++ "},0=>h}}"
   let port := fun token wire => (⟨token,[wire],1⟩ : Semantics.Raw.Port)
   let standalone := fun gate => (⟨[port 0 0],[],[.pure (.gate gate 0 1)],[1],[],.unitary⟩ : Semantics.Observation.Program)
   let controlled (zero one : List Semantics.Raw.UnitaryStep) : Semantics.Observation.Program :=
@@ -188,7 +191,16 @@ private def inlinePlan (fault : InlinePlanFault) (checkRaw : Bool := false) : Wo
   let interface : Semantics.CarrierInterface.Interface :=
     ⟨[⟨port 0 0,[.bit]⟩,⟨port 1 1,[.bit]⟩],[⟨port 2 0,[.bit]⟩,⟨port 3 1,[.bit]⟩],.unitary⟩
   let site : RuntimeContextRequest.Site := ⟨interface,interface,position,[⟨1,if fault == .missingRoot then 5 else 2⟩,⟨3,4⟩]⟩
-  let child := RuntimeContextRequest.Context.mk [⟨action.offset+(if fault == .wrongBody then 1 else 0),0,1⟩] [] [] [] []
+  let activePosition : SourceSequence.Position := ⟨action.offset+(if fault == .wrongBody then 1 else 0),0,1⟩
+  let calls : List (SourceSequence.Position × RuntimeContextRequest.Context) ← if viaHelper then do
+    let .named call := action | throw .request
+    let helper ← SourceRuntimeTrace.readNamedBody call
+    let [.operation operation] := helper.checked.events | throw .request
+    let position : SourceSequence.Position := ⟨operation.call.calleeOffset,0,1⟩
+    let graph := RuntimeContextRequest.Context.withReferences [] [] [] [] [] [[]] [] []
+    pure [(activePosition,RuntimeContextRequest.Context.mk [position] [] [(position,graph)] [] [])]
+  else pure []
+  let child := RuntimeContextRequest.Context.mk [activePosition] [] calls [] []
   let slots := match fault with
     | .missing => []
     | .extra => [(position,0,child),(position,1,child)]
@@ -202,6 +214,9 @@ private def inlinePlan (fault : InlinePlanFault) (checkRaw : Bool := false) : Wo
       interface.inputs.map fun value => [.quantum value],[[]],Semantics.RuntimeType.tuple 2 [tree,tree],
       .tuple 2 :: interface.outputs.map (· |> .quantum),.unitary,{}⟩
     let checked ← RuntimeBodyOperations.read plan #[1,2,3,4,0] runtime
+    if viaHelper then
+      guard (checked.checked.receipts.length == 2 && checked.checked.receipts.any
+        (fun receipt => receipt.request.requested.applicable && receipt.request.requested.controllable)) .request
     return (plan.roots,checked.selections.count)
   return (plan.roots,plan.receipts.length)
 
@@ -209,6 +224,7 @@ private def inlinePlan (fault : InlinePlanFault) (checkRaw : Bool := false) : Wo
 #guard [InlinePlanFault.missing,.extra,.wrongArm,.wrongBody,.missingRoot].all fun fault =>
   ((inlinePlan fault).run 10000000).1.toOption.isNone
 #guard ((inlinePlan .none true).run 10000000).1.toOption == some ([0,1,2,3,4],1)
+#guard ((inlinePlan .none true true).run 10000000).1.toOption == some ([0,1,2,3,4],1)
 #guard [InlinePlanFault.forward,.control,.parent].all fun fault =>
   ((inlinePlan fault true).run 10000000).1 matches .error .equation
 

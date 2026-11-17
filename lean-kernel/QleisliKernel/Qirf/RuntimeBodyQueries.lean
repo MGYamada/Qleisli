@@ -228,18 +228,18 @@ def readWorkspace {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.unsupported impossible⟩ => nomatch impossible
 
 structure Named {artifact : Artifact} (mode : Mode artifact) {owner : String}
-    (event : SourceRuntimeContext.NamedEvent artifact.sources owner) where
+    (event : SourceRuntimeContext.NamedEvent artifact.sources owner) (controlled : Bool) where
   context : Context
   body : SourceRuntimeTrace.Body event.target.signature
   original : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body
-  nested : mode.BodyData (.whole body) context
+  nested : mode.BodyData (.whole body controlled) context
   cursor : mode.Cursor
 
 def readNamed {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
     (event : SourceRuntimeContext.NamedEvent artifact.sources owner) (position : Position)
     (cursor : mode.Cursor) (data : mode.EventData source (.named event) position) :
-    WorkM (Named mode event) := do
+    WorkM (Named mode event source.requiresControl) := do
   match mode with
   | .fresh =>
     let (callPosition,child) :: remaining := cursor.calls | throw .request
@@ -252,18 +252,18 @@ def readNamed {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.unsupported _⟩ => throw .request
 
 structure Transform {artifact : Artifact} (mode : Mode artifact) {owner : String}
-    (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position) where
+    (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position) (controlled : Bool) where
   child : Context
   request : RuntimeTransformRequest.Checked event position child
   original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position child) request
-  nested : mode.BodyData (.whole request.source) request.context
+  nested : mode.BodyData (.whole request.source controlled) request.context
   cursor : mode.Cursor
 
 def readTransform {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
     (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position)
     (cursor : mode.Cursor) (data : mode.EventData source (.transform event) position) :
-    WorkM (Transform mode event position) := do
+    WorkM (Transform mode event position source.requiresControl) := do
   match mode with
   | .fresh =>
     let (callPosition,child) :: remaining := cursor.calls | throw .request
@@ -276,14 +276,14 @@ def readTransform {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.unsupported _⟩ => throw .request
 
 structure Branch {artifact : Artifact} (mode : Mode artifact) {owner name : String}
-    (event : SourceRuntimeContext.BranchEvent artifact.sources owner) where
+    (event : SourceRuntimeContext.BranchEvent artifact.sources owner) (controlled : Bool) where
   callerName : event.callerName = name
   left : Context
   right : Context
   source : RuntimeBranchAction.Source event
   original : RuntimeInterval.Computed (RuntimeBranchAction.readSource event) source
-  thenPlan : mode.BodyData (.arm event callerName source.bodies source.original true) left
-  elsePlan : mode.BodyData (.arm event callerName source.bodies source.original false) right
+  thenPlan : mode.BodyData (.arm event callerName source.bodies source.original true controlled) left
+  elsePlan : mode.BodyData (.arm event callerName source.bodies source.original false controlled) right
   cursor : mode.Cursor
 
 def readBranch {artifact : Artifact} (mode : Mode artifact) {owner name}
@@ -291,7 +291,7 @@ def readBranch {artifact : Artifact} (mode : Mode artifact) {owner name}
     (event : SourceRuntimeContext.BranchEvent artifact.sources owner)
     (thenEvents elseEvents : List (SourceRuntimeContext.Event artifact.sources owner)) (position : Position)
     (cursor : mode.Cursor) (data : mode.EventData source (.conditional event thenEvents elseEvents) position) :
-    WorkM (Branch mode (name := name) event) := do
+    WorkM (Branch mode (name := name) event source.requiresControl) := do
   match mode with
   | .fresh =>
     let (branchPosition,left,right) :: remaining := cursor.branches | throw .request
@@ -352,29 +352,30 @@ def readSelection {artifact : Artifact} (mode : Mode artifact) {owner name}
 /-- A complete operation child has one exact reference group in planned mode.
 Fresh mode retains its original complete child queues for the strict reader. -/
 def Mode.OperationData {artifact owner} (mode : Mode artifact)
-    (event : SourceOperationApplication.Event artifact.sources owner) (child : Context) : Type :=
+    (event : SourceOperationApplication.Event artifact.sources owner) (controlled : Bool) (child : Context) : Type :=
   match mode with
   | .fresh => Unit
   | .planned preparation => Sigma fun references : List (List RuntimeProviderHeader.Request) =>
       PLift (child.references = [references]) ×
-        RuntimeBodyPlan.Graph preparation event.operation.graph OperationAccess.applicable child.bodies references (.application event)
+        RuntimeBodyPlan.Graph preparation event.operation.graph (SourceRuntimeScope.applicationDemand controlled)
+          child.bodies references (.application event)
 
 structure Operation {artifact : Artifact} (mode : Mode artifact) {owner}
-    (event : SourceOperationApplication.Event artifact.sources owner) where
+    (event : SourceOperationApplication.Event artifact.sources owner) (controlled : Bool) where
   child : Context
-  graph : mode.OperationData event child
+  graph : mode.OperationData event controlled child
   cursor : mode.Cursor
 
 def readOperation {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
     (event : SourceOperationApplication.Event artifact.sources owner) (position : Position)
     (cursor : mode.Cursor) (data : mode.EventData source (.operation event) position) :
-    WorkM (Operation mode event) := do
+    WorkM (Operation mode event source.requiresControl) := do
   match mode with
   | .fresh =>
     let (callPosition,child) :: rest := cursor.calls | throw .request
     guard (callPosition == position && position.offset == event.call.calleeOffset && child.positions.isEmpty &&
-      child.sites.isEmpty && child.calls.isEmpty && child.branches.isEmpty) .request
+      child.sites.isEmpty && child.calls.isEmpty && child.branches.isEmpty && child.inlineBodies.isEmpty) .request
     return ⟨child,(),{cursor with calls := rest}⟩
   | .planned _ =>
     match data with
