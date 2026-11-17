@@ -14,7 +14,7 @@ private def source :=
   "unitary fn idle(q:Q<Bit>)->Q<Bit>{q}" ++
   "pub unitary fn route(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qif(c,q){0=>idle,1=>x}}"
 #guard (read source).map (fun checked => checked.events.map (fun event => match event with
-  | .selection _ parsed .. => parsed.keyword.text
+  | .selection selected => selected.parsed.keyword.text
   | _ => "other")) = some ["qif"]
 #guard (read (source.replace "c:Q<Bit>" "c:Q<Bits<1>>")).isNone
 #guard (read (source.replace "0=>idle,1=>x" "1=>x,0=>idle")).isNone
@@ -26,15 +26,14 @@ private def inlineBody (source : String) (index : Nat) :
   let action : Finite.WorkM _ := do
     let signature ← readSignature #[("main",source)] "main" "route" {}
     let body ← SourceRuntimeTrace.readBodyWithSignature signature
-    if first : 0 < body.checked.events.length then
-      let checked ← SourceRuntimeTrace.readInlineArmBody body ⟨0,first⟩ index
-      let events := checked.result.events.map fun event => match event with
-        | .primitive _ => "primitive"
-        | .phase phase => s!"phase {phase.application.j.result.value} {phase.application.k.result.value}"
-        | .named named => named.target.resolution.declaration.name
-        | _ => "other"
-      pure (checked.output.basis,checked.output.ordinal,events)
-    else throw .request
+    let [.selection selected] := body.checked.events | throw .request
+    let checked ← SourceRuntimeTrace.readInlineArmBody selected index
+    let events := checked.result.events.map fun event => match event with
+      | .primitive _ => "primitive"
+      | .phase phase => s!"phase {phase.application.j.result.value} {phase.application.k.result.value}"
+      | .named named => named.target.resolution.declaration.name
+      | _ => "other"
+    pure (checked.output.basis,checked.output.ordinal,events)
   (action.run 10000000).1.toOption
 
 private def inlineBit := "#![no_implicit_prelude] " ++
@@ -61,12 +60,10 @@ private def runtimeTable (source : String) (shift : Nat := 0) : Option (List (Na
   let action : Finite.WorkM _ := do
     let signature ← readSignature #[("main",source)] "main" "route" {}
     let body ← SourceRuntimeTrace.readBodyWithSignature signature
-    if first : 0 < body.checked.events.length then
-      let event : Fin body.checked.events.length := ⟨0,first⟩
-      let .selection _ parsed _ selector target .. := body.checked.events[event] | throw .request
-      let table ← QuantumArms.readRuntimeArms body event (parsed.keyword.span.startByte+shift) selector.basis target.basis
-      pure (table.arms.map fun arm => (arm.ordinal,match arm with | .inline .. => true | .operation _ => false))
-    else throw .request
+    let [.selection selected] := body.checked.events | throw .request
+    let table ← QuantumArms.readRuntimeArms selected (selected.parsed.keyword.span.startByte+shift)
+      selected.selector.basis selected.target.basis
+    pure (table.arms.map fun arm => (arm.ordinal,match arm with | .inline .. => true | .operation _ => false))
   (action.run 10000000).1.toOption
 
 private def inlineEnum := "#![no_implicit_prelude] pub enum Choice{A,B} " ++
@@ -78,5 +75,18 @@ private def inlineEnum := "#![no_implicit_prelude] pub enum Choice{A,B} " ++
 #guard runtimeTable (inlineEnum.replace "Choice::A=>h" "Choice::B=>h") = none
 #guard runtimeTable inlineBit 1 = none
 #guard runtimeTable (inlineBit.replace "{let r=h(q);stamp(r)}" "stamp") = some [(0,false),(1,false)]
+
+private def nestedOrdinals : Finite.WorkM (Nat × Nat × Nat × Nat) := do
+  let source := "#![no_implicit_prelude] pub unitary fn route(s:Q<Bit>,q:Q<(Bit,Bit)>)->(Q<Bit>,Q<(Bit,Bit)>){" ++
+    "qmatch(s,q){1=>{let (a,b)=split(q);let (c,d)=qif(a,b){0=>{b},1=>{h(b)}};join(c,d)},0=>{q}}}"
+  let signature ← readSignature #[("main",source)] "main" "route" {}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let [.selection parent] := body.checked.events | throw .request
+  let outer ← SourceRuntimeTrace.readInlineArmBody parent 0
+  let [.primitive _,.selection child,.primitive _] := outer.result.events | throw .request
+  let inner ← SourceRuntimeTrace.readInlineArmBody child 1
+  return (parent.nextOrdinal,child.nextOrdinal,inner.output.ordinal,outer.output.ordinal)
+
+#guard (nestedOrdinals.run 10000000).1.toOption == some (2,4,3,4)
 
 end QleisliKernel.Tests.SourceRuntimeQif

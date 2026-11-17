@@ -28,13 +28,14 @@ structure Queues where
   bodies : List BodyRequest
   references : List (List (List BodyRequest))
   staticIntervals : List RuntimeContextRequest.StaticInterval
+  inlineBodies : List (Position × Nat × Context)
 
 def Queues.ofContext (request : Context) : Queues :=
-  ⟨request.calls,request.sites,request.branches,request.bodies,request.references,request.staticIntervals⟩
+  ⟨request.calls,request.sites,request.branches,request.bodies,request.references,request.staticIntervals,request.inlineBodies⟩
 
 def Queues.isEmpty (queues : Queues) : Bool :=
   queues.calls.isEmpty && queues.sites.isEmpty && queues.branches.isEmpty &&
-    queues.bodies.isEmpty && queues.references.isEmpty && queues.staticIntervals.isEmpty
+    queues.bodies.isEmpty && queues.references.isEmpty && queues.staticIntervals.isEmpty && queues.inlineBodies.isEmpty
 
 /-- A compound interval belongs to its exact parent occurrence. The remaining
 queue is still required to be exhausted by the original body traversal. -/
@@ -94,6 +95,41 @@ inductive Arms {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepar
       Arms preparation table (index :: rest) before after
 
 mutual
+inductive MixedArms {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :
+    {owner : String} → (event : SourceRuntimeContext.SelectionEvent artifact.sources owner) →
+    Position →
+    (table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis) →
+    List (Fin table.arms.length) → Queues → Queues → Type where
+  | nil {owner : String} {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {position : Position}
+      {table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis}
+      (queues : Queues) : MixedArms preparation event position table [] queues queues
+  | named {owner : String} {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {position : Position}
+      {table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis}
+      {index : Fin table.arms.length} {rest : List (Fin table.arms.length)} {before after : Queues}
+      (arm : QuantumArms.BoundArm artifact.sources owner event.selector.basis event.target.basis)
+      (selected : table.arms[index] = .operation arm)
+      (cut : Cut before)
+      (graph : Graph preparation arm.operation.graph OperationAccess.controllable
+        cut.implementations cut.references (.arm arm.operation))
+      (tail : MixedArms preparation event position table rest cut.after after) :
+      MixedArms preparation event position table (index :: rest) before after
+  | inline {owner : String} {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {position : Position}
+      {table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis}
+      {index : Fin table.arms.length} {rest : List (Fin table.arms.length)} {originalIndex : Nat} {before after : Queues}
+      (arm : SourceRuntimeTrace.InlineArmBody event originalIndex)
+      (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody event originalIndex) arm)
+      (ports : event.selector.basis = event.selector.basis ∧ event.target.basis = event.target.basis)
+      (label : QuantumArms.Label (sources := artifact.sources))
+      (originalLabel : RuntimeInterval.Computed (QuantumArms.readLabel artifact.sources owner event.selector.basis
+        (event.parsed.arms.get ⟨originalIndex,arm.armIndex⟩).label) label)
+      (selected : table.arms[index] = .inline arm replayed ports label originalLabel)
+      (writtenIndex : originalIndex = index.val)
+      (child : Context) (remaining : List (Position × Nat × Context))
+      (slot : before.inlineBodies = (position,index.val,child) :: remaining)
+      (nested : Body preparation (.coherentArm rfl arm replayed) child)
+      (tail : MixedArms preparation event position table rest {before with inlineBodies := remaining} after) :
+      MixedArms preparation event position table (index :: rest) before after
+
 inductive Body {artifact : Artifact} (preparation : RuntimeGraphOperation.Preparation artifact) :
     {owner name : String} → SourceRuntimeScope.Subject artifact.sources owner name → Context → Type where
   | mk {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name} {request : Context}
@@ -150,23 +186,33 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (nested : Body preparation (.whole request.source) request.context) :
       Event preparation source (.transform event) position before {before with calls := remaining}
   | selection {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
-      {tokens : List LocatedToken} {parsed : QuantumMatch.Parsed}
-      {original : QuantumMatch.parse tokens = .ok (parsed,[])}
-      {selector target : Semantics.SourceOwners.Owner} {scope : List String}
-      {naturals : PhaseApplication.Naturals artifact.sources} {held : List Semantics.SourceOwners.Owner}
-      {remaining : SourceRuntimeValues.Environment} {position : Position} {before : Queues}
+      {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {position : Position} {before : Queues}
       (site : RuntimeContextRequest.Site) (rest : List RuntimeContextRequest.Site)
       (selected : before.sites = site :: rest)
-      (located : site.position = position ∧ position.offset = parsed.keyword.span.startByte)
-      (table : QuantumArms.Table artifact.sources owner name parsed.keyword.span.startByte selector.basis target.basis)
+      (located : site.position = position ∧ position.offset = event.parsed.keyword.span.startByte)
+      (table : QuantumArms.Table artifact.sources owner name event.parsed.keyword.span.startByte event.selector.basis event.target.basis)
       (originalTable : RuntimeInterval.Computed
         (QuantumArms.readArmsWithInstantiation source.signature.original source.signature.instantiation
-          source.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope) table)
+          source.signature.supply event.parsed.keyword.span.startByte event.selector.basis event.target.basis
+          (some event.naturals) event.scope) table)
       (armCount : site.arms.length = table.arms.length)
       (after : Queues)
       (arms : Arms preparation table (List.finRange table.arms.length) {before with sites := rest} after) :
-      Event preparation source (.selection tokens parsed original selector target scope naturals held remaining)
+      Event preparation source (.selection event)
         position before after
+  | inlineSelection {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {position : Position} {before after : Queues}
+      (site : RuntimeContextRequest.Site) (rest : List RuntimeContextRequest.Site)
+      (selected : before.sites = site :: rest)
+      (located : site.position = position ∧ position.offset = event.parsed.keyword.span.startByte)
+      (sameName : event.callerName = name)
+      (table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis)
+      (originalTable : RuntimeInterval.Computed
+        (QuantumArms.readRuntimeArms event event.parsed.keyword.span.startByte event.selector.basis event.target.basis) table)
+      (armCount : site.arms.length = table.arms.length)
+      (arms : MixedArms preparation event position table (List.finRange table.arms.length)
+        {before with sites := rest} after) :
+      Event preparation source (.selection event) position before after
   | conditional {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.BranchEvent artifact.sources owner} {thenEvents elseEvents : List (SourceRuntimeContext.Event artifact.sources owner)}
       {position : Position} {before : Queues}

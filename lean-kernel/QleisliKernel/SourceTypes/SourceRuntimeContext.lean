@@ -616,12 +616,25 @@ structure TransformEvent (sources : Sources) (caller : String) where
   held : List Semantics.SourceOwners.Owner
   remaining : Environment
 
+structure SelectionEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  parsed : QuantumMatch.Parsed
+  original : QuantumMatch.parse tokens = .ok (parsed,[])
+  selector : Semantics.SourceOwners.Owner
+  target : Semantics.SourceOwners.Owner
+  scope : List String
+  naturals : PhaseApplication.Naturals sources
+  held : List Semantics.SourceOwners.Owner
+  remaining : Environment
+  callerName : String
+  signature : Signature sources caller callerName
+  generic : RuntimeGenericAnalysis.Checked signature.original
+  basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations
+  computed : SourceComputedBindings.Checked signature.instantiation generic.computedObligations
+  nextOrdinal : Nat
+
 inductive Event (sources : Sources) (caller : String) where
-  | selection (tokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
-      (original : QuantumMatch.parse tokens = .ok (parsed,[]))
-      (selector target : Semantics.SourceOwners.Owner) (scope : List String)
-      (naturals : PhaseApplication.Naturals sources)
-      (held : List Semantics.SourceOwners.Owner) (remaining : Environment)
+  | selection (event : SelectionEvent sources caller)
   | primitive (event : PrimitiveEvent sources caller)
   | phase (event : PhaseEvent sources caller)
   | named (event : NamedEvent sources caller)
@@ -661,11 +674,13 @@ def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat
   | _ => event.callOffset.toList
 
 def Event.qmatchOffset {sources caller} : Event sources caller → Option Nat
-  | .selection _ parsed .. => some parsed.keyword.span.startByte
+  | .selection event => some event.parsed.keyword.span.startByte
   | _ => none
 
 def Event.qmatchOffsets {sources caller} (event : Event sources caller) : List Nat :=
   match event with
+  | .selection selected => selected.parsed.keyword.span.startByte ::
+      selected.parsed.arms.flatMap (fun arm => QuantumSequence.originalOffsets arm.operation)
   | .conditional event .. => QuantumSequence.originalOffsets event.written.parts.thenBody ++
       QuantumSequence.originalOffsets event.written.parts.elseBody
   | .staticConditional event .. => QuantumSequence.originalOffsets event.written.parts.thenBody ++
@@ -693,7 +708,7 @@ def Event.computedOffsets {sources caller} : Event sources caller → List Nat
   | _ => []
 
 def Event.offset {sources caller} : Event sources caller → Nat
-  | .selection _ parsed .. => parsed.keyword.span.startByte
+  | .selection event => event.parsed.keyword.span.startByte
   | .primitive event => event.call.calleeOffset
   | .phase event => event.call.calleeOffset
   | .named event => event.call.calleeOffset
@@ -734,7 +749,7 @@ def Event.quantumUse {sources caller} : Event sources caller → Bool
   | _ => true
 
 def Event.staticRows {sources caller} : Event sources caller → List (String × String)
-  | .selection _ _ _ _ _ _ naturals .. => naturals.sourceRows
+  | .selection event => event.naturals.sourceRows
   | .primitive _ => []
   | .phase event => event.naturals.sourceRows
   | .named event => event.target.sourceRows ++ event.canonical.staticRows

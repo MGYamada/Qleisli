@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.RuntimePureBody
 import QleisliKernel.Qirf.RuntimeLocalEvents
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
+import QleisliKernel.Qirf.RuntimeBodyOperations
 import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Tests.ArmBody
 
@@ -86,7 +87,7 @@ private def selected (exponent : Nat) (swapOutputs : Bool := false) : WorkM (Nat
 #guard (match (selected 0).run 10000000 with | (.error .equation,_) => true | _ => false)
 
 private inductive InlineFault where
-  | none | phase | order | controlled | parent | offset
+  | none | phase | order | controlled | parent | offset | ordinal
   deriving BEq
 
 private inductive InlineShape where
@@ -122,9 +123,11 @@ private def inlineSelection (fault : InlineFault) (shape : InlineShape := .qmatc
   let interval ← RuntimeInterval.check prepared.block 0 1
   if first : 0 < body.checked.events.length then
     let index : Fin body.checked.events.length := ⟨0,first⟩
-    let .selection _ parsed _ selector target .. := body.checked.events[index] | throw .request
-    let offset := parsed.keyword.span.startByte
-    let table ← QuantumArms.readRuntimeArms body index offset selector.basis target.basis
+    let .selection event := body.checked.events[index] | throw .request
+    let selector := event.selector
+    let target := event.target
+    let offset := event.parsed.keyword.span.startByte
+    let table ← QuantumArms.readRuntimeArms event offset selector.basis target.basis
     let interface : Semantics.CarrierInterface.Interface :=
       ⟨[⟨port 0 0,selector.basis⟩,⟨port 1 1,target.basis⟩],
         [⟨port 2 0,selector.basis⟩,⟨port 3 1,target.basis⟩],.unitary⟩
@@ -135,6 +138,9 @@ private def inlineSelection (fault : InlineFault) (shape : InlineShape := .qmatc
     let owners ← RuntimeOwnerTransition.read interval frame.bindings
     let execution : Qirf.RuntimePureBody.ExecutionMode artifact root := .fresh .strict
     let run := Qirf.RuntimePureBody.runBlockCore artifact root execution 8
+    let history : RuntimeStructuralAction.SourceState :=
+      ⟨frame.bindings,[selector,target],if fault == .ordinal then 3 else 2⟩
+    let same ← if same : event.callerName = "route" then pure (⟨same⟩ : PLift _) else throw .request
     let (_,labels) ← Qirf.RuntimePureBody.selectionNode artifact interval frame owners selector target table site []
       fun index arm labels => do
         let .inline replay original _ _ _ := arm | throw .request
@@ -142,8 +148,8 @@ private def inlineSelection (fault : InlineFault) (shape : InlineShape := .qmatc
         let positions := replay.result.events.zipIdx.map fun (event,index) =>
           (⟨event.offset+(if fault == .offset then 1 else 0),index,1⟩ : SourceSequence.Position)
         let request := RuntimeContextRequest.Context.mk positions [] [] [] []
-        let checked ← Qirf.RuntimePureBody.readInlineArm (execution := execution) replay original
-          subject.implementation request () (.root body) run
+        let checked ← Qirf.RuntimePureBody.readInlineArm (execution := execution) same.down replay original
+          subject.implementation request () (.root body) history run
         return (checked.action.code.logical,labels ++ [arm.ordinal])
     return labels
   else throw .request
@@ -154,6 +160,42 @@ private def inlineSelection (fault : InlineFault) (shape : InlineShape := .qmatc
 #guard [InlineFault.phase,.order,.controlled,.parent].all fun fault =>
   ((inlineSelection fault).run 10000000).1 matches .error .equation
 #guard ((inlineSelection .offset).run 10000000).1 matches .error .request
+#guard ((inlineSelection .ordinal).run 10000000).1 matches .error .request
+
+private inductive InlinePlanFault where
+  | none | missing | extra | wrongArm | wrongBody | missingRoot
+  deriving BEq
+
+private def inlinePlan (fault : InlinePlanFault) : WorkM (List Nat × Nat) := do
+  let text := "#![no_implicit_prelude] pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
+    "qmatch(s,q){1=>{h(q)},0=>h}}"
+  let port := fun token wire => (⟨token,[wire],1⟩ : Semantics.Raw.Port)
+  let arm : Semantics.Observation.Program := ⟨[port 0 0],[],[.pure (.gate .h 0 1)],[1],[],.unitary⟩
+  let controlled (zero one : List Semantics.Raw.UnitaryStep) : Semantics.Observation.Program :=
+    ⟨[port 0 0,port 1 1],[],[.pure (.quantumIf 0 1 2 3 zero one)],[2,3],[],.unitary⟩
+  let h := [.gate .h 0]
+  let artifact : Artifact := ⟨#[controlled h h,arm,controlled [] h,arm,controlled [] h],#[],#[("main",text)],0,none⟩
+  let body ← SourceRuntimeTrace.read artifact.sources "main" "route"
+  let [.selection event] := body.events | throw .request
+  let replay ← SourceRuntimeTrace.readInlineArmBody event 0
+  let [action] := replay.result.events | throw .request
+  let position : SourceSequence.Position := ⟨event.parsed.keyword.span.startByte,0,1⟩
+  let interface : Semantics.CarrierInterface.Interface :=
+    ⟨[⟨port 0 0,[.bit]⟩,⟨port 1 1,[.bit]⟩],[⟨port 2 0,[.bit]⟩,⟨port 3 1,[.bit]⟩],.unitary⟩
+  let site : RuntimeContextRequest.Site := ⟨interface,interface,position,[⟨1,if fault == .missingRoot then 5 else 2⟩,⟨3,4⟩]⟩
+  let child := RuntimeContextRequest.Context.mk [⟨action.offset+(if fault == .wrongBody then 1 else 0),0,1⟩] [] [] [] []
+  let slots := match fault with
+    | .missing => []
+    | .extra => [(position,0,child),(position,1,child)]
+    | .wrongArm => [(position,1,child)]
+    | _ => [(position,0,child)]
+  let request := RuntimeContextRequest.Context.withReferences [position] [site] [] [] [] [[]] [] slots
+  let plan ← RuntimeBodyOperations.prepare artifact "main" "route" {} request
+  return (plan.roots,plan.receipts.length)
+
+#guard ((inlinePlan .none).run 10000000).1.toOption == some ([0,1,2,3,4],1)
+#guard [InlinePlanFault.missing,.extra,.wrongArm,.wrongBody,.missingRoot].all fun fault =>
+  ((inlinePlan fault).run 10000000).1.toOption.isNone
 
 private def structural (text : String) (inputs : List Semantics.Raw.Port)
     (operations : List Semantics.Raw.Op) (outputs : List Nat) : WorkM (List Nat × List Nat × List Nat) := do

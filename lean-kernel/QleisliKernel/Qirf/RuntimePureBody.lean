@@ -596,11 +596,10 @@ private def readInlineForward (artifact : Artifact) (root : Validity.Root) (impl
     | _ => throw .request
   | none => throw .request
 
-def InlineForward.initial {artifact root implementation target owner name signature}
-    (forward : InlineForward artifact root implementation target)
-    (body : @SourceRuntimeTrace.Body artifact.sources owner name signature) : RuntimeStructuralAction.SourceState :=
-  let summary := body.checked.summary
-  ⟨[⟨target,forward.input⟩],summary.parameterValues.flatMap valueOwners ++ summary.allocated,summary.nextOrdinal⟩
+def InlineForward.initial {artifact root implementation target}
+    (forward : InlineForward artifact root implementation target) (parent : RuntimeStructuralAction.SourceState) :
+    RuntimeStructuralAction.SourceState :=
+  ⟨[⟨target,forward.input⟩],parent.issued,parent.nextOrdinal⟩
 
 structure InlineAction {artifact root implementation target}
     (forward : InlineForward artifact root implementation target) (output : Owner) (returned : Map) where
@@ -628,23 +627,23 @@ private def readInlineAction {artifact root implementation target}
       by with_reducible exact actual.property,code⟩
   else throw .request
 
-structure InlineChecked {artifact root execution rootOwner rootName owner name signature}
-    {body : @SourceRuntimeTrace.Body artifact.sources owner name signature}
-    {site : Fin body.checked.events.length} {index : Nat}
-    (arm : SourceRuntimeTrace.InlineArmBody body site index)
-    (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody body site index) arm)
+structure InlineChecked {artifact root execution rootOwner rootName owner name}
+    {site : SourceRuntimeContext.SelectionEvent artifact.sources owner} {index : Nat}
+    (sameName : site.callerName = name) (arm : SourceRuntimeTrace.InlineArmBody site index)
+    (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody site index) arm)
     (implementation : Nat) (request : Context)
-    (sourcePlan : execution.queries.BodyData (.coherentArm arm replayed) request)
+    (sourcePlan : execution.queries.BodyData (.coherentArm sameName arm replayed) request)
     (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
-    (run : BlockRunner artifact root execution) where
-  forward : InlineForward artifact root implementation arm.target
-  forwardRead : RuntimeInterval.Computed (readInlineForward artifact root implementation arm.target) forward
-  issuedInOrder : (forward.initial body).issued.map (·.ordinal) = List.range (forward.initial body).nextOrdinal
-  targetIssued : arm.target ∈ (forward.initial body).issued
+    (parent : RuntimeStructuralAction.SourceState) (run : BlockRunner artifact root execution) where
+  forward : InlineForward artifact root implementation site.target
+  forwardRead : RuntimeInterval.Computed (readInlineForward artifact root implementation site.target) forward
+  originalOrdinal : parent.nextOrdinal = site.nextOrdinal
+  issuedInOrder : parent.issued.map (·.ordinal) = List.range parent.nextOrdinal
+  targetIssued : site.target ∈ parent.issued
   result : BlockResult root.dependencies forward.program forward.prepared.block
   receipts : List execution.Receipt
-  traversal : RuntimeInterval.Computed (run .pureBody .rootOrder (.coherentArm arm replayed) path forward.program
-    request sourcePlan (forward.initial body) {} forward.prepared.block) (result,receipts)
+  traversal : RuntimeInterval.Computed (run .pureBody .rootOrder (.coherentArm sameName arm replayed) path forward.program
+    request sourcePlan (forward.initial parent) {} forward.prepared.block) (result,receipts)
   action : InlineAction forward arm.output result.history.bindings
   actionRead : RuntimeInterval.Computed (readInlineAction forward arm.output result.history.bindings) action
 
@@ -652,26 +651,25 @@ structure InlineChecked {artifact root execution rootOwner rootName owner name s
 selection. The shared traversal checks the original events, actual intervals,
 owner history and intermediate equations before recovering the logical action.
 The enclosing selection still checks that action against its controlled sectors. -/
-def readInlineArm {artifact root execution rootOwner rootName owner name signature}
-    {body : @SourceRuntimeTrace.Body artifact.sources owner name signature}
-    {site : Fin body.checked.events.length} {index : Nat}
-    (arm : SourceRuntimeTrace.InlineArmBody body site index)
-    (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody body site index) arm)
+def readInlineArm {artifact root execution rootOwner rootName owner name}
+    {site : SourceRuntimeContext.SelectionEvent artifact.sources owner} {index : Nat}
+    (sameName : site.callerName = name) (arm : SourceRuntimeTrace.InlineArmBody site index)
+    (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody site index) arm)
     (implementation : Nat) (request : Context)
-    (sourcePlan : execution.queries.BodyData (.coherentArm arm replayed) request)
+    (sourcePlan : execution.queries.BodyData (.coherentArm sameName arm replayed) request)
     (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
-    (run : BlockRunner artifact root execution) :
-    WorkM (InlineChecked arm replayed implementation request sourcePlan path run) := do
-  let forward ← NaturalAffine.witness (readInlineForward artifact root implementation arm.target)
-  let initial := forward.val.initial body
-  -- Preserve freshness against every original owner identity. Only the target
-  -- has a native port in this isolated body.
-  exactWork (Exact.charge (16*(Raw.OwnerFlow.fields initial.issued+initial.nextOrdinal+1)))
-  if issued : initial.issued.map (·.ordinal) = List.range initial.nextOrdinal ∧ arm.target ∈ initial.issued then
-    let checked ← NaturalAffine.witness (run .pureBody .rootOrder (.coherentArm arm replayed) path
-      forward.val.program request sourcePlan initial {} forward.val.prepared.block)
+    (parent : RuntimeStructuralAction.SourceState) (run : BlockRunner artifact root execution) :
+    WorkM (InlineChecked sameName arm replayed implementation request sourcePlan path parent run) := do
+  let forward ← NaturalAffine.witness (readInlineForward artifact root implementation site.target)
+  -- The parent retains every issued owner. Only the target has a native port
+  -- in the isolated body, and new owners start at the original event's ordinal.
+  exactWork (Exact.charge (16*(Raw.OwnerFlow.fields parent.issued+parent.nextOrdinal+1)))
+  if issued : parent.nextOrdinal = site.nextOrdinal ∧
+      parent.issued.map (·.ordinal) = List.range parent.nextOrdinal ∧ site.target ∈ parent.issued then
+    let checked ← NaturalAffine.witness (run .pureBody .rootOrder (.coherentArm sameName arm replayed) path
+      forward.val.program request sourcePlan (forward.val.initial parent) {} forward.val.prepared.block)
     let action ← NaturalAffine.witness (readInlineAction forward.val arm.output checked.val.1.history.bindings)
-    return ⟨forward.val,by with_reducible exact forward.property,issued.1,issued.2,checked.val.1,checked.val.2,
+    return ⟨forward.val,by with_reducible exact forward.property,issued.1,issued.2.1,issued.2.2,checked.val.1,checked.val.2,
       by with_reducible exact checked.property,action.val,by with_reducible exact action.property⟩
   else throw .request
 
@@ -987,7 +985,9 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
             forward child.history.bindings logical owners action (Nodes.ofList child.actions)
           return (owners.after,retired ++ event.consumed,ordinary,actions ++ [node],steps ++ [.pure node],
             obligations ++ child.islands,position.start+position.count,transformed.cursor,receipts ++ performed)
-        | .selection tokens parsed original selector target scope naturals held remaining,data,_ =>
+        | .selection event,data,_ =>
+          let selector := event.selector
+          let target := event.target
           let owners ← RuntimeOwnerTransition.read interval callerFrame.bindings
           let selected ← RuntimeBodyQueries.readSelection execution.queries source position sourceCursor data
           let table := selected.table

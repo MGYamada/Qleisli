@@ -280,22 +280,23 @@ structure Selection {artifact : Artifact} (mode : Mode artifact) {owner name off
 
 def readSelection {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
-    {tokens parsed original selector target scope naturals held remaining}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
     (position : Position) (cursor : mode.Cursor)
-    (data : mode.EventData source (.selection tokens parsed original selector target scope naturals held remaining) position) :
-    WorkM (Selection mode (offset := parsed.keyword.span.startByte) (selector := selector.basis)
-      (target := target.basis) source naturals scope) := do
+    (data : mode.EventData source (.selection event) position) :
+    WorkM (Selection mode (offset := event.parsed.keyword.span.startByte) (selector := event.selector.basis)
+      (target := event.target.basis) source event.naturals event.scope) := do
   match mode with
   | .fresh =>
     let site :: rest := cursor.sites | throw .request
-    guard (site.position == position && position.offset == parsed.keyword.span.startByte) .request
+    guard (site.position == position && position.offset == event.parsed.keyword.span.startByte) .request
     let table ← NaturalAffine.witness (QuantumArms.readArmsWithInstantiation source.signature.original
-      source.signature.instantiation source.signature.supply parsed.keyword.span.startByte selector.basis target.basis
-      (some naturals) scope)
+      source.signature.instantiation source.signature.supply event.parsed.keyword.span.startByte event.selector.basis event.target.basis
+      (some event.naturals) event.scope)
     return ⟨site,table.val,by with_reducible exact table.property,(),{cursor with sites := rest}⟩
   | .planned _ =>
     match data with
     | ⟨_,_,.selection site _ _ _ table original _ _ arms⟩ => return ⟨site,table,original,⟨_,_,arms⟩,()⟩
+    | ⟨_,_,.inlineSelection ..⟩ => throw .request
     | ⟨_,_,.unsupported _⟩ => throw .request
 
 /-- A complete operation child has one exact reference group in planned mode.

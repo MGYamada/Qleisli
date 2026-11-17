@@ -281,7 +281,7 @@ private def scopeAt {sources owner name} (signature : QuantumSignature.Checked s
   let runtime ← SourceRuntimeContext.fromQuantumCore signature.toChecked signature.context signature.operations
   let body ← SourceRuntimeTrace.readBodyWithSignature runtime.signature
   let some scope := body.checked.events.findSome? (fun
-    | .selection _ parsed _ _ _ scope .. => if parsed.keyword.span.startByte == offset then some scope else none
+    | .selection event => if event.parsed.keyword.span.startByte == offset then some event.scope else none
     | _ => none) | throw .request
   return scope
 
@@ -339,72 +339,69 @@ def readArmsWithInstantiation {sources owner name}
     (by obtain ⟨before,after,ran⟩ := layout.property; exact FiniteCarrier.read_reference _ _ _ _ ran)
     selectorKind.down arms
 
-inductive RuntimeArm {sources owner name} {signature : SourceRuntimeContext.Signature sources owner name}
-    (body : SourceRuntimeTrace.Body signature) (event : Fin body.checked.events.length) (selector target : Basis) where
+inductive RuntimeArm {sources owner} (event : SourceRuntimeContext.SelectionEvent sources owner)
+    (selector target : Basis) where
   | operation (arm : BoundArm sources owner selector target)
-  | inline {index : Nat} (arm : SourceRuntimeTrace.InlineArmBody body event index)
+  | inline {index : Nat} (arm : SourceRuntimeTrace.InlineArmBody event index)
       (replayed : ∃ before after,
-        (SourceRuntimeTrace.readInlineArmBody body event index).run before = (.ok arm,after))
-      (ports : arm.selector.basis = selector ∧ arm.target.basis = target)
+        (SourceRuntimeTrace.readInlineArmBody event index).run before = (.ok arm,after))
+      (ports : event.selector.basis = selector ∧ event.target.basis = target)
       (label : Label sources)
       (originalLabel : ∃ before after,
-        (readLabel sources owner selector (arm.parsed.arms.get ⟨index,arm.armIndex⟩).label).run before = (.ok label,after))
+        (readLabel sources owner selector (event.parsed.arms.get ⟨index,arm.armIndex⟩).label).run before = (.ok label,after))
 
-def RuntimeArm.written {sources owner name signature body event selector target} :
-    @RuntimeArm sources owner name signature body event selector target → QuantumMatch.Arm
+def RuntimeArm.written {sources owner event selector target} :
+    @RuntimeArm sources owner event selector target → QuantumMatch.Arm
   | .operation arm => arm.written
-  | .inline arm .. => arm.parsed.arms.get ⟨_,arm.armIndex⟩
+  | .inline arm .. => event.parsed.arms.get ⟨_,arm.armIndex⟩
 
-def RuntimeArm.ordinal {sources owner name signature body event selector target} :
-    @RuntimeArm sources owner name signature body event selector target → Nat
+def RuntimeArm.ordinal {sources owner event selector target} :
+    @RuntimeArm sources owner event selector target → Nat
   | .operation arm => arm.label.ordinal
   | .inline _ _ _ label _ => label.ordinal
 
-def RuntimeArm.sourceRows {sources owner name signature body event selector target} :
-    @RuntimeArm sources owner name signature body event selector target → List SourceRows.Row
+def RuntimeArm.sourceRows {sources owner event selector target} :
+    @RuntimeArm sources owner event selector target → List SourceRows.Row
   | .operation arm => arm.sourceRows
   | .inline arm _ _ label _ => label.sourceRows ++ arm.result.staticRows
 
-abbrev RuntimeTable {sources owner name} {signature : SourceRuntimeContext.Signature sources owner name}
-    (body : SourceRuntimeTrace.Body signature) (event : Fin body.checked.events.length)
+abbrev RuntimeTable {sources owner} (event : SourceRuntimeContext.SelectionEvent sources owner)
     (offset : Nat) (selector target : Basis) :=
-  TableWith sources owner name offset selector target (RuntimeArm body event selector target)
+  TableWith sources owner event.callerName offset selector target (RuntimeArm event selector target)
     RuntimeArm.written RuntimeArm.ordinal
 
-/-- Read every arm at the retained runtime event in written order. The table
+/-- Read every arm of the retained runtime event in written order. The table
 shares source, type, and label coverage checks with the static-operation table. -/
-def readRuntimeArms {sources owner name} {signature : SourceRuntimeContext.Signature sources owner name}
-    (body : SourceRuntimeTrace.Body signature) (event : Fin body.checked.events.length)
-    (offset : Nat) (selector target : Basis) : WorkM (RuntimeTable body event offset selector target) := do
-  let .selection _ parsed _ selectorOwner targetOwner eventScope naturals .. := body.checked.events[event]
-    | throw .request
-  guard (offset == parsed.keyword.span.startByte && selector == selectorOwner.basis && target == targetOwner.basis) .request
-  let caller := body.checked.signature.original
-  let instantiation := body.checked.signature.instantiation
-  let supply := body.checked.signature.supply
+def readRuntimeArms {sources owner} (event : SourceRuntimeContext.SelectionEvent sources owner)
+    (offset : Nat) (selector target : Basis) : WorkM (RuntimeTable event offset selector target) := do
+  guard (offset == event.parsed.keyword.span.startByte) .request
+  let caller := event.signature.original
+  let instantiation := event.signature.instantiation
+  let supply := event.signature.supply
   let site ← QuantumMatch.readSite caller offset
-  guard (site.parsed == parsed) .request
+  guard (site.parsed == event.parsed) .request
   let selectorKind ← QuantumMatch.checkSelector site.parsed selector
   let originalTypes ← SourceTypes.readMany sources [selector,target] (supply.arguments.catalogue.map (·.helpers))
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
-  let scope := instantiation.names ++ eventScope
-  let readArm (index : Fin site.parsed.arms.length) :
-      StateT (List (StaticOperation.SuppliedGraphEntry supply)) WorkM (RuntimeArm body event selector target) :=
-    fun previous => do
-      let written := site.parsed.arms[index]
-      if written.operation.head?.map (·.text) == some "{" then
-        let arm ← NaturalAffine.witness (SourceRuntimeTrace.readInlineArmBody body event index.val)
-        if ports : arm.val.selector.basis = selector ∧ arm.val.target.basis = target then
-          let label ← NaturalAffine.witness (readLabel sources owner selector (arm.val.parsed.arms.get ⟨index.val,arm.val.armIndex⟩).label)
+  let scope := instantiation.names ++ event.scope
+  if ports : event.selector.basis = selector ∧ event.target.basis = target then
+    let readArm (index : Fin site.parsed.arms.length) :
+        StateT (List (StaticOperation.SuppliedGraphEntry supply)) WorkM (RuntimeArm event selector target) :=
+      fun previous => do
+        let written := site.parsed.arms[index]
+        if written.operation.head?.map (·.text) == some "{" then
+          let arm ← NaturalAffine.witness (SourceRuntimeTrace.readInlineArmBody event index.val)
+          let label ← NaturalAffine.witness
+            (readLabel sources owner selector (event.parsed.arms.get ⟨index.val,arm.val.armIndex⟩).label)
           return (.inline arm.val (by with_reducible exact arm.property) ports label.val
             (by with_reducible exact label.property),previous)
-        else throw .request
-      else
-        let (arm,next) ← (readArmRetainingGraphs caller instantiation supply naturals scope selector target written).run previous
-        return (.operation arm,next)
-  let (arms,_) ← ((List.finRange site.parsed.arms.length).mapM readArm).run []
-  finishTable site originalTypes layout.val
-    (by obtain ⟨before,after,ran⟩ := layout.property; exact FiniteCarrier.read_reference _ _ _ _ ran)
-    selectorKind.down arms
+        else
+          let (arm,next) ← (readArmRetainingGraphs caller instantiation supply event.naturals scope selector target written).run previous
+          return (.operation arm,next)
+    let (arms,_) ← ((List.finRange site.parsed.arms.length).mapM readArm).run []
+    finishTable site originalTypes layout.val
+      (by obtain ⟨before,after,ran⟩ := layout.property; exact FiniteCarrier.read_reference _ _ _ _ ran)
+      selectorKind.down arms
+  else throw .request
 
 end QleisliKernel.SourceTypes.QuantumArms

@@ -124,6 +124,62 @@ private def armsRead {artifact owner name offset selector target} (mode : Operat
           return ⟨last.after,discovery,first.receipts ++ last.receipts,planned⟩)
   visit indices.length indices before
 
+structure MixedArmsResult {artifact owner} (mode : OperationMode artifact)
+    (event : SourceRuntimeContext.SelectionEvent artifact.sources owner) (position : SourceSequence.Position)
+    (table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis)
+    (indices : List (Fin table.arms.length)) (before : Queues) where
+  after : Queues
+  discovery : Discovery
+  receipts : List mode.Receipt
+  planned : RuntimeBodyPlan.MixedArms mode.preparation event position table indices before after
+
+private def mixedArmsRead {artifact owner} (mode : OperationMode artifact)
+    (next : {owner name : String} → (scope : Scope artifact owner name) → (request : Context) →
+      WorkM (BodyResult mode scope request))
+    (event : SourceRuntimeContext.SelectionEvent artifact.sources owner)
+    (position : SourceSequence.Position)
+    (table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis)
+    (subjects : List RuntimeContextRequest.Arm)
+    (indices : List (Fin table.arms.length)) (before : Queues) (explicit : Bool) :
+    WorkM (MixedArmsResult mode event position table indices before) :=
+  let visit : Nat → (remaining : List (Fin table.arms.length)) → (queues : Queues) →
+      WorkM (MixedArmsResult mode event position table remaining queues) :=
+    Nat.rec (fun remaining queues => match remaining with
+      | [] => pure ⟨queues,{},[],.nil queues⟩
+      | _ :: _ => throw .limit)
+      (fun _ tail remaining queues => do
+        match remaining with
+        | [] => return ⟨queues,{},[],.nil queues⟩
+        | index :: rest =>
+          let subject ← lift (readOption subjects[index.val]?)
+          let _ ← lift (readOption artifact.programs[subject.implementation]?)
+          let _ ← lift (readOption artifact.programs[subject.controlled]?)
+          let subjects : Discovery := ⟨[],[subject.implementation,subject.controlled]⟩
+          match selected : table.arms[index] with
+          | .operation arm =>
+            let first ← graphRead mode next arm.operation.graph OperationAccess.controllable queues explicit (.arm arm.operation)
+            let some ⟨head,same⟩ := first.planned | throw .request
+            let last ← tail rest first.after
+            exactWork (Exact.charge (first.discovery.rows.length+first.discovery.roots.length+first.receipts.length+1))
+            let plan : RuntimeBodyPlan.MixedArms mode.preparation event position table rest head.cut.after last.after :=
+              same.down.symm ▸ last.planned
+            return ⟨last.after,first.discovery.append (subjects.append last.discovery),first.receipts ++ last.receipts,
+              .named arm selected head.cut head.graphPlan plan⟩
+          | .inline (index := originalIndex) arm replayed ports label originalLabel =>
+            match written : queues.inlineBodies with
+            | (parent,armIndex,child) :: slots =>
+              if checked : parent = position ∧ armIndex = index.val ∧ originalIndex = index.val then
+                let nested ← next (.original (.coherentArm rfl arm replayed)) child
+                let some nestedPlan := nested.data | throw .request
+                let last ← tail rest {queues with inlineBodies := slots}
+                exactWork (Exact.charge (nested.discovery.rows.length+nested.discovery.roots.length+nested.receipts.length+1))
+                return ⟨last.after,subjects.append (nested.discovery.append last.discovery),nested.receipts ++ last.receipts,
+                  .inline arm replayed ports label originalLabel selected checked.2.2 child slots
+                    (by simpa only [checked.1,checked.2.1] using written) nestedPlan last.planned⟩
+              else throw .request
+            | [] => throw .request)
+  visit indices.length indices before
+
 private def collectEvents {artifact owner name} (mode : OperationMode artifact) (scope : Scope artifact owner name)
     (step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
       (before : Queues) → WorkM (EventResult mode scope event position before))
@@ -171,9 +227,11 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
       let signature := scope.signature
       let events := scope.events
       guard (request.positions.length ≤ 4096 && request.sites.length ≤ 128 && request.calls.length ≤ 4096 &&
-        request.branches.length ≤ 4096 && request.bodies.length ≤ 4096 && request.references.length ≤ 4096) .limit
+        request.branches.length ≤ 4096 && request.bodies.length ≤ 4096 && request.references.length ≤ 4096 &&
+        request.inlineBodies.length ≤ 8192) .limit
       exactWork (Exact.charge (32*(events.length+request.positions.length+request.sites.length+
-        request.calls.length+request.branches.length+request.bodies.length+request.references.length+1)^2))
+        request.calls.length+request.branches.length+request.bodies.length+request.references.length+1)^2+
+        32*request.inlineBodies.length))
       if offsets : request.positions.map (·.offset) = events.map SourceRuntimeContext.Event.offset then
         let _ ← if scope.prefixRequired then mode.checkSignature signature scope.incoming.isSome else pure ()
         let originals ← NaturalAffine.witness
@@ -213,32 +271,50 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                     else exact none
                 return ⟨after,⟨event.target.sourceRows ++ nested.discovery.rows,nested.discovery.roots⟩,nested.receipts,data⟩
               else throw .request
-          | .selection tokens parsed original selector target lexical naturals held remaining =>
+          | .selection event =>
+            let selector := event.selector
+            let target := event.target
             match sites : before.sites with
             | [] => throw .request
             | site :: rest =>
-              if located : site.position = position ∧ position.offset = parsed.keyword.span.startByte then
-                let table ← NaturalAffine.witness (QuantumArms.readArmsWithInstantiation signature.original signature.instantiation
-                  signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) lexical)
-                if count : site.arms.length = table.val.arms.length then
-                  guard (site.attached.inputs.map (·.basis) == [selector.basis,target.basis] &&
-                    site.attached.outputs.map (·.basis) == [selector.basis,target.basis] &&
-                    site.required.inputs.map (·.basis) == [selector.basis,target.basis] &&
-                    site.required.outputs.map (·.basis) == [selector.basis,target.basis] &&
-                    site.attached.publicEffect == .unitary && site.required.publicEffect == .unitary) .request
-                  let arms ← armsRead mode next table.val site.arms (List.finRange table.val.arms.length)
-                    {before with sites := rest} (!request.references.isEmpty)
-                  let data : scope.EventData mode.preparation
-                      (.selection tokens parsed original selector target lexical naturals held remaining) position before arms.after := by
-                    cases scope with
-                    | supplied => exact ()
-                    | original source =>
-                      exact arms.planned.map (fun plans => .selection site rest sites located table.val
-                        (by with_reducible simpa only [signature,Scope.signature] using table.property) count arms.after plans)
-                  return ⟨arms.after,⟨Carrier.sourceRows site.attached site.required ++ table.val.arms.flatMap (·.sourceRows) ++
-                    arms.discovery.rows,arms.discovery.roots⟩,
-                    arms.receipts,data⟩
-                else throw .request
+              if located : site.position = position ∧ position.offset = event.parsed.keyword.span.startByte then
+                guard (site.attached.inputs.map (·.basis) == [selector.basis,target.basis] &&
+                  site.attached.outputs.map (·.basis) == [selector.basis,target.basis] &&
+                  site.required.inputs.map (·.basis) == [selector.basis,target.basis] &&
+                  site.required.outputs.map (·.basis) == [selector.basis,target.basis] &&
+                  site.attached.publicEffect == .unitary && site.required.publicEffect == .unitary) .request
+                if event.parsed.arms.any (fun arm => arm.operation.head?.map (·.text) == some "{") then
+                  match scope with
+                  | .supplied .. => throw .request
+                  | .original source incoming =>
+                    if caller : event.callerName = name then
+                      let table ← NaturalAffine.witness (QuantumArms.readRuntimeArms event event.parsed.keyword.span.startByte
+                        event.selector.basis event.target.basis)
+                      if count : site.arms.length = table.val.arms.length then
+                        let arms ← mixedArmsRead mode next event position table.val site.arms
+                          (List.finRange table.val.arms.length) {before with sites := rest} (!request.references.isEmpty)
+                        return ⟨arms.after,⟨Carrier.sourceRows site.attached site.required ++ table.val.arms.flatMap (·.sourceRows) ++
+                          arms.discovery.rows,arms.discovery.roots⟩,arms.receipts,
+                          some (.inlineSelection site rest sites located caller table.val (by with_reducible exact table.property) count arms.planned)⟩
+                      else throw .request
+                    else throw .request
+                else
+                  let table ← NaturalAffine.witness (QuantumArms.readArmsWithInstantiation signature.original signature.instantiation
+                    signature.supply event.parsed.keyword.span.startByte selector.basis target.basis (some event.naturals) event.scope)
+                  if count : site.arms.length = table.val.arms.length then
+                    let arms ← armsRead mode next table.val site.arms (List.finRange table.val.arms.length)
+                      {before with sites := rest} (!request.references.isEmpty)
+                    let data : scope.EventData mode.preparation
+                        (.selection event) position before arms.after := by
+                      cases scope with
+                      | supplied => exact ()
+                      | original source =>
+                        exact arms.planned.map (fun plans => .selection site rest sites located table.val
+                          (by with_reducible simpa only [signature,Scope.signature] using table.property) count arms.after plans)
+                    return ⟨arms.after,⟨Carrier.sourceRows site.attached site.required ++ table.val.arms.flatMap (·.sourceRows) ++
+                      arms.discovery.rows,arms.discovery.roots⟩,
+                      arms.receipts,data⟩
+                  else throw .request
               else throw .request
           | .operation event =>
             match calls : before.calls with
@@ -247,6 +323,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               if located : callPosition = position ∧ position.offset = event.call.calleeOffset then
                 if childEmpty : child.positions.isEmpty = true ∧ child.sites.isEmpty = true ∧
                     child.calls.isEmpty = true ∧ child.branches.isEmpty = true then
+                  guard child.inlineBodies.isEmpty .request
                   let childQueues := Queues.ofContext child
                   let graph ← graphRead mode next event.operation.graph OperationAccess.applicable childQueues
                     (!child.references.isEmpty) (.application event)

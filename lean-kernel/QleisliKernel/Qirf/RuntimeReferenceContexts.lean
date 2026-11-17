@@ -13,6 +13,7 @@ abbrev Context := RuntimeContextRequest.Context
 private def withoutMeaningGroups (explicitEmpty : Bool) : Nat → Context → WorkM Unit :=
   Nat.rec (fun _ => throw .limit) (fun _ visit context => do
     exactWork (Exact.charge (16*(context.calls.length+context.branches.length+context.bodies.length+1)))
+    guard context.inlineBodies.isEmpty .request
     if explicitEmpty then
       exactWork (Exact.charge (16*(context.references.length+1)))
       guard (context.references.all List.isEmpty) .request
@@ -44,6 +45,7 @@ def selectionLeaves (context : Context) (explicitEmpty : Bool := false) : WorkM 
 an authenticated direct selection may consume it. All descendants use the
 ordinary body reader and cannot introduce another unconsumed group list. -/
 def call (context : Context) : WorkM Unit := do
+  guard context.inlineBodies.isEmpty .request
   selectionLeaves context
   exactWork (Exact.charge (16*(context.calls.length+context.branches.length+1)))
   context.calls.forM fun (_,child) => noGroups 129 child
@@ -53,7 +55,7 @@ def call (context : Context) : WorkM Unit := do
 context and rejects unsupported root sites/branches/bodies. This complementary
 walk checks all nested reference fields without a singleton-call assumption. -/
 def ordered (context : Context) : WorkM Unit := do
-  guard context.references.isEmpty .request
+  guard (context.references.isEmpty && context.inlineBodies.isEmpty) .request
   exactWork (Exact.charge (16*(context.calls.length+1)))
   context.calls.forM fun (_,child) => call child
 
@@ -63,8 +65,9 @@ provides no source, access, Meaning or execution evidence. -/
 def runtime : Nat → Context → WorkM Unit :=
   Nat.rec (fun _ => throw .limit) (fun _ visit context => do
     selectionLeaves context true
-    exactWork (Exact.charge (16*(context.calls.length+context.branches.length+1)))
+    exactWork (Exact.charge (16*(context.calls.length+context.branches.length+context.inlineBodies.length+1)))
     context.calls.forM fun (_,child) => visit child
-    context.branches.forM fun (_,first,second) => do visit first; visit second)
+    context.branches.forM fun (_,first,second) => do visit first; visit second
+    context.inlineBodies.forM fun (_,_,child) => visit child)
 
 end QleisliKernel.Qirf.RuntimeReferenceContexts

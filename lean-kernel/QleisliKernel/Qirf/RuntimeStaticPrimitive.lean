@@ -151,9 +151,9 @@ private def readEventEligibility {sources caller} (coherent : Bool)
     WorkM (EligibleEvents [event]) := do
   match event with
   | .named call => readNamedEligibility call
-  | .selection tokens parsed original selector target scope naturals held remaining =>
+  | .selection selected =>
     if coherent then
-      return .selection (.selection tokens parsed original selector target scope naturals held remaining) rfl
+      return .selection (.selection selected) rfl
     else throw .request
   | other =>
     match classified : classifyEvent other with
