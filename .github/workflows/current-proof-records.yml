@@ -95,7 +95,8 @@ jobs:
           build: 'false'
       - name: Compile the native package in the fresh checkout
         if: steps.records.outputs.refresh == 'true'
-        timeout-minutes: 15
+        # The complete cold build can exceed 15 minutes on ubuntu-latest.
+        timeout-minutes: 25
         shell: bash
         run: |
           test "$(git rev-parse HEAD)" = "$SOURCE_COMMIT"

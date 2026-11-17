@@ -229,6 +229,15 @@ ordinary native checking.
 pub unitary fn select(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
     qmatch(s, q) { 1 => global_phase_eighth, 0 => h }
 }
+
+pub unitary fn select_word(s: Q<Bits<2>>, q: Q<Bit>) -> (Q<Bits<2>>, Q<Bit>) {
+    qmatch(s, q) {
+        0 => { q },
+        1 => { h(excl q); },
+        2 => { phase[1,1](q) },
+        3 => h,
+    }
+}
 ```
 
 Selected Basis/Nat roots and their ordinary callers use the common emitter for
