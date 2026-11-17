@@ -89,4 +89,23 @@ private def nestedOrdinals : Finite.WorkM (Nat × Nat × Nat × Nat) := do
 
 #guard (nestedOrdinals.run 10000000).1.toOption == some (2,4,3,4)
 
+private def inlineMarkers (n : Nat) (fault : Bool := false) :
+    Finite.WorkM (List (Nat × Nat)) := do
+  let source := "#![no_implicit_prelude] classical fn mark(b:Bit)->Bit{b} " ++
+    "pub unitary fn route[const n:Nat](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
+    "qif(s,q){0=>{if static n==0 {basis q as b{not b}} else {q}}," ++
+    "1=>{with_computed(q,mark){|flag|phase[1,1](flag)}}}}"
+  let signature ← readSignature #[("main",source)] "main" "route" {naturals := [("n",n)]}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let [.selection site] := body.checked.events | throw .request
+  let original := if fault then {site with inlineOffsets := [([],[]),([],[])]} else site
+  let left ← SourceRuntimeTrace.readInlineArmBody original 0
+  let right ← SourceRuntimeTrace.readInlineArmBody original 1
+  return [left.result.events,right.result.events].map (fun events =>
+    ((events.flatMap Event.basisOffsets).length,(events.flatMap Event.computedOffsets).length))
+
+#guard ((inlineMarkers 0).run 10000000).1.toOption == some [(1,0),(0,1)]
+#guard ((inlineMarkers 1).run 10000000).1.toOption == some [(0,0),(0,1)]
+#guard ((inlineMarkers 0 true).run 10000000).1.toOption.isNone
+
 end QleisliKernel.Tests.SourceRuntimeQif

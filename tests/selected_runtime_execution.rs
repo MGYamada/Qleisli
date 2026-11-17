@@ -160,6 +160,33 @@ fn coherent_block_arm_checks_the_original_static_continuation() {
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn coherent_block_arm_checks_the_original_basis_table() {
+    let source =
+        include_str!("fixtures/authoring_sessions/inline-coherent-basis-v030/attempt-01/main.qli");
+    let accepted = selected_at(source, "main::route");
+    let program = accepted.program();
+    assert!(program.qmatch_source_checked());
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let lift = r#""table":[1,0]"#;
+    let permutation = r#""permutation":[1,0]"#;
+    assert_eq!(artifact.matches(lift).count(), 1);
+    assert_eq!(artifact.matches(permutation).count(), 2);
+    // Replace the forward, controlled and enclosing actions consistently.
+    // The written Boolean negation still distinguishes this valid identity proposal.
+    let forged = artifact
+        .replace(lift, r#""table":[0,1]"#)
+        .replace(permutation, r#""permutation":[0,1]"#);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn width_parameterized_predicate_has_one_original_circuit_and_ordinary_definition() {
     use qleisli::ir::RawOp;
 

@@ -113,6 +113,10 @@ private def sourceModules {sources owner name} (signature : Signature sources ow
     Option (SourceModules.Prepared sources) :=
   signature.operations.catalogue.map (·.modulesContext)
 
+def inlineFrame {parsed : QuantumMatch.Parsed} {index : Fin parsed.arms.length}
+    (arm : SourceSyntax.InlineArm parsed index) (target : Semantics.SourceOwners.Owner) : Environment :=
+  [⟨arm.targetName,[.owner target],.coherentArmTarget arm.block.opening.span.startByte⟩]
+
 /-- Every child is evaluated once in source argument order. A callee starts
 with its own full original body fuel; this evaluator's fuel bounds only its
 current original AST. -/
@@ -136,6 +140,33 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             consumed ++ result.consumed,result.nextOrdinal,events ++ result.events,rows ++ result.staticRows,context))
         (([] : List Value),environment,[],[],nextOrdinal,([] : List (Event sources owner)),
           ([] : List (String × String)),startContext)
+      let evaluateSelection (originalTokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
+          (original : QuantumMatch.parse originalTokens = .ok (parsed,[]))
+          (selectorTree : SourceSyntax.Tree parsed.selector) (targetTree : SourceSyntax.Tree parsed.target) := do
+        let (first,context) ← recurse naturals held scope nextOrdinal environment selectorTree context
+        let [.owner selector] := first.value | throw .request
+        let (last,context) ← recurse naturals (held ++ [selector]) scope first.nextOrdinal first.remaining targetTree context
+        let [.owner target] := last.value | throw .request
+        let _ ← QuantumMatch.checkSelector parsed selector.basis
+        Finite.guard (selector.ordinal != target.ordinal &&
+          QuantumSequence.armsAllowed scope signature.operationNames parsed.arms) .request
+        let references := selector :: held ++ owners last.remaining
+        let offsets ← (List.finRange parsed.arms.length).mapM fun index => do
+          let written := parsed.arms[index]
+          if written.operation.head?.map (·.text) != some "{" then return ([],[])
+          Finite.exactWork (Exact.charge (SourceTrace.Meter.syntaxWork written.operation))
+          -- These keywords only decide whether an early traversal is needed.
+          -- The arm reader compares both lists with its actual replay.
+          if !written.operation.any (fun token => token.text == "basis" || token.text == "with_computed") then
+            return ([],[])
+          let arm ← adapt (SourceSyntax.readInlineArm parsed index)
+          let (result,_) ← recurse naturals references scope last.nextOrdinal (inlineFrame arm target) arm.tree context
+          return (result.events.flatMap Event.basisOffsets,result.events.flatMap Event.computedOffsets)
+        return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
+          (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
+          (first.events ++ last.events ++ [.selection ⟨originalTokens,parsed,original,selector,target,scope,naturals,
+            held,last.remaining,name,signature,generic,basis,computed,last.nextOrdinal,offsets⟩])
+          (first.staticRows ++ last.staticRows ++ naturals.sourceRows),context)
       match tree with
       | .empty .. =>
         return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
@@ -394,31 +425,9 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
       | .selection tokens parsed original =>
         let selector ← adapt (SourceSyntax.read (parsed.selector.length+1) 0 false parsed.selector)
         let target ← adapt (SourceSyntax.read (parsed.target.length+1) 0 false parsed.target)
-        let (first,context) ← recurse naturals held scope nextOrdinal environment selector context
-        let [.owner selector] := first.value | throw .request
-        let (last,context) ← recurse naturals (held ++ [selector]) scope first.nextOrdinal first.remaining target context
-        let [.owner target] := last.value | throw .request
-        let _ ← QuantumMatch.checkSelector parsed selector.basis
-        Finite.guard (selector.ordinal != target.ordinal &&
-          QuantumSequence.armsAllowed scope signature.operationNames parsed.arms) .request
-        return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
-          (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
-          (first.events ++ last.events ++ [.selection ⟨tokens,parsed,original,selector,target,scope,naturals,
-            held,last.remaining,name,signature,generic,basis,computed,last.nextOrdinal⟩])
-          (first.staticRows ++ last.staticRows ++ naturals.sourceRows),context)
+        evaluateSelection tokens parsed original selector target
       | .selectionExpression tokens parsed original selectorTree targetTree =>
-        let (first,context) ← recurse naturals held scope nextOrdinal environment selectorTree context
-        let [.owner selector] := first.value | throw .request
-        let (last,context) ← recurse naturals (held ++ [selector]) scope first.nextOrdinal first.remaining targetTree context
-        let [.owner target] := last.value | throw .request
-        let _ ← QuantumMatch.checkSelector parsed selector.basis
-        Finite.guard (selector.ordinal != target.ordinal &&
-          QuantumSequence.armsAllowed scope signature.operationNames parsed.arms) .request
-        return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
-          (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
-          (first.events ++ last.events ++ [.selection ⟨tokens,parsed,original,selector,target,scope,naturals,
-            held,last.remaining,name,signature,generic,basis,computed,last.nextOrdinal⟩])
-          (first.staticRows ++ last.staticRows ++ naturals.sourceRows),context)
+        evaluateSelection tokens parsed original selectorTree targetTree
       | .basis written inputTree bodyTree =>
         let (inputResult,context) ← recurse naturals held scope nextOrdinal environment inputTree context
         let [.owner input] := inputResult.value | throw .request
@@ -823,10 +832,6 @@ def read (sources : Sources) (owner name : String) (arguments : StaticTypes.Argu
     Finite.WorkM (Checked sources owner name) := do
   readWithSignature (← readSignature sources owner name arguments)
 
-def inlineFrame {parsed : QuantumMatch.Parsed} {index : Fin parsed.arms.length}
-    (arm : SourceSyntax.InlineArm parsed index) (target : Semantics.SourceOwners.Owner) : Environment :=
-  [⟨arm.targetName,[.owner target],.coherentArmTarget arm.block.opening.span.startByte⟩]
-
 structure InlineArmBody {sources owner} (site : SelectionEvent sources owner) (index : Nat) where
   armIndex : index < site.parsed.arms.length
   arm : SourceSyntax.InlineArm site.parsed ⟨index,armIndex⟩
@@ -840,6 +845,8 @@ structure InlineArmBody {sources owner} (site : SelectionEvent sources owner) (i
   unitary : inferredEffect result.events = .unitary
   calls : arm.tree.calls = .ok (result.events.flatMap Event.callOffsets)
   selections : result.events.flatMap Event.qmatchOffsets = QuantumSequence.originalOffsets arm.block.body
+  offsets : site.inlineOffsets[index]? =
+    some (result.events.flatMap Event.basisOffsets,result.events.flatMap Event.computedOffsets)
 
 /-- Replay the exact selected block using the static bindings and owner issuance
 retained at the original event. Both an enclosing function and a nested arm
@@ -864,10 +871,12 @@ def readInlineArmBody {sources owner} (site : SelectionEvent sources owner) (ind
           result.nextOrdinal = site.nextOrdinal+result.allocated.length ∧
           inferredEffect result.events = .unitary ∧
           offsets = result.events.flatMap Event.callOffsets ∧
-          result.events.flatMap Event.qmatchOffsets = QuantumSequence.originalOffsets arm.block.body then
-        let ⟨outputType,complete,allocated,nextOrdinal,unitary,calls,selections⟩ := checked
+          result.events.flatMap Event.qmatchOffsets = QuantumSequence.originalOffsets arm.block.body ∧
+          site.inlineOffsets[index]? =
+            some (result.events.flatMap Event.basisOffsets,result.events.flatMap Event.computedOffsets) then
+        let ⟨outputType,complete,allocated,nextOrdinal,unitary,calls,selections,offsets⟩ := checked
         return ⟨armIndex,arm,result,output,outputValue,outputType,complete,allocated,nextOrdinal,unitary,
-          originalCalls.trans (congrArg Except.ok calls),selections⟩
+          originalCalls.trans (congrArg Except.ok calls),selections,offsets⟩
       else throw .request
     | _,_ => throw .request
   else throw .request

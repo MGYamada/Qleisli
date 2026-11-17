@@ -632,6 +632,8 @@ structure SelectionEvent (sources : Sources) (caller : String) where
   basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations
   computed : SourceComputedBindings.Checked signature.instantiation generic.computedObligations
   nextOrdinal : Nat
+  /-- Active basis and computed events indexed by the written arm order. -/
+  inlineOffsets : List (List Nat × List Nat)
 
 inductive Event (sources : Sources) (caller : String) where
   | selection (event : SelectionEvent sources caller)
@@ -692,6 +694,7 @@ def Event.qmatchOffsets {sources caller} (event : Event sources caller) : List N
 
 def Event.basisOffsets {sources caller} : Event sources caller → List Nat
   | .basis event => [event.written.parts.keyword.span.startByte]
+  | .selection event => event.inlineOffsets.flatMap (·.1)
   | .conditional event .. => event.thenArm.basisOffsets ++ event.elseArm.basisOffsets
   | .staticConditional event .. => event.selected.2.basisOffsets
   | .matching event .. => event.arms.flatMap (·.2.basisOffsets)
@@ -701,6 +704,7 @@ def Event.basisOffsets {sources caller} : Event sources caller → List Nat
 
 def Event.computedOffsets {sources caller} : Event sources caller → List Nat
   | .computed event .. => event.body.computedOffsets ++ [SourceRuntimeComputed.offset event.written]
+  | .selection event => event.inlineOffsets.flatMap (·.2)
   | .workspace event .. => event.body.computedOffsets
   | .conditional event .. => event.thenArm.computedOffsets ++ event.elseArm.computedOffsets
   | .staticConditional event .. => event.selected.2.computedOffsets
