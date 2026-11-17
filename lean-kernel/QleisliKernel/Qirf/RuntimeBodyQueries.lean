@@ -412,9 +412,14 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
       return ⟨sequence,positions,count,(),remaining⟩
     else throw .request
   | .planned _ =>
-    guard (!pureOnly) .request
     match data with
     | ⟨_,_,.staticConditional selected _ positions _ count events⟩ =>
+      -- A pure continuation keeps the authenticated owner delta empty.
+      -- Its selected events still run through the common pure body steps.
+      if pureOnly then
+        match selected with
+        | .unchanged _ => pure ()
+        | .events _ => throw .request
       return ⟨selected,positions,count,⟨_,_,events⟩,()⟩
     | ⟨_,_,.unsupported _⟩ => throw .request
 

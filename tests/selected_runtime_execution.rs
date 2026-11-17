@@ -124,6 +124,42 @@ observe fn main()->Bit{
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
+fn coherent_block_arm_checks_the_original_static_continuation() {
+    let source = include_str!(
+        "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02/main.qli"
+    );
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    let kernel = kernel();
+    let checked = [0, 1].map(|n| {
+        parsed
+            .instantiate_runtime_with_types(
+                "main::route",
+                Default::default(),
+                BTreeMap::from([("n".into(), n)]),
+                Default::default(),
+            )
+            .unwrap()
+            .compile_runtime_with_kernel(&kernel)
+            .unwrap()
+    });
+    let [zero, one] = checked.each_ref().map(|checked| checked.program());
+    assert!(zero.qmatch_source_checked() && one.qmatch_source_checked());
+    assert_ne!(zero.raw(), one.raw());
+    let error = kernel
+        .check_qmatch_source_v5(zero.artifact(), one.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
 fn width_parameterized_predicate_has_one_original_circuit_and_ordinary_definition() {
     use qleisli::ir::RawOp;
 

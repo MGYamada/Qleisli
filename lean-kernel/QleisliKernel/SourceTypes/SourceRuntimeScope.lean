@@ -43,6 +43,12 @@ def Subject.held {sources owner name} : Subject sources owner name → List Sema
   | .arm event _ _ _ _ _ => event.held
   | .coherentArm .. => []
 
+/-- The containing selector and other live parent owners retain their original
+identity in source replay. They have no ports in the isolated arm program. -/
+def Subject.suspended {sources owner name} : Subject sources owner name → List Semantics.SourceOwners.Owner
+  | .coherentArm (site := site) .. => site.selector :: site.held ++ owners site.remaining
+  | _ => []
+
 def Subject.parameterValues {sources owner name} : Subject sources owner name → List Value
   | .whole body _ => body.checked.summary.parameterValues
   | .arm _ _ _ _ _ _ => []

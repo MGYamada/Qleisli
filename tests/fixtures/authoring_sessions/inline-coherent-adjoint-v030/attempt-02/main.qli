@@ -1,0 +1,4 @@
+#![no_implicit_prelude]
+pub unitary fn route[const n:Nat](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>h,1=>{if static n==0 {h(q)} else {phase[1,1](q)}}}
+}

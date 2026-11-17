@@ -1056,7 +1056,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let interval ← RuntimeInterval.check block position.start position.count
           let bindings := (← reordered (history.bindings.map (·.owner)) interval.before history.bindings).bindings
           let before : RuntimeStructuralAction.SourceState := {history with bindings}
-          let _ ← RuntimeStaticPrimitive.readContinuationBefore sequence interval before
+          let _ ← RuntimeStaticPrimitive.readContinuationBefore sequence interval before source.suspended
           let count := sequence.selected.result.events.length
           exactWork (Exact.charge (32*(count+1)*(actions.length+steps.length+obligations.length+count+1)+
             32*(Raw.OwnerFlow.fields retired+1)))
@@ -1072,6 +1072,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let (after,afterRetired,_ordinary,_actions,_steps,_obligations,afterCursor,_sourceCursor,_receipts) := result
           guard (afterCursor == position.start+position.count) .request
           let _ ← RuntimeStaticPrimitive.readContinuationAfter sequence interval before after retired afterRetired
+            source.suspended
           return result
         | event,data,entry => step event position (.direct source request.positions entry) data state
     let (history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts) ←
