@@ -141,6 +141,7 @@ impl Request {
                 contexts.push(&body.body);
             }
             contexts.extend(context.calls.iter().map(|call| &call.body));
+            contexts.extend(context.inline_bodies.iter().map(|inline| &inline.body));
             for branch in &context.branches {
                 contexts.push(&branch.then_body);
                 contexts.push(&branch.else_body);

@@ -9,7 +9,8 @@ use super::{Error, Result};
 
 mod context;
 pub use context::{
-    BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ProviderSubject, StaticInterval,
+    BodyRequest, Branch, Call, Context, ContextArm, ContextSite, InlineBody, ProviderSubject,
+    StaticInterval,
 };
 mod operations;
 pub use operations::{Description, OperationNode, OperationPrimitive, StaticArguments};

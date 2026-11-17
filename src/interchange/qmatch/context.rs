@@ -31,6 +31,8 @@ pub struct Context {
     pub calls: Vec<Call>,
     pub branches: Vec<Branch>,
     pub bodies: Vec<BodyRequest>,
+    /// Inline blocks in selection order, then in written arm order.
+    pub inline_bodies: Vec<InlineBody>,
     /// For each original arm or operation application, one quantum-body list
     /// per Meaning obligation. Source order and empty groups are significant.
     pub references: Vec<Vec<Vec<BodyRequest>>>,
@@ -61,7 +63,43 @@ pub struct BodyRequest {
     pub body: Context,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct InlineBody {
+    /// The enclosing selection's exact source and Raw interval.
+    pub position: Position,
+    /// The zero-based written arm index, independent of the selector label.
+    pub arm_index: u32,
+    /// Source events and Raw coordinates local to the arm implementation.
+    pub body: Context,
+}
+
 impl Context {
+    fn check_inline_anchors(&self) -> Result<()> {
+        if self.inline_bodies.is_empty() {
+            return Ok(());
+        }
+        let mut pending = self.inline_bodies.iter().peekable();
+        for (site_index, site) in self.sites.iter().enumerate() {
+            if self.sites[..site_index]
+                .iter()
+                .any(|previous| previous.position == site.position)
+            {
+                return Err(Error::format("duplicate qmatch inline body site"));
+            }
+            for arm_index in 0..site.arms.len() {
+                if pending.peek().is_some_and(|next| {
+                    next.position == site.position && next.arm_index as usize == arm_index
+                }) {
+                    pending.next();
+                }
+            }
+        }
+        if pending.next().is_some() {
+            return Err(Error::format("unmatched or unordered qmatch inline body"));
+        }
+        Ok(())
+    }
+
     pub(super) fn bounded(&self, depth: usize, remaining: &mut usize) -> Result<()> {
         if depth > 128 || self.sites.len() > 128 {
             return Err(Error::limit("qmatch source context capacity"));
@@ -71,6 +109,7 @@ impl Context {
         charge(remaining, self.calls.len().saturating_mul(160))?;
         charge(remaining, self.branches.len().saturating_mul(192))?;
         charge(remaining, self.bodies.len().saturating_mul(64))?;
+        charge(remaining, self.inline_bodies.len().saturating_mul(160))?;
         charge(remaining, self.references.len().saturating_mul(32))?;
         for site in &self.sites {
             interface_storage(&site.attached, remaining)?;
@@ -92,6 +131,10 @@ impl Context {
         }
         for body in &self.bodies {
             body.body.bounded(depth + 1, remaining)?;
+        }
+        self.check_inline_anchors()?;
+        for inline in &self.inline_bodies {
+            inline.body.bounded(depth + 1, remaining)?;
         }
         for operation in &self.references {
             charge(remaining, operation.len().saturating_mul(32))?;
@@ -159,6 +202,12 @@ impl Context {
                 ),
             ));
         }
+        if !self.inline_bodies.is_empty() {
+            fields.push((
+                "inline_bodies".into(),
+                Value::Array(self.inline_bodies.iter().map(InlineBody::encode).collect()),
+            ));
+        }
         fields
     }
 
@@ -183,6 +232,9 @@ impl Context {
         ]);
         if value.field("static_intervals").is_ok() {
             fields.push("static_intervals");
+        }
+        if value.field("inline_bodies").is_ok() {
+            fields.push("inline_bodies");
         }
         value.fields(&fields)?;
         Ok(())
@@ -225,8 +277,23 @@ impl Context {
             }
             Err(_) => Vec::new(),
         };
-        Ok(Self {
+        let inline_bodies = match value.field("inline_bodies") {
+            Ok(value) => {
+                let values = value.array()?;
+                if values.is_empty() {
+                    return Err(Error::format("empty qmatch inline body list"));
+                }
+                charge(remaining, values.len().saturating_mul(160))?;
+                values
+                    .iter()
+                    .map(|inline| InlineBody::decode(inline, depth + 1, remaining))
+                    .collect::<Result<_>>()?
+            }
+            Err(_) => Vec::new(),
+        };
+        let context = Self {
             static_intervals,
+            inline_bodies,
             positions: positions
                 .iter()
                 .map(Position::decode)
@@ -265,7 +332,9 @@ impl Context {
                         .collect::<Result<_>>()
                 })
                 .collect::<Result<_>>()?,
-        })
+        };
+        context.check_inline_anchors()?;
+        Ok(context)
     }
 }
 
@@ -367,6 +436,25 @@ impl BodyRequest {
     }
 }
 
+impl InlineBody {
+    fn encode(&self) -> Value {
+        Value::object([
+            ("position", self.position.encode()),
+            ("arm_index", n(self.arm_index)),
+            ("body", self.body.encode()),
+        ])
+    }
+
+    fn decode(value: &Value, depth: usize, remaining: &mut usize) -> Result<Self> {
+        value.fields(&["position", "arm_index", "body"])?;
+        Ok(Self {
+            position: Position::decode(value.field("position")?)?,
+            arm_index: number(value.field("arm_index")?)?,
+            body: Context::decode(value.field("body")?, depth, remaining)?,
+        })
+    }
+}
+
 impl ProviderSubject {
     fn encode(&self) -> Value {
         match self {
@@ -429,5 +517,92 @@ impl Branch {
             then_body: Context::decode(value.field("then")?, depth, remaining)?,
             else_body: Context::decode(value.field("else")?, depth, remaining)?,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ir::Effect;
+
+    fn inline_context() -> Context {
+        let position = Position {
+            offset: 20,
+            start: 0,
+            count: 1,
+        };
+        let interface = Interface {
+            inputs: vec![],
+            outputs: vec![],
+            public_effect: Effect::Unitary,
+        };
+        Context {
+            positions: vec![position.clone()],
+            sites: vec![ContextSite {
+                attached: interface.clone(),
+                required: interface,
+                position: position.clone(),
+                arms: vec![
+                    ContextArm {
+                        implementation: 1,
+                        controlled: 2,
+                    },
+                    ContextArm {
+                        implementation: 1,
+                        controlled: 2,
+                    },
+                ],
+            }],
+            inline_bodies: [41, 63]
+                .into_iter()
+                .enumerate()
+                .map(|(index, offset)| InlineBody {
+                    position: position.clone(),
+                    arm_index: index as u32,
+                    body: Context {
+                        positions: vec![Position {
+                            offset,
+                            start: 0,
+                            count: 1,
+                        }],
+                        ..Default::default()
+                    },
+                })
+                .collect(),
+            ..Default::default()
+        }
+    }
+
+    #[test]
+    fn original_inline_positions_are_distinct_even_with_shared_programs() {
+        let context = inline_context();
+        let mut budget = json::MAX_BYTES;
+        context.bounded(0, &mut budget).unwrap();
+        let mut budget = json::MAX_BYTES;
+        let decoded = Context::decode(&context.encode(), 0, &mut budget).unwrap();
+        assert_eq!(decoded, context);
+    }
+
+    #[test]
+    fn inline_context_rejects_unused_duplicate_and_unordered_slots() {
+        let original = inline_context();
+        let mut wrong_position = original.clone();
+        wrong_position.inline_bodies[1].position.count += 1;
+        let mut wrong_index = original.clone();
+        wrong_index.inline_bodies[1].arm_index += 1;
+        let mut duplicate = original.clone();
+        duplicate.inline_bodies[1].arm_index = 0;
+        let mut reversed = original;
+        reversed.inline_bodies.swap(0, 1);
+        for context in [wrong_position, wrong_index, duplicate, reversed] {
+            let mut budget = json::MAX_BYTES;
+            assert!(context.bounded(0, &mut budget).is_err());
+            let mut budget = json::MAX_BYTES;
+            assert!(Context::decode(&context.encode(), 0, &mut budget).is_err());
+        }
+        let mut empty = Context::default().fields();
+        empty.push(("inline_bodies".into(), Value::Array(vec![])));
+        let mut budget = json::MAX_BYTES;
+        assert!(Context::decode(&Value::object(empty), 0, &mut budget).is_err());
     }
 }

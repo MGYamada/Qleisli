@@ -145,7 +145,8 @@ private def site (value : Json) : WorkM Site := do
 
 private def contextFields (value : Json) (leading : List String := []) : Except String Unit :=
   let names := leading ++ ["positions","sites","calls","branches","bodies","references"]
-  Carrier.fields value (if (field value "static_intervals").isOk then names ++ ["static_intervals"] else names)
+  let names := if (field value "static_intervals").isOk then names ++ ["static_intervals"] else names
+  Carrier.fields value (if (field value "inline_bodies").isOk then names ++ ["inline_bodies"] else names)
 
 private def readStaticIntervals (value : Json) : WorkM (List Qirf.RuntimeContextRequest.StaticInterval) := do
   match field value "static_intervals" with
@@ -178,7 +179,35 @@ private def readBody (readChild : Json → WorkM Context) (value : Json) : WorkM
   adapt (contextFields body)
   return (subject,← readChild body)
 
-private def context : Nat → Json → WorkM Context :=
+private def anchoredInlineBodies (sites : List Site)
+    (inline : List (Qirf.SourceSequence.Position × Nat × Context)) : Bool :=
+  let positions := sites.map (·.position)
+  positions.eraseDups.length == positions.length &&
+    (sites.foldl (fun pending site => (List.range site.arms.length).foldl (fun pending index =>
+      match pending with
+      | (parent,armIndex,_) :: rest => if parent == site.position && armIndex == index then rest else pending
+      | [] => []) pending) inline).isEmpty
+
+private def readInlineBodies (readChild : Json → WorkM Context) (enabled : Bool) (sites : List Site)
+    (value : Json) : WorkM (List (Qirf.SourceSequence.Position × Nat × Context)) := do
+  match field value "inline_bodies" with
+  | .error _ => return []
+  | .ok value =>
+    guard enabled .request
+    let bodies ← adapt value.getArr?
+    guard (!bodies.isEmpty) .request
+    exactWork (Exact.charge (16*(sites.length^2+(sites.map (·.arms.length)).sum+bodies.size+1)))
+    let inline ← bodies.toList.mapM fun entry => do
+      adapt (Carrier.fields entry ["position","arm_index","body"])
+      let parent ← adapt (position (← adapt (field entry "position")))
+      let index ← adapt (number (← adapt (field entry "arm_index")))
+      let body ← adapt (field entry "body")
+      adapt (contextFields body)
+      return (parent,index,← readChild body)
+    guard (anchoredInlineBodies sites inline) .request
+    return inline
+
+private def context (inlineEnabled : Bool) : Nat → Json → WorkM Context :=
   Nat.rec (fun _ => throw .limit) (fun _ readChild value => do
     let positions ← adapt ((← adapt (field value "positions")).getArr?)
     let sites ← adapt ((← adapt (field value "sites")).getArr?)
@@ -215,7 +244,14 @@ private def context : Nat → Json → WorkM Context :=
     let staticIntervals ← readStaticIntervals value
     unless staticIntervals.isEmpty do
       guard (anchoredStatics positions staticIntervals) .request
-    return .withReferences positions sites calls branches bodies references staticIntervals)
+    let inline ← readInlineBodies readChild inlineEnabled sites value
+    return .withReferences positions sites calls branches bodies references staticIntervals inline)
+
+/-- Inspect a context's transport structure. Actual source arm kind, source
+order and the corresponding Raw subject remain obligations of the native check. -/
+def inspectContext (value : Json) : WorkM Context := do
+  adapt (contextFields value)
+  context true 129 value
 
 /-- The profile is determined by sites in the compared runtime context.
 Provider evidence bodies do not supply a root selection occurrence. -/
@@ -255,7 +291,9 @@ def decode (value : Json) : WorkM Request := do
     ((source.arguments.naturals ++ runtime.staticArguments.naturals).map fun (name,_) => name.utf8ByteSize).sum
   exactWork (Exact.charge (16*(names+Raw.OwnerFlow.fields
     ((source.arguments.bases ++ runtime.staticArguments.bases).map fun (_,basis) => ⟨0,basis⟩)+1)))
-  let body ← context 129 value
+  -- Keep the native gate closed until every inline body is consumed by the
+  -- source-indexed runtime plan and the exact Raw check.
+  let body ← context false 129 value
   let hasSelection ← usesSelection 129 body
   let scope ← if hasSelection then pure profile else do
     pure (if ← hasMeaningGroup 129 body then meaningProfile else basisProfile)
