@@ -420,95 +420,114 @@ impl Circuit {
     /// Direct exact column evaluation, independent of the frontend and simulator.
     pub fn matrix(&self, budget: &mut Budget) -> Result<Matrix, ContractError> {
         let dimension = 1usize << self.basis.bits()?;
-        for step in &self.steps {
-            let cost = match &step.action {
-                CircuitAction::Contract { evidence, .. } => 3 * evidence.meaning().rows(),
-                _ => 6,
-            };
-            budget.charge(dimension * dimension * cost)?;
-        }
+        self.charge_columns(dimension, dimension, budget)?;
         let mut matrix = vec![Exact::zero(); dimension * dimension];
         for column in 0..dimension {
-            let mut values = vec![Exact::zero(); dimension];
-            values[column] = Exact::one();
-            for step in &self.steps {
-                let mut next = vec![Exact::zero(); dimension];
-                for (label, value) in values.iter().copied().enumerate() {
-                    if value == Exact::zero() {
-                        continue;
-                    }
-                    let enabled = step
-                        .controls
-                        .iter()
-                        .all(|c| ((label >> c.index) & 1 != 0) == c.when_one);
-                    if !enabled {
-                        next[label] = next[label].add(value)?;
-                        continue;
-                    }
-                    match &step.action {
-                        CircuitAction::Contract {
-                            indices,
-                            evidence,
-                            adjoint,
-                        } => {
-                            let input =
-                                indices.iter().enumerate().fold(0usize, |n, (place, axis)| {
-                                    n | (((label >> axis) & 1) << place)
-                                });
-                            let meaning = evidence.meaning();
-                            let local_dim = meaning.rows();
-                            for output in 0..local_dim {
-                                let entry = if *adjoint {
-                                    meaning.entries()[input * local_dim + output].conjugate()?
-                                } else {
-                                    meaning.entries()[output * local_dim + input]
-                                };
-                                if entry == Exact::zero() {
-                                    continue;
-                                }
-                                let mut target = label;
-                                for (place, axis) in indices.iter().enumerate() {
-                                    target =
-                                        (target & !(1 << axis)) | (((output >> place) & 1) << axis);
-                                }
-                                next[target] = next[target].add(value.mul(entry)?)?;
-                            }
-                        }
-                        CircuitAction::Hadamard { target } => {
-                            let low = label & !(1 << target);
-                            let high = low | (1 << target);
-                            let scaled = value.mul(Exact::inv_sqrt2())?;
-                            next[low] = next[low].add(scaled)?;
-                            let signed = if label == high { scaled.neg()? } else { scaled };
-                            next[high] = next[high].add(signed)?;
-                        }
-                        CircuitAction::Monomial {
-                            indices,
-                            permutation,
-                            phases,
-                        } => {
-                            let input =
-                                indices.iter().enumerate().fold(0usize, |n, (place, axis)| {
-                                    n | (((label >> axis) & 1) << place)
-                                });
-                            let output = usize::from(permutation[input]);
-                            let mut target = label;
-                            for (place, axis) in indices.iter().enumerate() {
-                                target =
-                                    (target & !(1 << axis)) | (((output >> place) & 1) << axis);
-                            }
-                            next[target] = next[target]
-                                .add(value.mul(Exact::phase(i32::from(phases[input])))?)?;
-                        }
-                    }
-                }
-                values = next;
-            }
+            let values = self.column(dimension, column)?;
             for (row, value) in values.into_iter().enumerate() {
                 matrix[row * dimension + column] = value;
             }
         }
         Ok(Matrix::new(dimension, dimension, matrix)?)
+    }
+
+    /// Evaluate only the column needed for a circuit starting in vacuum.
+    pub(crate) fn vacuum_column(&self, budget: &mut Budget) -> Result<Vec<Exact>, ContractError> {
+        let dimension = 1usize << self.basis.bits()?;
+        self.charge_columns(dimension, 1, budget)?;
+        self.column(dimension, 0)
+    }
+
+    fn charge_columns(
+        &self,
+        dimension: usize,
+        columns: usize,
+        budget: &mut Budget,
+    ) -> Result<(), ContractError> {
+        for step in &self.steps {
+            let cost = match &step.action {
+                CircuitAction::Contract { evidence, .. } => 3 * evidence.meaning().rows(),
+                _ => 6,
+            };
+            budget.charge(dimension * columns * cost)?;
+        }
+        Ok(())
+    }
+
+    fn column(&self, dimension: usize, column: usize) -> Result<Vec<Exact>, ContractError> {
+        let mut values = vec![Exact::zero(); dimension];
+        values[column] = Exact::one();
+        for step in &self.steps {
+            let mut next = vec![Exact::zero(); dimension];
+            for (label, value) in values.iter().copied().enumerate() {
+                if value == Exact::zero() {
+                    continue;
+                }
+                let enabled = step
+                    .controls
+                    .iter()
+                    .all(|c| ((label >> c.index) & 1 != 0) == c.when_one);
+                if !enabled {
+                    next[label] = next[label].add(value)?;
+                    continue;
+                }
+                match &step.action {
+                    CircuitAction::Contract {
+                        indices,
+                        evidence,
+                        adjoint,
+                    } => {
+                        let input = indices.iter().enumerate().fold(0usize, |n, (place, axis)| {
+                            n | (((label >> axis) & 1) << place)
+                        });
+                        let meaning = evidence.meaning();
+                        let local_dim = meaning.rows();
+                        for output in 0..local_dim {
+                            let entry = if *adjoint {
+                                meaning.entries()[input * local_dim + output].conjugate()?
+                            } else {
+                                meaning.entries()[output * local_dim + input]
+                            };
+                            if entry == Exact::zero() {
+                                continue;
+                            }
+                            let mut target = label;
+                            for (place, axis) in indices.iter().enumerate() {
+                                target =
+                                    (target & !(1 << axis)) | (((output >> place) & 1) << axis);
+                            }
+                            next[target] = next[target].add(value.mul(entry)?)?;
+                        }
+                    }
+                    CircuitAction::Hadamard { target } => {
+                        let low = label & !(1 << target);
+                        let high = low | (1 << target);
+                        let scaled = value.mul(Exact::inv_sqrt2())?;
+                        next[low] = next[low].add(scaled)?;
+                        let signed = if label == high { scaled.neg()? } else { scaled };
+                        next[high] = next[high].add(signed)?;
+                    }
+                    CircuitAction::Monomial {
+                        indices,
+                        permutation,
+                        phases,
+                    } => {
+                        let input = indices.iter().enumerate().fold(0usize, |n, (place, axis)| {
+                            n | (((label >> axis) & 1) << place)
+                        });
+                        let output = usize::from(permutation[input]);
+                        let mut target = label;
+                        for (place, axis) in indices.iter().enumerate() {
+                            target = (target & !(1 << axis)) | (((output >> place) & 1) << axis);
+                        }
+                        next[target] =
+                            next[target].add(value.mul(Exact::phase(i32::from(phases[input])))?)?;
+                    }
+                }
+            }
+            values = next;
+        }
+        Ok(values)
     }
 }
 

@@ -4,6 +4,9 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Add opt-in `run --show-exact-zeros` annotations for bounded terminal
+  distributions, including `LiftBasis` initialization and ordered readout.
+  Keep numerical values, JSON and sampling unchanged (#133).
 - Explain Rust's affine ownership and Qleisli's linear quantum ownership at
   implicit disposal errors, with specific return guidance for clean, dirty
   and computed workspace. Unresolved `drop` and `forget` calls receive

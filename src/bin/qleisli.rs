@@ -183,17 +183,39 @@ fn main() -> ExitCode {
             }
             write_stdout(text.as_bytes(), "sample results")
         }
-        Ok(source_commands::Success::Distribution(distribution)) => {
+        Ok(source_commands::Success::Distribution {
+            probabilities,
+            exact_zeros,
+        }) => {
             use std::fmt::Write as _;
+            let exact_zeros = match exact_zeros {
+                Some(Ok(zeros)) => Some(zeros),
+                Some(Err(reason)) => {
+                    eprintln!(
+                        "{}: exact-zero classification unavailable: {reason}",
+                        source_root.display()
+                    );
+                    None
+                }
+                None => None,
+            };
             let mut text = String::new();
-            for (outcome, probability) in distribution {
+            for (outcome, probability) in probabilities {
                 let label: String = outcome
                     .iter()
                     .map(|bit| if *bit { '1' } else { '0' })
                     .collect();
+                let annotation = if exact_zeros
+                    .as_ref()
+                    .is_some_and(|zeros| zeros.contains(&outcome))
+                {
+                    " [exact zero]"
+                } else {
+                    ""
+                };
                 writeln!(
                     text,
-                    "{}: {probability:.12e}",
+                    "{}: {probability:.12e}{annotation}",
                     if label.is_empty() { "()" } else { &label }
                 )
                 .expect("writing to String");

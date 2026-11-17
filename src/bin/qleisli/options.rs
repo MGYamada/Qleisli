@@ -28,7 +28,7 @@ pub(super) const USAGE: &str = "usage:
   qleisli --help | qleisli help
   qleisli help ecosystem
   qleisli check <source-root> [--format=json] [source-options]
-  qleisli run <source-root> [--format=json] [source-options]
+  qleisli run <source-root> [--format=json | --show-exact-zeros] [source-options]
   qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]
   qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]
   qleisli verify-ir <artifact-file> --edition=2026 [--against=REQUEST] [--lean-kernel=PATH] [--format=json]
@@ -77,6 +77,7 @@ pub(super) struct Options {
     pub output: Option<PathBuf>,
     pub against: Option<PathBuf>,
     pub qrate: bool,
+    pub show_exact_zeros: bool,
     pub lean_kernel: Option<PathBuf>,
     pub edition: Option<qleisli::edition::Edition>,
 }
@@ -121,6 +122,7 @@ impl Options {
         let (mut source, mut project, mut shots, mut seed) = (None, None, None, None);
         let (mut output, mut against) = (None, None);
         let mut qrate = false;
+        let mut show_exact_zeros = false;
         let mut lean_kernel = None;
         let mut edition = None;
         for arg in args {
@@ -128,6 +130,7 @@ impl Options {
                 Some("--format=json") if json && !format => format = true,
                 Some("--legacy-source-limits") if !legacy => legacy = true,
                 Some("--qrate") if !qrate => qrate = true,
+                Some("--show-exact-zeros") if !json && !show_exact_zeros => show_exact_zeros = true,
                 Some(s) if s.starts_with("--edition=") && edition.is_none() => {
                     edition = Some(s[10..].parse().ok()?);
                 }
@@ -174,6 +177,7 @@ impl Options {
             || matches!(command, "verify-ir" | "doc") && qrate
             || command == "doc" && lean_kernel.is_some()
             || command != "verify-ir" && edition.is_some()
+            || command != "run" && show_exact_zeros
         {
             return None;
         }
@@ -201,6 +205,7 @@ impl Options {
             output,
             against,
             qrate,
+            show_exact_zeros,
             lean_kernel,
             edition,
         })

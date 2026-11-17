@@ -260,7 +260,7 @@ fn execute(
         Failure::Simulation(error) => simulation_failure(error),
     })? {
         Success::Checked(report) => super::check_report::project_json(&report),
-        Success::Distribution(distribution) => distribution_json(distribution),
+        Success::Distribution { probabilities, .. } => distribution_json(probabilities),
         Success::Samples {
             shots,
             seed,

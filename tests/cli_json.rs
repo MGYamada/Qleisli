@@ -10,6 +10,96 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
         .unwrap()
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn exact_zero_presentation_keeps_the_numerical_distribution() {
+    let project = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/numerical-zero-presentation-v030/attempt-01");
+    let numerical = cli(&["run".as_ref(), project.as_os_str()]);
+    assert!(numerical.status.success(), "{numerical:?}");
+    let annotated = cli(&[
+        "run".as_ref(),
+        project.as_os_str(),
+        "--show-exact-zeros".as_ref(),
+    ]);
+    assert!(annotated.status.success(), "{annotated:?}");
+    assert_eq!(annotated.stderr, numerical.stderr);
+    let annotated = String::from_utf8(annotated.stdout).unwrap();
+    let numerical = String::from_utf8(numerical.stdout).unwrap();
+    assert_eq!(annotated.replace(" [exact zero]", ""), numerical);
+    assert_eq!(annotated.matches(" [exact zero]").count(), 16);
+    let residue = annotated
+        .lines()
+        .find_map(|line| line.strip_prefix("00001: "))
+        .and_then(|value| value.strip_suffix(" [exact zero]"))
+        .unwrap()
+        .parse::<f64>()
+        .unwrap();
+    assert!(0.0 < residue && residue < 1e-28, "{residue}");
+    let small = annotated
+        .lines()
+        .find_map(|line| line.strip_prefix("11110: "))
+        .unwrap()
+        .parse::<f64>()
+        .unwrap();
+    let expected = ((2.0 - std::f64::consts::SQRT_2) / 4.0).powi(4);
+    assert!((small - expected).abs() < 1e-14, "{small}");
+
+    let machine = cli(&[
+        "run".as_ref(),
+        project.as_os_str(),
+        "--format=json".as_ref(),
+    ]);
+    assert!(machine.status.success(), "{machine:?}");
+    let json = String::from_utf8(machine.stdout).unwrap();
+    assert!(!json.contains("exact zero"), "{json}");
+    let json_residue = json
+        .split_once("\"bits\":[false,false,false,false,true],\"probability\":")
+        .unwrap()
+        .1
+        .split_once('}')
+        .unwrap()
+        .0
+        .parse::<f64>()
+        .unwrap();
+    assert!((json_residue - residue).abs() <= residue * 1e-12);
+
+    let invalid = cli(&[
+        "run".as_ref(),
+        project.as_os_str(),
+        "--show-exact-zeros".as_ref(),
+        "--format=json".as_ref(),
+    ]);
+    assert_eq!(invalid.status.code(), Some(2), "{invalid:?}");
+    assert!(String::from_utf8_lossy(&invalid.stdout).contains("\"code\":\"usage\""));
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn exact_zero_presentation_keeps_numeric_output_when_branching_is_outside_its_profile() {
+    let root = SourceRoot::new(
+        "use std::state::init0; observe fn main() -> Bit { let b = measure_z(h(init0())); if b { 1 } else { 0 } }",
+    );
+    let numerical = cli(&["run".as_ref(), root.0.as_os_str()]);
+    let requested = cli(&[
+        "run".as_ref(),
+        root.0.as_os_str(),
+        "--show-exact-zeros".as_ref(),
+    ]);
+    assert!(numerical.status.success(), "{numerical:?}");
+    assert!(requested.status.success(), "{requested:?}");
+    assert_eq!(requested.stdout, numerical.stdout);
+    assert!(String::from_utf8_lossy(&requested.stderr).contains(
+        "exact-zero classification unavailable: outside the exact-zero terminal profile"
+    ));
+}
+
 fn source_check_json(root: &std::path::Path, entry: &str, selected: bool, status: i32) -> String {
     let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
     command.args(["check", "--format=json"]);
@@ -642,8 +732,14 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
     assert_eq!(historical.matches(retired_documentation).count(), 1);
     let verify_ir = "  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n";
     assert_eq!(historical.matches(verify_ir).count(), 1);
+    let run = "  qleisli run <source-root> [--format=json] [source-options]\n";
+    assert_eq!(historical.matches(run).count(), 1);
     let usage = historical
         .replace(retired, "")
+        .replace(
+            run,
+            "  qleisli run <source-root> [--format=json | --show-exact-zeros] [source-options]\n",
+        )
         .replace(
             verify_ir,
             &format!(concat!(

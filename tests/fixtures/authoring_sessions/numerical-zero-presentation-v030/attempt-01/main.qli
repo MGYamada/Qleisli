@@ -1,0 +1,22 @@
+use std::state::init0;
+
+unitary fn small(q: Q<Bit>) -> Q<Bit> {
+    h(phase[1,3](h(q)))
+}
+
+observe fn main() -> (Bit,Bit,Bit,Bit,Bit) {
+    let r = h(init0());
+    let r = phase[1,3](r);
+    let r = phase[1,3](r);
+    let r = phase[1,3](r);
+    let r = phase[1,3](r);
+    let r = phase[1,3](r);
+    let r = phase[1,3](r);
+    let r = phase[1,3](r);
+    let r = h(phase[1,3](r));
+    let a = small(init0());
+    let b = small(init0());
+    let c = small(init0());
+    let d = small(init0());
+    (measure_z(d),measure_z(c),measure_z(b),measure_z(a),measure_z(r))
+}

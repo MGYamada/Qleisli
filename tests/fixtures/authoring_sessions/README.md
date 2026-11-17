@@ -57,6 +57,10 @@ The [invisible source character study](invisible-source-characters-v030/README.m
 retains the original source bytes and the pre-change `doc` transcript. It
 records the prior binary separately from the reviewed source baseline.
 
+The [numerical zero presentation study](numerical-zero-presentation-v030/README.md)
+preserves the first source and original numerical outputs for interference
+roundoff and a separate small positive outcome.
+
 The [structural predicate target study](structural-predicate-target-v030/README.md)
 preserves the first closed source and the terminal export refusal at its
 original Raw computed scope.
