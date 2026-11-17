@@ -298,15 +298,15 @@ private def prepareSelectionCodes {α : Type} (input output : Semantics.Exact.Ma
 /-- Verify every literal arm and the complete selector partition with the
 actual ordered source owners and their encodings. The enclosing traversal
 supplies a source realization at each index of this exact arm table. -/
-def selectionNode {α : Type} (artifact : Artifact) {dependencies program block start count roles}
+def selectionNode {α Arm : Type} (artifact : Artifact) {dependencies program block start count roles}
     (interval : @RuntimeInterval.Checked dependencies program block start count)
     (callerFrame : RuntimeOwnerMap.Checked roles interval.before)
     (owners : RuntimeOwnerTransition.Checked interval callerFrame.bindings)
-    (selector target : Owner) {moduleName name offset}
-    (table : QuantumArms.Table artifact.sources moduleName name offset selector.basis target.basis)
+    (selector target : Owner) {moduleName name offset written ordinal}
+    (table : QuantumArms.TableWith artifact.sources moduleName name offset selector.basis target.basis Arm written ordinal)
     (site : RuntimeContextRequest.Site) (initial : α)
-    (realize : Fin table.arms.length → QuantumArms.BoundArm artifact.sources moduleName selector.basis target.basis →
-      α → WorkM (Semantics.Exact.Matrix × α)) : WorkM (Node dependencies program block × α) := do
+    (realize : Fin table.arms.length → Arm → α → WorkM (Semantics.Exact.Matrix × α)) :
+    WorkM (Node dependencies program block × α) := do
   guard (table.arms.length == site.arms.length) .request
   let entry ← RuntimeOwnerTransition.readPair [selector,target] callerFrame.bindings
   let exit ← RuntimeOwnerTransition.readPair [selector,target] owners.after.bindings
@@ -328,13 +328,13 @@ def selectionNode {α : Type} (artifact : Artifact) {dependencies program block 
   let (meanings,remaining) ← (arms.zip site.arms).foldlM
     (fun (meanings,current) ((index,arm),subject) => do
       let (logical,next) ← realize index arm current
-      let reference : SectorArm.Reference := ⟨arm.label.ordinal,target.basis,.unitary,
+      let reference : SectorArm.Reference := ⟨ordinal arm,target.basis,.unitary,
         subject.implementation,subject.controlled⟩
       let actual ← SectorArm.readUsing artifact dependencies target.basis targetLayout.bits
         inputCode.val outputCode.val preparedCodes reference
       exactWork (Exact.charge (logical.entries.length+actual.logical.entries.length+1))
       guard (actual.logical == logical) .equation
-      pure (meanings ++ [(arm.label.ordinal,logical)],next)) ([],initial)
+      pure (meanings ++ [(ordinal arm,logical)],next)) ([],initial)
   let expected ← (List.range selectorLayout.labels.length).mapM fun ordinal => do
     let some (_,logical) := meanings.find? (·.1 == ordinal) | throw .request
     pure logical
@@ -567,6 +567,113 @@ abbrev BlockRunner (artifact : Artifact) (root : Validity.Root) (execution : Exe
     execution.queries.BodyData source request → RuntimeStructuralAction.SourceState →
     RuntimeOrdinaryBody.State → (block : RuntimeInterval.Block root.dependencies program) →
     WorkM (BlockResult root.dependencies program block × List execution.Receipt)
+
+structure InlineForward (artifact : Artifact) (root : Validity.Root) (implementation : Nat)
+    (target : Owner) where
+  program : Semantics.Observation.Program
+  original : artifact.programs[implementation]? = some program
+  input : Semantics.Raw.Port
+  inputOrder : program.inputs = [input]
+  layout : Semantics.FiniteCarrier.Layout
+  layoutRead : RuntimeInterval.Computed (FiniteCarrier.read target.basis) layout
+  preflight : Raw.BranchFunction.preflight [.bits layout.bits] program = true
+  prepared : RuntimeInterval.Prepared root.dependencies program
+  preparedRead : RuntimeInterval.Computed (RuntimeInterval.prepare root.dependencies program) prepared
+
+private def readInlineForward (artifact : Artifact) (root : Validity.Root) (implementation : Nat)
+    (target : Owner) : WorkM (InlineForward artifact root implementation target) := do
+  let layout ← NaturalAffine.witness (FiniteCarrier.read target.basis)
+  match original : artifact.programs[implementation]? with
+  | some program =>
+    match inputs : program.inputs with
+    | [input] =>
+      exactWork (Exact.charge (16*(program.operations.length+1)))
+      if preflight : Raw.BranchFunction.preflight [.bits layout.val.bits] program = true then
+        let prepared ← NaturalAffine.witness (RuntimeInterval.prepare root.dependencies program)
+        return ⟨program,original,input,inputs,layout.val,by with_reducible exact layout.property,preflight,
+          prepared.val,by with_reducible exact prepared.property⟩
+      else throw .request
+    | _ => throw .request
+  | none => throw .request
+
+def InlineForward.initial {artifact root implementation target owner name signature}
+    (forward : InlineForward artifact root implementation target)
+    (body : @SourceRuntimeTrace.Body artifact.sources owner name signature) : RuntimeStructuralAction.SourceState :=
+  let summary := body.checked.summary
+  ⟨[⟨target,forward.input⟩],summary.parameterValues.flatMap valueOwners ++ summary.allocated,summary.nextOrdinal⟩
+
+structure InlineAction {artifact root implementation target}
+    (forward : InlineForward artifact root implementation target) (output : Owner) (returned : Map) where
+  outputOrder : returned.map (·.owner) = [output]
+  rawOutputs : returned.map (·.port.token) = forward.program.outputs
+  inputCode : Semantics.Exact.Matrix
+  outputCode : Semantics.Exact.Matrix
+  actual : Semantics.Exact.Matrix
+  inputRead : RuntimeInterval.Computed (Carrier.ownerCode [⟨forward.input,target.basis⟩]) inputCode
+  outputRead : RuntimeInterval.Computed (Carrier.ownerCode (RuntimeTransformAction.owners returned)) outputCode
+  actualRead : RuntimeInterval.Computed (Raw.BranchFunction.reconstruct root.dependencies forward.program) actual
+  code : CodeSpace.Map inputCode outputCode actual
+
+private def readInlineAction {artifact root implementation target}
+    (forward : InlineForward artifact root implementation target) (output : Owner) (returned : Map) :
+    WorkM (InlineAction forward output returned) := do
+  exactWork (Exact.charge (16*(Raw.OwnerFlow.fields (returned.map (·.owner))+returned.length+1)))
+  if boundary : returned.map (·.owner) = [output] ∧ returned.map (·.port.token) = forward.program.outputs then
+    let inputCode ← NaturalAffine.witness (Carrier.ownerCode [⟨forward.input,target.basis⟩])
+    let outputCode ← NaturalAffine.witness (Carrier.ownerCode (RuntimeTransformAction.owners returned))
+    let actual ← NaturalAffine.witness (Raw.BranchFunction.reconstruct root.dependencies forward.program)
+    let code ← CodeSpace.readMap inputCode.val outputCode.val actual.val
+    return ⟨boundary.1,boundary.2,inputCode.val,outputCode.val,actual.val,
+      by with_reducible exact inputCode.property,by with_reducible exact outputCode.property,
+      by with_reducible exact actual.property,code⟩
+  else throw .request
+
+structure InlineChecked {artifact root execution rootOwner rootName owner name signature}
+    {body : @SourceRuntimeTrace.Body artifact.sources owner name signature}
+    {site : Fin body.checked.events.length} {index : Nat}
+    (arm : SourceRuntimeTrace.InlineArmBody body site index)
+    (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody body site index) arm)
+    (implementation : Nat) (request : Context)
+    (sourcePlan : execution.queries.BodyData (.coherentArm arm replayed) request)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
+    (run : BlockRunner artifact root execution) where
+  forward : InlineForward artifact root implementation arm.target
+  forwardRead : RuntimeInterval.Computed (readInlineForward artifact root implementation arm.target) forward
+  issuedInOrder : (forward.initial body).issued.map (·.ordinal) = List.range (forward.initial body).nextOrdinal
+  targetIssued : arm.target ∈ (forward.initial body).issued
+  result : BlockResult root.dependencies forward.program forward.prepared.block
+  receipts : List execution.Receipt
+  traversal : RuntimeInterval.Computed (run .pureBody .rootOrder (.coherentArm arm replayed) path forward.program
+    request sourcePlan (forward.initial body) {} forward.prepared.block) (result,receipts)
+  action : InlineAction forward arm.output result.history.bindings
+  actionRead : RuntimeInterval.Computed (readInlineAction forward arm.output result.history.bindings) action
+
+/-- Tie a written arm to the same Raw body and dependencies used by the parent
+selection. The shared traversal checks the original events, actual intervals,
+owner history and intermediate equations before recovering the logical action.
+The enclosing selection still checks that action against its controlled sectors. -/
+def readInlineArm {artifact root execution rootOwner rootName owner name signature}
+    {body : @SourceRuntimeTrace.Body artifact.sources owner name signature}
+    {site : Fin body.checked.events.length} {index : Nat}
+    (arm : SourceRuntimeTrace.InlineArmBody body site index)
+    (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody body site index) arm)
+    (implementation : Nat) (request : Context)
+    (sourcePlan : execution.queries.BodyData (.coherentArm arm replayed) request)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
+    (run : BlockRunner artifact root execution) :
+    WorkM (InlineChecked arm replayed implementation request sourcePlan path run) := do
+  let forward ← NaturalAffine.witness (readInlineForward artifact root implementation arm.target)
+  let initial := forward.val.initial body
+  -- Preserve freshness against every original owner identity. Only the target
+  -- has a native port in this isolated body.
+  exactWork (Exact.charge (16*(Raw.OwnerFlow.fields initial.issued+initial.nextOrdinal+1)))
+  if issued : initial.issued.map (·.ordinal) = List.range initial.nextOrdinal ∧ arm.target ∈ initial.issued then
+    let checked ← NaturalAffine.witness (run .pureBody .rootOrder (.coherentArm arm replayed) path
+      forward.val.program request sourcePlan initial {} forward.val.prepared.block)
+    let action ← NaturalAffine.witness (readInlineAction forward.val arm.output checked.val.1.history.bindings)
+    return ⟨forward.val,by with_reducible exact forward.property,issued.1,issued.2,checked.val.1,checked.val.2,
+      by with_reducible exact checked.property,action.val,by with_reducible exact action.property⟩
+  else throw .request
 
 /-- One unchanged native body iteration, with the recursive caller explicit.
 This is the sole handler used by runBlockCore; factoring it introduces no

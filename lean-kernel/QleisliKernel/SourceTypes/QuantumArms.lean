@@ -343,6 +343,8 @@ inductive RuntimeArm {sources owner name} {signature : SourceRuntimeContext.Sign
     (body : SourceRuntimeTrace.Body signature) (event : Fin body.checked.events.length) (selector target : Basis) where
   | operation (arm : BoundArm sources owner selector target)
   | inline {index : Nat} (arm : SourceRuntimeTrace.InlineArmBody body event index)
+      (replayed : ∃ before after,
+        (SourceRuntimeTrace.readInlineArmBody body event index).run before = (.ok arm,after))
       (ports : arm.selector.basis = selector ∧ arm.target.basis = target)
       (label : Label sources)
       (originalLabel : ∃ before after,
@@ -356,12 +358,12 @@ def RuntimeArm.written {sources owner name signature body event selector target}
 def RuntimeArm.ordinal {sources owner name signature body event selector target} :
     @RuntimeArm sources owner name signature body event selector target → Nat
   | .operation arm => arm.label.ordinal
-  | .inline _ _ label _ => label.ordinal
+  | .inline _ _ _ label _ => label.ordinal
 
 def RuntimeArm.sourceRows {sources owner name signature body event selector target} :
     @RuntimeArm sources owner name signature body event selector target → List SourceRows.Row
   | .operation arm => arm.sourceRows
-  | .inline arm _ label _ => label.sourceRows ++ arm.result.staticRows
+  | .inline arm _ _ label _ => label.sourceRows ++ arm.result.staticRows
 
 abbrev RuntimeTable {sources owner name} {signature : SourceRuntimeContext.Signature sources owner name}
     (body : SourceRuntimeTrace.Body signature) (event : Fin body.checked.events.length)
@@ -391,10 +393,11 @@ def readRuntimeArms {sources owner name} {signature : SourceRuntimeContext.Signa
     fun previous => do
       let written := site.parsed.arms[index]
       if written.operation.head?.map (·.text) == some "{" then
-        let arm ← SourceRuntimeTrace.readInlineArmBody body event index.val
-        if ports : arm.selector.basis = selector ∧ arm.target.basis = target then
-          let label ← NaturalAffine.witness (readLabel sources owner selector (arm.parsed.arms.get ⟨index.val,arm.armIndex⟩).label)
-          return (.inline arm ports label.val (by with_reducible exact label.property),previous)
+        let arm ← NaturalAffine.witness (SourceRuntimeTrace.readInlineArmBody body event index.val)
+        if ports : arm.val.selector.basis = selector ∧ arm.val.target.basis = target then
+          let label ← NaturalAffine.witness (readLabel sources owner selector (arm.val.parsed.arms.get ⟨index.val,arm.val.armIndex⟩).label)
+          return (.inline arm.val (by with_reducible exact arm.property) ports label.val
+            (by with_reducible exact label.property),previous)
         else throw .request
       else
         let (arm,next) ← (readArmRetainingGraphs caller instantiation supply naturals scope selector target written).run previous

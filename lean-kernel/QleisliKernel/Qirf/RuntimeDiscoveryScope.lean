@@ -27,8 +27,7 @@ def Scope.events {artifact owner name} : Scope artifact owner name → List (Sou
 
 def Scope.staticRows {artifact owner name} : Scope artifact owner name → List SourceRows.Row
   | .supplied _ _ rows _ => rows
-  | .original (.whole body) _ => body.checked.summary.staticRows
-  | .original (.arm _ _ bodies _ choice) _ => if choice then bodies.thenResult.staticRows else bodies.elseResult.staticRows
+  | .original source _ => source.staticRows
 
 def Scope.prefixRequired {artifact owner name} : Scope artifact owner name → Bool
   | .supplied _ _ _ required => required

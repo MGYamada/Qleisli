@@ -821,7 +821,7 @@ def read (sources : Sources) (owner name : String) (arguments : StaticTypes.Argu
     Finite.WorkM (Checked sources owner name) := do
   readWithSignature (← readSignature sources owner name arguments)
 
-private def inlineFrame {parsed : QuantumMatch.Parsed} {index : Fin parsed.arms.length}
+def inlineFrame {parsed : QuantumMatch.Parsed} {index : Fin parsed.arms.length}
     (arm : SourceSyntax.InlineArm parsed index) (target : Semantics.SourceOwners.Owner) : Environment :=
   [⟨arm.targetName,[.owner target],.coherentArmTarget arm.block.opening.span.startByte⟩]
 
