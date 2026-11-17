@@ -125,7 +125,7 @@ theorem ordinal_permutation {sources owner name offset selector target}
     (table.arms.map (·.label.ordinal)).Perm (List.range table.layout.labels.length) := by
   let ordinals := table.arms.map (·.label.ordinal)
   have complete := table.complete
-  simp only [QuantumArms.partition,Bool.and_eq_true,List.all_eq_true,decide_eq_true_eq] at complete
+  simp only [QuantumArms.partitionWith,Bool.and_eq_true,List.all_eq_true,decide_eq_true_eq] at complete
   have distinct : ordinals.Nodup := Raw.Ownership.unique_nodup _ complete.2
   have bounded : ordinals ⊆ List.range table.layout.labels.length :=
     fun ordinal member => List.mem_range.mpr (complete.1.2 ordinal member)

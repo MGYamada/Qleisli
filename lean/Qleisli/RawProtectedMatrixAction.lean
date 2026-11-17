@@ -1,6 +1,7 @@
 import Qleisli.RawReconstructedAction
 import Qleisli.RawFiniteRows
 import Qleisli.RawEventLinear
+import Qleisli.StructuralComputedRestoration
 
 /-! The matrix reconstructed for a protected scope has the independent
 literal action on arbitrary complex amplitudes. The finite target domain
@@ -166,8 +167,48 @@ theorem protected_event_action (dependencies : List Dependency) (bits : Nat) (ax
 
 #print axioms protected_event_action
 
+/-- The table computed from the literal scratch flips has the same action as
+the original forward, use and inverse steps on every reference column. -/
+theorem structural_event_action (dependencies : List Dependency) (bits : Nat) (axes : List Nat)
+    (forward inverse : List Step) (uses : List Use) (actual : Matrix) (work left : Nat)
+    (read : (Raw.ProtectedEvaluation.eventMatrix dependencies
+      (.structuralComputed bits axes forward inverse uses)).run work = (.ok actual,left)) :
+    EventAction dependencies (.structuralComputed bits axes forward inverse uses) actual := by
+  intro Reference joint row reference bounded
+  obtain ⟨_,w₁,_,h⟩ := bind_success _ _ _ _ _ read
+  obtain ⟨clauses,w₂,hc,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,w₃,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨logical,w₄,localRead,promote⟩ := bind_success _ _ _ _ _ h
+  have checked := (lift_success _ _ _ _ hc).1
+  have facts := Raw.structuralComputeClauses_conditions checked
+  have inside := Qleisli.RuntimeForestProduct.gather_bound row axes
+  let predicate := fun label => (QleisliKernel.Semantics.Protected.xorPredicate clauses label).toNat
+  have choice : Qleisli.Semantics.RawAction.StructuralXorValue forward (gather row axes) =
+      predicate (gather row axes) :=
+    Qleisli.StructuralComputedRestoration.raw_xor_value checked _
+  have localAction := scope_action w₃ w₄ localRead (fun col ref => joint (scatter row axes col) ref)
+    (gather row axes) reference inside
+  rw [promoted_action w₄ left promote joint row reference bounded,localAction,
+    Qleisli.StructuralComputedRestoration.raw_event_action checked]
+  dsimp only
+  rw [clean_factorization _ _ (Qleisli.Raw.uses_valid_diagonal 0 1 0 uses facts.2.1)]
+  change _ = Qleisli.StructuralComputedRestoration.logicalAction axes forward uses
+    (fun col => joint col reference) row
+  simp only [Nat.mod_eq_of_lt inside,Nat.div_eq_of_lt inside,zero,if_true,
+    Qleisli.Semantics.Protected.logical,
+    List.getElem?_map,List.getElem?_range inside,Option.map_some,Option.getD_some,
+    Qleisli.StructuralComputedRestoration.logicalAction,Qleisli.Semantics.RawAction.embed,choice]
+  -- The zero-width target fibre has one coordinate. The use check bounds
+  -- every target to that fibre.
+  refine blocks_on_rows 0 1 0 _ _ uses facts.2.1 _ _ ?_ () 0 (by decide)
+  intro _ target small
+  have targetZero : target = 0 := by simpa only [Nat.pow_zero,Nat.lt_one_iff] using small
+  simp [targetZero]
+
+#print axioms structural_event_action
+
 /-- Every physical event produced by the protected reconstruction has its
-literal action on the checked finite output, including both computed forms. -/
+literal action on the checked finite output. -/
 theorem event_action (dependencies : List Dependency) (operation : Event)
     (actual : Matrix) (work left : Nat)
     (read : (Raw.ProtectedEvaluation.eventMatrix dependencies operation).run work = (.ok actual,left)) :
@@ -178,8 +219,7 @@ theorem event_action (dependencies : List Dependency) (operation : Event)
   case protectedComputed bits axes source ancilla function uses =>
     exact protected_event_action dependencies bits axes source ancilla function uses actual work left read
   case structuralComputed bits axes forward inverse uses =>
-    change ((Except.error Finite.Error.request : Except Finite.Error Matrix), work) = (Except.ok actual, left) at read
-    cases congrArg Prod.fst read
+    exact structural_event_action dependencies bits axes forward inverse uses actual work left read
   all_goals exact ordinary_event_action dependencies _ actual work left read True.intro
 
 /-- The actual reconstruction and the independent reader use the same

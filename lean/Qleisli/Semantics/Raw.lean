@@ -67,7 +67,14 @@ noncomputable def EventMeaning (dependencies : List Dependency) (event : Event) 
       ProtectedMatrix.Meaning sourceBits axes.length function uses logical) ∧
       Embedded bits axes logical actual
 
-  | .structuralComputed .. => False
+  | .structuralComputed bits axes forward inverse uses =>
+    ∃ (clauses : List (List Control)) (logical : Matrix), inverse = forward ∧
+      forward = clauses.map (fun controls => {(QleisliKernel.Semantics.RawTrace.gate .x axes.length) with controls}) ∧
+      (∀ controls ∈ clauses, ∀ control ∈ controls, control.index < axes.length) ∧
+      ProtectedMatrix.Meaning axes.length axes.length
+        ((List.range (2^axes.length)).map fun label =>
+          (QleisliKernel.Semantics.Protected.xorPredicate clauses label).toNat) uses logical ∧
+      Embedded bits axes logical actual
 
 noncomputable def Composition (localMap input output : Matrix) : Prop :=
   localMap.cols = input.rows ∧ output.rows = localMap.rows ∧ output.cols = input.cols ∧
