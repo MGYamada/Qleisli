@@ -757,9 +757,14 @@ input operator. It retains the visible SSA agreement and hidden outcomes for
 each returned history. Public v5, full12/64 and release validation remain
 separate.
 
-`original_body_graph_refinement` additionally derives each coherent selection's
-coefficients from the original written arm graphs. Its expected action follows
-the source prefix and selected path, including named calls and ordinary branches.
+`original_body_graph_refinement` derives coherent selection coefficients from
+the original named arm graphs and checked inline bodies. For a mixed selection,
+each nominal selector ordinal is paired with its written arm in the actual
+checked table. An inline arm uses its own original source evaluation at a
+smaller runner depth, including its input encoding and literal Raw return
+order. The resulting coefficients give the same action as the corresponding
+sectors of the caller's Raw program. The full result follows the source prefix
+and selected path, including named calls and ordinary branches.
 `native_qmatch_body_graph_refinement` connects this theorem to successful
 `Protocol.NativeContext.run .qmatchSourceV5` on the original packet. The same
 decision supplies the body and compared execution view. The result preserves

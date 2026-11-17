@@ -226,6 +226,49 @@ theorem selection_history_with {root : Validity.Root}
   change sourceDirectSelection node source = some expected at evaluated
   simpa only [node,sourceGraphSelection,sourceDirectSelection,operator] using evaluated
 
+/-- Any two evaluations that give the exact checked arm coefficients induce
+the same source history for the caller's actual owner frame. -/
+theorem selection_source_choices_eq {root : Validity.Root}
+    {program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked root.dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode : Matrix} {selectorBits targetBits : Nat} {retained : Raw.Sector.Retained}
+    (restricted : RuntimeInterval.Computed (Raw.Sector.read root.dependencies [.bits selectorBits] [.bits targetBits]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained)
+    {labels : List Nat} {arms logical : List Matrix}
+    (equations : RuntimeInterval.Computed
+      (NominalSector.checkLogicals inputCode outputCode retained.sectors labels arms) logical)
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels) :
+    let node := Node.selection frame selectorBits targetBits retained restricted inputCode outputCode labels
+      arms logical equations codes layouts
+    ∀ {first second : List Coefficient},
+      List.Forall₂ RuntimeSelectionGraphHistory.Coefficients arms first →
+      List.Forall₂ RuntimeSelectionGraphHistory.Coefficients arms second →
+      ∀ (ordinaryInputs : List Nat) (inherited : Option (Nat → Prop))
+        {ownerBefore ownerAfter ordinaryBefore},
+        Aligned ownerBefore ownerAfter (.pure node) →
+        ∀ {source history},
+          SemanticHistoryAgreesWithInherited inherited ordinaryInputs (nodeSpan node).checked.before
+            ownerBefore ordinaryBefore source history →
+          sourceGraphSelection node first source = sourceGraphSelection node second source := by
+  intro node first second firstRelated secondRelated ordinaryInputs inherited ownerBefore ownerAfter ordinaryBefore
+    owners source history agrees
+  have beforeMap : ownerBefore.bindings = codes.owners.before.bindings := owners.1
+  obtain ⟨_,_,_,input,_⟩ := agrees.2.2.2.2
+  let entry : Frame codes.owners.before.bindings := beforeMap ▸ input
+  obtain ⟨_,table⟩ := RuntimeMultiwayGram.ordinal_table equations
+  obtain ⟨_,after,_⟩ := RuntimeSemanticSelectionSource.direct_selection_action frame restricted codes layouts table entry
+  have selected := RuntimeSelectionPartition.order_values _ _ _ codes.owners.returned.ordered
+  have member : codes.owners.returned.second ∈ codes.owners.transport.after.bindings := selected.1 (by simp)
+  have firstAction := RuntimeSelectionGraphHistory.source_action_eq after
+    codes.owners.returned.first codes.owners.returned.second member firstRelated
+    (target_shapes frame codes layouts table after) source.operator
+  have secondAction := RuntimeSelectionGraphHistory.source_action_eq after
+    codes.owners.returned.first codes.owners.returned.second member secondRelated
+    (target_shapes frame codes layouts table after) source.operator
+  have sameAction := firstAction.trans secondAction.symm
+  simp only [node,sourceGraphSelection,sameAction]
+
 /-- The selected arm graphs can supply the operator of the same ordered
 history that carries the original SSA values and inherited measurements. -/
 theorem planned_selection_history {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
@@ -687,3 +730,222 @@ theorem inline_source_coefficients {artifact root execution rootOwner rootName o
 
 #print axioms inline_source_coefficients
 end Qleisli.RuntimeInlineArmBoundary
+
+namespace Qleisli.RuntimeSelectionGraphAction
+open QleisliKernel QleisliKernel.Qirf QleisliKernel.SourceTypes
+open RuntimePureBody (InlineChecked runBlockCore Step)
+open RuntimeSelectionGraphSource (execution NamedArmEvaluatedWith named_arm_evaluated)
+open RuntimeSelectionGraphHistory (Coefficients)
+open RuntimeSelectionSteps (Edge)
+open RuntimeGraphCoefficients (Coefficient)
+open RuntimeNamedChildRuns (CheckedStepAt RootInputs MixedLogical)
+open RuntimeSelectionArmTrace (EventTable MixedSlot)
+open Qleisli.RuntimeCallHistory (SourceAgreementWithin)
+open Qleisli.RuntimeInlineArmBoundary (evaluateInline inline_source_coefficients)
+open Qleisli.RuntimeLiteralBody
+
+/-- Pure callbacks at all smaller runner depths retain their source history. -/
+abbrev SmallerPureLeafLaws {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (inputs : List Nat) : Prop :=
+  ∀ lower, lower < depth → ∀ (origin : RootInputs) {program block}
+      (atStep : List Edge) (steps : List (Step root.dependencies program block)),
+      Qleisli.RuntimePureNamedScope.PureBlock block → ∀ inherited,
+      StepRefinement steps
+        (fun step => CheckedStepAt (runBlockCore artifact root (execution artifact catalogue root) lower)
+          origin step ∧ NeedsPureLeaf step)
+        (leaves lower atStep) (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
+        (inherited.map (fun holds id => ¬ holds id))
+
+/-- Retain the actual arm source and its original graph or evaluated inline
+body, separately from the logical matrix used by the parent selector. -/
+noncomputable def MixedArmSource {artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) {rootOwner rootName owner}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {table : EventTable event} (site : RuntimeContextRequest.Site)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) (index : Fin table.arms.length)
+    (slot : MixedSlot (execution artifact catalogue root).queries table index)
+    (matrix : Semantics.Exact.Matrix) (coefficient : Coefficient) : Prop :=
+  match slot with
+  | .named arm _ _ => NamedArmEvaluatedWith catalogue root scope arm matrix coefficient
+  | .inline arm replayed _ _ _ _ child plan =>
+    ∃ subject, site.arms[index.val]? = some subject ∧
+      ∃ checked : InlineChecked rfl arm replayed subject.implementation child plan path parent
+        (runBlockCore artifact root (execution artifact catalogue root) depth),
+        RuntimeInterval.Computed
+          (RuntimePureBody.readInlineArm rfl arm replayed subject.implementation child plan path parent
+            (runBlockCore artifact root (execution artifact catalogue root) depth)) checked ∧
+        matrix = checked.action.code.logical ∧
+        coefficient = evaluateInline (checked.forward.initial parent) checked.result.steps
+          checked.result.history.bindings (pureRecursiveSourceStepsAt leaves (depth-1))
+          (scope ++ [.atOrdinal index.val])
+
+theorem mixed_arm_coefficients {artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) (inputs : List Nat) {rootOwner rootName owner}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {table : EventTable event} (site : RuntimeContextRequest.Site)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) (index : Fin table.arms.length)
+    (slot : MixedSlot (execution artifact catalogue root).queries table index)
+    (matrix : Semantics.Exact.Matrix)
+    (localLeaves : SmallerPureLeafLaws catalogue root depth leaves inputs)
+    (original : MixedLogical (execution artifact catalogue root)
+      (runBlockCore artifact root (execution artifact catalogue root) depth) site path parent index slot matrix) :
+    ∃ coefficient, MixedArmSource catalogue root depth leaves scope site path parent index slot matrix coefficient ∧
+      Coefficients matrix coefficient := by
+  cases slot with
+  | named arm selected graph =>
+    obtain ⟨coefficient,source⟩ := named_arm_evaluated catalogue root scope arm matrix ⟨graph,original⟩
+    refine ⟨coefficient,source,?_⟩
+    obtain ⟨⟨_,_,_⟩,evidence,_,same,_,agrees⟩ := source
+    rw [same]
+    exact agrees.coefficient
+  | inline arm replayed ports label originalLabel selected child plan =>
+    obtain ⟨subject,atIndex,checked,computed,same⟩ := original
+    cases depth with
+    | zero =>
+      obtain ⟨work,left,ran⟩ := checked.traversal
+      cases ran
+    | succ depth =>
+      let coefficient := evaluateInline (checked.forward.initial parent) checked.result.steps
+        checked.result.history.bindings (pureRecursiveSourceStepsAt leaves depth) (scope ++ [.atOrdinal index.val])
+      have source := inline_source_coefficients depth checked inputs (scope ++ [.atOrdinal index.val]) leaves
+        (fun fuel within => localLeaves fuel (Nat.lt_succ_of_le within) (RuntimeBranchCondition.rootEntries path))
+      refine ⟨coefficient,⟨subject,atIndex,checked,computed,same,rfl⟩,?_⟩
+      rw [same]
+      exact source
+
+#print axioms mixed_arm_coefficients
+end Qleisli.RuntimeSelectionGraphAction
+
+namespace Qleisli.RuntimeSelectionGraphAction
+open QleisliKernel QleisliKernel.Qirf QleisliKernel.SourceTypes
+open RuntimePureBody (Node Step runBlockCore)
+open RuntimeSelectionSteps (Edge)
+open RuntimeSelectionGraphSource (execution)
+open RuntimeSelectionGraphHistory (Coefficients ordered_coefficients_from)
+open RuntimeNamedChildRuns (CheckedStepAt RootInputs MixedSelectionOrigin)
+open RuntimeSelectionLogicalRead (FromArms)
+open RuntimeGraphCoefficients (Coefficient)
+open Qleisli.RuntimeCallHistory (SourceAgreementWithin)
+open Qleisli.RuntimeLiteralBody
+
+/-- Relate every nominal ordinal to the written arm of this exact selector
+table, including its original graph or inline traversal. -/
+def MixedOriginalTableCoefficients {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge)
+    {rootOwner rootName owner name} {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {position : RuntimeBodyPlan.Position}
+    (selection : RuntimeBodyQueries.MixedSelection (name := name) (execution artifact catalogue root).queries event position)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) {program block}
+    (node : Node root.dependencies program block) (coefficients : List Coefficient) : Prop :=
+  match node with
+  | .selection (selector := selector) (target := target) _ _ _ _ _ _ _ labels matrices .. =>
+    selector.basis = event.selector.basis ∧ target.basis = event.target.basis ∧
+    labels = selection.table.layout.labels ∧ List.Forall₂ Coefficients matrices coefficients ∧
+    List.Forall₂ (fun ordinal pair => ∃ index : Fin selection.table.arms.length,
+      (selection.table.arms[index]).ordinal = ordinal ∧
+      ∃ slot, MixedArmSource catalogue root depth leaves scope selection.site path parent index slot pair.1 pair.2)
+      (List.range selection.table.layout.labels.length) (matrices.zip coefficients)
+  | _ => False
+
+/-- Retain the mixed source table and pair every nominal selector ordinal with
+the independently evaluated coefficient of its actual written arm. -/
+def MixedOriginalCoefficients {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) {program block}
+    (node : Node root.dependencies program block) (coefficients : List Coefficient) : Prop :=
+  ∃ (rootOwner rootName owner name : String)
+    (event : SourceRuntimeContext.SelectionEvent artifact.sources owner)
+    (position : RuntimeBodyPlan.Position)
+    (selection : RuntimeBodyQueries.MixedSelection (name := name) (execution artifact catalogue root).queries event position)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState),
+    MixedOriginalTableCoefficients catalogue root depth leaves scope selection path parent node coefficients
+
+theorem mixed_original_coefficients_agree {artifact : Artifact} {catalogue : GenericCatalogue.Checked artifact.sources}
+    {root : Validity.Root} {depth : Nat} {leaves : Nat → ScopedSourceSteps root.dependencies}
+    {scope : List Edge} {program block} {node : Node root.dependencies program block}
+    {coefficients : List Coefficient}
+    (original : MixedOriginalCoefficients catalogue root depth leaves scope node coefficients) :
+    match node with
+    | .selection _ _ _ _ _ _ _ _ matrices .. => List.Forall₂ Coefficients matrices coefficients
+    | _ => False := by
+  obtain ⟨_,_,_,_,_,_,_,_,_,ordered⟩ := original
+  cases node
+  case selection => exact ordered.2.2.2.1
+  all_goals exact ordered
+
+/-- Evaluate all written arms of the selected source table in nominal order. -/
+theorem original_mixed_table_coefficients {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) (inputs : List Nat)
+    {rootOwner rootName owner name} {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {position : RuntimeBodyPlan.Position}
+    (selection : RuntimeBodyQueries.MixedSelection (name := name) (execution artifact catalogue root).queries event position)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) {program block}
+    {node : Node root.dependencies program block}
+    (localLeaves : SmallerPureLeafLaws catalogue root depth leaves inputs)
+    (origin : FromArms selection.table (fun index matrix =>
+      ∃ slot, RuntimeNamedChildRuns.MixedLogical (execution artifact catalogue root)
+        (runBlockCore artifact root (execution artifact catalogue root) depth)
+        selection.site path parent index slot matrix) node) :
+    ∃ coefficients, MixedOriginalTableCoefficients catalogue root depth leaves scope
+      selection path parent node coefficients := by
+  let produced (index : Fin selection.table.arms.length) (matrix : Semantics.Exact.Matrix) :=
+    ∃ coefficient slot, MixedArmSource catalogue root depth leaves scope selection.site path parent index slot matrix coefficient ∧
+      Coefficients matrix coefficient
+  have mapped : FromArms selection.table produced node := origin.weaken (fun index matrix ⟨slot,read⟩ => by
+    obtain ⟨coefficient,source,agrees⟩ := mixed_arm_coefficients catalogue root depth leaves scope inputs
+      selection.site path parent index slot matrix localLeaves read
+    exact ⟨coefficient,slot,source,agrees⟩)
+  cases node
+  case selection =>
+    let source ordinal matrix coefficient := ∃ index : Fin selection.table.arms.length,
+      (selection.table.arms[index]).ordinal = ordinal ∧
+      (∃ slot, MixedArmSource catalogue root depth leaves scope selection.site path parent index slot matrix coefficient) ∧
+      Coefficients matrix coefficient
+    have reshape (ordinals : List Nat) (matrices : List Semantics.Exact.Matrix)
+        (rows : Exact.ListRel (fun ordinal matrix => ∃ index : Fin selection.table.arms.length,
+          (selection.table.arms[index]).ordinal = ordinal ∧ produced index matrix) ordinals matrices) :
+        Exact.ListRel (fun ordinal matrix => ∃ coefficient, source ordinal matrix coefficient) ordinals matrices := by
+      induction ordinals generalizing matrices with
+      | nil => exact rows
+      | cons ordinal rest ih =>
+        cases matrices with
+        | nil => exact rows
+        | cons matrix remaining =>
+          obtain ⟨index,written,coefficient,slot,source,agrees⟩ := rows.1
+          exact ⟨⟨coefficient,index,written,⟨slot,source⟩,agrees⟩,ih _ rows.2⟩
+    obtain ⟨coefficients,agrees,ordered⟩ := ordered_coefficients_from source
+      (fun _ _ _ ⟨_,_,_,agrees⟩ => agrees) (reshape _ _ mapped.2.2.2)
+    exact ⟨coefficients,
+      mapped.1,mapped.2.1,mapped.2.2.1,agrees,
+      ordered.imp (fun _ _ ⟨index,ordinal,arm,_⟩ => ⟨index,ordinal,arm⟩)⟩
+  all_goals exact False.elim mapped
+
+/-- The checked mixed selector node uses each actual arm's source coefficient
+at its nominal ordinal, with inline rows evaluated by lower-depth source laws. -/
+theorem original_mixed_coefficients {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) (inputs : List Nat) {program block}
+    {node : Node root.dependencies program block}
+    (localLeaves : SmallerPureLeafLaws catalogue root depth leaves inputs)
+    (original : MixedSelectionOrigin (execution artifact catalogue root)
+      (runBlockCore artifact root (execution artifact catalogue root) depth) node) :
+    ∃ coefficients, MixedOriginalCoefficients catalogue root depth leaves scope node coefficients := by
+  obtain ⟨rootOwner,rootName,owner,name,event,position,selection,path,parent,origin⟩ := original
+  obtain ⟨coefficients,checked⟩ :=
+    original_mixed_table_coefficients catalogue root depth leaves scope inputs selection path parent localLeaves origin
+  exact ⟨coefficients,rootOwner,rootName,owner,name,event,position,selection,path,parent,checked⟩
+
+#print axioms mixed_original_coefficients_agree
+#print axioms original_mixed_table_coefficients
+#print axioms original_mixed_coefficients
+end Qleisli.RuntimeSelectionGraphAction
