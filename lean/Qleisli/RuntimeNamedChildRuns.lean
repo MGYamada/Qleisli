@@ -16,7 +16,8 @@ open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
 open RuntimePureBody
 open RuntimeNamedSourceFlow (NodeAligned)
 open RuntimeLiteralBody (At Partition)
-open RuntimeSelectionLogicalRead (FromArms GraphLogical)
+open RuntimeSelectionLogicalRead (FromArms GraphLogical NamedArmLogical)
+open RuntimeSelectionArmTrace (EventTable MixedNamed MixedInline MixedSlot)
 
 abbrev RootInputs := List (Semantics.FiniteCarrier.Basis × RuntimeOrdinarySSA.Expression)
 
@@ -38,7 +39,8 @@ inductive ChildRunAt (artifact : Artifact) (root : Validity.Root)
       {rootOwner rootName : String}
       {path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName
         event.target.resolution.moduleName event.target.resolution.declaration.name}
-      {request : Context} {plan : execution.queries.BodyData (.whole body) request}
+      {controlled : Bool} {request : Context}
+      {plan : execution.queries.BodyData (.whole body controlled) request}
       {initialBindings : RuntimeOwnerMap.Map}
       {result : BlockResult root.dependencies scope.program scope.prepared.block}
       {receipts : List execution.Receipt}
@@ -50,7 +52,7 @@ inductive ChildRunAt (artifact : Artifact) (root : Validity.Root)
           ((scope.selected.zip event.inputOwners).map fun (port,role) =>
             (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner))).run beforeInput =
         (.ok initialBindings,afterInput))
-      (read : (next .runtimeBody .localScope (.whole body) path scope.program request plan
+      (read : (next .runtimeBody .localScope (.whole body controlled) path scope.program request plan
           ⟨initialBindings,body.checked.summary.parameterValues.flatMap SourceTypes.SourceRuntimeValues.valueOwners,
             body.checked.summary.nextOwner⟩
           scope.visible.ssa scope.prepared.block).run afterInput = (.ok (result,receipts),afterChild))
@@ -75,7 +77,8 @@ inductive PureChildRunAt (artifact : Artifact) (root : Validity.Root)
       {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
       {rootOwner rootName : String}
       {parent : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName caller event.target.callerName}
-      {request : Context} {plan : execution.queries.BodyData (.whole body) request}
+      {controlled : Bool} {request : Context}
+      {plan : execution.queries.BodyData (.whole body controlled) request}
       {initialBindings : RuntimeOwnerMap.Map}
       {result : BlockResult root.dependencies scope.program scope.prepared.block}
       {receipts : List execution.Receipt}
@@ -88,7 +91,7 @@ inductive PureChildRunAt (artifact : Artifact) (root : Validity.Root)
           ((scope.selected.zip event.inputOwners).map fun (port,role) =>
             (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner))).run beforeInput =
         (.ok initialBindings,afterInput))
-      (read : (next .pureBody .localScope (.whole body) (.named event body bodyRead parent) scope.program request plan
+      (read : (next .pureBody .localScope (.whole body controlled) (.named event body bodyRead parent) scope.program request plan
           ⟨initialBindings,body.checked.summary.parameterValues.flatMap SourceTypes.SourceRuntimeValues.valueOwners,
             body.checked.summary.nextOwner⟩
           ordinary scope.prepared.block).run afterInput = (.ok (result,receipts),afterChild))
@@ -124,8 +127,9 @@ inductive ConditionalRun (artifact : Artifact) (root : Validity.Root)
       {actual : @RuntimeInterval.Branch root.dependencies program block offset}
       {actualRead : RuntimeInterval.Computed (RuntimeInterval.readBranch block offset) actual}
       {leftRequest rightRequest : Context}
-      {leftPlan : execution.queries.BodyData (.arm event sameName source.bodies source.original true) leftRequest}
-      {rightPlan : execution.queries.BodyData (.arm event sameName source.bodies source.original false) rightRequest}
+      {controlled : Bool}
+      {leftPlan : execution.queries.BodyData (.arm event sameName source.bodies source.original true controlled) leftRequest}
+      {rightPlan : execution.queries.BodyData (.arm event sameName source.bodies source.original false controlled) rightRequest}
       {before ordinary}
       {left : BlockResult root.dependencies program actual.thenBlock}
       {right : BlockResult root.dependencies program actual.elseBlock}
@@ -133,10 +137,10 @@ inductive ConditionalRun (artifact : Artifact) (root : Validity.Root)
       {action : RuntimeBranchAction.Checked path event source actual before left.history right.history
         ordinary left.ordinary right.ordinary}
       {beforeThen afterThen afterElse afterJoin : Nat}
-      (thenRead : (next .runtimeBody .frame (.arm event sameName source.bodies source.original true)
+      (thenRead : (next .runtimeBody .frame (.arm event sameName source.bodies source.original true controlled)
           path program leftRequest leftPlan before ordinary actual.thenBlock).run beforeThen =
         (.ok (left,leftReceipts),afterThen))
-      (elseRead : (next .runtimeBody .frame (.arm event sameName source.bodies source.original false)
+      (elseRead : (next .runtimeBody .frame (.arm event sameName source.bodies source.original false controlled)
           path program rightRequest rightPlan before ordinary actual.elseBlock).run afterThen =
         (.ok (right,rightReceipts),afterElse))
       (joinRead : (RuntimeBranchAction.read path event source actual before left.history right.history
@@ -152,15 +156,16 @@ def CheckedStep {artifact root execution} (next : BlockRunner artifact root exec
   | .pure .. | .gap .. | .observation .. => True
 
 private def plannedOperationRequest {artifact} {preparation : RuntimeGraphOperation.Preparation artifact}
-    {owner} {event : SourceTypes.SourceOperationApplication.Event artifact.sources owner}
-    (original : RuntimeBodyQueries.Operation (.planned preparation) event) : RuntimeGraphOperation.Request artifact :=
-  ⟨_,_,event.operation.graph,SourceTypes.OperationAccess.applicable,original.child.bodies,original.graph.1,.application event⟩
+    {owner controlled} {event : SourceTypes.SourceOperationApplication.Event artifact.sources owner}
+    (original : RuntimeBodyQueries.Operation (.planned preparation) event controlled) : RuntimeGraphOperation.Request artifact :=
+  ⟨_,_,event.operation.graph,SourceTypes.SourceRuntimeScope.applicationDemand controlled,
+    original.child.bodies,original.graph.1,.application event⟩
 
 /-- Planned source execution uses the exact receipt from consuming this
 occurrence's checked graph, including its original preparation and location. -/
 def OperationResult {artifact root} (execution : ExecutionMode artifact root)
-    {owner} {event : SourceTypes.SourceOperationApplication.Event artifact.sources owner}
-    (original : RuntimeBodyQueries.Operation execution.queries event)
+    {owner controlled} {event : SourceTypes.SourceOperationApplication.Event artifact.sources owner}
+    (original : RuntimeBodyQueries.Operation execution.queries event controlled)
     (expected : Semantics.Exact.Matrix) (receipts : List execution.Receipt) : Prop :=
   match execution, original with
   | .fresh _, _ => True
@@ -176,8 +181,8 @@ def OperationResult {artifact root} (execution : ExecutionMode artifact root)
 private theorem planned_operation_result {artifact root}
     {preparation : RuntimeGraphOperation.Preparation artifact}
     (continuation : RuntimeGraphOperation.StagedConsumption preparation root (Island root.dependencies))
-    {owner} {event : SourceTypes.SourceOperationApplication.Event artifact.sources owner}
-    (original : RuntimeBodyQueries.Operation (.planned preparation) event)
+    {owner controlled} {event : SourceTypes.SourceOperationApplication.Event artifact.sources owner}
+    (original : RuntimeBodyQueries.Operation (.planned preparation) event controlled)
     (location : RuntimeGraphOperation.Location (plannedOperationRequest original))
     {expected children receipts work left} :
     let request := plannedOperationRequest original
@@ -216,6 +221,36 @@ def SelectionOrigin {artifact root} (execution : ExecutionMode artifact root)
       offset selector target (some naturals) scope) table ∧
     FromArms table (fun index matrix => ∃ graph, GraphLogical execution table index graph matrix) node
 
+/-- Each mixed row uses the action of its checked graph or of the actual
+isolated Raw run of its written inline body. -/
+def MixedLogical {artifact root} (execution : ExecutionMode artifact root)
+    (next : BlockRunner artifact root execution) {rootOwner rootName owner}
+    {event : SourceTypes.SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {table : EventTable event} (site : RuntimeContextRequest.Site)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) (index : Fin table.arms.length)
+    (slot : MixedSlot execution.queries table index) (matrix : Semantics.Exact.Matrix) : Prop :=
+  match slot with
+  | .named arm _ graph => NamedArmLogical execution arm graph matrix
+  | .inline arm replayed _ _ _ _ child plan =>
+    ∃ subject, site.arms[index.val]? = some subject ∧
+      ∃ checked : InlineChecked rfl arm replayed subject.implementation child plan path parent next,
+        RuntimeInterval.Computed (readInlineArm rfl arm replayed subject.implementation child plan path parent next) checked ∧
+          matrix = checked.action.code.logical
+
+/-- The literal selection uses the original mixed table and the action of
+the actual run at each of its written indices. -/
+def MixedSelectionOrigin {artifact root} (execution : ExecutionMode artifact root)
+    (next : BlockRunner artifact root execution) {program block}
+    (node : Node root.dependencies program block) : Prop :=
+  ∃ (rootOwner rootName owner name : String)
+    (event : SourceTypes.SourceRuntimeContext.SelectionEvent artifact.sources owner)
+    (position : Position)
+    (selection : RuntimeBodyQueries.MixedSelection (name := name) execution.queries event position)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState),
+    FromArms selection.table (fun index matrix => ∃ slot, MixedLogical execution next selection.site path parent index slot matrix) node
+
 /-- The operation's original source query and the literal node share the
 same ordered roles, body position and expected action. -/
 def OperationOrigin {artifact root} (execution : ExecutionMode artifact root)
@@ -225,7 +260,8 @@ def OperationOrigin {artifact root} (execution : ExecutionMode artifact root)
       (event : SourceTypes.SourceOperationApplication.Event artifact.sources owner)
       (position : Position) (cursor : execution.queries.Cursor)
       (data : execution.queries.EventData source (.operation event) position)
-      (original : RuntimeBodyQueries.Operation execution.queries event) (before after : RuntimeOwnerMap.Map)
+      (original : RuntimeBodyQueries.Operation execution.queries event source.requiresControl)
+      (before after : RuntimeOwnerMap.Map)
       (receipts : List execution.Receipt),
       event.inputOwners = roles ∧
       RuntimeInterval.Computed (RuntimeBodyQueries.readOperation execution.queries source event position cursor data) original ∧
@@ -236,7 +272,7 @@ def OperationOrigin {artifact root} (execution : ExecutionMode artifact root)
       (event : SourceTypes.SourceOperationApplication.Event artifact.sources owner)
       (position : Position) (cursor : execution.queries.Cursor)
       (data : execution.queries.EventData source (.operation event) position)
-      (original : RuntimeBodyQueries.Operation execution.queries event)
+      (original : RuntimeBodyQueries.Operation execution.queries event source.requiresControl)
       (receipts : List execution.Receipt),
       HEq event retained ∧ position.start = start ∧ position.count = count ∧
       RuntimeInterval.Computed (RuntimeBodyQueries.readOperation execution.queries source event position cursor data) original ∧
@@ -311,7 +347,7 @@ inductive TransformRun (artifact : Artifact) (root : Validity.Root)
       {event : SourceTypes.SourceRuntimeContext.TransformEvent artifact.sources caller}
       {position : Position} {cursor : execution.queries.Cursor}
       {data : execution.queries.EventData subject (.transform event) position}
-      {transformed : RuntimeBodyQueries.Transform execution.queries event position}
+      {transformed : RuntimeBodyQueries.Transform execution.queries event position subject.requiresControl}
       {forward : RuntimeTransformAction.Forward artifact root.dependencies transformed.request}
       {child : BlockResult root.dependencies forward.program forward.prepared.block}
       {receipts : List execution.Receipt}
@@ -324,7 +360,8 @@ inductive TransformRun (artifact : Artifact) (root : Validity.Root)
         (.ok transformed,beforeForward))
       (prepare : (RuntimeTransformAction.readForward artifact root.dependencies transformed.request).run beforeForward =
         (.ok forward,beforeChild))
-      (run : (next .pureBody .rootOrder (.whole transformed.request.source) (.root transformed.request.source)
+      (run : (next .pureBody .rootOrder (.whole transformed.request.source subject.requiresControl)
+          (.root transformed.request.source)
           forward.program transformed.request.context transformed.nested
           ⟨forward.initial,forward.roles,transformed.request.source.checked.summary.nextOwner⟩
           {} forward.prepared.block).run beforeChild = (.ok (child,receipts),afterChild)) :
@@ -338,6 +375,7 @@ def CheckedStepAt {artifact root execution} (next : BlockRunner artifact root ex
   | .named .. => ChildRunAt artifact root execution next (some inputs) step
   | .pure node@(.transform ..) => TransformRun artifact root execution next node
   | .pure node@(.named ..) => ∃ ordinary, PureChildRunAt artifact root execution next (some inputs) ordinary node
+  | .pure node@(.selection ..) => SelectionOrigin execution node ∨ MixedSelectionOrigin execution next node
   | .pure node => OperationOrigin execution node
   | _ => CheckedStep next step
 
@@ -345,7 +383,7 @@ private theorem CheckedStepAt.of_operationOrigin {artifact root execution}
     {next : BlockRunner artifact root execution} {inputs program block}
     {node : Node root.dependencies program block} (origin : OperationOrigin execution node) :
     CheckedStepAt next inputs (.pure node) := by
-  cases node <;> first | exact origin | exact False.elim origin
+  cases node <;> first | exact Or.inl origin | exact origin | exact False.elim origin
 
 theorem CheckedStepAt.forget {artifact root execution} {next : BlockRunner artifact root execution}
     {inputs program block step} (checked : @CheckedStepAt artifact root execution next inputs program block step) :
@@ -483,7 +521,7 @@ private theorem operation_aligned {artifact root} (execution : ExecutionMode art
     {program} (block : RuntimeInterval.Block root.dependencies program) (position : Position)
     (cursor : execution.queries.Cursor)
     (data : execution.queries.EventData source (.operation event) position)
-    (original : RuntimeBodyQueries.Operation execution.queries event)
+    (original : RuntimeBodyQueries.Operation execution.queries event source.requiresControl)
     (read : RuntimeInterval.Computed (RuntimeBodyQueries.readOperation execution.queries source event position cursor data) original)
     (expected : Semantics.Exact.Matrix) (node : Node root.dependencies program block)
     (initial : RuntimeStructuralAction.SourceState) {interval : RuntimeInterval.Checked block position.start position.count}
@@ -535,22 +573,21 @@ private theorem selection_after_transport
   cases same
   rfl
 
-private theorem selection_aligned {α : Type} (artifact : Artifact)
+private theorem selection_aligned {α Arm : Type} (artifact : Artifact)
     {dependencies program block start count roles}
     (interval : @RuntimeInterval.Checked dependencies program block start count)
     (frame : RuntimeOwnerMap.Checked roles interval.before)
     (owners : RuntimeOwnerTransition.Checked interval frame.bindings)
-    (selector target : RuntimeOwnerMap.Owner) {moduleName name offset}
-    (table : SourceTypes.QuantumArms.Table artifact.sources moduleName name offset selector.basis target.basis)
+    (selector target : RuntimeOwnerMap.Owner) {moduleName name offset written ordinal}
+    (table : SourceTypes.QuantumArms.TableWith artifact.sources moduleName name offset selector.basis target.basis Arm written ordinal)
     (site : RuntimeContextRequest.Site) (initial : α)
-    (realize : Fin table.arms.length →
-      SourceTypes.QuantumArms.BoundArm artifact.sources moduleName selector.basis target.basis →
-      α → WorkM (Semantics.Exact.Matrix × α))
+    (realize : Fin table.arms.length → Arm → α → WorkM (Semantics.Exact.Matrix × α))
+    (structural : Arm → Bool)
     (result : Node dependencies program block × α)
     (before : RuntimeStructuralAction.SourceState)
     (sameBindings : frame.bindings = before.bindings)
     (checked : RuntimeInterval.Computed
-      (selectionNode artifact interval frame owners selector target table site initial realize) result) :
+      (selectionNode artifact interval frame owners selector target table site initial realize structural) result) :
     NodeAligned before {before with bindings := owners.after.bindings} result.1 ∧
       At start (start+count) (.pure result.1) := by
   obtain ⟨work,left,ran⟩ := checked
@@ -661,6 +698,17 @@ private theorem PureCallAt.of_operationOrigin {artifact root execution} {next : 
 def IsRuntimeStep {dependencies program block} : Step dependencies program block → Prop
   | .pure (.named ..) => False
   | _ => True
+
+private theorem mixed_selection_step {artifact root execution} {next : BlockRunner artifact root execution}
+    {inputs program block} {node : Node root.dependencies program block}
+    (original : MixedSelectionOrigin execution next node) :
+    CheckedStepAt next inputs (.pure node) ∧
+      (∀ ordinary, PureCallAt next inputs ordinary (.pure node)) ∧ IsRuntimeStep (.pure node) := by
+  cases node
+  case selection => exact ⟨Or.inr original,fun _ => True.intro,True.intro⟩
+  all_goals
+    obtain ⟨_,_,_,_,_,_,_,_,_,invalid⟩ := original
+    exact False.elim invalid
 
 def RuntimeOnly {dependencies program block} (steps : List (Step dependencies program block)) : Prop :=
   ∀ step ∈ steps, IsRuntimeStep step
@@ -1022,44 +1070,129 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
       · exact atStart.symm
       · rfl
     case selection =>
+      let event : SourceTypes.SourceRuntimeContext.SelectionEvent artifact.sources owner := by assumption
       obtain ⟨owners,e,_owners,h⟩ := bind_success _ _ _ _ _ h
       obtain ⟨selected,f,_selected,h⟩ := bind_success _ _ _ _ _ h
-      obtain ⟨performed,g,_performed,h⟩ := bind_success _ _ _ _ _ h
-      rcases performed with ⟨logicals,children,cursor,receipts⟩
-      obtain ⟨actual,i,_node,returned⟩ := bind_success _ _ _ _ _ h
-      rcases actual with ⟨node,extra⟩
-      have same := (pure_success _ _ _ _ returned).1
-      subst after
-      have chain := entered.1
-      obtain ⟨aligned,⟨first,last⟩⟩ := selection_aligned artifact interval frame owners _ _ _ _ _ _
-        (node,extra) history sameBindings ⟨g,i,_node⟩
-      have exactActions := RuntimeSelectionLogicalRead.selectionNode_from_fold interval frame owners _ _
-        selected.table selected.site execution.queries _
-        (fun state : List Semantics.Exact.Matrix × List (Island root.dependencies) ×
-          execution.queries.Cursor × List execution.Receipt => state.1)
-        (GraphLogical execution selected.table) (by
-          intro index data start finish work left ran
-          obtain ⟨_,charged,_,ran⟩ := bind_success _ _ _ _ _ ran
-          obtain ⟨value,returned,graphRead,ran⟩ := bind_success _ _ _ _ _ ran
-          rcases value with ⟨matrix,children,cursor,receipts⟩
-          obtain ⟨rfl,_⟩ := pure_success _ _ _ _ ran
-          refine ⟨matrix,rfl,?_⟩
-          cases execution with
-          | fresh _ => exact True.intro
-          | planned preparation continuation =>
-            rcases data with ⟨implementations,references,plan⟩
-            obtain ⟨checked,budget,_,paid⟩ := bind_success _ _ _ _ _ graphRead
-            obtain ⟨_,finished,_,returned⟩ := bind_success _ _ _ _ _ paid
-            have action := congrArg Prod.fst (pure_success _ _ _ _ returned).1
-            exact ⟨checked.val,checked.property,action⟩)
-        selected.arms _ _ rfl ⟨f,g,_performed⟩ (node,extra) ⟨g,i,_node⟩
-      have original : SelectionOrigin execution node :=
-        ⟨_,_,source,_,_,_,_,_,selected.table,selected.original,
-          exactActions.weaken (fun _ _ ⟨graph,_,_,_,_,_,produced⟩ => ⟨graph,produced⟩)⟩
-      exact ⟨chain.snoc (by simpa only [sameBindings] using aligned) (.of_operationOrigin (selection_origin original)) rfl
-        ⟨first.trans atStart.symm,last⟩ True.intro,
-        entered.2.snocPure _ rfl (fun _ => .of_operationOrigin (execution := execution) (selection_origin original))
-          (fun _ => .of_operationOrigin (execution := execution) (selection_origin original))⟩
+      cases selected
+      case inl selected =>
+        obtain ⟨performed,g,_performed,h⟩ := bind_success _ _ _ _ _ h
+        rcases performed with ⟨logicals,children,cursor,receipts⟩
+        obtain ⟨actual,i,_node,returned⟩ := bind_success _ _ _ _ _ h
+        rcases actual with ⟨node,extra⟩
+        have same := (pure_success _ _ _ _ returned).1
+        subst after
+        have chain := entered.1
+        obtain ⟨aligned,⟨first,last⟩⟩ := selection_aligned artifact interval frame owners _ _ _ _ _ _ (fun _ => false)
+          (node,extra) history sameBindings ⟨g,i,_node⟩
+        have exactActions := RuntimeSelectionLogicalRead.selectionNode_from_fold interval frame owners _ _
+          selected.table selected.site execution.queries _
+          (fun state : List Semantics.Exact.Matrix × List (Island root.dependencies) ×
+            execution.queries.Cursor × List execution.Receipt => state.1)
+          (GraphLogical execution selected.table) (by
+            intro index data start finish work left ran
+            obtain ⟨_,charged,_,ran⟩ := bind_success _ _ _ _ _ ran
+            obtain ⟨value,returned,graphRead,ran⟩ := bind_success _ _ _ _ _ ran
+            rcases value with ⟨matrix,children,cursor,receipts⟩
+            obtain ⟨rfl,_⟩ := pure_success _ _ _ _ ran
+            refine ⟨matrix,rfl,?_⟩
+            cases execution with
+            | fresh _ => exact True.intro
+            | planned preparation continuation =>
+              rcases data with ⟨implementations,references,plan⟩
+              obtain ⟨checked,budget,_,paid⟩ := bind_success _ _ _ _ _ graphRead
+              obtain ⟨_,finished,_,returned⟩ := bind_success _ _ _ _ _ paid
+              have action := congrArg Prod.fst (pure_success _ _ _ _ returned).1
+              exact ⟨checked.val,checked.property,action⟩)
+          selected.arms _ _ rfl ⟨f,g,_performed⟩ (node,extra) ⟨g,i,_node⟩
+        have original : SelectionOrigin execution node :=
+          ⟨_,_,source,_,_,_,_,_,selected.table,selected.original,
+            exactActions.weaken (fun _ _ ⟨graph,_,_,_,_,_,produced⟩ => ⟨graph,produced⟩)⟩
+        exact ⟨chain.snoc (by simpa only [sameBindings] using aligned) (.of_operationOrigin (selection_origin original)) rfl
+          ⟨first.trans atStart.symm,last⟩ True.intro,
+          entered.2.snocPure _ rfl (fun _ => .of_operationOrigin (execution := execution) (selection_origin original))
+            (fun _ => .of_operationOrigin (execution := execution) (selection_origin original))⟩
+      case inr selected =>
+        obtain ⟨performed,g,_performed,h⟩ := bind_success _ _ _ _ _ h
+        rcases performed with ⟨logicals,children,finalCursor,finalReceipts⟩
+        obtain ⟨actual,i,_node,returned⟩ := bind_success _ _ _ _ _ h
+        rcases actual with ⟨node,extra⟩
+        have same := (pure_success _ _ _ _ returned).1
+        subst after
+        let childPath : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName :=
+          selected.sameName.symm ▸ path
+        let parent := {history with bindings := frame.bindings}
+        let State := List Semantics.Exact.Matrix × List (Island root.dependencies) ×
+          execution.queries.Cursor × List execution.Receipt
+        let named : MixedNamed execution.queries selected.table State :=
+          fun index arm atIndex data (logicals,checked,cursor,receipts) => do
+            exactWork (Exact.charge (16*(logicals.length+receipts.length+1)))
+            let (logical,children,cursor,performed) ← consumeGraph arm.operation.graph
+              SourceTypes.OperationAccess.controllable (.arm arm.operation) path
+              (.arm arm (.mixed event selected.sameName selected.table index atIndex))
+              cursor data (!request.references.isEmpty)
+            return (logicals ++ [logical],checked ++ children,cursor,receipts ++ performed)
+        let inline : MixedInline execution.queries event State :=
+          fun {index} arm replay child plan (logicals,checked,cursor,receipts) => do
+            exactWork (Exact.charge (16*(logicals.length+receipts.length+index+1)))
+            let subject ← lift (readOption selected.site.arms[index]?)
+            let inlineCheck ← readInlineArm rfl arm replay subject.implementation child plan childPath parent next
+            return (logicals ++ [inlineCheck.action.code.logical],checked ++ inlineCheck.result.islands,
+              cursor,receipts ++ inlineCheck.receipts)
+        let initial : State := ([],[],selected.cursor,receipts)
+        let final : State := (logicals,children,finalCursor,finalReceipts)
+        let structural (arm : SourceTypes.QuantumArms.RuntimeArm event event.selector.basis event.target.basis) : Bool :=
+          match arm with
+          | .inline .. => true
+          | .operation _ => false
+        have folded : RuntimeInterval.Computed
+            (RuntimeBodyQueries.foldMixedArms execution.queries position selected.table named inline selected.arms initial) final :=
+          ⟨f,g,_performed⟩
+        obtain ⟨aligned,⟨first,last⟩⟩ := selection_aligned artifact interval frame owners _ _ _ _ _ _ structural
+          (node,extra) history sameBindings ⟨g,i,_node⟩
+        have exactActions := RuntimeSelectionLogicalRead.selectionNode_from_mixed_fold interval frame owners
+          selected.table selected.site structural execution.queries position named inline
+          (Prod.fst : State → List Semantics.Exact.Matrix)
+          (MixedLogical execution next selected.site childPath parent) (by
+            intro index slot start finish work left ran
+            cases slot with
+            | named arm selected data =>
+              dsimp only [MixedSlot.run,named] at ran
+              obtain ⟨_,charged,_,ran⟩ := bind_success _ _ _ _ _ ran
+              obtain ⟨value,returned,graphRead,ran⟩ := bind_success _ _ _ _ _ ran
+              rcases value with ⟨matrix,children,cursor,receipts⟩
+              obtain ⟨rfl,_⟩ := pure_success _ _ _ _ ran
+              refine ⟨matrix,rfl,?_⟩
+              cases execution with
+              | fresh _ => exact True.intro
+              | planned preparation continuation =>
+                rcases data with ⟨implementations,references,plan⟩
+                obtain ⟨checked,budget,_,paid⟩ := bind_success _ _ _ _ _ graphRead
+                obtain ⟨_,finished,_,returned⟩ := bind_success _ _ _ _ _ paid
+                have action := congrArg Prod.fst (pure_success _ _ _ _ returned).1
+                exact ⟨checked.val,checked.property,action⟩
+            | inline arm replayed ports label originalLabel original child plan =>
+              dsimp only [MixedSlot.run,inline] at ran
+              obtain ⟨_,charged,_,ran⟩ := bind_success _ _ _ _ _ ran
+              obtain ⟨subject,entry,lookup,ran⟩ := bind_success _ _ _ _ _ ran
+              obtain ⟨checked,exit,traversal,ran⟩ := bind_success _ _ _ _ _ ran
+              obtain ⟨rfl,_⟩ := pure_success _ _ _ _ ran
+              have subjectAt : selected.site.arms[index.val]? = some subject := by
+                have read := (lift_success _ _ _ _ lookup).1
+                cases found : selected.site.arms[index.val]? with
+                | none => simp [found,readOption] at read
+                | some entry =>
+                  have same : (Except.ok entry : Except Error _) = .ok subject := by
+                    simpa only [found,readOption] using read
+                  exact congrArg some (Except.ok.inj same)
+              exact ⟨_,rfl,subject,subjectAt,checked,⟨entry,exit,traversal⟩,rfl⟩)
+          selected.arms initial final rfl folded (node,extra) ⟨g,i,_node⟩
+        have original : MixedSelectionOrigin execution next node :=
+          ⟨_,_,_,_,event,position,selected,childPath,parent,
+            exactActions.weaken (fun _ _ ⟨slot,_,_,_,_,_,produced⟩ => ⟨slot,produced⟩)⟩
+        obtain ⟨checked,pure,runtime⟩ := mixed_selection_step (inputs := RuntimeBranchCondition.rootEntries path) original
+        exact ⟨entered.1.snoc (by simpa only [sameBindings] using aligned) checked rfl
+          ⟨first.trans atStart.symm,last⟩ True.intro,
+          entered.2.snocPure _ rfl (fun _ => pure _) (fun _ => runtime)⟩
     case basis =>
       obtain ⟨_,e,_source,ran⟩ := bind_success _ _ _ _ _ h
       obtain ⟨_,_,_action,returned⟩ := bind_success _ _ _ _ _ ran
