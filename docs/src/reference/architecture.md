@@ -110,7 +110,9 @@ likely classical assumption, the canonical Qleisli construct where available,
 and a recovery that preserves the contract. For example, a missing explicit
 Op provider names the unresolved binding; it does not search for a convenient
 implementation. A quantum wildcard must not silently consume an owner.
-Text and JSON describe the same failure and source location.
+Text and JSON describe the same failure and source location. The
+[diagnostic reference](diagnostics.md) lists categories, recovery guidance,
+and conformance cases.
 
 An unfamiliar derived stdlib abstraction should have an inspectable recovery
 path: read its signature, inspect the ordinary checked `.qli` implementation,
