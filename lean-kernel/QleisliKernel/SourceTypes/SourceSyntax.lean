@@ -249,4 +249,23 @@ depth retain their existing roles; each let shares the original scan bound. -/
 def read (fuel depth : Nat) (body : Bool) (tokens : List LocatedToken) : Except String (Tree tokens) :=
   readWithStatements (StatementSyntax.prepare (tokens.length+1)) fuel depth body tokens
 
+structure InlineArm (parsed : QuantumMatch.Parsed) (index : Fin parsed.arms.length) where
+  block : QuantumMatch.Inline parsed.arms[index]
+  targetName : String
+  originalTarget : QuantumMoves.parse 65 (parsed.target.map (·.text)) = .ok [.name targetName]
+  tree : Tree block.body
+
+/-- Read the indexed arm with the same grammar as an ordinary source body.
+The result retains its exact occurrence, the name of the original target
+operand and the full body tree. Ownership and controllability are separate
+judgments. -/
+def readInlineArm (parsed : QuantumMatch.Parsed) (index : Fin parsed.arms.length) :
+    Except String (InlineArm parsed index) := do
+  let block ← parsed.arms[index].readInline
+  match target : QuantumMoves.parse 65 (parsed.target.map (·.text)) with
+  | .ok [.name name] =>
+    let tree ← read (block.body.length+1) 0 true block.body
+    return ⟨block,name,target,tree⟩
+  | _ => throw "inline coherent arm target requires an original owner name"
+
 end QleisliKernel.SourceTypes.SourceSyntax
