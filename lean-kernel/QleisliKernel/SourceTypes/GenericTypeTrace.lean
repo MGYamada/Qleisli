@@ -763,29 +763,42 @@ private def scalarLabelBasis {sources} (state : GenericLexicalNatural.SomeEnviro
 private def selection {sources} (reader : DefinitionReader sources)
     (state : GenericLexicalNatural.SomeEnvironment sources) (scope : List String)
     (formals : List (String × Operation sources)) (parsed : QuantumMatch.Parsed)
-    (selector target : Value) (remaining : Environment) : WorkM (Outcome sources) := do
+    (selector target : Value) (remaining : Environment)
+    (readBody : Environment → {tokens : List LocatedToken} → SourceSyntax.Tree tokens →
+      WorkM (Outcome sources)) : WorkM (Outcome sources) := do
   let [.owner selector] := selector | throw .request
   let [.owner target] := target | throw .request
   if parsed.keyword.text == "qif" then
     let _ ← SymbolicTypes.equate state selector [.fixed .bit]
   let labelBasis ← scalarLabelBasis state selector parsed.arms.length
-  let arms ← parsed.arms.mapM fun arm => do
+  let arms : List (QuantumLabels.Label sources × Outcome sources) ← (List.finRange parsed.arms.length).mapM fun index => do
+    let arm := parsed.arms[index]
     let label ← QuantumLabels.read sources state.owner labelBasis arm.label
-    let operation ← operationWithModules reader state scope formals 65 (some target) arm.operation
-    let _ ← SymbolicTypes.equate state operation.input target
-    let _ ← SymbolicTypes.equate state operation.output target
-    guard operation.paths.controllable .request
-    pure (label,operation)
+    if arm.operation.head?.map (·.text) == some "{" then
+      let inline ← adapt (SourceSyntax.readInlineArm parsed index)
+      let initial := [⟨inline.targetName,[.owner target],inline.block.opening.span.startByte+1⟩]
+      let body ← readBody initial inline.tree
+      GenericValues.expect state body.value [.owner target]
+      guard (body.remaining.all fun cell => !hasOwner cell.value) .request
+      -- Keep the inferred effect as an independent requirement for the arm body.
+      pure (label,{body with
+        effect := direct .unitary,
+        needs := body.needs ++ [⟨body.effect,.unitary,false⟩],rows := label.sourceRows ++ body.rows})
+    else
+      let operation ← operationWithModules reader state scope formals 65 (some target) arm.operation
+      let _ ← SymbolicTypes.equate state operation.input target
+      let _ ← SymbolicTypes.equate state operation.output target
+      guard operation.paths.controllable .request
+      pure (label,{
+        value := [.owner target],remaining := [],references := operation.references,
+        needs := operation.needs ++ [⟨operation.effect,.unitary,false⟩],meanings := operation.meanings,
+        activities := operation.activities ++ [.duty ⟨operation.origin,operation.subject,
+          .access ⟨false,false,true⟩,.selectionControl,[],operation.suppliers,none⟩],
+        rows := label.sourceRows ++ operation.rows})
   let labels := arms.map (·.1.ordinal)
   guard (labels.all (· < arms.length) && labels.eraseDups.length == labels.length) .request
-  pure {
-    value := [.tuple 2,.owner selector,.owner target],remaining,quantumUse := true,
-    effect := direct .unitary,references := arms.flatMap (·.2.references),
-    needs := arms.flatMap (fun (_,operation) => operation.needs ++ [⟨operation.effect,.unitary,false⟩]),
-    meanings := arms.flatMap (·.2.meanings),
-    activities := arms.flatMap (fun (_,operation) => operation.activities ++
-      [.duty ⟨operation.origin,operation.subject,.access ⟨false,false,true⟩,.selectionControl,[],operation.suppliers,none⟩]),
-    rows := arms.flatMap (fun (label,operation) => label.sourceRows ++ operation.rows)}
+  let result := arms.foldr (fun (_,arm) result => append arm result) {value := [],remaining := []}
+  pure {result with value := [.tuple 2,.owner selector,.owner target],remaining,quantumUse := true}
 
 private def expectEnvironment {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (actual expected : Environment) : WorkM Unit := do
@@ -889,9 +902,9 @@ private def primitiveApplication {sources} (state : GenericLexicalNatural.SomeEn
 private def applyOperation {sources} (reader : DefinitionReader sources)
     (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (formals : List (String × Operation sources)) (tokens : List LocatedToken)
-    (arguments : List Value) (remaining : Environment) : WorkM (Outcome sources) := do
+    (arguments : List Value) (remaining : Environment) (underControl : Bool) : WorkM (Outcome sources) := do
   let op ← operationWithModules reader state scope formals 65 none tokens
-  guard op.paths.applicable .request
+  guard (op.paths.applicable && (!underControl || op.paths.controllable)) .request
   let value ← if SourceOperationSyntax.controlled tokens then do
       let [[.owner control],[.owner target]] := arguments | throw .request
       let (inputControl,inputTarget) ← adapt (GenericValues.pairCodes op.input)
@@ -907,7 +920,8 @@ private def applyOperation {sources} (reader : DefinitionReader sources)
   pure {
     value,remaining,effect := op.effect,quantumUse := true,references := op.references,
     needs := op.needs,meanings := op.meanings,rows := op.rows,
-    activities := op.activities ++ [.duty ⟨op.origin,op.subject,.access ⟨true,false,false⟩,.application,[],op.suppliers,none⟩]}
+    activities := op.activities ++ [.duty ⟨op.origin,op.subject,.access ⟨true,false,underControl⟩,
+      .application,[],op.suppliers,none⟩]}
 
 private def quantumGroup (value : Value) : Bool :=
   hasOwner value && value.all (fun atom => match atom with | .ordinary _ => false | _ => true)
@@ -915,7 +929,8 @@ private def quantumGroup (value : Value) : Bool :=
 private def runtimeTransform {sources} (reader : DefinitionReader sources)
     (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (formals : List (String × Operation sources)) {tokens}
-    (written : SourceRuntimeTransformSyntax.Checked tokens) (arguments : List Value) (remaining : Environment) :
+    (written : SourceRuntimeTransformSyntax.Checked tokens) (arguments : List Value) (remaining : Environment)
+    (underControl : Bool) :
     WorkM (Outcome sources) := do
   let base := written.base
   let candidate ← CallName.readWithModules sources reader.context.modules state.owner scope base.2.callee
@@ -941,8 +956,8 @@ private def runtimeTransform {sources} (reader : DefinitionReader sources)
     let leaf := GenericOperation.Description.singleton (StaticHeaders.frame state.prepared.original) (.primitive primitive target)
     let subject := counts.foldl (fun op (count,_) => op.unary (fun child => .power child count)) leaf
     let requested : OperationPaths.Paths := match written.access with
-      | .forward => ⟨true,false,false⟩
-      | .adjoint => ⟨false,true,false⟩
+      | .forward => ⟨true,false,underControl⟩
+      | .adjoint => ⟨false,true,underControl⟩
       | .controlled => ⟨false,false,true⟩
     pure {
       value,remaining,quantumUse := true,rows := sourceRows,
@@ -975,15 +990,16 @@ private def runtimeTransform {sources} (reader : DefinitionReader sources)
       | .adjoint => pure (application.operations.all fun (_,actual) => actual.paths.applicable && actual.paths.adjointable)
       | .controlled => pure (application.operations.all fun (_,actual) =>
         actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable)
-    guard access .request
+    guard (access && (!underControl || application.operations.all
+      (fun (_,actual) => actual.paths.controllable))) .request
     let effect := functionEffect state.owner application.definition
     let origin ← GenericOperation.readOrigin state scope tokens
       (CallName.sourceRows candidate ++ rows.flatten ++ application.rows)
     let subject := counts.foldl (fun subject (count,_) =>
       subject.unary (fun child => .power child count)) application.subject
     let requested : OperationPaths.Paths := match written.access with
-      | .forward => ⟨true,false,false⟩
-      | .adjoint => ⟨false,true,false⟩
+      | .forward => ⟨true,false,underControl⟩
+      | .adjoint => ⟨false,true,underControl⟩
       | .controlled => ⟨false,false,true⟩
     let some occurrence := application.applications.getLast? | throw .request
     pure {
@@ -1005,9 +1021,10 @@ private def typedNominal {sources} (state : GenericLexicalNatural.SomeEnvironmen
 
 private def evaluator {sources owner name} (definition : Definition sources owner name)
     (prepared : Option (PreparedDefinitions definition.context)) :
-    Nat → GenericLexicalNatural.SomeEnvironment sources → List String → Environment →
+    Nat → Bool → GenericLexicalNatural.SomeEnvironment sources → List String → Environment →
     {tokens : List LocatedToken} → SourceSyntax.Tree tokens → WorkM (Outcome sources) :=
-  Nat.rec (fun _ _ _ {_} _ => throw .limit) (fun _ next state scope environment {tokens} tree => do
+  Nat.rec (fun _ _ _ _ {_} _ => throw .limit) (fun _ recurse underControl state scope environment {tokens} tree => do
+    let next := recurse underControl
     let reader : DefinitionReader sources := ⟨definition.context,prepared⟩
     exactWork (Exact.charge (16*((tokens.map fun token => token.text.utf8ByteSize+4).sum+
       (environment.map fun cell => cell.name.utf8ByteSize+valueFields cell.value+1).sum+1)))
@@ -1094,11 +1111,12 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       let target ← adapt (QuantumMoves.parse 65 (parsed.target.map (·.text)))
       let (selector,remaining) ← adapt (GenericValues.move selector environment)
       let (target,remaining) ← adapt (GenericValues.move target remaining)
-      selection reader state scope definition.operations parsed selector target remaining
+      selection reader state scope definition.operations parsed selector target remaining (recurse true state scope)
     | .selectionExpression _ parsed _ selector target =>
       let first ← next state scope environment selector
       let last ← next state scope first.remaining target
       let result ← selection reader state scope definition.operations parsed first.value last.value last.remaining
+        (recurse true state scope)
       pure (append first (append last result))
     | .basis written input body =>
       let input ← next state scope environment input
@@ -1236,9 +1254,11 @@ private def evaluator {sources owner name} (definition : Definition sources owne
           pure (match candidate.decision with | .lexical .. => false | _ => true)
       if transformedNamed then
         let some transformed := transformed | throw .request
-        pure (append arguments (← runtimeTransform reader state scope definition.operations transformed values arguments.remaining))
+        pure (append arguments (← runtimeTransform reader state scope definition.operations transformed values
+          arguments.remaining underControl))
       else if SourceOperationSyntax.selected (definition.operations.map (·.1)) call.call.callee then
-        pure (append arguments (← applyOperation reader state scope definition.operations call.call.callee values arguments.remaining))
+        pure (append arguments (← applyOperation reader state scope definition.operations call.call.callee values
+          arguments.remaining underControl))
       else
         let written ← adapt (StaticApplication.readSyntax call.call.callee)
         let candidate ← CallName.readWithModules sources definition.modules owner scope written.callee
@@ -1262,6 +1282,8 @@ private def evaluator {sources owner name} (definition : Definition sources owne
           let some resolution := CallName.candidateResolution candidate | throw .request
           let application ← instantiateWithReader state scope written resolution.moduleName resolution.declaration.name
             (operationWithModules reader state scope definition.operations 65 none) true reader
+          guard (!underControl || application.operations.all
+            (fun (_,actual) => actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable)) .request
           guard (values.length == application.parameters.length) .request
           for (actual,expected) in values.zip application.parameters do GenericValues.expect state actual expected
           let externalPermission := owner != application.owner &&
@@ -1286,7 +1308,7 @@ def checkTree {sources owner name} (definition : Definition sources owner name)
   if definition.original.envelope.parsedHeader.ordinaryOnly then
     checkClassicalTree definition.modules definition.state (staticNames ++ initial.map (·.name))
       (definition.original.envelope.occurrence.body.length+1) tree
-  let result ← evaluator definition prepared (definition.original.envelope.occurrence.body.length+1)
+  let result ← evaluator definition prepared (definition.original.envelope.occurrence.body.length+1) false
     definition.state (staticNames ++ initial.map (·.name)) initial tree
   guard (result.remaining.all fun cell => !hasOwner cell.value) .request
   GenericValues.expect definition.state result.value definition.result
