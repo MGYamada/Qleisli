@@ -210,8 +210,7 @@ pub unitary fn route(s:Q<Bit>,q:Q<(Bit,Bit)>)->(Q<Bit>,Q<(Bit,Bit)>){
 
     let consumed = binary.replacen("h(excl q);h(excl q);", "let q=h(q);h(excl q);", 1);
     let error = ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), consumed)]))
-        .err()
-        .expect("a shadowing owner cannot supply the implicit return");
+        .expect_err("a shadowing owner cannot supply the implicit return");
     assert_eq!(error.code(), "ownership", "{error:?}");
 }
 
