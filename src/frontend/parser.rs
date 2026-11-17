@@ -1501,6 +1501,29 @@ impl Parser {
     }
 
     fn expr_depth(expr: &Expr) -> Result<usize, ParseError> {
+        fn push_arms<'a>(
+            pending: &mut Vec<(&'a Expr, usize)>,
+            arms: impl IntoIterator<Item = &'a CoherentArm>,
+            depth: usize,
+        ) {
+            for arm in arms {
+                let CoherentArm::Block(block) = arm else {
+                    continue;
+                };
+                pending.push((&block.result, depth));
+                pending.extend(block.statements.iter().filter_map(|statement| {
+                    let value = match &statement.kind {
+                        StmtKind::StaticLet { .. } => return None,
+                        StmtKind::Let { value, .. }
+                        | StmtKind::MutableLet { value, .. }
+                        | StmtKind::Assign { value, .. }
+                        | StmtKind::Expr(value) => value,
+                    };
+                    Some((value, depth))
+                }));
+            }
+        }
+
         // Keep this iterative walk outside the recursive parsing frames.
         // Binary chains can deepen the AST without deepening the parse stack.
         let mut maximum = 1;
@@ -1517,6 +1540,11 @@ impl Parser {
                 ExprKind::QuantumMatch(selection) => {
                     pending.push((&selection.selector, depth + 1));
                     pending.push((&selection.target, depth + 1));
+                    push_arms(
+                        &mut pending,
+                        selection.arms.iter().map(|arm| &arm.body),
+                        depth + 1,
+                    );
                 }
                 ExprKind::Match(selection) => {
                     pending.push((&selection.scrutinee, depth + 1));
@@ -1562,13 +1590,18 @@ impl Parser {
                 ExprKind::Tuple(fields) => {
                     pending.extend(fields.iter().map(|field| (field, depth + 1)))
                 }
-                ExprKind::Xor(a, b)
-                | ExprKind::And(a, b)
-                | ExprKind::QuantumIf {
-                    control: a,
-                    target: b,
-                    ..
-                } => pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)]),
+                ExprKind::Xor(a, b) | ExprKind::And(a, b) => {
+                    pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)]);
+                }
+                ExprKind::QuantumIf {
+                    control,
+                    target,
+                    zero,
+                    one,
+                } => {
+                    pending.extend([(control.as_ref(), depth + 1), (target.as_ref(), depth + 1)]);
+                    push_arms(&mut pending, [zero, one], depth + 1);
+                }
                 ExprKind::Call { args, .. } | ExprKind::Controlled { args, .. } => {
                     pending.extend(args.iter().map(|arg| (arg, depth + 1)));
                 }
@@ -1967,13 +2000,9 @@ impl Parser {
                 }
             };
             self.expect_form(&TokenKind::FatArrow, QMATCH_FORM)?;
-            let operation = self.static_op()?;
-            let span = label_start.cover(operation.span);
-            arms.push(QuantumMatchArm {
-                label,
-                operation,
-                span,
-            });
+            let body = self.coherent_arm(false)?;
+            let span = label_start.cover(body.span());
+            arms.push(QuantumMatchArm { label, body, span });
             if self.consume(&TokenKind::Comma).is_none() {
                 break;
             }
@@ -1990,6 +2019,22 @@ impl Parser {
         })
     }
 
+    fn coherent_arm(&mut self, named_only: bool) -> Result<CoherentArm, ParseError> {
+        if self.at(&TokenKind::LBrace) {
+            return Ok(CoherentArm::Block(Box::new(self.block()?)));
+        }
+        let operation = if named_only {
+            let name = self.reference_name()?;
+            StaticOp {
+                span: name.span,
+                kind: StaticOpKind::Name(name),
+            }
+        } else {
+            self.static_op()?
+        };
+        Ok(CoherentArm::Operation(operation))
+    }
+
     fn quantum_if(&mut self, start: Token) -> Result<Expr, ParseError> {
         self.expect_form(&TokenKind::LParen, QIF_FORM)?;
         let control = Box::new(self.expr()?);
@@ -1999,11 +2044,11 @@ impl Parser {
         self.expect(&TokenKind::LBrace)?;
         self.expect_form(&TokenKind::Zero, QIF_FORM)?;
         self.expect(&TokenKind::FatArrow)?;
-        let zero = self.reference_name()?;
+        let zero = self.coherent_arm(true)?;
         self.expect(&TokenKind::Comma)?;
         self.expect_form(&TokenKind::One, QIF_FORM)?;
         self.expect(&TokenKind::FatArrow)?;
-        let one = self.reference_name()?;
+        let one = self.coherent_arm(true)?;
         let end = self.expect(&TokenKind::RBrace)?;
         Ok(Expr {
             kind: ExprKind::QuantumIf {

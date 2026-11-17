@@ -124,6 +124,11 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
         ExprKind::QuantumMatch(selection) => {
             self::expr(&selection.selector)?;
             self::expr(&selection.target)?;
+            for arm in &selection.arms {
+                if let CoherentArm::Block(body) = &arm.body {
+                    block(body)?;
+                }
+            }
         }
         ExprKind::Variant(_) => {}
         ExprKind::Record(record) => {
@@ -185,15 +190,23 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
                 self::expr(field)?;
             }
         }
-        ExprKind::And(a, b)
-        | ExprKind::Xor(a, b)
-        | ExprKind::QuantumIf {
-            control: a,
-            target: b,
-            ..
-        } => {
+        ExprKind::And(a, b) | ExprKind::Xor(a, b) => {
             self::expr(a)?;
             self::expr(b)?;
+        }
+        ExprKind::QuantumIf {
+            control,
+            target,
+            zero,
+            one,
+        } => {
+            self::expr(control)?;
+            self::expr(target)?;
+            for arm in [zero, one] {
+                if let CoherentArm::Block(body) = arm {
+                    block(body)?;
+                }
+            }
         }
         ExprKind::Call {
             static_args, args, ..

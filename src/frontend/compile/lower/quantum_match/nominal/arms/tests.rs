@@ -76,7 +76,7 @@ fn retained_primitive(source: &str, kind: OperationPrimitive, target_atoms: &[At
         let (body, steps, operation) = prepare(
             &mut lower,
             "main",
-            &arm.operation,
+            arm.body.operation().expect("static operation in test arm"),
             target,
             bits,
             &Env::new(),

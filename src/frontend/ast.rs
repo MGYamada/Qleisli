@@ -251,11 +251,32 @@ pub enum QuantumLabel {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+pub enum CoherentArm {
+    Operation(StaticOp),
+    Block(Box<Block>),
+}
+
+impl CoherentArm {
+    pub fn span(&self) -> Span {
+        match self {
+            Self::Operation(operation) => operation.span,
+            Self::Block(block) => block.span,
+        }
+    }
+
+    pub fn operation(&self) -> Option<&StaticOp> {
+        match self {
+            Self::Operation(operation) => Some(operation),
+            Self::Block(_) => None,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct QuantumMatchArm {
     pub label: QuantumLabel,
-    /// Complete original static operation expression, including every child
-    /// and ordered specialization actual. It is not a runtime arm body.
-    pub operation: StaticOp,
+    /// Original operation expression or inline block with its source span.
+    pub body: CoherentArm,
     pub span: Span,
 }
 
@@ -332,8 +353,8 @@ pub enum ExprKind {
     QuantumIf {
         control: Box<Expr>,
         target: Box<Expr>,
-        zero: Ident,
-        one: Ident,
+        zero: CoherentArm,
+        one: CoherentArm,
     },
     Controlled {
         operation: StaticOp,

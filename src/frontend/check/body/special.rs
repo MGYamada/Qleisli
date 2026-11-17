@@ -453,8 +453,8 @@ impl Checker<'_, '_> {
         &mut self,
         control: &Expr,
         target: &Expr,
-        zero: &Ident,
-        one: &Ident,
+        zero: &CoherentArm,
+        one: &CoherentArm,
         scope: &mut Scope,
         span: Span,
     ) -> Result<Ty> {
@@ -469,9 +469,8 @@ impl Checker<'_, '_> {
         let basis = target_ty.quantum_basis().ok_or_else(|| {
             SourceError::new("type", target.span, "qif target requires one Q<A> owner")
         })?;
-        for name in [zero, one] {
-            let op = self.target_operation(name, basis, target.span, scope)?;
-            access(&op, Access::Controlled, name.span)?;
+        for arm in [zero, one] {
+            self.coherent_arm(arm, target, basis, scope)?;
         }
         self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
         Ok(Ty::pair(control_ty, target_ty))

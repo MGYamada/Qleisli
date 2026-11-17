@@ -1129,10 +1129,11 @@ pub(super) fn emit(
                 "qmatch labels must cover the exact selector declaration once",
             ));
         }
+        let static_arm = lower.require_static_arm(module, &arm.body)?;
         let (subject, mut body, original) = arms::prepare(
             lower,
             module,
-            &arm.operation,
+            static_arm,
             &target_basis,
             target_bits,
             env,

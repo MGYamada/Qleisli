@@ -67,8 +67,9 @@ pub(in crate::frontend::check) fn expression_operations<E>(
             selection
                 .arms
                 .iter()
-                .filter(|arm| !matches!(arm.operation.kind, ast::StaticOpKind::Name(_)))
-                .map(|arm| (&arm.operation, [false, false, true]))
+                .filter_map(|arm| arm.body.operation())
+                .filter(|operation| !matches!(operation.kind, ast::StaticOpKind::Name(_)))
+                .map(|operation| (operation, [false, false, true]))
                 .collect()
         }
         _ => Vec::new(),

@@ -1255,9 +1255,9 @@ impl<'ast> Validation<'_, 'ast> {
             ast::ExprKind::QuantumMatch(selection) => {
                 self.budget.charge(span, selection.arms.len())?;
                 let mut found = None;
-                for arm in &selection.arms {
+                for operation in selection.arms.iter().filter_map(|arm| arm.body.operation()) {
                     if let Some(arguments) =
-                        self.call_in_operation(owner, &arm.operation, site, 1)?
+                        self.call_in_operation(owner, operation, site, 1)?
                     {
                         found = Some(arguments);
                         break;
@@ -1265,9 +1265,11 @@ impl<'ast> Validation<'_, 'ast> {
                 }
                 found
             }
-            ast::ExprKind::QuantumIf { zero, one, .. } => {
-                (index.usage(zero) == site || index.usage(one) == site).then_some(&[][..])
-            }
+            ast::ExprKind::QuantumIf { zero, one, .. } => [zero, one]
+                .into_iter()
+                .filter_map(|arm| arm.operation())
+                .any(|operation| matches!(&operation.kind, ast::StaticOpKind::Name(name) if index.usage(name) == site))
+                .then_some(&[][..]),
             _ => None,
         };
         found.ok_or_else(|| self.failure(span))
@@ -1337,8 +1339,8 @@ impl<'ast> Validation<'_, 'ast> {
             }
             ast::ExprKind::QuantumMatch(selection) => {
                 let mut found = false;
-                for arm in &selection.arms {
-                    if self.operation_in_tree(owner, &arm.operation, wanted, 1)? {
+                for operation in selection.arms.iter().filter_map(|arm| arm.body.operation()) {
+                    if self.operation_in_tree(owner, operation, wanted, 1)? {
                         found = true;
                         break;
                     }

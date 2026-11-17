@@ -27,6 +27,41 @@ fn failed(text: &str) -> SourceError {
 }
 
 #[test]
+fn inline_coherent_arms_share_the_target_frame_type_and_effect_checks() {
+    for select in ["qif", "qmatch"] {
+        for (block, expected_error) in [
+            ("{ let r=h(q); global_phase_eighth(r) }", None),
+            (
+                "{ let bit=measure_z(q); basis unit(()) as _ { 0 } }",
+                Some("effect"),
+            ),
+            ("{ h(s) }", Some("ownership")),
+            ("{ (h(q), ()) }", Some("type")),
+            ("{ q }", None),
+        ] {
+            let source = format!(
+                "{KEEP} pub observe fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){{{select}(s,q){{0=>keep,1=>{block}}}}}"
+            );
+            match expected_error {
+                None => {
+                    prepare(&[("main", &source)]).unwrap();
+                }
+                Some(code) => {
+                    let error = failed(&source);
+                    assert_eq!(error.code, code, "{source}: {error:?}");
+                    if code == "effect" {
+                        assert!(
+                            error.message.contains("inline coherent arm body"),
+                            "{error:?}"
+                        );
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn three_and_four_label_tables_reach_common_checking_and_retain_every_arm() {
     for (variants, arms, count) in [
         ("A,B,C", "E::C=>keep,E::A=>keep,E::B=>keep", 3),
