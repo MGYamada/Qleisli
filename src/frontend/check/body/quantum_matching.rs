@@ -209,6 +209,7 @@ impl Checker<'_, '_> {
                     "inline coherent arm must consume and return target owner `{}`",
                     name.text
                 ),
+                QuantumOwnershipBoundary::ImplicitDisposal,
             ));
         }
         self.program
