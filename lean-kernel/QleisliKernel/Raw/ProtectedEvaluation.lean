@@ -74,6 +74,16 @@ def eventMatrix (dependencies : List Dependency) (event : Event) : WorkM Matrix 
     guard (bits ≤ 6) .limit
     let logical ← matrix sourceBits axes.length ancillaBits function uses
     promote bits axes logical
+  | .structuralComputed bits axes forward inverse uses =>
+    guard (bits ≤ 6 && axesValid bits axes) .limit
+    -- Only checked scratch flips with the exact inverse and protected uses
+    -- contribute rows. The same XOR predicate describes the literal circuit.
+    let clauses ← lift (structuralComputeClauses axes.length forward inverse uses)
+    let count := 2^axes.length
+    exactWork (Exact.charge (count*(1+(clauses.map (·.length+1)).sum)))
+    let function := (List.range count).map fun label => (Semantics.Protected.xorPredicate clauses label).toNat
+    let logical ← matrix axes.length axes.length 1 function uses
+    promote bits axes logical
   | _ => Raw.eventMatrix dependencies event
 
 def evolve (dependencies : List Dependency) (actual : Matrix) (event : Event) : WorkM Matrix := do

@@ -163,6 +163,51 @@ pub(super) fn flatten_with_sources(
     Ok((flat.steps, flat.circuit_sources))
 }
 
+/// Propose the diagonal rows from the validated XOR scratch circuit. The
+/// native body check still reads the original predicate, scratch and uses.
+fn structural_predicate_rows(
+    compiler: &mut Compiler<'_>,
+    module: &str,
+    span: Span,
+    width: usize,
+    forward: &[CircuitStep],
+) -> Result<Vec<u16>, CompileError> {
+    if width > crate::contract::MAX_CONTRACT_BITS {
+        return Err(compiler.error(
+            module,
+            span,
+            ErrorCode::Limit,
+            "computed diagonal exceeds six source bits",
+        ));
+    }
+    let clauses = 1 + total_size(forward.iter().map(|step| step.controls.len() + 1));
+    let count = 1 << width;
+    compiler.charge(module, span, clauses.saturating_mul(count))?;
+    if !forward.iter().all(|step| {
+        matches!(&step.action, CircuitAction::Monomial { indices, permutation, phases }
+            if indices == &[width] && permutation == &[1, 0] && phases == &[0, 0])
+            && step.controls.iter().all(|control| control.index < width)
+    }) {
+        return Err(compiler.error(
+            module,
+            span,
+            ErrorCode::InvalidIr,
+            "structural computation requires source-controlled scratch flips",
+        ));
+    }
+    Ok((0..count)
+        .map(|label| {
+            u16::from(forward.iter().fold(false, |parity, step| {
+                parity
+                    ^ step
+                        .controls
+                        .iter()
+                        .all(|control| ((label >> control.index) & 1 != 0) == control.when_one)
+            }))
+        })
+        .collect())
+}
+
 /// The complete working state of one flattening pass. Classical branches
 /// recurse through this same state, retaining ownership and visible constants.
 struct FlatCircuit<'a> {
@@ -175,6 +220,84 @@ struct FlatCircuit<'a> {
 }
 
 impl FlatCircuit<'_> {
+    fn append_computed_diagonal(
+        &mut self,
+        compiler: &mut Compiler<'_>,
+        module: &str,
+        span: Span,
+        [source, output]: [TokenId; 2],
+        function: &[u16],
+        uses: &[ProtectedUse],
+    ) -> Result<(), CompileError> {
+        let axes = self.registers.remove(&source).expect("verified input");
+        let use_cost = uses.iter().fold(2usize, |cost, usage| {
+            cost.saturating_add(match usage {
+                ProtectedUse::ControlledPhase { controls, .. } => controls.len() + 1,
+                _ => 1,
+            })
+        });
+        compiler.charge(
+            module,
+            span,
+            (axes.len() + 1).saturating_add(function.len().saturating_mul(use_cost)),
+        )?;
+        let mut phases = vec![0u8; function.len()];
+        for (label, computed) in function.iter().enumerate() {
+            for usage in uses {
+                let bit_value = |bit: &ProtectedBit| {
+                    let value = match bit.region {
+                        ProtectedRegion::Source => label,
+                        ProtectedRegion::Ancilla => usize::from(*computed),
+                    };
+                    value & (1 << bit.index) != 0
+                };
+                let exponent = match usage {
+                    ProtectedUse::ProtectedGate { bit, gate }
+                        if matches!(gate, SingleGate::Z | SingleGate::T) =>
+                    {
+                        if bit_value(bit) {
+                            if *gate == SingleGate::Z { 4 } else { 1 }
+                        } else {
+                            0
+                        }
+                    }
+                    ProtectedUse::ControlledPhase { controls, phase } => {
+                        if controls
+                            .iter()
+                            .all(|control| bit_value(&control.bit) == control.when_one)
+                        {
+                            match phase {
+                                ScalarPhase::MinusOne => 4,
+                                ScalarPhase::EighthTurn => 1,
+                            }
+                        } else {
+                            0
+                        }
+                    }
+                    _ => {
+                        return Err(compiler.error(
+                            module,
+                            span,
+                            ErrorCode::Unsupported,
+                            "static transform requires a diagonal computed body",
+                        ));
+                    }
+                };
+                phases[label] = (phases[label] + exponent) % 8;
+            }
+        }
+        self.steps.push(CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Monomial {
+                indices: axes.clone(),
+                permutation: (0..function.len() as u16).collect(),
+                phases,
+            },
+        });
+        self.registers.insert(output, axes);
+        Ok(())
+    }
+
     // Recursion is bounded by the independent verifier's branch-depth limit.
     fn append(
         &mut self,
@@ -328,78 +451,32 @@ impl FlatCircuit<'_> {
                     use_ops,
                     ..
                 } if targets.is_empty() => {
-                    let axes = self.registers.remove(source).expect("verified input");
-                    compiler.charge(
+                    self.append_computed_diagonal(
+                        compiler,
                         module,
                         span,
-                        axes.len()
-                            .saturating_add(1)
-                            .saturating_add(function.len().saturating_mul(use_ops.iter().fold(
-                                2usize,
-                                |cost, usage| {
-                                    cost.saturating_add(match usage {
-                                        ProtectedUse::ControlledPhase { controls, .. } => {
-                                            controls.len() + 1
-                                        }
-                                        _ => 1,
-                                    })
-                                },
-                            ))),
+                        [*source, *source_out],
+                        function,
+                        use_ops,
                     )?;
-                    let mut phases = vec![0u8; function.len()];
-                    for (label, computed) in function.iter().enumerate() {
-                        for usage in use_ops {
-                            let bit_value = |bit: &ProtectedBit| {
-                                let value = match bit.region {
-                                    ProtectedRegion::Source => label,
-                                    ProtectedRegion::Ancilla => usize::from(*computed),
-                                };
-                                value & (1 << bit.index) != 0
-                            };
-                            let exponent = match usage {
-                                ProtectedUse::ProtectedGate { bit, gate }
-                                    if matches!(gate, SingleGate::Z | SingleGate::T) =>
-                                {
-                                    if bit_value(bit) {
-                                        if *gate == SingleGate::Z { 4 } else { 1 }
-                                    } else {
-                                        0
-                                    }
-                                }
-                                ProtectedUse::ControlledPhase { controls, phase } => {
-                                    if controls
-                                        .iter()
-                                        .all(|control| bit_value(&control.bit) == control.when_one)
-                                    {
-                                        match phase {
-                                            ScalarPhase::MinusOne => 4,
-                                            ScalarPhase::EighthTurn => 1,
-                                        }
-                                    } else {
-                                        0
-                                    }
-                                }
-                                _ => {
-                                    return Err(compiler.error(
-                                        module,
-                                        span,
-                                        ErrorCode::Unsupported,
-                                        "static transform requires a diagonal computed body",
-                                    ));
-                                }
-                            };
-                            phases[label] = (phases[label] + exponent) % 8;
-                        }
-                    }
-                    self.steps.push(CircuitStep {
-                        controls: vec![],
-                        action: CircuitAction::Monomial {
-                            indices: axes.clone(),
-                            permutation: (0..function.len() as u16).collect(),
-                            phases,
-                        },
-                    });
-                    self.registers.insert(*source_out, axes);
+                }
+                RawOp::StructuralCompute {
+                    source,
+                    source_out,
+                    forward,
+                    uses,
+                    ..
+                } => {
+                    let width = self.registers[source].len();
+                    let rows = structural_predicate_rows(compiler, module, span, width, forward)?;
+                    self.append_computed_diagonal(
+                        compiler,
+                        module,
+                        span,
+                        [*source, *source_out],
+                        &rows,
+                        uses,
+                    )?;
                 }
                 RawOp::ClassicalConst { value, output } => {
                     self.classical.insert(*output, *value);

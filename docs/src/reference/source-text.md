@@ -189,6 +189,10 @@ checks the resulting sector against the enclosing Raw interval.
 An `if static` inside the block checks the selected branch's original Raw
 interval and its local owner frame when the branch leaves the owner history
 unchanged.
+Within the finite profile, an inline arm can use `basis`, `with_computed`,
+`clean` and `dirty`. The checker reads the original basis table or computed
+predicate and applies the same scratch restoration checks as for a named
+body. A `dirty` scratch owner must come from the branch's local target.
 
 ```qli
 pub unitary fn select_bit(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {

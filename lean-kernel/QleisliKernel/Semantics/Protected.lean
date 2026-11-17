@@ -19,6 +19,10 @@ def value (source ancilla : Nat) (location : ProtectedBit) : Bool :=
 def enabled (source ancilla : Nat) (controls : List ProtectedControl) : Bool :=
   controls.all fun control => value source ancilla control.bit == control.whenOne
 
+/-- Each enabled clause flips the private scratch from its current label. -/
+def xorPredicate (clauses : List (List Control)) (label : Nat) : Bool :=
+  clauses.foldl (fun parity controls => Bool.xor parity (Finite.enabled controls label)) false
+
 def physical (sourceBits dataBits : Nat) : Use → Step
   | .protectedGate location gate => RawTrace.gate gate (axis dataBits location)
   | .targetGate controls target gate => {RawTrace.gate gate (sourceBits+target) with

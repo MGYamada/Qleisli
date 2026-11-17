@@ -40,6 +40,7 @@ fn selected_at(source: &str, entry: &str) -> qleisli::frontend::compile::Selecte
 }
 
 #[test]
+#[doc = include_str!("fixtures/authoring_sessions/inline-coherent-adjoint-v030/README.md")]
 #[cfg_attr(
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
@@ -156,6 +157,7 @@ fn coherent_block_arm_checks_the_original_static_continuation() {
 }
 
 #[test]
+#[doc = include_str!("fixtures/authoring_sessions/inline-coherent-basis-v030/README.md")]
 #[cfg_attr(
     not(qleisli_native_tests),
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
@@ -180,6 +182,85 @@ fn coherent_block_arm_checks_the_original_basis_table() {
         .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
         .unwrap_err();
     assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arm_checks_the_original_computed_predicate() {
+    let source = r#"#![no_implicit_prelude]
+classical fn mark(b:Bit)->Bit{b}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{q},1=>{with_computed(q,mark){|flag|phase[1,1](flag)}}}
+}
+"#;
+    let accepted = selected_at(source, "main::route");
+    let program = accepted.program();
+    assert!(program.qmatch_source_checked());
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let scratch_flip = concat!(
+        r#""permutation":[1,0],"phases":[0,0],"tag":"monomial"},"#,
+        r#""controls":[{"index":0,"when_one":true}]"#
+    );
+    assert_eq!(artifact.matches(scratch_flip).count(), 2);
+    assert_eq!(artifact.matches(r#""phases":[0,4]"#).count(), 2);
+    // Invert the predicate in both scratch passes and update both proposed
+    // sector actions. The scratch still returns to zero.
+    let different_flip = scratch_flip.replace(r#""when_one":true"#, r#""when_one":false"#);
+    let forged = artifact
+        .replace(scratch_flip, &different_flip)
+        .replace(r#""phases":[0,4]"#, r#""phases":[4,0]"#);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arm_checks_workspace_restoration() {
+    let clean = r#"#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{q},1=>{clean(q,h){|data,scratch|(h(data),scratch)}}}
+}
+"#;
+    let dirty = r#"#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<(Bit,Bit)>)->(Q<Bit>,Q<(Bit,Bit)>){
+    qif(s,q){0=>{q},1=>{let (d,r)=split(q);let (d,r)=dirty(d,r,h){|data,scratch|(h(data),scratch)};join(d,r)}}
+}
+"#;
+    for (source, replacement, obligation) in [
+        (clean, "(h(data),h(scratch))", "clean workspace restoration"),
+        (
+            dirty,
+            "(h(data),phase[1,1](scratch))",
+            "dirty workspace restoration",
+        ),
+    ] {
+        let accepted = selected_at(source, "main::route");
+        assert!(accepted.program().qmatch_source_checked());
+        let wrong = source.replace("(h(data),scratch)", replacement);
+        let result = ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), wrong)]))
+            .unwrap()
+            .instantiate_runtime_with_types(
+                "main::route",
+                Default::default(),
+                Default::default(),
+                Default::default(),
+            )
+            .unwrap()
+            .compile_runtime_with_kernel(&kernel());
+        let Err(error) = result else {
+            panic!("{obligation} must be checked");
+        };
+        assert_eq!(error.code, "invalid_ir", "{error:?}");
+        assert!(error.message.contains(obligation), "{error:?}");
+    }
 }
 
 #[test]

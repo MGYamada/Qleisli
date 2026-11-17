@@ -26,7 +26,7 @@ private theorem fold_parity (clauses : List (List Control)) (label : Nat) (initi
 
 private theorem predicate_parity (clauses : List (List Control)) (label : Nat) :
     predicate clauses label = parity clauses label := by
-  rw [predicate, fold_parity, Bool.false_xor]
+  rw [predicate, Semantics.Protected.xorPredicate, fold_parity, Bool.false_xor]
 
 private theorem parity_append (left right : List (List Control)) (label : Nat) :
     parity (left ++ right) label = Bool.xor (parity left label) (parity right label) := by

@@ -305,7 +305,8 @@ def selectionNode {α Arm : Type} (artifact : Artifact) {dependencies program bl
     (selector target : Owner) {moduleName name offset written ordinal}
     (table : QuantumArms.TableWith artifact.sources moduleName name offset selector.basis target.basis Arm written ordinal)
     (site : RuntimeContextRequest.Site) (initial : α)
-    (realize : Fin table.arms.length → Arm → α → WorkM (Semantics.Exact.Matrix × α)) :
+    (realize : Fin table.arms.length → Arm → α → WorkM (Semantics.Exact.Matrix × α))
+    (structural : Arm → Bool := fun _ => false) :
     WorkM (Node dependencies program block × α) := do
   guard (table.arms.length == site.arms.length) .request
   let entry ← RuntimeOwnerTransition.readPair [selector,target] callerFrame.bindings
@@ -331,7 +332,7 @@ def selectionNode {α Arm : Type} (artifact : Artifact) {dependencies program bl
       let reference : SectorArm.Reference := ⟨ordinal arm,target.basis,.unitary,
         subject.implementation,subject.controlled⟩
       let actual ← SectorArm.readUsing artifact dependencies target.basis targetLayout.bits
-        inputCode.val outputCode.val preparedCodes reference
+        inputCode.val outputCode.val preparedCodes reference (structural arm)
       exactWork (Exact.charge (logical.entries.length+actual.logical.entries.length+1))
       guard (actual.logical == logical) .equation
       pure (meanings ++ [(ordinal arm,logical)],next)) ([],initial)
@@ -576,7 +577,7 @@ structure InlineForward (artifact : Artifact) (root : Validity.Root) (implementa
   inputOrder : program.inputs = [input]
   layout : Semantics.FiniteCarrier.Layout
   layoutRead : RuntimeInterval.Computed (FiniteCarrier.read target.basis) layout
-  preflight : Raw.BranchFunction.preflight [.bits layout.bits] program = true
+  preflight : Raw.BranchFunction.preflight [.bits layout.bits] program true = true
   prepared : RuntimeInterval.Prepared root.dependencies program
   preparedRead : RuntimeInterval.Computed (RuntimeInterval.prepare root.dependencies program) prepared
 
@@ -588,7 +589,7 @@ private def readInlineForward (artifact : Artifact) (root : Validity.Root) (impl
     match inputs : program.inputs with
     | [input] =>
       exactWork (Exact.charge (16*(program.operations.length+1)))
-      if preflight : Raw.BranchFunction.preflight [.bits layout.val.bits] program = true then
+      if preflight : Raw.BranchFunction.preflight [.bits layout.val.bits] program true = true then
         let prepared ← NaturalAffine.witness (RuntimeInterval.prepare root.dependencies program)
         return ⟨program,original,input,inputs,layout.val,by with_reducible exact layout.property,preflight,
           prepared.val,by with_reducible exact prepared.property⟩
@@ -995,12 +996,14 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           let finish {Arm : Type} {tableName offset written ordinal}
               (table : QuantumArms.TableWith artifact.sources owner tableName offset selector.basis target.basis Arm written ordinal)
               (site : RuntimeContextRequest.Site)
-              (result : List Semantics.Exact.Matrix × List (Island dependencies) × execution.queries.Cursor × List execution.Receipt) := do
+              (result : List Semantics.Exact.Matrix × List (Island dependencies) × execution.queries.Cursor × List execution.Receipt)
+              (structural : Arm → Bool) := do
             let (logicals,checked,sourceCursor,receipts) := result
-            let (node,_) ← selectionNode artifact interval callerFrame owners selector target table site () fun index _ _ => do
-              exactWork (Exact.charge (index.val+1))
-              let logical ← lift (readOption logicals[index.val]?)
-              pure (logical,())
+            let (node,_) ← selectionNode artifact interval callerFrame owners selector target table site ()
+              (fun index _ _ => do
+                exactWork (Exact.charge (index.val+1))
+                let logical ← lift (readOption logicals[index.val]?)
+                pure (logical,())) structural
             pure ({before with bindings := owners.after.bindings},retired,ordinary,actions ++ [node],steps ++ [.pure node],
               obligations ++ checked,position.start+position.count,sourceCursor,receipts)
           match selected with
@@ -1015,7 +1018,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
                   cursor data (!request.references.isEmpty)
                 return (logicals ++ [logical],checked ++ children,cursor,receipts ++ performed))
               named.arms (initial named.cursor)
-            finish table named.site result
+            finish table named.site result (fun _ => false)
           | .inr mixed =>
             let table := mixed.table
             let result ← RuntimeBodyQueries.foldMixedArms execution.queries position table
@@ -1034,7 +1037,7 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
                 return (logicals ++ [inlineCheck.action.code.logical],checked ++ inlineCheck.result.islands,
                   cursor,receipts ++ inlineCheck.receipts))
               mixed.arms (initial mixed.cursor)
-            finish table mixed.site result
+            finish table mixed.site result (fun arm => match arm with | .inline .. => true | .operation _ => false)
         | _,_,_ =>
           let _ ← readOwners
           throw .request

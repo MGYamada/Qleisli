@@ -127,11 +127,11 @@ This helper checks concrete subjects and confers no independent acceptance API. 
 def readUsing (artifact : Artifact) (dependencies : List Dependency)
     (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
     (codes : Codes inputCode outputCode)
-    (reference : Reference) : WorkM Checked := do
+    (reference : Reference) (structural : Bool := false) : WorkM Checked := do
   let layout ← FiniteCarrier.read reference.basis
   guard (reference.basis == target && layout.bits == bits && reference.publicEffect == .unitary) .request
   let original ← lift (readOption artifact.programs[reference.implementation]?)
-  guard (Raw.BranchFunction.preflight [.bits bits] original) .request
+  guard (Raw.BranchFunction.preflight [.bits bits] original structural) .request
   let physical ← SectorForward.read dependencies bits original
   FiniteRestriction.adaptiveWholeSpace physical
   let projection ← SourceTypes.NaturalAffine.witness (projectLogicalUsing inputCode outputCode physical codes)
@@ -155,12 +155,12 @@ def read (artifact : Artifact) (dependencies : List Dependency)
 
 structure Postcondition (artifact : Artifact) (dependencies : List Dependency)
     (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
-    (reference : Reference) (checked : Checked) : Prop where
+    (reference : Reference) (checked : Checked) (structural : Bool := false) : Prop where
   target : reference.basis = target
   publicEffect : reference.publicEffect = .unitary
   layout : ∃ layout, Semantics.FiniteCarrier.layout reference.basis = some layout ∧ layout.bits = bits
   original : artifact.programs[reference.implementation]? = some checked.original
-  preflight : Raw.BranchFunction.preflight [.bits bits] checked.original = true
+  preflight : Raw.BranchFunction.preflight [.bits bits] checked.original structural = true
   reconstruction : SectorForward.Binding dependencies bits checked.original checked.physical
   physicalUnitary : ∃ a b, (wholeSpace checked.physical).run a = (.ok (),b)
   logical : Projection inputCode outputCode checked.physical checked.logical
@@ -177,10 +177,10 @@ structure Postcondition (artifact : Artifact) (dependencies : List Dependency)
 theorem readUsing_bound (artifact : Artifact) (dependencies : List Dependency)
     (target : Semantics.FiniteCarrier.Basis) (bits : Nat) (inputCode outputCode : Matrix)
     (codes : Codes inputCode outputCode)
-    (reference : Reference) (checked : Checked) (work left : Nat)
-    (ok : (readUsing artifact dependencies target bits inputCode outputCode codes reference).run work =
+    (reference : Reference) (checked : Checked) (work left : Nat) (structural : Bool)
+    (ok : (readUsing artifact dependencies target bits inputCode outputCode codes reference structural).run work =
       (.ok checked,left)) :
-    Postcondition artifact dependencies target bits inputCode outputCode reference checked := by
+    Postcondition artifact dependencies target bits inputCode outputCode reference checked structural := by
   obtain ⟨layout,w₁,hl,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨_,w₂,ht,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨original,w₃,ho,h⟩ := bind_success _ _ _ _ _ h
@@ -224,6 +224,6 @@ theorem read_bound (artifact : Artifact) (dependencies : List Dependency)
     (reference : Reference) (checked : Checked) (work left : Nat)
     (ok : (read artifact dependencies target bits inputCode outputCode reference).run work = (.ok checked,left)) :
     Postcondition artifact dependencies target bits inputCode outputCode reference checked :=
-  readUsing_bound artifact dependencies target bits inputCode outputCode {} reference checked work left ok
+  readUsing_bound artifact dependencies target bits inputCode outputCode {} reference checked work left false ok
 
 end QleisliKernel.Qirf.SectorArm
