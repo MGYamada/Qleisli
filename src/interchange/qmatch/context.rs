@@ -41,6 +41,8 @@ pub struct Context {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StaticInterval {
     pub parent: Position,
+    /// Direct source events in execution order. A static fold carries a
+    /// partition even when its range produces zero or one event.
     pub children: Vec<Position>,
 }
 
@@ -342,9 +344,6 @@ impl StaticInterval {
     pub(super) fn storage(values: &[Self], remaining: &mut usize) -> Result<()> {
         positions_storage(values.len(), remaining)?;
         for value in values {
-            if value.children.len() < 2 {
-                return Err(Error::format("qmatch static interval must be compound"));
-            }
             positions_storage(value.children.len(), remaining)?;
         }
         Ok(())
@@ -363,9 +362,6 @@ impl StaticInterval {
     fn decode(value: &Value, remaining: &mut usize) -> Result<Self> {
         value.fields(&["parent", "children"])?;
         let children = value.field("children")?.array()?;
-        if children.len() < 2 {
-            return Err(Error::format("qmatch static interval must be compound"));
-        }
         positions_storage(children.len(), remaining)?;
         Ok(Self {
             parent: Position::decode(value.field("parent")?)?,

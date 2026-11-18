@@ -23,7 +23,7 @@ theorem root_entries {sources owner name signature}
 theorem named_entries {sources rootOwner rootName caller}
     (event : SourceRuntimeContext.NamedEvent sources caller)
     (body : SourceRuntimeTrace.Body event.target.signature)
-    (read : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body)
+    (read : SourceRuntimeTrace.NamedRead event body)
     (parent : RuntimeOrdinaryBody.CallPath sources rootOwner rootName caller event.target.callerName) :
     rootEntries (.named event body read parent) = rootEntries parent := by
   unfold rootEntries

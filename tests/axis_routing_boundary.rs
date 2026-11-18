@@ -15,6 +15,10 @@ use qleisli::ir::{
 };
 use std::collections::BTreeMap;
 
+const REGISTER_SWAP_SOURCE: &str = include_str!(
+    "fixtures/authoring_sessions/register-axis-routing-v030/attempt-01/swap_registers.qli"
+);
+
 fn source(body: &str) -> String {
     format!(
         "use std::gate::cnot; use std::state::init0;
@@ -74,12 +78,9 @@ fn checked_permutation(text: &str, basis: BasisType, map: Vec<u16>) -> AcceptedP
 )]
 #[test]
 fn register_swap_preserves_wire_frames_and_axis_permutations_compose_without_gates() {
-    let local_swap = include_str!(
-        "fixtures/authoring_sessions/register-axis-routing-v030/attempt-01/swap_registers.qli"
-    );
     for width in 0..=3 {
         let source = format!(
-            "{local_swap}\n\
+            "{REGISTER_SWAP_SOURCE}\n\
              pub unitary fn probe(q:Q<(Bits<{width}>,Bits<{width}>)>)->Q<(Bits<{width}>,Bits<{width}>)>{{\
              let (a,b)=split(q); let (a,b)=swap_registers[{width}](a,b); join(a,b)}}"
         );
@@ -140,6 +141,108 @@ fn register_swap_preserves_wire_frames_and_axis_permutations_compose_without_gat
     }
 }
 
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn original_register_fold_matches_each_raw_iteration() {
+    use qleisli::edition::Edition;
+    use qleisli::interchange::qmatch::v5;
+
+    let kernel = Kernel::selected(Edition::E2026).unwrap();
+    for (width, call) in [(0, "swap_registers[0]"), (2, "keep_registers[2]")] {
+        let register_swap = if width == 0 { REGISTER_SWAP_SOURCE } else { "" };
+        let source = format!(
+            "{register_swap}
+             unitary fn keep_registers[const n:Nat](a:Q<Bits<n>>,b:Q<Bits<n>>)
+                                                    ->(Q<Bits<n>>,Q<Bits<n>>){{
+                 qfor static i in 0..n carry (a,b)=(a,b) {{
+                     let (x,a)=take_bit[n,i](a);
+                     let (y,b)=take_bit[n,i](b);
+                     yield (put_bit[n,i](x,a),put_bit[n,i](y,b));
+                 }}
+             }}
+             pub unitary fn probe(q:Q<((Unit,Bits<{width}>),Bits<{width}>)>)
+                                  ->Q<((Unit,Bits<{width}>),Bits<{width}>)>{{
+                 let (pair,b)=split(q);
+                 let (s,a)=split(pair);
+                 let (s,a)=qmatch(s,a){{0=>{{a}}}};
+                 let (a,b)={call}(a,b);
+                 join(join(s,a),b)
+             }}"
+        );
+        let selected = ParsedProgram::parse(
+            Edition::E2026,
+            BTreeMap::from([("main".into(), source.clone())]),
+        )
+        .unwrap()
+        .instantiate_runtime_with_types(
+            "main::probe",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel)
+        .unwrap_or_else(|error| panic!("{error:?}\n{source}"));
+        let program = selected.program();
+        assert!(program.qmatch_source_checked());
+        assert_eq!(
+            program.output_ports()[0].wires,
+            program.raw().quantum_inputs[0].wires
+        );
+        kernel.check_program(program).unwrap();
+
+        let bits = BasisType::Bits(u32::try_from(width).unwrap());
+        let basis = BasisType::pair(BasisType::pair(BasisType::Unit, bits.clone()), bits);
+        let physical = u8::try_from(2 * width).unwrap();
+        let table = (0..1 << physical).collect();
+        FunctionEvidence::check(
+            Edition::E2026,
+            basis,
+            program.raw().clone(),
+            independent_basis_map(physical, table),
+            FunctionIdentity {
+                implementation: "main::probe".into(),
+                specification: "independent register identity at exact phase +1".into(),
+                sources: vec![("main".into(), source.clone())],
+            },
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+
+        let mut request = v5::Request::decode(program.request().unwrap()).unwrap();
+        let offset = u32::try_from(source.find(call).unwrap()).unwrap();
+        let fold = request
+            .context
+            .calls
+            .iter_mut()
+            .find(|call| call.position.offset == offset)
+            .unwrap()
+            .body
+            .static_intervals
+            .first_mut()
+            .expect("the qfor must have an explicit partition");
+        assert_eq!(fold.children.len(), 4 * width);
+        if width == 0 {
+            assert_eq!(fold.parent.count, 0);
+            continue;
+        }
+        assert_eq!(fold.children[0].offset, fold.children[4].offset);
+        assert_ne!(fold.children[0].start, fold.children[4].start);
+        fold.children.swap(0, 4);
+        let error = kernel
+            .check_qmatch_source_v5(program.artifact(), &request.encode().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+        assert!(
+            error.message.contains("Lean native checker rejected"),
+            "{error}"
+        );
+    }
+}
+
 fn finite(text: &str) -> (AcceptedProgram, String) {
     // The project entry is closed. Retain its open provider through the normal
     // function-evidence path. Self-comparison here is only producer consistency;
@@ -177,18 +280,23 @@ fn finite(text: &str) -> (AcceptedProgram, String) {
 
 fn independent_swap() -> RawProgram {
     // Independently fixed little-endian equation |a,b> -> |b,a>, phase +1.
+    independent_basis_map(2, vec![0, 2, 1, 3])
+}
+
+fn independent_basis_map(bits: u8, table: Vec<u16>) -> RawProgram {
+    let wires: Vec<_> = (0..u32::from(bits)).map(WireId).collect();
     RawProgram {
         quantum_inputs: vec![QuantumPort {
             token: TokenId(0),
-            wires: vec![WireId(0), WireId(1)],
-            shape: BasisShape { bits: 2 },
+            wires: wires.clone(),
+            shape: BasisShape { bits },
         }],
         classical_inputs: vec![],
         operations: vec![RawOp::LiftBasis {
             input: TokenId(0),
             output: TokenId(1),
-            output_wires: vec![WireId(0), WireId(1)],
-            table: vec![0, 2, 1, 3],
+            output_wires: wires,
+            table,
         }],
         quantum_outputs: vec![TokenId(1)],
         classical_outputs: vec![],

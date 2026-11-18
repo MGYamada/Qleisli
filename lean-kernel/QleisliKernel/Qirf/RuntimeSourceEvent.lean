@@ -1,6 +1,6 @@
 import Init.Data.List.Zip
 import QleisliKernel.Qirf.SourceSequence
-import QleisliKernel.Qirf.RuntimeInterval
+import QleisliKernel.Qirf.RuntimeStaticFold
 import QleisliKernel.SourceTypes.SourceRuntimeScope
 
 /-! A source occurrence retains its original ordered event and request
@@ -35,6 +35,16 @@ theorem At.positionAt {sources : Sources} {caller : String}
     (entry : @At sources caller (events.zip positions) event position) :
     positions[entry.ordinal]? = some position := (List.getElem?_zip_eq_some.mp entry.selected).2
 
+theorem headAt {α : Type} (whole : List α) (ordinal : Nat) (head : α) (rest : List α)
+    (remaining : whole.drop ordinal = head :: rest) : whole[ordinal]? = some head := by
+  have first : (whole.drop ordinal)[0]? = some head := by rw [remaining]; rfl
+  simpa only [List.getElem?_drop,Nat.add_zero] using first
+
+theorem tailAt {α : Type} (whole : List α) (ordinal : Nat) (head : α) (rest : List α)
+    (remaining : whole.drop ordinal = head :: rest) : whole.drop (ordinal+1) = rest := by
+  rw [← List.drop_drop (i := 1) (j := ordinal) (l := whole),remaining]
+  rfl
+
 inductive Origin {sources caller} (event : SourceRuntimeContext.Event sources caller)
     (position : Position) : Type where
   | direct {name} (source : SourceRuntimeScope.Subject sources caller name) (positions : List Position)
@@ -47,6 +57,13 @@ inductive Origin {sources caller} (event : SourceRuntimeContext.Event sources ca
       (original : RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource parentEvent) body)
       (positions : List Position) (count : positions.length = body.result.events.length)
       (atEvent : At (body.result.events.zip positions) event position) : Origin event position
+
+  | folded {name} (source : SourceRuntimeScope.Subject sources caller name) (outerPositions : List Position)
+      {fold : SourceRuntimeContext.FoldEvent sources caller}
+      {iterations : List (List (SourceRuntimeContext.Event sources caller))} {outerPosition : Position}
+      (parent : At (source.events.zip outerPositions) (.staticFold fold iterations) outerPosition)
+      (partition : RuntimeStaticFold.Partition fold iterations outerPosition)
+      (atEvent : At (iterations.flatten.zip partition.positions) event position) : Origin event position
 
 /-- The original source event belongs to exactly this literal native interval. -/
 structure Location {sources caller} (event : SourceRuntimeContext.Event sources caller) (start size : Nat) where

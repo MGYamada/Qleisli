@@ -64,7 +64,7 @@ inductive Occurrence {dependencies program block} : RuntimePureBody.Step depende
       {event : SourceRuntimeContext.NamedEvent sources caller}
       {scope : RuntimeCallScope.Checked block start count inputs ordinary event.effect}
       {body : SourceRuntimeTrace.Body event.target.signature}
-      {read : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body}
+      {read : SourceRuntimeTrace.NamedRead event body}
       {boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before childHistory childRetired body.checked.summary.value}
       {finalOrdinary : RuntimeOrdinaryBody.State}
       {action : RuntimePrimitiveAction.Checked scope.prepared.block first size input output role kind}

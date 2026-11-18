@@ -934,13 +934,24 @@ pub(in crate::frontend::compile::lower) fn record_branch(
     Ok(())
 }
 
+#[derive(Clone, Copy, Eq, PartialEq)]
+pub(in crate::frontend::compile::lower) enum StaticRegion {
+    Conditional,
+    Fold,
+}
+
 pub(in crate::frontend::compile::lower) fn record_static(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
     span: Span,
     start: usize,
     (checkpoint, interval_checkpoint, static_checkpoint): (usize, usize, usize),
+    region: StaticRegion,
 ) -> Result<(), CompileError> {
+    let label = match region {
+        StaticRegion::Conditional => "static branch",
+        StaticRegion::Fold => "static fold",
+    };
     let frame = lower
         .nominal_qmatch
         .as_ref()
@@ -950,7 +961,7 @@ pub(in crate::frontend::compile::lower) fn record_static(
             module,
             span,
             ErrorCode::InvalidIr,
-            "static branch precedes its original context",
+            format!("{label} precedes its original context"),
         )
     })?;
     let count = lower
@@ -963,7 +974,7 @@ pub(in crate::frontend::compile::lower) fn record_static(
                 module,
                 span,
                 ErrorCode::InvalidIr,
-                "static branch removed its original operation prefix",
+                format!("{label} removed its original operation prefix"),
             )
         })?;
     let position = position(lower, module, span, span.start, relative, count)?;
@@ -976,30 +987,63 @@ pub(in crate::frontend::compile::lower) fn record_static(
                 module,
                 span,
                 ErrorCode::InvalidIr,
-                "static branch removed its original position prefix",
+                format!("{label} removed its original position prefix"),
             )
         })?;
-    lower.compiler.charge(module, span, 4 + 4 * children)?;
+    let nested = if region == StaticRegion::Fold {
+        frame
+            .static_intervals
+            .len()
+            .checked_sub(interval_checkpoint)
+            .ok_or_else(|| {
+                lower.error(
+                    module,
+                    span,
+                    ErrorCode::InvalidIr,
+                    "static fold removed its enclosing partition prefix",
+                )
+            })?
+    } else {
+        0
+    };
+    lower
+        .compiler
+        .charge(module, span, 4 + 4 * children + 4 * nested)?;
     let frame = lower
         .nominal_qmatch
         .as_mut()
         .expect("original static context");
-    // Prefer v5 for the literal primitive and selection continuation profile.
-    // Required v5 checks still cover their additional named continuation forms.
-    if frame.events_outside_static_profile != static_checkpoint {
-        frame.prefer_runtime_root();
-    }
-    frame.record_event_outside_static_profile();
-    frame.static_intervals.truncate(interval_checkpoint);
-    // Keep the exact child spans of a compound selected block, in the
-    // same coordinates as the parent and the original call/site queues.
-    if children > 1 {
-        frame.static_intervals.push(StaticInterval {
-            parent: position.clone(),
-            children: frame.positions.split_off(checkpoint),
-        });
-    } else {
-        frame.positions.truncate(checkpoint);
+    match region {
+        StaticRegion::Fold => {
+            // A fold has an explicit partition even for no active children.
+            // Lowering collects descendants first, so put this parent before them.
+            let children = frame.positions.split_off(checkpoint);
+            frame.static_intervals.insert(
+                interval_checkpoint,
+                StaticInterval {
+                    parent: position.clone(),
+                    children,
+                },
+            );
+        }
+        StaticRegion::Conditional => {
+            // Prefer v5 for the literal primitive and selection continuation profile.
+            // Required v5 checks still cover their additional named continuation forms.
+            if frame.events_outside_static_profile != static_checkpoint {
+                frame.prefer_runtime_root();
+            }
+            frame.record_event_outside_static_profile();
+            frame.static_intervals.truncate(interval_checkpoint);
+            // A selected branch needs an explicit partition only for compound lists.
+            if children > 1 {
+                frame.static_intervals.push(StaticInterval {
+                    parent: position.clone(),
+                    children: frame.positions.split_off(checkpoint),
+                });
+            } else {
+                frame.positions.truncate(checkpoint);
+            }
+        }
     }
     frame.positions.push(position);
     Ok(())

@@ -164,7 +164,7 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (event : SourceRuntimeContext.NamedEvent sources caller)
       (frame : RuntimeCallInterval.Checked block start count inputs)
       (source : SourceRuntimeTrace.Body event.target.signature)
-      (sourceRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) source)
+      (sourceRead : SourceRuntimeTrace.NamedRead event source)
       (boundary : RuntimeNamedBoundary.Checked frame.interval inputs event before childHistory childRetired source.checked.summary.value)
       (children : Nodes dependencies frame.program frame.prepared.block) : Node dependencies program block
   | operation {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
@@ -187,7 +187,7 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       {position : Position} {request : Context} {before : RuntimeStructuralAction.SourceState}
       {interval : RuntimeInterval.Checked block position.start position.count}
       (source : RuntimeTransformRequest.Checked event position request)
-      (original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position request) source)
+      (original : RuntimeTransformRequest.Read event position request source)
       (forward : RuntimeTransformAction.Forward artifact dependencies source)
       (forwardReturned : Map) (logical : RuntimeTransformAction.ForwardMap forward forwardReturned)
       (owners : RuntimeTransformOwners.Checked interval event before)
@@ -385,7 +385,7 @@ inductive Step (dependencies : List Semantics.Finite.Dependency) :
       (event : SourceRuntimeContext.NamedEvent sources caller)
       (frame : RuntimeCallScope.Checked block start count inputs ordinary event.effect)
       (source : SourceRuntimeTrace.Body event.target.signature)
-      (sourceRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) source)
+      (sourceRead : SourceRuntimeTrace.NamedRead event source)
       (boundary : RuntimeNamedBoundary.Checked frame.interval inputs event before childHistory childRetired source.checked.summary.value)
       (finalOrdinary : RuntimeOrdinaryBody.State)
       (children : Steps dependencies frame.program frame.prepared.block) : Step dependencies program block
@@ -1076,6 +1076,26 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
           guard (afterCursor == position.start+position.count) .request
           let _ ← RuntimeStaticPrimitive.readContinuationAfter sequence interval before after retired afterRetired
             source.suspended
+          return result
+        | .staticFold event iterations,data,entry =>
+          let (_,_,_,_,_,_,_,incomingSourceCursor,_) := state
+          let selected ← RuntimeBodyQueries.readFold execution.queries source event iterations position incomingSourceCursor data
+          let (history,retired,ordinary,actions,steps,obligations,cursor,_,receipts) ← advance state position.start
+          let interval ← RuntimeInterval.check block position.start position.count
+          let _ ← RuntimeStaticFold.readBefore event interval history source.suspended
+          let count := selected.partition.positions.length
+          exactWork (Exact.charge (32*(count+1)*(actions.length+steps.length+obligations.length+count+1)+
+            32*(Raw.OwnerFlow.fields retired+1)))
+          let initial : QueryState dependencies program block execution.queries.Cursor execution.Receipt :=
+            (history,retired,ordinary,actions,steps,obligations,cursor,selected.cursor,receipts)
+          let result ← RuntimeBodyQueries.foldEvents execution.queries source
+            (iterations.flatten.zip selected.partition.positions)
+            (fun event_ position_ inner data_ state_ =>
+              step event_ position_ (.folded source request.positions entry selected.partition inner) data_ state_)
+            selected.events initial
+          let (after,afterRetired,_ordinary,_actions,_steps,_obligations,afterCursor,_sourceCursor,_receipts) := result
+          guard (afterCursor == position.start+position.count) .request
+          let _ ← RuntimeStaticFold.readAfter event interval history after retired afterRetired source.suspended
           return result
         | event,data,entry => step event position (.direct source request.positions entry) data state
     let (history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts) ←

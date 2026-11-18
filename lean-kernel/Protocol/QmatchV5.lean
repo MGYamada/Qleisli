@@ -159,13 +159,12 @@ private def readStaticIntervals (value : Json) : WorkM (List Qirf.RuntimeContext
       adapt (Carrier.fields value ["parent","children"])
       let parent ← adapt (position (← adapt (field value "parent")))
       let children ← adapt ((← adapt (field value "children")).getArr?)
-      guard (2 ≤ children.size) .request
       exactWork (Exact.charge (16*(children.size+1)))
       return (parent,← adapt (children.toList.mapM position))
 
 /-- The additional entries must be an ordered subset of literal top-level
 positions. The runtime body reader subsequently consumes them only at their
-actual original static conditionals. -/
+actual original static expressions; those readers validate child counts. -/
 private def anchoredStatics (positions : List Qirf.SourceSequence.Position)
     (intervals : List Qirf.RuntimeContextRequest.StaticInterval) : Bool :=
   (positions.foldl (fun pending position => match pending with

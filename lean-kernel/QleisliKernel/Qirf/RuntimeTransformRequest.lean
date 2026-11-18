@@ -25,10 +25,12 @@ structure Checked {sources caller} (event : SourceRuntimeContext.TransformEvent 
   context : Context
   forward : request.bodies = [(subject,context)]
   source : SourceRuntimeTrace.Body event.target.signature
-  original : RuntimeInterval.Computed (SourceRuntimeTrace.readTransformBody event) source
+  original : SourceRuntimeTrace.TransformRead event source
 
-def read {sources caller} (event : SourceRuntimeContext.TransformEvent sources caller)
-    (position : SourceSequence.Position) (request : Context) :
+private def readWith {sources caller} (event : SourceRuntimeContext.TransformEvent sources caller)
+    (position : SourceSequence.Position) (request : Context)
+    (sourceRead : WorkM (Σ source : SourceRuntimeTrace.Body event.target.signature,
+      SourceRuntimeTrace.TransformRead event source)) :
     WorkM (Checked event position request) := do
   exactWork (Exact.charge 16)
   if offset : position.offset = event.call.calleeOffset then
@@ -37,12 +39,40 @@ def read {sources caller} (event : SourceRuntimeContext.TransformEvent sources c
       if references : noMeaning request = true then
         match forward : request.bodies with
         | [(subject,context)] =>
-          let source ← NaturalAffine.witness (SourceRuntimeTrace.readTransformBody event)
-          return ⟨offset,empty,references,subject,context,forward,source.val,
-            by with_reducible exact source.property⟩
+          let ⟨source,original⟩ ← sourceRead
+          return ⟨offset,empty,references,subject,context,forward,source,original⟩
         | _ => throw .request
       else throw .request
     else throw .request
   else throw .request
+
+def read {sources caller} (event : SourceRuntimeContext.TransformEvent sources caller)
+    (position : SourceSequence.Position) (request : Context) :
+    WorkM (Checked event position request) :=
+  readWith event position request do
+    let source ← NaturalAffine.witness (SourceRuntimeTrace.readTransformBody event)
+    return ⟨source.val,.replayed (by with_reducible exact source.property)⟩
+
+/-- Select the forward body from the actual checked caller occurrence. The
+request still undergoes the same position, shape and subject checks. -/
+def readRetained {sources caller name} {event : SourceRuntimeContext.TransformEvent sources caller}
+    (parent : SourceRuntimeTrace.Checked sources caller name)
+    (path : SourceRuntimeContext.RuntimeCalleeTrace.Path parent.events (.transform event))
+    (position : SourceSequence.Position) (request : Context) :
+    WorkM (Checked event position request) :=
+  readWith event position request do
+    let source ← NaturalAffine.witness (SourceRuntimeTrace.readRetainedTransform parent path)
+    return ⟨source.val,.retained parent path (by with_reducible exact source.property)⟩
+
+/-- The request witness records the reader that actually ran. Either entry
+point retains the exact original transform occurrence and forward body. -/
+inductive Read {sources caller} (event : SourceRuntimeContext.TransformEvent sources caller)
+    (position : SourceSequence.Position) (request : Context) (checked : Checked event position request) : Type where
+  | replayed (original : RuntimeInterval.Computed (read event position request) checked) :
+      Read event position request checked
+  | retained {name : String} (parent : SourceRuntimeTrace.Checked sources caller name)
+      (path : SourceRuntimeContext.RuntimeCalleeTrace.Path parent.events (.transform event))
+      (original : RuntimeInterval.Computed (readRetained parent path position request) checked) :
+      Read event position request checked
 
 end QleisliKernel.Qirf.RuntimeTransformRequest

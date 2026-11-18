@@ -4,6 +4,10 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Check bounded static `qfor` iterations against their ordered Raw intervals in
+  original-source contexts (#76). Project-local physical register SWAP examples
+  preserve exact phase, wire order and both owners at width zero. Bundled
+  `std::gate::swap_registers` is tracked in #616.
 - Check inline and mixed coherent selection arms against their original source
   blocks, literal Raw bodies and controlled sectors in the native checker (#215).
   The bounded arms retain original basis lifts, computed predicates and

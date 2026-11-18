@@ -43,6 +43,27 @@ private def chosenBit : StaticTypes.Arguments := {bases := [("A",[.bit])]}
 #guard summary (program ("pub unitary fn root[const n:Nat](q:Q<Bit>)->Q<Bit>{if static n>0 {" ++
     "let m=measure_z(q);let u=unit(());basis u as _ {m}} else {q}}")) {naturals := [("n",0)]} = none
 
+private def registerFold (last take yieldValue : String) : Sources :=
+  program ("pub unitary fn root[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{" ++
+    "qfor static i in 0.." ++ last ++ " carry q=q {let (x,r)=take_bit[n," ++ take ++ "](q);yield " ++
+    yieldValue ++ "}}")
+
+-- The index is a symbolic coordinate under the written half-open bound. A
+-- selected zero width cannot remove original obligations from the body.
+#guard summary (registerFold "n" "i" "put_bit[n,i](x,r);") {naturals := [("n",2)]} = some (.unitary,true,0,0)
+#guard summary (registerFold "n" "i" "put_bit[n,i](x,r)") {naturals := [("n",0)]} = some (.unitary,true,0,0)
+#guard summary (registerFold "n" "n" "put_bit[n,i](x,r);") {naturals := [("n",2)]} = none
+#guard summary (program ("pub unitary fn root[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{" ++
+    "qfor static i in 0..n carry q=q {static let j=i;let (j,r)=take_bit[n,j](q);yield put_bit[n,j](j,r);}}"))
+    {naturals := [("n",0)]} = none
+#guard summary (registerFold "n" "i" "r;") {naturals := [("n",0)]} = none
+#guard summary (registerFold "n" "i" "put_bit[n,i](x,outside);") {naturals := [("n",0)]} = none
+#guard summary (program "pub unitary fn root(q:Q<Bit>)->Q<Bit>{qfor static i in 1..0 carry q=q {yield q;}}") = none
+#guard summary (program "pub unitary fn root(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(qfor static i in 0..0 carry q=q {yield h(r);},r)}") = none
+#guard summary (program "pub unitary fn root(q:Q<Unit>)->Q<Unit>{qfor static i in 0..0 carry q=q {yield q}}") = some (.unitary,true,0,0)
+#guard summary (program "pub fn root()->Unit{for static i in 0..0 carry ()=() {yield}}") = some (.unitary,false,0,0)
+#guard summary (program "pub unitary fn root(q:Q<Bit>)->Q<Bit>{for static i in 0..0 carry q=q {yield q;}}") = none
+
 private def coherentBody (form block : String) : Sources :=
   program ("pub observe fn root(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
     form ++ "(c,q){0=>h,1=>{" ++ block ++ "}}}")

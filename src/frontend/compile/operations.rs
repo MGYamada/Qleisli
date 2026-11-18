@@ -43,6 +43,46 @@ pub(super) struct CachedProvider {
     pub body: AcceptedProgram,
 }
 
+impl CachedProvider {
+    // Distinct allocations are compared completely, in fixed-size words.
+    // The caller reserves both input streams before reading either one.
+    pub(super) fn comparison_work(&self, actual: &AcceptedProgram) -> usize {
+        let cached = self.body.artifact();
+        let actual = actual.artifact();
+        let step = std::mem::size_of::<u64>();
+        let words = if std::ptr::eq(cached, actual) || cached.len() != actual.len() {
+            0
+        } else {
+            cached
+                .len()
+                .div_ceil(step)
+                .saturating_add(actual.len().div_ceil(step))
+        };
+        words
+            .saturating_add(self.operation.copy_size())
+            .saturating_add(1)
+    }
+
+    pub(super) fn same_artifact(&self, actual: &AcceptedProgram) -> bool {
+        let cached = self.body.artifact();
+        let actual = actual.artifact();
+        if std::ptr::eq(cached, actual) {
+            return true;
+        }
+        if cached.len() != actual.len() {
+            return false;
+        }
+        let cached = cached.chunks_exact(8);
+        let actual = actual.chunks_exact(8);
+        cached.remainder() == actual.remainder()
+            && cached.zip(actual).all(|(left, right)| {
+                let left = u64::from_ne_bytes(left.try_into().expect("complete word"));
+                let right = u64::from_ne_bytes(right.try_into().expect("complete word"));
+                left == right
+            })
+    }
+}
+
 #[derive(Clone)]
 pub(super) struct ProviderOrigin {
     pub(super) definition: Key,
@@ -822,14 +862,9 @@ impl Compiler<'_> {
         })?;
         let cache = (key, mkey, effect, ProviderRoot::of(program));
         if let Some(op) = self.providers.get(&cache) {
-            let cost = op
-                .body
-                .artifact()
-                .len()
-                .saturating_add(program.artifact().len())
-                .saturating_add(op.operation.copy_size());
+            let cost = op.comparison_work(program);
             self.charge(module, name.span, cost)?;
-            if self.providers[&cache].body.artifact() != self.checked[&key].artifact() {
+            if !self.providers[&cache].same_artifact(&self.checked[&key]) {
                 return Err(self.error(
                     module,
                     name.span,

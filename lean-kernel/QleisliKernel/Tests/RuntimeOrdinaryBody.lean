@@ -46,25 +46,39 @@ private def program : Semantics.Observation.Program :=
 private def observationState {sources : Sources}
     {signature : SourceRuntimeContext.Signature sources "main" "route"}
     (body : SourceRuntimeTrace.Body signature) (prepared : RuntimeInterval.Prepared [] program)
-    (before : RuntimeStructuralAction.SourceState) : WorkM RuntimeOrdinaryBody.State := do
+    (before : RuntimeStructuralAction.SourceState) (retain : Bool) : WorkM RuntimeOrdinaryBody.State := do
   let root : CallPath sources "main" "route" "main" "route" := .root body
-  match body.checked.events with
+  match events : body.checked.events with
   | [.primitive event] => do
     let checked ← readObservation root event prepared.block ⟨event.call.calleeOffset,0,1⟩ before {}
     return checked.ordinary
   | [.named event] => do
-    let callee ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
+    let opened : Σ callee : SourceRuntimeTrace.Body event.target.signature, SourceRuntimeTrace.NamedRead event callee ←
+      if retain then do
+        let occurrence : SourceRuntimeContext.RuntimeCalleeTrace.Path body.checked.events (.named event) :=
+          .direct 0 (by simp only [events,List.getElem?_cons_zero])
+        let checked ← NaturalAffine.witness (SourceRuntimeTrace.readRetainedNamed body.checked occurrence)
+        pure (Sigma.mk checked.val
+          (SourceRuntimeTrace.NamedRead.retained body.checked occurrence (by with_reducible exact checked.property)))
+      else do
+        let checked ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
+        pure (Sigma.mk checked.val
+          (SourceRuntimeTrace.NamedRead.replayed (by with_reducible exact checked.property)))
     let parent : CallPath sources "main" "route" "main" event.target.callerName ←
       if callerName : event.target.callerName = "route" then
-        pure (by rw [callerName]; exact root)
+        pure (show CallPath sources "main" "route" "main" event.target.callerName from
+          by rw [callerName]; exact root)
       else throw .request
-    let path := CallPath.named event callee.val (by with_reducible exact callee.property) parent
-    let [.primitive measured] := callee.val.checked.events | throw .request
+    let callee := opened.1
+    let original := opened.2
+    let path := CallPath.named event callee original parent
+    let [.primitive measured] := callee.checked.events | throw .request
     let checked ← readObservation path measured prepared.block ⟨measured.call.calleeOffset,0,1⟩ before {}
     return checked.ordinary
   | _ => throw .request
 
-private def observedMinimal (nested : Bool) (bit : Bool) : Option (String × List String × List Nat × Nat) :=
+private def observedMinimal (nested : Bool) (bit : Bool) (retain : Bool := false) :
+    Option (String × List String × List Nat × Nat) :=
   let action : WorkM (String × List String × List Nat × Nat) := do
     let sources : Sources := #[("main",minimalSource nested)]
     let signature ← SourceRuntimeContext.readSignature sources "main" "route" {}
@@ -72,7 +86,7 @@ private def observedMinimal (nested : Bool) (bit : Bool) : Option (String × Lis
     let prepared ← RuntimeInterval.prepare [] program
     let before : RuntimeStructuralAction.SourceState :=
       ⟨[⟨⟨0,[.bit]⟩,⟨0,[0],1⟩⟩],[⟨0,[.bit]⟩],1⟩
-    let ordinary : RuntimeOrdinaryBody.State ← observationState body prepared before
+    let ordinary : RuntimeOrdinaryBody.State ← observationState body prepared before retain
     let [measurement] := ordinary.measurements | throw .request
     let values := valuation [] ordinary.measurements [(1,bit)]
     let [.ordinary [.bit] result] ← lift ((SourceRuntimeOrdinary.extract values body.checked.summary.value).mapError fun _ => .request)
@@ -85,6 +99,8 @@ private def observedMinimal (nested : Bool) (bit : Bool) : Option (String × Lis
 #guard observedMinimal false true = some ("route",[],[0],1)
 #guard observedMinimal true false = some ("read",["route"],[0],0)
 #guard observedMinimal true true = some ("read",["route"],[0],1)
+#guard observedMinimal true false true = some ("read",["route"],[0],0)
+#guard observedMinimal true true true = some ("read",["route"],[0],1)
 
 #print axioms QleisliKernel.Qirf.RuntimeOrdinaryBody.Gap.sameSource
 #print axioms QleisliKernel.Qirf.RuntimeOrdinaryBody.Observation.issuedUnchanged

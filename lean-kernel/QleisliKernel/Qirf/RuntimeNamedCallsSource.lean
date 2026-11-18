@@ -23,7 +23,7 @@ structure Ordinary {artifact owner name arguments}
   context : Context
   referenceFree : context.references.isEmpty = true
   body : SourceRuntimeTrace.Body event.target.signature
-  bodyRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body
+  bodyRead : SourceRuntimeTrace.NamedRead event body
   noOperationActuals : body.checked.signature.arguments.operations.isEmpty = true ∧
     body.checked.signature.operations.actuals.isEmpty = true ∧ body.checked.signature.operations.hasMeaningRequirements = false
   discovered : RuntimeBodyDiscovery.Discovery
@@ -76,7 +76,7 @@ private def prepareAction {artifact owner name arguments}
       match body.val.checked.events with
       | [.selection ..] =>
         let prepared ← RuntimeNamedSelectionSource.prepareCallWithBody source event (List.of_mem_zip member).1
-          position child child.references body.val (by with_reducible exact body.property)
+          position child child.references body.val (.replayed (by with_reducible exact body.property))
         return (.selection child prepared,rest)
       | _ =>
         if noActuals : body.val.checked.signature.arguments.operations.isEmpty = true ∧
@@ -87,7 +87,7 @@ private def prepareAction {artifact owner name arguments}
               body.val.checked.events body.val.checked.summary.staticRows child true)
             let prepared : Ordinary source event position :=
               ⟨(List.of_mem_zip member).1,located.2.1,located.2.2.1,located.2.2.2,child,referenceFree,
-                body.val,by with_reducible exact body.property,noActuals,discovered.val,
+                body.val,.replayed (by with_reducible exact body.property),noActuals,discovered.val,
                 by with_reducible exact discovered.property⟩
             return (.ordinary prepared,rest)
           else throw .request

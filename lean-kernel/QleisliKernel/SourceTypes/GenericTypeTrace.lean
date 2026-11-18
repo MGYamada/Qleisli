@@ -354,7 +354,7 @@ private def instantiateWithReader {sources : Sources} (state : GenericLexicalNat
       pure ([],[(formal.name,operation)],operation.rows)
   let bases := actuals.flatMap (·.1)
   let operations := actuals.flatMap (·.2.1)
-  let variables := (StaticHeaders.frame state.prepared.original).binders.length
+  let variables := state.environment.variables
   let naturals := NaturalFrames.replacements (StaticHeaders.frame transfer.callee.original) (transfer.forms.map (·.form))
   let parameters ← definition.parameters.mapM (GenericValues.substitute variables bases naturals)
   let result ← GenericValues.substitute variables bases naturals definition.result
@@ -520,8 +520,8 @@ private def operationWithModules {sources : Sources} (reader : DefinitionReader 
         let _ ← adapt (CallName.readName child.tokens)
         let child ← next none child.tokens
         let selected ← SourceMeaning.select sources state.owner scope (meaning.tokens.map (·.text)) meanings
-        let input ← SymbolicTypes.ofClosed (StaticHeaders.frame state.prepared.original).binders.length selected.meaning.graph.input
-        let output ← SymbolicTypes.ofClosed (StaticHeaders.frame state.prepared.original).binders.length selected.meaning.graph.output
+        let input ← SymbolicTypes.ofClosed state.environment.variables selected.meaning.graph.input
+        let output ← SymbolicTypes.ofClosed state.environment.variables selected.meaning.graph.output
         let _ ← SymbolicTypes.equate state child.input input.code
         let _ ← SymbolicTypes.equate state child.output output.code
         let origin := {origin with rows := child.rows ++ selected.request.sourceRows}
@@ -724,7 +724,7 @@ def ordinaryCode (value : Value) : WorkM Code := do
 
 private def width {sources} (state : GenericLexicalNatural.SomeEnvironment sources) (code : Code) :
     WorkM (Option Form) := do
-  let variables := (StaticHeaders.frame state.prepared.original).binders.length
+  let variables := state.environment.variables
   let zero ← NaturalAffine.witness (NaturalAffine.constant variables 0)
   code.foldlM (fun sum atom => do
     match sum,atom with
@@ -755,7 +755,7 @@ private def scalarLabelBasis {sources} (state : GenericLexicalNatural.SomeEnviro
   | [.fixed (.enumeration origin names)] => guard (count == names.length) .request; pure [.enumeration origin names]
   | [.bits _] =>
     let some bits := (List.range 7).find? (fun bits => 2^bits == count) | throw .request
-    let closed ← SymbolicTypes.ofClosed (StaticHeaders.frame state.prepared.original).binders.length [.bits bits]
+    let closed ← SymbolicTypes.ofClosed state.environment.variables [.bits bits]
     let _ ← SymbolicTypes.equate state code closed.code
     pure [.bits bits]
   | _ => throw .request
@@ -868,7 +868,7 @@ private def primitiveNatural {sources} (state : GenericLexicalNatural.SomeEnviro
 private def primitiveApplication {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (scope : List String) (kind : CallName.Primitive) (actuals : List CallSyntax.Argument)
     (arguments : List Value) (remaining : Environment) : WorkM (Outcome sources) := do
-  let variables := (StaticHeaders.frame state.prepared.original).binders.length
+  let variables := state.environment.variables
   match kind with
   | .emptyBits =>
     guard (actuals.isEmpty && arguments.isEmpty) .request
@@ -1022,7 +1022,7 @@ private def bindingNames (tokens : List LocatedToken) : WorkM (List String) := d
 
 private def typedNominal {sources} (state : GenericLexicalNatural.SomeEnvironment sources)
     (basis : Semantics.FiniteCarrier.Basis) : WorkM Value := do
-  let closed ← SymbolicTypes.ofClosed (StaticHeaders.frame state.prepared.original).binders.length basis
+  let closed ← SymbolicTypes.ofClosed state.environment.variables basis
   adapt (GenericValues.ordinaryValue closed.code)
 
 private def evaluator {sources owner name} (definition : Definition sources owner name)
@@ -1034,7 +1034,8 @@ private def evaluator {sources owner name} (definition : Definition sources owne
     let reader : DefinitionReader sources := ⟨definition.context,prepared⟩
     exactWork (Exact.charge (16*((tokens.map fun token => token.text.utf8ByteSize+4).sum+
       (environment.map fun cell => cell.name.utf8ByteSize+valueFields cell.value+1).sum+1)))
-    let staticNames := definition.original.header.formals.map (·.name)
+    let staticNames := state.environment.foldIndices ++ state.environment.aliases ++
+      definition.original.header.formals.map (·.name)
     let children (trees : List (Sigma SourceSyntax.Tree)) : WorkM (List Value × Outcome sources) :=
       trees.foldlM (fun (values,previous) child => do
         let result ← next state scope previous.remaining child.2
@@ -1166,6 +1167,25 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       let rows ← NaturalRows.bindings sources owner state.prepared.helpers condition.bindings
       let result ← branches leftState rightState environment left right
       pure {result with rows := rows ++ result.rows}
+    | .staticFold written initial body =>
+      let index := written.parts.index.text
+      let (loopEnvironment,boundBindings) ← GenericLexicalNatural.underFold state.prepared state.environment
+        scope index written.start written.stop
+      let seed ← next state scope environment initial
+      guard ((written.parts.keyword.text == "qfor") == hasOwner seed.value) .request
+      let names ← bindingNames written.parts.pattern
+      guard (names.all fun name => name != index && !staticNames.contains name) .request
+      let ordinary ← (seed.remaining.filter (fun cell => !hasOwner cell.value)).mapM fun cell => do
+        pure {cell with value := ← GenericValues.widen cell.value}
+      let carry ← GenericValues.widen seed.value
+      let inner ← adapt (GenericValues.bind (written.parts.pattern.map (·.text)) carry ordinary
+        (written.parts.carry.span.startByte+1))
+      let loopState := {state with environment := loopEnvironment}
+      let result ← next loopState (names ++ index :: scope) inner body
+      GenericValues.expect loopState result.value carry
+      guard (result.remaining.all fun cell => !hasOwner cell.value) .request
+      let rows ← NaturalRows.bindings sources owner state.prepared.helpers boundBindings
+      pure (append seed {result with value := seed.value, remaining := seed.remaining, rows := rows ++ result.rows})
     | .selection _ parsed _ =>
       let selector ← adapt (QuantumMoves.parse 65 (parsed.selector.map (·.text)))
       let target ← adapt (QuantumMoves.parse 65 (parsed.target.map (·.text)))
@@ -1300,7 +1320,7 @@ private def evaluator {sources owner name} (definition : Definition sources owne
     | .bitIndex _ _ _ _ _ _ index _ receiver =>
       let result ← next state scope environment receiver
       let [.ordinary [.bits width]] := result.value | throw .request
-      let coordinate ← NaturalAffine.constant (StaticHeaders.frame state.prepared.original).binders.length index
+      let coordinate ← NaturalAffine.constant state.environment.variables index
       let _ ← NaturalPredicates.implies state.environment.context coordinate .lt width
       pure {result with value := [.ordinary [.fixed .bit]]}
     | .call call trees =>
@@ -1344,6 +1364,10 @@ structure BodyRecord (sources : Sources) where
   outcome : Outcome sources
   checked : ∃ before after,(checkTree definition tree prepared).run before = (.ok outcome,after)
 
+def BodyRecord.Parsed {sources} (body : BodyRecord sources) : Prop :=
+  let tokens := body.definition.original.envelope.occurrence.body
+  SourceSyntax.read (tokens.length+1) 0 true tokens = .ok body.tree
+
 def BodyRecord.id {sources} (body : BodyRecord sources) : DefId := (body.owner,body.name)
 
 def BodyRecord.entry {sources} (body : BodyRecord sources) : Entry := ⟨body.id,body.outcome.effect⟩
@@ -1366,18 +1390,20 @@ def readBody (sources : Sources) (owner name : String)
 /-- A retained row needs no second key search. Parsing and symbolic evaluation
 still run here with the same exact-context table as the call reader. -/
 def readBodyDefinition {sources context owner name} (prepared : @PreparedDefinitions sources context)
-    (selected : PreparedDefinition context owner name) : WorkM (BodyRecord sources) := do
+    (selected : PreparedDefinition context owner name) : WorkM {body : BodyRecord sources // body.Parsed} := do
   let definition := selected.value
   let table : PreparedDefinitions definition.context := selected.sameContext.symm ▸ prepared
   let tokens := definition.original.envelope.occurrence.body
-  let tree ← adapt (SourceSyntax.read (tokens.length+1) 0 true tokens)
-  let result ← NaturalAffine.witness (checkTree definition tree (some table))
-  pure ⟨owner,name,definition,some table,tree,result.val,by with_reducible exact result.property⟩
+  match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
+  | .error _ => throw .request
+  | .ok tree =>
+    let result ← NaturalAffine.witness (checkTree definition tree (some table))
+    pure ⟨⟨owner,name,definition,some table,tree,result.val,by with_reducible exact result.property⟩,parsed⟩
 
 
 /-- Arbitrary component selection retains its actual metered key lookup. -/
 def readBodyPrepared {sources context} (prepared : @PreparedDefinitions sources context)
-    (owner name : String) : WorkM (BodyRecord sources) := do
+    (owner name : String) : WorkM {body : BodyRecord sources // body.Parsed} := do
   readBodyDefinition prepared (← lookupDefinition prepared owner name)
 
 def discover (sources : Sources) (fuel : Nat) (pending : List DefId) (visited : List (BodyRecord sources))

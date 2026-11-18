@@ -83,7 +83,7 @@ structure Checked {sources catalogue record invocation demand view}
     provider.supplier.origin.state.prepared.original.envelope.declaration
   sameBody : application.state.prepared.original.envelope.occurrence =
     provider.supplier.origin.state.prepared.original.envelope.occurrence
-  unguarded : application.state.environment.guards.isEmpty = true
+  unguarded : application.state.environment.unguarded = true
   targetOwner : application.owner = provider.owner
   targetName : application.name = provider.name
   targetSource : application.target.envelope.source = provider.signature.original.source
@@ -163,7 +163,7 @@ def read {sources catalogue record invocation demand view}
                     application.state.prepared.original.envelope.source = original.source ∧
                     application.state.prepared.original.envelope.declaration = original.declaration ∧
                     application.state.prepared.original.envelope.occurrence = original.occurrence ∧
-                    application.state.environment.guards.isEmpty = true ∧
+                    application.state.environment.unguarded = true ∧
                     application.owner = provider.owner ∧ application.name = provider.name ∧
                     application.target.envelope.source = target.source ∧ application.target.envelope.declaration = target.declaration ∧
                     application.target.envelope.occurrence = target.occurrence ∧

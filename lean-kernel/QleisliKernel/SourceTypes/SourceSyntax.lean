@@ -7,6 +7,7 @@ import QleisliKernel.SourceTypes.StaticBindings
 import QleisliKernel.SourceTypes.SourceBoolean
 import QleisliKernel.SourceTypes.SourceControlSyntax
 import QleisliKernel.SourceTypes.SourceStaticControlSyntax
+import QleisliKernel.SourceTypes.SourceStaticFoldSyntax
 import QleisliKernel.SourceTypes.SourceNominalSyntax
 import QleisliKernel.SourceTypes.SourceMatchSyntax
 import QleisliKernel.SourceTypes.SourceComputedSyntax
@@ -53,6 +54,8 @@ inductive Tree : List LocatedToken → Type where
       (elseBody : Tree written.parts.elseBody) : Tree tokens
   | staticConditional {tokens : List LocatedToken} (written : SourceStaticControlSyntax.Checked tokens)
       (thenBody : Tree written.parts.thenBody) (elseBody : Tree written.parts.elseBody) : Tree tokens
+  | staticFold {tokens : List LocatedToken} (written : SourceStaticFoldSyntax.Checked tokens)
+      (initial : Tree written.parts.initial) (body : Tree written.parts.body) : Tree tokens
   | variant {tokens : List LocatedToken} (written : SourceNominalSyntax.Variant tokens) : Tree tokens
   | record {tokens : List LocatedToken} (written : SourceNominalSyntax.Record tokens)
       (children : Children (written.initializers.map (·.expression))) : Tree tokens
@@ -121,6 +124,7 @@ private def callsWithFuel : Nat → {tokens : List LocatedToken} → Tree tokens
     | .conditional _ condition thenBody elseBody =>
       return (← next condition) ++ (← next thenBody) ++ (← next elseBody)
     | .staticConditional _ thenBody elseBody => return (← next thenBody) ++ (← next elseBody)
+    | .staticFold _ initial body => return (← next initial) ++ (← next body)
     | .variant _ => return []
     | .record _ children => return (← children.trees.mapM (fun child => next child.2)).flatten
     | .projection _ receiver => next receiver
@@ -178,6 +182,12 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
       let thenBody ← next (depth+1) true written.parts.thenBody
       let elseBody ← next (depth+1) true written.parts.elseBody
       return .conditional written condition thenBody elseBody
+    if tokens.head?.map (·.text) == some "qfor" ||
+        ((tokens.head?.map (·.text) == some "for") && tokens[1]?.map (·.text) == some "static") then
+      let written ← SourceStaticFoldSyntax.read tokens
+      let initial ← next (depth+1) false written.parts.initial
+      let body ← next (depth+1) true written.parts.body
+      return .staticFold written initial body
     if tokens.head?.map (·.text) == some "match" then
       let written ← SourceMatchSyntax.read tokens
       let scrutinee ← next (depth+1) false written.parts.scrutinee

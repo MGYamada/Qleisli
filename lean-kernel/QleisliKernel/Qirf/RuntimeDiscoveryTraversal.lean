@@ -7,6 +7,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace QleisliKernel.Qirf.RuntimeBodyDiscovery
 open QleisliKernel Finite SourceTypes
 open RuntimeBodyPlan (Queues)
+open SourceRuntimeContext
 
 structure GraphResult {artifact context description} (mode : OperationMode artifact)
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (demand : StaticOperation.Paths)
@@ -181,25 +182,66 @@ private def mixedArmsRead {artifact owner} (mode : OperationMode artifact)
   visit indices.length indices before
 
 private def collectEvents {artifact owner name} (mode : OperationMode artifact) (scope : Scope artifact owner name)
+    (pairs : List (SourceRuntimeContext.Event artifact.sources owner × SourceSequence.Position))
     (step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
-      (before : Queues) → WorkM (EventResult mode scope event position before))
-    (pairs : List (SourceRuntimeContext.Event artifact.sources owner × SourceSequence.Position)) (before : Queues) :
+      RuntimeSourceEvent.At pairs event position → (before : Queues) → WorkM (EventResult mode scope event position before))
+    (before : Queues) :
     WorkM (EventsResult mode scope pairs before) :=
-  let visit : Nat → (remaining : List (SourceRuntimeContext.Event artifact.sources owner × SourceSequence.Position)) →
-      (queues : Queues) → WorkM (EventsResult mode scope remaining queues) :=
-    Nat.rec (fun remaining queues => match remaining with
+  let visit : Nat → (ordinal : Nat) →
+      (remaining : List (SourceRuntimeContext.Event artifact.sources owner × SourceSequence.Position)) →
+      pairs.drop ordinal = remaining → (queues : Queues) → WorkM (EventsResult mode scope remaining queues) :=
+    Nat.rec (fun _ remaining _ queues => match remaining with
       | [] => pure ⟨queues,{},[],scope.emptyEvents mode.preparation queues⟩
       | _ :: _ => throw .limit)
-      (fun _ tail remaining queues => do
+      (fun _ tail ordinal remaining same queues => do
         match remaining with
         | [] => return ⟨queues,{},[],scope.emptyEvents mode.preparation queues⟩
         | (event,position) :: rest =>
-          let first ← step event position queues
-          let last ← tail rest first.after
+          let entry : RuntimeSourceEvent.At pairs event position :=
+            ⟨ordinal,RuntimeSourceEvent.headAt pairs ordinal (event,position) rest same⟩
+          let first ← step event position entry queues
+          let last ← tail (ordinal+1) rest (RuntimeSourceEvent.tailAt pairs ordinal (event,position) rest same) first.after
           exactWork (Exact.charge (first.discovery.rows.length+first.discovery.roots.length+first.receipts.length+1))
           return ⟨last.after,first.discovery.append last.discovery,first.receipts ++ last.receipts,
             scope.consEvents mode.preparation first.data last.data⟩)
-  visit pairs.length pairs before
+  visit pairs.length 0 pairs rfl before
+
+/-- The retained occurrence belongs to the original whole-body evaluation.
+Independently read scopes still use their existing original body readers. -/
+private def retainedPath {artifact owner name} (scope : Scope artifact owner name)
+    {event : SourceRuntimeContext.Event artifact.sources owner} :
+    Option (RuntimeCalleeTrace.Path scope.events event) →
+      Option (Σ checked : SourceRuntimeTrace.Checked artifact.sources owner name,
+        RuntimeCalleeTrace.Path checked.events event) :=
+  match scope with
+  | .original (.whole body _) _ => fun path => path.map (fun occurrence => ⟨body.checked,occurrence⟩)
+  | _ => fun _ => none
+
+private def readNamed {artifact owner name} (scope : Scope artifact owner name)
+    (event : SourceRuntimeContext.NamedEvent artifact.sources owner)
+    (path : Option (RuntimeCalleeTrace.Path scope.events (.named event))) :
+    WorkM (Σ body : SourceRuntimeTrace.Body event.target.signature, SourceRuntimeTrace.NamedRead event body) := do
+  match retainedPath scope path with
+  | some ⟨parent,occurrence⟩ =>
+    let body ← NaturalAffine.witness (SourceRuntimeTrace.readRetainedNamed parent occurrence)
+    return ⟨body.val,.retained parent occurrence (by with_reducible exact body.property)⟩
+  | none =>
+    let body ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
+    return ⟨body.val,.replayed (by with_reducible exact body.property)⟩
+
+private def readTransform {artifact owner name} (scope : Scope artifact owner name)
+    (event : SourceRuntimeContext.TransformEvent artifact.sources owner)
+    (path : Option (RuntimeCalleeTrace.Path scope.events (.transform event)))
+    (position : SourceSequence.Position) (child : Context) :
+    WorkM (Σ request : RuntimeTransformRequest.Checked event position child,
+      RuntimeTransformRequest.Read event position child request) := do
+  match retainedPath scope path with
+  | some ⟨parent,occurrence⟩ =>
+    let request ← NaturalAffine.witness (RuntimeTransformRequest.readRetained parent occurrence position child)
+    return ⟨request.val,.retained parent occurrence (by with_reducible exact request.property)⟩
+  | none =>
+    let request ← NaturalAffine.witness (RuntimeTransformRequest.read event position child)
+    return ⟨request.val,.replayed (by with_reducible exact request.property)⟩
 
 private def assembleBody {artifact owner name} (mode : OperationMode artifact) (scope : Scope artifact owner name)
     (request : Context) (positionsCount : request.positions.length = scope.events.length)
@@ -238,7 +280,8 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
           (if scope.prefixRequired then RuntimeProviderHeaders.originalActualSlots signature.operations else pure [])
         let prefixResult ← prefixRead mode next signature originals.val scope.incoming (Queues.ofContext request) (!request.references.isEmpty)
         let eventStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
-            (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do
+            Option (RuntimeCalleeTrace.Path scope.events event) →
+            (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position path before => do
           exactWork (Exact.charge (before.references.length+1))
           match event with
           | .primitive event =>
@@ -258,8 +301,8 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
             | [] => throw .request
             | (callPosition,child) :: remaining =>
               if located : callPosition = position ∧ position.offset = event.call.calleeOffset then
-                let body ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
-                let nested ← next (scope.named body.val (some (.named event body.val.originalSignature))) child
+                let ⟨body,original⟩ ← readNamed scope event path
+                let nested ← next (scope.named body (some (.named event body.originalSignature))) child
                 let after := {before with calls := remaining}
                 let data : scope.EventData mode.preparation (.named event) position before after := by
                   cases scope with
@@ -267,7 +310,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                   | original source =>
                     if callerName : event.target.callerName = name then
                       exact nested.data.map (fun childPlan => .named callPosition child remaining calls located callerName
-                        body.val (by with_reducible exact body.property) childPlan)
+                        body original childPlan)
                     else exact none
                 return ⟨after,⟨event.target.sourceRows ++ nested.discovery.rows,nested.discovery.roots⟩,nested.receipts,data⟩
               else throw .request
@@ -392,16 +435,16 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
             | [] => throw .request
             | (callPosition,child) :: remaining =>
               if located : callPosition = position then
-                let transform ← NaturalAffine.witness (RuntimeTransformRequest.read event position child)
-                let roots ← subjectRoots artifact transform.val.subject
-                let nested ← next (scope.named transform.val.source) transform.val.context
+                let ⟨transform,original⟩ ← readTransform scope event path position child
+                let roots ← subjectRoots artifact transform.subject
+                let nested ← next (scope.named transform.source) transform.context
                 let after := {before with calls := remaining}
                 let data : scope.EventData mode.preparation (.transform event) position before after := by
                   cases scope with
                   | supplied => exact ()
                   | original source =>
                     exact nested.data.map (fun childPlan => .transform child remaining
-                      (located ▸ calls) transform.val (by with_reducible exact transform.property) childPlan)
+                      (located ▸ calls) transform original childPlan)
                 return ⟨after,⟨event.target.sourceRows ++ event.counts.flatMap (·.checked.rows) ++
                   nested.discovery.rows,roots ++ nested.discovery.roots⟩,nested.receipts,data⟩
               else throw .request
@@ -445,9 +488,10 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               | supplied => exact ()
               | original => exact some (.register event)
             return ⟨before,⟨(SourceRuntimeContext.Event.registerPrimitive event).staticRows,[]⟩,[],data⟩
-          | .matching .. | .staticConditional .. => throw .request
+          | .matching .. | .staticConditional .. | .staticFold .. => throw .request
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
-            (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position before => do
+            RuntimeSourceEvent.At (events.zip request.positions) event position →
+            (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position entry before => do
           match event with
           | .staticConditional event children =>
             let source ← NaturalAffine.witness (RuntimeStaticPrimitive.readContinuation event)
@@ -455,7 +499,8 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
             let positions ← NaturalAffine.witness
               (source.val.positions position (before.calls.map (·.1)) (before.sites.map (·.position)) partition.1)
             if count : positions.val.length = source.val.selected.result.events.length then
-              let inner ← collectEvents mode scope eventStep (source.val.selected.result.events.zip positions.val) partition.2
+              let inner ← collectEvents mode scope (source.val.selected.result.events.zip positions.val)
+                (fun child childPosition _ => eventStep child childPosition none) partition.2
               let data : scope.EventData mode.preparation (.staticConditional event children) position before inner.after := by
                 cases scope with
                 | supplied => exact ()
@@ -468,8 +513,25 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
                 inner.discovery.roots.length+1)))
               return ⟨inner.after,⟨rows ++ inner.discovery.rows,inner.discovery.roots⟩,inner.receipts,data⟩
             else throw .request
-          | other => eventStep other position before
-        let checked ← collectEvents mode scope outerStep (events.zip request.positions) prefixResult.after
+          | .staticFold event iterations =>
+            let slot := before.takeStatic position
+            let partition ← NaturalAffine.witness (RuntimeStaticFold.readPartition event iterations position slot.1)
+            let parent : RuntimeCalleeTrace.Path scope.events (.staticFold event iterations) :=
+              .direct entry.ordinal entry.eventAt
+            let inner ← collectEvents mode scope (iterations.flatten.zip partition.val.positions)
+              (fun child childPosition atChild =>
+                eventStep child childPosition (some (.folded parent atChild.ordinal atChild.eventAt))) slot.2
+            let data : scope.EventData mode.preparation (.staticFold event iterations) position before inner.after := by
+              cases scope with
+              | supplied => exact ()
+              | original subject =>
+                exact inner.data.map (fun events => .staticFold partition.val
+                  (by with_reducible exact partition.property) events)
+            let rows := (SourceRuntimeContext.Event.staticFold event iterations).staticRows
+            exactWork (Exact.charge (16*(rows.length+inner.discovery.rows.length+inner.discovery.roots.length+1)))
+            return ⟨inner.after,⟨rows ++ inner.discovery.rows,inner.discovery.roots⟩,inner.receipts,data⟩
+          | other => eventStep other position (some (.direct entry.ordinal entry.eventAt)) before
+        let checked ← collectEvents mode scope (events.zip request.positions) outerStep prefixResult.after
         if exhausted : checked.after.isEmpty = true then
           have count : request.positions.length = scope.events.length := by simpa only [List.length_map] using congrArg List.length offsets
           let data := assembleBody mode scope request count offsets originals.val

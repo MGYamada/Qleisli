@@ -20,7 +20,7 @@ inductive Middle {dependencies program block} : Step dependencies program block 
       {event : SourceRuntimeContext.NamedEvent sources caller}
       {scope : RuntimeCallScope.Checked block start count inputs ordinary event.effect}
       {body : SourceRuntimeTrace.Body event.target.signature}
-      {read : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body}
+      {read : SourceRuntimeTrace.NamedRead event body}
       {boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before childHistory childRetired body.checked.summary.value}
       {finalOrdinary : RuntimeOrdinaryBody.State}
       (node : Node dependencies scope.program scope.prepared.block) (selection : IsSelection node) :
@@ -148,7 +148,7 @@ private def namedData {dependencies program block ordinal start count inputs sou
     {event : SourceRuntimeContext.NamedEvent sources caller}
     {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary event.effect}
     {body : SourceRuntimeTrace.Body event.target.signature}
-    {read : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body}
+    {read : SourceRuntimeTrace.NamedRead event body}
     {boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before childHistory childRetired body.checked.summary.value}
     {finalOrdinary : RuntimeOrdinaryBody.State} {children : Steps dependencies scope.program scope.prepared.block}
     (witness : Witness (.step ordinal (.named event scope body read boundary finalOrdinary children)) bodyCount) :

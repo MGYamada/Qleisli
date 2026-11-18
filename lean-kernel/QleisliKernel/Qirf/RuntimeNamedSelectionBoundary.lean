@@ -24,7 +24,7 @@ structure Prepared {artifact : Artifact} {caller name : String}
     (event : SourceRuntimeContext.NamedEvent artifact.sources caller)
     (callee : SourceRuntimeTrace.Body event.target.signature) where
   originalCall : body.checked.events = [.named event]
-  calleeRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) callee
+  calleeRead : SourceRuntimeTrace.NamedRead event callee
   callerName : event.target.callerName = name
   callOffset : position.offset = event.call.calleeOffset
   visibleEffect : event.effect = .unitary
@@ -46,8 +46,8 @@ structure Prepared {artifact : Artifact} {caller name : String}
       (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner))) initial
 
 /-- Caller syntax locates the original call; it supplies no child equation.
-The callee argument must retain the actual readNamedBody execution, including
-its original static actuals, supplier context and result-value correspondence.
+The callee argument retains its checked source origin, including its original
+static actuals, supplier context and result-value correspondence.
 Source frames and caller-visible effects are checked before the local scope.
 -/
 def prepare {artifact : Artifact} {caller name : String}
@@ -57,7 +57,7 @@ def prepare {artifact : Artifact} {caller name : String}
     (event : SourceRuntimeContext.NamedEvent artifact.sources caller)
     (originalCall : body.checked.events = [.named event])
     (callee : SourceRuntimeTrace.Body event.target.signature)
-    (calleeRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) callee) :
+    (calleeRead : SourceRuntimeTrace.NamedRead event callee) :
     WorkM (Prepared body root position runtime event callee) := do
   let roles := event.held ++ event.inputOwners ++ owners event.remaining
   exactWork (Exact.charge (16*(position.offset+position.start+position.count+

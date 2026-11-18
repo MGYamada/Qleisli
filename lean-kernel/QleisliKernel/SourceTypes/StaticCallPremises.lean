@@ -67,7 +67,7 @@ def readForm {sources} (state : GenericLexicalNatural.SomeEnvironment sources) (
       rw [same]
       omega⟩
   | _ =>
-    let zero ← NaturalAffine.witness (NaturalAffine.constant (StaticHeaders.frame state.prepared.original).binders.length 0)
+    let zero ← NaturalAffine.witness (NaturalAffine.constant state.environment.variables 0)
     pure ⟨zero.val,by
       intro values _held
       obtain ⟨before,after,ran⟩ := zero.property
@@ -137,7 +137,7 @@ def readInState {sources : Sources} (state : GenericLexicalNatural.SomeEnvironme
   if count : forms.val.length = target.header.formals.length then
     let replacements := NaturalFrames.replacements (StaticHeaders.frame callee.prepared.original) (forms.val.map (·.form))
     let premises ← NaturalHelpers.implyPremises state.environment.context
-      (StaticHeaders.frame state.prepared.original).binders.length replacements callee.prepared.scope.numeric
+      state.environment.variables replacements callee.prepared.scope.numeric
     pure ⟨callee.prepared,callee.originalHeader,forms.val,by with_reducible exact forms.property,count,by
       intro values held
       have substitution := NaturalFrames.replacements_meaning (StaticHeaders.frame callee.prepared.original)

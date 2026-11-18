@@ -157,13 +157,30 @@ private def step (s : Scan) (token : String) : Except String Scan := do
       if isName token then return {s with pending := [token]}
       push s ⟨.number (← decimal token),1⟩
 
-/-- Consume the complete expression; brackets describe static call arguments,
-parentheses group arithmetic or form the mandatory empty runtime call list. -/
-def read (tokens : List String) : Except String Expr := do
-  let s ← tokens.foldlM step {}
+private def complete (s : Scan) : Except String Expr := do
   if !s.frames.isEmpty || s.runtimeOpen.isSome || s.runtimeClose.isSome then
     throw "incomplete natural group/call"
   let s ← flush s
   return (← finish s).expression
+
+/-- Consume the complete expression; brackets describe static call arguments,
+parentheses group arithmetic or form the mandatory empty runtime call list. -/
+def read (tokens : List String) : Except String Expr := do
+  complete (← tokens.foldlM step {})
+
+/-- Keep scanning a contextual delimiter when it is still a Nat operand or
+part of a helper expression. A complete prefix ends at the first delimiter. -/
+def cut (delimiter : String) (tokens : List LocatedToken) :
+    Except String (List LocatedToken × LocatedToken × List LocatedToken) :=
+  (Nat.rec (motive := fun _ => Scan → List LocatedToken → List LocatedToken →
+      Except String (List LocatedToken × LocatedToken × List LocatedToken))
+    (fun _ _ _ => throw "missing original natural delimiter")
+    (fun _ next state pending remaining => do
+      let first :: rest := remaining | throw "missing original natural delimiter"
+      if first.text == delimiter && state.frames.isEmpty && !state.qualifier &&
+          (!state.operand || !state.pending.isEmpty) && state.runtimeOpen.isNone && state.runtimeClose.isNone then
+        let _ ← complete state
+        return (pending.reverse,first,rest)
+      next (← step state first.text) (first :: pending) rest) (tokens.length+1)) {} [] tokens
 
 end QleisliKernel.SourceTypes.NaturalSyntax

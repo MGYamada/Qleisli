@@ -23,7 +23,7 @@ structure Call {artifact owner name arguments}
   offset : position.offset = event.call.calleeOffset
   visibleUnitary : event.effect = .unitary
   callee : SourceRuntimeTrace.Body event.target.signature
-  calleeRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) callee
+  calleeRead : SourceRuntimeTrace.NamedRead event callee
   supplies : RuntimeNamedSelectionPrefix.Prepared source.catalogue callee.checked.signature child.bodies references
   suppliesRead : RuntimeInterval.Computed (RuntimeNamedSelectionPrefix.prepare source.catalogue
     callee.checked.signature child.bodies references) supplies
@@ -68,7 +68,7 @@ private def completeCall {artifact owner name arguments}
     (position : SourceSequence.Position) (child : Context) (references : List (List (List Request)))
     (location : @Location artifact.sources owner name event position)
     (callee : SourceRuntimeTrace.Body event.target.signature)
-    (calleeRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) callee) :
+    (calleeRead : SourceRuntimeTrace.NamedRead event callee) :
     WorkM (Call source event position child references) := do
   let supplies ← NaturalAffine.witness (RuntimeNamedSelectionPrefix.prepare source.catalogue
     callee.checked.signature child.bodies references)
@@ -91,7 +91,7 @@ def prepareCallWithBody {artifact owner name arguments}
     (member : (.named event : SourceRuntimeContext.Event artifact.sources owner) ∈ source.body.checked.events)
     (position : SourceSequence.Position) (child : Context) (references : List (List (List Request)))
     (callee : SourceRuntimeTrace.Body event.target.signature)
-    (calleeRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) callee) :
+    (calleeRead : SourceRuntimeTrace.NamedRead event callee) :
     WorkM (Call source event position child references) := do
   let location ← readLocation (name := name) event position
   completeCall source event member position child references location callee calleeRead
@@ -106,7 +106,8 @@ def prepareCall {artifact owner name arguments}
     WorkM (Call source event position child references) := do
   let location ← readLocation (name := name) event position
   let callee ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
-  completeCall source event member position child references location callee.val (by with_reducible exact callee.property)
+  completeCall source event member position child references location callee.val
+    (.replayed (by with_reducible exact callee.property))
 
 structure Prepared {artifact owner name arguments}
     (source : RuntimeBodyDiscovery.PreparedSource artifact owner name arguments) (request : Context)
@@ -123,7 +124,7 @@ structure Prepared {artifact owner name arguments}
   outerEmpty : request.sites.isEmpty = true ∧ request.branches.isEmpty = true ∧ request.bodies.isEmpty = true
   visibleUnitary : event.effect = .unitary
   callee : SourceRuntimeTrace.Body event.target.signature
-  calleeRead : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) callee
+  calleeRead : SourceRuntimeTrace.NamedRead event callee
   supplies : RuntimeNamedSelectionPrefix.Prepared source.catalogue callee.checked.signature childRequest.bodies references
   suppliesRead : RuntimeInterval.Computed (RuntimeNamedSelectionPrefix.prepare source.catalogue
     callee.checked.signature childRequest.bodies references) supplies

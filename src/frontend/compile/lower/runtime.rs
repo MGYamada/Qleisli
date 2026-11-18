@@ -306,18 +306,6 @@ pub(super) fn accept(
             .retained_ordinary_type_sources(*key, &name.0, decl.span)
     }
     .map_err(failure)?;
-    lower
-        .compiler
-        .charge(
-            &name.0,
-            decl.span,
-            rows.iter().map(|row| row.0.len() + row.1.len()).sum(),
-        )
-        .map_err(failure)?;
-    let sources = rows
-        .iter()
-        .map(|row| row.as_ref().clone())
-        .collect::<Vec<_>>();
     let fact = lower.compiler.source.effects[key];
     let request = Request {
         selection: if lower.compiler.selected_entry == Some(*key) {
@@ -344,13 +332,30 @@ pub(super) fn accept(
             .unwrap_or(fact.inferred()),
     };
     let checked = if let Some(context) = qmatch {
-        let (artifact, request) =
-            crate::interchange::qmatch::v5::proposal(raw, Arc::new(request), context, &sources)?;
+        // The interned originals can go straight to the bounded graph encoder.
+        let (artifact, request) = crate::interchange::qmatch::v5::proposal(
+            raw,
+            Arc::new(request),
+            context,
+            rows.iter().map(Arc::as_ref),
+        )?;
         lower
             .compiler
             .kernel
             .check_qmatch_source_v5(&artifact, &request.encode()?)?
     } else {
+        lower
+            .compiler
+            .charge(
+                &request.module,
+                decl.span,
+                rows.iter().map(|row| row.0.len() + row.1.len()).sum(),
+            )
+            .map_err(failure)?;
+        let sources = rows
+            .iter()
+            .map(|row| row.as_ref().clone())
+            .collect::<Vec<_>>();
         let proposal = Proposal::from_raw_with_sources(
             raw,
             None,

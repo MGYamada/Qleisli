@@ -83,7 +83,7 @@ def readCode {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment 
       | none =>
         let helpers : NaturalHelpers.Checked sources := ⟨state.prepared.helpers,state.prepared.helpersPrepared⟩
         let query ← typeExpressionWithCheckedHelpers sources helpers state.owner tokens
-        let closed ← ofClosed (StaticHeaders.frame state.prepared.original).binders.length query.basis
+        let closed ← ofClosed state.environment.variables query.basis
         let rows ← NaturalRows.typeRead sources state.owner state.prepared.helpers [] tokens query
         pure ⟨closed.code,rows⟩)
 
@@ -186,7 +186,7 @@ def checkRefinement {sources : Sources} (state : GenericLexicalNatural.SomeEnvir
     WorkM (Refinement state scope ordinal inputTokens outputTokens targetInput targetOutput) := do
   let input ← read state scope ordinal inputTokens
   let output ← read state scope ordinal outputTokens
-  let variables := (StaticHeaders.frame state.prepared.original).binders.length
+  let variables := state.environment.variables
   let targetInputCode ← ofClosed variables targetInput
   let targetOutputCode ← ofClosed variables targetOutput
   let inputEquality ← equate state input.result.code targetInputCode.code

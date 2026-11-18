@@ -231,7 +231,7 @@ structure Named {artifact : Artifact} (mode : Mode artifact) {owner : String}
     (event : SourceRuntimeContext.NamedEvent artifact.sources owner) (controlled : Bool) where
   context : Context
   body : SourceRuntimeTrace.Body event.target.signature
-  original : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body
+  original : SourceRuntimeTrace.NamedRead event body
   nested : mode.BodyData (.whole body controlled) context
   cursor : mode.Cursor
 
@@ -245,7 +245,7 @@ def readNamed {artifact : Artifact} (mode : Mode artifact) {owner name}
     let (callPosition,child) :: remaining := cursor.calls | throw .request
     guard (callPosition == position && position.offset == event.call.calleeOffset) .request
     let body ← NaturalAffine.witness (SourceRuntimeTrace.readNamedBody event)
-    return ⟨child,body.val,by with_reducible exact body.property,(),{cursor with calls := remaining}⟩
+    return ⟨child,body.val,.replayed (by with_reducible exact body.property),(),{cursor with calls := remaining}⟩
   | .planned _ =>
     match data with
     | ⟨_,_,.named _ child _ _ _ _ body original nested⟩ => return ⟨child,body,original,nested,()⟩
@@ -255,7 +255,7 @@ structure Transform {artifact : Artifact} (mode : Mode artifact) {owner : String
     (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position) (controlled : Bool) where
   child : Context
   request : RuntimeTransformRequest.Checked event position child
-  original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position child) request
+  original : RuntimeTransformRequest.Read event position child request
   nested : mode.BodyData (.whole request.source controlled) request.context
   cursor : mode.Cursor
 
@@ -269,7 +269,7 @@ def readTransform {artifact : Artifact} (mode : Mode artifact) {owner name}
     let (callPosition,child) :: remaining := cursor.calls | throw .request
     guard (callPosition == position) .request
     let request ← NaturalAffine.witness (RuntimeTransformRequest.read event position child)
-    return ⟨child,request.val,by with_reducible exact request.property,(),{cursor with calls := remaining}⟩
+    return ⟨child,request.val,.replayed (by with_reducible exact request.property),(),{cursor with calls := remaining}⟩
   | .planned _ =>
     match data with
     | ⟨_,_,.transform child _ _ request original nested⟩ => return ⟨child,request,original,nested,()⟩
@@ -423,7 +423,32 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
       return ⟨selected,positions,count,⟨_,_,events⟩,()⟩
     | ⟨_,_,.unsupported _⟩ => throw .request
 
-open RuntimeSourceEvent (At)
+structure Fold {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (event : SourceRuntimeContext.FoldEvent artifact.sources owner)
+    (iterations : List (List (SourceRuntimeContext.Event artifact.sources owner))) (position : Position) where
+  partition : RuntimeStaticFold.Partition event iterations position
+  events : mode.EventsData source (iterations.flatten.zip partition.positions)
+  cursor : mode.Cursor
+
+def readFold {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (event : SourceRuntimeContext.FoldEvent artifact.sources owner)
+    (iterations : List (List (SourceRuntimeContext.Event artifact.sources owner))) (position : Position)
+    (cursor : mode.Cursor) (data : mode.EventData source (.staticFold event iterations) position) :
+    WorkM (Fold mode source event iterations position) := do
+  match mode with
+  | .fresh =>
+    let (claimed,remaining) := cursor.takeStatic position
+    let partition ← RuntimeStaticFold.readPartition event iterations position claimed
+    return ⟨partition,(),remaining⟩
+  | .planned _ =>
+    match data with
+    | ⟨_,_,.staticFold partition _ events⟩ =>
+      return ⟨partition,⟨_,_,events⟩,()⟩
+    | ⟨_,_,.unsupported _⟩ => throw .request
+
+open RuntimeSourceEvent (At headAt tailAt)
 
 /-- An ordered trace of the actual handler computations. Original ordinals,
 handler data and intermediate work counters are retained. This administrative
@@ -442,16 +467,6 @@ inductive EventRun {sources : Sources} {caller : String} {State : Type}
       (read : (step event position entry data initial).run work = (.ok middle,budget))
       (tail : EventRun pairs Data step (entry.ordinal+1) rest middle final budget left) :
       EventRun pairs Data step entry.ordinal ((event,position) :: rest) initial final work left
-
-private theorem headAt {α : Type} (whole : List α) (ordinal : Nat) (head : α) (rest : List α)
-    (remaining : whole.drop ordinal = head :: rest) : whole[ordinal]? = some head := by
-  have first : (whole.drop ordinal)[0]? = some head := by rw [remaining]; rfl
-  simpa only [List.getElem?_drop,Nat.add_zero] using first
-
-private theorem tailAt {α : Type} (whole : List α) (ordinal : Nat) (head : α) (rest : List α)
-    (remaining : whole.drop ordinal = head :: rest) : whole.drop (ordinal+1) = rest := by
-  rw [← List.drop_drop (i := 1) (j := ordinal) (l := whole),remaining]
-  rfl
 
 private def freshVisit {sources caller State}
     (pairs : List (SourceRuntimeContext.Event sources caller × Position))

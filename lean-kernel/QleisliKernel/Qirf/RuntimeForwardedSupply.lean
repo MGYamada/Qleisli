@@ -141,7 +141,7 @@ inductive Chain {artifact catalogue context description graph implementations re
       Chain binding remaining paired
   | formal {caller record} {event : SourceRuntimeContext.NamedEvent artifact.sources caller}
       {body : SourceRuntimeTrace.Body event.target.signature}
-      {bodyRead : Computed (SourceRuntimeTrace.readNamedBody event) body}
+      {bodyRead : SourceRuntimeTrace.NamedRead event body}
       {parent : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName caller event.target.callerName}
       {invocation : Invocation catalogue record} {app : ApplicationAt catalogue record} {target : GenericDutyQueue.Target app}
       {prior : Binding queue parent invocation} {edge : Edge event parent app}
