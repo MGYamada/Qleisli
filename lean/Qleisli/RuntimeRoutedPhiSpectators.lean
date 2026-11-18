@@ -104,5 +104,35 @@ theorem checked_spectator_phi_slots {dependencies program block offset roles inp
       · exact ports_members checked.elseParked (List.mem_map_of_mem member)
       · exact ports_members checked.thenParked (List.mem_map_of_mem member))
 
+/-- The output of each original parked owner has its original physical
+width. The checked binding can therefore transport its source encoding. -/
+theorem checked_spectator_wire_width {dependencies program block offset roles inputTokens ordinary}
+    {branch : @RuntimeInterval.Branch dependencies program block offset}
+    {entry : RuntimeOwnerMap.Checked roles branch.interval.before}
+    (checked : RuntimeBranchProjection.Checked branch entry inputTokens ordinary) :
+    ∀ move ∈ checked.moves, move.2.original.binding.port.wires.length =
+      move.2.original.thenBinding.port.wires.length := by
+  intro move member
+  have included : move.1 ∈ checked.moves.map Sigma.fst := List.mem_map_of_mem member
+  rw [checked.allMoves] at included
+  have actual := (List.mem_filter.mp included).1
+  let port := move.2.original.thenBinding.port
+  have inside : port ∈ branch.thenState.quantum.live :=
+    ports_members checked.thenParked (List.mem_map_of_mem move.2.original.thenMember)
+  obtain ⟨work,left,ran⟩ := branch.thenRead
+  have valid := (Raw.Observation.checkOps_invariants _ _ _ _ _ work left ran).1
+  have found := RuntimeNamedFrameAxes.tokenLookup branch.thenState.quantum.live port
+    (Raw.Ownership.valid _ valid).owners inside
+  have key : port.token = move.1.thenToken := move.2.original.thenToken
+  rw [key] at found
+  have incoming : incomingWires branch.thenState.quantum.reference true move.1 = port.wires := by
+    have located : branch.thenState.quantum.reference.live.find?
+        (fun p => p.token == move.1.thenToken) = some port := found
+    simp only [incomingWires,if_true,located,Option.map_some,Option.getD_some]
+  exact (incoming_width branch.thenState.quantum branch.elseState.quantum branch.quantum true
+    (RuntimeOriginalBranch.original_branch_phi_checks branch).1 valid move.1 actual).trans
+      (congrArg List.length incoming)
+
 #print axioms checked_spectator_phi_slots
+#print axioms checked_spectator_wire_width
 end Qleisli.RuntimeCallHistory
