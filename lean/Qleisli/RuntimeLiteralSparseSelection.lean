@@ -33,7 +33,7 @@ private theorem pure_steps_ordinary {dependencies program block initial steps fi
   | nil => rfl
   | @cons initial middle final first rest head _ ih =>
     cases first
-    case pure node => exact (ih onlyPure).trans head
+    case pure node => exact (ih onlyPure).trans head.pure_preserves
     all_goals exact False.elim onlyPure
 
 private theorem named_stepList_ofList {dependencies program block} (steps : List (Step dependencies program block)) :
@@ -144,7 +144,7 @@ noncomputable def sourceNamedSelection {dependencies program block step}
     | named _ _ _ _ _ _ => exact False.elim selected
     | operation _ _ _ _ _ _ _ _ _ _ => exact False.elim selected
     | rectangularOperation _ => exact False.elim selected
-    | transform => exact False.elim selected
+    | transform | exclusive => exact False.elim selected
 
 noncomputable def withSparseSelection {dependencies program block}
     (fallback : List (Step dependencies program block) → Step dependencies program block →

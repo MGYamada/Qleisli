@@ -46,6 +46,67 @@ fn checked(source: &str) -> CheckedProgram {
 }
 
 #[test]
+fn mixed_unit_control_snapshot_retains_original_quantum_argument_positions() {
+    let source = "#![no_implicit_prelude]
+        unitary fn step(tag: Unit, a: Q<Bit>, end: Unit, b: Q<Unit>)
+            -> (Q<Bit>, Q<Unit>) { (phase[1,1](a), b) }
+        pub unitary fn probe(a: Q<Bit>, tag: Unit, b: Q<Unit>)
+            -> (Q<Bit>, Q<Unit>) {
+            step(tag, ctrl a, (), excl b); (a,b)
+        }";
+    let program = checked(source);
+    let obligation = program
+        .obligations
+        .iter()
+        .find(|obligation| matches!(obligation.kind, ObligationKind::ControlSectors))
+        .expect("original mixed control obligation");
+    let owners = &obligation.plan.runtime_owners;
+    assert_eq!(
+        owners
+            .iter()
+            .map(|owner| owner.argument_index)
+            .collect::<Vec<_>>(),
+        [1, 3]
+    );
+    assert_eq!(*owners[0].ty, Ty::quantum(Ty::bit()));
+    assert_eq!(*owners[1].ty, Ty::quantum(Ty::unit()));
+    assert_eq!(owners[0].reference.local.as_ref().unwrap().name, "a");
+    assert_eq!(owners[1].reference.local.as_ref().unwrap().name, "b");
+
+    let owner = program.resolution.qualified("main::probe").unwrap();
+    let module = crate::frontend::parser::parse_module(source).unwrap();
+    super::super::program_with(
+        BTreeMap::from([("main", &module)]),
+        SourceLimits::selected(),
+        |resolution, interfaces, helpers, _, _, indices, budget| {
+            let validation = Validation {
+                indices,
+                helpers,
+                interfaces,
+                resolution,
+                budget,
+                nominals: &Arc::default(),
+            };
+            let verify = |owners: &[RuntimeOwnerPlan]| {
+                validation.runtime_owners(
+                    owner,
+                    obligation.plan.node,
+                    &obligation.kind,
+                    owners,
+                    obligation.span,
+                )
+            };
+            verify(owners).unwrap();
+            let mut moved = owners.clone();
+            moved[1].argument_index = 2;
+            assert!(verify(&moved).is_err());
+            Ok(())
+        },
+    )
+    .unwrap();
+}
+
+#[test]
 fn control_snapshots_retain_original_alias_carry_types_and_call_order() {
     let program = checked(CONTROL_OWNERS);
     let owner = program.resolution.qualified("main::f").unwrap();

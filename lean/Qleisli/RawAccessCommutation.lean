@@ -311,7 +311,9 @@ theorem control_wire_index (places : List SourceTypes.AccessSyntax.Place)
     (wire : Nat) (present : wire ∈ place.axes) :
     ∃ index ∈ RuntimeAccessInterval.controlAxes places, (places.flatMap (·.axes))[index]? = some wire := by
   obtain ⟨index,read,held⟩ := written_control_position places 0 [] place member control wire present
-  exact ⟨index,by simpa only [Nat.zero_add,RuntimeAccessInterval.controlAxes] using held,read⟩
+  exact ⟨index,by
+    simpa only [Nat.zero_add,RuntimeAccessInterval.controlAxes,RuntimeAccessInterval.orderedControlAxes,
+      List.foldl_map] using held,read⟩
 
 #print axioms control_wire_index
 
@@ -579,16 +581,15 @@ private theorem structural_fold (operations : List Semantics.Raw.Op)
     have ⟨lastFrame,lastEvents⟩ := ih routing.2 tail
     exact ⟨lastFrame.trans frame,by simpa only [empty,List.append_nil] using lastEvents⟩
 
-/-- The actual routing slice changes owner ports and keeps the complete
+/-- The actual routing computation changes owner ports and keeps the complete
 physical frame in order. Its independent trace emits no quantum events. -/
-theorem structural_interval {dependencies program} {block : RuntimeInterval.Block dependencies program}
-    {start count} (interval : RuntimeInterval.Checked block start count)
-    (routing : (((block.operations.drop start).take count).all RuntimeAccessPartition.isRoute) = true) :
-    ∃ operations : List Semantics.Raw.Op,
-      (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure ∧
-      RuntimeLocalEvents.trace interval.before.quantum.reference operations =
-        some ⟨interval.after.quantum.reference,[],interval.before.quantum.frame.length⟩ ∧
-      interval.after.quantum.frame = interval.before.quantum.frame := by
+theorem structural_trace {dependencies fuel before after original}
+    (read : RuntimeInterval.Computed (Raw.Observation.checkOps dependencies fuel before original) after)
+    (routing : original.all RuntimeAccessPartition.isRoute = true) :
+    ∃ operations : List Semantics.Raw.Op, original = operations.map Semantics.Observation.Op.pure ∧
+      RuntimeLocalEvents.trace before.quantum.reference operations =
+        some ⟨after.quantum.reference,[],before.quantum.frame.length⟩ ∧
+      after.quantum.frame = before.quantum.frame := by
   have pure_routes (operations : List RuntimeInterval.Op)
       (routes : operations.all RuntimeAccessPartition.isRoute = true) :
       ∃ pureOps : List Semantics.Raw.Op, operations = pureOps.map Semantics.Observation.Op.pure := by
@@ -600,15 +601,94 @@ theorem structural_interval {dependencies program} {block : RuntimeInterval.Bloc
       cases operation with
       | pure op => exact ⟨op :: tail,congrArg _ equation⟩
       | _ => cases routes.1
-  obtain ⟨operations,original⟩ := pure_routes _ routing
-  obtain ⟨work,left,read⟩ := interval.intervalRead
-  rw [original] at read routing
-  obtain ⟨events,trace⟩ := RuntimeIntervalTrace.checkOps_pure_trace dependencies block.fuel
-    interval.before interval.after operations work left read
+  obtain ⟨operations,selected⟩ := pure_routes _ routing
+  obtain ⟨work,left,checked⟩ := read
+  rw [selected] at checked routing
+  obtain ⟨events,trace⟩ := RuntimeIntervalTrace.checkOps_pure_trace dependencies fuel
+    before after operations work left checked
   have ⟨frame,empty⟩ := structural_fold operations routing trace
   change events = [] at empty
   subst events
-  exact ⟨operations,original,trace,frame⟩
+  exact ⟨operations,selected,trace,frame⟩
+
+theorem structural_interval {dependencies program} {block : RuntimeInterval.Block dependencies program}
+    {start count} (interval : RuntimeInterval.Checked block start count)
+    (routing : (((block.operations.drop start).take count).all RuntimeAccessPartition.isRoute) = true) :
+    ∃ operations : List Semantics.Raw.Op,
+      (block.operations.drop start).take count = operations.map Semantics.Observation.Op.pure ∧
+      RuntimeLocalEvents.trace interval.before.quantum.reference operations =
+        some ⟨interval.after.quantum.reference,[],interval.before.quantum.frame.length⟩ ∧
+      interval.after.quantum.frame = interval.before.quantum.frame :=
+  structural_trace interval.intervalRead routing
+
+/-- An indexed access brackets its actual checked call with two structural
+computations. Both brackets induce the identity on the physical frame and
+emit no quantum action, even when the ordered owner view changes. -/
+theorem active_routing_traces {dependencies program block start count entry places returned}
+    {inner : @RuntimeInterval.Checked dependencies program block start count}
+    (opening : RuntimeAccessPartition.ActiveEntry inner entry places)
+    (closing : RuntimeAccessPartition.ActiveExit opening returned) :
+    (∃ operations : List Semantics.Raw.Op,
+      (block.operations.drop (start-RuntimeAccessPartition.activeCount places)).take
+          (RuntimeAccessPartition.activeCount places) = operations.map Semantics.Observation.Op.pure ∧
+      RuntimeLocalEvents.trace opening.preamble.before.quantum.reference operations =
+        some ⟨inner.before.quantum.reference,[],opening.preamble.before.quantum.frame.length⟩ ∧
+      inner.before.quantum.frame = opening.preamble.before.quantum.frame) ∧
+    (∃ operations : List Semantics.Raw.Op,
+      (block.operations.drop (start+count)).take (RuntimeAccessPartition.activeCount places) =
+        operations.map Semantics.Observation.Op.pure ∧
+      RuntimeLocalEvents.trace inner.after.quantum.reference operations =
+        some ⟨closing.after.quantum.reference,[],inner.after.quantum.frame.length⟩ ∧
+      closing.after.quantum.frame = inner.after.quantum.frame) := by
+  constructor
+  · rw [← opening.connected]
+    exact structural_interval opening.preamble opening.routes
+  · exact structural_trace closing.original closing.routes
+
+/-- The independent reader of the complete access interval sees exactly the
+events of the original call. The two routing slices change only the interface. -/
+theorem active_checked_events {dependencies program block start count entry places returned fuel events}
+    {inner : @RuntimeInterval.Checked dependencies program block start count}
+    (opening : RuntimeAccessPartition.ActiveEntry inner entry places)
+    (closing : RuntimeAccessPartition.ActiveExit opening returned)
+    (depth : block.fuel = fuel+1)
+    (read : Semantics.Observation.readOps block.fuel inner.before.quantum.reference
+      ((block.operations.drop start).take count) = some (inner.after.quantum.reference,events)) :
+    let size := RuntimeAccessPartition.activeCount places
+    Semantics.Observation.readOps block.fuel opening.preamble.before.quantum.reference
+      ((block.operations.drop (start-size)).take (size+count+size)) =
+      some (closing.after.quantum.reference,events) := by
+  let size := RuntimeAccessPartition.activeCount places
+  let original := block.operations.drop (start-size)
+  have split : original.take (size+count+size) =
+      original.take size ++ (((block.operations.drop start).take count) ++
+        ((block.operations.drop (start+count)).take size)) := by
+    simpa only [List.append_assoc] using
+      RuntimeAdjacentSlices.three_adjacent_slices block.operations start count size opening.bounded
+  obtain ⟨⟨preOps,prefixOps,prefixTrace,_⟩,postOps,suffixOps,suffixTrace,_⟩ :=
+    active_routing_traces opening closing
+  have before :
+      Semantics.Observation.readOps (fuel+1) opening.preamble.before.quantum.reference (original.take size) =
+        some (inner.before.quantum.reference,[]) := by
+    rw [show original.take size = preOps.map Semantics.Observation.Op.pure from prefixOps]
+    exact RuntimeAdjacentSlices.readOps_pure fuel _ _ _ prefixTrace
+  have after :
+      Semantics.Observation.readOps (fuel+1) inner.after.quantum.reference
+        ((block.operations.drop (start+count)).take size) = some (closing.after.quantum.reference,[]) := by
+    rw [show (block.operations.drop (start+count)).take size =
+      postOps.map Semantics.Observation.Op.pure from suffixOps]
+    exact RuntimeAdjacentSlices.readOps_pure fuel _ _ _ suffixTrace
+  rw [depth] at read
+  change Semantics.Observation.readOps block.fuel opening.preamble.before.quantum.reference
+    (original.take (size+count+size)) = _
+  rw [split,depth,RuntimeAdjacentSlices.readOps_append,before]
+  change (do
+    let (last,later) ← Semantics.Observation.readOps (fuel+1) inner.before.quantum.reference
+      (((block.operations.drop start).take count) ++ ((block.operations.drop (start+count)).take size))
+    return (last,[] ++ later)) = _
+  rw [RuntimeAdjacentSlices.readOps_append,read]
+  simp only [bind,Option.bind,after,List.nil_append,List.append_nil]
+  rfl
 
 theorem checked_routing_intervals {tokens dependencies program block callee lookup names calls start count inputs outputs}
     {call : @RuntimeAccessInterval.Checked tokens dependencies program callee lookup names calls
@@ -621,6 +701,8 @@ theorem checked_routing_intervals {tokens dependencies program block callee look
     (structural_interval routing.routing allowed.2).choose_spec.2.2⟩
 
 #print axioms structural_interval
+#print axioms active_routing_traces
+#print axioms active_checked_events
 #print axioms checked_routing_intervals
 
 private theorem selected_spectator_partition (state : Raw.Observation.State)

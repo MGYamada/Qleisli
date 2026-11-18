@@ -1,30 +1,38 @@
 //! Checked static descriptions and actual original callee specialization.
 use super::*;
 
-pub(super) struct PreparedAccess<'a> {
+pub(super) struct PreparedArgument<'a> {
     pub expression: &'a Expr,
     pub ty: Ty,
+    pub access: Option<QuantumAccess>,
 }
 #[derive(Clone, Copy)]
 pub(super) enum CallArguments<'a> {
     Source(RuntimeArguments<'a>),
-    Places(&'a [PreparedAccess<'a>]),
+    Prepared(&'a [PreparedArgument<'a>]),
 }
 impl<'a> CallArguments<'a> {
     fn len(self) -> usize {
         match self {
             Self::Source(args) => args.len(),
-            Self::Places(args) => args.len(),
+            Self::Prepared(args) => args.len(),
         }
     }
     fn get(self, index: usize) -> &'a Expr {
         match self {
             Self::Source(args) => args.get(index),
-            Self::Places(args) => args[index].expression,
+            Self::Prepared(args) => args[index].expression,
         }
     }
     fn iter(self) -> impl Iterator<Item = &'a Expr> {
         (0..self.len()).map(move |index| self.get(index))
+    }
+    fn access(self, index: usize) -> Option<QuantumAccess> {
+        match self {
+            Self::Source(RuntimeArguments::Values(_)) => None,
+            Self::Source(RuntimeArguments::Accesses(args)) => args[index].access(),
+            Self::Prepared(args) => args[index].access,
+        }
     }
 }
 impl Checker<'_, '_> {
@@ -37,7 +45,7 @@ impl Checker<'_, '_> {
     ) -> Result<Ty> {
         match arguments {
             CallArguments::Source(args) => self.expr(args.get(index), scope, expected),
-            CallArguments::Places(args) => {
+            CallArguments::Prepared(args) => {
                 let arg = &args[index];
                 if arg.ty.linear() {
                     self.effects.mark_quantum();
@@ -759,6 +767,41 @@ impl Checker<'_, '_> {
                 }
                 let (inputs, result, access) =
                     self.specialize(id, static_args, scope, span, kind != FnKind::Classical)?;
+                let result = if self.program.interfaces[&id].declares_access
+                    && inputs.len() == runtime.len()
+                {
+                    let mut owners = Vec::new();
+                    for (ordinal, (parameter, ty)) in
+                        self.program.decl(id).params.iter().zip(&inputs).enumerate()
+                    {
+                        let expected = parameter.access.map(|(mode, _)| mode);
+                        self.program.budget.charge(runtime.get(ordinal).span, 1)?;
+                        if expected != runtime.access(ordinal) {
+                            let required = match expected {
+                                Some(QuantumAccess::Excl) => "an explicit excl owner",
+                                Some(QuantumAccess::Ctrl) => "an explicit ctrl owner",
+                                None => "an ordinary argument",
+                            };
+                            return Err(SourceError::new(
+                                "ownership",
+                                runtime.get(ordinal).span,
+                                format!("declared access parameter requires {required}"),
+                            ));
+                        }
+                        if expected.is_some() {
+                            owners.push(self.program.budget.copy_ty(span, ty)?);
+                        }
+                    }
+                    self.program.budget.charge(span, 2)?;
+                    self.program.mixed_access_bodies.insert(self.definition);
+                    if owners.len() == 1 {
+                        owners.pop().expect("one declared access owner")
+                    } else {
+                        Ty::tuple(owners)
+                    }
+                } else {
+                    result
+                };
                 self.record_static_call(name, static_args, scope, &inputs, &result, access)?;
                 self.tick(span)?;
                 self.effects.call(id, span);
@@ -823,11 +866,18 @@ impl Checker<'_, '_> {
         scope: &mut Scope,
         span: Span,
     ) -> Result<Ty> {
-        if arguments
-            .iter()
-            .any(|argument| argument.selection.is_some())
+        let mixed = arguments.iter().any(|argument| argument.access().is_none());
+        if mixed
+            || arguments
+                .iter()
+                .any(|argument| argument.selection().is_some())
         {
-            return self.indexed_access_call(name, static_args, arguments, scope, span);
+            let result = self.indexed_access_call(name, static_args, arguments, scope, span)?;
+            if mixed {
+                self.program.budget.charge(span, arguments.len() + 2)?;
+                self.program.mixed_access_bodies.insert(self.definition);
+            }
+            return Ok(result);
         }
         self.program
             .budget
@@ -922,7 +972,7 @@ impl Checker<'_, '_> {
         }
         if arguments
             .iter()
-            .any(|argument| argument.access == QuantumAccess::Ctrl)
+            .any(|argument| argument.access() == Some(QuantumAccess::Ctrl))
         {
             // Retain the original obligation even when specialization never
             // visits this declaration, branch, loop body or provider call.

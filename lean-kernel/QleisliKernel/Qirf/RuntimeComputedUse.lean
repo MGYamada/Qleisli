@@ -105,6 +105,32 @@ private def callKey {sources caller scope tokens} (target : SourceRuntimeContext
 private def callKeyWork (key : CallKey) : Nat :=
   key.caller.utf8ByteSize + key.owner.utf8ByteSize + key.name.utf8ByteSize + 1
 
+/-- Use the owner's logical coordinate order before the access. The called
+body uses the marked places in written argument order. -/
+private def workspaceAccess {sources caller} (access : ExclusiveEvent sources caller)
+    (owners : List Owner) : WorkM (Nat × List Nat × List Owner) := do
+  let entries := access.checked.entries
+  let inputs := access.reservation.arguments
+  guard (entries.length == inputs.length && access.written.exclusive &&
+    !access.written.hasOrdinary) .request
+  exactWork (Exact.charge (16*(Raw.OwnerFlow.fields (owners ++ inputs ++ access.returned.outputs)+1)*
+    (owners.length+entries.length+1)))
+  let (bits,layouts) ← owners.foldlM (init := (0,([] : List (Owner × (Nat × Nat))))) fun (offset,layouts) owner => do
+    let layout ← FiniteCarrier.read owner.basis
+    guard (offset+layout.bits ≤ 6) .limit
+    guard (layout.labels == List.range (2^layout.bits)) .request
+    return (offset+layout.bits,(owner,offset,layout.bits)::layouts)
+  let axes ← (entries.zip inputs).flatMapM fun (entry,input) => do
+    let (offset,width) ← lift (readOption (layouts.lookup entry.2.parent))
+    let (start,stop) := entry.2.coordinates.range.getD (0,width)
+    guard (start ≤ stop && stop ≤ width && input.basis == entry.2.coordinates.basis) .request
+    return (List.range (stop-start)).map (fun axis => offset+start+axis)
+  let replaced := (entries.zip access.returned.outputs).filterMap fun (entry,output) =>
+    if entry.2.coordinates.range.isNone then some (entry.2.parent,output) else none
+  let returned := owners.map (fun owner => (replaced.lookup owner).getD owner)
+  guard (decide ((returned.map (·.ordinal)).Nodup)) .request
+  return (bits,axes,returned)
+
 /-- Evaluate original gates and explicit pair regrouping. A split keeps the
 components adjacent and first-fast. A join first orders its written inputs. -/
 def sourceAction (sources : Sources) (workspace : Bool) :
@@ -157,6 +183,19 @@ def sourceAction (sources : Sources) (workspace : Bool) :
         guard (event.consumed.all owners.contains) .request
         let (owners,action) ← applyGroup owners event.consumed event.allocated (← registerAction event) before
         return (owners,action,cache)
+      | .exclusive access child => do
+        guard (workspace && child.effect == .unitary) .request
+        let (bits,axes,returned) ← workspaceAccess access owners
+        guard (Finite.axesValid bits axes) .request
+        let dimension := 2^axes.length
+        exactWork (Exact.charge ((dimension+1)^2))
+        let identity ← lift (arithmetic (Exact.Matrix.identity dimension))
+        let action ← next access.reservation.arguments access.returned.outputs identity [child]
+        let whole ← Raw.promote bits axes action.matrix
+        let matrix ← exactWork (Exact.Matrix.composeWork whole before.matrix)
+        let coordinates := access.checked.entries.flatMap (fun entry => entry.2.coordinates.rows)
+        exactWork (Exact.charge (8*(before.rows.length+coordinates.length+action.rows.length+1)))
+        return (returned,⟨matrix,before.rows ++ coordinates ++ action.rows⟩,cache)
       | .named call => do
         let operands := call.arguments.flatMap valueOwners
         let returned := valueOwners call.value

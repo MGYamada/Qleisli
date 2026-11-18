@@ -226,12 +226,24 @@ QMATCH_V5_PROOF = {
         'Original.root_safe retain the original duty queue and fresh Raw root in the bounded checker. '
         'RuntimePureBody.readInlineArm checks the written arm and its actual Raw body in the original '
         'target frame. RuntimePureBody.selectionNode compares both arm forms against the exact controlled '
-        'action and caller Raw sector. RuntimeStaticFold.readPartition checks the original ordered '
-        'iterations against the complete contiguous Raw interval. Its owner frames retain the carried '
+        'action and caller Raw sector. RuntimeExclusiveAction binds the written access to its Raw '
+        'extraction, independently checked inner call and reassembly. A written ctrl must preserve its '
+        'sectors in that exact inner call. The checked extraction and reassembly each preserve the '
+        'ordered live wire frame, wire issuance history and live wire count. '
+        'RuntimeStaticFold.readPartition checks the original ordered '
+        'iterations against the complete contiguous Raw interval, including both routes for an indexed '
+        'access. Its owner frames retain the carried '
         'registers and spectators, including zero-width owners. Named and transformed call evidence '
         'retains the actual source read from that occurrence; each literal interval is checked. '
-        'The sourceScope field requires checked selections, a basis event, or a discharged application. '
-        'Rust retains the compared runtime request and uses it for recheck.'),
+        'The sourceScope field requires checked selections, a basis event, a discharged application, '
+        'or an explicitly requested access scope. Access scope requires an original wrapped access '
+        'in the checked root, call or branch steps and complete duty coverage of that invocation. '
+        'The access tag forms part of the compared QDV; unrelated roots retain their pending duties. '
+        'Rust retains the compared runtime request and uses it for recheck. '
+        'Active named v5 expansion can defer a missing nongeneric mixed ctrl receipt until '
+        'the enclosing source comparison. '
+        'After v5 acceptance Rust can reuse the retained module and callee offset for the same '
+        'active nongeneric mixed ctrl obligation in the dormant pass.'),
     'gaps': (
         'The bounded v5 route does not establish complete original source or numerical runtime '
         'preservation, full twelve-bit/64-label validation, external schemas, broader QS/PR/RS/EXACT '
@@ -446,6 +458,7 @@ PATHS = {
         ('src/interchange/native.rs', ['"qmatch recheck requires the complete retained request"',
             'super::execution_view::finite::qmatch_v5::complete(', 'pub fn qmatch_source_checked(']),
         ('src/interchange/execution_view/finite/qmatch_v5.rs', ['graph.write(&mut writer)?',
+            'writer.text(request.view_profile())?',
             'source(&mut view, &request.source)?', 'runtime(&mut view, &request.runtime)?',
             'context(&mut view, &request.context)?']),
         ('src/interchange/qmatch/context.rs', ['pub struct InlineBody', 'pub inline_bodies: Vec<InlineBody>',
@@ -456,10 +469,18 @@ PATHS = {
             'RuntimeBodyOperations.read prepared.val artifact.val.2 request.val.combinedRuntime',
             '0 < checked.selections.count', 'checked.coverage.residual = []',
             'RuntimeSelectionSteps.readBasisResult checked.checked.result',
+            'else if standaloneAccess then',
+            'RuntimeSelectionSteps.readAccessResult checked.checked.result',
+            'return .access noSelections (by with_reducible exact found ▸ access.property) (← readRootCoverage checked)',
             'RuntimeDutyInvocation.identify prepared.source.pending.queue (.root prepared.source.body)',
             'scope.val,by with_reducible exact scope.property',
             'guard (supplied.data == expected.data) .decodedView', 'theorem check_binding ',
             'theorem Original.covers ', 'theorem Original.root_safe ', 'theorem run_binding ']),
+        ('lean-kernel/Protocol/ExecutionView/QmatchV5.lean', [
+            'if request.standaloneAccess then Protocol.QmatchV5.accessProfile else Protocol.QmatchV5.profile']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeSelectionSteps.lean', ['def readAccessResult ',
+            '| .node _ (.exclusive ..) | .step _ (.routedNamed ..) => true',
+            '| .child (.transform ..) _ _ => return false']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeDiscoveryData.lean', ['def ordinaryRows ',
             '| .matching event arms =>', 'arm.2.inferredEffect == .unitary && !arm.2.quantumUse',
             'event.labels.labels.sourceRows ++ children']),
@@ -482,16 +503,46 @@ PATHS = {
             ['SourceRuntimeTrace.readComputedSource event',
              'Raw.clean dependencies bits bits 1 literal.table literal.useSteps literal.logicalSteps',
              'let action ← CodeSpace.readMap code.val code.val emitted.val']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeExclusiveAction.lean', [
+            'RuntimeAccessPartition.readActiveEntry interval before.bindings (places access)',
+            'RuntimeAccessPartition.readActiveExit opening.route returned.val',
+            'RuntimeAccessPartition.readBranchExit opening.route projected returned.val',
+            'access.written.arguments.zip selected', 'Sector.pureOps_bound _ _ pure',
+            'RuntimeAccessInterval.checkFragmentSectors',
+            'ControlEvidence access block start count opening.route.selected returned']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeBranchProjection.lean', [
+            'PureInterval.ports branch.thenState tokens = some ports',
+            'PureInterval.ports branch.elseState tokens = some ports',
+            '(selected ++ moves.map (·.2.original.thenBinding.port)).Perm branch.interval.before.quantum.live']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimePureBody.lean', [
+            'RuntimeBranchProjection.read actual.val opening.frame tokens ordinary',
+            'RuntimeExclusiveAction.readBranchClose opening frame boundary.after event.consumed nested.ordinary']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeAccessPartition.lean', [
+            'theorem checked_route_storage ', 'theorem ActiveEntry.storage ', 'theorem ActiveExit.storage ',
+            'checked_route_storage opening.preamble.intervalRead opening.routes',
+            'checked_route_storage closing.original closing.routes']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeStaticFold.lean', [
             'def readPartition ', 'positions.map (·.offset) = iterations.flatten.map',
-            'coverage : Ordered parent.start positions (parent.start+parent.count)',
+            'occupiedFrom : (iterations.flatten.zip positions).mapM occupiedPosition = some occupied',
+            'start := position.start-route, count := position.count+2*route',
+            'coverage : Ordered parent.start occupied (parent.start+parent.count)',
             'def readBefore ', 'def readAfter ']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeDiscoveryTraversal.lean', [
             'RuntimeStaticFold.readPartition event iterations position slot.1',
             '.retained parent occurrence']),
         ('lean-kernel/Protocol/QmatchV5.lean', ['def usesSelection ',
-            'if ← hasMeaningGroup 129 body then meaningProfile else basisProfile']),
+            'def accessProfile := "finite-source-access-context-v5"',
+            'if ← hasMeaningGroup 129 body then pure meaningProfile',
+            'if claimed == accessProfile then accessProfile else basisProfile']),
+        ('src/frontend/compile/dormant/controls.rs', ['self.check_dormant_controls_inner(None, false)',
+            '!inactive && self.declarations[&owner].static_params.is_empty()',
+            'if active_nongeneric && replay_mixed_control',
+            '.contains(&(module.into(), callee.span.start))',
+            'mixed Ctrl checks require independent replay of this original call']),
         ('src/frontend/compile/lower/mod.rs', ['let require_qmatch_v5 = require_qmatch_v5 || planned_meaning']),
+        ('src/frontend/compile/lower/quantum_match/nominal.rs', [
+            'for (owner, offset) in &context.retained_mixed_control_calls',
+            '.insert((owner.clone(), *offset))']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeArmDutyCoverage.lean', ['def Report.hasStandaloneMeaning',
             'body.checked.receipts[entry.2.candidate.receiptIndex].request.origin.isStandaloneMeaning']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeFormalMeaningDuty.lean',
@@ -503,11 +554,26 @@ PATHS = {
              'graphKey request.meaning.graph = graphKey native.request.meaning.graph',
              'asserted.child.action = specification.val.action']),
         ('src/frontend/compile/lower/mod.rs', ['if lower.nominal_basis_used == Some(true) && (qmatch.is_none() || runtime_inputs.is_none())',
-            'eval_typed_basis(module, basis, &env, &mut nominal)?']),
+            'eval_typed_basis(module, basis, &env, &mut nominal)?',
+            'let replay_mixed_control = self.uses_qmatch_v5()',
+            'self.call_instance(&key, values, Some(site), instance, replay_mixed_control)?',
+            '.retain_mixed_control_call(module, callee.span.start)',
+            '.filter(|_| program.source_body_scope().is_some())',
+            'quantum_match::nominal::retain_checked_calls(']),
     ], [('src/interchange/native/qmatch/tests.rs', 'v5_checks_the_original_context_and_refuses_a_divergent_view'),
+        ('src/interchange/qmatch/v5/tests.rs', 'standalone_access_wire_scope_retains_its_explicit_view_tag'),
         ('src/interchange/qmatch/context.rs', 'inline_context_rejects_unused_duplicate_and_unordered_slots'),
         ('tests/selected_runtime_execution.rs', 'coherent_block_arms_use_the_original_native_gate'),
         ('tests/selected_runtime_execution.rs', 'coherent_block_arm_replays_excl_and_returns_the_original_binding'),
+        ('tests/selected_runtime_execution.rs', 'coherent_static_arm_checks_exclusive_routes_and_inner_positions'),
+        ('tests/selected_runtime_execution.rs', 'coherent_block_arms_bind_ctrl_to_the_original_ordered_ports'),
+        ('tests/selected_runtime_execution.rs', 'mixed_access_requires_the_actual_original_body_and_marked_ports'),
+        ('tests/selected_runtime_execution.rs', 'mixed_bit_access_rechecks_the_written_condition_and_restores_parked_owners'),
+        ('tests/selected_runtime_execution.rs', 'declared_access_requires_the_original_role_and_raw_action'),
+        ('tests/selected_runtime_execution.rs', 'specialized_declared_access_requires_the_original_basis_actual'),
+        ('tests/selected_runtime_execution.rs', 'mixed_ctrl_dormant_check_requires_the_same_original_occurrence'),
+        ('tests/selected_runtime_execution.rs', 'nested_mixed_ctrl_replays_the_original_module_and_call'),
+        ('tests/selected_runtime_execution.rs', 'original_static_fold_binds_routed_control_occurrences_in_order'),
         ('tests/selected_runtime_execution.rs', 'project_coherent_block_arm_preserves_relative_phase'),
         ('tests/axis_routing_boundary.rs', 'original_register_fold_matches_each_raw_iteration'),
         ('src/frontend/compile/lower/quantum_match/nominal/tests.rs', 'original_general_nested_meaning_proposal'),
@@ -860,7 +926,7 @@ PATHS = {
     'sized-proposal': path_rule('untrusted-proposal', 'sized-source-proposal', '', [
         ('src/frontend/check/body/places.rs', ['fn selected_place(', 'fn disjoint_places(',
          'self.require_access_unitary(name, scope, span)?',
-         'CallArguments::Places(&prepared)', 'self.control_obligation(span, scope, Some(ports))?']),
+         'CallArguments::Prepared(&prepared)', 'self.control_obligation(span, scope, Some(ports))?']),
         ('src/frontend/specialize/elaborate/places.rs', ['fn partition_step(', 'fn place_call(', 'RuntimeInputs::Values(values)', 'records.into_iter().zip(returned).rev()']),
         ('src/frontend/specialize/lower/places.rs', ['fn partition_step(', 'fn validate_partition(',
          'Operation::TakeBit(', 'Operation::PutBit(']),
@@ -884,6 +950,7 @@ PATHS = {
         ('src/frontend/specialize/raw/preservation.rs', ['pub(super) fn validate_subject(', 'fn operation(', 'RawOp::ClassicalAnd', 'RawOp::ClassicalXor']),
     ], [('tests/sized_source.rs', 'untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming'),
         ('tests/exclusive_access.rs', 'selected_register_access_preserves_exact_axes_and_untouched_reference'),
+        ('tests/exclusive_access.rs', 'nested_fourier_steps_keep_the_original_axes_and_exact_reference_action'),
         ('tests/exclusive_access.rs', 'selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order'),
         ('tests/exclusive_access.rs', 'selected_generic_register_access_retains_original_static_bounds'),
         ('tests/exclusive_access.rs', 'indexed_places_retain_original_axis_and_owner_occurrences'),

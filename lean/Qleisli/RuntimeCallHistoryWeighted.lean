@@ -11,6 +11,7 @@ open RuntimeOwnerMap (Map)
 open RuntimeForestCode (embed sparseEntry)
 open Qleisli.RuntimeSemanticForest (Frame action product)
 open Qleisli.RuntimeStructuralHistory (Represents)
+open Qleisli.RuntimeSparseNamedBoundary (CallExit)
 open Qleisli.RuntimeNamedHeadCoefficients (fibre)
 open Qleisli.RuntimeForestRegroup (sourceDimension)
 open Qleisli.MixedRadix (recode)
@@ -87,23 +88,24 @@ private theorem families_unique {α : Type} {first second : List (Nat → α)}
 
 /-- The same ordered logical component family reconstructs every physical
 child result list. Its actual execution is independent of the slice weights. -/
-theorem CheckedCallRun.weighted_children
-    {dependencies program block start count inputs ordinary effect}
-    {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect}
+theorem CallRunOn.weighted_children
+    {dependencies program block start count childProgram}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    {prepared : RuntimeInterval.Prepared dependencies childProgram} {localAfter}
     {bindings} (frame : Frame bindings) (incoming selected spectators : Map)
-    (joint : Nat → Nat → ℂ) (actual : History) {parentEvents childEvents parents children}
-    (checked : CheckedCallRun scope (spectators.map (·.port)) actual
-      (inputHistory frame scope.prepared.block.entry.quantum.frame incoming selected spectators joint actual)
+    (joint : Nat → Nat → ℂ) (actual : History) {parentEvents childEvents parents children returnedSpectators}
+    (checked : CallRunOn interval prepared localAfter returnedSpectators actual
+      (inputHistory frame prepared.block.entry.quantum.frame incoming selected spectators joint actual)
       parentEvents childEvents parents children) :
     ∃ family : List (Nat → History),
-      (∀ logical, run dependencies scope.prepared.block.fuel childEvents
-        (componentInput frame scope.prepared.block.entry.quantum.frame incoming selected spectators joint actual logical) =
+      (∀ logical, run dependencies prepared.block.fuel childEvents
+        (componentInput frame prepared.block.entry.quantum.frame incoming selected spectators joint actual logical) =
         some (family.map (fun result => result logical))) ∧
       ∀ high, List.Forall₂
         (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
         (children.map (fun result => result high)) family := by
-  have law (high : Nat) := run_weighted _ _ dependencies scope.prepared.block.fuel childEvents _ _
-    (child_input_weighted frame scope.prepared.block.entry.quantum.frame incoming selected spectators joint actual high)
+  have law (high : Nat) := run_weighted _ _ dependencies prepared.block.fuel childEvents _ _
+    (child_input_weighted frame prepared.block.entry.quantum.frame incoming selected spectators joint actual high)
     (checked.paired.childRun high)
   obtain ⟨family,reads,_⟩ := law 0
   refine ⟨family,reads,?_⟩
@@ -138,7 +140,9 @@ theorem weighted_return_represents {bindings state} (frame : Frame bindings)
   exact congrArg (fun value => value * spectatorWeight spectators high index)
     (logical index (List.mem_range.mp member) col row bounded)
 
-private theorem return_families {bindings state} (frame : Frame bindings) (spectators : Map)
+/-- Reassemble each family of logical columns into its weighted child
+operator. The caller relates the resulting physical slices to its own ports. -/
+theorem weighted_return_families {bindings state} (frame : Frame bindings) (spectators : Map)
     {children family : List (Nat → History)} {joints : List (Nat → Nat → Nat → ℂ)}
     (mixed : ∀ high, List.Forall₂
       (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
@@ -170,32 +174,33 @@ private theorem return_families {bindings state} (frame : Frame bindings) (spect
 /-- Transport every logical result to the caller's written owner order,
 keeping the complete ordered parent histories. -/
 theorem original_weighted_call_returns
-    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
+    {dependencies program block start count inputs sources caller before child retired value localAfter}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
-    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
-    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
-    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (exit : CallExit boundary localAfter)
+    {roles} (checked : RuntimeOwnerMap.Checked roles interval.before)
     (parent : Frame checked.bindings) (sameBindings : checked.bindings = before.bindings)
     (returned : Frame child.bindings)
     {parents : List History} {children family : List (Nat → History)} {joints : List (Nat → Nat → Nat → ℂ)} :
     let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
-    List.Forall₂ (Agrees scope.interval.after.quantum.reference scope.localAfter.quantum.reference
+    List.Forall₂ (Agrees interval.after.quantum.reference localAfter.quantum.reference
       (spectators.map (·.port))) parents children →
     (∀ high, List.Forall₂
       (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
       (children.map (fun result => result high)) family) →
     List.Forall₂ (fun parts joint =>
       ∀ index < (product spectators).labels.length,
-        Represents returned scope.localAfter (parts index) (fun digit reference => joint digit index reference))
+        Represents returned localAfter (parts index) (fun digit reference => joint digit index reference))
       family joints →
     ∃ output : Frame boundary.afterFrame.bindings,
-      List.Forall₂ (fun actual joint => Represents output scope.interval.after actual
+      List.Forall₂ (fun actual joint => Represents output interval.after actual
         (returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators joint)) parents joints := by
   intro spectators paired mixed logical
-  exact original_call_returns scope boundary checked parent sameBindings returned paired
-    (return_families returned spectators mixed logical)
+  exact original_call_returns boundary exit checked parent sameBindings returned paired
+    (weighted_return_families returned spectators mixed logical)
 
 #print axioms child_input_weighted
-#print axioms CheckedCallRun.weighted_children
+#print axioms CallRunOn.weighted_children
 #print axioms original_weighted_call_returns
 end Qleisli.RuntimeCallHistory

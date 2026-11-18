@@ -17,6 +17,7 @@ open Lean Finite Semantics.CarrierInterface SourceTypes
 def profile := "finite-source-qmatch-context-v5"
 def basisProfile := "finite-source-basis-context-v5"
 def meaningProfile := "finite-source-meaning-context-v5"
+def accessProfile := "finite-source-access-context-v5"
 
 private def adapt {α : Type} (value : Except String α) : WorkM α := lift (value.mapError fun _ => .invalid)
 private def field (value : Json) (key : String) := value.getObjVal? key
@@ -111,6 +112,7 @@ structure Request where
   source : Source
   runtime : Qirf.RuntimeFamily.Request
   context : Context
+  standaloneAccess : Bool := false
 
 /-- The runtime JSON remains the strict existing v2 object. Its operation
 actuals come exclusively from this same original qmatch source instance. -/
@@ -292,9 +294,10 @@ def decode (value : Json) : WorkM Request := do
   let body ← context 129 value
   let hasSelection ← usesSelection 129 body
   let scope ← if hasSelection then pure profile else do
-    pure (if ← hasMeaningGroup 129 body then meaningProfile else basisProfile)
+    if ← hasMeaningGroup 129 body then pure meaningProfile
+    else pure (if claimed == accessProfile then accessProfile else basisProfile)
   guard (claimed == scope) .request
-  let request : Request := ⟨source,runtime,body⟩
+  let request : Request := ⟨source,runtime,body,scope == accessProfile⟩
   guard request.compatible .request
   return request
 

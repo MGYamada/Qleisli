@@ -1081,7 +1081,7 @@ fn contextual_markers_keep_original_locations_and_bounded_arity() {
     let ExprKind::AccessCall { args, .. } = &call.kind else {
         panic!("access call")
     };
-    assert_eq!(args[0].access, QuantumAccess::Excl);
+    assert_eq!(args[0].access(), Some(QuantumAccess::Excl));
     assert_eq!(
         &source[args[0].value.span.start..args[0].value.span.end],
         "excl q"
@@ -1090,11 +1090,14 @@ fn contextual_markers_keep_original_locations_and_bounded_arity() {
         panic!("lexical owner")
     };
     assert_eq!(&source[owner.span.start..owner.span.end], "q");
-    for arguments in ["excl q,q", "q,excl q", "excl q[]", "excl q()"] {
+    for arguments in ["excl q[]", "excl q()"] {
         assert!(
             parse_module(&format!("fn f(q:Q<Bit>)->Q<Bit>{{h({arguments});q}}")).is_err(),
             "{arguments}"
         );
+    }
+    for arguments in ["excl q,q", "q,excl q"] {
+        parse_module(&format!("fn f(q:Q<Bit>)->Q<Bit>{{h({arguments});q}}")).unwrap();
     }
     // Whitespace before a normal call's parenthesis does not turn the
     // ordinary identifier `excl` into an argument marker.
@@ -1103,6 +1106,11 @@ fn contextual_markers_keep_original_locations_and_bounded_arity() {
         "fn f(q:Q<Bit>)->Q<Bit>{{h({});q}}",
         vec!["excl q"; 65].join(",")
     );
+    let error = parse_module(&source).unwrap_err();
+    assert!(error.message.contains("64"), "{error}");
+
+    let ordinary = vec!["()"; 64].join(",");
+    let source = format!("fn f(q:Q<Bit>)->Q<Bit>{{h({ordinary},excl q);q}}");
     let error = parse_module(&source).unwrap_err();
     assert!(error.message.contains("64"), "{error}");
 }
@@ -1127,16 +1135,16 @@ fn indexed_places_retain_original_axis_and_owner_occurrences() {
         (&args[0], QuantumAccess::Excl, "excl q[k+1]"),
         (&args[1], QuantumAccess::Ctrl, "ctrl q[0..k]"),
     ] {
-        assert_eq!(arg.access, access);
+        assert_eq!(arg.access(), Some(access));
         assert_eq!(&source[arg.value.span.start..arg.value.span.end], text);
         let ExprKind::Name(owner) = &arg.value.kind else {
             panic!("parent owner")
         };
         assert_eq!(&source[owner.span.start..owner.span.end], "q");
     }
-    assert!(matches!(args[0].selection, Some(AxisSelection::Index(_))));
+    assert!(matches!(args[0].selection(), Some(AxisSelection::Index(_))));
     assert!(matches!(
-        args[1].selection,
+        args[1].selection(),
         Some(AxisSelection::Range { .. })
     ));
     for expression in [
@@ -1406,6 +1414,46 @@ fn symbolic_place_overlap_requires_original_binder_guards() {
     )
     .expect_err("runtime shadow is not a static index");
     assert_eq!(error.code(), "name", "{error}");
+}
+
+#[test]
+fn indexed_places_reject_nonlinear_indices_and_exhausted_affine_checks() {
+    let nonlinear = "pub unitary fn transform[const I: Nat,const J: Nat](q:Q<Bits<4>>)->Q<Bits<4>> requires I<2,J<2 { h(excl q[I*J]); q }\n";
+    // The declaration and fold are valid with 32 Nat parameters. The index
+    // obligation adds the loop binder as the 33rd solver variable.
+    let parameters = (0..32)
+        .map(|index| format!("const I{index}: Nat"))
+        .collect::<Vec<_>>()
+        .join(",");
+    let bounded = format!(
+        "pub unitary fn transform[{parameters}](q:Q<Bits<4>>)->Q<Bits<4>> {{ qfor static k in 0..4 carry r=q {{ h(excl r[k]); yield r; }} }}\n"
+    );
+    let parse = |text: &str| {
+        ParsedProgram::parse(
+            qleisli::edition::Edition::E2026,
+            BTreeMap::from([("main".into(), text.into())]),
+        )
+    };
+    parse(&bounded.replace("h(excl r[k]); ", "")).unwrap();
+    for (text, code, at, reason) in [
+        (
+            nonlinear,
+            "unsupported",
+            "I*J",
+            "symbolic sizes is nonlinear",
+        ),
+        (
+            &bounded,
+            "limit",
+            "excl r[k]",
+            "while checking static quantum place bounds or disjointness",
+        ),
+    ] {
+        let error = parse(text).unwrap_err();
+        assert_eq!(error.code(), code, "{error}");
+        assert_eq!(&text[error.span().start..error.span().end], at);
+        assert!(error.to_string().contains(reason), "{error}");
+    }
 }
 
 #[cfg_attr(
@@ -1856,6 +1904,130 @@ fn selected_places_thread_updated_parents_through_static_branches_and_folds() {
             .unwrap();
         let accepted = kernel.accept(proposal.proposal()).unwrap();
         proposal.validate_source_steps(&accepted).unwrap();
+    }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn nested_fourier_steps_keep_the_original_axes_and_exact_reference_action() {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
+    use qleisli::ir::RawOp;
+
+    let indexed = "use std::gate::controlled_phase;
+
+pub unitary fn transform(q: Q<Bits<2>>) -> Q<Bits<2>> {
+    qfor static j in 0..2 carry row=q {
+        h(excl row[j]);
+        let row = qfor static k in j+1..2 carry live=row {
+            controlled_phase[1,k-j+1](ctrl live[k], ctrl live[j]);
+            yield live;
+        };
+        yield row;
+    }
+}
+";
+    let explicit = "use std::gate::controlled_phase;
+
+pub unitary fn transform(q: Q<Bits<2>>) -> Q<Bits<2>> {
+    let (low,remaining) = take_bit[2,0](q);
+    let low = h(low);
+    let q = put_bit[2,0](low,remaining);
+    let (high,remaining) = take_bit[2,1](q);
+    let (low,empty) = take_bit[1,0](remaining);
+    let (high,low) = controlled_phase[1,2](high,low);
+    let remaining = put_bit[1,0](low,empty);
+    let q = put_bit[2,1](high,remaining);
+    let (high,remaining) = take_bit[2,1](q);
+    let high = h(high);
+    put_bit[2,1](high,remaining)
+}
+";
+    let wrong_axis = indexed.replace("h(excl row[j])", "h(excl row[1-j])");
+    let wrapper = "pub unitary fn with_reference(input:Q<(Bits<2>,Bit)>)->Q<(Bits<2>,Bit)>{
+        let (system,reference)=split(input);
+        transform(excl system);
+        join(system,reference)
+    }";
+    let moved_wrapper =
+        wrapper.replace("transform(excl system);", "let system = transform(system);");
+    let moved = checked_raw(
+        &format!("{indexed}\n{moved_wrapper}"),
+        "main::with_reference",
+    );
+
+    // Low axis first, followed by controlled S and high-axis H, with no
+    // physical reversal. This is F4 on the bit-reversed input label, tensored
+    // with identity on the high reference bit. Check every exact coefficient,
+    // so linearity also fixes the action on reference-entangled states.
+    let half = Exact::new([1, 0, 0, 0], 1).unwrap();
+    let expected = Matrix::new(
+        8,
+        8,
+        (0..64)
+            .map(|entry| {
+                let output = entry / 8;
+                let input = entry % 8;
+                if output & 4 != input & 4 {
+                    return Exact::zero();
+                }
+                let reversed = ((input & 1) << 1) | ((input & 2) >> 1);
+                half.mul(Exact::phase(2 * (output & 3) * reversed)).unwrap()
+            })
+            .collect(),
+    )
+    .unwrap();
+
+    let edition = qleisli::edition::Edition::E2026;
+    let kernel = Kernel::selected(edition).unwrap();
+    for (body, wrapper, matches) in [
+        (indexed, wrapper, true),
+        (explicit, moved_wrapper.as_str(), true),
+        (&wrong_axis, wrapper, false),
+    ] {
+        let source = selected(&format!("{body}\n{wrapper}"))
+            .instantiate("main::with_reference", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let proposal = source.lower_raw_with_kernel(&kernel, &mut budget).unwrap();
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        proposal.validate_source_steps(&accepted).unwrap();
+        assert!(accepted.raw().operations.iter().all(|operation| matches!(
+            operation,
+            RawOp::Split { .. }
+                | RawOp::Join { .. }
+                | RawOp::Gate { .. }
+                | RawOp::ApplyUnitary { .. }
+        )));
+        if body == indexed {
+            // Ending access gives back the transformed owner without adding
+            // an inverse or cleanup beyond the explicit owner-threaded call.
+            assert_eq!(accepted.raw(), moved.raw());
+        }
+        let boundary = UnitaryBoundary::new(
+            BasisType::pair(BasisType::Bits(2), BasisType::Bit),
+            accepted.raw().quantum_inputs[0].clone(),
+            accepted.output_ports()[0].clone(),
+        )
+        .unwrap();
+        let checked = check_unitary(
+            edition,
+            proposal.payload(),
+            &boundary,
+            &expected,
+            &mut budget,
+        );
+        if matches {
+            checked.unwrap();
+        } else {
+            assert_eq!(checked.unwrap_err().code, "contract");
+        }
     }
 }
 

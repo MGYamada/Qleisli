@@ -64,17 +64,15 @@ theorem full_product {bindings : Map} (available : Available bindings)
     simpa only [forestAxes,List.length_map] using product_width available
   rw [labels bindings full,width]
 
-/-- The literal register operation identifies every affected basis from its
-original source application. Its returned wire widths give full carriers. -/
-theorem register_layout {dependencies program sources caller block start count event before}
-    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
-    (binding : Binding) (consumed : binding.owner ∈ event.consumed ∨ binding.owner ∈ event.allocated)
+/-- A checked Bit or Bits owner has a full carrier, including the single
+logical value of a zero-width register. -/
+theorem full_register_layout (binding : Binding)
+    (basis : binding.owner.basis = [.bit] ∨ ∃ size, binding.owner.basis = [.bits size])
     (width : binding.port.bits = RuntimeStructuralAction.basisBits binding.owner.basis)
     (wires : binding.port.wires.length = binding.port.bits) :
     Nonempty (Qleisli.RuntimeStructuralLayoutEvidence.SemanticOwnerLayout binding) ∧
       (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits) := by
-  obtain bit | ⟨size,word⟩ := action.register_owners.2 binding.owner
-    (List.mem_append.mpr consumed.symm)
+  obtain bit | ⟨size,word⟩ := basis
   · let code : Semantics.FiniteCarrier.Layout := ⟨1,[0,1]⟩
     have original : layout binding.owner.basis = some code := by rw [bit]; rfl
     have bits : binding.port.bits = code.bits := by rw [width,bit]; rfl
@@ -87,6 +85,18 @@ theorem register_layout {dependencies program sources caller block start count e
     refine ⟨⟨⟨code,original,bits,wires.trans bits⟩⟩,?_⟩
     rw [ownerLayout,original]
     rfl
+
+/-- The literal register operation supplies the exact source basis and
+native widths for each full carrier it consumes or returns. -/
+theorem register_layout {dependencies program sources caller block start count event before}
+    (action : @RuntimeRegisterAction.Checked dependencies program sources caller block start count event before)
+    (binding : Binding) (consumed : binding.owner ∈ event.consumed ∨ binding.owner ∈ event.allocated)
+    (width : binding.port.bits = RuntimeStructuralAction.basisBits binding.owner.basis)
+    (wires : binding.port.wires.length = binding.port.bits) :
+    Nonempty (Qleisli.RuntimeStructuralLayoutEvidence.SemanticOwnerLayout binding) ∧
+      (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits) :=
+  full_register_layout binding (action.register_owners.2 binding.owner (List.mem_append.mpr consumed.symm))
+    width wires
 
 /-- Recover the full input and output codes from the exact ordered owner read
 and the zip of freshly allocated source roles with the actual Raw ports. -/
@@ -411,6 +421,117 @@ theorem full_block_repartition {before after spectators : Map}
   rw [block_result input, block_result output, eval _ inputFull, eval _ outputFull]
   rw [gather_repartition physical wires unique]
 
+/-- Change the source coordinates of a repartitioned full register while
+retaining the spectator digit and the external reference amplitude. -/
+noncomputable def repartitionOperator {Reference : Type}
+    (physicalFrame : List Nat) (before after oldBlock newBlock spectators : Map)
+    (original : Nat → Reference → ℂ) : Nat → Reference → ℂ :=
+  fun logical reference =>
+    let packed := recode after (newBlock++spectators) (sourceDimension (newBlock++spectators)) logical
+    let size := (product newBlock).labels.length
+    let oldDigit := gather (scatter 0 (forestAxes physicalFrame newBlock) (packed%size))
+      (forestAxes physicalFrame oldBlock)
+    let oldPacked := oldDigit+(product oldBlock).labels.length*(packed/size)
+    original (recode (oldBlock++spectators) before (sourceDimension before) oldPacked) reference
+
+/-- A full register may split into several owner groups or be reassembled.
+The ordered source representation changes by an exact coordinate map in
+either direction, while the represented state stays identical. -/
+theorem repartition_action {before after oldBlock newBlock spectators : Map}
+    (input : Frame before) (output : Frame after)
+    (groupedIn : Frame (oldBlock++spectators)) (groupedOut : Frame (newBlock++spectators))
+    (inputOrder : (oldBlock++spectators).Perm before) (outputOrder : (newBlock++spectators).Perm after)
+    (inputUnique : before.Nodup) (outputUnique : after.Nodup) (physicalFrame : List Nat)
+    (wires : (forestAxes physicalFrame oldBlock).Perm (forestAxes physicalFrame newBlock))
+    (unique : (forestAxes physicalFrame newBlock).Nodup)
+    (inputFull : (product oldBlock).labels = List.range (2^(forestAxes physicalFrame oldBlock).length))
+    (outputFull : (product newBlock).labels = List.range (2^(forestAxes physicalFrame newBlock).length))
+    {Reference : Type} (joint : Nat → Reference → ℂ) (row : Nat) (reference : Reference) :
+    action input physicalFrame joint row reference =
+      action output physicalFrame
+        (repartitionOperator physicalFrame before after oldBlock newBlock spectators joint) row reference := by
+  let old := fun logical ref => joint (recode (oldBlock++spectators) before (sourceDimension before) logical) ref
+  let low := (product oldBlock).labels.length
+  let byBlock := fun digit spectator ref => old (digit+low*spectator) ref
+  let new := blockJoint (product newBlock).labels.length (fun digit spectator ref =>
+    byBlock (gather (scatter 0 (forestAxes physicalFrame newBlock) digit)
+      (forestAxes physicalFrame oldBlock)) spectator ref)
+  have grouped : blockJoint low byBlock = old := by
+    funext logical ref
+    unfold blockJoint byBlock
+    rw [Nat.mod_add_div]
+  calc
+    _ = action groupedIn physicalFrame old row reference :=
+      regroup_action input groupedIn inputOrder.symm inputUnique physicalFrame joint row reference
+    _ = action groupedOut physicalFrame new row reference := by
+      rw [← grouped]
+      exact full_block_repartition groupedIn groupedOut physicalFrame wires unique inputFull outputFull
+        byBlock row reference
+    _ = _ := regroup_action groupedOut output outputOrder
+      (outputOrder.nodup_iff.mpr outputUnique) physicalFrame new row reference
+
+/-- The live input and output maps supply the coordinate permutation.
+The same spectator bindings on both sides can be cancelled from the
+complete Raw frame, including spectators with zero physical width. -/
+theorem repartition_checked_frames {beforeRoles afterRoles beforeState afterState}
+    (before : RuntimeOwnerMap.Checked beforeRoles beforeState)
+    (after : RuntimeOwnerMap.Checked afterRoles afterState)
+    (beforeValid : Raw.stateValid beforeState.quantum = true)
+    (afterValid : Raw.stateValid afterState.quantum = true)
+    (sameFrame : afterState.quantum.frame = beforeState.quantum.frame)
+    {oldBlock newBlock spectators : Map}
+    (inputOrder : (oldBlock++spectators).Perm before.bindings)
+    (outputOrder : (newBlock++spectators).Perm after.bindings)
+    (input : Frame before.bindings) (output : Frame after.bindings)
+    (oldFull : ∀ binding ∈ oldBlock, (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits))
+    (newFull : ∀ binding ∈ newBlock, (ownerLayout binding).labels = List.range (2^(ownerLayout binding).bits))
+    {Reference : Type} (joint : Nat → Reference → ℂ) (row : Nat) (reference : Reference) :
+    action input beforeState.quantum.frame joint row reference =
+      action output afterState.quantum.frame
+        (repartitionOperator beforeState.quantum.frame before.bindings after.bindings oldBlock newBlock
+          spectators joint) row reference := by
+  let physical := beforeState.quantum.frame
+  have beforeAxes := Qleisli.RuntimeNamedThreePackedOutput.final_axes_permutation before beforeValid
+  have afterAxes := Qleisli.RuntimeNamedThreePackedOutput.final_axes_permutation after afterValid
+  rw [sameFrame] at afterAxes
+  have axisOrder {first second : Map} (order : first.Perm second) :
+      (forestAxes physical first).Perm (forestAxes physical second) := by
+    simpa only [forestAxes] using
+      (order.flatMap_right (fun binding : Binding => binding.port.wires)).map physical.idxOf
+  have groupedBefore : (forestAxes physical (oldBlock++spectators)).Perm (List.range physical.length) :=
+    (axisOrder inputOrder).trans beforeAxes
+  have groupedAfter : (forestAxes physical (newBlock++spectators)).Perm (List.range physical.length) :=
+    (axisOrder outputOrder).trans afterAxes
+  have axes := groupedBefore.trans groupedAfter.symm
+  change (forestAxes physical (oldBlock++spectators)).Perm
+    (forestAxes physical (newBlock++spectators)) at axes
+  simp only [forestAxes,List.flatMap_append,List.map_append] at axes
+  have changed : (forestAxes physical oldBlock).Perm (forestAxes physical newBlock) :=
+    (List.perm_append_right_iff _).mp axes
+  have allDistinct := groupedAfter.nodup_iff.mpr List.nodup_range
+  simp only [forestAxes,List.flatMap_append,List.map_append] at allDistinct
+  have distinct : (forestAxes physical newBlock).Nodup := (List.nodup_append.mp allDistinct).1
+  have oldUnique : before.bindings.Nodup :=
+    List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+      (fun _ _ different equal => different (congrArg (fun binding : Binding => binding.port.token) equal))
+      before.tokensDistinct
+  have newUnique : after.bindings.Nodup :=
+    List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+      (fun _ _ different equal => different (congrArg (fun binding : Binding => binding.port.token) equal))
+      after.tokensDistinct
+  obtain ⟨groupedIn⟩ := frame_exists (bindings := oldBlock++spectators)
+    (fun binding member => input.available binding (inputOrder.mem_iff.mp member))
+  obtain ⟨groupedOut⟩ := frame_exists (bindings := newBlock++spectators)
+    (fun binding member => output.available binding (outputOrder.mem_iff.mp member))
+  have oldReady : Available oldBlock := fun binding member =>
+    groupedIn.available binding (List.mem_append_left _ member)
+  have newReady : Available newBlock := fun binding member =>
+    groupedOut.available binding (List.mem_append_left _ member)
+  rw [sameFrame]
+  exact repartition_action input output groupedIn groupedOut inputOrder outputOrder oldUnique newUnique
+    physical changed distinct (full_product oldReady oldFull physical) (full_product newReady newFull physical)
+    joint row reference
+
 private def registerReturns (outputs : List Semantics.Raw.Port) (roles : List RuntimeOwnerMap.Owner) : Map :=
   (outputs.zip roles).map (fun (port,owner) => ⟨owner,port⟩)
 
@@ -507,40 +628,24 @@ theorem original_register_action {dependencies program sources caller block star
     exact (List.nodup_append.mp sorted).2.1
   refine ⟨output,?_⟩
   intro Reference joint
-  let old := fun logical ref => joint (recode (selected++spectators) before.bindings
-    (sourceDimension before.bindings) logical) ref
-  let inCard := (product selected).labels.length
-  let outCard := (product returned).labels.length
-  let byBlock := fun digit spectator ref => old (digit + inCard * spectator) ref
-  let new := blockJoint outCard (fun digit spectator ref =>
-    byBlock (gather (scatter 0 (forestAxes physical returned) digit) (forestAxes physical selected)) spectator ref)
-  let expected := fun logical ref => new
-    (recode checked.after.bindings (returned++spectators) (sourceDimension (returned++spectators)) logical) ref
+  let expected := repartitionOperator physical before.bindings checked.after.bindings selected returned spectators joint
   refine ⟨expected,?_,?_⟩
   · rw [sourceRegister, Qleisli.RuntimeLiteralHistory.order_source ordered]
     rfl
   · intro row ref
-    have inputBlock : blockJoint inCard byBlock = old := by
-      funext logical ref
-      unfold blockJoint byBlock
-      rw [Nat.mod_add_div]
     rw [frames]
-    calc
-      _ = action groupedIn physical old row ref := regroup_action input groupedIn
-        partition.symm original physical joint row ref
-      _ = action groupedOut physical new row ref := by
-        rw [← inputBlock]
-        exact full_block_repartition groupedIn groupedOut physical axes unaliased
-          (full_product selectedAvailable selectedFull physical)
-          (full_product returnedAvailable returnedFull physical) byBlock row ref
-      _ = _ := regroup_action groupedOut output outputOrder
-        (outputOrder.nodup_iff.mpr realOutput) physical new row ref
+    exact repartition_action input output groupedIn groupedOut partition outputOrder original realOutput
+      physical axes unaliased (full_product selectedAvailable selectedFull physical)
+      (full_product returnedAvailable returnedFull physical) joint row ref
 
 #print axioms block_action
 #print axioms full_product
+#print axioms full_register_layout
 #print axioms register_layout
 #print axioms register_blocks
 #print axioms full_block_repartition
+#print axioms repartition_action
+#print axioms repartition_checked_frames
 #print axioms original_register_action
 #print axioms sparse_caller_input
 #print axioms caller_input

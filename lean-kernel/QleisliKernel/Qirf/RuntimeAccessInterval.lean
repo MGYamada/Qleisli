@@ -21,10 +21,13 @@ def carrier : Semantics.Finite.Atom → Semantics.FiniteCarrier.Atom
 def roles (places : List Place) : List Semantics.SourceOwners.Owner :=
   places.zipIdx.map fun (place,index) => ⟨index,place.basis.map carrier⟩
 
+def orderedControlAxes (ports : List (Role × Nat)) : List Nat :=
+  (ports.foldl (fun (offset,axes) (role,width) =>
+    (offset+width, if role == .ctrl then
+      axes ++ (List.range width).map (offset+·) else axes)) (0,[])).2
+
 def controlAxes (places : List Place) : List Nat :=
-  (places.foldl (fun (offset,axes) place =>
-    (offset+place.axes.length, if place.role == .ctrl then
-      axes ++ (List.range place.axes.length).map (offset+·) else axes)) (0,[])).2
+  orderedControlAxes (places.map fun place => (place.role,place.axes.length))
 
 structure Checked {tokens dependencies program} (call : CheckedCall tokens)
     (lookup : String → Option Owner) (names : Names) (calls : Calls)
@@ -66,20 +69,32 @@ structure Sectors {tokens dependencies program call lookup names calls block sta
   reconstructed : RuntimeInterval.Computed (Raw.BranchFunction.reconstruct dependencies checked.fragment) actual
   preserved : Semantics.ControlAccess.PreservesSectors actual (controlAxes checked.places)
 
-/-- Reconstruct only this call's exact action. Its control axes are obtained
-from the source-bound ordered ports, never an independently supplied mask. -/
-def checkSectors {tokens dependencies program call lookup names calls block start count inputs outputs}
-    (checked : @Checked tokens dependencies program call lookup names calls block start count inputs outputs) :
-    WorkM (Sectors checked) := do
-  let actual ← SourceTypes.NaturalAffine.witness (Raw.BranchFunction.reconstruct dependencies checked.fragment)
-  let bits := (checked.frame.selected.map (·.bits)).sum
-  let axes := controlAxes checked.places
+structure FragmentSectors (dependencies : List Semantics.Finite.Dependency)
+    (fragment : Semantics.Observation.Program) (axes : List Nat) where
+  actual : Semantics.Exact.Matrix
+  reconstructed : RuntimeInterval.Computed (Raw.BranchFunction.reconstruct dependencies fragment) actual
+  preserved : Semantics.ControlAccess.PreservesSectors actual axes
+
+/-- Check sectors of a literal fragment after the caller has fixed the port
+order and matched it to the original access operands. -/
+def checkFragmentSectors {dependencies} (fragment : Semantics.Observation.Program)
+    (bits : Nat) (axes : List Nat) : WorkM (FragmentSectors dependencies fragment axes) := do
+  let actual ← SourceTypes.NaturalAffine.witness (Raw.BranchFunction.reconstruct dependencies fragment)
   let passed ← SourceTypes.NaturalAffine.witness (ControlAccess.checkMatrix bits actual.val axes)
   have preserved : Semantics.ControlAccess.PreservesSectors actual.val axes := by
     obtain ⟨work,left,ok⟩ := passed.property
     have value : passed.val = () := Subsingleton.elim _ _
     exact ControlAccess.checkMatrix_sectors _ _ _ work left (by simpa only [value] using ok)
   return ⟨actual.val,by with_reducible exact actual.property,preserved⟩
+
+/-- Reconstruct only this call's exact action. Its control axes are obtained
+from the source-bound ordered ports, never an independently supplied mask. -/
+def checkSectors {tokens dependencies program call lookup names calls block start count inputs outputs}
+    (checked : @Checked tokens dependencies program call lookup names calls block start count inputs outputs) :
+    WorkM (Sectors checked) := do
+  let bits := (checked.frame.selected.map (·.bits)).sum
+  let sectors ← checkFragmentSectors (dependencies := dependencies) checked.fragment bits (controlAxes checked.places)
+  return ⟨sectors.actual,sectors.reconstructed,sectors.preserved⟩
 
 /-- The compatibility result now speaks about the wire lists read from the
 two actual intervals, even when structural routing lies between them. This is

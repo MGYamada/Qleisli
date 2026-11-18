@@ -14,6 +14,7 @@ impl Compiler<'_> {
         if !has_nominals
             && word_predicates.is_empty()
             && self.source.inline_coherent_bodies.is_empty()
+            && self.source.mixed_access_bodies.is_empty()
             && !self.source.obligations.iter().any(|obligation| {
                 matches!(obligation.kind, check::ObligationKind::WorkspaceRestoration)
             })
@@ -23,7 +24,11 @@ impl Compiler<'_> {
         let mut work = self.work;
         let planned = (|| {
             let mut roots = BTreeSet::new();
-            for key in &self.source.inline_coherent_bodies {
+            for key in self
+                .source
+                .inline_coherent_bodies
+                .union(&self.source.mixed_access_bodies)
+            {
                 if selected.is_none_or(|selected| selected.contains(key)) {
                     let module = &self.source.resolution.declaration(*key).name.0;
                     self.charge_at(&mut work, module, self.declarations[key].span, 2)?;

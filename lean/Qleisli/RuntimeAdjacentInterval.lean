@@ -113,6 +113,44 @@ theorem prefixSplit {α : Type} (xs : List α) (offset count : Nat) :
     | cons x xs => simpa only [Nat.succ_add,List.take_succ_cons,List.drop_succ_cons,List.cons_append,
         List.cons.injEq,true_and] using ih xs
 
+/-- The complete bracketed interval is the concatenation of its three
+literal slices. A zero-width slice still has its original boundary. -/
+theorem three_adjacent_slices {α : Type} (operations : List α) (start count size : Nat)
+    (bounded : size ≤ start) :
+    (operations.drop (start-size)).take (size+count+size) =
+      ((operations.drop (start-size)).take size) ++ ((operations.drop start).take count) ++
+        ((operations.drop (start+count)).take size) := by
+  have shift : start-size+size = start := Nat.sub_add_cancel bounded
+  rw [List.append_assoc,Nat.add_assoc,prefixSplit]
+  have dropPrefix : (operations.drop (start-size)).drop size = operations.drop start := by
+    simp only [List.drop_drop,shift]
+  rw [dropPrefix,prefixSplit,List.drop_drop]
+
+/-- Three successful readings of adjacent slices determine the final state
+of a successful reading of the same concatenated operations. Each receipt
+retains its actual inputs and may have used a different work counter. -/
+theorem checkOps_three_unique {deps fuel initial afterLeft afterMiddle afterRight combined left middle right}
+    (readLeft : Computed (Raw.Observation.checkOps deps fuel initial left) afterLeft)
+    (readMiddle : Computed (Raw.Observation.checkOps deps fuel afterLeft middle) afterMiddle)
+    (readRight : Computed (Raw.Observation.checkOps deps fuel afterMiddle right) afterRight)
+    (readCombined : Computed (Raw.Observation.checkOps deps fuel initial (left++middle++right)) combined) :
+    combined = afterRight := by
+  cases fuel with
+  | zero => exact False.elim (by obtain ⟨_,_,ran⟩ := readLeft; cases ran)
+  | succ fuel =>
+    let step := Raw.Observation.checkStep deps (Raw.Observation.checkOps deps fuel)
+    have one := singleFold step (singleStep deps _ (singleOps deps fuel))
+    obtain ⟨budget,leftover,ran⟩ := underlying readCombined
+    rw [List.append_assoc,List.foldlM_append] at ran
+    obtain ⟨first,nextBudget,firstRead,rest⟩ := bind_success _ _ budget leftover combined ran
+    have sameFirst := one left initial ⟨budget,nextBudget,firstRead⟩ (underlying readLeft)
+    subst first
+    rw [List.foldlM_append] at rest
+    obtain ⟨second,lastBudget,secondRead,lastRead⟩ := bind_success _ _ nextBudget leftover combined rest
+    have sameSecond := one middle afterLeft ⟨nextBudget,lastBudget,secondRead⟩ (underlying readMiddle)
+    subst second
+    exact one right afterMiddle ⟨lastBudget,leftover,lastRead⟩ (underlying readRight)
+
 /-- Adjacency is by position in one actual block, not by comparison of printed
 frames. The equality is of the full observing state, including history. -/
 theorem adjacent {deps program} {block : RuntimeInterval.Block deps program} {start count nextCount}
@@ -138,4 +176,5 @@ theorem adjacent {deps program} {block : RuntimeInterval.Block deps program} {st
     exact one ((block.operations.drop start).take count) first.before (underlying firstInterval) ⟨i,l,slice⟩
 
 #print axioms adjacent
+#print axioms checkOps_three_unique
 end Qleisli.RuntimeAdjacentSlices

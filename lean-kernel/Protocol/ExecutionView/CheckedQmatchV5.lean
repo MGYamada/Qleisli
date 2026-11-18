@@ -45,7 +45,7 @@ private def readRootCoverage {artifact owner name arguments context order runtim
     return ⟨root.val,by with_reducible exact root.property,List.all_eq_true.mp otherRoots⟩
   else throw .request
 
-/-- Standalone basis and Meaning checks retain the full catalogue and queue.
+/-- Standalone basis, access and Meaning checks retain the full catalogue and queue.
 They cover the selected original invocation and its callees. Other roots
 retain their pending positions for separate checks. -/
 inductive CheckedScope {artifact owner name arguments context order runtime}
@@ -54,6 +54,9 @@ inductive CheckedScope {artifact owner name arguments context order runtime}
   | selection (present : 0 < checked.selections.count) (complete : checked.coverage.residual = [])
   | basis (noSelections : checked.selections.count = 0)
       (found : ∃ before after,(RuntimeSelectionSteps.readBasisResult checked.checked.result).run before = (.ok true,after))
+      (coverage : RootCoverage checked)
+  | access (noSelections : checked.selections.count = 0)
+      (found : RuntimeInterval.Computed (RuntimeSelectionSteps.readAccessResult checked.checked.result) true)
       (coverage : RootCoverage checked)
   | meaning (noSelections : checked.selections.count = 0)
       (found : ∃ before after,checked.coverage.hasStandaloneMeaning.run before = (.ok true,after))
@@ -65,7 +68,7 @@ def CheckedScope.includes {artifact owner name arguments context order runtime}
     (scope : CheckedScope checked) (position : RuntimeArmDutyCoverage.Position prepared) : Prop :=
   match scope with
   | .selection .. => True
-  | .basis _ _ coverage | .meaning _ _ coverage =>
+  | .basis _ _ coverage | .access _ _ coverage | .meaning _ _ coverage =>
     outsideRoot coverage.root.record.val prepared.source.pending.entries[position.val] = false
 
 theorem CheckedScope.residual_excluded {artifact owner name arguments context order runtime}
@@ -77,24 +80,32 @@ theorem CheckedScope.residual_excluded {artifact owner name arguments context or
   | selection _ complete =>
     rw [complete]
     exact List.not_mem_nil
-  | basis _ _ coverage | meaning _ _ coverage =>
+  | basis _ _ coverage | access _ _ coverage | meaning _ _ coverage =>
     intro remaining
     exact Bool.noConfusion (within.symm.trans (coverage.otherRoots position remaining))
 
 private def readScope {artifact owner name arguments context order runtime}
     {prepared : RuntimeBodyOperations.Prepared artifact owner name arguments context}
-    (checked : RuntimeBodyOperations.Checked prepared order runtime) : Finite.WorkM (CheckedScope checked) := do
+    (standaloneAccess : Bool) (checked : RuntimeBodyOperations.Checked prepared order runtime) :
+    Finite.WorkM (CheckedScope checked) := do
   let selected ← Protocol.QmatchV5.usesSelection 129 context
   Finite.guard (selected == (0 < checked.selections.count)) .request
   if selection : 0 < checked.selections.count then
+    Finite.guard (!standaloneAccess) .request
     if complete : checked.coverage.residual = [] then return .selection selection complete
     else throw .request
   else
     let noSelections := Nat.eq_zero_of_not_pos selection
     if ← Protocol.QmatchV5.hasMeaningGroup 129 context then
+      Finite.guard (!standaloneAccess) .request
       let meaning ← NaturalAffine.witness checked.coverage.hasStandaloneMeaning
       if found : meaning.val = true then
         return .meaning noSelections (found ▸ meaning.property) (← readRootCoverage checked)
+      else throw .request
+    else if standaloneAccess then
+      let access ← NaturalAffine.witness (RuntimeSelectionSteps.readAccessResult checked.checked.result)
+      if found : access.val = true then
+        return .access noSelections (by with_reducible exact found ▸ access.property) (← readRootCoverage checked)
       else throw .request
     else
       let basis ← NaturalAffine.witness (RuntimeSelectionSteps.readBasisResult checked.checked.result)
@@ -119,7 +130,7 @@ structure Original (bytes : ByteArray) where
   checked : RuntimeBodyOperations.Checked prepared order request.combinedRuntime
   bodyRead : RuntimeInterval.Computed (RuntimeBodyOperations.read prepared order request.combinedRuntime) checked
   sourceScope : CheckedScope checked
-  scopeRead : RuntimeInterval.Computed (readScope checked) sourceScope
+  scopeRead : RuntimeInterval.Computed (readScope request.standaloneAccess checked) sourceScope
 
 def readOriginal (bytes : ByteArray) : Finite.WorkM (Original bytes) := do
   match packet : Protocol.Validity.packet bytes with
@@ -132,7 +143,7 @@ def readOriginal (bytes : ByteArray) : Finite.WorkM (Original bytes) := do
       let prepared ← NaturalAffine.witness (RuntimeBodyOperations.prepare artifact.val.1
         request.val.source.moduleName request.val.source.functionName request.val.source.arguments request.val.context)
       let checked ← NaturalAffine.witness (RuntimeBodyOperations.read prepared.val artifact.val.2 request.val.combinedRuntime)
-      let scope ← NaturalAffine.witness (readScope checked.val)
+      let scope ← NaturalAffine.witness (readScope request.val.standaloneAccess checked.val)
       return ⟨body,requestBytes,packet,artifact.val.1,artifact.val.2,
         by with_reducible exact artifact.property,
         request.val,by with_reducible exact request.property,compatible,
@@ -273,7 +284,7 @@ private def workspaceSteps {deps} (root : Semantics.Observation.Program) :
         let here ← match first with
           | .pure node => pure ((workspaceSegment root base node).toList)
           | .named (start := start) _ _ _ _ _ _ children => traverse (base+start) children
-          | .conditional .. => throw .request
+          | .conditional .. | .routedNamed .. => throw .request
           | _ => pure []
         let tail ← traverse base rest
         Finite.exactWork (Exact.charge here.length)
@@ -320,7 +331,7 @@ private def workspaceStep {deps root} (traverse : WorkspaceTraversal deps root)
   match first with
   | .pure node => pure ((workspaceSegment root base node).toList)
   | .named (start := start) _ _ _ _ _ _ children => traverse (base+start) children
-  | .conditional .. => throw .request
+  | .conditional .. | .routedNamed .. => throw .request
   | _ => pure []
 
 private theorem workspaceSteps_visit {deps root program block} (fuel base : Nat)
@@ -392,7 +403,7 @@ private theorem workspaceSteps_dependencies {deps : List Semantics.Finite.Depend
             subst builder
             exact workspaceSegment_dependencies selected
         | named _ _ _ _ _ _ children => exact ih head builder chosen
-        | conditional _ _ _ _ _ _ _ _ => cases head
+        | conditional _ _ _ _ _ _ _ _ | routedNamed _ _ => cases head
         | gap _ | observation _ =>
           simp only [workspaceStep] at head
           obtain ⟨rfl,_⟩ := Finite.pure_success _ _ _ _ head

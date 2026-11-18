@@ -155,6 +155,7 @@ pub(crate) fn proposal<'a>(
     raw: &RawProgram,
     runtime: Arc<interchange::runtime_root::Request>,
     original: &ContextSubject,
+    allow_standalone_access: bool,
     sources: impl IntoIterator<Item = &'a (String, String)>,
 ) -> Result<(Vec<u8>, Request)> {
     let mut graph = Encoder::new(Version::V2);
@@ -185,12 +186,15 @@ pub(crate) fn proposal<'a>(
         },
     };
     let context = builder.context(original, 0)?;
-    let request = Request {
+    let mut request = Request {
         source,
         runtime,
         context,
+        standalone_access: false,
     };
     request.bounded()?;
+    request.standalone_access =
+        allow_standalone_access && request.profile() == super::BASIS_PROFILE;
     Ok((
         interchange::finish_proposal(root, None, builder.graph)?,
         request,

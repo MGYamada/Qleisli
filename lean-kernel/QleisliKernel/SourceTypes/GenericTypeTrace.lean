@@ -69,6 +69,7 @@ structure Definition (sources : Sources) (owner name : String) where
   stateOriginal : HEq state.prepared.original original
   parameters : List Value
   result : Value
+  declared : Option (AccessSyntax.DeclaredParameters original.envelope)
   operations : List (String × Operation sources)
   rows : List (String × String)
   context : DefinitionContext sources
@@ -131,8 +132,24 @@ def prepareDefinition {sources owner name} (original : StaticHeaders.Original so
   let numeric ← StaticNatural.prepareOriginalWithHelpers original ["0"] context.helpers context.originals
   let state : GenericLexicalNatural.SomeEnvironment sources :=
     ⟨owner,name,numeric.prepared,GenericLexicalNatural.initial numeric.prepared⟩
-  let parameters ← original.envelope.parsedHeader.parameterTypes.mapM (GenericValues.readType state 65)
+  let declared ← if AccessSyntax.hasDeclaredTypes original.envelope.parsedHeader.parameterTypes then
+      some <$> adapt (AccessSyntax.readDeclaredParameters original.envelope)
+    else pure none
+  let parameters ← match declared with
+    | none => original.envelope.parsedHeader.parameterTypes.mapM (GenericValues.readType state 65)
+    | some declared => declared.parameters.mapM fun parameter => do
+      match parameter.2 with
+      | .ordinary _ =>
+        let part ← GenericValues.readType state 65 (parameter.1.typeTokens.map (·.text))
+        guard (!hasOwner part.value) .request
+        pure part
+      | .access written =>
+        let part ← GenericValues.readType state 65 (written.typeTokens.map (·.text))
+        let [.owner _] := part.value | throw .request
+        pure part
   let result ← GenericValues.readType state 65 (original.envelope.parsedHeader.resultTokens.map (·.text))
+  if declared.isSome then
+    GenericValues.expect state result.value [.ordinary [.fixed .unit]]
   let operations ← original.header.formals.mapM fun formal => do
     match formal.kind with
     | .operation _ => pure [(formal.name,← formalOperation state formal context.meanings)]
@@ -140,7 +157,7 @@ def prepareDefinition {sources owner name} (original : StaticHeaders.Original so
   let rows ← NaturalRows.bindings sources owner state.prepared.helpers state.prepared.bindings
   pure ⟨⟨original,state,by
       change HEq numeric.prepared.original original
-      rw [numeric.originalHeader],parameters.map (·.value),result.value,operations.flatten,
+      rw [numeric.originalHeader],parameters.map (·.value),result.value,declared,operations.flatten,
     (owner,original.envelope.source) :: rows ++ parameters.flatMap (·.rows) ++ result.rows ++
       operations.flatten.flatMap (fun (_,operation) => operation.rows),context⟩,rfl,rfl⟩
 
@@ -1042,7 +1059,8 @@ private def evaluator {sources owner name} (definition : Definition sources owne
         pure (values ++ [result.value],append previous result))
         ([],{value := [],remaining := environment})
     let checkCall {callTokens : List LocatedToken} (call : CallSyntax.Checked callTokens)
-        (values : List Value) (arguments : Outcome sources) : WorkM (Outcome sources) := do
+        (values : List Value) (arguments : Outcome sources) (access : List AccessSyntax.MarkedSlot := []) :
+        WorkM (Outcome sources) := do
       let transformed ← adapt (SourceRuntimeTransformSyntax.read call.call.callee)
       let transformedNamed ← match transformed with
         | none => pure false
@@ -1084,11 +1102,17 @@ private def evaluator {sources owner name} (definition : Definition sources owne
             (fun (_,actual) => actual.paths.applicable && actual.paths.adjointable && actual.paths.controllable)) .request
           guard (values.length == application.parameters.length) .request
           for (actual,expected) in values.zip application.parameters do GenericValues.expect state actual expected
+          let value ← match application.definition.declared with
+            | none => pure application.result
+            | some declared => do
+              guard (access == declared.markedSlots) .request
+              let returned ← access.mapM fun (slot,_) => lift (readOption values[slot]?)
+              pure (if returned.length == 1 then returned.flatten else .tuple returned.length :: returned.flatten)
           let externalPermission := owner != application.owner &&
             !application.definition.original.envelope.parsedHeader.ordinaryOnly &&
             application.definition.original.envelope.parsedHeader.effect.isSome
           let result : Outcome sources := {
-            value := application.result,remaining := arguments.remaining,
+            value,remaining := arguments.remaining,
             effect := functionEffect owner application.definition,quantumUse := externalPermission,
             references := application.references,needs := application.needs,meanings := application.meanings,
             activities := application.activities,
@@ -1328,16 +1352,21 @@ private def evaluator {sources owner name} (definition : Definition sources owne
       checkCall call values arguments
     | .exclusive written _ =>
       let names := written.ownerNames
-      guard (decide names.Nodup) .request
       exactWork (Exact.charge (16*(names.length+1)*(environment.length+1)))
-      let values ← names.mapM fun name => do
-        let some cell := environment.find? (fun cell => cell.name == name) | throw .request
-        let [.owner _] := cell.value | throw .request
-        pure cell.value
-      let expected := if values.length == 1 then values.flatten else .tuple values.length :: values.flatten
-      let checked ← checkCall written.parsed values {value := [],remaining := environment}
+      let whole := written.wholeExclusive
+      let (values,marked,rows) ← if whole then do
+        guard (decide names.Nodup) .request
+        let values ← names.mapM fun name => do
+          let some cell := environment.find? (fun cell => cell.name == name) | throw .request
+          let [.owner _] := cell.value | throw .request
+          pure cell.value
+        pure (values,values,[])
+      else GenericValues.readAccess state scope environment written
+      let expected := if marked.length == 1 then marked.flatten else .tuple marked.length :: marked.flatten
+      let checked ← checkCall written.parsed values {value := [],remaining := environment,rows} written.markedSlots
       GenericValues.expect state checked.value expected
-      pure {checked with value := [.ordinary [.fixed .unit]]})
+      let needs := if whole then checked.needs else checked.needs ++ [⟨checked.effect,.unitary,false⟩]
+      pure {checked with value := [.ordinary [.fixed .unit]],needs})
 
 def checkTree {sources owner name} (definition : Definition sources owner name)
     (tree : SourceSyntax.Tree definition.original.envelope.occurrence.body)
@@ -1351,9 +1380,22 @@ def checkTree {sources owner name} (definition : Definition sources owner name)
       (definition.original.envelope.occurrence.body.length+1) tree
   let result ← evaluator definition prepared (definition.original.envelope.occurrence.body.length+1) false
     definition.state (staticNames ++ initial.map (·.name)) initial tree
-  guard (result.remaining.all fun cell => !hasOwner cell.value) .request
   GenericValues.expect definition.state result.value definition.result
-  pure result
+  match definition.declared with
+  | none =>
+    guard (result.remaining.all fun cell => !hasOwner cell.value) .request
+    pure result
+  | some declared =>
+    let remaining ← (declared.parameters.zip definition.parameters).foldlM
+        (init := result.remaining) fun remaining (parameter,expected) => do
+      match parameter.2 with
+      | .ordinary _ => pure remaining
+      | .access written =>
+        let (value,rest) ← adapt (GenericValues.take written.owner.text remaining)
+        GenericValues.expect definition.state value expected
+        pure rest
+    guard (remaining.all fun cell => !hasOwner cell.value) .request
+    pure {result with remaining, needs := result.needs ++ [⟨result.effect,.unitary,false⟩]}
 
 structure BodyRecord (sources : Sources) where
   owner : String

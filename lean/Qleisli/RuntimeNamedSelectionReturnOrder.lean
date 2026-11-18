@@ -49,12 +49,12 @@ theorem returned_permutation {dependencies program block start count roles sourc
 
 /-- The retained caller complement uses full owner identity, so it also
 preserves spectator order and each separate zero-width owner. -/
-theorem caller_after_order
-    {dependencies program block callStart callCount inputs ordinary effect sources caller before child retired value}
+theorem caller_after_order_on
+    {dependencies program block callStart callCount inputs sources caller before child retired value}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
-    (scope : @RuntimeCallScope.Checked dependencies program block callStart callCount inputs ordinary effect)
-    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
-    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    {interval : @RuntimeInterval.Checked dependencies program block callStart callCount}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles interval.before)
     (sameBindings : checked.bindings = before.bindings) :
     let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
     boundary.afterFrame.bindings = spectators++boundary.mapped ∧
@@ -88,6 +88,18 @@ theorem caller_after_order
   have after : boundary.afterFrame.bindings = spectators++boundary.mapped :=
     boundary.sameAfter.trans (boundary.afterBindings.trans (by rw [complement]))
   exact ⟨after,after ▸ List.perm_append_comm⟩
+
+theorem caller_after_order
+    {dependencies program block callStart callCount inputs ordinary effect sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (scope : @RuntimeCallScope.Checked dependencies program block callStart callCount inputs ordinary effect)
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    (sameBindings : checked.bindings = before.bindings) :
+    let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
+    boundary.afterFrame.bindings = spectators++boundary.mapped ∧
+      (boundary.mapped++spectators).Perm boundary.afterFrame.bindings :=
+  caller_after_order_on boundary checked sameBindings
 
 private def SelectionReturnOrder
     {dependencies program block callStart callCount inputs ordinary effect sources caller before child retired value}

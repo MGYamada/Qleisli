@@ -28,11 +28,13 @@ pub(in crate::frontend::compile::lower) struct Frame {
     selections: Vec<Selection>,
     calls: Vec<(Position, Arc<ContextSubject>)>,
     retained_static_calls: Vec<(String, usize, usize)>,
+    retained_mixed_control_calls: Vec<(String, usize)>,
     branches: Vec<(Position, Arc<ContextSubject>, Arc<ContextSubject>)>,
     contains_selections: bool,
     contains_meaning_applications: bool,
     source_gate: bool,
     needs_qmatch_v5: bool,
+    requires_mixed_access_replay: bool,
     prefer_runtime_root: bool,
 }
 
@@ -249,17 +251,33 @@ impl Frame {
             selections: Vec::new(),
             calls: Vec::new(),
             retained_static_calls: Vec::new(),
+            retained_mixed_control_calls: Vec::new(),
             branches: Vec::new(),
             contains_selections: false,
             contains_meaning_applications,
             source_gate,
             needs_qmatch_v5: false,
+            requires_mixed_access_replay: false,
             prefer_runtime_root: false,
         }))
     }
 
     pub(in crate::frontend::compile::lower) fn requires_source_gate(&self) -> bool {
         self.source_gate
+    }
+
+    pub(in crate::frontend::compile::lower) fn require_mixed_access_replay(&mut self) {
+        self.requires_mixed_access_replay = true;
+        self.source_gate = true;
+    }
+
+    pub(in crate::frontend::compile::lower) fn retain_mixed_control_call(
+        &mut self,
+        module: &str,
+        offset: usize,
+    ) {
+        self.retained_mixed_control_calls
+            .push((module.into(), offset));
     }
 
     pub(super) fn require_qmatch_v5(&mut self) {
@@ -276,6 +294,9 @@ impl Frame {
 
     fn include_qmatch_profile(&mut self, body: &ContextSubject) {
         self.needs_qmatch_v5 |= body.needs_qmatch_v5;
+        if body.requires_mixed_access_replay {
+            self.require_mixed_access_replay();
+        }
         self.prefer_runtime_root |= body.prefer_runtime_root;
     }
 
@@ -305,11 +326,13 @@ impl Frame {
             selections: Vec::new(),
             calls: Vec::new(),
             retained_static_calls: Vec::new(),
+            retained_mixed_control_calls: Vec::new(),
             branches: Vec::new(),
             contains_selections: false,
             contains_meaning_applications: false,
             source_gate: self.source_gate,
             needs_qmatch_v5: false,
+            requires_mixed_access_replay: false,
             prefer_runtime_root: false,
         }
     }
@@ -358,10 +381,12 @@ impl Frame {
             branches: self.branches,
             operation: None,
             retained_static_calls: self.retained_static_calls,
+            retained_mixed_control_calls: self.retained_mixed_control_calls,
             contains_selections: self.contains_selections,
             contains_meaning_applications: self.contains_meaning_applications,
             requires_source_gate: self.source_gate,
             needs_qmatch_v5: self.needs_qmatch_v5,
+            requires_mixed_access_replay: self.requires_mixed_access_replay,
             prefer_runtime_root: self.prefer_runtime_root,
         }))
     }
@@ -406,10 +431,12 @@ impl Frame {
                 branches: self.branches,
                 operation: None,
                 retained_static_calls: self.retained_static_calls,
+                retained_mixed_control_calls: self.retained_mixed_control_calls,
                 contains_selections: self.contains_selections,
                 contains_meaning_applications: self.contains_meaning_applications,
                 requires_source_gate: self.source_gate,
                 needs_qmatch_v5: self.needs_qmatch_v5,
+                requires_mixed_access_replay: self.requires_mixed_access_replay,
                 prefer_runtime_root: self.prefer_runtime_root,
             })));
         }
@@ -559,10 +586,12 @@ impl Frame {
             branches: self.branches,
             operation: None,
             retained_static_calls: self.retained_static_calls,
+            retained_mixed_control_calls: self.retained_mixed_control_calls,
             contains_selections: self.contains_selections,
             contains_meaning_applications: self.contains_meaning_applications,
             requires_source_gate: self.source_gate,
             needs_qmatch_v5: self.needs_qmatch_v5,
+            requires_mixed_access_replay: self.requires_mixed_access_replay,
             prefer_runtime_root: self.prefer_runtime_root,
         })))
     }
@@ -771,6 +800,16 @@ pub(in crate::frontend::compile::lower) fn retain_checked_calls(
                 .entry((owner.clone(), *offset))
                 .or_default()
                 .insert(*record);
+        }
+        for (owner, offset) in &context.retained_mixed_control_calls {
+            compiler.charge(
+                module,
+                span,
+                (owner.len() + 2).saturating_mul(compiler.checked_mixed_control_calls.len() + 1),
+            )?;
+            compiler
+                .checked_mixed_control_calls
+                .insert((owner.clone(), *offset));
         }
         pending.extend(context.calls.iter().map(|(_, child)| child.as_ref()));
         for (_, then_body, else_body) in &context.branches {

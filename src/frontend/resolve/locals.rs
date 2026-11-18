@@ -1026,8 +1026,7 @@ impl<'ast> Task<'ast> {
                     .saturating_add(
                         args.iter()
                             .map(|arg| {
-                                arg.selection
-                                    .as_ref()
+                                arg.selection()
                                     .map_or(0, |selection| selection.naturals().count())
                             })
                             .sum::<usize>(),
@@ -1505,7 +1504,7 @@ where
                     } => {
                         tasks.extend(args.iter().rev().map(|arg| Task::Expression(&arg.value)));
                         for arg in args.iter().rev() {
-                            if let Some(selection) = &arg.selection {
+                            if let Some(selection) = arg.selection() {
                                 tasks.extend(selection.naturals().map(Task::Natural));
                             }
                         }

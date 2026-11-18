@@ -38,8 +38,8 @@ inductive Tree : List LocatedToken → Type where
       (children : Children (parsed.group.arguments.map (·.tokens))) : Tree tokens
   | call {tokens : List LocatedToken} (parsed : CallSyntax.Checked tokens)
       (children : Children (parsed.call.arguments.map (·.tokens))) : Tree tokens
-  | exclusive {tokens : List LocatedToken} (written : AccessSyntax.CheckedCall tokens)
-      (whole : written.wholeExclusive = true) : Tree tokens
+  | exclusive {tokens : List LocatedToken} (written : AccessSyntax.CheckedAccessCall tokens)
+      (original : AccessSyntax.readAccessCall tokens = .ok written) : Tree tokens
   | binding {tokens : List LocatedToken} (parsed : StatementSyntax.Checked tokens)
       (expression : Tree parsed.statement.expression)
       (rest : Tree parsed.statement.rest) : Tree tokens
@@ -255,11 +255,11 @@ private def readWithStatements {tokenFuel : Nat} (statements : StatementSyntax.P
       | .ok term => return .move tokens term parsed
       | .error error => throw error
     let call ← CallSyntax.read tokens
-    if call.call.arguments.any (fun arg => arg.tokens.head?.map (·.text) == some "excl") then
-      let written ← AccessSyntax.readCall tokens
-      if whole : written.wholeExclusive = true then
-        return .exclusive written whole
-      else throw "coherent source access requires whole exclusive arguments"
+    -- A marker is contextual and must be followed by a lexical owner.
+    if call.call.arguments.any (fun argument => AccessSyntax.startsAccess argument.tokens) then
+      match original : AccessSyntax.readAccessCall tokens with
+      | .ok written => return .exclusive written original
+      | .error error => throw error
     let children ← readChildren (next (depth+1) false) (call.call.arguments.map (·.tokens))
     return .call call children)
 

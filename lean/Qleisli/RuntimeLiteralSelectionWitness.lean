@@ -36,6 +36,42 @@ private theorem step_witness {dependencies program block step ordinal count}
         omega
       exact ⟨count,⟨position ▸ found⟩⟩
 
+/-- Keep the original ordinal when descending from a pure step into its node. -/
+theorem pure_node_at_step {dependencies program block steps count}
+    (node : Node dependencies program block)
+    (witness : Witness (.steps 0 (Steps.ofList steps)) count)
+    (earlier later : List (Step dependencies program block))
+    (split : steps = earlier ++ .pure node :: later) :
+    ∃ count, Nonempty (Witness (.node earlier.length node) count) := by
+  subst steps
+  obtain ⟨_,⟨current⟩⟩ := step_witness earlier later witness
+  cases current with
+  | leaf original => cases original
+  | selection original _ _ => cases original
+  | pair original _ _ => cases original
+  | child original nested =>
+    cases original
+    exact ⟨_,⟨by simpa only [Nat.zero_add] using nested⟩⟩
+
+/-- An indexed access retains the exact nested action and its original
+occurrence. There is no new ordinal for the structural routing slices. -/
+theorem exclusive_node_witness {sources caller dependencies program block start count access interval suspended before
+    child retired sourceEvent ordinal selections ordinary}
+    {opening : @RuntimeExclusiveAction.Opened sources caller dependencies program block start count
+      access interval suspended before}
+    {occurrence : RuntimeSourceEvent.Location (.exclusive access sourceEvent) start count}
+    {closing : RuntimeExclusiveAction.Closed opening child retired}
+    {inner : Node dependencies program block}
+    (witness : Witness (.node ordinal (.exclusive occurrence closing inner ordinary)) selections) :
+    Nonempty (Witness (.node ordinal inner) selections) := by
+  cases witness with
+  | leaf original => cases original
+  | selection original _ _ => cases original
+  | pair original _ _ => cases original
+  | child original nested =>
+    cases original
+    exact ⟨nested⟩
+
 def Direct {dependencies program block} : Step dependencies program block → Prop
   | .pure node@(.selection ..) => Nonempty (RuntimeSelectionWitness.Checked node)
   | _ => True
@@ -51,25 +87,20 @@ theorem direct_at_step {dependencies program block steps count step}
   | pure node =>
     cases node
     case selection =>
-      obtain ⟨_,⟨current⟩⟩ := step_witness earlier later witness
-      cases current with
+      obtain ⟨_,⟨nested⟩⟩ := pure_node_at_step _ witness earlier later rfl
+      cases nested with
       | leaf original => cases original
-      | selection original _ _ => cases original
-      | pair original _ _ => cases original
-      | child original nested =>
+      | selection original literal _ =>
         cases original
-        cases nested with
-        | leaf original => cases original
-        | child original _ => cases original
-        | pair original _ _ => cases original
-        | selection original literal _ =>
-          cases original
-          exact ⟨literal⟩
+        exact ⟨literal⟩
+      | pair original _ _ => cases original
+      | child original _ => cases original
     all_goals exact True.intro
   | _ => exact True.intro
 
 def Named {dependencies program block} : Step dependencies program block → Prop
-  | .named _ _ _ _ _ _ children => ∃ count, Nonempty (Witness (.steps 0 children) count)
+  | .named _ _ _ _ _ _ children | .routedNamed _ children =>
+    ∃ count, Nonempty (Witness (.steps 0 children) count)
   | _ => True
 
 /-- The same witness retains the actual named callee's steps for recursive
@@ -80,7 +111,7 @@ theorem named_at_step {dependencies program block steps count step}
     (split : steps = earlier ++ step :: later) : Named step := by
   subst steps
   cases step with
-  | named event frame body bodyRead boundary finalOrdinary children =>
+  | named _ _ _ _ _ _ children | routedNamed _ children =>
     obtain ⟨_,⟨current⟩⟩ := step_witness earlier later witness
     cases current with
     | leaf original => cases original
@@ -141,24 +172,20 @@ theorem pure_named_at_step {dependencies program block steps count step}
   case pure node =>
     cases node
     case named =>
-      obtain ⟨_,⟨current⟩⟩ := step_witness earlier later witness
-      cases current with
+      obtain ⟨_,⟨nested⟩⟩ := pure_node_at_step _ witness earlier later rfl
+      cases nested with
       | leaf original => cases original
       | selection original _ _ => cases original
       | pair original _ _ => cases original
-      | child original nested =>
+      | child original inside =>
         cases original
-        cases nested with
-        | leaf original => cases original
-        | selection original _ _ => cases original
-        | pair original _ _ => cases original
-        | child original inside =>
-          cases original
-          exact ⟨_,⟨inside⟩⟩
+        exact ⟨_,⟨inside⟩⟩
     all_goals exact True.intro
   all_goals exact True.intro
 
 #print axioms pureSteps_witness
+#print axioms pure_node_at_step
+#print axioms exclusive_node_witness
 #print axioms pure_named_at_step
 #print axioms direct_at_step
 #print axioms named_at_step

@@ -3,6 +3,7 @@ import QleisliKernel.Qirf.RuntimeStaticPrimitive
 /-! An original static fold shares the enclosing Raw block and event handlers.
 The explicit partition covers every emitted operation, in iteration order.
 Owner-only operations and empty folds still retain their source boundaries.
+An access child retains its inner call position and occupies both routes.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeStaticFold
 open QleisliKernel Finite SourceTypes SourceRuntimeValues
@@ -55,6 +56,17 @@ private theorem ordered_of_fold {positions : List Position} {cursor finish : Nat
       exact .next start (ih tail)
     · simp [advance,start] at read
 
+private def occupiedPosition {sources caller}
+    (entry : SourceRuntimeContext.Event sources caller × Position) : Option Position :=
+  let (event,position) := entry
+  match event with
+  | .exclusive access _ =>
+    let route := RuntimeExclusiveAction.routeCount access
+    if route ≤ position.start then
+      some {position with start := position.start-route, count := position.count+2*route}
+    else none
+  | _ => some position
+
 structure Partition {sources caller} (event : SourceRuntimeContext.FoldEvent sources caller)
     (iterations : List (List (SourceRuntimeContext.Event sources caller))) (parent : Position) where
   positions : List Position
@@ -62,19 +74,29 @@ structure Partition {sources caller} (event : SourceRuntimeContext.FoldEvent sou
   iterationCount : iterations.length = event.iterations.length
   count : positions.length = iterations.flatten.length
   offsets : positions.map (·.offset) = iterations.flatten.map SourceRuntimeContext.Event.offset
-  coverage : Ordered parent.start positions (parent.start+parent.count)
+  occupied : List Position
+  occupiedFrom : (iterations.flatten.zip positions).mapM occupiedPosition = some occupied
+  coverage : Ordered parent.start occupied (parent.start+parent.count)
 
 def readPartition {sources caller} (event : SourceRuntimeContext.FoldEvent sources caller)
     (iterations : List (List (SourceRuntimeContext.Event sources caller))) (parent : Position)
     (claimed : Option (List Position)) : WorkM (Partition event iterations parent) := do
   let some positions := claimed | throw .request
-  exactWork (Exact.charge (16*(iterations.length+positions.length+(iterations.map List.length).sum+1)))
+  let events := iterations.flatten
+  let routingFields := (events.map fun event => match event with
+    | .exclusive access _ => access.checked.entries.length+1
+    | _ => 0).sum
+  exactWork (Exact.charge (16*(iterations.length+positions.length+events.length+routingFields+1)))
   if offset : parent.offset = event.written.parts.keyword.span.startByte then
     if checked : iterations.length = event.iterations.length ∧ positions.length = iterations.flatten.length ∧
-        positions.map (·.offset) = iterations.flatten.map SourceRuntimeContext.Event.offset ∧
-        contiguous parent positions = true then
-      let ⟨iterations,count,offsets,coverage⟩ := checked
-      return ⟨positions,offset,iterations,count,offsets,ordered_of_fold (beq_iff_eq.mp coverage)⟩
+        positions.map (·.offset) = iterations.flatten.map SourceRuntimeContext.Event.offset then
+      match occupiedFrom : (events.zip positions).mapM occupiedPosition with
+      | none => throw .request
+      | some occupied =>
+        if coverage : contiguous parent occupied = true then
+          return ⟨positions,offset,checked.1,checked.2.1,checked.2.2,
+            occupied,occupiedFrom,ordered_of_fold (beq_iff_eq.mp coverage)⟩
+        else throw .request
     else throw .request
   else throw .request
 

@@ -34,6 +34,23 @@ def Mode.EventData {artifact owner name} (mode : Mode artifact)
   | .planned preparation => Sigma fun before : Queues =>
       Sigma fun after : Queues => RuntimeBodyPlan.Event preparation source event position before after
 
+/-- Use exactly the plan and queues of the original wrapped call. The fresh
+reader checks the same single-call binding without creating a second slot. -/
+def exclusiveChild {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (access : SourceRuntimeContext.ExclusiveEvent artifact.sources owner)
+    (child : SourceRuntimeContext.Event artifact.sources owner) (position : Position)
+    (data : mode.EventData source (.exclusive access child) position) :
+    WorkM (mode.EventData source child position) :=
+  match mode with
+  | .fresh => do
+    guard (RuntimeBodyPlan.exclusiveBinding access child position) .request
+    pure ()
+  | .planned _ =>
+    match data with
+    | ⟨before,after,.exclusive _ inner⟩ => pure ⟨before,after,inner⟩
+    | ⟨_,_,.unsupported _⟩ => throw .request
+
 def Mode.EventsData {artifact owner name} (mode : Mode artifact)
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
     (pairs : List (SourceRuntimeContext.Event artifact.sources owner × Position)) : Type :=
@@ -401,11 +418,7 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
     WorkM (Static mode source event) := do
   match mode with
   | .fresh =>
-    let sequence ← match pureOnly with
-      | true => do
-        let selected ← RuntimeStaticPrimitive.readSequence event
-        pure (RuntimeStaticPrimitive.Continuation.unchanged selected)
-      | false => RuntimeStaticPrimitive.readContinuation event
+    let sequence ← RuntimeStaticPrimitive.readContinuation event pureOnly
     let (claimed,remaining) := cursor.takeStatic position
     let positions ← sequence.positions position (cursor.calls.map (·.1)) (cursor.sites.map (·.position)) claimed
     if count : positions.length = sequence.selected.result.events.length then
@@ -414,12 +427,12 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
   | .planned _ =>
     match data with
     | ⟨_,_,.staticConditional selected _ positions _ count events⟩ =>
-      -- A pure continuation keeps the authenticated owner delta empty.
-      -- Its selected events still run through the common pure body steps.
       if pureOnly then
         match selected with
         | .unchanged _ => pure ()
-        | .events _ => throw .request
+        | .events source =>
+          exactWork (Exact.charge (16*(source.selected.result.events.length+1)))
+          guard selected.permitsPure .request
       return ⟨selected,positions,count,⟨_,_,events⟩,()⟩
     | ⟨_,_,.unsupported _⟩ => throw .request
 

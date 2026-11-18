@@ -313,7 +313,8 @@ impl ParsedProgram {
                         }
                         projections.insert(id, result);
                     }
-                    let runtime_roots = runtime_selection::roots(order, indices, budget)?;
+                    let runtime_roots =
+                        runtime_selection::roots(order, interfaces, indices, budget)?;
                     Ok((projections, meaning_targets, runtime_roots))
                 },
             )
@@ -553,8 +554,8 @@ impl ParsedProgram {
     }
 
     /// Select the original-source runtime emitter for nominal declarations,
-    /// word coordinates, qmatch, inline qif, computed scopes or workspace in
-    /// this entry's lexical closure. Unsupported syntax refuses at its checking boundary.
+    /// word coordinates, qmatch, inline qif, computed scopes, workspace, mixed or declared access
+    /// in this entry's lexical closure. Unsupported syntax refuses at its checking boundary.
     pub fn requires_typed_runtime_transport(&self, entry: &str) -> Result<bool> {
         let id = self.checked.resolution.qualified(entry).map_err(|kind| {
             Self::resolution_error(Failure {

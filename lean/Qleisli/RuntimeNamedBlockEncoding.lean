@@ -128,8 +128,29 @@ theorem partition_perm (all selected : Map) (allUnique : all.Nodup)
     exact ⟨fun member => ⟨subset member,member⟩,fun member => member.2⟩
   exact (ordered.append_right _).trans (List.filter_append_perm chosen all)
 
-/-- Full input-token uniqueness is derived from the real call input gate,
-including empty-wire owners. Wire-axis uniqueness alone is not used for it. -/
+theorem named_partition_geometry
+    {dependencies program block callStart callCount inputs sources caller before returned retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block callStart callCount}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before returned retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles interval.before)
+    (sameBindings : checked.bindings = before.bindings)
+    (tokens : (boundary.input.ordered.map (fun binding => binding.port.token)).Nodup) :
+    let selected := boundary.input.ordered
+    let spectators := RuntimeSelectionPartition.complement checked.bindings selected
+    (selected++spectators).Perm checked.bindings := by
+  intro selected spectators
+  have unique : selected.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+    (fun _ _ different equal => different (congrArg (fun binding : Binding => binding.port.token) equal)) tokens
+  have allUnique : checked.bindings.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
+    (fun _ _ different equal => different (congrArg (fun binding : Binding => binding.port.token) equal)) checked.tokensDistinct
+  have subset : selected ⊆ checked.bindings := by
+    rw [sameBindings]
+    exact (RuntimeSelectionPartition.order_values before.bindings event.inputOwners selected boundary.input.orderRead).1
+  exact partition_perm checked.bindings selected allUnique unique subset
+
+/-- The actual local input validates every original argument token,
+including the tokens of empty-wire owners. -/
 theorem original_named_partition_geometry
     {dependencies program block callStart callCount inputs ordinary effect sources caller before returned retired value}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
@@ -140,27 +161,14 @@ theorem original_named_partition_geometry
     let selected := boundary.input.ordered
     let spectators := RuntimeSelectionPartition.complement checked.bindings selected
     (selected++spectators).Perm checked.bindings := by
-  intro selected spectators
+  apply named_partition_geometry boundary checked sameBindings
   have opening := RuntimeNamedFrameAxes.initialized scope.entryRead
   have live : scope.localEntry.quantum.live = scope.selected :=
     congrArg Semantics.RawTrace.Interface.live opening.1
-  have tokens : (scope.selected.map (·.token)).Nodup := by
-    have valid := (Raw.Ownership.valid _ opening.2.1).owners
-    change (scope.localEntry.quantum.live.map (·.token)).Nodup at valid
-    rw [live] at valid
-    exact valid
-  have orderedTokens : (selected.map (fun binding => binding.port.token)).Nodup := by
-    simpa only [RuntimeNamedFrameAxes.mixed_bound_ports scope boundary,List.map_map,Function.comp_def]
-      using tokens
-  have unique : selected.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
-    (fun _ _ different equal => different (congrArg (fun binding : Binding => binding.port.token) equal)) orderedTokens
-  have allUnique : checked.bindings.Nodup := List.Pairwise.of_map (fun binding : Binding => binding.port.token)
-    (fun _ _ different equal => different (congrArg (fun binding : Binding => binding.port.token) equal)) checked.tokensDistinct
-  have subset : selected ⊆ checked.bindings := by
-    rw [sameBindings]
-    exact (RuntimeSelectionPartition.order_values before.bindings event.inputOwners selected boundary.input.orderRead).1
-  have permutation := partition_perm checked.bindings selected allUnique unique subset
-  exact permutation
+  have owners := (Raw.Ownership.valid _ opening.2.1).owners
+  change (scope.localEntry.quantum.live.map (·.token)).Nodup at owners
+  simpa only [live,RuntimeNamedFrameAxes.mixed_bound_ports scope boundary,List.map_map,Function.comp_def]
+    using owners
 
 /-- Reindex the original native receipts in the checked call partition. -/
 theorem original_named_partition

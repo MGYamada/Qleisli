@@ -1,12 +1,90 @@
 import QleisliKernel.SourceTypes.SourceRuntimeValues
+import QleisliKernel.SourceTypes.AccessSyntax
 
-/-! Actual symbolic result extraction against the independent ordinary
-valuation. Source body generation, actual SSA/measurement/phi correspondence and
-complete native instrument equations remain separate checked obligations.
+/-! Owner-free ordinary access arguments and symbolic result extraction against the
+independent ordinary valuation. Source body generation, actual SSA/measurement/phi
+correspondence and complete native instrument equations remain separate checked obligations.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes.SourceRuntimeOrdinary
 open QleisliKernel
 open Semantics.SourceOrdinary
+open SourceRuntimeValues (Environment)
+
+/-- The original slot is an empty group or a single lexical name. A name
+copies the exact symbolic Unit value, retaining the complete environment. -/
+inductive UnitSource (tokens : List LocatedToken) (environment : Environment) where
+  | literal (written : CallSyntax.CheckedGroup tokens) (empty : written.group.arguments = [])
+  | bound (token : LocatedToken) (original : tokens = [token])
+      (name : String) (parsed : QuantumMoves.parse 65 [token.text] = .ok [.name name])
+      (expression : Expression)
+      (copied : SourceRuntimeValues.take name environment =
+        .ok ([.ordinary [.unit] expression],environment))
+
+def UnitSource.expression {tokens environment} : UnitSource tokens environment → Expression
+  | .literal .. => .unit
+  | .bound _ _ _ _ expression _ => expression
+
+def UnitSource.value {tokens environment} (source : UnitSource tokens environment) : Value :=
+  [.ordinary [.unit] source.expression]
+
+@[simp] theorem UnitSource.typeOf_value {tokens environment} (source : UnitSource tokens environment) :
+    SourceRuntimeValues.typeOf source.value = Semantics.RuntimeType.ordinary [.unit] := rfl
+
+@[simp] theorem UnitSource.valueOwners_value {tokens environment} (source : UnitSource tokens environment) :
+    SourceRuntimeValues.valueOwners source.value = [] := rfl
+
+@[simp] theorem UnitSource.ordinary_value {tokens environment} (source : UnitSource tokens environment) :
+    SourceRuntimeValues.ordinary source.value = [([.unit],source.expression)] := rfl
+
+theorem UnitSource.argument_owners {tokens environment} (source : UnitSource tokens environment)
+    (before after : List Value) :
+    (before ++ source.value :: after).flatMap SourceRuntimeValues.valueOwners =
+      before.flatMap SourceRuntimeValues.valueOwners ++ after.flatMap SourceRuntimeValues.valueOwners := by
+  simp
+
+theorem UnitSource.argument_ordinary {tokens environment} (source : UnitSource tokens environment)
+    (before after : List Value) :
+    (before ++ source.value :: after).flatMap SourceRuntimeValues.ordinary =
+      before.flatMap SourceRuntimeValues.ordinary ++
+        ([.unit],source.expression) :: after.flatMap SourceRuntimeValues.ordinary := by
+  simp
+
+inductive AccessOrdinarySource (permitsBit : Bool) (tokens : List LocatedToken) (environment : Environment) where
+  | unit (source : UnitSource tokens environment)
+  | bit (token : LocatedToken) (original : tokens = [token])
+      (name : String) (parsed : QuantumMoves.parse 65 [token.text] = .ok [.name name])
+      (allowed : permitsBit = true) (expression : Expression)
+      (copied : SourceRuntimeValues.take name environment =
+        .ok ([.ordinary [.bit] expression],environment))
+
+def AccessOrdinarySource.value {permitsBit tokens environment} :
+    AccessOrdinarySource permitsBit tokens environment → Value
+  | .unit source => source.value
+  | .bit _ _ _ _ _ expression _ => [.ordinary [.bit] expression]
+
+/-- A lexical Bit copies the original symbolic expression without evaluating a
+new operand. The caller must meter the tokens and lexical environment. -/
+def readAccessOrdinary (permitsBit : Bool) (tokens : List LocatedToken) (environment : Environment) :
+    Except String (AccessOrdinarySource permitsBit tokens environment) := do
+  match ← AccessSyntax.readUnitSyntax tokens with
+  | .literal written empty => return .unit (.literal written empty)
+  | .bound token original name parsed =>
+    match copied : SourceRuntimeValues.take name environment with
+    | .ok ([.ordinary basis expression],remaining) =>
+      if unchanged : remaining = environment then
+        if unit : basis = [.unit] then
+          return .unit (.bound token original name parsed expression (by simpa only [unit,unchanged] using copied))
+        else if bit : permitsBit = true ∧ basis = [.bit] then
+          return .bit token original name parsed bit.1 expression (by simpa only [bit.2,unchanged] using copied)
+        else throw "original name does not hold an allowed ordinary access argument"
+      else throw "ordinary access argument changed its lexical environment"
+    | _ => throw "original name does not hold an allowed ordinary access argument"
+
+def readUnit (tokens : List LocatedToken) (environment : Environment) :
+    Except String (UnitSource tokens environment) := do
+  match ← readAccessOrdinary false tokens environment with
+  | .unit source => return source
+  | .bit _ _ _ _ allowed _ _ => nomatch allowed
 
 def readAtom (values : Valuation) : Atom → Except String ResultAtom
   | .owner owner => pure (.owner owner)

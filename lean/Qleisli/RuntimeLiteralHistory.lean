@@ -58,7 +58,64 @@ private theorem pure_node_operations {dependencies program block}
   | operation frame _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩
   | rectangularOperation checked => exact ⟨_,checked.frame.literal⟩
   | transform _ _ _ _ _ owners _ _ => exact ⟨_,owners.literal.literal⟩
+  | exclusive _ action _ _ => exact ⟨_,action.literal.literal⟩
   | selection frame _ _ _ _ _ _ _ _ _ _ _ _ => exact ⟨_,frame.literal⟩
+
+/-- The original reader of a checked pure node returns the same complete
+interface as the successful Raw check at its literal interval. -/
+theorem pure_node_read {dependencies program block} (node : RuntimePureBody.Node dependencies program block) :
+    let span := nodeSpan node
+    ∃ events, readOps block.fuel span.checked.before.quantum.reference span.operations =
+      some (span.checked.after.quantum.reference,events) := by
+  intro span
+  obtain ⟨operations,literal⟩ := pure_node_operations node
+  change span.operations = _ at literal
+  obtain ⟨work,left,checked⟩ := span.checked.intervalRead
+  change (Raw.Observation.checkOps dependencies block.fuel span.checked.before span.operations).run work =
+    (.ok span.checked.after,left) at checked
+  rw [literal] at checked ⊢
+  obtain ⟨events,traced⟩ := RuntimeIntervalTrace.checkOps_pure_trace dependencies block.fuel
+    span.checked.before span.checked.after operations work left checked
+  cases depth : block.fuel with
+  | zero =>
+    rw [depth] at checked
+    cases checked
+  | succ fuel =>
+    exact ⟨_,RuntimeAdjacentSlices.readOps_pure fuel _ _ _ traced⟩
+
+/-- Authentic occurrence positions identify the same operation slice and
+complete runtime states in both successful interval readings. -/
+theorem pure_node_bounds_at {dependencies program block start count}
+    (node : RuntimePureBody.Node dependencies program block)
+    (interval : RuntimeInterval.Checked block start count)
+    (location : Qleisli.RuntimeLiteralBody.At start (start+count) (.pure node)) :
+    let span := nodeSpan node
+    span.operations = (block.operations.drop start).take count ∧
+      span.checked.before = interval.before ∧ span.checked.after = interval.after := by
+  have first : (nodeSpan node).start = start := location.1
+  have stop : (nodeSpan node).start+(nodeSpan node).count = start+count := location.2
+  generalize nodeSpan node = span at first stop ⊢
+  cases span with
+  | mk actualStart actualCount checked =>
+    change actualStart = start at first
+    change actualStart+actualCount = start+count at stop
+    subst start
+    have length : actualCount = count := by omega
+    subst count
+    have before := RuntimeAdjacentSlices.checkOps_unique checked.prefixRead interval.prefixRead
+    have computed := checked.intervalRead
+    rw [before] at computed
+    exact ⟨rfl,before,RuntimeAdjacentSlices.checkOps_unique computed interval.intervalRead⟩
+
+theorem pure_node_read_at {dependencies program block start count}
+    (node : RuntimePureBody.Node dependencies program block)
+    (interval : RuntimeInterval.Checked block start count)
+    (location : Qleisli.RuntimeLiteralBody.At start (start+count) (.pure node)) :
+    ∃ events, readOps block.fuel interval.before.quantum.reference
+      ((block.operations.drop start).take count) = some (interval.after.quantum.reference,events) := by
+  obtain ⟨operations,before,after⟩ := pure_node_bounds_at node interval location
+  obtain ⟨events,checked⟩ := pure_node_read node
+  exact ⟨events,by simpa only [operations,before,after] using checked⟩
 
 /-- Every pure node runs its exact Raw trace on all reference columns. Its
 ordinary valuation and hidden outcomes remain those of the incoming history. -/

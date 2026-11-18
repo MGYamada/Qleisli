@@ -151,7 +151,7 @@ noncomputable def sourceStep {dependencies program block}
     match literalForm action with
     | some _ => sourceInlineHistory original source
     | none => other prior step source
-  | .pure _ | .conditional .. => other prior step source
+  | .pure _ | .conditional .. | .routedNamed .. => other prior step source
   | .named .. =>
     match inspect? step with
     | some held => sourceNamedPrimitive held source
@@ -246,7 +246,7 @@ theorem observation_results_refine {sources rootOwner rootName caller functionNa
 def NeedsSourceAction {dependencies program block} : @Step dependencies program block → Prop
   | .gap _ | .observation _ => False
   | .pure (.primitive action _) => (literalForm action).isNone
-  | .pure _ | .conditional .. => True
+  | .pure _ | .conditional .. | .routedNamed .. => True
   | step => (inspect? step).isNone
 
 private def sameFrame {state firstRoles secondRoles}
@@ -371,9 +371,8 @@ theorem sourceStep_refines {artifact root execution fuel program block}
       obtain ⟨expected,source,related⟩ :=
         sourceNamedPrimitive_refines held certified inputs owners ordinary read agrees executed
       exact ⟨expected,by simpa only [sourceStep,inspected] using source,related⟩
-  | conditional path event sourceBody actual actualRead action thenSteps elseSteps =>
-    exact remaining prior (.conditional path event sourceBody actual actualRead action thenSteps elseSteps)
-      later position ⟨certified,trivial⟩ owners ordinary read agrees executed
+  | conditional _ _ _ _ _ _ _ _ | routedNamed _ _ =>
+    exact remaining prior _ later position ⟨certified,trivial⟩ owners ordinary read agrees executed
   | gap gap =>
     rcases owners with ⟨rfl,rfl⟩
     rcases ordinary with ⟨rfl,rfl⟩

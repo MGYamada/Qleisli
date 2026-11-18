@@ -36,20 +36,57 @@ theorem actual_child_start
   change scope.prepared.entry = scope.localEntry
   exact initial_unique scope.prepared.inputRead scope.entryRead
 
+/-- A pure child's input-only check uses the same inputs as its complete
+prepared program. The initialization folds do not read the return ports. -/
+theorem actual_pure_child_start
+    {dependencies program block start count inputs}
+    (scope : @RuntimeCallInterval.Checked dependencies program block start count inputs) :
+    scope.prepared.block.entry = scope.localEntry :=
+  initial_unique scope.prepared.inputRead scope.entryRead
+
+/-- A zero-length checked return starts and ends at the state obtained
+by reading the complete prepared program. -/
+theorem child_endpoints_of_reads {dependencies childProgram}
+    (prepared : RuntimeInterval.Prepared dependencies childProgram) {localAfter}
+    (childRead : RuntimeInterval.Computed
+      (Raw.Observation.checkOps dependencies 65 prepared.block.entry prepared.block.operations) localAfter)
+    (native : RuntimeInterval.Checked prepared.block prepared.block.operations.length 0) :
+    native.before = localAfter ∧ native.after = localAfter := by
+  have all := native.prefixRead
+  simp only [List.take_length] at all
+  have before := RuntimeAdjacentSlices.checkOps_unique all childRead
+  have empty : RuntimeInterval.Computed
+      (Raw.Observation.checkOps dependencies 65 native.before []) native.after := by
+    simpa only [List.take_zero] using native.intervalRead
+  exact ⟨before,(RuntimeAdjacentSlices.checkOps_unique empty
+    (RuntimeIntervalStates.empty_read dependencies 64 native.before native.history.1)).trans before⟩
+
+theorem actual_child_endpoints {dependencies program block start count inputs ordinary effect}
+    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
+    (native : RuntimeInterval.Checked scope.prepared.block scope.prepared.block.operations.length 0) :
+    native.before = scope.localAfter ∧ native.after = scope.localAfter := by
+  have checked := scope.nativeRead
+  rw [← actual_child_start scope] at checked
+  exact child_endpoints_of_reads scope.prepared checked native
+
+/-- The pure callback's actual zero-length written return uses the same
+state as the independent read of its original literal operations. -/
+theorem actual_pure_child_endpoints {dependencies program block start count inputs}
+    (scope : @RuntimeCallInterval.Checked dependencies program block start count inputs)
+    (native : RuntimeInterval.Checked scope.prepared.block scope.prepared.block.operations.length 0) :
+    native.before = scope.localAfter ∧ native.after = scope.localAfter := by
+  have checked := scope.nativeRead
+  rw [← actual_pure_child_start scope] at checked
+  exact child_endpoints_of_reads scope.prepared checked native
+
 /-- The source child's final prefix follows the same native operation list,
 entry and depth as the paired original call. -/
 theorem actual_child_before_return
     {dependencies program block start count inputs ordinary effect}
     (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
     (native : RuntimeInterval.Checked scope.prepared.block scope.prepared.block.operations.length 0) :
-    native.before = scope.localAfter := by
-  have all := native.prefixRead
-  simp only [List.take_length] at all
-  have complete : RuntimeInterval.Computed (Raw.Observation.checkOps dependencies 65
-      scope.localEntry ((block.operations.drop start).take count)) native.before := by
-    rw [← actual_child_start scope]
-    exact all
-  exact RuntimeAdjacentSlices.checkOps_unique complete scope.nativeRead
+    native.before = scope.localAfter :=
+  (actual_child_endpoints scope native).1
 
 /-- The checked source return is at the same native state as the last
 literal event. Its zero-length interval leaves the full state unchanged. -/
@@ -57,12 +94,8 @@ theorem actual_child_final
     {dependencies program block start count inputs ordinary effect}
     (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
     (native : RuntimeInterval.Checked scope.prepared.block scope.prepared.block.operations.length 0) :
-    native.after = scope.localAfter := by
-  have empty : RuntimeInterval.Computed
-      (Raw.Observation.checkOps dependencies 65 native.before []) native.after := by
-    simpa only [List.take_zero] using native.intervalRead
-  exact (RuntimeAdjacentSlices.checkOps_unique empty
-    (RuntimeIntervalStates.empty_read dependencies 64 native.before native.history.1)).trans (actual_child_before_return scope native)
+    native.after = scope.localAfter :=
+  (actual_child_endpoints scope native).2
 
 /-- Retain the child's actual written owner lookup on the paired call's
 exact native exit, including zero-width owners. -/
@@ -99,6 +132,7 @@ theorem source_return_order {state beforeRoles afterRoles}
     (regroup_action frame returned ordered.symm distinct state.quantum.frame joint row column)
 
 #print axioms actual_child_final
+#print axioms actual_pure_child_endpoints
 #print axioms actual_child_return
 #print axioms source_return_order
 end Qleisli.RuntimeCallHistory

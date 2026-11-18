@@ -1433,7 +1433,8 @@ private def keepSignPayload (fault : SmallFault) : Artifact × Array Nat × Requ
       [[]],Semantics.RuntimeType.tuple 2 [unitTree,Semantics.RuntimeType.tuple 2 [bitTree,bitTree]],
       [.tuple 2,.quantum ⟨unitPort,[.unit]⟩,.tuple 2,.quantum ⟨bitPort 5 0,[.bit]⟩,.quantum ⟨bitPort 7 1,[.bit]⟩],
       .unitary,{}⟩
-  return (artifact,#[0,1,2,3,4],⟨⟨"main","route",{}⟩,runtime,context⟩)
+  let request : Request := { source := ⟨"main","route",{}⟩, runtime, context, standaloneAccess := false }
+  return (artifact,#[0,1,2,3,4],request)
 
 /-- Read the coefficient function already stored in the unique pure history. -/
 private def storedHistory {sources owner name signature dependencies program body prepared runtime inputs initial ssa bindings assignments}

@@ -21,6 +21,16 @@ abbrev Context := RuntimeContextRequest.Context
 abbrev Position := SourceSequence.Position
 abbrev BodyRequest := RuntimeProviderHeader.Request
 
+/-- An access wrapper has one ordinary call action at its original position.
+Its arguments are lexical places and cannot contribute a nested wrapper or
+another source action at that position. -/
+def exclusiveBinding {sources caller} (access : SourceRuntimeContext.ExclusiveEvent sources caller)
+    (child : SourceRuntimeContext.Event sources caller) (position : Position) : Bool :=
+  position.offset == access.written.parsed.calleeOffset && child.callOffset == some position.offset &&
+    match child with
+    | .primitive .. | .phase .. | .registerPrimitive .. | .named .. | .operation .. | .transform .. => true
+    | _ => false
+
 structure Queues where
   calls : List (Position × Context)
   sites : List RuntimeContextRequest.Site
@@ -157,6 +167,12 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
   | phase {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name} {position : Position} {queues : Queues}
       (event : SourceRuntimeContext.PhaseEvent artifact.sources owner) :
       Event preparation source (.phase event) position queues queues
+  | exclusive {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {access : SourceRuntimeContext.ExclusiveEvent artifact.sources owner}
+      {child : SourceRuntimeContext.Event artifact.sources owner} {position : Position} {before after : Queues}
+      (binding : exclusiveBinding access child position = true)
+      (inner : Event preparation source child position before after) :
+      Event preparation source (.exclusive access child) position before after
   | named {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.NamedEvent artifact.sources owner} {position : Position} {before : Queues}
       (callPosition : Position) (child : Context) (remaining : List (Position × Context))

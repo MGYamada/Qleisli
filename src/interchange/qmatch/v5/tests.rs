@@ -69,6 +69,33 @@ fn unified_body_subject_variants_are_exact_and_old_profiles_refuse() {
 }
 
 #[test]
+fn standalone_access_wire_scope_retains_its_explicit_view_tag() {
+    let original = value();
+    let basis = Request::decode(&json::encode(&original).unwrap()).unwrap();
+    assert_eq!(basis.profile(), BASIS_PROFILE);
+    assert_eq!(basis.view_profile(), PROFILE);
+
+    let mut access = original;
+    object(&mut access).insert("profile".into(), Value::String(ACCESS_PROFILE.into()));
+    let request = Request::decode(&json::encode(&access).unwrap()).unwrap();
+    assert!(request.standalone_access);
+    assert_eq!(request.view_profile(), ACCESS_PROFILE);
+    assert_eq!(
+        Request::decode(&request.encode().unwrap()).unwrap(),
+        request
+    );
+
+    let mut conflicting = request;
+    conflicting.context.references = vec![vec![]];
+    assert!(
+        conflicting.encode().is_ok(),
+        "empty reference groups are not Meaning"
+    );
+    conflicting.context.references = vec![vec![vec![conflicting.context.bodies[0].clone()]]];
+    assert!(conflicting.encode().is_err());
+}
+
+#[test]
 fn retained_runtime_identity_and_static_actuals_match_the_same_source_instance() {
     let initial = value();
     let decoded = Request::decode(&json::encode(&initial).unwrap()).unwrap();
@@ -214,6 +241,10 @@ fn arm_has_actual_programs_and_cannot_supply_a_duplicate_provider_table() {
     object(&mut changed).insert("profile".into(), Value::String(PROFILE.into()));
     let decoded = Request::decode(&json::encode(&changed).unwrap()).unwrap();
     assert_eq!(decoded.context.sites[0].arms[0].implementation, 3);
+
+    let mut conflicting = changed.clone();
+    object(&mut conflicting).insert("profile".into(), Value::String(ACCESS_PROFILE.into()));
+    assert!(Request::decode(&json::encode(&conflicting).unwrap()).is_err());
     for arm in [
         r#"{"evidence":3,"controlled":4}"#,
         r#"{"implementation":3,"controlled":4,"providers":[]}"#,

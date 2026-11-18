@@ -9,7 +9,7 @@ namespace Qleisli.RuntimeCallHistory
 open QleisliKernel QleisliKernel.Qirf
 open RuntimePureBody (Step runBlockCore)
 open RuntimeOwnerMap (Map)
-open Qleisli.RuntimeNamedChildRuns (CheckedStepAt Flow RootInputs ChildRunAt)
+open Qleisli.RuntimeNamedChildRuns (CheckedStepAt Flow RootInputs ChildRunAt RoutedChildRunAt)
 open Qleisli.RuntimeNamedSourceFlow (Returned)
 open Qleisli.RuntimeLiteralBody
   (SourceHistory SemanticHistoryAgreesWithInherited StepRefinement refineFlowWithWrites
@@ -51,6 +51,31 @@ private theorem within_agrees {domain inherited inputs native owners ordinary so
   · exact agrees
   · exact agrees.2
 
+private theorem source_input_on_prepared_slice {dependencies program roles}
+    (prepared : RuntimeInterval.Prepared dependencies program) (ordinary : RuntimeOrdinaryBody.State)
+    (checked : RuntimeOwnerMap.Checked roles prepared.block.entry)
+    (state : RuntimeStructuralAction.SourceState) (bindings : checked.bindings = state.bindings)
+    (frame : Frame checked.bindings) (ordinals : List Nat)
+    (source : SourceHistory) (actual : History) (localHistory : Nat → History)
+    (joint : Nat → Nat → Nat → ℂ)
+    (values : ∀ high, actual.values = (localHistory high).values)
+    (outcomes : ∀ high, actual.hidden = (localHistory high).hidden)
+    (hidden : actual.hidden = source.outcomes.map Prod.snd)
+    (measured : measurementBits ordinary.measurements actual.values = some source.measurements)
+    (ordinaryAgrees : RuntimeOrdinarySSA.Agreement
+      (RuntimeOrdinaryBody.valuation ordinals ordinary.measurements actual.values) actual.values ordinary.table)
+    (represented : ∀ high, Represents frame prepared.block.entry (localHistory high) (joint high)) :
+    ∀ high, SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals
+      prepared.block.entry state ordinary
+      {source with owners := state, operator := joint high} (localHistory high) := by
+  intro high
+  refine ⟨rfl,(outcomes high).symm.trans hidden,?_,⟨?_,?_⟩,_,checked,bindings,bindings ▸ frame,?_⟩
+  · simpa only [← values high] using measured
+  · simpa only [← values high] using ordinaryAgrees
+  · intro id present
+    exact .inl (by rwa [values high])
+  · exact cast_represents bindings frame (represented high)
+
 /-- The callee's ordinary inputs use its actual visible table while its
 source prefix retains the caller's measurement keys and hidden outcomes. -/
 theorem source_input_on_slice {dependencies program block start count inputs ordinary effect roles}
@@ -70,14 +95,69 @@ theorem source_input_on_slice {dependencies program block start count inputs ord
     ∀ high, SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals
       scope.prepared.block.entry state scope.visible.ssa
       {source with owners := state, operator := joint high} (localHistory high) := by
+  exact source_input_on_prepared_slice scope.prepared scope.visible.ssa checked state bindings frame ordinals
+    source actual localHistory joint values outcomes hidden
+    (by simpa only [scope.visible.measurements] using measured)
+    (Qleisli.RuntimeSparseNamedBoundary.visible_entry_agreement scope ordinals actual ordinaryAgrees) represented
+
+private theorem refine_child_runs_on
+    {artifact root mode fuel rootInputs childProgram}
+    (prepared : RuntimeInterval.Prepared root.dependencies childProgram) (localAfter : RuntimeInterval.State)
+    (initialOrdinary : RuntimeOrdinaryBody.State)
+    (atExit : ∀ native : RuntimeInterval.Checked prepared.block prepared.block.operations.length 0,
+      native.before = localAfter ∧ native.after = localAfter)
+    (actual : History) {childEvents} (localHistory : Nat → History) (children : List (Nat → History))
+    (read : Semantics.Observation.readOps prepared.block.fuel prepared.block.entry.quantum.reference
+      prepared.block.operations = some (localAfter.quantum.reference,childEvents))
+    (runs : ∀ high, run root.dependencies prepared.block.fuel childEvents (localHistory high) =
+      some (children.map (fun history => history high)))
+    {startState finish after steps finalOrdinary roles}
+    (flow : @Flow artifact root mode (runBlockCore artifact root mode fuel) rootInputs
+      childProgram prepared.block startState steps finish initialOrdinary finalOrdinary
+      prepared.block.operations.length)
+    (returned : Returned prepared.block roles finish after)
+    (ordinals : List Nat) (sourceInitial : Nat → SourceHistory)
+    (next : List (Step root.dependencies childProgram prepared.block) →
+      Step root.dependencies childProgram prepared.block → SourceHistory → Option (List SourceHistory))
+    (domain : Option (RuntimeOrdinaryBody.State → Prop))
+    (admitted : InOrdinaryDomain domain initialOrdinary)
+    (laws : StepRefinement steps (CheckedStepAt (runBlockCore artifact root mode fuel) rootInputs) next
+      (fun _ => SourceAgreementWithin domain (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
+      (some (fun id => id ∉ actual.values.map Prod.fst)))
+    (avoids : WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst))
+    (starts : ∀ high, SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
+      ordinals prepared.block.entry startState initialOrdinary (sourceInitial high) (localHistory high)) :
+    ∃ owners : RuntimeOwnerMap.Checked roles localAfter,
+      RuntimeInterval.Computed (RuntimePureBody.reordered roles localAfter finish.bindings) owners ∧
+      after = {finish with bindings := owners.bindings} ∧
+      ∀ high, ∃ expected,
+        runSourceHistories next [] steps [sourceInitial high] = some expected ∧
+        List.Forall₂
+          (SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
+            ordinals localAfter after finalOrdinary)
+          (expected.map (returnHistory owners.bindings)) (children.map (fun history => history high)) := by
+  obtain ⟨native,_,returnedOwners,returnedOrder,returnedBindings⟩ := returned
+  obtain ⟨beforeExit,afterExit⟩ := atExit native
+  have actualReturn : ∃ owners : RuntimeOwnerMap.Checked roles native.after,
+      RuntimeInterval.Computed (RuntimePureBody.reordered roles native.after finish.bindings) owners ∧
+      after = {finish with bindings := owners.bindings} := ⟨returnedOwners,returnedOrder,returnedBindings⟩
+  obtain ⟨owners,order,afterOrder⟩ : ∃ owners : RuntimeOwnerMap.Checked roles localAfter,
+      RuntimeInterval.Computed (RuntimePureBody.reordered roles localAfter finish.bindings) owners ∧
+      after = {finish with bindings := owners.bindings} := afterExit ▸ actualReturn
+  refine ⟨owners,order,afterOrder,?_⟩
   intro high
-  refine ⟨rfl,(outcomes high).symm.trans hidden,?_,⟨visible_child_input scope ordinals actual localHistory
-    values ordinaryAgrees high,?_⟩,_,checked,bindings,bindings ▸ frame,?_⟩
-  · rw [scope.visible.measurements,← values high]
-    exact measured
-  · intro id present
-    exact .inl (by rwa [values high])
-  · exact cast_represents bindings frame (represented high)
+  have literal := read
+  rw [← beforeExit] at literal
+  obtain ⟨expected,evaluated,paired⟩ := refineFlowWithWrites flow native (sourceInitial high) (localHistory high)
+    next (fun _ => SourceAgreementWithin domain (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
+    (fun id => id ∉ actual.values.map Prod.fst) literal (runs high) avoids laws (within_intro admitted (starts high))
+  refine ⟨expected,evaluated,?_⟩
+  rw [List.forall₂_map_left_iff]
+  apply paired.imp
+  intro source nativeHistory agrees
+  rw [afterOrder]
+  exact sparse_return_refines ordinals (inherited := some (fun id => id ∈ actual.values.map Prod.fst))
+    owners order (beforeExit ▸ within_agrees agrees)
 
 /-- Refine the actual child's source prefix and written return on each
 literal result list at its original read boundary. The local laws
@@ -115,23 +195,9 @@ theorem refine_child_runs
           (SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
             ordinals scope.localAfter after finalOrdinary)
           (expected.map (returnHistory owners.bindings)) (children.map (fun history => history high)) := by
-  obtain ⟨owners,order,afterOrder⟩ := actual_child_return scope returned
-  obtain ⟨native,_,_,_,_⟩ := returned
-  refine ⟨owners,order,afterOrder,?_⟩
-  intro high
-  have beforeExit := actual_child_before_return scope native
-  have literal := read
-  rw [← beforeExit] at literal
-  obtain ⟨expected,evaluated,paired⟩ := refineFlowWithWrites flow native (sourceInitial high) (localHistory high)
-    next (fun _ => SourceAgreementWithin domain (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
-    (fun id => id ∉ actual.values.map Prod.fst) literal (runs high) avoids laws (within_intro admitted (starts high))
-  refine ⟨expected,evaluated,?_⟩
-  rw [List.forall₂_map_left_iff]
-  apply paired.imp
-  intro source nativeHistory agrees
-  rw [afterOrder]
-  exact sparse_return_refines ordinals (inherited := some (fun id => id ∈ actual.values.map Prod.fst))
-    owners order (beforeExit ▸ within_agrees agrees)
+  exact refine_child_runs_on scope.prepared scope.localAfter scope.visible.ssa
+    (actual_child_endpoints scope)
+    actual localHistory children read runs flow returned ordinals sourceInitial next domain admitted laws avoids starts
 
 /-- Refine the actual child's source prefix and written return on each
 literal result list paired by the successful caller run. The local laws
@@ -190,6 +256,79 @@ private theorem indexed_source_family {A B : Type} (rel : Nat → A → B → Pr
 /-- The actual child result has one ordered family of source returns,
 indexed by the original logical spectator ordinals. The operators and SSA
 values are checked on the same literal run of each input component. -/
+theorem CallRunOn.refine_weighted_child_sources
+    {artifact root mode fuel rootInputs program block start count childProgram}
+    {ordinary initialOrdinary : RuntimeOrdinaryBody.State}
+    {interval : @RuntimeInterval.Checked root.dependencies program block start count}
+    {prepared : RuntimeInterval.Prepared root.dependencies childProgram} {localAfter : RuntimeInterval.State}
+    {inputRoles} (input : RuntimeOwnerMap.Checked inputRoles prepared.block.entry)
+    (frame : Frame input.bindings) (incoming selected spectators : Map)
+    (source : SourceHistory) (actual : History)
+    {parentEvents childEvents parents children returnedSpectators}
+    (checked : CallRunOn interval prepared localAfter returnedSpectators actual
+      (inputHistory frame prepared.block.entry.quantum.frame incoming selected spectators source.operator actual)
+      parentEvents childEvents parents children)
+    {startState finish after steps finalOrdinary roles}
+    (bindings : input.bindings = startState.bindings)
+    (flow : @Flow artifact root mode (runBlockCore artifact root mode fuel) rootInputs
+      childProgram prepared.block startState steps finish initialOrdinary finalOrdinary
+      prepared.block.operations.length)
+    (returned : Returned prepared.block roles finish after)
+    (atExit : ∀ native : RuntimeInterval.Checked prepared.block prepared.block.operations.length 0,
+      native.before = localAfter ∧ native.after = localAfter)
+    (ordinals : List Nat)
+    (hidden : actual.hidden = source.outcomes.map Prod.snd)
+    (measured : measurementBits ordinary.measurements actual.values = some source.measurements)
+    (ordinaryAgrees : RuntimeOrdinarySSA.Agreement
+      (RuntimeOrdinaryBody.valuation ordinals ordinary.measurements actual.values) actual.values ordinary.table)
+    (measurements : initialOrdinary.measurements = ordinary.measurements)
+    (transportOrdinary : RuntimeOrdinarySSA.Agreement
+      (RuntimeOrdinaryBody.valuation ordinals ordinary.measurements actual.values) actual.values ordinary.table →
+      RuntimeOrdinarySSA.Agreement (RuntimeOrdinaryBody.valuation ordinals initialOrdinary.measurements actual.values)
+        actual.values initialOrdinary.table)
+    (next : List (Step root.dependencies childProgram prepared.block) →
+      Step root.dependencies childProgram prepared.block → SourceHistory → Option (List SourceHistory))
+    (domain : Option (RuntimeOrdinaryBody.State → Prop) := none)
+    (admitted : InOrdinaryDomain domain initialOrdinary := by trivial)
+    (laws : StepRefinement steps (CheckedStepAt (runBlockCore artifact root mode fuel) rootInputs) next
+      (fun _ => SourceAgreementWithin domain (some (fun id => id ∈ actual.values.map Prod.fst)) ordinals)
+      (some (fun id => id ∉ actual.values.map Prod.fst)))
+    (avoids : WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst)) :
+    let localHistory := componentInput frame prepared.block.entry.quantum.frame incoming selected spectators
+      source.operator actual
+    let initial := fun index =>
+      {source with owners := startState, operator := componentJoint incoming selected spectators source.operator index}
+    ∃ nativeFamily : List (Nat → History), ∃ sourceFamily : List (Nat → SourceHistory),
+      (∀ index, run root.dependencies prepared.block.fuel childEvents (localHistory index) =
+        some (nativeFamily.map (fun result => result index))) ∧
+      (∀ high, List.Forall₂
+        (WeightedHistory (List.range (product spectators).labels.length) (fun _ => spectatorWeight spectators high))
+        (children.map (fun result => result high)) nativeFamily) ∧
+      (∀ index, ∃ expected, runSourceHistories next [] steps [initial index] = some expected ∧
+        sourceFamily.map (fun result => result index) = expected.map (returnHistory after.bindings)) ∧
+      List.Forall₂ (fun logical native => ∀ index,
+        SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
+          ordinals localAfter after finalOrdinary (logical index) (native index)) sourceFamily nativeFamily := by
+  intro localHistory initial
+  obtain ⟨nativeFamily,runs,weights⟩ :=
+    checked.weighted_children frame incoming selected spectators source.operator actual
+  have starts := source_input_on_prepared_slice prepared initialOrdinary input startState bindings frame ordinals
+    source actual localHistory (componentJoint incoming selected spectators source.operator) (fun _ => rfl) (fun _ => rfl)
+    hidden (by simpa only [measurements] using measured) (transportOrdinary ordinaryAgrees) (fun _ _ _ _ => rfl)
+  obtain ⟨owners,_,afterOrder,refined⟩ :=
+    refine_child_runs_on prepared localAfter initialOrdinary atExit actual localHistory nativeFamily checked.childRead
+      runs flow returned ordinals initial next domain admitted laws avoids starts
+  have ownerOrder : owners.bindings = after.bindings :=
+    (congrArg RuntimeStructuralAction.SourceState.bindings afterOrder).symm
+  simp only [ownerOrder] at refined
+  choose expected evaluated related using refined
+  obtain ⟨sourceFamily,projection,paired⟩ :=
+    indexed_source_family (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
+      ordinals localAfter after finalOrdinary)
+      (fun index => (expected index).map (returnHistory after.bindings)) related
+  exact ⟨nativeFamily,sourceFamily,runs,weights,fun index => ⟨expected index,evaluated index,(projection index).symm⟩,paired⟩
+
+/-- Transport the mixed caller's original visible SSA table to its actual slice. -/
 theorem CheckedCallRun.refine_weighted_child_sources
     {artifact root mode fuel rootInputs program block start count inputs ordinary effect}
     {scope : @RuntimeCallScope.Checked root.dependencies program block start count inputs ordinary effect}
@@ -233,25 +372,11 @@ theorem CheckedCallRun.refine_weighted_child_sources
         sourceFamily.map (fun result => result index) = expected.map (returnHistory after.bindings)) ∧
       List.Forall₂ (fun logical native => ∀ index,
         SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
-          ordinals scope.localAfter after finalOrdinary (logical index) (native index)) sourceFamily nativeFamily := by
-  intro localHistory initial
-  obtain ⟨nativeFamily,runs,weights⟩ :=
-    checked.weighted_children frame incoming selected spectators source.operator actual
-  have starts := source_input_on_slice scope input startState bindings frame ordinals source actual localHistory
-    (componentJoint incoming selected spectators source.operator) (fun _ => rfl) (fun _ => rfl)
-    hidden measured ordinaryAgrees (fun _ _ _ _ => rfl)
-  obtain ⟨owners,_,afterOrder,refined⟩ :=
-    refine_child_runs actual localHistory nativeFamily checked.childRead runs flow returned ordinals initial next
-      (domain := domain) (admitted := admitted) laws avoids starts
-  have ownerOrder : owners.bindings = after.bindings :=
-    (congrArg RuntimeStructuralAction.SourceState.bindings afterOrder).symm
-  simp only [ownerOrder] at refined
-  choose expected evaluated related using refined
-  obtain ⟨sourceFamily,projection,paired⟩ :=
-    indexed_source_family (fun _ => SemanticHistoryAgreesWithInherited (some (fun id => id ∈ actual.values.map Prod.fst))
-      ordinals scope.localAfter after finalOrdinary)
-      (fun index => (expected index).map (returnHistory after.bindings)) related
-  exact ⟨nativeFamily,sourceFamily,runs,weights,fun index => ⟨expected index,evaluated index,(projection index).symm⟩,paired⟩
+          ordinals scope.localAfter after finalOrdinary (logical index) (native index)) sourceFamily nativeFamily :=
+  CallRunOn.refine_weighted_child_sources input frame incoming selected spectators source actual checked bindings flow returned
+    (actual_child_endpoints scope)
+    ordinals hidden measured ordinaryAgrees scope.visible.measurements
+    (Qleisli.RuntimeSparseNamedBoundary.visible_entry_agreement scope ordinals actual) next domain admitted laws avoids
 
 private theorem maps_equal {first second : RuntimeOwnerMap.Map}
     (owners : first.map (·.owner) = second.map (·.owner))
@@ -308,6 +433,20 @@ def NamedSourceTraversal {artifact : Artifact} {root : Validity.Root}
           (Qleisli.RuntimeLiteralBody.stepList steps) finish scope.visible.ssa finalOrdinary
           scope.prepared.block.operations.length ∧
         Returned scope.prepared.block subject.outputRoles finish after
+  | .routedNamed access steps =>
+    let subject := SourceTypes.SourceRuntimeScope.Subject.whole access.source
+    ∃ (input : RuntimeOwnerMap.Checked subject.initialRoles access.frame.prepared.block.entry)
+      (assigned : RuntimeOwnerMap.Map),
+      RuntimeInterval.Computed (RuntimeSourceBoundary.bindings subject.initialRoles
+        ((access.frame.selected.zip (access.boundary.input.ordered.map (·.owner))).map fun (port,role) =>
+          (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner))) assigned ∧
+      RuntimeInterval.Computed (RuntimePureBody.reordered subject.initialRoles access.frame.prepared.block.entry assigned) input ∧
+      ∃ finish,
+        Flow (runBlockCore artifact root mode fuel) origin
+          ⟨input.bindings,subject.initialRoles,access.source.checked.summary.nextOwner⟩
+          (Qleisli.RuntimeLiteralBody.stepList steps) finish access.frame.visible.ssa access.childOrdinary
+          access.frame.prepared.block.operations.length ∧
+        Returned access.frame.prepared.block subject.outputRoles finish access.childHistory
   | _ => True
 
 /-- Consume the actual recursive source flow with the same original bindings
@@ -369,8 +508,35 @@ theorem actual_named_source_traversal {artifact root mode fuel origin program bl
     apply named_source_traversal_of_flow initial sourceRead initialOrdered _ returned
     simpa only [rootRead origin rfl] using flow
 
+/-- The selected child starts on the original selected ports and the exact
+caller SSA retained by the branch projection. Its actual return also
+supplies the child history used by the outer routing receipt. -/
+theorem actual_routed_source_traversal {artifact root mode fuel origin program block step}
+    (call : @RoutedChildRunAt artifact root mode
+      (runBlockCore artifact root mode (fuel+1)) (some origin) program block step) :
+    NamedSourceTraversal (artifact := artifact) (mode := mode) fuel origin step := by
+  cases call with
+  | @checked caller access rootOwner rootName parent controlled request plan originalAssigned result receipts
+      beforeInput afterInput afterChild inputRead childRead history _ ordinary rootRead =>
+    let path := RuntimeOrdinaryBody.CallPath.named access.event access.source access.sourceRead parent
+    obtain ⟨initial,initialOrdered,finish,flow,returned⟩ :=
+      Qleisli.RuntimeNamedChildRuns.core_flow artifact root mode fuel
+        .localScope (.whole access.source controlled) path access.frame.program request plan _ access.frame.visible.ssa
+        access.frame.prepared.block (result,receipts) ⟨afterInput,afterChild,childRead⟩
+    have sourceRead : RuntimeInterval.Computed _ originalAssigned := ⟨beforeInput,afterInput,inputRead⟩
+    have roles := (RuntimeSelectionPartition.order_values
+      (RuntimeExclusiveAction.selectedState access.opening).bindings access.event.inputOwners
+      access.boundary.input.ordered access.boundary.input.orderRead).2
+    have sameRoot : RuntimeBranchCondition.rootEntries path = origin :=
+      (RuntimeBranchInputDomain.named_entries _ _ _ _).trans (rootRead origin rfl)
+    refine ⟨initial,originalAssigned,?_,initialOrdered,finish,?_,by simpa only [history] using returned⟩
+    · simpa only [roles] using sourceRead
+    · simpa only [sameRoot,ordinary,stepList_ofList] using flow
+
 #print axioms source_input_on_slice
 #print axioms CheckedCallRun.refine_source_slices
+#print axioms CallRunOn.refine_weighted_child_sources
 #print axioms CheckedCallRun.refine_weighted_child_sources
 #print axioms actual_named_source_traversal
+#print axioms actual_routed_source_traversal
 end Qleisli.RuntimeCallHistory

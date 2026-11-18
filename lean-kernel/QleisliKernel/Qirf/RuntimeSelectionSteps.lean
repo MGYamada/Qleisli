@@ -30,6 +30,7 @@ inductive Edge where
   | atOrdinal (ordinal : Nat)
   | nextOrdinal (ordinal : Nat)
   | pureStep (ordinal : Nat)
+  | exclusive (ordinal : Nat)
   | named (ordinal : Nat) (callerOwner callerName : String) (offset : Nat) (owner name : String)
   | transform (ordinal : Nat) (callerOwner callerName : String) (offset : Nat) (owner name : String)
   | thenBranch (ordinal : Nat)
@@ -54,6 +55,8 @@ private def inspect {dependencies} : (item : Item dependencies) → View depende
     .child (.transform ordinal caller event.callerName event.call.calleeOffset
       event.target.resolution.moduleName event.target.resolution.declaration.name) (.nodes 0 nested)
       (by simp only [Smaller] <;> decreasing_tactic)
+  | .node ordinal (.exclusive _ _ inner _) => .child (.exclusive ordinal) (.node ordinal inner)
+      (by simp only [Smaller] <;> decreasing_tactic)
   | .node _ (.primitive ..) | .node _ (.structural _) | .node _ (.register ..) | .node _ (.basis ..)
   | .node _ (.computed ..) | .node _ (.certifiedComputed ..) | .node _ (.workspace ..) | .node _ (.operation ..) => .leaf
   | .node _ (.rectangularOperation _) | .node _ (.structuralComputed ..) => .leaf
@@ -63,6 +66,8 @@ private def inspect {dependencies} : (item : Item dependencies) → View depende
   | .step ordinal (.pure node) => .child (.pureStep ordinal) (.node ordinal node) (by simp only [Smaller] <;> decreasing_tactic)
   | .step _ (.gap _) | .step _ (.observation _) => .leaf
   | .step ordinal (.named event _ _ _ _ _ nested) => .child (namedEdge ordinal event) (.steps 0 nested) (by simp only [Smaller] <;> decreasing_tactic)
+  | .step ordinal (.routedNamed checked nested) =>
+    .child (namedEdge ordinal checked.event) (.steps 0 nested) (by simp only [Smaller] <;> decreasing_tactic)
   | .step ordinal (.conditional _ _ _ _ _ _ left right) => .pair (.thenBranch ordinal) (.steps 0 left) (.elseBranch ordinal) (.steps 0 right)
       (by simp only [Smaller] <;> decreasing_tactic) (by simp only [Smaller] <;> decreasing_tactic)
   | .steps _ .nil => .leaf
@@ -135,6 +140,31 @@ private def hasBasis {dependencies} (item : Item dependencies) : WorkM Bool :=
 def readBasisResult {dependencies program block} (result : BlockResult dependencies program block) : WorkM Bool := do
   exactWork (Exact.charge (8*(result.steps.length+1)))
   hasBasis (.steps 0 (Steps.ofList result.steps))
+
+/-- Require an original checked access action in the root's actual body,
+call or branch steps. The access node retains its original occurrence and
+complete Raw route and call checks. Transform witnesses are separate proof
+programs and do not establish an access in the emitted root. -/
+private def hasAccess {dependencies} (item : Item dependencies) : WorkM Bool :=
+  WellFounded.fix (smallerWF (dependencies := dependencies))
+    (C := fun _ => WorkM Bool)
+    (fun current next => do
+      exactWork (Exact.charge 8)
+      let found := match current with
+        | .node _ (.exclusive ..) | .step _ (.routedNamed ..) => true
+        | _ => false
+      if found then return true
+      else
+        match inspect current with
+        | .leaf | .selection .. => return false
+        | .child (.transform ..) _ _ => return false
+        | .child _ one smaller => next one smaller
+        | .pair _ first _ rest smallerFirst smallerRest =>
+          if ← next first smallerFirst then return true else next rest smallerRest) item
+
+def readAccessResult {dependencies program block} (result : BlockResult dependencies program block) : WorkM Bool := do
+  exactWork (Exact.charge (8*(result.steps.length+1)))
+  hasAccess (.steps 0 (Steps.ofList result.steps))
 
 /-- The selected node retains the same program, block and complete literal
 receipt. Its ordinal is local to its original enclosing body or branch. -/

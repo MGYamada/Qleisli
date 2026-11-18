@@ -27,6 +27,109 @@ private def ordinaryCopy := "fn duplicate(c:Bit)->(Bit,Bit){(c,c)}" ++
 #guard ((read ordinaryCopy).map fun checked => ordinary checked.summary.value |>.map Prod.snd) =
   some [.input 0,.input 0]
 
+private def originalAccess (text : String) : Except String (Option (List (String × String))) := do
+  let tokens ← lexLocated text
+  match ← SourceSyntax.read (tokens.length+1) 0 false tokens with
+  | .exclusive written _ =>
+    pure (some (written.arguments.map fun entry => (entry.2.marker.text,entry.2.owner.text)))
+  | .call .. => pure none
+  | _ => throw "expected call"
+
+#guard (originalAccess "turn[1](excl q[1],ctrl c)").toOption = some (some [("excl","q"),("ctrl","c")])
+#guard ["f(ctrl)","f(ctrl,excl)","f(excl[0],ctrl(x))","f(ctrl(x))","f(ctrl[i](x))","f(ctrl::g(x))"].all
+  (fun input => (originalAccess input).toOption == some none)
+#guard (originalAccess "f(1,excl q)").toOption = some (some [("excl","q")])
+#guard (originalAccess "f(ctrl c,q)").toOption = some (some [("ctrl","c")])
+
+private def originalMixedUnit := "unitary fn turn(pre:Unit,t:Q<Bit>,post:Unit)->Q<Bit>{h(t)} " ++
+  "pub unitary fn route(tag:Unit,q:Q<Bits<2>>)->Q<Bits<2>>{turn((),excl q[1],tag);q}"
+
+private def declaredUnit := "unitary fn turn(tag:Unit,q:excl Q<Bit>)->Unit{h(excl q);tag} " ++
+  "pub unitary fn route(q:Q<Bit>)->Q<Bit>{turn((),excl q);q}"
+
+#guard (read declaredUnit).isSome
+#guard (read (declaredUnit.replace ";tag}" ";q}")).isNone
+
+private def mixedAccessReplay (source : String) : Option (List Value × List Value × List Nat × List Nat) := do
+  let checked ← read source
+  let [.exclusive access (.named named)] := checked.events | none
+  some (access.arguments.values,named.arguments,access.reservation.arguments.map (·.ordinal),
+    (valueOwners checked.summary.value).map (·.ordinal))
+
+#guard mixedAccessReplay originalMixedUnit ==
+  let values := [[.ordinary [.unit] .unit],[.owner ⟨1,[.bit]⟩],[.ordinary [.unit] (.input 0)]]
+  some (values,values,[1],[0])
+#guard mixedAccessReplay (originalMixedUnit.replace "(),excl q[1],tag" "tag,excl q[1],()") ==
+  let values := [[.ordinary [.unit] (.input 0)],[.owner ⟨1,[.bit]⟩],[.ordinary [.unit] .unit]]
+  some (values,values,[1],[0])
+#guard (read (originalMixedUnit.replace "(),excl q[1]" "excl q[1],()")).isNone
+#guard (read (originalMixedUnit.replace ",tag);q" ",q);q")).isNone
+#guard (read (originalMixedUnit.replace "(),excl q[1]" "0,excl q[1]")).isNone
+#guard (read (originalMixedUnit.replace "(),excl q[1]" "discard(q),excl q[1]")).isNone
+
+private def originalMixedBit :=
+  "unitary fn turn(marker:Unit,choose:Bit,a:Q<Bit>,other:Bit)->Q<Bit>{if choose{h(a)}else{a}} " ++
+  "pub unitary fn route(flag:Bit,spare:Bit,q:Q<Bit>)->Q<Bit>{turn((),flag,excl q,spare);q}"
+
+private def mixedBitCondition (source : String) : Option (Expression × Expression) := do
+  let checked ← read source
+  let [.exclusive _ (.named named)] := checked.events | none
+  let callee ← ((SourceTypes.SourceRuntimeTrace.readNamedBody named).run 2000000000).1.toOption
+  let [.conditional branch _ _] := callee.checked.events | none
+  let actual ← (expressionTransport ⟨"main",named.target.callerName,named.call.calleeOffset⟩
+    named.ownerMap (named.arguments.flatMap ordinary) branch.condition).toOption
+  some (branch.condition,actual)
+
+#guard mixedAccessReplay originalMixedBit ==
+  let values := [[.ordinary [.unit] .unit],[.ordinary [.bit] (.input 0)],
+    [.owner ⟨0,[.bit]⟩],[.ordinary [.bit] (.input 1)]]
+  some (values,values,[0],[1])
+#guard mixedBitCondition originalMixedBit == some (.input 1,.input 0)
+#guard mixedBitCondition (originalMixedBit.replace "flag,excl q,spare" "spare,excl q,flag") ==
+  some (.input 1,.input 1)
+#guard (read (originalMixedBit.replace "excl q" "ctrl q")).isNone
+#guard (read (originalMixedBit.replace "flag:Bit" "flag:Bits<1>")).isNone
+#guard (read (originalMixedBit.replace "(),flag,excl" "(),0,excl")).isNone
+#guard (read (originalMixedBit.replace "(),flag,excl" "(),not flag,excl")).isNone
+
+private def orderedAccess (text : String) : Except String (List (Option AccessSyntax.Role × List String)) := do
+  let call ← AccessSyntax.readAccessCall (← lexLocated text)
+  return call.slots.map fun slot =>
+    let role := match slot.2 with
+      | .ordinary _ => none
+      | .access argument => some argument.role
+    (role,slot.1.map (·.text))
+
+#guard (orderedAccess "turn[1](ctrl,excl q[1],ctrl(x),ctrl c,(0,1),excl,ctrl::g(x))").toOption ==
+  some [(none,["ctrl"]),(some .excl,["excl","q","[","1","]"]),(none,["ctrl","(","x",")"]),
+    (some .ctrl,["ctrl","c"]),(none,["(","0",",","1",")"]),(none,["excl"]),
+    (none,["ctrl","::","g","(","x",")"])]
+#guard (orderedAccess "f(ctrl c,1)").toOption == some [(some .ctrl,["ctrl","c"]),(none,["1"])]
+#guard (orderedAccess "f(ctrl,excl,ctrl(x),ctrl::g(x))").toOption.isNone
+#guard (orderedAccess "f(ctrl c[0..],1)").toOption.isNone
+#guard (orderedAccess "f(1,excl q,)").toOption.isNone
+
+private def accessBinding (source : String) :
+    Option (List (Bool × Nat × Option (Nat × Nat)) × List Nat × List Nat × Semantics.Raw.Effect) := do
+  let checked ← read source
+  let [.exclusive access child] := checked.events | none
+  let places := access.checked.entries.map fun entry =>
+    (entry.1.2.role == .ctrl,entry.2.parent.ordinal,entry.2.coordinates.range)
+  some (places,access.reservation.arguments.map (·.ordinal),access.returned.outputs.map (·.ordinal),child.effect)
+
+private def indexedMixed := "unitary fn turn(t:Q<Bit>,c:Q<Bit>)->(Q<Bit>,Q<Bit>){(h(t),c)} " ++
+  "pub unitary fn route(c:Q<Bit>,q:Q<Bits<2>>)->(Q<Bit>,Q<Bits<2>>){turn(excl q[1],ctrl c);(c,q)}"
+#guard accessBinding indexedMixed == some ([(false,1,some (1,2)),(true,0,none)],[2,0],[2,0],.unitary)
+#guard (read (indexedMixed.replace "ctrl c" "ctrl q[1]")).isNone
+#guard (accessBinding (indexedMixed.replace "ctrl c" "excl c")).isSome
+
+-- A whole ctrl still retains the source event and zero-width port. Its
+-- sector evidence remains an obligation of the independently checked Raw.
+#guard accessBinding "pub unitary fn route(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(ctrl q);q}" ==
+  some ([(true,0,none)],[0],[0],.unitary)
+#guard (accessBinding "pub unitary fn route(q:Q<Bit>)->Q<Bit>{h(excl q);q}").isNone
+#guard view "pub unitary fn route(q:Q<Bit>)->Q<Bit>{h(excl q);q}" = some ([0],[],.unitary)
+
 private def observed := "observe fn read(q:Q<Bit>)->Bit{measure_z(h(q))}" ++
   "pub observe fn route(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Bit){(h(a),read(b))}"
 #guard view observed = some ([0],[1],.observe)

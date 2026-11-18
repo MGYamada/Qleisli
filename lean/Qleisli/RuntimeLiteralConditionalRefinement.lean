@@ -26,8 +26,9 @@ open Qleisli.RuntimeOriginalBranchJoin
   (armChecked armPermutation original_arm_run original_branch_join_with_inherited original_native_phi_history sourcePhiIndex)
 open Qleisli.RuntimeOriginalSparsePhi (original_sparse_phi_history)
 open Qleisli.RuntimeNamedThreePackedInstrument (pureHistory)
-open Qleisli.RuntimeNamedChildRuns (CheckedStep CheckedStepAt ChildRun ChildRunAt ConditionalRun ConditionFrom RootInputs)
-open Qleisli.RuntimeNamedChildRuns (RuntimeOnly core_runtime_only)
+open Qleisli.RuntimeNamedChildRuns (CheckedStep CheckedStepAt ChildRun ChildRunAt ConditionalRun ConditionFrom RootInputs RoutedChildRunAt)
+open Qleisli.RuntimeNamedChildRuns (IsRuntimeStep OrdinaryAligned PureCallAt RuntimeOnly core_runtime_only)
+open Qleisli.RuntimeNamedSourceFlow (Aligned)
 open Qleisli.RuntimeObservingValueRetention (Supports run_values run_retains_values)
 open Qleisli.RuntimeObservingPrefix (Issued issued_mono)
 open Qleisli.RuntimeObservingWrites (WritesWithin)
@@ -508,9 +509,8 @@ theorem sourceStep_with_conditionals {artifact root mode fuel program block}
   | observation observation => exact False.elim checked.2
   | pure node =>
     exact remaining prior (.pure node) later position checked owners ordinary read agrees executed
-  | named event frame body bodyRead boundary finalOrdinary nested =>
-    exact remaining prior (.named event frame body bodyRead boundary finalOrdinary nested) later position
-      checked owners ordinary read agrees executed
+  | named _ _ _ _ _ _ _ | routedNamed _ _ =>
+    exact remaining prior _ later position checked owners ordinary read agrees executed
   | conditional path event body actual actualRead action thenSteps elseSteps =>
     rcases owners with ⟨rfl,rfl⟩
     rcases ordinary with ⟨rfl,rfl⟩
@@ -588,25 +588,100 @@ private theorem named_zero_impossible {artifact root mode program block step}
       (Except.ok (result,receipts),afterChild) at childRead
     cases childRead
 
+private theorem routed_zero_impossible {artifact root mode program block step origin}
+    (checked : @RoutedChildRunAt artifact root mode (runBlockCore artifact root mode 0) origin program block step) :
+    False := by
+  cases checked with
+  | @checked caller access rootOwner rootName path controlled request plan initial result receipts
+      beforeInput afterInput afterChild inputRead childRead history retired ordinary rootRead =>
+    change (Except.error QleisliKernel.Finite.Error.limit,afterInput) =
+      (Except.ok (result,receipts),afterChild) at childRead
+    cases childRead
+
 private def NeedsRecursiveLeaf {dependencies program block} : Step dependencies program block → Prop
-  | .named .. | .conditional .. | .pure (.named ..) => False
+  | .named .. | .routedNamed .. | .conditional .. | .pure (.named ..) | .pure (.exclusive ..) => False
   | _ => True
+
+private theorem recursive_leaf_of_pure {dependencies program block} (step : Step dependencies program block)
+    (pure : NeedsPureLeaf step) : NeedsRecursiveLeaf step := by
+  cases step
+  case pure node => cases node <;> exact pure
+  all_goals exact False.elim pure
 
 abbrev RecursiveLeaf {dependencies program block} (step : Step dependencies program block) : Prop :=
   NeedsRecursiveLeaf step
 
+private abbrev RecursiveLeafLaws {artifact : Artifact} {root : Validity.Root}
+    {mode : RuntimePureBody.ExecutionMode artifact root}
+    (leaves : Nat → ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs) : Prop :=
+  ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block))
+    (inherited : Option (Nat → Prop)),
+    StepRefinement steps
+      (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧ NeedsRecursiveLeaf step)
+      (leaves depth scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
+      (inherited.map (fun holds id => ¬ holds id))
+
+/-- Refine a pure occurrence inside an ordinary body at its actual prefix.
+The call witness and step alignment retain the incoming ordinary frame. -/
+private theorem recursive_pure_node_refines {artifact root mode program block}
+    (leaves : Nat → ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs)
+    (localLeaves : RecursiveLeafLaws (artifact := artifact) (mode := mode) leaves inputs origin)
+    (depth : Nat) (scope : List Edge) (prior : List (Step root.dependencies program block))
+    (node : RuntimePureBody.Node root.dependencies program block) (inherited : Option (Nat → Prop))
+    {ownerBefore ownerAfter ordinaryBefore ordinaryAfter}
+    (checked : CheckedStepAt (runBlockCore artifact root mode depth) origin (.pure node))
+    (calls : PureCallAt (runBlockCore artifact root mode depth) origin ordinaryBefore (.pure node))
+    (owners : Aligned ownerBefore ownerAfter (.pure node))
+    (ordinary : OrdinaryAligned ordinaryBefore ordinaryAfter (.pure node))
+    {chunk : List Event}
+    (read : readOps block.fuel (nodeSpan node).checked.before.quantum.reference (nodeSpan node).operations =
+      some ((nodeSpan node).checked.after.quantum.reference,chunk)) :
+    WithChunkWriteBound (inherited.map (fun holds id => ¬ holds id)) chunk
+      (∀ {source actual outputs},
+        SemanticHistoryAgreesWithInherited inherited inputs (nodeSpan node).checked.before
+          ownerBefore ordinaryBefore source actual →
+        run root.dependencies block.fuel chunk actual = some outputs →
+        ∃ expected, pureRecursiveSourceStepsAt leaves depth scope prior (.pure node) source = some expected ∧
+          List.Forall₂ (SemanticHistoryAgreesWithInherited inherited inputs (nodeSpan node).checked.after
+            ownerAfter ordinaryAfter) expected outputs) := by
+  have law := pureRecursiveSourceStepAt_refine_in_frame (mode := mode) leaves inputs origin ordinaryBefore depth
+    (fun _ => True) (fun _ => trivial)
+    (fun childDepth _ {childProgram childBlock} atScope steps _ childInherited =>
+      pureLeafRefinement_of_semantic_in_frame steps _ _ ordinaryBefore inputs childInherited
+        ((localLeaves childDepth (program := childProgram) (block := childBlock) atScope steps childInherited).of_certifies
+          (fun step cert => ⟨cert.1,recursive_leaf_of_pure step cert.2⟩)))
+    depth (Nat.le_refl _) scope prior node trivial inherited ⟨checked,calls⟩
+  refine WithChunkWriteBound.of_trace ?_
+  intro writes source actual outputs agrees executed
+  obtain ⟨expected,evaluated,paired⟩ :=
+    ((law [] (.pure node) [] rfl trivial owners ordinary read).apply writes) ⟨rfl,agrees⟩ executed
+  exact ⟨expected,evaluated,paired.imp (fun _ _ pair => pair.2)⟩
+
+private theorem pure_call_in_runtime_body {artifact root mode depth origin program block}
+    (node : RuntimePureBody.Node root.dependencies program block)
+    (runtime : IsRuntimeStep (.pure node))
+    (checked : CheckedStepAt (runBlockCore artifact root mode depth) origin (.pure node))
+    {before after} (ordinary : OrdinaryAligned before after (.pure node)) :
+    PureCallAt (runBlockCore artifact root mode depth) origin before (.pure node) := by
+  cases node
+  case named => exact False.elim runtime
+  case exclusive => exact ⟨ordinary.1,checked.2.2.2⟩
+  all_goals trivial
+
 /-- Recurse through the original checked child list of a named call or the
-original arm selected by a conditional. Both start a fresh local prefix. -/
+original arm selected by a conditional. Pure steps retain their actual
+prefix, including when an indexed wrapper opens a pure callback. -/
 noncomputable def recursiveSourceStepsAt {dependencies}
     (leaves : Nat → ScopedSourceSteps dependencies) (inputs : List Nat) : Nat → ScopedSourceSteps dependencies
-  | 0 => leaves 0
+  | 0 => pureRecursiveSourceStepsAt leaves 0
   | depth+1 => fun scope =>
     let children : ScopedSourceSteps dependencies :=
       fun atChild => recursiveSourceStepsAt leaves inputs depth atChild
     withBranchSteps children (fun prior step source =>
       match step with
       | .named .. => evaluateGeneralNamed children scope prior.length step source
-      | _ => leaves (depth+1) scope prior step source) inputs scope
+      | .routedNamed access steps => evaluateRoutedChild access steps children scope prior.length source
+      | _ => pureRecursiveSourceStepsAt leaves (depth+1) scope prior step source) inputs scope
 
 /-- Use one shared leaf evaluator at every level. -/
 noncomputable abbrev recursiveSourceSteps {dependencies}
@@ -640,7 +715,7 @@ private theorem runtimeOnly_ofList {dependencies program block}
   exact same.symm ▸ original
 
 private def RuntimeChildren {dependencies program block} : Step dependencies program block → Prop
-  | .named _ _ _ _ _ _ steps => RuntimeOnly (stepList steps)
+  | .named _ _ _ _ _ _ steps | .routedNamed _ steps => RuntimeOnly (stepList steps)
   | .conditional _ _ _ _ _ _ left right => RuntimeOnly (stepList left) ∧ RuntimeOnly (stepList right)
   | _ => True
 
@@ -657,6 +732,19 @@ private theorem runtimeChildren_of_named {artifact root mode fuel origin program
       ⟨initial,body.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners,
         body.checked.summary.nextOwner⟩
       scope.visible.ssa scope.prepared.block (result,receipts) ⟨afterInput,afterChild,childRead⟩
+    exact runtimeOnly_ofList result.steps mixed
+
+private theorem runtimeChildren_of_routed {artifact root mode fuel origin program block step}
+    (checked : @RoutedChildRunAt artifact root mode (runBlockCore artifact root mode (fuel+1))
+      (some origin) program block step) : RuntimeChildren step := by
+  cases checked with
+  | @checked caller access rootOwner rootName path controlled request plan initial result receipts
+      beforeInput afterInput afterChild inputRead childRead history retired ordinary rootRead =>
+    have mixed := core_runtime_only artifact root mode fuel .localScope (.whole access.source controlled)
+      (.named access.event access.source access.sourceRead path) access.frame.program request plan
+      ⟨initial,access.source.checked.summary.parameterValues.flatMap SourceRuntimeValues.valueOwners,
+        access.source.checked.summary.nextOwner⟩ access.frame.visible.ssa access.frame.prepared.block
+      (result,receipts) ⟨afterInput,afterChild,childRead⟩
     exact runtimeOnly_ofList result.steps mixed
 
 private theorem runtimeChildren_of_conditional {artifact root mode fuel program block step}
@@ -683,6 +771,7 @@ private theorem runtimeChildren_of_checked {artifact root mode fuel origin progr
     RuntimeChildren step := by
   cases step
   case named => exact runtimeChildren_of_named (fuel := fuel) checked
+  case routedNamed => exact runtimeChildren_of_routed (fuel := fuel) checked
   case conditional => exact runtimeChildren_of_conditional (fuel := fuel) checked
   all_goals exact True.intro
 
@@ -692,13 +781,7 @@ history. An arm uses the enclosing write bound and the same root row. -/
 theorem recursiveSourceStepsAt_refine {artifact root mode}
     (leaves : Nat → ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs)
     (rootRow : RootConditionRow origin inputs)
-    (localLeaves : ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block))
-      {count}, Witness (.steps 0 (Steps.ofList steps)) count →
-      ∀ (inherited : Option (Nat → Prop)),
-      StepRefinement steps
-        (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧ NeedsRecursiveLeaf step)
-        (leaves depth scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
-        (inherited.map (fun holds id => ¬ holds id))) :
+    (localLeaves : RecursiveLeafLaws (artifact := artifact) (mode := mode) leaves inputs origin) :
     ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block))
       {count}, Witness (.steps 0 (Steps.ofList steps)) count →
       ∀ (inherited : Option (Nat → Prop)),
@@ -716,14 +799,15 @@ theorem recursiveSourceStepsAt_refine {artifact root mode}
     cases first
     case named =>
       exact False.elim (named_zero_impossible (ChildRunAt.forget checked))
+    case routedNamed =>
+      exact False.elim (routed_zero_impossible checked)
     case conditional =>
       exact False.elim (conditional_zero_impossible checked)
     case pure node =>
-      cases node
-      case named => exact False.elim firstMixed
-      all_goals exact localLeaves 0 scope steps witness inherited prior _ later position ⟨checked,trivial⟩ owners ordinary read
+      exact recursive_pure_node_refines leaves inputs origin localLeaves 0 scope prior node inherited
+        checked (pure_call_in_runtime_body node firstMixed checked ordinary) owners ordinary read
     all_goals
-      exact localLeaves 0 scope steps witness inherited prior _ later position ⟨checked,trivial⟩ owners ordinary read
+      exact localLeaves 0 scope steps inherited prior _ later position ⟨checked,trivial⟩ owners ordinary read
   | succ depth ih =>
     intro program block scope steps count witness inherited mixed origins prior first later position checked ownerBefore ownerAfter
       ordinaryBefore ordinaryAfter owners ordinary chunk read
@@ -739,6 +823,16 @@ theorem recursiveSourceStepsAt_refine {artifact root mode}
       rcases ordinary with ⟨rfl,rfl⟩
       obtain ⟨expected,evaluated,paired⟩ :=
         general_named_refines (fuel := depth) checked inputs inherited (recursiveSourceStepsAt leaves inputs depth)
+          scope prior.length agrees read executed writes
+          (fun rows => ih _ _ (by simpa only [ofList_stepList] using childWitness) _ childMode rows)
+      exact ⟨expected,by simpa only [recursiveSourceStepsAt,withBranchSteps] using evaluated,paired⟩
+    | routedNamed access steps =>
+      have childMode := runtimeChildren_of_checked checked
+      obtain ⟨_,⟨childWitness⟩⟩ := RuntimeLiteralSelectionWitness.named_at_step witness prior later position.symm
+      rcases owners with ⟨rfl,rfl⟩
+      rcases ordinary with ⟨rfl,rfl⟩
+      obtain ⟨expected,evaluated,paired⟩ :=
+        general_routed_refines (fuel := depth) checked inputs inherited (recursiveSourceStepsAt leaves inputs depth)
           scope prior.length agrees read executed writes
           (fun rows => ih _ _ (by simpa only [ofList_stepList] using childWitness) _ childMode rows)
       exact ⟨expected,by simpa only [recursiveSourceStepsAt,withBranchSteps] using evaluated,paired⟩
@@ -765,21 +859,17 @@ theorem recursiveSourceStepsAt_refine {artifact root mode}
       exact ⟨expected.map (finishArm action choice),
         by simp only [recursiveSourceStepsAt,withBranchSteps,choiceRead,sourceRead,bind,Option.bind,pure],paired⟩
     | pure node =>
-      cases node
-      case named => exact False.elim firstMixed
-      all_goals
-        exact ((localLeaves (depth+1) scope steps witness inherited prior _ later position ⟨checked,trivial⟩
-          owners ordinary read).apply writes) agrees executed
+      exact ((recursive_pure_node_refines leaves inputs origin localLeaves (depth+1) scope prior node inherited
+        checked (pure_call_in_runtime_body node firstMixed checked ordinary) owners ordinary read).apply writes) agrees executed
     | gap _ | observation _ =>
-      exact ((localLeaves (depth+1) scope steps witness inherited prior _ later position ⟨checked,trivial⟩
+      exact ((localLeaves (depth+1) scope steps inherited prior _ later position ⟨checked,trivial⟩
         owners ordinary read).apply writes) agrees executed
 
 theorem recursiveSourceSteps_refine {artifact root mode}
     (leaves : ScopedSourceSteps root.dependencies) (inputs : List Nat) (origin : RootInputs)
     (rootRow : RootConditionRow origin inputs)
     (localLeaves : ∀ depth {program block} (scope : List Edge) (steps : List (Step root.dependencies program block))
-      {count}, Witness (.steps 0 (Steps.ofList steps)) count →
-      ∀ (inherited : Option (Nat → Prop)),
+      (inherited : Option (Nat → Prop)),
       StepRefinement steps
         (fun step => CheckedStepAt (runBlockCore artifact root mode depth) origin step ∧ NeedsRecursiveLeaf step)
         (leaves scope) (fun _ => SemanticHistoryAgreesWithInherited inherited inputs)
@@ -824,6 +914,8 @@ theorem sparseStepsAt_refine {artifact root mode}
       exact False.elim (conditional_zero_impossible checked.1.1.1)
     case named =>
       exact False.elim (named_zero_impossible checked.1.1.1)
+    case routedNamed =>
+      exact False.elim (routed_zero_impossible checked.1.1.1)
     case observation =>
       exact False.elim checked.1.2
     all_goals
@@ -875,7 +967,7 @@ theorem sparseStepsAt_refine {artifact root mode}
           exact ⟨expected,by simpa only [withSparseSelection,selected,withSparseNamed,inspected]
             using sourceRead,paired⟩
     | observation _ => exact False.elim checked.1.2
-    | gap _ =>
+    | gap _ | routedNamed _ _ =>
       exact leaves (depth+1) scope steps prior _ later position
         ⟨checked.1.1.1,checked.1.1.2,checked.2⟩ owners ordinary read agrees executed
     | pure _ =>
@@ -1007,7 +1099,7 @@ private theorem recursiveBodyLeaves_refine {dependencies program block}
   cases step with
   | pure node =>
     cases node
-    case named => exact False.elim leaf
+    case named | exclusive => exact False.elim leaf
     case operation => exact False.elim graph
     case rectangularOperation => exact False.elim graph
     case transform => exact False.elim graph
@@ -1019,7 +1111,7 @@ private theorem recursiveBodyLeaves_refine {dependencies program block}
     case computed | certifiedComputed | structuralComputed => exact False.elim computed
   | gap _ => exact False.elim structural
   | observation _ => exact False.elim observation
-  | named _ _ _ _ _ _ _ => exact False.elim leaf
+  | named _ _ _ _ _ _ _ | routedNamed _ _ => exact False.elim leaf
   | conditional _ _ _ _ _ _ _ _ => exact False.elim leaf
 
 /-- The pure provider traversal reuses the original primitive, graph,
@@ -1034,11 +1126,7 @@ theorem pureBodyLeaves_refine {dependencies program block}
       (inherited.map (fun holds id => ¬ holds id)) := by
   apply pureLeafRefinement_of_semantic
   apply (recursiveBodyLeaves_refine scope inputs inherited steps certifies).of_certifies
-  intro step checked
-  refine ⟨checked.1,?_⟩
-  cases step
-  case pure node => cases node <;> exact checked.2
-  all_goals exact False.elim checked.2
+  exact fun step checked => ⟨checked.1,recursive_leaf_of_pure step checked.2⟩
 
 theorem recursiveLeafRefinement {dependencies program block}
     (scope : List Edge) (inputs : List Nat) (inherited : Option (Nat → Prop))
@@ -1084,7 +1172,7 @@ theorem original_body_recursive_refinement {artifact owner name arguments reques
     (recursiveSourceSteps recursiveBodyLeaves row.ordinals 127 scope) executed
     (recursiveSourceSteps_refine recursiveBodyLeaves row.ordinals
       (RuntimeBranchCondition.rootEntries (.root prepared.source.body)) (rootConditionRow_of_checked row)
-      (fun depth {program block} atStep steps _ _ inherited =>
+      (fun depth {program block} atStep steps inherited =>
         recursiveBodyLeaves_refine (program := program) (block := block) atStep row.ordinals inherited steps _)
       127 scope body.checked.result.steps body.selections.witness none
       (RuntimeNamedChildRuns.original_body_runtime_only body) flow.conditions) starts
