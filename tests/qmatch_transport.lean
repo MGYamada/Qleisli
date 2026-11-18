@@ -1234,7 +1234,8 @@ private def readRepeatedChoose (secondCall secondDuty : Bool) : WorkM (Nat × Na
   if caller : event.target.callerName = "route" then
     let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" event.target.callerName := by
       simpa only [caller] using (RuntimeOrdinaryBody.CallPath.root source.body)
-    let path := RuntimeOrdinaryBody.CallPath.named event body.val (by with_reducible exact body.property) parent
+    let path := RuntimeOrdinaryBody.CallPath.named event body.val
+      (.replayed (by with_reducible exact body.property)) parent
     let bound ← RuntimeDutyInvocation.readDemand entry path
     return (event.call.calleeOffset,entry.index.val,bound.demand.source.index.val)
   else throw .invalid
@@ -1541,7 +1542,8 @@ private def mixedSupplyStudy : WorkM Unit := do
   if caller : first.target.callerName = "route" then
     let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" first.target.callerName := by
       simpa only [caller] using (RuntimeOrdinaryBody.CallPath.root source.body)
-    let path := RuntimeOrdinaryBody.CallPath.named first callee.val (by with_reducible exact callee.property) parent
+    let path := RuntimeOrdinaryBody.CallPath.named first callee.val
+      (.replayed (by with_reducible exact callee.property)) parent
     let invoked ← RuntimeDutyInvocation.readDemand duty path
     let body := callee.val.checked
     let [.selection selected] := body.events | throw .invalid
@@ -1637,12 +1639,14 @@ private def forwardedSupplyStudy (second : Bool) : WorkM (List SupplyHopSummary)
   if outerCaller : outer.target.callerName = "route" then
     let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" outer.target.callerName := by
       simpa only [outerCaller] using (RuntimeOrdinaryBody.CallPath.root source.body)
-    let relayPath := RuntimeOrdinaryBody.CallPath.named outer relay.val (by with_reducible exact relay.property) parent
+    let relayPath := RuntimeOrdinaryBody.CallPath.named outer relay.val
+      (.replayed (by with_reducible exact relay.property)) parent
     if innerCaller : inner.target.callerName = outer.target.resolution.declaration.name then
       let innerParent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route"
           outer.target.resolution.moduleName inner.target.callerName := by
         simpa only [innerCaller] using relayPath
-      let path := RuntimeOrdinaryBody.CallPath.named inner choose.val (by with_reducible exact choose.property) innerParent
+      let path := RuntimeOrdinaryBody.CallPath.named inner choose.val
+        (.replayed (by with_reducible exact choose.property)) innerParent
       let invoked ← RuntimeDutyInvocation.readDemand duty path
       expectSupplyRefusal (RuntimeDutyInvocation.readDemand otherDuty path)
       let [actual] := outer.target.operationActuals.sourceActuals | throw .invalid
@@ -1727,11 +1731,13 @@ private def interiorSupplyStudy : WorkM Unit := do
   if outerCaller : outer.target.callerName = "route" then
     let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" outer.target.callerName := by
       simpa only [outerCaller] using (RuntimeOrdinaryBody.CallPath.root source.body)
-    let relayPath := RuntimeOrdinaryBody.CallPath.named outer relay.val (by with_reducible exact relay.property) parent
+    let relayPath := RuntimeOrdinaryBody.CallPath.named outer relay.val
+      (.replayed (by with_reducible exact relay.property)) parent
     if innerCaller : inner.target.callerName = outer.target.resolution.declaration.name then
       let innerParent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route"
           outer.target.resolution.moduleName inner.target.callerName := by simpa only [innerCaller] using relayPath
-      let path := RuntimeOrdinaryBody.CallPath.named inner choose.val (by with_reducible exact choose.property) innerParent
+      let path := RuntimeOrdinaryBody.CallPath.named inner choose.val
+        (.replayed (by with_reducible exact choose.property)) innerParent
       let invoked ← RuntimeDutyInvocation.readDemand duty path
       let body := choose.val.checked
       let [.selection selected] := body.events | throw .invalid
@@ -1929,15 +1935,18 @@ private def fourLevelSupplyStudy (fault : TailFault) : WorkM (List (List TailNod
   if outerCaller : outer.target.callerName = "route" then
     let parent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route" "main" outer.target.callerName := by
       simpa only [outerCaller] using (RuntimeOrdinaryBody.CallPath.root source.body)
-    let outerPath := RuntimeOrdinaryBody.CallPath.named outer outside.val (by with_reducible exact outside.property) parent
+    let outerPath := RuntimeOrdinaryBody.CallPath.named outer outside.val
+      (.replayed (by with_reducible exact outside.property)) parent
     if middleCaller : middle.target.callerName = outer.target.resolution.declaration.name then
       let middleParent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route"
           outer.target.resolution.moduleName middle.target.callerName := by simpa only [middleCaller] using outerPath
-      let relayPath := RuntimeOrdinaryBody.CallPath.named middle relay.val (by with_reducible exact relay.property) middleParent
+      let relayPath := RuntimeOrdinaryBody.CallPath.named middle relay.val
+        (.replayed (by with_reducible exact relay.property)) middleParent
       if innerCaller : inner.target.callerName = middle.target.resolution.declaration.name then
         let innerParent : RuntimeOrdinaryBody.CallPath artifact.sources "main" "route"
             middle.target.resolution.moduleName inner.target.callerName := by simpa only [innerCaller] using relayPath
-        let path := RuntimeOrdinaryBody.CallPath.named inner choose.val (by with_reducible exact choose.property) innerParent
+        let path := RuntimeOrdinaryBody.CallPath.named inner choose.val
+          (.replayed (by with_reducible exact choose.property)) innerParent
         let invoked ← RuntimeDutyInvocation.readDemand duty path
         let body := choose.val.checked
         let [.selection selected] := body.events | throw .invalid
