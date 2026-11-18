@@ -114,9 +114,8 @@ theorem returned_embedding (callerFrame : List Nat) (code : RuntimeForestCode.Sp
   rw [returned_axes boundary]
 end
 
-/-- Only actual named steps carry a child return. Their retained original
-boundary determines its complete carrier, sparse interpreter and caller axes.
-Other step kinds acquire no source-action or code-preservation assertion. -/
+/-- The retained boundary of a named call determines its child return
+carriers, sparse interpretation and caller axes. -/
 def StepReturnCodes {dependencies program block}
     (step : @RuntimePureBody.Step dependencies program block) : Prop :=
   match step with
@@ -124,6 +123,10 @@ def StepReturnCodes {dependencies program block}
     carrierOwners boundary.mapped = carrierOwners child.bindings ∧
     sparseLayout (forestBasis boundary.mapped) = sparseLayout (forestBasis child.bindings) ∧
     ∀ callerFrame, forestAxes callerFrame boundary.mapped = forestAxes callerFrame child.bindings
+  | .routedNamed access _ =>
+    carrierOwners access.boundary.mapped = carrierOwners access.childHistory.bindings ∧
+    sparseLayout (forestBasis access.boundary.mapped) = sparseLayout (forestBasis access.childHistory.bindings) ∧
+    ∀ callerFrame, forestAxes callerFrame access.boundary.mapped = forestAxes callerFrame access.childHistory.bindings
   | .pure .. | .gap .. | .observation .. | .conditional .. => True
 
 theorem step_return_codes {dependencies program block}
@@ -131,6 +134,8 @@ theorem step_return_codes {dependencies program block}
   match step with
   | .named _ _ _ _ boundary _ _ =>
     ⟨returned_carriers boundary,returned_sparse boundary,returned_axes boundary⟩
+  | .routedNamed access _ =>
+    ⟨returned_carriers access.boundary,returned_sparse access.boundary,returned_axes access.boundary⟩
   | .pure .. | .gap .. | .observation .. | .conditional .. => True.intro
 
 #print axioms returned_carriers
