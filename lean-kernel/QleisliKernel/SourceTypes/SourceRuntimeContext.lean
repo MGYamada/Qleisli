@@ -876,24 +876,65 @@ inductive Iterations (sources : Sources) :
       Iterations sources owner (events :: tail)
 end
 
-def Sequence.append {sources owner} {a b : List (Event sources owner)} :
-    Sequence sources owner a → Sequence sources owner b → Sequence sources owner (a ++ b)
-  | .nil _, right => right
-  | .cons first rest,right => .cons first (rest.append right)
+/-- Loop bounds use the aligned ordinary lists so executable recursion is on
+`Nat`. The length premise proves that exhaustion cannot truncate a trace. -/
+private def Sequence.appendWith {sources owner} {b : List (Event sources owner)}
+    (right : Sequence sources owner b) (fuel : Nat) :
+    {a : List (Event sources owner)} → Sequence sources owner a → a.length ≤ fuel →
+      Sequence sources owner (a ++ b) :=
+  Nat.rec
+    (motive := fun n => {a : List (Event sources owner)} → Sequence sources owner a →
+      a.length ≤ n → Sequence sources owner (a ++ b))
+    (fun {_} trace => match trace with
+      | .nil _ => fun _ => right
+      | .cons _ _ => fun enough => False.elim (by simp at enough))
+    (fun _ append {_} trace => match trace with
+      | .nil _ => fun _ => right
+      | .cons first rest => fun enough => .cons first (append rest (Nat.le_of_succ_le_succ enough)))
+    fuel
 
-def Iterations.flatten {sources owner} {iterations : List (List (Event sources owner))} :
-    Iterations sources owner iterations → Sequence sources owner iterations.flatten
-  | .nil _ => .nil owner
-  | .cons trace rest => trace.append rest.flatten
+def Sequence.append {sources owner} {a b : List (Event sources owner)}
+    (left : Sequence sources owner a) (right : Sequence sources owner b) :
+    Sequence sources owner (a ++ b) :=
+  appendWith right a.length left (Nat.le_refl _)
 
-def Sequence.at {sources owner} {events : List (Event sources owner)} (trace : Sequence sources owner events) :
-    {event : Event sources owner} → (index : Nat) → events[index]? = some event → Occurrence sources owner event :=
-  match trace with
-  | .nil _ => fun _ impossible => by cases impossible
-  | .cons first rest => fun
-    | 0, found => Option.some.inj found ▸ first
-    | index+1, found => rest.at index found
-termination_by structural trace
+private def Iterations.flattenWith {sources owner} (fuel : Nat) :
+    {iterations : List (List (Event sources owner))} → Iterations sources owner iterations →
+      iterations.length ≤ fuel → Sequence sources owner iterations.flatten :=
+  Nat.rec
+    (motive := fun n => {iterations : List (List (Event sources owner))} →
+      Iterations sources owner iterations → iterations.length ≤ n →
+        Sequence sources owner iterations.flatten)
+    (fun {_} trace => match trace with
+      | .nil _ => fun _ => .nil owner
+      | .cons _ _ => fun enough => False.elim (by simp at enough))
+    (fun _ flatten {_} trace => match trace with
+      | .nil _ => fun _ => .nil owner
+      | .cons current rest => fun enough => current.append (flatten rest (Nat.le_of_succ_le_succ enough)))
+    fuel
+
+def Iterations.flatten {sources owner} {iterations : List (List (Event sources owner))}
+    (trace : Iterations sources owner iterations) : Sequence sources owner iterations.flatten :=
+  flattenWith iterations.length trace (Nat.le_refl _)
+
+private def Sequence.atIndex {sources owner} {event : Event sources owner} (index : Nat) :
+    {events : List (Event sources owner)} → Sequence sources owner events →
+      events[index]? = some event → Occurrence sources owner event :=
+  Nat.rec
+    (motive := fun n => {events : List (Event sources owner)} → Sequence sources owner events →
+      events[n]? = some event → Occurrence sources owner event)
+    (fun {_} trace => match trace with
+      | .nil _ => fun found => False.elim (by cases found)
+      | .cons first _ => fun found => Option.some.inj found ▸ first)
+    (fun _ lookup {_} trace => match trace with
+      | .nil _ => fun found => False.elim (by cases found)
+      | .cons _ rest => fun found => lookup rest found)
+    index
+
+def Sequence.at {sources owner} {events : List (Event sources owner)}
+    (trace : Sequence sources owner events) {event : Event sources owner} (index : Nat)
+    (found : events[index]? = some event) : Occurrence sources owner event :=
+  atIndex index trace found
 
 structure Events (sources : Sources) (owner : String) where
   events : List (Event sources owner)
@@ -911,34 +952,51 @@ def Events.append {sources owner} (left right : Events sources owner) : Events s
 
 instance {sources owner} : Append (Events sources owner) := ⟨Events.append⟩
 
-def Events.iterations {sources owner} :
-    (entries : List (Events sources owner)) → Iterations sources owner (entries.map Events.events)
-  | [] => .nil owner
-  | first :: rest => .cons first.trace (iterations rest)
+private def Events.iterationsFrom {sources owner} (fuel : Nat) :
+    (entries : List (Events sources owner)) → entries.length ≤ fuel →
+      Iterations sources owner (entries.map Events.events) :=
+  Nat.rec
+    (motive := fun n => (entries : List (Events sources owner)) → entries.length ≤ n →
+      Iterations sources owner (entries.map Events.events))
+    (fun entries => match entries with
+      | [] => fun _ => .nil owner
+      | _ :: _ => fun enough => False.elim (by simp at enough))
+    (fun _ build entries => match entries with
+      | [] => fun _ => .nil owner
+      | first :: rest => fun enough => .cons first.trace (build rest (Nat.le_of_succ_le_succ enough)))
+    fuel
+
+def Events.iterations {sources owner} (entries : List (Events sources owner)) :
+    Iterations sources owner (entries.map Events.events) :=
+  iterationsFrom entries.length entries (Nat.le_refl _)
 
 /-- A path uses executed event ordinals, including across a compound fold.
-Repeated source offsets are never used as keys. -/
-inductive Path {sources : Sources} {owner : String} (events : List (Event sources owner)) :
-    Event sources owner → Type where
-  | direct {event : Event sources owner} (ordinal : Nat)
-      (selected : events[ordinal]? = some event) : Path events event
-  | folded {event : Event sources owner} {fold : FoldEvent sources owner}
-      {iterations : List (List (Event sources owner))}
-      (parent : Path events (.staticFold fold iterations)) (ordinal : Nat)
-      (selected : iterations.flatten[ordinal]? = some event) : Path events event
+Repeated source offsets do not participate in lookup. The private
+constructor retains composition of the checked ordinals. -/
+structure Path {sources : Sources} {owner : String} (events : List (Event sources owner))
+    (event : Event sources owner) where
+  private mk ::
+  cost : Unit → Nat
+  find : Sequence sources owner events → Option (Occurrence sources owner event)
 
-def Path.find {sources owner} {events : List (Event sources owner)} {event : Event sources owner}
-    (trace : Sequence sources owner events) : Path events event → Option (Occurrence sources owner event)
-  | .direct ordinal selected => some (trace.at ordinal selected)
-  | .folded parent ordinal selected => do
+def Path.work {sources owner} {events : List (Event sources owner)}
+    {event : Event sources owner} (path : Path events event) : Nat :=
+  path.cost ()
+
+def Path.direct {sources owner} {events : List (Event sources owner)}
+    {event : Event sources owner} (ordinal : Nat)
+    (selected : events[ordinal]? = some event) : Path events event :=
+  ⟨fun _ => ordinal+1,fun trace => some (trace.at ordinal selected)⟩
+
+def Path.folded {sources owner} {events : List (Event sources owner)}
+    {event : Event sources owner} {fold : FoldEvent sources owner}
+    {iterations : List (List (Event sources owner))}
+    (parent : Path events (.staticFold fold iterations)) (ordinal : Nat)
+    (selected : iterations.flatten[ordinal]? = some event) : Path events event :=
+  ⟨fun _ => parent.work+iterations.length+(iterations.map List.length).sum+ordinal+1,
+   fun trace => do
     let .fold _ _ children ← parent.find trace | none
-    pure (children.flatten.at ordinal selected)
-
-def Path.work {sources owner} {events : List (Event sources owner)} {event : Event sources owner} :
-    Path events event → Nat
-  | .direct ordinal _ => ordinal+1
-  | .folded (iterations := iterations) parent ordinal _ =>
-    parent.work+iterations.length+(iterations.map List.length).sum+ordinal+1
+    pure (children.flatten.at ordinal selected)⟩
 
 structure EvaluatedWithTrace {sources owner name} (signature : Signature sources owner name) where
   evaluated : Evaluated signature
