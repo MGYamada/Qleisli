@@ -37,6 +37,27 @@ impl Lowerer<'_, '_> {
         let mut slots = BTreeSet::new();
         for argument in arguments {
             let span = argument.value.span;
+            if argument.access().is_none() {
+                if !matches!(argument.value.kind, ExprKind::Unit | ExprKind::Name(_)) {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Unsupported,
+                        "ordinary access arguments require `()` or a lexical Unit or Bit value",
+                    ));
+                }
+                let value = self.expr(module, &argument.value, env)?;
+                if !matches!(value, Value::Unit | Value::Classical(_)) {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "ordinary access argument differs from its checked Unit or Bit interface",
+                    ));
+                }
+                values.push(value);
+                continue;
+            }
             let ExprKind::Name(name) = &argument.value.kind else {
                 return Err(self.error(
                     module,
@@ -91,7 +112,7 @@ impl Lowerer<'_, '_> {
                     "quantum access overlaps a whole owner",
                 )
             })?;
-            let (value, position) = if let Some(selection) = &argument.selection {
+            let (value, position) = if let Some(selection) = argument.selection() {
                 self.extract_place(module, span, selection, parent, remainder)?
             } else {
                 if !parent.removed.is_empty() {

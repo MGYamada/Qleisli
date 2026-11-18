@@ -238,6 +238,7 @@ struct Compiler<'a> {
     selected_entry: Option<Key>,
     selected_calls: usize,
     checked_static_calls: BTreeMap<(String, usize), BTreeSet<usize>>,
+    checked_mixed_control_calls: BTreeSet<(String, usize)>,
     basis: BTreeMap<Key, BasisFunction>,
     // Ordinary nominal calls use bodies; physical label tables stay unavailable.
     deferred_nominal_tables: BTreeSet<Key>,
@@ -1169,6 +1170,7 @@ fn process_loaded_project_details(
         selected_entry: None,
         selected_calls: 0,
         checked_static_calls: BTreeMap::new(),
+        checked_mixed_control_calls: BTreeSet::new(),
         locals,
         basis: BTreeMap::new(),
         deferred_nominal_tables: BTreeSet::new(),
@@ -1476,6 +1478,7 @@ mod snapshot_tests {
             selected_entry: None,
             selected_calls: 0,
             checked_static_calls: BTreeMap::new(),
+            checked_mixed_control_calls: BTreeSet::new(),
             locals: Forest::from_occurrences(occurrences),
             basis: BTreeMap::new(),
             deferred_nominal_tables: BTreeSet::new(),

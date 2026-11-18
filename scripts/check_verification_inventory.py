@@ -395,10 +395,10 @@ QMATCH_BOUNDARY = {
     'id': 'qmatch-component', 'group': 'qmatch-component',
     'entry_points': [
         'interchange::qmatch::{SourceSite,Position,Site,Arm,Request}; Request::{encode,decode}',
-        'interchange::qmatch::v5::{PROFILE,Source,Request}; Request::{encode,decode}',
+        'interchange::qmatch::v5::{PROFILE,ACCESS_PROFILE,Source,Request}; Request::{encode,decode}',
         'interchange::native::Kernel::{check_qmatch_source,check_qmatch_source_v5}',
         'QmatchChecked::{artifact,request_bytes,request,native} (v4 component binding)',
-        'AcceptedProgram::{qmatch_source_checked,runtime_result} (compared v5 request)',
+        'AcceptedProgram::{qmatch_source_checked,source_body_scope,runtime_result} (compared v5 request)',
     ],
     'status': 'Separate bounded native v4 source-frame component and v5 typed source-context execution routes',
     'request': (
@@ -406,7 +406,9 @@ QMATCH_BOUNDARY = {
         'It takes the original module/function and every literal event position and ordered site, with attached/required '
         'ordered quantum owner forests, original UTF8 byte offset, literal Raw start/count and evidence/control indices. '
         'Labels, logical matrices, graph roots and success flags are not supplied. The separate '
-        '--qmatch-source-v5-check mode reads only version5 / finite-source-qmatch-context-v5, retaining '
+        '--qmatch-source-v5-check mode reads version5 for finite-source-qmatch-context-v5, '
+        'finite-source-basis-context-v5, finite-source-meaning-context-v5 or finite-source-access-context-v5. '
+        'It retains '
         'original static arguments, a complete runtime request, ordered call, branch and provider occurrences, '
         'grouped Meaning references and indexed inline-arm body contexts.'),
     'binding': ('Fresh original source/header/operand/arm-name reads derive complete types, canonical labels, public effects, exact source rows and actual evidence subjects. The complete structural source function retains every quantum parameter and result, logical owner identities, basis trees and returned order. The local pair remains in selector/target order independently of the complete function interface. Additional zero-width owners remain in the original frame, and its public effect cannot be sharpened by the pure local contract. Independent transport through original Raw joins/splits and owner-moving operations must return those exact source roles; equal/empty wire lists do not supply identity. Matching source/Raw zero-width permutations succeed. Opaque-owner refinements and allocation/release need their checked source/representation rules. Unknown suffixes and ignored observation/discard refuse. Every original selection and supported direct h/global_phase_eighth/phase call appears once in evaluation order; arguments precede their enclosing call. Original closed Nat syntax and lexical static bindings determine phase parameters. Every initializer and ordinary caller intermediate is checked, including unused initializers and ignored helper actuals; original static helper bodies retain their checked signed-affine rules. Retained checked values preserve each initializer and its earlier helper/name interpretation without repeated evaluation. Existing canonical dyadic/eighth-root restrictions remain exact; no producer parameter values or success receipts supply those facts. Original callee-token/qmatch-keyword coordinates survive grouping; source name resolution checks lexical/module/prelude absence before primitive classification. Literal intervals exhaust the complete Raw body in order without gaps/overlaps and bind actual owner frames; each passes its own exact equations even if successive operators cancel. One original graph supplies fresh receipts with complete input/dependency provenance and actual U/CU/main equations. Rust proposes joint roots from actual requested entries/control programs; Lean independently derives relevance. QDV compares the same retained graph/caches, every typed site interface, original function, source occurrence, literal interval and arm indices. A private component handle retains the same allocations, without ordinary-program conversion or inverse/control access. '
@@ -415,9 +417,17 @@ QMATCH_BOUNDARY = {
         'The same sector check compares their exact controlled and enclosing Raw actions to the original arm. '
         'Original static folds retain the ordered checked iterations and actual source call occurrences. '
         'The fold reader checks complete contiguous Raw coverage and the carried and surviving owner frames. '
-        'All original obligations must be consumed; a checked selection, basis event or discharged application '
-        'qualifies for source scope. Fresh native comparison binds the full decoded graph and typed request to '
-        'the execution handle. Recheck retains that request.'),
+        'The selection scope consumes all original obligations. Standalone basis, Meaning or access consumes '
+        'the complete selected invocation duties; unrelated roots retain their pending duties. The access scope '
+        'requires the explicit profile and an original wrapped access in the checked root, call or branch steps. '
+        'Transformed supplier steps alone do not authorize this scope. Its profile tag is compared in QDV. '
+        'The checked extraction and reassembly each preserve ordered live wires, wire issuance history and live wire count. '
+        'Fresh native comparison binds the full decoded graph and typed request to '
+        'the execution handle. Recheck retains that request. An active nested named call in the v5 '
+        'path can defer a missing nongeneric mixed ctrl receipt until the enclosing source comparison. '
+        'After v5 acceptance the compiler can reuse '
+        'the retained module and callee offset for the same active nongeneric mixed ctrl obligation. '
+        'Inactive, generic or uncovered mixed ctrl obligations still refuse.'),
     'encoding': 'Explicit-edition execution-only QLV3 wraps exact original QLV1 body/request and finite-source-qmatch-context-v4 QDV1 graph/source-function/ordered event-position/ordered qmatch-site records, including both interfaces, source-interval and arms. --qmatch-source-check requires matching native-result3 accepted/execution context, complete product version and actual request-presence flag. V5 compares its own complete typed QDV1 request and graph through its distinct execution-only mode. Inspection/caller, old frames and cross-mode replies refuse without fallback.',
     'domain': (
         'Bounded ordered pure primitive/selection literal intervals in a complete original structural function, with '
@@ -426,6 +436,8 @@ QMATCH_BOUNDARY = {
         'direct supported primitive calls, closed body-local static Nat aliases and named-arm selections share this boundary. '
         'V5 supports checked typed contexts including selected nested operation suppliers with phase-fixed Meaning duties, '
         'complete original owner/storage trees, and the bounded wide-sector route with named or inline arms. '
+        'The bounded access route replays written ctrl/excl places and original ordered ordinary Unit arguments '
+        'limited to literal or lexical Unit through the checked call. The exact control check retains its six-bit bound. '
         'Unsupported cases refuse. '
         'Full source preservation and twelve-bit/64-label validation remain open. No new constitutional guarantee or '
         'full QS/PR/RS/EXACT discharge.'),

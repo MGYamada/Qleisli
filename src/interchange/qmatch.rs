@@ -144,11 +144,13 @@ pub(crate) struct ContextSubject {
     // Compiler-local call coordinates and exact specialization records.
     // These travel only with retained source contexts and never cross the wire.
     pub retained_static_calls: Vec<(String, usize, usize)>,
+    pub retained_mixed_control_calls: Vec<(String, usize)>,
     // Producer eligibility only; never serialized or trusted by a native gate.
     pub contains_selections: bool,
     pub contains_meaning_applications: bool,
     pub requires_source_gate: bool,
     pub needs_qmatch_v5: bool,
+    pub requires_mixed_access_replay: bool,
     pub prefer_runtime_root: bool,
 }
 

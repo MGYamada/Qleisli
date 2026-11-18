@@ -369,6 +369,18 @@ basis lift or computed interval earns the report
 original duties and retains pending positions belonging to other invocations.
 Checked selections use
 `finite-source-qmatch-context-v5`.
+A standalone original access body uses `finite-source-access-context-v5`
+when the native replay finds an access receipt in the actual checked steps
+of the selected invocation, its named calls or its branches. This receipt
+binds the written arguments and their roles to the actual callee, ordered
+quantum ports, returns and Raw interval. Ordinary `Unit` arguments keep their
+original positions in the call. A routed exclusive named call also checks
+its original `Bit` arguments, ordinary branch, parked owners and complete
+extraction and reinsertion. The checker verifies complete coverage
+of the selected invocation and retains the other invocations' pending
+positions. A transform's separate provider proof does not supply this
+receipt. The access profile is part of the compared QDV1 execution view.
+
 For `qif` and `qmatch`, a written inline arm submits its original arm index,
 source positions and literal Raw body. Lean replays the original block in
 the isolated target frame and compares the resulting exact action with its

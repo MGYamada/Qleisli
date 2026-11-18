@@ -80,6 +80,12 @@ def region {dependencies program block} : Node dependencies program block → Lo
       checked.frame.returned,checked.frame.operations,checked.frame.literal,checked.frame.spectators⟩
   | .transform (event := event) _ _ _ _ _ owners _ _ =>
     { (pureLocal owners.literal) with outputRoles := RuntimeTransformOwners.outputs event }
+  | .exclusive (start := start) (count := count) (access := access) _ action _ _ =>
+    let size := RuntimeExclusiveAction.routeCount access
+    let literal := action.literal
+    ⟨start-size,size+count+size,action.inputs.map (·.token),action.outputs.map (·.token),
+      RuntimeExclusiveAction.inputRoles access,RuntimeExclusiveAction.outputRoles access,
+      literal.interval,literal.selected,literal.returned,literal.operations,literal.literal,literal.spectators⟩
   | .selection frame .. => pureLocal frame
 
 def operations {dependencies program block} (node : Node dependencies program block) : List Semantics.Raw.Op :=

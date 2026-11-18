@@ -337,6 +337,7 @@ pub(super) fn accept(
             raw,
             Arc::new(request),
             context,
+            context.requires_mixed_access_replay && lower.nominal_basis_used != Some(true),
             rows.iter().map(Arc::as_ref),
         )?;
         lower

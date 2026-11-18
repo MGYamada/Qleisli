@@ -5,8 +5,14 @@ type clause is compared to the original common header reader.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes.ParameterPatterns
 
-def readLocated {sources owner name} (original : OrdinarySignature.Original sources owner name) :
-    Except String (List (List LocatedToken)) := do
+structure Clause where
+  pattern : List LocatedToken
+  colon : LocatedToken
+  typeTokens : List LocatedToken
+  deriving DecidableEq
+
+def readClauses {sources owner name} (original : OrdinarySignature.Original sources owner name) :
+    Except String (List Clause) := do
   let suffix := original.occurrence.header.dropWhile (· != original.occurrence.nameToken)
   let nameToken :: header := suffix | throw "missing original parameter clause"
   let header ← match original.parsedHeader.staticTokens with
@@ -27,13 +33,18 @@ def readLocated {sources owner name} (original : OrdinarySignature.Original sour
   if ending.map (·.text) != [")","-",">"] ++ result.map (·.text) ++ requirements then
     throw "original parameter boundary mismatch"
   let clauses ← splitMembersWith (·.text) raw
-  let pairs ← clauses.mapM fun clause => do
+  let parsed ← clauses.mapM fun clause => do
     let (pattern,rest) := clause.span (·.text != ":")
     let colon :: ty := rest | throw "missing original parameter type"
     if colon.text != ":" || pattern.isEmpty || ty.isEmpty then throw "empty original parameter pattern/type"
-    pure (pattern,ty.map (·.text))
-  if pairs.map Prod.snd != original.parsedHeader.parameterTypes then throw "original type clause mismatch"
-  pure (pairs.map Prod.fst)
+    pure (⟨pattern,colon,ty⟩ : Clause)
+  if parsed.map (fun clause => clause.typeTokens.map (·.text)) != original.parsedHeader.parameterTypes then
+    throw "original type clause mismatch"
+  pure parsed
+
+def readLocated {sources owner name} (original : OrdinarySignature.Original sources owner name) :
+    Except String (List (List LocatedToken)) :=
+  (readClauses original).map (List.map Clause.pattern)
 
 def read {sources owner name} (original : OrdinarySignature.Original sources owner name) :
     Except String (List (List String)) :=

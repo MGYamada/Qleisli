@@ -361,7 +361,7 @@ impl Lowerer<'_, '_> {
             module,
             span,
         )?;
-        self.call_instance(key, args, site, instance)
+        self.call_instance(key, args, site, instance, false)
     }
 
     pub(super) fn call_instance(
@@ -370,6 +370,7 @@ impl Lowerer<'_, '_> {
         args: Vec<Value>,
         site: Option<CallSite<'_>>,
         instance: Arc<super::super::instances::ClosedInstance>,
+        replay_mixed_control: bool,
     ) -> Result<Value, CompileError> {
         let own_module = self
             .compiler
@@ -383,8 +384,12 @@ impl Lowerer<'_, '_> {
                 .charge(module, span, key.name.len() + operation.copy_size() + 1)?;
         }
         self.compiler.charge(module, span, 1)?;
-        self.compiler
-            .check_dormant_instance(Arc::clone(&instance), module, span)?;
+        self.compiler.check_dormant_instance_with_replay(
+            Arc::clone(&instance),
+            module,
+            span,
+            replay_mixed_control,
+        )?;
         let bindings = instance.operations.clone();
         let frame = self.compiler.enter_instance(instance, module, span)?;
         let previous = std::mem::replace(&mut self.bindings, bindings);

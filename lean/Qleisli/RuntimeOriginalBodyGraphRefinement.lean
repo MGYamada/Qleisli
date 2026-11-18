@@ -180,7 +180,7 @@ theorem original_body_graph_refinement {artifact owner name arguments request pr
     (recursiveSourceStepsAt (plannedBodyLeaves prepared.source.catalogue body.root) row.ordinals 127 scope) executed
     (recursiveSourceStepsAt_refine (plannedBodyLeaves prepared.source.catalogue body.root) row.ordinals
       (RuntimeBranchCondition.rootEntries (.root prepared.source.body)) (rootConditionRow_of_checked row)
-      (fun depth {program block} atStep steps _ _ inherited =>
+      (fun depth {program block} atStep steps inherited =>
         plannedBodyLeaves_refine prepared.source.catalogue body.root row.ordinals depth _ atStep inherited steps)
       127 scope body.checked.result.steps body.selections.witness none
       (RuntimeNamedChildRuns.original_body_runtime_only body) flow.conditions) starts

@@ -525,7 +525,7 @@ ordinary user-defined identifier with the same spelling.
 | `Eq` / `Ord` / `Hash` | No ordinary relation on live quantum owners, including nested and zero-width owners. Internal IDs, ordinary values, explicit coherent comparison and state-testing procedures retain distinct meanings; see [ordinary relations](#ordinary-relations-and-live-quantum-owners). |
 | Wildcard / rest patterns | `_` may ignore only unrestricted data; every quantum-containing matched field remains linear. Ordinary tuple patterns retain exact immediate shape. Rest patterns are absent; their future omission must not hide owners. |
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. See the [checking and execution boundary](source-text.md#checking-failures-and-quantum-execution). |
-| Shared `&` / exclusive `&mut` / `ctrl` | Finite projects and selected Raw support whole owners and static indexed/slice arguments, with fresh native sector checks for `ctrl`. Pure hierarchy supports bounded `excl` selections and replayed `ctrl` calls with fresh native sector checks. Checker-free control emission remains unsupported. Stored references, escaping views and access parameter declarations remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
+| Shared `&` / exclusive `&mut` / `ctrl` | Finite projects and selected Raw support whole owners and static indexed/slice arguments, with fresh native sector checks for `ctrl`. Closed finite declared access uses the original-body profile. Pure hierarchy supports bounded `excl` selections and replayed `ctrl` calls with fresh native sector checks. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
 | `borrow` versus clean/dirty workspace | `borrow` has no builtin quantum-resource semantics. `excl`/`ctrl` express access; clean/dirty express independent workspace restoration obligations. See the [access vocabulary](#access-vocabulary-and-workspace-contracts). |
 
 ## Explicit calls and receiver access
@@ -634,10 +634,14 @@ No mutable-binding marker is required. Consuming `q` after the access makes it
 unavailable as usual; access cannot revive a spent or hidden owner. Duplicate
 arguments, a changed result interface and measurement through `excl` reject.
 Names `excl` and `ctrl` remain ordinary identifiers outside argument markers.
-The current call form requires every runtime argument to use an access marker;
-mixed ordinary/access arguments, escaping handles and access-parameter
-declarations remain unimplemented. Indexed selections have a common AST and
-static bounds/disjointness judgment. The finite project compiler and selected
+An access marker always denotes a quantum place. A checked mixed call can
+also pass an ordinary `Unit` literal or lexical `Unit` value. The compiler
+retains the source position of every argument and restores the owners of the
+marked places in order. See [mixed access calls](elaboration.md#ordinary-unit-arguments-in-access-calls).
+Closed finite [declared access parameters](elaboration.md#declared-access-parameters)
+use the same original-call and returned-owner checks. The supported access
+lifetime is the written call.
+Indexed selections have a common AST and static bounds/disjointness judgment. The finite project compiler and selected
 Raw lowering partition and reassemble their updated owners. Hierarchy supports
 `excl` on up to eight axes per selected owner and replays the structural
 interval against the original places. See [static places](elaboration.md#static-ordered-axis-places).
@@ -658,12 +662,14 @@ or empty loops remain unsupported; a different specialization cannot supply
 their evidence. Zero-count providers with retained
 bodies are checked independently of their execution count. Symbolic inverse or
 controlled transforms containing access obligations remain unsupported.
-`lower_raw`, checker-free `emit-proposal`, and hierarchical lowering still
-refuse control obligations. Final Raw consumption freshly checks the artifact
-and replays its source calls again; no source annotation or earlier native
-success substitutes for those checks. Diagnostics retain the original call's
-module and location. This limited implementation does not complete the general
-access Issues or establish a Lean source-preservation theorem.
+`lower_raw` and checker-free `emit-proposal` refuse control obligations.
+Selected pure hierarchy checks its bounded `ctrl` calls as described below.
+The v5 source profile checks supported `excl` and `ctrl` calls in coherent
+block arms and static continuations against their original ordered places
+and literal Raw intervals, including extraction and reassembly. Final Raw
+consumption freshly checks the artifact and replays its source calls.
+Diagnostics retain the original call's module and location. General source
+preservation and quantitative resource correspondence remain proof obligations.
 
 Unsupported Rust reference notation receives a syntax explanation: for quantum
 access, `excl` grants arbitrary coherent access, while `ctrl` requires the
@@ -699,8 +705,7 @@ This path uses the existing bounded exact native profile (at most six physical
 input bits for a control decision), with cumulative exact work charged to the
 existing compiler budget. It does not establish a general source-preservation
 theorem, quantitative resource correspondence or scheduling permission.
-General access lifetimes, stored views and declared access interfaces remain
-unfinished. The supported call-formed exit points follow the
+The supported call-formed exit points follow the
 [evaluation and owner lifetime rules](elaboration.md#evaluation-and-owner-lifetime-boundaries).
 
 Selected pure hierarchy ties each original control role to the replayed node

@@ -49,6 +49,7 @@ def NodeAligned {dependencies program block} (before after : RuntimeStructuralAc
       RuntimeRectangularOperation.continued original checked.source.input checked.source.output checked.returned
   | .transform (before := original) _ _ _ _ _ owners _ _ =>
     before = original ∧ after = owners.after
+  | .exclusive (before := original) _ action _ _ => before = original ∧ after = action.after
   | .selection (codes := codes) .. =>
     before.bindings = codes.owners.before.bindings ∧
       after = {before with bindings := codes.owners.transport.after.bindings}
@@ -103,6 +104,7 @@ def Aligned {dependencies program block} (before after : SourceState)
   match step with
   | .named (before := original) _ _ _ _ boundary _ _ =>
     before = original ∧ after = boundary.after
+  | .routedNamed checked _ => before = checked.before ∧ after = checked.closed.after
   | .pure node => NodeAligned before after node
   | .observation (before := original) observed => before = original ∧ after = observed.after
   | .gap (before := original) gap => before = original ∧ after = gap.after
@@ -112,6 +114,7 @@ def entryState {dependencies program block}
     (step : @RuntimePureBody.Step dependencies program block) : Option SourceState :=
   match step with
   | .named (before := original) .. => some original
+  | .routedNamed checked _ => some checked.before
   | .observation (before := original) _ => some original
   | .gap (before := original) _ => some original
   | .conditional _ _ _ _ _ (before := original) _ _ _ => some original
@@ -121,6 +124,7 @@ def exitState {dependencies program block}
     (step : @RuntimePureBody.Step dependencies program block) : Option SourceState :=
   match step with
   | .named _ _ _ _ boundary _ _ => some boundary.after
+  | .routedNamed checked _ => some checked.closed.after
   | .observation observed => some observed.after
   | .gap gap => some gap.after
   | .conditional _ _ _ _ _ action _ _ => some action.next

@@ -39,6 +39,29 @@ theorem Partition.of_native (parent child : Raw.State) (spectators : List Port)
   exact (native_wires parent parentValid).symm.trans
     (wires.trans ((native_wires child childValid).append_right _))
 
+private theorem entry_of_original_ports
+    {dependencies program block start count childProgram inputs sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (prepared : RuntimeInterval.Prepared dependencies childProgram)
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles interval.before)
+    (sameBindings : checked.bindings = before.bindings)
+    (selected : childProgram.inputs = boundary.input.ordered.map (·.port)) :
+    let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
+    Partition interval.before.quantum.reference prepared.block.entry.quantum.reference
+      (spectators.map (·.port)) := by
+  intro spectators
+  have childEntry := RuntimeNamedFrameAxes.initialized prepared.inputRead
+  have childPorts : prepared.block.entry.quantum.live = childProgram.inputs := congrArg Interface.live childEntry.1
+  have unique := (Raw.Ownership.valid _ childEntry.2.1).owners
+  change (prepared.block.entry.quantum.live.map (·.token)).Nodup at unique
+  rw [childPorts,selected,List.map_map] at unique
+  have order := RuntimeNamedBlockEncoding.named_partition_geometry boundary checked sameBindings unique
+  have ports := checked.complete.symm.trans (order.symm.map RuntimeOwnerMap.Binding.port)
+  rw [List.map_append,← selected,← childPorts] at ports
+  exact Partition.of_native _ _ _ interval.history.1 childEntry.2.1 ports
+
 /-- The partition starts at the original argument assignment. Its complement
 is the same complete source owner map used in the sparse boundary proof. -/
 theorem original_entry
@@ -50,18 +73,22 @@ theorem original_entry
     (sameBindings : checked.bindings = before.bindings) :
     let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
     Partition scope.interval.before.quantum.reference scope.prepared.block.entry.quantum.reference
-      (spectators.map (·.port)) := by
-  intro spectators
-  have order := RuntimeNamedBlockEncoding.original_named_partition_geometry scope boundary checked sameBindings
-  have ports := checked.complete.symm.trans (order.symm.map RuntimeOwnerMap.Binding.port)
-  rw [List.map_append,← RuntimeNamedFrameAxes.mixed_bound_ports scope boundary] at ports
-  have childEntry := RuntimeNamedFrameAxes.initialized scope.prepared.inputRead
-  have childPorts := congrArg Interface.live (RuntimeNamedFrameAxes.mixedAxes_input scope).2.2.1
-  apply Partition.of_native _ _ _ scope.interval.history.1 childEntry.2.1
-  change scope.interval.before.quantum.live.Perm
-    (scope.prepared.block.entry.quantum.reference.live ++ spectators.map (·.port))
-  rw [childPorts]
-  exact ports
+      (spectators.map (·.port)) :=
+  entry_of_original_ports scope.interval scope.prepared boundary checked sameBindings
+    (RuntimeNamedFrameAxes.mixed_bound_ports scope boundary)
+
+theorem original_pure_entry
+    {dependencies program block start count inputs sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (scope : @RuntimeCallInterval.Checked dependencies program block start count inputs)
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    (sameBindings : checked.bindings = before.bindings) :
+    let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
+    Partition scope.interval.before.quantum.reference scope.prepared.block.entry.quantum.reference
+      (spectators.map (·.port)) :=
+  entry_of_original_ports scope.interval scope.prepared boundary checked sameBindings
+    (Option.some.inj (scope.atEntry.symm.trans boundary.input.atEntry))
 
 /-- A wire of the local frame retains its exact position in the parent. -/
 theorem wire_positions (parent child : Interface) (wires : List Nat)
@@ -422,6 +449,7 @@ theorem original_call_branch_join
       (Raw.Observation.checkOps_invariants _ _ _ _ _ _ _ cRight).1 _ false
 
 #print axioms original_entry
+#print axioms original_pure_entry
 #print axioms erasure_events
 #print axioms basis_lift_events
 #print axioms branch_has_no_spectators

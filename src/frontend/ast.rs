@@ -121,6 +121,8 @@ pub struct Param {
     /// One typed pattern is one argument. Name/wildcard/product patterns retain
     /// immediate tuple arity; their ownership rules depend on the value's type.
     pub pattern: Pattern,
+    /// The original temporary access marker and its source span.
+    pub access: Option<(QuantumAccess, Span)>,
     pub ty: Type,
     pub span: Span,
 }
@@ -423,12 +425,37 @@ pub enum QuantumAccess {
     Ctrl,
 }
 
+/// Written actuals in a call containing at least one explicit access.
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct AccessArgument {
-    pub access: QuantumAccess,
     pub value: Expr,
-    /// A static place selector, never a value extraction or a reference.
-    pub selection: Option<AxisSelection>,
+    pub kind: CallArgumentKind,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum CallArgumentKind {
+    Ordinary,
+    Access {
+        mode: QuantumAccess,
+        /// A static place selector, never a value extraction or a reference.
+        selection: Option<AxisSelection>,
+    },
+}
+
+impl AccessArgument {
+    pub fn access(&self) -> Option<QuantumAccess> {
+        match self.kind {
+            CallArgumentKind::Ordinary => None,
+            CallArgumentKind::Access { mode, .. } => Some(mode),
+        }
+    }
+
+    pub fn selection(&self) -> Option<&AxisSelection> {
+        match &self.kind {
+            CallArgumentKind::Ordinary => None,
+            CallArgumentKind::Access { selection, .. } => selection.as_ref(),
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

@@ -11,7 +11,7 @@ open RuntimeForestCode (forestAxes sparseEntry)
 open RuntimeCallTraceFrames (WireOrder)
 open Qleisli.RuntimeSemanticForest (Frame action product)
 open Qleisli.RuntimeSparseBlockEncoding (blockJoint coefficient)
-open Qleisli.RuntimeSparseNamedBoundary (caller_return_action)
+open Qleisli.RuntimeSparseNamedBoundary (CallExit caller_return_action)
 open Qleisli.RuntimeForestRegroup (sourceDimension)
 open Qleisli.RuntimeStructuralHistory (Represents)
 open Qleisli.RuntimeForestProduct (gather_bound)
@@ -38,30 +38,31 @@ noncomputable def returnedOperator {Reference : Type} (child output mapped spect
 /-- The actual ordered result pair determines the caller's encoded operator
 when the original child source return is known on each spectator slice. -/
 theorem original_call_return
-    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
+    {dependencies program block start count inputs sources caller before child retired value localAfter}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
-    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
-    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
-    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (exit : CallExit boundary localAfter)
+    {roles} (checked : RuntimeOwnerMap.Checked roles interval.before)
     (parent : Frame checked.bindings) (sameBindings : checked.bindings = before.bindings)
     (returned : Frame child.bindings) :
     let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
     ∃ output : Frame boundary.afterFrame.bindings,
       ∀ (actual : History) (localResults : Nat → History) (joint : Nat → Nat → Nat → ℂ),
-        Agrees scope.interval.after.quantum.reference scope.localAfter.quantum.reference
+        Agrees interval.after.quantum.reference localAfter.quantum.reference
           (spectators.map (·.port)) actual localResults →
-        (∀ high, Represents returned scope.localAfter (localResults high) (returnFibre spectators high joint)) →
-        Represents output scope.interval.after actual
+        (∀ high, Represents returned localAfter (localResults high) (returnFibre spectators high joint)) →
+        Represents output interval.after actual
           (returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators joint) := by
   intro spectators
-  obtain ⟨output,encoded⟩ := caller_return_action scope boundary checked parent sameBindings returned
+  obtain ⟨output,encoded⟩ := caller_return_action boundary exit checked parent sameBindings returned
   refine ⟨output,?_⟩
   intro actual localResults joint paired childReturn col row bounded
-  let physical := scope.interval.after.quantum.reference
-  let localFrame := scope.localAfter.quantum.reference
+  let physical := interval.after.quantum.reference
+  let localFrame := localAfter.quantum.reference
   let high := project physical (WireOrder (spectators.map (·.port))) row
   let low := project physical localFrame.frame row
-  have lowBound : low < 2^scope.localAfter.quantum.frame.length := by
+  have lowBound : low < 2^localAfter.quantum.frame.length := by
     simpa only [low,project,Semantics.RawTrace.axes,List.length_map] using
       gather_bound row (Semantics.RawTrace.axes physical localFrame.frame)
   have highEq : high = gather row (forestAxes physical.frame spectators) := by
@@ -83,24 +84,25 @@ theorem original_call_return
 /-- Return the complete actual family in order using the same checked
 caller frame for every result. Duplicate and zero results remain present. -/
 theorem original_call_returns
-    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
+    {dependencies program block start count inputs sources caller before child retired value localAfter}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
-    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
-    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
-    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (exit : CallExit boundary localAfter)
+    {roles} (checked : RuntimeOwnerMap.Checked roles interval.before)
     (parent : Frame checked.bindings) (sameBindings : checked.bindings = before.bindings)
     (returned : Frame child.bindings)
     {parents : List History} {children : List (Nat → History)} {joints : List (Nat → Nat → Nat → ℂ)} :
     let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
-    List.Forall₂ (Agrees scope.interval.after.quantum.reference scope.localAfter.quantum.reference
+    List.Forall₂ (Agrees interval.after.quantum.reference localAfter.quantum.reference
       (spectators.map (·.port))) parents children →
     List.Forall₂ (fun localResults joint =>
-      ∀ high, Represents returned scope.localAfter (localResults high) (returnFibre spectators high joint)) children joints →
+      ∀ high, Represents returned localAfter (localResults high) (returnFibre spectators high joint)) children joints →
     ∃ output : Frame boundary.afterFrame.bindings,
-      List.Forall₂ (fun actual joint => Represents output scope.interval.after actual
+      List.Forall₂ (fun actual joint => Represents output interval.after actual
         (returnedOperator child.bindings boundary.afterFrame.bindings boundary.mapped spectators joint)) parents joints := by
   intro spectators paired childReturns
-  obtain ⟨output,encoded⟩ := original_call_return scope boundary checked parent sameBindings returned
+  obtain ⟨output,encoded⟩ := original_call_return boundary exit checked parent sameBindings returned
   refine ⟨output,?_⟩
   induction paired generalizing joints with
   | nil =>

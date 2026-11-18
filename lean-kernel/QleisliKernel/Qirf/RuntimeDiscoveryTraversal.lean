@@ -279,7 +279,7 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
         let originals ← NaturalAffine.witness
           (if scope.prefixRequired then RuntimeProviderHeaders.originalActualSlots signature.operations else pure [])
         let prefixResult ← prefixRead mode next signature originals.val scope.incoming (Queues.ofContext request) (!request.references.isEmpty)
-        let eventStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
+        let plainStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             Option (RuntimeCalleeTrace.Path scope.events event) →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position path before => do
           exactWork (Exact.charge (before.references.length+1))
@@ -488,7 +488,24 @@ def traverse (artifact : Artifact) (mode : OperationMode artifact) : Nat → {ow
               | supplied => exact ()
               | original => exact some (.register event)
             return ⟨before,⟨(SourceRuntimeContext.Event.registerPrimitive event).staticRows,[]⟩,[],data⟩
-          | .matching .. | .staticConditional .. | .staticFold .. => throw .request
+          | .matching .. | .staticConditional .. | .staticFold .. | .exclusive .. => throw .request
+        let eventStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
+            Option (RuntimeCalleeTrace.Path scope.events event) →
+            (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position path before => do
+          match event with
+          | .exclusive access child =>
+            if binding : RuntimeBodyPlan.exclusiveBinding access child position = true then
+              let childPath := path.map (fun parent => RuntimeCalleeTrace.Path.exclusive parent)
+              let inner ← plainStep child position childPath before
+              let data : scope.EventData mode.preparation (.exclusive access child) position before inner.after := by
+                cases scope with
+                | supplied => exact ()
+                | original => exact inner.data.map (.exclusive binding)
+              let rows := access.checked.entries.flatMap (fun entry => entry.2.coordinates.rows)
+              exactWork (Exact.charge (rows.length+1))
+              return ⟨inner.after,⟨rows ++ inner.discovery.rows,inner.discovery.roots⟩,inner.receipts,data⟩
+            else throw .request
+          | other => plainStep other position path before
         let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : SourceSequence.Position) →
             RuntimeSourceEvent.At (events.zip request.positions) event position →
             (before : Queues) → WorkM (EventResult mode scope event position before) := fun event position entry before => do

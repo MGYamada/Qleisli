@@ -168,31 +168,59 @@ theorem actual_child_values {dependencies program block start count args old eff
     exact run_values dependencies 65 events history _ (writes.mono (fun _ issued => Or.inr issued))
       (fun _ member => Or.inl (supported member)) executed
 
-/-- Every final child axis has an original position in the full caller
-frame. This follows from the actual returned ports, even when the child
-changes the shape or number of its owners. -/
-theorem actual_exit_axes
+/-- Both call readers check the original returned tokens against the actual
+caller exit and retain the complete native child frame. -/
+structure CallExit
+    {dependencies program block start count inputs sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (localAfter : RuntimeInterval.State) : Prop where
+  valid : Raw.stateValid localAfter.quantum = true
+  ports : boundary.returned.Perm localAfter.quantum.live
+
+theorem CallExit.of_mixed
     {dependencies program block start count inputs ordinary effect sources caller before child retired value}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
     (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
     (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value) :
-    child.bindings.flatMap (·.port.wires) ⊆ scope.localAfter.quantum.frame ∧
-      scope.localAfter.quantum.frame ⊆ scope.interval.after.quantum.frame ∧
-      (scope.localAfter.quantum.frame.map scope.interval.after.quantum.frame.idxOf).Nodup ∧
-      scope.localAfter.quantum.frame.Perm (boundary.mapped.flatMap (·.port.wires)) ∧
-      child.bindings.Nodup := by
+    CallExit boundary scope.localAfter := by
   obtain ⟨work,left,checked⟩ := scope.nativeRead
-  have localValid := Raw.Ownership.valid _
-    (Raw.Observation.checkOps_invariants _ _ _ _ _ work left checked).1
-  have parentValid := Raw.Ownership.valid _ scope.interval.history.2.2.1
+  exact ⟨(Raw.Observation.checkOps_invariants _ _ _ _ _ work left checked).1,
+    (RuntimeNamedReturnAxes.mixed_ports scope boundary).trans (List.Perm.of_eq scope.complete)⟩
+
+theorem CallExit.of_pure
+    {dependencies program block start count inputs sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (scope : @RuntimeCallInterval.Checked dependencies program block start count inputs)
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value) :
+    CallExit boundary scope.localAfter := by
+  obtain ⟨work,left,checked⟩ := scope.nativeRead
+  exact ⟨(Raw.Observation.checkOps_invariants _ _ _ _ _ work left checked).1,
+    (RuntimeNamedReturnAxes.pure_ports scope boundary).trans (List.Perm.of_eq scope.complete)⟩
+
+/-- Every final child axis has an original position in the full caller
+frame, including when the child changes the shape or number of its owners. -/
+theorem actual_exit_axes
+    {dependencies program block start count inputs sources caller before child retired value localAfter}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (exit : CallExit boundary localAfter) :
+    child.bindings.flatMap (·.port.wires) ⊆ localAfter.quantum.frame ∧
+      localAfter.quantum.frame ⊆ interval.after.quantum.frame ∧
+      (localAfter.quantum.frame.map interval.after.quantum.frame.idxOf).Nodup ∧
+      localAfter.quantum.frame.Perm (boundary.mapped.flatMap (·.port.wires)) ∧
+      child.bindings.Nodup := by
+  have localValid := Raw.Ownership.valid _ exit.valid
+  have parentValid := Raw.Ownership.valid _ interval.history.2.2.1
   have aliases := RuntimeNamedCodeTransport.returned_carriers boundary
   have ports : boundary.mapped.map (·.port) = child.bindings.map (·.port) := by
     have same := congrArg (List.map Semantics.CarrierInterface.Owner.port) aliases
     simpa only [carrierOwners,List.map_map,Function.comp_def] using same
   have sourcePorts := boundary.returnRead.trans ports
-  have originalPorts := RuntimeNamedReturnAxes.mixed_ports scope boundary
-  have localPorts : (child.bindings.map (·.port)).Perm scope.localAfter.quantum.live :=
-    (List.Perm.of_eq sourcePorts.symm).trans (originalPorts.trans (List.Perm.of_eq scope.complete))
+  have localPorts : (child.bindings.map (·.port)).Perm localAfter.quantum.live :=
+    (List.Perm.of_eq sourcePorts.symm).trans exit.ports
   have tokens : (child.bindings.map (·.port.token)).Nodup := by
     simpa only [List.map_map,Function.comp_def] using
       (localPorts.map Semantics.Raw.Port.token).nodup_iff.mpr localValid.owners
@@ -202,15 +230,15 @@ theorem actual_exit_axes
       tokens
   have wires := localPorts.flatMap_right (fun port => port.wires)
   simp only [List.flatMap_map] at wires
-  have inside : child.bindings.flatMap (·.port.wires) ⊆ scope.localAfter.quantum.frame :=
+  have inside : child.bindings.flatMap (·.port.wires) ⊆ localAfter.quantum.frame :=
     fun wire member => localValid.covered wire (wires.mem_iff.mp member)
   obtain ⟨ordered,permutation,sublist⟩ := List.subperm_iff.mp
     ((wires.nodup_iff.mpr localValid.exclusive).subperm inside)
   have same := sublist.eq_of_length ((wires.length_eq.trans localValid.count).trans permutation.length_eq.symm)
-  have complete : (child.bindings.flatMap (·.port.wires)).Perm scope.localAfter.quantum.frame :=
+  have complete : (child.bindings.flatMap (·.port.wires)).Perm localAfter.quantum.frame :=
     same ▸ permutation
   have sameWires := RuntimeNamedCarrierEncoding.carrier_wires aliases
-  have parent : scope.localAfter.quantum.frame ⊆ scope.interval.after.quantum.frame := by
+  have parent : localAfter.quantum.frame ⊆ interval.after.quantum.frame := by
     intro wire member
     have mapped : wire ∈ boundary.mapped.flatMap (·.port.wires) :=
       sameWires.symm ▸ complete.mem_iff.mpr member
@@ -227,49 +255,50 @@ theorem actual_exit_axes
 /-- Assemble the original caller's return frame from the child's written
 return bindings and the untouched spectator layouts. -/
 theorem caller_return_frame
-    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
+    {dependencies program block start count inputs sources caller before child retired value localAfter}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
-    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
-    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
-    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (exit : CallExit boundary localAfter)
+    {roles} (checked : RuntimeOwnerMap.Checked roles interval.before)
     (parent : Frame checked.bindings) (sameBindings : checked.bindings = before.bindings)
     (returned : Frame child.bindings) :
     Nonempty (Frame boundary.afterFrame.bindings) ∧
-      (forestAxes scope.interval.after.quantum.frame
+      (forestAxes interval.after.quantum.frame
         (RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered)).Disjoint
-        (scope.localAfter.quantum.frame.map scope.interval.after.quantum.frame.idxOf) := by
+        (localAfter.quantum.frame.map interval.after.quantum.frame.idxOf) := by
   let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
-  have inputOrder := RuntimeNamedBlockEncoding.original_named_partition_geometry scope boundary checked sameBindings
   obtain ⟨outputOrder,outputPerm⟩ :=
-    RuntimeNamedSelectionReturnOrder.caller_after_order scope boundary checked sameBindings
+    RuntimeNamedSelectionReturnOrder.caller_after_order_on boundary checked sameBindings
   have mapped := available_carriers (RuntimeNamedCodeTransport.returned_carriers boundary) returned.available
   constructor
   · apply frame_exists
     intro binding member
     rw [outputOrder] at member
     rcases List.mem_append.mp member with spectator | chosen
-    · exact parent.available binding (inputOrder.subset (List.mem_append_right _ spectator))
+    · exact parent.available binding ((RuntimeSelectionPartition.complement_original _ _).subset spectator)
     · exact mapped binding chosen
   · have disjoint := RuntimeNamedBlockSpectators.partition_axes_disjoint boundary.afterFrame
-      scope.interval.history.2.2.1 boundary.mapped spectators outputPerm
-    have axes := (actual_exit_axes scope boundary).2.2.2.1.map scope.interval.after.quantum.frame.idxOf
+      interval.history.2.2.1 boundary.mapped spectators outputPerm
+    have axes := (actual_exit_axes boundary exit).2.2.2.1.map interval.after.quantum.frame.idxOf
     exact List.disjoint_left.mpr (fun axis spectator selected =>
       List.disjoint_left.mp disjoint spectator (axes.mem_iff.mp selected))
 
 /-- Encode an arbitrary child return family on the exact caller axes. The
 child's amplitudes may depend on every spectator and reference coordinate. -/
 theorem caller_return_action
-    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
+    {dependencies program block start count inputs sources caller before child retired value localAfter}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
-    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
-    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
-    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    (exit : CallExit boundary localAfter)
+    {roles} (checked : RuntimeOwnerMap.Checked roles interval.before)
     (parent : Frame checked.bindings) (sameBindings : checked.bindings = before.bindings)
     (returned : Frame child.bindings) :
     let spectators := RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered
     let order := boundary.mapped++spectators
-    let physicalFrame := scope.interval.after.quantum.frame
-    let childFrame := scope.localAfter.quantum.frame
+    let physicalFrame := interval.after.quantum.frame
+    let childFrame := localAfter.quantum.frame
     let axes := childFrame.map physicalFrame.idxOf
     ∃ output : Frame boundary.afterFrame.bindings,
       ∀ {Reference : Type} (joint : Nat → Nat → Reference → ℂ) row ref,
@@ -282,10 +311,10 @@ theorem caller_return_action
           (fun digit ref => ((List.range (product spectators).labels.length).map fun high =>
             coefficient spectators physicalFrame row high * joint digit high ref).sum) (gather row axes) ref := by
   intro spectators order physicalFrame childFrame axes
-  have outputOrder := (RuntimeNamedSelectionReturnOrder.caller_after_order scope boundary checked sameBindings).2
-  obtain ⟨⟨output⟩,_⟩ := caller_return_frame scope boundary checked parent sameBindings returned
+  have outputOrder := (RuntimeNamedSelectionReturnOrder.caller_after_order_on boundary checked sameBindings).2
+  obtain ⟨⟨output⟩,_⟩ := caller_return_frame boundary exit checked parent sameBindings returned
   obtain ⟨ordered⟩ := frame_exists (fun b member => output.available b (outputOrder.subset member))
-  obtain ⟨inside,_,unique,_,childUnique⟩ := actual_exit_axes scope boundary
+  obtain ⟨inside,_,unique,_,childUnique⟩ := actual_exit_axes boundary exit
   have carriers := RuntimeNamedCodeTransport.returned_carriers boundary
   have outputUnique : boundary.afterFrame.bindings.Nodup :=
     List.Pairwise.of_map (fun b : RuntimeOwnerMap.Binding => b.port.token)
@@ -304,6 +333,8 @@ theorem caller_return_action
 #print axioms actual_named_entry
 #print axioms visible_entry_agreement
 #print axioms actual_child_values
+#print axioms CallExit.of_mixed
+#print axioms CallExit.of_pure
 #print axioms actual_exit_axes
 #print axioms caller_return_frame
 #print axioms caller_return_action

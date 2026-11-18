@@ -15,6 +15,7 @@ import QleisliKernel.SourceTypes.SourceRuntimeMatching
 import QleisliKernel.SourceTypes.SourceRuntimeComputed
 import QleisliKernel.SourceTypes.SourceComputedBindings
 import QleisliKernel.SourceTypes.SourceRegisterApplication
+import QleisliKernel.SourceTypes.SourceRuntimeAccess
 
 /-! Original mixed runtime signatures, call targets and owner/effect histories.
 Runtime metadata grants no native execution or qmatch arm capability. The actual
@@ -209,7 +210,8 @@ structure WithWritten {sources caller scope tokens} (written : StaticApplication
 def readTargetWithWritten {sources caller callerName scope tokens}
     (callerSignature : Signature sources caller callerName) (naturals : PhaseApplication.Naturals sources)
     (written : StaticApplication.Syntax tokens)
-    (candidate : CallName.Checked sources caller scope written.callee) :
+    (candidate : CallName.Checked sources caller scope written.callee)
+    (access : List AccessSyntax.MarkedSlot := []) :
     Finite.WorkM (WithWritten (sources := sources) (caller := caller) (scope := scope) written) := do
   match selected : QuantumSignature.candidateResolution candidate with
   | none => throw .request
@@ -226,7 +228,7 @@ def readTargetWithWritten {sources caller callerName scope tokens}
           naturals.environment scope actualsWithState.val.genericState 65
       rw [actualsWithState.property])
     let checked ← StaticRuntimeSignature.prepareWithArguments sources resolution.moduleName resolution.declaration.name actuals.arguments
-      (callerSignature.operations.catalogue.map (·.originals)) (callerSignature.operations.catalogue.map (·.helpers))
+      (callerSignature.operations.catalogue.map (·.originals)) (callerSignature.operations.catalogue.map (·.helpers)) access
     let prepared ← fromPreparedWithArguments checked (.source caller) operationActuals.actuals callerSignature.operations.catalogue
     let signature := prepared.signature
     if arguments : signature.arguments = actuals.arguments then
@@ -244,9 +246,10 @@ def readTargetWithWritten {sources caller callerName scope tokens}
 def readTarget {sources caller callerName scope tokens}
     (callerSignature : Signature sources caller callerName) (naturals : PhaseApplication.Naturals sources)
     (written : StaticApplication.Syntax tokens)
-    (candidate : CallName.Checked sources caller scope written.callee) :
+    (candidate : CallName.Checked sources caller scope written.callee)
+    (access : List AccessSyntax.MarkedSlot := []) :
     Finite.WorkM (Target sources caller scope tokens) := do
-  return (← readTargetWithWritten callerSignature naturals written candidate).target
+  return (← readTargetWithWritten callerSignature naturals written candidate access).target
 
 def Target.sourceRows {sources caller scope tokens} (target : Target sources caller scope tokens) :
     List (String × String) :=
@@ -669,6 +672,24 @@ structure SelectionEvent (sources : Sources) (caller : String) where
   /-- Active basis and computed events indexed by the written arm order. -/
   inlineOffsets : List (List Nat × List Nat)
 
+structure ExclusiveEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  written : AccessSyntax.CheckedAccessCall tokens
+  naturals : PhaseApplication.Naturals sources
+  scope : List String
+  before : Environment
+  held : List Semantics.SourceOwners.Owner
+  nextOrdinal : Nat
+  checked : SourceRuntimeAccess.Checked sources caller naturals scope before written
+  reservation : SourceRuntimeAccess.Reservation checked nextOrdinal
+  activation : SourceRuntimeAccess.Activated reservation
+  arguments : SourceRuntimeAccess.Arguments activation
+  value : Value
+  returned : SourceRuntimeAccess.Returned reservation value
+  allocated : List Semantics.SourceOwners.Owner
+  consumed : List Semantics.SourceOwners.Owner
+  innerOrdinal : Nat
+
 inductive Event (sources : Sources) (caller : String) where
   | selection (event : SelectionEvent sources caller)
   | primitive (event : PrimitiveEvent sources caller)
@@ -684,6 +705,7 @@ inductive Event (sources : Sources) (caller : String) where
   | computed (event : ComputedEvent sources caller) (body : List (Event sources caller))
   | workspace (event : WorkspaceEvent sources caller) (body : List (Event sources caller))
   | registerPrimitive (event : RegisterEvent sources caller)
+  | exclusive (access : ExclusiveEvent sources caller) (child : Event sources caller)
 
 def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .selection .. => none
@@ -699,6 +721,7 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .computed .. => none
   | .workspace .. => none
   | .registerPrimitive event => some event.call.calleeOffset
+  | .exclusive access _ => some access.written.parsed.calleeOffset
 
 def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat :=
   match event with
@@ -765,21 +788,25 @@ def Event.offset {sources caller} : Event sources caller → Nat
   | .computed event .. => SourceRuntimeComputed.offset event.written
   | .workspace event .. => event.written.parts.header.calleeOffset
   | .registerPrimitive event => event.call.calleeOffset
+  | .exclusive access _ => access.written.parsed.calleeOffset
 
-def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effect
-  | .primitive event => primitiveEffect event.kind
-  | .named event => event.effect
-  | .operation event => event.effect
-  | .basis event => event.function.effect
-  | .conditional event .. => SourceEffect.join event.thenArm.inferredEffect event.elseArm.inferredEffect
-  | .transform _ => .unitary
-  | .staticConditional event .. => event.selected.2.inferredEffect
-  | .staticFold event .. => event.iterations.foldl (fun effect iteration =>
-      SourceEffect.join effect iteration.seeded.inferredEffect) .unitary
-  | .matching event .. => event.arms.foldl (fun effect arm => SourceEffect.join effect arm.2.inferredEffect) .unitary
-  | .computed _ _ => .unitary
-  | .registerPrimitive _ => .unitary
-  | _ => .unitary
+def Event.effect {sources caller} (source : Event sources caller) : Semantics.Raw.Effect :=
+  WellFounded.fix (measure (fun event : Event sources caller => sizeOf event)).wf
+    (C := fun _ => Semantics.Raw.Effect) (fun event next => match event with
+      | .primitive event => primitiveEffect event.kind
+      | .named event => event.effect
+      | .operation event => event.effect
+      | .basis event => event.function.effect
+      | .conditional event .. => SourceEffect.join event.thenArm.inferredEffect event.elseArm.inferredEffect
+      | .transform _ => .unitary
+      | .staticConditional event .. => event.selected.2.inferredEffect
+      | .staticFold event .. => event.iterations.foldl (fun effect iteration =>
+          SourceEffect.join effect iteration.seeded.inferredEffect) .unitary
+      | .matching event .. => event.arms.foldl (fun effect arm => SourceEffect.join effect arm.2.inferredEffect) .unitary
+      | .computed _ _ => .unitary
+      | .registerPrimitive _ => .unitary
+      | .exclusive _ child => next child (by decreasing_tactic)
+      | _ => .unitary) source
 
 def Event.quantumUse {sources caller} : Event sources caller → Bool
   | .primitive event => event.kind != .emptyBits && event.kind != .prependBit
@@ -795,24 +822,29 @@ def Event.quantumUse {sources caller} : Event sources caller → Bool
   | .matching event .. => event.arms.any (·.2.quantumUse)
   | _ => true
 
-def Event.staticRows {sources caller} : Event sources caller → List (String × String)
-  | .selection event => event.naturals.sourceRows
-  | .primitive _ => []
-  | .phase event => event.naturals.sourceRows
-  | .named event => event.target.sourceRows ++ event.canonical.staticRows
-  | .operation event => event.naturals.sourceRows ++ event.operation.rows
-  | .basis event => event.staticRows
-  | .conditional event .. => event.naturals.sourceRows ++ event.thenArm.staticRows ++ event.elseArm.staticRows
-  | .transform event => event.target.sourceRows ++ event.forward.staticRows ++
-      event.counts.flatMap (·.checked.rows)
-  | .staticConditional event .. => event.selection.naturals.sourceRows ++ event.selected.2.staticRows
-  | .staticFold event .. => event.naturals.sourceRows ++ event.bounds.rows ++ event.iterations.flatMap (·.seeded.staticRows)
-  | .matching event .. => event.naturals.sourceRows ++ event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows)
-  | .computed event .. => event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
-      event.predicate.canonical.staticRows ++ event.logical.sourceRows ++ event.body.staticRows
-  | .workspace event .. => event.naturals.sourceRows ++ event.logical.sourceRows ++ event.body.staticRows
-  | .registerPrimitive event => event.naturals.sourceRows ++ CallName.sourceRows event.candidate ++
-      event.application.arguments.flatMap (·.rows)
+def Event.staticRows {sources caller} (source : Event sources caller) : List (String × String) :=
+  WellFounded.fix (measure (fun event : Event sources caller => sizeOf event)).wf
+    (C := fun _ => List (String × String)) (fun event next => match event with
+      | .selection event => event.naturals.sourceRows
+      | .primitive _ => []
+      | .phase event => event.naturals.sourceRows
+      | .named event => event.target.sourceRows ++ event.canonical.staticRows
+      | .operation event => event.naturals.sourceRows ++ event.operation.rows
+      | .basis event => event.staticRows
+      | .conditional event .. => event.naturals.sourceRows ++ event.thenArm.staticRows ++ event.elseArm.staticRows
+      | .transform event => event.target.sourceRows ++ event.forward.staticRows ++
+          event.counts.flatMap (·.checked.rows)
+      | .staticConditional event .. => event.selection.naturals.sourceRows ++ event.selected.2.staticRows
+      | .staticFold event .. => event.naturals.sourceRows ++ event.bounds.rows ++
+          event.iterations.flatMap (·.seeded.staticRows)
+      | .matching event .. => event.naturals.sourceRows ++ event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows)
+      | .computed event .. => event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
+          event.predicate.canonical.staticRows ++ event.logical.sourceRows ++ event.body.staticRows
+      | .workspace event .. => event.naturals.sourceRows ++ event.logical.sourceRows ++ event.body.staticRows
+      | .registerPrimitive event => event.naturals.sourceRows ++ CallName.sourceRows event.candidate ++
+          event.application.arguments.flatMap (·.rows)
+      | .exclusive access child => access.checked.entries.flatMap (fun entry => entry.2.coordinates.rows) ++
+          next child (by decreasing_tactic)) source
 
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
@@ -867,6 +899,8 @@ inductive Occurrence (sources : Sources) :
   | fold {owner : String} (event : FoldEvent sources owner)
       (iterations : List (List (Event sources owner))) (trace : Iterations sources owner iterations) :
       Occurrence sources owner (.staticFold event iterations)
+  | exclusive {owner : String} (access : ExclusiveEvent sources owner) {child : Event sources owner}
+      (trace : Occurrence sources owner child) : Occurrence sources owner (.exclusive access child)
 
 inductive Iterations (sources : Sources) :
     (owner : String) → List (List (Event sources owner)) → Type where
@@ -997,6 +1031,15 @@ def Path.folded {sources owner} {events : List (Event sources owner)}
    fun trace => do
     let .fold _ _ children ← parent.find trace | none
     pure (children.flatten.at ordinal selected)⟩
+
+/-- Open the exact routed source call recorded at this wrapper occurrence.
+The access event itself still supplies the separate owner-routing checks. -/
+def Path.exclusive {sources owner} {events : List (Event sources owner)}
+    {access : ExclusiveEvent sources owner} {child : Event sources owner}
+    (parent : Path events (.exclusive access child)) : Path events child :=
+  ⟨fun _ => parent.work+1,fun trace => do
+    let .exclusive _ childTrace ← parent.find trace | none
+    pure childTrace⟩
 
 structure EvaluatedWithTrace {sources owner name} (signature : Signature sources owner name) where
   evaluated : Evaluated signature

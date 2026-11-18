@@ -273,11 +273,13 @@ def StepInputOrder : RuntimePureBody.Step dependencies program block → Prop
     boundary.input.ordered.map (·.owner) = event.inputOwners ∧
       scope.selected = boundary.input.ordered.map (·.port) ∧
       mixedAxes scope = RuntimeForestCode.forestAxes scope.interval.before.quantum.frame boundary.input.ordered
+  | .routedNamed access _ => access.boundary.input.ordered.map (·.owner) = access.event.inputOwners
   | _ => True
 
 theorem step_input_order (step : RuntimePureBody.Step dependencies program block) : StepInputOrder step :=
   match step with
   | .named _ scope _ _ boundary _ _ => mixed_bound_axes scope boundary
+  | .routedNamed access _ => (RuntimeSelectionPartition.order_values _ _ _ access.boundary.input.orderRead).2
   | .pure .. | .gap .. | .observation .. | .conditional .. => True.intro
 
 end QleisliKernel.Qirf.RuntimeNamedFrameAxes

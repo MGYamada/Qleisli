@@ -14,6 +14,8 @@ import Qleisli.ObservingActionLinear
 import Qleisli.FiniteMatrixAction
 import Qleisli.RawActionLocality
 import Qleisli.RawAccessCommutation
+import Qleisli.RuntimeExclusiveCoordinates
+import Qleisli.RuntimeExclusiveResources
 import Qleisli.CodeSpaceAction
 import Qleisli.RawActionSector
 import Qleisli.RuntimeTapeAction

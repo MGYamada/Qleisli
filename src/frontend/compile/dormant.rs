@@ -463,11 +463,21 @@ impl<'a> Compiler<'a> {
         module: &str,
         span: Span,
     ) -> Result<(), CompileError> {
+        self.check_dormant_instance_with_replay(instance, module, span, false)
+    }
+
+    pub(super) fn check_dormant_instance_with_replay(
+        &mut self,
+        instance: Arc<instances::ClosedInstance>,
+        module: &str,
+        span: Span,
+        replay_mixed_control: bool,
+    ) -> Result<(), CompileError> {
         let owner = instance.definition;
         let frame = self.enter_instance(instance, module, span)?;
         let result = (|| {
             self.check_dormant_operations_inner(Some(owner))?;
-            self.check_dormant_controls_inner(Some(owner))
+            self.check_dormant_controls_inner(Some(owner), replay_mixed_control)
         })();
         self.leave_instance(frame);
         result

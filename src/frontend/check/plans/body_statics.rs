@@ -256,7 +256,7 @@ pub(in crate::frontend::check) fn expression_natural_roots<'a>(
     if let ast::ExprKind::AccessCall { args, .. } = &expression.kind {
         for argument in args {
             budget.charge(argument.value.span, 1)?;
-            if let Some(selection) = &argument.selection {
+            if let Some(selection) = argument.selection() {
                 for natural in selection.naturals() {
                     budget.charge(natural.span, 1)?;
                     roots.push(natural);

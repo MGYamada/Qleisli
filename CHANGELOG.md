@@ -20,6 +20,25 @@ development milestones from the scope of their evidence.
   scoped block visitor. A written name in `qif` is represented by
   `StaticOpKind::Name` inside the operation. The paired qlippy
   compatibility migration is tracked in #171.
+- Check indexed and sliced `excl` and `ctrl` calls in bounded coherent block
+  arms and static continuations against their original ordered places, Raw
+  extraction, callee and reassembly. The actual callee must preserve the
+  computational-basis sectors of its `ctrl` places (#29).
+- Retain ordinary `Unit` arguments alongside marked places in the exact source
+  order of checked mixed access calls (#29). The v5 request and compared view
+  can identify a standalone original access body. Rust AST consumers read
+  `AccessArgument.kind` or its `access()` and `selection()` accessors. A v5
+  `Request` carries the explicit `standalone_access` choice through the
+  existing JSON profile field.
+- Check exclusive calls that pass ordinary `Bit` arguments to a named
+  callee with a single Raw branch. Preserve the condition, the written
+  argument order and each parked owner through the checked return (#29).
+- Check closed finite declared access parameters against the original
+  declaration, call markers, live owner return and actual Raw body (#29).
+  Selected specializations retain the original static actuals. Rust AST
+  consumers read the optional role and marker span on `Param.access`.
+- Check indexed `excl` inside bounded clean and dirty workspace bodies against
+  the written axes, exact restoration and counted OpenQASM output (#29).
 - Document the diagnostic categories, structured output and source recovery
   contract in the Language Reference (#225).
 - Document the constitutional theorem boundary, its actual ordinary native

@@ -7,6 +7,64 @@ use std::collections::BTreeMap;
 const TYPE_WORDS: [&str; 7] = ["Q", "Op", "Unit", "Bit", "CBit", "Bits", "CBits"];
 
 #[test]
+fn access_call_arguments_retain_written_positions_and_contextual_names() {
+    let source = "fn f(q: Q<Bit>, excl: Bit) -> Unit { step(excl, ctrl q, ctrl(0), excl()); }";
+    let syntax = parse_module(source).unwrap();
+    let FnBody::Quantum(body) = &syntax.decls[0].body else {
+        panic!("runtime body")
+    };
+    let StmtKind::Expr(statement) = &body.statements[0].kind else {
+        panic!("call statement")
+    };
+    let ExprKind::AccessCall { args, .. } = &statement.kind else {
+        panic!("mixed access call")
+    };
+    let written = args
+        .iter()
+        .map(|arg| {
+            let span = arg.value.span;
+            (arg.access(), &source[span.start..span.end])
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(
+        written,
+        [
+            (None, "excl"),
+            (Some(QuantumAccess::Ctrl), "ctrl q"),
+            (None, "ctrl(0)"),
+            (None, "excl()"),
+        ]
+    );
+}
+
+#[test]
+fn declared_access_parameters_retain_original_roles_and_types() {
+    let source = "pub unitary fn step(q: excl Q<(Unit,Bit)>, c: ctrl Q<Bit>, a: excl)
+        -> Unit { () }";
+    let syntax = parse_module(source).unwrap();
+    let [target, control, ordinary] = syntax.decls[0].params.as_slice() else {
+        panic!("expected the three written parameter positions");
+    };
+    let (mode, span) = target.access.expect("written excl parameter");
+    assert_eq!(mode, QuantumAccess::Excl);
+    assert_eq!(&source[span.start..span.end], "excl");
+    assert_eq!(
+        &source[target.ty.span.start..target.ty.span.end],
+        "Q<(Unit,Bit)>"
+    );
+    let (mode, span) = control.access.expect("written ctrl parameter");
+    assert_eq!(mode, QuantumAccess::Ctrl);
+    assert_eq!(&source[span.start..span.end], "ctrl");
+    assert_eq!(ordinary.access, None);
+    assert!(matches!(&ordinary.ty.kind, TypeKind::Named(name) if name.text == "excl"));
+
+    let wildcard = source.replace("q: excl", "_: excl");
+    let error = parse_module(&wildcard).unwrap_err();
+    assert_eq!(&wildcard[error.span.start..error.span.end], "_");
+    assert!(error.message.contains("one named owner"));
+}
+
+#[test]
 fn workspace_syntax_retains_original_arguments_and_contextual_names() {
     for (source, expected_dirty) in [
         (

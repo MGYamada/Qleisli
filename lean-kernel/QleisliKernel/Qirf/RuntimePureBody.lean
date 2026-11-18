@@ -1,4 +1,5 @@
 import QleisliKernel.Qirf.RuntimeOwnerTransition
+import QleisliKernel.Qirf.RuntimeExclusiveAction
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimePrimitiveSource
 import QleisliKernel.Qirf.RuntimeStructuralAction
@@ -31,8 +32,9 @@ instrument/code and ordinary history/storage obligations remain open. It issues
 no handle and is not the complete v5 runtime acceptance gate.
 Fresh and staged runtime calls share this native handler. Arm graph reads now
 precede all sector comparisons, and branch source acquisition precedes the
-native branch read; work and first-failure observations can change. Planned
-pure static continuations refuse; existing pure callers retain fresh queries.
+native branch read. This ordering can change work and the first reported failure.
+Both modes check the actual selected static branch or fold through the same
+native event handler, with its original Raw positions.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimePureBody
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes
@@ -193,6 +195,15 @@ inductive Node (dependencies : List Semantics.Finite.Dependency) :
       (owners : RuntimeTransformOwners.Checked interval event before)
       (action : RuntimeTransformAction.Checked owners logical.code.logical)
       (children : Nodes dependencies forward.program forward.prepared.block) : Node dependencies program block
+  | exclusive {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
+      {sources caller start count access child suspended before activeAfter activeRetired}
+      {interval : RuntimeInterval.Checked block start count}
+      {opening : @RuntimeExclusiveAction.Opened sources caller dependencies program block start count
+        access interval suspended before}
+      (location : RuntimeSourceEvent.Location (.exclusive access child) start count)
+      (action : RuntimeExclusiveAction.Closed opening activeAfter activeRetired)
+      (inner : Node dependencies program block)
+      (ordinary : RuntimeOrdinaryBody.State) : Node dependencies program block
   | selection {program : Semantics.Observation.Program} {block : RuntimeInterval.Block dependencies program}
       {start count inputs outputs} {selector target : Owner}
       (frame : RuntimePureInterval.Checked block 2 start count inputs outputs [selector,target])
@@ -369,6 +380,33 @@ def staticNodes {dependencies program block start count} :
   | _,.identity _,_ => []
   | _,.primitive checked,source => [.primitive checked source]
 
+/-- The checked original branch, its selected child interface, and the
+surrounding Raw routing share the same literal outer block. -/
+structure RoutedAccess {dependencies program} (block : RuntimeInterval.Block dependencies program)
+    (sources : Sources) (caller : String) where
+  offset : Nat
+  access : SourceRuntimeContext.ExclusiveEvent sources caller
+  suspended : List Owner
+  before : RuntimeStructuralAction.SourceState
+  ordinary : RuntimeOrdinaryBody.State
+  event : SourceRuntimeContext.NamedEvent sources caller
+  location : RuntimeSourceEvent.Location (.exclusive access (.named event)) offset 1
+  actual : @RuntimeInterval.Branch dependencies program block offset
+  actualRead : RuntimeInterval.Computed (RuntimeInterval.readBranch block offset) actual
+  opening : @RuntimeExclusiveAction.Opened sources caller dependencies program block offset 1
+    access actual.interval suspended before
+  frame : RuntimeBranchProjection.Checked actual opening.frame (opening.route.selected.map (·.token)) ordinary
+  source : SourceRuntimeTrace.Body event.target.signature
+  sourceRead : SourceRuntimeTrace.NamedRead event source
+  projected : RuntimeInterval.Branch frame.prepared.block 0
+  projectedRead : RuntimeInterval.Computed (RuntimeInterval.readBranch frame.prepared.block 0) projected
+  childHistory : RuntimeStructuralAction.SourceState
+  childRetired : List Owner
+  childOrdinary : RuntimeOrdinaryBody.State
+  boundary : RuntimeNamedBoundary.Checked projected.interval (opening.route.selected.map (·.token)) event
+    (RuntimeExclusiveAction.selectedState opening) childHistory childRetired source.checked.summary.value
+  closed : RuntimeExclusiveAction.BranchClosed opening frame boundary.after event.consumed childOrdinary
+
 mutual
 /-- The common loop records every actual mixed interval. Pure composition
 continues to consume only its pure islands and requires complete pure coverage;
@@ -389,6 +427,10 @@ inductive Step (dependencies : List Semantics.Finite.Dependency) :
       (boundary : RuntimeNamedBoundary.Checked frame.interval inputs event before childHistory childRetired source.checked.summary.value)
       (finalOrdinary : RuntimeOrdinaryBody.State)
       (children : Steps dependencies frame.program frame.prepared.block) : Step dependencies program block
+  | routedNamed {program block sources caller}
+      (checked : RoutedAccess block sources caller)
+      (children : Steps dependencies checked.frame.program checked.frame.prepared.block) :
+      Step dependencies program block
   | conditional {program block offset sources rootOwner rootName caller name}
       (path : RuntimeOrdinaryBody.CallPath sources rootOwner rootName caller name)
       (event : SourceRuntimeContext.BranchEvent sources caller)
@@ -674,6 +716,95 @@ def readInlineArm {artifact root execution rootOwner rootName owner name}
       by with_reducible exact checked.property,action.val,by with_reducible exact action.property⟩
   else throw .request
 
+/-- A mixed access is routed as an ordinary branch only in the existing
+runtime body mode, and only when the selected child reads an ordinary Bit. -/
+def routedOrdinary {sources caller} (mode : Mode) (controlled : Bool)
+    (access : SourceRuntimeContext.ExclusiveEvent sources caller)
+    (child : SourceRuntimeContext.Event sources caller) : WorkM Bool := do
+  match mode,child with
+  | .runtimeBody,.named _ =>
+    if access.written.exclusive && !controlled && access.written.hasOrdinary then do
+      exactWork (Exact.charge (8*((access.arguments.values.map valueFields).sum+1)))
+      return access.arguments.values.any fun slot => match slot with
+        | [.ordinary [.bit] _] => true
+        | _ => false
+    else pure false
+  | _,_ => pure false
+
+/-- Replay the actual branch inside an already opened access range. The
+recursive result occupies the same selected caller ports and shares the
+remaining work counter with the checked Raw return. -/
+def readRoutedNamedStep (artifact : Artifact) (root : Validity.Root)
+    (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution)
+    {rootOwner rootName owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
+    {program} (block : RuntimeInterval.Block root.dependencies program)
+    (access : SourceRuntimeContext.ExclusiveEvent artifact.sources owner)
+    (event : SourceRuntimeContext.NamedEvent artifact.sources owner) (position : Position)
+    (origin : RuntimeSourceEvent.Origin (.exclusive access (.named event)) position)
+    (data : execution.queries.EventData source (.exclusive access (.named event)) position)
+    (state : QueryState root.dependencies program block execution.queries.Cursor execution.Receipt) :
+    WorkM (QueryState root.dependencies program block execution.queries.Cursor execution.Receipt) := do
+  let dependencies := root.dependencies
+  let size := RuntimeExclusiveAction.routeCount access
+  let (history,retired,ordinary,actions,steps,obligations,_,sourceCursor,receipts) := state
+  if span : position.count = 1 then
+    let childData ← RuntimeBodyQueries.exclusiveChild execution.queries source access (.named event) position data
+    let location : RuntimeSourceEvent.Location (.exclusive access (.named event)) position.start 1 :=
+      ⟨position,rfl,span,origin⟩
+    let actual ← NaturalAffine.witness (RuntimeInterval.readBranch block position.start)
+    let opening ← RuntimeExclusiveAction.readOpen access actual.val.interval source.suspended history
+    let tokens := opening.route.selected.map (·.token)
+    let frame ← RuntimeBranchProjection.read actual.val opening.frame tokens ordinary
+    let named ← RuntimeBodyQueries.readNamed execution.queries source event position sourceCursor childData
+    let original := named.body
+    if callerName : event.target.callerName = name then
+      let parent : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.target.callerName := by
+        simpa only [callerName] using path
+      let childPath := RuntimeOrdinaryBody.CallPath.named event original named.original parent
+      let childRoles := original.checked.summary.parameterValues.flatMap valueOwners
+      let inputOwners := (frame.selected.zip event.inputOwners).map fun (port,role) =>
+        (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)
+      let childInitial ← RuntimeSourceBoundary.bindings childRoles inputOwners
+      let childHistory : RuntimeStructuralAction.SourceState :=
+        ⟨childInitial,childRoles,original.checked.summary.nextOwner⟩
+      let (nested,childReceipts) ← next .runtimeBody .localScope (.whole original source.requiresControl) childPath
+        frame.program named.context named.nested childHistory frame.visible.ssa frame.prepared.block
+      let projected ← NaturalAffine.witness (RuntimeInterval.readBranch frame.prepared.block 0)
+      let selectedBefore := RuntimeExclusiveAction.selectedState opening
+      let boundary ← RuntimeNamedBoundary.read projected.val.interval tokens event selectedBefore nested.history nested.retired
+        original.checked.summary.value
+      let closed ← RuntimeExclusiveAction.readBranchClose opening frame boundary.after event.consumed nested.ordinary
+      exactWork (Exact.charge (32*(steps.length+obligations.length+receipts.length+
+        Raw.OwnerFlow.fields (retired ++ event.consumed ++ access.returned.retired)+1)))
+      let checked : RoutedAccess block artifact.sources owner :=
+        ⟨position.start,access,source.suspended,history,ordinary,event,location,actual.val,
+          by with_reducible exact actual.property,opening,frame,original,named.original,projected.val,
+          by with_reducible exact projected.property,nested.history,nested.retired,nested.ordinary,boundary,closed⟩
+      let step : Step dependencies program block := .routedNamed checked (Steps.ofList nested.steps)
+      return (closed.after,retired ++ (event.consumed ++ access.returned.retired),closed.finalOrdinary.ssa,actions,
+        steps ++ [step],obligations ++ nested.obligations,position.start+1+size,named.cursor,receipts ++ childReceipts)
+    else throw .request
+  else throw .request
+
+def readRoutedAccessStep (artifact : Artifact) (root : Validity.Root)
+    (execution : ExecutionMode artifact root) (next : BlockRunner artifact root execution)
+    {rootOwner rootName owner name}
+    (source : SourceRuntimeScope.Subject artifact.sources owner name)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name)
+    {program} (block : RuntimeInterval.Block root.dependencies program)
+    (access : SourceRuntimeContext.ExclusiveEvent artifact.sources owner)
+    (child : SourceRuntimeContext.Event artifact.sources owner) (position : Position)
+    (origin : RuntimeSourceEvent.Origin (.exclusive access child) position)
+    (data : execution.queries.EventData source (.exclusive access child) position)
+    (state : QueryState root.dependencies program block execution.queries.Cursor execution.Receipt) :
+    WorkM (QueryState root.dependencies program block execution.queries.Cursor execution.Receipt) :=
+  match child,origin,data with
+  | .named event,original,retained =>
+    readRoutedNamedStep artifact root execution next source path block access event position original retained state
+  | _,_,_ => throw .request
+
 /-- One unchanged native body iteration, with the recursive caller explicit.
 This is the sole handler used by runBlockCore; factoring it introduces no
 additional acceptance mode or work reset. -/
@@ -785,13 +916,15 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
         else
           let gap ← RuntimeOrdinaryBody.readGap block cursor (start-cursor) history ordinary
           return (history,retired,gap.ssa,actions,steps ++ [.gap gap],obligations,start,sourceCursor,receipts)
-    let step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
+    let stepCore : Mode → (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
         RuntimeSourceEvent.Origin event position → execution.queries.EventData source event position →
+        Option (RuntimeInterval.Checked block position.start position.count) →
         QueryState dependencies program block execution.queries.Cursor execution.Receipt →
-          WorkM (QueryState dependencies program block execution.queries.Cursor execution.Receipt) := fun event position origin data state => do
+          WorkM (QueryState dependencies program block execution.queries.Cursor execution.Receipt) :=
+      fun mode event position origin data opened state => do
         let (history,retired,ordinary,actions,steps,obligations,_cursor,sourceCursor,receipts) ← advance state position.start
         exactWork (Exact.charge (receipts.length+execution.referenceCount sourceCursor+1))
-        let interval ← RuntimeInterval.check block position.start position.count
+        let interval ← opened.getDM (RuntimeInterval.check block position.start position.count)
         let boundFrame ← RuntimeOwnerMap.checkBindings (history.bindings.map (·.owner)) interval.before history.bindings
         let callerFrame := boundFrame.val
         let bindings := callerFrame.bindings
@@ -1041,6 +1174,41 @@ def runBlockStep (artifact : Artifact) (root : Validity.Root) (execution : Execu
         | _,_,_ =>
           let _ ← readOwners
           throw .request
+    let step : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
+        RuntimeSourceEvent.Origin event position → execution.queries.EventData source event position →
+        QueryState dependencies program block execution.queries.Cursor execution.Receipt →
+          WorkM (QueryState dependencies program block execution.queries.Cursor execution.Receipt) :=
+      fun event position origin data state => do
+        match event,data,origin with
+        | .exclusive access child,data,origin =>
+          let size := RuntimeExclusiveAction.routeCount access
+          guard (size ≤ position.start && child.effect == .unitary &&
+            child.callOffset == some position.offset && position.offset == access.written.parsed.calleeOffset) .request
+          let advanced ← advance state (position.start-size)
+          let mixedNamed ← routedOrdinary mode source.requiresControl access child
+          if mixedNamed then
+            readRoutedAccessStep artifact root execution next source path block access child position origin data advanced
+          else
+            let (history,retired,ordinary,actions,steps,obligations,_,sourceCursor,receipts) := advanced
+            let interval ← RuntimeInterval.check block position.start position.count
+            let opening ← RuntimeExclusiveAction.readOpen access interval source.suspended history
+            let childData ← RuntimeBodyQueries.exclusiveChild execution.queries source access child position data
+            let initial : QueryState dependencies program block execution.queries.Cursor execution.Receipt :=
+              (opening.initial,[],ordinary,[],[],[],position.start,sourceCursor,[])
+            let (after,consumed,_innerOrdinary,innerActions,innerSteps,innerObligations,cursor,sourceCursor,innerReceipts) ←
+              stepCore .pureBody child position (.exclusive origin) childData (some interval) initial
+            guard (cursor == position.start+position.count && innerSteps.length == 1) .request
+            let [inner] := innerActions | throw .request
+            let closed ← RuntimeExclusiveAction.readClose opening after consumed
+            exactWork (Exact.charge (32*(actions.length+steps.length+obligations.length+receipts.length+
+              Raw.OwnerFlow.fields (retired ++ consumed ++ access.returned.retired)+1)))
+            let node : Node dependencies program block := .exclusive ⟨position,rfl,rfl,origin⟩ closed inner ordinary
+            -- The complete wrapper has a literal pure Raw interval. Its private
+            -- callee cannot add bindings to the surrounding ordinary frame.
+            return (closed.after,retired ++ (consumed ++ access.returned.retired),ordinary,actions ++ [node],
+              steps ++ [.pure node],obligations ++ innerObligations,position.start+position.count+size,
+              sourceCursor,receipts ++ innerReceipts)
+        | event,data,origin => stepCore mode event position origin data none state
     let outerStep : (event : SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
         RuntimeSourceEvent.At (source.events.zip request.positions) event position →
         execution.queries.EventData source event position →

@@ -119,7 +119,9 @@ fn check_action(
     compiler.charge(&module, original.span, args.len().saturating_mul(5) + 12)?;
     if args.is_empty()
         || args.len() > MAX_DEPTH
-        || !args.iter().any(|arg| arg.access == QuantumAccess::Ctrl)
+        || !args
+            .iter()
+            .any(|arg| arg.access() == Some(QuantumAccess::Ctrl))
     {
         return Ok(PrimitiveControlVisit::NotCovered);
     }
@@ -325,7 +327,7 @@ fn check_action(
         }
     }
     compiler.charge(&module, original.span, owners.len() + args.len())?;
-    let selected = args.iter().any(|argument| argument.selection.is_some());
+    let selected = args.iter().any(|argument| argument.selection().is_some());
     let mut closed = Vec::with_capacity(owners.len());
     for source_type in owners {
         match compiler.close_source_type_partial(&source_type, &environment, original.span)? {

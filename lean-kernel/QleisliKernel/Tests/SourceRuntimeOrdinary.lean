@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.SourceRuntimeOrdinary
 import QleisliKernel.SourceTypes.SourceBasisFunction
+import QleisliKernel.SourceTypes.AccessSyntax
 
 /-! Independent logical ordinary evaluation and actual result extraction.
 No native SSA, source-AST or instrument correspondence is assumed by these
@@ -13,6 +14,24 @@ private def values (inputs : List Nat := []) (measurement : Option Nat := none) 
   ⟨fun ordinal => inputs[ordinal]?,fun _ => none,fun _ _ _ => measurement⟩
 private def site : Site := ⟨"main","route",17⟩
 private def owner : Semantics.SourceOwners.Owner := ⟨2,[.bit]⟩
+
+private def mixedUnitSlots (source : String) : Except String (List (Option (List Nat × Value))) := do
+  let call ← AccessSyntax.readAccessCall (← lexLocated source)
+  let environment : SourceRuntimeValues.Environment :=
+    [⟨"tag",[.ordinary [.unit] (.input 0)],.parameter 0⟩,⟨"q",[.owner owner],.parameter 1⟩]
+  call.slots.mapM fun ⟨tokens,slot⟩ => match slot with
+    | .ordinary _ => do
+      let unit ← SourceTypes.SourceRuntimeOrdinary.readUnit tokens environment
+      return some (tokens.map (·.span.startByte),unit.value)
+    | .access _ => pure none
+
+#guard (mixedUnitSlots "f((), excl q[1], tag)").toOption =
+  some [some ([2,3],[.ordinary [.unit] .unit]),none,some ([17],[.ordinary [.unit] (.input 0)])]
+#guard (mixedUnitSlots "f(tag, excl q[1], ())").toOption =
+  some [some ([2],[.ordinary [.unit] (.input 0)]),none,some ([18,19],[.ordinary [.unit] .unit])]
+#guard (mixedUnitSlots "f(discard(q), excl q[1], tag)").isOk == false
+#guard (mixedUnitSlots "f((), excl q[1], q)").isOk == false
+#guard (mixedUnitSlots "f(0, excl q[1], tag)").isOk == false
 
 #guard evaluate (values [1,0]) (.xor (.input 0) (.input 1)) = some 1
 #guard evaluate (values) (.choose (.bit false) (.measured site [] owner) (.ordinal 7)) = some 7

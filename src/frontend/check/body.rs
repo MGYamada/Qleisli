@@ -267,6 +267,7 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
     let mut scope = declarations::scope(interface, &p.helpers, &p.budget, declaration.span)?;
     scope.nominals = Arc::clone(&p.nominals);
     let index = &p.indices[&id];
+    let mut accessed = Vec::new();
     for (parameter, ty) in declaration.params.iter().zip(&interface.params) {
         bind(
             &parameter.pattern,
@@ -275,6 +276,19 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
             &mut scope,
             &p.budget,
         )?;
+        if let Some((_, marker)) = parameter.access {
+            let PatternKind::Name(name) = &parameter.pattern.kind else {
+                unreachable!("access parameter has one named owner");
+            };
+            let key = index.table.key(index.binder(name));
+            let identity = scope
+                .values
+                .get(key)
+                .expect("checked access owner binding")
+                .identity;
+            p.budget.charge(marker, 2)?;
+            accessed.push((p.budget.key(marker, key)?, identity, marker));
+        }
     }
     let expected = p
         .budget
@@ -299,6 +313,9 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
     };
     if quantum_interface {
         checker.effects.mark_quantum();
+    }
+    if let Some((_, _, marker)) = accessed.first() {
+        checker.effects.require_unitary(id, *marker);
     }
     for formal in &checker.program.interfaces[&id].statics {
         checker.program.budget.charge(declaration.span, 1)?;
@@ -361,6 +378,23 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
         )?,
         FnBody::Quantum(body) => {
             checker.block(body, &mut scope, Some(&expected))?;
+            for (key, identity, marker) in accessed {
+                checker.tick(marker)?;
+                if !scope
+                    .values
+                    .remove(&key)
+                    .is_some_and(|binding| binding.identity == identity)
+                {
+                    return Err(SourceError::new(
+                        "ownership",
+                        marker,
+                        format!(
+                            "declared access must return the original owner `{}` at scope exit",
+                            key.name
+                        ),
+                    ));
+                }
+            }
             if let Some(key) = checker.live_owner(&scope, body.span)? {
                 return Err(disposal_error(
                     checker.index().table.binder(key.id).span,

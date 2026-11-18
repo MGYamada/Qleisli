@@ -274,6 +274,7 @@ theorem actual_conditional_steps {dependencies program block steps count step}
       exact ⟨⟨_,⟨yes⟩⟩,⟨_,⟨no⟩⟩⟩
   | pure _ => trivial
   | named _ _ _ _ _ _ _ => trivial
+  | routedNamed => trivial
   | gap _ => trivial
   | observation _ => trivial
 

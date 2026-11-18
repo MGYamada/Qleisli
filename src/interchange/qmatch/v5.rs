@@ -6,6 +6,7 @@ use super::*;
 pub const PROFILE: &str = "finite-source-qmatch-context-v5";
 pub const BASIS_PROFILE: &str = "finite-source-basis-context-v5";
 pub const MEANING_PROFILE: &str = "finite-source-meaning-context-v5";
+pub const ACCESS_PROFILE: &str = "finite-source-access-context-v5";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Source {
@@ -20,6 +21,8 @@ pub struct Request {
     /// This is the same typed object retained for public runtime execution.
     pub runtime: std::sync::Arc<crate::interchange::runtime_root::Request>,
     pub context: Context,
+    /// Explicit wire scope request. Source and Raw receipts determine acceptance.
+    pub standalone_access: bool,
 }
 
 mod producer;
@@ -76,6 +79,22 @@ impl Source {
 
 impl Request {
     pub(crate) fn profile(&self) -> &'static str {
+        if self.standalone_access {
+            ACCESS_PROFILE
+        } else {
+            self.inferred_profile()
+        }
+    }
+
+    pub(in crate::interchange) fn view_profile(&self) -> &'static str {
+        if self.standalone_access {
+            ACCESS_PROFILE
+        } else {
+            PROFILE
+        }
+    }
+
+    fn inferred_profile(&self) -> &'static str {
         let mut pending = vec![&self.context];
         let mut has_meaning = false;
         while let Some(context) = pending.pop() {
@@ -163,7 +182,13 @@ impl Request {
                 "qmatch source and retained runtime instance differ",
             ));
         }
-        self.context.bounded(0, &mut remaining)
+        self.context.bounded(0, &mut remaining)?;
+        if self.standalone_access && self.inferred_profile() != BASIS_PROFILE {
+            return Err(Error::format(
+                "standalone access scope cannot replace a selection or Meaning profile",
+            ));
+        }
+        Ok(())
     }
     pub fn encode(&self) -> Result<Vec<u8>> {
         self.bounded()?;
@@ -188,6 +213,7 @@ impl Request {
         {
             return Err(Error::format("unsupported qmatch request profile"));
         }
+        let scope = value.field("profile")?.text()?;
         let mut remaining = json::MAX_BYTES;
         let request = Self {
             source: Source::decode(value.field("source")?)?,
@@ -195,9 +221,10 @@ impl Request {
                 value.field("runtime")?,
             )?),
             context: Context::decode_fields(&value, 0, &mut remaining)?,
+            standalone_access: scope == ACCESS_PROFILE,
         };
         request.bounded()?;
-        if value.field("profile")?.text()? != request.profile() {
+        if scope != request.profile() {
             return Err(Error::format("unsupported qmatch request profile"));
         }
         Ok(request)

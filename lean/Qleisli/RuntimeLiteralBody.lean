@@ -30,6 +30,7 @@ def nodeSpan {dependencies program block} : Node dependencies program block → 
   | .operation frame .. => ⟨_,_,frame.interval⟩
   | .rectangularOperation checked => ⟨_,_,checked.frame.interval⟩
   | .transform _ _ _ _ _ owners _ _ => ⟨_,_,owners.literal.interval⟩
+  | .exclusive _ action _ _ => ⟨_,_,action.literal.interval⟩
   | .selection frame .. => ⟨_,_,frame.interval⟩
 
 def stepSpan {dependencies program block} : Step dependencies program block → Span block
@@ -37,6 +38,7 @@ def stepSpan {dependencies program block} : Step dependencies program block → 
   | .gap gap => ⟨_,_,gap.checked.interval⟩
   | .observation observation => ⟨_,_,observation.checked.interval⟩
   | .named _ frame _ _ _ _ _ => ⟨_,_,frame.interval⟩
+  | .routedNamed checked _ => ⟨_,_,checked.closed.route.literal⟩
   | .conditional _ _ _ actual .. => ⟨_,_,actual.interval⟩
 
 def At {dependencies program block} (start stop : Nat) (step : @Step dependencies program block) : Prop :=

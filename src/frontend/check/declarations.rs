@@ -383,6 +383,8 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         });
     }
     let mut params = Vec::new();
+    let mut first_access = None;
+    let mut unmarked_owner = None;
     for parameter in &decl.params {
         budget.charge(parameter.span, 1)?;
         body::pattern_work(&parameter.pattern, budget)?;
@@ -401,6 +403,18 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
             None,
             budget,
         )?;
+        if let Some((_, marker)) = parameter.access {
+            if !ty.is_quantum_owner() {
+                return Err(SourceError::new(
+                    "type",
+                    marker,
+                    "access requires one Q<A> owner",
+                ));
+            }
+            first_access.get_or_insert(marker);
+        } else if ty.linear() {
+            unmarked_owner.get_or_insert(parameter.span);
+        }
         // Real pattern shape/linearity checks are shared with body binding.
         body::bind(
             &parameter.pattern,
@@ -423,6 +437,29 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         None,
         budget,
     )?;
+    if let Some(marker) = first_access {
+        if !matches!(decl.kind, FnKind::Inferred | FnKind::Unitary) {
+            return Err(SourceError::new(
+                "effect",
+                marker,
+                "declared quantum access requires a Unitary interface",
+            ));
+        }
+        if let Some(span) = unmarked_owner {
+            return Err(SourceError::new(
+                "ownership",
+                span,
+                "a Unit-returning access declaration must mark every quantum parameter",
+            ));
+        }
+        normalize::expect(
+            &result,
+            &Ty::unit(),
+            &scope.context,
+            decl.return_type.span,
+            budget,
+        )?;
+    }
     let meaning_domain = decl
         .meaning_domain
         .as_ref()
@@ -436,6 +473,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         kind: decl.kind,
         statics,
         params,
+        declares_access: first_access.is_some(),
         meaning_domain,
         result,
         premises: scope.context,

@@ -10,11 +10,26 @@ use crate::ir::Effect;
 type ClosedControlInterface = (Vec<BasisType>, Vec<usize>);
 
 impl<'a> Compiler<'a> {
+    pub(in crate::frontend::compile) fn declares_access_target(&self, callee: &Ident) -> bool {
+        let locals = self.locals();
+        if locals.try_reference_site(callee).is_none() {
+            return false;
+        }
+        match locals.usage(callee).target {
+            ResolvedUse::Global(Target::Declaration(target)) => self
+                .source
+                .interfaces
+                .get(&target)
+                .is_some_and(|interface| interface.declares_access),
+            _ => false,
+        }
+    }
+
     pub(in crate::frontend::compile) fn check_dormant_controls(
         &mut self,
     ) -> Result<(), CompileError> {
         let previous = self.checking;
-        let result = self.check_dormant_controls_inner(None);
+        let result = self.check_dormant_controls_inner(None, false);
         self.checking = previous;
         result
     }
@@ -22,6 +37,7 @@ impl<'a> Compiler<'a> {
     pub(super) fn check_dormant_controls_inner(
         &mut self,
         owner_filter: Option<Key>,
+        replay_mixed_control: bool,
     ) -> Result<(), CompileError> {
         let Some((&first, declaration)) = self.declarations.first_key_value() else {
             return Ok(());
@@ -36,13 +52,18 @@ impl<'a> Compiler<'a> {
             {
                 continue;
             }
-            let (owner, node, span) =
-                (obligation.definition, obligation.plan.node, obligation.span);
+            let (owner, span) = (obligation.definition, obligation.span);
             let module = self.dormant_module(owner, span)?;
             self.charge(&module, span, 1)?;
             let environment = Arc::clone(&self.source.obligations[ordinal].plan.environment);
             self.visit_dormant_environment(&environment, &module, span, |compiler, inactive| {
-                compiler.check_dormant_control_site(ordinal, owner, node, span, &module, inactive)
+                compiler.check_dormant_control_site(
+                    ordinal,
+                    owner,
+                    &module,
+                    inactive,
+                    replay_mixed_control,
+                )
             })?;
         }
         Ok(())
@@ -52,12 +73,67 @@ impl<'a> Compiler<'a> {
         &mut self,
         ordinal: usize,
         owner: Key,
-        node: NodeId,
-        span: Span,
+        module: &str,
+        inactive: bool,
+        replay_mixed_control: bool,
+    ) -> Result<(), CompileError> {
+        let obligation = &self.source.obligations[ordinal];
+        let span = obligation.span;
+        let expression =
+            self.original_control_expression(owner, obligation.plan.node, module, span)?;
+        if let ExprKind::AccessCall { callee, args, .. } = &expression.kind {
+            self.charge(module, span, args.len() + 1)?;
+            let declared = self.declares_access_target(callee);
+            let ordinary = args.iter().find(|argument| argument.access().is_none());
+            if declared || ordinary.is_some() {
+                self.charge(
+                    module,
+                    callee.span,
+                    (module.len() + 2).saturating_mul(self.checked_mixed_control_calls.len() + 1),
+                )?;
+                let active_nongeneric =
+                    !inactive && self.declarations[&owner].static_params.is_empty();
+                if !active_nongeneric
+                    || !self
+                        .checked_mixed_control_calls
+                        .contains(&(module.into(), callee.span.start))
+                {
+                    if active_nongeneric && replay_mixed_control {
+                        // The actual named expansion supplies this occurrence to
+                        // the enclosing v5 request before the global dormant pass.
+                        return Ok(());
+                    }
+                    let message = if declared {
+                        "declared Ctrl checks require independent replay of this original call"
+                    } else {
+                        "mixed Ctrl checks require independent replay of this original call"
+                    };
+                    return Err(self.dormant_error(
+                        module,
+                        ordinary.map_or(callee.span, |value| value.value.span),
+                        ErrorCode::Unsupported,
+                        message,
+                    )?);
+                }
+                // The confirmed original-source check verifies the sectors on
+                // this declared call's threaded owner ports.
+                if declared {
+                    return Ok(());
+                }
+            }
+        }
+        self.check_dormant_original_control(ordinal, owner, expression, module, inactive)
+    }
+
+    fn check_dormant_original_control(
+        &mut self,
+        ordinal: usize,
+        owner: Key,
+        expression: &'a Expr,
         module: &str,
         inactive: bool,
     ) -> Result<(), CompileError> {
-        let expression = self.original_control_expression(owner, node, module, span)?;
+        let span = expression.span;
         self.charge(module, span, 5)?;
         let obligation = &self.source.obligations[ordinal];
         if !matches!(obligation.plan.subject, EvidenceSubject::Expression)
@@ -86,7 +162,7 @@ impl<'a> Compiler<'a> {
             || args.len() > 64
             || !args
                 .iter()
-                .any(|argument| argument.access == QuantumAccess::Ctrl)
+                .any(|argument| argument.access() == Some(QuantumAccess::Ctrl))
         {
             return Err(self.dormant_error(
                 module,
@@ -270,6 +346,19 @@ impl<'a> Compiler<'a> {
             self.charge_at(&mut work, module, expression.span, args.len() + 1)?;
             let mut owners = BTreeMap::new();
             for argument in args {
+                if argument.access().is_none() {
+                    if !matches!(argument.value.kind, ExprKind::Unit | ExprKind::Name(_)) {
+                        let message = "ordinary Ctrl slots require owner-free Unit values";
+                        self.charge_at(&mut work, module, argument.value.span, message.len() + 1)?;
+                        return Err(self.error(
+                            module,
+                            argument.value.span,
+                            ErrorCode::Unsupported,
+                            message,
+                        ));
+                    }
+                    continue;
+                }
                 let ExprKind::Name(name) = &argument.value.kind else {
                     let message = "dormant control requires original lexical Q owners";
                     self.charge_at(&mut work, module, argument.value.span, message.len() + 1)?;
@@ -299,7 +388,7 @@ impl<'a> Compiler<'a> {
                     self.charge_at(&mut work, module, name.span, message.len() + 1)?;
                     return Err(self.error(module, name.span, ErrorCode::Ownership, message));
                 };
-                let indexed = argument.selection.is_some();
+                let indexed = argument.selection().is_some();
                 if owners
                     .insert(id, indexed)
                     .is_some_and(|previous| !indexed || !previous)
@@ -383,13 +472,34 @@ impl<'a> Compiler<'a> {
                 "control call differs from its original closed interface",
             )?);
         }
-        let outputs = if parameters.len() == 1 {
+        self.charge(module, span, parameters.len() + 1)?;
+        if parameters.len() != args.len() {
+            return Err(self.dormant_error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "control call differs from its written argument arity",
+            )?);
+        }
+        let mut ports = Vec::with_capacity(parameters.len());
+        for (parameter, argument) in parameters.iter().zip(args) {
+            if let Some(mode) = argument.access() {
+                ports.push((parameter, mode));
+            } else if parameter != &Ty::unit() {
+                return Err(self.dormant_error(
+                    module,
+                    argument.value.span,
+                    ErrorCode::TypeMismatch,
+                    "ordinary Ctrl port differs from its checked Unit interface",
+                )?);
+            }
+        }
+        let outputs = if ports.len() == 1 {
             std::slice::from_ref(&result)
         } else {
             result.tuple_fields().unwrap_or(&[])
         };
-        self.charge(module, span, parameters.len() + 1)?;
-        if parameters.len() != args.len() || outputs.len() != parameters.len() {
+        if ports.len() != outputs.len() {
             return Err(self.dormant_error(
                 module,
                 span,
@@ -399,7 +509,7 @@ impl<'a> Compiler<'a> {
         }
         let mut work = self.work;
         let same = (|| {
-            for (parameter, output) in parameters.iter().zip(outputs) {
+            for ((parameter, _), output) in ports.iter().zip(outputs) {
                 if parameter.quantum_basis().is_none()
                     || !operations::same_port_budgeted(parameter, output, &mut |cells| {
                         self.charge_at(&mut work, module, span, cells)
@@ -419,11 +529,11 @@ impl<'a> Compiler<'a> {
                 "control call must preserve each exact Q owner type in order",
             )?);
         }
-        self.charge(module, span, 2 * (parameters.len() + 1))?;
-        let mut signatures = Vec::with_capacity(parameters.len());
-        let mut widths = Vec::with_capacity(parameters.len());
+        self.charge(module, span, 2 * (ports.len() + 1))?;
+        let mut signatures = Vec::with_capacity(ports.len());
+        let mut widths = Vec::with_capacity(ports.len());
         let mut requested = 0;
-        for (parameter, argument) in parameters.iter().zip(args) {
+        for (parameter, mode) in ports {
             let basis = parameter
                 .quantum_basis()
                 .expect("exact Q owner checked above");
@@ -436,18 +546,18 @@ impl<'a> Compiler<'a> {
             self.work = work;
             charged?;
             let width = basis.basis_bits().expect("closed finite basis");
-            widths.push(width);
+            widths.push((width, mode));
             // A zero-width owner still contributes its complete signature.
             signatures.push(operations::contract_basis(basis));
-            if argument.access == QuantumAccess::Ctrl {
+            if mode == QuantumAccess::Ctrl {
                 requested += width;
             }
         }
         self.charge(module, span, requested + widths.len() + 1)?;
         let mut axes = Vec::with_capacity(requested);
         let mut offset = 0;
-        for (width, argument) in widths.into_iter().zip(args) {
-            if argument.access == QuantumAccess::Ctrl {
+        for (width, mode) in widths {
+            if mode == QuantumAccess::Ctrl {
                 axes.extend(offset..offset + width);
             }
             offset += width;
@@ -462,10 +572,15 @@ mod tests {
     use crate::frontend::project::{ModuleOrigin, SourceModule};
 
     fn project() -> Project {
-        let source = "unitary fn guard(q:Q<Unit>)->Q<Unit>{q}
+        project_with(
+            "unitary fn guard(q:Q<Unit>)->Q<Unit>{q}
             unitary fn identity(q:Q<Unit>)->Q<Unit>{q}
             unitary fn unused[const U:Op<Unit>](q:Q<Unit>)->Q<Unit>
-            requires Applicable(U){identity(ctrl q);U(q)}";
+            requires Applicable(U){identity(ctrl q);U(q)}",
+        )
+    }
+
+    fn project_with(source: &str) -> Project {
         Project {
             edition_context: crate::frontend::project::ProjectEdition::Explicit(
                 crate::edition::Edition::E2026,
@@ -483,6 +598,56 @@ mod tests {
                 },
             )]),
         }
+    }
+
+    #[cfg_attr(
+        not(qleisli_native_tests),
+        ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+    )]
+    #[test]
+    fn dormant_mixed_unit_control_checks_the_actual_marked_native_ports() {
+        let source = "#![no_implicit_prelude]
+            unitary fn step(tag:Unit,a:Q<Bit>,end:Unit,b:Q<Unit>)
+                ->(Q<Bit>,Q<Unit>){(phase[1,1](a),b)}
+            pub unitary fn probe(a:Q<Bit>,tag:Unit,b:Q<Unit>)
+                ->(Q<Bit>,Q<Unit>){step(tag,ctrl a,(),excl b);(a,b)}";
+        let check_sectors = |compiler: &mut Compiler<'_>| {
+            let (ordinal, obligation) = compiler
+                .source
+                .obligations
+                .iter()
+                .enumerate()
+                .find(|(_, obligation)| {
+                    matches!(obligation.kind, check::ObligationKind::ControlSectors)
+                })
+                .expect("checked mixed control obligation");
+            let owner = obligation.definition;
+            let span = obligation.span;
+            let environment = Arc::clone(&obligation.plan.environment);
+            let expression = compiler
+                .original_control_expression(owner, obligation.plan.node, "main", span)
+                .unwrap();
+            compiler.visit_dormant_environment(&environment, "main", span, |compiler, inactive| {
+                compiler
+                    .check_dormant_original_control(ordinal, owner, expression, "main", inactive)
+            })
+        };
+
+        let project = project_with(source);
+        let mut compiler = super::super::super::snapshot_tests::compiler(&project);
+        let error = compiler.check_dormant_controls().unwrap_err();
+        assert_eq!(error.code, ErrorCode::Unsupported, "{error}");
+
+        let (kernel, decisions) = compiler.kernel.recording();
+        compiler.kernel = kernel;
+        check_sectors(&mut compiler).unwrap();
+        assert!(decisions.summary().requests_checked() > 0);
+
+        let non_sector_preserving = source.replace("phase[1,1](a)", "h(a)");
+        let project = project_with(&non_sector_preserving);
+        let mut compiler = super::super::super::snapshot_tests::compiler(&project);
+        let error = check_sectors(&mut compiler).unwrap_err();
+        assert_eq!(error.code, ErrorCode::Contract, "{error}");
     }
 
     #[cfg_attr(

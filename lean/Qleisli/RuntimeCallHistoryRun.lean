@@ -16,54 +16,51 @@ open Qleisli.RuntimeObservingValueRetention (Supports run_values)
 open Qleisli.RuntimeSparseNamedBoundary (visible_entry_agreement)
 open Qleisli.Semantics.ObservingAction (History run)
 
-structure CheckedCallRun
-    {dependencies program block start count inputs ordinary effect}
-    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
+structure CallRunOn {dependencies program block start count childProgram}
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (prepared : RuntimeInterval.Prepared dependencies childProgram) (localAfter : RuntimeInterval.State)
     (spectators : List Port) (actual : History) (localHistory : Nat → History)
     (parentEvents childEvents : List Event) (parents : List History) (children : List (Nat → History)) : Prop where
-  partition : Partition scope.interval.after.quantum.reference scope.localAfter.quantum.reference spectators
-  childRead : readOps scope.prepared.block.fuel scope.prepared.block.entry.quantum.reference scope.prepared.block.operations =
-    some (scope.localAfter.quantum.reference,childEvents)
-  paired : Results dependencies block.fuel scope.prepared.block.fuel scope.interval.after.quantum.reference
-    scope.localAfter.quantum.reference spectators parentEvents childEvents actual localHistory parents children
-  parentWrites : FreshWrites scope.interval.before scope.interval.after parentEvents
+  partition : Partition interval.after.quantum.reference localAfter.quantum.reference spectators
+  childRead : readOps prepared.block.fuel prepared.block.entry.quantum.reference prepared.block.operations =
+    some (localAfter.quantum.reference,childEvents)
+  paired : Results dependencies block.fuel prepared.block.fuel interval.after.quantum.reference
+    localAfter.quantum.reference spectators parentEvents childEvents actual localHistory parents children
+  parentWrites : FreshWrites interval.before interval.after parentEvents
   sameWrites : ∀ allowed, WritesWithin parentEvents allowed ↔ WritesWithin childEvents allowed
   parentValues : ∀ result ∈ parents,
     Semantics.OrdinaryValue.Extends actual.values result.values ∧
-      Supports (fun id => id ∈ actual.values.map Prod.fst ∨ Issued scope.interval.after id) result
+      Supports (fun id => id ∈ actual.values.map Prod.fst ∨ Issued interval.after id) result
   childValues : ∀ high result, result ∈ children.map (fun history => history high) →
     Semantics.OrdinaryValue.Extends actual.values result.values ∧
-      Supports (fun id => id ∈ actual.values.map Prod.fst ∨ Issued scope.localAfter id) result
+      Supports (fun id => id ∈ actual.values.map Prod.fst ∨ Issued localAfter id) result
 
-/-- Relate the result list of the actual caller interval to the original
-prepared child run on every spectator slice. Inherited ordinary values and
-the complete hidden history are retained in the pairing. -/
-theorem original_call_run
-    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
-    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+abbrev CheckedCallRun {dependencies program block start count inputs ordinary effect}
     (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
-    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
-    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before)
-    (bindings : checked.bindings = before.bindings)
+    (spectators : List Port) (actual : History) (localHistory : Nat → History)
+    (parentEvents childEvents : List Event) (parents : List History) (children : List (Nat → History)) : Prop :=
+  CallRunOn scope.interval scope.prepared scope.localAfter spectators actual localHistory parentEvents childEvents parents children
+
+private theorem call_run_from_segments {dependencies program block start count childProgram}
+    (interval : @RuntimeInterval.Checked dependencies program block start count)
+    (prepared : RuntimeInterval.Prepared dependencies childProgram) (localAfter : RuntimeInterval.State)
+    (spectators : List Port)
+    (segments : ∀ depth, block.fuel = depth+1 → CallSegment interval prepared localAfter depth spectators)
     (actual : History) (localHistory : Nat → History)
-    (agrees : Agrees scope.interval.before.quantum.reference scope.prepared.block.entry.quantum.reference
-      ((RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered).map (·.port))
-      actual localHistory)
+    (agrees : Agrees interval.before.quantum.reference prepared.block.entry.quantum.reference spectators actual localHistory)
     {parentEvents : List Event} {parents : List History}
-    (read : readOps block.fuel scope.interval.before.quantum.reference ((block.operations.drop start).take count) =
-      some (scope.interval.after.quantum.reference,parentEvents))
+    (read : readOps block.fuel interval.before.quantum.reference ((block.operations.drop start).take count) =
+      some (interval.after.quantum.reference,parentEvents))
     (executed : run dependencies block.fuel parentEvents actual = some parents) :
-    let spectators := (RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered).map (·.port)
-    ∃ childEvents children, CheckedCallRun scope spectators actual localHistory
+    ∃ childEvents children, CallRunOn interval prepared localAfter spectators actual localHistory
       parentEvents childEvents parents children := by
-  intro spectators
   cases depth : block.fuel with
   | zero =>
     rw [depth] at executed
     cases executed
   | succ fuel =>
     obtain ⟨pEvents,cEvents,pRead,cRead,parentWrites,writes,sameWrites,segment⟩ :=
-      actual_call_segment scope fuel depth spectators (RuntimeCallTraceFrames.original_entry scope boundary checked bindings)
+      segments fuel depth
     rw [depth] at executed
     have sameEvents : pEvents = parentEvents := congrArg Prod.snd (Option.some.inj (pRead.symm.trans read))
     subst pEvents
@@ -73,7 +70,7 @@ theorem original_call_run
     · exact run_values dependencies (fuel+1) parentEvents actual _
         (parentWrites.mono (fun _ written => Or.inr written.1)) (fun _ present => Or.inl present) executed
     · intro high result member
-      let allowed := fun id => id ∈ actual.values.map Prod.fst ∨ Issued scope.localAfter id
+      let allowed := fun id => id ∈ actual.values.map Prod.fst ∨ Issued localAfter id
       have support : Supports allowed (localHistory high) := by
         intro id present
         apply Or.inl
@@ -84,15 +81,59 @@ theorem original_call_run
       rw [← agrees.values high] at retained
       exact retained
 
+/-- Relate the actual caller results to the original prepared child run on
+every spectator slice, retaining the inherited ordinary and hidden history. -/
+theorem original_call_run
+    {dependencies program block start count inputs ordinary effect sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect)
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before) (bindings : checked.bindings = before.bindings)
+    (actual : History) (localHistory : Nat → History)
+    (agrees : Agrees scope.interval.before.quantum.reference scope.prepared.block.entry.quantum.reference
+      ((RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered).map (·.port)) actual localHistory)
+    {parentEvents : List Event} {parents : List History}
+    (read : readOps block.fuel scope.interval.before.quantum.reference ((block.operations.drop start).take count) =
+      some (scope.interval.after.quantum.reference,parentEvents))
+    (executed : run dependencies block.fuel parentEvents actual = some parents) :
+    let spectators := (RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered).map (·.port)
+    ∃ childEvents children, CheckedCallRun scope spectators actual localHistory parentEvents childEvents parents children := by
+  intro spectators
+  exact call_run_from_segments scope.interval scope.prepared scope.localAfter spectators
+    (fun fuel depth => actual_call_segment scope fuel depth spectators
+      (RuntimeCallTraceFrames.original_entry scope boundary checked bindings)) actual localHistory agrees read executed
+
+theorem original_pure_call_run
+    {dependencies program block start count inputs sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    (scope : @RuntimeCallInterval.Checked dependencies program block start count inputs)
+    (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value)
+    {roles} (checked : RuntimeOwnerMap.Checked roles scope.interval.before) (bindings : checked.bindings = before.bindings)
+    (actual : History) (localHistory : Nat → History)
+    (agrees : Agrees scope.interval.before.quantum.reference scope.prepared.block.entry.quantum.reference
+      ((RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered).map (·.port)) actual localHistory)
+    {parentEvents : List Event} {parents : List History}
+    (read : readOps block.fuel scope.interval.before.quantum.reference ((block.operations.drop start).take count) =
+      some (scope.interval.after.quantum.reference,parentEvents))
+    (executed : run dependencies block.fuel parentEvents actual = some parents) :
+    let spectators := (RuntimeSelectionPartition.complement checked.bindings boundary.input.ordered).map (·.port)
+    ∃ childEvents children, CallRunOn scope.interval scope.prepared scope.localAfter spectators actual localHistory
+      parentEvents childEvents parents children := by
+  intro spectators
+  exact call_run_from_segments scope.interval scope.prepared scope.localAfter spectators
+    (fun fuel depth => actual_pure_call_segment scope fuel depth spectators
+      (RuntimeCallTraceFrames.original_pure_entry scope boundary checked bindings)) actual localHistory agrees read executed
+
 /-- A nested caller also carries its own ancestors' history. Its original
 write bound and the checked local freshness jointly protect every input ID. -/
-theorem CheckedCallRun.child_writes_avoid_nested_input
-    {dependencies program block start count inputs ordinary effect}
-    {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect}
+theorem CallRunOn.child_writes_avoid_nested_input
+    {dependencies program block start count childProgram}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    {prepared : RuntimeInterval.Prepared dependencies childProgram} {localAfter}
     {spectators actual localHistory parentEvents childEvents parents children}
-    (checked : CheckedCallRun scope spectators actual localHistory parentEvents childEvents parents children)
+    (checked : CallRunOn interval prepared localAfter spectators actual localHistory parentEvents childEvents parents children)
     (inherited : Nat → Prop)
-    (supported : Supports (fun id => inherited id ∨ Issued scope.interval.before id) actual)
+    (supported : Supports (fun id => inherited id ∨ Issued interval.before id) actual)
     (avoids : WritesWithin parentEvents (fun id => ¬ inherited id)) :
     WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst) := by
   refine (checked.sameWrites (fun id => id ∉ actual.values.map Prod.fst)).mp ?_
@@ -101,12 +142,13 @@ theorem CheckedCallRun.child_writes_avoid_nested_input
 
 /-- A local replay can carry the actual inherited history. The enclosing
 call check proves that its original writes cannot shadow those input IDs. -/
-theorem CheckedCallRun.child_writes_avoid_input
-    {dependencies program block start count inputs ordinary effect}
-    {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary effect}
+theorem CallRunOn.child_writes_avoid_input
+    {dependencies program block start count childProgram}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    {prepared : RuntimeInterval.Prepared dependencies childProgram} {localAfter}
     {spectators actual localHistory parentEvents childEvents parents children}
-    (checked : CheckedCallRun scope spectators actual localHistory parentEvents childEvents parents children)
-    (supported : Supports (Issued scope.interval.before) actual) :
+    (checked : CallRunOn interval prepared localAfter spectators actual localHistory parentEvents childEvents parents children)
+    (supported : Supports (Issued interval.before) actual) :
     WritesWithin childEvents (fun id => id ∉ actual.values.map Prod.fst) :=
   checked.child_writes_avoid_nested_input (fun _ => False)
     (fun _ present => .inr (supported present)) (fun _ _ _ _ impossible => impossible)
@@ -128,7 +170,8 @@ theorem visible_child_input
   exact visible_entry_agreement scope ordinals actual ordinaryAgrees
 
 #print axioms original_call_run
-#print axioms CheckedCallRun.child_writes_avoid_input
-#print axioms CheckedCallRun.child_writes_avoid_nested_input
+#print axioms original_pure_call_run
+#print axioms CallRunOn.child_writes_avoid_input
+#print axioms CallRunOn.child_writes_avoid_nested_input
 #print axioms visible_child_input
 end Qleisli.RuntimeCallHistory

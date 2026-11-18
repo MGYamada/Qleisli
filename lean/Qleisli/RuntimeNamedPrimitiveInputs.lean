@@ -131,6 +131,20 @@ private theorem zipped_carriers (bindings : RuntimeOwnerMap.Map) :
   | cons first rest ih =>
     simpa only [List.map_cons,List.zip_cons_cons,RuntimeForestCode.carrierOwners,List.cons.injEq,true_and] using ih
 
+theorem named_input_carriers_on
+    {dependencies program block start count inputs sources caller before child retired value}
+    {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
+    {interval : @RuntimeInterval.Checked dependencies program block start count}
+    (boundary : RuntimeNamedBoundary.Checked interval inputs event before child retired value)
+    {selected : List Semantics.Raw.Port} (ports : selected = boundary.input.ordered.map (·.port)) :
+    (selected.zip event.inputOwners).map
+        (fun (port,role) => (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)) =
+      RuntimeForestCode.carrierOwners boundary.input.ordered := by
+  have ordered := RuntimeSelectionPartition.order_values before.bindings event.inputOwners
+    boundary.input.ordered boundary.input.orderRead
+  rw [ports,← ordered.2]
+  exact zipped_carriers boundary.input.ordered
+
 theorem named_input_carriers
     {dependencies program block start count inputs ordinary effect sources caller before child retired value}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
@@ -138,11 +152,8 @@ theorem named_input_carriers
     (boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired value) :
     (scope.selected.zip event.inputOwners).map
         (fun (port,role) => (⟨port,role.basis⟩ : Semantics.CarrierInterface.Owner)) =
-      RuntimeForestCode.carrierOwners boundary.input.ordered := by
-  have ordered := RuntimeSelectionPartition.order_values before.bindings event.inputOwners
-    boundary.input.ordered boundary.input.orderRead
-  rw [RuntimeNamedFrameAxes.mixed_bound_ports scope boundary,← ordered.2]
-  exact zipped_carriers boundary.input.ordered
+      RuntimeForestCode.carrierOwners boundary.input.ordered :=
+  named_input_carriers_on boundary (RuntimeNamedFrameAxes.mixed_bound_ports scope boundary)
 
 /-- A property of the actual stored named child: when it is exactly one
 primitive, its source history retains the caller's full ordered input carriers.

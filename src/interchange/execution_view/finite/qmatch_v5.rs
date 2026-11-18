@@ -215,7 +215,7 @@ pub(in crate::interchange) fn complete(graph: Graph<'_>, request: &Request) -> R
     };
     writer.sized(5, 5)?;
     writer.depth += 1;
-    writer.text(data::v5::PROFILE)?;
+    writer.text(request.view_profile())?;
     graph.write(&mut writer)?;
     let mut view = View {
         writer: &mut writer,

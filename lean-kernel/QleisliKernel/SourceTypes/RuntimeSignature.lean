@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.QuantumSignature
+import QleisliKernel.SourceTypes.AccessSyntax
 import QleisliKernel.Semantics.RuntimeType
 
 /-! Read complete original runtime type trees, including ordinary fields around
@@ -138,5 +139,110 @@ def Checked.sourceRows {sources owner name} (checked : Checked sources owner nam
     List (String × String) :=
   (owner,checked.original.source) ::
     ((checked.parameters.flatMap (·.queries)) ++ checked.result.queries).flatMap TypeRead.sourceRows
+
+/-- Ordered owner types derived from marked original parameter slots. The
+owner and marker keep their distinct lexical locations, including for Q<Unit>. -/
+structure DeclaredOwner where
+  ordinal : Nat
+  owner : LocatedToken
+  marker : LocatedToken
+  role : AccessSyntax.Role
+  basis : Basis
+
+private def declaredTypeTokens (parameter : Sigma AccessSyntax.DeclaredParameter) : List String :=
+  match parameter.2 with
+  | .ordinary _ => parameter.1.typeTokens.map (·.text)
+  | .access written => written.typeTokens.map (·.text)
+
+private def readDeclaredOwners {sources} (parameters : List (Sigma AccessSyntax.DeclaredParameter))
+    (types : List (Part sources)) : WorkM (List DeclaredOwner) := do
+  let nodes := (forestSize types).1
+  exactWork (Exact.charge (16*(nodes+parameters.length+1)^2))
+  guard (parameters.length == types.length) .request
+  let slots ← (parameters.zip types).zipIdx.mapM fun ((parameter,part),ordinal) => do
+    let some owners := Semantics.RuntimeType.ownerBases part.tree | throw .request
+    match parameter.2 with
+    | .ordinary _ =>
+      guard owners.isEmpty .request
+      return none
+    | .access written =>
+      guard (part.tree.head? == some .quantum) .request
+      let [basis] := owners | throw .request
+      return some (⟨ordinal,written.owner,written.marker,written.role,basis⟩ : DeclaredOwner)
+  return slots.filterMap id
+
+private def declaredResult (owners : List DeclaredOwner) : Semantics.RuntimeType.Tree :=
+  match owners with
+  | [] => Semantics.RuntimeType.ordinary [.unit]
+  | [owner] => Semantics.RuntimeType.owner owner.basis
+  | more => Semantics.RuntimeType.tuple more.length (more.map (Semantics.RuntimeType.owner ∘ DeclaredOwner.basis))
+
+/-- Type-only preparation for a closed original access declaration. The
+source result is Unit. The separate hidden result describes the required
+owner return for use by a subsequent checked body, never a body result witness. -/
+structure DeclaredAccess {sources owner name} (original : OrdinarySignature.Original sources owner name)
+    (reader : String → List String → WorkM (TypeRead sources)) where
+  headerAllowsUnitary : original.parsedHeader.effect = some .unitary ∨
+    (original.declaration.isPublic = false ∧ original.parsedHeader.effect = none)
+  written : AccessSyntax.DeclaredParameters original
+  syntaxRead : AccessSyntax.readDeclaredParameters original = .ok written
+  parameters : List (Part sources)
+  parametersRead : ∃ before after,
+    (readTypesWith sources reader owner (written.parameters.map declaredTypeTokens)).run before = (.ok parameters,after)
+  sourceResult : Part sources
+  resultRead : ∃ before after,
+    (readTypeWith sources reader owner (original.parsedHeader.resultTokens.map (·.text))).run before =
+      (.ok sourceResult,after)
+  resultUnit : sourceResult.tree = Semantics.RuntimeType.ordinary [.unit]
+  owners : List DeclaredOwner
+  ownersRead : ∃ before after,
+    (readDeclaredOwners written.parameters parameters).run before = (.ok owners,after)
+  marked : owners.isEmpty = false
+  returnOrder : Semantics.RuntimeType.ownerBases (declaredResult owners) = some (owners.map (·.basis))
+
+def DeclaredAccess.hiddenResult {sources owner name reader} {original : OrdinarySignature.Original sources owner name}
+    (checked : DeclaredAccess original reader) : Semantics.RuntimeType.Tree :=
+  declaredResult checked.owners
+
+theorem DeclaredAccess.hiddenOwnerOrder {sources owner name reader}
+    {original : OrdinarySignature.Original sources owner name} (checked : DeclaredAccess original reader) :
+    Semantics.RuntimeType.ownerBases checked.hiddenResult = some (checked.owners.map (·.basis)) :=
+  checked.returnOrder
+
+def DeclaredAccess.sourceRows {sources owner name reader} {original : OrdinarySignature.Original sources owner name}
+    (checked : DeclaredAccess original reader) : List (String × String) :=
+  (owner,original.source) ::
+    ((checked.parameters.flatMap (·.queries)) ++ checked.sourceResult.queries).flatMap TypeRead.sourceRows
+
+def readDeclaredAccessWith {sources owner name} (original : OrdinarySignature.Original sources owner name)
+    (reader : String → List String → WorkM (TypeRead sources)) : WorkM (DeclaredAccess original reader) := do
+  if effect : original.parsedHeader.effect = some .unitary ∨
+      (original.declaration.isPublic = false ∧ original.parsedHeader.effect = none) then
+    let headerFields := (original.occurrence.header.map fun token => token.text.utf8ByteSize+1).sum
+    exactWork (Exact.charge (64*(headerFields+1)+32*(original.occurrence.header.length+1)^2))
+    match syntaxRead : AccessSyntax.readDeclaredParameters original with
+    | .error _ => throw .request
+    | .ok written =>
+      let parameters ← NaturalAffine.witness (readTypesWith sources reader owner (written.parameters.map declaredTypeTokens))
+      let sourceResult ← NaturalAffine.witness
+        (readTypeWith sources reader owner (original.parsedHeader.resultTokens.map (·.text)))
+      if unit : sourceResult.val.tree = Semantics.RuntimeType.ordinary [.unit] then
+        let owners ← NaturalAffine.witness (readDeclaredOwners written.parameters parameters.val)
+        if present : owners.val.isEmpty = false then
+          let nodes := (owners.val.map fun owner => owner.basis.length+1).sum
+          exactWork (Exact.charge (16*(nodes+1)^2))
+          if order : Semantics.RuntimeType.ownerBases (declaredResult owners.val) = some (owners.val.map (·.basis)) then
+            return ⟨effect,written,syntaxRead,parameters.val,by with_reducible exact parameters.property,
+              sourceResult.val,by with_reducible exact sourceResult.property,unit,
+              owners.val,by with_reducible exact owners.property,present,order⟩
+          else throw .request
+        else throw .request
+      else throw .request
+  else throw .request
+
+def readDeclaredAccess {sources owner name} (original : OrdinarySignature.Original sources owner name) :
+    WorkM (DeclaredAccess original (typeExpressionWithSources sources)) := do
+  guard (original.parsedHeader.staticTokens.isNone && original.parsedHeader.requiresTokens.isNone) .request
+  readDeclaredAccessWith original (typeExpressionWithSources sources)
 
 end QleisliKernel.SourceTypes.RuntimeSignature

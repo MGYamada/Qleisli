@@ -361,6 +361,87 @@ theorem pure_named_successor {artifact : Artifact} {root : Validity.Root}
       rw [afterEq, pureScope_interval] at h
       exact h
 
+/-- Evaluate the original pure child directly, including when the surrounding
+native block has an ordinary frame. -/
+noncomputable def evaluateActualPureNamed {dependencies program block}
+    (children : ScopedSourceSteps dependencies) (sourceScope : List RuntimeSelectionSteps.Edge) (ordinal : Nat)
+    (step : Step dependencies program block) (source : SourceHistory) : Option (List SourceHistory) :=
+  match step with
+  | .pure (.named event scope body _ boundary actions) =>
+    if event.effect = .unitary then
+      evaluateNamedChild event body scope.selected boundary
+        (stepList (Qleisli.RuntimeLiteralSelectionWitness.pureSteps actions)) children sourceScope ordinal source
+    else none
+  | _ => none
+
+/-- A pure child keeps its caller's actual ordinary source state through
+the callback. The child has its own original native entry and exit. -/
+theorem pure_named_successor_in_frame {artifact : Artifact} {root : Validity.Root}
+    {mode : RuntimePureBody.ExecutionMode artifact root} {fuel origin callOrdinary program block node}
+    (call : @Qleisli.RuntimeNamedChildRuns.PureChildRunAt artifact root mode
+      (runBlockCore artifact root mode (fuel+1)) (some origin) callOrdinary program block node)
+    (inputs : List Nat) (inherited : Option (Nat → Prop))
+    (children : ScopedSourceSteps root.dependencies)
+    (sourceScope : List RuntimeSelectionSteps.Edge) (ordinal : Nat)
+    (descend : ∀ {childProgram childBlock} (scope : List RuntimeSelectionSteps.Edge)
+      (steps : List (Step root.dependencies childProgram childBlock)), PureBlock childBlock →
+      (∀ first ∈ steps, IsPureLiteral first) →
+      ∀ childInherited,
+      StepRefinement steps
+        (fun first => Qleisli.RuntimeNamedChildRuns.CheckedStepAt (runBlockCore artifact root mode fuel) origin first ∧
+          PureCallAt (runBlockCore artifact root mode fuel) origin callOrdinary first)
+        (children scope)
+        (fun _ => Qleisli.RuntimeCallHistory.SourceAgreementWithin (some (· = callOrdinary)) childInherited inputs)
+        (childInherited.map (fun holds id => ¬ holds id))) :
+    ∀ {ownerBefore ownerAfter ordinaryBefore ordinaryAfter},
+      Qleisli.RuntimeNamedSourceFlow.Aligned ownerBefore ownerAfter (.pure node) →
+      Qleisli.RuntimeNamedChildRuns.OrdinaryAligned ordinaryBefore ordinaryAfter (.pure node) →
+      ∀ {chunk}, QleisliKernel.Semantics.Observation.readOps block.fuel
+        (nodeSpan node).checked.before.quantum.reference (nodeSpan node).operations =
+          some ((nodeSpan node).checked.after.quantum.reference,chunk) →
+      WithChunkWriteBound (inherited.map (fun holds id => ¬ holds id)) chunk
+        (∀ {expected actual outputs},
+          Qleisli.RuntimeCallHistory.SourceAgreementWithin (some (· = callOrdinary)) inherited inputs
+            (nodeSpan node).checked.before ownerBefore ordinaryBefore expected actual →
+          Qleisli.Semantics.ObservingAction.run root.dependencies block.fuel chunk actual = some outputs →
+          ∃ expectedOutputs,
+            evaluateActualPureNamed children sourceScope ordinal (.pure node) expected = some expectedOutputs ∧
+            List.Forall₂ (Qleisli.RuntimeCallHistory.SourceAgreementWithin (some (· = callOrdinary)) inherited inputs
+              (nodeSpan node).checked.after ownerAfter ordinaryAfter) expectedOutputs outputs) := by
+  cases call with
+  | @named start count args caller before event scope body bodyRead rootOwner rootName parent controlled request plan
+      assigned result receipts boundary beforeInput afterInput afterChild unitary inputRead childRead rootRead =>
+    intro ownerBefore ownerAfter ordinaryBefore ordinaryAfter owners ordinary chunk read
+    refine WithChunkWriteBound.of_trace ?_
+    intro writes source actual outputs agrees executed
+    rcases owners with ⟨rfl,rfl⟩
+    subst ordinaryAfter
+    obtain ⟨ordinaryEq,agrees⟩ := agrees
+    subst ordinaryBefore
+    have entries := rootRead origin rfl
+    have actualRead : RuntimeInterval.Computed _ (result,receipts) := ⟨afterInput,afterChild,childRead⟩
+    obtain ⟨entry,entryRead,last,flow,returned,facts⟩ := Qleisli.RuntimeNamedChildRuns.step_flow_mode artifact root mode
+      (runBlockCore artifact root mode fuel) .pureBody .localScope
+      (Qleisli.RuntimeNamedChildRuns.core_pure_preserves_ordinary artifact root mode fuel)
+      (.whole body controlled) (.named event body bodyRead parent) scope.program request plan _ callOrdinary
+      scope.prepared.block (result,receipts) actualRead
+    have pure := facts.pure rfl
+    have unchanged : result.ordinary = callOrdinary := pure.ordinary
+    have flowOn : @Flow artifact root mode (runBlockCore artifact root mode fuel) origin scope.program scope.prepared.block
+        ⟨entry.bindings,(SourceTypes.SourceRuntimeScope.Subject.whole body).initialRoles,body.checked.summary.nextOwner⟩
+        result.steps last callOrdinary callOrdinary scope.prepared.block.operations.length := by
+      simpa only [entries,Prod.fst,unchanged] using flow
+    obtain ⟨expected,evaluated,paired⟩ := pure_named_refines_of_flow scope body boundary entry
+      ⟨beforeInput,afterInput,inputRead⟩ entryRead flowOn returned inputs inherited children sourceScope ordinal
+      agrees read executed writes (by
+        apply (descend _ result.steps (pureChildBlock scope) pure.allPure _).of_scoped_certifies
+        intro first present checked
+        exact ⟨checked,by simpa only [entries,Prod.fst] using pure.calls first present⟩)
+    refine ⟨expected,?_,paired.imp (fun _ _ agrees => ⟨rfl,agrees⟩)⟩
+    simpa only [evaluateActualPureNamed,if_pos unitary,
+      Qleisli.RuntimeLiteralSelectionWitness.pureSteps_ofList,stepList_ofList,← pure.literal] using evaluated
+
 #print axioms pure_named_successor
+#print axioms pure_named_successor_in_frame
 
 end Qleisli.RuntimeLiteralBody

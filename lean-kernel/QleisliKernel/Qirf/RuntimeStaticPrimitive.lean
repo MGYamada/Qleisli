@@ -1,19 +1,18 @@
 import QleisliKernel.Qirf.RuntimePrimitiveAction
 import QleisliKernel.Qirf.RuntimeStructuralAction
+import QleisliKernel.Qirf.RuntimeExclusiveAction
 import QleisliKernel.Qirf.SourceSequence
 import QleisliKernel.SourceTypes.SourceRuntimeTrace
 
 /-! A transparent static source selection in the same literal runtime block.
-Selected primitive and original named events with closed Basis/Nat actuals
-use the same common event step in their original order. Mixed continuations
-retain the complete selected source delta; pure continuations still require
-unchanged ownership.
-The exact original
-guard and both source arms remain in StaticEvent.generic; this component
-neither grants inactive duties nor invents a runtime condition, phi or child
-context. Source allocation and other selected bodies refuse this bounded
-continuation. Native root, final storage/history and all pending
-provider/Meaning/path obligations remain separate.
+Selected primitives, original named events with closed Basis/Nat actuals and
+temporary exclusive access use the same common event step in source order.
+Continuations retain the complete selected source history, including the owners
+issued and retired while an indexed access is open.
+The original guard and both source arms remain in StaticEvent.generic.
+The continuation checks the chosen arm without generating runtime branching.
+New allocation is restricted to the checked access scopes below. Native root,
+final storage/history and provider/Meaning/path checks remain separate.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf.RuntimeStaticPrimitive
 open QleisliKernel QleisliKernel.Finite QleisliKernel.SourceTypes
@@ -132,6 +131,9 @@ inductive EligibleEvents {sources caller} : List (SourceRuntimeContext.Event sou
       (written : event.qmatchOffset.isSome = true) : EligibleEvents [event]
   | basis (event : SourceRuntimeContext.BasisEvent sources caller)
       (preserved : event.output = event.input) : EligibleEvents [.basis event]
+  | exclusive (access : SourceRuntimeContext.ExclusiveEvent sources caller)
+      (child : SourceRuntimeContext.Event sources caller)
+      (unitary : child.effect = .unitary) : EligibleEvents [.exclusive access child]
   | cons {first : SourceRuntimeContext.Event sources caller} {rest : List (SourceRuntimeContext.Event sources caller)}
       (head : EligibleEvents [first]) (tail : EligibleEvents rest) :
       EligibleEvents (first :: rest)
@@ -160,6 +162,10 @@ private def readEventEligibility {sources caller} (coherent : Bool)
   | .basis basis =>
     if preserved : coherent = true ∧ basis.output = basis.input then
       return .basis basis preserved.2
+    else throw .request
+  | .exclusive access child =>
+    if unitary : child.effect = .unitary then
+      return .exclusive access child unitary
     else throw .request
   | other =>
     match classified : classifyEvent other with
@@ -214,26 +220,30 @@ def readSequence {sources caller} (event : SourceRuntimeContext.StaticEvent sour
     WorkM (Sequence event) := do
   sequenceWithSelected (← readSelected event)
 
-private def eventAllocated {sources caller} : SourceRuntimeContext.Event sources caller → List Owner
+private def namedAllocated {sources caller} : SourceRuntimeContext.Event sources caller → List Owner
   | .named call => call.allocated
+  | _ => []
+
+private def scopedAllocated {sources caller} : SourceRuntimeContext.Event sources caller → List Owner
+  | .exclusive access _ => access.reservation.temporary ++ access.allocated
   | _ => []
 
 private def eventConsumed {sources caller} : SourceRuntimeContext.Event sources caller → List Owner
   | .named call => call.consumed
+  | .exclusive access _ => access.consumed ++ access.returned.retired
   | _ => []
 
-/-- A general selected event sequence keeps the exact aggregate source delta.
-Only the already connected primitive/named leaves are eligible. No fresh owner
-is admitted here; all source consumption is accounted for by the genuine
-named steps, with their original effects and complete child histories. -/
+/-- Keep the source order of allocations and retirements. Each issued owner
+belongs to a genuine exclusive scope, whose existing Raw handler checks how
+its selected and remaining owners are reassembled. -/
 structure Events {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) : Type where
   selected : SourceRuntimeTrace.StaticBody event
   original : RuntimeInterval.Computed (SourceRuntimeTrace.readStaticSource event) selected
   eligible : EligibleEvents selected.result.events
-  allocated : selected.result.allocated = []
-  noEventAllocation : selected.result.events.flatMap eventAllocated = []
+  allocated : selected.result.allocated = selected.result.events.flatMap scopedAllocated
+  noNamedAllocation : selected.result.events.flatMap namedAllocated = []
   consumed : selected.result.consumed = selected.result.events.flatMap eventConsumed
-  ordinal : selected.result.nextOrdinal = event.nextOrdinal
+  ordinal : selected.result.nextOrdinal = event.nextOrdinal + selected.result.allocated.length
 
 inductive Continuation {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) where
   | unchanged (source : Sequence event)
@@ -249,19 +259,27 @@ def Continuation.original {sources caller event} (source : @Continuation sources
   | .unchanged source => source.original
   | .events source => source.original
 
-/-- Used only by discovery and Mode.runtimeBody. Pure checking uses readSequence
-and retains its no-consumption contract. The mixed path uses the same original
-selection reader and common event handlers, without a combination-specific
-source evaluator or a public-effect refinement. -/
-def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller) :
+/-- Pure mode permits the internal history of a scope and preserves the
+existing restriction on consumption by standalone named events. -/
+def Continuation.permitsPure {sources caller event} : @Continuation sources caller event → Bool
+  | .unchanged _ => true
+  | .events source => source.selected.result.events.all fun event => match event with
+    | .named call => call.consumed.isEmpty
+    | _ => true
+
+/-- Run the original selection reader once. Mode-specific eligibility only
+constrains the common native steps that can be used for the exact result. -/
+def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller)
+    (pureOnly : Bool := false) :
     WorkM (Continuation event) := do
   let selected ← readOriginalSelection event
   if unchanged : selected.selected.result.allocated = [] ∧ selected.selected.result.consumed = [] ∧
       selected.selected.result.nextOrdinal = event.nextOrdinal then
-    return .unchanged (← sequenceWithSelected ⟨selected.selected,selected.original,unchanged⟩ true)
+    return .unchanged (← sequenceWithSelected ⟨selected.selected,selected.original,unchanged⟩ (!pureOnly))
   else
     let events := selected.selected.result.events
-    let allocated := events.flatMap eventAllocated
+    let allocated := events.flatMap scopedAllocated
+    let named := events.flatMap namedAllocated
     let consumed := events.flatMap eventConsumed
     let namedFields := (events.map fun event => match event with
       | .named call =>
@@ -271,13 +289,15 @@ def readContinuation {sources caller} (event : SourceRuntimeContext.StaticEvent 
       | _ => 1).sum
     exactWork (Exact.charge (32*(namedFields+events.length+
       Raw.OwnerFlow.fields (selected.selected.result.allocated ++ selected.selected.result.consumed ++
-        allocated ++ consumed)+selected.selected.result.nextOrdinal+event.nextOrdinal+1)))
-    if checked : selected.selected.result.allocated = [] ∧ allocated = [] ∧
+        allocated ++ named ++ consumed)+selected.selected.result.nextOrdinal+event.nextOrdinal+1)))
+    if checked : selected.selected.result.allocated = allocated ∧ named = [] ∧
         selected.selected.result.consumed = consumed ∧
-        selected.selected.result.nextOrdinal = event.nextOrdinal then
-      let eligible ← readEvents true events
-      return .events ⟨selected.selected,selected.original,eligible,checked.1,
+        selected.selected.result.nextOrdinal = event.nextOrdinal + selected.selected.result.allocated.length then
+      let eligible ← readEvents (!pureOnly) events
+      let source : Continuation event := .events ⟨selected.selected,selected.original,eligible,checked.1,
         checked.2.1,checked.2.2.1,checked.2.2.2⟩
+      guard (!pureOnly || source.permitsPure) .request
+      return source
     else throw .request
 
 private def selectedRows {sources caller} (event : SourceRuntimeContext.StaticEvent sources caller)
@@ -297,6 +317,14 @@ def Sequence.sourceRows {sources caller event} (source : @Sequence sources calle
 def Continuation.sourceRows {sources caller event} (source : @Continuation sources caller event) : List (String × String) :=
   selectedRows event source.selected
 
+/-- An exclusive event's recorded position covers the inner call, while its
+enclosing static block includes both checked routes. -/
+private def accessPadding {sources caller} : SourceRuntimeContext.Event sources caller → WorkM Nat
+  | .exclusive access _ => do
+    exactWork (Exact.charge (16*(access.checked.entries.length+1)))
+    pure (RuntimeExclusiveAction.routeCount access)
+  | _ => pure 0
+
 /-- The interval partition is source ordered and contiguous. Supplied
 coordinates must agree with the named call and selection queues. Each child
 still goes through the independent action check on that exact Raw interval.
@@ -311,26 +339,32 @@ private def compoundPositions {sources caller} (events : List (SourceRuntimeCont
       | some (head :: tail) => pure (some head,some tail)
       | some [] => throw .request
     let (child,remaining) := claim
-    let located : SourceSequence.Position × List SourceSequence.Position × List SourceSequence.Position ← match event with
-      | .named _ =>
+    let padding ← accessPadding event
+    let inner := match event with
+      | .exclusive _ call => call
+      | other => other
+    let located : SourceSequence.Position × List SourceSequence.Position × List SourceSequence.Position ← match inner with
+      | .named _ | .operation _ | .transform _ =>
         let position :: calls := calls | throw .request
         pure (position,calls,sites)
       | .selection .. =>
         let position :: sites := sites | throw .request
         pure (position,calls,sites)
-      | .primitive _ | .phase _ | .basis _ =>
-        pure (child.getD ⟨event.offset,cursor,1⟩,calls,sites)
+      | .primitive _ | .phase _ | .basis _ | .registerPrimitive _ =>
+        pure (child.getD ⟨event.offset,cursor+padding,1⟩,calls,sites)
       | _ => throw .request
     let (position,calls,sites) := located
+    let next := position.start+position.count+padding
     guard (child.all (· == position) && position.offset == event.offset &&
-      position.start == cursor && position.start+position.count ≤ finish) .request
-    return (position :: positions,position.start+position.count,calls,sites,remaining))
+      position.start == cursor+padding && next ≤ finish) .request
+    return (position :: positions,next,calls,sites,remaining))
     (([] : List SourceSequence.Position),parent.start,calls,sites,claimed)
   guard (cursor == finish && remaining.all List.isEmpty) .request
   return reversed.reverse
 
-/-- Zero/single-event intervals retain their original whole slice.
-Only compound source lists consume an explicit child partition. -/
+/-- One ordinary event occupies the whole slice. One exclusive event keeps
+its original inner call position between its two routes. Compound source
+lists consume their original child partition. -/
 private def selectedPositions {sources caller} (events : List (SourceRuntimeContext.Event sources caller))
     (parent : SourceSequence.Position) (calls sites : List SourceSequence.Position)
     (claimed : Option (List SourceSequence.Position)) : WorkM (List SourceSequence.Position) := do
@@ -341,7 +375,9 @@ private def selectedPositions {sources caller} (events : List (SourceRuntimeCont
     return []
   | [event] =>
     guard claimed.isNone .request
-    return [⟨event.offset,parent.start,parent.count⟩]
+    let padding ← accessPadding event
+    guard (2*padding ≤ parent.count) .request
+    return [⟨event.offset,parent.start+padding,parent.count-2*padding⟩]
   | _ => compoundPositions events parent calls sites claimed
 
 def Sequence.positions {sources caller event} (sequence : @Sequence sources caller event)

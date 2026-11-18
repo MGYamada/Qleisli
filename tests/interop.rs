@@ -252,6 +252,62 @@ fn terminal_workspace_resource_report_replays_named_scopes_with_caller_spectator
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn terminal_indexed_access_preserves_accounted_live_wires() {
+    use qleisli::frontend::compile::{ErrorCode, compile_project};
+    use qleisli::interop::{OpenQasmResources, export_openqasm3_with_resources};
+
+    let source = |access: &str| {
+        "use std::state::init0;
+        unitary fn keep(q:Q<Bit>)->Q<Bit>{q}
+        observe fn main()->(Bit,Bit){
+            let held=init0();
+            let empty=basis unit(()) as _ {empty_bits()};
+            let q=put_bit[1,0](init0(),empty);
+            ACCESS
+            let (q,empty)=take_bit[1,0](q);
+            let q=clean(q,keep){|data,scratch|(data,scratch)};
+            finish(basis empty as _ {()});
+            (measure_z(held),measure_z(q))
+        }"
+        .replace("ACCESS", access)
+    };
+    let checked = |access| compile_project(&common::SourceRoot::new(&source(access)).0).unwrap();
+    let counts = |resources: &OpenQasmResources| {
+        [
+            resources.qubits,
+            resources.resets,
+            resources.gates,
+            resources.swaps,
+            resources.t_gates,
+            resources.measurements,
+        ]
+    };
+
+    let access = checked("h(excl q[0]);");
+    let explicit = checked("let (q,empty)=take_bit[1,0](q); let q=put_bit[1,0](h(q),empty);");
+    assert_eq!(access.raw(), explicit.raw());
+    let (text, resources) = export_openqasm3_with_resources(&access).unwrap();
+    let (explicit_text, explicit_resources) = export_openqasm3_with_resources(&explicit).unwrap();
+    assert_eq!(text, explicit_text);
+    assert_eq!(counts(&resources), [3, 3, 1, 0, 0, 2]);
+    assert_eq!(counts(&explicit_resources), counts(&resources));
+
+    // Two further Hadamards cancel as an operator and still cost two gates.
+    let extra = checked("h(excl q[0]); h(excl q[0]); h(excl q[0]);");
+    assert_ne!(extra.raw(), access.raw());
+    let (_, extra_resources) = export_openqasm3_with_resources(&extra).unwrap();
+    assert_eq!(counts(&extra_resources), [3, 3, 3, 0, 0, 2]);
+
+    let omitted = source("h(excl q[0]);").replace("measure_z(q)", "0");
+    let error = compile_project(&common::SourceRoot::new(&omitted).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Ownership, "{error}");
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn terminal_workspace_resources_follow_the_selected_provider() {
     let definitions = "use std::state::init0;
         unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
@@ -406,10 +462,10 @@ fn terminal_workspace_reports_only_the_actual_provider_realization() {
 )]
 #[test]
 fn terminal_workspace_resource_report_tracks_bits_register_axes() {
+    let explicit_update = "let (bit,rest)=take_bit[2,1](q); put_bit[2,1](h(bit),rest)";
     let source = "use std::state::init0;\n\
         use std::structure::{empty,consume_empty};\n\
-        unitary fn mark(q:Q<Bits<2>>)->Q<Bits<2>>{\n\
-            let (bit,rest)=take_bit[2,1](q); put_bit[2,1](h(bit),rest)}\n\
+        unitary fn mark(q:Q<Bits<2>>)->Q<Bits<2>>{UPDATE}\n\
         observe fn main()->(Bit,Bit,Bit){\n\
             let low=init0(); let high=init0();\n\
             let q=put_bit[2,1](high,put_bit[1,0](low,empty()));\n\
@@ -417,9 +473,17 @@ fn terminal_workspace_resource_report_tracks_bits_register_axes() {
             let (q,s)=dirty(q,init0(),mark){|data,scratch|(mark(data),scratch)};\n\
             let (upper,q)=take_bit[2,1](q); let (lower,q)=take_bit[1,0](q);\n\
             consume_empty(q); (measure_z(lower),measure_z(upper),measure_z(s))}";
-    let root = common::SourceRoot::new(source);
-    let program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
-    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&program).unwrap();
+    let checked = |update| {
+        let root = common::SourceRoot::new(&source.replace("UPDATE", update));
+        qleisli::frontend::compile::compile_project(&root.0).unwrap()
+    };
+    let explicit = checked(explicit_update);
+    let access = checked("h(excl q[1]); q");
+    assert_eq!(access.raw(), explicit.raw());
+    let (text, resources) = qleisli::interop::export_openqasm3_with_resources(&access).unwrap();
+    let (explicit_text, explicit_resources) =
+        qleisli::interop::export_openqasm3_with_resources(&explicit).unwrap();
+    assert_eq!(text, explicit_text);
     assert_eq!(
         text.lines()
             .filter(|line| line.starts_with("h "))
@@ -427,15 +491,18 @@ fn terminal_workspace_resource_report_tracks_bits_register_axes() {
         ["h q[1];", "h q[1];"]
     );
     assert_eq!(literal_output_axes(&text), [0, 1, 3]);
-    assert_eq!(
-        (
+    let counts = |resources: &qleisli::interop::OpenQasmResources| {
+        [
             resources.qubits,
             resources.resets,
             resources.gates,
-            resources.measurements
-        ),
-        (4, 4, 2, 3)
-    );
+            resources.swaps,
+            resources.t_gates,
+            resources.measurements,
+        ]
+    };
+    assert_eq!(counts(&resources), [4, 4, 2, 0, 0, 3]);
+    assert_eq!(counts(&resources), counts(&explicit_resources));
 }
 
 #[cfg_attr(

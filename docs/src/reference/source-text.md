@@ -187,16 +187,23 @@ and positions of events within the original block. The native v5 check follows
 those events in the arm Raw, checks control evidence for their operations, and
 checks the resulting sector against the enclosing Raw interval.
 An `if static` inside the block checks the selected branch's original Raw
-interval and its local owner frame when the branch leaves the owner history
-unchanged, including a `basis` lift that preserves the exact target owner.
+interval and its local owner frame. This includes a `basis` lift that
+preserves the exact target owner and an indexed `excl` call whose selected
+and remaining owners are issued and retired within the checked access.
 Within the finite profile, an inline arm can use `basis`, `with_computed`,
 `clean` and `dirty`. The checker reads the original basis table or computed
 predicate and applies the same scratch restoration checks as for a named
 body. A `dirty` scratch owner must come from the branch's local target.
 
-An `excl` call in a block arm can update a whole local owner. The checker
-requires the callee to return the same ordered owner types and restores each
-result to its original binding. A block arm ending in a semicolon returns
+An `excl` call in a block arm can update a whole local owner or disjoint,
+[statically selected places](elaboration.md#static-ordered-axis-places) in
+a local register. The checker requires the callee to return the same ordered
+selected types. It binds the written selectors to the actual Raw extraction,
+checks the original callee, and reinserts the returned owners in their written
+places. In a call with `ctrl` places, the checker also verifies that the
+callee's actual operation preserves the computational-basis sectors of
+those places. Relative phases within a coherent state may change. Empty
+selections still have an owner. A block arm ending in a semicolon returns
 its original target binding, which must still be live at the end of the
 block. An explicit final expression can return a target reassembled from
 local owners.

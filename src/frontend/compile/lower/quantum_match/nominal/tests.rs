@@ -52,6 +52,31 @@ fn lowerer<'c, 'p>(compiler: &'c mut Compiler<'p>) -> Lowerer<'c, 'p> {
 }
 
 #[test]
+fn mixed_access_enables_original_body_recording_before_project_lowering() {
+    let project = project(
+        "#![no_implicit_prelude]
+        unitary fn turn(tag: Unit, q: Q<Bit>) -> Q<Bit> { h(q) }
+        pub unitary fn probe(q: Q<Bit>) -> Q<Bit> { turn((),excl q); q }
+        pub unitary fn nested(q: Q<Bit>) -> Q<Bit> { probe(q) }
+        pub unitary fn untouched(q: Q<Bit>) -> Q<Bit> { q }",
+    );
+    let mut compiler = untrusted_compiler(&project);
+    compiler.plan_original_tables(None).unwrap();
+    for (name, planned) in [("probe", true), ("nested", true), ("untouched", false)] {
+        let key = compiler
+            .source
+            .resolution
+            .qualified(&format!("main::{name}"))
+            .unwrap();
+        assert_eq!(
+            compiler.nominal_basis_roots.contains(&key),
+            planned,
+            "{name}"
+        );
+    }
+}
+
+#[test]
 fn retained_frame_keeps_original_ordinary_input_ids() {
     let project = project(ORDINARY_COPY);
     let mut compiler = untrusted_compiler(&project);
@@ -135,6 +160,7 @@ pub unitary fn route(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) {
         program.raw(),
         Arc::new(program.runtime_result().unwrap().clone()),
         program.source_context().unwrap(),
+        false,
         &[("main".into(), source.into())],
     )
     .unwrap();
@@ -257,6 +283,7 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
         program.raw(),
         Arc::new(program.runtime_result().unwrap().clone()),
         caller,
+        false,
         &[("main".into(), source.into())],
     )
     .unwrap();
@@ -506,6 +533,7 @@ pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){relay[checked_op(sign,I
         program.raw(),
         Arc::new(runtime),
         caller,
+        false,
         &[("main".into(), source.into())],
     )
     .unwrap();

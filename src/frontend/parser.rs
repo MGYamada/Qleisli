@@ -112,6 +112,11 @@ const QIF_FORM: &str = "qif(control, target) { 0 => first, 1 => second }";
 const QMATCH_FORM: &str = "qmatch(selector, target) { 0 => first, 1 => second }";
 const QFOR_FORM: &str = "qfor static i in 0..count carry owner = input { yield owner; }";
 
+enum ParsedRuntimeArguments {
+    Ordinary(Vec<Expr>),
+    Access(Vec<AccessArgument>),
+}
+
 struct Parser {
     tokens: Vec<Token>,
     pos: usize,
@@ -504,13 +509,44 @@ impl Parser {
             loop {
                 let pattern = self.pattern()?;
                 self.expect(&TokenKind::Colon)?;
+                let access = match (
+                    &self.current().kind,
+                    self.tokens.get(self.pos + 1).map(|token| &token.kind),
+                ) {
+                    (TokenKind::Ident(word), Some(TokenKind::Q)) if word == "excl" => {
+                        Some((QuantumAccess::Excl, self.bump().span))
+                    }
+                    (TokenKind::Ident(word), Some(TokenKind::Q)) if word == "ctrl" => {
+                        Some((QuantumAccess::Ctrl, self.bump().span))
+                    }
+                    _ => None,
+                };
+                if let Some((_, marker)) = access {
+                    if matches!(kind, FnKind::Static | FnKind::Classical) {
+                        return Err(ParseError {
+                            message: "quantum access parameters require a runtime function".into(),
+                            span: marker,
+                        });
+                    }
+                    if !matches!(pattern.kind, PatternKind::Name(_)) {
+                        return Err(ParseError {
+                            message: "quantum access parameters require one named owner".into(),
+                            span: pattern.span,
+                        });
+                    }
+                }
                 let ty = if kind == FnKind::Classical {
                     self.basis_type()?
                 } else {
                     self.ty()?
                 };
                 let span = Span::new(pattern.span.start, ty.span.end);
-                params.push(Param { pattern, ty, span });
+                params.push(Param {
+                    pattern,
+                    access,
+                    ty,
+                    span,
+                });
                 if self.consume(&TokenKind::Comma).is_none() || self.at(&TokenKind::RParen) {
                     break;
                 }
@@ -2349,77 +2385,24 @@ impl Parser {
             }
         }
         if self.consume(&TokenKind::LParen).is_some() {
-            if matches!(&self.current().kind, TokenKind::Ident(name) if name == "excl" || name == "ctrl")
-                && matches!(
-                    self.tokens.get(self.pos + 1).map(|token| &token.kind),
-                    Some(TokenKind::Ident(_))
-                )
-            {
-                let mut args = Vec::new();
-                loop {
-                    let marker = self.ident()?;
-                    let access = match marker.text.as_str() {
-                        "excl" => QuantumAccess::Excl,
-                        "ctrl" => QuantumAccess::Ctrl,
-                        _ => {
-                            return Err(
-                                self.error("each quantum access argument requires excl or ctrl")
-                            );
-                        }
-                    };
-                    let name = self.ident()?;
-                    let selection = if self.consume(&TokenKind::LBracket).is_some() {
-                        let start = self.natural()?;
-                        let selection = if self.consume(&TokenKind::DotDot).is_some() {
-                            AxisSelection::Range {
-                                start,
-                                end: self.natural()?,
-                            }
-                        } else {
-                            AxisSelection::Index(start)
-                        };
-                        self.expect(&TokenKind::RBracket)?;
-                        Some(selection)
-                    } else {
-                        None
-                    };
-                    let span = marker.span.cover(self.tokens[self.pos - 1].span);
-                    args.push(AccessArgument {
-                        access,
-                        selection,
-                        value: Expr {
-                            kind: ExprKind::Name(name),
-                            span,
-                        },
-                    });
-                    if args.len() > 64 {
-                        return Err(self.error("quantum access call exceeds 64 arguments"));
-                    }
-                    if self.consume(&TokenKind::Comma).is_none() {
-                        break;
-                    }
-                }
-                let close = self.expect(&TokenKind::RParen)?;
-                let span = ident.span.cover(close.span);
-                return Ok(Expr {
-                    kind: ExprKind::AccessCall {
-                        callee: ident,
-                        static_args,
-                        args,
-                    },
-                    span,
-                });
-            }
-            let args = self.expr_args()?;
+            let start = ident.span.start;
+            let args = self.runtime_call_args()?;
             let close = self.expect(&TokenKind::RParen)?;
-            let span = ident.span.cover(close.span);
-            return Ok(Expr {
-                kind: ExprKind::Call {
+            let kind = match args {
+                ParsedRuntimeArguments::Access(args) => ExprKind::AccessCall {
                     callee: ident,
                     static_args,
                     args,
                 },
-                span,
+                ParsedRuntimeArguments::Ordinary(args) => ExprKind::Call {
+                    callee: ident,
+                    static_args,
+                    args,
+                },
+            };
+            return Ok(Expr {
+                span: Span::new(start, close.span.end),
+                kind,
             });
         }
         if ident.text.contains("::") {
@@ -2435,6 +2418,101 @@ impl Parser {
         Ok(Expr {
             span: ident.span.cover(end),
             kind: ExprKind::Name(ident),
+        })
+    }
+
+    fn runtime_call_args(&mut self) -> Result<ParsedRuntimeArguments, ParseError> {
+        let mut ordinary = Vec::new();
+        if self.at(&TokenKind::RParen) {
+            return Ok(ParsedRuntimeArguments::Ordinary(ordinary));
+        }
+        loop {
+            if let Some(mode) = self.peek_access_marker() {
+                if ordinary.len() >= 64 {
+                    return Err(self.error("quantum access call exceeds 64 arguments"));
+                }
+                return self
+                    .access_call_args(ordinary, mode)
+                    .map(ParsedRuntimeArguments::Access);
+            }
+            ordinary.push(self.expr()?);
+            if self.consume(&TokenKind::Comma).is_none() {
+                return Ok(ParsedRuntimeArguments::Ordinary(ordinary));
+            }
+        }
+    }
+
+    fn access_call_args(
+        &mut self,
+        prefix: Vec<Expr>,
+        mode: QuantumAccess,
+    ) -> Result<Vec<AccessArgument>, ParseError> {
+        let mut args = prefix
+            .into_iter()
+            .map(|value| AccessArgument {
+                value,
+                kind: CallArgumentKind::Ordinary,
+            })
+            .collect::<Vec<_>>();
+        args.push(self.marked_call_arg(mode)?);
+        loop {
+            if args.len() > 64 {
+                return Err(self.error("quantum access call exceeds 64 arguments"));
+            }
+            if self.consume(&TokenKind::Comma).is_none() {
+                return Ok(args);
+            }
+            let argument = if let Some(mode) = self.peek_access_marker() {
+                self.marked_call_arg(mode)?
+            } else {
+                AccessArgument {
+                    value: self.expr()?,
+                    kind: CallArgumentKind::Ordinary,
+                }
+            };
+            args.push(argument);
+        }
+    }
+
+    fn peek_access_marker(&self) -> Option<QuantumAccess> {
+        match (
+            &self.current().kind,
+            self.tokens.get(self.pos + 1).map(|token| &token.kind),
+        ) {
+            (TokenKind::Ident(marker), Some(TokenKind::Ident(_))) if marker == "excl" => {
+                Some(QuantumAccess::Excl)
+            }
+            (TokenKind::Ident(marker), Some(TokenKind::Ident(_))) if marker == "ctrl" => {
+                Some(QuantumAccess::Ctrl)
+            }
+            _ => None,
+        }
+    }
+
+    fn marked_call_arg(&mut self, mode: QuantumAccess) -> Result<AccessArgument, ParseError> {
+        let marker = self.ident()?;
+        let name = self.ident()?;
+        let selection = if self.consume(&TokenKind::LBracket).is_some() {
+            let start = self.natural()?;
+            let selected = if self.consume(&TokenKind::DotDot).is_some() {
+                AxisSelection::Range {
+                    start,
+                    end: self.natural()?,
+                }
+            } else {
+                AxisSelection::Index(start)
+            };
+            self.expect(&TokenKind::RBracket)?;
+            Some(selected)
+        } else {
+            None
+        };
+        Ok(AccessArgument {
+            value: Expr {
+                kind: ExprKind::Name(name),
+                span: marker.span.cover(self.tokens[self.pos - 1].span),
+            },
+            kind: CallArgumentKind::Access { mode, selection },
         })
     }
 

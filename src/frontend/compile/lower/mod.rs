@@ -510,7 +510,7 @@ impl Lowerer<'_, '_> {
                 module,
                 span,
             )?;
-            return self.call_instance(key, args, site, instance);
+            return self.call_instance(key, args, site, instance, false);
         }
         let depth_limit = if self.compiler.force_typed_root {
             16
@@ -572,6 +572,23 @@ impl Lowerer<'_, '_> {
             .name
             .clone();
         self.compiler.tick(&key_name.0, decl.span)?;
+        let declares_access = self.compiler.source.interfaces[key].declares_access;
+        if declares_access
+            && !matches!(
+                site,
+                Some(CallSite {
+                    args: CallArguments::Runtime(RuntimeArguments::Accesses(_)),
+                    ..
+                })
+            )
+        {
+            return Err(self.error(
+                &key_name.0,
+                decl.span,
+                ErrorCode::Ownership,
+                "a declared access body requires its original marked call",
+            ));
+        }
         let (params, return_ty) = self.compiler.signature(key)?;
         if decl.kind == FnKind::Meaning {
             return Err(self.error(
@@ -677,6 +694,37 @@ impl Lowerer<'_, '_> {
                     ),
                 ));
             }
+            let value = if declares_access {
+                let mut owners = Vec::new();
+                for parameter in &decl.params {
+                    let Some((_, marker)) = parameter.access else {
+                        continue;
+                    };
+                    let PatternKind::Name(name) = &parameter.pattern.kind else {
+                        unreachable!("checked access owner binder");
+                    };
+                    self.compiler
+                        .charge(&key_name.0, marker, name.text.len() + 2)?;
+                    let locals = self.compiler.locals();
+                    let returned = env.remove(locals.key(locals.binder(name)));
+                    let Some(Binding::Live(owner @ Value::Quantum(..))) = returned else {
+                        return Err(self.error(
+                            &key_name.0,
+                            marker,
+                            ErrorCode::Ownership,
+                            "declared access body did not return its original quantum owner",
+                        ));
+                    };
+                    owners.push(owner);
+                }
+                if owners.len() == 1 {
+                    owners.pop().expect("one declared access owner")
+                } else {
+                    Value::tuple(owners)
+                }
+            } else {
+                value
+            };
             let mut pending: Vec<_> = decl.params.iter().rev().map(|p| &p.pattern).collect();
             let mut parameter_names = Vec::new();
             while let Some(pattern) = pending.pop() {
@@ -978,9 +1026,46 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
         source: &Expr,
     ) -> Result<Value, CompileError> {
+        let ordinary = arguments.iter().find(|arg| arg.access().is_none());
+        if let Some(ordinary) = ordinary {
+            if !self.uses_qmatch_v5() || self.nominal_qmatch.is_none() {
+                return Err(self.error(
+                    module,
+                    ordinary.value.span,
+                    ErrorCode::Unsupported,
+                    "mixed quantum access requires the original source-body checker",
+                ));
+            }
+            self.nominal_qmatch
+                .as_mut()
+                .expect("original access context")
+                .require_mixed_access_replay();
+        }
         let (values, places) = self.prepare_places(module, arguments, env)?;
         let returned = self.checked_access_action(module, source, values, env)?;
         self.restore_places(module, places, returned, env)?;
+        let ExprKind::AccessCall { callee, .. } = &source.kind else {
+            unreachable!("original access call")
+        };
+        self.compiler.charge(module, callee.span, 1)?;
+        if ordinary.is_some() || self.compiler.declares_access_target(callee) {
+            self.compiler
+                .charge(module, source.span, arguments.len() + 1)?;
+            if arguments
+                .iter()
+                .any(|argument| argument.access() == Some(QuantumAccess::Ctrl))
+                && self.compiler.current_instance_owner().is_some_and(|owner| {
+                    self.compiler.declarations[&owner].static_params.is_empty()
+                })
+            {
+                self.compiler
+                    .charge(module, callee.span, module.len() + 4)?;
+                self.nominal_qmatch
+                    .as_mut()
+                    .expect("original access control context")
+                    .retain_mixed_control_call(module, callee.span.start);
+            }
+        }
         Ok(Value::Unit)
     }
 
@@ -1000,15 +1085,36 @@ impl Lowerer<'_, '_> {
             unreachable!("access action from its original expression");
         };
         let span = source.span;
+        if arguments.len() != values.len() {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Arity,
+                "prepared access arguments differ from the original call arity",
+            ));
+        }
         let mut owners = Vec::new();
         let control = arguments
             .iter()
-            .any(|arg| arg.access == QuantumAccess::Ctrl);
+            .any(|arg| arg.access() == Some(QuantumAccess::Ctrl));
         let mut ports = Vec::new();
         let mut signatures = Vec::new();
         let mut axes = Vec::new();
         let mut offset = 0;
         for (argument, value) in arguments.iter().zip(&values) {
+            let Some(mode) = argument.access() else {
+                if !matches!(value, Value::Unit)
+                    && (control || !matches!(value, Value::Classical(_)))
+                {
+                    return Err(self.error(
+                        module,
+                        argument.value.span,
+                        ErrorCode::TypeMismatch,
+                        "ordinary access argument differs from its checked interface",
+                    ));
+                }
+                continue;
+            };
             if control {
                 let Value::Quantum(slot, _) = value else {
                     unreachable!("prepared access owner");
@@ -1024,7 +1130,7 @@ impl Lowerer<'_, '_> {
                         bits: register.wires.len() as u8,
                     },
                 });
-                if argument.access == QuantumAccess::Ctrl {
+                if mode == QuantumAccess::Ctrl {
                     axes.extend(offset..offset + register.wires.len());
                 }
                 offset += register.wires.len();
@@ -1279,6 +1385,21 @@ impl Lowerer<'_, '_> {
             .unwrap_or_else(|| self.compiler.resolve(module, callee))?
         {
             Callee::User(key) => {
+                let declares_access = self.compiler.source.interfaces[&key].declares_access;
+                if declares_access {
+                    if !self.uses_qmatch_v5() || self.nominal_qmatch.is_none() {
+                        return Err(self.error(
+                            module,
+                            callee.span,
+                            ErrorCode::Unsupported,
+                            "declared access requires the original source-body checker",
+                        ));
+                    }
+                    self.nominal_qmatch
+                        .as_mut()
+                        .expect("original access context")
+                        .require_mixed_access_replay();
+                }
                 let original =
                     self.original_runtime_call(module, source, callee, static_args, args, key)?;
                 self.compiler.charge(
@@ -1303,9 +1424,17 @@ impl Lowerer<'_, '_> {
                     span,
                 )?;
                 let start = self.raw.operations.len();
-                let static_record = instance.record.filter(|_| !instance.operations.is_empty());
+                // The native original-body receipt retains this declared
+                // specialization at the written marked call.
+                let static_record = instance
+                    .record
+                    .filter(|_| declares_access || !instance.operations.is_empty());
                 self.source_context = None;
-                let value = self.call_instance(&key, values, Some(site), instance)?;
+                let replay_mixed_control = self.uses_qmatch_v5()
+                    && self.nominal_qmatch.is_some()
+                    && !self.compiler.in_inactive_region();
+                let value =
+                    self.call_instance(&key, values, Some(site), instance, replay_mixed_control)?;
                 let context = self.source_context.take();
                 quantum_match::nominal::record_named(
                     self,
@@ -2402,12 +2531,17 @@ fn lower_function_in_context(
         vec![]
     };
     let result = lower.call_user(key, args, None)?;
+    let mixed_access = lower
+        .source_context
+        .as_ref()
+        .is_some_and(|context| context.requires_mixed_access_replay);
     let qmatch = lower
         .source_context
         .as_ref()
         .filter(|context| {
             lower.uses_qmatch_v5()
-                && (lower.nominal_basis_used == Some(true)
+                && (context.requires_mixed_access_replay
+                    || lower.nominal_basis_used == Some(true)
                     || require_qmatch_v5 && context.contains_meaning_applications
                     || context.contains_selections
                         && (planned_basis
@@ -2422,6 +2556,14 @@ fn lower_function_in_context(
             decl.span,
             ErrorCode::Unsupported,
             "this coherent basis operation needs the original source-body gate",
+        ));
+    }
+    if mixed_access && (runtime_inputs.is_none() || qmatch.is_none()) {
+        return Err(lower.error(
+            &key_name.0,
+            decl.span,
+            ErrorCode::Unsupported,
+            "mixed quantum access requires the original source-body checker",
         ));
     }
     if require_qmatch_v5 && !(runtime_inputs.is_some() && qmatch.is_some()) {
@@ -2523,6 +2665,14 @@ fn lower_function_in_context(
             limit,
         )
     })?;
+    if mixed_access && program.source_body_scope().is_none() {
+        return Err(lower.error(
+            &key_name.0,
+            decl.span,
+            ErrorCode::InvalidIr,
+            "mixed quantum access checker returned no original source scope",
+        ));
+    }
     if let Some(context) = qmatch
         .as_deref()
         .filter(|_| program.source_body_scope().is_some())

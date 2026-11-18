@@ -138,7 +138,7 @@ requires its own evidence for the changed owner flow and other contracts.
 | Owners | Keep the same lexical owner identities with returned values. Require caller-visible checked Unitary effect, independent body checking and the exact original owner interface. Subsequent consuming calls still make their binders spent; shadows cannot restore them. |
 | Exact phase | Preserve the complete callee action, including entanglement, ordered axes and zero-width phase. Insert no inverse or cleanup. |
 | Source spans | Retain original callee and argument identifiers, byte spans and callee-body origins. Contextual marker spans do not replace owner-identifier spans. |
-| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, mixed ordinary/access arguments, escaping access, failed native control-sector check or unavailable concrete projection rejects. Static selections follow the separate rule below. Checker-free `ctrl` remains unsupported. Native-checked Raw also checks unused closed functions leading to control obligations; it invents no static bindings and refuses original obligations without a concrete interval in each retained specialization. |
+| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, mixed arguments outside the checked profile below, escaping access, failed native control-sector check or unavailable concrete projection rejects. Static selections follow the separate rule below. Checker-free `ctrl` remains unsupported. Native-checked Raw also checks unused closed functions leading to control obligations; it invents no static bindings and refuses original obligations without a concrete interval in each retained specialization. |
 | Remaining obligations | Check emitted artifacts and requests independently. The lookup-level scope-update model has finite-map, type-embedding and update-provenance premises; it is not a source-preservation proof or quantitative resource certificate. General footprints, lifetimes and access declarations remain pending. |
 
 See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).
@@ -146,6 +146,73 @@ The [public-effect rule](source-text.md#ordinary-function-effects-and-assertions
 uses the checked public contract outside the callee's original module and
 internal inference inside it. Specialization, inlining and cache reuse cannot
 turn a sharper actual body effect into external source eligibility.
+
+### Ordinary Unit arguments in access calls
+
+A checked mixed call may pass `()` or a lexical `Unit` value beside its
+marked places. It evaluates the original arguments once in their written
+order and reserves a marked owner when it reaches that argument. A later
+argument cannot use a reserved owner as an ordinary value. A quantum owner
+such as `Q<Unit>` still needs an access marker and an ownership check.
+
+```qli
+unitary fn turn(tag: Unit, data: Q<Bit>) -> Q<Bit> { h(data) }
+
+pub unitary fn update(data: Q<Bit>) -> Q<Bit> {
+    turn((), excl data);
+    data
+}
+```
+
+The named callee receives the complete ordered value list, including each
+`Unit` at its source position. The independently checked Raw interface
+carries only the marked quantum ports. The callee returns those owner types
+in their original relative order, and the call restores them to their
+original places and returns ordinary `Unit`. The checked operation retains
+its exact phase and the same interface to untouched owners.
+
+The native source-body check validates the actual named call, returned
+owners, Raw interval and any extraction and reinsertion. An access body
+without selection, basis or Meaning evidence must supply an original access
+receipt and complete coverage of the selected invocation. See
+[the native scope](production-boundary.md#mixed-runtime-root-requests).
+The dormant checker admits a mixed `ctrl` call from a closed nongeneric body
+after the native source check covers that exact original occurrence. It
+checks the callee's marked quantum sectors again.
+
+An exclusive named call can also take ordinary `Bit` arguments when the
+selected callee lowers to a single checked ordinary branch. The checker
+uses the original condition and both Raw arms. It verifies each parked
+owner in both arms and at the checked branch return, preserving port order
+and retaining zero-width owners.
+
+### Declared access parameters
+
+A finite function with a closed selected specialization can declare a marked
+owner slot and write a `Unit` result. The call supplies the exact marker at
+that argument position.
+The body must check as Unitary and leave each marked owner live on its
+original binder. The native call boundary reads those owners in parameter
+order and verifies the actual returned Raw ports.
+
+```qli
+pub unitary fn flip(target: excl Q<Bit>) -> Unit {
+    h(excl target);
+    ()
+}
+
+pub unitary fn update(target: Q<Bit>) -> Q<Bit> {
+    flip(excl target);
+    target
+}
+```
+
+The ordinary result is `Unit` at the written call. The returned quantum
+owners carry the updated state, including its exact phase. The production
+source check retains the declaration and the marked call as original
+occurrences, including explicit static arguments such as `type(Bit)` when
+checking a specialization. A declared access requires the finite original-body
+check and the applicable exact sector check for every `ctrl` slot.
 
 ### Static ordered-axis places
 

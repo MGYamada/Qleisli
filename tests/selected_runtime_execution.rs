@@ -64,6 +64,299 @@ fn recorded_inline_arm(project: &str, first_diagnostic: &str) -> ParsedProgram {
 }
 
 #[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn mixed_access_requires_the_actual_original_body_and_marked_ports() {
+    use qleisli::interchange::qmatch::v5::{ACCESS_PROFILE, Request};
+
+    let source = "#![no_implicit_prelude]
+        unitary fn turn(marker: Unit, q: Q<Bit>) -> Q<Bit> { h(q) }
+        pub unitary fn probe(q: Q<Bit>) -> Q<Bit> { turn((),excl q); q }
+        pub unitary fn nested(q: Q<Bit>) -> Q<Bit> { probe(q) }";
+    let explicit = source.replace("turn((),excl q); q", "turn((),q)");
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), source.into())]),
+    )
+    .unwrap();
+    assert!(
+        !parsed
+            .requires_typed_runtime_transport("main::turn")
+            .unwrap()
+    );
+    for entry in ["main::probe", "main::nested"] {
+        assert!(parsed.requires_typed_runtime_transport(entry).unwrap());
+        let accepted = compile_selected(&parsed, entry, Some(source));
+        let expected = selected_at(&explicit, entry);
+        let program = accepted.program();
+        assert_eq!(program.source_body_scope(), Some(ACCESS_PROFILE));
+        assert_eq!(program.raw(), expected.program().raw());
+        let request = program.request().expect("independent access request");
+        assert!(Request::decode(request).unwrap().standalone_access);
+        kernel().check_program(program).unwrap();
+
+        // H is permitted for the written excl, while the same emitted H
+        // cannot preserve the sectors of the replacement ctrl argument.
+        let original = std::str::from_utf8(program.artifact()).unwrap();
+        assert_eq!(original.matches("turn((),excl q)").count(), 1);
+        let changed = original.replacen("turn((),excl q)", "turn((),ctrl q)", 1);
+        let failure = kernel()
+            .check_qmatch_source_v5(changed.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(failure.code, "contract", "{failure}");
+    }
+
+    let basis_only = "#![no_implicit_prelude]
+        pub enum Flag { A, B, C }
+        pub unitary fn probe(q: Q<Flag>) -> Q<Flag> { basis q as value {value} }";
+    let accepted = selected_at(basis_only, "main::probe");
+    let program = accepted.program();
+    let mut missing_access = Request::decode(program.request().unwrap()).unwrap();
+    missing_access.standalone_access = true;
+    let failure = kernel()
+        .check_qmatch_source_v5(program.artifact(), &missing_access.encode().unwrap())
+        .unwrap_err();
+    assert_eq!(failure.code, "contract", "{failure}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn declared_access_requires_the_original_role_and_raw_action() {
+    use qleisli::interchange::qmatch::v5::ACCESS_PROFILE;
+    use qleisli::ir::{RawOp, SingleGate};
+
+    let source = "#![no_implicit_prelude]
+        pub unitary fn flip(target: excl Q<Bit>) -> Unit {
+            h(excl target);
+            ()
+        }
+        pub unitary fn probe(target: Q<Bit>) -> Q<Bit> {
+            flip(excl target);
+            target
+        }";
+    let accepted = selected_at(source, "main::probe");
+    let program = accepted.program();
+    assert_eq!(program.source_body_scope(), Some(ACCESS_PROFILE));
+    let explicit = selected_at(
+        "#![no_implicit_prelude]\npub unitary fn probe(target: Q<Bit>) -> Q<Bit> { h(target) }",
+        "main::probe",
+    );
+    assert_eq!(program.raw(), explicit.program().raw());
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let request = program.request().unwrap();
+    let marker = "target: excl Q<Bit>";
+    assert_eq!(artifact.matches(marker).count(), 1);
+    let changed = artifact.replacen(marker, "target: ctrl Q<Bit>", 1);
+    let refusal = kernel()
+        .check_qmatch_source_v5(changed.as_bytes(), request)
+        .unwrap_err();
+    assert_eq!(refusal.code, "contract", "{refusal}");
+
+    let mut different = program.raw().clone();
+    let [RawOp::Gate { gate, .. }] = different.operations.as_mut_slice() else {
+        panic!("the declared body must retain its written Hadamard");
+    };
+    assert_eq!(*gate, SingleGate::H);
+    *gate = SingleGate::X;
+    kernel().verify(&different).unwrap();
+    assert_eq!(artifact.matches(r#""gate":"h""#).count(), 1);
+    let changed = artifact.replacen(r#""gate":"h""#, r#""gate":"x""#, 1);
+    let refusal = kernel()
+        .check_qmatch_source_v5(changed.as_bytes(), request)
+        .unwrap_err();
+    assert_eq!(refusal.code, "contract", "{refusal}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn declared_control_reaches_the_original_raw_sectors() {
+    use qleisli::interchange::qmatch::v5::ACCESS_PROFILE;
+
+    let source = "#![no_implicit_prelude]
+        pub unitary fn turn(target: ctrl Q<Bit>) -> Unit {
+            phase[1,1](ctrl target);
+            ()
+        }
+        pub unitary fn probe(target: Q<Bit>) -> Q<Bit> {
+            turn(ctrl target);
+            target
+        }";
+    let accepted = selected_at(source, "main::probe");
+    let program = accepted.program();
+    assert_eq!(program.source_body_scope(), Some(ACCESS_PROFILE));
+    kernel().check_program(program).unwrap();
+
+    let changed = source.replace("phase[1,1](ctrl target)", "h(excl target)");
+    let parsed =
+        ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), changed)])).unwrap();
+    let error = parsed
+        .instantiate_runtime_with_types(
+            "main::probe",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .expect_err("Hadamard changes the declared control sector");
+    assert_eq!(error.code, "contract");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn specialized_declared_access_requires_the_original_basis_actual() {
+    use qleisli::interchange::qmatch::v5::ACCESS_PROFILE;
+
+    let source = "#![no_implicit_prelude]
+        pub unitary fn mark[const A:Basis](target: excl Q<A>) -> Unit {
+            global_phase_eighth(excl target);
+            ()
+        }
+        pub unitary fn probe(target: Q<Bit>) -> Q<Bit> {
+            mark[type(Bit)](excl target);
+            target
+        }";
+    let accepted = selected_at(source, "main::probe");
+    let program = accepted.program();
+    assert_eq!(program.source_body_scope(), Some(ACCESS_PROFILE));
+    let explicit = selected_at(
+        "#![no_implicit_prelude]
+         pub unitary fn probe(target: Q<Bit>) -> Q<Bit> { global_phase_eighth(target) }",
+        "main::probe",
+    );
+    assert_eq!(program.raw(), explicit.program().raw());
+    kernel().check_program(program).unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let original = "mark[type(Bit)](excl target)";
+    assert_eq!(artifact.matches(original).count(), 1);
+    let wrong = artifact.replacen(original, "mark[type(Bits<1>)](excl target)", 1);
+    let failure = kernel()
+        .check_qmatch_source_v5(wrong.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(failure.code, "contract", "{failure}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn mixed_ctrl_dormant_check_requires_the_same_original_occurrence() {
+    use qleisli::interchange::qmatch::v5::ACCESS_PROFILE;
+
+    let source = "#![no_implicit_prelude]
+        unitary fn turn(tag: Unit, q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }
+        pub unitary fn probe(tag: Unit, q: Q<Bit>) -> Q<Bit> {
+            turn(tag,ctrl q); q
+        }";
+    let expected = source.replace("turn(tag,ctrl q); q", "turn(tag,q)");
+    let accepted = selected_at(source, "main::probe");
+    let explicit = selected_at(&expected, "main::probe");
+    assert_eq!(accepted.program().source_body_scope(), Some(ACCESS_PROFILE));
+    assert_eq!(accepted.program().raw(), explicit.program().raw());
+    kernel().check_program(accepted.program()).unwrap();
+
+    let with_uncovered_call = format!(
+        "{source}
+        unitary fn elsewhere(q: Q<Bit>) -> Q<Bit> {{ turn((),ctrl q); q }}"
+    );
+    let parsed = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), with_uncovered_call)]),
+    )
+    .unwrap();
+    let failure = parsed
+        .instantiate_runtime_with_types(
+            "main::probe",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .err()
+        .expect("a different original occurrence needs its own replay");
+    assert_eq!(failure.code, "unsupported", "{failure:?}");
+    assert!(
+        failure
+            .message
+            .contains("independent replay of this original call"),
+        "{failure:?}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn nested_mixed_ctrl_replays_the_original_module_and_call() {
+    use qleisli::interchange::qmatch::v5::{ACCESS_PROFILE, Request};
+
+    let source = "#![no_implicit_prelude]
+        pub unitary fn outer(q: Q<Bit>) -> Q<Bit> { helpers::inner(q) }";
+    let helpers = "#![no_implicit_prelude]
+        unitary fn turn(tag: Unit, q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }
+        pub unitary fn inner(q: Q<Bit>) -> Q<Bit> { turn((),ctrl q); q }";
+    let modules = BTreeMap::from([
+        ("main".into(), source.into()),
+        ("helpers".into(), helpers.into()),
+    ]);
+    let parsed = ParsedProgram::parse(Edition::E2026, modules.clone()).unwrap();
+    let checked = compile_selected(&parsed, "main::outer", Some(source));
+    let program = checked.program();
+    assert_eq!(program.source_body_scope(), Some(ACCESS_PROFILE));
+    let request = Request::decode(program.request().unwrap()).unwrap();
+    let [inner] = request.context.calls.as_slice() else {
+        panic!("expected the original outer call");
+    };
+    let [turn] = inner.body.calls.as_slice() else {
+        panic!("expected the original control call");
+    };
+    assert_eq!(
+        turn.position.offset as usize,
+        helpers.find("turn((),ctrl q)").unwrap()
+    );
+    kernel().check_program(program).unwrap();
+
+    let mut with_uncovered = modules;
+    with_uncovered.insert("uncovered".into(), helpers.into());
+    let parsed = ParsedProgram::parse(Edition::E2026, with_uncovered).unwrap();
+    let failure = parsed
+        .instantiate_runtime_with_types(
+            "main::outer",
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .err()
+        .expect("the same byte offset in another module needs its own replay");
+    assert_eq!(failure.code, "unsupported", "{failure:?}");
+    assert!(
+        failure
+            .message
+            .contains("independent replay of this original call"),
+        "{failure:?}"
+    );
+}
+
+#[test]
 #[doc = include_str!("fixtures/authoring_sessions/inline-coherent-adjoint-v030/README.md")]
 #[cfg_attr(
     not(qleisli_native_tests),
@@ -212,6 +505,393 @@ pub unitary fn route(s:Q<Bit>,q:Q<(Bit,Bit)>)->(Q<Bit>,Q<(Bit,Bit)>){
     let error = ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), consumed)]))
         .expect_err("a shadowing owner cannot supply the implicit return");
     assert_eq!(error.code(), "ownership", "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arm_binds_indexed_excl_to_the_original_axis() {
+    use qleisli::contract::exact::Budget;
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
+
+    let source = r#"#![no_implicit_prelude]
+pub unitary fn probe(s: Q<Bit>, q: Q<Bits<2>>) -> (Q<Bit>, Q<Bits<2>>) {
+    qif(s,q) { 0 => { q }, 1 => { h(excl q[1]); q } }
+}
+"#;
+    let checked = selected_at(source, "main::probe");
+    let program = checked.program();
+    assert!(program.qmatch_source_checked());
+    kernel().check_program(program).unwrap();
+
+    let packed = format!(
+        "{source}pub unitary fn packed(pair:Q<(Bit,Bits<2>)>)->Q<(Bit,Bits<2>)>{{
+            let (s,q)=split(pair); let (s,q)=probe(s,q); join(s,q)
+        }}"
+    );
+    let implementation = selected_at(&packed, "main::packed");
+    let explicit = packed.replace(
+        "h(excl q[1]); q",
+        "let (axis,rest)=take_bit[2,1](q); put_bit[2,1](h(axis),rest)",
+    );
+    let specification = selected_at(&explicit, "main::packed");
+    FunctionEvidence::check(
+        Edition::E2026,
+        BasisType::pair(BasisType::Bit, BasisType::Bits(2)),
+        implementation.program().raw().clone(),
+        specification.program().raw().clone(),
+        FunctionIdentity {
+            implementation: "main::packed".into(),
+            specification: "explicit extraction and reinsertion at the second axis".into(),
+            sources: vec![("main".into(), packed)],
+        },
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
+
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    assert_eq!(artifact.matches("excl q[1]").count(), 1);
+    let changed = artifact.replacen("excl q[1]", "excl q[0]", 1);
+    let error = kernel()
+        .check_qmatch_source_v5(changed.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+    assert!(
+        error.message.contains("Lean native checker rejected"),
+        "{error}"
+    );
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_static_arm_checks_exclusive_routes_and_inner_positions() {
+    use qleisli::contract::exact::Budget;
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
+    use qleisli::interchange::qmatch::v5::Request;
+
+    let source = r#"#![no_implicit_prelude]
+unitary fn turn(q: Q<Bit>) -> Q<Bit> { phase[1,1](q) }
+pub unitary fn probe(s: Q<Bit>, q: Q<Bits<2>>) -> (Q<Bit>, Q<Bits<2>>) {
+    qif(s,q) {
+        0 => { if static 0==0 { h(excl q[1]); q } else { q } },
+        1 => { if static 0==0 { h(excl q[0]); turn(excl q[1]); q } else { q } }
+    }
+}
+"#;
+    let checked = selected_at(source, "main::probe");
+    let program = checked.program();
+    assert!(program.qmatch_source_checked());
+    let kernel = kernel();
+    kernel.check_program(program).unwrap();
+
+    let mut request = Request::decode(program.request().unwrap()).unwrap();
+    let compound = request
+        .context
+        .inline_bodies
+        .iter_mut()
+        .find(|arm| !arm.body.static_intervals.is_empty())
+        .expect("the original compound arm has a child partition");
+    let [interval] = compound.body.static_intervals.as_mut_slice() else {
+        panic!("expected one static compound interval");
+    };
+    let [first, second] = interval.children.as_mut_slice() else {
+        panic!("expected the primitive and named occurrences");
+    };
+    // Each single selected bit uses three Raw routing operations at each end.
+    assert_eq!(first.start, interval.parent.start + 3);
+    assert_eq!(second.start, first.start + first.count + 6);
+    assert_eq!(
+        second.start + second.count + 3,
+        interval.parent.start + interval.parent.count
+    );
+    first.start += 1;
+    let shifted = request.encode().unwrap();
+    let failure = kernel
+        .check_qmatch_source_v5(program.artifact(), &shifted)
+        .unwrap_err();
+    assert_eq!(failure.code, "contract", "{failure}");
+
+    let wrapper = r#"
+pub unitary fn packed(pair: Q<(Bit,Bits<2>)>) -> Q<(Bit,Bits<2>)> {
+    let (s,q)=split(pair); let (s,q)=probe(s,q); join(s,q)
+}
+"#;
+    let indexed = format!("{source}{wrapper}");
+    let explicit = indexed
+        .replace(
+            "if static 0==0 { h(excl q[1]); q } else { q }",
+            "let (b,r)=take_bit[2,1](q); put_bit[2,1](h(b),r)",
+        )
+        .replace(
+            "if static 0==0 { h(excl q[0]); turn(excl q[1]); q } else { q }",
+            "let (b,r)=take_bit[2,0](q); let q=put_bit[2,0](h(b),r);
+             let (b,r)=take_bit[2,1](q); put_bit[2,1](turn(b),r)",
+        );
+    let implementation = selected_at(&indexed, "main::packed");
+    let specification = selected_at(&explicit, "main::packed");
+    FunctionEvidence::check(
+        Edition::E2026,
+        BasisType::pair(BasisType::Bit, BasisType::Bits(2)),
+        implementation.program().raw().clone(),
+        specification.program().raw().clone(),
+        FunctionIdentity {
+            implementation: "main::packed".into(),
+            specification: "explicit access on the selected axes".into(),
+            sources: vec![("main".into(), indexed)],
+        },
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arms_bind_ctrl_to_the_original_ordered_ports() {
+    let mixed = r#"#![no_implicit_prelude]
+unitary fn turn(c: Q<Bit>, t: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    (phase[1,1](c),h(t))
+}
+pub unitary fn probe(s: Q<Bit>, q: Q<Bits<2>>) -> (Q<Bit>, Q<Bits<2>>) {
+    qif(s,q) { 0 => { turn(ctrl q[0],excl q[1]); q }, 1 => { q } }
+}
+"#;
+    let whole = r#"#![no_implicit_prelude]
+pub unitary fn probe(s: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    qif(s,q) { 0 => { phase[1,1](ctrl q); q }, 1 => { q } }
+}
+"#;
+    let kernel = kernel();
+    let whole = selected_at(whole, "main::probe");
+    assert!(whole.program().qmatch_source_checked());
+    kernel.check_program(whole.program()).unwrap();
+
+    let mixed = selected_at(mixed, "main::probe");
+    let program = mixed.program();
+    assert!(program.qmatch_source_checked());
+    kernel.check_program(program).unwrap();
+
+    // Keep the exact executable and request, including the original byte
+    // offsets. H remains on the second port, now marked as a control.
+    let original = std::str::from_utf8(program.artifact()).unwrap();
+    assert_eq!(original.matches("ctrl q[0],excl q[1]").count(), 1);
+    let changed = original.replacen("ctrl q[0],excl q[1]", "excl q[0],ctrl q[1]", 1);
+    let error = kernel
+        .check_qmatch_source_v5(changed.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn original_static_fold_binds_routed_control_occurrences_in_order() {
+    use qleisli::contract::exact::Budget;
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
+    use qleisli::interchange::qmatch::v5::Request;
+
+    let original = r#"#![no_implicit_prelude]
+pub unitary fn probe(s: Q<Bit>, q: Q<Bits<2>>) -> (Q<Bit>, Q<Bits<2>>) {
+    let q = qfor static i in 0..2 carry r=q {
+        phase[1,1](ctrl r[i]);
+        yield r;
+    };
+    qif(s,q) { 0=>{q}, 1=>{q} }
+}
+"#;
+    let explicit = r#"#![no_implicit_prelude]
+pub unitary fn probe(s: Q<Bit>, q: Q<Bits<2>>) -> (Q<Bit>, Q<Bits<2>>) {
+    let (b,r) = take_bit[2,0](q);
+    let q = put_bit[2,0](phase[1,1](b),r);
+    let (b,r) = take_bit[2,1](q);
+    let q = put_bit[2,1](phase[1,1](b),r);
+    qif(s,q) { 0=>{q}, 1=>{q} }
+}
+"#;
+    let original_run = selected_at(original, "main::probe");
+    let program = original_run.program();
+    assert!(program.qmatch_source_checked());
+    let kernel = kernel();
+    kernel.check_program(program).unwrap();
+    let mut request = Request::decode(program.request().unwrap()).unwrap();
+    let [interval] = request.context.static_intervals.as_mut_slice() else {
+        panic!("expected the original static fold");
+    };
+    let [first, second] = interval.children.as_slice() else {
+        panic!("expected two routed iterations");
+    };
+    assert_eq!(first.offset, second.offset);
+    assert_eq!(first.start, interval.parent.start + 3);
+    assert_eq!(second.start, first.start + first.count + 6);
+    assert_eq!(
+        second.start + second.count + 3,
+        interval.parent.start + interval.parent.count
+    );
+    interval.children.swap(0, 1);
+    let changed = request.encode().unwrap();
+    let error = kernel
+        .check_qmatch_source_v5(program.artifact(), &changed)
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+
+    // Reversing the two selected axes leaves the total diagonal operator
+    // unchanged. The retained original call of each iteration must match.
+    let with_expression = original.replace("ctrl r[i]", "ctrl r[0+i]");
+    let checked = selected_at(&with_expression, "main::probe");
+    let artifact = std::str::from_utf8(checked.program().artifact()).unwrap();
+    assert_eq!(artifact.matches("ctrl r[0+i]").count(), 1);
+    let reversed = artifact.replacen("ctrl r[0+i]", "ctrl r[1-i]", 1);
+    let error = kernel
+        .check_qmatch_source_v5(reversed.as_bytes(), checked.program().request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+
+    let wrapper = r#"
+pub unitary fn packed(pair: Q<(Bit,Bits<2>)>) -> Q<(Bit,Bits<2>)> {
+    let (s,q)=split(pair); let (s,q)=probe(s,q); join(s,q)
+}
+"#;
+    let indexed = format!("{original}{wrapper}");
+    let explicit = format!("{explicit}{wrapper}");
+    let implementation = selected_at(&indexed, "main::packed");
+    let specification = selected_at(&explicit, "main::packed");
+    FunctionEvidence::check(
+        Edition::E2026,
+        BasisType::pair(BasisType::Bit, BasisType::Bits(2)),
+        implementation.program().raw().clone(),
+        specification.program().raw().clone(),
+        FunctionIdentity {
+            implementation: "main::packed".into(),
+            specification: "explicit phase on both ordered axes".into(),
+            sources: vec![("main".into(), indexed)],
+        },
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn mixed_bit_access_rechecks_the_written_condition_and_restores_parked_owners() {
+    use qleisli::interchange::qmatch::v5::ACCESS_PROFILE;
+    use qleisli::ir::{ClassicalId, RawOp};
+
+    for (basis, place, parked_width) in [
+        ("Bit", "q", None),
+        ("Bits<1>", "q[0]", Some(0)),
+        ("Bits<2>", "q[1]", Some(1)),
+    ] {
+        let source = format!(
+            "#![no_implicit_prelude]
+            unitary fn turn(tag: Unit, flag: Bit, data: Q<Bit>, bias: Bit) -> Q<Bit> {{
+                if flag {{ h(data) }} else {{ data }}
+            }}
+            pub unitary fn probe(flag: Bit, bias: Bit, q: Q<{basis}>) -> Q<{basis}> {{
+                turn((), flag, excl {place}, bias); q
+            }}"
+        );
+        let accepted = selected_at(&source, "main::probe");
+        let program = accepted.program();
+        assert_eq!(program.source_body_scope(), Some(ACCESS_PROFILE));
+        kernel().check_program(program).unwrap();
+
+        let mut changed_raw = program.raw().clone();
+        assert_eq!(
+            changed_raw.classical_inputs,
+            [ClassicalId(0), ClassicalId(1)]
+        );
+        let (condition, phis) = changed_raw
+            .operations
+            .iter_mut()
+            .find_map(|operation| match operation {
+                RawOp::ClassicalBranch {
+                    condition,
+                    quantum_phis,
+                    ..
+                } => Some((condition, quantum_phis)),
+                _ => None,
+            })
+            .expect("the actual callee reads its first ordinary Bit");
+        assert_eq!(*condition, ClassicalId(0));
+        let parked: Vec<_> = phis
+            .iter()
+            .filter(|phi| phi.then_token == phi.else_token)
+            .map(|phi| phi.output_wires.len())
+            .collect();
+        assert_eq!(parked, parked_width.into_iter().collect::<Vec<_>>());
+        *condition = ClassicalId(1);
+        kernel().verify(&changed_raw).unwrap();
+
+        let original = std::str::from_utf8(program.artifact()).unwrap();
+        let request = program.request().unwrap();
+        let written = format!("turn((), flag, excl {place}, bias)");
+        let swapped = format!("turn((), bias, excl {place}, flag)");
+        assert_eq!(original.matches(&written).count(), 1);
+        let changed_source = original.replacen(&written, &swapped, 1);
+        let wrong_condition = r#""condition":0,"else_ops""#;
+        assert_eq!(original.matches(wrong_condition).count(), 1);
+        let changed_condition =
+            original.replacen(wrong_condition, r#""condition":1,"else_ops""#, 1);
+        for artifact in [changed_source, changed_condition] {
+            let error = kernel()
+                .check_qmatch_source_v5(artifact.as_bytes(), request)
+                .unwrap_err();
+            assert_eq!(error.code, "contract", "{error}");
+        }
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn mixed_named_indexed_access_keeps_an_earlier_measurement() {
+    let source = r#"#![no_implicit_prelude]
+unitary fn turn(q: Q<Bit>) -> Q<Bit> { h(q) }
+
+pub observe fn probe() -> (Bit, Bit, Bit) {
+    let measured = measure_z(h(basis unit(()) as _ { 0 }));
+    let empty = basis unit(()) as _ { empty_bits() };
+    let word = put_bit[1,0](basis unit(()) as _ { 1 }, empty);
+    let word = put_bit[2,1](basis unit(()) as _ { 0 }, word);
+    turn(excl word[1]);
+    let control = basis unit(()) as _ { 0 };
+    let (control, word) = qif(control, word) { 0 => { word }, 1 => { word } };
+    discard(control);
+    let (high, word) = take_bit[2,1](word);
+    let (low, empty) = take_bit[1,0](word);
+    discard(empty);
+    let high = if measured { high } else { h(high) };
+    (measured, measure_z(low), measure_z(high))
+}
+"#;
+    let checked = selected_at(source, "main::probe");
+    let program = checked.program();
+    assert!(program.qmatch_source_checked());
+    kernel().check_program(program).unwrap();
+
+    let outcomes = run_closed(program, SimulationLimits::default()).unwrap();
+    assert_eq!(outcomes.len(), 3);
+    for (bits, probability) in [
+        (vec![false, true, false], 0.5),
+        (vec![true, true, false], 0.25),
+        (vec![true, true, true], 0.25),
+    ] {
+        assert!((outcomes[&bits] - probability).abs() < 1e-12);
+    }
 }
 
 #[test]

@@ -1,5 +1,6 @@
 import QleisliKernel.SourceTypes.SymbolicTypes
 import QleisliKernel.SourceTypes.QuantumMoves
+import QleisliKernel.SourceTypes.AccessSyntax
 
 /-! Symbolic original runtime types and linear value shapes. Quantum product
 bases remain atomic owners; ordinary structural tuples retain their shape.
@@ -202,6 +203,94 @@ def expect {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment so
       pure ()
     | .tuple a,.tuple b => guard (a == b) .request
     | _,_ => throw .request
+
+private structure AccessPlace where
+  owner : String
+  value : Value
+  interval : Option (Semantics.SourceAffine.Form × Semantics.SourceAffine.Form)
+  rows : List (String × String)
+
+private def readAccessPlace {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (environment : Environment) {tokens : List LocatedToken}
+    (argument : AccessSyntax.Argument tokens) : WorkM AccessPlace := do
+  let owner := argument.owner.text
+  let some cell := environment.find? (fun cell => cell.name == owner) | throw .request
+  let [.owner basis] := cell.value | throw .request
+  let variables := state.environment.variables
+  let natural (expression : Semantics.SourceNatural.Expr) := do
+    let checked ← GenericLexicalNatural.read state.prepared state.environment scope expression
+    let rows ← NaturalRows.expression sources state.owner state.prepared.helpers scope expression
+    pure (checked.normalized.form,rows)
+  let context := state.environment.context
+  match argument.selection with
+  | .whole => pure ⟨owner,cell.value,none,[]⟩
+  | .index expression =>
+    let [.bits width] := basis | throw .request
+    let (start,rows) ← natural expression
+    let zero ← NaturalAffine.constant variables 0
+    let one ← NaturalAffine.constant variables 1
+    let stop ← NaturalAffine.add start one
+    let _ ← NaturalPredicates.provesLe context zero start
+    let _ ← NaturalPredicates.provesLe context stop width
+    pure ⟨owner,[.owner [.fixed .bit]],some (start,stop),rows⟩
+  | .slice first last =>
+    let [.bits width] := basis | throw .request
+    let (start,originRows) ← natural first
+    let (stop,terminalRows) ← natural last
+    let zero ← NaturalAffine.constant variables 0
+    let _ ← NaturalPredicates.provesLe context zero start
+    let _ ← NaturalPredicates.provesLe context start stop
+    let _ ← NaturalPredicates.provesLe context stop width
+    let length ← NaturalAffine.sub stop start
+    pure ⟨owner,[.owner [.bits length]],some (start,stop),originRows ++ terminalRows⟩
+
+private def disjointAccess {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (first second : AccessPlace) : WorkM Bool := do
+  exactWork (Exact.charge (first.owner.utf8ByteSize+second.owner.utf8ByteSize+1))
+  if first.owner != second.owner then return true
+  -- A whole access suspends its owner even when it has no physical axes.
+  let some (a,b) := first.interval | return false
+  let some (c,d) := second.interval | return false
+  let context := state.environment.context
+  let proved a b : WorkM Bool :=
+    try
+      let _ ← NaturalPredicates.provesLe context a b
+      pure true
+    catch error => match error with | .request => pure false | _ => throw error
+  if ← proved b c then return true
+  if ← proved d a then return true
+  if ← proved b a then return true
+  proved d c
+
+/-- Read ordered symbolic argument interfaces from the same live lexical
+frame. A slice may be empty; its access never permits a simultaneous whole
+access to the backing owner. The concrete execution still checks all ports. -/
+private def readAccessOrdinary (permitsBit : Bool) (environment : Environment)
+    (tokens : List LocatedToken) : Except String Value := do
+  match ← AccessSyntax.readUnitSyntax tokens with
+  | .literal .. => return [.ordinary [.fixed .unit]]
+  | .bound _ _ name _ =>
+    let (value,remaining) ← take name environment
+    let [.ordinary basis] := value | throw "original access argument requires an allowed ordinary value"
+    if basis != [.fixed .unit] && !(permitsBit && basis == [.fixed .bit]) then
+      throw "original access argument requires an allowed ordinary value"
+    if remaining == environment then return value
+    else throw "ordinary access argument changed its symbolic environment"
+
+def readAccess {sources : Sources} (state : GenericLexicalNatural.SomeEnvironment sources)
+    (scope : List String) (environment : Environment) {tokens : List LocatedToken}
+    (call : AccessSyntax.CheckedAccessCall tokens) : WorkM (List Value × List Value × List (String × String)) := do
+  let places ← call.arguments.mapM (fun argument => readAccessPlace state scope environment argument.2)
+  let _ ← places.foldlM (init := ([] : List AccessPlace)) fun previous place => do
+    for first in previous do guard (← disjointAccess state first place) .request
+    pure (place :: previous)
+  let marked := places.map (·.value)
+  let values ← if call.hasOrdinary then do
+    let fields := (environment.map fun cell => cell.name.utf8ByteSize+valueFields cell.value+1).sum
+    exactWork (Exact.charge (32*(call.slots.length+1)*(fields+1)))
+    adapt (call.fillArguments marked (readAccessOrdinary call.exclusive environment))
+  else pure marked
+  pure (values,marked,places.flatMap (·.rows))
 
 def substitute (variables : Nat) (bases : List (Parameter × Code)) (naturals : List Semantics.SourceAffine.Form)
     (value : Value) : WorkM Value := do

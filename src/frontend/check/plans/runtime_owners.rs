@@ -7,11 +7,20 @@ use crate::frontend::resolve::locals::Lookup;
 
 #[derive(Clone, Debug)]
 pub(in crate::frontend) struct RuntimeOwnerPlan {
+    pub argument_index: usize,
     pub reference: ResolvedReference,
     pub ty: Arc<Ty>,
     // Preserve the common capture's immutable type payload independently of
     // the transport field. Identity detects replacement, never proves typing.
     source_type: Arc<Ty>,
+}
+
+fn marked_arguments(
+    args: &[ast::AccessArgument],
+) -> impl Iterator<Item = (usize, &ast::AccessArgument)> + Clone {
+    args.iter()
+        .enumerate()
+        .filter(|(_, argument)| argument.access().is_some())
 }
 
 impl Capture<'_, '_> {
@@ -32,12 +41,14 @@ impl Capture<'_, '_> {
         };
         self.budget
             .charge(span, args.len().saturating_mul(2).saturating_add(1))?;
+        let marked = marked_arguments(args);
+        let count = marked.clone().count();
         if args.is_empty()
             || args.len() > 64
-            || selected.is_some_and(|ports| ports.len() != args.len())
+            || selected.is_some_and(|ports| ports.len() != count)
             || !args
                 .iter()
-                .any(|argument| argument.access == ast::QuantumAccess::Ctrl)
+                .any(|argument| argument.access() == Some(ast::QuantumAccess::Ctrl))
         {
             return Err(SourceError::new(
                 "source",
@@ -45,8 +56,8 @@ impl Capture<'_, '_> {
                 "control snapshot lacks its ordered Ctrl arguments",
             ));
         }
-        let mut owners = Vec::with_capacity(args.len());
-        for (ordinal, argument) in args.iter().enumerate() {
+        let mut owners = Vec::with_capacity(count);
+        for (ordinal, (argument_index, argument)) in marked.enumerate() {
             self.budget.charge(argument.value.span, 2)?;
             let ast::ExprKind::Name(name) = &argument.value.kind else {
                 return Err(SourceError::new(
@@ -101,6 +112,7 @@ impl Capture<'_, '_> {
             }
             let ty = Arc::new(self.budget.copy_ty(name.span, ty)?);
             owners.push(RuntimeOwnerPlan {
+                argument_index,
                 reference,
                 source_type: Arc::clone(&ty),
                 ty,
@@ -113,7 +125,7 @@ impl Capture<'_, '_> {
 fn port_matches(argument: &ast::AccessArgument, ty: &Ty) -> bool {
     matches!(
         (
-            &argument.selection,
+            argument.selection(),
             ty.quantum_basis().map(|basis| &basis.kind)
         ),
         (None, Some(_))
@@ -144,16 +156,17 @@ impl Validation<'_, '_> {
             return Err(self.failure(span));
         };
         self.budget.charge(span, args.len())?;
+        let marked = marked_arguments(args);
         if args.is_empty()
             || args.len() > 64
-            || args.len() != owners.len()
+            || marked.clone().count() != owners.len()
             || !args
                 .iter()
-                .any(|argument| argument.access == ast::QuantumAccess::Ctrl)
+                .any(|argument| argument.access() == Some(ast::QuantumAccess::Ctrl))
         {
             return Err(self.failure(span));
         }
-        for (argument, retained) in args.iter().zip(owners) {
+        for ((argument_index, argument), retained) in marked.zip(owners) {
             let ast::ExprKind::Name(name) = &argument.value.kind else {
                 return Err(self.failure(argument.value.span));
             };
@@ -161,7 +174,8 @@ impl Validation<'_, '_> {
             let Some(key) = retained.reference.local.as_ref() else {
                 return Err(self.failure(name.span));
             };
-            if self.key(owner, key, name.span)? != BindingKind::Runtime
+            if retained.argument_index != argument_index
+                || self.key(owner, key, name.span)? != BindingKind::Runtime
                 || !port_matches(argument, &retained.ty)
                 || !Arc::ptr_eq(&retained.ty, &retained.source_type)
             {
@@ -227,17 +241,18 @@ pub(in crate::frontend) fn original_runtime_owners<'plan, E>(
         refuse!();
     };
     charge(span, args.len().saturating_mul(4).saturating_add(2))?;
+    let marked = marked_arguments(args);
     if args.is_empty()
         || args.len() > 64
-        || args.len() != plan.runtime_owners.len()
+        || marked.clone().count() != plan.runtime_owners.len()
         || !args
             .iter()
-            .any(|argument| argument.access == ast::QuantumAccess::Ctrl)
+            .any(|argument| argument.access() == Some(ast::QuantumAccess::Ctrl))
     {
         refuse!();
     }
     let table = &program.lexical[&owner];
-    for (argument, retained) in args.iter().zip(&plan.runtime_owners) {
+    for ((argument_index, argument), retained) in marked.zip(&plan.runtime_owners) {
         let ast::ExprKind::Name(name) = &argument.value.kind else {
             refuse!();
         };
@@ -248,7 +263,8 @@ pub(in crate::frontend) fn original_runtime_owners<'plan, E>(
             name.span,
             key.name.len().saturating_mul(2).saturating_add(8),
         )?;
-        if locals.try_reference_site(name) != Some(retained.reference.site)
+        if retained.argument_index != argument_index
+            || locals.try_reference_site(name) != Some(retained.reference.site)
             || retained.reference.site.definition() != owner
             || retained.reference.target != ResolvedUse::Local(key.id)
             || table

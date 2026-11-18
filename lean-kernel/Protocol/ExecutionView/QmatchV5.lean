@@ -88,6 +88,7 @@ def runtime (request : Qirf.RuntimeFamily.Request) : Finite.WorkM Value := do
 def description (artifact : Qirf.Artifact) (root : Qirf.Validity.Root) (request : Protocol.QmatchV5.Request) :
     Finite.WorkM Value := do
   let graph ← FiniteView.graph artifact root
-  return record Protocol.QmatchV5.profile [graph,source request.source,← runtime request.runtime,← context 129 request.context]
+  let tag := if request.standaloneAccess then Protocol.QmatchV5.accessProfile else Protocol.QmatchV5.profile
+  return record tag [graph,source request.source,← runtime request.runtime,← context 129 request.context]
 
 end QleisliKernel.Protocol.ExecutionView.QmatchV5

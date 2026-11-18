@@ -33,6 +33,36 @@ private def chosenBit : StaticTypes.Arguments := {bases := [("A",[.bit])]}
 #guard summary (program "pub unitary fn root[const A:Basis](q:Q<A>)->(Q<Bit>,Q<Bit>){split(q)}")
     {bases := [("A",[.pair,.bit,.bit])]} = none
 
+private def indexedAccess (premises : String) : Sources :=
+  program ("unitary fn update(a:Q<Bit>,b:Q<Bits<1>>)->(Q<Bit>,Q<Bits<1>>){(h(a),b)} " ++
+    "pub unitary fn root[const n:Nat,const i:Nat,const j:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires " ++
+    premises ++ " {update(excl q[i],excl q[j..j+1]);q}")
+
+private def indexedArgs : StaticTypes.Arguments := {naturals := [("n",3),("i",0),("j",1)]}
+
+#guard summary (indexedAccess "i<j,j<n") indexedArgs = some (.unitary,true,0,0)
+#guard summary (indexedAccess "i<n,j<n") indexedArgs = none
+#guard summary (indexedAccess "i<j") indexedArgs = none
+
+private def mixedIndexedAccess (premises : String) : Sources :=
+  (indexedAccess premises).map fun (moduleName,source) =>
+    (moduleName,source.replace "excl q[j..j+1]" "ctrl q[j..j+1]")
+
+#guard summary (mixedIndexedAccess "i<j,j<n") indexedArgs = some (.unitary,true,0,0)
+#guard summary (mixedIndexedAccess "i<n,j<n") indexedArgs = none
+#guard summary (mixedIndexedAccess "i<j") indexedArgs = none
+#guard summary #[
+    ("main","#![no_implicit_prelude] use library::keep;pub observe fn root(q:Q<Bit>)->Q<Bit>{keep(ctrl q);q}"),
+    ("library","#![no_implicit_prelude] pub observe fn keep(q:Q<Bit>)->Q<Bit>{q}") ] = none
+
+#guard summary (program "pub unitary fn root(q:Q<Bits<0>>)->Q<Bits<0>>{global_phase_eighth(excl q[0..0]);q}") =
+    some (.unitary,true,0,0)
+#guard summary (program ("unitary fn keep(a:Q<Bits<1>>,b:Q<Bits<0>>)->(Q<Bits<1>>,Q<Bits<0>>){(a,b)} " ++
+    "pub unitary fn root(q:Q<Bits<1>>)->Q<Bits<1>>{keep(excl q,excl q[0..0]);q}")) = none
+#guard summary #[
+    ("main","#![no_implicit_prelude] use library::keep;pub observe fn root(q:Q<Bits<1>>)->Q<Bits<1>>{keep(excl q[0]);q}"),
+    ("library","#![no_implicit_prelude] pub observe fn keep(q:Q<Bit>)->Q<Bit>{q}") ] = none
+
 -- Both original static branches are checked under their own original guards.
 #guard summary (program "pub unitary fn root[const n:Nat](q:Q<Bit>)->Q<Bit>{if static n>0 {phase[n-1,3](q)} else {q}}")
     {naturals := [("n",0)]} = some (.unitary,true,0,0)
