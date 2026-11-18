@@ -44,6 +44,12 @@ private def originalAccess (text : String) : Except String (Option (List (String
 private def originalMixedUnit := "unitary fn turn(pre:Unit,t:Q<Bit>,post:Unit)->Q<Bit>{h(t)} " ++
   "pub unitary fn route(tag:Unit,q:Q<Bits<2>>)->Q<Bits<2>>{turn((),excl q[1],tag);q}"
 
+private def declaredUnit := "unitary fn turn(tag:Unit,q:excl Q<Bit>)->Unit{h(excl q);tag} " ++
+  "pub unitary fn route(q:Q<Bit>)->Q<Bit>{turn((),excl q);q}"
+
+#guard (read declaredUnit).isSome
+#guard (read (declaredUnit.replace ";tag}" ";q}")).isNone
+
 private def mixedAccessReplay (source : String) : Option (List Value × List Value × List Nat × List Nat) := do
   let checked ← read source
   let [.exclusive access (.named named)] := checked.events | none

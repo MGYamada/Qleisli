@@ -207,7 +207,8 @@ pub unitary fn update(target: Q<Bit>) -> Q<Bit> {
 }
 ```
 
-The ordinary result is `Unit` at the written call. The returned quantum
+The ordinary result is `Unit` at the written call. The body can return `()`
+or a value of type `Unit`, including a parameter. The returned quantum
 owners carry the updated state, including its exact phase. The production
 source check retains the declaration and the marked call as original
 occurrences, including explicit static arguments such as `type(Bit)` when

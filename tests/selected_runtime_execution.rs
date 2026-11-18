@@ -149,6 +149,16 @@ fn declared_access_requires_the_original_role_and_raw_action() {
     assert_eq!(program.raw(), explicit.program().raw());
     kernel().check_program(program).unwrap();
 
+    // A Unit parameter remains symbolic when the native checker reads the
+    // callee. Returning it must thread exactly the same updated owner as ().
+    let unit_parameter = "#![no_implicit_prelude]
+        unitary fn turn(tag: Unit, q: excl Q<Bit>) -> Unit { h(excl q); tag }
+        pub unitary fn probe(q: Q<Bit>) -> Q<Bit> { turn((), excl q); q }";
+    let symbolic = selected_at(unit_parameter, "main::probe");
+    assert_eq!(symbolic.program().source_body_scope(), Some(ACCESS_PROFILE));
+    assert_eq!(symbolic.program().raw(), explicit.program().raw());
+    kernel().check_program(symbolic.program()).unwrap();
+
     let artifact = std::str::from_utf8(program.artifact()).unwrap();
     let request = program.request().unwrap();
     let marker = "target: excl Q<Bit>";

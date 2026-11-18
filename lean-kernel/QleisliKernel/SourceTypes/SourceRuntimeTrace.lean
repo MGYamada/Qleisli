@@ -829,7 +829,8 @@ private def closeDeclared {sources owner name} (signature : Signature sources ow
   let some declared := signature.checked.portView.declared | return result
   Finite.exactWork (Exact.charge (16*(environmentCells result.remaining+result.events.length+
     (parameters.map valueFields).sum+1)*(declared.owners.length+1)))
-  Finite.guard (result.value == [.ordinary [.unit] .unit] && inferredEffect result.events == .unitary) .request
+  let [.ordinary [.unit] _] := result.value | throw .request
+  Finite.guard (inferredEffect result.events == .unitary) .request
   let (returned,remaining) ← declared.owners.foldlM (init := ([],result.remaining))
       fun (returned,remaining) parameter => do
     let original ← Finite.lift (Finite.readOption parameters[parameter.ordinal]?)
