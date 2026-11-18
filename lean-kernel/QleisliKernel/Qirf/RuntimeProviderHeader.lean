@@ -69,6 +69,8 @@ def eventRows {sources caller} : Nat → SourceRuntimeContext.Event sources call
         event.counts.flatMap (·.checked.rows)
     | .staticConditional event children => event.generic.sourceRows ++
         event.selection.naturals.sourceRows ++ event.selected.2.staticRows ++ children.flatMap next
+    | .staticFold event children => event.generic.sourceRows ++
+        (SourceRuntimeContext.Event.staticFold event children).staticRows ++ children.flatMap (·.flatMap next)
     | .matching event children => event.generic.sourceRows ++ event.naturals.sourceRows ++
         event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows) ++
         children.flatMap (fun arm => arm.flatMap next)

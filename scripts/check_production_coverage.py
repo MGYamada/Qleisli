@@ -226,7 +226,10 @@ QMATCH_V5_PROOF = {
         'Original.root_safe retain the original duty queue and fresh Raw root in the bounded checker. '
         'RuntimePureBody.readInlineArm checks the written arm and its actual Raw body in the original '
         'target frame. RuntimePureBody.selectionNode compares both arm forms against the exact controlled '
-        'action and caller Raw sector. '
+        'action and caller Raw sector. RuntimeStaticFold.readPartition checks the original ordered '
+        'iterations against the complete contiguous Raw interval. Its owner frames retain the carried '
+        'registers and spectators, including zero-width owners. Named and transformed call evidence '
+        'retains the actual source read from that occurrence; each literal interval is checked. '
         'The sourceScope field requires checked selections, a basis event, or a discharged application. '
         'Rust retains the compared runtime request and uses it for recheck.'),
     'gaps': (
@@ -479,6 +482,13 @@ PATHS = {
             ['SourceRuntimeTrace.readComputedSource event',
              'Raw.clean dependencies bits bits 1 literal.table literal.useSteps literal.logicalSteps',
              'let action ← CodeSpace.readMap code.val code.val emitted.val']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeStaticFold.lean', [
+            'def readPartition ', 'positions.map (·.offset) = iterations.flatten.map',
+            'coverage : Ordered parent.start positions (parent.start+parent.count)',
+            'def readBefore ', 'def readAfter ']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeDiscoveryTraversal.lean', [
+            'RuntimeStaticFold.readPartition event iterations position slot.1',
+            '.retained parent occurrence']),
         ('lean-kernel/Protocol/QmatchV5.lean', ['def usesSelection ',
             'if ← hasMeaningGroup 129 body then meaningProfile else basisProfile']),
         ('src/frontend/compile/lower/mod.rs', ['let require_qmatch_v5 = require_qmatch_v5 || planned_meaning']),
@@ -499,6 +509,7 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'coherent_block_arms_use_the_original_native_gate'),
         ('tests/selected_runtime_execution.rs', 'coherent_block_arm_replays_excl_and_returns_the_original_binding'),
         ('tests/selected_runtime_execution.rs', 'project_coherent_block_arm_preserves_relative_phase'),
+        ('tests/axis_routing_boundary.rs', 'original_register_fold_matches_each_raw_iteration'),
         ('src/frontend/compile/lower/quantum_match/nominal/tests.rs', 'original_general_nested_meaning_proposal'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_wide_interfaces_in_separate_sectors'),
         ('tests/selected_runtime_execution.rs', 'selected_qmatch_checks_nominal_basis_rows_and_rejects_padding_leaks'),
@@ -1557,10 +1568,16 @@ for _path, _extension in {'ordinary-acceptance': {'source_bindings': [{'path': '
                                                           'BodyState::Ready',
                                                           'match &self.instances[record].bodies[profile]',
                                                           'operations::ProviderRoot::of(&body)',
-                                                          'cached.body.artifact() != body.artifact()']},
+                                                          'cached.comparison_work(&body)',
+                                                          '!cached.same_artifact(&body)']},
                                              {'path': 'src/frontend/compile/operations.rs',
                                               'markers': ['ProviderRoot::of(program)',
-                                                          'self.providers[&cache].body.artifact() != self.checked[&key].artifact()']},
+                                                          'op.comparison_work(program)',
+                                                          '!self.providers[&cache].same_artifact(&self.checked[&key])',
+                                                          'std::ptr::eq(cached, actual)',
+                                                          'cached.chunks_exact(8)',
+                                                          'cached.remainder() == actual.remainder()',
+                                                          'cached.zip(actual).all']},
                                              {'path': 'src/frontend/compile/lower/operations.rs',
                                               'markers': ['fn call_instance(',
                                                           'check_dormant_instance']},

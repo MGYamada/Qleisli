@@ -50,6 +50,7 @@ inductive BindingOrigin where
   | workspaceData (offset : Nat)
   | workspaceScratch (offset : Nat)
   | coherentArmTarget (offset : Nat)
+  | staticFoldCarry (offset : Nat)
   deriving BEq, DecidableEq, Repr
 
 structure Cell where

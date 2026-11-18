@@ -151,11 +151,11 @@ impl Builder {
     }
 }
 
-pub(crate) fn proposal(
+pub(crate) fn proposal<'a>(
     raw: &RawProgram,
     runtime: Arc<interchange::runtime_root::Request>,
     original: &ContextSubject,
-    sources: &[(String, String)],
+    sources: impl IntoIterator<Item = &'a (String, String)>,
 ) -> Result<(Vec<u8>, Request)> {
     let mut graph = Encoder::new(Version::V2);
     for (module, text) in sources {

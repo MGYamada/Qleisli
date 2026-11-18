@@ -317,7 +317,7 @@ theorem named_source_traversal_of_flow {artifact root mode fuel origin program b
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
     {scope : @RuntimeCallScope.Checked root.dependencies program block start count inputs ordinary event.effect}
     {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
-    {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+    {bodyRead : SourceTypes.SourceRuntimeTrace.NamedRead event body}
     {child finish : RuntimeStructuralAction.SourceState}
     {boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired body.checked.summary.value}
     {finalOrdinary} {steps : List (Step root.dependencies scope.program scope.prepared.block)}

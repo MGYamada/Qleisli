@@ -9,6 +9,7 @@ import QleisliKernel.SourceTypes.SourceRuntimeBranches
 import QleisliKernel.SourceTypes.SourceRuntimeTransformPorts
 import QleisliKernel.SourceTypes.SourceBasisBindings
 import QleisliKernel.SourceTypes.SourceStaticSelection
+import QleisliKernel.SourceTypes.SourceStaticFold
 import QleisliKernel.SourceTypes.SourceMatchLabels
 import QleisliKernel.SourceTypes.SourceRuntimeMatching
 import QleisliKernel.SourceTypes.SourceRuntimeComputed
@@ -266,7 +267,7 @@ structure Summary {sources owner name} (signature : Signature sources owner name
     signature.original.occurrence.body = .ok tree
   generic : RuntimeGenericAnalysis.Checked signature.original
   genericRead : ∃ before after,
-    (RuntimeGenericAnalysis.read signature.instantiation tree signature.operations.catalogue).run before = (.ok generic,after)
+    (RuntimeGenericAnalysis.readParsed signature.instantiation tree parsed signature.operations.catalogue).run before = (.ok generic,after)
   originalAsserted : SourceEffect.permits signature.original.parsedHeader.effect generic.inferredEffect = true
   basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations
   computed : SourceComputedBindings.Checked signature.instantiation generic.computedObligations
@@ -549,6 +550,39 @@ structure StaticEvent (sources : Sources) (caller : String) where
   projected : SourceRuntimeBranches.outer before selected.2.remaining = .ok remaining
   held : List Semantics.SourceOwners.Owner
 
+structure FoldIteration (sources : Sources) (caller : String) (tokens : List LocatedToken) where
+  coordinate : Nat
+  carry : Value
+  before : Environment
+  seeded : Arm sources caller before tokens
+  shape : typeOf seeded.value = typeOf carry
+  complete : owners seeded.remaining = []
+
+structure FoldEvent (sources : Sources) (caller : String) where
+  tokens : List LocatedToken
+  written : SourceStaticFoldSyntax.Checked tokens
+  callerName : String
+  signature : Signature sources caller callerName
+  generic : RuntimeGenericAnalysis.Checked signature.original
+  naturals : PhaseApplication.Naturals sources
+  scope : List String
+  bounds : SourceStaticFold.Checked sources caller naturals scope written
+  boundsRead : ∃ before after,
+    (SourceStaticFold.read sources caller naturals scope written).run before = (.ok bounds,after)
+  tree : SourceSyntax.Tree written.parts.body
+  calls : List Nat
+  originalCalls : tree.calls = .ok calls
+  initial : Value
+  outer : Environment
+  held : List Semantics.SourceOwners.Owner
+  nextOrdinal : Nat
+  iterations : List (FoldIteration sources caller written.parts.body)
+  coordinates : iterations.map (·.coordinate) = (List.finRange bounds.count).map bounds.coordinate
+  value : Value
+  allocated : List Semantics.SourceOwners.Owner
+  consumed : List Semantics.SourceOwners.Owner
+  finalOrdinal : Nat
+
 structure MatchEvent (sources : Sources) (caller : String) where
   tokens : List LocatedToken
   written : SourceMatchSyntax.Checked tokens
@@ -645,6 +679,7 @@ inductive Event (sources : Sources) (caller : String) where
   | conditional (event : BranchEvent sources caller) (thenEvents elseEvents : List (Event sources caller))
   | transform (event : TransformEvent sources caller)
   | staticConditional (event : StaticEvent sources caller) (events : List (Event sources caller))
+  | staticFold (event : FoldEvent sources caller) (iterations : List (List (Event sources caller)))
   | matching (event : MatchEvent sources caller) (arms : List (List (Event sources caller)))
   | computed (event : ComputedEvent sources caller) (body : List (Event sources caller))
   | workspace (event : WorkspaceEvent sources caller) (body : List (Event sources caller))
@@ -659,7 +694,7 @@ def Event.callOffset {sources caller} : Event sources caller → Option Nat
   | .basis _ => none
   | .conditional .. => none
   | .transform event => some event.call.calleeOffset
-  | .staticConditional .. => none
+  | .staticConditional .. | .staticFold .. => none
   | .matching .. => none
   | .computed .. => none
   | .workspace .. => none
@@ -670,6 +705,7 @@ def Event.callOffsets {sources caller} (event : Event sources caller) : List Nat
   | .basis event => event.bodyCalls
   | .conditional event .. => event.thenArm.calls ++ event.elseArm.calls
   | .staticConditional event .. => event.thenCalls ++ event.elseCalls
+  | .staticFold event .. => event.calls
   | .matching event .. => event.arms.flatMap (·.2.calls)
   | .computed event .. => event.body.calls
   | .workspace event .. => event.body.calls
@@ -687,6 +723,7 @@ def Event.qmatchOffsets {sources caller} (event : Event sources caller) : List N
       QuantumSequence.originalOffsets event.written.parts.elseBody
   | .staticConditional event .. => QuantumSequence.originalOffsets event.written.parts.thenBody ++
       QuantumSequence.originalOffsets event.written.parts.elseBody
+  | .staticFold event .. => QuantumSequence.originalOffsets event.written.parts.body
   | .matching event .. => event.written.parts.arms.flatMap (fun arm => QuantumSequence.originalOffsets arm.body.tokens)
   | .computed event .. => QuantumSequence.originalOffsets event.written.parts.body
   | .workspace event .. => QuantumSequence.originalOffsets event.written.parts.body
@@ -697,6 +734,7 @@ def Event.basisOffsets {sources caller} : Event sources caller → List Nat
   | .selection event => event.inlineOffsets.flatMap (·.1)
   | .conditional event .. => event.thenArm.basisOffsets ++ event.elseArm.basisOffsets
   | .staticConditional event .. => event.selected.2.basisOffsets
+  | .staticFold event .. => (event.iterations.flatMap (·.seeded.basisOffsets)).eraseDups
   | .matching event .. => event.arms.flatMap (·.2.basisOffsets)
   | .computed event .. => event.body.basisOffsets
   | .workspace event .. => event.body.basisOffsets
@@ -708,6 +746,7 @@ def Event.computedOffsets {sources caller} : Event sources caller → List Nat
   | .workspace event .. => event.body.computedOffsets
   | .conditional event .. => event.thenArm.computedOffsets ++ event.elseArm.computedOffsets
   | .staticConditional event .. => event.selected.2.computedOffsets
+  | .staticFold event .. => (event.iterations.flatMap (·.seeded.computedOffsets)).eraseDups
   | .matching event .. => event.arms.flatMap (·.2.computedOffsets)
   | _ => []
 
@@ -721,6 +760,7 @@ def Event.offset {sources caller} : Event sources caller → Nat
   | .conditional event .. => event.written.parts.keyword.span.startByte
   | .transform event => event.call.calleeOffset
   | .staticConditional event .. => event.written.parts.keyword.span.startByte
+  | .staticFold event .. => event.written.parts.keyword.span.startByte
   | .matching event .. => event.written.parts.keyword.span.startByte
   | .computed event .. => SourceRuntimeComputed.offset event.written
   | .workspace event .. => event.written.parts.header.calleeOffset
@@ -734,6 +774,8 @@ def Event.effect {sources caller} : Event sources caller → Semantics.Raw.Effec
   | .conditional event .. => SourceEffect.join event.thenArm.inferredEffect event.elseArm.inferredEffect
   | .transform _ => .unitary
   | .staticConditional event .. => event.selected.2.inferredEffect
+  | .staticFold event .. => event.iterations.foldl (fun effect iteration =>
+      SourceEffect.join effect iteration.seeded.inferredEffect) .unitary
   | .matching event .. => event.arms.foldl (fun effect arm => SourceEffect.join effect arm.2.inferredEffect) .unitary
   | .computed _ _ => .unitary
   | .registerPrimitive _ => .unitary
@@ -749,6 +791,7 @@ def Event.quantumUse {sources caller} : Event sources caller → Bool
     else event.canonical.generic.quantumUse
   | .conditional event .. => event.thenArm.quantumUse || event.elseArm.quantumUse
   | .staticConditional event .. => event.selected.2.quantumUse
+  | .staticFold event .. => !((valueOwners event.initial).isEmpty) || event.iterations.any (·.seeded.quantumUse)
   | .matching event .. => event.arms.any (·.2.quantumUse)
   | _ => true
 
@@ -763,6 +806,7 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
   | .transform event => event.target.sourceRows ++ event.forward.staticRows ++
       event.counts.flatMap (·.checked.rows)
   | .staticConditional event .. => event.selection.naturals.sourceRows ++ event.selected.2.staticRows
+  | .staticFold event .. => event.naturals.sourceRows ++ event.bounds.rows ++ event.iterations.flatMap (·.seeded.staticRows)
   | .matching event .. => event.naturals.sourceRows ++ event.labels.labels.sourceRows ++ event.arms.flatMap (·.2.staticRows)
   | .computed event .. => event.naturals.sourceRows ++ event.predicate.target.sourceRows ++
       event.predicate.canonical.staticRows ++ event.logical.sourceRows ++ event.body.staticRows
@@ -773,6 +817,193 @@ def Event.staticRows {sources caller} : Event sources caller → List (String ×
 def inferredEffect {sources caller} (events : List (Event sources caller)) : Semantics.Raw.Effect :=
   events.foldl (fun effect event => SourceEffect.join effect event.effect) .unitary
 
+structure Evaluated {sources owner name} (signature : Signature sources owner name) where
+  summary : Summary signature
+  events : List (Event sources owner)
+  inferred : inferredEffect events = summary.inferredEffect
+  basisCovered : summary.basis.covered (events.flatMap Event.basisOffsets) = true
+  computedCovered : summary.computed.covered (events.flatMap Event.computedOffsets) = true
+
+namespace RuntimeCalleeTrace
+
+/- A child result is retained at its actual evaluated occurrence. The index
+includes the original declaration, complete instantiation and supplying context.
+Iterations retain distinct ordered sequences even when their offsets repeat. -/
+mutual
+inductive Sequence (sources : Sources) :
+    (owner : String) → List (Event sources owner) → Type where
+  | nil (owner : String) : Sequence sources owner []
+  | cons {owner : String} {event : Event sources owner} {tail : List (Event sources owner)}
+      (head : Occurrence sources owner event) (rest : Sequence sources owner tail) :
+      Sequence sources owner (event :: tail)
+
+inductive Occurrence (sources : Sources) :
+    (owner : String) → Event sources owner → Type where
+  | local {owner : String} (event : Event sources owner) : Occurrence sources owner event
+  | named {caller : String} (event : NamedEvent sources caller)
+      (body : Evaluated event.target.signature) (canonical : body.summary = event.canonical)
+      (trace : Sequence sources event.target.resolution.moduleName body.events) :
+      Occurrence sources caller (.named event)
+  | transform {caller : String} (event : TransformEvent sources caller)
+      (body : Evaluated event.target.signature) (forward : body.summary = event.forward)
+      (trace : Sequence sources event.target.resolution.moduleName body.events) :
+      Occurrence sources caller (.transform event)
+  | branch {owner : String} (event : BranchEvent sources owner)
+      {left right : List (Event sources owner)}
+      (thenTrace : Sequence sources owner left) (elseTrace : Sequence sources owner right) :
+      Occurrence sources owner (.conditional event left right)
+  | staticBranch {owner : String} (event : StaticEvent sources owner)
+      {events : List (Event sources owner)} (trace : Sequence sources owner events) :
+      Occurrence sources owner (.staticConditional event events)
+  | computed {owner : String} (event : ComputedEvent sources owner)
+      {events : List (Event sources owner)} (trace : Sequence sources owner events) :
+      Occurrence sources owner (.computed event events)
+  | workspace {owner : String} (event : WorkspaceEvent sources owner)
+      {events : List (Event sources owner)} (trace : Sequence sources owner events) :
+      Occurrence sources owner (.workspace event events)
+  | matching {owner : String} (event : MatchEvent sources owner)
+      {arms : List (List (Event sources owner))} (trace : Iterations sources owner arms) :
+      Occurrence sources owner (.matching event arms)
+  | fold {owner : String} (event : FoldEvent sources owner)
+      (iterations : List (List (Event sources owner))) (trace : Iterations sources owner iterations) :
+      Occurrence sources owner (.staticFold event iterations)
+
+inductive Iterations (sources : Sources) :
+    (owner : String) → List (List (Event sources owner)) → Type where
+  | nil (owner : String) : Iterations sources owner []
+  | cons {owner : String} {events : List (Event sources owner)} {tail : List (List (Event sources owner))}
+      (trace : Sequence sources owner events) (rest : Iterations sources owner tail) :
+      Iterations sources owner (events :: tail)
+end
+
+/-- Loop bounds use the aligned ordinary lists so executable recursion is on
+`Nat`. The length premise proves that exhaustion cannot truncate a trace. -/
+private def Sequence.appendWith {sources owner} {b : List (Event sources owner)}
+    (right : Sequence sources owner b) (fuel : Nat) :
+    {a : List (Event sources owner)} → Sequence sources owner a → a.length ≤ fuel →
+      Sequence sources owner (a ++ b) :=
+  Nat.rec
+    (motive := fun n => {a : List (Event sources owner)} → Sequence sources owner a →
+      a.length ≤ n → Sequence sources owner (a ++ b))
+    (fun {_} trace => match trace with
+      | .nil _ => fun _ => right
+      | .cons _ _ => fun enough => False.elim (by simp at enough))
+    (fun _ append {_} trace => match trace with
+      | .nil _ => fun _ => right
+      | .cons first rest => fun enough => .cons first (append rest (Nat.le_of_succ_le_succ enough)))
+    fuel
+
+def Sequence.append {sources owner} {a b : List (Event sources owner)}
+    (left : Sequence sources owner a) (right : Sequence sources owner b) :
+    Sequence sources owner (a ++ b) :=
+  appendWith right a.length left (Nat.le_refl _)
+
+private def Iterations.flattenWith {sources owner} (fuel : Nat) :
+    {iterations : List (List (Event sources owner))} → Iterations sources owner iterations →
+      iterations.length ≤ fuel → Sequence sources owner iterations.flatten :=
+  Nat.rec
+    (motive := fun n => {iterations : List (List (Event sources owner))} →
+      Iterations sources owner iterations → iterations.length ≤ n →
+        Sequence sources owner iterations.flatten)
+    (fun {_} trace => match trace with
+      | .nil _ => fun _ => .nil owner
+      | .cons _ _ => fun enough => False.elim (by simp at enough))
+    (fun _ flatten {_} trace => match trace with
+      | .nil _ => fun _ => .nil owner
+      | .cons current rest => fun enough => current.append (flatten rest (Nat.le_of_succ_le_succ enough)))
+    fuel
+
+def Iterations.flatten {sources owner} {iterations : List (List (Event sources owner))}
+    (trace : Iterations sources owner iterations) : Sequence sources owner iterations.flatten :=
+  flattenWith iterations.length trace (Nat.le_refl _)
+
+private def Sequence.atIndex {sources owner} {event : Event sources owner} (index : Nat) :
+    {events : List (Event sources owner)} → Sequence sources owner events →
+      events[index]? = some event → Occurrence sources owner event :=
+  Nat.rec
+    (motive := fun n => {events : List (Event sources owner)} → Sequence sources owner events →
+      events[n]? = some event → Occurrence sources owner event)
+    (fun {_} trace => match trace with
+      | .nil _ => fun found => False.elim (by cases found)
+      | .cons first _ => fun found => Option.some.inj found ▸ first)
+    (fun _ lookup {_} trace => match trace with
+      | .nil _ => fun found => False.elim (by cases found)
+      | .cons _ rest => fun found => lookup rest found)
+    index
+
+def Sequence.at {sources owner} {events : List (Event sources owner)}
+    (trace : Sequence sources owner events) {event : Event sources owner} (index : Nat)
+    (found : events[index]? = some event) : Occurrence sources owner event :=
+  atIndex index trace found
+
+structure Events (sources : Sources) (owner : String) where
+  events : List (Event sources owner)
+  trace : Sequence sources owner events
+
+def Events.empty {sources owner} : Events sources owner :=
+  ⟨[],.nil owner⟩
+
+def Events.single {sources owner} {event : Event sources owner}
+    (entry : Occurrence sources owner event) : Events sources owner :=
+  ⟨[event],.cons entry (.nil owner)⟩
+
+def Events.append {sources owner} (left right : Events sources owner) : Events sources owner :=
+  ⟨left.events ++ right.events,left.trace.append right.trace⟩
+
+instance {sources owner} : Append (Events sources owner) := ⟨Events.append⟩
+
+private def Events.iterationsFrom {sources owner} (fuel : Nat) :
+    (entries : List (Events sources owner)) → entries.length ≤ fuel →
+      Iterations sources owner (entries.map Events.events) :=
+  Nat.rec
+    (motive := fun n => (entries : List (Events sources owner)) → entries.length ≤ n →
+      Iterations sources owner (entries.map Events.events))
+    (fun entries => match entries with
+      | [] => fun _ => .nil owner
+      | _ :: _ => fun enough => False.elim (by simp at enough))
+    (fun _ build entries => match entries with
+      | [] => fun _ => .nil owner
+      | first :: rest => fun enough => .cons first.trace (build rest (Nat.le_of_succ_le_succ enough)))
+    fuel
+
+def Events.iterations {sources owner} (entries : List (Events sources owner)) :
+    Iterations sources owner (entries.map Events.events) :=
+  iterationsFrom entries.length entries (Nat.le_refl _)
+
+/-- A path uses executed event ordinals, including across a compound fold.
+Repeated source offsets do not participate in lookup. The private
+constructor retains composition of the checked ordinals. -/
+structure Path {sources : Sources} {owner : String} (events : List (Event sources owner))
+    (event : Event sources owner) where
+  private mk ::
+  cost : Unit → Nat
+  find : Sequence sources owner events → Option (Occurrence sources owner event)
+
+def Path.work {sources owner} {events : List (Event sources owner)}
+    {event : Event sources owner} (path : Path events event) : Nat :=
+  path.cost ()
+
+def Path.direct {sources owner} {events : List (Event sources owner)}
+    {event : Event sources owner} (ordinal : Nat)
+    (selected : events[ordinal]? = some event) : Path events event :=
+  ⟨fun _ => ordinal+1,fun trace => some (trace.at ordinal selected)⟩
+
+def Path.folded {sources owner} {events : List (Event sources owner)}
+    {event : Event sources owner} {fold : FoldEvent sources owner}
+    {iterations : List (List (Event sources owner))}
+    (parent : Path events (.staticFold fold iterations)) (ordinal : Nat)
+    (selected : iterations.flatten[ordinal]? = some event) : Path events event :=
+  ⟨fun _ => parent.work+iterations.length+(iterations.map List.length).sum+ordinal+1,
+   fun trace => do
+    let .fold _ _ children ← parent.find trace | none
+    pure (children.flatten.at ordinal selected)⟩
+
+structure EvaluatedWithTrace {sources owner name} (signature : Signature sources owner name) where
+  evaluated : Evaluated signature
+  sequence : Sequence sources owner evaluated.events
+
+end RuntimeCalleeTrace
+
 structure Outcome (sources : Sources) (caller : String) (before : Environment) where
   value : Value
   remaining : Environment
@@ -782,6 +1013,11 @@ structure Outcome (sources : Sources) (caller : String) (before : Environment) w
   events : List (Event sources caller)
   balanced : (owners before ++ allocated).Perm (valueOwners value ++ owners remaining ++ consumed)
   staticRows : List (String × String)
+  trace : RuntimeCalleeTrace.Sequence sources caller events
+
+def Outcome.tracedEvents {sources caller before} (result : Outcome sources caller before) :
+    RuntimeCalleeTrace.Events sources caller :=
+  ⟨result.events,result.trace⟩
 
 /-- Actual data compared when a native continuation freshly recovers an
 original arm. Proof fields are retained by the arm and outcome themselves. -/
@@ -809,11 +1045,5 @@ def Outcome.description {sources caller before} (result : Outcome sources caller
     result.events.any Event.quantumUse,result.staticRows,result.events.flatMap Event.callOffsets,
     result.events.flatMap Event.qmatchOffsets,result.events.flatMap Event.basisOffsets,result.events.flatMap Event.computedOffsets⟩
 
-structure Evaluated {sources owner name} (signature : Signature sources owner name) where
-  summary : Summary signature
-  events : List (Event sources owner)
-  inferred : inferredEffect events = summary.inferredEffect
-  basisCovered : summary.basis.covered (events.flatMap Event.basisOffsets) = true
-  computedCovered : summary.computed.covered (events.flatMap Event.computedOffsets) = true
 
 end QleisliKernel.SourceTypes.SourceRuntimeContext

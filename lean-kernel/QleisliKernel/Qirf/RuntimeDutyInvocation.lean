@@ -168,7 +168,7 @@ inductive Binding {sources catalogue} (queue : @GenericDutyQueue.Checked sources
       (same : selected.entry.index = record) : Binding queue (.root body) (.root record)
   | named {caller record} {event : SourceRuntimeContext.NamedEvent sources caller}
       {body : SourceRuntimeTrace.Body event.target.signature}
-      {original : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body}
+      {original : SourceRuntimeTrace.NamedRead event body}
       {parent : CallPath sources rootOwner rootName caller event.target.callerName}
       {invocation : Invocation catalogue record} {application : ApplicationAt catalogue record}
       {target : GenericDutyQueue.Target application}

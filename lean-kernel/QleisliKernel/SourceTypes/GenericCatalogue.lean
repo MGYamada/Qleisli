@@ -183,10 +183,19 @@ prepared invocation checks table coverage without scanning a body again. -/
 def readModules (sources : Sources) (modules : List Module) : WorkM (SourceModules.Prepared sources) := do
   SourceModules.prepare sources (← modules.mapM (readModuleData sources))
 
+abbrev ParsedRecords (sources : Sources) := {records : List (BodyRecord sources) //
+  ∀ index : Fin records.length, (records[index.val]'index.isLt).Parsed}
+
+private def retainParsers {sources} (checked : List {body : BodyRecord sources // body.Parsed}) :
+    ParsedRecords sources :=
+  ⟨checked.map Subtype.val,fun index => by
+    have bounded : index.val < checked.length := by simpa only [List.length_map] using index.isLt
+    simpa only [List.getElem_map] using (checked[index.val]'bounded).property⟩
+
 def readBodies (sources : Sources) (helpers : NaturalHelpers.Checked sources)
     (originals : OrdinarySignature.Originals sources) (ids : List DefId)
     (modules : Option (SourceModules.Prepared sources) := none)
-    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (List (BodyRecord sources)) := do
+    (meanings : Option (SourceMeaning.Prepared sources) := none) : WorkM (ParsedRecords sources) := do
   let context : DefinitionContext sources := ⟨helpers,some originals,modules,meanings⟩
   let prepared ← prepareDefinitions context
   let keys := prepared.entries.map (fun entry => (entry.owner,entry.name))
@@ -195,10 +204,10 @@ def readBodies (sources : Sources) (helpers : NaturalHelpers.Checked sources)
   -- The complete ordered cohort is already present. Check its actual key
   -- coverage once, then traverse those exact rows without repeated searches.
   -- RuntimeChecked.identified separately retains the resulting original order.
-  if ids == keys then
+  let checked ← if ids == keys then
     prepared.entries.mapM fun entry => readBodyDefinition prepared entry.prepared
-  else
-    ids.mapM fun (owner,name) => readBodyPrepared prepared owner name
+  else ids.mapM fun (owner,name) => readBodyPrepared prepared owner name
+  return retainParsers checked
 
 structure RuntimeChecked (sources : Sources) where
   modules : List Module
@@ -215,8 +224,10 @@ structure RuntimeChecked (sources : Sources) where
   meaningsPrepared : ∃ before after,
     (SourceMeaning.prepare sources (meaningIds modules)).run before = (.ok meaningsContext,after)
   records : List (BodyRecord sources)
+  parsed : ∀ index : Fin records.length, (records[index.val]'index.isLt).Parsed
   bodiesRead : ∃ before after,
-    (readBodies sources helpers originals (runtimeIds modules) (some modulesContext) (some meaningsContext)).run before = (.ok records,after)
+    (readBodies sources helpers originals (runtimeIds modules) (some modulesContext) (some meaningsContext)).run before =
+      (.ok ⟨records,parsed⟩,after)
   identified : records.map (·.id) = runtimeIds modules
   cycles : ∃ before after,(checkCycles records).run before = (.ok (),after)
   all : AllInferred records records
@@ -246,6 +257,35 @@ def Entry.body {sources catalogue owner name original} (entry : @Entry sources c
 
 def Entry.inferred {sources catalogue owner name original} (entry : @Entry sources catalogue owner name original) :
     Inferred catalogue.records entry.body := catalogue.all.get entry.index
+
+private theorem sameParsedTree {sources owner name} (body : BodyRecord sources)
+    (sameOwner : body.owner = owner) (sameName : body.name = name)
+    (original : OrdinarySignature.Original sources owner name)
+    (sameOriginal : HEq body.definition.original.envelope original)
+    (retained : body.Parsed) (tree : SourceSyntax.Tree original.occurrence.body)
+    (parsed : SourceSyntax.read (original.occurrence.body.length+1) 0 true original.occurrence.body = .ok tree) :
+    HEq body.tree tree := by
+  rcases body with ⟨_,_,definition,_,stored,_,_⟩
+  cases sameOwner
+  cases sameName
+  have same := eq_of_heq sameOriginal
+  cases same
+  exact heq_of_eq (Except.ok.inj (retained.symm.trans parsed))
+
+/-- The retained symbolic result applies to this exact original parser tree.
+The checked definition and every obligation stay attached to its catalogue row. -/
+def Entry.bindTree {sources catalogue owner name original} (entry : @Entry sources catalogue owner name original)
+    (tree : SourceSyntax.Tree original.occurrence.body)
+    (parsed : SourceSyntax.read (original.occurrence.body.length+1) 0 true original.occurrence.body = .ok tree) :
+    WorkM (PLift (HEq entry.body.tree tree)) := do
+  let body := entry.body
+  exactWork (Exact.charge (16*(body.owner.utf8ByteSize+body.name.utf8ByteSize+
+    owner.utf8ByteSize+name.utf8ByteSize+1)))
+  if sameOwner : body.owner = owner then
+    if sameName : body.name = name then
+      return ⟨sameParsedTree body sameOwner sameName original entry.sameOriginal (catalogue.parsed entry.index) tree parsed⟩
+    else throw .request
+  else throw .request
 
 def lookup {sources owner name} (catalogue : RuntimeChecked sources)
     (original : OrdinarySignature.Original sources owner name) : WorkM (Entry catalogue original) := do
@@ -411,23 +451,24 @@ def read (sources : Sources) : WorkM (Checked sources) := do
         let modulesContext ← NaturalAffine.witness (readModules sources modules.val)
         let helpers ← NaturalHelpers.read sources
         let meanings ← NaturalAffine.witness (SourceMeaning.prepare sources (meaningIds modules.val))
-        let records ← NaturalAffine.witness
+        let auditedBodies ← NaturalAffine.witness
           (readBodies sources helpers originals.val (runtimeIds modules.val) (some modulesContext.val) (some meanings.val))
-        if identified : records.val.map (·.id) = runtimeIds modules.val then
-          let cycles ← NaturalAffine.witness (checkCycles records.val)
+        let records := auditedBodies.val.val
+        if identified : records.map (·.id) = runtimeIds modules.val then
+          let cycles ← NaturalAffine.witness (checkCycles records)
           have cycleUnit : cycles.val = () := by cases cycles.val; rfl
-          let all ← inferAll records.val records.val
+          let all ← inferAll records records
           let runtime : RuntimeChecked sources :=
             ⟨modules.val,by with_reducible exact modules.property,moduleNames,uniqueModules,
               originals.val,by with_reducible exact originals.property,originalsComplete,
               modulesContext.val,by with_reducible exact modulesContext.property,helpers,
-              meanings.val,by with_reducible exact meanings.property,records.val,
-              by with_reducible exact records.property,identified,
+              meanings.val,by with_reducible exact meanings.property,records,auditedBodies.val.property,
+              by with_reducible exact auditedBodies.property,identified,
               by with_reducible simpa only [cycleUnit] using cycles.property,all⟩
           let auxiliary ← NaturalAffine.witness
             ((auxiliaryIds modules.val).mapM (fun item => readAuxiliary sources helpers item (some meanings.val)))
           let meaningReferences ← NaturalAffine.witness
-            ((auxiliary.val.flatMap (·.meanings) ++ records.val.flatMap bodyMeanings).forM (checkMeaningReferences runtime))
+            ((auxiliary.val.flatMap (·.meanings) ++ records.flatMap bodyMeanings).forM (checkMeaningReferences runtime))
           have meaningUnit : meaningReferences.val = () := by cases meaningReferences.val; rfl
           pure ⟨runtime,auxiliary.val,by with_reducible exact auxiliary.property,
             by with_reducible simpa only [meaningUnit] using meaningReferences.property⟩

@@ -16,14 +16,14 @@ open RuntimeOrdinarySSA
 abbrev SourceState := RuntimeStructuralAction.SourceState
 abbrev Position := SourceSequence.Position
 
-/-- Each edge retains the original instantiated event and a fresh exact callee
-body read. No emitted module name, numeric width or wire alias builds an edge. -/
+/-- Each edge retains the original instantiated event and the actual checked
+origin of its callee body. Emitted names, widths and wire aliases supply no edge. -/
 inductive CallPath (sources : Sources) (rootOwner rootName : String) : String → String → Type where
   | root {signature : SourceRuntimeContext.Signature sources rootOwner rootName}
       (body : SourceRuntimeTrace.Body signature) : CallPath sources rootOwner rootName rootOwner rootName
   | named {caller : String} (event : SourceRuntimeContext.NamedEvent sources caller)
       (body : SourceRuntimeTrace.Body event.target.signature)
-      (original : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body)
+      (original : SourceRuntimeTrace.NamedRead event body)
       (parent : CallPath sources rootOwner rootName caller event.target.callerName) :
       CallPath sources rootOwner rootName event.target.resolution.moduleName event.target.resolution.declaration.name
 

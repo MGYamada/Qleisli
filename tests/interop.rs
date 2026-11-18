@@ -1893,11 +1893,12 @@ fn ordinary_swap_and_structural_axes_keep_distinct_export_work_and_readout_order
 #[test]
 fn register_routing_exports_keep_physical_gates_and_structural_order() {
     use qleisli::contract::exact::{Exact, Matrix};
-    let local_swap = include_str!(
+    let register_swap = include_str!(
         "fixtures/authoring_sessions/register-axis-routing-v030/attempt-01/swap_registers.qli"
     );
-    for (body, expected_gates, expected_axes, gather) in [
+    for (provider, body, expected_gates, expected_axes, gather) in [
         (
+            register_swap,
             "let (a,b) = swap_registers[2](a,b);",
             vec![
                 "cx q[0], q[2];",
@@ -1911,6 +1912,7 @@ fn register_routing_exports_keep_physical_gates_and_structural_order() {
             [2, 3, 0, 1],
         ),
         (
+            "",
             "let a = transpose_axes[2,0,1](a);",
             vec![],
             [1, 0, 2, 3],
@@ -1918,8 +1920,9 @@ fn register_routing_exports_keep_physical_gates_and_structural_order() {
         ),
     ] {
         let source = format!(
-            "{local_swap}\nuse std::structure::{{empty,consume_empty,transpose_axes}};\n\
+            "use std::structure::{{empty,consume_empty,transpose_axes}};\n\
              use std::state::init0;\n\
+             {provider}\n\
              isometry fn pair()->Q<Bits<2>>{{let a=init0();let b=init0();put_bit[2,0](a,put_bit[1,0](b,empty()))}}\n\
              observe fn main()->(Bit,Bit,Bit,Bit){{\n\
              let a=pair();let b=pair();{body}\n\

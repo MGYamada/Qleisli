@@ -1,5 +1,5 @@
 import QleisliKernel.Qirf.RuntimeGraphOperation
-import QleisliKernel.Qirf.RuntimeStaticPrimitive
+import QleisliKernel.Qirf.RuntimeStaticFold
 import QleisliKernel.Qirf.RuntimeTransformRequest
 import QleisliKernel.Qirf.RuntimeBranchAction
 import QleisliKernel.Qirf.RuntimeBasisAction
@@ -164,7 +164,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (located : callPosition = position ∧ position.offset = event.call.calleeOffset)
       (callerName : event.target.callerName = name)
       (body : SourceRuntimeTrace.Body event.target.signature)
-      (original : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body)
+      (original : SourceRuntimeTrace.NamedRead event body)
       (nested : Body preparation (.whole body source.requiresControl) child) :
       Event preparation source (.named event) position before {before with calls := remaining}
   | operation {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
@@ -183,7 +183,7 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (child : Context) (remaining : List (Position × Context))
       (call : before.calls = (position,child) :: remaining)
       (request : RuntimeTransformRequest.Checked event position child)
-      (original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position child) request)
+      (original : RuntimeTransformRequest.Read event position child request)
       (nested : Body preparation (.whole request.source source.requiresControl) request.context) :
       Event preparation source (.transform event) position before {before with calls := remaining}
   | selection {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
@@ -239,6 +239,16 @@ inductive Event {artifact : Artifact} (preparation : RuntimeGraphOperation.Prepa
       (events : Events preparation source (selected.selected.result.events.zip positions)
         (before.takeStatic position).2 after) :
       Event preparation source (.staticConditional event children) position before after
+  | staticFold {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
+      {event : SourceRuntimeContext.FoldEvent artifact.sources owner}
+      {iterations : List (List (SourceRuntimeContext.Event artifact.sources owner))}
+      {position : Position} {before after : Queues}
+      (partition : RuntimeStaticFold.Partition event iterations position)
+      (original : RuntimeInterval.Computed
+        (RuntimeStaticFold.readPartition event iterations position (before.takeStatic position).1) partition)
+      (events : Events preparation source (iterations.flatten.zip partition.positions)
+        (before.takeStatic position).2 after) :
+      Event preparation source (.staticFold event iterations) position before after
   | basis {owner name} {source : SourceRuntimeScope.Subject artifact.sources owner name}
       {event : SourceRuntimeContext.BasisEvent artifact.sources owner} {position : Position} {before : Queues}
       (body : RuntimeBasisAction.Source event) :

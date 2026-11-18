@@ -39,6 +39,19 @@ def valueFields (value : Value) : Nat := value.foldl (fun size atom => size+matc
   | .owner code | .ordinary code => codeFields code+1
   | .tuple _ => 1) 0
 
+private def widenCode (code : Code) : Code := code.map fun
+  | .bits form => .bits (StaticFoldBounds.widen form)
+  | atom => atom
+
+/-- A fold index adds one affine coordinate. The enclosing value has zero
+coefficient on that coordinate and keeps its exact nominal and ownership shape. -/
+def widen (value : Value) : WorkM Value := do
+  exactWork (Exact.charge (valueFields value + value.length + 1))
+  pure (value.map fun
+    | .owner code => .owner (widenCode code)
+    | .ordinary code => .ordinary (widenCode code)
+    | atom => atom)
+
 private def children : Semantics.SymbolicBasis.Atom → Option Nat
   | .fixed .unit | .fixed .bit | .fixed (.bits _) | .fixed (.enumeration ..) => some 0
   | .fixed atom => Semantics.FiniteCarrier.children atom

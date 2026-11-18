@@ -413,6 +413,8 @@ QMATCH_BOUNDARY = {
         'V5 independently reads the original complete typed body, actual calls, provider arguments and Meaning duties. '
         'Inline arms replay their original indexed body against the literal arm Raw in the isolated target frame. '
         'The same sector check compares their exact controlled and enclosing Raw actions to the original arm. '
+        'Original static folds retain the ordered checked iterations and actual source call occurrences. '
+        'The fold reader checks complete contiguous Raw coverage and the carried and surviving owner frames. '
         'All original obligations must be consumed; a checked selection, basis event or discharged application '
         'qualifies for source scope. Fresh native comparison binds the full decoded graph and typed request to '
         'the execution handle. Recheck retains that request.'),

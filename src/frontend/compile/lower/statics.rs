@@ -3,6 +3,7 @@
 //! untrusted emitter selects operations, never replaces their native gates.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
+use super::quantum_match::nominal::{self, StaticRegion};
 use super::*;
 use crate::frontend::check::plans::{
     BodyStaticKind, BodyStaticOriginal, BodyStaticPlan, original_body_static,
@@ -220,16 +221,17 @@ impl Lowerer<'_, '_> {
             .nominal_qmatch
             .as_ref()
             .filter(|_| self.uses_qmatch_v5())
-            .map(super::quantum_match::nominal::Frame::static_checkpoint);
+            .map(nominal::Frame::static_checkpoint);
         let start = self.raw.operations.len();
         let result = self.block(module, selected, env)?;
         if let Some(checkpoint) = position_checkpoint {
-            super::quantum_match::nominal::record_static(
+            nominal::record_static(
                 self,
                 module,
                 original.span,
                 start,
                 checkpoint,
+                StaticRegion::Conditional,
             )?;
         }
         Ok(result)
@@ -361,6 +363,14 @@ impl Lowerer<'_, '_> {
             }
         };
         self.compiler.charge(module, original.span, iterations)?;
+        // The seed's source events are already in the enclosing sequence.
+        // A fold interval starts with the first iteration, or is empty.
+        let position_checkpoint = self
+            .nominal_qmatch
+            .as_ref()
+            .filter(|_| self.uses_qmatch_v5())
+            .map(nominal::Frame::static_checkpoint);
+        let raw_start = self.raw.operations.len();
         for current in start..end {
             // The source frame is never replaced by the iteration's scope.
             // Mixed products containing any Q owner are hidden as a whole.
@@ -398,6 +408,16 @@ impl Lowerer<'_, '_> {
                 });
             self.compiler.charge(module, body.span, local_storage)?;
             self.no_owned_bindings(module, body.result.span, &local, std::iter::empty())?;
+        }
+        if let Some(checkpoint) = position_checkpoint {
+            nominal::record_static(
+                self,
+                module,
+                original.span,
+                raw_start,
+                checkpoint,
+                StaticRegion::Fold,
+            )?;
         }
         Ok(value)
     }

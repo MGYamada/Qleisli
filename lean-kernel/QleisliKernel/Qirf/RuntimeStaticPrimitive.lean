@@ -358,7 +358,7 @@ structure Frame (roles : List Owner) (state : Raw.Observation.State) (bindings :
   checked : RuntimeOwnerMap.Checked roles state
   same : checked.bindings.Perm bindings
 
-private def readFrame (roles : List Owner) (state : Raw.Observation.State) (bindings : RuntimeOwnerMap.Map) :
+def readFrame (roles : List Owner) (state : Raw.Observation.State) (bindings : RuntimeOwnerMap.Map) :
     WorkM (Frame roles state bindings) := do
   exactWork (Exact.charge (32*(Raw.OwnerFlow.fields roles+
     Raw.OwnerFlow.fields (bindings.map (·.owner))+

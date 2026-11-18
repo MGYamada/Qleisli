@@ -195,7 +195,7 @@ def evalWithReader (sources : Sources) (caller : String)
     (fun _ next naturals held scope environment tokens tree context => do
     match tree with
     | .empty .. => return (← outcome environment [.tuple 0] environment [],context)
-    | .literal .. | .boolean .. | .conditional .. | .staticConditional .. | .basis .. |
+    | .literal .. | .boolean .. | .conditional .. | .staticConditional .. | .staticFold .. | .basis .. |
         .variant .. | .record .. | .projection .. | .bitIndex .. | .matching .. | .computed .. |
         .workspace .. | .exclusive .. => throw .request
     | .move tokens _ _ =>

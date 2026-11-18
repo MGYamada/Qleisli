@@ -206,9 +206,9 @@ class ProductionCoverage(unittest.TestCase):
             ('src/frontend/compile/instances.rs', 'pub bodies: [BodyState; 4]'),
             ('src/frontend/compile/instances/provider.rs', 'match &self.instances[record].bodies[profile]'),
             ('src/frontend/compile/instances/provider.rs', 'operations::ProviderRoot::of(&body)'),
-            ('src/frontend/compile/instances/provider.rs', 'cached.body.artifact() != body.artifact()'),
+            ('src/frontend/compile/instances/provider.rs', '!cached.same_artifact(&body)'),
             ('src/frontend/compile/operations.rs', 'ProviderRoot::of(program)'),
-            ('src/frontend/compile/operations.rs', 'self.providers[&cache].body.artifact() != self.checked[&key].artifact()'),
+            ('src/frontend/compile/operations.rs', '!self.providers[&cache].same_artifact(&self.checked[&key])'),
         ):
             with self.subTest(path=path, marker=marker), self.assertRaisesRegex(ValueError, 'source binding changed'):
                 self.check_changed_source(path, marker, 'removed reviewed cache binding')

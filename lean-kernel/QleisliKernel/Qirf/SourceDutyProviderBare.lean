@@ -95,7 +95,7 @@ structure Site {sources} (catalogue : GenericCatalogue.Checked sources)
   initial : GenericValues.Environment
   seeded : GenericValues.seed patterns original.entry.body.definition.parameters = .ok initial
   initialScope : scope = original.entry.body.definition.original.header.formals.map (·.name) ++ initial.map (·.name)
-  unguarded : state.environment.guards.isEmpty = true
+  unguarded : state.environment.unguarded = true
   bytes : LocatedFacts.OrderedSlices state.prepared.original.envelope.source.toUTF8
     state.prepared.original.envelope.occurrence.openBrace.span.endByte tokens
   inside : tokens.all (fun token => token.span.endByte ≤
@@ -124,7 +124,7 @@ def readSite {sources} (catalogue : GenericCatalogue.Checked sources)
     | .error _ => throw .request
     | .ok initial =>
       if initialScope : scope = definition.original.header.formals.map (·.name) ++ initial.map (·.name) then
-        if unguarded : state.environment.guards.isEmpty = true then
+        if unguarded : state.environment.unguarded = true then
           let written := state.prepared.original.envelope
           if bytes : LocatedFacts.checkOrdered written.source.toUTF8 written.occurrence.openBrace.span.endByte tokens = true then
             if inside : tokens.all (fun token => token.span.endByte ≤ written.occurrence.closeBrace.span.startByte) = true then

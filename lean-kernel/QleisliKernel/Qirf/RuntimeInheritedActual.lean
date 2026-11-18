@@ -42,7 +42,7 @@ private structure OriginKey where
   deriving DecidableEq
 
 private def originKey {sources} (o : GenericOperation.Origin sources) : OriginKey :=
-  ⟨originalKey o.state.prepared.original.envelope,o.scope,o.tokens,o.offset,o.rows,o.state.environment.guards.isEmpty⟩
+  ⟨originalKey o.state.prepared.original.envelope,o.scope,o.tokens,o.offset,o.rows,o.state.environment.unguarded⟩
 
 private structure ActualKey where
   parameter : Semantics.SymbolicBasis.Parameter
@@ -69,7 +69,7 @@ private structure CallKey where
   deriving DecidableEq
 
 private def callKey {sources} (a : GenericOperation.ApplicationSource sources) : CallKey :=
-  ⟨originalKey a.state.prepared.original.envelope,a.scope,a.tokens,a.state.environment.guards.isEmpty,
+  ⟨originalKey a.state.prepared.original.envelope,a.scope,a.tokens,a.state.environment.unguarded,
     originalKey a.target.envelope,a.basisActuals,a.naturalActuals,a.operationActuals.map actualKey⟩
 
 private def applicationCost {sources} (a : GenericOperation.ApplicationSource sources) : Nat :=
@@ -96,7 +96,7 @@ structure Inherited {sources} (catalogue : GenericCatalogue.Checked sources)
   formalOfCall : app.target.header.formals[binding.formal.ordinal]? = some binding.formal
   appliedTo : binding.actual.tokens = argument ∧ binding.actual.tokens = tokens
   sameScope : binding.actual.scope = app.scope
-  noGuard : binding.actual.state.environment.guards.isEmpty = true
+  noGuard : binding.actual.state.environment.unguarded = true
 
 /-- A selected interior actual uses the same complete supplying-call check as
 a whole-formal actual. The caller supplies its authenticated original slot. -/
@@ -122,7 +122,7 @@ def readInheritedAt {sources caller scope} (catalogue : GenericCatalogue.Checked
             binding.formal = formal ∧
             app.target.header.formals[binding.formal.ordinal]? = some binding.formal then
           if site : (binding.actual.tokens = argument ∧ binding.actual.tokens = marker.tokens) ∧
-              binding.actual.scope = app.scope ∧ binding.actual.state.environment.guards.isEmpty = true then
+              binding.actual.scope = app.scope ∧ binding.actual.state.environment.unguarded = true then
             let ⟨original,caller,sameFormal,onlyFormal⟩ := target
             return ⟨binding,only,application,retained,call,supplied.val,by with_reducible exact supplied.property,
               original,caller,sameFormal,onlyFormal,site.1,site.2.1,site.2.2⟩

@@ -65,7 +65,7 @@ theorem named_entry_of_bindings {dependencies program block start count inputs o
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
     {scope : @RuntimeCallScope.Checked dependencies program block start count inputs ordinary event.effect}
     {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
-    {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+    {bodyRead : SourceTypes.SourceRuntimeTrace.NamedRead event body}
     {boundary : RuntimeNamedBoundary.Checked scope.interval inputs event before child retired body.checked.summary.value}
     {finalOrdinary} {steps : RuntimePureBody.Steps dependencies scope.program scope.prepared.block}
     {assigned : Map}

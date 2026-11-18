@@ -23,6 +23,29 @@ private instance : LawfulBEq Description := ⟨by deriving_LawfulEq_tactic⟩
 private def adapt {α : Type} (value : Except String α) : WorkM α :=
   lift (value.mapError fun _ => .request)
 
+-- This pass reads the written expression. The name and type readers reserve
+-- their own source lookups when the expression actually selects a declaration.
+private def chargeSyntax (tokens : List LocatedToken) : WorkM Unit :=
+  exactWork (Exact.charge (32*((tokens.map fun token => token.text.utf8ByteSize+4).sum+1)))
+
+private def remapCells (description : Description) : Nat :=
+  description.nodes.foldl (fun total node => total+match node with
+    | .provider _ _ _ _ edges | .formal _ _ _ _ edges _ => edges.length+1
+    | _ => 3) 0
+
+private def buildUnary (child : Description) (constructor : Nat → Node) : WorkM Description := do
+  exactWork (Exact.charge (8*(child.nodes.length+1)))
+  return child.unary constructor
+
+private def buildBinary (constructor : Nat → Nat → Node)
+    (left right : Description) : WorkM Description := do
+  exactWork (Exact.charge (8*(left.nodes.length+remapCells right+1)))
+  return Description.binary constructor left right
+
+private def chargeApplications (operations : List (String × Description)) : WorkM Unit :=
+  -- Provider and formal construction append graph prefixes and remap each edge.
+  exactWork (Exact.charge (8*(operations.length+1)*((operations.map fun op => remapCells op.2+1).sum+1)))
+
 private def candidateResolution {sources caller scope tokens}
     (candidate : CallName.Checked sources caller scope tokens) : Option Resolved :=
   match candidate.decision with
@@ -91,27 +114,26 @@ def buildWithInstantiation {sources caller callerName original}
     (scope : List String) (genericState : Option (GenericLexicalNatural.SomeEnvironment sources)) :
     Nat → List LocatedToken → WorkM Description :=
   Nat.rec (fun _ => throw .limit) (fun _ next tokens => do
-    let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
-    exactWork (Exact.charge (32*(bytes+(tokens.map fun token => token.text.utf8ByteSize+4).sum+1)))
+    chargeSyntax tokens
     let description ← if tokens.getLast?.map (·.text) == some ")" then do
         let call ← adapt (CallSyntax.read tokens)
         let [constructor] := call.call.callee.map (·.text) | throw .request
         match constructor,call.call.arguments with
-        | "adjoint",[child] => return (← next child.tokens).unary .inverse
-        | "controlled",[child] => return (← next child.tokens).unary .controlled
+        | "adjoint",[child] => buildUnary (← next child.tokens) .inverse
+        | "controlled",[child] => buildUnary (← next child.tokens) .controlled
         | "power",[child,amount] =>
           let child ← next child.tokens
           let count ← countValue instantiation entries environment scope genericState amount.tokens
-          return child.unary (fun index => .power index count)
-        | "then_op",[left,right] => return Description.binary .thenOp (← next left.tokens) (← next right.tokens)
-        | "tensor_op",[left,right] => return Description.binary .tensor (← next left.tokens) (← next right.tokens)
+          buildUnary child (fun index => .power index count)
+        | "then_op",[left,right] => buildBinary .thenOp (← next left.tokens) (← next right.tokens)
+        | "tensor_op",[left,right] => buildBinary .tensor (← next left.tokens) (← next right.tokens)
         | "conjugate_op",[outer,middle] =>
-          return Description.binary .conjugate (← next outer.tokens) (← next middle.tokens)
+          buildBinary .conjugate (← next outer.tokens) (← next middle.tokens)
         | "checked_op",[child,meaning] =>
           let _ ← adapt (CallName.readName child.tokens)
           let child ← next child.tokens
           let selected ← SourceMeaning.selectName sources caller scope (meaning.tokens.map (·.text))
-          return child.unary (fun index => .requested index selected.resolution.moduleName selected.resolution.declaration.name)
+          buildUnary child (fun index => .requested index selected.resolution.moduleName selected.resolution.declaration.name)
         | _,_ => throw .request
       else do
         let written ← adapt (StaticApplication.readSyntax tokens)
@@ -122,17 +144,21 @@ def buildWithInstantiation {sources caller callerName original}
           match instantiation with
           | .closed _ => throw .request
           | .static arguments staticEnvironment _ =>
-            let some formal := staticEnvironment.numeric.original.header.formals.find? (·.name == name)
-              | throw .request
+            let formals := staticEnvironment.numeric.original.header.formals
+            exactWork (Exact.charge (8*((formals.map fun formal => formal.name.utf8ByteSize+name.utf8ByteSize+1).sum+1)))
+            let some formal := formals.find? (·.name == name) | throw .request
             let .operation _ := formal.kind | throw .request
+            chargeApplications arguments.operations
             pure (OperationDescription.formal caller callerName arguments.bases arguments.naturals
               arguments.operations formal.ordinal)
         | _ =>
           let some resolution := candidateResolution candidate | throw .request
           let actuals ← StaticApplication.read instantiation entries environment scope written
             resolution.moduleName resolution.declaration.name next genericState
+          let arguments := actuals.arguments
+          chargeApplications arguments.operations
           pure (OperationDescription.provider resolution.moduleName resolution.declaration.name
-            actuals.arguments.bases actuals.arguments.naturals actuals.arguments.operations)
+            arguments.bases arguments.naturals arguments.operations)
     guard (description.nodes.length ≤ 4096) .limit
     exactWork (Exact.charge (16*(description.nodes.length+1)^2))
     guard description.complete .request
@@ -209,8 +235,8 @@ Basis actual remain relevant; canonical names alone cannot cover those rows. -/
 private def underEdge {sources caller scope childTokens tokens}
     (edge : Edge) (value : Provenance sources caller scope childTokens) :
     WorkM (Provenance sources caller scope tokens) := do
-  -- Pay before mapping paths and copying the returned marker spine. Original
-  -- row/source/query work retains its existing separate reservation.
+  -- Pay before mapping paths and copying the returned marker spine. Source
+  -- rows are shared with the child here.
   exactWork (Exact.charge (8*(value.markers.length+1)))
   return ⟨value.rows,value.markers.map fun marker => {marker with path := edge :: marker.path}⟩
 
@@ -222,8 +248,7 @@ def readProvenanceWithInstantiation {sources caller callerName original}
     (scope : List String) (genericState : Option (GenericLexicalNatural.SomeEnvironment sources)) :
     Nat → (tokens : List LocatedToken) → WorkM (Provenance sources caller scope tokens) :=
   Nat.rec (fun _ => throw .limit) (fun _ next tokens => do
-    let bytes := (sources.toList.map fun row => row.1.utf8ByteSize+row.2.utf8ByteSize).sum
-    exactWork (Exact.charge (32*(bytes+(tokens.map fun token => token.text.utf8ByteSize+4).sum+1)))
+    chargeSyntax tokens
     if tokens.getLast?.map (·.text) == some ")" then
       let call ← adapt (CallSyntax.read tokens)
       match checkedOp : call.call.callee.map (·.text),arguments : call.call.arguments with
@@ -232,12 +257,14 @@ def readProvenanceWithInstantiation {sources caller callerName original}
       | ["then_op"],[left,right] | ["tensor_op"],[left,right] | ["conjugate_op"],[left,right] => do
         let left ← underEdge (tokens := tokens) (.child 0) (← next left.tokens)
         let right ← underEdge (tokens := tokens) (.child 1) (← next right.tokens)
+        exactWork (Exact.charge (8*(left.rows.length+left.markers.length+1)))
         return ⟨left.rows ++ right.rows,left.markers ++ right.markers⟩
       | ["checked_op"],[child,meaning] => do
         let childName ← adapt (CallName.readName child.tokens)
         let selected ← NaturalAffine.witness
           (SourceMeaning.selectName sources caller scope (meaning.tokens.map (·.text)))
         let inherited ← underEdge (tokens := tokens) (.child 0) (← next child.tokens)
+        exactWork (Exact.charge (8*(inherited.rows.length+inherited.markers.length+1)))
         let marker : Marker sources caller scope :=
           ⟨[],tokens,call,child,meaning,checkedOp,arguments,childName,selected.val,
             by with_reducible exact selected.property⟩
@@ -257,8 +284,11 @@ def readProvenanceWithInstantiation {sources caller callerName original}
           match actual.formal.kind with
           | .operation _ => underEdge (tokens := tokens) (.actual actual.formal.ordinal) (← next actual.argument.tokens)
           | _ => pure (⟨[],[]⟩ : Provenance sources caller scope tokens)
-        exactWork (Exact.charge (8*((children.map fun child => child.markers.length).sum+children.length+1)))
-        return ⟨CallName.sourceRows candidate ++ actuals.actuals.flatMap StaticApplication.Actual.sourceRows ++
+        let calleeRows := CallName.sourceRows candidate
+        let actualRows := actuals.actuals.map StaticApplication.Actual.sourceRows
+        exactWork (Exact.charge (8*(calleeRows.length+(actualRows.map List.length).sum+
+          (children.map fun child => child.rows.length+child.markers.length+1).sum+1)))
+        return ⟨calleeRows ++ actualRows.flatten ++
           children.flatMap (·.rows),children.flatMap (·.markers)⟩)
 
 /-- Compatibility projection of the one shared provenance traversal. New

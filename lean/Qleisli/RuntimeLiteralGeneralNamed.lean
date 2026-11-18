@@ -165,7 +165,7 @@ theorem named_refines_of_traversal {artifact : Artifact} {root : Validity.Root}
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
     {scope : @RuntimeCallScope.Checked root.dependencies program block start count args ordinary event.effect}
     {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
-    {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+    {bodyRead : SourceTypes.SourceRuntimeTrace.NamedRead event body}
     {boundary : RuntimeNamedBoundary.Checked scope.interval args event before child retired body.checked.summary.value}
     {finalOrdinary} {steps : RuntimePureBody.Steps root.dependencies scope.program scope.prepared.block}
     (entry : NamedHistoryEntry (.named event scope body bodyRead boundary finalOrdinary steps))

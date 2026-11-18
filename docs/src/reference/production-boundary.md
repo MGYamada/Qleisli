@@ -374,6 +374,10 @@ source positions and literal Raw body. Lean replays the original block in
 the isolated target frame and compares the resulting exact action with its
 controlled implementation and with the caller's Raw sector. Mixed named and
 inline arms use that same sector check.
+For a supported original `qfor` with closed bounds, Lean follows the
+written iteration order and checks that the literal Raw intervals cover
+the loop body contiguously. The carried register and surviving owner
+frames are checked at the boundaries, including zero-width owners.
 Nonstructural bodies and the full twelve-bit profile remain pending.
 A selected coherent arm can use an original classical Meaning helper with
 nominal intermediate values when the Meaning's ports are supported built-in

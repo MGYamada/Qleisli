@@ -293,16 +293,10 @@ impl Compiler<'_> {
                 // binds the source. Fresh native decoding issues fresh receipt
                 // identities, so compare the complete canonical accepted Raw
                 // graph and retained dependency source bytes before reuse.
-                let cost = cached
-                    .body
-                    .artifact()
-                    .len()
-                    .saturating_add(body.artifact().len())
-                    .saturating_add(cached.operation.copy_size())
-                    .saturating_add(1);
+                let cost = cached.comparison_work(&body);
                 self.charge(module, span, cost)?;
                 let cached = &self.providers[&cache];
-                if cached.body.artifact() != body.artifact() {
+                if !cached.same_artifact(&body) {
                     return Err(self.error(
                         module,
                         span,

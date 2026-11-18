@@ -35,7 +35,7 @@ inductive ChildRunAt (artifact : Artifact) (root : Validity.Root)
       {event : SourceTypes.SourceRuntimeContext.NamedEvent artifact.sources caller}
       {scope : RuntimeCallScope.Checked block start count inputs ordinary event.effect}
       {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
-      {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+      {bodyRead : SourceTypes.SourceRuntimeTrace.NamedRead event body}
       {rootOwner rootName : String}
       {path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName
         event.target.resolution.moduleName event.target.resolution.declaration.name}
@@ -74,7 +74,7 @@ inductive PureChildRunAt (artifact : Artifact) (root : Validity.Root)
       {event : SourceTypes.SourceRuntimeContext.NamedEvent artifact.sources caller}
       {scope : RuntimeCallInterval.Checked block start count inputs}
       {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
-      {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+      {bodyRead : SourceTypes.SourceRuntimeTrace.NamedRead event body}
       {rootOwner rootName : String}
       {parent : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName caller event.target.callerName}
       {controlled : Bool} {request : Context}
@@ -747,6 +747,157 @@ private def ModeInvariant {artifact root execution} (next : BlockRunner artifact
   Invariant next inputs initial ordinary state ∧
     ModeFacts next mode inputs ordinary state.2.2.1 state.2.2.2.1 state.2.2.2.2.1
 
+
+private abbrev SectionState {artifact : Artifact} (queries : RuntimeBodyQueries.Mode artifact)
+    (Receipt : Type) {dependencies program} (block : RuntimeInterval.Block dependencies program) :=
+  QueryState dependencies program block queries.Cursor Receipt
+
+private abbrev SectionStep {artifact : Artifact} (queries : RuntimeBodyQueries.Mode artifact)
+    {owner name} (source : SourceTypes.SourceRuntimeScope.Subject artifact.sources owner name)
+    (State : Type) :=
+  (event : SourceTypes.SourceRuntimeContext.Event artifact.sources owner) → (position : Position) →
+    RuntimeSourceEvent.Origin event position → queries.EventData source event position → State → WorkM State
+
+private def withSourceCursor {dependencies program block Cursor Receipt}
+    (state : @QueryState dependencies program block Cursor Receipt) (next : Cursor) :
+    @QueryState dependencies program block Cursor Receipt :=
+  let (history,retired,ordinary,actions,steps,obligations,cursor,_,receipts) := state
+  (history,retired,ordinary,actions,steps,obligations,cursor,next,receipts)
+
+private theorem preserves_static_conditional {artifact : Artifact}
+    (queries : RuntimeBodyQueries.Mode artifact) {owner name}
+    (source : SourceTypes.SourceRuntimeScope.Subject artifact.sources owner name)
+    {dependencies program} (block : RuntimeInterval.Block dependencies program) {Receipt : Type}
+    (positions : List Position) (pureOnly : Bool)
+    (event : SourceTypes.SourceRuntimeContext.StaticEvent artifact.sources owner)
+    (children : List (SourceTypes.SourceRuntimeContext.Event artifact.sources owner))
+    (position : Position)
+    (entry : RuntimeSourceEvent.At (source.events.zip positions) (.staticConditional event children) position)
+    (data : queries.EventData source (.staticConditional event children) position)
+    (advance : SectionState queries Receipt block → Nat → WorkM (SectionState queries Receipt block))
+    (step : SectionStep queries source (SectionState queries Receipt block))
+    (property : SectionState queries Receipt block → Prop)
+    (advances : ∀ before after start work left, property before →
+      (advance before start).run work = (.ok after,left) → property after)
+    (steps : ∀ event position origin data before after work left, property before →
+      (step event position origin data before).run work = (.ok after,left) → property after)
+    (rescope : ∀ state cursor, property state → property (withSourceCursor state cursor))
+    (before after : SectionState queries Receipt block) (work left : Nat) (opening : property before)
+    (read : ((do
+      let (_,_,_,_,_,_,_,incomingSourceCursor,_) := before
+      let actual ← SourceTypes.NaturalAffine.witness
+        (RuntimeBodyQueries.readStatic queries source event children position pureOnly incomingSourceCursor data)
+      let selected := actual.val
+      let state ← advance before position.start
+      let (history,retired,ordinary,actions,steps,obligations,cursor,_,receipts) := state
+      let sequence := selected.sequence
+      let interval ← RuntimeInterval.check block position.start position.count
+      let bindings := (← reordered (history.bindings.map (·.owner)) interval.before history.bindings).bindings
+      let before : RuntimeStructuralAction.SourceState := {history with bindings}
+      let _ ← RuntimeStaticPrimitive.readContinuationBefore sequence interval before source.suspended
+      let count := sequence.selected.result.events.length
+      exactWork (Exact.charge (32*(count+1)*(actions.length+steps.length+obligations.length+count+1)+
+        32*(Raw.OwnerFlow.fields retired+1)))
+      let initial : SectionState queries Receipt block :=
+        (before,retired,ordinary,actions,steps,obligations,cursor,selected.cursor,receipts)
+      let result ← RuntimeBodyQueries.foldEvents queries source
+        (sequence.selected.result.events.zip selected.positions)
+        (fun child childPosition inner childData state =>
+          step child childPosition (RuntimeBodyQueries.selectedOrigin queries source positions
+            event children position entry pureOnly incomingSourceCursor data
+            ⟨selected,by with_reducible exact actual.property⟩ inner) childData state)
+        selected.events initial
+      let (after,afterRetired,_,_,_,_,afterCursor,_,_) := result
+      guard (afterCursor == position.start+position.count) .request
+      let _ ← RuntimeStaticPrimitive.readContinuationAfter sequence interval before after retired afterRetired source.suspended
+      return result) : WorkM (SectionState queries Receipt block)).run work = (.ok after,left)) :
+    property after := by
+  rcases before with ⟨history,retired,ordinary,actions,stepsBefore,obligations,cursor,sourceCursor,receipts⟩
+  dsimp (config := {zeta := false}) only at read
+  obtain ⟨actual,a,_,rest⟩ := bind_success _ _ _ _ _ read
+  obtain ⟨advanced,b,advancedRead,rest⟩ := bind_success _ _ _ _ _ rest
+  have entered := advances _ advanced position.start a b opening advancedRead
+  rcases advanced with ⟨history,retired,ordinary,actions,stepsBefore,obligations,cursor,sourceCursor,receipts⟩
+  obtain ⟨interval,c,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨ordered,d,orderedRead,rest⟩ := bind_success _ _ _ _ _ rest
+  have sameMap : ordered.bindings = history.bindings := reordered_self ⟨c,d,orderedRead⟩
+  obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,f,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨result,g,walked,rest⟩ := bind_success _ _ _ _ _ rest
+  rcases result with ⟨historyAfter,retiredAfter,ordinaryAfter,actionsAfter,stepsAfter,obligationsAfter,cursorAfter,sourceCursorAfter,receiptsAfter⟩
+  obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,_,_,returned⟩ := bind_success _ _ _ _ _ rest
+  have same := (pure_success _ _ _ _ returned).1
+  subst after
+  have trace := RuntimeBodyQueries.foldEvents_trace queries source
+    (actual.val.sequence.selected.result.events.zip actual.val.positions) _ actual.val.events _ _ f g walked
+  apply trace.invariant property
+  · simpa only [sameMap,withSourceCursor] using rescope _ actual.val.cursor entered
+  · intro child position inner data before after work left incoming read
+    exact steps child position _ data before after work left incoming read
+
+private theorem preserves_static_fold {artifact : Artifact}
+    (queries : RuntimeBodyQueries.Mode artifact) {owner name}
+    (source : SourceTypes.SourceRuntimeScope.Subject artifact.sources owner name)
+    {dependencies program} (block : RuntimeInterval.Block dependencies program) {Receipt : Type}
+    (positions : List Position)
+    (event : SourceTypes.SourceRuntimeContext.FoldEvent artifact.sources owner)
+    (iterations : List (List (SourceTypes.SourceRuntimeContext.Event artifact.sources owner)))
+    (position : Position)
+    (entry : RuntimeSourceEvent.At (source.events.zip positions) (.staticFold event iterations) position)
+    (data : queries.EventData source (.staticFold event iterations) position)
+    (advance : SectionState queries Receipt block → Nat → WorkM (SectionState queries Receipt block))
+    (step : SectionStep queries source (SectionState queries Receipt block))
+    (property : SectionState queries Receipt block → Prop)
+    (advances : ∀ before after start work left, property before →
+      (advance before start).run work = (.ok after,left) → property after)
+    (steps : ∀ event position origin data before after work left, property before →
+      (step event position origin data before).run work = (.ok after,left) → property after)
+    (rescope : ∀ state cursor, property state → property (withSourceCursor state cursor))
+    (before after : SectionState queries Receipt block) (work left : Nat) (opening : property before)
+    (read : ((do
+      let (_,_,_,_,_,_,_,incomingSourceCursor,_) := before
+      let selected ← RuntimeBodyQueries.readFold queries source event iterations position incomingSourceCursor data
+      let (history,retired,ordinary,actions,steps,obligations,cursor,_,receipts) ← advance before position.start
+      let interval ← RuntimeInterval.check block position.start position.count
+      let _ ← RuntimeStaticFold.readBefore event interval history source.suspended
+      let count := selected.partition.positions.length
+      exactWork (Exact.charge (32*(count+1)*(actions.length+steps.length+obligations.length+count+1)+
+        32*(Raw.OwnerFlow.fields retired+1)))
+      let initial : SectionState queries Receipt block :=
+        (history,retired,ordinary,actions,steps,obligations,cursor,selected.cursor,receipts)
+      let result ← RuntimeBodyQueries.foldEvents queries source
+        (iterations.flatten.zip selected.partition.positions)
+        (fun child position inner data state =>
+          step child position (.folded source positions entry selected.partition inner) data state)
+        selected.events initial
+      let (after,afterRetired,_,_,_,_,afterCursor,_,_) := result
+      guard (afterCursor == position.start+position.count) .request
+      let _ ← RuntimeStaticFold.readAfter event interval history after retired afterRetired source.suspended
+      return result) : WorkM (SectionState queries Receipt block)).run work = (.ok after,left)) :
+    property after := by
+  rcases before with ⟨history,retired,ordinary,actions,stepsBefore,obligations,cursor,sourceCursor,receipts⟩
+  dsimp (config := {zeta := false}) only at read
+  obtain ⟨selected,a,_,rest⟩ := bind_success _ _ _ _ _ read
+  obtain ⟨advanced,b,advancedRead,rest⟩ := bind_success _ _ _ _ _ rest
+  have entered := advances _ advanced position.start a b opening advancedRead
+  rcases advanced with ⟨history,retired,ordinary,actions,stepsBefore,obligations,cursor,sourceCursor,receipts⟩
+  obtain ⟨interval,c,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,e,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨result,f,walked,rest⟩ := bind_success _ _ _ _ _ rest
+  rcases result with ⟨historyAfter,retiredAfter,ordinaryAfter,actionsAfter,stepsAfter,obligationsAfter,cursorAfter,sourceCursorAfter,receiptsAfter⟩
+  obtain ⟨_,_,_,rest⟩ := bind_success _ _ _ _ _ rest
+  obtain ⟨_,_,_,returned⟩ := bind_success _ _ _ _ _ rest
+  have same := (pure_success _ _ _ _ returned).1
+  subst after
+  have trace := RuntimeBodyQueries.foldEvents_trace queries source
+    (iterations.flatten.zip selected.partition.positions) _ selected.events _ _ e f walked
+  apply trace.invariant property
+  · exact rescope _ selected.cursor entered
+  · intro child position inner data before after work left incoming read
+    exact steps child position _ data before after work left incoming read
+
 set_option maxHeartbeats 500000 in
 /-- One proof of the actual iteration retains both the complete state chain
 and its named-child computations. The recursive caller is explicit here;
@@ -1312,31 +1463,19 @@ theorem step_flow_mode (artifact : Artifact) (root : Validity.Root)
       ModeInvariant next mode (RuntimeBranchCondition.rootEntries path) historyStart initialOrdinary after := by
     cases event
     case staticConditional event children =>
-      rcases before with ⟨initialHistory,initialRetired,incomingOrdinary,initialActions,initialSteps,initialObligations,initialCursor,initialSourceCursor,initialReceipts⟩
-      dsimp only [outerStep] at read
-      obtain ⟨actual,a,_actual,h⟩ := bind_success _ _ _ _ _ read
-      obtain ⟨advanced,b,advancedRead,h⟩ := bind_success _ _ _ _ _ h
-      have entered := (advances (initialHistory,initialRetired,incomingOrdinary,initialActions,initialSteps,
-        initialObligations,initialCursor,initialSourceCursor,initialReceipts) advanced position.start a b incoming advancedRead
-        ).1
-      rcases advanced with ⟨history,retired,ordinary,actions,steps,obligations,cursor,sourceCursor,receipts⟩
-      obtain ⟨interval,c,_interval,h⟩ := bind_success _ _ _ _ _ h
-      obtain ⟨ordered,d,orderedRead,h⟩ := bind_success _ _ _ _ _ h
-      have sameMap : ordered.bindings = history.bindings := reordered_self ⟨c,d,orderedRead⟩
-      obtain ⟨_,e,_before,h⟩ := bind_success _ _ _ _ _ h
-      obtain ⟨_,f,_charge,h⟩ := bind_success _ _ _ _ _ h
-      obtain ⟨walk,g,walked,h⟩ := bind_success _ _ _ _ _ h
-      rcases walk with ⟨nextHistory,nextRetired,nextOrdinary,nextActions,nextSteps,nextObligations,nextCursor,nextSourceCursor,nextReceipts⟩
-      obtain ⟨_,i,_cursor,h⟩ := bind_success _ _ _ _ _ h
-      obtain ⟨_,j,_after,returned⟩ := bind_success _ _ _ _ _ h
-      have same := (pure_success _ _ _ _ returned).1
-      subst after
-      have trace := RuntimeBodyQueries.foldEvents_trace execution.queries source
-        (actual.val.sequence.selected.result.events.zip actual.val.positions) _ actual.val.events _ _ f g walked
-      apply trace.invariant (ModeInvariant next mode (RuntimeBranchCondition.rootEntries path) historyStart initialOrdinary)
-      · simpa only [sameMap] using entered
-      · intro child position inner data before after budget remaining incoming childRead
-        exact steps_preserve child position _ data before after budget remaining incoming childRead
+      exact preserves_static_conditional execution.queries source block request.positions pureOnly
+        event children position entry data advance step
+        (ModeInvariant next mode (RuntimeBranchCondition.rootEntries path) historyStart initialOrdinary)
+        (fun before after start work left h run => (advances before after start work left h run).1)
+        steps_preserve (by intro state cursor h; rcases state with ⟨_,_,_,_,_,_,_,_,_⟩; exact h)
+        before after budget remaining incoming read
+    case staticFold event iterations =>
+      exact preserves_static_fold execution.queries source block request.positions
+        event iterations position entry data advance step
+        (ModeInvariant next mode (RuntimeBranchCondition.rootEntries path) historyStart initialOrdinary)
+        (fun before after start work left h run => (advances before after start work left h run).1)
+        steps_preserve (by intro state cursor h; rcases state with ⟨_,_,_,_,_,_,_,_,_⟩; exact h)
+        before after budget remaining incoming read
     all_goals
       exact steps_preserve _ position (.direct source request.positions entry)
         data before after budget remaining incoming read

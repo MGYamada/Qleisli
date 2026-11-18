@@ -344,7 +344,7 @@ theorem original_transform_history {dependencies program block artifact caller}
     {event : SourceTypes.SourceRuntimeContext.TransformEvent artifact.sources caller}
     {position request before} {interval : @RuntimeInterval.Checked dependencies program block position.start position.count}
     (sourceRequest : RuntimeTransformRequest.Checked event position request)
-    (original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position request) sourceRequest)
+    (original : RuntimeTransformRequest.Read event position request sourceRequest)
     (forward : RuntimeTransformAction.Forward artifact dependencies sourceRequest)
     {forwardReturned : Map} (logical : RuntimeTransformAction.ForwardMap forward forwardReturned)
     (held : RuntimeTransformOwners.Checked interval event before)

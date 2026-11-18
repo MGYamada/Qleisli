@@ -10,7 +10,10 @@ assertion. Source metadata alone grants neither arm equations nor execution.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.SourceTypes.SourceRuntimeTrace
 open QleisliKernel QleisliKernel.SourceTypes
-open SourceRuntimeValues SourceRuntimeContext
+open SourceRuntimeValues SourceRuntimeContext SourceRuntimeContext.RuntimeCalleeTrace
+
+abbrev Traced {sources owner name} (signature : Signature sources owner name) :=
+  EvaluatedWithTrace signature
 
 private def adapt {α : Type} (action : Except String α) : Finite.WorkM α :=
   Finite.lift (action.mapError fun _ => .request)
@@ -28,7 +31,7 @@ structure OriginalSetup {sources owner name} (signature : Signature sources owne
     signature.original.occurrence.body = .ok tree
   generic : RuntimeGenericAnalysis.Checked signature.original
   genericRead : ∃ before after,
-    (RuntimeGenericAnalysis.read signature.instantiation tree signature.operations.catalogue).run before = (.ok generic,after)
+    (RuntimeGenericAnalysis.readParsed signature.instantiation tree parsed signature.operations.catalogue).run before = (.ok generic,after)
 
 private def readOriginalSetup {sources owner name} (signature : Signature sources owner name) :
     Finite.WorkM (OriginalSetup signature) := do
@@ -36,7 +39,8 @@ private def readOriginalSetup {sources owner name} (signature : Signature source
   match parsed : SourceSyntax.read (tokens.length+1) 0 true tokens with
   | .error _ => throw .request
   | .ok tree =>
-    let generic ← NaturalAffine.witness (RuntimeGenericAnalysis.read signature.instantiation tree signature.operations.catalogue)
+    let generic ← NaturalAffine.witness
+      (RuntimeGenericAnalysis.readParsed signature.instantiation tree parsed signature.operations.catalogue)
     return ⟨tree,parsed,generic.val,by with_reducible exact generic.property⟩
 
 def originalSetup {sources owner name signature} (summary : @Summary sources owner name signature) :
@@ -48,19 +52,19 @@ private def callFrame {sources owner name} (signature : Signature sources owner 
 
 private def outcome {sources caller} (before : Environment) (value : Value) (remaining : Environment)
     (allocated consumed : List Semantics.SourceOwners.Owner) (nextOrdinal : Nat)
-    (events : List (Event sources caller)) (rows : List (String × String) := []) :
+    (events : Events sources caller) (rows : List (String × String) := []) :
     Finite.WorkM (Outcome sources caller before) := do
   -- Each evaluated child already retained every row of its events. Callers
   -- add only the rows contributed by their own new event or source operation.
   let staticRows ← SourceTrace.retainStaticRows rows
   Finite.exactWork (Exact.charge (16*(environmentCells before+environmentCells remaining+valueFields value+
-    events.length+1)+
+    events.events.length+1)+
     SourceTrace.Meter.permutationWork (owners before ++ allocated)
       (valueOwners value ++ owners remaining ++ consumed)))
   Finite.guard (value.length ≤ 3*128 && remaining.length ≤ 128) .limit
   if balanced : (owners before ++ allocated).Perm
       (valueOwners value ++ owners remaining ++ consumed) then
-    return ⟨value,remaining,allocated,consumed,nextOrdinal,events,balanced,staticRows⟩
+    return ⟨value,remaining,allocated,consumed,nextOrdinal,events.events,balanced,staticRows,events.trace⟩
   else throw .request
 
 private def boundNames (pattern : List LocatedToken) : Except String (List String) := do
@@ -125,7 +129,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
     (basis : SourceBasisBindings.Checked signature.instantiation generic.basisObligations)
     (computed : SourceComputedBindings.Checked signature.instantiation generic.computedObligations)
     (readCallee : {callee calleeName : String} → (target : Signature sources callee calleeName) →
-      Finite.WorkM (Summary target)) : Nat → PhaseApplication.Naturals sources →
+      Finite.WorkM (EvaluatedWithTrace target)) : Nat → PhaseApplication.Naturals sources →
     List Semantics.SourceOwners.Owner → List String → Nat → (environment : Environment) →
     {tokens : List LocatedToken} → SourceSyntax.Tree tokens → SourceContext.Context sources owner →
     Finite.WorkM (Outcome sources owner environment × SourceContext.Context sources owner) :=
@@ -137,8 +141,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           let holding := held ++ values.flatMap valueOwners
           let (result,context) ← recurse naturals holding scope ordinal current child.2 context
           return (values ++ [result.value],result.remaining,allocated ++ result.allocated,
-            consumed ++ result.consumed,result.nextOrdinal,events ++ result.events,rows ++ result.staticRows,context))
-        (([] : List Value),environment,[],[],nextOrdinal,([] : List (Event sources owner)),
+            consumed ++ result.consumed,result.nextOrdinal,events ++ result.tracedEvents,rows ++ result.staticRows,context))
+        (([] : List Value),environment,[],[],nextOrdinal,(Events.empty : Events sources owner),
           ([] : List (String × String)),startContext)
       let evaluateSelection (originalTokens : List LocatedToken) (parsed : QuantumMatch.Parsed)
           (original : QuantumMatch.parse originalTokens = .ok (parsed,[]))
@@ -164,13 +168,14 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           return (result.events.flatMap Event.basisOffsets,result.events.flatMap Event.computedOffsets)
         return (← outcome environment [.tuple 2,.owner selector,.owner target] last.remaining
           (first.allocated ++ last.allocated) (first.consumed ++ last.consumed) last.nextOrdinal
-          (first.events ++ last.events ++ [.selection ⟨originalTokens,parsed,original,selector,target,scope,naturals,
-            held,last.remaining,name,signature,generic,basis,computed,last.nextOrdinal,offsets⟩])
+          (first.tracedEvents ++ last.tracedEvents ++ Events.single (.local (.selection
+            ⟨originalTokens,parsed,original,selector,target,scope,naturals,held,last.remaining,name,signature,
+              generic,basis,computed,last.nextOrdinal,offsets⟩)))
           (first.staticRows ++ last.staticRows ++ naturals.sourceRows),context)
       let executeCall {callTokens : List LocatedToken} (call : CallSyntax.Checked callTokens)
           (readArguments : SourceContext.Context sources owner → Finite.WorkM
             (List Value × Environment × List Semantics.SourceOwners.Owner × List Semantics.SourceOwners.Owner ×
-              Nat × List (Event sources owner) × List (String × String) × SourceContext.Context sources owner)) :
+              Nat × Events sources owner × List (String × String) × SourceContext.Context sources owner)) :
           Finite.WorkM (Outcome sources owner environment × SourceContext.Context sources owner) := do
         if let some written ← adapt (SourceRuntimeTransformSyntax.read call.call.callee) then
           let lookup ← SourceContext.read sources owner context scope written.base.2.callee (sourceModules signature)
@@ -185,7 +190,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             -- The child is checked even when one of the original powers is
             -- zero. No selected-body effect is inferred from the prefix.
             let _ ← SourceRecursion.read generic scope written.base.1 target.signature.original
-            let forward ← readCallee target.signature
+            let child ← readCallee target.signature
+            let forward := child.evaluated.summary
             if visibleUnitary : SourceEffect.visible owner target.resolution.moduleName
                 target.signature.original.declaration.isPublic target.signature.original.parsedHeader.effect
                 forward.generic.inferredEffect = .unitary then
@@ -220,7 +226,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                             visibleUnitary,counts,originalCounts,copies,multiplied,access,ports,portsRead,
                             values,ordinal,value,new,used,after,applied,held,remaining⟩
                         return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
-                          after (events ++ [.transform event]) (rows ++ (Event.transform event).staticRows),context)
+                          after (events ++ Events.single (.transform event child.evaluated rfl child.sequence))
+                          (rows ++ (Event.transform event).staticRows),context)
                   else throw .request
               else throw .request
             else throw .request
@@ -240,7 +247,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                 ⟨callTokens,call,name,signature.original,signature.instantiation,naturals,scope,application,applicable,
                   values,ordinal,value,new,used,after,applied,held,owners remaining⟩
               return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
-                (events ++ [.operation event]) (rows ++ (Event.operation event).staticRows),context)
+                (events ++ Events.single (.local (.operation event))) (rows ++ (Event.operation event).staticRows),context)
           else throw .request
         let written ← adapt (StaticApplication.readSyntax call.call.callee)
         let lookup ← SourceContext.read sources owner context scope written.callee (sourceModules signature)
@@ -254,7 +261,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
             let phase : PhaseEvent sources owner :=
               ⟨callTokens,call,scope,naturals,application,operand,bit,held,remaining⟩
             return (← outcome environment [.owner operand] remaining allocated consumed ordinal
-              (events ++ [.phase phase]) (rows ++ (Event.phase phase).staticRows),context)
+              (events ++ Events.single (.local (.phase phase))) (rows ++ (Event.phase phase).staticRows),context)
           else throw .request
         | some kind =>
           if SourceRegisterApplication.selected kind then
@@ -268,7 +275,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                 ⟨callTokens,call,scope,naturals,written,candidate,kind,selected,application,values,ordinal,
                   value,new,used,after,applied,held,remaining⟩
               return (← outcome environment value remaining (allocated ++ new) (consumed ++ used)
-                after (events ++ [.registerPrimitive event]) (rows ++ (Event.registerPrimitive event).staticRows),context)
+                after (events ++ Events.single (.local (.registerPrimitive event))) (rows ++ (Event.registerPrimitive event).staticRows),context)
           Finite.guard written.arguments.isEmpty .request
           match applied : SourceRuntimePrimitive.apply kind ⟨owner,name,call.calleeOffset⟩ values ordinal with
           | .error _ => throw .request
@@ -277,12 +284,13 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
               ⟨callTokens,call,scope,written,candidate,kind,selected,values,value,new,used,after,held,remaining,
                 ⟨name,ordinal,applied⟩⟩
             return (← outcome environment value remaining (allocated ++ new) (consumed ++ used) after
-              (events ++ [.primitive event]) rows,context)
+              (events ++ Events.single (.local (.primitive event))) rows,context)
         | none =>
           let target ← readTarget signature naturals written candidate
           if matched : values.map typeOf = target.signature.parameters.map (·.tree) then
             let _ ← SourceRecursion.read generic scope call.call.callee target.signature.original
-            let canonical ← readCallee target.signature
+            let child ← readCallee target.signature
+            let canonical := child.evaluated.summary
             let inputOwners := values.flatMap valueOwners
             let fresh := canonical.allocated.zipIdx.map fun (owner,index) =>
               (⟨ordinal+index,owner.basis⟩ : Semantics.SourceOwners.Owner)
@@ -300,13 +308,14 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                   ⟨callTokens,call,scope,target,canonical,values,matched,inputOwners,rfl,fresh,mapping,rfl,
                     value,transported,used,consumedRead,held,remaining⟩
                 return (← outcome environment value remaining (allocated ++ fresh) (consumed ++ used)
-                  (ordinal+fresh.length) (events ++ [.named event]) (rows ++ (Event.named event).staticRows),context)
+                  (ordinal+fresh.length) (events ++ Events.single (.named event child.evaluated rfl child.sequence))
+                  (rows ++ (Event.named event).staticRows),context)
           else throw .request
       match tree with
       | .empty .. =>
-        return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal [],context)
+        return (← outcome environment [.ordinary [.unit] .unit] environment [] [] nextOrdinal Events.empty,context)
       | .literal _ bit _ =>
-        return (← outcome environment [.ordinary [.bit] (.bit bit)] environment [] [] nextOrdinal [],context)
+        return (← outcome environment [.ordinary [.bit] (.bit bit)] environment [] [] nextOrdinal Events.empty,context)
       | .workspace written inputTree dirtyTrees bodyTree =>
         let (values,remaining,allocated,consumed,ordinal,events,rows,context) ←
           evaluateChildren (⟨written.parts.data.tokens,inputTree⟩ :: dirtyTrees.trees) context
@@ -352,7 +361,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     return (← outcome environment value remaining
                       (allocated ++ (if fresh then [scratch] else []) ++ body.allocated)
                       (consumed ++ body.consumed ++ (if fresh then [scratchOut] else [])) body.nextOrdinal
-                      (events ++ [.workspace event body.events]) (rows ++ (Event.workspace event body.events).staticRows),context)
+                      (events ++ Events.single (.workspace event body.trace)) (rows ++ (Event.workspace event body.events).staticRows),context)
                 else throw .request
               | _ => throw .request
           else throw .request
@@ -362,7 +371,8 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let [.owner input] := inputResult.value | throw .request
         let binding ← SourceBasisBindings.activeAt computed (SourceRuntimeComputed.offset written)
         if inputType : binding.ports.input = input.basis then
-          let predicate ← readComputedPredicate signature naturals scope written.parts.predicate input.basis readCallee
+          let predicate ← readComputedPredicate signature naturals scope written.parts.predicate input.basis
+            (fun target => return (← readCallee target).evaluated.summary)
           let logical ← readComputedLogical signature naturals scope input.basis written.parts.logical
           match prepared : SourceRuntimeComputed.prepare written input inputResult.remaining inputResult.nextOrdinal signature.staticNames with
           | .error _ => throw .request
@@ -391,7 +401,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     return (← outcome environment [.owner returned.data] inputResult.remaining
                       (inputResult.allocated ++ [initial.auxiliary] ++ body.allocated)
                       (inputResult.consumed ++ body.consumed ++ [returned.auxiliary]) body.nextOrdinal
-                      (inputResult.events ++ [.computed event body.events])
+                      (inputResult.tracedEvents ++ Events.single (.computed event body.trace))
                       (inputResult.staticRows ++ body.staticRows ++ (Event.computed event body.events).staticRows),context)
               else throw .request
             else throw .request
@@ -413,9 +423,9 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                   result.balanced,inferredEffect result.events,result.events.any Event.quantumUse,
                   result.staticRows,calls,callsRead,result.events.flatMap Event.basisOffsets,
                   result.events.flatMap Event.computedOffsets⟩
-              return (arms ++ [⟨child.1,arm⟩],events ++ [result.events],result.nextOrdinal,context))
+              return (arms ++ [⟨child.1,arm⟩],events ++ [result.tracedEvents],result.nextOrdinal,context))
           (([] : List (Sigma (Arm sources owner selected.remaining))),
-            ([] : List (List (Event sources owner))),selected.nextOrdinal,context)
+            ([] : List (Events sources owner)),selected.nextOrdinal,context)
         if originalBodies : arms.map (·.1) = written.parts.arms.map (·.body.tokens) then
           let some first := arms.head? | throw .request
           let remaining ← adapt (SourceRuntimeBranches.outer selected.remaining first.2.remaining)
@@ -436,10 +446,64 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
               let consumed := SourceRuntimeBranches.retired selected.remaining remaining ++ allocated
               return (← outcome environment value remaining
                 (selected.allocated ++ allocated ++ phis.map (·.output)) (selected.consumed ++ consumed)
-                (ordinal+phis.length) (selected.events ++ [.matching event armEvents])
+                (ordinal+phis.length) (selected.tracedEvents ++ Events.single (.matching event (Events.iterations armEvents)))
                 (selected.staticRows ++ labels.labels.sourceRows ++ arms.flatMap (·.2.staticRows) ++ naturals.sourceRows),context)
           else throw .request
         else throw .request
+      | .staticFold written initial body =>
+        let range ← NaturalAffine.witness (SourceStaticFold.read sources owner naturals scope written)
+        let (seed,context) ← recurse naturals held scope nextOrdinal environment initial context
+        let carryType := typeOf seed.value
+        Finite.guard ((written.parts.keyword.text == "qfor") == !(valueOwners seed.value).isEmpty) .request
+        let names ← adapt (boundNames written.parts.pattern)
+        let index := written.parts.index.text
+        Finite.guard (names.all fun binder => binder != index && !naturals.staticNames.contains binder) .request
+        let ordinary := seed.remaining.filter fun cell => (valueOwners cell.value).isEmpty
+        let bodyScope := names ++ index :: scope
+        let holding := held ++ owners seed.remaining
+        match originalCalls : body.calls with
+        | .error _ => throw .request
+        | .ok calls =>
+          let qmatches := QuantumSequence.originalOffsets written.parts.body
+          Finite.exactWork (Exact.charge (16*(range.val.count+1)+SourceTrace.Meter.syntaxWork written.parts.body))
+          let (value,ordinal,iterations,events,context) ← (List.finRange range.val.count).foldlM
+            (fun (carry,ordinal,iterations,events,context) step => do
+              Finite.exactWork (Exact.charge (32*(environmentCells ordinary+valueFields carry+
+                Raw.OwnerFlow.fields holding+SourceTrace.Meter.nameFields bodyScope+1)))
+              let before ← adapt (SourceRuntimeValues.bind (written.parts.pattern.map (·.text)) carry ordinary
+                (.staticFoldCarry written.parts.carry.span.startByte))
+              let (result,context) ← recurse (range.val.environment step) holding bodyScope ordinal before body context
+              Finite.exactWork (Exact.charge (32*(environmentCells result.remaining+valueFields result.value+
+                result.events.length+calls.length+qmatches.length+1)))
+              Finite.guard (typeOf carry == carryType && result.events.flatMap Event.callOffsets == calls &&
+                result.events.flatMap Event.qmatchOffsets == qmatches) .request
+              if shape : typeOf result.value = typeOf carry then
+                if complete : owners result.remaining = [] then
+                  let checked : Arm sources owner before written.parts.body :=
+                    ⟨body,result.value,result.remaining,result.allocated,result.consumed,result.nextOrdinal,result.balanced,
+                      inferredEffect result.events,result.events.any Event.quantumUse,result.staticRows,calls,originalCalls,
+                      result.events.flatMap Event.basisOffsets,result.events.flatMap Event.computedOffsets⟩
+                  let iteration : FoldIteration sources owner written.parts.body :=
+                    ⟨range.val.coordinate step,carry,before,checked,shape,complete⟩
+                  pure (result.value,result.nextOrdinal,iteration :: iterations,result.tracedEvents :: events,context)
+                else throw .request
+              else throw .request)
+            (seed.value,seed.nextOrdinal,([] : List (FoldIteration sources owner written.parts.body)),
+              ([] : List (Events sources owner)),context)
+          let iterations := iterations.reverse
+          let events := events.reverse
+          let allocated := iterations.flatMap (·.seeded.allocated)
+          let consumed := iterations.flatMap (·.seeded.consumed)
+          Finite.exactWork (Exact.charge (32*(iterations.length+allocated.length+consumed.length+1)))
+          if coordinates : iterations.map (·.coordinate) = (List.finRange range.val.count).map range.val.coordinate then
+            let event : FoldEvent sources owner :=
+              ⟨tokens,written,name,signature,generic,naturals,scope,range.val,by with_reducible exact range.property,
+                body,calls,originalCalls,seed.value,seed.remaining,held,seed.nextOrdinal,iterations,coordinates,value,
+                allocated,consumed,ordinal⟩
+            let folded := Events.single (.fold event (events.map Events.events) (Events.iterations events))
+            return (← outcome environment value seed.remaining (seed.allocated ++ allocated) (seed.consumed ++ consumed)
+              ordinal (seed.tracedEvents ++ folded) (seed.staticRows ++ (Event.staticFold event (events.map Events.events)).staticRows),context)
+          else throw .request
       | .staticConditional written thenTree elseTree =>
         let selection ← SourceStaticSelection.read sources owner naturals scope written
         let selected : Sigma SourceSyntax.Tree := if selection.selected then
@@ -474,14 +538,14 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     thenCalls,thenCallsRead,elseCalls,elseCallsRead,environment,nextOrdinal,⟨selected.1,arm⟩,
                     selectedTokens,remaining,projected,held⟩
                 return (← outcome environment result.value remaining result.allocated result.consumed
-                  result.nextOrdinal [.staticConditional event result.events]
+                  result.nextOrdinal (Events.single (.staticBranch event result.trace))
                   (selection.naturals.sourceRows ++ result.staticRows),context)
       | .variant written =>
         let reference ← SourceNominal.readVariant sources owner scope written
         let rows ← NaturalRows.typeRead sources owner naturals.helpers.val scope
           (written.typeTokens.map (·.text)) reference.nominal.query
         return (← outcome environment [.ordinary reference.nominal.query.basis (.ordinal reference.ordinal)]
-          environment [] [] nextOrdinal [] rows,context)
+          environment [] [] nextOrdinal Events.empty rows,context)
       | .record written children =>
         let reference ← SourceNominal.readRecord sources owner scope written
         let (values,remaining,allocated,consumed,ordinal,events,rows,context) ←
@@ -501,18 +565,18 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
         let value ← adapt (SourceRuntimeNominalValue.project reference expression)
         let typeRows ← NaturalRows.nominalOrigins sources naturals.helpers.val basis
         return (← outcome environment value result.remaining result.allocated result.consumed
-          result.nextOrdinal result.events (result.staticRows ++ typeRows),context)
+          result.nextOrdinal result.tracedEvents (result.staticRows ++ typeRows),context)
       | .bitIndex _ _ _ _ _ _ index _ receiver =>
         let (result,context) ← recurse naturals held scope nextOrdinal environment receiver context
         let [.ordinary [.bits width] expression] := result.value | throw .request
         Finite.guard (index < width) .request
         Finite.exactWork (Exact.charge (8*(index+1)))
         return (← outcome environment [.ordinary [.bit] (.field (2^index) 2 expression)]
-          result.remaining result.allocated result.consumed result.nextOrdinal result.events result.staticRows,context)
+          result.remaining result.allocated result.consumed result.nextOrdinal result.tracedEvents result.staticRows,context)
       | .move tokens _ _ =>
         Finite.exactWork (Exact.charge (SourceTrace.Meter.moveWork tokens []+16*environmentCells environment))
         let (value,remaining) ← adapt (move tokens environment)
-        return (← outcome environment value remaining [] [] nextOrdinal [],context)
+        return (← outcome environment value remaining [] [] nextOrdinal Events.empty,context)
       | .binding statement expression rest =>
         let (first,context) ← recurse naturals held scope nextOrdinal environment expression context
         let pattern := statement.statement.pattern
@@ -524,14 +588,14 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           (.letBinding statement.statement.keyword.span.startByte))
         let (last,context) ← recurse naturals held (names ++ scope) first.nextOrdinal after rest context
         return (← outcome environment last.value last.remaining (first.allocated ++ last.allocated)
-          (first.consumed ++ last.consumed) last.nextOrdinal (first.events ++ last.events)
+          (first.consumed ++ last.consumed) last.nextOrdinal (first.tracedEvents ++ last.tracedEvents)
           (first.staticRows ++ last.staticRows),context)
       | .sequence _ expression rest =>
         let (first,context) ← recurse naturals held scope nextOrdinal environment expression context
         Finite.guard (valueOwners first.value == []) .request
         let (last,context) ← recurse naturals held scope first.nextOrdinal first.remaining rest context
         return (← outcome environment last.value last.remaining (first.allocated ++ last.allocated)
-          (first.consumed ++ last.consumed) last.nextOrdinal (first.events ++ last.events)
+          (first.consumed ++ last.consumed) last.nextOrdinal (first.tracedEvents ++ last.tracedEvents)
           (first.staticRows ++ last.staticRows),context)
       | .staticBindings leading _ rest =>
         let (naturals,scope) ← PhaseApplication.extend sources owner leading naturals scope
@@ -618,7 +682,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     pureBody,body.events.any Event.quantumUse,classicalBody,output,held,inputResult.remaining,staticRows⟩
                 return (← outcome environment [.owner output] inputResult.remaining
                   (inputResult.allocated ++ fresh) (inputResult.consumed ++ used) after
-                  (inputResult.events ++ [.basis event]) (inputResult.staticRows ++ staticRows),context)
+                  (inputResult.tracedEvents ++ Events.single (.local (.basis event))) (inputResult.staticRows ++ staticRows),context)
             else throw .request
           else throw .request
       | .conditional written conditionTree thenTree elseTree =>
@@ -671,7 +735,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
                     left.allocated ++ right.allocated
                   return (← outcome environment value remaining (condition.allocated ++ introduced)
                     (condition.consumed ++ retired) (right.nextOrdinal+phis.length)
-                    (condition.events ++ [.conditional event left.events right.events])
+                    (condition.tracedEvents ++ Events.single (.branch event left.trace right.trace))
                     (condition.staticRows ++ left.staticRows ++ right.staticRows ++ naturals.sourceRows),context)
       | .call call children => executeCall call (evaluateChildren children.trees)
       | .exclusive written _ =>
@@ -683,7 +747,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           let [.owner _] := value | throw .request
           return (values ++ [value],remaining)) (([] : List Value),environment)
         let (call,context) ← executeCall written.parsed (fun context =>
-          pure (values,remaining,[],[],nextOrdinal,[],[],context))
+          pure (values,remaining,[],[],nextOrdinal,Events.empty,[],context))
         let outputs ← if values.length == 1 then pure [call.value] else do
           let .tuple count :: fields := call.value | throw .request
           Finite.guard (count == values.length && fields.length == count) .request
@@ -697,7 +761,7 @@ def evalWithReader {sources owner name} (signature : Signature sources owner nam
           | some (_,value) => {cell with value}
           | none => cell
         return (← outcome environment [.ordinary [.unit] .unit] restored call.allocated call.consumed
-          call.nextOrdinal call.events call.staticRows,context))
+          call.nextOrdinal call.tracedEvents call.staticRows,context))
 
 def quantumUse {sources owner name} (signature : Signature sources owner name)
     (events : List (Event sources owner)) : Bool :=
@@ -708,9 +772,9 @@ def quantumUse {sources owner name} (signature : Signature sources owner name)
 /-- Original guarded decrease is checked at each self-call occurrence before
 this concrete specialization stack. Mutual and repeated instances refuse;
 the existing depth capacity is independent of a caller expression's tokens. -/
-def readNestedWithSetup (sources : Sources) : (fuel : Nat) → (active : List SourceCallStack.Frame) →
+def readNestedTraced (sources : Sources) : (fuel : Nat) → (active : List SourceCallStack.Frame) →
     {owner name : String} → (signature : Signature sources owner name) →
-    Option (OriginalSetup signature) → Finite.WorkM (Evaluated signature) :=
+    Option (OriginalSetup signature) → Finite.WorkM (Traced signature) :=
   Nat.rec (fun _ {_ _} _ _ => throw .limit) (fun _ previous active {_ _} signature provided => do
     let frame := callFrame signature
     let _ ← SourceCallStack.read active frame
@@ -747,7 +811,7 @@ def readNestedWithSetup (sources : Sources) : (fuel : Nat) → (active : List So
           let computed ← SourceComputedBindings.prepare signature.instantiation generic.computedObligations
           let naturals ← signature.naturals
           let (result,_) ← evalWithReader signature generic basis computed
-            (fun callee => do return (← previous (frame :: active) callee none).summary)
+            (fun callee => previous (frame :: active) callee none)
             (tokens.length+1) naturals [] (signature.staticNames ++ initial.map (·.name))
             nextOwner initial tree {}
           let basisCovered : PLift (basis.covered (result.events.flatMap Event.basisOffsets) = true) ←
@@ -793,7 +857,7 @@ def readNestedWithSetup (sources : Sources) : (fuel : Nat) → (active : List So
                           result.consumed,result.nextOrdinal,issued,ordinalCount,complete,balanced,typed,
                           inferredEffect result.events,asserted,quantumUse signature result.events,publicQuantum,
                           staticRows⟩
-                        return ⟨summary,result.events,rfl,basisCovered.down,computedCovered.down⟩
+                        return ⟨⟨summary,result.events,rfl,basisCovered.down,computedCovered.down⟩,result.trace⟩
                       else throw .request
                     else throw .request
                   else throw .request
@@ -802,25 +866,52 @@ def readNestedWithSetup (sources : Sources) : (fuel : Nat) → (active : List So
             else throw .request
           else throw .request)
 
+def readNestedWithSetup (sources : Sources) (fuel : Nat) (active : List SourceCallStack.Frame)
+    {owner name : String} (signature : Signature sources owner name)
+    (setup : Option (OriginalSetup signature)) : Finite.WorkM (Evaluated signature) := do
+  return (← readNestedTraced sources fuel active signature setup).evaluated
+
 /-- The fresh public source-body wrapper retains its original action identity.
 Only explicitly supplied exact setup evidence takes the separate path above. -/
 def readNested (sources : Sources) (fuel : Nat) (active : List SourceCallStack.Frame)
     {owner name : String} (signature : Signature sources owner name) : Finite.WorkM (Evaluated signature) :=
   readNestedWithSetup sources fuel active signature none
 
-inductive Traversal {sources owner name} (signature : Signature sources owner name)
-    (evaluated : Evaluated signature) : Type where
-  | fresh (original : ∃ before after,
-      (readNested sources (SourceTrace.sourceFuel sources) [] signature).run before = (.ok evaluated,after)) :
-      Traversal signature evaluated
-  | prepared (setup : OriginalSetup signature) (original : ∃ before after,
-      (readNestedWithSetup sources (SourceTrace.sourceFuel sources) [] signature (some setup)).run before =
-        (.ok evaluated,after)) : Traversal signature evaluated
+inductive Traversal (sources : Sources) :
+    {owner name : String} → (signature : Signature sources owner name) → Traced signature → Type where
+  | fresh {owner name : String} {signature : Signature sources owner name} {traced : Traced signature}
+      (original : ∃ before after,
+        (readNestedTraced sources (SourceTrace.sourceFuel sources) [] signature none).run before = (.ok traced,after)) :
+      Traversal sources signature traced
+  | prepared {owner name : String} {signature : Signature sources owner name} {traced : Traced signature}
+      (setup : OriginalSetup signature)
+      (original : ∃ before after,
+        (readNestedTraced sources (SourceTrace.sourceFuel sources) [] signature (some setup)).run before =
+          (.ok traced,after)) : Traversal sources signature traced
+  | named {owner name : String} {signature : Signature sources owner name} {traced : Traced signature}
+      (parent : Traversal sources signature traced)
+      {event : NamedEvent sources owner} {actual : Evaluated event.target.signature}
+      {canonical : actual.summary = event.canonical}
+      {sequence : RuntimeCalleeTrace.Sequence sources event.target.resolution.moduleName actual.events}
+      (path : RuntimeCalleeTrace.Path traced.evaluated.events (.named event))
+      (selected : path.find traced.sequence = some (.named event actual canonical sequence)) :
+      Traversal sources event.target.signature ⟨actual,sequence⟩
+  | transform {owner name : String} {signature : Signature sources owner name} {traced : Traced signature}
+      (parent : Traversal sources signature traced)
+      {event : TransformEvent sources owner} {actual : Evaluated event.target.signature}
+      {forward : actual.summary = event.forward}
+      {sequence : RuntimeCalleeTrace.Sequence sources event.target.resolution.moduleName actual.events}
+      (path : RuntimeCalleeTrace.Path traced.evaluated.events (.transform event))
+      (selected : path.find traced.sequence = some (.transform event actual forward sequence)) :
+      Traversal sources event.target.signature ⟨actual,sequence⟩
 
 structure Checked (sources : Sources) (owner name : String) where
   signature : Signature sources owner name
-  evaluated : Evaluated signature
-  traversed : Traversal signature evaluated
+  traced : Traced signature
+  traversed : Traversal sources signature traced
+
+def Checked.evaluated {sources owner name} (checked : Checked sources owner name) : Evaluated checked.signature :=
+  checked.traced.evaluated
 
 def Checked.summary {sources owner name} (checked : Checked sources owner name) : Summary checked.signature :=
   checked.evaluated.summary
@@ -832,11 +923,33 @@ structure Body {sources owner name} (signature : Signature sources owner name) w
   checked : Checked sources owner name
   originalSignature : checked.signature = signature
 
+/-- The only retained callee is the occurrence selected from a checked
+ancestor and this exact named call. The parent's verified run is preserved. -/
+def readRetainedNamed {sources owner name}
+    (caller : Checked sources owner name) {event : NamedEvent sources owner}
+    (path : RuntimeCalleeTrace.Path caller.events (.named event)) :
+    Finite.WorkM (Body event.target.signature) := do
+  Finite.exactWork (Exact.charge (16*path.work))
+  match found : path.find caller.traced.sequence with
+  | some (.named _ actual _ sequence) =>
+    return ⟨⟨event.target.signature,⟨actual,sequence⟩,.named caller.traversed path found⟩,rfl⟩
+  | _ => throw .request
+
+def readRetainedTransform {sources owner name}
+    (caller : Checked sources owner name) {event : TransformEvent sources owner}
+    (path : RuntimeCalleeTrace.Path caller.events (.transform event)) :
+    Finite.WorkM (Body event.target.signature) := do
+  Finite.exactWork (Exact.charge (16*path.work))
+  match found : path.find caller.traced.sequence with
+  | some (.transform _ actual _ sequence) =>
+    return ⟨⟨event.target.signature,⟨actual,sequence⟩,.transform caller.traversed path found⟩,rfl⟩
+  | _ => throw .request
+
 /-- The continuation retains the exact already-checked original signature and
 its instantiation/supply context. No equal-width replacement is selected. -/
 def readBodyWithSignature {sources owner name} (signature : Signature sources owner name) :
     Finite.WorkM (Body signature) := do
-  let summary ← NaturalAffine.witness (readNested sources (SourceTrace.sourceFuel sources) [] signature)
+  let summary ← NaturalAffine.witness (readNestedTraced sources (SourceTrace.sourceFuel sources) [] signature none)
   let checked : Checked sources owner name :=
     ⟨signature,summary.val,.fresh (by with_reducible exact summary.property)⟩
   return ⟨checked,rfl⟩
@@ -848,7 +961,7 @@ traversal records this real prepared invocation, not a fictitious fresh run. -/
 def readBodyWithOriginalSetup {sources owner name} (signature : Signature sources owner name)
     (setup : OriginalSetup signature) : Finite.WorkM (Body signature) := do
   let evaluated ← NaturalAffine.witness
-    (readNestedWithSetup sources (SourceTrace.sourceFuel sources) [] signature (some setup))
+    (readNestedTraced sources (SourceTrace.sourceFuel sources) [] signature (some setup))
   let checked : Checked sources owner name :=
     ⟨signature,evaluated.val,.prepared setup (by with_reducible exact evaluated.property)⟩
   return ⟨checked,rfl⟩
@@ -890,8 +1003,7 @@ def readInlineArmBody {sources owner} (site : SelectionEvent sources owner) (ind
     Finite.guard (site.target.ordinal < site.nextOrdinal &&
       reference.all (fun owner => owner.ordinal < site.nextOrdinal && owner.ordinal != site.target.ordinal)) .request
     let (result,_) ← evalWithReader site.signature site.generic site.basis site.computed
-      (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
-        [callFrame site.signature] callee).summary)
+      (fun callee => readNestedTraced sources (SourceTrace.sourceFuel sources) [callFrame site.signature] callee none)
       (arm.block.body.length+1) site.naturals reference site.scope site.nextOrdinal (inlineFrame arm site.target) arm.tree {}
     let result ← if arm.implicitResult then do
       Finite.guard (result.value == [.ordinary [.unit] .unit]) .request
@@ -899,7 +1011,7 @@ def readInlineArmBody {sources owner} (site : SelectionEvent sources owner) (ind
       Finite.guard (cell.origin == .coherentArmTarget arm.block.opening.span.startByte) .request
       let (value,remaining) ← adapt (SourceRuntimeValues.take arm.targetName result.remaining)
       outcome (inlineFrame arm site.target) value remaining result.allocated result.consumed
-        result.nextOrdinal result.events result.staticRows
+        result.nextOrdinal result.tracedEvents result.staticRows
     else pure result
     match outputValue : result.value, originalCalls : arm.tree.calls with
     | [.owner output], .ok offsets =>
@@ -964,6 +1076,26 @@ def readTransformSource {sources caller} (event : TransformEvent sources caller)
     Finite.WorkM (Checked sources event.target.resolution.moduleName event.target.resolution.declaration.name) := do
   return (← readTransformBody event).checked
 
+/-- A native body plan can retain the original read from the source pass or
+independently replay the exact callee. Either form keeps its actual witness. -/
+inductive NamedRead {sources caller} (event : NamedEvent sources caller)
+    (body : Body event.target.signature) : Type where
+  | replayed (original : ∃ before after,(readNamedBody event).run before = (.ok body,after)) :
+      NamedRead event body
+  | retained {name : String} (parent : Checked sources caller name)
+      (path : RuntimeCalleeTrace.Path parent.events (.named event))
+      (original : ∃ before after,(readRetainedNamed parent path).run before = (.ok body,after)) :
+      NamedRead event body
+
+inductive TransformRead {sources caller} (event : TransformEvent sources caller)
+    (body : Body event.target.signature) : Type where
+  | replayed (original : ∃ before after,(readTransformBody event).run before = (.ok body,after)) :
+      TransformRead event body
+  | retained {name : String} (parent : Checked sources caller name)
+      (path : RuntimeCalleeTrace.Path parent.events (.transform event))
+      (original : ∃ before after,(readRetainedTransform parent path).run before = (.ok body,after)) :
+      TransformRead event body
+
 /-- Coherent body calls are source/reference dependencies, not invented runtime
 call intervals. A native basis continuation freshly recovers their original
 ordinary evaluation and source rows through this same evaluator. -/
@@ -973,8 +1105,7 @@ def readBasisSource {sources caller} (event : BasisEvent sources caller) :
   let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
   let computed ← SourceComputedBindings.prepare event.signature.instantiation event.generic.computedObligations
   let (body,_) ← evalWithReader event.signature event.generic basis computed
-    (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
-      [callFrame event.signature] callee).summary)
+    (fun callee => readNestedTraced sources (SourceTrace.sourceFuel sources) [callFrame event.signature] callee none)
     (event.written.parts.body.length+1) event.naturals
     (event.held ++ owners event.remaining) (names ++ event.scope) event.bodyOrdinal
     event.bodyInitial event.bodyTree {}
@@ -1008,8 +1139,8 @@ The second branch uses a disjoint issued-identity interval; no condition value
 selects or suppresses an original effect, type check or owner obligation. -/
 def readBranchSource {sources caller} (event : BranchEvent sources caller) :
     Finite.WorkM (BranchBodies event) := do
-  let readCallee := fun {owner name} (callee : Signature sources owner name) => do
-    return (← readNested sources (SourceTrace.sourceFuel sources) [callFrame event.signature] callee).summary
+  let readCallee := fun {owner name} (callee : Signature sources owner name) =>
+    readNestedTraced sources (SourceTrace.sourceFuel sources) [callFrame event.signature] callee none
   let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
   let computed ← SourceComputedBindings.prepare event.signature.instantiation event.generic.computedObligations
   let (left,_) ← evalWithReader event.signature event.generic basis computed readCallee
@@ -1061,8 +1192,7 @@ def readStaticSource {sources caller} (event : StaticEvent sources caller) :
   let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
   let computed ← SourceComputedBindings.prepare event.signature.instantiation event.generic.computedObligations
   let (result,_) ← evalWithReader event.signature event.generic basis computed
-    (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
-      [callFrame event.signature] callee).summary)
+    (fun callee => readNestedTraced sources (SourceTrace.sourceFuel sources) [callFrame event.signature] callee none)
     (event.selected.1.length+1) event.selection.naturals event.held event.scope event.nextOrdinal
     event.before event.selected.2.tree {}
   Finite.exactWork (Exact.charge (32*(valueFields result.value+valueFields event.selected.2.value+
@@ -1093,8 +1223,7 @@ def readMatchSource {sources caller} (event : MatchEvent sources caller) :
   let computed ← SourceComputedBindings.prepare event.signature.instantiation event.generic.computedObligations
   let (results,_) ← event.arms.foldlM (fun (results,ordinal) arm => do
     let (result,_) ← evalWithReader event.signature event.generic basis computed
-      (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
-        [callFrame event.signature] callee).summary)
+      (fun callee => readNestedTraced sources (SourceTrace.sourceFuel sources) [callFrame event.signature] callee none)
       (arm.1.length+1) event.naturals event.held event.scope ordinal event.before arm.2.tree {}
     return (results ++ [result],result.nextOrdinal))
     (([] : List (Outcome sources caller event.before)),event.nextOrdinal)
@@ -1116,8 +1245,7 @@ def readComputedSource {sources caller} (event : ComputedEvent sources caller) :
     Finite.WorkM (ComputedBody event) := do
   let basis ← SourceBasisBindings.prepare event.signature.instantiation event.generic.basisObligations
   let (result,_) ← evalWithReader event.signature event.generic basis event.bindings
-    (fun callee => do return (← readNested sources (SourceTrace.sourceFuel sources)
-      [callFrame event.signature] callee).summary)
+    (fun callee => readNestedTraced sources (SourceTrace.sourceFuel sources) [callFrame event.signature] callee none)
     (event.written.parts.body.length+1) event.naturals
     (event.held ++ owners event.before ++ event.initial.heldData)
     (SourceRuntimeComputed.names event.written ++ event.scope) event.initial.nextOrdinal

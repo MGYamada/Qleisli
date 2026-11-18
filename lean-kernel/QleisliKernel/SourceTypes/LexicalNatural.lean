@@ -40,6 +40,29 @@ def ofBindings (entries : List NaturalHelpers.Entry) (bindings : List (String ×
           exact found
         · simp only [Form.evaluate,dot_nil,Int.add_zero]⟩⟩
 
+/-- Bind a separately established concrete coordinate without replacing the
+lookup and helper evidence retained by preceding lexical aliases. -/
+def withCoordinate (entries : List NaturalHelpers.Entry) (previous : Environment entries)
+    (name : String) (coordinate : Nat) : Environment entries :=
+  let names := fun path => if path = [name] then some coordinate else previous.names path
+  ⟨names,fun bindings fuel path => do
+    exactWork (Exact.charge (name.utf8ByteSize+(path.map String.utf8ByteSize).sum+1))
+    if same : path = [name] then
+      pure ⟨⟨(coordinate : Int),[]⟩,by
+        intro _ _
+        refine ⟨coordinate,?_,?_⟩
+        · change names path = some coordinate
+          simp [names,same]
+        · simp only [Form.evaluate,dot_nil,Int.add_zero]⟩
+    else
+      let earlier ← previous.reader bindings fuel path
+      pure ⟨earlier.form,by
+        intro values held
+        obtain ⟨value,computed,meaning⟩ := earlier.correct values held
+        refine ⟨value,?_,meaning⟩
+        change names path = some value
+        simpa only [names,if_neg same] using computed⟩⟩
+
 /-- `originalBindings` is captured at the original initializer, never replaced
 by the call table of a later use. Only name lookup is polymorphic in that table. -/
 def extend (entries : List NaturalHelpers.Entry) (previous : Environment entries)

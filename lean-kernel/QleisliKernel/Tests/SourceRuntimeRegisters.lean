@@ -45,6 +45,48 @@ private def generic :=
 #guard (read (generic.replace "n>0,k<n" "n>0") {naturals := [("n",2),("k",1)]}).isNone
 #guard (read generic {naturals := [("n",2),("k",2)]}).isNone
 
+private def registerFold :=
+  "pub unitary fn route[const n:Nat,const first:Nat](u:Q<Unit>,q:Q<Bits<n>>)->(Q<Unit>,Q<Bits<n>>)" ++
+  "requires first<=n{let r=qfor static i in first..n carry r=q{" ++
+  "let(bit,tail)=take_bit[n,i](r);yield put_bit[n,i](bit,tail);};(u,r)}"
+
+private def readFold (source : String) (n first : Nat) :=
+  read source {naturals := [("n",n),("first",first)]}
+
+private structure RegisterIteration where
+  coordinate : Nat
+  takeArguments : List Nat
+  putArguments : List Nat
+  carryIn : List Nat
+  carryOut : List Nat
+  consumed : List Nat
+  spectators : List Nat
+  deriving DecidableEq
+
+private def registerFoldTrace (n first : Nat) :
+    Option (List RegisterIteration × List (Nat × Semantics.FiniteCarrier.Basis)) := do
+  let checked ← readFold registerFold n first
+  let [.staticFold fold children] := checked.events | none
+  let true := fold.iterations.length == children.length | none
+  let iterations ← (fold.iterations.zip children).mapM fun (iteration,events) => do
+    let [.registerPrimitive take,.registerPrimitive put] := events | none
+    let true := take.kind == .takeBit && put.kind == .putBit && take.held == put.held | none
+    pure ⟨iteration.coordinate,take.application.arguments.map (·.value),
+      put.application.arguments.map (·.value),(valueOwners iteration.carry).map (·.ordinal),
+      (valueOwners iteration.seeded.value).map (·.ordinal),iteration.seeded.consumed.map (·.ordinal),
+      take.held.map (·.ordinal)⟩
+  return (iterations,(valueOwners checked.summary.value).map fun owner => (owner.ordinal,owner.basis))
+
+-- Both primitive calls read the current written coordinate. Each iteration
+-- owns the preceding carry, with the zero-width spectator held outside it.
+#guard registerFoldTrace 3 1 = some
+  ([⟨1,[3,1],[3,1],[1],[4],[1,2,3],[0]⟩,⟨2,[3,2],[3,2],[4],[7],[4,5,6],[0]⟩],[(0,[.unit]),(7,[.bits 3])])
+#guard registerFoldTrace 0 0 = some ([],[(0,[.unit]),(1,[.bits 0])])
+
+-- Empty ranges still submit their original bodies to the common source check.
+#guard (readFold (registerFold.replace "take_bit[n,i]" "take_bit[n,n]") 0 0).isNone
+#guard (readFold (registerFold.replace "yield put_bit" "finish(u);yield put_bit") 0 0).isNone
+
 #print axioms QleisliKernel.SourceTypes.SourceRegisterApplication.read
 #print axioms QleisliKernel.SourceTypes.SourceRegisterApplication.apply
 end QleisliKernel.Tests.SourceRuntimeRegisters

@@ -147,7 +147,7 @@ theorem named_history_entry_of_entry {dependencies program block start count arg
     {event : SourceTypes.SourceRuntimeContext.NamedEvent sources caller}
     {scope : @RuntimeCallScope.Checked dependencies program block start count args ordinary event.effect}
     {body : SourceTypes.SourceRuntimeTrace.Body event.target.signature}
-    {bodyRead : RuntimeInterval.Computed (SourceTypes.SourceRuntimeTrace.readNamedBody event) body}
+    {bodyRead : SourceTypes.SourceRuntimeTrace.NamedRead event body}
     {boundary : RuntimeNamedBoundary.Checked scope.interval args event before child retired body.checked.summary.value}
     {finalOrdinary} {steps : RuntimePureBody.Steps dependencies scope.program scope.prepared.block}
     (entry : Qleisli.RuntimeSparseNamedBoundary.NamedEntry (.named event scope body bodyRead boundary finalOrdinary steps)) :

@@ -1,4 +1,5 @@
 import QleisliKernel.SourceTypes.StaticNatural
+import QleisliKernel.SourceTypes.StaticFoldBounds
 
 /-! Symbolic Nat aliases under the original generic header's ordered premises.
 Each alias retains its initializer's helper interpretation and earlier lexical
@@ -42,8 +43,17 @@ structure Environment {sources owner name tokens}
   reader : ∀ bindings fuel path,
     WorkM (NaturalNormalize.Result names (NaturalHelpers.interpretation prepared.helpers bindings)
       meaning (fuel+1) (.name path))
+  variables : Nat
+  foldIndices : List String
+  aliases : List String
   guards : List Guard
   guardsHeld : ∀ values,meaning values → ∀ guard ∈ guards,guard.Holds values
+
+/-- Existing header-level provider duties have neither a conditional premise
+nor an iteration-local coordinate. -/
+def Environment.unguarded {sources owner name tokens prepared}
+    (environment : @Environment sources owner name tokens prepared) : Bool :=
+  environment.guards.isEmpty && environment.foldIndices.isEmpty
 
 def initial {sources owner name tokens} (prepared : StaticNatural.Prepared sources owner name tokens) :
     Environment prepared :=
@@ -51,7 +61,8 @@ def initial {sources owner name tokens} (prepared : StaticNatural.Prepared sourc
     NaturalFrames.names (StaticHeaders.frame prepared.original),fun bindings =>
     NaturalFrames.readName (StaticHeaders.frame prepared.original)
       (NaturalHelpers.interpretation prepared.helpers bindings) (fun _ held => held.1),
-    [],by intro values held guard member; cases member⟩
+    (StaticHeaders.frame prepared.original).binders.length,[],[],[],
+    by intro values held guard member; cases member⟩
 
 structure Checked {sources owner name tokens}
     (prepared : StaticNatural.Prepared sources owner name tokens) (environment : Environment prepared)
@@ -68,11 +79,11 @@ private def normalize {sources owner name tokens}
     (bindings : List (Path × NaturalCatalog.Key)) (expression : Expr) :
     WorkM (NaturalNormalize.Result environment.names (NaturalHelpers.interpretation prepared.helpers bindings)
       environment.meaning 128 expression) :=
-  NaturalNormalize.normalize (StaticHeaders.frame prepared.original).binders.length
+  NaturalNormalize.normalize environment.variables
     environment.context
     ⟨environment.reader bindings,
       fun fuel path arguments args => NaturalHelpers.readCall
-        (StaticHeaders.frame prepared.original).binders.length environment.names
+        environment.variables environment.names
         prepared.helpers bindings environment.context fuel path arguments args⟩ 128 expression
 
 def read {sources owner name tokens}
@@ -109,6 +120,7 @@ def extend {sources owner name tokens prepared environment scope expression}
           change (if path = [aliasName] then _ else _) = some value
           rw [if_neg same]
           exact computed⟩),
+    environment.variables,environment.foldIndices,aliasName :: environment.aliases,
     environment.guards,environment.guardsHeld⟩
 
 structure PredicateChecked {sources owner name tokens}
@@ -172,13 +184,54 @@ def underPredicate {sources owner name tokens prepared environment scope predica
     environment.names,(fun bindings fuel path => do
       let previous ← environment.reader bindings fuel path
       pure ⟨previous.form,fun values held => previous.correct values held.1⟩),
-    environment.guards ++ [guard],by
+    environment.variables,environment.foldIndices,environment.aliases,environment.guards ++ [guard],by
       intro values held selected member
       rcases List.mem_append.mp member with earlier | current
       · exact environment.guardsHeld values held.1 selected earlier
       · have same : selected = guard := by simpa only [List.mem_singleton] using current
         subst selected
         exact (checked.branchMeaning branch values held.1).mp held.2⟩
+
+/-- Introduce a fresh original fold index only after proving the range in the
+outer context. The new coordinate never changes an enclosing name's value. -/
+def underFold {sources owner name tokens}
+    (prepared : StaticNatural.Prepared sources owner name tokens) (environment : Environment prepared)
+    (scope : List String) (index : String) (start stop : Expr) : WorkM (Environment prepared × List (Path × NaturalCatalog.Key)) := do
+  guard (!scope.contains index) .request
+  let first ← read prepared environment scope start
+  let last ← read prepared environment scope stop
+  let _ ← NaturalPredicates.provesLe environment.context first.normalized.form last.normalized.form
+  let variables := environment.variables
+  let form ← NaturalAffine.witness (NaturalAffine.parameter (variables+1) variables)
+  let context ← StaticFoldBounds.iteration environment.context variables first.normalized.form last.normalized.form
+  let names := fun values path => if path = [index] then some (values variables).toNat else environment.names values path
+  let next : Environment prepared := ⟨_,context,fun values held => environment.original values held.1,names,
+    (fun bindings fuel path => do
+      exactWork (Exact.charge (index.utf8ByteSize + (path.map String.utf8ByteSize).sum + 1))
+      if same : path = [index] then
+        return ⟨form.val,by
+          intro values held
+          obtain ⟨before,after,ok⟩ := form.property
+          refine ⟨(values variables).toNat,?_,?_⟩
+          · change names values path = _
+            simp [names,same]
+          · rw [NaturalAffine.parameter_meaning _ _ _ before after ok values]
+            exact (Int.toNat_of_nonneg held.2.1).symm⟩
+      else
+        let previous ← environment.reader bindings fuel path
+        guard (previous.form.coefficients.length == variables) .request
+        let widened := StaticFoldBounds.widen previous.form
+        NaturalAffine.valid widened
+        return ⟨widened,by
+          intro values held
+          obtain ⟨value,computed,meaning⟩ := previous.correct values held.1
+          refine ⟨value,?_,?_⟩
+          · change names values path = _
+            simpa only [names,if_neg same] using computed
+          · simpa only [widened,StaticFoldBounds.widen_evaluate] using meaning⟩),
+    variables+1,index :: environment.foldIndices,environment.aliases,environment.guards,
+    fun values held => environment.guardsHeld values held.1⟩
+  return (next,first.bindings ++ last.bindings)
 
 structure SomeEnvironment (sources : Sources) where
   owner : String
