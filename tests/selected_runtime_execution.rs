@@ -288,8 +288,7 @@ fn mixed_ctrl_dormant_check_requires_the_same_original_occurrence() {
         )
         .unwrap()
         .compile_runtime_with_kernel(&kernel())
-        .err()
-        .expect("a different original occurrence needs its own replay");
+        .expect_err("a different original occurrence needs its own replay");
     assert_eq!(failure.code, "unsupported", "{failure:?}");
     assert!(
         failure
@@ -345,8 +344,7 @@ fn nested_mixed_ctrl_replays_the_original_module_and_call() {
         )
         .unwrap()
         .compile_runtime_with_kernel(&kernel())
-        .err()
-        .expect("the same byte offset in another module needs its own replay");
+        .expect_err("the same byte offset in another module needs its own replay");
     assert_eq!(failure.code, "unsupported", "{failure:?}");
     assert!(
         failure

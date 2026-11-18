@@ -380,10 +380,10 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
             checker.block(body, &mut scope, Some(&expected))?;
             for (key, identity, marker) in accessed {
                 checker.tick(marker)?;
-                if !scope
+                if scope
                     .values
                     .remove(&key)
-                    .is_some_and(|binding| binding.identity == identity)
+                    .is_none_or(|binding| binding.identity != identity)
                 {
                     return Err(SourceError::new(
                         "ownership",

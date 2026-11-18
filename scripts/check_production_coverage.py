@@ -479,7 +479,8 @@ PATHS = {
         ('lean-kernel/Protocol/ExecutionView/QmatchV5.lean', [
             'if request.standaloneAccess then Protocol.QmatchV5.accessProfile else Protocol.QmatchV5.profile']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeSelectionSteps.lean', ['def readAccessResult ',
-            '| .node _ (.exclusive ..) => true', '| .child (.transform ..) _ _ => return false']),
+            '| .node _ (.exclusive ..) | .step _ (.routedNamed ..) => true',
+            '| .child (.transform ..) _ _ => return false']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeDiscoveryData.lean', ['def ordinaryRows ',
             '| .matching event arms =>', 'arm.2.inferredEffect == .unitary && !arm.2.quantumUse',
             'event.labels.labels.sourceRows ++ children']),
@@ -505,9 +506,17 @@ PATHS = {
         ('lean-kernel/QleisliKernel/Qirf/RuntimeExclusiveAction.lean', [
             'RuntimeAccessPartition.readActiveEntry interval before.bindings (places access)',
             'RuntimeAccessPartition.readActiveExit opening.route returned.val',
+            'RuntimeAccessPartition.readBranchExit opening.route projected returned.val',
             'access.written.arguments.zip selected', 'Sector.pureOps_bound _ _ pure',
             'RuntimeAccessInterval.checkFragmentSectors',
             'ControlEvidence access block start count opening.route.selected returned']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimeBranchProjection.lean', [
+            'PureInterval.ports branch.thenState tokens = some ports',
+            'PureInterval.ports branch.elseState tokens = some ports',
+            '(selected ++ moves.map (·.2.original.thenBinding.port)).Perm branch.interval.before.quantum.live']),
+        ('lean-kernel/QleisliKernel/Qirf/RuntimePureBody.lean', [
+            'RuntimeBranchProjection.read actual.val opening.frame tokens ordinary',
+            'RuntimeExclusiveAction.readBranchClose opening frame boundary.after event.consumed nested.ordinary']),
         ('lean-kernel/QleisliKernel/Qirf/RuntimeAccessPartition.lean', [
             'theorem checked_route_storage ', 'theorem ActiveEntry.storage ', 'theorem ActiveExit.storage ',
             'checked_route_storage opening.preamble.intervalRead opening.routes',
@@ -559,6 +568,9 @@ PATHS = {
         ('tests/selected_runtime_execution.rs', 'coherent_static_arm_checks_exclusive_routes_and_inner_positions'),
         ('tests/selected_runtime_execution.rs', 'coherent_block_arms_bind_ctrl_to_the_original_ordered_ports'),
         ('tests/selected_runtime_execution.rs', 'mixed_access_requires_the_actual_original_body_and_marked_ports'),
+        ('tests/selected_runtime_execution.rs', 'mixed_bit_access_rechecks_the_written_condition_and_restores_parked_owners'),
+        ('tests/selected_runtime_execution.rs', 'declared_access_requires_the_original_role_and_raw_action'),
+        ('tests/selected_runtime_execution.rs', 'specialized_declared_access_requires_the_original_basis_actual'),
         ('tests/selected_runtime_execution.rs', 'mixed_ctrl_dormant_check_requires_the_same_original_occurrence'),
         ('tests/selected_runtime_execution.rs', 'nested_mixed_ctrl_replays_the_original_module_and_call'),
         ('tests/selected_runtime_execution.rs', 'original_static_fold_binds_routed_control_occurrences_in_order'),
