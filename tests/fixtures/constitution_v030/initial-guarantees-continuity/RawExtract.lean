@@ -323,6 +323,15 @@ def externalModules : List String := [
   "Std.Data.DTreeMap.Raw.Basic",
   "Std.Data.TreeMap.Raw.Basic"]
 
+-- The current checker reaches these additional declarations from pinned Lean.
+def pinnedExternalDeclaration (name moduleName : Name) : Bool :=
+  moduleName == `Init.Data.Bool && (name == ``Bool.xor || name == ``Bool.toNat)
+
+#guard pinnedExternalDeclaration ``Bool.xor `Init.Data.Bool
+#guard pinnedExternalDeclaration ``Bool.toNat `Init.Data.Bool
+#guard !pinnedExternalDeclaration ``Bool.xor `Init.Prelude
+#guard !pinnedExternalDeclaration ``Bool.not `Init.Data.Bool
+
 def declarationJson (info : ConstantInfo) (project : Bool) : ExtractM Json := do
   let base := #[nameJson info.name, toJson (info.levelParams.map nameJson), ← exprJson info.type]
   if info.isUnsafe || info.isPartial then
@@ -381,7 +390,7 @@ elab "#extract_qleisli_continuity" : command => do
       let some moduleIdx := env.getModuleIdxFor? name | throwError "unattributed declaration {name}"
       let moduleName := env.allImportedModuleNames[moduleIdx.toNat]!
       let project := historicalProjectModules.contains moduleName.toString
-      unless project || externalModules.contains moduleName.toString do
+      unless project || externalModules.contains moduleName.toString || pinnedExternalDeclaration name moduleName do
         throwError "unrecognized declaration origin {moduleName} for {name}"
       let (decl, references) ← match (declarationJson info project).run #[] with
         | .ok value => pure value

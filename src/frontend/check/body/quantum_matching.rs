@@ -149,13 +149,93 @@ impl Checker<'_, '_> {
             SourceError::new("type", span, "qmatch target requires one Q<B> owner")
         })?;
         for arm in &selection.arms {
-            // Reuse qif's full type, Unitary provider and actual access path.
-            // This also records every original arm's dependency/obligation.
-            let operation =
-                self.qmatch_operation(&arm.operation, target_basis, selection.target.span, scope)?;
-            access(&operation, Access::Controlled, arm.operation.span)?;
+            self.coherent_arm(&arm.body, &selection.target, target_basis, scope)?;
         }
         self.obligation(span, ObligationKind::TransformedMeaning, scope)?;
         Ok(Ty::pair(selector, target))
+    }
+
+    pub(super) fn coherent_arm(
+        &mut self,
+        arm: &CoherentArm,
+        target: &Expr,
+        basis: &Ty,
+        scope: &Scope,
+    ) -> Result<()> {
+        let block = match arm {
+            CoherentArm::Operation(operation) => {
+                let checked = self.qmatch_operation(operation, basis, target.span, scope)?;
+                return access(&checked, Access::Controlled, operation.span);
+            }
+            CoherentArm::Block(block) => block,
+        };
+        let ExprKind::Name(name) = &target.kind else {
+            return Err(SourceError::new(
+                "ownership",
+                target.span,
+                "bind the target owner to a name before using it in an inline coherent arm",
+            ));
+        };
+        let key = self.local(name).ok_or_else(|| {
+            SourceError::new(
+                "ownership",
+                name.span,
+                "inline coherent arm requires a target owner",
+            )
+        })?;
+        let mut inner = scope.basis_scope(&self.program.budget, block.span)?;
+        let expected = Ty::quantum(self.program.budget.copy_ty(block.span, basis)?);
+        let identity = inner.next_binding.get();
+        inner.next_binding.set(
+            identity.checked_add(1).ok_or_else(|| {
+                SourceError::new("limit", block.span, "binding identity overflow")
+            })?,
+        );
+        let key = self.program.budget.key(name.span, key)?;
+        self.program.budget.charge(name.span, key.name.len() + 1)?;
+        inner.values.insert(
+            key.clone(),
+            Binding {
+                identity,
+                ty: self.program.budget.copy_ty(block.span, &expected)?,
+            },
+        );
+        let implicit = block.implicit_result && !block.statements.is_empty();
+        let surrounding = std::mem::replace(&mut self.effects, BodyEffects::new(block.span));
+        let checked = self.block(block, &mut inner, (!implicit).then_some(&expected));
+        let region = std::mem::replace(&mut self.effects, surrounding);
+        checked?;
+        if implicit {
+            let returned = inner.values.remove(&key).ok_or_else(|| {
+                SourceError::new(
+                    "ownership",
+                    block.result.span,
+                    "implicit return requires the original target owner to remain live",
+                )
+            })?;
+            inner.moved.insert(returned.identity);
+        }
+        if self.live_owner(&inner, block.span)?.is_some() {
+            return Err(disposal_error(
+                block.result.span,
+                format!(
+                    "inline coherent arm must consume and return target owner `{}`",
+                    name.text
+                ),
+                QuantumOwnershipBoundary::ImplicitDisposal,
+            ));
+        }
+        self.program
+            .budget
+            .charge(block.span, region.storage_cells() + 1)?;
+        self.program.inline_coherent_bodies.insert(self.definition);
+        self.effects.merge(&region);
+        self.program.unitary_regions.push((
+            self.definition,
+            block.span,
+            region,
+            "inline coherent arm body must be unitary",
+        ));
+        Ok(())
     }
 }

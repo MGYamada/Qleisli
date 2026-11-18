@@ -197,7 +197,7 @@ def evalWithReader (sources : Sources) (caller : String)
     | .empty .. => return (← outcome environment [.tuple 0] environment [],context)
     | .literal .. | .boolean .. | .conditional .. | .staticConditional .. | .basis .. |
         .variant .. | .record .. | .projection .. | .bitIndex .. | .matching .. | .computed .. |
-        .workspace .. => throw .request
+        .workspace .. | .exclusive .. => throw .request
     | .move tokens _ _ =>
       Finite.exactWork (Exact.charge (Meter.moveWork tokens environment))
       let (value,remaining) ← adapt (QuantumMoves.eval (tokens.map (·.text)) environment)

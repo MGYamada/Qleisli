@@ -142,14 +142,15 @@ for an exact clean checkout of `codex/beta-finite-adts`,
 `codex/beta-70-scoped-workspace`, `codex/beta-70-resource-candidate`,
 `codex/beta-70-target-routing`, `codex/beta-70-bits-workspace`,
 `codex/beta-30-structural-rust`, `codex/beta-30-word-coordinate`,
-`codex/beta-70-30-integration`, or `codex/beta-30-structural-resources`.
+`codex/beta-70-30-integration`, `codex/beta-30-structural-resources`, or
+`codex/beta-215-inline-coherent-arms`.
 The selected branch and workflow source must agree. On pushes, the producer
 first records the schema and scoped-guarantee source identity checks. Matching
 records finish this bootstrap workflow at that point. Stale records and manual
 dispatches run the complete fresh verification and proposal generation below.
 Required ordinary CI retains its own executable checks and proof-lane policy.
 When regeneration is required, the runner compiles the
-native package from that checkout in a separate 15-minute preparation step and
+native package from that checkout in a separate 25-minute preparation step and
 retains the build log with its commit. The registry then checks the native
 build, compiles the mathematical package, audits both packages and runs its
 fresh kernel replay and schema export within its existing deadline.

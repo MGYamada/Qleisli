@@ -2,7 +2,7 @@
 //! This metadata grants no execution, native acceptance or operation access.
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 use crate::frontend::{
-    ast::ExprKind,
+    ast::{CoherentArm, ExprKind},
     check::{Budget, SourceError},
     resolve::{
         DefId, Target,
@@ -26,9 +26,18 @@ pub(super) fn roots(
         budget.charge(Default::default(), nodes.len() + uses.len() + 2)?;
         let direct = index.table.reads_word_coordinate()
             || nodes.iter().any(|node| {
-                matches!(node,
-            OriginalNode::Expression(expr) if matches!(expr.kind,
-                ExprKind::QuantumMatch(_) | ExprKind::WithComputed { .. } | ExprKind::Workspace(_)))
+                let OriginalNode::Expression(expr) = node else {
+                    return false;
+                };
+                match &expr.kind {
+                    ExprKind::QuantumMatch(_)
+                    | ExprKind::WithComputed { .. }
+                    | ExprKind::Workspace(_) => true,
+                    ExprKind::QuantumIf { zero, one, .. } => [zero, one]
+                        .iter()
+                        .any(|arm| matches!(arm, CoherentArm::Block(_))),
+                    _ => false,
+                }
             });
         let dependency = uses.iter().any(|usage| {
             matches!(usage.target,

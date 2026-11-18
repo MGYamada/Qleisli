@@ -1,5 +1,5 @@
 import QleisliKernel.FiniteRestriction.BitUpdate
-import QleisliKernel.Semantics.RawTrace
+import QleisliKernel.Semantics.Protected
 
 /-! Phase-free controlled XOR on one actual ordered target wire.
 The check visits literal circuit steps and their controls without enumerating
@@ -116,7 +116,7 @@ theorem targetUpdate_xor (target label : Nat) (first second : Bool) :
 /-- Each clause contributes a controlled flip. Their parity is the logical
 Boolean result. A clause may test either polarity of an input bit. -/
 def predicate (clauses : List (List Control)) (label : Nat) : Bool :=
-  clauses.foldl (fun parity controls => Bool.xor parity (enabled controls label)) false
+  Semantics.Protected.xorPredicate clauses label
 
 private def run (target : Nat) (clauses : List (List Control)) (label : Nat) : Nat :=
   clauses.foldl (fun row controls => targetUpdate target row (enabled controls row)) label

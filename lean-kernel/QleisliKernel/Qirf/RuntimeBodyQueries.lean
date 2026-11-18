@@ -49,6 +49,14 @@ def Mode.ArmsData {artifact owner name offset selector target} (mode : Mode arti
   | .planned preparation => Sigma fun before : Queues =>
       Sigma fun after : Queues => RuntimeBodyPlan.Arms preparation table (List.finRange table.arms.length) before after
 
+def Mode.MixedArmsData {artifact owner} (mode : Mode artifact)
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} (position : Position)
+    (table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis) : Type :=
+  match mode with
+  | .fresh => Empty
+  | .planned preparation => Sigma fun before : Queues => Sigma fun after : Queues =>
+      RuntimeBodyPlan.MixedArms preparation event position table (List.finRange table.arms.length) before after
+
 def Mode.GraphData {artifact context description} (mode : Mode artifact)
     (graph : StaticOperation.CheckedGraph artifact.sources context description) (demand : StaticOperation.Paths)
     (origin : RuntimeGraphOperation.Origin graph := .unlocated) : Type :=
@@ -134,6 +142,37 @@ def foldArms {artifact : Artifact} (mode : Mode artifact) {owner name offset sel
             next rest tail checked)
     visit (List.finRange table.arms.length).length (List.finRange table.arms.length) data.2.2 initial
 
+/-- Consume the graph or original block plan retained at each written index. -/
+def foldMixedArms {artifact : Artifact} (mode : Mode artifact) {owner}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} (position : Position)
+    (table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis)
+    {State : Type}
+    (named : (index : Fin table.arms.length) →
+      (arm : QuantumArms.BoundArm artifact.sources owner event.selector.basis event.target.basis) →
+      table.arms[index] = .operation arm →
+      mode.GraphData arm.operation.graph OperationAccess.controllable (.arm arm.operation) → State → WorkM State)
+    (inline : {index : Nat} → (arm : SourceRuntimeTrace.InlineArmBody event index) →
+      (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody event index) arm) →
+      (child : Context) → mode.BodyData (.coherentArm rfl arm replayed) child → State → WorkM State)
+    (data : mode.MixedArmsData position table) (initial : State) : WorkM State :=
+  match mode with
+  | .fresh => nomatch data
+  | .planned preparation =>
+    let visit : Nat → (remaining : List (Fin table.arms.length)) → {before after : Queues} →
+        RuntimeBodyPlan.MixedArms preparation event position table remaining before after → State → WorkM State :=
+      Nat.rec (fun remaining {_ _} plans state => match remaining,plans with
+        | [],.nil _ => pure state
+        | _ :: _,.named .. | _ :: _,.inline .. => throw .limit)
+        (fun _ next remaining {_ _} plans state => match remaining,plans with
+          | [],.nil _ => pure state
+          | index :: rest,.named arm selected cut graph tail => do
+            let checked ← named index arm selected ⟨cut.implementations,cut.references,graph⟩ state
+            next rest tail checked
+          | _ :: rest,.inline arm replayed _ _ _ _ _ child _ _ nested tail => do
+            let checked ← inline arm replayed child nested state
+            next rest tail checked)
+    visit (List.finRange table.arms.length).length (List.finRange table.arms.length) data.2.2 initial
+
 def readBasis {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
     (event : SourceRuntimeContext.BasisEvent artifact.sources owner) (position : Position)
@@ -189,18 +228,18 @@ def readWorkspace {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.unsupported impossible⟩ => nomatch impossible
 
 structure Named {artifact : Artifact} (mode : Mode artifact) {owner : String}
-    (event : SourceRuntimeContext.NamedEvent artifact.sources owner) where
+    (event : SourceRuntimeContext.NamedEvent artifact.sources owner) (controlled : Bool) where
   context : Context
   body : SourceRuntimeTrace.Body event.target.signature
   original : RuntimeInterval.Computed (SourceRuntimeTrace.readNamedBody event) body
-  nested : mode.BodyData (.whole body) context
+  nested : mode.BodyData (.whole body controlled) context
   cursor : mode.Cursor
 
 def readNamed {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
     (event : SourceRuntimeContext.NamedEvent artifact.sources owner) (position : Position)
     (cursor : mode.Cursor) (data : mode.EventData source (.named event) position) :
-    WorkM (Named mode event) := do
+    WorkM (Named mode event source.requiresControl) := do
   match mode with
   | .fresh =>
     let (callPosition,child) :: remaining := cursor.calls | throw .request
@@ -213,18 +252,18 @@ def readNamed {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.unsupported _⟩ => throw .request
 
 structure Transform {artifact : Artifact} (mode : Mode artifact) {owner : String}
-    (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position) where
+    (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position) (controlled : Bool) where
   child : Context
   request : RuntimeTransformRequest.Checked event position child
   original : RuntimeInterval.Computed (RuntimeTransformRequest.read event position child) request
-  nested : mode.BodyData (.whole request.source) request.context
+  nested : mode.BodyData (.whole request.source controlled) request.context
   cursor : mode.Cursor
 
 def readTransform {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
     (event : SourceRuntimeContext.TransformEvent artifact.sources owner) (position : Position)
     (cursor : mode.Cursor) (data : mode.EventData source (.transform event) position) :
-    WorkM (Transform mode event position) := do
+    WorkM (Transform mode event position source.requiresControl) := do
   match mode with
   | .fresh =>
     let (callPosition,child) :: remaining := cursor.calls | throw .request
@@ -237,14 +276,14 @@ def readTransform {artifact : Artifact} (mode : Mode artifact) {owner name}
     | ⟨_,_,.unsupported _⟩ => throw .request
 
 structure Branch {artifact : Artifact} (mode : Mode artifact) {owner name : String}
-    (event : SourceRuntimeContext.BranchEvent artifact.sources owner) where
+    (event : SourceRuntimeContext.BranchEvent artifact.sources owner) (controlled : Bool) where
   callerName : event.callerName = name
   left : Context
   right : Context
   source : RuntimeBranchAction.Source event
   original : RuntimeInterval.Computed (RuntimeBranchAction.readSource event) source
-  thenPlan : mode.BodyData (.arm event callerName source.bodies source.original true) left
-  elsePlan : mode.BodyData (.arm event callerName source.bodies source.original false) right
+  thenPlan : mode.BodyData (.arm event callerName source.bodies source.original true controlled) left
+  elsePlan : mode.BodyData (.arm event callerName source.bodies source.original false controlled) right
   cursor : mode.Cursor
 
 def readBranch {artifact : Artifact} (mode : Mode artifact) {owner name}
@@ -252,7 +291,7 @@ def readBranch {artifact : Artifact} (mode : Mode artifact) {owner name}
     (event : SourceRuntimeContext.BranchEvent artifact.sources owner)
     (thenEvents elseEvents : List (SourceRuntimeContext.Event artifact.sources owner)) (position : Position)
     (cursor : mode.Cursor) (data : mode.EventData source (.conditional event thenEvents elseEvents) position) :
-    WorkM (Branch mode (name := name) event) := do
+    WorkM (Branch mode (name := name) event source.requiresControl) := do
   match mode with
   | .fresh =>
     let (branchPosition,left,right) :: remaining := cursor.branches | throw .request
@@ -278,52 +317,65 @@ structure Selection {artifact : Artifact} (mode : Mode artifact) {owner name off
   arms : mode.ArmsData table
   cursor : mode.Cursor
 
+structure MixedSelection {artifact : Artifact} (mode : Mode artifact) {owner name}
+    (event : SourceRuntimeContext.SelectionEvent artifact.sources owner) (position : Position) where
+  site : RuntimeContextRequest.Site
+  sameName : event.callerName = name
+  table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis
+  original : RuntimeInterval.Computed
+    (QuantumArms.readRuntimeArms event event.parsed.keyword.span.startByte event.selector.basis event.target.basis) table
+  arms : mode.MixedArmsData position table
+  cursor : mode.Cursor
+
 def readSelection {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
-    {tokens parsed original selector target scope naturals held remaining}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
     (position : Position) (cursor : mode.Cursor)
-    (data : mode.EventData source (.selection tokens parsed original selector target scope naturals held remaining) position) :
-    WorkM (Selection mode (offset := parsed.keyword.span.startByte) (selector := selector.basis)
-      (target := target.basis) source naturals scope) := do
+    (data : mode.EventData source (.selection event) position) :
+    WorkM (Sum (Selection mode (offset := event.parsed.keyword.span.startByte) (selector := event.selector.basis)
+      (target := event.target.basis) source event.naturals event.scope) (MixedSelection (name := name) mode event position)) := do
   match mode with
   | .fresh =>
     let site :: rest := cursor.sites | throw .request
-    guard (site.position == position && position.offset == parsed.keyword.span.startByte) .request
+    guard (site.position == position && position.offset == event.parsed.keyword.span.startByte) .request
     let table ← NaturalAffine.witness (QuantumArms.readArmsWithInstantiation source.signature.original
-      source.signature.instantiation source.signature.supply parsed.keyword.span.startByte selector.basis target.basis
-      (some naturals) scope)
-    return ⟨site,table.val,by with_reducible exact table.property,(),{cursor with sites := rest}⟩
+      source.signature.instantiation source.signature.supply event.parsed.keyword.span.startByte event.selector.basis event.target.basis
+      (some event.naturals) event.scope)
+    return .inl ⟨site,table.val,by with_reducible exact table.property,(),{cursor with sites := rest}⟩
   | .planned _ =>
     match data with
-    | ⟨_,_,.selection site _ _ _ table original _ _ arms⟩ => return ⟨site,table,original,⟨_,_,arms⟩,()⟩
+    | ⟨_,_,.selection site _ _ _ table original _ _ arms⟩ => return .inl ⟨site,table,original,⟨_,_,arms⟩,()⟩
+    | ⟨_,_,.inlineSelection site _ _ _ sameName table original _ arms⟩ =>
+      return .inr ⟨site,sameName,table,original,⟨_,_,arms⟩,()⟩
     | ⟨_,_,.unsupported _⟩ => throw .request
 
 /-- A complete operation child has one exact reference group in planned mode.
 Fresh mode retains its original complete child queues for the strict reader. -/
 def Mode.OperationData {artifact owner} (mode : Mode artifact)
-    (event : SourceOperationApplication.Event artifact.sources owner) (child : Context) : Type :=
+    (event : SourceOperationApplication.Event artifact.sources owner) (controlled : Bool) (child : Context) : Type :=
   match mode with
   | .fresh => Unit
   | .planned preparation => Sigma fun references : List (List RuntimeProviderHeader.Request) =>
       PLift (child.references = [references]) ×
-        RuntimeBodyPlan.Graph preparation event.operation.graph OperationAccess.applicable child.bodies references (.application event)
+        RuntimeBodyPlan.Graph preparation event.operation.graph (SourceRuntimeScope.applicationDemand controlled)
+          child.bodies references (.application event)
 
 structure Operation {artifact : Artifact} (mode : Mode artifact) {owner}
-    (event : SourceOperationApplication.Event artifact.sources owner) where
+    (event : SourceOperationApplication.Event artifact.sources owner) (controlled : Bool) where
   child : Context
-  graph : mode.OperationData event child
+  graph : mode.OperationData event controlled child
   cursor : mode.Cursor
 
 def readOperation {artifact : Artifact} (mode : Mode artifact) {owner name}
     (source : SourceRuntimeScope.Subject artifact.sources owner name)
     (event : SourceOperationApplication.Event artifact.sources owner) (position : Position)
     (cursor : mode.Cursor) (data : mode.EventData source (.operation event) position) :
-    WorkM (Operation mode event) := do
+    WorkM (Operation mode event source.requiresControl) := do
   match mode with
   | .fresh =>
     let (callPosition,child) :: rest := cursor.calls | throw .request
     guard (callPosition == position && position.offset == event.call.calleeOffset && child.positions.isEmpty &&
-      child.sites.isEmpty && child.calls.isEmpty && child.branches.isEmpty) .request
+      child.sites.isEmpty && child.calls.isEmpty && child.branches.isEmpty && child.inlineBodies.isEmpty) .request
     return ⟨child,(),{cursor with calls := rest}⟩
   | .planned _ =>
     match data with
@@ -360,9 +412,14 @@ def readStatic {artifact : Artifact} (mode : Mode artifact) {owner name}
       return ⟨sequence,positions,count,(),remaining⟩
     else throw .request
   | .planned _ =>
-    guard (!pureOnly) .request
     match data with
     | ⟨_,_,.staticConditional selected _ positions _ count events⟩ =>
+      -- A pure continuation keeps the authenticated owner delta empty.
+      -- Its selected events still run through the common pure body steps.
+      if pureOnly then
+        match selected with
+        | .unchanged _ => pure ()
+        | .events _ => throw .request
       return ⟨selected,positions,count,⟨_,_,events⟩,()⟩
     | ⟨_,_,.unsupported _⟩ => throw .request
 

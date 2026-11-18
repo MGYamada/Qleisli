@@ -86,7 +86,7 @@ private def compound (exponent : Nat) (change : List SourceSequence.Position →
   let parent : SourceSequence.Position := ⟨keyword.span.startByte,0,4⟩
   let children := change [⟨phase.span.startByte,0,1⟩,⟨h.span.startByte,1,3⟩]
   let intervals := if children.isEmpty then [] else [(parent,children)]
-  let context : RuntimeContextRequest.Context := .withReferences [parent] [] [] [] [] [] intervals
+  let context : RuntimeContextRequest.Context := .withReferences [parent] [] [] [] [] [] intervals []
   let headers ← RuntimeBodyDiscovery.readHeaders artifact "main" "route" {naturals := [("n",1)]} context
   let fresh ← RuntimeBodyDiscovery.prepare #[0] headers
   let body := headers.source.body

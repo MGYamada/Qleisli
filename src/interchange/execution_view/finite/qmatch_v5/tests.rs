@@ -135,6 +135,45 @@ fn both_branch_paths_and_zero_count_call_positions_participate_in_view() {
 }
 
 #[test]
+fn inline_body_parent_index_and_nested_context_participate_in_view() {
+    let mut value = data::Context {
+        inline_bodies: vec![data::InlineBody {
+            position: data::Position {
+                offset: 20,
+                start: 0,
+                count: 1,
+            },
+            arm_index: 1,
+            body: data::Context {
+                positions: vec![data::Position {
+                    offset: 63,
+                    start: 0,
+                    count: 1,
+                }],
+                ..Default::default()
+            },
+        }],
+        ..Default::default()
+    };
+    let actual = write(|w| context(w, &value));
+    assert_eq!(
+        actual,
+        expected(
+            r#"["source-context",[],[],[],[],[],[],[
+      ["source-inline-arm",["source-interval",20,0,1],1,["source-context",[["source-interval",63,0,1]],[],[],[],[],[]]]]]"#
+        )
+    );
+    value.inline_bodies[0].body.positions[0].offset -= 1;
+    assert_ne!(actual, write(|w| context(w, &value)));
+    value.inline_bodies[0].body.positions[0].offset += 1;
+    value.inline_bodies[0].arm_index = 0;
+    assert_ne!(actual, write(|w| context(w, &value)));
+    value.inline_bodies[0].arm_index = 1;
+    value.inline_bodies[0].position.offset += 1;
+    assert_ne!(actual, write(|w| context(w, &value)));
+}
+
+#[test]
 fn source_actuals_and_original_meaning_selector_have_independent_literal_view() {
     let mut value = data::v5::Source {
         module: "m".into(),

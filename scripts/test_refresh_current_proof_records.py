@@ -191,7 +191,8 @@ class MaintenanceRefusalTests(unittest.TestCase):
                 "refs/heads/codex/beta-162-checked-provider-placement",
                 "refs/heads/codex/beta-163-engineering-resource-bounds",
                 "refs/heads/codex/beta-30-xor-circuit-work",
-                "refs/heads/codex/beta-30-72-integration")
+                "refs/heads/codex/beta-30-72-integration",
+                "refs/heads/codex/beta-215-inline-coherent-arms")
         self.assertEqual(maintenance.HOSTED_REFS, frozenset(refs))
         workflow = "MGYamada/Qleisli/.github/workflows/current-proof-records.yml@"
         for ref in refs:
@@ -253,6 +254,7 @@ class MaintenanceRefusalTests(unittest.TestCase):
     def test_record_construction_keeps_historical_alpha_and_all_protected_fields(self):
         current = json.loads((maintenance.ROOT / maintenance.CURRENT).read_bytes())
         ledger = json.loads((maintenance.ROOT / maintenance.LEDGER).read_bytes())
+        current["continuity"]["extractor"]["sha256"] = "0" * 64
         original_current, original_ledger = copy.deepcopy(current), copy.deepcopy(ledger)
         extraction = b"synthetic already-verified extraction\xff\n"
         result = maintenance.proposed(current, ledger, {"sha256": "fresh"}, b"audit", b"schema", {label: {"seconds": 2} for label in ("review", "main", "binding")}, extraction)
@@ -262,6 +264,8 @@ class MaintenanceRefusalTests(unittest.TestCase):
         self.assertEqual(maintenance.continuity.xz_decompressed(compressed), extraction)
         expected_continuity = copy.deepcopy(current["continuity"])
         expected_continuity["source_revision_sha256"] = "fresh"
+        expected_continuity["extractor"] = dict(path=maintenance.continuity.RAW_EXTRACTOR,
+                                              sha256=maintenance.continuity.RAW_EXTRACTOR_SHA256)
         expected_continuity["raw_transport"] = maintenance.continuity.raw_transport_record()
         expected_continuity["stdout"]["sha256"] = maintenance.sha(compressed)
         expected_continuity["stdout"]["uncompressed_sha256"] = maintenance.sha(extraction)

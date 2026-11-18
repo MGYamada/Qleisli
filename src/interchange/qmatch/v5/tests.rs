@@ -103,6 +103,53 @@ fn retained_runtime_identity_and_static_actuals_match_the_same_source_instance()
 }
 
 #[test]
+fn inline_body_graph_roots_include_its_local_provider_and_meaning_programs() {
+    let mut request = Request::decode(&json::encode(&value()).unwrap()).unwrap();
+    let position = Position {
+        offset: 20,
+        start: 0,
+        count: 1,
+    };
+    let interface = Interface {
+        inputs: vec![],
+        outputs: vec![],
+        public_effect: crate::ir::Effect::Unitary,
+    };
+    request.context = Context {
+        positions: vec![position.clone()],
+        sites: vec![ContextSite {
+            attached: interface.clone(),
+            required: interface,
+            position: position.clone(),
+            arms: vec![ContextArm {
+                implementation: 1,
+                controlled: 2,
+            }],
+        }],
+        inline_bodies: vec![InlineBody {
+            position,
+            arm_index: 0,
+            body: Context {
+                bodies: vec![BodyRequest {
+                    subject: ProviderSubject::Function { evidence: 1 },
+                    body: Context::default(),
+                }],
+                references: vec![vec![vec![BodyRequest {
+                    subject: ProviderSubject::Pure { program: 4 },
+                    body: Context::default(),
+                }]]],
+                ..Context::default()
+            },
+        }],
+        ..Context::default()
+    };
+    let request = Request::decode(&request.encode().unwrap()).unwrap();
+    assert_eq!(request.graph_roots(0, 5, 2).unwrap(), [0, 1, 2, 4, 6]);
+    assert!(request.graph_roots(0, 4, 2).is_err());
+    assert!(request.graph_roots(0, 5, 1).is_err());
+}
+
+#[test]
 fn body_cannot_masquerade_as_old_context_or_claim_an_effect_or_success() {
     for bad in [
         EMPTY.to_owned(),

@@ -413,6 +413,16 @@ noncomputable def logicalAction (axes : List Nat) (forward : List Semantics.Fini
     (fun input output => blocks output (Qleisli.Semantics.RawAction.StructuralXorValue forward output)
       uses (fun _ (_ : Unit) => input output) 0 ()) ψ
 
+/-- Checked literal controls give the same parity as the original forward
+word. This comparison does not depend on the inverse or the use running. -/
+theorem raw_xor_value {width forward inverse uses clauses}
+    (checked : Raw.structuralComputeClauses width forward inverse uses = .ok clauses) (label : Nat) :
+    Qleisli.Semantics.RawAction.StructuralXorValue forward label =
+      (StructuralXor.predicate clauses label).toNat := by
+  rw [(Raw.structuralComputeClauses_conditions checked).2.2.1]
+  simp [Qleisli.Semantics.RawAction.StructuralXorValue, StructuralXor.predicate,
+    Semantics.Protected.xorPredicate, List.foldl_map]
+
 /-- The actual Raw circuit reading suffices for the local logical replacement.
 The same literal factorization underlies the separate source predicate equation. -/
 theorem raw_event_action {axes forward inverse uses clauses}
@@ -427,11 +437,7 @@ theorem raw_event_action {axes forward inverse uses clauses}
   have action := literal_factorization axes.length clauses facts.2.2.2.1 uses facts.2.1
     (fun input => ψ (Semantics.Finite.scatter row axes input))
     (Semantics.Finite.gather row axes) 0 bounded (by decide)
-  have choice : Qleisli.Semantics.RawAction.StructuralXorValue forward (Semantics.Finite.gather row axes) =
-      (StructuralXor.predicate clauses (Semantics.Finite.gather row axes)).toNat := by
-    rw [facts.2.2.1]
-    simp [Qleisli.Semantics.RawAction.StructuralXorValue, StructuralXor.predicate,
-      List.foldl_map]
+  have choice := raw_xor_value checked (Semantics.Finite.gather row axes)
   simp only [Qleisli.Semantics.RawAction.event, logicalAction, Qleisli.Semantics.RawAction.embed, choice]
   rw [facts.1, facts.2.2.1]
   simpa only [FiniteRestriction.pack, Nat.mul_zero, Nat.add_zero, if_pos rfl, StructuralXor.toggle] using action
@@ -547,10 +553,7 @@ theorem raw_word_clean_return {width forward inverse uses clauses}
     if aux = 0 then blocks source (Qleisli.Semantics.RawAction.StructuralXorValue forward source)
       uses (fun _ (_ : Unit) => ψ source) 0 () else 0 := by
   have facts := Raw.structuralComputeClauses_conditions checked
-  have choice : Qleisli.Semantics.RawAction.StructuralXorValue forward source =
-      (StructuralXor.predicate clauses source).toNat := by
-    rw [facts.2.2.1]
-    simp [Qleisli.Semantics.RawAction.StructuralXorValue,StructuralXor.predicate,List.foldl_map]
+  have choice := raw_xor_value checked source
   rw [choice,facts.1,facts.2.2.1]
   simpa only [StructuralXor.toggle] using
     literal_factorization width clauses facts.2.2.2.1 uses facts.2.1 ψ source aux bound small

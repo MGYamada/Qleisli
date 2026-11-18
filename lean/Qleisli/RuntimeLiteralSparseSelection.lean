@@ -52,9 +52,9 @@ private theorem named_child_flow {artifact root mode fuel program block step}
     (call : @ChildRun artifact root mode (runBlockCore artifact root mode (fuel+1)) program block step) :
     NamedChildFlow step := by
   cases call with
-  | @named _ _ _ _ _ _ _ scope body _ _ _ path request plan _ result receipts _ _ afterInput afterChild _ childRead =>
+  | @named _ _ _ _ _ _ _ scope body _ _ _ path controlled request plan _ result receipts _ _ afterInput afterChild _ childRead =>
     obtain ⟨_,_,_,flow,_⟩ := RuntimeNamedChildRuns.core_flow artifact root mode fuel
-      .localScope (.whole body) path scope.program request plan _ scope.visible.ssa
+      .localScope (.whole body controlled) path scope.program request plan _ scope.visible.ssa
       scope.prepared.block (result,receipts) ⟨afterInput,afterChild,childRead⟩
     exact ⟨by simpa only [named_stepList_ofList] using flow.literal,pure_steps_ordinary flow.ordinary⟩
 

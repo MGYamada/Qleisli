@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"invalid_ir","severity":"error","message":"contract: Lean native checker rejected the artifact/request; no fallback while checking main::route","primary":{"module":null,"path":"/private/tmp/qleisli-215-inline-nested-repro/main.qli","start":73,"end":272},"related":[]}],"result":null}

@@ -50,5 +50,6 @@ theorem armsWrapper (sources : Sources) (owner name : String)
     QuantumArms.read sources owner name offset selector target =
       legacyArms sources owner name offset selector target := by
   simp only [QuantumArms.read, QuantumArms.readArms, legacyArms, QuantumMatch.read, SourceTypes.readMany, bind_assoc, pure_bind]
+  rfl
 
 end QleisliKernel.Tests.OriginalSelectionContinuity

@@ -65,10 +65,7 @@ fn quantum_match_preserves_written_labels_operations_and_original_spans() {
         .iter()
         .zip(["keep", "h", "global_phase_eighth"])
     {
-        assert_eq!(
-            &source[arm.operation.span.start..arm.operation.span.end],
-            name
-        );
+        assert_eq!(&source[arm.body.span().start..arm.body.span().end], name);
     }
     let syntax = parse_module(
         "fn f(s:Q<Bits<2>>,q:Q<Bit>)->(Q<Bits<2>>,Q<Bit>){qmatch(s,q){3=>h,0=>h,2=>h,1=>h}}",
@@ -94,7 +91,7 @@ fn quantum_match_preserves_written_labels_operations_and_original_spans() {
 }
 
 #[test]
-fn convenience_patterns_and_dynamic_arm_bodies_are_not_silently_desugared() {
+fn convenience_patterns_and_unbraced_dynamic_arms_are_rejected() {
     for arms in [
         "_=>h",
         "0..2=>h",
@@ -103,7 +100,6 @@ fn convenience_patterns_and_dynamic_arm_bodies_are_not_silently_desugared() {
         "00=>h",
         "4294967296=>h",
         "0=>h(q)",
-        "0=>{q}",
     ] {
         let source = format!("fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){{qmatch(s,q){{{arms}}}}}");
         assert!(parse_module(&source).is_err(), "{source}");
@@ -111,6 +107,31 @@ fn convenience_patterns_and_dynamic_arm_bodies_are_not_silently_desugared() {
     // Existing qif syntax and its fixed 0/1 written order are unchanged.
     parse_module("fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qif(s,q){0=>h,1=>h}}").unwrap();
     assert!(parse_module("fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){qif(s,q){1=>h,0=>h}}").is_err());
+}
+
+#[test]
+fn coherent_arm_blocks_retain_original_spans_and_local_statements() {
+    let block_text = "{ let temp = h(q); global_phase_eighth(temp) }";
+    for select in ["qif", "qmatch"] {
+        let source = format!(
+            "fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){{{select}(s,q){{0=>{block_text},1=>h}}}}"
+        );
+        let syntax = parse_module(&source).unwrap();
+        assert_eq!(parse_bounded_module(&source).unwrap(), syntax);
+        let FnBody::Quantum(body) = &syntax.decls[0].body else {
+            panic!()
+        };
+        let arm = match &body.result.kind {
+            ExprKind::QuantumIf { zero, .. } => zero,
+            ExprKind::QuantumMatch(selection) => &selection.arms[0].body,
+            _ => panic!(),
+        };
+        let CoherentArm::Block(block) = arm else {
+            panic!()
+        };
+        assert_eq!(&source[block.span.start..block.span.end], block_text);
+        assert_eq!(block.statements.len(), 1);
+    }
 }
 
 #[test]
@@ -124,7 +145,8 @@ fn static_arms_retain_specializations_constructor_children_and_spans() {
     let ExprKind::QuantumMatch(selection) = &body.result.kind else {
         panic!()
     };
-    let StaticOpKind::Then(left, right) = &selection.arms[0].operation.kind else {
+    let first = selection.arms[0].body.operation().unwrap();
+    let StaticOpKind::Then(left, right) = &first.kind else {
         panic!()
     };
     let StaticOpKind::Specialize { name, arguments } = &left.kind else {
@@ -135,11 +157,11 @@ fn static_arms_retain_specializations_constructor_children_and_spans() {
     assert!(matches!(arguments[0].kind, StaticOpKind::Type(_)));
     assert!(matches!(right.kind, StaticOpKind::Inverse(_)));
     assert_eq!(
-        &source[selection.arms[0].operation.span.start..selection.arms[0].operation.span.end],
+        &source[first.span.start..first.span.end],
         "then_op(keep[type(Bit), 2], adjoint(other))"
     );
     assert!(matches!(
-        selection.arms[1].operation.kind,
+        selection.arms[1].body.operation().unwrap().kind,
         StaticOpKind::Repeat(_, _)
     ));
 }

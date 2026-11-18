@@ -9,6 +9,172 @@ use crate::interchange::qmatch::ArmBody;
 #[cfg(test)]
 mod tests;
 
+pub(super) fn inline_arm(
+    lower: &mut Lowerer<'_, '_>,
+    module: &str,
+    block: &Block,
+    target: &Expr,
+    basis: &Ty,
+    bits: usize,
+) -> Result<(ArmSubject, Vec<CircuitStep>), CompileError> {
+    let ExprKind::Name(name) = &target.kind else {
+        return Err(lower.error(
+            module,
+            target.span,
+            ErrorCode::Ownership,
+            "bind the target owner to a name before using it in an inline coherent arm",
+        ));
+    };
+    let target_key = lower
+        .compiler
+        .locals()
+        .local_key(name)
+        .ok_or_else(|| {
+            lower.error(
+                module,
+                name.span,
+                ErrorCode::Ownership,
+                "inline coherent arm requires a target owner",
+            )
+        })?
+        .clone();
+    let parent = lower.nominal_qmatch.as_ref().ok_or_else(|| {
+        lower.error(
+            module,
+            block.span,
+            ErrorCode::InvalidIr,
+            "missing original coherent arm context",
+        )
+    })?;
+    let frame = parent.branch_frame();
+    lower.compiler.charge(
+        module,
+        block.span,
+        basis.tree_size().nodes.saturating_mul(3)
+            + total_size(
+                lower
+                    .bindings
+                    .iter()
+                    .map(|(key, operation)| key.name.len() + operation.copy_size() + 1),
+            ),
+    )?;
+    let expected = Ty::quantum(basis.clone());
+    let mut inner = Lowerer {
+        nominal_modules: std::rc::Rc::clone(&lower.nominal_modules),
+        nominal_basis_used: Some(false),
+        source_planned: true,
+        compiler: lower.compiler,
+        raw: RawState::new(),
+        operation_sources: BTreeMap::new(),
+        instrument_calls: Vec::new(),
+        nominal_qmatch: Some(frame),
+        source_context: None,
+        tuple_binding_origins: Vec::new(),
+        access_updates: Vec::new(),
+        effect: Effect::Unitary,
+        contract_effect: Effect::Unitary,
+        effect_source: None,
+        depth: lower.depth,
+        bindings: lower.bindings.clone(),
+    };
+    let mut quantum_inputs = Vec::new();
+    let mut classical_inputs = Vec::new();
+    let input = inner.input(
+        &expected,
+        module,
+        name.span,
+        &mut quantum_inputs,
+        &mut classical_inputs,
+    )?;
+    inner
+        .compiler
+        .charge(module, name.span, target_key.name.len() + 1)?;
+    let mut isolated = BTreeMap::from([(target_key.clone(), Binding::Live(input))]);
+    let value = inner.block(module, block, &mut isolated)?;
+    let result = if block.implicit_result && !block.statements.is_empty() {
+        match isolated.remove(&target_key) {
+            Some(Binding::Live(value)) => value,
+            _ => {
+                return Err(inner.error(
+                    module,
+                    block.result.span,
+                    ErrorCode::Ownership,
+                    "implicit return requires the original target owner to remain live",
+                ));
+            }
+        }
+    } else {
+        value
+    };
+    inner.no_owned_bindings(module, block.span, &isolated, [name])?;
+    if result.ty() != expected {
+        return Err(inner.error(
+            module,
+            block.result.span,
+            ErrorCode::TypeMismatch,
+            "inline coherent arm must return a single owner of the exact target type",
+        ));
+    }
+    if inner.effect != Effect::Unitary || inner.contract_effect != Effect::Unitary {
+        return Err(inner.error(
+            module,
+            block.span,
+            ErrorCode::Effect,
+            "inline coherent arm body must be unitary",
+        ));
+    }
+    let slot = inner.quantum(module, block.result.span, &result, false)?;
+    let raw = RawProgram {
+        quantum_inputs,
+        classical_inputs,
+        operations: std::mem::take(&mut inner.raw.operations),
+        quantum_outputs: vec![inner.raw.registers[&slot].token],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let context = inner
+        .nominal_qmatch
+        .take()
+        .expect("original arm frame")
+        .branch_subject(&mut inner, module)?;
+    let checked = inner
+        .compiler
+        .kernel
+        .accept_raw_with_budget(raw, &mut inner.compiler.exact_work)
+        .map_err(|failure| {
+            let limit = failure.code == "limit";
+            verification_error(
+                inner.compiler,
+                &inner.operation_sources,
+                module,
+                block.span,
+                failure,
+                limit,
+            )
+        })?;
+    let flat = circuit::flatten(inner.compiler, module, block.span, &checked)?;
+    inner.compiler.charge(
+        module,
+        block.span,
+        crate::frontend::raw_state::operations_size(&checked.program().operations)
+            + total_size(flat.iter().map(circuit::size)).saturating_mul(2)
+            + 4 * bits
+            + 8,
+    )?;
+    let controlled_steps = operations::controlled(flat, bits);
+    Ok((
+        ArmSubject {
+            body: ArmBody::Inline {
+                raw: checked.program().clone(),
+                context,
+            },
+            controlled: super::controlled(controlled_steps.clone(), bits),
+            operation: None,
+        },
+        controlled_steps,
+    ))
+}
+
 pub(in crate::frontend::compile::lower::quantum_match) enum BuiltinArmOrigin<'a> {
     Named(&'a Ident),
     Constructed(&'a operations::Operation, Span),
@@ -77,7 +243,7 @@ pub(in crate::frontend::compile::lower::quantum_match) fn builtin_arm(
     })
 }
 
-fn builtin_named_origin(
+pub(super) fn builtin_named_origin(
     lower: &mut Lowerer<'_, '_>,
     module: &str,
     name: &Ident,
@@ -134,13 +300,14 @@ fn builtin_named_origin(
             lower
                 .compiler
                 .charge(module, name.span, 2 * target.tree_size().nodes + 1)?;
-            (
-                OperationNode::Primitive {
-                    kind,
-                    target: super::builtin_basis_description(target),
-                },
-                vec![],
-            )
+            let target = if target.basis_bits().is_some() {
+                super::builtin_basis_description(target)
+            } else {
+                lower
+                    .compiler
+                    .carrier_description(module, name.span, target)?
+            };
+            (OperationNode::Primitive { kind, target }, vec![])
         }
     };
     Ok(OperationSubject {

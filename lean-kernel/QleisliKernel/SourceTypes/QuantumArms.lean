@@ -216,21 +216,43 @@ def BoundArm.sourceRows {sources owner selector target} (arm : BoundArm sources 
     List (String × String) :=
   arm.label.sourceRows ++ arm.operation.sourceRows
 
-def partition {sources owner selector target} (count : Nat) (arms : List (BoundArm sources owner selector target)) : Bool :=
-  let labels := arms.map (·.label.ordinal)
+def partitionWith {Arm : Type} (ordinal : Arm → Nat) (count : Nat) (arms : List Arm) : Bool :=
+  let labels := arms.map ordinal
   labels.length == count && labels.all (· < count) && labels.eraseDups.length == labels.length
+
+def partition {sources owner selector target} (count : Nat) (arms : List (BoundArm sources owner selector target)) : Bool :=
+  partitionWith (·.label.ordinal) count arms
 
 /-- Original arm headers and label coverage, not an enclosing lexical-scope
 judgment. Current native admission also requires QuantumSequence.read. -/
-structure Table (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) where
+structure TableWith (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis)
+    (Arm : Type) (written : Arm → QuantumMatch.Arm) (ordinal : Arm → Nat) where
   site : QuantumMatch.Site sources owner name offset
   layout : Semantics.FiniteCarrier.Layout
   originalTypes : SourceTypes.ManyRead sources [selector,target]
   selectorLayout : Semantics.FiniteCarrier.layout selector = some layout
-  arms : List (BoundArm sources owner selector target)
-  originalArms : arms.map (·.written) = site.parsed.arms
-  complete : partition layout.labels.length arms = true
+  arms : List Arm
+  originalArms : arms.map written = site.parsed.arms
+  complete : partitionWith ordinal layout.labels.length arms = true
   selectorKind : QuantumMatch.acceptsSelector site.parsed selector = true
+
+abbrev Table (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) :=
+  TableWith sources owner name offset selector target (BoundArm sources owner selector target)
+    BoundArm.written (·.label.ordinal)
+
+private def finishTable {sources owner name offset selector target Arm written ordinal}
+    (site : QuantumMatch.Site sources owner name offset)
+    (originalTypes : SourceTypes.ManyRead sources [selector,target])
+    (layout : Semantics.FiniteCarrier.Layout)
+    (selectorLayout : Semantics.FiniteCarrier.layout selector = some layout)
+    (selectorKind : QuantumMatch.acceptsSelector site.parsed selector = true)
+    (arms : List Arm) : WorkM (TableWith sources owner name offset selector target Arm written ordinal) := do
+  exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
+  if same : arms.map written = site.parsed.arms then
+    if complete : partitionWith ordinal layout.labels.length arms = true then
+      return ⟨site,layout,originalTypes,selectorLayout,arms,same,complete,selectorKind⟩
+    else throw .request
+  else throw .request
 
 /-- Reuse the exact already-read caller; all arm, source-type and partition
 checks remain in this shared continuation. No alternate source body is supplied. -/
@@ -243,15 +265,9 @@ def readArms {sources owner name}
   let original ← SourceTypes.readMany sources [selector,target]
   let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
   let arms ← site.parsed.arms.mapM (readArm sources owner selector target)
-  exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
-  if same : arms.map (·.written) = site.parsed.arms then
-    if complete : partition layout.val.labels.length arms = true then
-      return ⟨site,layout.val,original,
-        by obtain ⟨before,after,ran⟩ := layout.property
-           exact FiniteCarrier.read_reference _ _ _ _ ran,
-        arms,same,complete,selectorKind.down⟩
-    else throw .request
-  else throw .request
+  finishTable site original layout.val
+    (by obtain ⟨before,after,ran⟩ := layout.property; exact FiniteCarrier.read_reference _ _ _ _ ran)
+    selectorKind.down arms
 
 def read (sources : Sources) (owner name : String) (offset : Nat) (selector target : Basis) :
     WorkM (Table sources owner name offset selector target) := do
@@ -265,7 +281,7 @@ private def scopeAt {sources owner name} (signature : QuantumSignature.Checked s
   let runtime ← SourceRuntimeContext.fromQuantumCore signature.toChecked signature.context signature.operations
   let body ← SourceRuntimeTrace.readBodyWithSignature runtime.signature
   let some scope := body.checked.events.findSome? (fun
-    | .selection _ parsed _ _ _ scope .. => if parsed.keyword.span.startByte == offset then some scope else none
+    | .selection event => if event.parsed.keyword.span.startByte == offset then some event.scope else none
     | _ => none) | throw .request
   return scope
 
@@ -288,15 +304,19 @@ def readArmsWithSignature {sources owner name}
   let locals ← match eventScope with | some names => pure names | none => scopeAt signature offset
   let scope := signature.staticNames ++ locals
   let arms ← site.parsed.arms.mapM (readArmWithSignature signature naturals scope selector target)
-  exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
-  if same : arms.map (·.written) = site.parsed.arms then
-    if complete : partition layout.val.labels.length arms = true then
-      return ⟨site,layout.val,original,
-        by obtain ⟨before,after,ran⟩ := layout.property
-           exact FiniteCarrier.read_reference _ _ _ _ ran,
-        arms,same,complete,selectorKind.down⟩
-    else throw .request
-  else throw .request
+  finishTable site original layout.val
+    (by obtain ⟨before,after,ran⟩ := layout.property; exact FiniteCarrier.read_reference _ _ _ _ ran)
+    selectorKind.down arms
+
+private def readArmRetainingGraphs {sources owner name}
+    (original : OrdinarySignature.Original sources owner name)
+    (instantiation : StaticInstantiation.Checked original) (supply : StaticOperation.Supply instantiation)
+    (naturals : PhaseApplication.Naturals sources) (scope : List String)
+    (selector target : Basis) (written : QuantumMatch.Arm) :
+    StateT (List (StaticOperation.SuppliedGraphEntry supply)) WorkM (BoundArm sources owner selector target) :=
+  fun previous => readArmUsing original instantiation supply naturals scope selector target written
+    (fun tokens => SourceOperation.readWithSharedGraphs instantiation naturals.helpers.val
+      naturals.environment scope tokens naturals.generic supply) previous
 
 def readArmsWithInstantiation {sources owner name}
     (originalCaller : OrdinarySignature.Original sources owner name)
@@ -313,20 +333,75 @@ def readArmsWithInstantiation {sources owner name}
     | some naturals => pure naturals
     | none => PhaseApplication.prepareWithInstantiation instantiation
   let scope := instantiation.names ++ eventScope
-  let readArm (written : QuantumMatch.Arm) :
-      StateT (List (StaticOperation.SuppliedGraphEntry supply)) WorkM (BoundArm sources owner selector target) :=
-    fun previous => readArmUsing originalCaller instantiation supply naturals scope selector target written
-      (fun tokens => SourceOperation.readWithSharedGraphs instantiation naturals.helpers.val
-        naturals.environment scope tokens naturals.generic supply) previous
+  let readArm := readArmRetainingGraphs originalCaller instantiation supply naturals scope selector target
   let (arms,_) ← (site.parsed.arms.mapM readArm).run []
-  exactWork (Exact.charge (256*(site.parsed.tokens.length+1)*(arms.length+1)))
-  if same : arms.map (·.written) = site.parsed.arms then
-    if complete : partition layout.val.labels.length arms = true then
-      pure ⟨site,layout.val,original,
-        by obtain ⟨before,after,ran⟩ := layout.property
-           exact FiniteCarrier.read_reference _ _ _ _ ran,
-        arms,same,complete,selectorKind.down⟩
-    else throw .request
+  finishTable site original layout.val
+    (by obtain ⟨before,after,ran⟩ := layout.property; exact FiniteCarrier.read_reference _ _ _ _ ran)
+    selectorKind.down arms
+
+inductive RuntimeArm {sources owner} (event : SourceRuntimeContext.SelectionEvent sources owner)
+    (selector target : Basis) where
+  | operation (arm : BoundArm sources owner selector target)
+  | inline {index : Nat} (arm : SourceRuntimeTrace.InlineArmBody event index)
+      (replayed : ∃ before after,
+        (SourceRuntimeTrace.readInlineArmBody event index).run before = (.ok arm,after))
+      (ports : event.selector.basis = selector ∧ event.target.basis = target)
+      (label : Label sources)
+      (originalLabel : ∃ before after,
+        (readLabel sources owner selector (event.parsed.arms.get ⟨index,arm.armIndex⟩).label).run before = (.ok label,after))
+
+def RuntimeArm.written {sources owner event selector target} :
+    @RuntimeArm sources owner event selector target → QuantumMatch.Arm
+  | .operation arm => arm.written
+  | .inline arm .. => event.parsed.arms.get ⟨_,arm.armIndex⟩
+
+def RuntimeArm.ordinal {sources owner event selector target} :
+    @RuntimeArm sources owner event selector target → Nat
+  | .operation arm => arm.label.ordinal
+  | .inline _ _ _ label _ => label.ordinal
+
+def RuntimeArm.sourceRows {sources owner event selector target} :
+    @RuntimeArm sources owner event selector target → List SourceRows.Row
+  | .operation arm => arm.sourceRows
+  | .inline arm _ _ label _ => label.sourceRows ++ arm.result.staticRows
+
+abbrev RuntimeTable {sources owner} (event : SourceRuntimeContext.SelectionEvent sources owner)
+    (offset : Nat) (selector target : Basis) :=
+  TableWith sources owner event.callerName offset selector target (RuntimeArm event selector target)
+    RuntimeArm.written RuntimeArm.ordinal
+
+/-- Read every arm of the retained runtime event in written order. The table
+shares source, type, and label coverage checks with the static-operation table. -/
+def readRuntimeArms {sources owner} (event : SourceRuntimeContext.SelectionEvent sources owner)
+    (offset : Nat) (selector target : Basis) : WorkM (RuntimeTable event offset selector target) := do
+  guard (offset == event.parsed.keyword.span.startByte) .request
+  let caller := event.signature.original
+  let instantiation := event.signature.instantiation
+  let supply := event.signature.supply
+  let site ← QuantumMatch.readSite caller offset
+  guard (site.parsed == event.parsed) .request
+  let selectorKind ← QuantumMatch.checkSelector site.parsed selector
+  let originalTypes ← SourceTypes.readMany sources [selector,target] (supply.arguments.catalogue.map (·.helpers))
+  let layout ← NaturalAffine.witness (FiniteCarrier.read selector)
+  let scope := instantiation.names ++ event.scope
+  if ports : event.selector.basis = selector ∧ event.target.basis = target then
+    let readArm (index : Fin site.parsed.arms.length) :
+        StateT (List (StaticOperation.SuppliedGraphEntry supply)) WorkM (RuntimeArm event selector target) :=
+      fun previous => do
+        let written := site.parsed.arms[index]
+        if written.operation.head?.map (·.text) == some "{" then
+          let arm ← NaturalAffine.witness (SourceRuntimeTrace.readInlineArmBody event index.val)
+          let label ← NaturalAffine.witness
+            (readLabel sources owner selector (event.parsed.arms.get ⟨index.val,arm.val.armIndex⟩).label)
+          return (.inline arm.val (by with_reducible exact arm.property) ports label.val
+            (by with_reducible exact label.property),previous)
+        else
+          let (arm,next) ← (readArmRetainingGraphs caller instantiation supply event.naturals scope selector target written).run previous
+          return (.operation arm,next)
+    let (arms,_) ← ((List.finRange site.parsed.arms.length).mapM readArm).run []
+    finishTable site originalTypes layout.val
+      (by obtain ⟨before,after,ran⟩ := layout.property; exact FiniteCarrier.read_reference _ _ _ _ ran)
+      selectorKind.down arms
   else throw .request
 
 end QleisliKernel.SourceTypes.QuantumArms

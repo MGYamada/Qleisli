@@ -31,36 +31,42 @@ inductive Context where
       (calls : List (SourceSequence.Position × Context))
       (branches : List (SourceSequence.Position × Context × Context)) (bodies : List (Provider × Context))
       (references : List (List (List (Provider × Context)))) (staticIntervals : List StaticInterval)
+      (inlineBodies : List (SourceSequence.Position × Nat × Context))
 
 /-- Construct a local context with no transported Meaning groups. The wire
 decoder requires the reference field even when its value is empty. -/
 def Context.mk (positions : List SourceSequence.Position) (sites : List Site)
     (calls : List (SourceSequence.Position × Context))
     (branches : List (SourceSequence.Position × Context × Context)) (bodies : List (Provider × Context)) : Context :=
-  .withReferences positions sites calls branches bodies [] []
+  .withReferences positions sites calls branches bodies [] [] []
 
 def Context.positions : Context → List SourceSequence.Position
-  | .withReferences positions _ _ _ _ _ _ => positions
+  | .withReferences positions _ _ _ _ _ _ _ => positions
 def Context.sites : Context → List Site
-  | .withReferences _ sites _ _ _ _ _ => sites
+  | .withReferences _ sites _ _ _ _ _ _ => sites
 def Context.calls : Context → List (SourceSequence.Position × Context)
-  | .withReferences _ _ calls _ _ _ _ => calls
+  | .withReferences _ _ calls _ _ _ _ _ => calls
 def Context.branches : Context → List (SourceSequence.Position × Context × Context)
-  | .withReferences _ _ _ branches _ _ _ => branches
+  | .withReferences _ _ _ branches _ _ _ _ => branches
 def Context.bodies : Context → List (Provider × Context)
-  | .withReferences _ _ _ _ bodies _ _ => bodies
+  | .withReferences _ _ _ _ bodies _ _ _ => bodies
 
 /-- One group list per original operation graph. Each group supplies the
 quantum leaves of one original Meaning in written order. -/
 def Context.references : Context → List (List (List (Provider × Context)))
-  | .withReferences _ _ _ _ _ references _ => references
+  | .withReferences _ _ _ _ _ references _ _ => references
 
 def Context.staticIntervals : Context → List StaticInterval
-  | .withReferences _ _ _ _ _ _ intervals => intervals
+  | .withReferences _ _ _ _ _ _ intervals _ => intervals
+
+/-- The parent interval and written arm index identify a proposed inline body. -/
+def Context.inlineBodies : Context → List (SourceSequence.Position × Nat × Context)
+  | .withReferences _ _ _ _ _ _ _ inline => inline
 
 /-- Preserve the original request while passing the remaining provider slots
 to the body after its original function-level operation supplies. -/
 def Context.withBodies (context : Context) (bodies : List (Provider × Context)) : Context :=
-  .withReferences context.positions context.sites context.calls context.branches bodies context.references context.staticIntervals
+  .withReferences context.positions context.sites context.calls context.branches bodies context.references
+    context.staticIntervals context.inlineBodies
 
 end QleisliKernel.Qirf.RuntimeContextRequest

@@ -1,6 +1,7 @@
 import QleisliKernel.Qirf.RuntimePureBody
 import QleisliKernel.Qirf.RuntimeLocalEvents
 import QleisliKernel.Qirf.RuntimeBodyDiscovery
+import QleisliKernel.Qirf.RuntimeBodyOperations
 import QleisliKernel.Qirf.RuntimePureComposition
 import QleisliKernel.Tests.ArmBody
 
@@ -84,6 +85,148 @@ private def selected (exponent : Nat) (swapOutputs : Bool := false) : WorkM (Nat
 -- The whole main, arm, specification and control agree on the wrong phase.
 -- Every original provider body is nevertheless traversed, so this refuses.
 #guard (match (selected 0).run 10000000 with | (.error .equation,_) => true | _ => false)
+
+private inductive InlineFault where
+  | none | phase | order | controlled | parent | offset | ordinal
+  deriving BEq
+
+private inductive InlineShape where
+  | qif | qmatch | product
+  deriving BEq
+
+private def inlineSelection (fault : InlineFault) (shape : InlineShape := .qmatch) : WorkM (List Nat) := do
+  let basis := if shape == .product then "(Unit,Bit)" else "Bit"
+  let text := s!"#![no_implicit_prelude] pub unitary fn route(s:Q<Bit>,q:Q<{basis}>)->(Q<Bit>,Q<{basis}>)" ++
+    match shape with
+    | .qif => "{qif(s,q){0=>{q},1=>{let r=h(q);phase[1,1](r)}}}"
+    | .qmatch => "{qmatch(s,q){1=>{let r=h(q);phase[1,1](r)},0=>{q}}}"
+    | .product => "{qmatch(s,q){1=>{let (u,b)=split(q);join(u,phase[1,1](h(b)))},0=>{q}}}"
+  let port := fun token wire => (⟨token,[wire],1⟩ : Semantics.Raw.Port)
+  let desired : List Semantics.Raw.Gate := [.h,.z]
+  let actual := if fault == .phase then [.h,.t] else if fault == .order then desired.reverse else desired
+  let control := fun (gates : List Semantics.Raw.Gate) =>
+    (⟨[port 0 0,port 1 1],[],[.pure (.quantumIf 0 1 2 3 [] (gates.map (fun gate => .gate gate 0)))],
+      [2,3],[],.unitary⟩ : Semantics.Observation.Program)
+  let gates := actual.zipIdx.map fun (gate,index) =>
+    let input := index + (if shape == .product then 2 else 0)
+    Semantics.Raw.Op.gate gate input (input+1)
+  let operations := if shape == .product then [.split 0 1 2 0] ++ gates ++ [.join 1 4 5] else gates
+  let action : Semantics.Observation.Program :=
+    ⟨[port 0 0],[],operations.map .pure,[if shape == .product then 5 else 2],[],.unitary⟩
+  let keep : Semantics.Observation.Program := ⟨[port 0 0],[],[],[0],[],.unitary⟩
+  let artifact : Artifact := ⟨#[control (if fault == .parent then [.h] else actual),
+    action,control (if fault == .controlled then [.h] else actual),keep,control []],#[],#[("main",text)],0,none⟩
+  let signature ← SourceRuntimeContext.readSignature artifact.sources "main" "route" {}
+  let body ← SourceRuntimeTrace.readBodyWithSignature signature
+  let root ← Validity.checkRootFromRoots artifact #[1,2,3,4,0] [("main",text)] [0,1,2,3,4]
+  let prepared ← RuntimeInterval.prepare root.dependencies root.program
+  let interval ← RuntimeInterval.check prepared.block 0 1
+  if first : 0 < body.checked.events.length then
+    let index : Fin body.checked.events.length := ⟨0,first⟩
+    let .selection event := body.checked.events[index] | throw .request
+    let selector := event.selector
+    let target := event.target
+    let offset := event.parsed.keyword.span.startByte
+    let table ← QuantumArms.readRuntimeArms event offset selector.basis target.basis
+    let interface : Semantics.CarrierInterface.Interface :=
+      ⟨[⟨port 0 0,selector.basis⟩,⟨port 1 1,target.basis⟩],
+        [⟨port 2 0,selector.basis⟩,⟨port 3 1,target.basis⟩],.unitary⟩
+    let subjects : List RuntimeContextRequest.Arm := [⟨1,2⟩,⟨3,4⟩]
+    let site : RuntimeContextRequest.Site :=
+      ⟨interface,interface,⟨offset,0,1⟩,if shape == .qif then subjects.reverse else subjects⟩
+    let frame ← RuntimeOwnerMap.check [selector,target] interval.before [⟨selector,port 0 0⟩,⟨target,port 1 1⟩]
+    let owners ← RuntimeOwnerTransition.read interval frame.bindings
+    let execution : Qirf.RuntimePureBody.ExecutionMode artifact root := .fresh .strict
+    let run := Qirf.RuntimePureBody.runBlockCore artifact root execution 8
+    let history : RuntimeStructuralAction.SourceState :=
+      ⟨frame.bindings,[selector,target],if fault == .ordinal then 3 else 2⟩
+    let same ← if same : event.callerName = "route" then pure (⟨same⟩ : PLift _) else throw .request
+    let (_,labels) ← Qirf.RuntimePureBody.selectionNode artifact interval frame owners selector target table site []
+      fun index arm labels => do
+        let .inline replay original _ _ _ := arm | throw .request
+        let some subject := site.arms[index.val]? | throw .request
+        let positions := replay.result.events.zipIdx.map fun (event,index) =>
+          (⟨event.offset+(if fault == .offset then 1 else 0),index,1⟩ : SourceSequence.Position)
+        let request := RuntimeContextRequest.Context.mk positions [] [] [] []
+        let checked ← Qirf.RuntimePureBody.readInlineArm (execution := execution) same.down replay original
+          subject.implementation request () (.root body) history run
+        return (checked.action.code.logical,labels ++ [arm.ordinal])
+    return labels
+  else throw .request
+
+#guard ((inlineSelection .none).run 10000000).1.toOption == some [1,0]
+#guard ((inlineSelection .none .qif).run 10000000).1.toOption == some [0,1]
+#guard ((inlineSelection .none .product).run 10000000).1.toOption == some [1,0]
+#guard [InlineFault.phase,.order,.controlled,.parent].all fun fault =>
+  ((inlineSelection fault).run 10000000).1 matches .error .equation
+#guard ((inlineSelection .offset).run 10000000).1 matches .error .request
+#guard ((inlineSelection .ordinal).run 10000000).1 matches .error .request
+
+private inductive InlinePlanFault where
+  | none | missing | extra | wrongArm | wrongBody | missingRoot | forward | control | parent
+  deriving BEq
+
+private def inlinePlan (fault : InlinePlanFault) (checkRaw : Bool := false) (viaHelper : Bool := false) :
+    WorkM (List Nat × Nat) := do
+  let helperSource := if viaHelper then "unitary fn helper(q:Q<Bit>)->Q<Bit>{adjoint(h)(q)} " else ""
+  let block := if viaHelper then "helper(q)" else "h(q)"
+  let text := "#![no_implicit_prelude] " ++ helperSource ++ "pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
+    "qmatch(s,q){1=>{" ++ block ++ "},0=>h}}"
+  let port := fun token wire => (⟨token,[wire],1⟩ : Semantics.Raw.Port)
+  let standalone := fun gate => (⟨[port 0 0],[],[.pure (.gate gate 0 1)],[1],[],.unitary⟩ : Semantics.Observation.Program)
+  let controlled (zero one : List Semantics.Raw.UnitaryStep) : Semantics.Observation.Program :=
+    ⟨[port 0 0,port 1 1],[],[.pure (.quantumIf 0 1 2 3 zero one)],[2,3],[],.unitary⟩
+  let h := [.gate .h 0]
+  let written := if fault == .forward then .z else .h
+  let physical := [.gate written 0]
+  let parent := if fault == .parent then .phase .minusOne :: physical else physical
+  let active := if fault == .control then .phase .minusOne :: physical else physical
+  let artifact : Artifact :=
+    ⟨#[controlled h parent,standalone written,controlled [] active,standalone .h,controlled [] h],#[],#[("main",text)],0,none⟩
+  let body ← SourceRuntimeTrace.read artifact.sources "main" "route"
+  let [.selection event] := body.events | throw .request
+  let replay ← SourceRuntimeTrace.readInlineArmBody event 0
+  let [action] := replay.result.events | throw .request
+  let position : SourceSequence.Position := ⟨event.parsed.keyword.span.startByte,0,1⟩
+  let interface : Semantics.CarrierInterface.Interface :=
+    ⟨[⟨port 0 0,[.bit]⟩,⟨port 1 1,[.bit]⟩],[⟨port 2 0,[.bit]⟩,⟨port 3 1,[.bit]⟩],.unitary⟩
+  let site : RuntimeContextRequest.Site := ⟨interface,interface,position,[⟨1,if fault == .missingRoot then 5 else 2⟩,⟨3,4⟩]⟩
+  let activePosition : SourceSequence.Position := ⟨action.offset+(if fault == .wrongBody then 1 else 0),0,1⟩
+  let calls : List (SourceSequence.Position × RuntimeContextRequest.Context) ← if viaHelper then do
+    let .named call := action | throw .request
+    let helper ← SourceRuntimeTrace.readNamedBody call
+    let [.operation operation] := helper.checked.events | throw .request
+    let position : SourceSequence.Position := ⟨operation.call.calleeOffset,0,1⟩
+    let graph := RuntimeContextRequest.Context.withReferences [] [] [] [] [] [[]] [] []
+    pure [(activePosition,RuntimeContextRequest.Context.mk [position] [] [(position,graph)] [] [])]
+  else pure []
+  let child := RuntimeContextRequest.Context.mk [activePosition] [] calls [] []
+  let slots := match fault with
+    | .missing => []
+    | .extra => [(position,0,child),(position,1,child)]
+    | .wrongArm => [(position,1,child)]
+    | _ => [(position,0,child)]
+  let request := RuntimeContextRequest.Context.withReferences [position] [site] [] [] [] [[]] [] slots
+  let plan ← RuntimeBodyOperations.prepare artifact "main" "route" {} request
+  if checkRaw then
+    let tree := Semantics.RuntimeType.owner [.bit]
+    let runtime : RuntimeFamily.Request := ⟨.exported,"main","route",[tree,tree],
+      interface.inputs.map fun value => [.quantum value],[[]],Semantics.RuntimeType.tuple 2 [tree,tree],
+      .tuple 2 :: interface.outputs.map (· |> .quantum),.unitary,{}⟩
+    let checked ← RuntimeBodyOperations.read plan #[1,2,3,4,0] runtime
+    if viaHelper then
+      guard (checked.checked.receipts.length == 2 && checked.checked.receipts.any
+        (fun receipt => receipt.request.requested.applicable && receipt.request.requested.controllable)) .request
+    return (plan.roots,checked.selections.count)
+  return (plan.roots,plan.receipts.length)
+
+#guard ((inlinePlan .none).run 10000000).1.toOption == some ([0,1,2,3,4],1)
+#guard [InlinePlanFault.missing,.extra,.wrongArm,.wrongBody,.missingRoot].all fun fault =>
+  ((inlinePlan fault).run 10000000).1.toOption.isNone
+#guard ((inlinePlan .none true).run 10000000).1.toOption == some ([0,1,2,3,4],1)
+#guard ((inlinePlan .none true true).run 10000000).1.toOption == some ([0,1,2,3,4],1)
+#guard [InlinePlanFault.forward,.control,.parent].all fun fault =>
+  ((inlinePlan fault true).run 10000000).1 matches .error .equation
 
 private def structural (text : String) (inputs : List Semantics.Raw.Port)
     (operations : List Semantics.Raw.Op) (outputs : List Nat) : WorkM (List Nat × List Nat × List Nat) := do

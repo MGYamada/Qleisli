@@ -159,7 +159,7 @@ theorem actual_named_input {artifact root execution fuel program block step}
     NamedPrimitiveInput step := by
   cases call with
   | @named start count inputs caller before ordinary event scope body bodyRead
-      rootOwner rootName path request plan assigned result receipts boundary beforeInput afterInput afterChild inputRead childRead =>
+      rootOwner rootName path controlled request plan assigned result receipts boundary beforeInput afterInput afterChild inputRead childRead =>
     cases emitted : result.steps with
     | nil => trivial
     | cons first rest =>
@@ -174,7 +174,7 @@ theorem actual_named_input {artifact root execution fuel program block step}
           cases node
           case primitive action binding =>
             simp only [NamedPrimitiveInput,Steps.ofList,List.foldr_cons,List.foldr_nil]
-            have actual := child_primitive_carriers artifact root execution fuel (.whole body) path scope.program request plan
+            have actual := child_primitive_carriers artifact root execution fuel (.whole body controlled) path scope.program request plan
               _ assigned ⟨beforeInput,afterInput,inputRead⟩ _ rfl scope.visible.ssa scope.prepared.block
               (result,receipts) ⟨afterInput,afterChild,childRead⟩ action binding emitted
             exact actual.trans (named_input_carriers scope boundary)

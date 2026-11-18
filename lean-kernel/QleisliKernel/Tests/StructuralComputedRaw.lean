@@ -83,6 +83,16 @@ private def emittedCoefficient (row column : Nat) : Option Semantics.Exact.Scala
 #guard emittedCoefficient 3 3 == some (Exact.Scalar.phase 4)
 #guard emittedCoefficient 2 3 == some Semantics.Exact.Scalar.zero
 
+private def reconstructedMatchesCoefficients : Bool := Id.run do
+  let some trace := checkedTrace packet | return false
+  let [event,_] := trace.events | return false
+  let .ok matrix := ((Raw.ProtectedEvaluation.eventMatrix [] event).run exactWorkLimit).1
+    | return false
+  return (List.range 4).all fun row => (List.range 4).all fun col =>
+    emittedCoefficient row col == some (matrix.entry row col)
+
+#guard reconstructedMatchesCoefficients
+
 private def source : String := "#![no_implicit_prelude]\n" ++
   "classical fn both((a,b):(Bit,Bit))->Bit{a and b}\n" ++
   "pub unitary fn route(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>" ++

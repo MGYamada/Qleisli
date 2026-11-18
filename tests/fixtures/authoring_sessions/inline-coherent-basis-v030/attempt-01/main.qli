@@ -1,0 +1,4 @@
+#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{basis q as b {not b}},1=>h}
+}

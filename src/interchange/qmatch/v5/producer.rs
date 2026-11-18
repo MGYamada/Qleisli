@@ -3,7 +3,7 @@
 use super::{Request, Source};
 use crate::interchange::qmatch::{
     self, ArmBody, BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ContextSubject,
-    OperationSubject, OriginalBody, ProviderSubject, StaticInterval,
+    InlineBody, OperationSubject, OriginalBody, ProviderSubject, StaticInterval,
 };
 use crate::interchange::{self, Encoder, Error, Result, Version};
 use crate::ir::RawProgram;
@@ -94,18 +94,34 @@ impl Builder {
                 selection.arms.len().saturating_mul(128) + 512,
             )?;
             let mut arms = Vec::new();
-            for arm in &selection.arms {
+            for (arm_index, arm) in selection.arms.iter().enumerate() {
                 let raw = match &arm.body {
                     ArmBody::Evidence(evidence) => evidence.implementation(),
-                    ArmBody::Program(raw) | ArmBody::Physical { raw, .. } => raw,
+                    ArmBody::Program(raw)
+                    | ArmBody::Physical { raw, .. }
+                    | ArmBody::Inline { raw, .. } => raw,
                 };
                 let implementation = self.graph.program(raw)? as u32;
                 let controlled = self.graph.program(&arm.controlled)? as u32;
-                let operation = arm
-                    .operation
-                    .as_ref()
-                    .ok_or_else(|| Error::format("missing original qmatch arm operation"))?;
-                self.operation(operation, &mut result, depth)?;
+                match (&arm.body, arm.operation.as_ref()) {
+                    (ArmBody::Inline { context, .. }, None) => {
+                        qmatch::charge(&mut self.remaining, 160)?;
+                        result.inline_bodies.push(InlineBody {
+                            position: selection.position.clone(),
+                            arm_index: arm_index as u32,
+                            body: self.context(context, depth + 1)?,
+                        });
+                    }
+                    (ArmBody::Inline { .. }, Some(_)) => {
+                        return Err(Error::format(
+                            "inline qmatch arm supplied a named operation",
+                        ));
+                    }
+                    (_, Some(operation)) => self.operation(operation, &mut result, depth)?,
+                    (_, None) => {
+                        return Err(Error::format("missing original qmatch arm operation"));
+                    }
+                }
                 arms.push(ContextArm {
                     implementation,
                     controlled,

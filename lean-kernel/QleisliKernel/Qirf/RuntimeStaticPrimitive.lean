@@ -130,6 +130,8 @@ inductive EligibleEvents {sources caller} : List (SourceRuntimeContext.Event sou
       (single : events = [.named call]) (actuals : BasisNatActuals call) : EligibleEvents events
   | selection (event : SourceRuntimeContext.Event sources caller)
       (written : event.qmatchOffset.isSome = true) : EligibleEvents [event]
+  | basis (event : SourceRuntimeContext.BasisEvent sources caller)
+      (preserved : event.output = event.input) : EligibleEvents [.basis event]
   | cons {first : SourceRuntimeContext.Event sources caller} {rest : List (SourceRuntimeContext.Event sources caller)}
       (head : EligibleEvents [first]) (tail : EligibleEvents rest) :
       EligibleEvents (first :: rest)
@@ -151,9 +153,13 @@ private def readEventEligibility {sources caller} (coherent : Bool)
     WorkM (EligibleEvents [event]) := do
   match event with
   | .named call => readNamedEligibility call
-  | .selection tokens parsed original selector target scope naturals held remaining =>
+  | .selection selected =>
     if coherent then
-      return .selection (.selection tokens parsed original selector target scope naturals held remaining) rfl
+      return .selection (.selection selected) rfl
+    else throw .request
+  | .basis basis =>
+    if preserved : coherent = true ∧ basis.output = basis.input then
+      return .basis basis preserved.2
     else throw .request
   | other =>
     match classified : classifyEvent other with
@@ -312,7 +318,7 @@ private def compoundPositions {sources caller} (events : List (SourceRuntimeCont
       | .selection .. =>
         let position :: sites := sites | throw .request
         pure (position,calls,sites)
-      | .primitive _ | .phase _ =>
+      | .primitive _ | .phase _ | .basis _ =>
         pure (child.getD ⟨event.offset,cursor,1⟩,calls,sites)
       | _ => throw .request
     let (position,calls,sites) := located
@@ -400,16 +406,27 @@ def readAfter {sources caller dependencies program block start count event}
 structure ContinuationBefore {sources caller dependencies program block start count event}
     (source : @Continuation sources caller event)
     (interval : @RuntimeInterval.Checked dependencies program block start count)
-    (before : RuntimeStructuralAction.SourceState) where
+    (before : RuntimeStructuralAction.SourceState) (suspended : List Owner) where
   ordinal : before.nextOrdinal = event.nextOrdinal
-  frame : Frame (event.held ++ owners event.before) interval.before before.bindings
+  suspendedIssued : suspended.all (fun owner => before.issued.contains owner) = true
+  suspendedHeld : suspended.all (fun owner => event.held.contains owner) = true
+  frame : Frame (event.held.filter (fun owner => !suspended.contains owner) ++ owners event.before)
+    interval.before before.bindings
 
 def readContinuationBefore {sources caller dependencies program block start count event}
     (source : @Continuation sources caller event)
     (interval : @RuntimeInterval.Checked dependencies program block start count)
-    (before : RuntimeStructuralAction.SourceState) : WorkM (ContinuationBefore source interval before) := do
-  if ordinal : before.nextOrdinal = event.nextOrdinal then
-    return ⟨ordinal,← readFrame (event.held ++ owners event.before) interval.before before.bindings⟩
+    (before : RuntimeStructuralAction.SourceState) (suspended : List Owner) :
+    WorkM (ContinuationBefore source interval before suspended) := do
+  if !suspended.isEmpty then
+    exactWork (Exact.charge (16*(suspended.length+1)*
+      (Raw.OwnerFlow.fields (suspended ++ event.held ++ before.issued)+1)))
+  if checked : before.nextOrdinal = event.nextOrdinal ∧
+      suspended.all (fun owner => before.issued.contains owner) = true ∧
+      suspended.all (fun owner => event.held.contains owner) = true then
+    let frame ← readFrame (event.held.filter (fun owner => !suspended.contains owner) ++ owners event.before)
+      interval.before before.bindings
+    return ⟨checked.1,checked.2.1,checked.2.2,frame⟩
   else throw .request
 
 /-- The mixed exit uses the exact selected source deltas. Issued and retired
@@ -418,25 +435,27 @@ that history. The ordinary SSA result remains the actual common step's state. -/
 structure ContinuationAfter {sources caller dependencies program block start count event}
     (source : @Continuation sources caller event)
     (interval : @RuntimeInterval.Checked dependencies program block start count)
-    (before after : RuntimeStructuralAction.SourceState) (beforeRetired afterRetired : List Owner) where
+    (before after : RuntimeStructuralAction.SourceState) (beforeRetired afterRetired suspended : List Owner) where
   ordinal : after.nextOrdinal = source.selected.result.nextOrdinal
   issued : after.issued = before.issued ++ source.selected.result.allocated
   retired : afterRetired = beforeRetired ++ source.selected.result.consumed
-  frame : Frame (event.held ++ valueOwners source.selected.result.value ++ owners source.selected.result.remaining)
+  frame : Frame (event.held.filter (fun owner => !suspended.contains owner) ++
+    valueOwners source.selected.result.value ++ owners source.selected.result.remaining)
     interval.after after.bindings
 
 def readContinuationAfter {sources caller dependencies program block start count event}
     (source : @Continuation sources caller event)
     (interval : @RuntimeInterval.Checked dependencies program block start count)
-    (before after : RuntimeStructuralAction.SourceState) (beforeRetired afterRetired : List Owner) :
-    WorkM (ContinuationAfter source interval before after beforeRetired afterRetired) := do
+    (before after : RuntimeStructuralAction.SourceState) (beforeRetired afterRetired suspended : List Owner) :
+    WorkM (ContinuationAfter source interval before after beforeRetired afterRetired suspended) := do
   exactWork (Exact.charge (32*(Raw.OwnerFlow.fields (before.issued ++ after.issued ++
     source.selected.result.allocated ++ beforeRetired ++ afterRetired ++ source.selected.result.consumed)+
     after.nextOrdinal+source.selected.result.nextOrdinal+1)))
   if history : after.nextOrdinal = source.selected.result.nextOrdinal ∧
       after.issued = before.issued ++ source.selected.result.allocated ∧
       afterRetired = beforeRetired ++ source.selected.result.consumed then
-    let frame ← readFrame (event.held ++ valueOwners source.selected.result.value ++ owners source.selected.result.remaining)
+    let frame ← readFrame (event.held.filter (fun owner => !suspended.contains owner) ++
+      valueOwners source.selected.result.value ++ owners source.selected.result.remaining)
       interval.after after.bindings
     return ⟨history.1,history.2.1,history.2.2,frame⟩
   else throw .request

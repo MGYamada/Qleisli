@@ -120,6 +120,14 @@ structure Request (artifact : Artifact) where
   references : List (List BodyRequest)
   origin : Origin graph
 
+inductive ArmOccurrence {sources : Sources} {owner name : String} {selector target}
+    (arm : QuantumArms.BoundArm sources owner selector target) where
+  | named {offset : Nat} (table : QuantumArms.Table sources owner name offset selector target)
+      (index : Fin table.arms.length) (original : table.arms[index] = arm)
+  | mixed (event : SourceRuntimeContext.SelectionEvent sources owner) (sameName : event.callerName = name)
+      (table : QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte selector target)
+      (index : Fin table.arms.length) (original : table.arms[index] = .operation arm)
+
 /-- An arm belongs to the table of the current function at this exact index.
 Other graph requests retain their invocation without a local arm site. -/
 inductive Site {sources : Sources} (owner name : String) :
@@ -127,8 +135,8 @@ inductive Site {sources : Sources} (owner name : String) :
     {graph : StaticOperation.CheckedGraph sources context description} → Origin graph → Type where
   | unlocated {context description} {graph : StaticOperation.CheckedGraph sources context description} :
       Site owner name (.unlocated (graph := graph))
-  | arm {offset selector target} (table : QuantumArms.Table sources owner name offset selector target)
-      (index : Fin table.arms.length) : Site owner name (.arm (table.arms[index]).operation)
+  | arm {selector target} (arm : QuantumArms.BoundArm sources owner selector target)
+      (occurrence : ArmOccurrence (name := name) arm) : Site owner name (.arm arm.operation)
   | application (event : SourceOperationApplication.Event sources owner) (caller : event.callerName = name) :
       Site owner name (.application event)
   | supplying (event : SourceRuntimeContext.NamedEvent sources owner)

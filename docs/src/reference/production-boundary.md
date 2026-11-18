@@ -369,6 +369,11 @@ basis lift or computed interval earns the report
 original duties and retains pending positions belonging to other invocations.
 Checked selections use
 `finite-source-qmatch-context-v5`.
+For `qif` and `qmatch`, a written inline arm submits its original arm index,
+source positions and literal Raw body. Lean replays the original block in
+the isolated target frame and compares the resulting exact action with its
+controlled implementation and with the caller's Raw sector. Mixed named and
+inline arms use that same sector check.
 Nonstructural bodies and the full twelve-bit profile remain pending.
 A selected coherent arm can use an original classical Meaning helper with
 nominal intermediate values when the Meaning's ports are supported built-in
@@ -752,9 +757,14 @@ input operator. It retains the visible SSA agreement and hidden outcomes for
 each returned history. Public v5, full12/64 and release validation remain
 separate.
 
-`original_body_graph_refinement` additionally derives each coherent selection's
-coefficients from the original written arm graphs. Its expected action follows
-the source prefix and selected path, including named calls and ordinary branches.
+`original_body_graph_refinement` derives coherent selection coefficients from
+the original named arm graphs and checked inline bodies. For a mixed selection,
+each nominal selector ordinal is paired with its written arm in the actual
+checked table. An inline arm uses its own original source evaluation at a
+smaller runner depth, including its input encoding and literal Raw return
+order. The resulting coefficients give the same action as the corresponding
+sectors of the caller's Raw program. The full result follows the source prefix
+and selected path, including named calls and ordinary branches.
 `native_qmatch_body_graph_refinement` connects this theorem to successful
 `Protocol.NativeContext.run .qmatchSourceV5` on the original packet. The same
 decision supplies the body and compared execution view. The result preserves

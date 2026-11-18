@@ -9,7 +9,8 @@ use super::{Error, Result};
 
 mod context;
 pub use context::{
-    BodyRequest, Branch, Call, Context, ContextArm, ContextSite, ProviderSubject, StaticInterval,
+    BodyRequest, Branch, Call, Context, ContextArm, ContextSite, InlineBody, ProviderSubject,
+    StaticInterval,
 };
 mod operations;
 pub use operations::{Description, OperationNode, OperationPrimitive, StaticArguments};
@@ -29,6 +30,10 @@ pub(crate) enum ArmBody {
         )
     )]
     Program(crate::ir::RawProgram),
+    Inline {
+        raw: crate::ir::RawProgram,
+        context: std::sync::Arc<ContextSubject>,
+    },
     Physical {
         bits: u32,
         raw: crate::ir::RawProgram,
@@ -218,10 +223,10 @@ pub(crate) fn proposal(
         for arm in selection.arms {
             let evidence = match &arm.body {
                 ArmBody::Evidence(evidence) => encoder.evidence(evidence)?,
-                ArmBody::Program(_) => {
+                ArmBody::Program(_) | ArmBody::Inline { .. } => {
                     return Err(Error::new(
                         "unsupported",
-                        "standalone qmatch arm programs require the complete v5 source gate. Wrap the gate in a named unitary function",
+                        "standalone qmatch arm programs require the complete v5 source gate",
                     ));
                 }
                 ArmBody::Physical {

@@ -176,19 +176,56 @@ fn apply_selection_steps(
 }
 
 impl Lowerer<'_, '_> {
+    fn require_static_arm<'a>(
+        &self,
+        module: &str,
+        arm: &'a CoherentArm,
+    ) -> Result<&'a StaticOp, CompileError> {
+        arm.operation().ok_or_else(|| {
+            self.error(
+                module,
+                arm.span(),
+                ErrorCode::InvalidIr,
+                "inline coherent arm reached lowering without its original-body gate",
+            )
+        })
+    }
+
     pub(super) fn quantum_if(
         &mut self,
         module: &str,
         span: Span,
         control: &Expr,
         target: &Expr,
-        names: [&Ident; 2],
+        bodies: [&CoherentArm; 2],
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         let selector = self.expr(module, control, env)?;
-        self.quantum(module, control.span, &selector, true)?;
+        let selector_slot = self.quantum(module, control.span, &selector, true)?;
         let value = self.expr(module, target, env)?;
         let slot = self.quantum(module, target.span, &value, false)?;
+        if bodies
+            .iter()
+            .any(|arm| matches!(arm, CoherentArm::Block(_)))
+        {
+            let labels = [QuantumLabel::Ordinal(0), QuantumLabel::Ordinal(1)];
+            return nominal::emit(
+                self,
+                module,
+                span,
+                span.start,
+                target,
+                labels
+                    .iter()
+                    .zip(bodies)
+                    .map(|(label, arm)| (label, arm, arm.span())),
+                env,
+                selector,
+                selector_slot,
+                value,
+                slot,
+            );
+        }
         let basis = self.raw.registers[&slot].basis.clone();
         let width = self.circuit_width(module, span, &basis)?;
         let record_source = self.uses_qmatch_v5() && self.nominal_qmatch.is_some();
@@ -196,7 +233,16 @@ impl Lowerer<'_, '_> {
         let mut steps = Vec::new();
         let mut operation_arm = false;
         let mut expectations = [None, None];
-        for (label, name) in names.into_iter().enumerate() {
+        for (label, arm) in bodies.into_iter().enumerate() {
+            let operation = self.require_static_arm(module, arm)?;
+            let StaticOpKind::Name(name) = &operation.kind else {
+                return Err(self.error(
+                    module,
+                    operation.span,
+                    ErrorCode::Unsupported,
+                    "qif static arms require a named operation",
+                ));
+            };
             let (mut arm, already_controlled) =
                 named_selection_steps(self, module, name, &basis, env, target.span)?;
             operation_arm |= already_controlled;
@@ -274,6 +320,10 @@ impl Lowerer<'_, '_> {
             .nominal_qmatch
             .as_ref()
             .is_some_and(nominal::Frame::requires_source_gate)
+            || selection
+                .arms
+                .iter()
+                .any(|arm| matches!(&arm.body, CoherentArm::Block(_)))
             || selector_basis.basis_bits().is_none()
             || self.raw.registers[&target_slot]
                 .basis
@@ -284,7 +334,12 @@ impl Lowerer<'_, '_> {
                 self,
                 module,
                 span,
-                selection,
+                selection.keyword.start,
+                &selection.target,
+                selection
+                    .arms
+                    .iter()
+                    .map(|arm| (&arm.label, &arm.body, arm.span)),
                 env,
                 selector,
                 selector_slot,
@@ -358,7 +413,8 @@ impl Lowerer<'_, '_> {
                     "qmatch ordinal is duplicated or outside the selector domain",
                 ));
             }
-            let (mut body, already_controlled, expected, operation) = match &arm.operation.kind {
+            let static_arm = self.require_static_arm(module, &arm.body)?;
+            let (mut body, already_controlled, expected, operation) = match &static_arm.kind {
                 StaticOpKind::Name(name) => {
                     let (body, controlled) = named_selection_steps(
                         self,
@@ -376,7 +432,7 @@ impl Lowerer<'_, '_> {
                     )
                 }
                 _ => {
-                    let operation = self.operation(module, &arm.operation, env)?;
+                    let operation = self.operation(module, static_arm, env)?;
                     if operation.basis != target_basis
                         || operation.codomain != target_basis
                         || operation.effect != Effect::Unitary
@@ -412,9 +468,9 @@ impl Lowerer<'_, '_> {
                 )
             })?;
             if self.nominal_qmatch.is_some() {
-                let origin = match (&arm.operation.kind, operation.as_ref()) {
+                let origin = match (&static_arm.kind, operation.as_ref()) {
                     (_, Some(operation)) => {
-                        nominal::BuiltinArmOrigin::Constructed(operation, arm.operation.span)
+                        nominal::BuiltinArmOrigin::Constructed(operation, static_arm.span)
                     }
                     (StaticOpKind::Name(name), None) => nominal::BuiltinArmOrigin::Named(name),
                     _ => {

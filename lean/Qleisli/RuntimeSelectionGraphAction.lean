@@ -1,4 +1,5 @@
 import Qleisli.RuntimeSelectionGraphHistory
+import Qleisli.RuntimePureProviderLogicalAction
 
 /-! The original coherent selection's literal Raw action agrees with its
 written arm graph evaluations in the same complete caller history.
@@ -17,6 +18,44 @@ open RuntimePureBody (Node)
 open RuntimeLiteralBody
 open RuntimeNamedSourceFlow (Aligned)
 open RuntimeNamedChildRuns (OrdinaryAligned)
+
+/-- At each selector ordinal, link the actual written arm's action to the
+parent's independently evaluated Raw sector on arbitrary reference columns. -/
+theorem written_arm_sector_action {sources owner name offset selectorBasis targetBasis Arm written armOrdinal}
+    (source : QuantumArms.TableWith sources owner name offset selectorBasis targetBasis Arm written armOrdinal)
+    (produced : Fin source.arms.length → Matrix → Prop)
+    {dependencies program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode : Matrix} {selectorBits targetBits : Nat} {retained : Raw.Sector.Retained}
+    (restricted : RuntimeInterval.Computed (Raw.Sector.read dependencies [.bits selectorBits] [.bits targetBits]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained)
+    {labels : List Nat} {arms logical : List Matrix}
+    (equations : RuntimeInterval.Computed
+      (NominalSector.checkLogicals inputCode outputCode retained.sectors labels arms) logical)
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels)
+    (origin : RuntimeSelectionLogicalRead.FromArms source produced
+      (.selection frame selectorBits targetBits retained restricted inputCode outputCode labels arms logical equations codes layouts))
+    (ordinal : Fin labels.length) :
+    ∃ index matrix, armOrdinal source.arms[index] = ordinal.val ∧ produced index matrix ∧
+      ∀ {Reference : Type} (joint : Nat → Nat → Reference → ℂ) (row : Nat) (ref : Reference), row < outputCode.rows →
+        let label := labels[ordinal.val]
+        let action := Qleisli.Semantics.Exact.action
+        Qleisli.Semantics.RawAction.circuit dependencies retained.steps
+            (fun coordinate => Qleisli.NominalSector.encodedTargets selectorBits inputCode joint coordinate ref)
+            (FiniteRestriction.pack selectorBits label row) =
+          action outputCode (fun output reference => action matrix (joint label) output reference) row ref := by
+  have length := congrArg List.length origin.2.2.1
+  obtain ⟨index,matrix,written,found,fromArm⟩ := origin.at_ordinal ⟨ordinal.val,length ▸ ordinal.isLt⟩
+  obtain ⟨_,table⟩ := RuntimeMultiwayGram.ordinal_table equations
+  have requested : arms[ordinal.val]? = some (table.arm ordinal) := List.getElem?_eq_getElem (table.count.symm ▸ ordinal.isLt)
+  have actionEq := Option.some.inj (requested.symm.trans found)
+  obtain ⟨work,left,read⟩ := restricted
+  have literal := Raw.Sector.read_bound _ _ _ _ _ work left read
+  refine ⟨index,matrix,written,fromArm,?_⟩
+  intro Reference joint row ref bounded
+  simpa only [actionEq] using
+    Qleisli.NominalSector.read_logical_sector_action literal (table.arm_checked ordinal) joint row ref bounded
 
 private theorem target_shapes
     {dependencies program block start count inputs outputs selector target}
@@ -187,6 +226,49 @@ theorem selection_history_with {root : Validity.Root}
   change sourceDirectSelection node source = some expected at evaluated
   simpa only [node,sourceGraphSelection,sourceDirectSelection,operator] using evaluated
 
+/-- Any two evaluations that give the exact checked arm coefficients induce
+the same source history for the caller's actual owner frame. -/
+theorem selection_source_choices_eq {root : Validity.Root}
+    {program block start count inputs outputs selector target}
+    (frame : @RuntimePureInterval.Checked root.dependencies program block 2 start count inputs outputs [selector,target])
+    {inputCode outputCode : Matrix} {selectorBits targetBits : Nat} {retained : Raw.Sector.Retained}
+    (restricted : RuntimeInterval.Computed (Raw.Sector.read root.dependencies [.bits selectorBits] [.bits targetBits]
+      (RuntimePureInterval.fragment frame.selected frame.operations outputs)) retained)
+    {labels : List Nat} {arms logical : List Matrix}
+    (equations : RuntimeInterval.Computed
+      (NominalSector.checkLogicals inputCode outputCode retained.sectors labels arms) logical)
+    (codes : RuntimePureBody.SelectionCodes frame.interval inputs outputs selector target inputCode outputCode)
+    (layouts : RuntimePureBody.SelectionLayouts selector.basis target.basis selectorBits targetBits labels) :
+    let node := Node.selection frame selectorBits targetBits retained restricted inputCode outputCode labels
+      arms logical equations codes layouts
+    ∀ {first second : List Coefficient},
+      List.Forall₂ RuntimeSelectionGraphHistory.Coefficients arms first →
+      List.Forall₂ RuntimeSelectionGraphHistory.Coefficients arms second →
+      ∀ (ordinaryInputs : List Nat) (inherited : Option (Nat → Prop))
+        {ownerBefore ownerAfter ordinaryBefore},
+        Aligned ownerBefore ownerAfter (.pure node) →
+        ∀ {source history},
+          SemanticHistoryAgreesWithInherited inherited ordinaryInputs (nodeSpan node).checked.before
+            ownerBefore ordinaryBefore source history →
+          sourceGraphSelection node first source = sourceGraphSelection node second source := by
+  intro node first second firstRelated secondRelated ordinaryInputs inherited ownerBefore ownerAfter ordinaryBefore
+    owners source history agrees
+  have beforeMap : ownerBefore.bindings = codes.owners.before.bindings := owners.1
+  obtain ⟨_,_,_,input,_⟩ := agrees.2.2.2.2
+  let entry : Frame codes.owners.before.bindings := beforeMap ▸ input
+  obtain ⟨_,table⟩ := RuntimeMultiwayGram.ordinal_table equations
+  obtain ⟨_,after,_⟩ := RuntimeSemanticSelectionSource.direct_selection_action frame restricted codes layouts table entry
+  have selected := RuntimeSelectionPartition.order_values _ _ _ codes.owners.returned.ordered
+  have member : codes.owners.returned.second ∈ codes.owners.transport.after.bindings := selected.1 (by simp)
+  have firstAction := RuntimeSelectionGraphHistory.source_action_eq after
+    codes.owners.returned.first codes.owners.returned.second member firstRelated
+    (target_shapes frame codes layouts table after) source.operator
+  have secondAction := RuntimeSelectionGraphHistory.source_action_eq after
+    codes.owners.returned.first codes.owners.returned.second member secondRelated
+    (target_shapes frame codes layouts table after) source.operator
+  have sameAction := firstAction.trans secondAction.symm
+  simp only [node,sourceGraphSelection,sameAction]
+
 /-- The selected arm graphs can supply the operator of the same ordered
 history that carries the original SSA values and inherited measurements. -/
 theorem planned_selection_history {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
@@ -227,6 +309,643 @@ theorem planned_selection_history {artifact : Artifact} (catalogue : GenericCata
   exact ⟨coefficients,expected,ordered.2.2.2.1,evaluated,paired⟩
 
 #print axioms original_coefficients
+#print axioms written_arm_sector_action
 #print axioms planned_selection_history
 #print axioms planned_selection_action
+end Qleisli.RuntimeSelectionGraphAction
+
+namespace Qleisli.RuntimeInlineArmBoundary
+open QleisliKernel QleisliKernel.Qirf QleisliKernel.Finite
+open Semantics.Observation (readOps)
+open Semantics.Exact (Matrix)
+open Semantics.FiniteCarrier (Layout layout encoding)
+open Qleisli.Semantics.Exact (action)
+open Qleisli.Semantics.ObservingAction (History run)
+open Qleisli.Semantics.RawAction (event)
+open RuntimeNamedThreePackedOutput (readerFinish final_axes final_axes_permutation)
+open RuntimeNamedThreePackedInstrument (pureHistory run_pure)
+open RuntimePureProviderBoundary (packedAction packed_code_action reorder_packed)
+open RuntimeSemanticForest (Frame product)
+
+/-- The prepared full block and the mathematical reader enumerate the same
+pure prefix, with exactly the reader's final output permutation. -/
+theorem prepared_pure_trace {dependencies program}
+    (prepared : RuntimeInterval.Prepared dependencies program)
+    (closed : program.classicalInputs = [])
+    (shape : Qleisli.RuntimePureNamedScope.PureBlock prepared.block)
+    (last : RuntimeInterval.Checked prepared.block prepared.block.operations.length 0) :
+    let block := prepared.block
+    let finish := readerFinish program last.before.quantum.reference
+    ∃ rawEvents : List Semantics.Raw.Event,
+      readOps block.fuel block.entry.quantum.reference block.operations =
+        some (last.before.quantum.reference,rawEvents.map Semantics.Observation.Event.pure) ∧
+      Semantics.Observation.read program = some prepared.whole.prepared ∧
+      prepared.whole.prepared.events = (rawEvents ++ [finish]).map Semantics.Observation.Event.pure ∧
+      prepared.whole.prepared.state = last.before.quantum.reference := by
+  intro block finish
+  obtain ⟨_,operations,pureOps⟩ := shape
+  obtain ⟨work,left,checkedPrefix⟩ := last.prefixRead
+  have runOps := congrArg (fun ops => (Raw.Observation.checkOps dependencies block.fuel
+    block.entry ops).run work) pureOps
+  have purePrefix := runOps.symm.trans (by simpa only [List.take_length] using checkedPrefix)
+  obtain ⟨rawEvents,traced⟩ :=
+    RuntimeIntervalTrace.checkOps_pure_trace dependencies block.fuel block.entry last.before operations work left
+      purePrefix
+  have literal : readOps block.fuel block.entry.quantum.reference block.operations =
+      some (last.before.quantum.reference,rawEvents.map Semantics.Observation.Event.pure) := by
+    exact (congrArg (readOps block.fuel block.entry.quantum.reference) pureOps).trans
+      (RuntimeAdjacentSlices.readOps_pure 64 _ _ _ traced)
+  have original := prepared.originalRoot.reader
+  have entry := RuntimePureProviderExecution.entry_reference prepared closed
+  have whole : Semantics.Observation.read program =
+      some ⟨last.before.quantum.reference,(rawEvents ++ [finish]).map Semantics.Observation.Event.pure,
+        (Semantics.RawTrace.initial program.inputs).frame.length⟩ := by
+    unfold Semantics.Observation.read
+    have read := literal
+    change readOps 65 block.entry.quantum.reference program.operations = _ at read
+    rw [show block.entry.quantum.reference = Semantics.RawTrace.initial program.inputs from entry] at read
+    simp only [read,bind,Option.bind,pure,List.map_append,List.map_cons,List.map_nil,finish,readerFinish]
+  have same := Option.some.inj (original.symm.trans whole)
+  exact ⟨rawEvents,literal,original,congrArg Semantics.Observation.Prepared.events same,
+    congrArg Semantics.Observation.Prepared.state same⟩
+
+/-- Apply the actual Raw reconstruction and map equation to the prefix history
+and its literal final permutation. -/
+theorem prepared_pure_execution {dependencies program inputCode outputCode actual}
+    (prepared : RuntimeInterval.Prepared dependencies program)
+    (closed : program.classicalInputs = [])
+    (shape : Qleisli.RuntimePureNamedScope.PureBlock prepared.block)
+    (last : RuntimeInterval.Checked prepared.block prepared.block.operations.length 0)
+    (actualRead : RuntimeInterval.Computed (Raw.BranchFunction.reconstruct dependencies program) actual)
+    (code : QleisliKernel.CodeSpace.Map inputCode outputCode actual)
+    (joint : Nat → Nat → ℂ) :
+    let block := prepared.block
+    let initial : History := ⟨[],[],action inputCode joint⟩
+    let finish := readerFinish program last.before.quantum.reference
+    ∃ final : History,
+      (do
+        let (_,events) ← readOps block.fuel block.entry.quantum.reference block.operations
+        run dependencies block.fuel events initial) = some [final] ∧
+      ∀ row column, row < actual.rows →
+        event dependencies finish (fun i => final.operator i column) row =
+          action outputCode (fun i ref => action code.logical joint i ref) row column := by
+  intro block initial finish
+  obtain ⟨rawEvents,literal,original,pureEvents,_⟩ := prepared_pure_trace prepared closed shape last
+  let final := pureHistory dependencies rawEvents initial
+  refine ⟨final,?_,?_⟩
+  · rw [literal]
+    exact run_pure dependencies 64 rawEvents initial
+  · intro row column bound
+    obtain ⟨work,left,matrix⟩ := actualRead
+    have physical := Qleisli.Raw.PureInstrumentAction.reconstructed_action dependencies
+      program actual work left matrix prepared.whole.prepared original
+      (rawEvents ++ [finish]) pureEvents (action inputCode joint) row column bound
+    rw [Qleisli.RawActionComposition.events_append] at physical
+    exact physical.symm.trans (Qleisli.CodeSpace.map_reference_action code joint row column bound)
+
+/-- A singleton checked source role is encoded through the actual closed Raw
+entry port in its original wire order. -/
+theorem singleton_input_agreement {dependencies program inputCode}
+    (prepared : RuntimeInterval.Prepared dependencies program)
+    (closed : program.classicalInputs = [])
+    (target : RuntimeOwnerMap.Owner) (port : Semantics.Raw.Port)
+    (rawInputs : program.inputs = [port])
+    (source : RuntimeStructuralAction.SourceState)
+    (assigned : source.bindings = [⟨target,port⟩])
+    (inputCodeRead : RuntimeInterval.Computed (Carrier.ownerCode [⟨port,target.basis⟩]) inputCode)
+    (input : RuntimeOwnerMap.Checked [target] prepared.block.entry)
+    (reordered : RuntimeInterval.Computed
+      (RuntimePureBody.reordered [target] prepared.block.entry source.bindings) input)
+    (inputs : List Nat) (joint : Nat → Nat → ℂ) :
+    let sourceInitial : Qleisli.RuntimeLiteralBody.SourceHistory := ⟨source,[],[],joint,[]⟩
+    let initial : History := ⟨[],[],action inputCode joint⟩
+    Qleisli.RuntimeCallHistory.SourceAgreementWithin (some (· = {})) none inputs prepared.block.entry
+      {source with bindings := input.bindings} {} sourceInitial initial := by
+  intro sourceInitial initial
+  let state := prepared.block.entry
+  have original := RuntimePureProviderExecution.entry_reference prepared closed
+  have nativeFrame : state.quantum.reference = ⟨[port],port.wires⟩ :=
+    original.trans (by simp [rawInputs,Semantics.RawTrace.initial])
+  have wires : state.quantum.frame = port.wires := congrArg Semantics.RawTrace.Interface.frame nativeFrame
+  have same : input.bindings = source.bindings := by
+    have lookup := Qleisli.RuntimeLiteralHistory.reordered_source input reordered
+    rw [assigned] at lookup ⊢
+    have exactOrder : [target].mapM (RuntimeOwnerMap.byOwner [⟨target,port⟩]) = some [⟨target,port⟩] := by
+      simp [RuntimeOwnerMap.byOwner]
+    exact Option.some.inj (lookup.symm.trans exactOrder)
+  have actualBindings : input.bindings = [⟨target,port⟩] := same.trans assigned
+  have codeRead : RuntimeInterval.Computed (Carrier.ownerCode (RuntimeForestCode.carrierOwners input.bindings))
+      inputCode := by
+    rw [actualBindings]
+    exact inputCodeRead
+  obtain ⟨available,codeEq⟩ := RuntimeSparseOperationAction.original_block_code codeRead
+  obtain ⟨frame⟩ := RuntimeSemanticForest.frame_exists available
+  have valid : Raw.stateValid state.quantum = true := Raw.inputs_valid _ _ _ rfl (by
+    obtain ⟨work,left,ran⟩ := prepared.inputRead
+    unfold PureInterval.initial at ran
+    obtain ⟨quantum,_,inserted,returned⟩ := bind_success _ _ _ _ _ ran
+    rw [closed,List.foldlM_nil] at returned
+    have finish := congrArg Raw.Observation.State.quantum (pure_success _ _ _ _ returned).1
+    change state.quantum = quantum at finish
+    rw [finish]
+    exact (lift_success _ _ _ _ inserted).1)
+  have allWires : input.bindings.flatMap (fun b => b.port.wires) = state.quantum.frame := by
+    simp [actualBindings,wires]
+  have width : (product input.bindings).bits = state.quantum.frame.length :=
+    (RuntimeSparseBlockEncoding.product_width available).trans (congrArg List.length allWires)
+  have axes : RuntimeForestCode.forestAxes state.quantum.frame input.bindings = List.range state.quantum.frame.length := by
+    unfold RuntimeForestCode.forestAxes
+    rw [allWires]
+    exact RuntimeNamedCallerAction.self_indices _ (Raw.Ownership.valid _ valid).frame
+  refine ⟨rfl,?_,?_⟩
+  · change sourceInitial.owners = {source with bindings := input.bindings}
+    rw [same]
+  · change initial.hidden = sourceInitial.outcomes.map Prod.snd ∧
+      Qleisli.RuntimeLiteralBranchChoice.measurementBits [] initial.values = some sourceInitial.measurements ∧ _
+    refine ⟨rfl,rfl,⟨RuntimeOrdinarySSA.Agreement.empty _ _,fun id member => by cases member⟩,
+      _,input,rfl,frame,?_⟩
+    intro col row bounded
+    have codeBound : row < inputCode.rows := by
+      rw [codeEq]
+      change row < 2^(product input.bindings).bits
+      rwa [width]
+    have packed := packed_code_action frame codeEq joint row col codeBound
+    change action inputCode joint row col =
+      RuntimeSemanticForest.action frame state.quantum.frame joint row col
+    rw [← packed]
+    unfold packedAction RuntimeSemanticForest.action RuntimeForestCode.embed
+    rw [axes,Raw.Sector.gather_identity row _ bounded]
+
+open RuntimePureBody (InlineChecked Context BlockRunner Step runBlockCore)
+open QleisliKernel.SourceTypes
+
+theorem inline_input_agreement {artifact root execution rootOwner rootName owner name}
+    {site : SourceRuntimeContext.SelectionEvent artifact.sources owner} {index : Nat}
+    {sameName : site.callerName = name} {arm : SourceRuntimeTrace.InlineArmBody site index}
+    {replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody site index) arm}
+    {implementation : Nat} {request : Context}
+    {plan : execution.queries.BodyData (.coherentArm sameName arm replayed) request}
+    {path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name}
+    {parent : RuntimeStructuralAction.SourceState} {runArm : BlockRunner artifact root execution}
+    (checked : InlineChecked sameName arm replayed implementation request plan path parent runArm)
+    (inputs : List Nat) (joint : Nat → Nat → ℂ)
+    (input : RuntimeOwnerMap.Checked [site.target] checked.forward.prepared.block.entry)
+    (reordered : RuntimeInterval.Computed
+      (RuntimePureBody.reordered [site.target] checked.forward.prepared.block.entry
+        (checked.forward.initial parent).bindings) input) :
+    let source := checked.forward.initial parent
+    let sourceInitial : Qleisli.RuntimeLiteralBody.SourceHistory := ⟨source,[],[],joint,[]⟩
+    let initial : History := ⟨[],[],action checked.action.inputCode joint⟩
+    Qleisli.RuntimeCallHistory.SourceAgreementWithin (some (· = {})) none inputs checked.forward.prepared.block.entry
+      {source with bindings := input.bindings} {} sourceInitial initial := by
+  have preflight := checked.forward.preflight
+  simp only [Raw.BranchFunction.preflight,Bool.and_eq_true,List.isEmpty_iff] at preflight
+  exact singleton_input_agreement checked.forward.prepared preflight.1.1.1.2 site.target checked.forward.input
+    checked.forward.inputOrder (checked.forward.initial parent) rfl checked.action.inputRead input reordered inputs joint
+
+/-- The verified complete owner map and exact declared return tokens determine
+the Raw reader's final permutation, including empty-width owner ports. -/
+theorem packed_return_agreement {dependencies program roles state bindings}
+    (physical : RuntimeOwnerMap.Checked roles state)
+    (valid : Raw.stateValid state.quantum = true)
+    (tokens : program.outputs = physical.bindings.map (fun binding => binding.port.token))
+    (same : physical.bindings = bindings)
+    (output : Frame bindings) (source native : Nat → Nat → ℂ)
+    (encoded : ∀ col row, row < 2^state.quantum.frame.length →
+      native row col = RuntimeSemanticForest.action output state.quantum.frame source row col) :
+    ∀ row col, row < 2^state.quantum.frame.length →
+      event dependencies (readerFinish program state.quantum.reference) (fun i => native i col) row =
+        packedAction output source row col := by
+  subst bindings
+  have finish : readerFinish program state.quantum.reference =
+      .reorder state.quantum.frame.length (RuntimeForestCode.forestAxes state.quantum.frame physical.bindings) := by
+    unfold readerFinish
+    rw [tokens]
+    exact congrArg (Semantics.Raw.Event.reorder state.quantum.frame.length) (final_axes physical valid)
+  intro row col bound
+  rw [finish]
+  obtain ⟨original,inside,coordinate,applied⟩ := RuntimeNamedThreePackedOutput.reorder_gather dependencies _ _
+    (final_axes_permutation physical valid) (fun i => native i col) row bound
+  rw [applied,encoded col original inside]
+  unfold RuntimeSemanticForest.action RuntimeForestCode.embed packedAction
+  rw [coordinate]
+
+theorem output_rows {roles state}
+    (physical : RuntimeOwnerMap.Checked roles state)
+    (valid : Raw.stateValid state.quantum = true)
+    {inputCode outputCode actual : Matrix}
+    (map : QleisliKernel.CodeSpace.Map inputCode outputCode actual)
+    (read : RuntimeInterval.Computed (Carrier.ownerCode (RuntimeForestCode.carrierOwners physical.bindings)) outputCode) :
+    actual.rows = 2^state.quantum.frame.length := by
+  obtain ⟨available,code⟩ := RuntimeSparseOperationAction.original_block_code read
+  have wires := (physical.complete.flatMap_right (fun port => port.wires)).length_eq
+  rw [List.flatMap_map] at wires
+  have width : (product physical.bindings).bits = state.quantum.frame.length :=
+    (RuntimeSparseBlockEncoding.product_width available).trans
+      (wires.trans (Raw.Ownership.valid _ valid).count)
+  rw [map.physicalShape.2,code]
+  change 2^(product physical.bindings).bits = _
+  rw [width]
+
+/-- Decode the returned source history through the true singleton output
+layout on both sides of its checked packed equality. -/
+theorem logical_from_packed {bindings : RuntimeOwnerMap.Map} (frame : Frame bindings)
+    {outputCode : Matrix} {basis : Semantics.FiniteCarrier.Basis} {code : Layout}
+    (layoutRead : layout basis = some code)
+    (outputLayout : outputCode = encoding code)
+    (outputProduct : outputCode = encoding (product bindings))
+    (source native : Nat → Nat → ℂ)
+    (packed : ∀ row col, row < outputCode.rows →
+      packedAction frame source row col = action outputCode native row col) :
+    ∀ row col, row < code.labels.length → source row col = native row col := by
+  intro row col bounded
+  let ordinal : Fin code.labels.length := ⟨row,bounded⟩
+  have physicalBound : code.labels[ordinal.val] < outputCode.rows := by
+    rw [outputLayout]
+    exact (RuntimeForestProduct.layout_bounds _ _ layoutRead).2 _ (List.getElem_mem _)
+  have same := packed code.labels[ordinal.val] col physicalBound
+  rw [packed_code_action frame outputProduct source code.labels[ordinal.val] col physicalBound,
+    outputLayout] at same
+  rw [RuntimePureProviderLogicalAction.encoding_label layoutRead source ordinal col,
+    RuntimePureProviderLogicalAction.encoding_label layoutRead native ordinal col] at same
+  exact same
+
+#print axioms prepared_pure_execution
+#print axioms inline_input_agreement
+#print axioms packed_return_agreement
+#print axioms logical_from_packed
+
+open Qleisli.RuntimeLiteralBody
+open RuntimeNamedChildRuns (CheckedStepAt)
+open Qleisli.RuntimeCallHistory (SourceAgreementWithin)
+open RuntimeProviderSourceEntry (basisColumn action_basisColumn)
+
+/-- The original isolated body, evaluated using its written steps and owner
+return, agrees with the checked logical action at every logical output row. -/
+theorem original_inline_source_operator {artifact root execution rootOwner rootName owner name}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {index : Nat}
+    {sameName : event.callerName = name} {arm : SourceRuntimeTrace.InlineArmBody event index}
+    {replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody event index) arm}
+    {implementation : Nat} {request : Context}
+    {plan : execution.queries.BodyData (.coherentArm sameName arm replayed) request}
+    {path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name}
+    {parent : RuntimeStructuralAction.SourceState} (depth : Nat)
+    (checked : InlineChecked sameName arm replayed implementation request plan path parent
+      (runBlockCore artifact root execution (depth+1)))
+    (inputs : List Nat) (scope : List RuntimeSelectionSteps.Edge) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (laws : ∀ fuel, fuel ≤ depth → ∀ {program block} (atStep : List RuntimeSelectionSteps.Edge) (steps : List (Step root.dependencies program block)),
+      Qleisli.RuntimePureNamedScope.PureBlock block → ∀ inherited,
+      StepRefinement steps
+        (fun step => CheckedStepAt (runBlockCore artifact root execution fuel)
+          (RuntimeBranchCondition.rootEntries path) step ∧ NeedsPureLeaf step)
+        (leaves fuel atStep) (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
+        (inherited.map (fun holds id => ¬ holds id)))
+    (joint : Nat → Nat → ℂ) :
+    let returned := checked.result.history.bindings
+    let initial : SourceHistory := ⟨checked.forward.initial parent,[],[],joint,[]⟩
+    ∃ history,
+      runSourceHistories (pureRecursiveSourceStepsAt leaves depth scope) [] checked.result.steps [initial] =
+        some [history] ∧
+      ∀ row col, row < checked.action.code.logical.rows →
+        (returnHistory returned history).operator row col =
+          action checked.action.code.logical joint row col := by
+  intro returned initial
+  let source := SourceRuntimeScope.Subject.coherentArm sameName arm replayed
+  let prepared := checked.forward.prepared
+  let result := (checked.result,checked.receipts)
+  let start := checked.forward.initial parent
+  let next := runBlockCore artifact root execution depth
+  have core := checked.traversal
+  have shape := RuntimePureProviderNative.replayed_pure_shape next .rootOrder source path request plan
+    start {} prepared result core
+  obtain ⟨_,_,_,_,⟨last,lastRead,_⟩,_⟩ := RuntimeNamedChildRuns.step_flow_mode
+    artifact root execution next .pureBody .rootOrder
+    (RuntimeNamedChildRuns.core_pure_preserves_ordinary artifact root execution depth)
+    source path checked.forward.program request plan start {} prepared.block result core
+  have preflight := checked.forward.preflight
+  simp only [Raw.BranchFunction.preflight,Bool.and_eq_true,List.isEmpty_iff] at preflight
+  have closed := preflight.1.1.1.2
+  obtain ⟨final,performed,matrixAction⟩ := prepared_pure_execution prepared closed shape last
+    checked.action.actualRead checked.action.code joint
+  let initialNative : History := ⟨[],[],action checked.action.inputCode joint⟩
+  obtain ⟨_,exit,exitRead,exitMap,_,returnMap,histories,evaluated,paired⟩ :=
+    original_pure_block_refinement execution depth source path plan start prepared.block result core shape
+      inputs leaves laws scope initial initialNative [final] performed
+      (fun entry read => inline_input_agreement checked inputs joint entry read)
+  have count : histories.length = 1 := by
+    simpa only [List.length_map,List.length_singleton] using paired.length_eq
+  obtain ⟨history,only⟩ := List.length_eq_one_iff.mp count
+  rw [only,List.map_singleton] at paired
+  cases paired with
+  | cons related _ =>
+    obtain ⟨_,_,_,_,_,_,physical,bindings,output,encoded⟩ := related
+    have atReturn : exitMap.bindings = returned := congrArg (·.bindings) returnMap |>.symm
+    have tokens : checked.forward.program.outputs = physical.bindings.map (·.port.token) := by
+      rw [bindings]
+      exact checked.action.rawOutputs.symm
+    have outputRead : RuntimeInterval.Computed
+        (Carrier.ownerCode (RuntimeForestCode.carrierOwners physical.bindings)) checked.action.outputCode := by
+      rw [bindings]
+      exact checked.action.outputRead
+    have order := checked.action.outputOrder
+    have size : returned.length = 1 := by
+      simpa only [List.length_map,List.length_singleton] using congrArg List.length order
+    obtain ⟨binding,one⟩ := List.length_eq_one_iff.mp size
+    change checked.result.history.bindings = [binding] at one
+    have boundOwner : binding.owner = arm.output := by
+      simpa only [one,List.map_singleton,List.cons.injEq,and_true] using order
+    have singleRead : RuntimeInterval.Computed
+        (Carrier.ownerCode [⟨binding.port,arm.output.basis⟩]) checked.action.outputCode := by
+      have read := checked.action.outputRead
+      simpa only [one,RuntimeTransformAction.owners,List.map_singleton,boundOwner] using read
+    obtain ⟨layout,layoutRead,codeEq,_,_,_⟩ :=
+      RuntimeFiniteTargetCode.owner_code_reference arm.output.basis binding.port checked.action.outputCode singleRead
+    have rows : checked.action.code.logical.rows = layout.labels.length := by
+      simpa only [codeEq] using checked.action.code.logicalShape.2
+    obtain ⟨_,productEq⟩ := RuntimeSparseOperationAction.original_block_code outputRead
+    rw [bindings] at productEq
+    obtain ⟨_,_,_,_,lastState⟩ := prepared_pure_trace prepared closed shape last
+    obtain ⟨_,_,_,_,exitState⟩ := prepared_pure_trace prepared closed shape exit
+    have same := (lastState.symm.trans exitState).trans
+      (congrArg (fun state : Raw.Observation.State => state.quantum.reference)
+        (Qleisli.RuntimeOwnerTransitionAction.empty_state exit).symm)
+    have valid := exit.history.2.2.1
+    let evaluatedReturn := (returnHistory exitMap.bindings history).operator
+    have actualRows := output_rows physical valid checked.action.code outputRead
+    have packed : ∀ row col, row < checked.action.outputCode.rows →
+        packedAction output evaluatedReturn row col =
+          action checked.action.outputCode (fun input ref => action checked.action.code.logical joint input ref) row col := by
+      intro row col inside
+      have physicalRow : row < checked.action.actual.rows := checked.action.code.physicalShape.2 ▸ inside
+      have returnedRow : row < 2^exit.after.quantum.frame.length := actualRows ▸ physicalRow
+      have fromRaw := matrixAction row col physicalRow
+      rw [same] at fromRaw
+      exact (packed_return_agreement (dependencies := root.dependencies) physical valid tokens bindings output evaluatedReturn
+        final.operator encoded row col returnedRow).symm.trans fromRaw
+    refine ⟨history,only ▸ evaluated,?_⟩
+    intro row col inside
+    have atOrdinal := logical_from_packed output layoutRead codeEq productEq evaluatedReturn
+      (fun input ref => action checked.action.code.logical joint input ref) packed row col (rows ▸ inside)
+    simpa only [evaluatedReturn,atReturn] using atOrdinal
+
+#print axioms original_inline_source_operator
+
+/-- Evaluate the written steps on the original input basis columns, then read
+the returned source coefficient in its logical owner order. -/
+noncomputable def evaluateInline {dependencies program block}
+    (initial : RuntimeStructuralAction.SourceState) (steps : List (Step dependencies program block))
+    (returned : RuntimeOwnerMap.Map) (evaluate : ScopedSourceSteps dependencies) (scope : List RuntimeSelectionSteps.Edge) :
+    RuntimeGraphCoefficients.Coefficient :=
+  fun row col =>
+    let source : SourceHistory := ⟨initial,[],[],basisColumn,[]⟩
+    match runSourceHistories (evaluate scope) [] steps [source] with
+    | some [history] => (returnHistory returned history).operator row col
+    | _ => 0
+
+theorem inline_source_coefficients {artifact root execution rootOwner rootName owner name}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {index : Nat}
+    {sameName : event.callerName = name} {arm : SourceRuntimeTrace.InlineArmBody event index}
+    {replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody event index) arm}
+    {implementation : Nat} {request : Context}
+    {plan : execution.queries.BodyData (.coherentArm sameName arm replayed) request}
+    {path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner name}
+    {parent : RuntimeStructuralAction.SourceState} (depth : Nat)
+    (checked : InlineChecked sameName arm replayed implementation request plan path parent
+      (runBlockCore artifact root execution (depth+1)))
+    (inputs : List Nat) (scope : List RuntimeSelectionSteps.Edge) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (laws : ∀ fuel, fuel ≤ depth → ∀ {program block} (atStep : List RuntimeSelectionSteps.Edge) (steps : List (Step root.dependencies program block)),
+      Qleisli.RuntimePureNamedScope.PureBlock block → ∀ inherited,
+      StepRefinement steps
+        (fun step => CheckedStepAt (runBlockCore artifact root execution fuel)
+          (RuntimeBranchCondition.rootEntries path) step ∧ NeedsPureLeaf step)
+        (leaves fuel atStep) (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
+        (inherited.map (fun holds id => ¬ holds id))) :
+    RuntimeSelectionGraphHistory.Coefficients checked.action.code.logical
+      (evaluateInline (checked.forward.initial parent) checked.result.steps checked.result.history.bindings
+        (pureRecursiveSourceStepsAt leaves depth) scope) := by
+  obtain ⟨history,executionRead,agrees⟩ :=
+    original_inline_source_operator depth checked inputs scope leaves laws basisColumn
+  intro row col rowBound colBound
+  simp only [evaluateInline,executionRead,agrees row col rowBound,action_basisColumn _ row col colBound]
+
+#print axioms inline_source_coefficients
+end Qleisli.RuntimeInlineArmBoundary
+
+namespace Qleisli.RuntimeSelectionGraphAction
+open QleisliKernel QleisliKernel.Qirf QleisliKernel.SourceTypes
+open RuntimePureBody (InlineChecked runBlockCore Step)
+open RuntimeSelectionGraphSource (execution NamedArmEvaluatedWith named_arm_evaluated)
+open RuntimeSelectionGraphHistory (Coefficients)
+open RuntimeSelectionSteps (Edge)
+open RuntimeGraphCoefficients (Coefficient)
+open RuntimeNamedChildRuns (CheckedStepAt RootInputs MixedLogical)
+open RuntimeSelectionArmTrace (EventTable MixedSlot)
+open Qleisli.RuntimeCallHistory (SourceAgreementWithin)
+open Qleisli.RuntimeInlineArmBoundary (evaluateInline inline_source_coefficients)
+open Qleisli.RuntimeLiteralBody
+
+/-- Pure callbacks at all smaller runner depths retain their source history. -/
+abbrev SmallerPureLeafLaws {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (inputs : List Nat) : Prop :=
+  ∀ lower, lower < depth → ∀ (origin : RootInputs) {program block}
+      (atStep : List Edge) (steps : List (Step root.dependencies program block)),
+      Qleisli.RuntimePureNamedScope.PureBlock block → ∀ inherited,
+      StepRefinement steps
+        (fun step => CheckedStepAt (runBlockCore artifact root (execution artifact catalogue root) lower)
+          origin step ∧ NeedsPureLeaf step)
+        (leaves lower atStep) (fun _ => SourceAgreementWithin (some (· = {})) inherited inputs)
+        (inherited.map (fun holds id => ¬ holds id))
+
+/-- Retain the actual arm source and its original graph or evaluated inline
+body, separately from the logical matrix used by the parent selector. -/
+noncomputable def MixedArmSource {artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) {rootOwner rootName owner}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {table : EventTable event} (site : RuntimeContextRequest.Site)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) (index : Fin table.arms.length)
+    (slot : MixedSlot (execution artifact catalogue root).queries table index)
+    (matrix : Semantics.Exact.Matrix) (coefficient : Coefficient) : Prop :=
+  match slot with
+  | .named arm _ _ => NamedArmEvaluatedWith catalogue root scope arm matrix coefficient
+  | .inline arm replayed _ _ _ _ child plan =>
+    ∃ subject, site.arms[index.val]? = some subject ∧
+      ∃ checked : InlineChecked rfl arm replayed subject.implementation child plan path parent
+        (runBlockCore artifact root (execution artifact catalogue root) depth),
+        RuntimeInterval.Computed
+          (RuntimePureBody.readInlineArm rfl arm replayed subject.implementation child plan path parent
+            (runBlockCore artifact root (execution artifact catalogue root) depth)) checked ∧
+        matrix = checked.action.code.logical ∧
+        coefficient = evaluateInline (checked.forward.initial parent) checked.result.steps
+          checked.result.history.bindings (pureRecursiveSourceStepsAt leaves (depth-1))
+          (scope ++ [.atOrdinal index.val])
+
+theorem mixed_arm_coefficients {artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) (inputs : List Nat) {rootOwner rootName owner}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {table : EventTable event} (site : RuntimeContextRequest.Site)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) (index : Fin table.arms.length)
+    (slot : MixedSlot (execution artifact catalogue root).queries table index)
+    (matrix : Semantics.Exact.Matrix)
+    (localLeaves : SmallerPureLeafLaws catalogue root depth leaves inputs)
+    (original : MixedLogical (execution artifact catalogue root)
+      (runBlockCore artifact root (execution artifact catalogue root) depth) site path parent index slot matrix) :
+    ∃ coefficient, MixedArmSource catalogue root depth leaves scope site path parent index slot matrix coefficient ∧
+      Coefficients matrix coefficient := by
+  cases slot with
+  | named arm selected graph =>
+    obtain ⟨coefficient,source⟩ := named_arm_evaluated catalogue root scope arm matrix ⟨graph,original⟩
+    refine ⟨coefficient,source,?_⟩
+    obtain ⟨⟨_,_,_⟩,evidence,_,same,_,agrees⟩ := source
+    rw [same]
+    exact agrees.coefficient
+  | inline arm replayed ports label originalLabel selected child plan =>
+    obtain ⟨subject,atIndex,checked,computed,same⟩ := original
+    cases depth with
+    | zero =>
+      obtain ⟨work,left,ran⟩ := checked.traversal
+      cases ran
+    | succ depth =>
+      let coefficient := evaluateInline (checked.forward.initial parent) checked.result.steps
+        checked.result.history.bindings (pureRecursiveSourceStepsAt leaves depth) (scope ++ [.atOrdinal index.val])
+      have source := inline_source_coefficients depth checked inputs (scope ++ [.atOrdinal index.val]) leaves
+        (fun fuel within => localLeaves fuel (Nat.lt_succ_of_le within) (RuntimeBranchCondition.rootEntries path))
+      refine ⟨coefficient,⟨subject,atIndex,checked,computed,same,rfl⟩,?_⟩
+      rw [same]
+      exact source
+
+#print axioms mixed_arm_coefficients
+end Qleisli.RuntimeSelectionGraphAction
+
+namespace Qleisli.RuntimeSelectionGraphAction
+open QleisliKernel QleisliKernel.Qirf QleisliKernel.SourceTypes
+open RuntimePureBody (Node Step runBlockCore)
+open RuntimeSelectionSteps (Edge)
+open RuntimeSelectionGraphSource (execution)
+open RuntimeSelectionGraphHistory (Coefficients ordered_coefficients_from)
+open RuntimeNamedChildRuns (CheckedStepAt RootInputs MixedSelectionOrigin)
+open RuntimeSelectionLogicalRead (FromArms)
+open RuntimeGraphCoefficients (Coefficient)
+open Qleisli.RuntimeCallHistory (SourceAgreementWithin)
+open Qleisli.RuntimeLiteralBody
+
+/-- Relate every nominal ordinal to the written arm of this exact selector
+table, including its original graph or inline traversal. -/
+def MixedOriginalTableCoefficients {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge)
+    {rootOwner rootName owner name} {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {position : RuntimeBodyPlan.Position}
+    (selection : RuntimeBodyQueries.MixedSelection (name := name) (execution artifact catalogue root).queries event position)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) {program block}
+    (node : Node root.dependencies program block) (coefficients : List Coefficient) : Prop :=
+  match node with
+  | .selection (selector := selector) (target := target) _ _ _ _ _ _ _ labels matrices .. =>
+    selector.basis = event.selector.basis ∧ target.basis = event.target.basis ∧
+    labels = selection.table.layout.labels ∧ List.Forall₂ Coefficients matrices coefficients ∧
+    List.Forall₂ (fun ordinal pair => ∃ index : Fin selection.table.arms.length,
+      (selection.table.arms[index]).ordinal = ordinal ∧
+      ∃ slot, MixedArmSource catalogue root depth leaves scope selection.site path parent index slot pair.1 pair.2)
+      (List.range selection.table.layout.labels.length) (matrices.zip coefficients)
+  | _ => False
+
+/-- Retain the mixed source table and pair every nominal selector ordinal with
+the independently evaluated coefficient of its actual written arm. -/
+def MixedOriginalCoefficients {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) {program block}
+    (node : Node root.dependencies program block) (coefficients : List Coefficient) : Prop :=
+  ∃ (rootOwner rootName owner name : String)
+    (event : SourceRuntimeContext.SelectionEvent artifact.sources owner)
+    (position : RuntimeBodyPlan.Position)
+    (selection : RuntimeBodyQueries.MixedSelection (name := name) (execution artifact catalogue root).queries event position)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState),
+    MixedOriginalTableCoefficients catalogue root depth leaves scope selection path parent node coefficients
+
+theorem mixed_original_coefficients_agree {artifact : Artifact} {catalogue : GenericCatalogue.Checked artifact.sources}
+    {root : Validity.Root} {depth : Nat} {leaves : Nat → ScopedSourceSteps root.dependencies}
+    {scope : List Edge} {program block} {node : Node root.dependencies program block}
+    {coefficients : List Coefficient}
+    (original : MixedOriginalCoefficients catalogue root depth leaves scope node coefficients) :
+    match node with
+    | .selection _ _ _ _ _ _ _ _ matrices .. => List.Forall₂ Coefficients matrices coefficients
+    | _ => False := by
+  obtain ⟨_,_,_,_,_,_,_,_,_,ordered⟩ := original
+  cases node
+  case selection => exact ordered.2.2.2.1
+  all_goals exact ordered
+
+/-- Evaluate all written arms of the selected source table in nominal order. -/
+theorem original_mixed_table_coefficients {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) (inputs : List Nat)
+    {rootOwner rootName owner name} {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    {position : RuntimeBodyPlan.Position}
+    (selection : RuntimeBodyQueries.MixedSelection (name := name) (execution artifact catalogue root).queries event position)
+    (path : RuntimeOrdinaryBody.CallPath artifact.sources rootOwner rootName owner event.callerName)
+    (parent : RuntimeStructuralAction.SourceState) {program block}
+    {node : Node root.dependencies program block}
+    (localLeaves : SmallerPureLeafLaws catalogue root depth leaves inputs)
+    (origin : FromArms selection.table (fun index matrix =>
+      ∃ slot, RuntimeNamedChildRuns.MixedLogical (execution artifact catalogue root)
+        (runBlockCore artifact root (execution artifact catalogue root) depth)
+        selection.site path parent index slot matrix) node) :
+    ∃ coefficients, MixedOriginalTableCoefficients catalogue root depth leaves scope
+      selection path parent node coefficients := by
+  let produced (index : Fin selection.table.arms.length) (matrix : Semantics.Exact.Matrix) :=
+    ∃ coefficient slot, MixedArmSource catalogue root depth leaves scope selection.site path parent index slot matrix coefficient ∧
+      Coefficients matrix coefficient
+  have mapped : FromArms selection.table produced node := origin.weaken (fun index matrix ⟨slot,read⟩ => by
+    obtain ⟨coefficient,source,agrees⟩ := mixed_arm_coefficients catalogue root depth leaves scope inputs
+      selection.site path parent index slot matrix localLeaves read
+    exact ⟨coefficient,slot,source,agrees⟩)
+  cases node
+  case selection =>
+    let source ordinal matrix coefficient := ∃ index : Fin selection.table.arms.length,
+      (selection.table.arms[index]).ordinal = ordinal ∧
+      (∃ slot, MixedArmSource catalogue root depth leaves scope selection.site path parent index slot matrix coefficient) ∧
+      Coefficients matrix coefficient
+    have reshape (ordinals : List Nat) (matrices : List Semantics.Exact.Matrix)
+        (rows : Exact.ListRel (fun ordinal matrix => ∃ index : Fin selection.table.arms.length,
+          (selection.table.arms[index]).ordinal = ordinal ∧ produced index matrix) ordinals matrices) :
+        Exact.ListRel (fun ordinal matrix => ∃ coefficient, source ordinal matrix coefficient) ordinals matrices := by
+      induction ordinals generalizing matrices with
+      | nil => exact rows
+      | cons ordinal rest ih =>
+        cases matrices with
+        | nil => exact rows
+        | cons matrix remaining =>
+          obtain ⟨index,written,coefficient,slot,source,agrees⟩ := rows.1
+          exact ⟨⟨coefficient,index,written,⟨slot,source⟩,agrees⟩,ih _ rows.2⟩
+    obtain ⟨coefficients,agrees,ordered⟩ := ordered_coefficients_from source
+      (fun _ _ _ ⟨_,_,_,agrees⟩ => agrees) (reshape _ _ mapped.2.2.2)
+    exact ⟨coefficients,
+      mapped.1,mapped.2.1,mapped.2.2.1,agrees,
+      ordered.imp (fun _ _ ⟨index,ordinal,arm,_⟩ => ⟨index,ordinal,arm⟩)⟩
+  all_goals exact False.elim mapped
+
+/-- The checked mixed selector node uses each actual arm's source coefficient
+at its nominal ordinal, with inline rows evaluated by lower-depth source laws. -/
+theorem original_mixed_coefficients {artifact : Artifact} (catalogue : GenericCatalogue.Checked artifact.sources)
+    (root : Validity.Root) (depth : Nat) (leaves : Nat → ScopedSourceSteps root.dependencies)
+    (scope : List Edge) (inputs : List Nat) {program block}
+    {node : Node root.dependencies program block}
+    (localLeaves : SmallerPureLeafLaws catalogue root depth leaves inputs)
+    (original : MixedSelectionOrigin (execution artifact catalogue root)
+      (runBlockCore artifact root (execution artifact catalogue root) depth) node) :
+    ∃ coefficients, MixedOriginalCoefficients catalogue root depth leaves scope node coefficients := by
+  obtain ⟨rootOwner,rootName,owner,name,event,position,selection,path,parent,origin⟩ := original
+  obtain ⟨coefficients,checked⟩ :=
+    original_mixed_table_coefficients catalogue root depth leaves scope inputs selection path parent localLeaves origin
+  exact ⟨coefficients,rootOwner,rootName,owner,name,event,position,selection,path,parent,checked⟩
+
+#print axioms mixed_original_coefficients_agree
+#print axioms original_mixed_table_coefficients
+#print axioms original_mixed_coefficients
 end Qleisli.RuntimeSelectionGraphAction

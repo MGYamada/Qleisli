@@ -20,10 +20,18 @@ theorem same_sound (a b : Input) (ok : same a b = true) : a = b := by
   cases a; cases b; simp_all
 
 /-- Original vectors and both arm totals have the existing finite capacities. -/
-def preflightOps (fuel : Nat) : List Op → Option (Nat × Nat) :=
+def preflightOps (fuel : Nat) (operations : List Op) (structural : Bool := false) : Option (Nat × Nat) :=
   Nat.rec (fun _ => none) (fun _ recurse ops => do
     let counts ← ops.foldlM (fun (count,steps) op => do
       let added ← match op with
+      | .pure (.structuralCompute _ _ _ forward inverse uses) =>
+        if structural && forward.length + inverse.length + uses.length ≤ 1024 &&
+            (forward ++ inverse).all Raw.Function.stepBounded &&
+            uses.all (fun use => match use with
+              | .protectedGate .. => true
+              | .targetGate controls .. | .phase controls _ => controls.length ≤ 12) then
+          some (0,forward.length + inverse.length + uses.length)
+        else none
       | .pure operation => do
         if !Raw.Function.operationBounded operation then none else
           some (0,(Raw.Function.suppliedSteps operation).length + match operation with
@@ -38,13 +46,13 @@ def preflightOps (fuel : Nat) : List Op → Option (Nat × Nat) :=
       | _ => some (0,0)
       let next := (count+1+added.1,steps+added.2)
       if next.1 ≤ 1024 && next.2 ≤ 1024 then some next else none) (0,0)
-    return counts) fuel
+    return counts) fuel operations
 
-def preflight (signature : Basis) (program : Program) : Bool :=
+def preflight (signature : Basis) (program : Program) (structural : Bool := false) : Bool :=
   basisValid signature && program.effect == .unitary && program.inputs.length == 1 &&
     program.outputs.length == 1 && program.classicalInputs.isEmpty && program.classicalOutputs.isEmpty &&
     ((program.inputs[0]?).map (fun port => port.bits == width signature && port.wires.length == width signature)).getD false &&
-    (preflightOps 33 program.operations).isSome
+    (preflightOps 33 program.operations structural).isSome
 
 def selected (fuel : Nat) : List Event → Instrument.Values → WorkM (Instrument.Values × List Semantics.Raw.Event) :=
   Nat.rec (fun _ _ => throw .limit) (fun _ recurse events initial =>

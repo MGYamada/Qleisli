@@ -1644,7 +1644,10 @@ where
                     } => tasks.extend([Task::Expression(input), Task::Reference(function)]),
                     ExprKind::QuantumMatch(selection) => {
                         for arm in selection.arms.iter().rev() {
-                            tasks.push(Task::Operation(&arm.operation));
+                            tasks.push(match &arm.body {
+                                CoherentArm::Operation(operation) => Task::Operation(operation),
+                                CoherentArm::Block(block) => Task::Block(block),
+                            });
                             if let QuantumLabel::Variant(label) = &arm.label {
                                 tasks.push(Task::Reference(&label.type_name));
                             }
@@ -1659,12 +1662,19 @@ where
                         target,
                         zero,
                         one,
-                    } => tasks.extend([
-                        Task::Reference(one),
-                        Task::Reference(zero),
-                        Task::Expression(target),
-                        Task::Expression(control),
-                    ]),
+                    } => {
+                        for arm in [one, zero] {
+                            tasks.push(match arm {
+                                CoherentArm::Operation(StaticOp {
+                                    kind: StaticOpKind::Name(name),
+                                    ..
+                                }) => Task::Reference(name),
+                                CoherentArm::Operation(operation) => Task::Operation(operation),
+                                CoherentArm::Block(block) => Task::Block(block),
+                            });
+                        }
+                        tasks.extend([Task::Expression(target), Task::Expression(control)]);
+                    }
                     ExprKind::Bit(_) | ExprKind::Unit => {}
                 },
             }

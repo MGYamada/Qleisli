@@ -11,7 +11,23 @@ open RuntimeForestCode (sparseLayout forestBasis sparseEntry)
 open Qleisli.RuntimeLiteralBody
 open Qleisli.Semantics.Exact (entry action scalar)
 
-private noncomputable def basisColumn (row column : Nat) : ℂ := if row = column then 1 else 0
+noncomputable def basisColumn (row column : Nat) : ℂ := if row = column then 1 else 0
+
+/-- The exact action on an original basis column reads that coefficient. -/
+theorem action_basisColumn (matrix : Semantics.Exact.Matrix) (row column : Nat)
+    (bounded : column < matrix.cols) :
+    action matrix basisColumn row column = entry matrix row column := by
+  unfold action
+  calc
+    _ = ((List.range matrix.cols).map fun digit =>
+        if column = digit then entry matrix row digit else 0).sum := by
+      apply Qleisli.Exact.sum_map_congr
+      intro digit _
+      by_cases same : column = digit
+      · simp [basisColumn,same]
+      · have different : digit ≠ column := Ne.symm same
+        simp [basisColumn,same,different]
+    _ = _ := Qleisli.Exact.range_delta_sum _ _ _ bounded
 
 noncomputable def evaluate {artifact root owner name signature program request bindings}
     {body : @SourceRuntimeTrace.Body artifact.sources owner name signature}
@@ -50,18 +66,7 @@ theorem exact_entry {artifact context description graph index request header roo
   have label : layout.labels[row]? = some layout.labels[ordinal.val] :=
     List.getElem?_eq_getElem bounded
   have sourceEq := each ordinal column
-  have value : action checked.action basisColumn row column = entry checked.action row column := by
-    unfold action
-    calc
-      _ = ((List.range checked.action.cols).map fun digit =>
-          if column = digit then entry checked.action row digit else 0).sum := by
-        apply Qleisli.Exact.sum_map_congr
-        intro digit _
-        by_cases same : column = digit
-        · simp [basisColumn,same]
-        · have different : digit ≠ column := Ne.symm same
-          simp [basisColumn,same,different]
-      _ = _ := Qleisli.Exact.range_delta_sum _ _ _ colBound
+  have value := action_basisColumn checked.action row column colBound
   calc
     _ = Qleisli.RuntimePureProviderBoundary.packedAction output
         (returnHistory checked.originalBody.body.result.history.bindings result).operator

@@ -8,7 +8,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 namespace Qleisli.RuntimeSelectionArmTrace
 open QleisliKernel QleisliKernel.Finite QleisliKernel.Qirf QleisliKernel.SourceTypes
 open RuntimeBodyQueries (Mode)
-open RuntimeBodyPlan (Queues)
+open RuntimeBodyPlan (Queues Context Position)
 
 inductive Trace {Index State : Type} (Data : Index → Type)
     (step : (index : Index) → Data index → State → WorkM State) :
@@ -118,6 +118,102 @@ theorem foldArms_trace {artifact : Artifact} (mode : Mode artifact)
             (ih rest tail middle finish budget left remaining)
     exact planned _ _ plans initial final work left read
 
+abbrev EventTable {sources owner} (event : SourceRuntimeContext.SelectionEvent sources owner) :=
+  QuantumArms.RuntimeTable event event.parsed.keyword.span.startByte event.selector.basis event.target.basis
+
+/-- The actual argument consumed at one written index, including the original
+body replay and exact child plan for an inline arm. -/
+inductive MixedSlot {artifact : Artifact} (mode : Mode artifact) {owner}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    (table : EventTable event) (index : Fin table.arms.length) : Type where
+  | named (arm : QuantumArms.BoundArm artifact.sources owner event.selector.basis event.target.basis)
+      (selected : table.arms[index] = .operation arm)
+      (graph : mode.GraphData arm.operation.graph OperationAccess.controllable (.arm arm.operation))
+  | inline (arm : SourceRuntimeTrace.InlineArmBody event index.val)
+      (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody event index.val) arm)
+      (ports : event.selector.basis = event.selector.basis ∧ event.target.basis = event.target.basis)
+      (label : QuantumArms.Label (sources := artifact.sources))
+      (originalLabel : RuntimeInterval.Computed (QuantumArms.readLabel artifact.sources owner event.selector.basis
+        (event.parsed.arms.get ⟨index.val,arm.armIndex⟩).label) label)
+      (selected : table.arms[index] = .inline arm replayed ports label originalLabel)
+      (child : Context) (plan : mode.BodyData (.coherentArm rfl arm replayed) child)
+
+abbrev MixedNamed {artifact : Artifact} (mode : Mode artifact) {owner}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner}
+    (table : EventTable event) (State : Type) :=
+  (index : Fin table.arms.length) →
+  (arm : QuantumArms.BoundArm artifact.sources owner event.selector.basis event.target.basis) →
+  table.arms[index] = .operation arm →
+  mode.GraphData arm.operation.graph OperationAccess.controllable (.arm arm.operation) → State → WorkM State
+
+abbrev MixedInline {artifact : Artifact} (mode : Mode artifact) {owner}
+    (event : SourceRuntimeContext.SelectionEvent artifact.sources owner) (State : Type) :=
+  {index : Nat} → (arm : SourceRuntimeTrace.InlineArmBody event index) →
+  (replayed : RuntimeInterval.Computed (SourceRuntimeTrace.readInlineArmBody event index) arm) →
+  (child : Context) → mode.BodyData (.coherentArm rfl arm replayed) child → State → WorkM State
+
+def MixedSlot.run {artifact : Artifact} {mode : Mode artifact} {owner}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} {table : EventTable event} {State}
+    (named : MixedNamed mode table State) (inline : MixedInline mode event State)
+    (index : Fin table.arms.length) : MixedSlot mode table index → State → WorkM State
+  | .named arm selected graph => named index arm selected graph
+  | .inline arm replayed _ _ _ _ child plan => inline arm replayed child plan
+
+/-- Successful mixed execution records exactly the original named or inline
+callback at every written index, with one continuous work counter. -/
+theorem foldMixedArms_trace {artifact : Artifact} (mode : Mode artifact) {owner State}
+    {event : SourceRuntimeContext.SelectionEvent artifact.sources owner} (position : Position)
+    (table : EventTable event)
+    (named : MixedNamed mode table State) (inline : MixedInline mode event State)
+    (data : mode.MixedArmsData position table) (initial final : State) (work left : Nat)
+    (read : (RuntimeBodyQueries.foldMixedArms mode position table named inline data initial).run work =
+      (.ok final,left)) :
+    Trace (MixedSlot mode table) (MixedSlot.run named inline) (List.finRange table.arms.length)
+      initial final work left := by
+  cases mode with
+  | fresh => nomatch data
+  | planned preparation =>
+    rcases data with ⟨before,after,plans⟩
+    unfold RuntimeBodyQueries.foldMixedArms at read
+    dsimp (config := {zeta := false}) only at read
+    extract_lets visit at read
+    have planned (fuel : Nat) (indices : List (Fin table.arms.length))
+        {before after : Queues} (plans : RuntimeBodyPlan.MixedArms preparation event position table indices before after)
+        (start finish : State) (work left : Nat)
+        (read : (visit fuel indices plans start).run work = (.ok finish,left)) :
+        Trace (MixedSlot (.planned preparation) table) (MixedSlot.run named inline)
+          indices start finish work left := by
+      induction fuel generalizing indices before after start finish work left with
+      | zero =>
+        cases plans with
+        | nil =>
+          obtain ⟨rfl,rfl⟩ := pure_success _ _ _ _ read
+          exact .nil _ _
+        | named => cases read
+        | inline => cases read
+      | succ fuel ih =>
+        cases plans with
+        | nil =>
+          obtain ⟨rfl,rfl⟩ := pure_success _ _ _ _ read
+          exact .nil _ _
+        | @named _ _ _ _ index rest before after arm selected cut graph tail =>
+          change (do
+            let middle ← named index arm selected ⟨cut.implementations,cut.references,graph⟩ start
+            visit fuel rest tail middle).run work = (.ok finish,left) at read
+          obtain ⟨middle,budget,first,remaining⟩ := bind_success _ _ _ _ _ read
+          exact .cons (.named arm selected ⟨cut.implementations,cut.references,graph⟩) first
+            (ih rest tail middle finish budget left remaining)
+        | @inline _ _ _ _ index rest originalIndex before after arm replayed ports label originalLabel selected writtenIndex
+            child remaining slot nested tail =>
+          change (do
+            let middle ← inline arm replayed child nested start
+            visit fuel rest tail middle).run work = (.ok finish,left) at read
+          subst originalIndex
+          obtain ⟨middle,budget,first,remainingRead⟩ := bind_success _ _ _ _ _ read
+          exact .cons (.inline arm replayed ports label originalLabel selected child nested) first
+            (ih rest tail middle finish budget left remainingRead)
+    exact planned _ _ plans initial final work left read
+
 /-- The checked source table enumerates the entire selector domain, while
 retaining the written arm order. -/
 theorem ordinal_permutation {sources owner name offset selector target}
@@ -125,7 +221,7 @@ theorem ordinal_permutation {sources owner name offset selector target}
     (table.arms.map (·.label.ordinal)).Perm (List.range table.layout.labels.length) := by
   let ordinals := table.arms.map (·.label.ordinal)
   have complete := table.complete
-  simp only [QuantumArms.partition,Bool.and_eq_true,List.all_eq_true,decide_eq_true_eq] at complete
+  simp only [QuantumArms.partitionWith,Bool.and_eq_true,List.all_eq_true,decide_eq_true_eq] at complete
   have distinct : ordinals.Nodup := Raw.Ownership.unique_nodup _ complete.2
   have bounded : ordinals ⊆ List.range table.layout.labels.length :=
     fun ordinal member => List.mem_range.mpr (complete.1.2 ordinal member)
@@ -204,6 +300,7 @@ theorem ordinal_read {artifact : Artifact} (mode : Mode artifact)
   exact ⟨index,graph,before,after,incoming,outgoing,selected,ran,produced⟩
 
 #print axioms foldArms_trace
+#print axioms foldMixedArms_trace
 #print axioms arm_at_ordinal
 #print axioms ordinal_read
 end Qleisli.RuntimeSelectionArmTrace

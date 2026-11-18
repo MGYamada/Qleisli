@@ -20,10 +20,9 @@ structure Site {artifact : Artifact} {owner name : String}
   scope : List String
   naturals : PhaseApplication.Naturals artifact.sources
   offset : Nat
-  original : ∃ (tokens : List LocatedToken) (parsed : QuantumMatch.Parsed) (written : QuantumMatch.parse tokens = .ok (parsed,[]))
-      (held : List Semantics.SourceOwners.Owner) (remaining : SourceRuntimeValues.Environment), body.checked.events =
-      [.selection tokens parsed written selector target scope naturals held remaining] ∧
-      offset = parsed.keyword.span.startByte
+  original : ∃ event : SourceRuntimeContext.SelectionEvent artifact.sources owner,
+    body.checked.events = [.selection event] ∧ event.selector = selector ∧ event.target = target ∧
+      event.scope = scope ∧ event.naturals = naturals ∧ offset = event.parsed.keyword.span.startByte
   table : QuantumArms.Table artifact.sources owner name offset selector.basis target.basis
   tableRead : RuntimeInterval.Computed (QuantumArms.readArmsWithInstantiation
     body.checked.signature.original body.checked.signature.instantiation
@@ -47,10 +46,15 @@ structure Checked {artifact owner name arguments}
 private def readData {artifact : Artifact} {owner name : String}
     {signature : SourceRuntimeContext.Signature artifact.sources owner name}
     (original : SourceRuntimeTrace.Body signature) (request : Context) : WorkM (Site original request) := do
+  guard request.inlineBodies.isEmpty .request
   let body := original.checked
   match events : body.events, sites : request.sites with
-  | [.selection tokens parsed written selector target scope naturals held remaining],[site] =>
-    let offset := parsed.keyword.span.startByte
+  | [.selection event],[site] =>
+    let offset := event.parsed.keyword.span.startByte
+    let selector := event.selector
+    let target := event.target
+    let scope := event.scope
+    let naturals := event.naturals
     if valid : request.positions = [site.position] ∧ site.position.offset = offset ∧
         request.calls.isEmpty = true ∧ request.branches.isEmpty = true then
       let table ← NaturalAffine.witness (QuantumArms.readArmsWithInstantiation body.signature.original
@@ -58,7 +62,7 @@ private def readData {artifact : Artifact} {owner name : String}
       if arity : site.arms.length = table.val.arms.length then
         let relevance ← SourceRows.read ([(owner,body.signature.original.source)] ++ body.signature.sourceRows ++
           body.summary.staticRows ++ Carrier.sourceRows site.attached site.required ++ table.val.arms.flatMap (·.sourceRows))
-        return ⟨selector,target,scope,naturals,offset,⟨tokens,parsed,written,held,remaining,events,rfl⟩,
+        return ⟨selector,target,scope,naturals,offset,⟨event,events,rfl,rfl,rfl,rfl,rfl⟩,
           table.val,by with_reducible exact table.property,site,sites,valid.1,valid.2.1,arity,valid.2.2,relevance⟩
       else throw .request
     else throw .request

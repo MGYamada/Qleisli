@@ -2091,3 +2091,70 @@ private def actualPacket := placementBytes fixturePacket emitted.toUTF8 placemen
   | _, _, _ => false
 
 end QleisliKernel.Tests.WorkspaceTarget
+
+namespace QleisliKernel.Tests.InlineBodyTransport
+open Lean Finite
+
+private def position (offset : Nat) : Json :=
+  Json.mkObj [("offset",.num (JsonNumber.fromNat offset)),("start",.num 0),("count",.num 1)]
+
+private def contextFields (positions sites : Array Json) : List (String × Json) :=
+  [("positions",.arr positions),("sites",.arr sites),("calls",.arr #[]),("branches",.arr #[]),
+    ("bodies",.arr #[]),("references",.arr #[])]
+
+private def inlineSlot (offset index localOffset : Nat) : Json :=
+  Json.mkObj [("position",position offset),("arm_index",.num (JsonNumber.fromNat index)),
+    ("body",Json.mkObj (contextFields #[position localOffset] #[]))]
+
+private def packet (slots : Option (Array Json)) (leading : List (String × Json) := []) : Json :=
+  let interface := Json.mkObj [("inputs",.arr #[]),("outputs",.arr #[]),("public_effect",.str "unitary")]
+  let evidence := Json.mkObj [("implementation",.num 1),("controlled",.num 2)]
+  let site := Json.mkObj [("attached",interface),("required",interface),("position",position 20),
+    ("arms",.arr #[evidence,evidence])]
+  Json.mkObj (leading ++ contextFields #[position 20] #[site] ++
+    slots.toList.map (fun entries => ("inline_bodies",.arr entries)))
+
+private def recd (name : String) (values : List Protocol.ExecutionView.Value) : Protocol.ExecutionView.Value :=
+  .array (.text name :: values)
+
+private def expected : Protocol.ExecutionView.Value :=
+  let interval := fun offset => recd "source-interval" [.natural offset,.natural 0,.natural 1]
+  let arm := recd "qmatch-arm" [.natural 1,.natural 2]
+  let intf := recd "carrier-interface" [.array [],.array [],.natural 0]
+  let site := recd "qmatch-site" [intf,intf,interval 20,.array [arm,arm]]
+  let slot := fun index offset => recd "source-inline-arm" [interval 20,.natural index,
+    recd "source-context" [.array [interval offset],.array [],.array [],.array [],.array [],.array []]]
+  recd "source-context" [.array [interval 20],.array [site],.array [],.array [],.array [],.array [],
+    .array [slot 0 41,slot 1 63]]
+
+private def read (slots : Array Json) := ((Protocol.QmatchV5.inspectContext (packet (some slots))).run 1000000).1
+
+#guard match read #[inlineSlot 20 0 41,inlineSlot 20 1 63] with
+  | .error _ => false
+  | .ok recovered =>
+    (recovered.inlineBodies.map fun (parent,index,body) => (parent.offset,index,body.positions.map (·.offset))) ==
+      [(20,0,[41]),(20,1,[63])] &&
+    match ((Protocol.ExecutionView.QmatchV5.context 129 recovered).run 1000000).1 with
+    | .error _ => false
+    | .ok view => (Protocol.ExecutionView.encode view).toOption.map (·.data) ==
+        (Protocol.ExecutionView.encode expected).toOption.map (·.data)
+
+#guard [#[],#[inlineSlot 20 1 63,inlineSlot 20 0 41],#[inlineSlot 20 0 41,inlineSlot 20 0 63],
+    #[inlineSlot 20 2 41],#[inlineSlot 21 1 41]].all fun slots => (read slots).toOption.isNone
+
+private def nativePreparation (slots : Option (Array Json)) : WorkM Protocol.QmatchV5.Request := do
+  let runtime ← lift ((Protocol.FiniteCodec.parseWithDepth ("{\"format\":\"qleisli.runtime-root-request\",\"version\":2," ++
+    "\"profile\":\"finite-runtime-root-v2\",\"selection\":\"internal\",\"module\":\"m\",\"declaration\":\"f\"," ++
+    "\"static_bases\":[],\"static_naturals\":[],\"parameters\":[],\"input_storage\":[],\"input_rows\":[[]]," ++
+    "\"result\":[{\"tag\":\"finite\",\"atom\":{\"tag\":\"unit\"}}]," ++
+    "\"storage\":[{\"tag\":\"ordinary\",\"basis\":[{\"tag\":\"unit\"}],\"storage\":{\"tag\":\"unit\"}}]," ++
+    "\"public_effect\":\"unitary\"}") 128).mapError fun _ => .invalid)
+  let source := Json.mkObj [("module",.str "m"),("function",.str "f"),("static_bases",.arr #[]),
+    ("static_naturals",.arr #[]),("static_operations",.arr #[])]
+  Protocol.QmatchV5.decode (packet slots [("format",.str "qleisli.qmatch-request"),("version",.num 5),
+    ("profile",.str Protocol.QmatchV5.profile),("source",source),("runtime",runtime)])
+
+#guard ((nativePreparation none).run 1000000).1.isOk
+#guard ((nativePreparation (some #[inlineSlot 20 1 63])).run 1000000).1.isOk
+
+end QleisliKernel.Tests.InlineBodyTransport

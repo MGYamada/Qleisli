@@ -43,6 +43,32 @@ private def chosenBit : StaticTypes.Arguments := {bases := [("A",[.bit])]}
 #guard summary (program ("pub unitary fn root[const n:Nat](q:Q<Bit>)->Q<Bit>{if static n>0 {" ++
     "let m=measure_z(q);let u=unit(());basis u as _ {m}} else {q}}")) {naturals := [("n",0)]} = none
 
+private def coherentBody (form block : String) : Sources :=
+  program ("pub observe fn root(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){" ++
+    form ++ "(c,q){0=>h,1=>{" ++ block ++ "}}}")
+
+#guard summary (coherentBody "qif" "let r=h(q);global_phase_eighth(r)") = some (.unitary,true,0,0)
+#guard summary (coherentBody "qmatch" "let r=h(q);global_phase_eighth(r)") = some (.unitary,true,0,0)
+#guard summary (coherentBody "qif" "let m=measure_z(q);basis unit(()) as _ {m}") = none
+#guard summary (coherentBody "qmatch" "h(c)") = none
+#guard summary (coherentBody "qmatch" "(h(q),())") = none
+
+private def inlineAccess (requires : String) : Option Bool :=
+  let sources := program ("pub unitary fn root[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires " ++
+    requires ++ " {qmatch(c,q){0=>h,1=>{U(q)}}}")
+  let action := do
+    let definition ← SourceTypes.GenericTypeTrace.readDefinition sources "main" "root"
+    let tokens := definition.original.envelope.occurrence.body
+    let tree ← lift ((SourceSyntax.read (tokens.length+1) 0 true tokens).mapError fun _ => Error.request)
+    let body ← SourceTypes.GenericTypeTrace.checkTree definition tree
+    pure (body.duties.any fun duty => match duty.kind,duty.requirement with
+      | .application,.access paths => paths.applicable && paths.controllable
+      | _,_ => false)
+  (action.run 10000000).1.toOption
+
+#guard inlineAccess "Applicable(U)" = none
+#guard inlineAccess "Applicable(U),Controllable(U)" = some true
+
 -- Opaque basis lifts retain a pending finite injection obligation and the
 -- ORIGINAL conservative effect, including when a selected type is Unit.
 #guard summary (program "pub isometry fn root[const A:Basis](q:Q<A>)->Q<Bit>{basis q as a {0}}")

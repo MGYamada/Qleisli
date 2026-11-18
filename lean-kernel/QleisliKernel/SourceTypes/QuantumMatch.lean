@@ -40,6 +40,24 @@ structure Arm where
   operation : List LocatedToken
   deriving BEq, DecidableEq, Repr
 
+structure Inline (arm : Arm) where
+  opening : LocatedToken
+  body : List LocatedToken
+  closing : LocatedToken
+  original : arm.operation = opening :: body ++ [closing]
+  delimiters : (opening.text,closing.text) = ("{","}")
+
+/-- Recover the body of the written arm, including the original byte locations
+of all its tokens. A partial group or any tokens after its block are refused. -/
+def Arm.readInline (arm : Arm) : Except String (Inline arm) := do
+  let (opening,rest) ← expect "{" arm.operation
+  let block ← segment (rest.length+1) ["}"] [] rest []
+  if original : arm.operation = opening :: block.tokens ++ [block.delimiter] then
+    if delimiters : (opening.text,block.delimiter.text) = ("{","}") then
+      return ⟨opening,block.tokens,block.delimiter,original,delimiters⟩
+    else throw "invalid coherent arm block delimiters"
+  else throw "inline coherent arm must be one complete block"
+
 private def arms : Nat → List LocatedToken → List Arm →
     Except String (List Arm × List LocatedToken) :=
   Nat.rec (fun _ _ => throw "qmatch exceeds existing arm bound") (fun _ next tokens reversed => do

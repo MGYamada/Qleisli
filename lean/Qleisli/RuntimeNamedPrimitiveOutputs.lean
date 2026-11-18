@@ -176,7 +176,7 @@ theorem actual_named_output {artifact root execution fuel program block step}
   have inputs := RuntimeNamedPrimitiveInputs.actual_named_input call
   cases call with
   | @named start count inputTokens caller before ordinary event scope body bodyRead
-      rootOwner rootName path request plan assigned result receipts boundary beforeInput afterInput afterChild inputRead childRead =>
+      rootOwner rootName path controlled request plan assigned result receipts boundary beforeInput afterInput afterChild inputRead childRead =>
     change boundary.input.ordered.length = 1 ∧ result.history.bindings.length = 1 at counts
     cases emitted : result.steps with
     | nil => trivial
@@ -199,7 +199,7 @@ theorem actual_named_output {artifact root execution fuel program block step}
               rw [sameInput]
               simpa only [RuntimeForestCode.carrierOwners,List.length_map] using counts.1
             obtain ⟨ordered,_orderedRead,last,flow,returned⟩ :=
-              RuntimeNamedChildRuns.core_flow artifact root execution fuel .localScope (.whole body) path
+              RuntimeNamedChildRuns.core_flow artifact root execution fuel .localScope (.whole body controlled) path
                 scope.program request plan ⟨assigned,_,_⟩ scope.visible.ssa scope.prepared.block
                 (result,receipts) ⟨afterInput,afterChild,childRead⟩
             rw [emitted] at flow

@@ -68,7 +68,12 @@ private def inspect (fault : Fault) : WorkM Summary := do
   let [.named call] := original.body.checked.events | throw .request
   let callee ← SourceRuntimeTrace.readNamedBody call
   let body := callee.checked
-  let [.selection _ parsed _ selector target scope naturals ..] := body.events | throw .request
+  let [.selection selected] := body.events | throw .request
+  let parsed := selected.parsed
+  let selector := selected.selector
+  let target := selected.target
+  let scope := selected.scope
+  let naturals := selected.naturals
   let table ← QuantumArms.readArmsWithInstantiation body.signature.original body.signature.instantiation
     body.signature.supply parsed.keyword.span.startByte selector.basis target.basis (some naturals) scope
   let [firstIndex,secondIndex] := List.finRange table.arms.length | throw .request

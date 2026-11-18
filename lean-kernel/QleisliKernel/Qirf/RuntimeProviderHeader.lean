@@ -59,7 +59,7 @@ def eventRows {sources caller} : Nat → SourceRuntimeContext.Event sources call
   Nat.rec (fun _ => []) (fun _ next event => match event with
     | .primitive event => CallName.sourceRows event.candidate
     | .phase event => CallName.sourceRows event.application.candidate ++ event.naturals.sourceRows
-    | .selection _ _ _ _ _ _ naturals .. => naturals.sourceRows
+    | .selection event => event.naturals.sourceRows
     | .named event => event.target.sourceRows ++ event.canonical.staticRows
     | .operation event => event.operation.rows ++ event.operation.graph.sourceRows ++ event.naturals.sourceRows
     | .basis event => event.staticRows

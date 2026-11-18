@@ -23,20 +23,352 @@ fn selected(source: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram 
 }
 
 fn selected_at(source: &str, entry: &str) -> qleisli::frontend::compile::SelectedRuntimeProgram {
-    ParsedProgram::parse(
+    let parsed = ParsedProgram::parse(
         Edition::E2026,
         BTreeMap::from([("main".into(), source.into())]),
     )
-    .unwrap()
-    .instantiate_runtime_with_types(
-        entry,
-        Default::default(),
-        Default::default(),
-        Default::default(),
+    .unwrap();
+    compile_selected(&parsed, entry, Some(source))
+}
+
+fn compile_selected(
+    parsed: &ParsedProgram,
+    entry: &str,
+    source: Option<&str>,
+) -> qleisli::frontend::compile::SelectedRuntimeProgram {
+    parsed
+        .instantiate_runtime_with_types(
+            entry,
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        )
+        .unwrap()
+        .compile_runtime_with_kernel(&kernel())
+        .unwrap_or_else(|error| {
+            if let Some(source) = source {
+                panic!("{error:?}\nOriginal test source:\n{source}");
+            }
+            panic!("{error:?}");
+        })
+}
+
+fn recorded_inline_arm(project: &str, first_diagnostic: &str) -> ParsedProgram {
+    assert!(first_diagnostic.contains(r#""outcome":"error""#));
+    assert!(first_diagnostic.contains(r#""code":"invalid_ir""#));
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests")
+        .join(project)
+        .join("main.qli");
+    ParsedProgram::load(BTreeMap::from([("main".into(), path)])).unwrap()
+}
+
+#[test]
+#[doc = include_str!("fixtures/authoring_sessions/inline-coherent-adjoint-v030/README.md")]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arms_use_the_original_native_gate() {
+    let binary = r#"#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>h,1=>{let r=h(q);phase[1,1](r)}}
+}"#;
+    let nominal = r#"#![no_implicit_prelude]
+pub enum Tag { A, B }
+pub unitary fn route(s:Q<Tag>,q:Q<(Unit,Bit)>)->(Q<Tag>,Q<(Unit,Bit)>){
+    qmatch(s,q){Tag::B=>{let (u,b)=split(q);join(u,h(b))},Tag::A=>{q}}
+}"#;
+    let nested = recorded_inline_arm(
+        "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-01",
+        include_str!(
+            "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-01.before.json"
+        ),
+    );
+    let basic = [binary, nominal].map(|source| {
+        let parsed = ParsedProgram::parse(
+            Edition::E2026,
+            BTreeMap::from([("main".into(), source.into())]),
+        )
+        .unwrap();
+        (parsed, Some(source))
+    });
+    for (parsed, source) in basic.into_iter().chain([(nested, None)]) {
+        assert!(
+            parsed
+                .requires_typed_runtime_transport("main::route")
+                .unwrap()
+        );
+        let accepted = compile_selected(&parsed, "main::route", source);
+        let program = accepted.program();
+        assert!(program.qmatch_source_checked());
+        let raw = program.raw();
+        assert_eq!(raw.quantum_inputs.len(), 2);
+        assert_eq!(raw.quantum_outputs.len(), 2);
+        assert_eq!(raw.declared_effect, qleisli::ir::Effect::Unitary);
+        kernel().check_program(program).unwrap();
+        let mut request =
+            qleisli::interchange::qmatch::v5::Request::decode(program.request().unwrap()).unwrap();
+        let position = request
+            .context
+            .inline_bodies
+            .iter_mut()
+            .find_map(|arm| arm.body.positions.first_mut())
+            .expect("original primitive position within an inline arm");
+        position.offset += 1;
+        let error = kernel()
+            .check_qmatch_source_v5(program.artifact(), &request.encode().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn project_coherent_block_arm_preserves_relative_phase() {
+    let source = r#"#![no_implicit_prelude]
+unitary fn idle(q:Q<Bit>)->Q<Bit>{q}
+unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>idle,1=>{phase[1,1](q)}}
+}
+observe fn main()->Bit{
+    let s=h(basis unit(()) as _ {0});
+    let q=basis unit(()) as _ {1};
+    let (s,q)=route(s,q);
+    discard(q);
+    measure_z(h(s))
+}"#;
+    let program = compile_project(&SourceRoot::new(source).0).unwrap();
+    assert_eq!(
+        program.source_body_scope(),
+        Some("finite-source-qmatch-context-v5")
+    );
+    let values = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert!((values[&vec![true]] - 1.0).abs() < 1e-12);
+    assert!(values.get(&vec![false]).copied().unwrap_or(0.0) < 1e-12);
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arm_replays_excl_and_returns_the_original_binding() {
+    let binary = r#"#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{h(excl q);h(excl q);},1=>{h(excl q);}}
+}
+"#;
+    let nominal = r#"#![no_implicit_prelude]
+pub enum Tag { A, B }
+unitary fn sign(q:Q<Bit>)->Q<Bit>{phase[1,1](q)}
+pub unitary fn route(s:Q<Tag>,q:Q<Bit>)->(Q<Tag>,Q<Bit>){
+    qmatch(s,q){Tag::B=>{sign(excl q);},Tag::A=>{sign(excl q);q}}
+}
+"#;
+    let pair = r#"#![no_implicit_prelude]
+unitary fn turn(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){(h(a),phase[1,1](b))}
+pub unitary fn route(s:Q<Bit>,q:Q<(Bit,Bit)>)->(Q<Bit>,Q<(Bit,Bit)>){
+    qif(s,q){0=>{q},1=>{let (a,b)=split(q);turn(excl a,excl b);join(a,b)}}
+}
+"#;
+    for (source, original, changed) in [
+        (binary, "excl q", "excl s"),
+        (nominal, "excl q", "excl s"),
+        (pair, "excl b", "excl a"),
+    ] {
+        let checked = selected_at(source, "main::route");
+        let program = checked.program();
+        assert!(program.qmatch_source_checked());
+        kernel().check_program(program).unwrap();
+        let request = program.request().unwrap();
+        let artifact = std::str::from_utf8(program.artifact()).unwrap();
+        let wrong = artifact.replacen(original, changed, 1);
+        assert_ne!(artifact, wrong);
+        let error = kernel()
+            .check_qmatch_source_v5(wrong.as_bytes(), request)
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+
+    let closed = format!(
+        "{binary}
+        observe fn main()->(Bit,Bit){{
+            let s=basis unit(()) as _ {{0}};
+            let q=basis unit(()) as _ {{1}};
+            let (s,q)=route(s,q);
+            (measure_z(s),measure_z(q))
+        }}"
+    );
+    let program = compile_project(&SourceRoot::new(&closed).0).unwrap();
+    assert!(program.qmatch_source_checked());
+    let values = run_closed(&program, SimulationLimits::default()).unwrap();
+    assert!((values[&vec![false, true]] - 1.0).abs() < 1e-12);
+
+    let consumed = binary.replacen("h(excl q);h(excl q);", "let q=h(q);h(excl q);", 1);
+    let error = ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), consumed)]))
+        .expect_err("a shadowing owner cannot supply the implicit return");
+    assert_eq!(error.code(), "ownership", "{error:?}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arm_checks_the_original_static_continuation() {
+    let primitive = recorded_inline_arm(
+        "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02",
+        include_str!(
+            "fixtures/authoring_sessions/inline-coherent-adjoint-v030/attempt-02.before.json"
+        ),
+    );
+    let basis = r#"#![no_implicit_prelude]
+pub unitary fn route[const n:Nat](s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{if static n==0 {basis q as b {not b}} else {q}},1=>h}
+}
+"#;
+    let basis = ParsedProgram::parse(
+        Edition::E2026,
+        BTreeMap::from([("main".into(), basis.into())]),
     )
-    .unwrap()
-    .compile_runtime_with_kernel(&kernel())
-    .unwrap_or_else(|error| panic!("{error:?}\nOriginal test source:\n{source}"))
+    .unwrap();
+    let kernel = kernel();
+    for parsed in [primitive, basis] {
+        let checked = [0, 1].map(|n| {
+            parsed
+                .instantiate_runtime_with_types(
+                    "main::route",
+                    Default::default(),
+                    BTreeMap::from([("n".into(), n)]),
+                    Default::default(),
+                )
+                .unwrap()
+                .compile_runtime_with_kernel(&kernel)
+                .unwrap()
+        });
+        let [zero, one] = checked.each_ref().map(|checked| checked.program());
+        assert!(zero.qmatch_source_checked() && one.qmatch_source_checked());
+        assert_ne!(zero.raw(), one.raw());
+        let error = kernel
+            .check_qmatch_source_v5(zero.artifact(), one.request().unwrap())
+            .unwrap_err();
+        assert_eq!(error.code, "contract", "{error}");
+    }
+}
+
+#[test]
+#[doc = include_str!("fixtures/authoring_sessions/inline-coherent-basis-v030/README.md")]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arm_checks_the_original_basis_table() {
+    let parsed = recorded_inline_arm(
+        "fixtures/authoring_sessions/inline-coherent-basis-v030/attempt-01",
+        include_str!(
+            "fixtures/authoring_sessions/inline-coherent-basis-v030/attempt-01.before.json"
+        ),
+    );
+    let accepted = compile_selected(&parsed, "main::route", None);
+    let program = accepted.program();
+    assert!(program.qmatch_source_checked());
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let lift = r#""table":[1,0]"#;
+    let permutation = r#""permutation":[1,0]"#;
+    assert_eq!(artifact.matches(lift).count(), 1);
+    assert_eq!(artifact.matches(permutation).count(), 2);
+    // Replace the forward, controlled and enclosing actions consistently.
+    // The written Boolean negation still distinguishes this valid identity proposal.
+    let forged = artifact
+        .replace(lift, r#""table":[0,1]"#)
+        .replace(permutation, r#""permutation":[0,1]"#);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arm_checks_the_original_computed_predicate() {
+    let source = r#"#![no_implicit_prelude]
+classical fn mark(b:Bit)->Bit{b}
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{q},1=>{with_computed(q,mark){|flag|phase[1,1](flag)}}}
+}
+"#;
+    let accepted = selected_at(source, "main::route");
+    let program = accepted.program();
+    assert!(program.qmatch_source_checked());
+    let artifact = std::str::from_utf8(program.artifact()).unwrap();
+    let scratch_flip = concat!(
+        r#""permutation":[1,0],"phases":[0,0],"tag":"monomial"},"#,
+        r#""controls":[{"index":0,"when_one":true}]"#
+    );
+    assert_eq!(artifact.matches(scratch_flip).count(), 2);
+    assert_eq!(artifact.matches(r#""phases":[0,4]"#).count(), 2);
+    // Invert the predicate in both scratch passes and update both proposed
+    // sector actions. The scratch still returns to zero.
+    let different_flip = scratch_flip.replace(r#""when_one":true"#, r#""when_one":false"#);
+    let forged = artifact
+        .replace(scratch_flip, &different_flip)
+        .replace(r#""phases":[0,4]"#, r#""phases":[4,0]"#);
+    let error = kernel()
+        .check_qmatch_source_v5(forged.as_bytes(), program.request().unwrap())
+        .unwrap_err();
+    assert_eq!(error.code, "contract", "{error}");
+}
+
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn coherent_block_arm_checks_workspace_restoration() {
+    let clean = r#"#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){
+    qif(s,q){0=>{q},1=>{clean(q,h){|data,scratch|(h(data),scratch)}}}
+}
+"#;
+    let dirty = r#"#![no_implicit_prelude]
+pub unitary fn route(s:Q<Bit>,q:Q<(Bit,Bit)>)->(Q<Bit>,Q<(Bit,Bit)>){
+    qif(s,q){0=>{q},1=>{let (d,r)=split(q);let (d,r)=dirty(d,r,h){|data,scratch|(h(data),scratch)};join(d,r)}}
+}
+"#;
+    for (source, replacement, obligation) in [
+        (clean, "(h(data),h(scratch))", "clean workspace restoration"),
+        (
+            dirty,
+            "(h(data),phase[1,1](scratch))",
+            "dirty workspace restoration",
+        ),
+    ] {
+        let accepted = selected_at(source, "main::route");
+        assert!(accepted.program().qmatch_source_checked());
+        let wrong = source.replace("(h(data),scratch)", replacement);
+        let result = ParsedProgram::parse(Edition::E2026, BTreeMap::from([("main".into(), wrong)]))
+            .unwrap()
+            .instantiate_runtime_with_types(
+                "main::route",
+                Default::default(),
+                Default::default(),
+                Default::default(),
+            )
+            .unwrap()
+            .compile_runtime_with_kernel(&kernel());
+        let Err(error) = result else {
+            panic!("{obligation} must be checked");
+        };
+        assert_eq!(error.code, "invalid_ir", "{error:?}");
+        assert!(error.message.contains(obligation), "{error:?}");
+    }
 }
 
 #[test]

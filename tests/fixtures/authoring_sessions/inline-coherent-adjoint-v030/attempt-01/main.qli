@@ -1,0 +1,9 @@
+#![no_implicit_prelude]
+unitary fn turn(q:Q<Bit>)->Q<Bit>{adjoint(h)(q)}
+pub unitary fn route(s:Q<Bit>,q:Q<(Bit,Bit)>)->(Q<Bit>,Q<(Bit,Bit)>){
+    qmatch(s,q){0=>{q},1=>{
+        let (c,t)=split(q);
+        let (c,t)=qif(c,t){0=>{h(t)},1=>turn};
+        join(c,t)
+    }}
+}

@@ -115,7 +115,9 @@ fn position(view: &mut View<'_>, value: &data::Position) -> Result<()> {
 }
 
 fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
-    let fields = 6 + usize::from(!value.static_intervals.is_empty());
+    let fields = 6
+        + usize::from(!value.static_intervals.is_empty())
+        + usize::from(!value.inline_bodies.is_empty());
     view.record("source-context", fields, |w| {
         w.list(&value.positions, position)?;
         w.list(&value.sites, |w, site| {
@@ -153,6 +155,15 @@ fn context(view: &mut View<'_>, value: &data::Context) -> Result<()> {
                 w.record("source-static-interval", 2, |w| {
                     position(w, &interval.parent)?;
                     w.list(&interval.children, position)
+                })
+            })?;
+        }
+        if !value.inline_bodies.is_empty() {
+            w.list(&value.inline_bodies, |w, inline| {
+                w.record("source-inline-arm", 3, |w| {
+                    position(w, &inline.position)?;
+                    w.n(inline.arm_index as usize)?;
+                    context(w, &inline.body)
                 })
             })?;
         }
