@@ -1310,7 +1310,8 @@ requirements of the command that consumes it.
 | Source in a finite or sized program | Disposition and migration |
 | --- | --- |
 | `Unit`, `Bit`, ordered tuples, `Bits<n>` and `Q<A>` | Kept. Preserve the type tree. `Bits<1>` and `Bit` are distinct, as are `Bits<0>` and `Unit`. See the [type model](type-model.md). |
-| `CBit`, `CBits<n>`, `false`, `true`, or `()` as a result **type** | Replaced by `Bit`, `Bits<n>`, `0`, `1` and `Unit`, respectively. The Unit **value** is `()`. See [retired type spellings](type-model.md#retired-spellings). |
+| `CBit`, `CBits<n>` and `()` in a result type | Use `Bit`, `Bits<n>` and `Unit`, respectively. The Unit value is `()`. See [retired type spellings](type-model.md#retired-spellings). |
+| Ordinary bit literals `false` and `true` | Use `0` and `1`, respectively. |
 | Functions, module paths, imports and explicit static specialization | Kept. Declare the edition in the owning manifest. Both loaders use the same [declaration resolution](#declaration-resolution). |
 | `[static n: Nat]`, `Op` parameters and `requires` | The parameter marker is `const`. Numeric predicates and capability requirements share one clause. See [retired spellings](static-language.md#retired-spellings) for each capability name. |
 | `if static` and static folds with `carry` and `yield` | Static selection is kept. Use `for static` for an ordinary carry and `qfor static` for a carry containing a quantum owner. Both folds thread the written carry in order. See [static branches and folds](static-language.md#static-branches-folds-and-termination). |
