@@ -228,11 +228,9 @@ fn missing_manifest_has_no_default_and_all_filesystem_loaders_check_it() {
         .output()
         .unwrap();
     assert_eq!(output.status.code(), Some(1));
-    assert!(
-        String::from_utf8(output.stdout)
-            .unwrap()
-            .contains("missing Qargo.toml")
-    );
+    let response = String::from_utf8(output.stdout).unwrap();
+    assert!(response.contains("missing Qargo.toml"));
+    assert!(response.contains("selects the constitutional regime"));
 }
 
 #[test]
@@ -262,6 +260,10 @@ fn malformed_numeric_missing_and_unsupported_editions_are_rejected_before_source
             "unsupported Qleisli edition",
         ),
         (
+            "schema-version = 2\n[qrate]\nedition = 'latest'",
+            "unsupported Qleisli edition",
+        ),
+        (
             "schema-version = 2\n[qrate]\nedition = '2026'\nedition = '2026'",
             "invalid Qargo.toml",
         ),
@@ -277,6 +279,45 @@ fn malformed_numeric_missing_and_unsupported_editions_are_rejected_before_source
         );
         assert!(diagnostic.primary.unwrap().path.ends_with("Qargo.toml"));
     }
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn cli_checks_source_after_explicit_edition_migration() {
+    let root = SourceRoot::new(SOURCE);
+    let check = || {
+        Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .args(["check", root.0.to_str().unwrap(), "--format=json"])
+            .output()
+            .unwrap()
+    };
+    for manifest in [
+        "schema-version = 2\n[qrate]\n",
+        "schema-version = 2\n[qrate]\nedition = 'current'\n",
+    ] {
+        root.write("Qargo.toml", manifest);
+        let output = check();
+        assert_eq!(output.status.code(), Some(1));
+        let response = String::from_utf8(output.stdout).unwrap();
+        assert!(response.contains("\"code\":\"project\""), "{response}");
+        assert!(
+            response.contains("selects the constitutional regime"),
+            "{response}"
+        );
+    }
+    root.write(
+        "Qargo.toml",
+        "schema-version = 2\n[qrate]\nedition = '2026'\n",
+    );
+    let output = check();
+    assert!(output.status.success(), "{output:?}");
+    let response = String::from_utf8(output.stdout).unwrap();
+    assert!(response.contains("\"outcome\":\"ok\""), "{response}");
+    assert!(response.contains("\"native_decisions\":"), "{response}");
+    assert!(response.contains("\"complete\":true"), "{response}");
 }
 
 #[cfg_attr(

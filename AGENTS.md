@@ -82,7 +82,7 @@ notices outside retired docs. Regenerate corpus counts with
 
 ## Changes, versions and licensing
 
-Batch PRs into `main` where practical. Check CI and review for the combined head.
+Prefer batching related work in PRs and PRs into `main`. Review the combined head and CI.
 Follow [size budgets](.github/ci/README.md#size-budgets). Never raise them to pass.
 Record decisions and friction in Issues. Keep one backlog. Before breaking
 changes, file the target, contracts, reason, migration and acceptance criteria.

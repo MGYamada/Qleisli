@@ -38,6 +38,10 @@ entry-point failures remain distinct from manifest refusals and seven bounded
 native queries. The old QLV2 context gap is recorded; proposed QLV3 support,
 general proofs and Issue completion are not inferred from inert history.
 
+The [project edition diagnostic study](project-edition-diagnostics-v030/README.md)
+retains the first source trees and paired CLI results for a manifest
+diagnostic that explains constitutional edition selection.
+
 The [quantum-access first study](quantum-access-v030/README.md) preserves
 four desired ctrl/excl calls, explicit-owner controls, two honest source repairs
 and 42 actual observations. Parser refusals are separate from ownership

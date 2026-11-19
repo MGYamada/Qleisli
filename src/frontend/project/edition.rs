@@ -42,6 +42,8 @@ fn capture(path: &Path, source: String) -> Result<EditionManifest, LoadFailure> 
 }
 
 const MAX_MANIFEST_BYTES: u64 = 65_536;
+const EDITION_SELECTION: &str = "The edition selects the constitutional regime independently of \
+    the compiler release and source grammar.";
 
 #[cfg(test)]
 std::thread_local! { static PARSES: std::cell::Cell<usize> = const { std::cell::Cell::new(0) }; }
@@ -147,7 +149,10 @@ pub(super) fn read_directory(directory: &Path) -> Result<EditionManifest, LoadFa
     Err(error(
         &directory.join("Qargo.toml"),
         Span::default(),
-        "missing Qargo.toml: add schema-version = 2 and [qrate] edition = \"2026\" to the source tree's top-level directory",
+        format!(
+            "missing Qargo.toml: add schema-version = 2 and [qrate] edition = \"2026\" \
+             to the source tree's top-level directory. {EDITION_SELECTION}"
+        ),
     ))
 }
 
@@ -238,10 +243,15 @@ fn parse_manifest(path: &Path, source: &str) -> Result<(toml::Table, Edition), L
         .and_then(toml::Value::as_table)
         .and_then(|qrate| qrate.get("edition"))
         .and_then(toml::Value::as_str)
-        .ok_or_else(|| invalid("Qargo.toml requires an explicit string [qrate].edition; add edition = \"2026\" (there is no default)".to_owned()))?;
+        .ok_or_else(|| {
+            invalid(format!(
+                "Qargo.toml requires an explicit string [qrate].edition. \
+                 Add edition = \"2026\" under [qrate]. {EDITION_SELECTION}"
+            ))
+        })?;
     let edition = edition
         .parse::<Edition>()
-        .map_err(|failure| invalid(failure.to_string()))?;
+        .map_err(|failure| invalid(format!("{failure}. {EDITION_SELECTION}")))?;
     Ok((manifest, edition))
 }
 
