@@ -31,7 +31,7 @@
 - [Standard-library semantic namespaces](reference/stdlib.md)
 - [Realization, specialization and resources](reference/realization.md)
 
-# Design candidates
+# Design history
 
 - [Type foundation and common frontend](design/type-foundation.md)
 - [Operations, meanings and capabilities](design/operations.md)

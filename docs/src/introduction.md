@@ -11,19 +11,24 @@ endorsed by, or sponsored by the Rust Project or the Rust Foundation.
 classical-to-quantum ecosystem lift without changing the pronunciation. See
 the canonical [project name and pronunciation](reference/project-identity.md).
 
-This book is being prepared as a guide to learning and using Qleisli. Its
-chapters will build from small executable programs toward reusable quantum
-algorithms, with examples grounded in the implemented language.
+## What this book contains
 
-For now, the book also includes imaginary-v1 design drafts and the
-documentation build guide. These retained documents keep their
-original scope; they have not yet been rewritten as a sequential tutorial.
+| Part | Content |
+| --- | --- |
+| Constitutional authority | The records of the ratified Constitution, the [authority hierarchy](reference/authority.md), the adopted interpretations and guarantees, and the [boundary](reference/production-boundary.md) of what the native checker accepts |
+| Language Reference | The rules of the language, from [source text](reference/source-text.md) and [types](reference/type-model.md) to the [standard library](reference/stdlib.md) and [realization](reference/realization.md) |
+| Design history | The records of two retired design packets: the decisions that followed them and the proposals that no decision adopted |
+| Retained drafts | The [imaginary-v1 drafts](imaginary-v1/index.md), with their original scope |
+| Contributing | The [build guide](building.md) and the style guide for the chapters |
 
-For a Bell-pair program and the current distribution status, start with
-the [repository guide](https://github.com/MGYamada/Qleisli/blob/main/README.md#example).
+The book has no tutorial part. A guide that builds from small executable
+programs toward reusable quantum algorithms is planned.
+
+For a Bell-pair program and the distribution status, start with the
+[repository guide](https://github.com/MGYamada/Qleisli/blob/main/README.md#example).
 The [roadmap](https://github.com/MGYamada/Qleisli/blob/main/ROADMAP.md) records
 planned language features and their status.
 
-This introductory guide is descriptive. Normative requirements and proof
-claims retain the scope of their adopted source documents; rendering a page
-does not establish a language rule or a correctness proof.
+This introduction is descriptive. Normative requirements and proof claims
+retain the scope of their adopted source documents. Rendering a page does not
+establish a language rule or a correctness proof.

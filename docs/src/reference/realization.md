@@ -1,195 +1,218 @@
 # Realization, specialization and resources
 
-This chapter specifies the 0.3.0 boundary between a program's meaning and a
-claimed target implementation. It applies the adopted PR-2026-01 and RS-2026-01
-[interpretations](../design/initial-interpretations.md) under the
-[authority hierarchy](authority.md). It selects no concrete target schema,
-universal gate set, synthesis algorithm or new source syntax. The current
-implementation and proof limits are stated below.
+A **realization** is a claim that one emitted target artifact implements the
+accepted meaning of a program under a named target profile. A realization
+names a **closed specialization**: an instance of a definition in which every
+choice that determines its meaning and interface is fixed. An
+**engineering claim** is an approximation claim: a finite bound, in a named
+metric, on the distance between an actual artifact and an exact ideal. It is
+neither acceptance nor a guarantee. A **resource certificate** is a checked
+quantitative bound on the resources of one emitted artifact.
 
-The governing decisions are [#120](https://github.com/MGYamada/Qleisli/issues/120),
-[#121](https://github.com/MGYamada/Qleisli/issues/121),
-[#127](https://github.com/MGYamada/Qleisli/issues/127),
-[#280](https://github.com/MGYamada/Qleisli/issues/280) and
-[#281](https://github.com/MGYamada/Qleisli/issues/281). Their remaining
-implementation and evidence obligations are not discharged by this chapter.
+This chapter specifies the boundary between the meaning of a program and a
+claimed target implementation. It applies the adopted PR-2026-01 and
+RS-2026-01 [interpretations](../design/initial-interpretations.md) under the
+[authority hierarchy](authority.md).
+
+The chapter fixes the request formats and the named profiles of the
+[native engineering comparisons](#separate-engineering-approximation-claims).
+Each of those profiles is closed and bounded, and it serves one comparison.
+None is the target capability schema. The chapter defines no such schema, no
+universal gate set and no synthesis algorithm, and it adds no source syntax.
+The target capability schema is future work that consumes the abstract
+obligations stated here.
+
+[Status and limits](#status-and-limits) states the limits of the
+implementation and of the proofs. This chapter does not discharge the
+implementation and evidence obligations of the decisions that govern it.
 
 ## Semantic validity and a target realization
 
-Semantic unitarity states a property of the exact denotation. It does not
-promise that the selected target can implement that operator, that synthesis
-can find an implementation, or that the source's logical wires suffice.
-Target synthesis failure must not reclassify a semantically unitary program
-as non-unitary. Inverse and coherent-control access have their own contracts;
-neither follows from finding one realization.
-
+Semantic unitarity is a property of the exact denotation of a program.
 Physical Realizability is a **forward correspondence obligation**. For an
 accepted closed instance `p`, a checked realization of the actual output
 artifact `C` under profile `T` must implement the accepted meaning of `p`,
-subject to its explicit interface, encoding and workspace premises. A claim
-about a circuit that was considered during search does not cover a different
-circuit subsequently emitted or executed.
+subject to its explicit interface, encoding and workspace premises.
 
-Synthesis and search produce candidates outside acceptance. An independently
-supplied candidate can qualify through the same checks; possession of a
-complete synthesis algorithm for the entire semantic domain is unnecessary.
-A failure to find a candidate is not evidence of impossibility. An
-impossibility claim requires an obstruction whose hypotheses match the target.
+Rules:
 
-Domain-wide existence or synthesis completeness is optional profile
-mathematics. For example, Giles and Selinger's Theorem 1 establishes exact
-Clifford+T synthesis with at most one clean ancilla for `2^n × 2^n` unitary matrices over
-`Z[1/√2, i]`, using their specified gate and phase conventions. That result
-neither grants arbitrary dirty workspace nor verifies a particular compiler's
-output. See the [original theorem](https://arxiv.org/html/1212.0506v3#S2).
+- Semantic unitarity does not promise that the selected target can implement
+  the operator, that synthesis can find an implementation, or that the logical
+  wires of the source suffice.
+- A failure of target synthesis must not reclassify a semantically unitary
+  program as non-unitary.
+- Inverse access and controlled access have their own contracts. Neither
+  follows from finding one realization.
+- A claim about a circuit that a search considered does not cover a different
+  circuit that is emitted or executed afterwards.
+- Synthesis and search produce candidates outside acceptance. An independently
+  supplied candidate may qualify through the same checks. A complete synthesis
+  algorithm for the entire semantic domain is not required.
+- A failure to find a candidate is not evidence of impossibility. An
+  impossibility claim requires an obstruction whose hypotheses match the
+  target.
+- Domain-wide existence or synthesis completeness is optional profile
+  mathematics.
+
+For example, Theorem 1 of Giles and Selinger establishes exact Clifford+T
+synthesis with at most one clean ancilla for `2^n × 2^n` unitary matrices over
+`Z[1/√2, i]`, under their specified gate and phase conventions. That result
+grants no arbitrary dirty workspace, and it does not verify the output of a
+particular compiler. See the
+[original theorem](https://arxiv.org/html/1212.0506v3#S2).
 
 ## Observing instruments on a target
 
 The [source instrument judgment](source-text.md#instruments-and-ordinary-feed-forward)
 defines the complete outcome maps of an `Observe` expression. Realization
-requires a separate judgment for its closed instance, the selected target
-profile and the actual emitted artifact. The judgment fixes the ordered quantum
-and classical interfaces, logical encodings and projection of target records to
-source outcomes. It accounts for the initialization and disposition of every
-additional physical owner.
+requires a separate judgment for the closed instance, the selected target
+profile and the actual emitted artifact.
 
 For each ordinary input `x` and declared outcome `c`, let `Φ[x,c]` be the
-source map and `Ψ[x,c]` the emitted instrument's map after the declared record
-projection. The projection assigns every target history to exactly one source
-outcome, including histories with records hidden from the source. With the
-declared input and output encoding channels `E_in` and `E_out`, the exact
-obligation is
+source map. Let `Ψ[x,c]` be the map of the emitted instrument after the
+declared record projection. With the declared input and output encoding
+channels `E_in` and `E_out`, the exact obligation is
 
 ```text
 (Ψ[x,c] ⊗ id_R)((E_in ⊗ id_R)(ρ)) =
 (E_out ⊗ id_R)((Φ[x,c] ⊗ id_R)(ρ)).
 ```
 
-It holds for every finite external reference `R` and every joint input
-`ρ` at the complete source interface. The unnormalized maps fix both outcome
-probabilities and the residual quantum state on the declared retained owners.
-The correspondence includes consumed owners, the order of all remaining
-owners and the action of every branch that contributes to a public outcome.
+The equation holds for every finite external reference `R` and every joint
+input `ρ` at the complete source interface.
 
-The evidence states how the profile realizes each required measurement basis,
-where measurements can occur, which owners remain live, and how reset or
-repreparation obtains its stated output. For feed-forward it identifies the
-available classical outcome, conditional operations and any dynamic control,
-scheduling or latency assumptions needed for the branch to execute with the
-specified live owners. Classical feed-forward selects a branch using a
-classical outcome. Coherent control instead acts on a live quantum selector and
-must preserve coherence between its sectors. Each needs its own realization
-evidence.
+Rules:
 
-Destructive readout accounts for the consumed owner. A retaining instrument
-requires the declared output owners and their conditional quantum state.
-A readout-and-prepare implementation qualifies only if the full correspondence
-equation holds. For example, measuring both data qubits in Z and reporting
-their parity has the same classical distribution as
+- The judgment fixes the ordered quantum and classical interfaces, the logical
+  encodings and the projection of target records to source outcomes. It
+  accounts for the initialization and the disposition of every additional
+  physical owner.
+- The projection assigns every target history to exactly one source outcome,
+  including a history with records hidden from the source.
+- The unnormalized maps fix both the outcome probabilities and the residual
+  quantum state on the declared retained owners.
+- The correspondence includes the consumed owners, the order of every owner
+  that stays live and the action of every branch that contributes to a public
+  outcome.
+- The evidence states how the profile realizes each required measurement
+  basis, where measurements can occur, which owners stay live, and how reset
+  or repreparation obtains its stated output.
+- For feed-forward, the evidence identifies the available classical outcome
+  and the conditional operations. It also identifies any dynamic control,
+  scheduling or latency assumption that the branch needs to execute with the
+  specified live owners.
+- Classical feed-forward selects a branch by a classical outcome. Coherent
+  control acts on a live quantum selector and must preserve coherence between
+  its sectors. Each needs its own realization evidence.
+- Destructive readout accounts for the consumed owner. A retaining instrument
+  requires the declared output owners and their conditional quantum state.
+- A readout-and-prepare implementation qualifies only if the full
+  correspondence equation holds.
+- A terminal-readout-only profile may refuse a target claim that requires
+  mid-circuit measurement and conditional quantum action.
+- A profile that lacks a required target feature, or the evidence for it,
+  fails target lowering. The source retains its instrument, type and effect.
+- An engineering approximation requires the
+  [explicit separate claim](#separate-engineering-approximation-claims).
+
+For example, measuring both data qubits in Z and reporting their parity has
+the same classical distribution as
 [`std::measurement::parity_zz`](stdlib.md) on an even Bell state. The two
-readouts lose the coherence between `00` and `11`, whereas the retaining parity
-projector preserves it. Preparing computational-basis replacements leaves
-that difference in the even outcome map.
+readouts lose the coherence between `00` and `11`, whereas the retaining
+parity projector preserves it. Preparing computational-basis replacements
+leaves that difference in the even outcome map.
 
-A terminal-readout-only profile may refuse a target claim that requires
-mid-circuit measurement and conditional quantum action. Missing capability or
-missing evidence is a target-lowering failure, so the source retains its
-instrument, type and effect. Any engineering approximation requires the
-[explicit separate claim below](#separate-engineering-approximation-claims)
-under [#31](https://github.com/MGYamada/Qleisli/issues/31). This abstract
-obligation from [#124](https://github.com/MGYamada/Qleisli/issues/124) is an
-input to the future [target capability schema](https://github.com/MGYamada/Qleisli/issues/179).
-QCP or another backend can express the premises using its own profile
+This abstract obligation is an input to the future target capability schema.
+QCP or another backend may express the premises in its own profile
 vocabulary. Source semantics are defined independently of that vocabulary.
 
 ## Closed specialization
 
-A generic definition describes a family. A **closed specialization** fixes
-every choice needed to determine its meaning and interface:
+A generic definition describes a family. A closed specialization fixes every
+choice that determines its meaning and interface:
 
-- the resolved definition and complete dependency/source identities;
-- ordered static arguments, including natural sizes and basis types;
-- selected providers, their types, required capabilities and meaning bindings;
+- the resolved definition and the complete dependency and source identities;
+- the ordered static arguments, including natural sizes and basis types;
+- the selected providers, their types, their capability requirements and
+  their Meaning bindings;
 - all relevant static constraints and finite evaluation results;
-- the declared constitutional edition and applicable semantic profile.
+- the declared constitutional edition and the applicable semantic profile.
 
-For a target claim, the realization also fixes the target/profile, ordered
-layout and encoding, workspace contract and any target-dependent choices.
-An unresolved parameter, capability, constraint or budget expression cannot
-be treated as a successful concrete certificate. A spelling, bit width or
-function name is not a specialization identity. The
-[exact type tree](type-model.md#structural-equality-coherence-and-physical-maps) remains part
-of that identity, including Unit factors and zero-width owners.
+For a target claim, the realization also fixes the target and profile, the
+ordered layout and encoding, the workspace contract and any target-dependent
+choices.
 
-Generic checking must cover the generic body's admitted cases under its
-declared premises. A favorable specialization cannot excuse an invalid generic
-body or erase an obligation in an unselected branch. Conversely, a well-typed
-family need not fit one fixed target at every parameter value.
+Rules:
 
-A family theorem may quantify over all admissible substitutions. Its statement
-must retain those premises; it must not describe one fixed finite circuit as
-implementing an unbounded family. Static totality, computation of an instance's
-resource bounds, and feasibility of those bounds on a target are separate
-properties. The static language and specialization implementation remain
-tracked in [#28](https://github.com/MGYamada/Qleisli/issues/28),
-[#44](https://github.com/MGYamada/Qleisli/issues/44) and
-[#47](https://github.com/MGYamada/Qleisli/issues/47).
+- An unresolved parameter, capability requirement, constraint or budget
+  expression must not be treated as a successful concrete certificate.
+- A spelling, a bit width or a function name is not a specialization
+  identity. The
+  [exact type tree](type-model.md#structural-equality-coherence-and-physical-maps)
+  is part of that identity, including Unit factors and zero-width owners.
+- Generic checking must cover the admitted cases of the generic body under
+  its declared premises. A favorable specialization must not excuse an invalid
+  generic body or erase an obligation in an unselected branch.
+- A well-typed family need not fit one fixed target at every parameter value.
+- A family theorem may quantify over all admissible substitutions. Its
+  statement must retain those premises. It must not describe one fixed finite
+  circuit as implementing an unbounded family.
+- Static totality, the computation of the resource bounds of an instance, and
+  the feasibility of those bounds on a target are separate properties.
 
-Terminal export can identify the closed specialization and original source
-expression when a rejected operation has a single retained origin. This includes
-steps from an explicit clean or dirty workspace body. When a rewrite combines
-several expressions, the enclosing Raw operation can provide its own origin.
-For a failed native workspace equation, the checker supplies the original Raw
-interval and the host checks it against the retained workspace. The diagnostic
-can name the enclosing specialization or a single specialization shared by
-all steps in the checked body. Packet-wide errors and ambiguous bodies leave
-the specialization unspecified.
-Imported artifacts have no original project diagnostics.
+The [static language](static-language.md#definition-checking-and-closed-instances)
+specifies static evaluation and the forming of closed instances.
+[Diagnostics](#diagnostics) states when a failed export names the closed
+specialization.
 
 ## Logical axes and physical placement
 
-The logical interface records the ordered axes of each owner using the exact
+The logical interface records the ordered axes of each owner by the exact
 [source type trees](type-model.md#structural-equality-coherence-and-physical-maps).
-A physical layout assigns the live axes to target locations. For example,
-the ordered pair of logical axes can occupy physical locations `(17,4)`.
-The first axis remains the first logical axis. Nested products and `Bits<n>`
-retain their declared axis and owner order. A zero-width owner retains its
-interface identity and contributes no physical location.
+A physical layout assigns the live axes to target locations. For example, the
+ordered pair of logical axes can occupy the physical locations `(17,4)`. The
+first axis stays the first logical axis.
 
-A target realization records the initial and final placement or their
-equivalent ordered encodings. For a pure instance with semantic action `U`
-and actual target action `C`, a correspondence with encodings `E_in` and
-`E_out` has the form `C ∘ E_in = E_out ∘ U`. The encodings include the
-specified workspace and its boundary state where required. The equation
-extends to arbitrary joint inputs with an untouched reference. Observing
-realizations use the [outcome maps above](#observing-instruments-on-a-target)
-and record the placement and disposition of the owners still live at each
-interface, including any retired locations where the profile supports them.
+For a pure instance with semantic action `U` and actual target action `C`, a
+correspondence with encodings `E_in` and `E_out` has the form
+`C ∘ E_in = E_out ∘ U`.
 
-Routing may change the placement from `(17,4)` to `(4,17)` by an emitted
-physical SWAP, provided the evidence tracks each logical axis into its
-new location. The SWAP contributes to the target cost. A metadata relabeling
-changes the description of the layout and leaves the physical state in place.
-The encoding evidence must justify that relabeling. A source-level axis
-permutation changes the logical action and must be included in `U` with its
-specified order and phase. An emitted implementation of a logical SWAP must
-realize that action under its declared encodings.
+Rules:
 
-The placement evidence identifies each routing step and accounts for the
-live locations used by routing and synthesis workspace. The target model
-may expose this relation to QCP routing analysis. The [future target capability
-schema](https://github.com/MGYamada/Qleisli/issues/179) consumes the abstract
-correspondence required by [#126](https://github.com/MGYamada/Qleisli/issues/126).
-The current [bounded routing checker](#quantitative-resource-claims)
-covers literal physical SWAP intervals and their stated placement premises.
+- Nested products and `Bits<n>` retain their declared axis order and owner
+  order. A zero-width owner retains its interface identity and contributes no
+  physical location.
+- A target realization records the initial and the final placement, or their
+  equivalent ordered encodings.
+- The encodings include the specified workspace and its boundary state where
+  required. The equation extends to arbitrary joint inputs with an untouched
+  reference.
+- An observing realization uses the
+  [outcome maps](#observing-instruments-on-a-target). It records the placement
+  and the disposition of the owners that are live at each interface, including
+  any retired locations where the profile supports them.
+- Routing may change the placement from `(17,4)` to `(4,17)` by an emitted
+  physical SWAP, provided the evidence tracks each logical axis into its
+  location after the SWAP. The SWAP contributes to the target cost.
+- A metadata relabeling changes the description of the layout and leaves the
+  physical state in place. The encoding evidence must justify that relabeling.
+- A source-level axis permutation changes the logical action. It must be
+  included in `U` with its specified order and phase.
+- An emitted implementation of a logical SWAP must realize that action under
+  its declared encodings.
+- The placement evidence identifies each routing step. It accounts for the
+  live locations that routing and synthesis workspace use.
+
+The target model may expose this relation to QCP routing analysis. The future
+target capability schema consumes this abstract correspondence. The
+[bounded routing check](#quantitative-resource-claims) covers literal physical
+SWAP intervals and their stated placement premises.
 
 ## Workspace and exact correspondence
 
-Source `clean`/`dirty` workspace is part of the author's program contract and
-owner accounting. Backend workspace is additional implementation storage used
-to realize that meaning. Backend storage does not become an implicit source
-owner or permission to discard a source value. Its initialization, lifetime,
-restoration and physical cost must appear in the realization claim.
+Source `clean` and `dirty` workspace is part of the author's program contract
+and owner accounting. Backend workspace is additional implementation storage
+that realizes that meaning.
 
 For a clean-workspace unitary instance, a representative equation is
 
@@ -198,220 +221,254 @@ For a clean-workspace unitary instance, a representative equation is
   = (encode_out ⊗ I_E)(|0>_W ⊗ (U ⊗ I_E)ψ)
 ```
 
-Here `ψ` belongs to `L_in ⊗ E`, and `U` maps `L_in` to `L_out`.
-The isometric encodings map `W ⊗ L_in` and `W ⊗ L_out` to the respective
-physical interfaces; the reference `E` stays last and is untouched. Thus each
-side uses the same explicit workspace/data/reference order. The equality is exact,
-including scalar phase. `W` starts and finishes in the specified pure zero
-state. A type width, owner name or an example input does not prove this
-equation. For other encodings or differing input/output interfaces, the
-realization must state its corresponding typed equation explicitly.
+Here `ψ` belongs to `L_in ⊗ E`, and `U` maps `L_in` to `L_out`. The isometric
+encodings map `W ⊗ L_in` and `W ⊗ L_out` to the respective physical
+interfaces. The reference `E` stays last and is untouched. Each side therefore
+uses the same explicit order of workspace, data and reference.
 
-For the finite one-scratch checker, the application proof
-`WorkspaceTargetAction.clean_checked_separates` uses the exact checked
-insertion and output coefficients with QPTL's fixed-scratch law. The joint
-output density has support only in the zero-scratch block, for every input
-density on data and a reference. The companion
-`WorkspaceTargetAction.dirty_checked_promotion` binds every coefficient of
-the actual body to the logical operator promoted on the ordered data axes.
-`WorkspaceTargetAction.dirty_checked_reference` then applies that action
-to each joint reference column and proves that every selected input
-coordinate retains the output's scratch bit.
+Rules:
 
-Dirty workspace requires the declared identity action on its unknown state
-and all reference correlations. Returning its marginal state on a few inputs
-is insufficient. Observing implementations require the complete unnormalized,
-outcome-indexed instrument correspondence, including declared classical result
-assembly; a normalized selected branch or matching measurement probabilities
-cannot replace it. The exact clean/dirty requirements come from the adopted
-QS interpretation and [#70](https://github.com/MGYamada/Qleisli/issues/70),
-[#156](https://github.com/MGYamada/Qleisli/issues/156) and
-[#157](https://github.com/MGYamada/Qleisli/issues/157).
+- Backend storage must not become an implicit source owner or a permission to
+  discard a source value. The realization claim must state its
+  initialization, lifetime, restoration and physical cost.
+- The equality is exact, including scalar phase. `W` starts and finishes in
+  the specified pure zero state.
+- A type width, an owner name or an example input does not prove this
+  equation.
+- For other encodings, or for differing input and output interfaces, the
+  realization must state its corresponding typed equation explicitly.
+- Dirty workspace requires the declared identity action on its unknown state
+  and on all reference correlations. Returning its marginal state on a few
+  inputs is insufficient.
+- An observing implementation requires the complete unnormalized,
+  outcome-indexed instrument correspondence, including the declared classical
+  result assembly. A normalized selected branch or matching measurement
+  probabilities must not replace it.
+- Projective equality differs from exact operator equality. Dropping a global
+  phase can change a coherently controlled operation. The exact contract does
+  not quotient by that phase.
+- A different equality relation must identify its boundary and its
+  compositional obligations explicitly. The exact contract of this chapter has
+  no approximate acceptance and no error budget.
 
-Projective equality is different from exact operator equality. Dropping a
-global phase can change a coherently controlled operation. The present exact
-contract does not quotient by that phase. A different equality relation must
-identify its boundary and compositional obligations explicitly; this chapter
-introduces no approximate acceptance or error budget. Exact/approximate
-profile decisions remain in [#31](https://github.com/MGYamada/Qleisli/issues/31)
-and [#123](https://github.com/MGYamada/Qleisli/issues/123).
+The exact clean and dirty requirements come from the adopted QS
+interpretation. [Exact target-domain membership](#exact-target-domain-membership)
+and [Separate engineering approximation claims](#separate-engineering-approximation-claims)
+state the rules of the exact and the approximate profiles.
 
 ## Controlled target realizations
 
-The coherent Meaning of `controlled(U)` is the ordered direct sum
-`I ⊕ U` with inactive sector zero and active sector one. Semantic unitarity
+The coherent Meaning of `controlled(U)` is the ordered direct sum `I ⊕ U`,
+with inactive sector zero and active sector one. Semantic unitarity
 establishes the operator property of `U`. The static `Controllable(U)`
 judgment separately governs source use under the
 [operation type rules](type-model.md#general-pure-operation-arrows).
-Target lowering additionally requires a checked realization of the exact
-direct sum on the selected target.
 
-For transparent implementations, a structural derivation must check each
-original gate or named implementation with its control, dependencies, axis
-order and exact phase. The implementation must act as identity in the
-inactive sector and implement the requested operation in the active sector.
-Composition and powers can compose those exact sector equations when the
-interfaces and control match. QPTL proves the corresponding operator
-identities in `controlled_mul` and `controlled_pow`. Provider calls and
-controlled powers used by QPE carry the same obligations.
+Rules:
 
-A realization certificate binds the original operation and Meaning, the
-actual emitted implementation, the target profile, and the ordered control,
-data and workspace encodings. It identifies where native controlled gates
-are used and where additional synthesis steps are needed. Physical counts
-include workspace preparation, live width, restoration, generated inverse
-steps and routing when required by that implementation. An opaque provider
-requires explicit controlled evidence bound to the requested operator and
-the emitted artifact.
-
-A scalar phase multiplying only the active block changes its phase relative
-to the inactive block. QPTL's `controlled_phase_ne` proves the change for
-any nontrivial scalar on a nonzero operator. Projective agreement or channel
-equality for the uncontrolled operation therefore cannot supply the
-controlled equation. An engineering approximation to a controlled operator
-must bound its error against the intended controlled Meaning itself and
-retain the exactness distinction below.
+- Target lowering additionally requires a checked realization of the exact
+  direct sum on the selected target.
+- For a transparent implementation, a structural derivation must check each
+  original gate or named implementation with its control, dependencies, axis
+  order and exact phase.
+- The implementation must act as the identity in the inactive sector and
+  must implement the requested operation in the active sector.
+- Composition and powers may compose those exact sector equations when the
+  interfaces and the control match. Provider calls and the controlled powers
+  that QPE uses carry the same obligations.
+- A realization certificate binds the original operation and Meaning, the
+  actual emitted implementation, the target profile, and the ordered control,
+  data and workspace encodings. It identifies where native controlled gates
+  are used and where additional synthesis steps are needed.
+- Physical counts include workspace preparation, live width, restoration,
+  generated inverse steps and routing when the implementation requires them.
+- An opaque provider requires explicit controlled evidence bound to the
+  requested operator and the emitted artifact.
+- A scalar phase that multiplies only the active block changes its phase
+  relative to the inactive block. Projective agreement or channel equality
+  for the uncontrolled operation therefore must not supply the controlled
+  equation.
+- An engineering approximation to a controlled operator must bound its error
+  against the intended controlled Meaning itself. It retains the exactness
+  distinction of
+  [Separate engineering approximation claims](#separate-engineering-approximation-claims).
 
 ## Isometries and initialized target interfaces
 
-A semantic isometry `V: A -> B` satisfies `V† V = I_A`. The basis trees
-of `A` and `B` can differ, including in width. A realization of
-`Op<A -> B>`, or its refinement `Op<A -> B, M>`, retains both exact
-ports and the requested Meaning. Sequential composition matches the middle
-tree exactly. Tensor composition preserves the declared order of both ports.
+A semantic isometry `V: A -> B` satisfies `V† V = I_A`. The basis trees of `A`
+and `B` can differ, including in width.
 
 For a target that implements the isometry with a unitary dilation, let
 `E_in: A -> P_in` and `E_out: B -> P_out` be the exact input and output
-isometric encodings, and let `C: P_in -> P_out` be the action of the actual
-target circuit. On every joint input `ψ` with external reference `R`,
-the realization must establish
+isometric encodings. Let `C: P_in -> P_out` be the action of the actual target
+circuit. On every joint input `ψ` with external reference `R`, the realization
+must establish
 
 ```text
 (C ⊗ I_R)(E_in ⊗ I_R) ψ = (E_out ⊗ I_R)(V ⊗ I_R) ψ.
 ```
 
-The input encoding specifies any initialized backend wires and their ordered
-placement. The output encoding identifies the retained logical output and
-fixes the state of every backend wire claimed to be returned clean. Other
-physical degrees of freedom require an explicit output contract. Isometry
-typing introduces no implicit discard or partial trace. Source `clean` and
-`dirty` contracts bind source owners separately. A target claim accounts for
-every physical wire used by the dilation, including initialized backend
-workspace, plus the preparation, realization, cleanup and routing required
-by the selected target model. A dilation existence theorem supplies a
-candidate. The accepted artifact still requires the displayed correspondence.
-
 The mathematical adjoint reverses `V` on its image. On the full output space,
 `V V†` is the projector onto that image. For an exact unitary dilation,
-`C† E_out V = E_in`, including under arbitrary external reference, so an
-available checked reverse circuit recovers the encoded input on that image.
-An application outside the established image needs its own contract. The
-static `Adjointable` capability and physical realization of a reverse
-operation require independent evidence under the
-[operation type rules](type-model.md#general-pure-operation-arrows).
-The QPTL theorem `dilation_recover_reference` derives the image-restricted
-equation from the exact forward square and the unitary implementation law.
+`C† E_out V = E_in`, including under an arbitrary external reference. An
+available checked reverse circuit therefore recovers the encoded input on that
+image.
+
+Rules:
+
+- A realization of `Op<A -> B>`, or of its refinement `Op<A -> B, M>`,
+  retains both exact ports and the requested Meaning.
+- Sequential composition matches the middle tree exactly. Tensor composition
+  preserves the declared order of both ports.
+- The input encoding specifies any initialized backend wires and their
+  ordered placement.
+- The output encoding identifies the retained logical output. It fixes the
+  state of every backend wire that the claim returns clean. Other physical
+  degrees of freedom require an explicit output contract.
+- Isometry typing introduces no implicit discard and no partial trace.
+- Source `clean` and `dirty` contracts bind source owners separately.
+- A target claim accounts for every physical wire that the dilation uses,
+  including initialized backend workspace. It also accounts for the
+  preparation, realization, cleanup and routing that the selected target model
+  requires.
+- A dilation existence theorem supplies a candidate. The accepted artifact
+  requires the displayed correspondence.
+- An application outside the established image needs its own contract.
+- The static `Adjointable` capability and the physical realization of a
+  reverse operation require independent evidence under the
+  [operation type rules](type-model.md#general-pure-operation-arrows).
 
 ## Exact target-domain membership
 
-`M ∈ ExactDomain(P)` is an abstract judgment about the requested exact
-Meaning `M` and a specified target profile `P`. Its evidence identifies the
-profile and version, literal gate vocabulary, coefficient and parameter
-domain, ordered interface, and phase convention. It also states the admitted
-initialization, encoding, workspace and restoration assumptions. Same-wire
-and clean-workspace profiles can therefore have different exact domains.
+`M ∈ ExactDomain(P)` is an abstract judgment about the requested exact Meaning
+`M` and a specified target profile `P`.
 
-Physical Realizability requires evidence of this premise for an accepted
-exact target realization. A checked exact witness for the profile can
-establish membership and bind the actual emitted artifact to the same
-Meaning. An existence theorem or coefficient test can support this judgment
-within its own hypotheses. A necessary condition alone does not authorize a
-candidate. A search failure or capacity refusal leaves the claim unproved.
-A target-domain refusal concerns the requested realization; the source
-retains its exact meaning and typing.
+Rules:
 
-For a profile whose gates and computational-basis coordinates have
-coefficients in `Q(ζ8)`, every entry of the gate product lies in that field.
-Appending clean zero workspace and taking the corresponding returned
+- The evidence identifies the profile and its version, the literal gate
+  vocabulary, the coefficient and parameter domain, the ordered interface and
+  the phase convention. It also states the admitted initialization, encoding,
+  workspace and restoration assumptions. Same-wire and clean-workspace
+  profiles can therefore have different exact domains.
+- Physical Realizability requires evidence of this premise for an accepted
+  exact target realization.
+- A checked exact witness for the profile may establish membership and bind
+  the actual emitted artifact to the same Meaning.
+- An existence theorem or a coefficient test may support this judgment within
+  its own hypotheses. A necessary condition alone does not authorize a
+  candidate.
+- A search failure or a capacity refusal leaves the claim unproved.
+- A target-domain refusal concerns the requested realization. The source
+  retains its exact meaning and typing.
+- A failed exact request does not select the engineering path implicitly. An
+  engineering approximation requires an
+  [explicit separate claim](#separate-engineering-approximation-claims) with
+  the applicable metric, a closed budget and the correspondence to the actual
+  artifact.
+- This judgment is independent of any eventual QCP implementation. The future
+  target capability schema may use it.
+
+For example, take a profile whose gates and computational-basis coordinates
+have coefficients in `Q(ζ8)`. Every entry of the gate product lies in that
+field. Appending clean zero workspace and taking the corresponding returned
 coordinate selects entries of the same product. A controlled phase of one
-sixteenth of a turn has coefficient `ζ16` at its active diagonal entry,
-which is outside `Q(ζ8)`. The obstruction applies for any number of such
-clean axes. The QPTL theorem `extracted_sixteenth_ne` proves the coefficient
-obstruction. A target with a declared native sixteenth-turn gate requires
-its own exact-domain evidence. The existing eighth-root execution profile
-reports an unsupported exact phase for such a request.
+sixteenth of a turn has coefficient `ζ16` at its active diagonal entry, which
+is outside `Q(ζ8)`. The obstruction applies for any number of such clean axes.
 
-Engineering approximation requires an explicit separate claim with the
-applicable metric, closed budget and actual artifact correspondence, as
-specified below. A failed exact request does not choose that path implicitly.
-This judgment is independent of any eventual QCP implementation and can be
-used by the future [target capability schema](https://github.com/MGYamada/Qleisli/issues/179).
-The domain boundary is tracked in [#123](https://github.com/MGYamada/Qleisli/issues/123).
+A target with a declared native sixteenth-turn gate requires its own
+exact-domain evidence. The eighth-root execution profile reports an
+unsupported exact phase for such a request.
 
 ## Separate engineering approximation claims
 
-The human-adopted **EXACT-2026-01** interpretation in
-[#311](https://github.com/MGYamada/Qleisli/issues/311) governs this boundary.
-An epsilon-bound approximation is an engineering synthesis or export claim,
-outside edition-2026 constitutional semantic truth conditions. It cannot
-replace exact source Meaning, semantic equality, phase/control, owner/effect
-or clean/dirty restoration obligations. An approximation bound grants no
-purity, inverse, control access or exact release capability.
+The adopted EXACT-2026-01 interpretation governs this boundary. An
+epsilon-bound approximation is an engineering synthesis or export claim. It
+lies outside the constitutional semantic truth conditions of edition 2026.
 
-A checked engineering claim must identify the exact ideal, actual artifact,
-interface, target/profile, metric, finite bound, input/reference domain and
-composition assumptions. Instrument claims must retain the complete public
-outcomes and residual outputs with arbitrary external references. Sampling,
-algorithmic resolution, synthesis and numerical-runtime information remain
-distinct; an absent claim does not mean zero error. The bounded engineering
-profiles below implement these contracts within their stated domains. They
-define no universal approximation metric. The bounded literal OpenQASM
-resource profile below uses its own closed engineering budget.
+Rules:
 
-Engineering receipts and their API/CLI claim kinds must remain mechanically
-distinct from exact correspondence and resource evidence. Neither a small
-bound nor a reported `epsilon = 0` bypasses the independent exact gates or
-automatically discharges constitutional PR or target RS. An actual circuit
-may independently obtain ordinary acceptance for its own exact meaning;
-that acceptance does not identify its meaning with the source ideal.
-Reusing engineering evidence through a Meaning or operation interface cannot
-weaken that interface's exact promise.
+- An engineering claim must not replace the exact source Meaning, semantic
+  equality, or the obligations of phase and control, of owner and effect, and
+  of clean and dirty restoration.
+- An approximation bound grants no purity, no inverse access, no controlled
+  access and no exact release.
+- A checked engineering claim must identify the exact ideal, the actual
+  artifact, the interface, the target and profile, the metric, the finite
+  bound, the input and reference domain, and the composition assumptions.
+- An instrument claim must retain the complete public outcomes and the
+  residual outputs with arbitrary external references.
+- Sampling, algorithmic resolution, synthesis and numerical-runtime
+  information are distinct. An absent claim does not mean zero error.
+- Engineering receipts, and their API and CLI claim kinds, must stay
+  mechanically distinct from exact correspondence evidence and from resource
+  evidence.
+- Neither a small bound nor a reported `epsilon = 0` bypasses the independent
+  exact gates or automatically discharges constitutional PR or target RS.
+- An actual circuit may independently obtain ordinary acceptance for its own
+  exact meaning. That acceptance does not identify its meaning with the source
+  ideal.
+- Reusing engineering evidence through a Meaning or an operation interface
+  must not weaken the exact promise of that interface.
+- Numerical, interval and approximate search methods may construct an exact
+  artifact or proof. That result is eligible for the separate exact
+  correspondence and resource checks. The spelling of a search parameter does
+  not decide its claim kind.
+- Exact cost accounting for an approximate artifact does not supply its
+  missing exact correspondence to the source.
+- Neither engineering validation nor this section creates an interpretation,
+  a guarantee admission or a broader discharge of QS, PR or RS.
 
-Numerical, interval and approximate search methods may construct an exact
-artifact or proof. That result remains eligible for the separate exact
-correspondence and resource checks; the spelling of a search parameter does
-not decide its claim kind. Conversely, exact cost accounting for an approximate
-artifact does not supply its missing exact correspondence to the source.
-No new interpretation, guarantee admission or broader QS/PR/RS discharge
-follows from either engineering validation or this clarification.
+The bounded engineering profiles below implement these contracts within their
+stated domains. They define no universal approximation metric. Each bounded
+literal OpenQASM resource profile uses its own closed engineering budget.
 
-The pure component checks a sufficient squared Frobenius
-witness over canonical rectangular R8 matrices and a closed nonnegative dyadic
-budget. Its proof bounds the explicitly selected Euclidean operator norm,
-including arbitrary finite external references and literal scalar phase.
-Witness failure does not establish that no approximation or synthesis exists.
-The original-artifact component runs the existing exact PureLeaf check on each
-body against its own independent matrix request before comparing those matrices;
-both complete type trees and ordered ports remain checked. Neither component
-changes the exact equality gate. A separate native engineering protocol binds
-these components to the actual invocation and both retained host graphs. The
-native composed instrument profile, target-resource gate and source-compiler
-consumption of engineering claims remain unsupported. Mathematical instrument
-composition and native ordered pure tensor composition are described below.
-An engineering result does not establish source/target preservation.
+### Common rules of the native comparisons
+
+Five `qleisli engineering` commands check an engineering claim through the
+**native checker**, the Lean checker executable. Each command takes one
+positional file and these options:
+
+| Option | Meaning |
+| --- | --- |
+| `--edition=2026` | Required. It selects the constitutional edition. |
+| `--against=REQUEST` | Required. It names the UTF-8 JSON request. |
+| `--lean-kernel=PATH` | Optional. It selects the native checker. Without it, the command uses the checker that `QLEISLI_KERNEL` names. |
+| `--format=json` | Optional. The command writes the [result envelope](diagnostics.md#the-result-envelope) in place of text. |
+
+Rules:
+
+- Every `engineering` comparison requires `--edition=2026`. A command without
+  it fails with the code `edition`.
+- A command with neither `--lean-kernel` nor `QLEISLI_KERNEL` fails with the
+  code `kernel`. A missing, incompatible or failed checker fails the
+  comparison. No comparison falls back to another checker.
+- A command line with a repeated option, an unlisted option or an extra
+  positional argument fails with the code `usage` and exit status 2. Every
+  other failure has exit status 1.
+- Each request and each QIRF artifact must hold at least 1 byte and at most
+  16 MiB (`limit`). The QLV3 envelope retains its 64 MiB limit.
+- A request must hold exactly the fields of its format, with the fixed values
+  of its profile. An unknown or missing field, an unknown version or another
+  profile value is refused (`format`).
+- Each comparison accepts execution scope only. It refuses inspection scope
+  and caller scope.
+- A report names the selected checker path. The checker identity is unpinned
+  under the provenance limitation. A hash identifies the reported bytes. It
+  establishes neither the correctness of the native binary nor human
+  authority.
+- Serialized CLI output is an inert report. It is never reusable native
+  acceptance.
 
 ### Native pure engineering comparison
 
 ```text
-qleisli engineering compare-pure ACTUAL --against=REQUEST --lean-kernel=PATH --format=json
+qleisli engineering compare-pure ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
 ```
 
-`ACTUAL` is an original finite QIRF artifact. `REQUEST` is a UTF-8 JSON request
-containing the separate original ideal artifact, both independently specified
-matrices and ordered ports, common complete domain/codomain type trees and a
-closed canonical nonnegative dyadic budget. Each file is bounded to 16 MiB;
-the QLV3 envelope retains its existing 64 MiB limit. The exact finite-matrix
-carrier remains R8; no arbitrary-angle syntax or coefficient extension follows.
+`ACTUAL` is an original finite QIRF artifact. `REQUEST` holds the separate
+original ideal artifact, both independently specified matrices and ordered
+ports, the common complete domain and codomain type trees, and a closed
+canonical nonnegative dyadic budget.
 
 The request has exactly these fields:
 
@@ -429,62 +486,64 @@ The request has exactly these fields:
 | `epsilon` | `{"numerator":"7","denominator_bits":3}` means 7/8; use reduced signed decimal data, with zero encoded as `"0"` and exponent 0 |
 | `expected_artifact` | Original UTF-8 ideal QIRF text, including its original byte spelling |
 
-Ports and matrices use the existing native pure-leaf request encodings.
-Unknown or missing fields, unsupported profiles, malformed or open budgets,
-false body matrices and insufficient arithmetic/work capacity refuse. A
-successful conservative witness is an inequality, not a completeness claim.
-Hidden observation, reset or discard cannot acquire a pure label through this
-path, even when the requested budget is large.
+Rules:
 
-The Rust `interchange::engineering_pure` API constructs data-only requests and
-returns a private, allocation-bound `EngineeringPureReport` after a fresh
-native check. Its serialized convenience entry independently decodes the same
-typed request. Both original artifacts receive their ordinary checks and then
-fresh independent pure checks against their own matrices; Lean compares the
-typed context and both fresh graphs with the actual retained Rust execution
-description. Inspection and caller scopes refuse this mode. The engineering
-response uses a distinct header and cannot enter an exact accepted-handle
-constructor. The report has no conversion to `AcceptedProgram`, Meaning,
-control/inverse access, cleanup or resource evidence, including at epsilon 0.
-Serialized CLI output is an inert report, never reusable native acceptance.
+- Ports and matrices use the native pure-leaf request encodings.
+- The exact finite-matrix carrier is R8. The profile adds no arbitrary-angle
+  syntax and no coefficient extension.
+- A malformed or open budget, a false body matrix and insufficient arithmetic
+  or work capacity are refused.
+- Hidden observation, reset or discard must not acquire a pure label through
+  this path, even when the requested budget is large.
 
-Text and JSON identify the engineering metric, bound, profiles, composition,
-original artifact/request digests and selected checker path. Checker identity
-remains unpinned under the existing provenance limitation. Hashes identify
-reported bytes, not native binary correctness or human authority. Sampling,
-algorithmic resolution and numerical-runtime errors are separately `not-claimed`;
-they are not silently zero. Source preservation, exact source correspondence,
-instrument bounds and target-resource bounds remain explicitly unestablished.
+The checker establishes:
 
-Pure composition proofs establish additive sequential and ordered tensor error
-rules for the same Euclidean metric under the stated exact isometry premises,
-including arbitrary references. The coherent-control corollary additionally
-requires equal domain/codomain and the existing independent access meanings.
-These mathematical rules do not change the single-component profile or supply
-compiler/lowering preservation. The separate ordered-tensor profile below
-checks its own original parent artifacts and component comparisons.
+- Each original artifact passes its ordinary check and then a fresh exact
+  PureLeaf check against its own independent matrix request. Both complete
+  type trees and the ordered ports are checked. The matrices are compared only
+  after these checks.
+- A sufficient squared Frobenius witness, over canonical rectangular R8
+  matrices, meets the closed nonnegative dyadic budget. The witness is
+  sufficient for the explicitly selected Euclidean operator norm.
+
+The checker does not establish:
+
+- A successful conservative witness is an inequality, not a completeness
+  claim. A witness failure does not establish that no approximation or
+  synthesis exists.
+- Neither check changes the exact equality gate.
+- The result does not establish source preservation, exact source
+  correspondence, an instrument bound or a target-resource bound. The report
+  states each of them as unestablished.
+- The report has no conversion to `AcceptedProgram`, a Meaning, inverse or
+  controlled access, cleanup evidence or resource evidence, including at
+  epsilon 0.
+
+Text and JSON identify the engineering metric, the bound, the profiles, the
+composition, the digests of the original artifacts and of the request, and the
+selected checker path. They report sampling, algorithmic resolution and
+numerical-runtime errors separately as `not-claimed`. Those errors are not
+silently zero.
+
+> **Implementation note.** The Rust `interchange::engineering_pure` API
+> constructs data-only requests. It returns a private, allocation-bound
+> `EngineeringPureReport` after a fresh native check. Its serialized
+> convenience entry independently decodes the same typed request. The native
+> checker compares the typed context and both fresh graphs with the actual
+> retained Rust execution description. A separate native engineering protocol
+> binds both checks to the actual invocation and to both retained host graphs.
+> The engineering response uses a distinct header and cannot enter an exact
+> accepted-handle constructor.
 
 ### Native ordered pure tensor comparison
 
 ```text
-qleisli engineering compare-pure-tensor ACTUAL --against=REQUEST --lean-kernel=PATH --format=json
+qleisli engineering compare-pure-tensor ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
 ```
 
-This profile combines exactly two ordered pure comparisons. It checks six
-original QIRF artifacts afresh: actual and ideal parents, actual and ideal left
-components, and actual and ideal right components. Each body retains its own
-dependency order, exact matrix request, ordered ports and full type trees.
-Both parent interfaces are the complete products of the component interfaces;
-`Unit` nodes are retained even when they occupy no physical wires.
-
-The exact parent equations use the existing low-first coordinates
-`left + left_dimension * right`. Both parent matrices must equal the ordered
-tensors of their respective component matrices. The checker then adds the two
-closed component bounds exactly and requires equality with the explicitly
-requested total bound. It does not repeat the sufficient whole-parent
-Frobenius inequality: an additive component certificate may succeed when that
-whole-matrix witness is too loose. All six body checks, component inequalities,
-parent equations and bounded addition share one remaining-work counter.
+This comparison combines exactly two ordered pure comparisons. It checks six
+original QIRF artifacts afresh: the actual and ideal parents, the actual and
+ideal left components, and the actual and ideal right components.
 
 The request has exactly fourteen top-level fields:
 
@@ -503,34 +562,70 @@ The request has exactly fourteen top-level fields:
 | `expected_artifact` | Original UTF-8 ideal parent QIRF text |
 
 Each component object has exactly `domain`, `codomain`, `actual`, `ideal`,
-`epsilon`, `actual_artifact` and `expected_artifact`. Types, leaf requests and
-budgets use the single-component encodings; both artifact fields contain the
-original UTF-8 QIRF text. Parent type trees are derived from the ordered
-components, rather than supplied as width-only claims. Missing or extra
-components, altered profiles, noncanonical or open budgets, a stale total
-budget, false body matrices or parent tensor equations, and arithmetic/work
-exhaustion refuse. Existing per-file, envelope, matrix and work limits apply.
+`epsilon`, `actual_artifact` and `expected_artifact`.
 
-The dedicated QLV3 invocation accepts execution scope only. Lean compares its
-freshly decoded typed request and all six graphs with the retained Rust QDV1
-view in parent-actual, parent-ideal, left-actual, left-ideal, right-actual,
-right-ideal order. The private Rust report binds the immutable artifacts,
-original request and selected checker path. A changed component, matrix,
-budget or parent cannot reuse it. Text and JSON report this engineering bound
-and its composition profile, with the same separate unclaimed error categories
-and preservation/resource disclosures as the single-component result.
+Rules:
 
-The checked additive operator bound extends to every finite external reference,
-including entangled inputs, under the freshly checked exact isometry premises.
-It supplies no exact equality between the parents, source preservation,
-controlled/inverse access, cleanup, emitted-target correspondence or resource
-certificate, including at total epsilon zero. Recursive, sequential, controlled
-and instrument native composition remain separate unsupported paths; this
-two-component profile supplies only its stated additive engineering bound.
+- Types, leaf requests and budgets use the encodings of the pure comparison.
+  Both artifact fields of a component hold the original UTF-8 QIRF text.
+- Each body retains its own dependency order, exact matrix request, ordered
+  ports and full type trees.
+- Both parent interfaces must be the complete products of the component
+  interfaces. `Unit` nodes are retained even when they occupy no physical
+  wires. The checker derives the parent type trees from the ordered
+  components. A width-only claim does not supply them.
+- The exact parent equations use the low-first coordinates
+  `left + left_dimension * right`. Both parent matrices must equal the ordered
+  tensors of their respective component matrices.
+- Missing or extra components, altered profiles, noncanonical or open
+  budgets, a stale total budget, false body matrices, and arithmetic or work
+  exhaustion are refused. A false parent tensor equation is refused
+  (`contract`).
+- The per-file, envelope, matrix and work limits of the pure comparison apply.
+
+The checker establishes:
+
+- The checker adds the two closed component bounds exactly and requires
+  equality with the explicitly requested total bound.
+- It does not repeat the sufficient whole-parent Frobenius inequality. An
+  additive component certificate may succeed when that whole-matrix witness
+  is too loose.
+- All six body checks, the component inequalities, the parent equations and
+  the bounded addition share one work counter.
+- The checked additive operator bound extends to every finite external
+  reference, including entangled inputs, under the freshly checked exact
+  isometry premises.
+
+The checker does not establish:
+
+- The result supplies no exact equality between the parents, no source
+  preservation, no inverse or controlled access, no cleanup, no
+  emitted-target correspondence and no resource certificate, including at
+  total epsilon zero.
+- This comparison supplies only its stated additive bound for two components
+  in one ordered tensor. It checks no recursive, sequential, controlled or
+  instrument composition.
+  [Support of the native comparisons](#support-of-the-native-comparisons)
+  lists the composition that each comparison checks.
+
+Text and JSON report this engineering bound and its composition profile. They
+carry the same separate unclaimed error categories and the same preservation
+and resource disclosures as the pure comparison.
+
+> **Implementation note.** In the dedicated QLV3 invocation, the native
+> checker compares its freshly decoded typed request and all six graphs with
+> the retained Rust QDV1 view. The order is parent-actual, parent-ideal,
+> left-actual, left-ideal, right-actual, right-ideal. The private Rust report
+> binds the immutable artifacts, the original request and the selected checker
+> path. A changed component, matrix, budget or parent cannot reuse it.
 
 ### Instrument engineering comparison
 
-The instrument component uses a **complete adjoint Euclidean operator
+```text
+qleisli engineering compare-instrument ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+```
+
+The instrument comparison uses a **complete adjoint Euclidean operator
 bound**. For actual and ideal Kraus families, it bounds the difference between
 their adjoint actions on every joint observable family `B`, for every finite
 external reference `R` and classical input `x`:
@@ -542,95 +637,99 @@ norm(sum_y,h (K_actual[x,y,h] tensor I_R)^dagger B[y]
              (K_ideal[x,y,k] tensor I_R)) <= epsilon * norm(B)_infinity
 ```
 
-The norms on operators are explicitly Euclidean operator norms; the family
-norm is the supremum over public outcomes. Hidden-history sets may differ.
-This quantifies joint observables, including reference correlations, without
-a reference-dimension factor or branch renormalization. The metric is not
-advertised as a diamond norm without a separate norm-duality proof.
+The norms on operators are explicitly Euclidean operator norms. The family
+norm is the supremum over public outcomes. Hidden-history sets may differ. The
+bound quantifies joint observables, including reference correlations, without
+a reference-dimension factor and without branch renormalization. The metric is
+not advertised as a diamond norm without a separate norm-duality proof.
 
-The sufficient witness assigns a canonical nonnegative closed dyadic `q` to
-every complex CP-coefficient difference, in fixed order: public outcome,
-output row, input column, other output row, other input column. All actual and
-ideal public labels contribute; absent labels denote zero. Each coefficient
-is freshly reconstructed from all matching hidden histories. Existing exact
-R8 arithmetic checks its squared magnitude against `q*q`, and exact summation
-checks `sum(q) <= epsilon`. Both `q` and `epsilon` have unsquared norm units.
-Witness length is exact. Malformed dimensions/coefficients, noncanonical or
-negative budgets, insufficient witnesses and arithmetic/work exhaustion refuse.
-A remaining-work preflight precedes Cartesian witness allocation. Its work
-counter bounds verification, separately from program or target resources.
+The request has exactly fourteen fields:
 
-The original-graph wrapper reuses ordinary root/dependency checks, requested
-complete signature equality, ordered result projection, principal Observe
-checks and complete Kraus/Gram reconstruction on both bodies. Its current
-profile has one quantum input owner, empty classical inputs and the existing
-bounded dense reconstruction. Requested source/type trees remain distinct
-from source-to-IR preservation. The independent metric also defines general
-finite classical input families for subsequent composition work.
+| Field | Value |
+| --- | --- |
+| `format`, `version` | `qleisli.engineering-instrument-request`, `1` |
+| `claim_kind` | `engineering-instrument-bound` |
+| `metric` | `complete-adjoint-euclidean-operator-norm-v1` |
+| `checker_profile` | `choi-l1-r8-instrument-v1` |
+| `target_profile` | `qirf-r8-instrument-v1`, an IR profile, not hardware |
+| `composition` | `single-component-v1` |
+| `error_category` | `implementation-distance` |
+| `actual_signature`, `expected_signature` | The complete requested signatures |
+| `identity` | The original identity data |
+| `epsilon` | Closed dyadic data, for example `{"numerator":"1","denominator_bits":2}` for `1/4` |
+| `majorants` | The witness described below |
+| `expected_artifact` | The original ideal QIRF text |
 
-The dedicated native request has fourteen fields: `format`, `version`,
-`claim_kind`, `metric`, `checker_profile`, `target_profile`, `composition`,
-`error_category`, `actual_signature`, `expected_signature`, `identity`,
-`epsilon`, `majorants` and `expected_artifact`. Its format is
-`qleisli.engineering-instrument-request`, version `1`, with claim kind
-`engineering-instrument-bound`, metric
-`complete-adjoint-euclidean-operator-norm-v1`, checker profile
-`choi-l1-r8-instrument-v1`, target profile `qirf-r8-instrument-v1`, composition
-`single-component-v1` and error category `implementation-distance`.
-Other profiles and extra/missing fields refuse. Bounds use the existing closed
-dyadic data, for example `{"numerator":"1","denominator_bits":2}` for `1/4`.
-The target names an IR profile, not hardware. No producer-supplied outcome
-labels, matrices, probabilities or success flags replace reconstruction.
+Rules:
 
-The Rust request uses validated `InstrumentSignature`/`InstrumentResult` data,
-and its private `EngineeringInstrumentReport` retains both immutable artifacts,
-the original request and selected checker path. The native QLV3 invocation
-accepts execution scope only and compares both fresh graphs, signatures,
-identity and complete budget/witness data with the Rust execution view.
-Inspection, caller scopes, old outer frames, cross-kind replies and
-missing/incompatible/failed checkers refuse without fallback.
+- The witness assigns a canonical nonnegative closed dyadic `q` to every
+  complex CP-coefficient difference. The order is fixed: public outcome,
+  output row, input column, other output row, other input column.
+- All actual and ideal public labels contribute. An absent label denotes
+  zero. The witness length must be exact.
+- Malformed dimensions or coefficients, noncanonical or negative budgets,
+  insufficient witnesses, and arithmetic or work exhaustion are refused. An
+  `epsilon` that the majorants exceed is refused (`contract`).
+- No producer-supplied outcome labels, matrices, probabilities or success
+  flags replace reconstruction.
+- Old outer frames and cross-kind replies are refused.
 
-```text
-qleisli engineering compare-instrument actual.qirf --against=comparison.json --lean-kernel=PATH
+The checker establishes:
+
+- On both bodies, the checker reuses the ordinary root and dependency checks,
+  the equality with the requested complete signature, the ordered result
+  projection, the principal Observe checks and the complete Kraus and Gram
+  reconstruction.
+- Each coefficient is freshly reconstructed from all matching hidden
+  histories. Exact R8 arithmetic checks its squared magnitude against `q*q`.
+  Exact summation checks `sum(q) <= epsilon`. Both `q` and `epsilon` have
+  unsquared norm units.
+- The profile has one quantum input owner, empty classical inputs and the
+  bounded dense reconstruction. The independent metric also defines general
+  finite classical input families, for later composition work.
+
+The checker does not establish:
+
+- Pure phase agreement, source preservation, inverse or controlled access,
+  cleanup, resources and constitutional PR or RS are unestablished, including
+  at epsilon zero. No instrument bound grants exact release.
+- Requested source and type trees are distinct from source-to-IR
+  preservation.
+- The profile is single-component. It issues no composed certificate, and it
+  checks no resource limit. A comparison of emitted target bytes requires the
+  [literal OpenQASM profile](#literal-openqasm-target-comparison).
+- Sampling, algorithmic resolution and numerical runtime error are separate
+  unclaimed categories. The pure comparison reports instrument bounds as
+  unestablished.
+
+Text and `--format=json` disclose the complete instrument bound, the digests
+of the actual inputs and the unpinned checker identity. For example:
+
+```sh
+qleisli engineering compare-instrument actual.qirf --edition=2026 --against=comparison.json --lean-kernel=PATH
 ```
 
-Text and `--format=json` disclose the complete instrument bound, actual input
-digests and unpinned checker identity. Pure phase agreement, source preservation,
-inverse/control, cleanup, resources and constitutional PR/RS remain
-unestablished, including at epsilon zero. Sampling, algorithmic resolution and
-numerical runtime error are separate unclaimed categories. The pure comparison
-continues to report instrument bounds as unestablished.
-
-Independent mathematical composition uses the actual Kraus families. Full Gram
-completeness implies adjoint contraction at every finite reference. A literal
-pure operator gap `delta` and both pure Gram equations imply the one-way
-instrument bound `2*delta`; no phase information is recovered. Feed-forward
-composition retains public `(y,z)` outcomes and hidden `(h,k)` histories.
-Ordered tensor composition retains the declared left/right input/output,
-public and hidden products through explicit proved reference regrouping.
-Both constructions have additive `epsilon_1 + epsilon_2` bounds under their
-stated component bounds and Gram premises. Separate completeness theorems
-require both original Gram equations; a bound alone does not establish them.
-
-These results provide no source epsilon annotation, compiler consumption or
-original source/QIRF composition-preservation proof. The native profile remains
-single-component: it does not issue a composed certificate. Emitted target-byte
-comparisons require the separate bounded profile below. Target-resource
-certification remains unfinished under #163; this profile supplies no such claim.
-No instrument bound grants pure phase agreement, coherent control, inverse,
-exact release or constitutional PR/RS authority.
+> **Implementation note.** The Rust request uses validated
+> `InstrumentSignature` and `InstrumentResult` data. Its private
+> `EngineeringInstrumentReport` retains both immutable artifacts, the original
+> request and the selected checker path. The native QLV3 invocation compares
+> both fresh graphs, the signatures, the identity and the complete budget and
+> witness data with the Rust execution view. A preflight on the work that is
+> left precedes the allocation of the Cartesian witness. The work counter
+> bounds verification. It is separate from program resources and target
+> resources.
 
 ### Literal OpenQASM target comparison
 
 ```text
-qleisli engineering compare-openqasm3 TARGET --against=REQUEST --lean-kernel=PATH --format=json
+qleisli engineering compare-openqasm3 TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
 ```
 
-`TARGET` contains the actual emitted bytes. The closed profile accepts this
-literal ASCII structure, with zero to eight ordered gate lines between reset
-and measurement, and a final newline:
+`TARGET` holds the actual emitted bytes. The closed profile accepts this
+literal ASCII structure, with zero to eight ordered gate lines between the
+reset and the measurement, and a final newline:
 
-```qasm
+```text
 OPENQASM 3.0;
 include "stdgates.inc";
 qubit[1] q;
@@ -640,30 +739,14 @@ h q[0];
 c[0] = measure q[0];
 ```
 
-Each gate line is exactly `h`, `x`, `y`, `z`, `s`, `sdg`, `t` or `tdg`, followed
-by ` q[0];`. The profile bounds the target to 1,024 bytes and eight gates.
-Changed whitespace, headers, includes, operands, additional results, gates
-after measurement and unsupported syntax refuse. The include line is a fixed
-token; checking loads no external include file. This deliberately bounded
-profile is not a general OpenQASM parser or hardware-conformance claim.
+The ordered gate word constructs the actual instrument. The instrument
+consumes an explicit zero-width `Q<Unit>` owner, initializes one qubit, applies
+the word, and then consumes that qubit with a terminal Z measurement.
 
-The independent byte reader imports the existing Raw meaning data without
-acceptance definitions. Its ordered gate word constructs the actual instrument:
-consume an explicit zero-width `Q<Unit>` owner, initialize one qubit, apply the
-word, then consume that qubit with terminal Z measurement. The full interface
-is exactly `Unit -> Bit`, with a classical result and principal Observe effect.
-Equal widths do not admit `Bits<0>`, products of Unit or other result trees.
-This closed terminal experiment grants no open pure or controllable map.
-
-The standard gate interpretation is an explicit specification assumption.
-The adapter reuses existing exact Raw/std meanings; it introduces no new
-semantic primitive or constitutional interpretation. Kernel-checked matrices
-and the original-body bridge preserve H's sign, literal Y phase, S/SDG direction
-and T/TDG direction before the terminal observation. This does not adopt a new
-external reference specification or prove general OpenQASM execution semantics.
-
-`REQUEST` has the same fourteen field names and signature/identity/dyadic
-encodings as the instrument request above, with these distinct fixed values:
+`REQUEST` has the fourteen field names of the
+[instrument request](#instrument-engineering-comparison) and the same
+signature, identity and dyadic encodings. These fields have distinct fixed
+values:
 
 | Field | Value |
 | --- | --- |
@@ -675,73 +758,114 @@ encodings as the instrument request above, with these distinct fixed values:
 | `composition` | `single-component-v1` |
 | `error_category` | `implementation-distance` |
 
-Both complete signatures must equal the fixed interface. `expected_artifact`
-retains the independently supplied original ideal QIRF, including all original
-dependencies; no fixed H ideal or producer-supplied actual matrix substitutes
-for it. The unchanged exact instrument gates reconstruct both complete Kraus
-families and Gram equations before checking the closed epsilon and every Choi
-coefficient majorant. The complete-adjoint bound covers every finite external
-reference and joint observable, without branch normalization.
+Rules:
 
-The native `--engineering-openqasm-check` mode accepts execution scope only.
-Its QLV3 body contains literal target bytes; its QDV1 comparison binds the typed
-request, original byte array, ordered word, generated actual graph and original
-ideal graph. Decoding is charged before traversal and shares remaining work
-with the ideal reader, exact instrument reconstruction and metric check.
-Missing, incompatible, failed or cross-kind checkers cannot fall back.
+- Each gate line must be exactly `h`, `x`, `y`, `z`, `s`, `sdg`, `t` or `tdg`,
+  followed by ` q[0];`.
+- The target must hold at most 1,024 bytes and eight gates (`limit`).
+- Changed whitespace, headers, includes or operands, additional results,
+  gates after the measurement and unsupported syntax are refused.
+- The include line is a fixed token. Checking loads no external include file.
+- The full interface is exactly `Unit -> Bit`, with a classical result and the
+  principal Observe effect. Both complete signatures of the request must equal
+  this interface. Equal widths do not admit `Bits<0>`, products of Unit or
+  other result trees.
+- `expected_artifact` retains the independently supplied original ideal QIRF,
+  including all original dependencies. No fixed H ideal and no
+  producer-supplied actual matrix substitutes for it.
+- The standard gate interpretation is an explicit specification assumption.
+  The adapter reuses the exact Raw and std meanings. It introduces no semantic
+  primitive and no constitutional interpretation.
+- An `epsilon` that the majorants exceed is refused (`contract`).
+- A cross-kind checker is refused without fallback.
 
-The private `EngineeringOpenQasmReport` retains immutable target/ideal/request
-bytes, full contract and checker path. Its actual graph is data, without a Rust
-accepted-program constructor. Text/JSON report the target-bound instrument
-inequality and actual digests. Sampling, algorithmic resolution and numerical
-runtime errors remain separately unclaimed. Source/export preservation, exact
-source correspondence, pure phase agreement, inverse/control, exact cleanup
-and constitutional PR/RS remain unestablished even at epsilon zero. Version 1
-checks the instrument bound alone.
+The checker establishes:
+
+- The unchanged exact instrument gates reconstruct both complete Kraus
+  families and Gram equations. The checker then checks the closed epsilon and
+  every Choi coefficient majorant.
+- The complete-adjoint bound covers every finite external reference and joint
+  observable, without branch normalization.
+- Kernel-checked matrices and the original-body bridge preserve the sign of H,
+  the literal Y phase, the S/SDG direction and the T/TDG direction before the
+  terminal observation.
+
+The checker does not establish:
+
+- This deliberately bounded profile is not a general OpenQASM parser, and it
+  is no hardware-conformance claim. It adopts no external reference
+  specification and proves no general OpenQASM execution semantics.
+- This closed terminal experiment grants no open pure or controllable map.
+- Source or export preservation, exact source correspondence, pure phase
+  agreement, inverse or controlled access, exact cleanup and constitutional PR
+  or RS are unestablished, even at epsilon zero.
+- Sampling, algorithmic resolution and numerical runtime errors are
+  separately unclaimed.
+- Version 1 checks the instrument bound alone.
+
+Text and JSON report the target-bound instrument inequality and the digests
+of the actual inputs.
+
+> **Implementation note.** The independent byte reader imports the Raw meaning
+> data without acceptance definitions. The native mode is
+> `--engineering-openqasm-check`. Its QLV3 body holds the literal target bytes.
+> Its QDV1 comparison binds the typed request, the original byte array, the
+> ordered word, the generated actual graph and the original ideal graph.
+> Decoding is charged before traversal. It shares one work counter with the
+> ideal reader, the exact instrument reconstruction and the metric check.
+
+> **Implementation note.** The private `EngineeringOpenQasmReport` retains the
+> immutable target, ideal and request bytes, the full contract and the checker
+> path. Its actual graph is data, without a Rust accepted-program constructor.
 
 ### Literal OpenQASM engineering resource limits
 
-Version 2 of the same request uses claim kind
-`engineering-target-instrument-resource-bound` and adds one required field.
+Version 2 of the same request uses the claim kind
+`engineering-target-instrument-resource-bound` and adds one required field:
 
 ```json
 "resource_limits": {"model":"openqasm3-one-qubit-literal-gates-v1","gates":2,"t_gates":2}
 ```
 
-Both limits are closed integers from 0 through 8. `gates` bounds emitted gate
-lines and `t_gates` bounds the subset `t` and `tdg`. The required literal
-header, reset and terminal readout fix one reserved qubit, one reset and one
-measurement. This model charges the literal one-qubit vocabulary and excludes
-compiler work, synthesis search, hardware timing, and cross-component
-composition. The metric, epsilon and single-component contract stay required.
+`gates` bounds the emitted gate lines. `t_gates` bounds the subset `t` and
+`tdg`.
 
-Lean checks the limits against the independently decoded word used for the
-engineering instrument inequality. The typed execution view includes the
-model and limits. Text and JSON reports include the checked counts and limits
-with the identities of the actual artifact, original ideal and request.
-Changing any of them requires a fresh comparison. A timed-out or rejected
-check emits no certificate. The engineering receipt cannot supply exact
-cleanup, phase-sensitive coherent control, or constitutional PR/RS. See
-[#163](https://github.com/MGYamada/Qleisli/issues/163).
+Rules:
+
+- Both limits must be closed integers from 0 through 8.
+- The required literal header, reset and terminal readout fix one reserved
+  qubit, one reset and one measurement.
+- The model charges the literal one-qubit vocabulary. It excludes compiler
+  work, synthesis search, hardware timing and cross-component composition.
+- The metric, the epsilon and the single-component contract stay required.
+- Changing the actual artifact, the original ideal or the request requires a
+  fresh comparison.
+- A timed-out or rejected check emits no certificate.
+
+The checker establishes:
+
+- The native checker checks the limits against the independently decoded word
+  that the engineering instrument inequality uses.
+- Text and JSON reports include the checked counts and limits, with the
+  identities of the actual artifact, the original ideal and the request.
+
+The checker does not establish:
+
+- The engineering receipt supplies no exact cleanup, no phase-sensitive
+  coherent control and no constitutional PR or RS.
+
+> **Implementation note.** The typed execution view includes the model and the
+> limits.
 
 ### Literal OpenQASM gate comparison with resource limits
 
 ```text
-qleisli engineering compare-openqasm3-gate ACTUAL --against=REQUEST --edition=2026 --lean-kernel=PATH --format=json
+qleisli engineering compare-openqasm3-gate TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
 ```
 
-`ACTUAL` is a complete canonical OpenQASM 3.0 gate definition. The header and
-include line have the literal spellings below. The declaration is either
-`gate implementation a {` or `gate implementation a, b {`. Body instructions
-start at the first column, use one space after the mnemonic and after a comma,
-and end with a semicolon and LF. The closing brace occupies its own line
-with an LF. The admitted mnemonics are `h`, `x`, `y`, `z`, `s`, `sdg`, `t`,
-`tdg`, `cx`, `cz` and `swap` with their exact ordered formal operands. The
-body may be empty. The fixed include selects the profile's standard gate
-meanings. The checker reads at most 1,024 bytes and eight gate lines. For
-the general definition syntax, see the [OpenQASM 3.0 specification](https://openqasm.com/versions/3.0/language/gates.html#hierarchical-gates-definitions).
+`TARGET` is a complete canonical OpenQASM 3.0 gate definition:
 
-```openqasm
+```text
 OPENQASM 3.0;
 include "stdgates.inc";
 gate implementation a, b {
@@ -749,11 +873,25 @@ cx a, b;
 }
 ```
 
-The ports are `Bit` or the ordered pair `(Bit, Bit)`. Formal `a` is the
-low coordinate and formal `b` is the high coordinate. The resource report
-counts formal wires, literal gate lines, and the `t`/`tdg` subset. Hardware
-scheduling and compiler/search work use separate measures. The required
-request fields common to both variants are:
+For the general definition syntax, see the
+[OpenQASM 3.0 specification](https://openqasm.com/versions/3.0/language/gates.html#hierarchical-gates-definitions).
+
+Rules:
+
+- The header and the include line must have the literal spellings shown. The
+  fixed include selects the standard gate meanings of the profile.
+- The declaration must be either `gate implementation a {` or
+  `gate implementation a, b {`.
+- A body instruction starts at the first column, uses one space after the
+  mnemonic and after a comma, and ends with a semicolon and LF. The closing
+  brace occupies its own line with an LF. The body may be empty.
+- The admitted mnemonics are `h`, `x`, `y`, `z`, `s`, `sdg`, `t`, `tdg`, `cx`,
+  `cz` and `swap`, with their exact ordered formal operands.
+- The checker reads at most 1,024 bytes and eight gate lines (`limit`).
+- The ports are `Bit` or the ordered pair `(Bit, Bit)`. Formal `a` is the low
+  coordinate and formal `b` is the high coordinate.
+
+The request fields common to both compositions are:
 
 | Field | Value |
 | --- | --- |
@@ -768,301 +906,356 @@ request fields common to both variants are:
 | `resource_limits` | Object with model `openqasm3-ordered-gate-literal-gates-v1` and integer `gates` and `t_gates` ceilings from 0 through 8 |
 
 An ideal description has exactly `expected_artifact` and `leaf`. The former
-is the original UTF-8 QIRF text; the latter contains exactly `input`, `output`
-and `matrix` in the finite pure-leaf format. The checker verifies each
-original ideal independently against that exact port and matrix request. The
-canonical dyadic and finite coefficient encodings match `compare-pure` above.
+is the original UTF-8 QIRF text. The latter holds exactly `input`, `output`
+and `matrix` in the finite pure-leaf format. The canonical dyadic and finite
+coefficient encodings match `compare-pure`.
+
+Each composition adds its own fields:
 
 - `ordered-sequential-two-v1` additionally requires `split`, `first` and
   `second`. `split` is the number of literal instructions in the first slice.
   `first` and `second` each have exactly `ideal` and `epsilon`. The two
   comparisons use the same full port tree. The checked dyadic sum of the
-  component budgets equals the requested total. The same decoded slices
-  constitute the whole word, in first-then-second order. The additive bound
-  applies to this composition for every finite external reference.
+  component budgets must equal the requested total. The same decoded slices
+  constitute the whole word, in first-then-second order.
 - `controlled-low-selector-v1` additionally requires `ideal` over one `Bit`.
-  The desired action on `a, b` is identity on selector zero and exactly the
-  ideal operator on selector one. The checker compares the entire literal
+  The desired action on `a, b` is the identity on selector zero and exactly
+  the ideal operator on selector one. The checker compares the entire literal
   two-wire matrix with that controlled operator. Scalar phase in the active
-  sector enters the metric as a relative phase. The norm bound extends to
-  arbitrary finite external references.
+  sector enters the metric as a relative phase.
 
-The native checker reconstructs the literal actions over the exact R8 carrier
-and uses the sufficient Frobenius comparison for the selected operator metric.
-It checks the reported literal counts under the same request and remaining-work
-counter. The execution view contains the original bytes, the decoded ordered
-instructions, the closed budgets and the fresh ideal graphs. Changing any of
-the artifact, profile, metric, budget, split or ideal requires a fresh check.
-Timeouts and refusals return an error. The engineering result is scoped to the
-named approximation and literal resource bounds. Exact target correspondence,
-source capabilities and constitutional PR/RS require their own checks, including
-when a numerical search selected the circuit or the engineering epsilon is zero.
+The checker establishes:
+
+- The checker verifies each original ideal independently against its exact
+  port and matrix request.
+- The native checker reconstructs the literal actions over the exact R8
+  carrier. It uses the sufficient Frobenius comparison for the selected
+  operator metric.
+- For the sequential composition, the additive bound applies to the
+  composition for every finite external reference. For the controlled
+  composition, the norm bound extends to arbitrary finite external references.
+- The checker checks the reported literal counts under the same request and
+  the same work counter. The resource report counts formal wires, literal gate
+  lines and the `t`/`tdg` subset.
+
+The checker does not establish:
+
+- The engineering result is scoped to the named approximation and the literal
+  resource bounds. Hardware scheduling and compiler or search work use
+  separate measures.
+- Exact target correspondence, source capabilities and constitutional PR or
+  RS require their own checks. This holds when a numerical search selected the
+  circuit, and when the engineering epsilon is zero.
+
+Changing any of the artifact, profile, metric, budget, split or ideal requires
+a fresh check. Timeouts and refusals return an error.
+
+> **Implementation note.** The execution view holds the original bytes, the
+> decoded ordered instructions, the closed budgets and the fresh ideal graphs.
 
 ## Quantitative resource claims
 
-A resource certificate must identify the actual closed instance, emitted
-artifact, target/profile, resource measures, schedule or interpretation of
-those measures, and checked bounds. Changing providers, layout, target,
-workspace or output bytes invalidates reuse unless checked correspondence
-establishes the new claim. A content hash establishes identity, not the bound.
+A resource certificate states a checked bound for one emitted artifact. The
+subsections below describe the bounded checks of the canonical terminal
+OpenQASM profile.
 
-The [provider resource contract](functional-boundary.md#provider-selection-and-quantitative-resource-evidence)
-applies to each selected body and composition. An external, opaque or
-device-native implementation must meet the same admission requirements.
+Rules:
 
-Physical live width includes logical data, explicit source workspace,
-backend synthesis workspace and routing/target storage. Count actual physical
-locations once, accounting for their lifetimes and permitted reuse. Peak
-width is the maximum simultaneous live count; a sum of separate peaks is a
-conservative upper bound, not necessarily the realized peak. Logical width
-alone does not bound the physical implementation width.
+- A resource certificate must identify the actual closed instance, the
+  emitted artifact, the target and profile, the resource measures, the
+  schedule or interpretation of those measures, and the checked bounds.
+- Changing providers, layout, target, workspace or output bytes invalidates
+  reuse, unless a checked correspondence establishes the changed claim.
+- A content hash establishes identity, not the bound.
+- The
+  [provider resource contract](functional-boundary.md#provider-selection-and-quantitative-resource-evidence)
+  applies to each selected body and composition. An external, opaque or
+  device-native implementation must meet the same admission requirements.
+- Gate count, depth and non-Clifford cost require declared target
+  conventions. Literal IR T-word counts are not automatically physical or
+  optimal T counts.
+- Compiler memory, checker work limits, static termination, ownership safety
+  and target resource bounds are different claims. In particular, the
+  ownership-only predicate does not discharge quantitative RS.
+- An admitted symbolic family bound may strengthen RS within edition 2026. It
+  needs the corresponding current proof and the actual compilation and
+  resource binding.
+- A family or construct may be admitted later with resource behavior outside
+  current coverage. Its bound and its preservation obligations must be
+  discharged before it is certified. Existing guarantees stay in force.
+- A failure to meet a target budget rejects that target claim. It does not
+  change the mathematical denotation of the program.
 
-A fixed-occupancy SWAP segment records the ordered placement of all
-occupied locations, including any source, synthesis and routing scratch
-that is live during the segment. Each literal SWAP must name two distinct
-occupied locations connected in the declared profile. It moves both
-locations in the placement, leaves every other location alone, and counts
-as one operation even when a later SWAP cancels it. The final placement
-preserves logical axis order and exact joint coefficients with any
-reference. The Lean component independently decodes the declared register
-width and the literal SWAP instructions from a designated byte interval
-of canonical OpenQASM output. It also checks the target capacity.
-A complete certificate still establishes that the interval is used for
-routing and that its entry placement is correct. It also checks the other
-target operations, allocation, release and reuse.
+The QCP implementation and concrete target schemas have a separately
+scheduled scope. This chapter is not their implementation.
 
-The canonical terminal profile reserves all declared physical locations
-and resets them before its first gate. It retains the reservation through
-terminal measurement. The independent complete-artifact reader counts
-reserved and reset wires, gates, literal SWAPs, T/TDG and measurements from
-the output bytes. An exact finite workspace check can also compare a
-designated gate interval with the independently checked original clean or
-dirty body. The comparison uses the declared ordered data/scratch placement
-and requires the physical register to cover the checked Raw peak. The checker
-can derive the workspace's ordered locations from the checked original Raw
-frame and its complete injective physical placement. A fresh scratch must
-occupy a location absent from that frame. For a fresh scratch wire, the
-checker can verify that nothing touches it between the initial reset and
-workspace entry, or after exact restoration. This profile keeps the physical
-reservation throughout.
+### Physical live width
 
-For a closed straight-line Raw prefix with zero preparations, structural
-owner operations and finite gates, the checker derives this frame by
-replaying the original prefix and the decoded target gate word. Marked
-routing operations must match connected physical SWAPs in the emitted word.
-An ordinary Raw SWAP is matched as a gate and does not move the encoding.
-The derived original frame must equal the checked workspace entry, including
-zero-width ports. With one checked workspace interval and literal gates, the
-checker can carry the original exit owners through the target suffix and use
-the resulting placement to verify the emitted terminal measurements in
-classical output order. All original quantum owners must be consumed by the
-end. Discarded owners and measurements outside the classical outputs do not
-add to the emitted readout. The single-interval check requires an exclusive
-lifetime for fresh scratch. Outside a workspace interval the checker can also
-compare a single original circuit event against a decomposed target word. It
-derives the ordered support from the original operands and controls and
-compares the complete exact operators on that support, up to six axes. Gates
-on other wires and phase changes are rejected. Matrix checking spends the
-same cumulative work as the surrounding replay.
+Rules:
 
-A gate decomposition may use allocated synthesis scratch. The checker
-verifies that its physical locations are declared and separate from all live
-owners. It compares the full target word on the data and scratch with the
-original operator under the canonical zero embedding at both ends. The
-six-axis bound includes scratch. The executable check keeps the same zero
-encoding at entry and exit. The Lean theorem
-`WorkspaceTargetAction.synthesis_action` connects the actual decoded gate
-word to the original local operator under that encoding. It proves equality
-with full phase on every external reference column, with zero amplitude
-whenever any synthesis scratch bit is nonzero. The checked placement replay
-recovers this evidence at the original Raw position and physical gate offset,
-for either a single circuit event or an optimized span.
-`WorkspaceTargetAction.bound_synthesis_action` and
-`WorkspaceTargetAction.native_suffix_synthesis_action` connect the replay
-before a source workspace and the native decision's terminal suffix to that
-exact action. The equation uses the original circuit steps on the recovered
-support with their dependencies. Reindexing the checked local steps by the
-ordered data and synthesis scratch layout recovers the same emitted instruction
-slice. The decoder establishes the arity and distinct, in-range operands of
-each instruction. The full physical register action on a fixed spectator
-slice therefore agrees with the checked local word for arbitrary input
-amplitudes and external references. The literal gate interval and its
-synthesis scratch locations are within the reported gate and register counts.
-A complete trace may reserve locations for several disjoint synthesis slices.
-Original allocation, routing, source workspace and readout cannot touch
-these locations. Every slice using them
-checks its own zero return. An individual slice can instead use exclusive
-scratch, which the checker verifies is untouched everywhere else.
+- Physical live width includes logical data, explicit source workspace,
+  backend synthesis workspace, and routing and target storage.
+- A count takes each actual physical location once. It accounts for the
+  lifetime of the location and its permitted reuse.
+- Peak width is the maximum simultaneous live count. A sum of separate peaks
+  is a conservative upper bound, not necessarily the realized peak.
+- Logical width alone does not bound the physical implementation width.
 
-A physical scratch location can also be reused across ordered, disjoint,
-clean intervals. A zero-gate interval still checks the exact zero-return
-equation and covers no gate accesses. The checker
-requires an exact zero-return equation for each interval, checks that every
-gate touching that location lies in one of those intervals, and checks that
-the location is absent from terminal readout. The literal multi-interval check
-derives every entry placement from the preceding original owners and target
-word. It reserves each designated scratch location across the complete trace,
-keeping it out of ordinary preparations, routing and terminal readout. Each
-reuse interval must be bound to its own checked original workspace.
+### Routing segments
 
-For a successful native placement check, each reusable clean wire is in the
-counted reset register. Every gate that touches that wire belongs to a
-checked restoration interval, with one operator step per decoded gate in
-the interval. A routing action before a workspace or in the terminal suffix
-points to a literal SWAP on an allowed edge at a counted gate index. The
-reported SWAP total includes the literal routing gates as well as any
-ordinary SWAP instructions in the target word.
-The replay can also align a target word with several consecutive Raw circuit
-events and structural owner operations. It reads the actual owner transitions
-and checks the combined operator on the ordered support, with the same
-zero-return check when the slice uses synthesis scratch. Preparation,
-observation and source workspace boundaries require their own alignment.
-The typed-source adapter reads workspace intervals from the original checked
-root and named calls. It binds each local interval to the identical Raw
-operations at its position in the root, checks the selected and returned
-ports against the full caller frame, and retains all untouched spectator
-ports. The exporter preserves the interval boundaries across exact
-rewrites and proposes the corresponding gate positions and scratch locations.
-Lean checks the proposal against the original source, including the clean and
-dirty intervals and terminal result order.
-The written logical operation and the workspace body use the same admitted
-workspace source fragment. This lets an independently checked controlled
-phase appear in the declared logical operation and in the body; their exact
-restoration equation still checks the complete data and scratch action.
-The application theorem `Qleisli.WorkspaceTargetAction.decoded_action`
-connects the exact action of that decoded workspace slice to the literal Raw
-body on its full ordered data and scratch interface. The equality preserves
-the original phase for arbitrary reference columns.
-For each reserved clean wire, `native_clean_access_counted_once` links native
-placement success to its literal reset and one unique restoration interval
-for every emitted gate that touches it. The application theorem also places
-the interval inside the counted target gates and excludes the scratch wire
-from terminal readout.
-For a `Q<Bits<n>>` data register, each original `take_bit` or `put_bit` index
-determines the ordered wire selection or insertion. The Raw repartition retains
-the other owners, including a distinct `Q<Bits<0>>` remainder. Repartition inside
-a workspace body is part of its independently evaluated exact operator.
+A **fixed-occupancy SWAP segment** records the ordered placement of all
+occupied locations. The record includes any source, synthesis and routing
+scratch that is live during the segment.
 
-Use `qleisli interop emit-qasm <source> --input=qli --resources` for the
-checked resource report on a closed typed program with workspace scopes in
-its root or in a statically named call, or with a protected computed scope.
-The JSON result contains the emitted text, exact work spent in the placement
-check, reserved qubits, reset wires, gates, literal SWAPs, T/TDG operations and
-measurements. Counts come from Lean's decoding of the returned text.
-The internal packet binds the complete original QLV3 request and literal target
-bytes. Lean rechecks the original source, decodes the target and replays
-placement using one 20,000,000 exact-work budget. Exhausting it returns a
-limit rejection with no resource payload. The report covers the
-supported canonical terminal profile and its declared physical register.
-Lean proves that the decoded register width bounds the maximum Raw live width
-over the workspace occurrences visited by the replay, including caller
-spectators and temporary clean wires.
-The native reply theorem binds the reported counts to those exact target bytes
-and proves that the reserved width is within the requested target capacity.
-`Qleisli.TerminalPlacement.native_terminal_correspondence` relates that same
-successful native decision to the selected original Raw root. Immediately
-before terminal measurement, after all decoded gates have run from reset, the
-entire physical complex column agrees with the corresponding pure Raw prefix
-under its ordered placement, including phase and restored scratch. The final
-measurement distribution agrees for every public result word after summing
-the original hidden outcomes. The theorem also binds the reply's resource
-counts and workspace peak bound to that same checked packet.
-For `--resources`, the terminal emitter supplies the emitted register width as
-the packet's capacity.
-A structural basis lift updates the physical placement only when its complete
-table is an axis permutation. It contributes zero gates. A routing SWAP
-must occupy a literal gate position.
+Rules:
+
+- Each literal SWAP must name two distinct occupied locations that are
+  connected in the declared profile.
+- A SWAP moves both locations in the placement and leaves every other location
+  alone. It counts as one operation even when a later SWAP cancels it.
+- The final placement preserves the logical axis order and the exact joint
+  coefficients with any reference.
+- The check of a segment does not establish that the interval is used for
+  routing, or that its entry placement is correct. A complete certificate
+  establishes both. It also checks the other target operations, allocation,
+  release and reuse.
+
+> **Implementation note.** The native checker independently decodes the
+> declared register width and the literal SWAP instructions from a designated
+> byte interval of canonical OpenQASM output. It also checks the target
+> capacity.
+
+### The canonical terminal profile
+
+The canonical terminal profile reserves all declared physical locations and
+resets them before its first gate. It keeps the reservation through terminal
+measurement.
+
+Rules:
+
+- The independent complete-artifact reader counts reserved and reset wires,
+  gates, literal SWAPs, T/TDG and measurements from the output bytes.
+- An exact finite workspace check may compare a designated gate interval with
+  the independently checked original clean or dirty body. The comparison uses
+  the declared ordered placement of data and scratch. The physical register
+  must cover the checked Raw peak.
+- The checker can derive the ordered locations of the workspace from the
+  checked original Raw frame and its complete injective physical placement.
+- A fresh scratch must occupy a location absent from that frame. For a fresh
+  scratch wire, the checker can verify that nothing touches it between the
+  initial reset and workspace entry, or after exact restoration.
+
+### Placement replay
+
+For a closed straight-line Raw prefix with zero preparations, structural owner
+operations and finite gates, the checker derives the original frame by replay.
+It replays the original prefix and the decoded target gate word.
+
+Rules:
+
+- Marked routing operations must match connected physical SWAPs in the
+  emitted word. An ordinary Raw SWAP is matched as a gate and does not move
+  the encoding.
+- The derived original frame must equal the checked workspace entry,
+  including zero-width ports.
+- With one checked workspace interval and literal gates, the checker can
+  carry the original exit owners through the target suffix. It uses the
+  resulting placement to verify the emitted terminal measurements in classical
+  output order.
+- All original quantum owners must be consumed by the end. Discarded owners
+  and measurements outside the classical outputs do not add to the emitted
+  readout.
+- The single-interval check requires an exclusive lifetime for fresh scratch.
+- Outside a workspace interval, the checker can compare a single original
+  circuit event against a decomposed target word. It derives the ordered
+  support from the original operands and controls. It compares the complete
+  exact operators on that support, up to six axes.
+- Gates on other wires and phase changes are rejected. Matrix checking spends
+  the same cumulative work as the surrounding replay.
+- The replay can align a target word with several consecutive Raw circuit
+  events and structural owner operations. It reads the actual owner
+  transitions and checks the combined operator on the ordered support.
+  Preparation, observation and source workspace boundaries require their own
+  alignment.
+- A structural basis lift updates the physical placement only when its
+  complete table is an axis permutation. It contributes zero gates. A routing
+  SWAP must occupy a literal gate position.
+- For a `Q<Bits<n>>` data register, each original `take_bit` or `put_bit`
+  index determines the ordered wire selection or insertion. The Raw
+  repartition retains the other owners, including a distinct `Q<Bits<0>>`
+  remainder. Repartition inside a workspace body is part of its independently
+  evaluated exact operator.
+
+### Synthesis scratch
+
+A gate decomposition may use allocated synthesis scratch.
+
+Rules:
+
+- The physical locations of the scratch must be declared and separate from
+  all live owners.
+- The checker compares the full target word on the data and the scratch with
+  the original operator, under the canonical zero embedding at both ends. The
+  executable check keeps the same zero encoding at entry and exit.
+- The six-axis bound includes scratch.
+- A slice of several aligned events that uses synthesis scratch has the same
+  zero-return check.
+- A complete trace may reserve locations for several disjoint synthesis
+  slices. Original allocation, routing, source workspace and readout must not
+  touch these locations. Every slice that uses them checks its own zero
+  return.
+- An individual slice may instead use exclusive scratch. The checker verifies
+  that the scratch is untouched everywhere else.
+
+### Reuse of clean scratch
+
+A physical scratch location may be reused across ordered, disjoint, clean
+intervals.
+
+Rules:
+
+- The checker requires an exact zero-return equation for each interval. A
+  zero-gate interval also checks that equation, and no gate touches the
+  location in it.
+- Every gate that touches the location must lie in one of those intervals.
+  The location must be absent from terminal readout.
+- The literal multi-interval check derives every entry placement from the
+  preceding original owners and target word. It reserves each designated
+  scratch location across the complete trace. It keeps the location out of
+  ordinary preparations, routing and terminal readout.
+- Each reuse interval must be bound to its own checked original workspace.
+- The written logical operation and the workspace body use the same admitted
+  workspace source fragment. An independently checked controlled phase may
+  therefore appear in the declared logical operation and in the body. Their
+  exact restoration equation checks the complete data and scratch action.
+
+A successful native placement check has these properties:
+
+- Each reusable clean wire is in the counted reset register.
+- Every gate that touches that wire belongs to a checked restoration
+  interval, with one operator step per decoded gate in the interval.
+- A routing action before a workspace or in the terminal suffix points to a
+  literal SWAP on an allowed edge at a counted gate index.
+- The reported SWAP total includes the literal routing gates and any ordinary
+  SWAP instructions in the target word.
+
+> **Implementation note.** The typed-source adapter reads workspace intervals
+> from the original checked root and named calls. It binds each local interval
+> to the identical Raw operations at its position in the root. It checks the
+> selected and returned ports against the full caller frame and retains all
+> untouched spectator ports. The exporter preserves the interval boundaries
+> across exact rewrites. It proposes the corresponding gate positions and
+> scratch locations. The native checker checks the proposal against the
+> original source, including the clean and dirty intervals and the terminal
+> result order.
+
+### The checked resource report
+
+```sh
+qleisli interop emit-qasm <source> --input=qli --resources
+```
+
+The command gives the checked resource report for a closed typed program. The
+program has workspace scopes in its root or in a statically named call, or it
+has a protected computed scope.
+
+Rules:
+
+- The JSON result contains the emitted text, the exact work spent in the
+  placement check, the reserved qubits, the reset wires, the gates, the
+  literal SWAPs, the T/TDG operations and the measurements.
+- The counts come from the decoding of the returned text by the native
+  checker.
+- The placement check has one exact-work budget of 20,000,000. Exhausting it
+  returns a limit rejection (`limit`) with no resource payload.
+- The report covers the supported canonical terminal profile and its declared
+  physical register.
+- For `--resources`, the terminal emitter supplies the emitted register width
+  as the capacity of the packet.
+
+> **Implementation note.** The internal packet binds the complete original
+> QLV3 request and the literal target bytes. The native checker rechecks the
+> original source, decodes the target and replays placement under the one
+> budget.
+
+### Computed scopes
 
 For a source-checked structural `with_computed` interval, the Raw resource
 read counts the full live frame plus one private scratch wire at peak. It
 counts one preparation, one clean release and both predicate passes. The
 literal circuit count includes every forward step, inverse step and protected
-use. The Lean theorem `Qleisli.RuntimeComputedResources.structural_counts`
-binds these numbers to the same original source-checked Raw occurrence and
-retains caller spectators in the peak width.
-The Raw interval reader charges owner and issuance-history checks separately
-from literal circuit validation. Its circuit charge covers the full forward
-and inverse fields and the operand checks in each forward step and protected
-use. `QleisliKernel.Qirf.StructuralComputedRaw.read_work` proves the debit of
-the executable reader. Both charges consume the same shared work budget.
-The source-bound compute and inverse comparisons consume exactly
-`16 * (1 + sum(2 * control_count + 7))`, summing over the predicate clauses.
-The Lean theorem
-`QleisliKernel.Qirf.StructuralComputedUse.read_circuit_work` identifies the
-work state after both comparisons and before checking the emitted auxiliary
-action. This charge depends on the literal circuit fields. The original
-runtime plan retains the predicate and auxiliary action computed by Lean for
-the exact source occurrence. Both the structural and finite-table paths use
-those source results and check the actual literal action independently.
-The same literal XOR factorization proves logical action for the independently
-checked Raw event, even for an arbitrary caller amplitude function. The
-source-bound theorem additionally identifies the predicate and phase from the
-original body. The complete pure Raw event fold uses the local logical action
-without constructing a global matrix.
+use.
 
 The terminal OpenQASM placement check can read this event in a closed original
-source root, including in a pure interval before or after an explicit workspace.
-It places the ordered source wires followed by a private predicate wire and
-reconstructs the whole forward, protected-use and inverse word from the Raw
-operation. The decoded target word must agree on the complete support,
-including the predicate wire, with exact phase. If the target decomposition
-uses additional scratch, the same synthesis check requires it to start and
-return to zero. The predicate and synthesis wires are reserved from source
-allocation, routing and terminal readout. Counts include their resets, the
-physical compute and inverse gates, and any additional synthesis gates.
-This check uses the bounded terminal operator profile and its shared work
-budget.
-`BoundSegment.structural_paid` and `FinishedTrace.suffix_structural_paid`
-recover the checked placement and gate interval from the executable replay.
-`StructuralPlacement.literal_costs` binds that interval and the distinct data
-and scratch locations to the decoded gate and reset counts.
+source root. This includes a pure interval before or after an explicit
+workspace.
+
+Rules:
+
+- The check places the ordered source wires, followed by a private predicate
+  wire. It reconstructs the whole forward, protected-use and inverse word from
+  the Raw operation.
+- The decoded target word must agree on the complete support, including the
+  predicate wire, with exact phase.
+- If the target decomposition uses additional scratch, the same synthesis
+  check requires the scratch to start at zero and return to zero.
+- The predicate and synthesis wires are reserved from source allocation,
+  routing and terminal readout.
+- Counts include the resets of those wires, the physical compute and inverse
+  gates, and any additional synthesis gates.
+- This check uses the bounded terminal operator profile and its shared work
+  budget.
 
 For an admitted finite-table computed scope, the exporter uses the retained
 table rows to emit controlled XOR flips of the private auxiliary bits. It
 emits the protected operations on the ordered source, target and auxiliary
-coordinates, then repeats the XOR flips to restore the auxiliary bits. For
-resource reporting the source program must retain its original checked typed
-request. Lean builds the original table permutation and protected word from
-that request's checked Raw event and compares them to the complete decoded
-target interval. The same bounded operator profile covers these comparisons.
-`ProtectedTablePlacement.literal_costs` ties the decoded interval and its
-distinct physical locations to the reported gate and reset counts.
+coordinates. It then repeats the XOR flips to restore the auxiliary bits.
 
-Gate count, depth and non-Clifford cost require declared target conventions.
-Literal IR T-word counts are not automatically physical or optimal T counts.
-Compiler memory, checker work limits, static termination, ownership safety
-and target resource bounds are different claims. In particular, the existing
-ownership-only predicate does not discharge quantitative RS.
+Rules:
 
-An admitted symbolic family bound may strengthen RS within edition 2026.
-It still needs the corresponding current proof and actual compilation/resource
-binding. Before certifying a newly admitted family or construct whose resource
-behavior lies outside current coverage, its corresponding bound and preservation
-obligations must be discharged; existing guarantees remain in force.
-Failure to meet a target budget rejects that target claim, without
-changing the program's mathematical denotation. QCP implementation and concrete
-target schemas retain their separately scheduled scope in
-[#103](https://github.com/MGYamada/Qleisli/issues/103); this chapter is not their
-implementation. Phase-aware target cost is tracked in
-[#165](https://github.com/MGYamada/Qleisli/issues/165).
+- For resource reporting, the source program must retain its original checked
+  typed request.
+- The native checker builds the original table permutation and the protected
+  word from the checked Raw event of that request. It compares them to the
+  complete decoded target interval.
+- The same bounded operator profile covers these comparisons.
+
+> **Implementation note.** The Raw interval reader charges owner checks and
+> issuance-history checks separately from literal circuit validation. Its
+> circuit charge covers the full forward and inverse fields and the operand
+> checks in each forward step and protected use. Both charges consume the same
+> shared work budget. The source-bound compute and inverse comparisons consume
+> exactly `16 * (1 + sum(2 * control_count + 7))`, summing over the predicate
+> clauses. This charge depends on the literal circuit fields.
+
+> **Implementation note.** The original runtime plan retains the predicate and
+> the auxiliary action that the native checker computes for the exact source
+> occurrence. Both the structural path and the finite-table path use those
+> source results and check the actual literal action independently.
 
 ## Phase words and target-dependent costs
 
 In the eighth-root finite profile, let `ω = exp(2πi/8)`. The one-axis phase
-with residue `r` is exactly `diag(1,ω^r)` on the declared axis, including
-when it acts on an input entangled with a reference. A supported source
-`phase[j,d]` has `r = 8j / 2^d` when this quotient is an integer. The
-[primitive contract](primitive-boundary.md) specifies the source and profile
-limits. Adjoint changes the exponent to `-r` modulo eight. Repetition
-adds the residue on each action. A scalar `ω^r I` differs from a one-axis
-phase and can become a relative phase under coherent control.
+with residue `r` is exactly `diag(1,ω^r)` on the declared axis. This includes
+an action on an input that is entangled with a reference.
 
-The existing finite format represents the one-axis phase by a monomial with
-the chosen axis, identity permutation `[0,1]` and phase exponents `[0,r]`.
-The action of the historical word of `r` T gates is the same diagonal.
-Keep decoding the existing gate and circuit constructors in their versioned
-profiles. This equivalent monomial representation requires no dedicated Phase
-constructor or change to the established encoding of a T word.
+Rules:
+
+- A supported source `phase[j,d]` has `r = 8j / 2^d` when this quotient is an
+  integer. The [primitive contract](primitive-boundary.md) specifies the
+  source and profile limits.
+- Adjoint changes the exponent to `-r` modulo eight. Repetition adds the
+  residue on each action.
+- A scalar `ω^r I` differs from a one-axis phase. It can become a relative
+  phase under coherent control.
+- The finite format represents the one-axis phase by a monomial with the
+  chosen axis, the identity permutation `[0,1]` and the phase exponents
+  `[0,r]`. The action of the historical word of `r` T gates is the same
+  diagonal.
+- A decoder must keep decoding the gate and circuit constructors in their
+  versioned profiles. The equivalent monomial representation requires no
+  dedicated Phase constructor and no change to the established encoding of a
+  T word.
 
 For the canonical terminal OpenQASM vocabulary, the selected one-axis words
 and their literal `t` or `tdg` counts are
@@ -1078,41 +1271,41 @@ and their literal `t` or `tdg` counts are
 | 6 | S† | 0 |
 | 7 | T† | 1 |
 
-These counts apply to the specified one-axis words. A coherent branch or
-control requires the complete ordered action on each sector with its original
-phase. For example, the terminal export uses two T instructions, one T† and
-two CX instructions for controlled S. A negative control can introduce
-additional X gates. A conjunction-based lowering includes its live scratch,
-preparation, computation and full reverse
-chain. A model that decomposes CCX must include that decomposition. In the
-canonical terminal profile CCX is a single literal gate and is outside the
-`t_gates` counter, which counts exactly the emitted T and T† instructions.
+Rules:
 
-Literal source-IR word counts, optimized target instruction counts and resource
-bounds are separate claims. A certificate binds the actual emitted word and
-checked decomposition to its profile and includes the required workspace and
-routing. An exponent, operation name, or normalized phase word supplies no
-bound for a different target or an optimal cost claim. See
-[#165](https://github.com/MGYamada/Qleisli/issues/165).
+- These counts apply to the specified one-axis words. A coherent branch or
+  control requires the complete ordered action on each sector with its
+  original phase. For example, the terminal export uses two T instructions,
+  one T† and two CX instructions for controlled S.
+- A negative control can introduce additional X gates.
+- A conjunction-based lowering includes its live scratch, preparation,
+  computation and full reverse chain.
+- A model that decomposes CCX must include that decomposition. In the
+  canonical terminal profile, CCX is a single literal gate. It is outside the
+  `t_gates` counter, which counts exactly the emitted T and T† instructions.
+- Literal source-IR word counts, optimized target instruction counts and
+  resource bounds are separate claims.
+- A certificate binds the actual emitted word and the checked decomposition
+  to its profile. It includes the required workspace and routing.
+- An exponent, an operation name or a normalized phase word supplies no bound
+  for a different target and no optimal cost claim.
 
 ## Small obstruction examples
 
 Embedding a `k`-qubit gate `G` into `n` wires, under a fixed ordered basis,
 gives determinant `det(G)^(2^(n-k))`. Determinants multiply under composition.
 Consequently a target generator set restricts same-wire determinants.
-This gives a necessary condition. Sufficiency requires a separate theorem for
-that precise generator, phase and workspace profile.
-For a basis-permutation vocabulary, signs multiply under composition.
-An even-only vocabulary therefore excludes odd permutations on the same wires.
-Precomputed generator determinant classes or the parity of an available
-permutation table can reject a candidate before synthesis.
 
-In QPTL, `QPTL.FiniteMatrix.det_embedded` proves this determinant formula
-for finite matrix bases and simultaneous reindexing of both interfaces.
-`QPTL.FiniteMatrix.exact_same_wire_obstruction` proves that a product of
-generators whose determinants lie in a multiplication-closed set containing
-one cannot equal a requested matrix with determinant outside that set.
-The premises retain the chosen target vocabulary, layout and exact phase.
+Rules:
+
+- This restriction is a necessary condition. Sufficiency requires a separate
+  theorem for that precise generator, phase and workspace profile.
+- For a basis-permutation vocabulary, signs multiply under composition. An
+  even-only vocabulary therefore excludes odd permutations on the same wires.
+- Precomputed generator determinant classes, or the parity of an available
+  permutation table, may reject a candidate before synthesis.
+- The obstructions use the stated generator vocabulary, controls and
+  workspace premises.
 
 The repository retains two exact small examples:
 
@@ -1121,63 +1314,346 @@ The repository retains two exact small examples:
 | Positive-exponent three-qubit Fourier operator `F8` | Unitary, with `det(F8) = i` | The embedded H/T/X and NCT generators considered by the regression have determinants only `±1` on three wires. |
 | Four-bit `c3x` basis permutation | A bijection with one transposition, hence determinant `−1` | Those embedded generators have determinant `+1` on four wires. |
 
-Both programs remain semantically accepted. The regression
+Both programs are semantically accepted. The regression
 `tests/static_semantics.rs::review_same_wire_obstructions_do_not_reject_semantic_unitaries`
 checks the original four-bit table, the complete exact F8 operator and the
 embedded-generator determinant calculation. The original source is retained at
 `tests/fixtures/review_v023/c3x.qli`. The regression reads the corresponding
 current fixture at
 `tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/review_v023/c3x.qli`.
-The obstructions use the stated generator vocabulary, controls and workspace
-premises.
 
-## Current production status and diagnostics
+<a id="current-production-status-and-diagnostics"></a>
 
-The [production inventory](production-boundary.md) identifies actual native
-acceptance, proposal, execution and export routes. Ordinary native acceptance
-does not itself issue a target realization or resource certificate. The two
-admitted QLV1 guarantees cover original-root ownership and classical scope;
-they do not certify source lowering, target emission or quantitative bounds.
+## Diagnostics
 
-The current terminal exporter in `src/interop/export.rs` performs bounded
-untrusted rewrites after program verification. A borrowed cursor expands actual
-retained function circuits, including nested controls, adjoints and ordered axis
-maps, before merging adjacent diagonal actions. Contract expansion shares the
-existing 1,000,000-step function limit across the whole export; this is a producer
-work limit, not a target-resource bound. Flat input and emitted-gate limits remain
-unchanged. The exporter explicitly allocates and uncomputes conjunction scratch
-and rejects output exceeding its physical qubit capacity. For an accepted
-single-bit certified compute with an all-zero predicate, the exporter emits
-the physical body with data axes followed by a separately reserved clean
-scratch wire. It reuses that wire after complete verified zero return. The
-Rust/Lean regression binds the same emitted OpenQASM bytes to two original
-clean intervals and checks their placement, exact restoration and readout.
-The terminal OpenQASM exporter can consume the original accepted handle of a
-closed typed source program. It emits a wire-level projection of a Unit result
-or a positive-width product of measured bits in the verified SSA output order.
-Nominal results, zero-width components of products and source parameters are
-outside this projection. Typed QIRF transport remains a separate obligation.
-A nontrivial uncontrolled scalar has no realization in this gate vocabulary.
-The independent `scripts/test_review_v024.py` oracle checks
-emitted small QFT/control circuits, including complex phase, output axes and
-zero-return scratch. Such bounded numerical validation is distinct from a
-general transformation proof or resource certificate. External schema entries
-remain disabled until their binding gates are completed.
+A diagnostic for a failed realization claim or resource claim reports a
+restriction on the realization. [Diagnostics and recovery](diagnostics.md)
+gives the codes and the fields.
 
-Diagnostics for a failed realization/resource claim must identify the closed
-instance, requested profile and failed premise, and distinguish a proved
-obstruction from unsupported synthesis or exhausted checking capacity. An
-unsupported target operation or target-width error must not be presented as
-failure of semantic unitarity. The current exporter already reports unsupported
-operations and the synthesis-workspace capacity limit. For source project
-exports, a failure at a Raw operation emitted inside a closed generic body
-identifies the specialization and points to the original expression. The
-terminal exporter reports its own target refusal after source checking has
-completed. Imported artifacts lack these compiler-local source diagnostics.
-The location supplies no realization or resource certificate. General
-specialization certificates and diagnostic coverage remain part of
-[#48](https://github.com/MGYamada/Qleisli/issues/48),
-[#120](https://github.com/MGYamada/Qleisli/issues/120) and
-[#127](https://github.com/MGYamada/Qleisli/issues/127).
+Rules:
+
+- The diagnostic must identify the closed instance, the requested profile and
+  the failed premise.
+- It must distinguish a proved obstruction from unsupported synthesis and from
+  exhausted checking capacity.
+- An unsupported target operation or a target-width error must not be
+  presented as a failure of semantic unitarity.
+- The terminal exporter reports an unsupported operation (`unsupported`) and
+  the capacity limit of the synthesis workspace (`limit`). It reports its own
+  target refusal after source checking has completed.
+- For a source project export, a failure at a Raw operation emitted inside a
+  closed generic body identifies the specialization and points to the original
+  expression.
+- Terminal export can identify the closed specialization and the original
+  source expression when a rejected operation has a single retained origin.
+  This includes steps from an explicit clean or dirty workspace body.
+- When a rewrite combines several expressions, the enclosing Raw operation can
+  provide its own origin.
+- For a failed native workspace equation, the checker supplies the original
+  Raw interval, and the host checks it against the retained workspace. The
+  diagnostic can name the enclosing specialization, or a single specialization
+  shared by all steps in the checked body.
+- Packet-wide errors and ambiguous bodies leave the specialization
+  unspecified.
+- Imported artifacts have no original project diagnostics.
+- A location supplies no realization and no resource certificate.
+
+## Status and limits
+
+The [production inventory](production-boundary.md) identifies the actual
+native acceptance, proposal, execution and export routes. Ordinary native
+acceptance does not itself issue a target realization or a resource
+certificate. An engineering result is not acceptance and not a guarantee.
+
+### Limits
+
+| Limit | Value |
+| --- | --- |
+| A request or a QIRF artifact of a native comparison | 16 MiB |
+| The QLV3 envelope | 64 MiB |
+| The literal target of either OpenQASM comparison | 1,024 bytes and 8 gate lines |
+| `gates` and `t_gates` of a `resource_limits` object | 0 through 8 |
+| Exact operator comparison of the placement replay | 6 axes, including synthesis scratch |
+| Exact-work budget of the placement check behind `--resources` | 20,000,000 |
+| Contract expansion of the terminal exporter | 1,000,000 steps |
+| Allocated qubits of the terminal exporter | 12 |
+
+Contract expansion shares the 1,000,000-step function limit across the whole
+export. That limit is a producer work limit, not a target-resource bound. Flat
+steps keep the flat input limit and the emitted-gate limit of the exporter.
+
+### Support of the native comparisons
+
+| Command | Compared | `composition` | Resource limits |
+| --- | --- | --- | --- |
+| `compare-pure` | Two original pure QIRF artifacts | `single-component-v1` | None |
+| `compare-pure-tensor` | Two parents and their two ordered components | `ordered-tensor-two-v1` | None |
+| `compare-instrument` | Two original instrument QIRF artifacts | `single-component-v1` | None |
+| `compare-openqasm3` | Literal one-qubit terminal OpenQASM bytes and an original ideal instrument | `single-component-v1` | Version 2 only: model `openqasm3-one-qubit-literal-gates-v1` |
+| `compare-openqasm3-gate` | A literal OpenQASM gate definition and original ideal pure artifacts | `ordered-sequential-two-v1` or `controlled-low-selector-v1` | Required: model `openqasm3-ordered-gate-literal-gates-v1` |
+
+Unsupported:
+
+- No native comparison checks a recursive composition.
+- No native comparison checks a composed instrument. Both instrument profiles
+  are single-component.
+- Sequential and controlled composition are checked only for a literal
+  OpenQASM gate definition of at most two formal wires and eight gate lines.
+- The two resource models above are the only target-resource checks of an
+  engineering claim. Each bounds the literal gate lines and the `t`/`tdg`
+  subset of one bounded target. Neither discharges the constitutional
+  quantitative RS obligation, which is pending.
+- The source compiler consumes no engineering claim. The language has no
+  source epsilon annotation.
+- A request for another composition or another profile value is refused
+  (`format`).
+
+### The terminal exporter
+
+- The terminal exporter in `src/interop/export.rs` performs bounded untrusted
+  rewrites after program verification.
+- The exporter explicitly allocates and uncomputes conjunction scratch. It
+  rejects output that exceeds its physical qubit capacity (`limit`).
+- For an accepted single-bit certified compute with an all-zero predicate,
+  the exporter emits the physical body with the data axes followed by a
+  separately reserved clean scratch wire. It reuses that wire after a complete
+  verified zero return.
+- The terminal OpenQASM exporter can consume the original accepted handle of
+  a closed typed source program. It emits a wire-level projection of a Unit
+  result, or of a positive-width product of measured bits, in the verified SSA
+  output order.
+- Nominal results, zero-width components of products and source parameters
+  are outside this projection (`unsupported`). Typed QIRF transport is a
+  separate obligation.
+- A nontrivial uncontrolled scalar has no realization in this gate vocabulary
+  (`unsupported`).
+- External schema entries stay disabled until their binding gates are
+  completed.
+- The OpenQASM 3 and QIR adapters are experimental test features. They are
+  not suitable for real quantum hardware.
+
+> **Implementation note.** A borrowed cursor expands the actual retained
+> function circuits, including nested controls, adjoints and ordered axis
+> maps. The exporter then merges adjacent diagonal actions.
+
+### Code, tests, proof, preservation and specification review
+
+Code:
+
+- The native comparisons, the placement replay and the resource report are
+  bounded implementation checks. Each covers the profile that its section
+  states.
+- General specialization certificates and general diagnostic coverage are
+  open work.
+
+Tests:
+
+- The regression named in
+  [Small obstruction examples](#small-obstruction-examples) covers the two
+  obstruction examples.
+- A Rust and Lean regression binds the same emitted OpenQASM bytes to two
+  original clean intervals. It checks their placement, exact restoration and
+  readout.
+- The independent `scripts/test_review_v024.py` oracle checks emitted small
+  QFT and control circuits, including complex phase, output axes and
+  zero-return scratch. Such bounded numerical validation is distinct from a
+  general transformation proof and from a resource certificate.
+
+Proof, for the QPTL library:
+
+- `controlled_mul` proves the operator identity that composes the exact
+  sector equations of a controlled composition.
+- `controlled_pow` proves the corresponding operator identity for powers.
+- `controlled_phase_ne` proves that a scalar phase on the active block alone
+  changes the controlled operator. It holds for any nontrivial scalar on a
+  nonzero operator.
+- `dilation_recover_reference` derives the image-restricted recovery equation
+  of an isometry from the exact forward square and the unitary implementation
+  law.
+- `extracted_sixteenth_ne` proves the coefficient obstruction of
+  [Exact target-domain membership](#exact-target-domain-membership).
+- `QPTL.FiniteMatrix.det_embedded` proves the determinant formula of an
+  embedded gate, for finite matrix bases and simultaneous reindexing of both
+  interfaces.
+- `QPTL.FiniteMatrix.exact_same_wire_obstruction` covers a product of
+  generators whose determinants lie in a multiplication-closed set that
+  contains one. Such a product cannot equal a requested matrix with
+  determinant outside that set. The premises retain the chosen target
+  vocabulary, layout and exact phase.
+
+Proof, for source workspace on the finite one-scratch checker:
+
+- `WorkspaceTargetAction.clean_checked_separates` uses the exact checked
+  insertion and output coefficients with the fixed-scratch law of QPTL. The
+  joint output density has support only in the zero-scratch block, for every
+  input density on data and a reference.
+- `WorkspaceTargetAction.dirty_checked_promotion` binds every coefficient of
+  the actual body to the logical operator promoted on the ordered data axes.
+- `WorkspaceTargetAction.dirty_checked_reference` applies that action to each
+  joint reference column. It proves that every selected input coordinate
+  retains the scratch bit of the output.
+- `Qleisli.WorkspaceTargetAction.decoded_action` connects the exact action of
+  a decoded workspace slice to the literal Raw body on its full ordered data
+  and scratch interface. The equality preserves the original phase for
+  arbitrary reference columns.
+- `native_clean_access_counted_once` covers each reserved clean wire. It
+  links native placement success to the literal reset of the wire and to one
+  unique restoration interval for every emitted gate that touches it. It also
+  places the interval inside the counted target gates and excludes the scratch
+  wire from terminal readout.
+
+Proof, for synthesis scratch:
+
+- `WorkspaceTargetAction.synthesis_action` connects the actual decoded gate
+  word to the original local operator under the canonical zero encoding. It
+  proves equality with full phase on every external reference column, with
+  zero amplitude whenever any synthesis scratch bit is nonzero. The checked
+  placement replay recovers this evidence at the original Raw position and
+  physical gate offset, for a single circuit event or an optimized span.
+- `WorkspaceTargetAction.bound_synthesis_action` connects the replay before a
+  source workspace to that exact action.
+- `WorkspaceTargetAction.native_suffix_synthesis_action` connects the
+  terminal suffix of the native decision to that exact action.
+- In both theorems, the equation uses the original circuit steps on the
+  recovered support with their dependencies. Reindexing the checked local
+  steps by the ordered layout of data and synthesis scratch recovers the same
+  emitted instruction slice. The decoder establishes the arity and the
+  distinct, in-range operands of each instruction.
+- The full physical register action on a fixed spectator slice therefore
+  agrees with the checked local word, for arbitrary input amplitudes and
+  external references. The literal gate interval and its synthesis scratch
+  locations are within the reported gate and register counts.
+
+Proof, for the resource report:
+
+- A Lean theorem proves that the decoded register width bounds the maximum
+  Raw live width over the workspace occurrences that the replay visits. The
+  bound includes caller spectators and temporary clean wires.
+- The native reply theorem binds the reported counts to the exact target
+  bytes. It proves that the reserved width is within the requested target
+  capacity.
+- `Qleisli.TerminalPlacement.native_terminal_correspondence` relates the same
+  successful native decision to the selected original Raw root. Immediately
+  before terminal measurement, after all decoded gates have run from reset,
+  the entire physical complex column agrees with the corresponding pure Raw
+  prefix under its ordered placement, including phase and restored scratch.
+- By the same theorem, the final measurement distribution agrees for every
+  public result word after summing the original hidden outcomes. The theorem
+  also binds the resource counts of the reply and its workspace peak bound to
+  that same checked packet.
+
+Proof, for computed scopes:
+
+- `Qleisli.RuntimeComputedResources.structural_counts` binds the counts of a
+  structural `with_computed` interval to the same original source-checked Raw
+  occurrence. It retains caller spectators in the peak width.
+- `QleisliKernel.Qirf.StructuralComputedRaw.read_work` proves the debit of
+  the executable Raw interval reader.
+- `QleisliKernel.Qirf.StructuralComputedUse.read_circuit_work` identifies the
+  work state after the source-bound compute and inverse comparisons and before
+  the check of the emitted auxiliary action.
+- The same literal XOR factorization proves the logical action for the
+  independently checked Raw event, even for an arbitrary caller amplitude
+  function. The source-bound theorem additionally identifies the predicate and
+  the phase from the original body. The complete pure Raw event fold uses the
+  local logical action without constructing a global matrix.
+- `BoundSegment.structural_paid` and `FinishedTrace.suffix_structural_paid`
+  each recover the checked placement and the gate interval from the executable
+  replay.
+- `StructuralPlacement.literal_costs` binds that interval, and the distinct
+  data and scratch locations, to the decoded gate and reset counts.
+- `ProtectedTablePlacement.literal_costs` ties the decoded interval of a
+  finite-table computed scope, and its distinct physical locations, to the
+  reported gate and reset counts.
+
+Proof, for engineering claims:
+
+- The proof of the pure comparison bounds the explicitly selected Euclidean
+  operator norm, including arbitrary finite external references and literal
+  scalar phase.
+- Pure composition proofs establish additive sequential and ordered tensor
+  error rules for the same Euclidean metric, under the stated exact isometry
+  premises, including arbitrary references.
+- The coherent-control corollary additionally requires equal domain and
+  codomain and the independent access meanings.
+- These mathematical rules do not change the single-component profile, and
+  they supply no compiler or lowering preservation.
+- Independent mathematical composition of instruments uses the actual Kraus
+  families. Full Gram completeness implies adjoint contraction at every finite
+  reference.
+- A literal pure operator gap `delta` and both pure Gram equations imply the
+  one-way instrument bound `2*delta`. No phase information is recovered.
+- Feed-forward composition retains the public `(y,z)` outcomes and the hidden
+  `(h,k)` histories. Ordered tensor composition retains the declared left and
+  right input, output, public and hidden products through explicit proved
+  reference regrouping.
+- Both constructions have additive `epsilon_1 + epsilon_2` bounds under their
+  stated component bounds and Gram premises.
+- Separate completeness theorems require both original Gram equations. A
+  bound alone does not establish them.
+- These results provide no compiler consumption and no composition-preservation
+  proof for original source or QIRF.
+
+Preservation:
+
+- An engineering result does not establish source preservation or target
+  preservation. A location in a diagnostic supplies no certificate.
+- The two admitted QLV1 guarantees cover original-root ownership and
+  classical scope. They do not certify source lowering, target emission or
+  quantitative bounds.
+- QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01 are pending, as the
+  [initial guarantees](../design/initial-guarantees.md) record. No statement
+  of this chapter discharges one of them, and this chapter admits no
+  guarantee.
+
+Specification review:
+
+- The standard gate interpretation of the literal OpenQASM profiles is an
+  explicit specification assumption. This chapter records no specification
+  review of its rules.
+
+## History
+
+- This chapter was written as the 0.3.0 boundary between the meaning of a
+  program and a claimed target implementation. Its governing decisions are
+  [#120](https://github.com/MGYamada/Qleisli/issues/120),
+  [#121](https://github.com/MGYamada/Qleisli/issues/121),
+  [#127](https://github.com/MGYamada/Qleisli/issues/127),
+  [#280](https://github.com/MGYamada/Qleisli/issues/280) and
+  [#281](https://github.com/MGYamada/Qleisli/issues/281). #280, which reserves
+  the Resource Safety theorem inside edition 2026, is open.
+- [#124](https://github.com/MGYamada/Qleisli/issues/124) separated instrument
+  semantics from target measurement and feed-forward realizability.
+  [#126](https://github.com/MGYamada/Qleisli/issues/126) defined the
+  correspondence between logical axes and the physical layout.
+- The future
+  [target capability schema](https://github.com/MGYamada/Qleisli/issues/179)
+  is open work of 0.4.0. QCP and concrete target schemas are scheduled in
+  [#103](https://github.com/MGYamada/Qleisli/issues/103), which is also open.
+- [#28](https://github.com/MGYamada/Qleisli/issues/28),
+  [#44](https://github.com/MGYamada/Qleisli/issues/44) and
+  [#47](https://github.com/MGYamada/Qleisli/issues/47) tracked the static
+  language and the specialization implementation. All three are closed.
+- The exact clean and dirty requirements come from
+  [#70](https://github.com/MGYamada/Qleisli/issues/70),
+  [#156](https://github.com/MGYamada/Qleisli/issues/156) and
+  [#157](https://github.com/MGYamada/Qleisli/issues/157).
+- [#31](https://github.com/MGYamada/Qleisli/issues/31) fixed the boundary
+  between exact and approximate semantics.
+  [#123](https://github.com/MGYamada/Qleisli/issues/123) defined exact
+  target-domain membership. Both are closed.
+- The human-adopted EXACT-2026-01 interpretation is recorded in
+  [#311](https://github.com/MGYamada/Qleisli/issues/311).
+- [#163](https://github.com/MGYamada/Qleisli/issues/163) required closed
+  approximation budgets before target resource certification. It is closed.
+  The changelog records the native comparisons and the resource limits of the
+  literal OpenQASM comparison under 0.3.0-beta. It records the literal
+  OpenQASM gate comparison after that release, under #163.
+- [#165](https://github.com/MGYamada/Qleisli/issues/165) defined the exact
+  phase words and the target-dependent non-Clifford costs. It is closed.
+- General specialization certificates and diagnostic coverage are part of the
+  Language Reference work in
+  [#48](https://github.com/MGYamada/Qleisli/issues/48), which is open. #120
+  and #127 are closed.
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
