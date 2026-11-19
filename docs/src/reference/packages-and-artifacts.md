@@ -603,6 +603,13 @@ standalone and linked checking records the two Qleisli identities separately.
 The registry artifact and host checks control which linked pair may be
 described as an official distribution.
 
+> **Implementation note.** The qleisliup toolchain manifest records
+> `qleisli`, `std`, `qargo` and `qargo_checker_qleisli` separately. Its
+> release manifest binds a host archive by SHA-256 and size. The Qleisli
+> distribution report binds the checked commit and tree to the crate digest,
+> complete source archive and installation checks. A qleisliup development
+> link selects a local directory under its own inspection contract.
+
 ### Version-drift checks
 
 Derive or check repeated manifests and runtime version fields from their
