@@ -1,96 +1,148 @@
 # Coherent basis maps
 
-This chapter specifies the coherent basis-map expression adopted for
-`0.3.0-beta` in constitutional edition 2026 through
-[Issue #81](https://github.com/MGYamada/Qleisli/issues/81). It is subordinate to
-the [authority hierarchy](authority.md) and uses the existing
-[ordinary types and quantum-owner rules](type-model.md). The syntax changes;
-the existing CoherentLift semantic obligation and finite lowering remain.
+A **coherent basis map** applies a function on basis labels to one quantum
+owner. The expression `basis q as p { e }` consumes a `Q<A>` owner, sends each
+basis state `|a>` to `|f(a)>` with coefficient `+1`, and returns a `Q<B>`
+owner. The function `f` must be injective.
 
-## Syntax and scope
+This chapter is subordinate to the [authority hierarchy](authority.md). It
+uses the [ordinary types and quantum-owner rules](type-model.md).
+
+## Syntax
 
 ```text
 CoherentBasisExpr ::= "basis" Expr "as" Pattern "{" BasisExpr "}"
 ```
 
-`Expr` is an existing quantum input expression. It evaluates completely and
-once before the pattern is bound. It must produce **one** `Q<A>` owner. A
-tuple `(Q<A>,Q<B>)` is not one such owner and is not implicitly joined. The
-complete ordinary basis tree A, rather than its width alone, determines the
-pattern's type.
+`Expr` is the **input**, `Pattern` is the **binder** and `BasisExpr` is the
+**body**. `basis` is a reserved word. `as` is contextual: it is a keyword at
+this separator and an identifier elsewhere.
 
-`Pattern` uses the existing name, wildcard, Unit and ordered tuple forms.
-It binds ordinary labels of A for this basis computation, never runtime
-quantum owners. Exact arity and nesting remain mandatory. An ordinary tuple
-pattern over A does not perform runtime quantum `split`. Duplicate names and
-static-name collisions retain the ordinary pattern checks.
+## The input
 
-The braces contain exactly one existing `BasisExpr`, not an ordinary block.
-The admitted forms are bound labels, `()`, `0`/`1`, grouping, ordered tuples,
-`not`, `and`, `xor`, calls to declared `classical fn` functions with their exact
-argument-list arity and types, and the existing nullary ordinary
-`empty_bits()` language primitive constructor, requiring no import. The constructor produces the exact
-`Bits<0>` label; it introduces no quantum owner. Its resolved primitive identity
-and checked signature are required, so an ordinary same-spelled function gains
-no special permission. A literal coordinate read `word[k]` uses the ordinary
-`Bits<n>` rule and requires `k < n`. Other quantum primitive calls remain excluded. There is no `let`, statement sequence, semicolon,
-measurement, ordinary runtime call or nested coherent map in this body.
-`classical fn` declares total ordinary computations. Its body can also be called
-on ordinary runtime values, including measured Bits, under the
-[classical declaration rules](source-text.md#total-classical-declarations).
+The input is an existing quantum input expression.
 
-The body's runtime-value context consists only of its pattern's ordinary
-labels. It cannot capture an outer ordinary value or quantum owner, even if
-that value is immutable. Declared classical functions and the static premises
-needed for their checking retain their normal resolution and dependency
-checks. A retained static premise is not an outer runtime-value capture.
-The input expression may itself contain an ordinary call or another coherent
-map; that input's effects and owner use remain checked before this map.
+Rules:
 
-`basis` is reserved. `as` is contextual at this separator and remains an
-identifier elsewhere. `do` and `pure` are retained only as reserved removal
-tokens. They have no accepted alias, general monadic bind, injection or state
-preparation meaning.
+- The input must produce **one** `Q<A>` owner. A tuple `(Q<A>,Q<B>)` is not one
+  owner, and the checker joins nothing implicitly. An input with another owner
+  shape is a type error.
+- The input evaluates completely, and once, before the binder is bound.
+- The input may contain an ordinary call or another coherent map. Its effects
+  and its owner use are checked before this map.
+- The map consumes the input owner once and returns one `Q<B>` owner. Using
+  the old binding again is an ownership error.
 
-As this concrete consequence of the [Haskell/Qleisli boundary in #80](https://github.com/MGYamada/Qleisli/issues/80),
-Qleisli has no general quantum-core `Monad` or `do` syntax. This migration does
-not complete that broader boundary audit.
+## The binder
 
-## Meaning, injectivity and effects
+The binder is a pattern over the ordinary basis tree `A`. It uses the existing
+name, wildcard, Unit and ordered tuple forms.
+
+Rules:
+
+- The complete basis tree `A` determines the type of the pattern. Its width
+  alone does not. The arity and the nesting of the pattern must match `A`.
+- The binder binds ordinary labels of `A` for this basis computation. It never
+  binds runtime quantum owners.
+- A tuple pattern over `A` performs no runtime quantum `split`.
+- Duplicate names and collisions with static names are errors, as for every
+  ordinary pattern.
+
+## The body
+
+The braces hold one `BasisExpr`. They do not hold an ordinary block.
+
+| Form | Meaning |
+| --- | --- |
+| A name that the binder binds | That label |
+| `()` | The Unit label |
+| `0`, `1` | A Bit label |
+| `(e)`, `(e1, e2, ...)` | Grouping, and an ordered tuple |
+| `not e`, `e1 and e2`, `e1 xor e2` | Boolean operations on Bit labels |
+| `f(e1, ...)` | A call of a declared `classical fn` |
+| `empty_bits()` | The `Bits<0>` label |
+| `word[k]` | Coordinate `k` of a `Bits<n>` label |
+| `Type::Variant`, `Type { field: e, ... }`, `e.field` | A nominal label, a record label and a field of one |
+| `match e { Type::Variant => e1, ... }` | Selection on a nominal label |
+
+[Total classical declarations](source-text.md#total-classical-declarations)
+gives the rules of `classical fn`, and
+[Parsed finite type declarations](source-text.md#parsed-finite-type-declarations)
+gives the nominal forms. A `classical fn` declares a total ordinary
+computation. A program may also call it on ordinary runtime values, including
+measured Bits.
+
+Rules:
+
+- A call must name a declared `classical fn` and must match its argument-list
+  arity and types. A call of an ordinary or a measuring function is rejected,
+  because that function is not a classical function.
+- `empty_bits()` is the nullary language primitive constructor. It needs no
+  import, and it introduces no quantum owner. The checker requires its resolved
+  primitive identity and its checked signature, so an ordinary function with
+  the same spelling gains no special permission.
+- A coordinate read `word[k]` must use a literal `k` with `k < n`, as the
+  ordinary `Bits<n>` rule requires.
+- The body must not call any other quantum primitive.
+- The body must not contain `let`, a statement sequence, a semicolon, a
+  measurement, an ordinary runtime call or a nested coherent map.
+- The runtime values of the body are the labels that the binder binds, and
+  nothing else. The body must not capture an outer ordinary value or an outer
+  quantum owner, even an immutable one. An outer value in the body is unbound.
+- Declared classical functions, and the static premises that their checking
+  needs, keep their normal resolution and dependency checks. A retained static
+  premise is not an outer runtime-value capture.
+- The body may nest to 64 levels.
+
+## Meaning
 
 For fixed valid static premises, the body denotes a total ordinary function
-`f: A -> B`. A coherent map requires f to be injective on the complete domain.
-Its exact linear action is
+`f: A -> B`. The map acts linearly:
 
 ```text
 V_f |a> = |f(a)>
 V_f (sum_a alpha_a |a>) = sum_a alpha_a |f(a)>
 ```
 
-Every basis transition has coefficient **`+1`**. The map preserves input
-amplitudes and their phase, rather than choosing a phase convention after the
-fact. With an arbitrary retained reference R its action is `V_f tensor I_R`;
-the input need not be separable from R. B's complete ordered basis tree fixes
-the output labels and axis order. No implicit reassociation, flattening,
-same-width conversion or axis permutation is inserted.
+Rules:
 
-Injectivity makes this an isometry. A bijection between equal finite domains
-is unitary; a map into a larger basis space contributes Isometry effect. The
-common source checker records an injectivity obligation and determines its
-effect conservatively from the available exact basis/width premises. Equal
-width is an effect fact, not injectivity evidence. An unresolved check cannot
-be replaced by an annotation, favorable example, runtime test or name.
+- `f` must be injective on the complete domain `A`. A body that gives two
+  inputs the same label is an error (`ownership`).
+- The body must have one output type for every input label.
+- Every basis transition has coefficient **`+1`**. The map preserves the input
+  amplitudes and their phase. It does not choose a phase convention after the
+  fact.
+- With an arbitrary retained reference `R`, the action is `V_f tensor I_R`.
+  The input need not be separable from `R`.
+- The complete ordered basis tree `B` fixes the output labels and the axis
+  order. The checker inserts no reassociation, flattening, same-width
+  conversion or axis permutation.
+- The map discards no input and measures no label.
 
-The finite lowering evaluates every input label in its supported bounded
-domain, requires one fixed exact output type, rejects repeated output labels
-and constructs the existing `LiftBasis` table. It preserves the existing
-ordered wire list and extends it for an admitted larger output basis. The
-native checker independently checks the resulting proposal. The expression
-consumes the input owner once and returns one `Q<B>` owner; the old binding
-cannot be reused. Its total effect also includes every operation performed by
-the input expression. It does not discard an input or measure a label.
+## Effects
 
-For example:
+Injectivity makes the map an isometry. A bijection between equal finite
+domains is unitary. A map into a larger basis space has the Isometry effect.
+
+Rules:
+
+- The effect of the expression includes every operation that the input
+  expression performs.
+- The checker records an injectivity obligation. It determines the effect
+  conservatively from the available basis and width premises.
+- Equal width is an effect fact. It is not evidence of injectivity.
+- An annotation, a favourable example, a runtime test or a name must not
+  replace an unresolved check.
+
+> **Implementation note.** The finite lowering evaluates every input label in
+> its supported bounded domain, rejects repeated output labels and constructs a
+> `LiftBasis` table. It preserves the ordered wire list and extends it for an
+> admitted larger output basis. The native checker checks the resulting
+> proposal independently.
+
+## Examples
+
+The checker accepts both functions:
 
 ```qli
 fn invert(q: Q<Bit>) -> Q<Bit> {
@@ -102,88 +154,137 @@ fn correlate(q: Q<Bit>) -> Q<(Bit,Bit)> {
 }
 ```
 
-The second function maps `alpha|0> + beta|1>` to
-`alpha|00> + beta|11>`. It can create entanglement; it does not produce the
-tensor square of an arbitrary quantum state. Copying an ordinary basis label
-inside an injective map is therefore distinct from duplicating a quantum
-owner. In contrast, `basis q as x { 0 }` on `Q<Bit>` rejects: the two inputs
-collide. An ordinary classical `if` or runtime `let` does not inspect an
+`correlate` maps `alpha|0> + beta|1>` to `alpha|00> + beta|11>`. It can create
+entanglement. It does not produce the tensor square of an arbitrary quantum
+state. Copying an ordinary basis label inside an injective map is therefore
+distinct from duplicating a quantum owner.
+
+The checker rejects `basis q as x { 0 }` on `Q<Bit>`, because the two inputs
+collide. An ordinary classical `if` or a runtime `let` does not inspect an
 unmeasured quantum input, and `pure 0` does not prepare one.
 
-The Unit case has the same contract: `basis q as () { () }` has coefficient
+The Unit case has the same contract. `basis q as () { () }` has coefficient
 `+1` on the one-dimensional basis and returns a `Q<Unit>` owner. It preserves
-any scalar phase already on q. That owner cannot disappear because its
+any scalar phase already on `q`. That owner cannot disappear because its
 physical width is zero.
 
-## Migration and diagnostics
+## Removed `do` and `pure` forms
 
-| Removed source | Current source |
+`do` and `pure` are reserved words that the parser rejects. They have no
+accepted alias, and they have no meaning as a general monadic bind, an
+injection or a state preparation. Qleisli has no general quantum-core `Monad`
+and no `do` syntax.
+
+| Removed source | Source |
 | --- | --- |
 | `do x <- q; pure not x` | `basis q as x { not x }` |
 | `do (x,y) <- q; pure (y,x)` | `basis q as (x,y) { (y,x) }` |
 | `do () <- q; pure ()` | `basis q as () { () }` |
 
-Keep the same input expression, pattern and basis expression. A rewrite cannot
-repair a noninjective body, outer capture, owner reuse or unsupported concrete
-profile. The parser rejects both retired tokens and explains the canonical
-`basis q as p { e }` form, coherent basis-map meaning, lack of monadic bind or
-measurement, and lack of a `pure` preparation operation. It must not suggest
-that an old spelling remains accepted.
+Rules:
 
-Other diagnostics retain their actual stage: an input with the wrong owner
-shape is a type error; an isolated body's outer value is unbound; an ordinary
-or measuring call is not a classical function; a finite map with colliding labels
-fails injectivity; reuse of the consumed input fails ownership. Text and JSON
-diagnostics retain original source locations and the frontend's public code
-and message. A syntax suggestion must not bypass these semantic requirements.
+- A migration keeps the same input expression, pattern and basis expression.
+- A rewrite cannot repair a noninjective body, an outer capture, owner reuse or
+  an unsupported concrete profile.
+- The parser rejects both words. Its message gives the `basis q as p { e }`
+  form and states that the form is a coherent basis map, that it is neither a
+  monadic bind nor a measurement, and that no `pure` preparation operation
+  exists. The message must not suggest that an old spelling is accepted.
 
-The public Qleisli library and CLI produce these frontend diagnostics. The
-external qargo project implements qlippy as a consumer of Qleisli checking and
-diagnostics; this repository supplies no qlippy command. Its actual consumer
-integration is excluded from this migration's completion conditions by the
-maintainer's explicit decision. No updated qlippy integration is claimed.
-Any later claim of support must validate its actual consumer version and
-diagnostic forwarding against this grammar; a Reference contract or a
-Qleisli CLI test alone does not establish that integration.
+## Diagnostics
 
-## Concrete profiles and proof boundary
+Each failure keeps the stage that finds it:
 
-Both finite and selected loading parse this form into the same original
-`CoherentLift` AST and apply the same complete source judgment. Selected
-elaboration retains the original binder, use-site and declaration identities
-and evaluates the complete bounded label domain, including closed classical
-helpers. Selected Raw lowering emits the existing `LiftBasis`; its separate
-source-step comparison binds the exact retained table, ordered wires, owner
-transitions and effects to the emitted instructions. The opaque `SourceStep`
-exposes `kind() == "lift_basis"` and a read-only `basis_table()` view of the
-untrusted coefficient-+1 labels. This view supplies no accepted handle or proof
-of the preceding source elaboration.
+| Failure | Report |
+| --- | --- |
+| An input with the wrong owner shape | A type error |
+| An outer value in the body | An unbound name |
+| A call of an ordinary or a measuring function in the body | Not a classical function |
+| A finite map with colliding labels | An injectivity failure, with the code `ownership` |
+| Reuse of the consumed input | An ownership error |
 
-Selected tables require at most eight input/output bits and preserve the
-existing type-tree, depth, work, call and storage bounds. Square maps may use
-the existing independently checked finite operation-access path; unitarity
-alone grants no inverse or control. Selected hierarchy lowering admits ordinary
-coherent lifts only for the exact singleton coefficient-+1 table `[0]`:
-`Q<Unit>` or `Q<Bits<0>>` to either zero-width type, or to `Q<Bit>` prepared in
-zero. The structural/preparation proposals retain the original source step,
-complete ordered owner frames and actual root/child links, and still require
-independent native acceptance. This bounded untrusted replay is not a proof of
-source elaboration or general source preservation. Other coherent tables and
-table-dependent static operation transforms, including zero repetition, remain
-unsupported. Preparation after observation remains unsupported in this
-hierarchy profile. Finite project lowering admits complete
-closed Basis/Nat instances and ordinary/quantum registers within its twelve-bit
-capacity. `Bits<0>` is
-never replaced by Unit, and its quantum owner remains linear. Every concrete
-unused finite declaration still requires checking. A lowering or native failure
-cannot fall back to a weaker acceptance route.
+Text and JSON diagnostics retain the original source locations and the
+frontend's public code and message. A syntax suggestion must not bypass these
+semantic requirements. [Diagnostics and recovery](diagnostics.md) gives the
+codes of each route.
 
-This migration creates no new semantic primitive, native schema, accepted
-handle, constitutional interpretation or guarantee admission. The scoped
-ordinary QLV1 ownership and classical-scope guarantees retain their recorded
-premises. Full QS, source preservation, forward PR correspondence and
-quantitative RS remain separately pending under the adopted interpretations
-and exactness boundary. Historical first sources, diagnostics and artifacts
-remain unchanged beside explicit current migration derivatives.
+<a id="concrete-profiles-and-proof-boundary"></a>
+
+## Status and limits
+
+Both finite loading and selected loading parse the form into the same
+`CoherentLift` syntax tree and apply the same complete source judgment. The
+profiles differ in the maps that they lower:
+
+| Profile | Coherent basis maps that it lowers |
+| --- | --- |
+| Finite project | Complete closed Basis/Nat instances, and ordinary and quantum registers, within its twelve-bit capacity |
+| Selected Raw | Tables of at most eight input and output bits, within the type-tree, depth, work, call and storage bounds of the profile |
+| Selected hierarchy | Only the singleton coefficient-`+1` table `[0]`: from `Q<Unit>` or `Q<Bits<0>>` to either zero-width type, or to `Q<Bit>` prepared in zero |
+
+Limits that apply to these profiles:
+
+- Selected elaboration retains the original binder, use-site and declaration
+  identities. It evaluates the complete bounded label domain, including closed
+  classical helpers.
+- Selected Raw lowering emits `LiftBasis`. A separate source-step comparison
+  binds the retained table, the ordered wires, the owner transitions and the
+  effects to the emitted instructions.
+- The opaque `SourceStep` exposes `kind() == "lift_basis"` and a read-only
+  `basis_table()` view of the untrusted coefficient-`+1` labels. This view
+  supplies no accepted handle and no proof of the preceding source
+  elaboration.
+- A square map may use the independently checked finite operation-access path.
+  Unitarity alone grants no inverse and no control.
+- In the selected hierarchy profile, the structural and preparation proposals
+  retain the original source step, the complete ordered owner frames and the
+  root and child links. They require independent native acceptance. This
+  bounded untrusted replay is not a proof of source elaboration or of general
+  source preservation.
+- The selected hierarchy profile does not support other coherent tables,
+  table-dependent static operation transforms, including zero repetition, or
+  preparation after observation.
+- Selected roots and ordinary project roots can use coherent basis maps over
+  nominal labels, as the [type model](type-model.md) describes.
+- `Bits<0>` is never replaced by Unit, and its quantum owner stays linear.
+- Every concrete unused finite declaration requires checking.
+- A lowering failure or a native failure cannot fall back to a weaker
+  acceptance route.
+
+Proof status:
+
+- The form creates no semantic primitive, native schema, accepted handle,
+  constitutional interpretation or guarantee admission.
+- The scoped ordinary QLV1 ownership and classical-scope guarantees retain
+  their recorded premises.
+- Full QS, source preservation, forward PR correspondence and quantitative RS
+  are pending under the adopted interpretations and the exactness boundary.
+
+Tooling:
+
+- The public Qleisli library and the CLI produce the diagnostics above.
+- The external qargo project implements qlippy as a consumer of Qleisli
+  checking and diagnostics. This repository supplies no qlippy command, and
+  this chapter claims no qlippy integration.
+- A later claim of qlippy support must validate the consumer version and its
+  diagnostic forwarding against this grammar. A Reference contract or a
+  Qleisli CLI test alone does not establish that integration.
+
+## History
+
+- The `basis q as p { e }` expression was adopted for edition 2026 through
+  [Issue #81](https://github.com/MGYamada/Qleisli/issues/81). This chapter
+  first named `0.3.0-beta` as its release; the changelog records the change
+  under 0.3.0-alpha.
+- The expression replaced the Haskell-style `do ... pure ...` form. The syntax
+  changed. The CoherentLift semantic obligation and the finite lowering are
+  those of the earlier form.
+- The removal of `do` and `pure` is a concrete consequence of the
+  [Haskell/Qleisli boundary in #80](https://github.com/MGYamada/Qleisli/issues/80).
+  The migration does not complete that broader boundary audit.
+- The maintainer excluded the qlippy consumer integration from the completion
+  conditions of the migration by an explicit decision.
+- Historical first sources, diagnostics and artifacts are unchanged. They sit
+  beside explicit migration derivatives.
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

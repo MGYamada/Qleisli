@@ -1,117 +1,295 @@
 # Static values, constraints and bounded specialization
 
-This chapter specifies the implemented static fragment in 0.3.0-beta, under
-the [type boundary](type-model.md) and [authority hierarchy](authority.md).
-It records the existing rules tracked by
-[#28](https://github.com/MGYamada/Qleisli/issues/28),
-[#47](https://github.com/MGYamada/Qleisli/issues/47),
-[#44](https://github.com/MGYamada/Qleisli/issues/44) and
-[#63](https://github.com/MGYamada/Qleisli/issues/63). It does not introduce a
-general compile-time programming language. General builders and static collections
-remain separate work under #60/#61 and #63; the bounded static contract does
-not discharge quantitative Resource Safety.
+A **static computation** is a deterministic, terminating computation that
+elaboration performs before any runtime step. Its result is an admitted size,
+an exact constant, a closed description of an operation, or an input to the
+check of a constraint or of a capability.
 
-## Static categories and binding
+This chapter specifies the static computations of edition 2026. It covers
+static parameters, natural expressions, `requires` clauses, static bindings,
+Nat helpers, static branches and folds, operation descriptions, and the
+specialization of a generic declaration. It is subordinate to the
+[type boundary](type-model.md) and the [authority hierarchy](authority.md).
+It does not define a general compile-time programming language.
 
-The static computation class consists of deterministic, terminating elaboration
-computations whose results are admitted sizes, exact constants, closed operation
-descriptions or constraint/capability inputs. Its evaluator has only the
-explicit static environment and admitted ordinary finite labels; it has no live
-quantum owner, runtime input, host environment or execution authority. Results
-are normalized/resolved before canonical Core. An operation description must
-still satisfy its independent evidence and native acceptance obligations.
+Two terms recur in every section:
 
-This semantic class is the 0.3.0 decision in
-[#40](https://github.com/MGYamada/Qleisli/issues/40). It does not stabilize a
-general public `static fn`, `const fn` or builder API: those spellings, static
-lambdas and quotation/splicing remain choices for #60/#61 in 0.4.0. Any later
-0.3.0 helper spelling is provisional unless separately stabilized. Existing
-specified forms retain their own contracts; this class alone grants no syntax
-or new result type. The maintainer retains #63's unimplemented bounded-const
-and collection criteria outside v0.3.0, including beta. This supersedes the
-earlier alpha-only deferral; it is not implementation completion. The scalar
-fragment and provisional helpers specified here remain supported.
+- The **common judgment** is the check of the original source of every
+  declaration. It precedes every concrete elaboration.
+- A **closed instance** is a declaration with a concrete value bound to each
+  of its static parameters.
 
-`Nat` denotes a nonnegative static integer. It is not a runtime integer or an
-ordinary `Bit`. `Basis` denotes an exact finite type tree, and `Op<A>` denotes
-a static operation description over that tree. The explicit
-[`Op<A -> B>` form](type-model.md#general-pure-operation-arrows) retains separate
-exact input/output trees; its comma slot remains a Meaning refinement.
-None is a live `Q<A>` owner.
-Runtime values, measurement results and quantum owners cannot determine a
-static size, operation provider, static condition or loop bound.
+The CLI checks source through two [routes](diagnostics.md#routes), the project
+route and the selected-entry route. Both run the common judgment. Each
+elaborates closed instances within its own limits.
 
-Compile-time parameters use an explicit contextual `const` marker, for example
-`const n: Nat` followed by `const U: Op<Bits<n>>` in a function header. Brackets supply
-specialization arguments; parentheses supply runtime arguments. `const` in
-this position is not a runtime value, a storage declaration or a general
-compile-time function API. Ordinary functions and locals named `const` retain
-ordinary name resolution. The old `[static name: Kind]` marker is rejected at
-that marker with a diagnostic instructing replacement by `const`, including
-when mixed with current markers. To migrate, replace each parameter-header
-marker and preserve parameter order, kinds and explicit arguments. This does
-not change `if static`, `qfor static`, `for static` or `static let`. Historical
-source bytes remain historical inputs; the production parser has no legacy
-header mode. See [#33](https://github.com/MGYamada/Qleisli/issues/33).
+A rule names, in parentheses, the common checker class of a program that
+breaks it, as in (`size`). The code `parse` marks a syntax error.
+[Codes](diagnostics.md#codes) maps each class to the `code` that a route
+reports.
 
-Static parameters are explicit, positional and ordered. A parameter's kind may
-refer only to earlier parameters. For example, declare `n: Nat` before
-`U: Op<Bits<n>>`. Duplicate names and forward kind dependencies reject. Source
-calls provide the complete ordered argument list; host entry selection provides
-the complete named binding set. Missing bindings are not inferred from a
-matching width or provider name.
+<a id="static-categories-and-binding"></a>
 
-An abstract Basis parameter remains opaque. Finiteness alone does not permit
-type reflection, preparation, tuple decomposition, control or an inverse.
-See [generic responsibilities](type-model.md#inference-and-generic-responsibilities)
-for the independent access and specialization rules.
+## Static categories
+
+A static computation reads the explicit static environment and the admitted
+ordinary finite labels. Static values have three categories.
+
+| Category | Values |
+| --- | --- |
+| `Nat` | A nonnegative static integer. It is not a runtime integer and not an ordinary `Bit`. |
+| `Basis` | An exact finite type tree. |
+| `Op<A>` | An **operation description**: a static description of an operation over the tree `A`. |
+
+The explicit [`Op<A -> B>` form](type-model.md#general-pure-operation-arrows)
+has separate exact input and output trees. Its comma slot holds a Meaning
+refinement. A **provider** is the operation that a static argument supplies
+for an `Op` parameter.
+
+Rules:
+
+- A static computation must not read a live quantum owner, a runtime input or
+  the host environment. It has no execution authority.
+- Elaboration normalizes or resolves each static result before canonical Core.
+- No value of a static category is a live `Q<A>` owner.
+- A runtime value, a measurement result or a quantum owner must not determine
+  a static size, a provider, a static condition or a loop bound.
+- An operation description must satisfy its independent evidence obligations
+  and its native acceptance obligations.
+- An abstract `Basis` parameter is opaque. Finiteness alone permits no type
+  reflection, preparation, tuple decomposition, control or inverse.
+  [Generic responsibilities](type-model.md#inference-and-generic-responsibilities)
+  give the independent access and specialization rules.
+- The class of static computations grants no syntax and no result type. Each
+  form that this chapter specifies keeps its own contract.
+
+## Static parameters
+
+```text
+StaticParameters ::= "[" StaticParameter ( "," StaticParameter )* "]"
+StaticParameter  ::= "const" Identifier ":" StaticKind
+StaticKind       ::= "Nat" | "Basis"
+                   | "Op" "<" BasisType ( "->" BasisType )? ( "," MeaningName )? ">"
+```
+
+A **static parameter** is a compile-time parameter of a declaration. The
+contextual marker `const` introduces it, as in `const n: Nat` followed by
+`const U: Op<Bits<n>>` in a function header. The **kind** of a static
+parameter is the annotation after its colon. At a call, brackets supply the
+static arguments and parentheses supply the runtime arguments.
+
+Rules:
+
+- `const` in a parameter header is not a runtime value, a storage declaration
+  or a general compile-time function API. An ordinary function or a local
+  named `const` keeps ordinary name resolution.
+- Static parameters are explicit, positional and ordered. The kind of a
+  parameter may refer only to earlier parameters. For example, `n: Nat` must
+  precede `U: Op<Bits<n>>`. A forward kind dependency rejects.
+- Two static parameters of one declaration must not share a name (`binding`).
+- A source call must supply the complete ordered list of static arguments
+  (`static-arity`).
+- Host entry selection must supply the complete named binding set (`static`).
+- The checker infers no missing binding from a matching width or from a
+  provider name.
+- The marker `static` in a parameter header rejects at that marker (`parse`),
+  also in a header that mixes it with `const`. The diagnostic instructs
+  replacement by `const`; see [Retired spellings](#retired-spellings). The
+  forms `if static`, `qfor static`, `for static` and `static let` keep the
+  word `static`.
+
+The checker accepts this declaration, which declares `n` before the kind that
+uses it:
+
+```qli
+pub unitary fn use_op[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { U(q) }
+```
+
+The checker rejects a forward kind dependency:
+
+```qli
+pub unitary fn f[const U:Op<Bits<n>>,const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires Applicable(U){U(q)}
+```
+
+The checker rejects the marker `static` in a header (`parse`):
+
+```qli
+pub fn f[static n:Nat](q:Q<Bit>)->Q<Bit>{q}
+```
 
 ## Natural expressions and constraints
 
-The current natural expression grammar contains nonnegative decimal literals,
-static Nat names, parentheses, `+`, `-` and `*`. Multiplication binds more
-tightly than addition/subtraction; operators at either level associate to the
-left. These forms are not runtime arithmetic. Calls to the checked acyclic Nat
-helpers below are supported. Division, remainder and arbitrary exponentiation
-are not admitted by this fragment.
+```text
+Natural       ::= NaturalFactor ( ( "+" | "-" ) NaturalFactor )*
+NaturalFactor ::= NaturalAtom ( "*" NaturalAtom )*
+NaturalAtom   ::= DecimalLiteral | Name | HelperCall | "(" Natural ")"
+Comparison    ::= Natural ( "==" | "!=" | "<" | "<=" | ">" | ">=" ) Natural
+```
 
-Symbolic normalization produces exact affine expressions over original static
-binder identities. Constant folding and multiplication by an expression that
-normalizes to a constant are supported. Multiplication of two expressions with
-nonzero symbolic terms rejects as unsupported nonlinear arithmetic. Thus
-`2*n+1` and `n+n+1` can denote the same size, whereas `n*n` is unsupported even
-if a caller later supplies a small concrete `n`.
+A **natural expression** denotes a static `Nat`. It consists of nonnegative
+decimal literals, static Nat names, parentheses, `+`, `-`, `*` and calls of
+checked acyclic [Nat helpers](#provisional-bounded-nat-helpers).
+Multiplication binds more tightly than addition and subtraction. Operators of
+one level associate to the left. A natural expression is not runtime
+arithmetic.
 
-Subtraction is exact, never wrapping or saturating. The current premises must
-establish that the right operand is no greater than the left operand before
-normalization proceeds. For example, `n-1` requires a sufficient guard such as
-`n >= 1`. An unresolved nonnegativity obligation rejects; substituting a
-convenient value later does not repair an invalid generic definition.
+A **premise** is a comparison that the checker may assume. The
+**constraint context** of a program point is the set of premises in force
+there.
 
-Comparisons are `==`, `!=`, `<`, `<=`, `>` and `>=`. Declared premises and static
-branch guards extend the current natural constraint context. Callee premises
-must follow from that context. Equality of symbolic sizes requires implications
-in both directions; equal physical width or failed counterexample search does
-not establish type equality.
+### Arithmetic
 
-The implementation uses a bounded exact linear implication procedure based on
-rational relaxation of integer constraints. A successful inconsistency check
-can establish an obligation. Incomplete search supplies no evidence and an
-unresolved required implication rejects. This is not a complete solver for
-integer arithmetic.
+Rules:
 
-Mathematical Nat arithmetic has no modular overflow semantics. The current
-symbolic implementation stores affine coefficients/constants as signed
-128-bit integers and uses checked arithmetic. Concrete selected-source
-specialization uses checked unsigned 32-bit naturals. Exceeding either
-representation is a capacity failure, not permission to wrap, truncate or
-approximate the value. Concrete negative subtraction also rejects.
+- A natural expression must not use division, remainder or arbitrary
+  exponentiation. The grammar admits none of them.
+- Symbolic normalization produces an exact affine expression over the
+  original static binder identities. It folds constants. It accepts
+  multiplication by an expression that normalizes to a constant.
+- A product of two expressions with nonzero symbolic terms rejects as
+  nonlinear arithmetic (`unsupported`). `n*n` rejects even if a caller later
+  supplies a small concrete `n`.
+- Subtraction is exact. It never wraps and never saturates. Before
+  normalization proceeds, the constraint context must establish that the
+  right operand is no greater than the left operand (`size`). For example,
+  `n-1` requires a guard such as `n >= 1`.
+- An unresolved nonnegativity obligation rejects. Substituting a convenient
+  value later does not repair an invalid generic definition.
+- Nat arithmetic has no modular overflow. A value that exceeds the capacity
+  of its representation is a capacity failure (`limit`). It gives no
+  permission to wrap, truncate or approximate. [Capacities](#capacities)
+  states each representation.
+- A concrete subtraction with a negative result rejects.
+
+The checker accepts this declaration, because `2*n+1` and `n+n+1` denote the
+same size:
+
+```qli
+pub unitary fn f[const n: Nat](q: Q<Bits<2*n+1>>) -> Q<Bits<n+n+1>> { q }
+```
+
+The checker rejects the nonlinear size (`unsupported`):
+
+```qli
+pub unitary fn f[const n: Nat](q: Q<Bits<n*n>>) -> Q<Bits<n*n>> { q }
+```
+
+The checker rejects the unguarded subtraction (`size`):
+
+```qli
+pub unitary fn f[const n: Nat](q: Q<Bits<n-1>>) -> Q<Bits<n-1>> { q }
+```
+
+### Comparisons and the constraint context
+
+The comparisons are `==`, `!=`, `<`, `<=`, `>` and `>=`.
+
+Rules:
+
+- Declared premises and static branch guards extend the constraint context.
+- The premises of a callee must follow from the constraint context of the
+  call (`size`).
+- Equality of two symbolic sizes requires implications in both directions.
+  Equal physical width does not establish type equality. A failed search for
+  a counterexample does not establish it either.
+- A required implication that the checker does not establish rejects.
+
+> **Implementation note.** `src/frontend/linear.rs` holds the implication
+> procedure. It is a bounded exact linear procedure that relaxes the integer
+> constraints to rational ones. A successful inconsistency check establishes
+> an obligation. An incomplete search supplies no evidence. Ordered binder
+> identities and deterministic collections fix its traversal and its
+> tie-breaking. `src/frontend/check/normalize.rs` normalizes natural
+> expressions for the common judgment.
 
 ## Unified `requires` obligations
 
-One comma-separated `requires` clause contains both natural comparisons and
-operation-access predicates. Both use the common original-source judgment and
-closed substitution checks, with their respective rules below. For example:
+```text
+RequiresClause      ::= "requires" Requirement ( "," Requirement )*
+Requirement         ::= Comparison | CapabilityPredicate
+CapabilityPredicate ::= ( "Applicable" | "Adjointable" | "Controllable" ) "(" Identifier ")"
+```
+
+One comma-separated `requires` clause holds two kinds of entries: numeric
+entries and capability requirements. A **numeric entry** is one of the six
+comparisons. Both kinds use the common judgment and the closed substitution
+checks.
+
+A **capability** is one of the three ways to use the provider of an operation
+description: Applicable, Adjointable and Controllable. A
+**capability requirement** is one of `Applicable(U)`, `Adjointable(U)` and
+`Controllable(U)` in a `requires` clause.
+
+| Capability predicate | Capability |
+| --- | --- |
+| `Applicable(U)` | Applicable: forward application |
+| `Adjointable(U)` | Adjointable: adjoint application |
+| `Controllable(U)` | Controllable: controlled application |
+
+A capability requirement describes justified access to the actual provider.
+It is separate from the Meaning of the provider and from its semantic
+unitarity.
+
+Rules:
+
+- A capability requirement must name an operation parameter of its
+  declaration. An unknown name rejects (`name`). A parameter of another kind
+  rejects (`access`).
+- A clause must not repeat a capability requirement (`access`).
+- Each capability is independent. Another capability requirement, an effect
+  annotation or a Meaning refinement supplies none.
+- The three adjective names are contextual in this clause. They construct no
+  operator, and an annotation alone grants no access.
+- The spellings `Apply(U)`, `Adjoint(U)` and `Controlled(U)` reject with
+  located migration diagnostics (`parse`); see
+  [Retired spellings](#retired-spellings).
+- A clause must not hold an arbitrary Boolean formula or a user-defined
+  constraint predicate. The clause admits no broader const language.
+
+The order of the entries matters, because a numeric entry can guard the
+arithmetic of a later entry.
+
+Rules:
+
+- The checker normalizes numeric entries in source order. While it checks the
+  arithmetic of an entry, only the preceding numeric entries extend the
+  initial Nat context.
+- A later guard does not repair an earlier unguarded subtraction. Thus
+  `requires n >= 1, n-1 <= 3` is well formed, and
+  `requires n-1 <= 3, n >= 1` rejects at `n-1` (`size`).
+- An intervening capability requirement adds no numeric fact and removes
+  none.
+- After this ordered check, the normalized numeric facts form a conjunction.
+  The capability requirements form the explicit capability assumptions of the
+  declaration.
+- The checker checks the original body under those facts, including both
+  static arms and empty fold bodies.
+
+A generic call and a closed instance each discharge the clause of the
+declaration that they use.
+
+Rules:
+
+- A generic call substitutes exact static arguments simultaneously. The
+  caller context must establish every numeric premise of the callee (`size`)
+  and every capability that the callee requires (`access`).
+- An unresolved premise or a missing capability rejects at its source
+  obligation.
+- A closed instance separately evaluates the checked numeric facts. It checks
+  the actual providers before the elaboration of the concrete body.
+- A false numeric premise rejects (`size`). The diagnostic identifies the
+  selected entry or the resolved provider, the failed predicate and the
+  original location of its clause.
+- A convenient closed instance does not validate an ill-formed generic
+  declaration.
+- These obligations compose with opaque `Basis` parameters, exact `Bits<n>`
+  sizes and the
+  [provider rules](type-model.md#inference-and-generic-responsibilities).
+  They introduce no runtime condition, owner conversion, semantic evidence or
+  native acceptance rule.
+
+The checker accepts this declaration. The guard `n >= 1` precedes the
+subtraction, and `Applicable(U)` permits the application:
 
 ```qli
 fn step[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>>
@@ -120,277 +298,477 @@ requires n >= 1, Applicable(U), n-1 <= 3 {
 }
 ```
 
-The numeric entries use the six comparisons above; the access entries are
-`Applicable(U)`, `Adjointable(U)` and `Controllable(U)`. An access entry must
-name an operation parameter of that declaration. Repeating the same access
-entry rejects. Each access is independent: neither another access, an effect
-annotation nor a Meaning refinement supplies it.
+The checker rejects a repeated capability requirement (`access`):
 
-Numeric entries are normalized in source order. While checking an entry's
-arithmetic, only preceding numeric entries extend the initial Nat context.
-Thus `requires n >= 1, n-1 <= 3` is well formed, whereas
-`requires n-1 <= 3, n >= 1` rejects at `n-1`: a later guard cannot repair an
-earlier unguarded subtraction. An intervening access entry adds no numeric
-fact and does not remove an earlier one. After this ordered well-formedness
-check, the normalized numeric facts form a conjunction; access entries form
-the declaration's explicit capability assumptions. The original body is
-checked under those facts, including both static arms and empty fold bodies.
+```qli
+pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U), Applicable(U) { q }
+```
 
-A generic call substitutes exact static arguments simultaneously and must
-establish every callee numeric premise and required operation path from the
-caller context. An unresolved premise or missing path rejects at its source
-obligation. A closed instance separately evaluates the checked numeric facts
-and checks the actual providers before concrete body elaboration. A false
-numeric premise identifies the selected entry or resolved provider, the failed
-predicate and its original clause location. Supplying a convenient closed
-instance cannot validate an ill-formed generic declaration.
+The checker rejects a Boolean connective in a clause (`parse`):
 
-These obligations compose with opaque Basis parameters, exact `Bits<n>` sizes
-and the [provider rules](type-model.md#inference-and-generic-responsibilities).
-They introduce no runtime condition, owner conversion, semantic evidence or
-new native acceptance rule. Arbitrary Boolean formulas, user-defined constraint
-predicates and a broader const language are not admitted by this clause.
+```qli
+pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit> requires n >= 1 && n <= 2 {q}
+```
+
+The checker accepts this declaration. A closed instance with `n` equal to 0
+rejects at `n >= 1`, and one with `n` equal to 9 rejects at `n <= 2`
+(`size`):
+
+```qli
+pub unitary fn bounded[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>
+        requires n >= 1, n <= 2 {q}
+```
 
 ## Sizes and zero width
 
-`Bits<n>` requires an admitted static natural expression. A closed instance
-retains its exact evaluated size and constructor tag. `Bits<0>` is valid as a
-type and remains distinct from `Unit`; `Bits<1>` remains distinct from `Bit`.
-Concrete emitters have separate supported-interface restrictions.
+This section states the rules for the size `n` of a type `Bits<n>` and for
+types of zero width.
 
-An ordinary zero-width value has no quantum owner. `Q<Bits<0>>` and `Q<Unit>`
-still have linear owner identities. Zero width does not authorize copying,
-implicit dropping or phase erasure. Explicit zero-width consumption and
-structural Unit maps retain their specified effects and exact action.
+Rules:
 
-## Static branches, folds and termination
+- The size of `Bits<n>` must be an admitted natural expression.
+- A closed instance keeps its exact evaluated size and its constructor tag.
+- `Bits<0>` is a valid type. It is distinct from `Unit`. `Bits<1>` is distinct
+  from `Bit`.
+- An ordinary zero-width value has no quantum owner. `Q<Bits<0>>` and
+  `Q<Unit>` have linear owner identities.
+- Zero width authorizes no copying, no implicit dropping and no phase erasure.
+- Explicit zero-width consumption and structural Unit maps keep their
+  specified effects and their exact action.
 
-An ordinary function block may bind a natural expression with
-`static let name = expression;`. The initializer uses the static context and
-the same exact natural arithmetic as sizes and fold bounds. It sees preceding
-bindings, including an enclosing static parameter or fold index; it cannot
-read runtime classical values or quantum owners. Static bindings cannot shadow
-another visible lexical binding. Their names end at the containing block and
-are unavailable as runtime values.
+## Static bindings
 
-The `static let` authoring spelling is provisional in 0.3.0. Its static
-category, exactness and authority laws remain fixed; #60/#61 may select the
-future typed-builder surface without introducing a second execution semantics.
+```text
+StaticLet ::= "static" "let" Identifier "=" Natural ";"
+```
 
-For example, `static let width = n+n;` supplies a normalized
-size to an already checked generic definition:
+A **static binding** names a natural expression inside an ordinary function
+block, as in `static let name = expression;`. The initializer uses the static
+context and the same exact natural arithmetic as sizes and fold bounds.
+
+Rules:
+
+- The initializer sees the preceding bindings, including an enclosing static
+  parameter and an enclosing fold index.
+- The initializer must not read a runtime classical value or a quantum owner.
+- A static binding must not shadow another visible lexical binding
+  (`shadow`).
+- The name of a static binding ends at its containing block. It is not
+  available as a runtime value (`type`).
+- Definition checking visits dead arms and empty fold bodies.
+- A closed instance evaluates a static binding with the checked Nat evaluator
+  that it uses for generic sizes and fold bounds.
+- A static binding produces no runtime instruction, owner, operation access
+  or trusted evidence.
+
+For example, `static let rounds = n+1;` may supply a fold bound. Within a
+fold, `static let next = i+1;` is evaluated for the current index. In the
+body below, `static let width = n+n;` supplies a normalized size to a checked
+generic definition:
 
 ```qli
 static let width = n+n;
 identity[width](q)
 ```
 
-`static let rounds = n+1;`
-may supply a fold bound. Within a fold, `static let next = i+1;` is evaluated
-for the current index. Definition checking still visits dead arms and empty
-fold bodies. A closed instance evaluates aliases with the same checked Nat
-evaluator used for generic sizes and fold bounds. Alias storage is charged to
-the existing work/storage budgets. Finite lowering erases checked unused
-aliases; using a sized operation still requires a supported output profile.
+The checker accepts this source, which holds that body with one more static
+binding:
 
-This binding produces no runtime instruction, new owner, operation access or
-trusted evidence.
+```qli
+pub unitary fn identity[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}
+pub unitary fn twice[const n:Nat](q:Q<Bits<2*n>>)->Q<Bits<2*n>>{
+    static let width=n+n; static let normalized=width+0; identity[normalized](q)
+}
+```
+
+The checker rejects a static name that is used as a runtime value:
+
+```qli
+pub observe fn main()->Bit{static let n=1;n}
+```
+
+> **Implementation note.** The storage of a static binding is charged to the
+> work and storage budgets of the route. On the project route, finite
+> lowering erases a checked static binding that the body does not use.
 
 ## Provisional bounded Nat helpers
 
-The provisional first-order helper spelling is:
+```text
+NatHelper  ::= "static" "fn" Identifier StaticParameters? "(" ")" "->" "Nat"
+               RequiresClause? "{" Natural "}"
+HelperCall ::= Name ( "[" ( Natural ( "," Natural )* )? "]" )? "(" ")"
+```
+
+A **Nat helper** is a first-order static function from `Nat` arguments to a
+`Nat` result.
+
+Rules:
+
+- A helper must have only explicit static `Nat` parameters and no runtime
+  parameters (`static`).
+- A helper must have the literal result category `Nat` and one
+  natural-expression body (`parse`). `Nat` in this position does not become
+  an ordinary finite type.
+- A helper may call other helpers. Acyclic forward references are accepted.
+  Ordinary public and private module visibility applies.
+- Two formals of a helper must not share a name (`binding`).
+- A helper must not call itself, directly or through other helpers
+  (`cycle`).
+- The checker checks unused and private helper bodies too.
+- A Nat helper is not a runtime entry, an ordinary function or a provider
+  (`static`).
+
+A natural expression calls a helper with a complete positional list of
+static arguments and an empty list of runtime arguments, as in `twice[n]()`.
+
+Rules:
+
+- A call must supply one argument for each parameter (`static-arity`).
+- The common judgment normalizes each helper to an exact affine template over
+  its original binder identities. Substitution is simultaneous. A caller
+  expression is never rewritten again as a callee parameter.
+- The caller must establish every premise of the callee before it uses the
+  result (`size`). This holds within a size, another helper, a static
+  condition and a fold.
+- Unproved nonnegativity (`size`), nonlinear arithmetic (`unsupported`) and
+  symbolic overflow (`limit`) keep their refusals.
+- A runtime value, a quantum owner, an operation or a Meaning declaration
+  must not supply a helper input. A natural expression must not call one
+  (`static`).
+- A computed helper result uses the exact size normalization and the
+  specialization rules of every other natural expression.
+
+The checker accepts both helpers:
 
 ```qli
 static fn twice[const n: Nat]() -> Nat { n+n }
 static fn previous[const n: Nat]() -> Nat requires n >= 1 { n-1 }
 ```
 
-A helper has only explicit static Nat parameters, no runtime parameters, a
-literal `Nat` result category and one natural-expression body. `Nat` here does
-not become an ordinary finite type. Helpers may call other helpers with a
-complete positional static argument list and an empty runtime argument list,
-for example `twice[n]()`. Acyclic forward references and ordinary public/private
-module visibility are supported. Duplicate formals, self-recursion and mutual
-cycles reject. Unused and private helper bodies are checked too.
+The checker rejects a call that does not establish the premise `n >= 1`
+(`size`):
 
-The common original-source judgment normalizes helpers to exact affine
-templates over their original binder identities. Substitution is simultaneous:
-caller expressions are not recursively rewritten as callee parameters. The
-caller must establish every callee premise before using its result, including
-within a size, another helper, a static condition or a fold. Unproved
-nonnegativity, nonlinear arithmetic and symbolic overflow retain their existing
-refusals. Runtime values, quantum owners, operations and Meaning declarations
-cannot supply helper inputs or be called from a natural expression. A Nat helper
-is not a runtime entry, ordinary function or operation provider.
+```qli
+static fn previous[const n:Nat]()->Nat requires n>=1 {n-1} pub observe fn main()->Bit{static let n=previous[0]();0}
+```
 
-Computed helper results use the existing exact size normalization and
-specialization rules. The selected-source projection retains shared immutable
-checked templates; it does not expand a call graph into duplicate runtime code.
-The concrete Nat evaluator used for sizes, aliases and fold bounds evaluates the
-arguments and the normalized affine result. Template arithmetic uses checked
-signed 128-bit intermediate values, then requires a nonnegative unsigned 32-bit
-result. Ordinary concrete natural arithmetic retains its checked unsigned
-32-bit operations. Capacity failures do not introduce modular arithmetic.
-In selected elaboration, every concrete natural visit and helper argument/term
-allocation is charged to the existing 100,000-cell accounting allowance. Each
-evaluated helper call also counts toward its aggregate 1,024-call allowance,
-shared with runtime function specialization. Ordinary finite lowering charges
-its original natural visits and helper work to the existing project-wide
-1,000,000-unit allowance; it does not import the selected consumer's counters.
-Template preparation consumes the common source budget.
+The checker rejects a dependency cycle (`cycle`):
 
-For an indexed exact phase schedule, a helper such as
+```qli
+static fn first()->Nat{second()} static fn second()->Nat{first()} pub observe fn main()->Bit{0}
+```
+
+A helper can index an exact phase schedule. The helper
 `static fn exponent[const stage: Nat]() -> Nat { stage+1 }` supplies
-`phase[1, exponent[i]()]` inside a bounded fold. Its result is an exact denominator
-exponent, not a floating-point angle or runtime table. Small Z/S/T schedules and
-computed generic sizes have independent checks; these do not complete a general
-static collection API, all phase-table work, source-preservation theorem or
-generic QFT implementation. The helper spelling remains provisional under the
-#40 category decision; future #60/#61 builders are separate work.
+`phase[1, exponent[i]()]` inside a bounded fold. Its result is an exact
+denominator exponent. It is not a floating-point angle and not a runtime
+table.
 
-`if static comparison { ... } else { ... }` checks both original source arms
-under their respective premises. After all closed bindings are supplied, the
-concrete elaborator evaluates the comparison and elaborates the selected arm.
-A constant condition does not hide an unresolved name, invalid owner use or
-missing operation access in the other arm.
+> **Implementation note.** The selected-entry route keeps the shared
+> immutable checked templates. It does not expand a call graph into duplicate
+> runtime code. The concrete Nat evaluator of sizes, static bindings and fold
+> bounds evaluates the arguments and the normalized affine result of a call.
+> `natural` in `src/frontend/specialize/elaborate.rs` is that evaluator on the
+> selected-entry route, and `src/frontend/compile/naturals.rs` holds the one
+> of the project route. Template preparation consumes the budget of the
+> common judgment. [Capacities](#capacities) states the arithmetic widths and
+> the allowances.
 
-The quantum-owner fold spelling is
-`qfor static k in start..end carry pattern = initial { ... yield result; }`.
-Its carry must contain at least one quantum owner, including a zero-width
-`Q<Unit>` owner. Mixed ordinary/quantum products are permitted. Ordinary-only
-carry uses `for static` with the same header and tail; that spelling rejects
-quantum carry with a located suggestion to use `qfor static`.
-The [control boundary diagnostic](source-text.md#diagnostics-at-control-boundaries)
-identifies both carry mismatches and names the corresponding fold syntax.
-The range is half-open and must be nonnegative: `end >= start`. The carried
-value has the same exact type/tree across iterations. Each iteration receives
-its declared carry owners; unrelated live owners cannot be captured as hidden
-carry. The final result returns the threaded value. A zero-iteration range
-returns the evaluated initial value and still checks the original body for
-names, types, ownership and capabilities. No implicit discard implements a
-fold exit.
+## Static branches, folds and termination
 
-The initializer is evaluated once. Non-carried quantum owners remain in the
-caller frame and cannot be accessed by the body. Both branch arms must preserve
-the required owner interface and carry tree. `yield` supplies the next carry;
-omitting it rejects, even for an empty range. There is no implicit quantum
-capture, discard, carry-shape conversion or runtime bound. `qfor` without the
-explicit `static` marker is unsupported. The loop's operations retain the
-ordinary effect and capability rules; its syntax grants no inverse or control
-access. Concrete iterations use the common checked natural-expression
-evaluator and existing specialization/work capacities.
+### Static branches
 
-Both forms lower through the existing fold representation to proposed
-raw/hierarchical IR and independent native checking. This implements the
-explicit threading boundary tracked by
-[#194](https://github.com/MGYamada/Qleisli/issues/194); small-system conformance
-checks do not establish a general source-preservation theorem.
+```text
+StaticIf ::= "if" "static" Comparison Block "else" Block
+```
 
-Runtime function self-recursion is admitted only when checked static Nat
-arguments do not increase and at least one strictly decreases under the
-current guards. A same-size call, absence of a decreasing Nat or an unproved
-decrease rejects. Mutual dependency cycles reject. Concrete specialization
-also rejects an active repeated specialization identity and applies aggregate
-call/depth/work limits. Total classical declarations instead have acyclic
-calls and their separate [finite expression grammar](source-text.md#total-classical-declarations).
-No general recursion or runtime unbounded loop is introduced.
+A **static branch** `if static comparison { ... } else { ... }` selects one
+of two arms by a comparison of natural expressions.
+
+Rules:
+
+- The checker checks both original source arms, each under its own premise.
+- After a closed instance supplies all bindings, the concrete elaborator
+  evaluates the comparison and elaborates the selected arm.
+- A constant condition hides nothing in the other arm. An unresolved name
+  (`name`), an invalid owner use (`ownership`) and a missing capability
+  (`access`) reject there.
+
+Each line below is a separate source. The checker rejects both, although the
+condition selects the first arm. The first has an unknown name (`name`), and
+the second uses an owner twice (`ownership`):
+
+```qli
+pub unitary fn f(q: Q<Bit>) -> Q<Bit> { if static 0 == 0 { q } else { missing(q) } }
+pub unitary fn f(q: Q<Bit>) -> Q<Bit> { if static 0 == 0 { q } else { (q,q) } }
+```
+
+### Static folds
+
+```text
+StaticFold ::= ( "for" | "qfor" ) "static" Identifier "in" Natural ".." Natural
+               "carry" Pattern "=" Expr "{" Statement* "yield" ( Expr ";"? )? "}"
+```
+
+A **static fold** threads a value through a finite range of indices. The
+**carry** is the value that it threads. The fold over quantum owners is
+spelled `qfor static k in start..end carry pattern = initial { ... yield result; }`.
+The fold over ordinary values is spelled `for static`, with the same header
+and tail. `yield` supplies the next carry. A `yield` without an expression
+supplies `()`.
+
+The carry decides the spelling of a fold.
+
+Rules:
+
+- The carry of `qfor static` must contain at least one quantum owner
+  (`type`). A zero-width `Q<Unit>` owner counts. A product of ordinary and
+  quantum values is permitted.
+- The carry of `for static` must be ordinary. A quantum carry rejects
+  (`type`) with a located suggestion to use `qfor static`.
+- The
+  [control boundary diagnostic](source-text.md#diagnostics-at-control-boundaries)
+  identifies both carry mismatches and names the corresponding fold syntax.
+- `qfor` without the marker `static` rejects (`parse`).
+- A fold body must end with `yield`, also for an empty range (`parse`).
+
+The range of a fold is static.
+
+Rules:
+
+- The range is half-open and must be nonnegative. The constraint context
+  must establish `end >= start` (`size`).
+- A bound must not depend on runtime classical data or on a measurement
+  outcome. A fold has no runtime bound.
+- A closed instance evaluates the bounds of each fold with the common checked
+  natural-expression evaluator, within the specialization and work capacities
+  of its route.
+
+A fold threads its carry explicitly.
+
+Rules:
+
+- The initializer is evaluated once.
+- The carried value has the same exact type tree in every iteration
+  (`type`). A fold converts no carry shape.
+- Each iteration receives its declared carry owners. The body must not
+  capture an unrelated live owner as hidden carry (`ownership`).
+- A quantum owner outside the carry stays in the caller frame. The body must
+  not access it.
+- Both arms of a branch in the body must preserve the required owner
+  interface and the carry tree.
+- The fold returns the threaded value. A range of zero iterations returns the
+  evaluated initial value.
+- The checker checks the original body for names, types, ownership and
+  capabilities, also for a range of zero iterations.
+- No implicit discard implements a fold exit. A fold captures and discards no
+  quantum owner implicitly.
+- The operations of the body keep the ordinary effect rules and capability
+  rules. The fold syntax grants no inverse access and no control access.
+
+Each line below is a separate source. The checker accepts both. The second
+returns `1`:
+
+```qli
+use std::gate::x; pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit>{qfor static i in 0..n carry a=q{yield x(a);}}
+pub observe fn main()->Bit{for static i in 0..3 carry a=0{yield not a;}}
+```
+
+Each line below is a separate source, and the checker rejects each. In order,
+they have a quantum carry in `for static` (`type`), an ordinary carry in
+`qfor static` (`type`), no marker `static` (`parse`), no `yield` (`parse`)
+and a hidden capture of `r` (`ownership`):
+
+```qli
+pub unitary fn f(q:Q<Bit>)->Q<Bit>{for static i in 0..0 carry a=q{yield a;}}
+pub observe fn main()->Bit{qfor static i in 0..0 carry a=0{yield a;}}
+pub unitary fn f(q:Q<Bit>)->Q<Bit>{qfor i in 0..1 carry a=q{yield a;}}
+pub unitary fn f(q:Q<Bit>)->Q<Bit>{qfor static i in 0..0 carry a=q{a}}
+pub unitary fn f(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=qfor static i in 0..0 carry a=q{yield r;};(q,r)}
+```
+
+> **Implementation note.** Both spellings lower through one fold
+> representation to proposed raw or hierarchical IR. Independent native
+> checking then applies. On the project route,
+> `src/frontend/compile/lower/statics.rs` selects the arms and unrolls the
+> folds.
+
+### Termination of calls
+
+A runtime function may call itself only under a checked decrease of its
+static `Nat` arguments.
+
+Rules:
+
+- In a self-call, no checked static `Nat` argument may increase, and at least
+  one must strictly decrease under the guards in force (`cycle`). A call of
+  the same size, the absence of a decreasing `Nat` and an unproved decrease
+  reject.
+- A cycle of mutual dependencies rejects (`cycle`).
+- Concrete specialization rejects a specialization identity that is already
+  active (`cycle`). It applies the aggregate call, depth and work limits
+  (`limit`).
+- A total classical declaration has acyclic calls and its separate
+  [finite expression grammar](source-text.md#total-classical-declarations).
+- The language has no general recursion and no unbounded runtime loop.
+
+The checker accepts this declaration. The arm that holds the self-call has
+the premise `n != 0`, which guards `n-1` and proves the decrease:
+
+```qli
+pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { if static n == 0 { q } else { f[n-1](q) } }
+```
+
+The checker rejects a self-call of the same size (`cycle`):
+
+```qli
+pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { f[n](q) }
+```
 
 ## Finite runtime control and resources
 
-For each closed static instance, the currently admitted control forms describe
-a finite execution structure. The following rules compose with the existing
-type, effect, owner, provider and concrete-profile checks; they do not enable
-a form that its production path currently refuses.
+For each closed instance, the admitted control forms describe a finite
+execution structure. The rules of this section compose with the type, effect,
+owner, provider and concrete-profile checks. They enable no form that a route
+refuses.
+
+### Control forms
 
 | Form | Termination and resource structure |
-|---|---|
-| Ordinary `if` | Evaluate an ordinary Bit condition and execute one finite arm per history. Both original arms must check and return the same complete result and live-owner interface. Measurement-dependent choices retain every complete history and its weight. |
-| `if static` | Check both original arms under their respective premises, then select the arm determined by the closed static comparison. The unselected arm cannot hide a source obligation. |
-| `for static` and `qfor static` | Evaluate the initializer once, then thread the exact carry through the finite half-open range. A zero range returns that initializer and still checks the original body. Bounds cannot depend on runtime classical data or measurement outcomes. |
-| `power(U, count)` | Apply the checked provider a finite static number of times, subject to the existing count and materialization capacities. Evaluate the runtime input once. Zero count still checks the original provider, Meaning and requested access. |
-| Ordinary calls | Use the checked dependency and static-specialization rules above. A direct self call requires nonincreasing static Nat arguments and at least one proved strict decrease. Mutual cycles and general recursion reject; concrete expansion also enforces its existing call, depth and work capacities. |
-| Coherent `qif` and controlled operation descriptions | Use finite provider bodies with their independently checked controlled access and ordered interfaces. Coherent selector sectors are not ordinary alternative execution histories; preserve their relative phase and actual controlled action. |
+| --- | --- |
+| Ordinary `if` | Evaluate an ordinary `Bit` condition and execute one finite arm per history. Both original arms must check and must return the same complete result and live-owner interface. A choice that depends on a measurement retains every complete history and its weight. |
+| `if static` | Check both original arms under their respective premises, then select the arm that the closed static comparison determines. The unselected arm cannot hide a source obligation. |
+| `for static` and `qfor static` | Evaluate the initializer once, then thread the exact carry through the finite half-open range. A zero range returns that initializer and checks the original body. A bound cannot depend on runtime classical data or on measurement outcomes. |
+| `power(U, count)` | Apply the checked provider a finite static number of times, subject to the count and materialization capacities. Evaluate the runtime input once. A zero count checks the original provider, its Meaning and the requested capability. |
+| Ordinary calls | Use the checked dependency rules and the static-specialization rules above. A direct self-call requires nonincreasing static `Nat` arguments and at least one proved strict decrease. Mutual cycles and general recursion reject. Concrete expansion also enforces its call, depth and work capacities. |
+| Coherent `qif` and controlled operation descriptions | Use finite provider bodies with their independently checked controlled access and ordered interfaces. Coherent selector sectors are not ordinary alternative execution histories. Preserve their relative phase and the controlled action. |
+| Ordinary `match` | Select one arm among the exhaustive, disjoint arms of an ordinary enum value. A `match` has at most 64 arms. [Parsed finite type declarations](source-text.md#parsed-finite-type-declarations) specifies the form. |
+| Coherent `qmatch` | Apply one checked arm for each exact label of a quantum selector, without measurement of the selector. A `qmatch` has at most 64 arms. [Exact-label coherent selection](source-text.md#exact-label-coherent-selection) specifies the form. |
 
-Each branch and iteration respects its complete declared owner interface and
-the surrounding caller frame, including zero-width owners and correlations
-with an external reference. Declared consumption and fresh returned owners
-retain their existing operation contracts. Internal workspace must satisfy
-its declared consumption or return contract. An empty
-fold, an unselected arm or a successful measurement result grants no implicit
-discard, reset or clean release. Exact clean release retains its all-input,
-reference-safe zero-return obligation. These requirements also apply when a
-finite body contains further branches, folds or calls.
+This chapter specifies neither `match` nor `qmatch`. Each form executes in
+the bounded profiles that its own section states, within the native-transport
+boundaries of that section. The rules of this section neither widen nor
+narrow those profiles.
 
-For an additive **per-execution/per-history** work measure, sequencing composes
-bounds by addition, a finite fold by the finite sum of its iteration bounds,
-and an ordinary conditional by its condition and merge overhead plus the
-maximum arm bound. These are composition rules for a declared measure, not
-target costs inferred from source spelling. Whole-ensemble evaluation and
-checking may process both arms and all histories and require their own bounds.
-The resource cost of coherent control must account for its actual controlled
-implementation; it is not obtained by choosing the cheaper sector or by
-applying the ordinary conditional rule to the two source arms. Peak live
-storage follows owner and workspace lifetimes, including the caller frame;
-summing separate peaks gives only a conservative upper bound.
+### Owners in branches and iterations
 
-Resource Safety can quantify over this finite structure for the specified
-closed instance. A quantitative claim must still bind the actual artifact,
-target, measures, schedule and checked bounds required by the
-[realization contract](realization.md#quantitative-resource-claims).
-Source-level summaries, compiler/checker capacities and target resource
-certificates are distinct. General source/resource preservation and the
-quantitative RS theorem remain separate obligations. Finiteness alone proves
-neither a particular target budget nor that correspondence.
+Rules:
 
-The current core has no runtime-counted loop, unbounded `while`, general or
-mutual recursion, or source-level retry/RUS construct. Measurement outcomes
-cannot supply a fold bound or replace the checked static decrease for self-calls.
-Decreasing static Nat specialization is not recursion on a measured runtime value.
-Nominal `match` and coherent `qmatch` retain their existing implementation and
-native-transport boundaries; this finite-control contract does not make them
-executable.
+- Each branch and each iteration must respect its complete declared owner
+  interface and the surrounding caller frame. This includes zero-width owners
+  and correlations with an external reference.
+- Declared consumption and fresh returned owners keep their operation
+  contracts.
+- Internal workspace must satisfy its declared consumption contract or its
+  declared return contract.
+- An empty fold, an unselected arm or a successful measurement result grants
+  no implicit discard, reset or clean release.
+- Exact clean release keeps its all-input, reference-safe zero-return
+  obligation.
+- These rules also apply when a finite body contains further branches, folds
+  or calls.
 
-A bounded unrolling may return a success Bit together with its declared
-owners only while retaining both success and failure outcomes in the complete
-instrument. It cannot keep only favorable outcomes or normalize them into a
-successful operation: the [postselection boundary](source-text.md#observation-and-postselection)
-still applies. The bounded host trial driver is separate: it retains no
-quantum state, requires fresh quantum trials and reports retries, exhaustion
-and execution errors. Its callback-count bound is not a bound on an arbitrary
-callback's running time or permission for a source-level quantum retry loop.
+### Work and storage bounds
 
-A future RUS extension requires a separate termination and resource contract,
-including success and failure semantics, owners and workspace on every exit,
-composition with arbitrary references, and the meaning of exhaustion or a
-resource failure. It must distinguish a hard finite bound from an expected
-cost or a probabilistic tail claim and supply the evidence appropriate to the
-requested guarantee. Almost-sure termination alone grants neither a current
-core construct nor a worst-case resource bound. No RUS API or new acceptance
-path is introduced here.
+A **per-history work measure** is an additive measure of the work of one
+execution along one history.
+
+Rules:
+
+- Sequencing composes the bounds of a per-history work measure by addition.
+- A finite fold has the finite sum of the bounds of its iterations.
+- An ordinary conditional has the overhead of its condition and its merge,
+  plus the maximum of the bounds of its arms.
+- These are composition rules for a declared measure. They are not target
+  costs inferred from source spelling.
+- Whole-ensemble evaluation and checking may process both arms and all
+  histories. They require their own bounds.
+- The resource cost of coherent control must account for the controlled
+  implementation that realizes it. Neither the cheaper sector nor the
+  ordinary conditional rule on the two source arms gives that cost.
+- Peak live storage follows the lifetimes of owners and workspace, including
+  the caller frame. A sum of separate peaks gives only a conservative upper
+  bound.
+- Resource Safety can quantify over this finite structure for the specified
+  closed instance.
+- A quantitative claim must bind the artifact, the target, the measures, the
+  schedule and the checked bounds that the
+  [realization contract](realization.md#quantitative-resource-claims)
+  requires.
+- Source-level summaries, the capacities of the compiler and the checker, and
+  target resource certificates are distinct.
+- Finiteness alone proves neither a particular target budget nor the
+  correspondence of source and target resources.
+
+### Loops, recursion and retry
+
+A **repeat-until-success (RUS)** construct would repeat a quantum trial until
+a measured success. The core has none.
+
+Rules:
+
+- The core has no runtime-counted loop, no unbounded `while`, no general or
+  mutual recursion, and no source-level retry or RUS construct.
+- A measurement outcome must not supply a fold bound. It must not replace the
+  checked static decrease of a self-call.
+- Decreasing static `Nat` specialization is not recursion on a measured
+  runtime value.
+- A bounded unrolling may return a success `Bit` together with its declared
+  owners only while it retains both the success outcome and the failure
+  outcome in the complete instrument.
+- A bounded unrolling must not keep only favorable outcomes, and it must not
+  normalize them into a successful operation. The
+  [postselection boundary](source-text.md#observation-and-postselection)
+  applies.
+- The bounded host trial driver is separate. It retains no quantum state,
+  requires fresh quantum trials, and reports retries, exhaustion and
+  execution errors.
+- The callback-count bound of the driver is not a bound on the running time
+  of an arbitrary callback. It gives no permission for a source-level quantum
+  retry loop.
+
+An RUS extension would require a separate termination and resource contract.
+That contract must state the success and failure semantics, and the owners
+and the workspace on every exit. It must state the composition with arbitrary
+references, and the meaning of exhaustion or of a resource failure. It must
+distinguish a hard finite bound from an expected cost and from a
+probabilistic tail claim. It must supply the evidence that the requested
+guarantee needs. Almost-sure termination alone grants neither a core
+construct nor a worst-case resource bound. This chapter introduces no RUS API
+and no acceptance path.
 
 ## Operation repetition and access
 
-Capability predicates in a `requires` clause are `Applicable(U)`,
-`Adjointable(U)` and `Controllable(U)`. They describe justified access to the
-actual operation provider, separately from its Meaning and semantic unitarity.
-The former predicates `Apply(U)`, `Adjoint(U)` and `Controlled(U)` reject with
-located migration diagnostics. The adjective names are contextual in this
-clause; they do not construct operators or grant access by annotation alone.
+```text
+OperationDescription ::= Name ( "[" StaticArguments? "]" )?
+                       | "adjoint" "(" OperationDescription ")"
+                       | "controlled" "(" OperationDescription ")"
+                       | "power" "(" OperationDescription "," Count ")"
+                       | ( "then_op" | "tensor_op" | "conjugate_op" )
+                         "(" OperationDescription "," OperationDescription ")"
+                       | "checked_op" "(" Name "," Name ")"
+StaticArguments      ::= StaticArgument ( "," StaticArgument )*
+StaticArgument       ::= OperationDescription | Natural | "type" "(" BasisType ")"
+Count                ::= Natural | "2" "^" NaturalAtom
+```
+
+This section specifies the capabilities of each operation description and
+the three forms that apply a description to runtime arguments. The
+[`requires` clause](#unified-requires-obligations) defines a capability and
+the capability requirements `Applicable(U)`, `Adjointable(U)` and
+`Controllable(U)`.
 
 ### Capability derivation for enabled descriptions
 
-For a well-kinded operation description `U`, write its available paths as
-`caps(U) = (A_U, J_U, C_U)`: Applicable, Adjointable and Controllable,
-respectively. These are untrusted source-checking facts about implementation
-paths, not proofs of mathematical unitarity or native acceptance. An opaque
-operation formal has exactly the paths declared in its `requires` premises;
-neither its `Op<A>` type nor a Meaning refinement adds a path.
+Write the available capabilities of a well-kinded operation description `U`
+as `caps(U) = (A_U, J_U, C_U)`: Applicable, Adjointable and Controllable, in
+that order.
 
-Write `U: A -> B` and `V: C -> D`, with each letter an exact basis tree.
-The general constructor rules below also apply to the `Op<A>` abbreviation
-where both ports are A:
+Write `U: A -> B` and `V: C -> D`, where each letter is an exact basis tree.
+The constructor rules below also apply to the `Op<A>` abbreviation, where
+both ports are `A`.
 
-| Description | Input → output and required equalities | Derived paths `(Applicable, Adjointable, Controllable)` |
+| Description | Input → output and required equalities | Derived capabilities `(Applicable, Adjointable, Controllable)` |
 | --- | --- | --- |
 | `adjoint(U)` | `B -> A` | `(J_U, A_U, C_U)`; constructing it additionally requires `J_U`, even if unused |
 | `controlled(U)` | `(Bit,A) -> (Bit,A)`, requiring `A = B` | `(C_U, C_U, C_U)` |
@@ -398,292 +776,708 @@ where both ports are A:
 | `then_op(U,V)` | `A -> D`, requiring `B = C` | `(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)` |
 | `tensor_op(U,V)` | `(A,C) -> (B,D)` in that axis order | `(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)` |
 | `conjugate_op(U,V)` | `B -> B`, requiring `C = D = A` | `(A_U ∧ J_U ∧ A_V, A_U ∧ J_U ∧ J_V, A_U ∧ J_U ∧ C_V)` |
-| `checked_op(U,M)` | `A -> B`, matching both M ports | U's paths unchanged; retain the separate exact Meaning-equality obligation |
+| `checked_op(U,M)` | `A -> B`, matching both M ports | U's capabilities unchanged; retain the separate exact Meaning-equality obligation |
 
-Every operand and count is checked before using these rules. There is no
-short circuit that erases a missing provider, invalid count, false Meaning or
-missing requested path because a power is zero or a declaration is unused.
-A description may have no available execution path; forwarding it to a formal
-that requires one rejects. In particular, forming `controlled(U)` does not
-give direct application or adjoint access to the original opaque `U`.
+Rules:
 
-The controlled rule reflects the supported construction of a transparent
-controlled circuit: its retained circuit can itself be applied, reversed or
-controlled. This is a capability of that constructed object, not a rule that
-every mathematically unitary black box supplies those implementations.
-`conjugate_op(U,V)` denotes `U V U†` in column-vector order. Its controlled
-path uses U's forward/adjoint paths around V's controlled path; it does not
-require a controlled U. Exact phase and the inactive-branch identity are
-retained, rather than inferred from channel equality.
+- Capabilities are untrusted source-checking facts about implementation
+  paths. They are not proofs of mathematical unitarity or of native
+  acceptance.
+- An opaque operation parameter has exactly the capabilities that its
+  `requires` clause declares. Neither its `Op<A>` kind nor a Meaning
+  refinement adds a capability.
+- The checker checks every operand and every count before it uses the table.
+- No short circuit erases a missing provider, an invalid count, a false
+  Meaning or a missing requested capability. A zero power and an unused
+  declaration are no exceptions.
+- A description may have no capability. Forwarding it to a parameter that
+  requires one rejects (`access`).
+- Forming `controlled(U)` gives no direct application access and no adjoint
+  access to the original opaque `U`.
 
-A transparent ordinary source provider must have the exact quantum interface
-and all its instantiated premises checked. General pure application permits
-a caller-visible effect at most Isometry. Reverse access additionally requires
-caller-visible Unitary and usable inverse evidence; control additionally requires
-equal exact ports. Under the [public-effect rule](source-text.md#ordinary-function-effects-and-assertions),
-the checked public effect governs external callers and host-selected public
-providers; same-module calls retain independently checked internal inference.
-Eligibility is checked before specialization, inlining or cache reuse, while
-the actual body and artifact still undergo their separate checks.
-For a source provider with caller-visible Unitary and operation actuals `U_i`, the conservative
-common rule is `(true, ∧_i(A_i ∧ J_i), ∧_i(A_i ∧ J_i ∧ C_i))`. This includes
-unused operation actuals and makes no claim of maximal inference. With no such
-actuals it gives forward/reverse paths, plus control for equal ports. The provider's own declared premises
-still apply before this rule; `true` cannot bypass a missing required path.
+The `controlled` row reflects the supported construction of a transparent
+controlled circuit. The retained circuit can itself be applied, reversed or
+controlled. This is a capability of the constructed object. It is not a rule
+that every mathematically unitary black box supplies those implementations.
 
-Sealed gates use their existing exact interface and materializable circuit
-paths where the direct application grammar permits them. Static provider
-arguments retain their ordinary-function restriction described below; a gate
-name is not silently wrapped into a new source provider. External artifacts
-cannot declare their own trusted capability set. Closed materialization still
-needs the supported retained implementation, exact source/dependency identity
-and fresh native evidence; unsupported external providers reject.
+`conjugate_op(U,V)` denotes `U V U†` in column-vector order. Its Controllable
+capability needs the Applicable and Adjointable capabilities of `U` and the
+Controllable capability of `V`. The controlled realization places the forward
+and adjoint circuit paths of `U` around the controlled circuit path of `V`.
+It requires no controlled `U`. The exact phase and the inactive-branch
+identity are retained. They are not inferred from channel equality.
 
-These rules do not enlarge a concrete projection's support. Finite and selected
-lowering retain their separate capacities and explicit unsupported results.
-An inferred path, a successful original-source judgment or a named Meaning is
-never an executable receipt. The admitted [general arrow rules](type-model.md#general-pure-operation-arrows)
-do not admit other forms in the [operations candidate](../design/operations.md).
+### Source providers and language primitives
 
-### Application and repetition profiles
+A **source provider** is an ordinary function that serves as a provider. It
+is transparent: the checker has its body. A **language primitive** is an
+operation that the language supplies under a bare spelling, such as `h`. The
+[primitive boundary](primitive-boundary.md) lists the language primitives.
 
-The canonical controlled application is `controlled(U)(c, q)`. The runtime
-arguments are evaluated once in control-then-target order. The control has
-exact type `Q<Bit>`; the target has the operation's exact `Q<A>` type. The result
-is `(Q<Bit>, Q<A>)`, retaining both logical owners even when `A` has zero width.
-It requires Controllable access, including for unused bodies and zero powers;
-an ordinary classical Bit, aliases and incorrect argument counts reject.
-The finite profile uses existing checked controlled circuit construction and
-native evidence, with the same six-bit/1024-step operation and shared work
-limits. Control is the first, low axis; the complete phase is retained.
-Single-stage ordinary `controlled(q)` calls retain normal name resolution.
+Rules:
 
-The canonical unary adjoint application is `adjoint(U)(q)`. The first stage
-contains the existing static operation description; the second evaluates one
-runtime input. It requires the actual operation's Adjointable access and an exact
-quantum-owner interface. Unitarity or a Meaning annotation alone grants no
-access. The same checks apply to unused bodies and zero-count descriptions.
-No runtime callable is constructed. The executable profile remains Unitary;
-general isometry adjoints are unsupported. For a unitary, its adjoint equals
-its inverse, but an isometry's adjoint need not be a two-sided inverse. The
-identifier `inverse` is reserved for a future API requiring that law. An
-ordinary `inverse(q)` and functions or locals named `inverse` retain normal
-resolution; the retired two-stage `inverse(U)(q)` rejects with a suggestion to
-use `adjoint(U)(q)`. Independent native evidence gates still apply.
-Finite constructed adjoints such as `adjoint(power(U, k))(q)` use the existing
-closed operation-provider profile, exact basis and Adjointable evidence. Literal
-count, six-bit operation, step and shared work limits remain; named adjoints
-retain their existing sealed-gate path. A zero power still checks the original
-provider/Meaning and requested access, and evaluates its runtime input once.
-`adjoint(U,q)` is retired and rejects at its constructor token with a
-suggestion to use `adjoint(U)(q)`. The two stages do not infer an adjoint
-capability or construct a runtime callable.
+- A source provider must have the exact quantum interface. The checker checks
+  all its instantiated premises.
+- General pure application permits a caller-visible effect of at most
+  Isometry.
+- Reverse access additionally requires a caller-visible Unitary effect and
+  usable inverse evidence.
+- Control additionally requires equal exact ports.
+- Under the
+  [public-effect rule](source-text.md#ordinary-function-effects-and-assertions),
+  the checked public effect governs external callers and host-selected public
+  providers. Same-module calls keep independently checked internal inference.
+- The checker checks eligibility before specialization, inlining or cache
+  reuse. The body and the artifact undergo their separate checks.
+- For a source provider with a caller-visible Unitary effect and operation
+  actuals `U_i`, the conservative common rule gives
+  `(true, ∧_i(A_i ∧ J_i), ∧_i(A_i ∧ J_i ∧ C_i))`. The rule includes unused
+  operation actuals. It makes no claim of maximal inference.
+- With no operation actuals, the rule gives the Applicable and Adjointable
+  capabilities, plus the Controllable capability for equal ports.
+- The declared premises of the provider apply before this rule. The value
+  `true` cannot bypass a missing required capability.
 
-In static operation arguments, `adjoint(U)` and `controlled(U)` construct the
-corresponding descriptions, including nested descriptions. They retain the
-same provider-bound capability derivations and concrete profile restrictions.
-The legacy descriptions `inverse_op(U)` and `controlled_op(U)` reject at their
-constructor tokens, suggesting `adjoint(U)` and `controlled(U)`.
+A language primitive and an external artifact are not source providers.
 
-The canonical repetition description is `power(U, count)`; its forward runtime
-application is `power(U, count)(q)`. Operation comes first, count second. The
-original-source AST retains the complete description, count and byte spans;
-no generated function name or anonymous source loop replaces the application.
-The runtime argument is evaluated once, including for count zero, and the
-operation requires Applicable access even in zero-count and unused bodies.
-Direct runtime `power(name, literal)(q)` retains the existing complete runtime
-group judgment for ordinary functions and the opaque basis/Applicable rule for
-operation parameters. For a sealed gate it retains the former named-function
-repetition profile, checking the exact single-owner basis and Unitary effect.
-The literal must be in `0..=4096`, even in unused bodies. The finite adapter
-checks the original body and serial copies through the existing native gates;
-actual operation parameters retain their 1024-step limit and shared work
-accounting. This form preserves the former `repeat_static` contract. The
-following descriptions still require the ordinary checked provider contract;
-wrap a sealed gate in an ordinary function for these uses:
+Rules:
 
-```qli
-f[power(t, 0)](q)
-controlled(power(t, 0))(c, q)
-adjoint(power(t, 0))(q)
+- A language primitive uses its exact interface and its materializable
+  circuit paths where the direct application grammar permits it.
+- A name in a static operation argument must be an ordinary function or an
+  operation parameter. A language primitive in that position rejects
+  (`type`). The checker does not wrap a primitive name into a source
+  provider.
+- An external artifact cannot declare its own trusted capability set.
+- Closed materialization needs the supported retained implementation, the
+  exact source and dependency identity, and fresh native evidence. An
+  unsupported external provider rejects.
+
+A capability is a source-checking fact.
+
+Rules:
+
+- An inferred capability, a successful common judgment or a named Meaning is
+  never an executable receipt.
+- The admitted
+  [general arrow rules](type-model.md#general-pure-operation-arrows) admit no
+  other form of the retired
+  [operations design packet](../design/operations.md).
+
+<a id="application-and-repetition-profiles"></a>
+
+### Controlled application
+
+```text
+ControlledApplication ::= "controlled" "(" OperationDescription ")" "(" Expr "," Expr ")"
 ```
 
-Symbolic/compound counts retain the general operation-provider and
-closed-binding rules.
+The canonical controlled application is `controlled(U)(c, q)`. It applies
+the description `U` to the target `q` under the control `c`.
 
-`controlled(power(U, count))(c, q)` and `adjoint(power(U, count))(q)` retain the
-complete repeated provider and require their actual additional access.
+Rules:
 
-Only an unqualified two-stage `power(...)(...)` denotes this runtime form.
-Ordinary single-stage `power(a, b)`, declarations and module imports retain
-normal resolution. Root-qualified ordinary references/calls follow the common
-[module lookup](prelude.md); qualification does not select this special runtime
-constructor. Static-operation argument positions interpret `power`
-explicitly as the constructor. The finite profile evaluates symbolic counts and
-`2^e` with complete original natural bindings and checked u32 intermediates.
-Every nested count must fit `0..=4096`, including inside an outer zero, subject
-to the existing step/work limits. The direct runtime-transform adapter also
-requires the product of its nested repetition counts to fit 4096. That product
-guard is specific to direct runtime transforms; opaque operation descriptions
-retain their own materialization step/work limits. Selected elaboration retains
-its own count, exponent and aggregate-work limits.
+- The runtime arguments are evaluated once, in control-then-target order.
+- The control must have the exact type `Q<Bit>`. The target must have the
+  exact `Q<A>` type of the operation.
+- The result is `(Q<Bit>, Q<A>)`. It keeps both logical owners, also when `A`
+  has zero width.
+- The application requires the Controllable capability (`access`), also in
+  an unused body and for a zero power.
+- An ordinary classical `Bit` as control rejects. One owner in both argument
+  positions rejects. A number of arguments other than two rejects (`arity`).
+- The control is the first, low axis. The exact phase is retained.
+- A single-stage ordinary call `controlled(q)` keeps normal name resolution.
 
-`repeat_op(count, U)` and `repeat_static(count, U, q)` are retired and reject
-at their constructor tokens. Migrate them to `power(U, count)` and
-`power(U, count)(q)`, respectively. This is not execution of a
-host loop. An ordinary count is a natural expression. The special count form
-`2^e` is admitted here with a natural atom exponent; use parentheses for a
-compound exponent, for example `2^(n+1)`. It is not a general natural-expression
-power operator and cannot be inserted into `Bits<2^n>` by this rule.
+Each line below is a separate source. The checker accepts the first, where
+`z` is `std::gate::z`. It rejects the second, which declares only
+`Applicable(U)` (`access`):
 
-The selected concrete path limits the exponent to eight and both each count
-and its nested repetition product to 256. Counts and products use checked
-arithmetic. A zero count still resolves and checks its provider and required
-access. Repetition grants no `Adjointable` or `Controllable` access. The same applies
-when a repeated description is forwarded through another generic call.
+```qli
+unitary fn f(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){controlled(power(z,0))(c,q)}
+unitary fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Applicable(U){controlled(power(U,0))(c,q)}
+```
 
-## Definition checking and concrete capacities
+### Adjoint application
 
-The common original-source judgment checks all declarations, including private
-and unused bodies, before a finite or selected-source projection. It checks
-static categories, exact type trees, owner/effect rules, generic premises and
-capabilities. A concrete instance separately checks complete closed bindings,
-actual provider identities, substitutions and supported interfaces. Neither
-stage issues a native accepted handle.
+```text
+AdjointApplication ::= "adjoint" "(" OperationDescription ")" "(" Expr ")"
+```
 
-The common judgment retains static calls and evidence obligations by their
-original structural occurrence identities. Each plan keeps the resolved
-callee and formal identities, ordered Basis/Nat/Op actuals, both operation
-ports, Meaning requests, lexical static bindings and predicate/fold regions.
-Ordinary natural-expression plans retain their original arithmetic alongside
-normalized facts, preserving their concrete intermediate-overflow and work
-checks. Helper calls retain their original arguments and shared checked affine
-templates, with the signed-128-bit template and unsigned-32-bit result rules
-specified above. A zero power retains its child operation and its requests.
+The canonical unary adjoint application is `adjoint(U)(q)`. The first stage
+holds a static operation description. The second stage evaluates one runtime
+input. The adjoint of a unitary equals its inverse. The adjoint of an
+isometry need not be a two-sided inverse.
 
-These private plans consume the existing preparation budget. They are source
-metadata, not independently checked evidence. Retention alone does not
-discharge an unmaterialized generic obligation or widen a concrete profile.
-In particular, selected-specialization validity of a harmless entry does not
-check a false Meaning request in an unselected generic body. A separate finite
-dormant pass checks available closed Meaning requests and each closed static
-actual in uninstantiated bodies, retaining the original Basis/Nat/Op scope.
-It borrows original operation occurrences, visits both
-siblings even when one depends on an unbound formal, and retains zero-count
-children. Each concrete actual uses the ordinary exact-port, phase-fixed Meaning
-and requested-access gates. When every actual is closed, the complete concrete
-body reaches ordinary lowering and native checking under its complete instance
-identity, rather than a declaration-only ordinary-root cache. A Meaning comparison does not itself
-request every capability in the source's available-access summary.
+Rules:
 
-Requested paths also reach each maximal closed fragment of a partially
-deferred description. Then/tensor preserve the requested path on both operands;
-inverse exchanges forward/reverse requests and retains its required inverse
-at construction; control maps a requested path to the child's controlled path.
-For a requested conjugate path, its outer operand needs forward and reverse
-paths and its inner operand needs the requested path. Repetition propagates requests even at
-zero count. The same concrete access gates and their existing circuit/step
-limits apply. Checking these fragments does not establish the whole deferred
-description's contract or replace aggregate checks when all actuals close.
+- The application requires the Adjointable capability of the actual
+  operation (`access`) and an exact quantum-owner interface.
+- Unitarity alone grants no access. A Meaning annotation alone grants none.
+- The same checks apply in an unused body and to a zero-count description.
+- The two stages construct no runtime callable and infer no Adjointable
+  capability.
+- A zero power checks the original provider, its Meaning and the requested
+  capability. It evaluates its runtime input once.
+- The independent native evidence gates apply.
+- `inverse` is not a keyword. An ordinary call `inverse(q)`, a function named
+  `inverse` and a local named `inverse` keep normal name resolution.
+- The two-stage form `inverse(U)(q)` rejects (`parse`) with a suggestion to
+  use `adjoint(U)(q)`. The language has no inverse API. Such an API would
+  require the two-sided inverse law.
 
-Unbound original Op formals remain conditional, including `checked_op(U,M)`;
-that deferral does not establish the requested Meaning. Runtime-expression
-obligations still require their corresponding concrete gates. For a dormant
-whole-owner `ctrl` call to a declaration with closed static actuals, the finite
-adapter binds the original expression and operands to its checked call plan,
-requires the original caller-visible Unitary effect, and preserves the complete
-ordered Q-owner interface. It independently checks the concrete callee body and
-submits its actual Raw ports and body to the existing native sector gate.
-Unitarity alone does not establish that sector condition. A zero-width Ctrl
-owner retains its exact type and still causes a native request, even though its
-physical axis set is empty. The existing control-request capacity applies to
-this explicit request; ordinary calls retain their separate finite profile.
+The checker accepts this program. `inverse` is an ordinary function, and
+`adjoint(oracle)(q)` undoes `h`:
 
-Unbound actuals remain conditional; closed siblings still undergo their own
-contract checks. The ordinary finite adapter binds complete Basis/Nat/Op
-instances, checks closed bodies and dormant operation roots, and submits
-concrete Ctrl calls through the existing native sector gate. In a provably
-inactive region, a Nat-dependent premise may remain conditional; independently
-closed siblings and fixed owner/Meaning/access mismatches cannot be deferred.
-Caller-frame and clean-workspace obligations retain their separate scopes.
+```qli
+use std::state::init0;
+unitary fn inverse(q:Q<Bit>)->Q<Bit>{q}
+unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(q)}
+unitary fn undo(q:Q<Bit>)->Q<Bit>{adjoint(oracle)(q)}
+pub observe fn main()->Bit{measure_z(h(undo(inverse(init0()))))}
+```
 
-Finite ordinary runtime calls additionally bind the borrowed plan to the exact
-original expression, callee and ordered static/runtime operand slices. A cloned
-same-shaped AST is not an original occurrence. The finite distinct-specialization
-counter compares complete operation descriptions within its shared work budget:
-both exact ports, phase, source effect, access, constructors, ordered children,
-repetition counts and issued native dependency identities. A zero power retains
-its child identity. Matching matrices alone do not identify two descriptions.
-The same complete identity keys the private body/provider registry. Every
-reuse repeats original actual/interface/access checks and a fresh native check
-of the retained immutable body before copying its action. A refused comparison
-is not a cache miss. Body entry and failure restore the original instance,
-static environment and caller context; issued identities and charged work do
-not rewind. This bounded materialization supplies no source-preservation theorem
-or general caller-frame/cleanup guarantee.
+The checker rejects this declaration, which declares only `Applicable(U)`
+(`access`):
 
-Evidence preparation and selected typed lowering keep separate prepared bodies
-and providers for the same original specialization. Nongeneric provider reuse
-also retains the actual Raw, ordinary or runtime root representation: identical
-Raw instructions do not identify different native request/view data. Each
-representation still undergoes its original checks, and reuse within it still
-requires the complete accepted artifact to match.
+```qli
+pub unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){adjoint(U)(q)}
+```
 
-The current common judgment has a 1,000,000-unit work allowance. Its selected
-profile also limits retained scope storage to 16,384 cells. Natural-expression
-depth is limited to 128; type trees have separate 4,096-cell, depth-64 and
-64-immediate-field capacities. Accounting units measure implementation work
-and retained structures; they are not byte counts or quantum resource bounds.
+### Descriptions as static arguments
 
-The exact constraint procedure allows at most 64 alternatives and 32 symbolic
-variables per elimination problem. Before generating an elimination pair, it
-rejects if the pair count would exceed 50,000 or the retained set already has
-4,096 constraints. All storage also consumes the common preparation budget.
-Ordered binder identities and deterministic collections fix its
-traversal and tie-breaking. Exceeding a solver capacity rejects; it does not
-convert an unresolved premise into a successful assumption.
+The constructors also build descriptions inside the brackets of a call.
 
-The current selected-source concrete elaborator limits aggregate function
-calls to 1,024, call depth to 16, aggregate fold iterations to 1,024, emitted
-source-order steps to 10,000 and charged storage to 100,000 cells. Cache reuse
-does not remove call accounting. Separate parser, constraint, lowering, native
-and simulation capacities can reject an otherwise meaningful instance.
+Rules:
 
-Capacity failures are reported as limits; invalid types, unsupported syntax or
-arithmetic, missing access and non-decreasing cycles retain their own failure
-categories. Exhausting a budget is neither acceptance nor proof that a program
-has no meaning. Compiler capacities, termination, ownership safety, computed
-quantum resources and checked target budgets are distinct obligations.
+- In a static operation argument, `adjoint(U)` and `controlled(U)` construct
+  the corresponding descriptions, also when nested.
+- A constructed description keeps the provider-bound capability derivations
+  and the restrictions of the concrete profile.
 
-## Evidence and remaining work
+### Repetition
 
-Static evaluation need not enumerate the computational basis of a register.
-For example, a generic identity fold retains one definition and no source
-instructions as its width changes; its fold counter counts the requested
-iterations, independently of the basis dimension `2^n`. Width is retained in
-the interface, including the logical owner at `n = 0`. The bounded conformance
-test `static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold`
-checks widths 0–3 and iteration counts 0, 1 and 3, then independently accepts
-and executes each proposed identity with an external reference. The simulation
-oracle enumerates small amplitudes after elaboration; it is not the static
-evaluator. This example establishes no general complexity bound or quantitative
-resource certificate, and other representations may need explicit finite data.
+```text
+PowerApplication ::= "power" "(" OperationDescription "," Count ")" "(" Expr ")"
+```
 
-Existing small sized-source regressions cover guarded subtraction and affine
-equality, nonlinear refusal, original obligation spans, static dead arms,
-empty folds, forwarded premises/access, mutual cycles, complete bindings,
-repeat limits and aggregate call/fold/storage accounting. These are bounded
-implementation checks, not a theorem of general specialization preservation.
+The canonical repetition description is `power(U, count)`. The operation
+comes first and the count second. Its forward runtime application is
+`power(U, count)(q)`. Repetition is not the execution of a host loop.
 
-Rust still produces untrusted proposals. The exact resulting artifact and any
-independent request pass their native gate as described by the
-[production boundary](production-boundary.md). Native validity of that output
-does not prove that specialization preserves the original source meaning.
-The two admitted QLV1 ownership/scope guarantees retain their original-root
-scope; QS, PR, quantitative RS and EXACT remain pending at their broader scopes.
+Rules:
 
-General static builder evaluation belongs to #60/#61; finite static collections
-and remaining phase-table work belong to #63. This chapter supplies
-no arbitrary code execution, I/O, randomness, raw IR injection, trusted evidence
-constructor or floating-point substitute for an exact obligation. Generic QFT
-implementation remains outside the current human-selected goal.
+- The original-source syntax tree keeps the complete description, the count
+  and the byte spans. No generated function name and no anonymous source loop
+  replaces the application.
+- The runtime argument is evaluated once, also for a zero count.
+- The application requires the Applicable capability (`access`), also for a
+  zero count and in an unused body.
+- A zero count resolves and checks its provider and the required capability.
+- Repetition grants no `Adjointable` capability and no `Controllable`
+  capability. This also holds when another generic call forwards a repeated
+  description.
+- `controlled(power(U, count))(c, q)` and `adjoint(power(U, count))(q)` keep
+  the complete repeated provider. Each requires the capability of its outer
+  constructor.
+
+The count of a repetition is static.
+
+Rules:
+
+- An ordinary count is a natural expression.
+- The count form `2^e` takes a natural atom as exponent. A compound exponent
+  needs parentheses, as in `2^(n+1)`.
+- `2^e` is not a general power operator of natural expressions. This rule
+  does not admit it in `Bits<2^n>`.
+- Counts and products of counts use checked arithmetic.
+  [Limits of the routes](#limits-of-the-routes) states the largest counts.
+
+The direct form `power(name, literal)(q)` names its operand and gives its
+count as a literal.
+
+Rules:
+
+- The literal must be in `0..=4096`, also in an unused body (`limit`).
+- For an ordinary function, the direct form uses the runtime group judgment
+  over the complete group of quantum inputs.
+- For an operation parameter, the direct form uses the opaque basis rule and
+  requires the Applicable capability.
+- For a language primitive, the direct form checks the exact single-owner
+  basis and the Unitary effect.
+- A symbolic count or a compound count uses the general operation-provider
+  rules and the closed-binding rules.
+
+The word `power` is contextual.
+
+Rules:
+
+- Only an unqualified two-stage `power(...)(...)` denotes the runtime
+  application.
+- An ordinary single-stage call `power(a, b)`, a declaration named `power`
+  and a module import keep normal resolution.
+- A root-qualified ordinary reference or call follows the common
+  [module lookup](prelude.md). Qualification does not select the runtime
+  constructor.
+- A static operation argument interprets `power` as the constructor.
+
+The checker accepts this program. It returns `1`, because the argument
+`x(init0())` is evaluated once and the zero power applies `oracle` no times:
+
+```qli
+use std::gate::x; use std::state::init0;  unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub observe fn main()->Bit{measure_z(power(oracle,0)(x(init0())))}
+```
+
+The checker rejects a literal count above 4096 (`limit`):
+
+```qli
+use std::gate::x; unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn f(q:Q<Bit>)->Q<Bit>{power(oracle,4097)(q)}
+```
+
+The project route rejects the same count inside an outer zero power
+(`limit`):
+
+```qli
+unitary fn target[const n:Nat](q:Q<Bit>)->Q<Bit>{q}
+unitary fn unused[const n:Nat](q:Q<Bit>)->Q<Bit>{power(power(target[1],4097),0)(q)}
+```
+
+The checker accepts the count `2^(n+1)` in this declaration. It rejects the
+counts `2^n+1` and `3^n` in its place (`parse`), and the count `n*n`
+(`unsupported`):
+
+```qli
+pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controllable(U) { controlled(power(U,2^(n+1)))(c,q) }
+```
+
+The direct form accepts a language primitive, as in `power(h,0)(q)`. The
+three descriptions below require a provider under the ordinary checked
+provider contract. Each line is the body of a separate function, where `c`
+and `q` are `Q<Bit>` owners and `use_op` has the static parameter
+`U: Op<Bit>`. The checker rejects each body, because the language primitive
+`h` is not a provider (`type`):
+
+```qli
+use_op[power(h,0)](q)
+controlled(power(h,0))(c,q)
+adjoint(power(h,0))(q)
+```
+
+An ordinary function is a provider in the same positions. The checker accepts
+each body below. `had` is the ordinary function
+`unitary fn had(q:Q<Bit>)->Q<Bit>{h(q)}`, which wraps `h`, and `z` is the
+ordinary standard-library function `std::gate::z`:
+
+```qli
+use_op[power(had,0)](q)
+controlled(power(z,0))(c,q)
+adjoint(power(z,0))(q)
+```
+
+<a id="definition-checking-and-concrete-capacities"></a>
+
+## Definition checking and closed instances
+
+Checking has two stages. The common judgment checks every declaration in its
+generic form. A route then checks each closed instance that it elaborates.
+
+Rules:
+
+- The common judgment checks every declaration, including private and unused
+  bodies, before either route elaborates a closed instance.
+- The common judgment checks static categories, exact type trees, owner and
+  effect rules, generic premises and capabilities.
+- A closed instance separately checks its complete closed bindings, the
+  identities of its actual providers, its substitutions and its supported
+  interfaces.
+- Neither stage issues a native accepted handle.
+- A capacity failure is reported as a limit (`limit`). An invalid type, an
+  unsupported syntax or arithmetic form, a missing capability and a
+  non-decreasing cycle keep their own classes.
+
+### Retained source plans
+
+A **plan** is the record that the common judgment keeps of one static call or
+of one evidence obligation.
+
+Rules:
+
+- A plan is source metadata. It is not independently checked evidence.
+- Retention of a plan discharges no unmaterialized generic obligation and
+  widens no concrete profile.
+
+> **Implementation note.** `src/frontend/check/plans.rs` holds the plans. The
+> common judgment keeps each plan under the identity of its original
+> structural occurrence. A plan keeps the resolved callee and formal
+> identities, the ordered Basis, Nat and Op actuals, and both operation
+> ports. It also keeps the Meaning requests, the lexical static bindings, and
+> the predicate and fold regions. The plans consume the preparation budget.
+>
+> The plan of an ordinary natural expression keeps the original arithmetic
+> beside the normalized facts, so the concrete checks of intermediate
+> overflow and of work apply to it. The plan of a helper call keeps the
+> original arguments and the shared checked affine template, under the
+> template and result widths that [Capacities](#capacities) states. A zero
+> power keeps its child operation and its requests.
+
+### Uninstantiated bodies
+
+A body is **dormant** when no closed instance instantiates its declaration.
+On the project route, a dormant pass checks the closed parts of dormant
+bodies.
+
+Rules:
+
+- The pass checks each available closed Meaning request and each closed
+  static actual in a dormant body. It keeps the original Basis, Nat and Op
+  scope.
+- The pass visits both siblings of a description, also when one depends on
+  an unbound formal. It keeps zero-count children.
+- Each concrete actual passes the ordinary exact-port gate, the phase-fixed
+  Meaning gate and the requested-access gate.
+- When every actual is closed, the concrete body reaches ordinary lowering
+  and native checking under its complete instance identity. A
+  declaration-only ordinary-root cache does not stand in for that check.
+- A Meaning comparison does not itself request every capability in the
+  available-access summary of the source.
+- An unbound original Op formal stays conditional, also inside
+  `checked_op(U,M)`. That deferral does not establish the requested Meaning.
+- An unbound actual stays conditional. Its closed siblings undergo their own
+  contract checks.
+- An obligation of a runtime expression requires its corresponding concrete
+  gate.
+- In a provably inactive region, a premise that depends on a `Nat` may stay
+  conditional. An independently closed sibling cannot be deferred. A fixed
+  owner, Meaning or access mismatch cannot be deferred.
+- Caller-frame obligations and clean-workspace obligations keep their
+  separate scopes.
+
+A requested capability also reaches each maximal closed fragment of a
+partially deferred description:
+
+| Description | Requests that reach its operands |
+| --- | --- |
+| `then_op(U,V)`, `tensor_op(U,V)` | The requested capability, on both operands |
+| `adjoint(U)` | A request for Applicable becomes a request for Adjointable, and a request for Adjointable becomes one for Applicable. The construction keeps its required Adjointable capability. |
+| `controlled(U)` | The Controllable capability of the child, for each requested capability |
+| `conjugate_op(U,V)` | The Applicable and Adjointable capabilities of the outer operand `U`, and the requested capability of the inner operand `V` |
+| `power(U,n)` | The requested capability, also at a zero count |
+
+Rules:
+
+- The concrete access gates and their circuit and step limits apply to a
+  fragment.
+- A check of a fragment does not establish the contract of the whole
+  deferred description. It does not replace the aggregate checks that apply
+  when all actuals close.
+
+The project route also checks a dormant whole-owner `ctrl` call to a
+declaration with closed static actuals.
+
+Rules:
+
+- The project route binds the original expression and its operands to the
+  checked plan of the call. It requires the original caller-visible Unitary
+  effect and preserves the complete ordered Q-owner interface.
+- The project route independently checks the concrete callee body. It
+  submits the Raw ports and the body to the native sector gate.
+- Unitarity alone does not establish the sector condition.
+- A zero-width Ctrl owner keeps its exact type. It causes a native request,
+  although its set of physical axes is empty.
+- The control-request capacity applies to this explicit request. Ordinary
+  calls keep their separate finite profile.
+
+> **Implementation note.** `src/frontend/compile/dormant.rs` holds the
+> dormant pass, and `src/frontend/compile/dormant/controls.rs` checks dormant
+> `ctrl` sites. The pass borrows the original operation occurrences. The
+> finite adapter of the project route binds complete Basis,
+> Nat and Op instances. It checks closed bodies and dormant operation roots,
+> and it submits concrete Ctrl calls through the native sector gate.
+
+### Specialization identity and reuse
+
+The **specialization identity** of an operation description consists of
+these parts:
+
+- both exact ports, the phase and the source effect;
+- the capabilities, the constructors and the ordered children;
+- the repetition counts and the issued native dependency identities.
+
+On the project route, a specialization may reuse a retained body.
+
+Rules:
+
+- An ordinary runtime call binds its borrowed plan to the exact original
+  expression, the callee and the ordered slices of static and runtime
+  operands. A cloned syntax tree of the same shape is not an original
+  occurrence.
+- Two operation descriptions are one specialization only when their
+  specialization identities agree. A zero power keeps the identity of its
+  child. Matching matrices alone do not identify two descriptions.
+- Every reuse repeats the original checks of actuals, interface and access.
+  It also runs a fresh native check of the retained immutable body before it
+  copies the action of that body.
+- A refused comparison is not a cache miss.
+- Entry into a body and failure of a body restore the original instance, the
+  static environment and the caller context. Issued identities and charged
+  work do not rewind.
+
+Prepared bodies are separate for each consumer and for each representation.
+
+Rules:
+
+- Evidence preparation and selected typed lowering keep separate prepared
+  bodies and providers for one original specialization.
+- Reuse of a nongeneric provider also keeps the Raw, ordinary or runtime root
+  representation. Identical Raw instructions do not identify different
+  native request data or view data.
+- Each representation undergoes its original checks. Reuse within one
+  representation requires the complete accepted artifact to match.
+
+> **Implementation note.** The distinct-specialization counter of the project
+> route compares specialization identities within its shared work budget. The
+> same identity keys the private registry of bodies and providers in
+> `src/frontend/compile/instances.rs`.
+
+## Retired spellings
+
+The parser rejects each retired spelling at its marker, predicate or
+constructor token (`parse`). The diagnostic names the replacement.
+
+| Retired spelling | Replacement |
+| --- | --- |
+| `[static name: Kind]` in a parameter header | `[const name: Kind]` |
+| `Apply(U)`, `Adjoint(U)`, `Controlled(U)` | `Applicable(U)`, `Adjointable(U)`, `Controllable(U)` |
+| `adjoint(U,q)` | `adjoint(U)(q)` |
+| `inverse(U)(q)` | `adjoint(U)(q)` |
+| `inverse_op(U)` | `adjoint(U)` |
+| `controlled_op(U)` | `controlled(U)` |
+| `repeat_op(count, U)` | `power(U, count)` |
+| `repeat_static(count, U, q)` | `power(U, count)(q)` |
+
+Rules:
+
+- The parser has no legacy header mode.
+- To migrate a parameter header, replace each marker and preserve the order
+  of the parameters, their kinds and the explicit arguments.
+
+<a id="evidence-and-remaining-work"></a>
+
+## Status and limits
+
+### Capacities
+
+Accounting units measure implementation work and retained structures. They
+are not byte counts and not quantum resource bounds.
+
+| Capacity | Limit | Scope |
+| --- | --- | --- |
+| Work of the common judgment | 1,000,000 units | Both routes |
+| Retained scope storage | 16,384 cells | Selected-entry route |
+| Depth of a natural expression | 128 | Both routes |
+| Type tree | 4,096 cells, depth 64, 64 immediate fields | Both routes |
+| Symbolic affine coefficients and constants | Signed 128-bit integers, checked | Common judgment |
+| Concrete natural arithmetic | Unsigned 32-bit naturals, checked | Closed instances |
+| Helper template arithmetic | Signed 128-bit intermediate values, then a nonnegative unsigned 32-bit result | Closed instances |
+| Alternatives of the constraint procedure | 64 per elimination problem | Common judgment |
+| Symbolic variables of the constraint procedure | 32 per elimination problem | Common judgment |
+| Elimination pairs of the constraint procedure | 50,000 | Common judgment |
+| Retained constraints of the constraint procedure | 4,096 | Common judgment |
+| Aggregate function calls, with Nat helper calls | 1,024 | Selected-entry route |
+| Call depth | 16 | Selected-entry route |
+| Aggregate fold iterations | 1,024 | Selected-entry route |
+| Emitted source-order steps | 10,000 | Selected-entry route |
+| Charged storage | 100,000 cells | Selected-entry route |
+| Work of finite lowering | 1,000,000 units | Project route |
+
+Limits that apply to these capacities:
+
+- The constraint procedure rejects before it generates an elimination pair,
+  if the pair count would exceed its limit or the retained set is at its
+  limit. All its storage also consumes the preparation budget.
+- The constraint procedure is not a complete solver for integer arithmetic.
+  Exceeding one of its capacities rejects. It does not convert an unresolved
+  premise into a successful assumption.
+- On the selected-entry route, each concrete natural visit and each
+  allocation of a helper argument or term is charged to the 100,000-cell
+  allowance. Each evaluated helper call counts toward the 1,024-call
+  allowance, which it shares with the specialization of runtime functions.
+- On the project route, finite lowering charges its original natural visits
+  and its helper work to the project-wide 1,000,000-unit allowance. It does
+  not import the counters of the selected-entry route.
+- Cache reuse does not remove call accounting.
+- A capacity failure introduces no modular arithmetic.
+- Separate parser, constraint, lowering, native and simulation capacities
+  can reject an otherwise meaningful instance.
+- Exhausting a budget is neither acceptance nor proof that a program has no
+  meaning.
+- Compiler capacities, termination, ownership safety, computed quantum
+  resources and checked target budgets are distinct obligations.
+
+### Limits of the routes
+
+| Limit | Project route | Selected-entry route |
+| --- | --- | --- |
+| A repetition count, at every nesting level | `0..=4096`, also inside an outer zero count | At most 256 |
+| The exponent `e` of a count `2^e` | The count `2^e` must fit `0..=4096` | At most 8 |
+| The product of nested repetition counts | At most 4096 in a direct runtime transform | At most 256 |
+| An operation description that the route materializes | Six bits and 1024 steps, within the shared work limit | The aggregate limits of [Capacities](#capacities) |
+
+Limits of the project route:
+
+- The route evaluates symbolic counts and `2^e` with the complete original
+  natural bindings and checked unsigned 32-bit intermediates.
+- The product guard is specific to direct runtime transforms. An opaque
+  operation description keeps its own materialization step and work limits.
+- A controlled application uses checked controlled circuit construction and
+  native evidence, within the six-bit, 1024-step operation limit and the
+  shared work limit.
+- A constructed adjoint such as `adjoint(power(U, k))(q)` uses the closed
+  operation-provider profile, the exact basis and Adjointable evidence. The
+  literal-count, six-bit operation, step and shared work limits apply. An
+  adjoint of a bare name, `adjoint(name)(q)`, uses the finite transform path
+  of the direct power of a name.
+- For the direct form `power(name, literal)(q)`, the finite adapter checks the
+  original body and the serial copies through the native gates. An actual
+  operation parameter has a 1024-step limit and shared work accounting.
+- A use of a sized operation requires a supported output profile.
+
+Limits of the selected-entry route:
+
+- The route applies its own count, exponent and aggregate-work limits. A
+  count or a product above 256 and an exponent above 8 reject (`limit`).
+- The validity of a selected entry does not check a false Meaning request in
+  a generic body that the entry does not select.
+
+Limits of both routes:
+
+- The executable adjoint profile is Unitary. General isometry adjoints are
+  unsupported.
+- Concrete emitters have separate supported-interface restrictions for
+  `Bits<n>` sizes.
+- The capability rules enlarge the support of no concrete projection. Finite
+  lowering and selected lowering keep their separate capacities and their
+  explicit unsupported results.
+
+### Provisional spellings and absent constructs
+
+- The spellings `static let` and `static fn` are provisional in 0.3.0. Their
+  static category, their exactness and their authority laws are fixed. The
+  typed-builder surface of 0.4.0 may select other spellings without
+  introducing a second execution semantics.
+- No general public `static fn`, `const fn` or builder API is stable. Those
+  spellings, static lambdas, and quotation and splicing are open choices for
+  0.4.0. A helper spelling that 0.3.0 adds later is provisional unless a
+  separate decision stabilizes it.
+- The scalar fragment and the provisional helpers of this chapter are
+  supported. The bounded-const criteria and the collection criteria that
+  [History](#history) names are not implemented.
+- The language has no general static builder evaluation, no finite static
+  collections and no general phase-table facility.
+- Small Z, S and T phase schedules and computed generic sizes have
+  independent checks. Those checks do not complete a general static
+  collection API, the whole of the phase-table work, a source-preservation
+  theorem or a generic QFT implementation.
+- A generic QFT implementation is outside the human-selected development
+  goal.
+- This chapter supplies no arbitrary code execution, I/O, randomness, raw IR
+  injection, trusted evidence constructor or floating-point substitute for
+  an exact obligation.
+- The bounded static contract does not discharge quantitative Resource
+  Safety.
+
+### Code, tests, proof, preservation and specification review
+
+Code:
+
+- The Rust frontend implements the rules of this chapter and produces
+  untrusted proposals. Each resulting artifact and each independent request
+  passes its native gate, as the
+  [production boundary](production-boundary.md) describes.
+
+Tests:
+
+- Bounded regressions on small systems check the rules. They are
+  implementation checks. They are not a theorem of general specialization
+  preservation.
+- The sized-source regressions cover guarded subtraction and affine
+  equality, nonlinear refusal, original obligation spans, static dead arms
+  and empty folds. They also cover forwarded premises and access, mutual
+  cycles, complete bindings, repeat limits, and aggregate call, fold and
+  storage accounting.
+- Static evaluation need not enumerate the computational basis of a
+  register. A generic identity fold keeps one definition and no source
+  instructions as its width changes. Its fold counter counts the requested
+  iterations, independently of the basis dimension `2^n`. The interface
+  keeps the width, including the logical owner at `n = 0`.
+- The bounded conformance test
+  `static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold`
+  checks widths 0–3 and iteration counts 0, 1 and 3. It then independently
+  accepts and executes each proposed identity with an external reference.
+  Its simulation oracle enumerates small amplitudes after elaboration. The
+  oracle is not the static evaluator.
+- That test establishes no general complexity bound and no quantitative
+  resource certificate. Other representations may need explicit finite data.
+
+| Subject | Regression tests |
+| --- | --- |
+| Sizes, guarded subtraction, static dead arms, recursion and capacities | `tests/sized_source.rs` |
+| Static bindings and the identity-fold accounting | `tests/static_naturals.rs` |
+| Nat helpers | `tests/static_helpers.rs` |
+| `requires` clauses | `tests/unified_requires.rs` |
+| Static folds | `tests/qfor.rs` |
+| Operation descriptions, applications and retired spellings | `tests/operation_parameters.rs`, `tests/checked_operations.rs`, `tests/parser.rs` |
+
+Proof:
+
+- This chapter claims no theorem of general specialization preservation. The
+  checks on small systems establish no general source-preservation theorem.
+- The two admitted guarantees `QS-QLV1-OWNERSHIP-2026-01` and
+  `QS-QLV1-SCOPE-2026-01` keep their original-root scope.
+- `QS-2026-01`, `PR-2026-01`, `RS-2026-01` for quantitative Resource Safety,
+  and `EXACT-2026-01` are binding and pending at their broader scopes.
+- General preservation of source and resources and the quantitative RS
+  theorem are separate obligations.
+
+Preservation:
+
+- Native validity of an output does not prove that specialization preserves
+  the meaning of the original source.
+- The bounded materialization of specializations supplies no
+  source-preservation theorem and no general caller-frame or cleanup
+  guarantee.
+
+Specification review:
+
+- Reference meanings require human specification review, independently of
+  acceptance, as the [authority hierarchy](authority.md) states. This chapter
+  records no review of its rules.
+
+## History
+
+- This chapter describes the static fragment as `0.3.0-beta` implements it.
+  It records the rules that
+  [#28](https://github.com/MGYamada/Qleisli/issues/28),
+  [#47](https://github.com/MGYamada/Qleisli/issues/47),
+  [#44](https://github.com/MGYamada/Qleisli/issues/44) and
+  [#63](https://github.com/MGYamada/Qleisli/issues/63) tracked.
+- [#40](https://github.com/MGYamada/Qleisli/issues/40) fixed the class of
+  static computations as the 0.3.0 decision. It deferred the public builder
+  syntax to the typed meta-layer of 0.4.0, which
+  [#60](https://github.com/MGYamada/Qleisli/issues/60) and
+  [#61](https://github.com/MGYamada/Qleisli/issues/61) track. General static
+  builder evaluation belongs to those two Issues. The helper spelling is
+  provisional under the #40 decision.
+- The maintainer excludes the unimplemented bounded-const and collection
+  criteria of #63 from all of v0.3.0, including beta. The exclusion
+  supersedes the earlier alpha-only deferral. It is not implementation
+  completion. #63, which also held finite static collections and other
+  phase-table work, is closed as not planned.
+- [#33](https://github.com/MGYamada/Qleisli/issues/33) replaced the marker
+  `[static name: Kind]` by `const`. Historical source bytes are historical
+  inputs.
+- [#194](https://github.com/MGYamada/Qleisli/issues/194) tracked the explicit
+  threading boundary that the static folds implement.
+- `power(U, count)(q)` preserves the contract of the retired `repeat_static`
+  form. For a language primitive, it keeps the profile of the retired
+  named-function repetition.

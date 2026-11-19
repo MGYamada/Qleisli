@@ -2,11 +2,10 @@
 
 **Policy as Theorem. Constitution as Harness. Compiler as Executor.**
 
-This is Qleisli's top-level architecture principle, specified by
-[Issue #254](https://github.com/MGYamada/Qleisli/issues/254). It is subordinate to
+This is Qleisli's top-level architecture principle. It is subordinate to
 [the authority hierarchy](authority.md), the ratified Constitution and the
-recorded human interpretations. It defines no new mathematical interpretation
-or discharged guarantee.
+recorded human interpretations. It defines no mathematical interpretation
+and no discharged guarantee.
 The [qrate and external-artifact boundary](packages-and-artifacts.md) distinguishes
 semantic, evidence, observational, realization and organizational roles, with
 explicit current package and edition-binding limitations.
@@ -23,9 +22,9 @@ interpretation for a defined case: what must be proved, the applicable scope
 and premises, and how the requirement relates to existing guarantees. Lean or
 the designated independent proof checker establishes derivability of the
 resulting proposition under its actual definitions and recorded assumptions.
-Human interpretation and mathematical verification remain separate judgments.
+Human interpretation and mathematical verification are separate judgments.
 Ordinary maintainers select language and implementation designs within those
-requirements; routine covered maintenance needs no new interpretation.
+requirements; routine covered maintenance needs no further interpretation.
 
 QS, PR and quantitative RS are three permanent, distinct proof obligations.
 Their binding meanings come from the adopted interpretations; this chapter
@@ -54,17 +53,16 @@ representation, release or tool cannot escape an applicable obligation by
 renaming or moving its acceptance path. Changed representations require the
 appropriate checked semantic transport; old proof files alone are insufficient.
 Edition identifies this constitutional regime. Syntax and release compatibility
-remain separate.
+are separate matters.
 
 The harness must reach executable boundaries. Prefer making a prohibited
 operation unrepresentable, untypable, unverifiable or explicitly rejected.
 External prompts, coding conventions and author identity cannot be the only
 protection for an accepted guarantee. Identity, continuity, production coverage
 and required evidence belong in mechanical enforcement, with their actual
-limitations exposed. Current CI checks implement parts of that harness;
-[constitutional CI](https://github.com/MGYamada/Qleisli/issues/141) and the
-[release gate](https://github.com/MGYamada/Qleisli/issues/142) retain their
-unfinished requirements.
+limitations exposed. The CI checks implement parts of that harness.
+Constitutional CI and the release gate have unfinished requirements, which
+[History](#history) links.
 
 Pre-v1 proof maturity permits truthful disclosure of incomplete coverage. It
 never permits withdrawing an admitted guarantee, treating a failed check as
@@ -76,24 +74,24 @@ successful or advertising an unproved scope as constitutionally certified.
 
 The language and ecosystem are the executable surface of these constraints.
 Parsing, name resolution, type/effect/ownership preparation, evidence generation
-and lowering apply the authorized contracts. Native Lean checking supplies new
-semantic accepted handles under the
+and lowering apply the authorized contracts. Native Lean checking supplies each
+fresh semantic accepted handle under the
 [constitutional theorem boundary](production-boundary.md#constitutional-theorem-boundary).
-Rust proposals, authored source and external IR all remain subject to the
+Rust proposals, authored source and external IR are all subject to the
 applicable independent checks. Native absence, incompatibility or failure rejects
 without fallback to another acceptance authority.
 
 | Boundary | Enforcement and user-visible meaning |
 | --- | --- |
-| Ordinary values and quantum owners | `T` and `Q<T>` remain distinct. Preparation and measurement are explicit; expected typing cannot insert either. |
-| Ownership, axes and phase | Every owner, including zero-width owners, is accounted for. Width is not interface identity; permutation and nontrivial phase remain explicit. |
+| Ordinary values and quantum owners | `T` and `Q<T>` are distinct. Preparation and measurement are explicit; expected typing cannot insert either. |
+| Ownership, axes and phase | Every owner, including zero-width owners, is accounted for. Width is not interface identity; permutation and nontrivial phase are explicit. |
 | Effects and capabilities | A body cannot downgrade Observe to Unitary, and unitarity alone supplies no inverse or control API. Declared evidence and access obligations must be checked. |
 | Workspace and temporary access | Clean/dirty and access features must enforce their adopted all-input/reference contracts when admitted; planned syntax or a successful known-input test is not such evidence. |
 | Source and external artifacts | An external provider or schema cannot manufacture semantic authority. Independently checking valid output IR alone does not prove its source or target correspondence. |
 | Qrate, module and toolchain | Explicit identities and closed substitutions govern checking; ambient names or a plausible provider are not evidence. |
 
 The [type model](type-model.md), [primitive boundary](primitive-boundary.md) and
-[realization contracts](realization.md) state current rules and remaining profile
+[realization contracts](realization.md) state the rules and the profile
 limits. This table does not implement the unfinished access, workspace,
 realization or surface proposals.
 
@@ -123,11 +121,11 @@ first-party status and documentation generation confer no semantic authority.
 Language primitives require their canonical contracts and independent checks;
 reading an implementation cannot reconstruct or authorize a different meaning.
 The [primitive inventory and current limitations](primitive-boundary.md) separate
-this policy from the source cutover and its remaining proof/profile obligations.
+this policy from the source cutover and its open proof and profile obligations.
 
 QLT — Qleisli Testsuite, QDB — Qleisli Debugger and QCP — Qleisli Circuit
 Profiler are planned Qleisli tools. They and qargo, qlidoc and other tools
-remain subordinate interfaces: they may expose programs, facts, diagnostics
+are subordinate interfaces: they may expose programs, facts, diagnostics
 or evidence, but cannot adopt interpretations, waive proof, create a parallel
 acceptance path or weaken accepted meaning. Their implementation is later work;
 this chapter installs none of those tools. mdBook is the separate documentation
@@ -152,14 +150,14 @@ measured success rate or permission to infer quantum meaning.
 | First-party ecosystem tools, including QLT, QDB and QCP | Explicit discovery through `qleisli --help`, then `qleisli help ecosystem`; each tool's role and current availability are stated there. These are Qleisli-native discovery targets. |
 
 The help path works without a project or native checker and issues no accepted
-handle. Planned tools remain unavailable for execution. Predictable classical
+handle. Planned tools are unavailable for execution. Predictable classical
 mistakes need deterministic, located correction paths that preserve owners,
 phase and evidence; semantic ambiguity must reject. Naming must avoid misleading
 pseudo-analogues and [semantic false friends](functional-boundary.md#false-friends-and-diagnostics).
 Every future first-party language or ecosystem addition must declare its
 category, intended semantic role and canonical recovery or discovery path.
-This implements the documentation boundary in
-[#253](https://github.com/MGYamada/Qleisli/issues/253) within the current Reference.
+This implements the documentation boundary for inference and discovery within
+the Reference.
 
 ## Required review of future designs
 
@@ -167,25 +165,36 @@ Every major language or tooling design document must identify how it preserves:
 
 1. the applicable adopted interpretation, scope, premises and existing guarantees;
 2. formal obligations, actual acceptance/artifact bindings, checked evidence and
-   remaining proof gaps;
+   open proof gaps;
 3. authorized source rules, lowering, ownership/effects, exact phase/axes and
    fail-closed behavior;
 4. diagnostic recovery, inspectable derived source and explicit tool discovery;
 5. the distinction between human interpretation, formal verification and execution.
 
 Use the existing constitutional impact procedure and GitHub decision record.
-An unresolved new constitutional case requires the concrete human judgment;
-ordinary implementation within existing interpretations remains maintenance.
+An unresolved constitutional case that existing interpretations do not cover
+requires the concrete human judgment; ordinary implementation within existing
+interpretations is maintenance.
 No design document gains constitutional authority by completing this checklist.
 
-Related decisions: [Constitution #129](https://github.com/MGYamada/Qleisli/issues/129),
-[production boundary #136](https://github.com/MGYamada/Qleisli/issues/136),
-[theorem jurisdictions #139](https://github.com/MGYamada/Qleisli/issues/139),
-[checked stdlib #167](https://github.com/MGYamada/Qleisli/issues/167),
-[external authority #169](https://github.com/MGYamada/Qleisli/issues/169),
-[surface boundary #196](https://github.com/MGYamada/Qleisli/issues/196),
-[diagnostic pedagogy #224](https://github.com/MGYamada/Qleisli/issues/224),
-[diagnostic harness #225](https://github.com/MGYamada/Qleisli/issues/225),
-and [inference/discovery #253](https://github.com/MGYamada/Qleisli/issues/253).
+## History
+
+- [Issue #254](https://github.com/MGYamada/Qleisli/issues/254) specified this
+  principle.
+- The unfinished requirements of the harness are tracked as
+  [constitutional CI #141](https://github.com/MGYamada/Qleisli/issues/141) and
+  the [release gate #142](https://github.com/MGYamada/Qleisli/issues/142).
+- The section on inference and explicit discovery implements the documentation
+  boundary of
+  [inference/discovery #253](https://github.com/MGYamada/Qleisli/issues/253).
+- Related decisions:
+  [Constitution #129](https://github.com/MGYamada/Qleisli/issues/129),
+  [production boundary #136](https://github.com/MGYamada/Qleisli/issues/136),
+  [theorem jurisdictions #139](https://github.com/MGYamada/Qleisli/issues/139),
+  [checked stdlib #167](https://github.com/MGYamada/Qleisli/issues/167),
+  [external authority #169](https://github.com/MGYamada/Qleisli/issues/169),
+  [surface boundary #196](https://github.com/MGYamada/Qleisli/issues/196),
+  [diagnostic pedagogy #224](https://github.com/MGYamada/Qleisli/issues/224) and
+  [diagnostic harness #225](https://github.com/MGYamada/Qleisli/issues/225).
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

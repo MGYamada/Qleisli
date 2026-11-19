@@ -1,9 +1,8 @@
 # Project name and pronunciation
 
-This is the canonical project-identity wording for Qleisli 0.3.0, following
-the decision in [Issue #234](https://github.com/MGYamada/Qleisli/issues/234).
-Other introductions and naming guidance should link here or reproduce this
-meaning without changing it.
+This is the canonical project-identity wording for Qleisli. Other
+introductions and naming guidance should link here or reproduce this meaning
+without changing it.
 
 **Qleisli is pronounced exactly like Kleisli.** The name expresses a
 **Kleisli-style lift of the classical software ecosystem into a quantum
@@ -20,5 +19,11 @@ and justified independently under the [authority hierarchy](authority.md).
 The name itself changes no language acceptance rule or proof obligation.
 
 **The Q changes the world, not the pronunciation.**
+
+## History
+
+- This wording follows the decision in
+  [Issue #234](https://github.com/MGYamada/Qleisli/issues/234) for Qleisli
+  0.3.0.
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

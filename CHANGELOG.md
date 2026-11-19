@@ -4,6 +4,19 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Rewrite the Book to the style guide in `docs/src/building.md`. Each Reference
+  chapter states its rules, keeps implementation detail in notes, and ends with
+  "Status and limits" and "History" sections. The two design-candidate chapters
+  become History records, and the four chapters that render adopted
+  constitutional records keep their wording. `scripts/check_book.py` also checks
+  the book sources: status words, tracker references outside History, the
+  120-word paragraph limit, code-fence labels and text that renders as HTML.
+  Correct documentation that disagreed with the code: `--edition=2026` on the
+  `engineering` comparison commands, the diagnostics of the selected-entry
+  route, the 21 native modes and five reply claims, the 22 `RawOp`
+  constructors, and the resumed scope of general operation arrows. The word for
+  `Applicable`, `Adjointable` and `Controllable` is "capability". No language,
+  checker or proof behaviour changes.
 - Check bounded static `qfor` iterations against their ordered Raw intervals in
   original-source contexts (#76). Project-local physical register SWAP examples
   preserve exact phase, wire order and both owners at width zero. Bundled
