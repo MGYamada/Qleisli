@@ -1,0 +1,103 @@
+{
+  "format": "qleisli.surface-roles-first-authoring",
+  "version": 1,
+  "archive": "first.tar.xz",
+  "reference_commit": "1751b32f0bde9a716a245ed7797dee2c1fa07d6f",
+  "records": {
+    "A/1.qli": {
+      "bytes": 134,
+      "sha256": "a66ff20b811a0736893e34c56031bf1dee25e1b7c58b7a9d3e1cdae8753faa63",
+      "original_mode": 420
+    },
+    "A/2.qli": {
+      "bytes": 187,
+      "sha256": "cdad35754ded0632fd4f0f345619a9677bea4d79a6a457fdb58cfcf9ad35fae3",
+      "original_mode": 420
+    },
+    "A/3-invalid.qli": {
+      "bytes": 111,
+      "sha256": "2cb5ff73a67363233e8acd9d8d190f1eabbdb39b796a284dd728c1e4fcccb967",
+      "original_mode": 420
+    },
+    "A/3.qli": {
+      "bytes": 92,
+      "sha256": "1f89fa9f78cd7d3413ae7380bbab12ea4e6639b98fe6aa8f0c1a62151c950e32",
+      "original_mode": 420
+    },
+    "A/4.qli": {
+      "bytes": 149,
+      "sha256": "03f63a76a1f376aa8aab01e7923501407db06019f87c850606fa45dcdc0ef755",
+      "original_mode": 420
+    },
+    "A/5.qli": {
+      "bytes": 121,
+      "sha256": "62c12296dbb34b346657aaa75328884143cda145d82212e72d5dedd703ab997c",
+      "original_mode": 420
+    },
+    "A/notes.txt": {
+      "bytes": 2279,
+      "sha256": "11cca84b12cda619dcb633a2213c23d19feec2c81965667d302009e2f56a50d5",
+      "original_mode": 420
+    },
+    "B/1.qli": {
+      "bytes": 134,
+      "sha256": "a66ff20b811a0736893e34c56031bf1dee25e1b7c58b7a9d3e1cdae8753faa63",
+      "original_mode": 420
+    },
+    "B/2.qli": {
+      "bytes": 187,
+      "sha256": "cdad35754ded0632fd4f0f345619a9677bea4d79a6a457fdb58cfcf9ad35fae3",
+      "original_mode": 420
+    },
+    "B/3-invalid.qli": {
+      "bytes": 106,
+      "sha256": "bbb91bf82c2444f7ec8a4e3cb6f748209f24d451c14e49274045004a201f28c7",
+      "original_mode": 420
+    },
+    "B/3.qli": {
+      "bytes": 84,
+      "sha256": "61cfac912e3abd6d98bb04886c40bfb99fb5c4b9ef92d27d09774bdd9787cfd5",
+      "original_mode": 420
+    },
+    "B/4.qli": {
+      "bytes": 139,
+      "sha256": "4f415761905020cbaa68994fed249a55b4b69b6349d5c93d97e092d1d200e04d",
+      "original_mode": 420
+    },
+    "B/5.qli": {
+      "bytes": 133,
+      "sha256": "0d31359785badf355b46e82a97436a80a22a28a08e4d3bdaf6bcf682b44b3a27",
+      "original_mode": 420
+    },
+    "B/notes.txt": {
+      "bytes": 1990,
+      "sha256": "faa2ffe0f229b77ed1cf8b038136591e167b8ba52f64f85c4935ef5a693498de",
+      "original_mode": 420
+    },
+    "TASK.txt": {
+      "bytes": 1560,
+      "sha256": "7cbc7c9e9600d76dddce24d318522b8b022cbafbed357a64ce29b71a7c8627e1",
+      "original_mode": 420
+    },
+    "binaries.json": {
+      "bytes": 283,
+      "sha256": "8c2a12b24aea7b41bc60cda430d5b87e412f09f22ee4772830467c93b4bb8101",
+      "original_mode": 420
+    },
+    "context.json": {
+      "bytes": 3035,
+      "sha256": "1c073c931f0cd83a840d0e23a561c5fe3150a4288955265f97f2fdf6c69ea18c",
+      "original_mode": 420
+    },
+    "observations.json": {
+      "bytes": 65724,
+      "sha256": "dc9bd239dde7e7396cb28af6fa8071a7a7fd9bfe41c01b6464bb8c6788cbde01",
+      "original_mode": 420
+    },
+    "observer.py.txt": {
+      "bytes": 4110,
+      "sha256": "ff4432956df6709ebf3380520a8098b67f58847ef416dd0fc7b886351d6a72bf",
+      "original_mode": 420
+    }
+  }
+}

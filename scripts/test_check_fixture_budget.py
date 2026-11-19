@@ -24,10 +24,10 @@ POLICY = json.loads((budget.ROOT / budget.POLICY_PATH).read_bytes())
 
 class BudgetPolicy(unittest.TestCase):
     def test_exact_inclusive_totals_and_added_line_caps(self):
-        totals = dict(files=18_000, bytes=157_286_400)
+        totals = dict(files=20_000, bytes=157_286_400)
         self.assertEqual(budget.enforce(POLICY, totals, dict(additions=100_000))["status"], "allowed")
         for totals, growth in [
-            (dict(files=18_001, bytes=0), None),
+            (dict(files=20_001, bytes=0), None),
             (dict(files=1, bytes=157_286_401), None),
             (dict(files=1, bytes=0), dict(additions=100_001)),
         ]:
@@ -42,7 +42,7 @@ class BudgetPolicy(unittest.TestCase):
                                    ("mgyamada/qleisli", 307), ("MGYamada/Qleisli", "307"),
                                    ("MGYamada/Qleisli", 307.0)]:
             self.assertEqual(budget.enforce(POLICY, totals, growth, repository, number)["status"], "forbidden")
-        for totals in [dict(files=18_001, bytes=0), dict(files=1, bytes=157_286_401)]:
+        for totals in [dict(files=20_001, bytes=0), dict(files=1, bytes=157_286_401)]:
             self.assertEqual(budget.enforce(POLICY, totals, growth, "MGYamada/Qleisli", 307)["status"], "forbidden")
 
     def test_policy_has_exact_schema_no_bool_or_raised_cap_or_extra_exception(self):
@@ -53,7 +53,7 @@ class BudgetPolicy(unittest.TestCase):
             lambda p: p.update(fixture_root="experimental"),
             lambda p: p["totals"].update(max_bytes=True),
             lambda p: p["totals"].update(max_bytes=157_286_401),
-            lambda p: p["totals"].update(max_files=18_001),
+            lambda p: p["totals"].update(max_files=20_001),
             lambda p: p["totals"].update(max_files=0),
             lambda p: p["pull_request"].update(max_added_lines=100_001),
             lambda p: p["pull_request"].update(max_added_lines=-1),
@@ -327,7 +327,7 @@ class GitFixtureBudget(unittest.TestCase):
             environment["GITHUB_REF"] = "refs/pull/308/merge"
             self.assertEqual(self.run_main(["--hosted"], environment)[1]["status"], "error")
             environment["GITHUB_REF"] = "refs/pull/307/merge"
-            with patch("check_fixture_budget.committed_totals", return_value=dict(files=18_001, bytes=0)):
+            with patch("check_fixture_budget.committed_totals", return_value=dict(files=20_001, bytes=0)):
                 self.assertEqual(self.run_main(["--hosted"], environment)[0], 1)
         self.assertEqual(self.run_main(["--base", self.base, "--head", self.head], self.context())[0], 1)
         with patch("check_fixture_budget.fixture_growth", return_value=oversized):

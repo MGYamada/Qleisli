@@ -807,5 +807,33 @@ class SelectedDormantTableHistory(unittest.TestCase):
         self.assertEqual(self.record('selected-ci-partition-repair-first.json')['first_updated_manifest_test']['exit_code'], 1)
 
 
+class SurfaceRolesFirstAuthoringTests(unittest.TestCase):
+    def test_unchanged_submissions_and_profile_refusals(self):
+        root = Path(__file__).resolve().parents[1] / 'tests/fixtures/authoring_sessions/surface-roles-v030'
+        with patch.object(history, 'FIXTURES', root):
+            data = history.read_history(
+                'first-index.json', 'first.tar.xz',
+                'd1b7326d484d9d31db670a6050e809344a9973da6d0f25421f2904b62f10d053',
+                8620, '0622c5547cfaaa7a366f491fbf8f3239b0ed5358a03e37a612922c3e83558f85',
+                80558)
+        observed = json.loads(data['observations.json'])
+        calls = observed['calls']
+        files = observed['files']
+        self.assertEqual(len(calls), 44)
+        for author in ('A', 'B'):
+            for task, outcome in [('1', 'ok'), ('2', 'ok'), ('3', 'ok'),
+                                  ('3-invalid', 'ownership'), ('4', 'ok'), ('5', 'unsupported')]:
+                path = f'{author}/{task}'
+                self.assertEqual(files[f'{path}/client.qli'].encode(), data[path + '.qli'])
+                reply = json.loads(files[f'{path}/first-selected/stdout.json'])
+                actual = reply['diagnostics'][0]['code'] if reply['diagnostics'] else reply['outcome']
+                self.assertEqual(actual, outcome)
+        runs = [row for row in calls if row['action'] == 'project-run']
+        self.assertEqual(len(runs), 32)
+        for row in runs:
+            self.assertEqual((row['exit'], row['actual']), (0, 'ok'))
+            self.assertLess(row['max_probability_error'], 1e-11)
+
+
 if __name__ == '__main__':
     unittest.main()

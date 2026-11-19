@@ -861,3 +861,7 @@ target counts and the separate placement refusal after source acceptance.
 The [derived provider resources study](provider-derived-resources-v030/README.md)
 keeps the first source and terminal reports for a composed inverse, inverse
 power, ordered tensor and a semantic provider that the target cannot realize.
+
+The [surface roles study](surface-roles-v030/README.md) retains two independent
+first submissions across coherent control, explicit access, ownership and ordinary
+control, including both selected-profile refusals and the closed truth tables.

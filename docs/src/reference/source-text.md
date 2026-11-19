@@ -1259,7 +1259,7 @@ Rules:
   same original source location.
 - A grammar example supplies a syntactic form. Name resolution, typing,
   effects and ownership determine whether a program that uses the form is
-  valid. See [the roles of quantum syntax and types](type-model.md).
+  valid. See [the roles of quantum syntax and types](type-model.md#surface-roles).
 
 ## Diagnostics at control boundaries
 
@@ -1299,6 +1299,34 @@ Rules:
   [linear ownership rules](type-model.md).
 
 ## Migration
+
+### Finite and sized programs
+
+Edition 2026 uses one source grammar for literal and parameterized programs.
+The project loader and the selected-entry loader both check the original
+declarations. A checked program must also satisfy the entry and IR profile
+requirements of the command that consumes it.
+
+| Source in a finite or sized program | Disposition and migration |
+| --- | --- |
+| `Unit`, `Bit`, ordered tuples, `Bits<n>` and `Q<A>` | Kept. Preserve the type tree. `Bits<1>` and `Bit` are distinct, as are `Bits<0>` and `Unit`. See the [type model](type-model.md). |
+| `CBit`, `CBits<n>`, `false`, `true`, or `()` as a result **type** | Replaced by `Bit`, `Bits<n>`, `0`, `1` and `Unit`, respectively. The Unit **value** is `()`. See [retired type spellings](type-model.md#retired-spellings). |
+| Functions, module paths, imports and explicit static specialization | Kept. Declare the edition in the owning manifest. Both loaders use the same [declaration resolution](#declaration-resolution). |
+| `[static n: Nat]`, `Op` parameters and `requires` | The parameter marker is `const`. Numeric predicates and capability requirements share one clause. See [retired spellings](static-language.md#retired-spellings) for each capability name. |
+| `if static` and static folds with `carry` and `yield` | Static selection is kept. Use `for static` for an ordinary carry and `qfor static` for a carry containing a quantum owner. Both folds thread the written carry in order. See [static branches and folds](static-language.md#static-branches-folds-and-termination). |
+| Runtime `if` and coherent `qif` | Kept. The former branches on an ordinary bit. The latter elaborates coherent control and preserves relative phase. See [runtime control](static-language.md#finite-runtime-control-and-resources). |
+| `split`, `join`, `take_bit`, `put_bit` and access to a register place | The structural primitives are kept. An indexed or sliced `excl` call elaborates to ordered partition, application and reassembly. See [static ordered-axis places](elaboration.md#static-ordered-axis-places). |
+| `adjoint`, controlled application and static repetition | Use the operation description followed by application. For example, `repeat_static(n,U,q)` becomes `power(U,n)(q)`. The [operation spelling table](static-language.md#retired-spellings) maps each retired constructor. |
+| `basis fn` and `do p <- q; pure e` | Renamed to `classical fn` and replaced by `basis q as p { e }`, respectively. The latter elaborates a checked coherent basis map. See [coherent notation](#the-coherent-notation). |
+| `meaning`, `bind_op(F,M)` and `apply_contract(F,S,q)` | Meaning declarations and function contracts are kept. Use `checked_op(F,M)` for the retired binding constructor. See [checked operations](checked-operations.md) and [function contracts](elaboration.md#function-contracts). |
+| `with_computed` | Kept. Its checked expansion computes, uses and uncomputes the workspace. Migrate argument-list predicates to an explicit [predicate domain](#predicate-domains). |
+| Qualified gate, preparation, measurement, reset and discard names | Use the [primitive and library name mapping](primitive-boundary.md#retired-qualified-names). Reset in `std::state` consumes the old owner and returns a fresh zero owner. |
+
+The [elaboration whitelist](elaboration.md#whitelist) gives the targets of
+individual expansions. The [selected-entry commands](type-model.md#selected-entry-commands)
+give the CLI migration for programs that select a module, entry and static arguments.
+
+### Rejected source
 
 The table gives the replacement for each source form that the common scanner,
 parser and judgment reject.
