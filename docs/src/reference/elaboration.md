@@ -426,6 +426,11 @@ Rules:
 > call interval in that same graph. Lean checks the sectors of the exact
 > action during the invocation that checks the executable hierarchy.
 
+The [bounded resource correspondence](realization.md#exclusive-access-and-generated-work)
+counts the live wires of the indexed Raw access and its reassembly. The
+selected operation and any emitted physical implementation have their own
+resource checks.
+
 The common checker accepts this function:
 
 ```qli

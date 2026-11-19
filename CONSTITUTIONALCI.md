@@ -168,6 +168,15 @@ incompatible, malformed, timed-out or failed checking must not fall back to
 Rust acceptance, cached success or a producer receipt. CI receipts described
 below are validation evidence; they are not executable acceptance handles.
 
+The [production coverage check](scripts/check_production_coverage.py) checks
+the complete registered path and native mode inventory and verifies its
+proof-scope and gap records. Live verification replays the proofs of the two
+admitted QS guarantees. The inventory and the Reference disclose the
+remaining QS, PR and RS obligations, as well as the EXACT supplement. The
+canonical terminal placement proof covers the declared closed Raw and target
+profiles. Its quantitative resource evidence covers the counted resources of
+the checked artifact under those same premises.
+
 ## 6. Scheduling, lanes and required contexts
 
 Develop and validate locally. Hosted runs start on every branch push, on pull
@@ -288,6 +297,12 @@ Success reports `ready-scoped-candidate`, not publication authorization or full
 constitutional conformance. Ordinary required contexts are test gates and do
 not substitute for readiness. Merging, tagging, pushing and publication are
 separate acts; publication needs separate authorization and artifact readback.
+
+This gate rejects a candidate outside the scoped 0.3.0 release line and
+rejects a request to report full conformance. A v1.0.0 or later full
+constitutional conformance gate must verify discharge of every applicable
+obligation against the current production acceptance and realizations, with
+continuity of the accumulated guarantee ledger.
 
 ## 8. Failure rules, regressions and present limits
 

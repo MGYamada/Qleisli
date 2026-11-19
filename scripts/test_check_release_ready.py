@@ -468,6 +468,12 @@ class SyntheticRelease(unittest.TestCase):
     def test_full_conformance_claim_rejects(self):
         self.update_acceptance(lambda x:x['proof_scope'].update(claim='full-conformance')); self.reject('full constitutional')
 
+    def test_v1_cannot_use_scoped_release_readiness(self):
+        self.write('Cargo.toml', b'[package]\nname="qleisli"\nversion="1.0.0"\n')
+        self.head = self.commit()
+        self.env['GITHUB_SHA'] = self.head
+        self.reject('gate supports only scoped 0.3.0 product releases')
+
     def test_tests_model_lanes_and_incomplete_suites_reject(self):
         original=copy.deepcopy(self.needs)
         for lane in ['tests','model']:
