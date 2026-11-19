@@ -17,7 +17,7 @@ These tools are distributed separately; consult their own documentation.
 QLT — Qleisli Testsuite: mathematical tests.
 QDB — Qleisli Debugger: failure/obligation navigation.
 QCP — Qleisli Circuit Profiler: circuit/resource profiling.
-These analysis tools are planned, not executable commands in this alpha.
+These analysis commands are planned for future releases.
 
 This help is documentation only; it does not check programs or issue accepted handles.
 Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md
@@ -64,7 +64,7 @@ selected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::
   doc produces Markdown text; verify-ir does not accept source-options.
 discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
   QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
-  These analysis tools are planned, not executable commands in this alpha.
+  These analysis commands are planned for future releases.
   qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.
   Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md
   Help is text-only; invalid/extra flags, including --format=json, remain usage errors.";

@@ -7,6 +7,8 @@ development milestones from the scope of their evidence.
 - Explain constitutional edition selection in project manifest diagnostics (#255).
 - Specify synchronized product releases and the compatibility metadata that
   binds their exact distribution snapshots (#230, #231).
+- Keep CLI help for planned analysis commands independent of the release stage
+  (#230).
 - State how the edition-2026 resource obligation applies to closed resource
   accounting, exclusive access and generated target work (#280).
 - Enforce the two approved whole-Issue exclusions in the beta requirements
