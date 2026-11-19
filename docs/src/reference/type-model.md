@@ -1066,6 +1066,9 @@ On the selected-entry route, the commands `check`, `run`, `sample` and
 | `--type`, `--nat`, `--operation`, `--operation-type`, `--operation-nat` | The explicit static bindings of the entry and of its providers |
 | `--ir-profile=auto\|raw\|hierarchy` | The IR and checker route |
 | `--basis=N` | The quantum input selector of a hierarchy execution |
+| `--request=PATH` or `--qpe-provider=PATH` | Check the hierarchy against a caller-supplied composition request or a named QPE provider. Supply at most one. |
+| `--shots=N` and `--seed=N` | Sampling requires both. The shot count ranges from 1 through 1024. |
+| `--output=PATH` | Destination for `emit-proposal`. |
 | `--lean-kernel`, with the alias `--kernel` | The native checker. An explicitly configured `QLEISLI_KERNEL` also selects it. |
 | `--format=json` | The common [`qleisli.result` envelope](diagnostics.md#the-result-envelope) |
 
@@ -1101,9 +1104,10 @@ Rules for the root:
   classical header and body. It invents no ordinary wrapper.
 - An unselected valid quantum declaration is source checked without being an
   execution root.
-- `run` and `sample` require zero original runtime parameters. Closed
-  simulation and sampling reject retained source parameters, including `Unit`,
-  `Bits<0>` and empty records with no classical transport bits.
+- On Raw and typed ordinary or mixed routes, `run` and `sample` require
+  zero original runtime parameters, including parameters of zero physical
+  width. Hierarchy execution can take a quantum basis input. Its
+  [root and effect requirements](#hierarchy-roots) also govern sampling.
 
 Rules for `--ir-profile`:
 
@@ -1137,13 +1141,32 @@ Rules:
 
 ### Hierarchy roots
 
-Selected hierarchy admits a root with a checked public Isometry effect and an
-actual Unitary or Isometry effect. The root has quantum entry values and
+Hierarchy execution takes the computational basis input selected by
+`--basis=N` (default 0). A public unitary root can act on that input.
+An observing root can produce measurement outcomes. For example, consider
+these public entries in module `main`:
+
+```qli
+pub unitary fn keep(q: Q<Bit>) -> Q<Bit> { q }
+
+pub observe fn read(q: Q<Bit>) -> Bits<1> {
+    let b = measure_z(q);
+    prepend_bit[0](b, empty_bits())
+}
+```
+
+With `--ir-profile=hierarchy --basis=1`, `run` on `main::keep` returns
+amplitudes `[[0,0],[1,0]]`. Sampling `main::read` with `--shots=3 --seed=7`
+returns outcomes `[1,1,1]`. Sampling `main::keep` fails with `unsupported`
+because this entry performs no observation.
+
+The preparation profile admits a root with a checked public Isometry effect
+and an actual Unitary or Isometry effect. It has quantum entry values and
 quantum results, optionally accompanied by one ordinary `Bits<0>` result.
 
 Rules:
 
-- The body must fit the preparation and pure-operation profile: fresh zero
+- An Isometry root must fit the preparation and pure-operation profile: fresh zero
   initialization where needed, followed by checked unitary hierarchy
   operations, with no observation.
 - A unitary implementation needs no fresh preparation. Its `SourceDefinition`,
@@ -1169,7 +1192,7 @@ Rules:
 - An unsupported combination of source and profile is refused explicitly. Raw
   retains its own classification.
 
-> **Implementation note.** Hierarchy lowering uses the
+> **Implementation note.** The Isometry profile uses the
 > initialization/evolution/readout transport with zero measurements. Its
 > single empty outcome is a transport carrier. It introduces no source Observe
 > effect, no measurement and no conversion between `Unit` and `Bits<0>`. The

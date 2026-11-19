@@ -4,6 +4,9 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Document the finite and sized source migrations together, complete the
+  selected-entry option table, and distinguish closed Raw execution from
+  hierarchy execution with a basis input (#250).
 - Rewrite the Book to the style guide in `docs/src/building.md`. Each Reference
   chapter states its rules, keeps implementation detail in notes, and ends with
   "Status and limits" and "History" sections. The two design-candidate chapters
