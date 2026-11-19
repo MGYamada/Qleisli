@@ -75,7 +75,8 @@ or physical correctness.
 
 ## Documentation and development
 
-- [Language Reference](docs/src/reference/source-text.md) and [Book contents](docs/src/SUMMARY.md)
+- [Book introduction](docs/src/introduction.md) and [Book contents](docs/src/SUMMARY.md)
+- [Language Reference](docs/src/reference/source-text.md) and [Rust API documentation](https://docs.rs/qleisli)
 - [Examples](examples/) and [roadmap](ROADMAP.md)
 - [Trust boundary](TRUSTBOUNDARY.md) and [constitutional CI](CONSTITUTIONALCI.md)
 - [Contributing](CONTRIBUTING.md), [working guidelines](AGENTS.md) and [changelog](CHANGELOG.md)

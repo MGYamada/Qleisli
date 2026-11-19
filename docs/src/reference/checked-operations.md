@@ -257,11 +257,16 @@ meaning F4: (Bit,Bit) = reference(fourier2);
 meaning F8: ((Bit,Bit),Bit) = reference(fourier3);
 ```
 
-With low-order axes first, the independent equation is
-`F_N[y,x] = exp(2*pi*i*x*y/N) / sqrt(N)` for `N = 4, 8`. The fixed reference
-regressions check every coefficient on both concrete adapters, including the
-output reversal and the exact phase. A consumer can use these targets in
-`apply_contract` or `Op<A,M>` under the same evidence rules.
+With low-order axes first, the independent equation for the fixed dimensions
+`N = 4` and `N = 8` is
+
+\\[
+F_N[y,x] = \frac{\exp(2\pi ixy/N)}{\sqrt{N}}.
+\\]
+
+The fixed reference regressions check every coefficient on both concrete
+adapters, including the output reversal and the exact phase. A consumer can
+use these targets in `apply_contract` or `Op<A,M>` under the same evidence rules.
 
 ## Migration from `bind_op`
 

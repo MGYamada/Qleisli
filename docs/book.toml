@@ -12,6 +12,7 @@ create-missing = false
 [output.html]
 git-repository-url = "https://github.com/MGYamada/Qleisli"
 input-404 = "404.md"
+mathjax-support = true
 
 [output.html.playground]
 runnable = false

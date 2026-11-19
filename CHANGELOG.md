@@ -4,6 +4,7 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Enable equation rendering in the Book and link the Rust API from the README (#48).
 - Raise the repository-wide fixture count limit from 18,000 to 20,000 files.
   The 150 MiB storage limit and per-PR growth limits continue to apply.
 - Correct the Reference's surface roles to include explicit quantum access

@@ -82,17 +82,18 @@ notices outside retired docs. Regenerate corpus counts with
 
 ## Changes, versions and licensing
 
-Enforce [size budgets](.github/ci/README.md#size-budgets); never raise them to pass.
-Use GitHub Issues for decisions/friction; no duplicate backlog. Breaking changes
-need an Issue with target, contracts, reason, migration and acceptance criteria
-before implementation. Compatible changes use PATCH, breaks MINOR, except the
-explicitly approved v0.2.9 verifier migration (#276). Cargo.toml is authoritative; synchronize
-Cargo.lock, lakefiles, Python metadata/runtime, std Qargo and research Cargo via
-`scripts/maintain_release.py`; inspect its plan and source-review requirements. Synchronization must not change dependency versions. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
-Qargo.toml. Update [CHANGELOG](CHANGELOG.md); no per-task bumps.
-Record performed/skipped checks. For releases
-check source, packages, installation and full CI; tag the checked commit.
-Tagging, pushing and publication are distinct; published artifacts
+Batch PRs into `main` where practical. Check CI and review for the combined head.
+Follow [size budgets](.github/ci/README.md#size-budgets). Never raise them to pass.
+Record decisions and friction in Issues. Keep one backlog. Before breaking
+changes, file the target, contracts, reason, migration and acceptance criteria.
+PATCH for compatible changes, MINOR for breaks. #276 is the exception.
+Cargo.toml is authoritative. Sync Cargo.lock, lakefiles, Python metadata/runtime,
+std Qargo and research Cargo with `scripts/maintain_release.py`. Inspect its plan
+and source-review requirements. Keep dependency versions unchanged. Require
+schema-2 `[qrate].edition = "2026"` per source tree. No root Qargo.toml.
+Update [CHANGELOG](CHANGELOG.md) without per-task bumps. Record checks run/skipped.
+For releases, check source, packages, installation and full CI. Tag the checked
+commit. Tagging, pushing and publication are distinct. Published artifacts
 are immutable. Docs-only work need not rerun Rust/Lean tests.
 Keep Apache-2.0, [LICENSE](LICENSE), [NOTICE](NOTICE), third-party attribution
 and historical provenance. Use Qleisli Project Contributors for current
