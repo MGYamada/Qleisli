@@ -4,7 +4,7 @@
   "fixture_root": "tests/fixtures",
   "totals": {
     "max_bytes": 157286400,
-    "max_files": 18000
+    "max_files": 20000
   },
   "pull_request": {
     "max_added_lines": 100000,

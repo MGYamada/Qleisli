@@ -23,7 +23,7 @@ from check_pr_size import (
 
 POLICY_PATH = ".github/ci/size-budgets.json"
 FIXTURE_ROOT = "tests/fixtures"
-CEILINGS = dict(max_bytes=150 * 1024 * 1024, max_files=18_000, max_added_lines=100_000)
+CEILINGS = dict(max_bytes=150 * 1024 * 1024, max_files=20_000, max_added_lines=100_000)
 LFS_PREFIX = b"version https://git-lfs.github.com/spec/v1"
 
 

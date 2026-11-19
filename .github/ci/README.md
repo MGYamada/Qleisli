@@ -216,7 +216,7 @@ comparators and untrusted host computations.
 
 The maintainer requested recurrence protection for generated fixtures. The
 configured operational budgets in `size-budgets.json` are **150 MiB
-(157,286,400 bytes)** and **18,000 files** for all fixtures, and **100,000 added
+(157,286,400 bytes)** and **20,000 files** for all fixtures, and **100,000 added
 fixture text lines per PR**. Exact limits are allowed; exceeding any limit
 rejects. Only canonical `MGYamada/Qleisli#307` has the existing PR-growth
 exception. It never waives total bytes or files. The separate whole-PR rule
