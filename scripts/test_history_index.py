@@ -835,5 +835,44 @@ class SurfaceRolesFirstAuthoringTests(unittest.TestCase):
             self.assertLess(row['max_probability_error'], 1e-11)
 
 
+class UnifiedSourceComparisonHistory(unittest.TestCase):
+    def test_bounded_comparisons_and_first_refusals_are_retained(self):
+        root = Path(__file__).resolve().parents[1] / 'tests/fixtures/authoring_sessions/unified-source-comparison-v030'
+        readme = (root / 'README.md').read_text(encoding='utf-8')
+        self.assertIn('[observation record](checks.json)', readme)
+        records = json.loads((root / 'checks.json').read_bytes())
+
+        unitary = [row for row in records if row['kind'] == 'finite-unitary']
+        protocols = [row for row in records if row['kind'] == 'finite-protocol']
+        self.assertEqual((len(unitary), len(protocols)), (83, 5))
+        self.assertEqual(len({row['id'] for row in unitary + protocols}), 88)
+        self.assertEqual([row['id'] for row in unitary if row['scope'] == 'beta-only'],
+                         ['qualtran/qrom2_qmatch'])
+        for row in unitary:
+            self.assertEqual(row['coefficients'], row['basis_inputs'] ** 2)
+            self.assertLess(row['max_amplitude_error'], 1e-10)
+        for row in protocols:
+            self.assertGreater(row['probes'], 0)
+            self.assertLess(row['max_probability_error'], 1e-11)
+
+        stdlib = [row for row in records if row['kind'] == 'stdlib']
+        self.assertEqual(len({row['name'] for row in stdlib}), 12)
+        self.assertEqual(sum(row.get('choi_pauli_settings', 0) for row in stdlib), 93)
+        self.assertTrue(all(row['status'] == 'matched' for row in stdlib))
+
+        sized = [row for row in records if row['kind'] == 'sized-comparison']
+        matched = [row for row in sized if row['status'] == 'matched']
+        self.assertEqual(len(matched), 27)
+        self.assertEqual(sum(row['basis_inputs'] for row in matched), 110)
+        self.assertEqual(sum(row['complex_coefficients'] for row in matched), 700)
+        self.assertTrue(all(row['independent'] and row['error'] < 1e-11 for row in matched))
+        first_refusals = [row['entry'] for row in sized if row['status'] == 'error']
+        self.assertCountEqual(first_refusals, ['inverse::inverse_fourier'] * 2 +
+                              ['initialization::init_zero'] * 2)
+        first_observer, = [row for row in records if row['kind'] == 'observer-first-refusal']
+        self.assertIn('measure_z2', first_observer['source'])
+        self.assertIn('a local value is not callable', first_observer['observation'])
+
+
 if __name__ == '__main__':
     unittest.main()
