@@ -181,26 +181,31 @@ relates this effect to complete outcome maps and quantum-owner interfaces.
 
 ### Surface roles
 
-The surface follows three distinct roles:
+Four rules determine how a program expresses quantum and ordinary operations.
+A single expression may use more than one rule.
 
-| Surface | Role |
-| --- | --- |
-| A `q` construct, such as `qif` or `qfor` | Explicitly supplies coherent control or a quantum-owner fold |
-| `Q<A>` | Marks quantum ownership even in ordinary syntax such as `let`, a function argument or an explicit call |
-| An unmarked construct | Operates according to its ordinary or const rules |
+| What the program does | Surface form | Meaning |
+| --- | --- | --- |
+| Select an operation coherently or iterate with a quantum owner | `qif`, `qmatch`, `qfor static` | The first two preserve coherence across selector sectors. A static quantum fold moves its complete carry once per iteration. Its index and bounds are ordinary compile-time values. |
+| Give a call temporary access to an existing owner | `excl q`, `ctrl q` | Exclusive access permits a checked action on the selected place. Coherent control must preserve its computational-basis sectors and may accumulate phase or entanglement. The caller retains the owner after the call. |
+| Move a live value of type `Q<A>` | Ordinary `let`, tuple construction, function application and tail expressions | The type makes each owner linear. A binding transfers the owner, and an owned call consumes its argument. |
+| Compute with ordinary data or specialize a program | Ordinary `if`, `match`, `const` arguments and `for static` with an ordinary carry | A runtime condition reads an ordinary bit or discriminant. Compile-time arguments and loop bounds are fixed during specialization. |
 
-Rules:
+For example, `let r = h(q);` moves the result into `r`. The call
+`h(excl q);` instead leaves the updated owner bound to `q`. Access markers
+must appear on the argument that requests temporary access. The language
+has no implicit receiver adjustment that inserts one.
 
-- An ordinary `if` requires `Bit`, not `Q<Bit>`. A static fold cannot inspect
-  quantum state.
-- A prefix alone grants no operation access, effect or evidence.
-- Ordinary `match` and the bounded exact-label `qmatch` form follow the same
-  roles under their distinct owner and checking contracts. Their execution
-  limits admit no additional pattern forms.
+An ordinary `if` requires `Bit`. To branch on a measured value, the program
+must explicitly measure its owner. A `qif` carries its selector through the
+operation. A `q` prefix grants no operation capability or effect. Each form
+also follows the type, ownership and effect rules of its arguments.
 
-[Static control](static-language.md) specifies the supported folds. The
-[control boundary diagnostics](source-text.md#diagnostics-at-control-boundaries)
-use these three roles when they explain a rejection.
+See [coherent selection](source-text.md#exact-label-coherent-selection),
+[static folds](static-language.md#static-folds) and
+[exclusive and coherent-control access](rust-boundary.md#whole-owner-exclusive-calls).
+The [control diagnostics](source-text.md#diagnostics-at-control-boundaries)
+identify the failed selector or carry rule.
 
 ## Structural equality, coherence and physical maps
 

@@ -1259,7 +1259,7 @@ Rules:
   same original source location.
 - A grammar example supplies a syntactic form. Name resolution, typing,
   effects and ownership determine whether a program that uses the form is
-  valid. See [the roles of quantum syntax and types](type-model.md).
+  valid. See [the roles of quantum syntax and types](type-model.md#surface-roles).
 
 ## Diagnostics at control boundaries
 
