@@ -855,7 +855,9 @@ gate, even when present in an older caller-reviewed requirements base.
 The maintainer excludes #39 and #63 from all v0.3.0, including beta, and the
 current goal, superseding #39's earlier beta resumption. Retain the 127 audit
 entries as **125 applicable Issues plus two approved exclusions**. Audit both
-reviewed exclusions without implementation-completion credit. The existing
+reviewed exclusions using the schema's `explicit-later-version` value. A base
+that marks their criteria required or excludes every criterion of another
+Issue fails validation. The existing
 explicitly approved generic-QFT exclusion also remains separate.
 
 The separately approved [alpha snapshot scope](../../release/alpha-scope-proposal.md)

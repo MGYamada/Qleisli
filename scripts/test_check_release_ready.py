@@ -82,6 +82,9 @@ class SyntheticRelease(unittest.TestCase):
             dict(id=number, snapshot=self.ref('release/issue-snapshot.txt'), criteria=[dict(
                 id='C1', text='Synthetic criterion for test only.', scope='required', roles=sorted(checker.ROLES))])
             for number in sorted(checker.ISSUES)])
+        for row in self.requirements['issues']:
+            if row['id'] in {39, 63}:
+                row['criteria'][0].update(scope='explicit-later-version', roles=[])
         self.write(checker.REQUIREMENTS, encoded(self.requirements))
         self.base = self.commit()
         self.acceptance = dict(format='qleisli.release-acceptance', version=1,
@@ -92,6 +95,9 @@ class SyntheticRelease(unittest.TestCase):
                              pending=sorted(row['interpretation'] for row in self.ledger['pending_obligations'])),
             issues=[dict(id=number, criteria=[dict(id='C1', disposition='implemented', review=self.ref('release/review.txt'),
                         evidence={role: self.ref('release/evidence.txt') for role in checker.ROLES})]) for number in sorted(checker.ISSUES)])
+        for row in self.acceptance['issues']:
+            if row['id'] in {39, 63}:
+                row['criteria'][0].update(disposition='explicit-later-version', evidence={})
         self.write(checker.ACCEPTANCE, encoded(self.acceptance))
         self.head = self.commit()
         self.env = dict(GITHUB_ACTIONS='true', GITHUB_REPOSITORY='MGYamada/Qleisli', GITHUB_EVENT_NAME='workflow_dispatch',
@@ -385,17 +391,6 @@ class SyntheticRelease(unittest.TestCase):
                                          product_version='0.3.0-beta')
 
     def test_reviewed_39_and_63_exclusions_are_retained_without_implementation_credit(self):
-        records = []
-        for number in [39, 63]:
-            row = next(row for row in self.requirements['issues'] if row['id'] == number)
-            row['criteria'][0].update(scope='explicit-later-version', roles=[])
-            record = next(row for row in self.acceptance['issues'] if row['id'] == number)['criteria'][0]
-            record.update(disposition='explicit-later-version', evidence={})
-            records.append(record)
-        self.write(checker.REQUIREMENTS, encoded(self.requirements))
-        self.base = self.commit()
-        self.acceptance['requirements_sha256'] = checker.digest(encoded(self.requirements))
-        self.write(checker.ACCEPTANCE, encoded(self.acceptance))
         snapshot = checker.Snapshot()
         expected, raw = checker.requirements(self.root, self.base, snapshot,
                                               product_version='0.3.0-beta')
@@ -405,13 +400,39 @@ class SyntheticRelease(unittest.TestCase):
         self.assertEqual(required, checker.ISSUES - {39, 63})
         self.assertEqual(len(required), 125)
         checker.acceptance(self.root, expected, raw, snapshot, self.ledger)
-        for number, record in zip([39, 63], records):
+        for number in [39, 63]:
             with self.subTest(issue=number):
+                record = next(row for row in self.acceptance['issues'] if row['id'] == number)['criteria'][0]
                 record['disposition'] = 'implemented'
                 self.write(checker.ACCEPTANCE, encoded(self.acceptance))
                 with self.assertRaisesRegex(PacketError, 'unresolved or unauthorized exclusion'):
                     checker.acceptance(self.root, expected, raw, checker.Snapshot(), self.ledger)
                 record['disposition'] = 'explicit-later-version'
+
+    def test_reviewed_base_cannot_classify_approved_exclusion_as_required(self):
+        for number in [39, 63]:
+            with self.subTest(issue=number):
+                requirements = copy.deepcopy(self.requirements)
+                row = next(row for row in requirements['issues'] if row['id'] == number)
+                row['criteria'][0].update(scope='required', roles=['implementation'])
+                self.write(checker.REQUIREMENTS, encoded(requirements))
+                base = self.commit()
+                with self.assertRaisesRegex(PacketError, f'Issue {number}: approved v0.3.0 exclusion'):
+                    checker.requirements(self.root, base, checker.Snapshot(),
+                                         product_version='0.3.0-beta')
+
+    def test_applicable_issue_must_have_a_required_criterion(self):
+        row = next(row for row in self.requirements['issues'] if row['id'] == 69)
+        row['criteria'].append(dict(row['criteria'][0], id='C2', scope='explicit-later-version', roles=[]))
+        self.write(checker.REQUIREMENTS, encoded(self.requirements))
+        base = self.commit()
+        checker.requirements(self.root, base, checker.Snapshot(), product_version='0.3.0-beta')
+
+        row['criteria'][0].update(scope='explicit-later-version', roles=[])
+        self.write(checker.REQUIREMENTS, encoded(self.requirements))
+        base = self.commit()
+        with self.assertRaisesRegex(PacketError, 'Issue 69: applicable v0.3.0 Issue requires'):
+            checker.requirements(self.root, base, checker.Snapshot(), product_version='0.3.0-beta')
 
     def omitted_issue_packet_rejects(self, omitted, previous_count):
         current_requirements = copy.deepcopy(self.requirements)

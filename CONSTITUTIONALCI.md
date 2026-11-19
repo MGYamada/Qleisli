@@ -242,6 +242,10 @@ beta and the current goal, superseding #39's earlier resumption. Retain all 127
 audit entries as 125 applicable Issues and two approved exclusions, without
 implementation credit for either exclusion. The approved generic-QFT exclusion
 remains separate.
+The complete-feature checker requires the criteria for #39 and #63 to use
+the schema's `explicit-later-version` exclusion value. The human scope
+decisions govern any future assignment. Each of the other 125 Issues
+retains at least one required criterion in the reviewed index.
 GitHub remains the decisions/progress ledger.
 These files are evidence indices, not another backlog or authority for adoption.
 The criterion review references the
