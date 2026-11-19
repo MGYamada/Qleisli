@@ -865,3 +865,7 @@ power, ordered tensor and a semantic provider that the target cannot realize.
 The [surface roles study](surface-roles-v030/README.md) retains two independent
 first submissions across coherent control, explicit access, ownership and ordinary
 control, including both selected-profile refusals and the closed truth tables.
+
+The [unified source comparison](unified-source-comparison-v030/README.md)
+records v0.2.9 and beta observations for finite and sized programs, the fixed
+standard library and shipped examples, including the first observer refusal.
