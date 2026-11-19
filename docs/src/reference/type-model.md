@@ -1858,16 +1858,18 @@ Code:
   under the disclosed boundary.
 - The Selected hierarchy root adapter introduces no native primitive and no
   theorem.
-- Removing the `sized` namespace does not complete the grammar and CLI
-  migration.
+- The [source migration](source-text.md#finite-and-sized-programs) and
+  [selected-entry commands](#selected-entry-commands) record the grammar
+  and CLI replacements for finite and sized programs.
 
 Tests:
 
-- Required conformance includes same-width different-tree substitution, tuple
-  arity, zero-owner loss and duplication, controlled scalar phase and
-  runtime-to-static leakage. These requirements are open until their
-  implementations and results are recorded in the Issues that
-  [History](#history) links.
+| Subject | Regression tests |
+| --- | --- |
+| Exact product trees and tuple constructors | `tests/source_judgments.rs`, `tests/ordinary_types.rs` |
+| Loss and duplication of zero-width owners | `tests/ordinary_types.rs`, `tests/quantum_tuple_unitors.rs` |
+| Controlled scalar phase | `tests/operation_parameters.rs` |
+| Rejection of ordinary runtime values in static bindings | `tests/static_naturals.rs` |
 
 Proof:
 
@@ -1889,8 +1891,8 @@ Specification review:
 
 - The chapter specifies the 0.3.0 target contract under the adopted type
   boundary of [#22](https://github.com/MGYamada/Qleisli/issues/22) and
-  [#27](https://github.com/MGYamada/Qleisli/issues/27). The limits of the
-  concrete profiles do not close the open work of #27.
+  [#27](https://github.com/MGYamada/Qleisli/issues/27). The
+  [profile limits](#status-and-limits) state the concrete implementation scope.
 - The retired [foundation packet](../design/type-foundation.md) records the
   original experiments. Their historical failures are not acceptance results
   of this chapter.
