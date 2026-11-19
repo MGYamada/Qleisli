@@ -734,6 +734,9 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
     assert_eq!(historical.matches(verify_ir).count(), 1);
     let run = "  qleisli run <source-root> [--format=json] [source-options]\n";
     assert_eq!(historical.matches(run).count(), 1);
+    let analysis_notice =
+        "  These analysis tools are planned, not executable commands in this alpha.\n";
+    assert_eq!(historical.matches(analysis_notice).count(), 1);
     let usage = historical
         .replace(retired, "")
         .replace(
@@ -767,6 +770,10 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
         .replace(
             retired_documentation,
             "  Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md\n",
+        )
+        .replace(
+            analysis_notice,
+            "  These analysis commands are planned for future releases.\n",
         )
         .trim_end()
         .replace('\n', "\\u000a");
