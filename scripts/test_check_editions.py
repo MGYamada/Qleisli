@@ -1,14 +1,59 @@
 #!/usr/bin/env python3
 """Mutation checks for edition coverage, independently parsed by Python TOML."""
 
-from pathlib import Path
+import hashlib
+import io
 import json
+from pathlib import Path
+import tarfile
 import tempfile
 import unittest
 
 from check_editions import HISTORY, HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT, REJECTED_CONST_ROOT, REJECTED_ARROW_ROOT, REJECTED_ADJOINT_ROOT, ROOT, check_editions
 
 MANIFEST = 'schema-version = 2\n[qrate]\nedition = "2026"\n'
+
+
+class EditionObservationTests(unittest.TestCase):
+    def test_retained_project_diagnostics_change_only_the_edition_explanation(self):
+        guide = ROOT / "tests/fixtures/authoring_sessions/project-edition-diagnostics-v030/README.md"
+        archive = ROOT / "tests/fixtures/authoring_sessions/project-edition-diagnostics-v030/observations.tar.xz"
+        digest = "7ca5e4864b9b881c0b555e94b872b6a6548e045084ca00a3ef55445f169fb36b"
+        with archive.open("rb") as stream:
+            packed = stream.read(2245)
+        self.assertEqual(len(packed), 2244)
+        self.assertEqual(hashlib.sha256(packed).hexdigest(), digest)
+        self.assertIn(f"`{digest}`", guide.read_text(encoding="utf-8"))
+
+        with tarfile.open(fileobj=io.BytesIO(packed), mode="r:xz") as records:
+            before, after = (records.extractfile(f"{stage}/binary-identities.txt").read().splitlines()
+                             for stage in ("first", "after"))
+            self.assertEqual(len(before), 2)
+            self.assertEqual(len(after), 2)
+            self.assertNotEqual(before[0].split()[0], after[0].split()[0])
+            self.assertEqual(before[1].split()[0], after[1].split()[0])
+            for case in ("missing-manifest", "missing-edition", "numeric-edition", "floating-edition",
+                         "unsupported-edition", "explicit-edition"):
+                with self.subTest(case=case):
+                    self.assertTrue(records.getmember(f"first/{case}/main.qli").isfile())
+                    reports = []
+                    accepted = case == "explicit-edition"
+                    for stage in ("first", "after"):
+                        prefix = f"{stage}/{case}"
+                        self.assertEqual(records.extractfile(prefix + ".exit").read().strip(),
+                                         b"0" if accepted else b"1")
+                        self.assertEqual(records.extractfile(prefix + ".stderr.txt").read(), b"")
+                        reports.append(json.load(records.extractfile(prefix + ".stdout.json")))
+                    first, revised = reports
+                    if accepted:
+                        self.assertTrue(revised["result"]["native_decisions"]["complete"])
+                    else:
+                        self.assertEqual(first["diagnostics"][0]["code"], "project")
+                        old_message = first["diagnostics"][0].pop("message")
+                        new_message = revised["diagnostics"][0].pop("message")
+                        self.assertNotIn("constitutional regime", old_message)
+                        self.assertIn("constitutional regime", new_message)
+                    self.assertEqual(first, revised)
 
 
 class EditionTests(unittest.TestCase):
