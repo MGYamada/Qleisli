@@ -1,0 +1,40 @@
+---
+config:
+  theme: neutral
+  htmlLabels: false
+  flowchart:
+    useMaxWidth: false
+    nodeSpacing: 20
+    rankSpacing: 30
+    minNodeWidth: 70
+    wrappingWidth: 185
+---
+flowchart TB
+    accTitle: Proposed Cargo dependencies for the Qleisli Rust core
+    accDescr: Solid arrows point to Cargo dependencies. The dashed arrow from the kernel client calls the native Lean verifier outside the Cargo workspace.
+    subgraph Rust["Proposed Cargo workspace"]
+        Public["qleisli"]
+        Compiler["qleisli-compiler"]
+        Runtime["qleisli-runtime"]
+        Interop["qleisli-interop"]
+        Client["qleisli-kernel-client"]
+        Core["qleisli-core-ir"]
+        Circuit["qleisli-circuit-ir"]
+        Types["qleisli-ir-types"]
+
+        Public --> Compiler
+        Public --> Runtime
+        Public --> Interop
+        Public --> Client
+        Runtime --> Client
+        Interop --> Client
+        Compiler --> Core
+        Compiler --> Circuit
+        Client --> Core
+        Client --> Circuit
+        Core --> Types
+        Circuit --> Types
+    end
+    Client -.-> Lean["qleisli-kernel (Lean)"]
+    classDef acceptance fill:#e5f3ed,stroke:#35694f,color:#173f2b,stroke-width:2px
+    class Client,Lean acceptance

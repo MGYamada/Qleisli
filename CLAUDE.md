@@ -14,7 +14,7 @@ follow [constitutional handoff](governance/README.md#agent-startup-and-handoff).
 AI cannot adopt interpretations or guarantees.
 Read [README](README.md), [ROADMAP](ROADMAP.md), [trust boundary](TRUSTBOUNDARY.md),
 [adopted cutover](https://github.com/MGYamada/Qleisli/issues/276) and
-[algorithm drafts](docs/src/imaginary-v1/index.md).
+[v1 algorithm goals](docs/src/imaginary-v1/index.md).
 Read specs before behavior changes; English is authoritative
 for production specs, public library contracts, comments and examples.
 

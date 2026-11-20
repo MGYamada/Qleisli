@@ -2713,6 +2713,11 @@ impl Parser {
     }
 
     fn basis_atom_inner(&mut self) -> Result<BasisExpr, ParseError> {
+        if self.at(&TokenKind::If) {
+            return Err(self.error(
+                "finite classical expressions do not support `if`. Use Boolean operators or put the conditional in an ordinary `fn`",
+            ));
+        }
         if let Some(start) = self.consume(&TokenKind::Match) {
             return self.basis_match(start);
         }

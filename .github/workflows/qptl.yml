@@ -38,3 +38,4 @@ jobs:
             Mathlib.Analysis.Complex.Basic Mathlib.Data.Complex.BigOperators Mathlib.LinearAlgebra.Matrix.PosDef
           lake build
           lake test
+          lake env python3 test_audit.py

@@ -135,6 +135,18 @@ impl Checker<'_, '_> {
                     self.specialize(id, arguments, scope, name.span, true)?;
                 let parameter_count = inputs.len();
                 if inputs.is_empty() {
+                    if requested == Access::Adjoint
+                        && self.program.decl(id).kind == FnKind::Isometry
+                    {
+                        return Err(SourceError::new(
+                            "type",
+                            name.span,
+                            format!(
+                                "isometry `{}` takes no inputs and does not supply `Adjointable` access. Call it forward to prepare its output",
+                                name.text
+                            ),
+                        ));
+                    }
                     return Err(SourceError::new(
                         "type",
                         name.span,

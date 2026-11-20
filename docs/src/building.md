@@ -67,10 +67,10 @@ compatibility together. Such tools belong to this documentation environment.
 Use `qli` fences for Qleisli examples; mdBook's Rust playground is disabled,
 and an HTML build does not execute or verify Qleisli programs.
 
-The retained [imaginary-v1 drafts](imaginary-v1/index.md) are part of the book
-with their existing status. Each added chapter derives from adopted decisions,
-the code and its proofs. Book links to repository material outside its chapters use repository
-URLs so they also work in the rendered HTML.
+The [v1 algorithm goals](imaginary-v1/index.md) describe planned capabilities
+and link to their design issues. Specification chapters derive from adopted
+decisions, the code and its proofs. Book links to repository material outside
+its chapters use repository URLs so they also work in the rendered HTML.
 
 ## Style guide
 
@@ -139,6 +139,13 @@ the wording that their records bind:
   `sh` for commands.
 - Take an example from a source that a test checks, and say whether the checker
   accepts or rejects it.
+- In a lesson, ask readers to predict an observable result before they run
+  the program. Change one expression at a time so they can explain the
+  difference. When teaching from a rejected program, show the diagnostic
+  alongside the expression that caused it and let readers try the repair.
+- When a later lesson reuses a project, name the file to edit and say
+  whether a listing replaces the file or just one expression. Give readers
+  an observable result to check before they make the next edit.
 
 ### Checked rules
 
@@ -161,9 +168,8 @@ double quotation marks, which mention a word rather than use it.
 
 A checked chapter is a chapter in neither of two lists in the script:
 
-- `EXEMPT` names the chapters that keep the wording of their records or
-  drafts: the four constitutional chapters above and the two retained
-  imaginary-v1 chapters.
+- `EXEMPT` names the four constitutional chapters that keep the wording of
+  their records and the v1 goals chapter that links each goal to its design issue.
 - `PENDING` names the chapters that predate this guide. Remove a chapter from
   the list in the change that rewrites it. The check fails on a pending chapter
   that keeps the rules, and on a list entry that `SUMMARY.md` does not name.
@@ -178,8 +184,21 @@ maintained copies. Edit the chapter files directly.
 The book builds with mdBook's default preprocessors, without include wrappers
 or custom build steps.
 
-The retained planning prose is documentation debt while a coherent tutorial is
-written. Its draft or planned status is explicit. Repository root documents
+The architecture chapters display SVGs rendered from the Mermaid sources in
+`docs/src/architecture/diagrams/`. If a diagram changes, regenerate its SVG
+with [Mermaid CLI 12.2.0](https://github.com/mermaid-js/mermaid-cli/releases/tag/12.2.0)
+from the repository root. The book build copies the rendered files.
+
+```sh
+for name in system compiler verifier rust-crates; do
+  diagram="docs/src/architecture/diagrams/$name"
+  mmdc --no-font-embed --svgId "qleisli-$name" \
+    --input "$diagram.mmd" --output "$diagram.svg"
+done
+```
+
+The [introductory lessons](learn/first-qubit.md) teach with executable
+programs. The roadmap identifies planned features explicitly. Repository root documents
 are linked where needed, not embedded. Links between chapters are relative;
 links to code, fixtures and build configuration use their repository URLs.
 No external plugin is required.

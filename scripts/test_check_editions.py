@@ -82,6 +82,22 @@ class EditionTests(unittest.TestCase):
         self.assertEqual(counts, {"manifests": 2, "qli": 2, "qlt": 1,
                                   "historical_manifests": 0, "historical_sources": 0})
 
+    def test_nested_checkouts_do_not_hide_invalid_sources_in_the_current_checkout(self):
+        worktree = ".claude/worktrees/old"
+        self.write(f"{worktree}/.git", "gitdir: /separate/worktree\n")
+        self.write(f"{worktree}/Qargo.toml", "[qrate]\n")
+        self.write(f"{worktree}/main.qli", "historical source")
+        self.write("vendor/other/.git/config", "[core]\n")
+        self.write("vendor/other/main.qli", "source from another repository")
+        self.assertEqual(check_editions(self.root)[0], [])
+
+        self.write(".claude/worktrees/local/Qargo.toml", "[qrate]\n")
+        self.write(".claude/worktrees/local/main.qli", "current source")
+        self.assertEqual(check_editions(self.root)[0], [
+            ".claude/worktrees/local/Qargo.toml: requires schema-version = 2",
+            ".claude/worktrees/local/main.qli: invalid enclosing .claude/worktrees/local/Qargo.toml",
+        ])
+
     def copy_history(self):
         """Copy only exact source inputs and anchors, never build archives."""
         metadata = (ROOT / HISTORY).read_bytes()

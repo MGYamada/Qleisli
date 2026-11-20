@@ -27,8 +27,20 @@ impl View<'_> {
     ) -> Result<()> {
         self.writer.sized(5, fields + 1)?;
         self.writer.depth += 1;
+        #[cfg(debug_assertions)]
+        let start = self.writer.bytes.len();
         let result = self.writer.text(tag).and_then(|_| body(self));
         self.writer.depth -= 1;
+        // The declared arity is a hand-written constant. Check it where it is
+        // written; a mismatch would otherwise only fail Lean's comparison.
+        #[cfg(debug_assertions)]
+        if result.is_ok() {
+            debug_assert_eq!(
+                super::top_level_values(&self.writer.bytes[start..]),
+                Some(fields + 1),
+                "QDV1 record `{tag}` declares {fields} fields"
+            );
+        }
         result
     }
 

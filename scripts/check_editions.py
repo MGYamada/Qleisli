@@ -6,6 +6,7 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import tomllib
@@ -68,6 +69,20 @@ def historical_inputs(root):
     return manifests, sources
 
 
+def checkout_paths(root):
+    for directory, children, files in os.walk(root):
+        current = Path(directory)
+        if current != root and (".git" in files or ".git" in children):
+            # Git worktrees use a gitfile rather than a .git directory.
+            children.clear()
+            continue
+        children[:] = [name for name in children if name not in SKIP]
+        for name in (*children, *files):
+            path = current / name
+            if name == "Qargo.toml" or path.suffix in {".qli", ".qlt"}:
+                yield path
+
+
 def check_editions(root: Path):
     errors, manifests, sources = [], {}, []
     historical_manifests, historical_sources = set(), set()
@@ -80,10 +95,8 @@ def check_editions(root: Path):
     for required in ("corpus/Qargo.toml", "stdlib/Qargo.toml"):
         if not (root / required).is_file():
             errors.append(f"missing {required}")
-    for path in sorted(root.rglob("*")):
+    for path in sorted(checkout_paths(root)):
         relative = path.relative_to(root)
-        if any(part in SKIP for part in relative.parts):
-            continue
         if path.name == "Qargo.toml":
             if path in historical_manifests:
                 # Deliberately invalid for filesystem admission; only the exact

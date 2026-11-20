@@ -1,0 +1,24 @@
+---
+config:
+  theme: neutral
+  htmlLabels: false
+  flowchart:
+    useMaxWidth: false
+    nodeSpacing: 24
+    rankSpacing: 32
+    minNodeWidth: 70
+    wrappingWidth: 155
+---
+flowchart TB
+    accTitle: Qleisli native verifier architecture
+    accDescr: The verifier checks the request context and independently checks the payload. Execution and caller scopes also require an exact execution-view match.
+    Request["QLV3 request"] --> Decode["Validate context and decode"]
+    Decode --> Check["Check artifact and evidence"]
+    Check -->|Inspection| Report["Inspection decision"]
+    Check -->|Execution or caller scope| Compare["Compare QDV1 views"]
+    Compare -->|Match| Accepted["Scoped successful decision"]
+    Compare -->|Mismatch| Reject["Reject"]
+    classDef acceptance fill:#e5f3ed,stroke:#35694f,color:#173f2b,stroke-width:2px
+    class Compare,Accepted acceptance
+    classDef rejection fill:#faeae7,stroke:#a34640,color:#682a29,stroke-width:2px
+    class Reject rejection

@@ -13,6 +13,7 @@ manifest pin Lean and mathlib to 4.30.0.
 ```sh
 lake build
 lake test
+lake env python3 test_audit.py
 ```
 
 On a fresh checkout, the following optional command retrieves the mathlib

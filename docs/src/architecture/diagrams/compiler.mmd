@@ -1,0 +1,26 @@
+---
+config:
+  theme: neutral
+  htmlLabels: false
+  flowchart:
+    useMaxWidth: false
+    nodeSpacing: 24
+    rankSpacing: 32
+    minNodeWidth: 70
+    wrappingWidth: 155
+---
+flowchart TB
+    accTitle: Qleisli compiler architecture
+    accDescr: The compiler loads and parses source, applies common source checks, and specializes and lowers accepted source forms into proposals for the native verifier.
+    Source["Source modules and manifest"] --> Parsed["Load and parse project"]
+    Parsed --> Common["Common source checks"]
+    Common --> Lower["Specialize and lower"]
+    Lower --> Finite["Finite project"]
+    Lower --> Raw["Selected Raw"]
+    Lower --> Hierarchy["Selected hierarchy"]
+    Finite --> Proposal["IR and evidence proposals"]
+    Raw --> Proposal
+    Hierarchy --> Proposal
+    Proposal --> Verifier["Native Lean verifier"]
+    classDef acceptance fill:#e5f3ed,stroke:#35694f,color:#173f2b,stroke-width:2px
+    class Verifier acceptance
