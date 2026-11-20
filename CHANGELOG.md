@@ -8,6 +8,11 @@ development milestones from the scope of their evidence.
 
 - Move the beta entries listed above the 0.3.0-beta heading into that section,
   date it like its tag and open it with its scope statement (#645, #646).
+- Pin the crate documentation's Language Reference link to the release tag, so
+  release synchronization updates it (#647).
+- Allow the leakage each certified cleanup may retain in the sampling norm
+  check, so `sample_closed` accepts what `run_closed` accepts (#648).
+- Check each QDV1 record's declared field count in debug builds (#649).
 
 ## 0.3.0-beta — 2026-11-20
 
