@@ -38,6 +38,10 @@ Tagged beta snapshot for edition 2026. The two admitted QLV1 guarantees retain
 their recorded scopes. The broader QS, PR, quantitative RS and exactness
 obligations and the v0.3.0 final-release gates remain open.
 
+- Extend the Book's lessons to nine: widen the ownership lesson to gates,
+  discard and branches, and add lessons on effects, checked meanings and the
+  command-line tools. Move the architecture chapters ahead of the Language
+  Reference and rewrite them to follow the lesson projects.
 - Restore navigation from the diagnostics and primitive chapters to the
   inference and discovery contract (#253).
 - Retain the 127 fixed GitHub Issue bodies for the beta acceptance review
