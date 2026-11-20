@@ -4,6 +4,8 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Restore navigation from the diagnostics and primitive chapters to the
+  inference and discovery contract (#253).
 - Explain constitutional edition selection in project manifest diagnostics (#255).
 - Specify synchronized product releases and the compatibility metadata that
   binds their exact distribution snapshots (#230, #231).

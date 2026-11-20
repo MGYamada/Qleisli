@@ -26,6 +26,9 @@ checker gives to the diagnostic of a program that breaks the rule, such as
 `name`. [Codes](diagnostics.md#codes) gives the code that each route reports
 for a class.
 
+The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
+shows where to find a primitive's contract or inspect a derived definition.
+
 A **concrete adapter** lowers a checked program to a concrete proposal under
 fixed capacities. The **finite adapter** lowers a program to finite Raw IR.
 The **selected adapter** is the concrete preparation of a selected entry for
