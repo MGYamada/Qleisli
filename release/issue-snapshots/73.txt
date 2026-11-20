@@ -1,0 +1,78 @@
+## Status
+
+**0.3.0 semantic decision fixed; implementation/diagnostics remain open.**
+
+Related:
+- #67 / #68 — Rust/Qleisli semantic firewall
+- #29 — `excl` quantum access
+- #77 — binding `mut`
+- #70 — clean/dirty workspace contracts
+
+## Decision
+
+Qleisli 0.3.0 does **not** support Rust-style assignment to a place whose current value contains live quantum ownership.
+
+Therefore source such as
+
+```qli
+q = r;
+q = h(q);
+state.field = next;
+```
+
+is rejected when the assigned place owns a live `Q<...>` transitively.
+
+The reason is semantic, not syntactic convenience: Rust assignment carries replacement semantics for the old value, while Qleisli must never let replacement imply hidden measurement, reset, discard, release, or destruction.
+
+## Canonical quantum update form
+
+Use linear consumption followed by ordinary shadowing/rebinding:
+
+```qli
+let q = prepare();
+let q = h(q);
+let q = qft(q);
+q
+```
+
+The right-hand side consumes the old owner before the new binding is introduced. No live owner is overwritten.
+
+Structured decomposition/reassembly remains explicit through the ordinary ownership machinery.
+
+## Relation to `mut`
+
+Because quantum-containing place assignment is absent in 0.3.0, `mut` is not a quantum-owner feature.
+
+A live quantum-containing binding does not become writable merely because it is marked `mut`; #77 therefore keeps `mut` on the ordinary classical/static side of the language.
+
+## Mixed aggregates
+
+A place whose value transitively contains live `Q<T>` is not assignable as a whole.
+
+Ordinary classical components may be rebound separately only when doing so does not replace, duplicate, hide, or discard quantum ownership.
+
+## Diagnostics
+
+Prefer a semantic diagnostic:
+
+```text
+error: assignment would replace a live quantum owner
+
+Qleisli does not assign to quantum-containing places.
+consume the owner explicitly and introduce the result with 'let'.
+```
+
+Do not suggest `mut`.
+
+## Acceptance criteria
+
+- [ ] Assignment to live quantum-containing places is rejected.
+- [ ] `let q = f(q)` remains the canonical linear rebinding form.
+- [ ] No assignment path synthesizes Drop, release, reset, measurement, or discard.
+- [ ] Mixed aggregates are checked transitively for live ownership.
+- [ ] Diagnostics distinguish forbidden live-owner replacement from ordinary classical reassignment.
+- [ ] Lowering preserves owner identity, exact phase, axis order, and arbitrary-reference behavior.
+
+## Compact rule
+
+> **Quantum owners are consumed and rebound, never overwritten.**

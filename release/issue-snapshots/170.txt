@@ -1,0 +1,284 @@
+## Canonical-identity cross-reference
+
+#172 distinguishes this qrate identity from canonical module/declaration identity and physical file storage. Module/import/visibility ergonomics belong to #65 under #41; their local resolver IDs and file-mapping conventions are not a resolved qrate/dependency/configuration identity. The primitive/derived boundary in #167 and external-artifact boundary in #169 continue to apply.
+
+All original acceptance criteria remain in force. This cross-reference supplies no resolver, registry, lock format, new visibility syntax, evidence transport, implementation completion or issue-closure claim.
+
+## Status
+
+**Qleisli 0.3.0 important. Priority: highest. Constitutional / package-semantics boundary.**
+
+This issue defines the normative meaning of a **qrate** before the package ecosystem, `qlirgo`, registry behavior, and the standard library grow around an accidental implementation model.
+
+The central rule is:
+
+> **A qrate is the smallest independently versioned and distributable unit of Qleisli programs. A qrate may depend on other qrates, but it cannot extend, weaken, or bypass the semantics guaranteed by the Qleisli language.**
+
+This issue is a direct consequence of #167 and complements #169.
+
+- #167 fixes the **primitive / derived** boundary.
+- #169 fixes the **.qli / external-artifact authority** boundary.
+- this issue fixes the **language / package-unit** boundary.
+
+## 1. Define qrate independently of qlirgo
+
+Qleisli 0.3.0 should define the semantic/package object first:
+
+```text
+qrate
+    = versioned + dependency-addressable + distributable
+      unit of Qleisli source and associated non-semantic artifacts
+```
+
+Then:
+
+```text
+qlirgo
+    = tool that resolves, obtains, verifies, builds, and records qrate graphs
+```
+
+The qrate abstraction must not be reverse-engineered from the current qlirgo implementation.
+
+## 2. Fix qrate identity
+
+0.3.0 should specify the components of qrate identity, including at minimum:
+
+- logical package name;
+- package version;
+- applicable Qleisli edition / toolchain compatibility;
+- reproducibility identity for resolved content, where required.
+
+The specification should distinguish:
+
+- **human/logical identity** such as `name + version`;
+- **resolved artifact identity** such as a content hash / immutable package instance.
+
+Exact hashing/registry mechanics may evolve, but the semantic role of identity should not.
+
+## 3. Define what a qrate may contain
+
+A qrate may contain ordinary project artifacts such as:
+
+- `.qli` source;
+- manifest metadata;
+- documentation;
+- tests / QLT artifacts;
+- proof artifacts;
+- resource metadata;
+- build metadata permitted by the package specification.
+
+However:
+
+> **Bundling an artifact inside a qrate does not grant that artifact semantic authority.**
+
+In particular, a qrate must not be able to smuggle in a new trusted primitive, verifier rule, ownership rule, effect rule, or language semantic through package metadata or opaque native code.
+
+## 4. Freeze the semantic-authority rule
+
+Adopt the normative rule:
+
+> **A qrate may define programs, but it may not extend the trusted language semantics.**
+
+Installing a qrate must never mean installing a language extension in the trusted sense.
+
+A qrate cannot by package status alone:
+
+- create a primitive;
+- weaken type/ownership/effect checking;
+- bypass the verifier;
+- manufacture trusted `Meaning` evidence;
+- reinterpret an existing language construct;
+- add an `unsafe`-like semantic escape hatch.
+
+If future extension mechanisms exist, they must cross an explicit constitutional/kernel admission boundary rather than appearing as ordinary qrate behavior.
+
+## 5. Define dependency semantics
+
+A qrate may depend on other qrates.
+
+The dependency model should guarantee that:
+
+- dependency selection is explicit or deterministically implied by the toolchain;
+- the resolved dependency graph is recordable;
+- the same locked graph denotes the same package/source selection;
+- dependency metadata cannot silently alter language semantics;
+- dependency cycles and duplicate-version rules are specified by qlirgo/package policy rather than left accidental.
+
+The exact solver may evolve after 0.3.0; the semantic meaning of a resolved qrate graph should not.
+
+## 6. Define `std` as a distinguished qrate, not a privileged semantic layer
+
+The standard library should be specified as:
+
+> **A distinguished qrate by distribution and compatibility policy, not by semantic privilege.**
+
+Architecturally:
+
+```text
+Qleisli language / kernel
+        |
+        +-- primitives
+        |
+        +-- ordinary checked .qli
+                |
+                +-- std qrate
+                +-- user qrates
+                +-- third-party qrates
+```
+
+Therefore:
+
+- `std` is checked through the ordinary Qleisli path;
+- `std` does not gain extra semantic authority from being bundled;
+- `std` is special because the official toolchain distributes and version-locks it;
+- user qrates and `std` share the same derived-language semantics.
+
+This should be cross-referenced directly with #167.
+
+## 7. Distribution privilege must remain separate from semantic privilege
+
+The official toolchain may give `std` special treatment in:
+
+- default availability;
+- release/version coupling;
+- compatibility guarantees;
+- documentation;
+- preinstallation;
+- caching;
+- registry/distribution policy.
+
+But none of those should imply:
+
+- special typing rules;
+- special verifier bypass;
+- trusted implementations hidden behind ordinary std paths;
+- a second stdlib-only semantic layer.
+
+A useful invariant is:
+
+> **Removing the distribution privilege of `std` would make it inconvenient to obtain, but would not change what its accepted .qli source means.**
+
+## 8. Keep native/opaque implementation outside ordinary qrate semantics
+
+If a qrate references native code, backend artifacts, plugins, or opaque implementations, those artifacts remain outside ordinary executable Qleisli semantics unless admitted through an explicit contract/evidence boundary.
+
+This inherits the authority rule of #169.
+
+A package manager must never turn:
+
+```text
+package dependency
+      ↓
+opaque implementation
+      ↓
+trusted Qleisli operation
+```
+
+into an implicit trust path.
+
+## 9. Manifest metadata is organizational, not semantic
+
+The qrate manifest may specify things such as:
+
+- package name/version;
+- dependencies;
+- edition/toolchain requirements;
+- build targets;
+- documentation/test metadata;
+- feature/configuration selection where explicitly permitted.
+
+It must not become an undeclared semantic language.
+
+A manifest may select **which source/environment is compiled**; it may not silently redefine **what Qleisli constructs mean**.
+
+## 10. Relationship to qlirgo
+
+After this issue is fixed, qlirgo should implement the qrate model rather than define it.
+
+The intended direction is:
+
+```text
+qrate specification
+      ↓
+dependency / identity / reproducibility rules
+      ↓
+qlirgo implementation
+```
+
+not:
+
+```text
+current qlirgo behavior
+      ↓
+therefore that is what a qrate means
+```
+
+## Non-goals
+
+This issue does not require 0.3.0 to finish:
+
+- a public qrate registry;
+- final registry protocol;
+- signatures/transparency infrastructure;
+- full lockfile UX;
+- advanced dependency solver policy;
+- all qlirgo commands;
+- 0.4.0 stdlib restructuring.
+
+It requires the **meaning and authority boundary of qrate itself** to be fixed before those systems mature.
+
+## 0.3.0 acceptance criteria
+
+- [x] The Language/Package Reference contains a normative definition of `qrate`.
+- [x] Qrate is defined independently of qlirgo.
+- [x] Logical package identity and resolved artifact identity are distinguished.
+- [x] The allowed artifact classes inside a qrate are documented.
+- [x] A qrate cannot extend or weaken trusted Qleisli semantics by ordinary package mechanisms.
+- [x] Dependency graphs have a defined reproducibility/identity model.
+- [x] Manifest metadata is explicitly non-authoritative for language semantics.
+- [x] `std` is specified as a distinguished qrate by distribution/compatibility policy only.
+- [x] `std` and third-party qrates share the same ordinary checked-Qleisli semantic path.
+- [x] Opaque/native/plugin artifacts cannot acquire semantic authority merely by being packaged.
+- [x] qlirgo is documented as an implementation/manager of qrate semantics, not their source.
+- [x] #167 and #169 are cross-referenced as the neighboring semantic-boundary flagships.
+
+## Release principle
+
+> **Packages distribute Qleisli programs; they do not redefine Qleisli.**
+
+And for the standard library:
+
+> **`std` is special in how Qleisli ships it, not in what Qleisli lets it mean.**
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #169 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Qrate artifact identity.** Classifying an artifact or validating a qrate manifest gives it no semantic privilege. Source, configuration, evidence and executable identities must retain their distinct authority and bind the actual selected artifact. Current root-manifest adapters do not establish general dependency/name resolution. The complete qrate classification, resolution rules and invalid-substitution behavior remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.
+
+
+## Beta criterion audit — 2026-10-19
+
+All 12 original criteria are satisfied for this issue's **normative authority/identity boundary**, reviewed at [main `7760aa3`](https://github.com/MGYamada/Qleisli/commit/7760aa3569984ff33f50e71c06535fd87f3564d0). [Reference](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/docs/src/reference/packages-and-artifacts.md) is the production specification; this audit implements none of the explicitly excluded future ecosystem features.
+
+| Criterion, in original order | Evidence |
+| --- | --- |
+| 1 | Normative definition opens “Qrate, module and file”. |
+| 2 | qlirgo manages the specified qrate object; it does not define its semantics. |
+| 3 | Identity table separates logical package, resolved program and distribution bytes. |
+| 4 | Source, docs, tests/QLT, proofs, resource metadata and permitted build artifacts are listed. |
+| 5 | Qrate status grants no primitive, rule, evidence or checking privilege. |
+| 6 | Explicit/deterministic dependency selection and immutable recorded locked closure are required; unsupported solver policies cannot be inferred. |
+| 7 | Configuration selects inputs without changing language rules. |
+| 8 | Canonical std has distribution/compatibility privilege only. |
+| 9 | Bundled and third-party ordinary source use the same applicable source/native checks. |
+| 10 | Opaque/plugin/native artifacts require their separate contract/admission boundary. |
+| 11 | The qlirgo paragraph explicitly makes the tool subordinate to the qrate contract. |
+| 12 | The chapter links #169 and the primitive-boundary contract; #167 now reciprocally links #169. |
+
+Validation: #420 merged the specification; #421's [full-profile CI](https://github.com/MGYamada/Qleisli/actions/runs/39131240742) rechecked the same Reference and complete Rust coverage. Exact checked head `299e8f47bf9fb1973dd6ad2aba46fdee6a610f97` and main merge `7760aa3569984ff33f50e71c06535fd87f3564d0` have the identical tree `6bd7c71e7f5ed89e7ff5682678de379e175effa8`. All 42 checks succeeded; only two nonrelease readiness jobs skipped as expected. Practical retained regressions cover ordinary std visibility/public effects, invalid doc claims and ignored manifest metadata without privilege. The complete Rust remaining partition passed and its command includes `project`, `public_effects`, `body_effects`, `cli` and `review_v024`. Documentation/link checks also pass. No new Rust/Lean behavior change or proof replay was needed for this audit.
+
+This closes the specified conceptual/normative boundary only. #65's frontend criteria, #171's effective toolchain/std pairing, #255's native edition propagation, future registry/solver/build capabilities and source/target preservation remain under their own scopes. The two admitted QLV1 guarantees and pending broader QS/PR/RS/EXACT duties retain their status; no release approval or new guarantee is claimed. Historical implementation-gap observations above remain dated records.

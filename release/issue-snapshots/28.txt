@@ -1,0 +1,153 @@
+## Status
+
+Design issue for **Qleisli 0.3.0**. This issue does not adopt final syntax yet.
+
+Related:
+- #27 type-theory synthesis
+- R01 / R04 / R14 in `docs/imaginary-v1/requirements.md`
+- A020-02, A020-03, A020-07 in `docs/v0.2.0-backlog.md`
+
+## Problem
+
+Qleisli's scalable algorithm drafts already rely on concepts such as
+
+```text
+Bits<n>
+Q<Bits<n>>
+power(U, 2^k)
+for const k in 0..n
+```
+
+but the language has not yet fixed a general account of:
+
+- what a compile-time value is;
+- which size expressions are legal;
+- when compile-time evaluation must terminate;
+- whether recursion is ever allowed;
+- how elaboration/resource growth is bounded;
+- how static parameters interact with evidence and specialization.
+
+These choices affect QFT/QPE, scalable arithmetic, proof reuse, resource accounting, and the future Resource Safety / Resource Computability story. They should be decided before size-polymorphic source becomes public.
+
+## Proposed direction
+
+Treat compile-time computation as a separate stage with its own context, conceptually
+
+```text
+Γs ; Γ ; Δ ⊢ e : T ! ε
+```
+
+where:
+
+- `Γs` contains compile-time/compile-time values;
+- `Γ` contains unrestricted runtime classical values;
+- `Δ` contains linear quantum ownership.
+
+The static fragment should be deliberately finite and total.
+
+A candidate initial compile-time language:
+
+```text
+Nat
++  -  *
+2^k
+comparisons
+finite ranges
+Bits<n>
+for const
+compile-time operation parameters
+```
+
+### Proposed principle
+
+> **Every accepted quantum program elaborates to a finite checked IR, and the language can compute or conservatively bound the resources required by elaboration and execution.**
+
+This suggests:
+
+- no general recursion in the quantum source language;
+- no dynamic unbounded loops;
+- compile-time loops must have statically known finite bounds;
+- const/compile-time functions, if added, must be structurally/otherwise provably terminating;
+- size arithmetic must be exact and overflow-free at the language level;
+- implementation capacity limits remain separate from mathematical well-formedness.
+
+## Questions to decide
+
+1. Is `Nat` the only initial static scalar type?
+2. Which arithmetic operators are legal in type/size expressions?
+3. Are subtraction/division partial, saturating, rejected on invalid operands, or expressed through propositions?
+4. Are static conditionals allowed?
+5. Are user-defined const/compile-time functions allowed in 0.3.0?
+6. If so, what termination discipline is required?
+7. How are range bounds and loop counts normalized?
+8. How are symbolic resource bounds represented?
+9. At what point are size constraints checked: definition time, specialization time, or both?
+10. Which parts of evidence are shared between a generic definition and its instances?
+
+## Resource-theoretic consequence
+
+The eventual metatheory should support a statement of the form:
+
+```text
+well_typed(p)
+  => elaboration terminates
+  => verified IR is finite
+  => resource use is statically bounded
+```
+
+This need not yet be the final theorem name, but the 0.3.0 design should avoid choices that make such a theorem impossible.
+
+## Non-goals
+
+This issue does not require:
+
+- dependent types in general;
+- general theorem proving in source;
+- runtime arbitrary-precision integers;
+- general recursion;
+- dynamic allocation driven by unknown runtime values;
+- hardware cost prediction.
+
+## Acceptance criteria
+
+Before shipping the first public sized source profile:
+
+1. Specify static types and expressions normatively.
+2. Specify evaluation/normalization and failure behavior.
+3. Specify termination requirements.
+4. Specify `Bits<n>` formation including `n = 0`.
+5. Specify `for const` including zero-iteration body checking.
+6. Specify how compile-time operation parameters and powers interact with capabilities.
+7. Specify definition-time vs specialization-time checking.
+8. Specify capacity diagnostics separately from language well-formedness.
+9. Show one QFT/QPE source body instantiated at multiple supported widths.
+10. Show that elaboration/resource accounting does not require expanding an exponential truth table merely because the logical domain has size `2^n`.
+
+## Design intent
+
+The goal is not merely convenient generics. The goal is to make **finite, terminating, resource-accountable quantum programs** a language property rather than a convention.
+
+## Retrospective constitutional impact — 2026-10-05
+
+**Scope and authority.** This #140 analysis covers #28 and the related static-declaration and bounded-evaluation duties in #40/#63 under QS-2026-01, PR-2026-01 and RS-2026-01. It does not settle still-open static-language syntax or arithmetic choices, authorize new recursion, or expand exact phase domains. #40's separately recorded public-builder boundary remains unchanged.
+
+**QS.** Static evaluation and specialization must preserve exact type trees, ordered interfaces, owners, effects, source/dependency identity and selected operation providers. Definition checking must cover otherwise unused declarations, static branches and zero-iteration bodies. Current Rust symbolic/concrete checking, decreasing-call checks and bounded source-step validation are implementation evidence; native validity of the resulting Raw or hierarchy artifact is not a general theorem that specialization preserves source meaning.
+
+**PR.** Target correspondence concerns the actual emitted implementation of a closed specialization, with its encoding, phase, layout and workspace premises. A finite generic description or successful specialization does not establish target feasibility or synthesis completeness. No target-realization certificate is introduced by this analysis.
+
+**Quantitative RS.** Static totality, elaboration capacity, computed program-resource bounds and target-budget feasibility are distinct. Current checked arithmetic and limits on calls, depth, steps and storage prevent particular implementation overflows; they do not discharge quantitative RS. Resource claims require the selected measures, permitted branches, closed providers and a checked bound/preservation link to the actual artifact.
+
+**Definitions, ledger and transport.** Static judgments, arithmetic failure semantics, normalization and termination premises need explicit normative definitions. No new trusted assumption or project axiom is proposed. The two admitted QLV1 ownership/scope guarantees retain their exact meanings and current original-root native acceptance boundary. Ordinary QLV1, exact finite contracts and hierarchy profiles keep their separate current artifact/request bindings; a static elaborator cannot issue a native accepted handle or substitute a producer claim for an independent requested meaning. Source refactoring requires preservation evidence; any changed protected representation requires justified transport rather than an unchanged old proof. The current identity verifier rejects unsupported representation changes.
+
+**Distinct duties and proof status.** #28 must specify finite compile-time values/arithmetic, termination, size constraints and failure limits together. #40 must separate public static-builder syntax from the currently admitted compile-time language, including its explicit later boundary, with no capture of live Q owners or external execution authority. #63 must use the same deterministic bounded evaluation rules for helpers/iteration and phase/size construction. Small multi-width QFT/QPE instances and negatives for arithmetic, invalid branches, zero iterations and non-decreasing calls provide bounded evidence, not universal discharge. Remaining language, implementation and proof obligations stay open.
+
+**Edition and human judgment.** Development remains in edition 2026, with release-level migration where behavior changes. Ordinary work covered by the adopted interpretations does not require a fresh ruling. A genuinely new constitutional application, changed protected meaning/assumption, disputed adequacy or proposed guarantee admission requires its designated affirmative human judgment and evidence; recording this analysis supplies none of them. Protected-text changes follow the Constitution's own procedure.
+
+
+## Public keyword note — 2026-10-07
+
+The semantic stage is called **compile-time**. Public `static` is not canonical because it collides with Rust static-storage/lifetime intuition. Where an explicit staging keyword is required, use `const`; older `static` spellings are migration syntax.
+
+## Target realization cross-reference
+
+See [#120](https://github.com/MGYamada/Qleisli/issues/120) for the boundary between a static source/logical width bound and a physical target width claim that includes synthesis workspace.

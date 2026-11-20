@@ -1,0 +1,58 @@
+## Status
+
+**0.3.0 semantic decision fixed; parser/diagnostics/conformance remain open.**
+
+Parent: #32. Related: #67, #68, #86, #194, #195, #215.
+
+## Decision
+
+Verified quantum-core functions are expression-oriented and have **one structured result boundary**.
+
+For `unitary fn`, isometry functions, and `observe fn` in the quantum core:
+
+```text
+early return        forbidden
+? / residual exit   forbidden
+panic!/assert!      forbidden as runtime quantum exits
+unreachable!        forbidden as an accepted runtime edge
+stack unwinding     forbidden
+hidden abort        forbidden
+partial quantum fn  forbidden
+```
+
+The final block expression is the function result. Structured quantum constructs must merge ownership explicitly before that result boundary.
+
+## Why
+
+Every hidden exit is an ownership/resource edge. Allowing Rust-shaped early exit would require implicit cleanup semantics exactly where Qleisli forbids implicit Drop, release, reset, discard, or uncomputation.
+
+> **No hidden control-flow edge may abandon live quantum ownership or synthesize cleanup.**
+
+## Classical / host boundary
+
+A future host/classical orchestration language may support ordinary `return`, `Result`, `?`, assertions, or process failure under its own semantics. That does not import those constructs into verified quantum functions.
+
+Explicit classical data such as an ordinary `Result<T,E>` may exist as data when it does not itself create a hidden exit; propagation syntax remains outside the quantum core.
+
+## Structured alternatives
+
+Use:
+- final expressions;
+- explicit classical branches whose every arm returns the same required owner shape;
+- `qif` / `qmatch` for coherent control;
+- `qfor` for finite linear quantum iteration.
+
+No `qreturn`, `qtry`, or quantum unwind form is introduced.
+
+## Acceptance criteria
+
+- [ ] Quantum-core grammar rejects early `return`.
+- [ ] `?` cannot create an implicit quantum exit.
+- [ ] panic/assert/unreachable/unwind do not exist as accepted runtime quantum-core edges.
+- [ ] Every legal branch preserves complete owner/resource obligations.
+- [ ] Final-expression diagnostics explain the structured-exit rule.
+- [ ] Host/classical failure semantics remain explicitly separate.
+
+## Compact rule
+
+> **Quantum functions exit structurally exactly once.**

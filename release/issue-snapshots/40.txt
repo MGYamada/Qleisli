@@ -1,0 +1,56 @@
+**Parent:** #32  
+**Related:** #28, #30, #44, #47, #60, #61
+
+## Status
+
+**0.3.0 semantic decision only.**
+
+The public authoring syntax for compile-time program builders belongs to the 0.4.0 typed meta-layer in #60/#61.
+
+0.3.0 must freeze only the semantic role required by the compile-time language.
+
+## 0.3.0 requirement
+
+Qleisli needs a class of compile-time computations that may produce sizes, exact constants, statically specialized operation descriptions, capability/constraint inputs, and other bounded elaboration-time data admitted by #28/#30/#44/#47.
+
+Whatever provisional spelling is used, these computations:
+
+- run only during bounded elaboration/specialization;
+- cannot inspect or capture live quantum owners;
+- cannot manufacture trusted evidence or semantic authority;
+- obey the 0.3.0 termination/boundedness rules;
+- are erased/resolved before canonical Core.
+
+## Deferred public syntax
+
+0.3.0 does **not** expose a public compile-time helper declaration. The future public form belongs to #60/#61, but `const fn` is explicitly excluded as a canonical spelling because Rust `const fn` remains an ordinary callable function that is merely eligible for const evaluation, whereas Qleisli's meta helper is compile-time-only. The preferred future spelling is `meta fn`.
+
+Those questions are owned by #60/#61 in 0.4.0.
+
+## Acceptance criteria
+
+- [x] The Language Reference defines the semantic/static computation class needed by 0.3.0.
+- [x] Static computation cannot capture live `Q<T>`.
+- [x] Termination and authority rules are fixed.
+- [x] Any 0.3.0 implementation spelling is explicitly provisional unless separately stabilized.
+- [x] #60/#61 remain free to choose the public compile-time builder syntax without changing the 0.3.0 semantic laws.
+
+## 2026-10-07 spelling clarification
+
+`static fn` and `const fn` are both explicitly non-canonical for Qleisli's compile-time-only helper. If 0.4.0 exposes such helpers, the preferred public spelling is `meta fn`, making the stage restriction explicit.
+
+
+## Rust `const fn` false-friend boundary — 2026-10-07
+
+Rust `const fn` denotes an ordinary function that may also be evaluated in const contexts. Qleisli's meta helper is instead a compile-time-only elaboration construct and cannot be called as an ordinary runtime function.
+
+Therefore:
+
+```text
+const N / const arguments   retained for compile-time values
+for const                   retained for bounded compile-time iteration
+const fn                    not canonical
+meta fn                     preferred compile-time-only helper spelling
+```
+
+This is a naming/staging clarification; it does not change the bounded evaluation or trust rules.

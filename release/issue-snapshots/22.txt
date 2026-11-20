@@ -1,0 +1,268 @@
+## Status and adopted direction
+
+Target: **Qleisli 0.3.0 type-system specification**.
+
+**User decision, 2026-10-02:** remove the classical `C` type prefix from the surface model. Classical/ordinary data is the unmarked baseline; `Q<T>` is the quantum ownership constructor.
+
+In particular, the intended 0.3.0 direction is:
+
+```text
+CBit       -> Bit
+CBits<n>   -> Bits<n>
+C<T>       -> T        // do not introduce a general classical modality
+```
+
+while quantum data remains explicit:
+
+```text
+Bit        ordinary/classical bit
+Bits<n>    ordinary/classical finite bit sequence
+
+Q<Bit>     quantum ownership with basis Bit
+Q<Bits<n>> quantum ownership with basis Bits<n>
+```
+
+This supersedes the earlier framing of this issue as merely “two copies of the same finite set”. The stronger principle is:
+
+> **Classical is not a modality in Qleisli. Quantum is.**
+
+Related:
+- #196 — three-level surface boundary: `q***`, `Q<T>`, unmarked syntax
+- #195 — `qmatch`
+- #194 — `qfor`
+- #43 — `Unit` / `Q<Unit>`
+- #23 — basis-state preparation
+- #27 — type-theory synthesis
+
+## Problem
+
+The current surface model contains parallel classical and basis/quantum-facing names:
+
+```text
+Bit       vs CBit
+Bits<n>   vs CBits<n>
+```
+
+and earlier design discussion left open the possibility of a general `C<T>`.
+
+That duplicates the ordinary finite data universe even though the actual semantic distinction is already represented by `Q<T>`.
+
+A measured bit is not “a bit in a second classical modality”. It is simply an ordinary `Bit`.
+
+Likewise, a coherent bit is not another kind of `Bit`; it is quantum ownership over the same finite basis:
+
+```text
+Q<Bit>
+```
+
+The old naming therefore places the quantum/classical boundary in the wrong location.
+
+## Three-level surface model
+
+This issue is the type-level part of #196.
+
+Qleisli should expose three cases:
+
+### 1. Unmarked ordinary values
+
+```qli
+b: Bit
+word: Bits<n>
+n: Nat
+()```
+
+These are ordinary copyable/droppable classical or static values, subject to their normal staging rules.
+
+### 2. Quantum-owned values
+
+```qli
+q: Q<Bit>
+register: Q<Bits<n>>
+```
+
+The `Q<...>` constructor is what changes ownership, coherence, observation and resource rules.
+
+### 3. Dedicated `q***` constructs where the construct itself changes meaning
+
+Examples:
+
+```text
+if      / qif
+for     / qfor
+match   / qmatch
+```
+
+Do not encode the same boundary a second time with `CBit`, `CBits` or `C<T>`.
+
+## Consequence for observation
+
+The natural observation signatures become:
+
+```text
+measure_z    : Q<Bit>     -> Bit
+measure_bits : Q<Bits<n>> -> Bits<n>
+```
+
+The type transition itself says exactly what happened:
+
+```text
+Q<T> -> T
+```
+
+together with the declared `Observe` effect.
+
+No `C` wrapper is needed to mark the result as classical.
+
+This does **not** make observation implicit. There remains no coercion:
+
+```text
+Q<T> -> T
+```
+
+except through an operation whose semantics/effect explicitly permits observation.
+
+## Consequence for control flow
+
+The distinction becomes direct:
+
+```text
+b : Bit
+if b { ... }                 // ordinary classical branch
+
+q : Q<Bit>
+qif(q, target) { ... }       // coherent quantum control
+```
+
+and similarly:
+
+```text
+Bits<n>       -> match
+Q<Bits<n>>    -> qmatch when coherent basis-space control is intended
+```
+
+This is the intended interaction between unmarked types, `Q<T>`, and the `q***` family.
+
+## One finite type universe
+
+The preferred conceptual model is one ordinary finite data/basis grammar, for example:
+
+```text
+A ::= Unit | Bit | Bits<n> | A × B | ...
+```
+
+with:
+
+```text
+A       ordinary value of A
+Q<A>    linear quantum ownership whose computational basis is A
+```
+
+“Basis type” therefore describes the role of `A` under `Q<A>`; it need not be a second source-level copy of the same finite set.
+
+Static/basis computation and runtime classical computation may still have different **judgments, staging rules or admissible operations**. Those distinctions belong in typing/staging, not in a duplicate `C...` type family.
+
+## Basis/static reuse
+
+A total finite function should be reusable where its semantics permits:
+
+```text
+f : A -> B
+```
+
+may serve:
+
+- ordinary classical computation;
+- compile-time/static evaluation;
+- checked coherent lifting when Qleisli can prove the required totality/injectivity/semantic conditions.
+
+The language must not duplicate the function merely because the same finite map is used before and after measurement.
+
+This does not permit coherent data to be read classically.
+
+## Literal spelling
+
+0.3.0 should choose one coherent literal story for the unified finite type.
+
+The important semantic decision in this issue is the **single type**, not whether the preferred surface literals are `0/1`, `false/true`, or a narrowly specified aliasing policy.
+
+Whichever spelling is adopted:
+
+- it must not recreate `Bit` vs `CBit` through literal classes;
+- coherent basis labels and ordinary values denote elements of the same `Bit` type;
+- access to a value inside `Q<Bit>` still requires quantum semantics, not ordinary evaluation.
+
+## Migration
+
+This is a breaking 0.3.0 surface migration.
+
+At minimum audit and migrate:
+
+- `CBit` -> `Bit`;
+- `CBits<n>` -> `Bits<n>`;
+- measurement/readout signatures;
+- classical Boolean operators and branch guards;
+- sized QPE/readout corpus;
+- AST and parser variants;
+- Rust/Lean public type representations where externally visible;
+- IR/interchange schema names where they encode the old source distinction;
+- docs, examples, diagnostics and authoring corpus;
+- any planned `C<T>` abstraction: remove it from the design unless a distinct future semantic need is demonstrated.
+
+Internal verifier representations may remain distinct where staging or port classification genuinely requires it, but that distinction must not leak back into duplicate source types without a separate semantic justification.
+
+## Obligations
+
+- No implicit readout of `Q<A>`.
+- `Q<A>` remains linear and cannot be copied or implicitly discarded.
+- Ordinary `A` remains unrestricted where the ordinary type permits it.
+- `Observe` remains an explicit effect boundary.
+- `if` and `qif` remain semantically distinct.
+- `match` and `qmatch` remain semantically distinct.
+- No hidden coercion from `Q<A>` to `A`.
+- Exact axis/bit order for `Bits<n>` remains specified.
+- The migration must preserve verified quantum IR/meaning modulo the deliberate source-type rename/unification.
+
+## Acceptance criteria
+
+1. The Language Reference states: **ordinary/classical types are unmarked; quantum ownership is `Q<T>`.**
+2. `CBit`, `CBits<n>`, and a general surface `C<T>` are absent from the adopted 0.3.0 type model.
+3. Measurement examples type as `Q<Bit> -> Bit` and `Q<Bits<n>> -> Bits<n>`.
+4. Classical control consumes ordinary `Bit`; coherent control consumes/preserves `Q<Bit>`.
+5. One finite predicate/decoder can be reused classically and in checked coherent/static contexts when its typing obligations permit.
+6. Every path that attempts to inspect `Q<A>` as ordinary `A` without an explicit permitted operation is rejected.
+7. Sized QPE and measured-client examples migrate from `CBits<m>` to `Bits<m>`.
+8. Diagnostics no longer teach a parallel “C-type universe”.
+9. #43's `Unit` / `Q<Unit>` model is consistent with the same generic `T` / `Q<T>` rule.
+10. First-attempt authoring tests verify that an LLM given a few examples infers `Bit` vs `Q<Bit>` without inventing `CBit`.
+
+## Design principle
+
+> **The ordinary world is the default world. `Q` marks the semantic lift into quantum ownership.**
+
+Equivalently:
+
+```text
+T       ordinary/classical
+Q<T>    quantum-owned
+```
+
+not:
+
+```text
+C<T>    classical
+Q<T>    quantum
+```
+
+This keeps the type boundary aligned with Qleisli's surface boundary in #196.
+
+## 2026-10-04 target type contract
+
+Select `0` / `1` as the ordinary and basis Bit literals, with explicit migration from `false` / `true`. The same static-Nat numeral spelling is distinguished by its checked category. Removing `CBit` / `CBits<n>` follows the already adopted ordinary `T` / owned `Q<T>` boundary; it does not create preparation or observation coercions.
+
+The [target Language Reference](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/reference/type-model.md) and [foundation analysis](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/design/type-foundation.md) record this ordinary implementation decision under the approved 0.3.0 plan and adopted authority hierarchy. Edition remains 2026. This is not a new Guardian interpretation or guarantee admission.
+
+Status: target rules selected; implementation and conformance remain in progress in #307. Current alpha syntax still contains CBit/CBits and general Basis polymorphism is not yet implemented. Required positive and negative tests, exact lowering/interface preservation and native acceptance evidence remain open. Documentation alone does not complete this issue.
+
+## Canonical surface implementation — 2026-10-05
+
+The concrete current-profile cutover contract is recorded in #27 under “Canonical ordinary types and literals: implementation contract”. It selects a shared source-type classifier, 0/1 literals, explicit removal of C-prefixed types/legacy Boolean literals, genuine sized ordinary Unit and a coordinated active-source migration. Existing backend limitations remain explicit obligations; this is not completion of the generic type system or a new guarantee admission. Historical sources and evidence remain unchanged.

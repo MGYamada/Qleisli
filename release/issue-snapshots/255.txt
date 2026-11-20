@@ -1,0 +1,437 @@
+## Status
+
+**Qleisli 0.3.0 flagship-level constitutional / manifest boundary.**
+
+Related:
+- #137 — define the relation between editions and release versions
+- #129 — Qleisli 2026 Constitution
+- #170 — normative semantics and authority boundary of a qrate
+- #48 — authoritative Qleisli Language Reference
+
+## Problem
+
+Qleisli editions identify constitutional regimes, not syntax generations.
+
+An edition identifies the ratified constitutional framework and its continuing obligations. Release/formalization state identifies the current grammar, implementation, acceptance judgments, and semantic realization within that framework. Following #137, explanatory coordinates include:
+
+```text
+Constitution_e
+Jurisdictions_e
+Ledger_e,t
+
+Accepted_e,t(P)
+Meaning_e,t(P)
+RealizationAccepted_e,t(P, target, artifact, evidence)
+```
+
+These are explanatory indices, not fixed constitutional theorem names or a requirement to freeze acceptance and semantics for an entire edition.
+
+If a `.qli` or `.qlt` source can omit its edition and silently inherit the compiler's current/default/latest edition, then the same source tree may later be interpreted under a different constitutional regime without any source or manifest change.
+
+That is unacceptable for a language whose guarantees are edition-indexed.
+
+The manifest therefore needs to bind every ordinary Qleisli project explicitly to one constitutional edition.
+
+## Normative rule
+
+For every ordinary Qleisli source tree or qrate containing `.qli` and/or `.qlt` source, a schema-2 `Qargo.toml` **MUST explicitly declare `edition` in `[qrate]`**.
+
+For example:
+
+```toml
+schema-version = 2
+
+[qrate]
+edition = "2026"
+```
+
+The central invariant is:
+
+> **A Qleisli source tree must never silently change the Constitution under which it is interpreted.**
+
+Equivalently:
+
+> **Compiler release selects the implementation; edition selects the constitutional regime.**
+
+## 1. Missing edition is a hard error
+
+For a normal package/qrate build, check, test, or QLT invocation:
+
+```text
+Qargo.toml contains .qli/.qlt sources
+        +
+edition absent
+        ↓
+hard error
+```
+
+This must not be a warning.
+
+The compiler/qlirgo must not silently insert `edition = latest`, `edition = current`, `edition = toolchain-default`, or any equivalent floating interpretation.
+
+## 2. Floating editions are forbidden
+
+The manifest must name a concrete edition.
+
+Forms equivalent to `latest`, `current`, or `*` must not exist.
+
+The same project checked years later must still request the same constitutional edition unless the manifest is explicitly changed.
+
+## 3. `.qlt` is covered by the same rule
+
+QLT is not exempt.
+
+Tests must not be interpreted under a different or implicit edition from the source they are asserting properties about.
+
+Therefore:
+- `.qli` is edition-bound;
+- `.qlt` is edition-bound;
+- a qrate-level QLT suite inherits the explicit `[qrate].edition` unless a future specification introduces an equally explicit, non-floating override;
+- ordinary test tooling must never select an edition implicitly.
+
+## 4. Edition and toolchain version are distinct coordinates
+
+The manifest model must distinguish:
+
+```text
+toolchain/compiler version
+    = which implementation is used
+
+edition
+    = which constitutional regime and continuing obligations are requested
+```
+
+Many compiler releases may implement one edition. Those releases may change syntax, types, or tooling under an explicit release compatibility and migration policy. Such changes do not select another edition or amend the Constitution by themselves.
+
+Updating from one compiler version to another must **not** by itself migrate the project to a new edition.
+
+Likewise, declaring edition `2026` does not uniquely pin a compiler patch release.
+
+This concretizes the release/edition distinction tracked in #137.
+
+## 5. Edition migration must be explicit
+
+Changing edition is a semantic/constitutional migration, not routine dependency drift.
+
+A migration from `edition = "2026"` to `edition = "2029"` must require an explicit manifest edit or an explicit migration command whose result includes that manifest edit.
+
+Tooling may assist migration, but it must never perform an edition change merely because a newer toolchain is installed.
+
+The manifest diff should make the constitutional transition reviewable in Git history.
+
+## 6. The effective edition must reach the authoritative acceptance path
+
+The edition field must not remain frontend-only metadata.
+
+Conceptually:
+
+```text
+Qargo.toml
+   edition = e
+        ↓
+frontend / project loading
+        ↓
+canonical artifact / Core metadata
+        ↓
+authoritative verifier / acceptance
+        ↓
+Accepted_e,t / Meaning_e,t under Constitution_e and its applicable obligations
+```
+
+The authoritative acceptance path must bind the requested constitutional edition together with the release/profile and checker identity whose current normative rules it executes. Declaring an edition alone does not identify a grammar or a complete acceptance predicate.
+
+A frontend must not be able to claim one constitutional edition while the verifier silently checks another.
+
+## 7. Dependencies do not redefine the root edition
+
+Ordinary qrate dependencies may declare their own compatible edition metadata according to the package specification, but dependency resolution must never silently change the root project's edition.
+
+If a dependency graph is incompatible with the root edition, resolution/checking should fail with a diagnostic rather than migrating the root project.
+
+The exact cross-edition dependency compatibility policy may be specified separately; the invariant here is that **dependency selection cannot mutate constitutional meaning implicitly**.
+
+## 8. Standalone / snippet tooling
+
+The normal Qleisli project model should require `Qargo.toml`.
+
+If future tooling intentionally supports isolated source snippets without a manifest, that mode must still receive an edition **explicitly** (for example by a required CLI/API parameter).
+
+It must not fall back to a floating current/latest edition.
+
+Such a mode is tooling convenience, not an exception to the constitutional binding rule.
+
+## 9. Diagnostics should teach the rule
+
+A missing-edition diagnostic should explain why the field is mandatory, for example:
+
+```text
+error: Qleisli edition is not declared
+
+This source tree contains .qli/.qlt source, but its schema-2 Qargo.toml
+does not declare `qrate.edition`.
+
+Qleisli editions identify constitutional regimes; the compiler will
+not choose one implicitly.
+
+Declare the edition explicitly:
+
+    schema-version = 2
+
+    [qrate]
+    edition = "2026"
+```
+
+This aligns compiler diagnostics with the general principle that errors act as part of the language harness.
+
+## 10. Reproducibility consequence
+
+With an explicit edition, a repository records both source/package history and constitutional semantic identity.
+
+A future toolchain may stop supporting an old edition as an implementation-policy matter, but it must never reinterpret old source as a newer edition merely to keep compiling it.
+
+This preserves the distinction from #137:
+
+- ratified constitutional text and recorded ledger guarantees retain their historical identity and meaning under #137 and the applicable constitutional rules;
+- current formal realizations, release compatibility, and implementation support may evolve separately without silently changing the requested edition.
+
+## Acceptance criteria
+
+- [ ] The Language/Package Reference states that ordinary `.qli` / `.qlt` projects MUST declare `[qrate].edition` in a schema-2 `Qargo.toml`.
+- [ ] Missing edition is a hard error, not a warning.
+- [ ] No implicit default/current/latest edition exists for ordinary qrate builds.
+- [ ] Floating edition values are forbidden.
+- [ ] `.qlt` is explicitly covered by the same constitutional binding rule as `.qli`.
+- [ ] Updating the Qleisli toolchain does not automatically change the project edition.
+- [ ] Edition migration requires an explicit manifest change.
+- [ ] The selected edition is propagated to the authoritative Core/verifier/acceptance boundary.
+- [ ] The verifier cannot silently check a different edition from the manifest-selected one.
+- [ ] Dependency resolution cannot silently mutate the root project's edition.
+- [ ] Any future manifest-free snippet mode still requires an explicit edition parameter.
+- [ ] Diagnostics explain that edition identifies the constitutional regime rather than a grammar generation.
+- [ ] Conformance tests cover missing, invalid, floating, mismatched, and explicitly migrated editions.
+- [ ] #137 is updated/cross-referenced so its open question “Does source code declare its edition?” is resolved normatively.
+
+## Core principle
+
+> **No implicit Constitution.**
+
+And operationally:
+
+> **Every ordinary Qleisli source tree declares the edition whose guarantees it is asking the toolchain to enforce.**
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #169 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Explicit constitutional edition.** Schema-2 [qrate].edition validation is a frontend configuration check. Edition 2026 must also be explicitly bound through the applicable authoritative artifact/native acceptance path; syntax or product version cannot stand in for it. Existing version-argument checks are not that missing edition proof. The full propagation and mismatch-rejection obligations remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.
+
+
+## Beta implementation contract — planned 2026-10-18
+
+This records the concrete technical migration for the existing acceptance criteria, before implementation. It is ordinary maintenance under the adopted edition-2026 QS/PR/RS/EXACT interpretations and #276, not a new interpretation, guarantee admission, completed check or release decision. The original criteria above remain required.
+
+- Introduce a supported `Edition::E2026` value with strict parsing and no `Default`, current/latest selection or product-version conversion. Checked in-memory preparation and native/raw/foreign/evidence helpers require the explicit selection or an immutable edition-bound kernel. Syntax-only parsing and untrusted proposals confer no acceptance.
+- Filesystem preparation retains the actual validated manifest bytes and their association with the captured source modules. Carry that immutable context through preparation, specialization and every fresh native decision. Do not reread configuration later, derive a user's selection from bundled std, or silently replace a missing/different context with 2026. Mixed selections reject; dependencies cannot change the root selection. A pre-decision subject contains requested context only; accepted data additionally binds the actual fresh checked context and the same original subject.
+- Replace the external QLV2 envelope with QLV3. Its little-endian u32 header is `magic | edition=2026 | scope | original_length | graph_length | caller_length | alias_count`, followed at byte 28 by the unchanged original inner packet, QDV1 graph, caller bytes and aliases. Retain exact-length, scope, alias and 64-MiB limits using checked arithmetic; the new four bytes stay inside existing caps. Reject old envelopes instead of falling back. The original internal QLV1/hierarchy meanings and existing scope-specific evidence remain unchanged.
+- Require a strict native-result version 3 success reply containing the validated edition, compiled complete product release, actual canonical mode and checked scope before the existing claim-specific payload. Keep accepted, pending, engineering and component claims distinct. Reject stale/mismatched context, old replies, malformed counters and extra text. Errors make no successful-context claim; unsupported well-framed editions receive an edition error. Retain current transport, response and semantic-work caps.
+- Use one pure, total context-aware dispatcher called by the actual Main IO adapter and one reply projection. Prove its successful executable path validates the context and retains each existing original-artifact, QDV1/caller and mode-specific binding; the reply must describe that same result. Preserve the two admitted ordinary QLV1 root properties and their exact premises. A theorem about a separate unused validator or a caller's assumed validity is insufficient. Isolated file-based mathematical component checks remain outside production acceptance and cannot supply a fallback.
+- Preserve the first one-qubit initialization/readout and zero-width scalar sources, actual pre-change diagnostics and all counterexamples. Conformance must include missing/invalid/floating/mismatched edition, explicit manifest edits, source/context substitution, nested selection, dropped helper context, dormant/zero-repeat children, exact phase, axes and external references. Rebuild/audit/replay changed proofs, check the actual native path, retain current-evidence continuity and perform required CI and package/installation checks before completion credit. No maximum-size quantum case or budget increase is authorized.
+
+Qlirgo's authorized minimal beta migration must pass its captured user's selection through the changed API. Its current configuration digest and actual std descriptor alone do not establish native edition binding. Existing qlirgo result/build-record version 2 and child version 1 are closed contracts; any new serialized context fields need their own explicit reviewed schema decision. This contract chooses no qlirgo product release, publication, registry fallback, new lint feature or general QLT implementation. #171 pairing and broader source/runtime/target proof duties remain separately unfinished.
+
+
+### Captured-context capacity and API migration
+
+For bounded filesystem preparation, retained manifest bytes share the existing `SourcePolicy::Bounded.project_bytes` aggregate input budget with source text. Each actually read manifest is charged once; inherited references share immutable bytes. The per-manifest 65,536-byte cap, per-source cap, directory-entry cap, default 16-MiB aggregate cap and explicit Legacy mode remain. This prevents the new immutable context from retaining an unbounded aggregate of individually valid manifests. A tree near the old source-only aggregate limit may need less source/configuration data; this is an explicit beta migration, not a raised limit or omitted check. Diagnostics and boundary tests must cover the accounting.
+
+Public in-memory `Project` construction moves from context-free struct literals to `Project::from_modules(root, modules, Edition::E2026)` (or another explicitly supported value). Requested context is not acceptance evidence. Filesystem preparation preserves original root, module path/origin inventory and manifest associations; replacement requires a fresh explicit preparation, without rereading configuration through a saved selection. Existing body/AST checks still run afresh.
+
+
+## Native-side implementation checkpoint — 2026-10-19
+
+Local commit `26a82671469eb6371b25d7a91e73b03267288484` (not pushed) follows foundation `7af7634` and the merge of reviewed main `7760aa3`. This is the native-side slice of the contract above; **#255 remains incomplete**.
+
+- QLV3 framing explicitly checks edition 2026 from the original header, with body offset 28 and the unchanged 64-MiB/alias/view caps. Unsupported editions reject as `edition`; old external QLV2/QLV1 do not fall back. The original inner payload/checker meanings are unchanged.
+- One pure `Protocol.NativeContext.run` handles all thirteen existing modes. The actual Main adapter invokes it and its one reply projection. Version-3 success reports carry the checked edition, compiled complete product release, canonical mode and checked scope, then the existing mode payload. Accepted, pending, engineering and component results stay distinct; failures assert no successful context.
+- Checked lemmas connect actual dispatcher success to product/header validation, the original profile computations, compared execution/caller views, and both scoped ordinary decoded-root properties. Readout/preparation proofs retain their actual independent requests and component checks. This is preservation of existing scopes, not a new guarantee admission, source/runtime correspondence or broader QS/PR/RS/EXACT discharge.
+
+Performed: changed proofs and Main built; the native executable built (294 Lake jobs); compiled declaration/import/axiom policy audited 14,678 kernel/transport declarations, including private/generated declarations, with only the three recorded standard axioms; `leanchecker --fresh Main` passed. Actual rebuilt native execution passed **77 bounded checks**: seven retained small finite vectors in inspection/execution plus changed-view refusal, all thirteen modes' wrong/missing product, unsupported edition and old-envelope refusals, and malformed packets. Only ordinary finite success was exercised in this slice; other modes' successful payloads still need migration/conformance coverage.
+
+The current test window and the committed tree have identical working-input digest `5244252428a7d6baaea853bf567ce98b416505b33215b3b52682627a96bab8ae`. Observed local executable SHA-256: `4e17484b74c584d17dcbb04e826661de6715ae4bd794b5f828c8b0e194b431bd`. These identify observed bytes, not portable binary attestation. Original proof-compilation refusals, prototype sources, complete later diagnostics and actual observations remain separate under the private native-edition dispatch record; none was rewritten into a pass.
+
+Remaining: Rust edition-bound kernels/accepted subjects and strict response parsing; propagation from the captured user's selection through every source/raw/foreign/evidence helper, Python and the authorized qargo compatibility path; all helper/conformance migrations; retirement of unused old IO adapters after replacement coverage; source/coverage/schema and current-guarantee evidence rebinding; required CI, packages/installation and final beta gates. Rust and test helpers still use the old communication contract at this intermediate local commit, so the complete toolchain is intentionally not yet paired or ready. No new serialized qargo context schema is adopted here.
+
+No criterion closure, release publication, version/dependency change, budget increase or maximum-size quantum experiment is claimed.
+
+
+### Rust/API and CLI migration forms
+
+The current implementation slice uses `native::Kernel::new(path, edition)`, `Kernel::selected(edition)` and the equivalent edition-bound hierarchy kernel. Manifest-free `ParsedProgram::parse(edition, modules)` and raw/foreign/evidence convenience functions require an explicit supported edition; operations starting from an already accepted subject retain its checked edition. No product-version or bundled-std conversion supplies it.
+
+For CLI raw artifact verification and engineering comparisons, and `interop --input=qirf|qasm`, the planned explicit spelling is `--edition=2026`. Missing/floating/unsupported choices fail. Ordinary source-tree and selected-module commands take the edition from the exact captured manifest(s), without an overriding CLI default. They load once, choose the bound kernel from that capture, and compile/check the retained project. The general `.qli`/source rules remain unchanged; this introduces no manifest-free ordinary source-tree mode or serialized qargo context field.
+
+Read-only retained Project checking/compilation methods support that single-load flow. Documentation and tests must migrate with the public APIs; old protocol or context-free acceptance is not a compatibility fallback.
+
+
+## Rust/API integration checkpoint — 2026-10-19
+
+Local commit `d38d27c0d37dd658441e53e53da7f341cd1dc608`, tree `e36c5789ad822c86bc05c3f5c2ed266de8bfded0`, follows native commit `26a8267`. It is not pushed, paired for distribution, CI-validated or complete; **#255 stays open**.
+
+Implemented: edition-bound finite/hierarchy kernels, immutable requested subjects and actual matched reply contexts; one strict version-3 Rust context parser; explicit raw/foreign/contract APIs; captured manifest propagation through selected modules and retained Project checking/compilation; source/evidence edition agreement checks; CLI raw/engineering/foreign `--edition=2026` requirements with no source override. Accepted compositions retain the original checked edition and kernel. Source inputs load once rather than rereading the selecting manifest. Compiled Rust tests/examples retain their existing cases and semantic oracles, with assertions updated for the explicit wire/API/diagnostic migration. Dependencies and limits are unchanged.
+
+Performed, using the existing shared target sequentially:
+- All-target compilation and all-target Clippy with warnings denied passed on normal Rust 1.98.1 and actual MSRV Rust/Clippy 1.85.0.
+- Both toolchains passed the strict context tests (2), process/framing/runtime tests (17), four engineering-profile tests (34), edition tests (19) and CLI scope tests (4), with no ignored tests in these selections. The groups overlap; their counts are not a distinct-case total or full-suite claim.
+- Thirteen bounded actual CLI calls cover one-bit preparation/readout, selected Raw/hierarchy identity and zero-width phase, manifest errors and explicit raw verification. Expected successes and refusals match. Eight further native preparation/readout component calls check successes, changed independent requests, unsupported edition and wrong scope.
+- Edition-tree checking passed: 4,645 .qli / 5 .qlt files, 1,083 explicit manifests, no root manifest. The passive history reader passed all eight tests; whitespace and fixture preflight passed (17,162 files / 140,016,855 bytes, unchanged ceilings).
+
+First prototype Lean failures, Rust compiler/API failures, stale negative-frame test failures and the component probe's accidental shared-object mutation are retained separately from repaired observations in `tests/fixtures/authoring_sessions/native-edition-v030/native-context-integration-first.json.gz`. Its passive reader verifies 113 exact records and never executes captured code. Routine later validation logs remain private. The component probe's original accepts changed both actual and requested data and are not evidence of a checker bypass.
+
+Checks still failing or unperformed: `check_docs.py` reports six unused legacy IO adapters omitted from the root import/audit closure; they need proper retained build/audit or retirement after replacement coverage, not an exemption. Constitutional checking against reviewed base `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb` reports stale `Protocol/ExecutionView/Native.lean` source binding; protected current evidence requires fresh controlled verification/refresh, not an expected-hash waiver. No new proof build/replay is claimed for the Rust slice; the previous native-stage build/audit/replay keeps its original identity.
+
+Remaining: Python and the authorized minimal qargo/qlippy compatibility path; protocol/helper and generated-client migrations; complete conformance/independent comparisons; legacy-adapter and source/coverage/schema inventory review; current-guarantee evidence continuity; required latest-head CI, packages/installation and final beta gates. Existing broader QS/PR/RS/EXACT and source/runtime/target preservation gaps remain disclosed. No criterion closure, new guarantee, version/dependency bump, budget increase, tag or publication.
+
+## Native helper checkpoint and Python migration contract (2026-10-19)
+
+Local commits `ca572d1bb8d9f77821eadf6a5c1a1c3597c73495` and `0a5f5a85` migrate current native/helper and generated Rust consumers to explicit QLV3/result-3 contexts. They preserve hierarchy diagnostic classification and restore the six legacy IO modules to the audit/build closure without routing production calls through them. Fresh Main build/replay and the 14,738-declaration audit pass. The five retained hierarchy modes match; 2,683 divergent plans reject and 25 additional native hierarchy checks pass. The original 820 hierarchy-request cases and ten row-cost controls pass. Normal/MSRV research Clippy, nine passive-history tests, five packaging-policy tests, docs and fixture preflight pass. The earlier generated/native/CLI comparisons retain their original source windows. This is partial local validation, not complete CI or criterion closure. First helper refusals and both real hierarchy diagnostic counterexamples are retained in `native-helper-first.json.gz`; incomplete intermediate SourceKernel preimage/child-stream capture is explicitly disclosed.
+
+Concrete Python/public CLI migration to implement next, recorded before changing behavior:
+
+- Require a keyword constitutional edition in `Client(executable=None, *, edition, timeout=60, lean_kernel=None)`. Edition is a concrete string; initially only `"2026"` is supported. Missing, floating, malformed or unsupported selection cannot invoke a default/current edition. Expose the selected edition read-only.
+- Python raw/OpenQASM/QIR-derived calls pass the required `--edition=2026` to Rust. Every returned `Program` retains an explicit immutable edition; replacing a client cannot reinterpret that artifact under a different selection. Public host objects remain untrusted data and every operation requires fresh native acceptance.
+- Source calls keep the actual immutable manifest capture as the authority for their edition. Add an optional Rust interop source-only `--expect-edition=2026` assertion. It compares against the captured project's edition before selecting/checking the kernel; it never overrides the manifest. Python source calls always send this assertion. Raw `--edition` remains forbidden on source inputs; the new expectation is forbidden on raw/foreign inputs. Reject duplicates, conflicting forms, unsupported editions, and context disagreement.
+- Require an explicit `--edition=2026` for `python -m qleisli`; source inputs use it as the expectation above. Migrate current examples and test callers without changing their programs, oracles, limits or optional-QIR policy.
+- Preserve the closed `qleisli.result` v1 envelope and existing result fields; no implicit context fields or schema reinterpretation are introduced. Product/profile/native identity remains bound by Rust's fresh current native decision. Python parsing adds no acceptance authority or binary attestation.
+
+This applies the already adopted edition binding and single-verifier requirements. It changes no constitutional text, interpretation, admitted scope, reference meaning, dependency versions or budget. The two scoped QLV1 guarantees and pending broader QS/PR/RS/EXACT duties remain. Source/runtime/target preservation, current-evidence refresh, reviewed production inventories, qargo compatibility, complete conformance and latest-head CI/package/install gates remain outstanding.
+
+## Python and installed-host checkpoint (2026-10-19)
+
+Implemented locally at `9c5a7035b6593ea3604eb9538d0d791b8417298c` (tree `dc7b69f9e496f1b156f74dde6278be626f615bf9`), after helper commits `ca572d1b`/`0a5f5a85` and integration of reviewed main/#422 as `0e4fd260`. This is not a criterion closure or published candidate.
+
+- Python follows the concrete contract above: required concrete Client/CLI edition, read-only Client selection, immutable Program edition, explicit raw/foreign requests, and a source-only expectation checked against the actual captured manifest before native kernel selection. QIR reader work retains the same selected edition. No result-v1 fields, semantic acceptance rules, limits or dependencies changed.
+- Current Python and raw CLI consumers are migrated, including installed-package connection tests and the baseline verifier's explicit raw argument. The benchmark's actual and reported existing raw argv received the same mechanical update; no benchmark, shared-driver shadow, timing or default-adoption work was run. #223 remains set aside.
+- Normal Rust 1.98.1 and actual MSRV 1.85 all-target Clippy pass. Host tests: 8 pass. Actual selected-native interop tests: 12 pass with no skips, including QIR text/bitcode, all actions, invalid/missing checkers, source expectations and manifest mutation after capture. Those results retain their exact source/binary windows; they are not full CI.
+- A local `qleisli-0.3.0b0` wheel was built and installed with the existing declared setuptools 83.0.0 and PyQIR 0.12.5 pins. Installed module bytes were compared with the current sources; all 13 installed Connections tests pass. JSON CLI ran 14 tests successfully with only its 2 Linux-specific cases skipped on macOS. Those cases still require hosted Linux validation.
+- The 12 passive first-history tests, source syntax/whitespace, documentation (2,553 links / 89 anchors / 289 Lean roots), and unchanged fixture budgets pass: 17,171 files / 140,618,492 bytes. No maximum-size quantum case was newly generated or checked.
+
+First sources/observers and actual diagnostics remain separately in `python-context-first.json.gz` (32 records), `python-validation-first.json.gz` (9 records) and `cli-validation-first.json.gz` (5 records). Sandbox `ps` denial is distinct from the authorized unrestricted missing-edition observation. Two initial new tests incorrectly expected CLI-option code `edition` for source-manifest failures; the existing `project` classification and Qargo.toml spans were preserved and the tests strengthened. The JSON observer's missing positional absolute binary argument is distinct from a stale raw consumer flag. Missing transient test-file captures are disclosed; saved history is never executed as current validation. Routine successful logs remain private.
+
+Remaining before #255 can close: authorized qargo/qlippy compatibility and paired workspace-bin tests, complete production/public/source/schema inventory review (including the four new native-context modules), controlled current-guarantee evidence refresh against reviewed base `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb`, complete required conformance/CI, packages/installation and final beta gates. Existing source/runtime/target proof gaps, both scoped QLV1 guarantees and pending broader QS/PR/RS/EXACT duties remain. There is no new guarantee, hash waiver, version/dependency/budget increase, release tag or publication.
+
+
+## Current production-inventory checkpoint (2026-10-19)
+
+Committed locally as `0723e548955046d8bcd8c11a42eb277e402f4474` (tree `6955ef05b76d67a5d7b6d2d0ae7749a03f6551f8`); branch remains unpushed. This is a reviewed operational inventory checkpoint, not #255 completion or proof/readiness certification.
+
+- Identified all 86 changed source rows' exact recorded SHA-256 preimages in Git and reviewed their current changes, including 18 changed Rust public surfaces. Registered all four new native-context modules. Reviewed the 15 changed current comparison-file identities against exact main `5ce106c890e9807707b1d98afbc2261dd2785275`; original inputs, oracles and capacities remain. Historical packets, adopted records and original baselines are unchanged.
+- Current inventory checks cover 463 source snapshots, 309 constructor variants, 45 groups, 24 public boundaries, 26 paths and all 13 native modes. Coverage now recognizes the actual NativeContext mode/name tables and Main adapter, rejects aliases, omissions, remapping, accepting defaults, bypasses and altered Lean layout, and requires current context guards and wrapper-to-original checker bindings. Retained legacy IO helpers remain inventoried/audited; Main's native dispatch uses the common adapter.
+- Source/Python records now describe actual captured manifests, explicit kernel/Program editions, source expectations and native-result-3 edition/product/mode/scope binding. Engineering reports retain their separate claim classes even at epsilon zero. Hierarchy coverage does not inherit ordinary-root guarantees. All S05-C1-C5 and MIG-1-5 gates, existing work/transport/size budgets, constructor groups and original corpus census retain their prior status.
+- Both static inventory/coverage checks pass. All 68 inventory/coverage regression tests pass (29 + 39). Documentation and whitespace checks pass; fixture totals are 17,171 files / 140,657,484 bytes under unchanged limits. Validation source windows were unchanged and validated file bytes were compared with the committed blobs. Cumulative PR-size preflight against main `5ce106c8` passes at 11,566 changed text lines, 252 files including 10 binary records.
+- This slice changes operational scripts/records only; no Rust or Lean build/replay, benchmark, maximum-size quantum case, hosted CI, package installation, release tag or publication was run or claimed. Prior native/host evidence retains its exact original windows.
+
+Current-guarantee evidence remains stale against the actual native sources: the continuity check against reviewed base `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb` still rejects (latest first reported mismatch: `lean-kernel/Protocol/ExecutionView/Packet.lean`). No protected guarantee, semantic baseline, admission record or expected evidence hash was edited to waive that failure. Controlled proof/build/audit/transport/extraction refresh remains required, followed by the remaining schema/conformance, authorized minimal qargo/qlippy pairing and workspace-bin tests, latest-head CI and package/installation/final-beta gates. The two scoped QLV1 guarantees remain protected and broader QS/PR/RS/EXACT duties remain pending. #223 additional work stays set aside. No #255 completion credit is claimed.
+
+
+## Latest checkpoint: scoped-guarantee continuity current (2026-10-19)
+
+Committed as `bc2547d77d515dbe43c6053b1e6ee3db76326d9d` (tree `c7c9cd08bcc731f26684cea252db0f17912d027b`) and included in draft [PR #423](https://github.com/MGYamada/Qleisli/pull/423). This supersedes the previous stale-source checkpoint for current scoped evidence; #255 remains open and earns no completion credit.
+
+The canonical `check_schema_registry.py --write` completed all seven actual source-policy/build/audit/replay/type-export commands. Both Lean packages build; 14,738 kernel/transport and 4,897 mathematical declarations audit under the existing standard axiom basis. Fresh `QleisliKernel` and `Main` replay pass. The schema's three theorem types, parameter domains and disabled external gates are unchanged.
+
+The actual fixed Review, CurrentBinding, BasisTransportReview and RawTransportReview were recompiled. Their outputs/axiom information match the original fixed bytes. Fresh Raw extraction is exactly the previous current 8,186,631-byte stream, SHA-256 `79a3c723c2c779054502731555b8d3c05451d8042374102f9fc31e9c53d9583b`; its historical comparison preserves 292 independent-meaning declarations and 27 original-subject bindings. The existing compressed extraction, semantic baseline, admission records and guarantee identities remain unchanged.
+
+Only successful actual observations update the current registry/evidence and the ledger's current-evidence digest. Current proof closure is `7f15b67ebfe46d19c808cd8e96e81ae2df602c8c66587d75ae84dbe56698044a` (301 files); current evidence SHA-256 is `84f76a099368e434ce22ad31324f41a06f4241a3f110f36443806cd64c0ce2c8`. The deliberately historical alpha `observed_native_build` field is preserved, not presented as current beta attestation.
+
+After the update, the canonical `check_constitution.py --base-ref 28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb --verify-lean` passes with unchanged source/evidence windows. All 125 constitution/scoped-evidence/schema regressions pass without skips. Documentation, production/source inventory, whitespace and unchanged fixture budgets pass: 17,171 files / 140,653,649 bytes. Validated file bytes were compared against committed blobs. PR-size preflight against actual base `5ce106c8` passes at 11,644 changed text lines / 256 files (10 binary). PR #423's first exact-head CI discovery reports jobs in progress at this same head; no hosted success or merge is claimed.
+
+Read-only follow-up of qargo found the 59-file compatibility migration already committed at `d58b29d0968817c5ce4293d80665906b6bebb90e`, with exactly four pre-existing unrelated dirty files preserved untouched. Its adapter still uses the former no-edition Kernel signatures and separate Project reloads. The remaining authorized minimum is to bind selection/checking to one captured Project and its actual edition, then freshly validate and deploy/test qargo/qlippy/qlifmt/qlidoc under the Qleisli workspace `bin/`. No qargo source was edited in this checkpoint.
+
+Remaining: that minimal compatibility/pairing work, complete current-head conformance/CI (including Linux-only cases), package/installation and final beta gates. The two scoped ordinary-QLV1 guarantees retain their admitted premises; broad QS/PR/quantitative RS/EXACT, source/native-IO/runtime/target correspondence and release approval remain distinct and incomplete. No new guarantee, dependency/product version, budget, tag or publication is introduced. Further #223 work remains set aside.
+
+
+## Consumer and qargo minimum checkpoint (2026-10-19)
+
+[Commit d7bfdea8](https://github.com/MGYamada/Qleisli/commit/d7bfdea8f1158d045a21a5fb2dc8514e8c10d738), tree `d452aec2cfbcb20fbc0ff9e6fbff6aba6518a3a3`, is pushed in draft [PR #423](https://github.com/MGYamada/Qleisli/pull/423). Exact-head hosted diagnostics identified missing Edition arguments in Rustdoc, raw CLI error-path tests and QASM example consumers. Those callers now use explicit selections; source input still uses captured manifests. Existing output, contract, interface, IO and location assertions remain, and missing/floating/unsupported selections still reject.
+
+Normal local consumer validation passes 29 affected Rust cases, two JSON regressions, one bounded receipt case and all 15 doctests. The separate existing 300-KB receipt stress remains ignored, not credited. All four actual OpenQASM-parser/LLVM gates pass without skips. Strict Clippy for changed Rust targets, formatting, 14 passive-history tests, current source/production inventory and coverage, documentation, whitespace and constitutional identity/continuity against reviewed base `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb` pass. This slice changes no Lean definition; the preceding actual proof/build/audit/replay evidence retains its exact scope. Fixture preflight passes at 17,173 files / 140,810,931 bytes; cumulative committed PR preflight passes at 11,800 text lines / 262 files, including 12 binary records. Validated file bytes match committed blobs.
+
+The authorized two-file qargo minimum is applied but uncommitted on sibling base `d58b29d`: select the bound kernel from one captured Project's actual edition, check that same retained Project and produce metadata without a later reload. A meaningful real-native regression changes only the child-private staged manifest before delegating to the actual checker, and checks successful original-source/snapshot/index metadata. Normal Rust 1.98.1 all-target compilation, strict workspace/all-target Clippy and all 173 tests pass with an explicit local beta source override and frozen locks. The first Clippy invocation lost its pre-subcommand override; the corrected invocation supplies it after Clippy. Five sandbox `ps` refusals are preserved separately from the successful unrestricted full run. All four pre-existing unrelated dirty files are byte-identical.
+
+Focused first sources, original diagnostics and separately labeled observer/environment failures are retained as inert history. Repetitive routine source inventories remain private. The successful external run uses the existing hash-pinned validator wheels; no project dependency or version changed. No archived script, packet or maximum-size quantum case was executed.
+
+Remaining: fresh MSRV and independent-component checks for that qargo minimum, four workspace-bin deployment/pairing tests, complete current-head CI and review, packages/installation and final beta gates. #255 remains open with no completion credit. Both admitted scoped guarantees and pending broader QS/PR/RS/EXACT duties remain unchanged.
+
+## Linked-tooling and workspace-bin checkpoint (2026-10-19)
+
+This supersedes only the preceding pending qargo/MSRV/bin status. Root [4f3cff5c](https://github.com/MGYamada/Qleisli/commit/4f3cff5c914ff83f2103102698a559d5648166d2) is clean and pushed in draft [PR #423](https://github.com/MGYamada/Qleisli/pull/423). The authorized qargo minimum is committed and pushed as [18e1bc5](https://github.com/MGYamada/qargo/commit/18e1bc5003c3003030314e702f39dc46688ec824), in attached draft [qargo PR #41](https://github.com/MGYamada/qargo/pull/41). Four original unrelated qargo changes remain untouched and excluded.
+
+The retained 37-command matrix passes: actual Rust 1.98.1 and 1.85.0 independent component tests (qlippy 60 / qlifmt 17 / qlidoc 20), strict Clippy, doctest commands and warning-free Rustdoc; MSRV qargo all 173 tests and Clippy; and the affected Root consumers, JSON regressions, bounded receipt and all 15 doctests. Normal qargo 173 tests/Clippy passed in the preceding retained source window. All selected tests have zero failures; component doctest commands contain zero examples. The separate existing 300-KB receipt stress remains ignored and uncredited.
+
+All four current bundle binaries are deployed under the Qleisli workspace `bin/`. The actual runtime verifier and 310 standalone/bundle pairs pass (100 qlippy / 100 qlifmt / 110 qlidoc). Source and checker identities remain stable in both matrix/runtime windows. These use frozen locks, an explicit local Qleisli source override and one existing shared target; not isolated extraction, registry availability, clean-commit/binary-source attestation or official installation. The later commits change only documentation outside the already validated executable bodies. Future qlt/qdb/qcp placement under the same workspace `bin/`, with explicit executable-path checks, is recorded; these remain planned tools.
+
+Hosted qargo checks at exact head `18e1bc5` fail before compilation: both Ubuntu stable and MSRV logs show `cargo fetch --locked` cannot resolve exact `qleisli =0.3.0-beta` from crates.io (only alpha/older candidates). The missing artifact upload is subsequent to that fetch failure. No registry fallback, gate weakening, release tag or publication is introduced. Both drafts currently have no submitted reviews or inline threads; that does not constitute a completed review.
+
+Remaining: complete current-head CI/review, actual registry/package/native installation, supported-host/isolated extraction and final same-commit beta gates. #255 and #171 stay open with no completion credit. Existing scoped QLV1 guarantees retain their meanings; broader QS/PR/RS/EXACT obligations remain pending. Fresh constitutional identity/continuity passes against reviewed base `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb`; it is not a new Lean replay.
+
+## Capacity consumer and std diagnostic follow-up (2026-10-19)
+
+[Root `a6382bae`](https://github.com/MGYamada/Qleisli/commit/a6382baef9bfc5f4cd9c21c3b8f7e2206f2b5050) is pushed in draft #423. The actual macOS CI failure was reproduced locally: the existing capacity test omitted captured manifest bytes from its expected total. The repaired oracle keeps the production policy, limits, exact-boundary success and one-byte-under refusal/location unchanged. Actual normal/MSRV runs each pass all four capacity tests and strict Clippy. Original test/helper/manifest, complete hosted failure and first local diagnostic remain in inert history. Docs, formatting, whitespace, 14 existing passive-history tests and unchanged fixture budgets pass; committed PR preflight is 11,829 text lines / 265 files (13 binary records). Validated bytes match committed blobs. No production or Lean definition changes in this follow-up; earlier proof windows retain their scope.
+
+[qargo `bbce16a`](https://github.com/MGYamada/qargo/commit/bbce16aed2830eb52cc78ac4b8873e1817663736), pushed in draft qargo PR #41, explains canonical-std selection by the linked Qleisli toolchain. Five complete first projects and 25 actual before/after CLI pairs preserve all refusal/exit/schema/source/std/native fields; only explanatory prose and the actual rebuilt executable identity differ. The one-Bit no-dependency control reaches native checking; explicit std/dependency tables still refuse before source checking. Its normal build, formatting and direct workspace `bin/` checks pass. Only qargo was refreshed in this follow-up; the other three binaries and earlier full matrix/310-pair source windows remain unchanged. Four original unrelated sibling changes remain untouched/excluded.
+
+At exact qargo head `bbce16a`, Ubuntu MSRV hosted logs again fail at fetching unpublished `qleisli =0.3.0-beta`. Root's new-head CI/review are pending. No registry fallback, budget increase, publication, new guarantee, Issue closure or completion credit is introduced.
+
+## Retention, Reference and linked-runtime checkpoint (2026-10-19)
+
+Current draft #423 is pushed at [`bd904619`](https://github.com/MGYamada/Qleisli/commit/bd90461908b71388e658e0399cb30ca99a693a47). The first `a6382bae` preflight correctly rejected the new capacity-history archive because no actual rooted consumer read it. The existing passive history reader now verifies its fixed compressed/expanded bytes, all eight original records, actual hosted/local failures, four later validation results and the separate canceled observer attempt. All 15 passive tests pass; the full exact-commit fixture-reference gate passes all 1,246 new fixtures without exemptions. No historical command is executed. The same archive and production source/caps remain unchanged.
+
+The Reference now distinguishes edition/product/format coordinates and describes actual qargo std/configuration records. An actual hosted Book failure exposed an out-of-book relative link; its corrected exact public-source link passes the shared three-command Book plan, including generated HTML inspection. Cumulative PR preflight passes at 11,922 text lines / 266 files (13 binary); fixture totals remain 17,174 files / 140,841,124 bytes. These documentation/retention follow-ups add no production or Lean definition and do not extend prior proof scope.
+
+A fresh actual `bin/qargo` one-Bit audit passes 13 build invocations: initial/exact reuse, ten stale/changed std/config/native/schema record refusals without overwrite, and successful reuse after byte restoration. The independent qrate version is `9.8.7`; the actual linked Qleisli/std pair is `0.3.0-beta`. Runtime metadata and monitored head/sibling-diff/binary/checker coordinates are retained locally; no filesystem-wide trace, source/binary or clean-commit attestation is claimed.
+
+The next #41/#65 audit also passes the current declaration/lexical-resolution suite (23) and project/import suite (14) on both Rust 1.98.1 and 1.85.0, with no failures/ignores and unchanged recorded Rust/std/test inputs. Their historical temporary profile differences are not current policy: the actual common resolver permits unused import-only cycles and rejects self-import collisions consistently. Their remaining contracts still require final review; #58 prelude design is not implemented by this audit.
+
+Latest exact-head `bd904619` CI has source-selection/analysis jobs in progress; CodeQL is neutral at initial discovery, not a pass. Submitted review/inline-thread lists were empty at the last read. qargo `bbce16a` registry fetch remains blocked by the unpublished exact beta dependency. No Issue closes or earns completion credit; all approved exclusions, protected scoped guarantees and broader pending obligations remain.
+
+## Active native consumer repair (2026-10-19; not completion)
+
+[PR #423](https://github.com/MGYamada/Qleisli/pull/423) is ready for review at [`74e1149a`](https://github.com/MGYamada/Qleisli/commit/74e1149ae694c37f8233b0d4fe634a795a3e9776). The earlier `bd904619` normal/MSRV and extracted-source distribution jobs failed because the diagnostic checker stand-in still returned the legacy response header; the current native parser correctly refused it. A separate actual local check found the same migration omission in the rectangular pure-leaf test's direct QLV2 envelope. Both original failures and complete original test/helper/manifest sources are retained in the new inert `consumer-protocol-first.json.gz`; transient generated project/checker files were not separately retained, and their full authored literals remain in the saved test sources.
+
+The repaired active consumers use native-result 3 and explicitly selected edition-2026 QLV3. Existing rejection categories, text/JSON assertions, one valid independent request and all malformed-request mutations remain required. Actual normal Rust 1.98.1 and MSRV 1.85.0 each pass all 18 existing tests, zero failed/ignored, plus strict Clippy for both targets. Recorded Rust/std/test inputs and selected native bytes stay unchanged during the four validation commands; committed changed test bytes match that validated source window. Production Rust/Lean definitions, old-format rejection, work/size caps and historical executable fixtures are unchanged.
+
+All 16 passive history checks, docs, formatting, whitespace and trusted-base constitutional continuity pass. Full exact-commit fixture retention reaches all 1,247 new fixtures without exemptions. Fixture totals are 17,175 files / 140,928,482 bytes; cumulative PR preflight passes 11,996 text lines / 267 files, including 14 binary records. No fresh Lean replay or expanded guarantee is claimed by this test-only repair. Current-head CI/review, qargo's unpublished-registry dependency, package/install/platform and final-beta gates remain open; no Issue completion credit or release operation.
+
+## Reviewed hierarchy-consumer repair (2026-10-19; not completion)
+
+The [P1 review](https://github.com/MGYamada/Qleisli/pull/423#discussion_r4312029386) at `74e1149a` identified another diagnostic stand-in returning old hierarchy/instrument headers. Its actual local failure is retained. The related malformed-obligation test had passed on a legacy-header refusal before reaching its intended fields; that distinct passing baseline is preserved as well. [Commit `7f7cda5d`](https://github.com/MGYamada/Qleisli/commit/7f7cda5d31786be592ea0b982425dabce91b579f) migrates both active stand-ins without weakening the strict parser. The native-obligation check now rejects the actual missing/duplicate/malformed fields under a valid current context. The original conditional-reconstruction refusal remains, and real native instrument controls cover both APIs and finite reconstruction.
+
+Actual normal Rust 1.98.1 and MSRV 1.85.0 each pass the two diagnostic tests, three selected small instrument tests and strict Clippy. All six commands retain unchanged recorded Rust/std/test inputs and native checker; committed changed test blobs match the validated source window. The other 15 hierarchy tests are filtered and receive no validation credit here. The original P1, complete original sources, actual failed/masked-pass baselines and two separate failed repair attempts are pinned in the bounded 13-record `hierarchy-consumer-first.json.gz`; no historical observer or packet is executed. Generated temporary files were not separately retained; their authored literals remain in the originals.
+
+All 17 passive integrity checks, docs, formatting/whitespace and unchanged fixture budgets pass: 17,176 files / 141,049,336 bytes. Full exact-commit reachability covers all 1,248 new fixtures; cumulative PR preflight is 12,105 text lines / 268 files (15 binary). The P1 thread was resolved after the validated commit was pushed. Latest-head hosted CI and review remain pending. No production Rust/Lean definition, accepted protocol, limit, protected guarantee or historical fixture changed; no fresh Lean replay, Issue completion, registry publication or release claim.
+
+The independent #41/#65 audit is now recorded criterion by criterion. Four actual normal/MSRV commands pass 18 existing namespace/source/static tests plus two composed-Meaning tests per toolchain, zero failed/ignored; these supplement the earlier 37 resolver/project checks. This audit creates no alias/reexport/prelude API or general source-preservation theorem. Current-head CI/review and all package/install/final-beta gates remain open.
+
+## Reviewed current-test inventory synchronization (2026-10-19)
+
+The exact `7f7cda5d` changes job failed closed on a stale current comparison-source pin for `tests/hierarchical_host.rs`; dependent required contexts failed/skipped without executing their heavy suites. The full original hosted log is retained. The changed fault test and its relevant normal/MSRV native controls were reviewed above. [Commit `e67da70f`](https://github.com/MGYamada/Qleisli/commit/e67da70f1ccd1573ee5d20ec87fe83af0a52b965) deliberately updates that one current-test digest and documents the review. It changes no serialized comparison artifact/request, historical result, production definition, capacity or protected guarantee identity.
+
+All **13 shared source-integrity commands** and **29 inventory regressions** now pass. The complete committed working-input digest equals the actual validated pre-commit snapshot (`1a514f244a07142aeccc99366adeb6d99f81b95f36d2e7806246661a98af0889`); this is source identity, not a fresh clean-commit build or proof attestation. Full exact-commit fixture reachability still covers 1,248 files; fixture totals are 17,176 / 141,049,954 bytes. Cumulative PR preflight is 12,116 text lines / 269 files, 15 binary records. Latest-head CI and review remain pending; no Issue completion or release operation.
+
+## Single-file retained-manifest budget repair (2026-10-19; not completion)
+
+The [P2 review](https://github.com/MGYamada/Qleisli/pull/423#discussion_r4312209293) was reproduced on the unchanged 76-byte documented source and 45-byte selecting manifest: the old `qleisli doc` succeeded at total budgets 120 and 76 although its retained inputs total 121 bytes. Both actual counterexamples and all seven first observations remain pinned with the exact source, manifest, loader/test preimages and review in the nine-record inert `single-doc-manifest-first.json.gz`.
+
+[Commit `6eb45164`](https://github.com/MGYamada/Qleisli/commit/6eb451647f599cb0f1589f5e75de1c91d3f7325e) charges the captured manifest before reading a single source. An explicit initial-policy sentinel check preserves the earlier overflow refusal; explicit Legacy and file-byte limits remain intact. The new API regression covers nonempty/empty sources, exact aggregate success, one-byte-under rejection, manifest-only exhaustion and original source locations. Actual normal Rust 1.98.1 and MSRV 1.85.0 each pass all five capacity tests and strict Clippy. Seven fresh actual CLI calls now reject both counterexamples and preserve all three successful Markdown outputs; the manifest-too-large refusal points to `Qargo.toml`. Documentation reading performs no quantum execution.
+
+The project-loader source pin is deliberately reviewed and updated with an unchanged public API. All 13 shared source-integrity commands, 29 inventory regressions, 18 passive integrity checks, docs, formatting/whitespace and trusted-base constitutional continuity pass. The committed working-input digest equals the actual validated pre-commit snapshot (`bb7fdeb461059c021c6d5f35bcd78f1d95c76f06e4533a891eb2c28c0b4729d8`); this is source identity, not clean-commit build/proof attestation. Exact-commit fixture reachability covers all 1,249 new fixtures. Totals remain within the unchanged budgets: 17,177 files / 141,077,319 bytes; PR preflight 12,234 text lines / 270 files, 16 binary records.
+
+The P2 thread is resolved after the validated repair was pushed; the earlier P1 is resolved as well. Latest-head hosted CI has passed source selection/analysis, macOS, docs, Lean, interop and normal/MSRV differential producers; Rust remaining, distribution and native-kernel jobs are still running, and latest-head review remains pending. No Lean definition, native acceptance rule, admitted guarantee or serialized comparison artifact changes. #58 remains unimplemented while this review repair takes priority. No Issue completion credit, release tag or publication.
+
+## Integrated native edition checkpoint — 2026-10-19
+
+[PR #423](https://github.com/MGYamada/Qleisli/pull/423) is merged as `d74d60ce95c81cf4fc4b060040d2a168a098dc24`, from verified head `6eb451647f599cb0f1589f5e75de1c91d3f7325e`. Both exact-head push/PR CI runs finish with all eight required shared contexts successful (normal/MSRV Rust, macOS source, interop, Lean, native kernel, distribution, docs); CodeQL/analysis and producers pass as well. The two release-readiness jobs are intentionally skipped for ordinary push/PR events. Both automated P1/P2 findings are resolved after their checked repairs; final local review of the repair deltas found no further actionable issue. Submitted automated reviews retain their original `74e1149a`/`e67da70f` anchors; no latest-head automated receipt is invented.
+
+#41 and #65 are now completed from their individual criterion reviews and this complete hosted validation. They add two completion credits to the fixed plan: **67 completed + two approved exclusions /127 =54.33%;58 remain**. This does not complete #255 or #137/#171: the companion qargo PR remains draft, exact unpublished-beta registry fetch fails, and its conformance/package/native-install/supported-host gates remain open. Final same-commit beta and broader QS/PR/RS/EXACT obligations retain their separate scope. No version/dependency/budget change, tag or publication.

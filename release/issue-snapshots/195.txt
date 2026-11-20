@@ -1,0 +1,231 @@
+## Current completion scope — 2026-11-12 JST
+
+The maintainer explicitly requested moving the remaining work to separate bugs **without a target version**, and moving this feature issue toward closure. The implemented coherent-control contract is assessed below; transferred work remains unfinished. This is a scope/scheduling decision, not a statement that every original obligation has been proved.
+
+| Original criterion | Current disposition and evidence |
+| --- | --- |
+| Source semantics | Implemented in the [Language Reference](https://github.com/MGYamada/Qleisli/blob/b6ce6b821d99a0633e9efa19a4aa029cfa10dd6e/docs/src/reference/source-text.md#L161), with static coherent selection, ordered owners and exact phase. |
+| Static partitions; overlap/incomplete rejection | [Common original-source checker and regressions](https://github.com/MGYamada/Qleisli/blob/b6ce6b821d99a0633e9efa19a4aa029cfa10dd6e/src/frontend/check/body/quantum_matching.rs) check the admitted exact-label partition. |
+| Selector/target ownership | Original linear ownership and exact target trees are checked; [small regressions](https://github.com/MGYamada/Qleisli/blob/b6ce6b821d99a0633e9efa19a4aa029cfa10dd6e/tests/static_semantics.rs#L1395) retain distinct zero-width owners. |
+| Phase; arm capabilities and shape | [Independent exact sector equations](https://github.com/MGYamada/Qleisli/blob/b6ce6b821d99a0633e9efa19a4aa029cfa10dd6e/tests/static_semantics.rs#L1327), all-arm checks and public-effect/unused-arm refusals cover the implemented profile. Unitarity alone grants no control implementation. |
+| qif consistency | [Exact binary comparison with a reference](https://github.com/MGYamada/Qleisli/blob/b6ce6b821d99a0633e9efa19a4aa029cfa10dd6e/tests/static_semantics.rs#L1361) and shared qif/qmatch lowering retain both actual sites and their order. |
+| Independent lowering check | The v5/native path and [original-body graph refinement](https://github.com/MGYamada/Qleisli/blob/b6ce6b821d99a0633e9efa19a4aa029cfa10dd6e/lean/Qleisli/RuntimeOriginalBodyGraphRefinement.lean#L109) cover the stated supported profile. PR #519 passed exact-head CI/review and is integrated through #520; see the completion record below. |
+| Positive/negative upstream-derived corpus | **Unfinished; transferred to #521.** Existing language regressions and a project-checking observation do not substitute for corpus integration and the independent QROM oracle. |
+| General composed typed/public path and shared work | **Unfinished; retained in #472**, including original Op-closure transport, both Meaning duties and normal 20,000,000-work acceptance. |
+| Saved 16-label rectangular case | **Unfinished; retained in #517.** The limited development replay is not a normal production-profile success. |
+| Full twelve-joined-bit / 64-label boundary validation | **Unfinished; transferred to #522.** Smaller cases and component proofs do not supply this validation. |
+
+All four residual issues are open bugs without a target version or milestone. The original requirements and historical checkpoints are preserved below. The scope transfer authorizes closing #195 after the implemented feature's integration/audit; it does not close those bugs, waive release checks, permit maximum-size new tests, or admit broader QS/PR/RS/EXACT guarantees.
+
+The arm-wide theorem retains initial encoded source/Raw agreement and successful mathematical execution as explicit premises. Compiled IO, the native compiler, Rust simulation, exported targets and full source-language coverage remain outside its claim. #491 records the proof composition separately; the earlier inner/outer Meaning experiments must not be presented as still-unconsumed duties after their later successful checks.
+
+**Completion of the revised scope — 2026-11-12 JST:** #519 and #520 are integrated in main by merge commit [`7e5ab1d2`](https://github.com/MGYamada/Qleisli/commit/7e5ab1d2db56f52a39aea37eb069813f3ad24771). Both reviewed heads are verified ancestors of main, and the merged tree exactly equals checked #520 head `ccdfbddb30c540bbcbf1bde8526ca1b7d4b19513`. Its [PR CI](https://github.com/MGYamada/Qleisli/actions/runs/43043100292) and [push CI](https://github.com/MGYamada/Qleisli/actions/runs/43043090697) succeeded; exact-head code/security reviews completed with no code findings or unresolved threads. The final main-base cumulative size, retention, fixture-budget and constitutional-continuity checks also passed. Close this feature issue under the maintainer-authorized residual transfer, with **#521, #522, #472 and #517 still open**. This is not completion of those defects, unrestricted source/runtime proof, release readiness or a new guarantee.
+
+## Original proposal and acceptance criteria
+
+
+Labels: **important**, **enhancement**.
+
+Related:
+- #194 — `qfor` for explicit linear quantum iteration
+- #89 — callable model / quantum-capturing closures
+- existing `qif` semantics and static-operation rules
+
+## Motivation
+
+Qleisli already distinguishes ordinary classical branching from coherent quantum control:
+
+```qli
+if cbit {
+    ...
+}
+```
+
+versus
+
+```qli
+let (control, target) = qif(control, target) {
+    0 => U0,
+    1 => U1,
+};
+```
+
+The same distinction is needed for multiway selection.
+
+Ordinary `match` means: inspect a classical value, choose one arm, and execute that arm.
+
+A quantum selector cannot be treated this way without observation. For a selector in superposition, the appropriate semantics are instead a single coherent block-diagonal operation:
+
+```text
+Σ_x |x><x| ⊗ U_x
+```
+
+with the selector ownership preserved and all relative phases retained.
+
+## Proposal
+
+Introduce a dedicated `qmatch` construct for coherent multiway quantum control.
+
+Conceptually:
+
+```qli
+let (selector, target) = qmatch(selector, target) {
+    0 => U0,
+    1 => U1,
+    2 => U2,
+    3 => U3,
+};
+```
+
+For `selector : Q<A>` and `target : Q<B>`, `qmatch` coherently selects a static operation according to a finite partition of the basis of `A`, while consuming and returning both quantum ownerships.
+
+For the initial 0.3.0 profile, `qif` should be understood as the binary `Q<Bit>` specialization of this broader concept, without requiring an implementation rewrite.
+
+## Design intent
+
+`qmatch` is **not** classical pattern matching over a quantum value.
+
+It must not:
+
+- measure the selector;
+- reveal a basis label as a classical value;
+- bind arm-local classical data extracted from the selector;
+- erase relative phase between selector sectors;
+- duplicate or drop selector ownership.
+
+Instead, its patterns describe a **static partition of basis space** that determines which unitary arm acts coherently.
+
+## Initial semantic shape
+
+A conservative 0.3.0 design should require:
+
+```text
+selector              Q<A>
+target                Q<B>
+arms                   statically resolved unitary operations
+arm target type        identical B -> B
+selector ownership     preserved
+target ownership       preserved
+basis partition        finite, disjoint, exhaustive
+relative phase         preserved
+measurement            forbidden
+classical extraction   forbidden
+runtime arm creation   forbidden
+```
+
+Semantically:
+
+```text
+qmatch : (Q<A>, Q<B>) -> (Q<A>, Q<B>)
+```
+
+with a unitary block decomposition indexed by the selected basis partition of `A`.
+
+## Boundary questions to resolve
+
+1. What selector basis types are permitted in 0.3.0: `Bit`, `Bits<n>`, finite tuples, or every finite basis type?
+2. What pattern language is allowed?
+3. Are patterns restricted to exact basis literals initially?
+4. May ranges or finite sets appear in patterns?
+5. Must arms be exhaustive with no wildcard, or may a final `_` arm represent the complement?
+6. How are overlapping patterns rejected?
+7. Are all arms required to be `Unitary`, or may a narrower/equivalent operation capability formulation be used?
+8. Must all arms have exactly the same target type and ownership shape?
+9. May `qmatch` control multiple target owners as a tuple?
+10. May the selector itself be part of the target tuple? Recommended initial answer: no; require distinct ownership.
+11. How are arm identities and phases bound into semantic evidence?
+12. What is the canonical lowering: a generalized coherent-branch IR node or a verified decomposition into existing controls?
+13. Is `qif` specified as a syntactic specialization of `qmatch`, or merely required to be semantically consistent with it?
+
+## Recommended initial restriction
+
+For 0.3.0, prefer a deliberately small basis-pattern language:
+
+```text
+selector basis         finite
+patterns               exact static basis labels
+partition              exhaustive + pairwise disjoint
+arms                    static phase-fixed unitary operations
+target                  one explicit Q<B> owner, tuple B allowed
+selector/target         distinct ownership
+classical bindings      none
+observation             none
+```
+
+This is sufficient to establish the semantic boundary without importing Rust-style destructuring semantics into coherent control.
+
+## Relationship to ordinary `match`
+
+The language reference should make the distinction explicit:
+
+```text
+match     classical pattern selection; exactly one arm executes
+qmatch    coherent quantum selection; all sectors remain in one quantum evolution
+```
+
+If ordinary `match` is later introduced, applying it directly to `Q<A>` must not silently mean coherent matching.
+
+## Relationship to `qif`
+
+`qif` should remain the concise binary form:
+
+```qli
+qif(control, target) {
+    0 => U0,
+    1 => U1,
+}
+```
+
+while `qmatch` handles larger finite basis partitions.
+
+The two constructs must agree on:
+
+- preservation of selector ownership;
+- distinct selector/target ownership;
+- branch unitarity/capabilities;
+- exact phase retention;
+- evidence binding;
+- rejection of measurement-like extraction.
+
+## Validation
+
+Add first-attempt / zero-shot authoring cases that ask an LLM to implement:
+
+- a 2-bit coherent selector;
+- a small QROM-style controlled operation;
+- a controlled permutation with four selector values;
+- a negative case where ordinary classical `match` would imply measurement;
+- overlapping/non-exhaustive arm rejection.
+
+The syntax should make it obvious from one example that this is coherent quantum control, not ordinary pattern selection.
+
+## Acceptance criteria
+
+- `qmatch` has a precise source-level semantics in the Language Reference.
+- Patterns denote a checked static basis partition, not runtime observation.
+- Selector ownership is consumed and returned exactly once.
+- Target ownership is consumed and returned exactly once.
+- Relative phase between selector sectors is preserved.
+- Arms have compatible verified operation capabilities and identical target ownership shape.
+- Overlapping or incomplete partitions are rejected according to the chosen 0.3.0 rule.
+- `qif` and `qmatch` have explicitly consistent semantics.
+- Lowering is independently verified and does not rely on hidden measurement.
+- Positive and negative corpus cases cover multiway coherent control.
+
+## Non-goals
+
+This issue does not require:
+
+- general Rust pattern matching over quantum data;
+- measurement-driven branching;
+- extracting quantum basis labels into classical variables;
+- dynamic arm construction;
+- recursive or open-ended quantum control flow.
+
+## Design principle
+
+Ordinary syntax should retain its ordinary meaning.
+
+When branching itself becomes a coherent quantum operation, Qleisli should say so explicitly.
+
+`qmatch` names that boundary.

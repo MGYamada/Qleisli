@@ -1,0 +1,224 @@
+## Status and goal
+
+**Target: Qleisli 0.3.0. Priority: important. Constitutional.**
+
+Define a constitutional admission policy for **new sealed primitives / trusted semantic axioms**.
+
+Related:
+- #129 — Qleisli 2026 Constitution
+- #134 — normative authority hierarchy
+- #135 — Fundamental-Theorem dependency closure
+- #136 — constitutional kernel / theorem boundary
+- #138 — admission rules for new Fundamental Theorems
+- #139 — Fundamental-Theorem statement schemas
+- #140 — Fundamental-Theorem impact analysis
+- #141 — constitutional CI / protected-artifact manifest
+- #142 — constitution-compatible release gate
+- #152 — stdlib namespace boundaries and primitive/derived distinction
+
+## Problem
+
+Qleisli already distinguishes:
+
+- sealed compiler/kernel primitives such as selected quantum/observation operations;
+- ordinary checked `.qli` definitions in the standard library and user qrates.
+
+What is still missing is a rule for:
+
+> **When is it legitimate to add a new sealed primitive at all?**
+
+Without such a rule, the trusted base can grow by convenience:
+
+- a frequently used algorithm becomes a builtin;
+- a performance shortcut becomes a semantic primitive;
+- a backend capability leaks into the language core;
+- an implementation detail becomes a trusted axiom;
+- a library routine is promoted because it is difficult to optimize.
+
+That would undermine the central Qleisli design: a small constitutional kernel, ordinary checked source above it, and Fundamental Theorems stated over a controlled trust boundary.
+
+## Core principle
+
+> **A new sealed primitive is a trust-base expansion, not an ordinary feature addition.**
+
+Therefore:
+
+> **Performance, popularity, convenience, or implementation difficulty are not by themselves sufficient reasons to create a new semantic primitive.**
+
+The default should be:
+
+```text
+express in ordinary Qleisli source
+        ↓
+check through the normal verifier
+        ↓
+optimize / recognize / lower independently if useful
+```
+
+rather than:
+
+```text
+useful operation
+        ↓
+make it a trusted primitive
+```
+
+## 1. Define what counts as a sealed primitive / trusted semantic axiom
+
+The policy should cover any addition that gives the compiler/kernel new semantic authority, including:
+
+- new primitive quantum operations;
+- new primitive observation/instrument operations;
+- new ownership-structure primitives;
+- new primitive effect transitions;
+- trusted semantic constructors not reducible to existing checked source;
+- any new Core form whose correctness is assumed rather than derived through the existing kernel.
+
+Do not classify a name as “non-primitive” merely because its implementation is written in a different repository or backend.
+
+The criterion is semantic authority.
+
+## 2. Require a primitive-admission justification
+
+Every proposed primitive must answer:
+
+1. **Expressibility** — can the operation already be expressed as ordinary checked Qleisli source?
+2. **Why trust is required** — what cannot be achieved by library definition, elaboration, optimization, proof-carrying transformation, or target lowering?
+3. **Semantic contract** — what exact operator/instrument/ownership meaning is added?
+4. **Reference behavior** — what is guaranteed in the presence of arbitrary entanglement/reference systems?
+5. **Phase and axis order** — what exact conventions are normative?
+6. **Ownership/effect behavior** — what owners are consumed/returned and what effect class is introduced?
+7. **Physical realizability impact** — under what target/workspace assumptions is it realizable?
+8. **Resource Safety impact** — what new accounting rule or primitive resource obligation is introduced?
+9. **Soundness impact** — what checker/semantic rules become trusted?
+10. **Replacement/evolution** — can the implementation change without changing the primitive meaning?
+
+A proposal without these answers is not ready for sealed admission.
+
+## 3. Prefer derived/library definitions whenever possible
+
+Adopt a strong presumption:
+
+> **If an operation can be represented as ordinary checked Qleisli source with acceptable semantics and evidence, keep it derived.**
+
+Examples that should normally remain derived unless a separate constitutional case is made:
+
+- QFT;
+- arithmetic routines;
+- Grover reflections;
+- algorithmic subroutines;
+- generic controlled/power constructions where the capability calculus can justify them;
+- decomposition choices;
+- backend-native compound instructions.
+
+A compiler may recognize these for optimization without promoting them to semantic primitives.
+
+## 4. Separate semantic primitives from implementation intrinsics
+
+A backend or optimizer may use an intrinsic/native instruction without changing the source-language trust base.
+
+Require explicit distinction:
+
+```text
+semantic primitive
+    = part of the language/kernel meaning
+
+implementation intrinsic
+    = an implementation choice justified against an existing meaning
+```
+
+An intrinsic must not become a primitive merely because it is fast or hardware-native.
+
+## 5. Fundamental-Theorem impact review is mandatory
+
+Any new sealed primitive must trigger the #140 impact-analysis process for all three Fundamental Theorems.
+
+At minimum record:
+
+- Soundness rule/assumption added;
+- Physical Realizability premise/theorem obligation added;
+- Resource Safety accounting rule/obligation added;
+- any protected vocabulary change;
+- any dependency-closure change under #135.
+
+If the primitive cannot be placed coherently under the theorem schemas, admission must stop.
+
+## 6. Constitutional-kernel growth should be monotonic and explicit
+
+Do not allow new trusted primitives to enter through:
+
+- stdlib placement;
+- parser sugar;
+- meta expansion;
+- optimization recognizers;
+- target adapters;
+- compatibility shims;
+- Qlirgo/plugin integration.
+
+Kernel growth must be an explicit reviewed change to the protected boundary/manifest.
+
+Constitutional CI should detect unreviewed additions to the sealed primitive inventory / trusted Core forms.
+
+## 7. Require negative alternatives analysis
+
+Before admission, the proposal should document why the following are insufficient:
+
+- ordinary stdlib/source definition;
+- static/meta elaboration;
+- a verified transformation theorem;
+- optimizer recognizer;
+- target lowering;
+- a new qrate/library abstraction;
+- an explicit capability/evidence object.
+
+This is intended to prevent “primitive creep.”
+
+## 8. Admission threshold
+
+A new primitive should be admitted only when the project can state a reason of the form:
+
+> **Without this primitive, the language cannot faithfully express/check a fundamental semantic transition or structural operation at the constitutional boundary.**
+
+“Users write this often” and “the backend already has this instruction” are not enough.
+
+## 9. Removal and replacement policy
+
+Because a primitive is part of the trust base, removal/replacement needs a deliberate migration rule.
+
+Specify:
+
+- whether a primitive may be deprecated in a later edition;
+- how its semantic contract remains interpretable for older editions;
+- how replacement by a derived definition affects theorem/proof artifacts;
+- how protected manifests record historical primitive sets.
+
+Do not silently redefine an existing primitive under the same edition.
+
+## 0.3.0 acceptance criteria
+
+- [x] The Constitution/Language Reference defines what counts as a sealed primitive or trusted semantic axiom.
+- [x] A documented admission checklist exists.
+- [x] Admission requires explicit Soundness, Physical Realizability, and Resource Safety impact analysis.
+- [x] Expressible ordinary algorithms are presumed to remain derived/library code.
+- [x] Semantic primitives are distinguished from optimizer/backend intrinsics.
+- [x] New primitives cannot enter through stdlib/meta/optimizer/target paths without explicit constitutional admission.
+- [x] Constitutional CI/protected manifests detect changes to the trusted primitive inventory.
+- [x] At least one rejected-example review demonstrates that performance/popularity alone is insufficient.
+- [x] The policy defines edition-aware replacement/deprecation rules for primitives.
+- [x] The 0.3.0 release gate references this admission policy.
+
+## Design intent
+
+Qleisli should make the trusted base **deliberately difficult to grow**.
+
+The language can gain enormous expressive power through ordinary checked source, meta-programming, libraries, proofs, optimization, and target lowering without giving each new abstraction semantic authority.
+
+> **The kernel should grow only when the semantics require it, not when the ecosystem finds something useful.**
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.

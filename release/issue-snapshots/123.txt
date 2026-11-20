@@ -1,0 +1,135 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+The Language Reference should make **membership in a target's exact synthesis domain** an explicit realizability judgment rather than an implicit consequence of exact source semantics.
+
+Related:
+- #31 — exact/approximate semantics boundary
+- #46 — semantic `Meaning` language
+- #120 — semantic unitarity vs target realizability
+- #103 — future QCP target profiles
+
+## Problem
+
+Qleisli intentionally gives source programs exact mathematical meanings.
+
+But
+
+```text
+exactly representable in Qleisli semantics
+```
+
+does not imply
+
+```text
+exactly synthesizable over target gate set G.
+```
+
+A target may support only a proper exact subdomain of the semantic language.
+
+Examples include:
+
+- coefficient/ring restrictions;
+- gate-set-generated subgroups;
+- dimension/arity restrictions;
+- target-native parameter restrictions;
+- exact synthesis theorems with explicit hypotheses.
+
+Therefore a future Physical Realizability theorem must not quantify over all well-typed exact meanings without an explicit domain premise.
+
+## Proposed judgment
+
+The 0.3.0 specification should reserve a concept such as
+
+```text
+P ⊢ M exact-realizable
+```
+
+or an equivalent target/profile judgment, where `P` identifies the synthesis profile and `M` is the exact meaning.
+
+The exact spelling is not important yet. The semantic distinction is.
+
+Conceptually:
+
+```text
+well typed
+    ↓
+exact Meaning M
+    ↓
+M ∈ ExactDomain(P)
+    ↓
+exact target synthesis/correspondence
+```
+
+Failure of the third step is **not** a type error and does not invalidate the exact source meaning.
+
+## Domain evidence
+
+A target exact-domain claim should be tied to:
+
+- target/gate-set profile identity and version;
+- coefficient domain / exact parameter assumptions;
+- supported operation/interface class;
+- required ancilla/workspace theorem, if any;
+- phase convention;
+- the synthesis/correspondence theorem or checked evidence being relied upon.
+
+Cheap sufficient/necessary tests may be exposed, but the language should not confuse an incomplete checker with the mathematical domain itself.
+
+## Exact vs approximate fallback
+
+If `M` is outside `ExactDomain(P)`, a backend may later attempt certified approximation under #31.
+
+That transition must be explicit:
+
+```text
+exact semantic meaning
+  ├─ exact target-domain evidence -> exact lowering
+  └─ approximation contract       -> approximate lowering
+```
+
+There is no silent conversion from exact source semantics to approximate target semantics.
+
+## Acceptance criteria
+
+- [x] The Reference defines target exact-domain membership as distinct from source typing/meaning.
+- [x] Physical Realizability includes an explicit target-domain premise.
+- [x] Failure of exact-domain membership does not reclassify a valid source program as semantically invalid.
+- [x] Target profiles identify the assumptions under which exact-domain claims are made.
+- [x] Exact-domain evidence includes phase and workspace hypotheses where relevant.
+- [x] Exact and approximate lowering paths remain explicitly separate.
+- [x] Unsupported exact meanings fail target lowering with a realizability diagnostic, not a type-soundness diagnostic.
+- [x] The judgment composes with #120 same-wire/workspace distinctions.
+- [x] The concept is reusable by future QCP without making QCP part of the trusted language semantics.
+
+## Design principle
+
+> **Exact semantics says what the program means. Exact-domain evidence says whether a particular target can realize that meaning exactly.**
+
+## 0.2.4 follow-up review — 2026-10-01
+
+Retain the sized `controlled_phase[1,m]` example as an exact-domain counterexample: its phase is exp(2πi/2^m); m=4 already requires ζ16, outside Q(ζ8), so no exact Clifford+T circuit over the current ring can realize it, even with clean-zero ancillas. This is a **target-domain** failure and does not invalidate the source's exact unitary meaning.
+
+Before freezing the 0.3.0 type contract, specify the separate outcomes: supported exact target domain; explicitly declared target-native phase assumptions; or certified approximation with a static rational/dyadic error budget and a stated operator/instrument metric. An approximation contract need not put arbitrary runtime real parameters into types. It must bind the actual circuit/witness to the independent ideal request and compose error budgets under control and use. Preserve exact clean-zero obligations separately; neither floating tolerance in the core nor a silent arbitrary-angle axiom is acceptable. Cross-reference #31, #120 and the later closed-budget work #163; no new angle domain or hardware authority is adopted by this review.
+
+
+## Version boundary: abstract obligation now, capability schema later
+
+This v0.3.0 issue fixes a **normative abstract realizability obligation**. It does not require the complete concrete backend/target capability schema to exist in v0.3.0.
+
+The intended dependency direction is:
+
+```text
+v0.3.0 semantic / realizability law
+        ↓ normative input
+v0.4.0 #179 backend + target capability schema
+        ↓ implementation/profile vocabulary
+QCP / backend lowering / later Physical Realizability proof
+```
+
+Therefore #179 depends on the distinction fixed here; this issue does not depend on the final concrete schema of #179.
+
+v0.3.0 may use abstract premises such as a target/profile `P`, capability relation, layout/encoding relation, or exact-domain judgment without committing to the complete serialized/profile representation that v0.4.0 will define.
+
+The v0.4.0 capability model must faithfully implement this boundary and may not collapse source validity into target support.

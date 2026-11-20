@@ -1,0 +1,91 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Qleisli should explicitly separate the mathematical construction `controlled(U)` from the existence of a target implementation that realizes controlled-`U` with the required exact phase.
+
+Related:
+- #19 — controlled application
+- #31 — exact/approximate semantics boundary
+- #45 — static operation capability calculus
+- #120 — target realizability and synthesis workspace
+
+## Problem
+
+For a unitary `U`, the mathematical controlled operator is well-defined:
+
+```text
+C(U) = |0><0| ⊗ I + |1><1| ⊗ U.
+```
+
+But having an implementation of `U` does **not** automatically justify constructing a physical controlled implementation.
+
+In particular, if a provider realizes only projective equality,
+
+```text
+U_actual = exp(iφ) U,
+```
+
+that global phase becomes a relative phase under coherent control:
+
+```text
+C(U_actual) != C(U)
+```
+
+in general.
+
+Therefore:
+
+> **Apply-realizability is not Controlled-realizability.**
+
+This is the target-level counterpart of #45's static capability distinction.
+
+## Required specification boundary
+
+The Reference should keep separate:
+
+```text
+semantic unitary / exact Meaning
+mathematical controlled constructor
+static Controlled capability
+target Controlled-realizability certificate
+```
+
+A backend must not manufacture `controlled(U)` from an arbitrary black-box implementation merely because the underlying denotation is unitary.
+
+## Certificate content
+
+A controlled-realizability certificate should be able to bind:
+
+- exact operation identity / meaning;
+- exact phase convention;
+- target gate/profile assumptions;
+- implementation identity;
+- any required workspace;
+- whether control is native or synthesized;
+- approximation contract, if approximation is permitted;
+- composition/provenance sufficient for independent verification.
+
+Transparent source-defined circuits may admit structural derivation rules. Opaque/external providers require explicit evidence.
+
+## Interaction with approximation
+
+If controlled approximation is supported later, its error metric must be phase-sensitive enough that the controlled result is certified against the intended `C(U)`.
+
+Channel equivalence of the uncontrolled operation is insufficient evidence.
+
+## Acceptance criteria
+
+- [x] The Reference states that semantic unitarity does not imply target Controlled-realizability.
+- [x] `Controllable(U)` remains a distinct static capability/evidence judgment.
+- [x] Target lowering requires a controlled-realizability path or certificate.
+- [x] Exact global phase is retained in any derivation that authorizes coherent control.
+- [x] Opaque/projective providers cannot be controlled without additional evidence.
+- [x] Transparent source circuits have explicit structural derivation rules if control is derivable.
+- [x] Controlled synthesis workspace is represented in target evidence/resources.
+- [x] Approximate controlled lowering cannot rely only on uncontrolled channel equality.
+- [x] QPE and controlled powers use this same rule rather than a special bypass.
+
+## Design principle
+
+> **The existence of controlled-`U` as mathematics is not a license to control an arbitrary implementation of `U`.**

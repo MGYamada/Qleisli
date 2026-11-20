@@ -1,0 +1,100 @@
+**Parent:** #32
+
+## Problem
+
+The language is gaining more categories of names:
+- modules;
+- types;
+- ordinary values;
+- basis functions;
+- static functions;
+- operation descriptions;
+- meanings.
+
+Current shadowing rules were designed for a much smaller finite grammar. Extending them mechanically risks confusing cases where a local value hides a callable/static declaration or where type/meaning names collide.
+
+## Decide
+
+- namespace partitioning, at minimum value/type/module and any additional static namespace;
+- whether declaration kinds share one value namespace;
+- shadowing priority;
+- whether a moved local continues to shadow static/ordinary declarations;
+- qualification syntax;
+- import collision rules;
+- reserved names for built-ins and future syntax;
+- diagnostic policy for ambiguous resolution.
+
+## Non-goal
+
+This issue need not add aliases, glob imports, reexports, or relative imports.
+
+## Acceptance
+
+Name resolution remains deterministic and explainable after `const fn`, `Meaning`, `Op`, sized types, and register-view syntax are added.
+
+## Shared resolution implementation unit — 2026-10-04
+
+Under #32, introduce one private declaration table with source-collection-local ModuleId/DefId, explicit visibility/import lookup and common graph traversal. Both finite compilation and sized generic/concrete elaboration must consume this table for actual declaration calls, Meaning/contracts and static providers. IDs are not serialized evidence identity: retain canonical paths, original source/dependency snapshots, static bindings and provider identity. Preserve every declaration and original source/span/order; rebuild the immutable view at the finite Project boundary because its public modules remain mutable. Loaders retain filesystem confinement, explicit module-map scope and edition checks.
+
+This is a shared implementation boundary before the final language cutover. Retain current profile policies explicitly: finite rejects unused import cycles and self-import collisions; sized permits its current unused-import/self-import cases but still rejects actual cross-module call/provider cycles and only permits already-checked decreasing self-recursion. Preserve each profile's module-name validation and primitive set. Do not add aliases/globs, fallback lookup, implicit sized bundled modules, sized multiple-function acceptance, or new source syntax. Local owner/static-binder scopes remain in the checkers and a moved local must never fall back to a global declaration. A later common source contract must resolve the temporary policy differences before final cutover; this unit does not complete #41/#65.
+
+Validation retains the ten actual pre-change cases, including source errors, and adds small cross-module identity/diamond/private/Meaning/contract/unused-provider cases. Check both static branches and zero-iteration dependencies. Compare native acceptance, actual diagnostics and small proposal bytes; resolver success is not a source-preservation proof. Run relevant project/compiler/sized/ownership suites and independent review. QS keeps all owner/effect/native checks, PR providers and output binding unchanged, and RS engineering bounds retained without a new quantitative claim. No admitted guarantee meaning or Guardian interpretation is changed.
+
+
+## Shared declaration-resolution checkpoint — af21dd5
+
+[af21dd5](https://github.com/MGYamada/Qleisli/commit/af21dd5d3e4373083edcf207ef9890967d4c7dab), in draft #307, adds one immutable ModuleId/DefId declaration table for finite compilation, sized generic checking and concrete elaboration. Canonical declaration paths, visibility/import lookup and graph traversal are shared; Meaning/contract and static-provider lookups use those identities. Public finite Projects are re-resolved at compilation, preserving the original source/dependency binding. Local owner/static-binder checks remain explicit and a moved local does not fall back to a global.
+
+The recorded unit's temporary profile differences are preserved, including unused imports/self-import policy, primitive sets, decreasing self-recursion and sized one-function lowering. This is not the canonical syntax cutover or complete checking convergence.
+
+Validation: **171 tests passed, nine existing cases ignored** in the focused selection; latest Rust and MSRV 1.85.0 all-target Clippy and formatting pass. Twenty-five actual pre/post observations (stdout, stderr, exit code) and five small proposal byte sequences are identical; bounded proposals use at most one qubit. Independent review verified the actual comparisons and all retained fixture hashes. Evidence: `tests/fixtures/frontend_v030/shared-resolution/`. No source-preservation proof, new guarantee admission or issue completion is claimed. Full hosted integration remains pending.
+
+
+## Retrospective constitutional impact — 2026-10-05
+
+This #140 assessment covers #41, #58, #65, #131 and #167, with the separate primitive-admission policy #154 as an authority dependency. Applicable interpretations are QS-2026-01, PR-2026-01 and RS-2026-01. No unresolved primitive inventory, namespace migration or library proof is declared complete.
+
+**Distinct contracts.** #41 requires deterministic namespace/category/shadow/import resolution, and a moved local must remain a local rather than fall back to a callable or provider. #65 must make public import/visibility/coherence policy uniform; import spelling adds no runtime effect or evidence. #58's prelude supplies names, not semantic privilege or implicit operations. #167 requires an audited minimal primitive inventory, justified irreducibility and ordinary checked source for derived stdlib, with source effects/owners/phase/reference behavior and migration out of misleading sealed-stdlib categories. #131 separates untrusted producers, generic independent acceptance, library-owned intended meanings/proofs, execution and compatibility; algorithm names and recognizer matches are not authority. Its architectural 0.3.0 contract and the generic-acceptance/library-proof implementation migration explicitly assigned to #273 remain distinct. The separately approved #250 common-frontend and one-language cutover remains 0.3.0 work; it is not postponed by that split.
+
+**QS / PR / quantitative RS.** QS is affected when resolution selects a different declaration/meaning, capture revives a spent owner, or library placement bypasses type/effect/owner checks. PR is affected when provider selection, algorithm recognition or target lowering substitutes an implementation whose exact artifact/meaning correspondence was not checked. Quantitative RS is affected by primitive cost assumptions, derived expansion, closed provider choice and workspace. An import, library name, capability marker or recognized algorithm supplies no bound. Intended library contracts are reviewed semantic specifications; library implementations still require normal independent checking.
+
+**Definitions, assumptions and actual acceptance.** The new normative work is the primitive/derived classification, per-primitive mathematical meaning and admission justification, namespace/prelude policy and generic-contract responsibility/binding rules. Changes to semantic primitive meaning or assumptions require explicit review and the corresponding evidence; frequency, optimization convenience and existing sealed spelling are not justification. Do not add project axioms or trust Rust/Python recognition. Current catalog names and bundled source status are documented in the primitive-boundary Reference, which expressly does not complete the final minimized inventory. The shared declaration table retains canonical source/dependency/provider identities; finite bundled source and sized explicit module maps still have stated policy differences. Those differences require migration before this group closes.
+
+Proposals from user, generated, or bundled source reach the same applicable native acceptance gate. Bind the actual operations, exact interface/encoding, independent expected request where claimed, selected root and full dependencies. A valid emitted IR object is not by itself proof that source resolution/elaboration preserved meaning. Keep Mathlib-free executable checking distinct from independent Mathlib reference/proof duties and keep required compatibility paths until their versioned replacements satisfy the original contracts.
+
+**Ledger, transport and evidence.** Preserve both scoped original-root QLV1 guarantee identities and current evidence bindings. The existing unchanged-representation identity verifier does not authorize semantic primitive changes or evidence reuse across different root/dependency/interface representations; those need checked transport. The current primitive inventory, ordinary bundled-module checks, shared resolution tests and fixed native/finite-contract/hierarchy proof components are evidence only for their recorded scopes. They do not complete generic algorithm-independent acceptance, source/runtime correspondence, library algorithm correctness, production-wide PR or quantitative RS. The exact final primitive minimization, remaining import/prelude migration, per-entry proof/assumption audit and generic architecture acceptance criteria remain required.
+
+**Edition and human review.** Keep edition 2026 and explicit 0.3.0 compatibility decisions; do not advance QLT/QDB/QCP or the separately scheduled #273 implementation merely through this review. Existing interpretation-covered implementation needs no new human ruling on every change. An irreducible new semantic capability, changed constitutional assumption or adequacy question must follow the actual primitive/Guardian review process; moving a name into or out of stdlib cannot supply that approval. This analysis changes neither protected text nor ledger guarantees.
+
+## Current resolver audit (2026-10-19; not completion)
+
+The current source contract is [declaration resolution](https://github.com/MGYamada/Qleisli/blob/bd90461908b71388e658e0399cb30ca99a693a47/docs/src/reference/source-text.md): one declaration/import policy, canonical collection-local DefIds, ordinary visibility, lexical bindings before declarations/imports, and primitive fallback only for a genuinely unbound spelling. The historical profile split in the earlier checkpoint is superseded in current code: unused import-only cycles are permitted, and self-import/declaration collisions reject consistently. Actual call/provider/Meaning cycles and owner/category checks remain separate obligations.
+
+At source head `b7e472b3` (the later `bd904619` changes only a documentation link), both actual Rust 1.98.1 and 1.85.0 pass all 23 declaration/lexical-resolution tests and 14 project/import tests, zero failed/ignored. The selection covers canonical IDs, local/static shadow identities, import/private/collision errors and source spans, ordinary std imports, retired paths, diamonds and deep import-only graphs. Recorded Rust/std/test inputs and the selected checker remain unchanged during those four runs. No new Rust target/cache or maximum-size quantum case was introduced.
+
+This is targeted evidence, not complete source-preservation or independent semantic equivalence. Final namespace/category/qualification and complete static/Meaning/provider review remains open, along with complete current-head CI/review. No alias/reexport/prelude API is adopted by these tests; #58 retains its separate derived-member/default/opt-out decisions. This issue stays open without completion credit.
+
+## Namespace/category review at `74e1149a` (2026-10-19)
+
+This review records current implemented behavior; it adds no source form, primitive, constitutional interpretation or guarantee. The historical temporary profile split above does not select today's policy.
+
+| Required decision | Current implementation and contract |
+| --- | --- |
+| Namespace partition | [The declaration table](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/frontend/resolve.rs) keeps module paths separately from a module's declaration names. Bounded Nat helpers, Meanings, classical and ordinary/effect-annotated functions share one declaration namespace; there is no overload search by declaration kind. Built-in type syntax and lexical Basis formals supply current types; an ordinary declaration is not a type alias. |
+| Category checking | [Original lexical identities](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/frontend/resolve/locals.rs) select the binding before category checking. [Type normalization/plans](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/frontend/check/normalize.rs) require the actual ordered Basis binder; a runtime/static mismatch does not retry a global declaration. Meaning descriptions and Nat helpers are not runtime entry points. |
+| Shadow priority and moved locals | Lexical runtime/static bindings precede same-module declarations/imports, which precede an actually unbound primitive. Consumed bindings retain their identity. A coherent basis expression has its documented closed basis context; it does not capture surrounding ordinary runtime values. |
+| Qualification | Accepted `use module::item;` selects a root-relative canonical declaration. Host entry/provider options use explicit qualified paths. Expression-level qualified calls are deliberately unsupported and receive the actual import suggestion; no alias, glob, relative-import or reexport syntax is introduced. |
+| Imports and visibility | Imports select the same DefId, not a new declaration. Private external access, duplicate imports and declaration collisions reject deterministically; unused import-only cycles are allowed. Runtime/provider/Meaning cycles remain checked separately. |
+| Reserved/contextual words | [Source-text rules](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/docs/src/reference/source-text.md) enumerate reserved grammar/migration tokens, contextual kinds/types and ordinary primitive spellings. Primitive spellings are not reserved; wrong-kind/shadowed uses never silently fall back. |
+| Diagnostic selection | Missing modules point to the complete use span; missing/private/colliding members point to the final token. Wrong-category, moved-owner, cycle and capacity errors preserve their selected source use and original spans. |
+| Static, Meaning and provider identity | [Provider binding](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/frontend/specialize/bindings.rs) enforces canonical visibility/category/public effects. [Meaning lookup](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/frontend/specialize/meaning.rs) consumes the original resolved use. Canonical paths and closed static actuals remain distinct from collection-local IDs and diagnostic storage paths. |
+
+The fresh audit passes all 18 existing shared-resolution/source-judgment/static-helper tests and both composed-Meaning tests on **each** actual Rust 1.98.1 and MSRV 1.85.0, zero failed/ignored. It covers declaration-module lookup, same-named private helpers/providers, moved and branch-local shadows, static-as-runtime errors, original type trees, public-path Meaning checks, wrong composition/axes/categories and unused/cyclic Meaning rejection. The earlier 23 resolver plus 14 project tests retain their recorded window. No new test cases or maximum-size quantum cases were generated.
+
+Recorded Rust/std/test inputs, head, clean status and selected checker remain unchanged during the four fresh commands. This is scoped implementation/conformance evidence, not an atomic filesystem trace, source/binary attestation or general source-preservation theorem. The implementation review is now recorded; complete current-head hosted CI and PR review remain pending. #58 retains its separate prelude decision and implementation; no completion credit is taken here.
+
+## Completion audit — 2026-10-19
+
+The implemented criteria above are complete at [verified head `6eb45164`](https://github.com/MGYamada/Qleisli/commit/6eb451647f599cb0f1589f5e75de1c91d3f7325e), integrated by [PR #423](https://github.com/MGYamada/Qleisli/pull/423) as [`d74d60ce`](https://github.com/MGYamada/Qleisli/commit/d74d60ce95c81cf4fc4b060040d2a168a098dc24). Both [push CI](https://github.com/MGYamada/Qleisli/actions/runs/39233547130) and [PR CI](https://github.com/MGYamada/Qleisli/actions/runs/39233553436) pass all eight required shared contexts on that exact head: normal/MSRV Rust, macOS source, interop, Lean, native kernel, distribution and docs. The release-only readiness job is intentionally not selected for an ordinary PR; final beta/package/install gates remain separate. Both automated P1/P2 findings are repaired and resolved; final local review of those repair deltas found no additional actionable issue. Submitted automated reviews retain their original `74e1149a`/`e67da70f` anchors.
+
+The recorded criterion-by-criterion implementation review and actual normal/MSRV checks supply the completion evidence: 23 resolver plus 14 project tests, then 18 category/static/source tests plus two composed-Meaning tests per toolchain, all zero failed/ignored in those selections. Their original source windows and filtered-test limits remain as recorded, supplemented by the complete current-head hosted checks. Namespace separation, binding-first category checks, moved-local shadowing, qualification policy, visibility/collisions, reserved/contextual names, diagnostics and canonical static/Meaning/provider identities are specified and implemented. The former temporary profile split has been removed. #58's separately scoped prelude is still pending; closing this issue neither adds that API nor claims general source-preservation, a new constitutional guarantee or broader QS/PR/RS/EXACT discharge.

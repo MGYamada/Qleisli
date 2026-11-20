@@ -1,0 +1,62 @@
+**Parent:** #32
+
+## Problem
+
+Qleisli currently has several competing notations for compile-time specialization and runtime application across current M1 syntax and imaginary-v1 drafts.
+
+The 0.3.0 surface language should fix a single visual distinction between:
+- compile-time/specialization arguments;
+- runtime value arguments;
+- compile-time operation application.
+
+## Proposed direction
+
+Use:
+
+```text
+[...] = compile-time/static specialization
+(...) = runtime application
+```
+
+Conceptually:
+
+```qli
+fn qpe[const n: Nat, const m: Nat, const U: Op<Bits<n>>](
+    psi: Q<Bits<n>>
+) -> ...
+```
+
+and uniform operation application:
+
+```qli
+U(q)
+adjoint(U)(q)
+power(U, 8)(q)
+controlled(U)(c, q)
+```
+
+Historical forms such as `adjoint(U,q)`, `repeat_static(n,U,q)`, and common one-active-arm `qif` should become migration/desugaring forms rather than parallel concepts.
+
+## Decide
+
+- exact parameter-header grammar;
+- ordering/mixing rules for compile-time parameters;
+- whether compile-time arguments are always explicit or may be inferred;
+- application precedence for constructed compile-time operations;
+- migration of M1 fixed-width syntax.
+
+## Acceptance
+
+One QPE/Grover-style source should use one consistent notation for sizes, operation parameters, powers, control, and runtime application.
+
+## 2026-10-07 terminology decision
+
+Do not stabilize Rust-shaped `static` as Qleisli's public staging keyword. In Rust, `static` primarily denotes static storage/items and `'static` lifetime; Qleisli's concept is compile-time specialization.
+
+Use `const` for explicit compile-time parameters where a keyword is required, and keep `<N>` / bracket specialization syntax as owned by the corresponding generic-family issue.
+
+```qli
+fn qpe[const n: Nat, const m: Nat, const U: Op<Bit<n>>](...)
+```
+
+Existing `static` examples are migration/history, not normative spelling.

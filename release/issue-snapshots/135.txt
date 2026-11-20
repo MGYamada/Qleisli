@@ -1,0 +1,310 @@
+## Status
+
+**Constitutional design issue for Qleisli 0.3.0.**
+
+Related:
+- #129 — Qleisli 2026 Constitution
+- #139 — Fundamental-Theorem jurisdictions and evolving formal realizations
+- #149 — Constitution Guardian Office interpretation authority
+- #280 — Resource Safety jurisdiction
+- #137 — editions and release versions
+
+## Problem
+
+The earlier dependency-closure model assumed that edition 2026 would eventually freeze one `Accepted_e`, one theorem statement, and the definitions beneath it.
+
+That model is no longer correct.
+
+Edition 2026 is intended to keep growing. New same-edition language features may create new proof obligations under Soundness, Physical Realizability, or Resource Safety. Therefore the Constitution cannot protect one frozen acceptance relation or one frozen theorem type.
+
+What must be preserved is instead:
+
+1. the three constitutional jurisdictions;
+2. every binding Guardian interpretation that has already been formally discharged and recorded as a guarantee;
+3. the identity between the acceptance predicate used in constitutional proofs and the actual production acceptance mechanism of the release being shipped.
+
+The dependency problem therefore splits into a **monotone property ledger**, a **current acceptance identity**, and a separate **compatibility/regression layer**.
+
+## 1. Constitutional interpretation ledger
+
+When a binding interpretation by the Constitution Guardian Office is successfully discharged by Lean / the independent checker, record the result as a permanent edition-2026 ledger entry. Record pending interpretations separately; the proof of an ordinary helper lemma does not automatically create constitutional precedent. The Guardian determines the constitutional adequacy of the formalization; the checker establishes the proposition under the declared proof boundary and assumptions.
+
+Conceptually, entry `s` contains at least:
+
+```text
+jurisdiction_s
+language fragment L_s
+protected property Φ_s
+semantic vocabulary required to state Φ_s
+proof / evidence binding
+interpretation record
+```
+
+The ledger is append-only inside an edition.
+
+A useful schematic invariant for the current release is:
+
+```text
+∀ s ∈ Ledger,
+∀ P ∈ L_s,
+  Accepted_now(ι_s(P))
+    -> Lift_s(Φ_s)(ι_s(P))
+```
+
+where:
+
+- `Accepted_now` is the acceptance judgment actually used by the current release;
+- `ι_s` is a specified, faithful translation of the historical fragment into the current program representation; it does not assume the translation will be accepted;
+- `Lift_s` transports the historical protected property into the current semantic vocabulary.
+
+When the old and current vocabularies coincide, `Lift_s` may be the identity.
+
+The lifted property must constrain the **current accepted artifact and its behavior/evidence**. It must not simply assert an already proved fact about an old denotation independent of the current implementation. A more explicit schematic form is:
+
+```text
+ProductionAccepts_now(ι_s(P), A)
+  -> Φ_s(P, Observe_s,now(A))
+```
+
+Here `A` stands for the relevant current checked representation, emitted realization, and/or resource evidence. The observation map and the embedding need a checked relation to the recorded semantics; neither may be an arbitrary map chosen to make the obligation trivial.
+
+The exact signature depends on the jurisdiction. The current three-jurisdiction proofs must also cover **newly admitted features outside historical fragments**. Replaying the historical ledger alone is insufficient.
+
+The important constitutional fact is not this exact notation. It is that **every discharged interpretation remains a live proof obligation of every later release in the same edition**.
+
+## 2. Semantic preservation across the ledger
+
+A historical ledger entry may use an older semantic vocabulary.
+
+Therefore CI may need to prove not only the property itself but also a preservation relation such as:
+
+```text
+⟦ι_s(P)⟧_now
+  ≃
+ι_sem,s(⟦P⟧_s)
+```
+
+or an equivalent transport theorem.
+
+This prevents a later release from retaining the same surface program while silently changing the meaning against which an old constitutional precedent was discharged.
+
+The exact transport machinery is an implementation/formalization question. It is not itself constitutional text.
+
+## 3. Acceptance is current and operational, not frozen extensionally
+
+For a theorem of the form
+
+```text
+Accepted_now(P) -> Φ(P)
+```
+
+shrinking the accepted set does make the implication easier to prove, but that is **not by itself a constitutional weakening of safety**.
+
+It is a loss of language expressivity or compatibility.
+
+Those concerns belong to:
+
+- edition/language compatibility policy;
+- migration policy;
+- QLT / corpus regression;
+- release compatibility tests.
+
+The Constitution should therefore **not freeze the extension of `Accepted`** merely to prevent vacuity.
+
+What the Constitution must require is stronger and more operational:
+
+> **The `Accepted_now` appearing in the constitutional proof must be the same acceptance judgment that the released implementation actually uses to admit Qleisli programs and realization evidence.**
+
+There must be no second "constitutional acceptance" predicate that is easier to satisfy or narrower than production acceptance.
+
+This is the LCF-style identity that closes the trust boundary.
+
+## 4. Acceptance identity
+
+Each release should bind the production acceptance mechanism to the constitutional proof boundary.
+
+Conceptually:
+
+```text
+production check / verifier
+        =
+Accepted_now
+        ↓
+Fundamental-Theorem proofs
+```
+
+A release is invalid if:
+
+- production accepts a program outside the proved `Accepted_now`;
+- a compatibility path bypasses `Accepted_now`;
+- the theorem is proved over a ghost/reference predicate that is not the actual release gate;
+- a producer annotation or frontend path can confer acceptance independently.
+
+The implementation of this identity may use a small Lean checker, generated declarations, kernel replay, proof-carrying artifacts, or another independently reviewed LCF-style construction.
+
+## 5. Property side and acceptance side evolve differently
+
+The constitutional model should explicitly separate:
+
+### Property side — monotone
+
+The ledger of already discharged obligations is cumulative.
+
+A later same-edition release may:
+
+- add a new interpretation;
+- strengthen a previous obligation;
+- add a more general theorem that subsumes earlier entries;
+- refactor the proof.
+
+It may not silently delete or weaken a discharged ledger obligation.
+
+### Acceptance side — replaceable implementation
+
+The parser, frontend, Core, checker implementation and acceptance architecture may evolve.
+
+The accepted language may become larger or smaller under ordinary compatibility policy.
+
+But the current release must prove the **entire accumulated ledger** against its actual `Accepted_now`.
+
+This is what gives implementation freedom without losing constitutional guarantees.
+
+## 6. Why "new theorem implies old theorem" is not enough
+
+A naive preservation check of the form
+
+```text
+NewTheorem -> OldTheorem
+```
+
+between two already closed proved propositions is not a meaningful constitutional guard. If both propositions are theorems, the implication is already trivially provable.
+
+The nontrivial check is to hold the historical obligation fixed while replacing the acceptance side with the **current production acceptance mechanism**:
+
+```text
+Accepted_now(ι_s(P))
+    -> Lift_s(Φ_s)(ι_s(P))
+```
+
+for every ledger entry `s`.
+
+That is what makes old guarantees constrain the new implementation.
+
+## 7. Guardian interpretations form a ratchet
+
+A binding interpretation becomes a ledger entry only after its proof/evidence obligation is discharged.
+
+Within the same edition, later Guardian interpretations may:
+
+- clarify;
+- specialize without weakening the protected guarantee;
+- generalize;
+- strengthen;
+- add new obligations.
+
+They may not repeal or relax a discharged ledger obligation.
+
+If a prior interpretation or its formalization is mistaken, use an explicit constitutional-correction record. Meaning-preserving repairs require verification and may remain within the edition. A weakened guarantee cannot be introduced by a later interpretation or disguised as a correction.
+
+Except for a valid pre-v1 rectification authorized under #129 Article IX, a proposed constitutional amendment requires an edition transition, but that transition is **not sufficient** to override #129 Article IV's non-weakening rule. A change that abandons an entrenched guarantee cannot claim constitutional continuity. Proof gaps require repair or withholding the affected acceptance/certification, not deletion of the guarantee.
+
+Thus:
+
+```text
+interpretation
+  -> proof
+  -> ledger
+  -> same-edition ratchet
+```
+
+## 8. Formal interface
+
+A dedicated interface such as
+
+```text
+Qleisli.Constitution.*
+```
+
+may expose:
+
+- current production `Accepted_now`;
+- current semantic interpretation;
+- current realization relation;
+- current resource semantics;
+- ledger entries or generated obligations;
+- theorem families discharging all ledger entries.
+
+However, the Constitution should not pin the transitive Lean dependency graph or the exact declaration names.
+
+The protected object is the **ledgered guarantee**, together with the requirement that the current production acceptance mechanism discharges it.
+
+## 9. Formal meaning is permanent; implementation support is separately governed
+
+Preserving a ledger entry does not imply that Qleisli must permanently ship:
+
+- an old parser;
+- an old binary;
+- an old package manager;
+- an old source-compatibility mode;
+- an old backend.
+
+Historical programs may require an embedding/migration path or may cease to be accepted under ordinary compatibility policy.
+
+What cannot disappear is the constitutional guarantee already discharged for the relevant historical fragment whenever that fragment is accepted by the current release through the specified embedding.
+
+## Acceptance criteria
+
+- [ ] Replace the frozen-`Accepted_e` model with an append-only constitutional interpretation ledger.
+- [ ] Define the minimum data carried by a ledger entry: jurisdiction, language fragment, protected property, semantic vocabulary/transport, interpretation record, and proof binding.
+- [ ] Require current releases to re-discharge every ledger entry against the actual production `Accepted_now`.
+- [ ] Define faithful embeddings and semantic transport that constrain current accepted artifacts and behavior, not merely old already-proved properties.
+- [ ] Cover the entire current accepted scope under the three jurisdictions, in addition to replaying historical ledger entries.
+- [ ] Require identity between constitutional `Accepted_now` and the acceptance mechanism actually used by the release.
+- [ ] Prohibit ghost, narrower, or bypassable acceptance predicates from satisfying the Constitution.
+- [ ] Move acceptance-set continuity / source compatibility to edition policy, migration policy and QLT/corpus regression.
+- [ ] Make discharged Guardian interpretations monotone within the edition.
+- [ ] Permit clarification/strengthening but not repeal/relaxation of ledgered obligations by ordinary later interpretation.
+- [ ] Define a separate constitutional-correction path for genuinely mistaken interpretations.
+- [ ] Separate meaning-preserving corrections from proposals that reduce guarantees; require explicit constitutional review and preserve #129 Article IV even at an edition transition.
+- [ ] Keep proof/library/internal declaration refactoring free as long as the current release re-proves the accumulated ledger.
+
+## Core principles
+
+> **The Constitution protects an accumulating ledger of discharged obligations, not one frozen theorem spelling.**
+
+> **Acceptance may evolve; every release must prove the accumulated guarantees against the acceptance gate it actually ships.**
+
+> **Interpretation becomes precedent when it is discharged, and precedent is monotone within an edition.**
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and, at that initial checkpoint, zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.
+
+
+## Scoped guarantee admission and production review — 2026-10-04
+
+The appointed human Guardian explicitly answered **「2件とも提示された範囲・前提で妥当と認め、保証登録を承認する」** for the two exact scoped proposals:
+
+- `QS-QLV1-OWNERSHIP-2026-01`: ownership of the original ordinary QLV1 decoded root.
+- `QS-QLV1-SCOPE-2026-01`: classical lexical scope of that same actual accepted root.
+
+Reviewed proposal: `governance/proposals/initial-guarantees.json`, SHA-256 `bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02`. Subsequent human adequacy/admission event: `governance/guarantees/initial-2026-admission.json`, SHA-256 `9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2`.
+
+The live ledger now records **two discharged scoped QS guarantees and three pending broader obligations**. QS-2026-01, PR-2026-01 and RS-2026-01 are not fully discharged. The admitted theorems bind actual `Protocol.Validity.check bytes` success to an `Acceptance` witness, its decoded artifact and selected original root. Their independent OwnershipSafe/ScopeSafe properties do not certify source lowering, Rust re-materialization, native compiler/runtime, hierarchy, native-contract, PR or quantitative RS.
+
+The exact reviewed source closure and registry are preserved beside the initial validation. Initial proof evidence includes both Lean builds/audits, fresh kernel/Main replay and exact elaborated theorem/axiom output. The initial proposal checker passed 18 regressions and live Lean-output comparison; an independent review found no scope/premise mismatch. The subsequent v3 ledger/current-evidence enforcement is being integrated and tested separately. Historical approved meaning and mutable current implementation evidence are distinct; unrelated source changes must refresh current proof binding, while changes of semantic representation require justified transport.
+
+The production inventory now distinguishes **21 paths and all nine native modes**, with 12 passing coverage regressions. It separates ordinary fresh acceptance, hierarchy/component checking, proposal-only output, source configuration, display and host execution. The corresponding Reference is `docs/src/reference/production-boundary.md`; S05-C1–C5 remain open.
+
+These are working-tree results. No integration commit, full hosted CI, completed issue, release readiness or publication is claimed.
+
+
+### Implemented checkpoint: immutable identities and current evidence (d128327)
+
+[Commit d128327](https://github.com/MGYamada/Qleisli/commit/d1283270f25f062871ec34634268e25ee29720a6) migrates the live ledger to v4: admitted identity (edition, jurisdiction/interpretation, exact human event and reviewed proposal entry) is independent of current evidence. Code-owned admission registrations and fixed verifier profiles are distinct. Every earlier entry must survive a trusted-base comparison, and every live identity needs exact fixed-profile coverage. Unknown historical entries fail closed. The original two admissions and three broader pending obligations remain unchanged.
+
+Independent review reproduced two timed-read substitution failures, now rejected by authenticated frozen snapshots and each profile returning the digest of the exact evidence it validated. Final policy/evidence tests: 54 + 33 passed. Root live `--base-ref HEAD --verify-lean` passed against the refreshed current Lean closure. See `tests/fixtures/constitution_v030/ledger-continuity/{final,root-replay}` and the preserved before/after counterexamples. This implements mechanical continuity, not a general semantic transport rule or human authentication; broader production coverage and full issue acceptance remain open.

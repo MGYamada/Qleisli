@@ -1,0 +1,365 @@
+## Current tracking scope — 2026-10-05
+
+The maintainer explicitly confirmed **109 Issues**, including this Issue and every original 108 target. #142 and the release gate now require #311's criteria/evidence; earlier separate-accounting notes are historical. This interpretation's checked integration is now published and its fourteen criteria are complete. Together with #134, current verified completion is **6/109 (5.50%)**.
+
+## Summary
+
+Establish a constitutional rule for **Qleisli edition 2026**:
+
+> **ε-approximation is not a constitutional semantic primitive and may not weaken any Fundamental-Theorem obligation.**
+
+Qleisli's constitutional semantics should remain exact.
+
+In particular, no edition-2026 guarantee may replace an exact obligation such as
+
+```text
+C realizes ⟦P⟧
+```
+
+with a weaker statement of the form
+
+```text
+distance(C, ⟦P⟧) ≤ ε.
+```
+
+Approximation may exist as an optional realization/export technique outside the constitutional acceptance contract, but **ε must not become part of the constitutional meaning of an accepted Qleisli program**.
+
+The governing principle is:
+
+> **Approximation is a realization technique, not a constitutional semantic primitive.**
+
+---
+
+## Motivation
+
+Approximation looks locally convenient but becomes constitutional debt immediately if admitted into the semantic kernel.
+
+Once a theorem is parameterized by an approximation budget, the Constitution must also decide or inherit answers to questions such as:
+
+- which metric or norm is authoritative;
+- how ε composes;
+- whether global phase is quotiented out;
+- how controlled operations transport the error;
+- what the corresponding notion is for channels and instruments;
+- whether approximation may justify ancilla cleanup;
+- whether ε belongs to PR, RS, the source language, the backend, or the target profile;
+- who chooses ε;
+- whether changing ε changes program meaning;
+- whether target resource guarantees quantify over ε.
+
+Those questions are legitimate engineering and realization questions.
+
+They should **not become constitutional definitions of quantum meaning**.
+
+Edition 2026 should instead keep the constitutional core exact and push any future approximation mechanism to a strictly subordinate layer.
+
+---
+
+## Constitutional rule
+
+For edition 2026, the following are prohibited as constitutional weakening mechanisms.
+
+### 1. No ε-relaxed semantic equality
+
+The meaning of a program must not be defined by tolerance:
+
+```text
+Meaning(P) ≈_ε U
+```
+
+as a substitute for an exact semantic object.
+
+Floating-point or tolerance-based equality must not define semantic identity.
+
+### 2. No ε-relaxed Qleisli Soundness
+
+Soundness may not discharge an ownership, effect, phase, cleanup, or semantic obligation by proving that the violation is merely small.
+
+Examples of forbidden substitutions include:
+
+```text
+Pr[dirty ancilla] ≤ ε
+```
+
+in place of exact cleanup, or
+
+```text
+‖U_checked - U_meaning‖ ≤ ε
+```
+
+in place of the exact semantic promise made by the accepted object.
+
+### 3. No ε-relaxed Physical Realizability
+
+The constitutional PR jurisdiction must remain a checked **exact correspondence** obligation for whatever realization is admitted as constitutionally realized.
+
+Conceptually:
+
+```text
+Accepted(P)
+∧ AdmittedRealizationρ(P, C, E)
+→ Realizesρ(C, ⟦P⟧, E).
+```
+
+It must not silently become:
+
+```text
+→ Dist(⟦C⟧, ⟦P⟧) ≤ ε.
+```
+
+If a backend emits an approximate circuit, that artifact is not thereby a constitutionally exact realization of the source meaning.
+
+### 4. No ε-relaxed Resource Safety
+
+RS must not acquire an approximation budget merely because a synthesis algorithm has one.
+
+A target cost depending on ε may be useful engineering information, but it must not redefine the constitutional resource obligation for edition 2026.
+
+### 5. No ε as the bridge between gate paradigms
+
+A program that is not exactly representable in one gate/coefficient paradigm must not be made constitutionally valid in that paradigm by introducing a tolerance.
+
+The allowed architectural responses are:
+
+- select a richer exact paradigm;
+- extend the coefficient domain;
+- use scalar/base extension;
+- reject the exact realization under that paradigm;
+- or produce a non-constitutional approximate backend artifact.
+
+This rule is especially important for the progression:
+
+```text
+Clifford+T
+    ↓
+Clifford+cyclotomic
+    ↓
+ℂ
+```
+
+The mathematical universe should be enlarged explicitly rather than patched by an ε escape hatch.
+
+---
+
+## Relationship to paradigms
+
+This issue is the constitutional counterpart of #309 and #310.
+
+#309 removes Clifford+T as a hidden exactness assumption by moving to the single exact cyclotomic coefficient domain `R_∞ = ℤ[ζ_{2^∞}, 1/2]`.
+
+#310 introduces **paradigm** as an axis independent of constitutional edition.
+
+Together they provide the clean alternative to ε-based semantics:
+
+```text
+exact program meaning
+        ×
+constitutional edition
+        ×
+gate-set paradigm
+        ×
+realization profile
+```
+
+If the exact meaning cannot be realized under one paradigm, Qleisli changes the realization domain or reports failure.
+
+It does not change the truth condition by inserting ε.
+
+---
+
+## Orthogonality to NISQ / FTQC
+
+This rule must not encode:
+
+```text
+NISQ = approximate
+FTQC = exact
+```
+
+The NISQ/FTQC boundary is independent of the constitutional exactness rule.
+
+A NISQ-oriented realization may still be modeled against an exact mathematical semantic object.
+
+An FTQC backend may still use practical approximate synthesis internally.
+
+Neither fact requires approximation to become part of the constitutional semantics.
+
+---
+
+## Numerical implementations are not forbidden
+
+This issue does **not** prohibit numerical computation, floating-point acceleration, verified numerics, interval methods, or approximate internal algorithms.
+
+The boundary is constitutional.
+
+A numerical procedure may assist the implementation if the final accepted claim is still an exact proposition justified by checked evidence.
+
+For example:
+
+```text
+numerical / interval / approximate computation
+        ↓
+checked certificate
+        ↓
+exact constitutional proposition
+```
+
+is compatible with this issue.
+
+What is prohibited is making the tolerance itself the final constitutional guarantee.
+
+This distinction is important for the future ℂ paradigm in #310: a high-performance Lean representation may use sophisticated numerical techniques internally, but the Constitution must not collapse mathematical equality or realizability into an arbitrary ε-threshold.
+
+---
+
+## Impact on existing approximation issues
+
+### #31
+
+#31 correctly established the essential rule that **source meanings are exact** and approximation belongs to a separate synthesis/backend contract.
+
+This issue strengthens that boundary constitutionally.
+
+For edition 2026, any language in #31 suggesting that certified approximate target programs discharge constitutional PR should be interpreted more narrowly:
+
+- approximate backend artifacts may exist;
+- they may carry metrics, error bounds, and certificates;
+- but the ε-bound itself does not constitute edition-2026 PR.
+
+### #163
+
+#163 describes resource certification after an approximation budget is closed.
+
+Under this constitutional rule, such certification is **non-constitutional target/tooling certification** unless and until a future constitutional edition explicitly admits a corresponding approximation jurisdiction.
+
+It must not be confused with edition-2026 Resource Safety.
+
+No existing approximation issue may silently widen the constitutional theorem jurisdictions.
+
+---
+
+## Future editions
+
+This issue governs edition 2026.
+
+A future edition may deliberately introduce a constitutional approximation concept, but that must be an explicit constitutional change with a fully specified mathematical contract.
+
+It may not enter by implementation drift, backend convenience, or reinterpretation of an existing theorem.
+
+Any such future proposal would need to settle, at minimum:
+
+- metric;
+- phase convention;
+- composition;
+- channel/instrument semantics;
+- cleanup interaction;
+- control interaction;
+- resource interaction;
+- acceptance identity;
+- theorem-jurisdiction impact.
+
+Until then, edition 2026 remains exact.
+
+---
+
+## Required constitutional consequences
+
+- **Soundness:** exact semantic and structural obligations remain exact.
+- **Physical Realizability:** constitutionally admitted realization remains exact correspondence.
+- **Resource Safety:** no ε-dependent weakening of the constitutional resource jurisdiction.
+- **Ancilla cleanliness:** approximate cleanliness never authorizes exact release.
+- **Controlled semantics:** approximate phase agreement never replaces exact phase obligations.
+- **Paradigm selection:** non-membership in an exact gate/coefficient domain is not repaired constitutionally by tolerance.
+- **Edition compatibility:** adding approximation to the constitutional contract requires an explicit edition-level decision.
+
+---
+
+## Acceptance criteria
+
+- [x] Record that edition 2026 constitutional semantics are exact.
+- [x] State that ε-approximation is not a constitutional semantic primitive.
+- [x] Prohibit ε-relaxation of Soundness obligations.
+- [x] Prohibit ε-relaxation of constitutional Physical Realizability.
+- [x] Prohibit ε-relaxation of constitutional Resource Safety.
+- [x] Preserve exact ancilla-cleanup obligations.
+- [x] Preserve exact phase/control obligations.
+- [x] State that gate/paradigm mismatch is resolved by paradigm/profile choice, exact coefficient extension, or rejection — not by constitutional tolerance.
+- [x] Clarify that numerical/approximate internal computation is allowed when it produces checked evidence for an exact proposition.
+- [x] Clarify #31 so approximate backend contracts do not automatically discharge edition-2026 PR.
+- [x] Clarify #163 so ε-dependent resource certificates are not automatically edition-2026 RS evidence.
+- [x] Cross-reference #309 and #310 as the exact architectural alternative to an ε bridge.
+- [x] Require an explicit future constitutional edition change before ε can become part of constitutional semantic truth conditions.
+- [x] Add this rule to the constitutional interpretation/guarantee process rather than leaving it as an ordinary implementation convention.
+
+---
+
+## Non-goals
+
+- Do not ban approximate compilation as a backend feature.
+- Do not ban numerical algorithms inside the implementation.
+- Do not ban floating-point execution where it is outside semantic identity.
+- Do not choose a universal approximation metric.
+- Do not define ε-composition rules for edition 2026 constitutional semantics.
+- Do not identify NISQ with approximation.
+- Do not identify FTQC with exact Clifford+T.
+- Do not require every physical execution to be mathematically noiseless.
+- Do not make a practical hardware noise model part of the constitutional semantic kernel.
+
+---
+
+## Core principle
+
+> **Qleisli may approximate an implementation. It must not approximate its Constitution.**
+
+Equivalently:
+
+> **Exact meaning first. Gate-set variation is handled by paradigms. Approximation, if used, remains subordinate realization machinery.**
+
+
+## Integration checkpoint — 2026-10-05
+
+At this earlier checkpoint, #311 was tracked separately from the original 108-Issue plan in #142. That accounting rule was superseded by the maintainer's explicit 2026-10-05 correction, 「109 issuesです」: #311 now belongs to the 109-Issue target and denominator. Issue creation itself was not a Guardian adoption; the subsequent actual adoption is recorded below.
+
+Prepare a concrete interpretation packet against the exact already adopted QS-2026-01 / PR-2026-01 / RS-2026-01 text, preserving constitutional bytes and both admitted scoped guarantees. Review the stricter ε boundary and the #31/#163 terminology before requesting the required explicit human adoption; do not rewrite historical interpretation records or infer adoption from this Issue's creation. Existing exact source/phase/cleanup obligations continue to apply. Current source-to-Raw CLI work preserves exact supported phases and rejects unsupported ones, so it can continue independently.
+
+#309 remains targeted at 0.3.1 and #310 at v1+; their implementation is not pulled into the 0.3.0 completion set by this dependency. No approximate backend feature, coefficient extension, new paradigm implementation or new theorem discharge is claimed at this checkpoint.
+
+
+## Reviewed interpretation candidate — 2026-10-05
+
+A concrete pending supplement is saved locally at `governance/proposals/exactness-2026.md`, identifier **EXACT-2026-01**, SHA-256 **b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179**. Root and independent review found no blocker to submitting these exact bytes for human Guardian adoption. The explicit question has been submitted; no answer or adoption is inferred here.
+
+The candidate distinguishes exact quotient contracts from epsilon approximation, permits checked numerical assistance to exact propositions, preserves the exact-artifact resource case even if an internal search parameter is named epsilon, and keeps future edition transition subject to historical non-weakening. #31/#163 engineering requirements remain; the two scoped guarantees and three broader pending obligations retain their status. It chooses no metric and implements neither #309 nor #310.
+
+The candidate is not yet pushed. Existing constitutional text and original interpretation/admission records remain byte-identical. After actual adoption, recording and enforcement require an additive reviewed transition; the current fixed three-interpretation validator must not be satisfied by rewriting the original packet.
+
+
+## Actual Guardian adoption — 2026-10-05 (Asia/Tokyo)
+
+The appointed human Guardian explicitly answered **「提示された本文どおりEXACT-2026-01を採択する」** to the question identifying the exact candidate SHA-256 **b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179**. This is the actual affirmative adoption, separately from Issue creation or implementation permission.
+
+The unchanged reviewed bytes remain at `governance/proposals/exactness-2026.md`; its historical candidate notice remains immutable. The actual event is recorded separately at `governance/interpretations/exactness-2026-adoption.json`, SHA-256 **e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59**, with the complete question/answer, holder capacity, constitutional grounds, source conversation/question identity and explicit transcript-authentication limit. The first clock observation after the reply is not asserted to be the message timestamp.
+
+EXACT-2026-01 is now binding under the existing three jurisdictions. No guarantee is discharged. Additive mechanical recording/continuity checks and Reference/#31/#163 integration are in progress; this Issue remains open until its actual conditions are verified and published. The original ratified text, initial three interpretation records and two scoped guarantee admissions are unchanged.
+
+
+## Implemented interpretation integration — 2026-10-05
+
+Local commit **c89871fa490807c12150d70fdbac5c28763ae88b** registers the actual human-adopted supplement in ledger schema v5 and connects the authority Reference, Book interpretation/ratification companions and governance records. Only the ledger version, explanatory scope and additive `supplemental_interpretations` field change; the original three interpretation/pending rows, both admitted guarantee identities and current evidence bindings are unchanged. The constitutional text and every earlier human-reviewed/adoption record remain byte-identical. Supplementary pending count 1 is distinct from the three existing jurisdictions.
+
+The fourteen criteria are covered by the adopted text's sections 1–5: exact semantic identity/QS/PR/RS, exact cleanup and phase/control, exact domain/profile alternatives, checked numerical assistance, retained #31/#163 engineering duties, #309/#310 later architecture and future-edition/non-weakening requirements, plus the actual adoption and operating ledger process. #31/#163/#45/#120 now reference the adopted boundary without reducing their implementation criteria. No new theorem is discharged and no fourth jurisdiction is created.
+
+Mechanical verification includes **63 constitutional regressions**, **28 release regressions**, and a real replay of the existing scoped Lean verifiers in **36.865s**, with all **270 recorded inputs unchanged**. It rejects edited adoption bytes, supplement deletion, rollback, fabricated discharge, hidden pending disclosure, stale receipts and mismatches between the ledger bytes actually checked and those captured by release processing. Independent review found that last identity gap; the exact same saved synthetic counterexample now changes from false-ready to rejection. Synthetic release tests are not actual release readiness.
+
+Evidence packet: `tests/fixtures/constitution_v030/exactness/`, manifest SHA-256 **e15a7f8a37919b08f6b3bdb286131f6d6e9f5d104fd97cee6fde5698ee106730**. Live replay result SHA-256 **b314bac9db7ae2dc8f4e17134e3d77a662358f717ac542fc1fb7bdfbf5f2f45f**. Fixed mdBook 0.5.4, 20 rendered HTML files / 753 local links / 277 anchors, source identities and staged whitespace checks pass. No new full Lean build/audit, release approval or publication is claimed.
+
+**Publication remains pending:** CI 37233042845 still runs for the earlier pushed 10553a9f commit; this implementation is retained locally to avoid cancelling that run. Keep this Issue open until the checked sources and evidence are published. It is included in the maintainer-corrected 109-Issue target and denominator.
+
+
+## Verified publication and completion — 2026-10-05
+
+The unchanged human-reviewed text, actual adoption event, ledger v5, operating checks and evidence are now published in [d753962de3eedd39629c8441f2b82521ce01d70f](https://github.com/MGYamada/Qleisli/commit/d753962de3eedd39629c8441f2b82521ce01d70f), containing implementation c89871fa. Remote reads of the reviewed interpretation, adoption, ledger and authority Reference match that commit's exact Git blobs; the identified SHA-256 identities remain unchanged. #31 and #163 were read back with the adopted boundary and original engineering criteria intact. #309/#310 remain later work.
+
+Acceptance mapping: criteria 1–5 are adopted section 1; 6–7 sections 1–2; 8 section 4; 9 section 2; 10–11 section 3 and updated #31/#163; 12–13 section 4; 14 the explicit human adoption, additive ledger record, Reference and enforcement/continuity regressions. The evidence and its limits are recorded in the preceding implementation checkpoint. The subsequent109-scope unit adds a 29th release regression refusing old108-only requirements or evidence, while preserving historical observations. All fourteen current criteria are checked; this interpretation/process Issue is complete, not a new theorem discharge or completion of approximate-backend implementation.
+
+The preceding10553a9 head's CI37233042845 succeeded. Current CI37242938514 for d753962 is still running and is not asserted successful. No release is approved or published by this closure; #141/#142 and broader pending obligations stay open.

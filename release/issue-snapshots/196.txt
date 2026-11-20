@@ -1,0 +1,116 @@
+## Status
+
+**0.3.0 semantic-surface boundary fixed; implementation/reference integration remains open.**
+
+Related: #29, #37, #69, #73–#77, #89, #194, #195.
+
+## Motivation
+
+Qleisli now has four distinct ways quantum meaning can become visible. Collapsing them into a single “q-prefix vs ordinary syntax” rule is no longer accurate after adopting `excl` / `ctrl`.
+
+## Four-channel surface boundary
+
+### 1. Dedicated `q***` constructs — the construct itself has quantum semantics
+
+Use a dedicated form when coherence or linear quantum control changes the construct itself:
+
+```text
+qif
+qfor
+qmatch
+```
+
+Ordinary `if`, `for`, and `match` never silently acquire coherent quantum semantics.
+
+### 2. Explicit access markers — an existing owner is accessed under a quantum contract
+
+```qli
+excl q
+ctrl q
+```
+
+These are neither Rust references nor binding mutability.
+
+```text
+excl — temporary exclusive arbitrary coherent access
+ctrl — basis-preserving coherent access
+```
+
+The access marker is mandatory where the callee contract requires it; method/autoref machinery cannot insert it.
+
+### 3. `Q<T>` — ordinary syntax over live linear quantum ownership
+
+Ordinary constructs keep their ordinary structural meaning while the type system enforces linear ownership:
+
+```qli
+let q: Q<Bit<1>> = ...;
+let q = f(q);
+q
+```
+
+This includes ordinary binding, tuples/products, explicit function application, lexical names/scopes, and final-expression results.
+
+It does **not** import assignment, Drop, early return, ordinary equality, or unrestricted closure capture for live owners.
+
+### 4. Ordinary classical / compile-time syntax
+
+When neither the construct nor the value is quantum-specific, ordinary classical/compile-time syntax is used.
+
+Compile-time staging is described normatively as **compile-time / const specialization**, not Rust `static` storage semantics.
+
+## Decision procedure
+
+```text
+Does quantum mechanics change the construct itself?
+    yes -> q*** form
+
+Otherwise, does an existing live owner need a physically meaningful access contract?
+    yes -> explicit excl / ctrl
+
+Otherwise, is a live quantum owner being linearly carried?
+    yes -> ordinary permitted syntax over Q<T>
+
+Otherwise
+    -> ordinary classical / compile-time syntax
+```
+
+## Unsupported / intentionally absent in 0.3.0
+
+Do not infer or invent:
+
+```text
+qlet qreturn qborrow qref qderef qclosure qunsafe
+quantum & / &mut
+quantum Drop / Default / Clone / Copy
+quantum Eq / Ord / Hash
+assignment to live quantum-containing places
+implicit quantum method receiver adjustment
+runtime quantum index panic
+panic/unwind/? across live quantum ownership
+unrestricted closure capture of Q<T>
+```
+
+## LLM-facing criterion
+
+A coding agent should learn from a small corpus that:
+
+- `q***` means “the control construct itself is quantum”;
+- `excl` / `ctrl` are explicit access contracts;
+- `Q<T>` means live linear ownership;
+- otherwise syntax is ordinary classical/compile-time syntax.
+
+The compiler should reject Rust-shaped false friends with targeted migration diagnostics rather than silently reinterpret them.
+
+## Acceptance criteria
+
+- [ ] Language Reference documents all four channels.
+- [ ] `qif`, `qfor`, `qmatch` use one coherent rule.
+- [ ] `excl` / `ctrl` are not described as Rust references.
+- [ ] `Q<T>` does not automatically import ordinary-value traits or destructive control flow.
+- [ ] classical/compile-time syntax remains ordinary where semantics transfer.
+- [ ] diagnostics teach every frozen false-friend boundary.
+- [ ] zero-shot authoring tests distinguish the four channels.
+
+## Compact formulation
+
+> **`q***` marks quantum constructs; `excl/ctrl` mark quantum access; `Q<T>` marks live ownership; everything else stays ordinary only where ordinary semantics remain true.**

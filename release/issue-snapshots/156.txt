@@ -1,0 +1,62 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Related: #70, #72, #29, #120.
+
+## Problem
+
+A flat gate list forgets *why* an ancilla can be uncomputed. For a structured compute/apply/uncompute region, Qleisli can verify a local theorem without solving arbitrary circuit equivalence. If lowering erases that structure too early, the verifier is pushed back toward a global identity problem.
+
+## Proposed direction
+
+The verified IR should preserve a first-class or equivalently proof-preserving conjugation node, conceptually:
+
+```text
+Conjugate { compute: U, apply: V }
+```
+
+with the corresponding U / V / U† denotation under the project's fixed composition convention.
+
+The surface syntax is not fixed by this issue. The normative requirement is that the compute/apply boundary survive until its proof obligations have been checked.
+
+## Admissible compute region
+
+The initial rule should be deliberately restricted. The verifier must establish syntactically that:
+
+1. the compute region is computational-basis preserving up to exact phase;
+2. retained dependencies are not mutated;
+3. temporary workspace is the only mutable target of the compute region;
+4. dependencies later used by apply are available only through the admitted coherent-control / const-like discipline;
+5. no measurement, discard, reset, or other irreversible effect occurs in the reversible compute region;
+6. exact phase and axis order remain represented.
+
+A primitive whitelist alone is insufficient. For example, X may be basis-preserving but is still invalid if it targets a dependency that the theorem assumes is preserved.
+
+## Trust boundary
+
+Frontend annotations are proposals only. The authoritative verifier must re-check all premises locally. Flattening to a gate sequence is allowed only after the relevant obligations have been discharged or transported in checked evidence.
+
+## Non-goals
+
+- general circuit-equivalence solving;
+- automatic discovery of arbitrary compute/uncompute pairs;
+- general dirty-ancilla restoration;
+- choosing final user-facing syntax;
+- proving the full quantitative Resource Safety Theorem.
+
+## Acceptance criteria
+
+- [x] 0.3.0 specifies a first-class or proof-preserving conjugation form in IR.
+- [x] The compute/apply boundary survives long enough for independent verification.
+- [x] Compute admissibility checks both gate/effect class and wire-access discipline.
+- [x] Dependency wires cannot be silently modified.
+- [x] Exact phase and axis order are preserved.
+- [x] Irreversible effects are rejected from the reversible compute region.
+- [x] Frontend annotations remain untrusted and independently checked.
+- [x] Flattening happens only after checked obligations are discharged or carried forward.
+- [x] Unsupported cases fail closed rather than invoking general equivalence search.
+
+## Design principle
+
+> **Uncomputation should be proved from preserved program structure, not rediscovered from a flattened circuit.**

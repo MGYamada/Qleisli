@@ -1,0 +1,181 @@
+## Three-theorem design alignment — 2026-10-08
+
+**Maintainer-level design direction only.** This is not a new binding Constitution Guardian Office interpretation, constitutional amendment, theorem discharge, or guarantee-ledger admission. Existing ratified Constitution (#129), jurisdiction framework (#139), ledger (#135), and EXACT-2026-01 (#311) retain authority.
+
+1. **QS / Soundness:** semantic acceptance proves the specified exact owner/access/effect/phase/meaning contracts, including clean return and dirty identity restoration. Ending `excl` restores *access authority* over the changed, still-live owner, not its prior state, and does not release it (#29/#70/#72/#157).
+2. **PR / Physical Realizability:** separately admitted, independently checked target realization implements the accepted semantic meaning with its exact phase, ordered axes, workspace and target assumptions. The obligation is **forward correspondence**, not completeness of exact synthesis. Semantic acceptance does not imply target execution (#281/#120).
+3. **RS / Resource Safety:** quantitative bounds and budgets apply to the actual admitted Core/realization artifact under its selected profile. Count live owners once, allocated ancillas, generated uncomputation, routing, physical SWAPs, measurements/feed-forward where relevant. A restored clean ancilla proves a QS state property, **not** a numerical cost bound. Access exit and `Unit` return do not erase cost (#280).
+
+Current illustrative schemas (not frozen constitutional theorem statements):
+
+```text
+Accepted_R(P) -> SemanticSafe_R(P)
+Accepted_R(P) AND AdmittedRealization_{R,rho}(P,C,Epr)
+  -> Realizes_{R,rho}(C, Meaning_R(P), Epr)
+Accepted_R(P) AND AdmittedRealization_{R,rho}(P,C,Epr)
+  AND CheckedResourceEvidence_{R,rho}(C,b,Ers)
+  -> Cost_{R,rho}(C) <= b
+```
+
+A resource claim for **Core alone** may instead use its independently checked Core-cost relation without asserting existence of a target circuit. Neither cost schema permits untrusted producer assertions as certificates. A production path advertising target/quantitative certification must require its actual corresponding evidence, not evade proof via empty premises.
+
+**Independent axes:** exact coefficient paradigm `R` (initially `R_3`, `R_infty`, #309/#339), gate/target realization profile `rho`, and resource cost model. Exact typed base change preserves denotation, not automatic target admission, optimally minimal cost, or cost-certificate transport. No epsilon approximate correspondence discharges edition-2026 constitutional guarantees.
+
+**Specialization:** closed finite instances can have concrete verified cost certificates; a family-level RS guarantee requires an explicit, checked symbolic bound for all admitted parameter choices and provider contracts. Totality and fixed-target feasibility are separate (#127/#161/#162/#164). No single target must handle every instance of an accepted generic family.
+
+**Acceptance boundary:** the frontend, LLM, Rust optimizers, synthesis engines, and caches may only propose unchecked artifacts. Lean/independent checking must validate exact meaning, transformed artifact correspondence, applicable target admission and artifact-bound resource evidence before certification (#136/#309). The three pending broad QS/PR/RS obligations are not automatically discharged by this issue edit. All preexisting implementation checkboxes stay open until independently verified; scope and ledger guarantees remain unchanged.
+
+See #136 (joint boundary), #280 (RS), #281 (PR), #127 (families), #157 (workspace QS), #142 (release gate).
+
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Qleisli should fix the theorem boundary between a generic/static program family and the closed specialized program to which target realizability and concrete resource claims apply.
+
+Related:
+- #28 — static language, sizes, termination, and resource bounds
+- #44 — basis-type polymorphism, kinds, and generic specialization
+- #47 — static constraints
+- #120 — physical realizability/workspace
+- #280 — Resource Safety jurisdiction already present in edition 2026
+- #281 — forward Physical Realizability
+- #135 / #139 — guarantee ledger and evolving formal realizations
+
+## Problem
+
+A generic definition such as
+
+```text
+qft<n>
+adder<n>
+phase_estimation<n,m>
+```
+
+may be a well-typed finite program family.
+
+That does not mean one fixed finite target realizes "the generic program" for arbitrary `n`.
+
+Concrete claims such as:
+
+- exact target realizability;
+- physical qubit count;
+- gate count/depth;
+- target capacity;
+- synthesis workspace;
+- routing feasibility;
+
+naturally apply after static parameters, basis types, trait/capability choices, and relevant target profile information are instantiated.
+
+If the theorem statements do not say this explicitly, Resource Safety can accidentally conflate:
+
+```text
+finite/total family description
+```
+
+with
+
+```text
+one finite executable target instance.
+```
+
+## Proposed theorem boundary
+
+The 0.3.0 specification should treat target/resource theorems as statements over a **closed specialization** or quantify explicitly over admissible substitutions.
+
+Conceptually:
+
+```text
+Γs ⊢ p generic and well formed
+σ satisfies static constraints
+--------------------------------
+close(σ,p) = pσ
+```
+
+Then target statements apply to `pσ`:
+
+```text
+Accepted_now(pσ)
+and CheckedRealization_now(pσ, target, C, E)
+  -> Realizes_target(C, Meaning_now(pσ), E)
+
+CheckedResourceEvidence_now(pσ, target, C, E, bound)
+  -> resource_use_target(C) <= bound
+```
+
+Alternatively, a theorem may quantify:
+
+```text
+for every admissible finite specialization σ, ...
+```
+
+but it must not silently interpret a generic family as one concrete circuit. No premise may be an unchecked producer assertion; #135 binds these schematic judgments to the actual production acceptance gate.
+
+## Static admissibility
+
+The specialization premise should include whatever 0.3.0 ultimately requires:
+
+- natural-number/size constraints;
+- basis-type/kind constraints;
+- trait/capability resolution;
+- finite static evaluation;
+- target-domain premises where relevant.
+
+The exact source semantics of the family remains independent of whether every possible specialization fits a chosen target.
+
+## Resource Safety consequence
+
+Resource Safety should distinguish:
+
+1. **computability/totality of the static family**, from
+2. **resource function computability for a closed specialization**, from
+3. **budget feasibility on a particular finite target**.
+
+These are related but not identical statements.
+
+A family may be total for every finite `n` while no single fixed-capacity target supports all `n`.
+
+## Same-edition family growth and forward PR
+
+The constitutional PR duty is checked correspondence for an admitted realization of a specialization. It does not require complete synthesis over every mathematical object or every possible specialization (#281).
+
+A family-level RS claim may use a symbolic bound such as `Resource(P<n>) <= f(n)` when the language admits and certifies that family. Such an obligation arises under the RS jurisdiction already present in edition 2026; it does not create a new Fundamental Theorem or require an edition change merely because the proof becomes nontrivial.
+
+The Guardian determines the required family/instance obligations. Discharged binding interpretations enter the ledger, and future implementations must preserve them against current acceptance and artifacts.
+
+## Acceptance criteria
+
+- [x] The Reference defines what counts as a closed specialization for target lowering.
+- [x] Target Physical Realizability is forward correspondence for checked realizations of closed specializations or explicitly quantified admissible substitutions.
+- [x] Generic well-typedness does not promise domain-wide synthesis completeness.
+- [x] Admitted family-level symbolic resource guarantees remain possible within edition 2026 under #280.
+- [x] Concrete resource bounds are attached to a specialization and target profile.
+- [x] Generic well-typedness does not imply feasibility on one fixed finite target for all parameters.
+- [x] Static constraints/capabilities are discharged before concrete target correspondence is claimed.
+- [x] Resource Safety distinguishes family totality, resource-function computation, and target budget feasibility.
+- [x] Diagnostics can identify which specialization violates a realizability or resource premise.
+- [x] The rule composes with #120 backend workspace accounting.
+
+## Design principle
+
+> **A generic Qleisli definition describes a family. Physical realizability and concrete resource safety are claims about its admissible closed instances.**
+## 0.3.0 Reference implementation unit — 2026-10-04
+
+Implement the already adopted PR-2026-01 / RS-2026-01 boundary in a normative realization/resource Reference chapter. Define closed-specialization identity, checked forward correspondence with the actual output artifact, exact phase/ordered axes, source versus backend workspace, and quantitative resource accounting independently of optional synthesis completeness. Preserve all current native/source/export proof gaps; a content hash or successful export is not a realizability/resource certificate. This unit selects no universal gate set, concrete target schema or new source syntax.
+
+Reuse and re-run the existing small exact QFT3/C3X determinant and exported-workspace regressions rather than creating a new maximum-size case. The original sources and historical observations remain intact. Record diagnostics as current existing behavior, without promising a new profiler or falsely upgrading tests to a general theorem. Cross-reference #28/#31/#48/#70/#103/#127/#280/#281 as applicable; implementation obligations beyond this boundary remain open.
+
+## Closed-specialization Reference checkpoint — 2eff16e
+
+[2eff16e](https://github.com/MGYamada/Qleisli/commit/2eff16e0cea96f6988f72def038a43dbe37d3013) adds the normative [closed-specialization and realization boundary](https://github.com/MGYamada/Qleisli/blob/2eff16e0cea96f6988f72def038a43dbe37d3013/docs/src/reference/realization.md). Identity includes resolved definition/dependencies, ordered static and basis arguments, providers/capabilities/meanings, discharged constraints, edition/profile and the actual target/layout/workspace/output evidence where claimed. Generic totality, computed bounds and finite-target feasibility are distinct. Newly admitted resource behavior cannot be certified without its applicable bound/preservation obligations; existing guarantees remain in force.
+
+The chapter selects no new target schema, universal gate set or synthesis completeness duty. Existing exact determinant and bounded emitted-workspace checks are retained and re-run as described in #120. Common generic checking, concrete certificates and specialization-aware diagnostics remain implementation work; this issue is not closed by the chapter.
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #120 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Closed specialization.** Static/type/provider/capability/Meaning/constraint resolution must close in a specified order and bind the same instance during analysis and execution. A finite set of successful specializations does not certify a whole resource family. Unresolved budgets or provider obligations must remain uncertified. Full closure rules, evidence identity and negative stale/substitution cases remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

@@ -1,0 +1,16 @@
+Target: 0.3.0 specification/public-IR migration. Origin: the supplied 0.2.4 review; related #130, #103, #120, #122, #153 and #160.
+
+Current sealed aliases deliberately lower S/S-adjoint/T-adjoint to T^2/T^6/T^7 to preserve finite-v0 public IR compatibility. Their meanings remain exact. Literal T counts describe those actual words, not minimal target non-Clifford cost. The compatible export repair in #160 recovers adjacent diagonal words without changing acceptance or public constructors.
+
+Evaluate a canonical one-axis Phase(k mod 8) operation or an equivalent explicit phase/cost representation at the breaking boundary. For an uncontrolled phase gate, even k is Clifford and odd k needs one T or T-adjoint with Clifford factors in the stated target model. This formula is not the cost of a controlled phase: control, conjunction synthesis, clean workspace and native CCX decomposition have separate costs.
+
+Affected public contracts: Rust SingleGate/CircuitAction and exhaustive matches, finite serialization/profile versions and codecs, public Lean IR/checker declarations/native transport, gate/evidence mappings, export capability/resource reporting. Preserve exact scalar phase, axis order, adjoint/control/repetition and zero-width owner behavior. Existing aliases and old profile artifacts need explicit versioned migration; no constructor change during compatible PATCH work.
+
+Acceptance:
+- Specify exact semantics and the target/cost model before changing representation; distinguish literal IR count, optimized emitted count and a proved resource bound.
+- Demonstrate old/new meanings agree, including both qif arms, negative controls, adjoints and phase-sensitive reference probes.
+- Bind any cost certificate to the actual emitted circuit, all synthesis workspace and the selected target decomposition. No count inferred only from source names or gate parity.
+- Review codec/profile and public Rust/Lean migrations; retain old compatibility until the selected MINOR migration.
+- Required runtime policy, compiled audits and actual-definition proof/independent translation validation pass for migrated checker/backend definitions.
+
+This Issue records a proposal and migration obligation; it does not adopt a new IR constructor or complete Resource Safety. No duplicate backlog.

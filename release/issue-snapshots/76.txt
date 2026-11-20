@@ -1,0 +1,70 @@
+## Status
+
+**0.3.0 semantic/vocabulary decision fixed; implementation/docs remain open.**
+
+Related:
+- #18 — owner packaging / products
+- #67 / #68 — Rust/Qleisli semantic firewall
+- #73 — no quantum-place assignment
+
+## Decision
+
+Qleisli keeps three operations distinct:
+
+1. **binding/slot exchange** — not provided for live quantum owners in the 0.3.0 core;
+2. **ordered axis/tensor-factor permutation** — an explicit structural operation, named `permute_axes` in specification/examples;
+3. **physical quantum SWAP** — the quantum gate meaning of `swap`.
+
+Therefore the unqualified quantum name `swap` is reserved for the physical SWAP unitary.
+
+## Physical SWAP
+
+A quantum call named `swap` denotes the actual two-subsystem SWAP operation under its declared interface, for example conceptually:
+
+```qli
+swap(excl a, excl b);
+```
+
+It changes the quantum state according to the SWAP unitary. It is not a source-binding exchange.
+
+## Structural permutation
+
+Reordering output/tensor axes without applying the physical SWAP gate is spelled explicitly as a structural operation:
+
+```text
+permute_axes
+```
+
+Its meaning/evidence must state the exact old/new ordered-axis map.
+
+A backend may realize logical routing using physical swaps when required, but that is an implementation/Physical-Realizability fact and does not change source semantics.
+
+## Binding exchange
+
+Rust-style `mem::swap` for live quantum-containing bindings is not part of the 0.3.0 quantum core.
+
+Ordinary classical values may have ordinary exchange utilities separately; they do not define quantum SWAP semantics.
+
+## Acceptance criteria
+
+- [x] `swap` has one public quantum meaning: the physical SWAP unitary.
+- [x] `permute_axes` denotes explicit structural axis reordering with an exact permutation witness.
+- [x] No binding-exchange API for live quantum owners is imported from Rust in 0.3.0.
+- [x] Optimizers/backends cannot silently identify structural permutation with physical SWAP without checked routing correspondence.
+- [x] Diagnostics distinguish binding exchange, axis permutation, and quantum SWAP.
+
+## Compact rule
+
+> **`swap` moves quantum state; `permute_axes` changes representation order; binding exchange is not a quantum primitive.**
+
+## Verified on main
+
+The merge `a9f23924b8731f16fda43ea6fe1de0ff5fa74187` contains the reviewed tree `0fe6300cebddd0e7f79a16d7ed94a985829c6dd6`. The PR and push runs each passed all 24 required jobs, and CodeQL passed all three analyses. [PR #617](https://github.com/MGYamada/Qleisli/pull/617) · [PR CI](https://github.com/MGYamada/Qleisli/actions/runs/44274299473) · [push CI](https://github.com/MGYamada/Qleisli/actions/runs/44274292290) · [CodeQL](https://github.com/MGYamada/Qleisli/actions/runs/44274294447)
+
+1. The public `std::gate::swap` applies physical Bit SWAP using three CNOTs, with fixed wire frames and exact amplitude. [Gate definition](https://github.com/MGYamada/Qleisli/blob/0fe6300cebddd0e7f79a16d7ed94a985829c6dd6/stdlib/src/gate.qli#L70-L78) · [Independent physical SWAP equation](https://github.com/MGYamada/Qleisli/blob/0fe6300cebddd0e7f79a16d7ed94a985829c6dd6/tests/axis_routing_boundary.rs#L327)
+2. `std::structure::permute_axes` records the exact `[1,0]` structural map. `transpose_axes` checks the ordered static indices, and the original static register-fold regression checks each Raw interval in order. [Structure definitions](https://github.com/MGYamada/Qleisli/blob/0fe6300cebddd0e7f79a16d7ed94a985829c6dd6/stdlib/src/structure.qli#L5-L22) · [Original fold regression](https://github.com/MGYamada/Qleisli/blob/0fe6300cebddd0e7f79a16d7ed94a985829c6dd6/tests/axis_routing_boundary.rs#L149)
+3. A live quantum owner cannot be overwritten through rebinding, and the source diagnostics identify the live binding. [Ownership regression](https://github.com/MGYamada/Qleisli/blob/0fe6300cebddd0e7f79a16d7ed94a985829c6dd6/tests/common_authoring_diagnostics.rs#L193)
+4. Checked export preserves the gate work and output-axis order. Both actual exporters reject a reversible basis table with the same zero and one-hot rows when its other rows violate the axis map. [Literal export comparison](https://github.com/MGYamada/Qleisli/blob/0fe6300cebddd0e7f79a16d7ed94a985829c6dd6/tests/interop.rs#L1768) · [Corrupted axis-map regression](https://github.com/MGYamada/Qleisli/blob/0fe6300cebddd0e7f79a16d7ed94a985829c6dd6/tests/interop.rs#L1980)
+5. The retired-path diagnostic names the structural operation and the physical gate and explains the binding-exchange boundary. [Diagnostic regression](https://github.com/MGYamada/Qleisli/blob/0fe6300cebddd0e7f79a16d7ed94a985829c6dd6/tests/project.rs#L382)
+
+The work-budget follow-up for bundling register SWAP remains in #616. This merge retains the existing 20,000,000-work limit.

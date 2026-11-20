@@ -1,4 +1,17 @@
 # Keep frozen sources byte-identical, including upstream whitespace.
+# GitHub Issue bodies retained for the fixed beta acceptance review.
+release/issue-snapshots/*.txt -text
+release/issue-snapshots/40.txt -whitespace
+release/issue-snapshots/64.txt -whitespace
+release/issue-snapshots/68.txt -whitespace
+release/issue-snapshots/80.txt -whitespace
+release/issue-snapshots/133.txt -whitespace
+release/issue-snapshots/149.txt -whitespace
+release/issue-snapshots/163.txt -whitespace
+release/issue-snapshots/198.txt -whitespace
+release/issue-snapshots/226.txt -whitespace
+release/issue-snapshots/234.txt -whitespace
+
 # Retain raw Iso validation EOFs and hosted timestamped blank lines.
 tests/fixtures/frontend_v030/isometry-preparation/*/*.stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt -text -whitespace

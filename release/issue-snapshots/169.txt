@@ -1,0 +1,535 @@
+## Status
+
+**Qleisli 0.3.0 umbrella. Priority: important. Constitutional / semantic authority boundary.**
+
+This issue freezes the boundary between:
+
+- **Qleisli source that constructs executable program meaning**, and
+- **external artifacts/tools that may generate, inspect, prove, analyze, lower, package, or realize that meaning without silently acquiring semantic authority**.
+
+This is the companion boundary to #167.
+
+- #167 asks: **what must be primitive, and what should be derived Qleisli?**
+- this issue asks: **what counts as Qleisli source at all, and what must remain outside it?**
+
+The core rule is:
+
+> **Only the language/kernel and accepted .qli source construct executable Qleisli meaning. Everything else may consume, generate, check, prove, transform, package, or realize that meaning, but may not silently redefine it.**
+
+## Architectural picture
+
+The intended authority hierarchy is:
+
+~~~text
+             Constitution
+                  |
+        Language / primitive kernel
+                  |
+                .qli
+          /       |       \
+       stdlib   user code   generated .qli
+          |
+          v
+   checked semantic artifacts
+      /        |         \
+    QLT       Lean      QDB / QCP
+   tests      proofs     analysis
+      \        |         /
+       \       |        /
+        inspect / check / prove
+          without defining
+        executable semantics
+                  |
+              lowering
+                  |
+          target / hardware
+~~~
+
+The exact implementation architecture may evolve, but the authority direction should not.
+
+## 1. Define what .qli is authoritative for
+
+The Language Reference should state explicitly that accepted .qli source is the ordinary language in which executable Qleisli programs are defined.
+
+A .qli program may construct:
+
+- classical/static structure permitted by the language;
+- quantum ownership structure;
+- operations and program composition;
+- effects;
+- declared semantic contracts / Meaning objects as specified by the language;
+- ordinary derived algorithms;
+- stdlib implementations;
+- generated program families if the meta/static layer is part of Qleisli.
+
+A .qli file does **not** gain extra authority from being bundled, generated, optimized, or shipped with the compiler.
+
+## 2. Meta/static generation should remain Qleisli, not a second semantic language
+
+The preferred boundary is:
+
+> **Program generation is Qleisli; generated programs are Qleisli.**
+
+The compile-time/meta layer may be staged or restricted, but it should be part of the Qleisli language model rather than a second independent semantic authority.
+
+The intended shape is:
+
+~~~text
+Qleisli static/meta fragment
+        ↓
+generated Qleisli program / Op
+        ↓
+ordinary Qleisli checking
+~~~
+
+This means:
+
+- generated code receives no trust exemption;
+- meta expansion cannot inject trusted IR;
+- meta code cannot inspect live coherent quantum state;
+- generation must ultimately produce ordinary checkable Qleisli artifacts.
+
+Related:
+- #60 — typed compile-time meta-layer
+- #61 — generative frontend / elaboration / desugaring
+
+This umbrella fixes the authority rule now even if the full meta system lands later.
+
+## 3. QLT is deliberately outside .qli
+
+QLT should remain a separate observational/testing language or artifact class.
+
+The boundary should be asymmetric:
+
+~~~text
+.qli
+  constructs executable quantum program meaning
+  cannot inspect its own amplitudes/denotation as a language primitive
+
+.qlt
+  may inspect bounded mathematical denotation/cost for testing
+  cannot construct or strengthen production semantic authority
+~~~
+
+A QLT result may demonstrate a test outcome under its declared profile, but cannot:
+
+- authorize a .qli program;
+- create trusted Meaning evidence by itself;
+- bypass ownership/effect checking;
+- become a language primitive;
+- redefine program semantics.
+
+Related:
+- #50 — QLT
+- #49 — mathematical testing/debugging umbrella
+
+## 4. Proof artifacts are outside .qli
+
+Lean proofs, certificates, witnesses, and proof objects should remain distinct from ordinary program source.
+
+Preferred relationship:
+
+~~~text
+.qli program
+    ↓
+semantic claim / proof obligation
+    ↓
+Lean proof / checked certificate
+~~~
+
+The proof establishes a property of the program; it does not retroactively define a different denotation for that program.
+
+A useful invariant is:
+
+> **If external proof artifacts are removed, the denotation of the .qli source does not change; only available acceptance evidence may disappear.**
+
+This keeps proof authority and program meaning separate.
+
+## 5. Analysis/debugging/profiling are read-only with respect to semantics
+
+QDB, QCP, diagnostics, resource analyzers, visualizers, and similar tooling may inspect checked artifacts and derive reports.
+
+They must not become hidden semantic authorities.
+
+They may:
+
+- inspect IR/provenance;
+- explain obligations;
+- produce witnesses;
+- compute bounded denotations;
+- estimate or certify resources under explicit profiles;
+- show transformations.
+
+They may not:
+
+- make an invalid program valid;
+- inject trusted semantics;
+- silently strengthen a contract;
+- replace missing evidence with a successful analysis result.
+
+Related:
+- #51 — QDB
+- #103 — QCP
+- #105 / #106 — shared analysis artifacts/protocol
+
+## 6. External/opaque implementations require an explicit gate
+
+Foreign code, opaque providers, callbacks, plugins, backend-native implementations, or external operation bodies are the most dangerous boundary.
+
+Reject the model:
+
+~~~text
+extern code
+    ↓
+trust me
+    ↓
+ordinary Qleisli semantics
+~~~
+
+The preferred rule is:
+
+> **External implementation may enter Qleisli execution only through an explicit semantic contract and the required checked evidence/capability, or by explicit admission as a language primitive.**
+
+Therefore an opaque provider must not be allowed to smuggle in:
+
+- unknown ownership behavior;
+- hidden measurement;
+- untracked ancillas;
+- unsupported approximation;
+- undeclared resource behavior;
+- semantic claims that ordinary .qli could not make.
+
+Related:
+- #161 — checked resource contracts for opaque/external providers
+- #164 — FFI/callback/plugin Resource Safety boundary
+- #154 — primitive admission policy
+
+This is the external analogue of Qleisli's no-unsafe principle.
+
+## 7. Optimization and lowering are not source semantics
+
+Compiler optimizers, recognizers, decomposition passes, target-specific rewrites, and backend intrinsics may change implementation but not the meaning of the accepted source program.
+
+They are downstream of the source semantics.
+
+The rule is:
+
+~~~text
+accepted .qli meaning
+        ↓
+optimization / rewrite / lowering
+        ↓
+implementation artifact
+~~~
+
+not:
+
+~~~text
+optimizer recognizes pattern
+        ↓
+therefore source means X
+~~~
+
+Related:
+- #153 — optimization/rewrite authority boundary
+- #120–#127 — realizability / target / workspace boundaries
+
+## 8. Target and hardware profiles are outside source meaning
+
+Device topology, native gate sets, target exact domains, timing models, workspace availability, approximation budgets, and hardware resource limits should not silently alter the logical denotation of the .qli source.
+
+Preferred distinction:
+
+~~~text
+.qli
+  = what computation is requested
+
+target / hardware profile
+  = where and how that computation may be realized
+~~~
+
+The same accepted .qli program may have:
+
+- several valid target realizations;
+- no valid realization on a selected target;
+- different resource costs on different targets.
+
+That is a Physical Realizability / Resource Safety question, not a change in the source program's meaning.
+
+Related:
+- #120 — semantic unitarity vs same-wire realizability
+- #121 — isometry dilation/workspace
+- #122 — controlled semantics vs realizability certificate
+- #123 — target exact-domain membership
+- #124 — instrument semantics vs target measurement/feed-forward
+- #127 — realizability/resource theorems over closed specializations
+
+## 9. Package/build metadata are outside executable semantics
+
+Qlirgo manifests, qrate metadata, lock/build records, toolchain pins, cache keys, package provenance, and similar files may determine:
+
+- what source is selected;
+- which dependencies are used;
+- which edition/toolchain applies;
+- reproducibility inputs;
+- build orchestration.
+
+They must not independently define quantum program semantics.
+
+A manifest may select the program environment; it must not function as an undeclared semantic escape hatch.
+
+## 10. Documentation is descriptive, not evidence
+
+Documentation comments and generated docs may live next to .qli source, but prose is not semantic authority.
+
+For example, a comment claiming that an operation implements the exact Fourier transform does not itself establish exact Fourier semantics.
+
+qlidoc and related tooling must distinguish:
+
+- prose description;
+- machine-readable declaration;
+- checked semantic contract;
+- test status;
+- proof/evidence status.
+
+## 11. Generated IR, caches, and serialized artifacts are derivative
+
+IR, Core serialization, optimizer caches, compiled artifacts, proof caches, analysis snapshots, and build outputs are derived artifacts.
+
+They must carry enough identity/provenance to be checked against their source/toolchain context.
+
+They must not become an alternate source of truth merely because they are machine-generated.
+
+If such an artifact is allowed to bypass normal source checking, that bypass is part of the trusted kernel and must be admitted explicitly.
+
+## 12. Define one-way authority flow
+
+The 0.3.0 Reference should distinguish at least these classes:
+
+### A. Semantic authority
+
+- Constitution / normative language specification;
+- admitted primitive kernel;
+- accepted .qli source under that language.
+
+### B. Evidence authority
+
+- Lean proofs;
+- checked certificates;
+- verifier outputs.
+
+These may justify acceptance claims, but do not redefine the source denotation.
+
+### C. Observational/analysis authority
+
+- QLT;
+- QDB;
+- QCP;
+- diagnostics;
+- resource reports.
+
+These may report properties under explicit profiles.
+
+### D. Realization authority
+
+- target profiles;
+- lowerings;
+- synthesis/decomposition evidence;
+- hardware mappings.
+
+These justify implementation/realizability claims.
+
+### E. Organizational authority
+
+- qrate/Qlirgo metadata;
+- docs;
+- package provenance;
+- build records.
+
+These organize artifacts but do not create executable semantics.
+
+The boundary should make illegal authority escalation explicit.
+
+## 13. Forbidden authority escalations
+
+0.3.0 should explicitly reject patterns such as:
+
+- QLT pass → production semantic evidence;
+- docstring → verified Meaning;
+- backend intrinsic → new semantic primitive;
+- target native gate → source-language builtin;
+- optimizer recognizer → proof of source meaning;
+- opaque FFI body → trusted Qleisli operation without contract/evidence;
+- generated IR → accepted program solely because it came from the compiler;
+- package metadata → hidden semantic rule;
+- QDB diagnosis → verifier acceptance;
+- meta expansion → unchecked trusted IR.
+
+## 14. Relationship to #167
+
+#167 and this issue define orthogonal axes.
+
+### #167 — primitive / derived
+
+~~~text
+What must the language trust?
+~~~
+
+### This issue — .qli / external artifact
+
+~~~text
+What is allowed to construct executable Qleisli meaning?
+~~~
+
+Together:
+
+~~~text
+primitive kernel
+     ↓
+accepted .qli
+     ↓
+stdlib / user code / generated code
+     ↓
+external proofs, tests, analysis, lowering and packaging
+~~~
+
+This pair should form the central semantic architecture of 0.3.0.
+
+## Non-goals
+
+This issue does not require 0.3.0 to finish:
+
+- QLT;
+- QDB;
+- QCP;
+- full meta-layer implementation;
+- qlirgo/qrate ecosystem;
+- target backends;
+- all Lean proofs.
+
+It requires the **authority boundaries** for those future components to be fixed before they grow.
+
+## 0.3.0 acceptance criteria
+
+- [x] The Language Reference defines what semantic authority belongs to accepted .qli.
+- [x] The Reference distinguishes semantic, evidence, observational, realization, and organizational artifacts.
+- [x] Only the language/kernel and accepted .qli may construct executable Qleisli meaning.
+- [x] Meta/static generation is specified to produce ordinary checkable Qleisli rather than trusted IR.
+- [x] QLT is explicitly observational/testing authority only.
+- [x] Lean proofs/certificates establish claims without redefining source denotation.
+- [x] QDB/QCP/analysis tools cannot upgrade program acceptance.
+- [x] FFI/opaque providers require explicit contracts/evidence or primitive admission.
+- [x] Optimizers and backend intrinsics cannot create semantic authority.
+- [x] Target/hardware profiles affect realizability/resources, not logical source denotation.
+- [x] Package/build metadata cannot act as hidden semantic rules.
+- [x] Documentation prose cannot become semantic evidence.
+- [x] Generated IR/caches/artifacts retain source/provenance identity and do not automatically become authoritative.
+- [x] Forbidden authority-escalation examples are documented and regression-tested where practical.
+- [x] #167 and this issue are cross-referenced as the two primary 0.3.0 semantic-boundary umbrellas.
+
+## Release principle
+
+The desired 0.3.0 rule is:
+
+> **Qleisli source defines the computation. External artifacts may explain, test, prove, transform, package, or realize it—but they do not silently become the language.**
+
+Or more compactly:
+
+~~~text
+.qli constructs meaning.
+Everything else must declare what kind of authority it has.
+~~~
+
+## Design intent
+
+This boundary prevents Qleisli from slowly acquiring hidden second languages:
+
+- a macro language that can bypass checking;
+- a test language that becomes an oracle;
+- a proof system that changes program meaning;
+- an FFI that acts like unsafe;
+- a backend whose intrinsics redefine semantics;
+- a package manifest that controls meaning by configuration.
+
+The goal is one semantic center:
+
+> **Qleisli programs are Qleisli. Everything around them must remain visibly around them.**
+
+
+## Retrospective constitutional impact — 2026-10-05
+
+This record covers #169–174, #230, #231 and #255 under the existing authority hierarchy and adopted QS-2026-01, PR-2026-01 and RS-2026-01 interpretations. It adds no semantic authority to packaging, analysis, build or distribution tools and does not complete the original acceptance criteria.
+
+**Scope and distinct risks**
+
+| Issue | Obligation that must remain visible |
+|---|---|
+| #169 | Separate source semantics, checked evidence, observation, realization and organization. Generated IR, proof files, documentation, analysis success and backend recognition cannot manufacture acceptance. |
+| #170 | A qrate distributes versioned programs; packaging cannot introduce primitives, weaken checking or privilege bundled `std` semantically. |
+| #171 | The official bundled `std` follows the exact toolchain product release, including prereleases. Distribution coupling is not proof or semantic privilege. |
+| #172 | Qrate identity, canonical module/declaration identity and physical file location are distinct. Storage movement and namespace changes must not be conflated. |
+| #173 | Build actions and external generators remain untrusted producers. Resolution/installation must not silently authorize host execution, trusted IR or runtime FFI. |
+| #174 | Program-selecting configuration belongs in resolved identity; hashing it does not turn configuration into language semantics. Undeclared feature semantics or ambient inputs cannot become hidden authority. |
+| #230 | Preserve the three product-version domains and separate them from edition, protocol, schema, qrate and target-model identities. Future bundled tools gain no authority through version equality. |
+| #231 | Exact distribution identity and explicit compatibility metadata must support coherent release-train selection/update/rollback. Similar version numbers cannot establish compatibility or authorize fallback. |
+| #255 | A source tree explicitly selects its constitutional edition. That selection must reach authoritative acceptance together with the applicable current profile/checker; release updates cannot silently change it. |
+
+**QS / PR / quantitative RS impact**
+
+QS is affected when source/dependency/configuration selection changes the program, or when a cache, generator, proof object or foreign provider attempts to bypass ownership/effect/meaning checks. PR is affected when target selection, lowering or distribution substitutes an artifact or implementation not covered by the checked correspondence. Quantitative RS is affected when selected providers, configuration, target models or foreign execution alter resource behavior without revalidated finite bounds.
+
+These are applications of the existing interpretations. Metadata equality, package origin, build success, installation success and analysis output prove none of those semantic obligations by themselves.
+
+**Definitions, assumptions and actual binding**
+
+The normative objects remain accepted `.qli` meaning, its exact interfaces and contracts, explicitly classified external artifacts, canonical resolved program identity and the separate release/edition/protocol/schema coordinates. Any supported program-changing dependency or configuration closure must be recorded. Toolchain and native checker compatibility, pinned proof environment, filesystem/input identity and declared target assumptions must be explicit; packaging cannot conceal additional trusted axioms.
+
+Current source loading and qrate-root selection produce frontend inputs. Rust/Python/foreign producers ultimately submit untrusted artifacts to the relevant native Lean gate. Ordinary checked handles retain the checked artifact/request and checker path; the native dispatcher enforces the paired product version. No package or build mechanism may substitute a producer assertion for that decision. Source correspondence and any claimed target/resource correspondence require their own actual-artifact bindings.
+
+The two admitted QLV1 guarantees remain protected by the v4 ledger and fixed current-artifact identity verifier. Changes to packaging or identity formats cannot erase their historical scope or silently relabel evidence. Representation-changing reuse requires supported checked transport; the current verifier rejects unsupported changes.
+
+**Current implementation and gaps**
+
+Implemented pieces include schema-2 explicit-edition validation for filesystem source trees, bounded/anchored source loading, ordinary bundled-source checking, Cargo-authoritative version synchronization, native product-version rejection and exact-source/bundle/release evidence machinery.
+
+These pieces do **not** complete the ecosystem contracts:
+
+- `project/edition.rs` explicitly treats edition as frontend configuration. `Project` does not retain that selection, and the current ordinary QLV1 packet/native dispatcher do not independently transport and validate the manifest-selected edition. #255 therefore still needs end-to-end edition/artifact/acceptance binding, including the explicit in-memory/snippet API rule.
+- Root-relative module resolution is not a completed resolved qrate/dependency/configuration identity model or generalized storage-independent evidence model.
+- Existing product synchronization and native bundle manifests do not implement the future whole qlirgo/QLT/QDB/QCP compatibility and atomic-release-train machinery.
+- No completed general source-preservation, production-wide PR or quantitative-RS theorem follows from these organizational checks.
+
+The future concrete backend schema, QLT, QDB, QCP, registry and installer implementations retain their existing version scope. Their authority boundaries must be fixed now without pretending those products already exist.
+
+**Edition and human decision boundary**
+
+The current migration remains edition 2026; edition is a constitutional regime, not a syntax version. Implementing the already recorded package/authority distinctions is ordinary engineering. A new primitive, semantic escape hatch, newly applicable constitutional interpretation or proposed guarantee admission requires its actual designated human decision and evidence process. Tool installation, matching versions, CI results and this retrospective analysis cannot supply that judgment.
+
+
+## Beta criterion audit — 2026-10-19
+
+All 15 original criteria are satisfied for the **authority-boundary specification** at [main `7760aa3`](https://github.com/MGYamada/Qleisli/commit/7760aa3569984ff33f50e71c06535fd87f3564d0), via #420. The [normative Reference](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/docs/src/reference/packages-and-artifacts.md) and existing primitive/admission/realization contracts establish the boundary. #170, #172, #173 and #174 have separate criterion-by-criterion completion audits; #167/#369 already completed the ordinary-source primitive/derived cutover.
+
+| Criterion, original order | Evidence |
+| --- | --- |
+| 1 | Source and five artifact roles states the authority of accepted ordinary .qli. |
+| 2 | The five-row table separates semantic, evidence, observation, realization and organization. |
+| 3 | Only the normative language/kernel and accepted .qli define executable meaning. |
+| 4 | Generated source/typed structure uses ordinary checking; static/meta expansion cannot inject trusted IR. |
+| 5 | QLT is external bounded observation/testing, without production acceptance authority. |
+| 6 | Checked proofs establish claims about subjects; removing a proof does not change denotation. |
+| 7 | QDB/QCP and analyses cannot upgrade acceptance or replace evidence. |
+| 8 | Opaque/native/plugin execution needs explicit contracts/evidence/capabilities or primitive admission. |
+| 9 | Recognizers, optimizers and backend intrinsics implement existing meanings; no source equation by recognition. |
+| 10 | Targets select realization/resource contracts without silently changing source denotation. |
+| 11 | Package/configuration/build records select and identify inputs; no hidden semantic rules. |
+| 12 | Docs distinguish prose, declarations, contracts, observations and evidence; doc claims are not equations/proofs. |
+| 13 | Derivative IR/cache paths require actual subject/context binding and independent checks; output validity is not source preservation. |
+| 14 | Forbidden escalation examples are explicit. Practical retained regressions include invalid documentation claims, false pure labels, ordinary std visibility and unused manifest metadata; complete native-enabled Rust coverage passes. |
+| 15 | The chapter links #169 and the primitive boundary/#167; #167's Related list now reciprocally identifies #169. |
+
+Practical regression sources include [invalid docs versus ordinary check](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/tests/cli.rs), [direct/transitive false effect annotations](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/tests/body_effects.rs), [ordinary bundled-source visibility](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/tests/project.rs) and [manifest metadata without acceptance changes](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/tests/review_v024.rs). These are bounded regressions, not general preservation proofs. The existing remaining Rust command includes all four targets and [passes all ten declared commands](https://github.com/MGYamada/Qleisli/actions/runs/39131240742/job/117688373622), with native-skip rejection retained. No nonexistent QLT/QDB/FFI implementation is claimed tested.
+
+Final audit of #421 CI: 42 successes; only the two expected nonrelease readiness jobs skipped. Checked head `299e8f47bf9fb1973dd6ad2aba46fdee6a610f97` and the actual main merge have identical tree `6bd7c71e7f5ed89e7ff5682678de379e175effa8`. Full producer/aggregate artifact checks and documentation passed. Constitutional continuity against reviewed base `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb` verifies current source/evidence identity; it is not a fresh proof or human adequacy judgment.
+
+Closing this umbrella fixes the requested authority rules. It does not finish QLT/QDB/QCP, metaprogramming, a qrate ecosystem, general FFI/backend implementation or the explicitly excluded proofs. #171, #255, the two scoped QLV1 continuity duties and broader QS/PR/RS/EXACT obligations remain open under their own acceptance criteria. No version/dependency change, release approval or publication follows. Earlier gap descriptions remain historical observations rather than claims of current ecosystem completion.

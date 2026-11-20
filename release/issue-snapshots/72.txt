@@ -1,0 +1,228 @@
+## Status
+
+**Important semantic boundary for Qleisli 0.3.0.**
+
+Related:
+- #67 — scoped linear quantum ownership without implicit destruction
+- #68 — syntax must expose real quantum distinctions
+- #29 — exclusive `excl` access
+- #69 — coherent-control access
+- #70 / #157 — exact clean/dirty restoration and local Soundness
+- #280 — quantitative Resource Safety
+- #344 — `Observe` / `Channel` version boundary
+
+## Problem
+
+Once Qleisli distinguishes
+
+```text
+excl   -> exclusive arbitrary access
+ctrl   -> basis-preserving coherent access
+clean  -> known-state ancilla contract
+dirty  -> arbitrary-state exact-restoration contract
+```
+
+the next question is unavoidable:
+
+> **When may the language itself synthesize uncomputation?**
+
+"Quantum bookkeeping is the language's responsibility" does not mean that the compiler should attempt a general inverse-synthesis problem for every program.
+
+The language needs a deliberately bounded rule that is:
+
+- sound;
+- understandable;
+- mechanically checkable;
+- predictable for humans and LLMs;
+- small enough for the 0.3.0 semantic core.
+
+## Proposed principle
+
+Automatic uncomputation is a **derived convenience under a restricted proof rule**, not a general semantic right.
+
+The source-level exact semantic restoration obligation always remains authoritative:
+
+```text
+clean -> must prove clean return
+dirty -> must prove exact restoration
+```
+
+The compiler may discharge some clean obligations automatically when it has sufficient structured provenance.
+
+It must not silently weaken dirty restoration into a heuristic notion of "probably restored".
+
+## Clean automatic uncomputation
+
+For clean ancillas, permit compiler-generated uncomputation only for a deliberately restricted class of computations whose inverse can be derived structurally and whose dependencies satisfy the coherent-access restrictions.
+
+A candidate initial rule may use information such as:
+
+- the ancilla was created by a clean declaration;
+- the computation that produced its temporary value is reversible in the accepted effect class;
+- all retained dependencies are available;
+- dependencies whose basis sectors the rule requires to remain available satisfy the admitted coherent-control / basis-preserving contract; phase kickback and entanglement must still be accounted for;
+- no measurement, discard, reset, or other irreversible effect crossed the computation;
+- exact phase and axis order are retained;
+- the elaborator can synthesize an inverse that is independently verified like ordinary code.
+
+The exact rule should be specified formally rather than described as compiler magic.
+
+## Dirty restoration
+
+Dirty ancillas require a stronger contract.
+
+A dirty scope must establish that the net denotation acts as identity on the dirty resource for every initial state, including states entangled with an external reference.
+
+Therefore 0.3.0 should **not** promise general automatic dirty-ancilla uncomputation.
+
+Acceptable initial mechanisms include:
+
+- explicit compute/uncompute structure;
+- a syntactically reversible region whose inverse is mechanically derived;
+- library operations carrying independently checked restoration evidence;
+- another structural rule that proves identity on the dirty interface.
+
+The verifier, not a heuristic optimizer, decides acceptance.
+
+## Relationship to `excl` and Resource Safety — 2026-10-08
+
+`qft(excl q)` is an owner-preserving in-place quantum-state update. Ending the access returns authority over the updated owner; it does not request inverse QFT or create a restoration obligation for ordinary live data. An inverse is generated only where an explicit clean/dirty or structured-uncomputation contract requires it and the admitted rule proves it valid.
+
+Clean/dirty discharge belongs to Soundness (#70/#157). Typing or structured rules are proved ways to establish that semantic obligation automatically; supported independent evidence can establish the same obligation. An `excl` annotation alone proves neither cleanup nor its impossibility. If a dependency receives arbitrary coherent updates, the restricted rule needs evidence that its actual restoration premises still hold; otherwise automatic discharge fails and explicit verified structure is required.
+
+Generated uncomputation is ordinary work for quantitative RS (#280). Account for its gates, inverse dependencies, live workspace, pending owners and physical routing in the actual lowered program and realization. Keep each owner live for its real logical lifetime; ending an access or returning surface `Unit` does not release it. Compare with the explicit compute/use/uncompute artifact under the same model and schedule, or validate the replacement bound for the actual generated artifact without relaxing the declared budget/capacity contract.
+
+This is the same checked-elaboration principle as #29. A proved cleanup rule does not establish a resource bound by itself, and successful resource accounting does not prove cleanup.
+
+## Relationship to `ctrl`
+
+The coherent-control access form is valuable because it gives the compiler a stronger dependency fact than an ordinary `excl` access.
+
+A `ctrl` input may participate in a restricted automatic-uncomputation rule precisely because the computation is known to be block-diagonal / basis-preserving on that input.
+
+However:
+
+> `ctrl` does not mean unchanged state.
+
+Phase kickback remains observable and exact phase must be preserved.
+
+Any uncomputation rule must therefore be stated in denotational terms, not in terms of "read-only inputs".
+
+## Relationship to `clean`
+
+A clean declaration creates an obligation, not an implicit promise that cleanup will succeed.
+
+The desired user experience may be:
+
+```text
+write forward computation
+        ↓
+compiler recognizes a supported reversible provenance pattern
+        ↓
+compiler generates inverse
+        ↓
+ordinary verifier checks the result
+```
+
+If the pattern is unsupported, compilation should fail with an explanation or require explicit uncomputation.
+
+There is no fallback to implicit discard/reset.
+
+## Relationship to `dirty`
+
+For dirty ancillas the bar is higher because arbitrary unknown state and reference entanglement must be preserved.
+
+The language should prefer a simple, strong contract over aggressive inference:
+
+```text
+dirty returned
+    =>
+net action on dirty interface is identity
+```
+
+No equality-only-on-basis-states shortcut is sufficient.
+
+## Trusted boundary
+
+Automatic uncomputation must not enlarge the trusted core.
+
+The architecture should be:
+
+```text
+source
+  ↓
+untrusted elaboration / inverse synthesis
+  ↓
+ordinary Core / evidence
+  ↓
+authoritative independent verification
+```
+
+A bug in the automatic-uncompute pass may cause rejection, but it must not cause a semantically invalid cleanup or an unsupported resource claim to be accepted. Acceptance of a proposed Core object alone does not establish source preservation: the claimed source contract, generated code and checked evidence must be connected at the production boundary.
+
+## Diagnostics
+
+When automatic uncomputation cannot discharge a clean obligation, diagnostics should explain the broken premise.
+
+Examples:
+
+```text
+error: clean ancilla cannot be automatically uncomputed
+reason: an arbitrary update of dependency 'q' lacks the restoration
+        evidence required by this structured rule
+help: preserve the required basis sectors where valid,
+      or provide explicit verified uncomputation/restoration evidence
+```
+
+```text
+error: dirty ancilla restoration is not proven
+help: provide explicit reversible structure or a checked restoration contract
+```
+
+The diagnostic should never say merely "borrow error" for these failures.
+
+## Non-goals
+
+0.3.0 does not need:
+
+- a complete algorithm for discovering arbitrary uncomputation;
+- optimization-equivalent circuit cancellation;
+- semantic equivalence solving for arbitrary unitary programs;
+- a trusted inverse synthesizer;
+- heuristic acceptance;
+- implicit reset/discard on failure.
+
+## Acceptance criteria
+
+- [ ] The Language Reference distinguishes ancilla obligations from automatic-uncomputation conveniences.
+- [ ] Clean automatic uncomputation has a finite, explicit admissibility rule.
+- [ ] The rule accounts for access/dependency provenance, effects, exact phase, and axis order.
+- [ ] `ctrl` inputs are treated as basis-preserving coherent dependencies, not unchanged values.
+- [ ] Dirty restoration requires identity on the dirty interface for arbitrary/reference-entangled input.
+- [ ] General automatic dirty-ancilla uncomputation is not promised by 0.3.0.
+- [ ] Unsupported cases fail closed and request explicit structure/evidence.
+- [ ] Compiler-generated inverse code is independently verified through the ordinary acceptance path.
+- [ ] No new trusted acceptance primitive is introduced.
+- [ ] Diagnostics identify which uncomputation premise failed.
+- [ ] Regression tests include phase-kickback cases and dirty ancillas entangled with reference systems.
+- [ ] Ordinary `excl` access ending never inserts an inverse or treats the surviving data owner as released.
+- [ ] Proved structural/typing rules and supported certificates discharge the same exact semantic obligation; explicit code is also checked.
+- [ ] RS evidence includes generated inverse work, live workspace and routing, with correspondence to the actual output artifact.
+- [ ] Counterexamples reject omitted cleanup cost and unsupported restoration assumptions without weakening declared resource budgets.
+
+## Compact formulation
+
+> **The language may synthesize uncomputation; it may never assume it.**
+>
+> **Clean obligations may be discharged automatically under a restricted rule.**
+>
+> **Dirty obligations require exact restoration evidence.**
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #29 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Structured uncomputation.** A compute/uncompute structure must bind the actual computed operation, protected dependencies and checked inverse to the cleanup obligation. A matching name or heuristic inverse does not authorize discarding or resetting an owner. Bounded provenance and local proofs must apply to the production lowering; quantitative workspace bounds are separate. General structured-conjugation implementation and rejection tests remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

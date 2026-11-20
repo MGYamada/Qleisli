@@ -1,0 +1,228 @@
+## Status
+
+**Constitutional process/design issue for Qleisli 0.3.0.**
+
+Related:
+- #129 — Qleisli 2026 Constitution draft
+- #134 — normative authority hierarchy
+- #135 — monotone ledger, semantic transport and current acceptance identity
+- #149 — binding Guardian interpretation
+- #136 — constitutional kernel and theorem boundary
+- #138 — admission rules for new Fundamental Theorems
+
+## Problem
+
+The Constitution constrains Qleisli only if ordinary language evolution is routinely checked against the Fundamental Theorems.
+
+Today, an enhancement can be discussed in terms of syntax, ergonomics, implementation difficulty, or local semantics without explicitly recording whether it:
+
+- preserves a Fundamental Theorem;
+- strengthens it;
+- changes one of its premises;
+- adds a new normative dependency;
+- changes the constitutional kernel;
+- adds a new trusted assumption.
+
+That makes constitutional reasoning optional exactly where it should become habitual.
+
+## Proposal
+
+Beginning with the 0.3.0 design process, every language-level feature, breaking semantic change, or constitutional-kernel change should include a short **Fundamental-Theorem impact analysis**.
+
+A candidate template is:
+
+```text
+Constitutional impact
+
+Qleisli Soundness:
+  preserves / strengthens / affects / not applicable
+
+Physical Realizability:
+  preserves / strengthens / affects / not applicable
+
+Resource Safety:
+  preserves / strengthens / affects / not applicable
+
+Constitutional-kernel change:
+  yes / no
+
+New normative definition:
+  yes / no
+
+New trusted assumption:
+  yes / no
+
+Ledger impact:
+  existing entries / new binding interpretation / none with reason
+
+Current acceptance/artifact binding:
+  unchanged / changed with preservation evidence
+
+Semantic transport:
+  existing / new obligation / not needed with reason
+
+Proof coverage:
+  discharged by existing proof / new proof required / pending
+
+Edition impact:
+  same edition / requires edition review
+```
+
+The exact form may be implemented as an issue template, PR template, checklist, or generated metadata, but the semantic requirement should be normative.
+
+## Scope
+
+The requirement should apply at least to changes involving:
+
+- public syntax with semantic consequences;
+- typing/effect/ownership rules;
+- static evaluation;
+- `Op`, `Meaning`, traits/capabilities, and constraints;
+- measurement/instrument semantics;
+- realizability rules;
+- resource semantics;
+- the constitutional core/checker/accepted representation;
+- protected normative definitions.
+
+Pure documentation, diagnostics wording, test refactoring, and implementation-only changes outside the constitutional boundary may use a lightweight “no constitutional impact” declaration.
+
+## Important distinction
+
+This mechanism does **not** require every feature author to provide a new formal proof.
+
+Its purpose is to force one explicit design question:
+
+> **How does this change live under the three Fundamental Theorems?**
+
+Existing proofs may already cover a change. The author records that coverage and affected ledger entries; the Guardian has final interpretation authority when a new constitutional case or dispute arises. Routine changes covered by existing interpretations do not require a new individual ruling.
+
+Newly activated duties must be discharged before corresponding certification. Pending obligations must remain explicit under #129 Article VIII. Later interpretation cannot waive a discharged ledger guarantee, and changing a premise cannot excuse currently accepted cases from its protection.
+
+The impact analysis must distinguish a same-edition extension or formal strengthening from constitutional amendment. An edition transition does not override Article IV's non-weakening rule.
+
+## Acceptance criteria
+
+- [x] Define a standard Fundamental-Theorem impact section.
+- [x] Define which issue/PR categories must include it.
+- [x] Require explicit treatment of all three Fundamental Theorems.
+- [x] Require disclosure of new trusted assumptions and normative definitions.
+- [x] Require explicit current-boundary, ledger, artifact-binding, and semantic-transport impact.
+- [x] Identify applicable binding interpretations and proof status; preserve the Guardian's final interpretation authority.
+- [x] Define when a change escalates to constitutional or edition-level review.
+- [x] Add the template/checklist to the repository development process.
+- [x] Apply the analysis retroactively to the 0.3.0 core-design umbrella issues before release.
+
+## Core principle
+
+> **The Constitution should become a design procedure, not merely a document.**
+
+A new Qleisli feature should be justified not only by what it enables, but by where it sits under Soundness, Physical Realizability, and Resource Safety.
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and, at that initial checkpoint, zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.
+
+
+Repository process now has `.github/ISSUE_TEMPLATE/language-change.md` and `.github/PULL_REQUEST_TEMPLATE.md`, linked from CONTRIBUTING. They require QS/PR/quantitative RS, definitions/assumptions, actual acceptance/artifact binding, ledger/transport, proof status and edition/authority analysis for affected changes; no-impact declarations need a specific reason. Retroactive coverage of all core-design umbrellas remains open.
+
+
+## Scoped guarantee admission and production review — 2026-10-04
+
+The appointed human Guardian explicitly answered **「2件とも提示された範囲・前提で妥当と認め、保証登録を承認する」** for the two exact scoped proposals:
+
+- `QS-QLV1-OWNERSHIP-2026-01`: ownership of the original ordinary QLV1 decoded root.
+- `QS-QLV1-SCOPE-2026-01`: classical lexical scope of that same actual accepted root.
+
+Reviewed proposal: `governance/proposals/initial-guarantees.json`, SHA-256 `bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02`. Subsequent human adequacy/admission event: `governance/guarantees/initial-2026-admission.json`, SHA-256 `9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2`.
+
+The live ledger now records **two discharged scoped QS guarantees and three pending broader obligations**. QS-2026-01, PR-2026-01 and RS-2026-01 are not fully discharged. The admitted theorems bind actual `Protocol.Validity.check bytes` success to an `Acceptance` witness, its decoded artifact and selected original root. Their independent OwnershipSafe/ScopeSafe properties do not certify source lowering, Rust re-materialization, native compiler/runtime, hierarchy, native-contract, PR or quantitative RS.
+
+The exact reviewed source closure and registry are preserved beside the initial validation. Initial proof evidence includes both Lean builds/audits, fresh kernel/Main replay and exact elaborated theorem/axiom output. The initial proposal checker passed 18 regressions and live Lean-output comparison; an independent review found no scope/premise mismatch. The subsequent v3 ledger/current-evidence enforcement is being integrated and tested separately. Historical approved meaning and mutable current implementation evidence are distinct; unrelated source changes must refresh current proof binding, while changes of semantic representation require justified transport.
+
+The production inventory now distinguishes **21 paths and all nine native modes**, with 12 passing coverage regressions. It separates ordinary fresh acceptance, hierarchy/component checking, proposal-only output, source configuration, display and host execution. The corresponding Reference is `docs/src/reference/production-boundary.md`; S05-C1–C5 remain open.
+
+These are working-tree results. No integration commit, full hosted CI, completed issue, release readiness or publication is claimed.
+
+
+## Retrospective coverage and acceptance audit — 2026-10-05
+
+The process below implements this Issue's original conditions. Earlier dated checkpoints above remain historical. This record neither completes the covered feature Issues nor changes their acceptance criteria.
+
+### Fixed 108-Issue coverage
+
+Every member of the approved 108-Issue set has exactly one primary impact assessment in this table; cross-cutting obligations remain cross-referenced. The twelve feature-anchor assessments were posted to the live Issues and each identifies its children, applicable interpretations, QS/PR/RS, definitions/assumptions, production boundary, ledger/transport, current evidence gaps and human/edition escalation. The fourteen institutional Issues are assessed below.
+
+| Primary assessment | Scope | Selected Issues |
+|---|---|---|
+| #140 | Constitution, authority, guarantees and release | #129 #134 #135 #136 #137 #138 #139 #140 #141 #142 #149 #154 #280 #281 |
+| #27 | Type structure and coherence | #22 #27 #43 #44 #84 #100 |
+| #28 | Static language and basis construction | #28 #40 #63 |
+| #30 | Total basis computation and checked reversible synthesis | #30 |
+| #45 | Operations, Meaning, effects and constraints | #31 #39 #45 #46 #47 #83 #89 |
+| #29 | Access, lifetimes and workspace | #29 #69 #70 #71 #72 #73 #74 #75 #76 #77 #79 #85 #86 #156 #157 #158 #198 #303 |
+| #37 | Control and instruments | #37 #64 #81 #87 #88 #125 #194 #195 #215 |
+| #32 | Surface language and common frontend | #25 #32 #33 #34 #35 #57 #67 #68 #80 #82 #196 #250 |
+| #120 | Realization and quantitative resources | #120 #121 #122 #123 #124 #126 #127 #161 #162 #163 #164 #165 |
+| #41 | Primitive/stdlib responsibilities | #41 #58 #65 #131 #167 |
+| #169 | Qrate, artifacts, edition and version trains | #169 #170 #171 #172 #173 #174 #230 #231 #255 |
+| #225 | Diagnostics and display | #133 #224 #225 #226 #237 #245 #270 #272 |
+| #48 | Reference and explanation | #48 #234 #253 #254 |
+
+For conservative coverage of explicitly named core parents, twenty-six Issues additionally carry a scoped application of their primary assessment: #31 → #45; #46 → #45; #47 → #45; #89 → #45; #69 → #29; #70 → #29; #72 → #29; #85 → #29; #86 → #29; #87 → #37; #88 → #37; #67 → #32; #80 → #32; #196 → #32; #250 → #32; #127 → #120; #161 → #120; #164 → #120; #131 → #41; #167 → #41; #170 → #169; #230 → #169; #231 → #169; #255 → #169; #253 → #48; #254 → #48. Together with the twelve primary feature anchors, all thirty-eight audited core-design parents have their own impact record. These concise applications incorporate the full shared fields and record the parent's distinctive risk; they do not replace its original requirements.
+
+### Institutional impact: the fourteen Issues indexed under #140
+
+This maintainer assessment applies the actual human ratification, appointment and QS-2026-01 / PR-2026-01 / RS-2026-01 adoption. It records their application without creating a new interpretation, guarantee or release authorization.
+
+| Issues | Category and distinct duties |
+|---|---|
+| #129 #149 | Preserve the exact ratified text, appointment and human Office's institutional powers, distinct from ordinary maintenance. Ratification is not production enforcement or proof completion; no later council/title transition is claimed. |
+| #134 #137 #138 | Preserve the five authority layers and edition 2026 as constitutional regime. The human-approved external navigation criterion does not alter the Constitution. Native/artifact edition propagation remains pending. The completed new-jurisdiction policy adds no fourth theorem jurisdiction. |
+| #135 #141 | Preserve admitted scope, premises and meaning against current acceptance; enforce ledger continuity and actual evidence identity. Existing identity transport and CI replay do not implement arbitrary representation transport or whole-current-scope enforcement. |
+| #136 | Account for actual production checker roots and accepted objects. Neither the 21-path/nine-mode inventory nor valid IR alone proves source, decoding, runtime or export correspondence. No provider/frontend/backend acquires alternate acceptance authority. |
+| #139 #280 #281 | Apply evolving formalizations under the completed jurisdiction policy, forward correspondence for actual admitted realizations, and quantitative resource obligations. Ownership, finite examples and checker limits do not discharge PR or quantitative RS. |
+| #140 | Require impact review for semantic language, static/type/effect/ownership, Meaning/capability, instrument, realization/resource, acceptance and protected-definition changes. A no-impact declaration needs a reason; retrospective analysis is not feature completion. |
+| #142 | Bind every selected acceptance criterion and release claim to current evidence, actual artifacts and the exact release run. Scoped pre-v1 readiness, full v1 conformance, human publication approval and publication are distinct. |
+| #154 | Require irreducible semantic need, independent contracts and explicit trust/proof consequences for each primitive. Performance, library placement, backend support or inventory updates cannot authorize a primitive or project axiom. |
+
+**QS / PR / quantitative RS.** The institutional work affects the application and enforcement of all three duties: interpreted typing, ownership, scope, effects and semantics; correspondence of actual admitted realizations; and explicit quantitative bounds and preservation. The duties remain distinct. A policy decision does not prove any of them.
+
+**Definitions and trusted assumptions.** Institutional jurisdictions are fixed by the ratified Constitution; their current binding scope is in the separately adopted interpretation packet. This assessment changes neither and adds no primitive, mathematical definition or trusted assumption. Source derivations, compiled native execution, decoding, source lowering and runtime/export correspondence retain their separately disclosed boundaries. Hashes identify records; they do not independently authenticate a human transcript or judge formal adequacy.
+
+**Current acceptance, ledger and semantic transport.** The v4 ledger contains exactly two discharged entries, QS-QLV1-OWNERSHIP-2026-01 and QS-QLV1-SCOPE-2026-01, plus the three broader pending obligations. The admitted guarantees protect the original decoded root of successful ordinary QLV1 checking. They do not automatically cover hierarchy, all source programs, complete effect/CPTP behavior, realizations or quantitative resources. The fixed verifier connects the protected properties to current Protocol.Validity.check, the original-byte/root Acceptance witness and its exact elaborated semantic closure. Trusted-base continuity and registered current evidence preserve the admitted identities. Live replay is distinct from source-only checking. Supported identity transport permits specified proof/formatting maintenance; changed protected meanings, witness fields, dependencies or representations fail closed and require justified checked transport. Old closed propositions, refreshed hashes or human review do not replace preservation.
+
+**Proof and release state.** The two admitted entries remain the entire discharged ledger. Bounded tests, component theorems, inventories and audits have their stated scope. Whole-current-scope enforcement, general source/runtime/export correspondence, end-to-end edition binding and broader QS/PR/RS remain pending. The implemented scoped 0.3.0 readiness checker requires trusted requirements, complete criterion evidence and matching run/artifact identities; it permits truthful scoped-pre-v1 disclosure and rejects a full-conformance claim. No complete real release packet exists. Pending broader obligations are neither discharged nor an unconditional prohibition on every scoped prerelease; v1 retains the applicable full-discharge requirement.
+
+**Edition and human escalation.** Covered routine changes require review under the adopted interpretations. New constitutional cases, applicability disputes, formalization adequacy and guarantee admission require the appropriate concrete human judgment and independent evidence. Such judgment cannot waive failed proof or weaken a guarantee. Text amendments follow Articles III–IV; strictly pre-v1 rectification additionally requires the actual Article IX conditions. No version/edition increment supplies approval. This work retains edition 2026 and all recorded approvals.
+
+Published evidence: [Constitution](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/CONSTITUTION.md), [adopted interpretations](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/governance/interpretations/initial-2026-reviewed.txt), [live ledger](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/governance/guarantees.json), [continuity verifier](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/scripts/check_guarantee_continuity.py), [production boundary](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/docs/src/reference/production-boundary.md), [primitive policy](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/docs/src/reference/primitive-boundary.md), and [scoped readiness checker](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/scripts/check_release_ready.py).
+
+### Original acceptance criteria: evidence
+
+| Criterion | Actual completion evidence |
+|---|---|
+| 1. Standard section | [Issue template](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/.github/ISSUE_TEMPLATE/language-change.md#L20) and [PR template](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/.github/PULL_REQUEST_TEMPLATE.md) provide the common fields. |
+| 2. Required categories | PR template and [CONTRIBUTING](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/CONTRIBUTING.md#L71) require it for the stated semantic, normative and acceptance changes; reasoned no-impact declarations cover genuinely unaffected changes. |
+| 3. All three Fundamental Theorems | Template has separate QS, PR and quantitative RS rows; the [normative Reference](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/docs/src/reference/authority.md#L134) requires each. |
+| 4. Assumptions and definitions | Both templates disclose new normative definitions and trusted assumptions; Reference makes this mandatory. |
+| 5. Current boundary, ledger, artifact and transport | The template separates these fields; Reference requires their actual current binding and preservation duties. |
+| 6. Interpretation, proof status and human authority | Applicable adopted interpretation and proof coverage are explicit; Reference and Constitution Article V reserve final interpretation/formal-adequacy judgment while preserving mechanical evidence requirements. |
+| 7. Constitutional/edition escalation | [Reference conflict/correction rules](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/docs/src/reference/authority.md#L170) distinguish routine covered work, new cases, amendment and strictly pre-v1 rectification; no edition change permits weakening. |
+| 8. Repository process | CONTRIBUTING requires and links both committed templates and the normative review process. These files are published at the linked commit; no claim is made that GitHub's default-branch template UI has already switched. |
+| 9. Retrospective application | The complete 108 partition, twelve live detailed analyses, twenty-six live scoped parent applications and institutional assessment above apply the process to the existing 0.3.0 core-design umbrellas. |
+
+Criteria 1–8 were independently checked by fetching their actual files at published commit 10553a9f94f6fd6a4555961244e0e9be41154f8f and matching Git blob identities. No unpublished navigation changes are required for those criteria. Criterion 9 passed independent fresh readback after posting: all twelve detailed anchors and twenty-six scoped records exist exactly once, all thirty-eight original parent bodies/criteria are preserved, and the thirteen-row index equals the approved 108-Issue set with no duplicates, omissions or additions. The #30 scope label was corrected to total basis computation/checked reversible synthesis, and #67's scoped prose grammar was corrected. All feature implementation, conformance, local proof and release gates remain attached to their own Issues; this process Issue does not discharge them.
+
+
+**Completion — 2026-10-05 (Asia/Tokyo).** All nine original process criteria are satisfied by the published repository process and the actual retrospectively reviewed Issue records above. This closes only #140. No covered feature is closed, acceptance criterion reduced, new binding interpretation adopted, guarantee discharged, full CI declared successful, or release authorized by this closure.
+
+
+## Prospective application and 109-Issue scope — 2026-10-05
+
+The maintainer explicitly corrected the release target to **109 Issues**, adding #311 to the original 108 without removing any target. The retrospective 108-Issue table and closure observations above remain the accurate historical snapshot. The new #311 case follows the same adopted process prospectively: its exact reviewed EXACT-2026-01 packet identifies QS/PR/RS impact, the actual human adoption, exact phase/control/cleanup and resource boundaries, unchanged constitutional/guarantee identities, numerical-assistance limits, pending proof/enforcement duties, required current artifact correspondence, and future-edition/non-weakening escalation. The two prior admitted guarantees and three initial obligations are retained; no fourth jurisdiction or new discharge is inferred.
+
+The source candidate, actual event and tested additive enforcement are recorded in #311, with implementation commit c89871fa490807c12150d70fdbac5c28763ae88b still local pending publication. This is an application of the established impact process, not completion of #311's publication checkpoint or the broader proof/feature work. #142's current 13-group index includes all **109** distinct selected Issues, with #311 in G02. The original eight rule/template criteria and retrospective process audit are not narrowed or retroactively relabeled as a 109-Issue observation.

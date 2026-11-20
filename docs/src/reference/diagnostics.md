@@ -14,6 +14,9 @@ This chapter covers the diagnostics of the `qleisli` CLI for edition 2026: the
 two routes that produce them, their JSON form, their codes, and the guidance
 that each language boundary gives.
 
+The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
+explains how to find the canonical rule behind a predictable classical mistake.
+
 ## Routes
 
 The CLI checks source through two routes. Both use the common checker. They

@@ -1,0 +1,111 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+The 0.3.0 specification should distinguish a mathematically valid `Observe` instrument from the capabilities required to realize that instrument on a concrete target.
+
+Related:
+- #31 — exact/approximate semantics boundary
+- #46 — semantic `Meaning` language
+- #87 — define `Observe` through measurement instruments and classical feed-forward
+- #103 — future QCP target profiles
+
+## Problem
+
+#87 correctly moves `Observe` toward instrument semantics.
+
+But a valid instrument does not imply that every target can execute it.
+
+A target may lack, for example:
+
+- mid-circuit measurement;
+- non-destructive measurement;
+- reset;
+- conditional/classical feed-forward;
+- sufficient classical latency semantics;
+- a required measurement basis or native realization;
+- dynamic control required by later branches.
+
+Therefore:
+
+```text
+instrument validity
+    !=
+instrument realizability on target P
+```
+
+This is the measurement-side analogue of the unitary realizability distinction in #120.
+
+## Required target capability model
+
+The Language Reference should reserve target-side capabilities sufficient to state whether an `Observe` program can be lowered.
+
+Conceptually:
+
+```text
+P supports Measurement(...)
+P supports Reset(...)
+P supports FeedForward(...)
+P supports DynamicControl(...)
+```
+
+Exact names and granularity may remain backend/profile design work, but 0.3.0 should fix that these are **realizability premises**, not source semantic facts.
+
+## Instrument correspondence
+
+A target implementation must correspond to the exact source instrument, including:
+
+- outcome space;
+- outcome probabilities;
+- post-measurement quantum state for each outcome;
+- retained/consumed owner interface;
+- branch-dependent classical feed-forward;
+- reference-system-safe semantics.
+
+Two target implementations with the same output distribution are not equivalent if they leave different post-measurement states and the source instrument distinguishes them.
+
+## Destructive vs retaining measurement
+
+Target realizability must preserve whatever distinction #87 adopts between:
+
+- destructive measurement;
+- state-retaining/projective measurement;
+- reset/reprepare sequences;
+- later general instruments.
+
+A target that supports destructive readout only must not silently claim a nondestructive instrument.
+
+## Acceptance criteria
+
+- [x] The Reference separates instrument semantics from target instrument realizability.
+- [x] Target measurement/reset/feed-forward support appears as explicit realizability premises.
+- [x] Instrument correspondence preserves post-measurement states, not merely classical distributions.
+- [x] Destructive and retaining measurements cannot be silently interchanged.
+- [x] Classical feed-forward and coherent control remain distinct mechanisms.
+- [x] Unsupported target capabilities cause target-lowering failure, not source type failure.
+- [x] Approximate instrument lowering, if later supported, uses the explicit contract from #31.
+- [x] The model is compatible with future QCP target profiles without making QCP normative semantics.
+
+## Design principle
+
+> **`Observe` specifies a mathematical instrument. Hardware capability determines whether that instrument can be realized on a selected target.**
+
+## Version boundary: abstract obligation now, capability schema later
+
+This v0.3.0 issue fixes a **normative abstract realizability obligation**. It does not require the complete concrete backend/target capability schema to exist in v0.3.0.
+
+The intended dependency direction is:
+
+```text
+v0.3.0 semantic / realizability law
+        ↓ normative input
+v0.4.0 #179 backend + target capability schema
+        ↓ implementation/profile vocabulary
+QCP / backend lowering / later Physical Realizability proof
+```
+
+Therefore #179 depends on the distinction fixed here; this issue does not depend on the final concrete schema of #179.
+
+v0.3.0 may use abstract premises such as a target/profile `P`, capability relation, layout/encoding relation, or exact-domain judgment without committing to the complete serialized/profile representation that v0.4.0 will define.
+
+The v0.4.0 capability model must faithfully implement this boundary and may not collapse source validity into target support.

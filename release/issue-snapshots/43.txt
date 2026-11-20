@@ -1,0 +1,378 @@
+## Status and adopted direction
+
+Target: **Qleisli 0.3.0 type-system specification**.
+
+**User decision, amended 2026-10-02:** retain `Q<Unit>`, but understand it through the general Qleisli type boundary:
+
+```text
+T       ordinary/classical value
+Q<T>    quantum ownership over T
+```
+
+Therefore:
+
+```text
+Unit       ordinary singleton value
+Q<Unit>    quantum ownership over the one-element basis Unit
+```
+
+`Q<Unit>` is **not** evidence that Qleisli needs a parallel classical modality such as `C<Unit>`. It is the smallest and most revealing instance of the generic `T` / `Q<T>` distinction.
+
+The earlier 2026-10-01 decision is retained in substance: `Q<Unit>` remains a distinct linear ownership type; its one-dimensional scalar phase must not be erased; pure introduction/elimination may be specified with independent checking.
+
+Related:
+- #196 — three-level surface boundary: `q***`, `Q<T>`, unmarked syntax
+- #22 — remove `CBit/CBits`; classical data is unmarked
+- #15 — tuple reassociation / monoidal associator
+- #18 — owner packaging
+- #27 — type-theory synthesis
+
+## Core principle
+
+The monoidal unit should obey the same source-level rule as every other finite type:
+
+```text
+Bit        / Q<Bit>
+Bits<n>    / Q<Bits<n>>
+Unit       / Q<Unit>
+```
+
+There is no third source-level “basis Unit” and no need for `C<Unit>`.
+
+The role of `Unit` changes only by context:
+
+- as an ordinary type, it contains the ordinary value `()`;
+- under `Q<Unit>`, the same singleton basis generates a one-dimensional quantum space.
+
+This is the unit case of the general interpretation:
+
+```text
+A        ordinary finite value space
+Q<A>     linear quantum ownership with computational basis A
+```
+
+## Why `Q<Unit>` still matters
+
+Although `Unit` has only one value, `Q<Unit>` cannot simply be replaced by ordinary `Unit`.
+
+The empty wire list denotes a **one-dimensional**, not zero-dimensional, Hilbert space:
+
+```text
+H(Unit) = ℂ
+```
+
+A unitary on it may carry a scalar phase:
+
+```text
+Uθ |()> = exp(iθ) |()>
+```
+
+That phase becomes observable under coherent control:
+
+```text
+Uπ = [-1]
+controlled(Uπ) = diag(1, -1) = Z
+```
+
+Therefore:
+
+> **zero physical wires does not imply zero quantum semantics.**
+
+This is exactly why the generic `Q<T>` distinction remains meaningful even at `T = Unit`.
+
+## Ownership interpretation
+
+`Q<Unit>` remains a linear owner in the source/core ownership discipline.
+
+This is primarily a **uniform semantic and verification rule**, not a no-cloning necessity for a singleton state:
+
+- every `Q<A>` participates in the same move/consume/return accounting;
+- zero-width owners cannot disappear merely because their physical wire count is zero;
+- operations on them may retain scalar phase;
+- controlled composition may expose that phase;
+- evidence and interface identity must not silently change when an empty owner is removed.
+
+Thus the generic rule is preserved without inventing a special “classical unit modality”.
+
+## Monoidal unit coherence
+
+The tensor unit has canonical isomorphisms:
+
+```text
+A ⊗ Unit ≅ A ≅ Unit ⊗ A
+```
+
+These are canonical structure maps, but need not be definitional type equalities in the verified core.
+
+The surface/elaborator may eventually strictify canonical unit structure where #15/#18 permit it, provided:
+
+- leaf/axis order is unchanged;
+- the inserted map has exact phase +1;
+- ownership is preserved;
+- the core independently checks the resulting explicit structure;
+- scalar operations on a `Q<Unit>` factor are never erased by structural simplification.
+
+In particular, “remove the Unit factor” and “erase all Unit-only quantum computation” are **not** the same transformation.
+
+## Pure introduction and elimination
+
+Retain the 2026-10-01 direction that Qleisli may specify explicit pure structure maps, with names still illustrative:
+
+```text
+unit   : Unit    -> Q<Unit>
+finish : Q<Unit> -> Unit
+```
+
+Their canonical structural meaning is phase +1.
+
+Conceptually:
+
+```text
+η(1) = |()>
+ε(|()>) = 1
+
+ε ∘ η = id_ℂ
+η ∘ ε = id_H(Unit)
+```
+
+They allocate/consume a logical zero-width owner without measurement, reset or partial trace.
+
+Crucially, elimination is **not phase normalization**:
+
+```text
+ε ∘ Uθ ∘ η = exp(iθ) id_ℂ
+```
+
+So a computation returning ordinary `()` may still carry a nontrivial scalar operator in its checked quantum meaning.
+
+The final public spelling of these maps remains open; the semantic requirement does not depend on the names `unit` and `finish`.
+
+## Relation to observation
+
+Do not confuse:
+
+```text
+Q<Unit> -> Unit
+```
+
+pure structural elimination with general observation:
+
+```text
+Q<A> -> A
+```
+
+The latter is not a generic coercion and is not permitted merely because #22 removes the `C` prefix.
+
+For nontrivial `A`, obtaining an ordinary value requires an explicit operation with appropriate `Observe` semantics.
+
+The unit case is special only because its Hilbert space is canonically one-dimensional; it does **not** establish a generic `Q<T> -> T` conversion.
+
+## Relation to #22
+
+#22 now adopts:
+
+```text
+Bit       ordinary
+Q<Bit>    quantum-owned
+
+Bits<n>   ordinary
+Q<Bits<n>> quantum-owned
+```
+
+This issue must match exactly:
+
+```text
+Unit      ordinary
+Q<Unit>   quantum-owned
+```
+
+The consistency requirement is more important than any particular API spelling.
+
+This eliminates the old temptation to describe classical terminal data, basis Unit and quantum unit as three separate source-level type universes.
+
+## `Bits<0>` question
+
+`Bits<0>` is also a singleton finite type.
+
+0.3.0 still needs to decide whether:
+
+```text
+Bits<0> = Unit
+```
+
+definitionally at the surface, or whether they are distinct finite types connected by a canonical map.
+
+Whichever choice is made:
+
+- `Q<Bits<0>>` and `Q<Unit>` must preserve any scalar phase semantics;
+- equal physical width alone must not authorize arbitrary receipt/evidence substitution;
+- no optimization may erase a controlled scalar merely because both representations use zero physical wires.
+
+## Lowering and verification obligations
+
+- Preserve linear moves for `Q<Unit>`; reject duplicate, omitted and revived zero-width owners.
+- Preserve scalar phase exactly through adjoint, repetition, tensoring and coherent control.
+- Keep ordinary `Unit` unrestricted as ordinary data.
+- Do not introduce `C<Unit>`.
+- Distinguish source-level coherence convenience from core evidence/type identity.
+- Runtime handle erasure must preserve source/evidence binding and the accepted operator meaning.
+- Resource accounting assigns zero physical qubits to `Q<Unit>`, while checker/evidence representation may still consume compile-time resources.
+- Pure removal of a zero-width owner must not authorize release of nontrivial ancillas such as `Q<Bit>`; those retain their own cleanup/separation obligations.
+
+## Acceptance criteria
+
+1. The Language Reference presents `Unit` / `Q<Unit>` as the unit instance of the generic `T` / `Q<T>` boundary.
+2. No source-level `C<Unit>` or separate “classical Unit type” is introduced.
+3. `H(Unit)=ℂ` and phase-bearing zero-wire operations are specified explicitly.
+4. Controlled scalar-phase regressions remain valid, including `[-1]` becoming a nontrivial controlled phase.
+5. Pure introduction/elimination, if exposed, preserve phase and are independently checked.
+6. Canonical left/right unitors have phase +1 and preserve surrounding/reference state.
+7. Structural simplification cannot erase a nontrivial scalar operator on a `Q<Unit>` factor.
+8. `Bits<0>` / `Unit` equality-or-coherence is decided explicitly.
+9. Zero-width owners remain covered by ownership/evidence tests even though they use zero physical qubits.
+10. The final specification is consistent with #22 and #196 without creating a second classical modality.
+
+## Design principle
+
+> **`Unit` is ordinary because ordinary is the default. `Q<Unit>` is quantum because `Q` is the modality.**
+
+And:
+
+> **Zero wires is not zero meaning.**
+
+This is the minimal case that tests whether the `T` / `Q<T>` boundary is semantically honest.
+
+## 2026-10-04 target type contract
+
+Keep `Unit` and `Bits<0>` definitionally distinct in 0.3.0. Both owned forms retain linear accounting and scalar phase. A pure introduction/elimination rule must be explicit and checked; no ordinary Unit coercion erases the quantum owner. This conservative current contract does not bring #197's future implicit conveniences forward.
+
+The [target Language Reference](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/reference/type-model.md) and [foundation analysis](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/design/type-foundation.md) record this ordinary implementation decision under the approved 0.3.0 plan and adopted authority hierarchy. Edition remains 2026. This is not a new Guardian interpretation or guarantee admission.
+
+Status: target rules selected; implementation and conformance remain in progress in #307. The canonical ordinary-type cutover in 5ce1778 removes active CBit/CBits spellings and adds exact ordinary Unit patterns to the sized profile. General Basis polymorphism, quantum structural maps and the remaining conformance obligations are still open. Documentation alone does not complete this issue.
+
+
+## Next implementation unit: exact ordinary Unit patterns — 2026-10-05
+
+Bring the finite profile's patterns into the existing ordinary Unit contract, using a shared exact pattern-shape rule consumed by finite basis/runtime and sized symbolic/concrete checking. An empty `()` pattern matches only ordinary `Unit`; a nonempty tuple pattern matches exactly the same immediate tuple arity and recursively checks each child. Do not identify Unit with an empty tuple, Bits<0>, Q<Unit>, or any other zero-width owner. Preserve existing duplicate-name, shadowing, scope, static and effect checks.
+
+Support named ordinary Unit parameters and exact `let ()` bindings, including nested products and the existing basis-function parameter-pattern positions. Ordinary runtime function parameters currently require names in the shared parser; general destructuring in those signatures remains a separate unfinished common-frontend obligation under #32. Preserve a desired direct parameter-pattern source and its actual parser rejection in this study rather than representing it as supported or as completed/deferred scope. In a coherent basis lift, the binder describes the ordinary basis of its consumed quantum input: `do () <- q; pure ()` may match a Unit basis while still emitting the existing checked LiftBasis operation and returning its Q<Unit> owner. This is distinct from a runtime `let () = q`, which must reject. No implicit Q-to-ordinary elimination, preparation, new primitive, core rule, native schema, or constitutional guarantee is introduced.
+
+Evaluate Unit-returning expressions completely before binding their result. An effectful body or scalar phase operation must remain in the proposed artifact even though ordinary Unit has no value ports. Keep all quantum ownership and complete-source checking obligations, including unused declarations.
+
+Before implementation, preserve informed first sources and actual baseline diagnostics in `tests/fixtures/authoring_sessions/finite-unit-pattern-v030/`; identify the reused executable and its original build snapshot rather than claiming a new build. Required bounded validation: ordinary copy/drop and nested exact patterns; basis Unit functions and coherent identity lifting; runtime Q<Unit>/Bit/tuple/Bits<0> mismatch negatives; duplicate and lost owners; exact native-accepted scalar phase after coherent Unit lifting, including control/reference-sensitive comparison; and retained effectful Unit-returning work. Compare unchanged programs/proposals and independently review the shared rule's consumers. No maximum-size generation or general preservation claim follows. The parent Issue remains open until its complete acceptance criteria are met.
+
+
+## Integrated exact Unit patterns — c0ac2b3 (2026-10-05)
+
+Implemented the bounded unit above in [c0ac2b3f80f0cee522774885abb4b9fd21d1c2f9](https://github.com/MGYamada/Qleisli/commit/c0ac2b3f80f0cee522774885abb4b9fd21d1c2f9). One exact pattern-shape rule now serves finite basis/runtime and sized symbolic/concrete checking. Ordinary Unit patterns preserve complete RHS work; quantum owners and scalar phase remain distinct. Reference and native comparison scheduling are updated.
+
+Evidence: [first sources and original diagnostics](https://github.com/MGYamada/Qleisli/tree/c0ac2b3f80f0cee522774885abb4b9fd21d1c2f9/tests/fixtures/authoring_sessions/finite-unit-pattern-v030), [integration records](https://github.com/MGYamada/Qleisli/tree/c0ac2b3f80f0cee522774885abb4b9fd21d1c2f9/tests/fixtures/frontend_v030/unit-pattern-integration), and independent implementation review. Rust 1.98.1 and actual 1.85.0 each pass 33 focused integration tests plus the manually constructed parameter-AST regression (34 each); focused Clippy passes on both. Tests include exact native-accepted scalar coefficients, controlled interference, retained effectful Unit work, exact nesting/arity and lost/duplicate-owner rejection. The three reference-amplitude multiplications are algebraic comparisons, not three additional native executions. The CLI observation records 25 calls and byte-identical emitted IR for three unchanged programs. Earlier failed runs and observer mistakes are retained separately.
+
+General runtime signature destructuring still rejects in the shared parser, with the desired source and real diagnostic preserved; it remains unfinished under #32. General Basis support, explicit quantum structural maps and the remaining acceptance criteria are not completed by this unit. No new constitutional guarantee is admitted and this Issue stays open. Whole-tree validation runs on the integrated head under [CI 37221444899](https://github.com/MGYamada/Qleisli/actions/runs/37221444899); local focused success is not a full-CI or release claim.
+
+
+### Ordinary signature patterns implemented locally — 48807e4
+
+The previously pending ordinary signature pattern restriction is implemented under #32 in local commit **48807e42391e406a3fd83152983a5823223640b7** (awaiting push after the current CI finishes). Both profiles use exact Unit/product patterns while preserving complete argument evaluation, quantum ownership and scalar phase. Each supported Rust toolchain passes 75 focused tests, including controlled phase and reference-sensitive checks; three unchanged named controls retain exact emitted IR. #32 records full evidence, first-run test-input repairs and remaining profile limitations. This removes that specific implementation gap; explicit quantum Unit structural maps and this Issue's other acceptance criteria remain open. No new Lean proof/guarantee or release readiness is claimed.
+
+
+## Next implementation unit: quantum Unit and existing scalar phase — 2026-10-05
+
+Target: the common selected-source path in 0.3.0, edition 2026, under the already selected #27/#43 type contract and QS/PR/RS plus EXACT-2026-01. This is ordinary implementation of those contracts, not a new interpretation, primitive meaning or guarantee admission. No acceptance criterion is removed.
+
+Desired programs move and return `Q<Unit>`, pass it through ordinary helpers and exact `Op<Unit>` providers, and compose the existing `std::quantum::phase_eighth(q)` through apply/adjoint/repetition/coherent control. Preserve the fourteen first projects and 28 actual baseline observations in `tests/fixtures/authoring_sessions/quantum-unit-v030/` before implementation. First-file manifest SHA-256: `620ff262140a6604c12356233e0759c59b8ee0fbe00312c7799e16dba9de5e67`; completed baseline packet manifest: `292bf6372b934da1e692540cb01f5d9fe75f2169256c2a77b157a1ca146f6fb7`. These reuse the identified c89871fa-built executable without a fresh build; finite empty-main checks do not observe open f's phase.
+
+The shared source projection must retain `Q<Unit>` as an exact single linear owner: public SourceType kind `unit`, width 0, is_quantum true, no tuple fields. Ordinary Unit has no quantum port; Q<Unit> has a Unit-basis owner with no axes; Q<Bits<0>> has a distinct Bits(0)-basis owner with no axes. Equal width permits no substitution, coercion, implicit removal, duplication, wildcard discard or revival. Existing exact tuple trees, complete declaration/body checking (including zero-iteration bodies), argument order, effect rules and provider identity remain in force.
+
+Extend the current sized primitive catalogue to the already specified phase_eighth: no static arguments, exactly one quantum-owner argument, unitary effect, and the exact same output type. Its map is scalar omega I, omega = exp(i*pi/4), on each currently represented atom Unit, Bit and Bits<n>; it is not a T gate on one selected axis. Do not infer support for tuples of separate owners, new Basis polymorphism or new public unit/finish operations. Evaluate the argument once and retain its complete preceding work.
+
+Lowering uses only already checked hierarchy/finite constructors and existing native rules. Unit ports carry their own basis tag and owner identity through calls, frames, renaming, control and independent preparation validation. Any auxiliary zero-wire structural bridge used to carry the scalar over Bits must use explicit checked phase-+1 introduction/elimination and preserve the original basis, ordered axes and exact scalar; no native schema or acceptance extension is part of this unit. Raw remains subject to its explicit capability check; an unsupported target or rejected native artifact must not trigger a retry that drops meaning.
+
+Required bounded validation compares native-accepted candidate operators against independently specified exact scalar/controlled requests: omega, conjugate omega under adjoint, eight repetitions = identity and controlled four repetitions = Z. Check at most two-qubit states with an external reference, ordered Unit/Bit owner interfaces, Unit versus Bits0/request substitutions, source/provider binding, duplicate/lost/revived/wildcard owners and invalid zero-fold bodies. Preserve original source/diagnostic bytes, plus the first actual post-change observations and any failed runs. Native acceptance and executable correspondence do not establish general AST/source preservation, quantitative RS or target realization. The remaining #43 criteria, explicit quantum structural maps and full common-frontend migration stay open.
+
+
+## Integrated quantum Unit and exact scalar phase — e01e98a (2026-10-05)
+
+[e01e98a42a00c04892617205307f2db76b5c404e](https://github.com/MGYamada/Qleisli/commit/e01e98a42a00c04892617205307f2db76b5c404e) implements the preceding bounded contract through the shared source path. Exact Q<Unit>/Op<Unit> remains distinct from ordinary Unit and Q<Bits<0>>; Unit/Bit/Bits ports retain their actual native basis. The existing phase_eighth operation preserves its one quantum atom's exact type and linear owner. Closed scalar work uses existing checked pack_unit/scalar/unpack_unit constructions, with no new acceptance rule, schema or Lean proof. Raw and public unit/finish remain explicitly outside this unit.
+
+Rust 1.98.1 and actual 1.85.0 each pass **126 focused tests**, all-target Clippy, warnings-denied library rustdoc and formatting. The twelve new-target tests include independently authored exact requests for direct scalar, apply, adjoint, repetition and coherent control, plus valid-but-wrong providers rejected against unchanged external requests. Transport placement inspected from proposals is explicitly separated from the independently authored mathematical expectations. Small reference-sensitive numerical checks supplement, rather than replace, exact native requests. All selected existing ignored tests were explicitly run; no maximum-size cases were generated. Both toolchains bind the same 366 selected inputs, manifest **a615de916190042c6e997e30d80c37a7e9e4e134e35f53bee10cd01c6e600359**.
+
+[Evidence packet](https://github.com/MGYamada/Qleisli/tree/e01e98a42a00c04892617205307f2db76b5c404e/tests/fixtures/frontend_v030/quantum-unit-source) has manifest **2abca445291ba06709dedc7059a0d2c5e2ac243e5551923a3ccc12f575db6c82**. First sources and real failed runs remain intact. Repeated CLI checks accept eight selected programs and reject six intended violations; all fourteen finite results remain byte-identical to their original observations. Independent review found no actionable defect. Inventory, production coverage, constitutional continuity and docs checks pass. Reused native-checker bytes are recorded; this is not a fresh Lean replay, general preservation theorem, full CI or release approval.
+
+Public quantum structural maps, general Basis checking and the full parent criteria remain open. No Issue is closed and no guarantee admitted by this unit.
+
+## Next implementation contract: canonical quantum Unit maps — 2026-10-05
+
+Under the existing Unit meaning and QS/PR/RS plus EXACT interpretations, select the explicit sealed source entries `std::quantum::unit` and `std::quantum::finish` for the common selected-source hierarchy path. This is an ordinary source/API decision, not a new constitutional interpretation or guarantee. `unit(())` takes exactly one ordinary Unit argument and returns one fresh Q<Unit> owner; `finish(q)` consumes exactly one Q<Unit> owner and returns ordinary Unit. Both have zero static parameters and Unitary quantum action. Their exact coefficients are +1, with no wire, observation, discard, state promise or implicit conversion. Unit, Bit and Bits<0> remain distinct. The explicit argument is evaluated fully exactly once, including its effects and scalar work.
+
+Lower to the existing checked hierarchy pack_unit/unpack_unit constructors and independently validate the source events and frames. Preserve scalar multiplication: finish(phase_eighth(unit(()))) contributes omega, not +1, and four eighth phases under coherent control produce Z. Both round trips, including arbitrary retained reference frames, must preserve their stated exact action. Ordinary owner-product wrappers can implement the explicit left/right interface maps while retaining owner order; these are not packaged-tree Q<(Unit,A)> unitors. General quantum product projection/coherent lifts and packaged-tree unitors remain required subsequent work.
+
+The selected hierarchy profile can support these existing exact constructors; the finite Raw route has no pure owner-introduction/elimination constructor and must give its honest unsupported result. Do not replace finish with observing discard, silently fall back after native failure, or claim that this partial integration completes the common-language migration. Current finite/Raw parity remains required by #32; no scope is deferred or closed here.
+
+Before implementation preserve complete first sources, context, independent equations and actual current-CLI diagnostics under authoring_sessions/quantum-unit-maps-v030. Include introduction/elimination and both round trips, phase/controlled-phase/reference checks, distinct left/right owner-product wrappers, caller argument evaluation, Bit/Bits0/ordinary substitution, arity/static-arity, duplicate/revived/lost owner and effect violations, and packed-product desired sources exposing the next unsupported boundary. Use at most two system qubits. Reuse one bounded build target, retain actual failures and named repairs, then validate both supported Rust toolchains and current native checking. No new native semantic rule or general source-preservation theorem is implied.
+
+## Integrated canonical Unit maps — 9a1ecef (2026-10-05)
+
+[9a1ecef79f2f1e42f94093b6f4822f282f6e9129](https://github.com/MGYamada/Qleisli/commit/9a1ecef79f2f1e42f94093b6f4822f282f6e9129) implements the preceding unit/finish contract. [First sources](https://github.com/MGYamada/Qleisli/tree/9a1ecef79f2f1e42f94093b6f4822f282f6e9129/tests/fixtures/authoring_sessions/quantum-unit-maps-v030) retain 22 complete projects and 44 original observations. The [validation packet](https://github.com/MGYamada/Qleisli/tree/9a1ecef79f2f1e42f94093b6f4822f282f6e9129/tests/fixtures/frontend_v030/quantum-unit-maps), manifest `162a4bc1de3330511ba186605cc149919569076aa83bad24fb5b147c9a302b63`, records 149 passing bounded checks on each actual Rust 1.98.1 and 1.85.0, all-target Clippy, warnings-denied rustdoc, formatting and pinned mdBook checks. All seven default-ignored selected checks were explicitly run. Current source manifests select the same 531 inputs; kernel bytes are unchanged. No fresh local Lean build/audit/replay is claimed.
+
+Independent exact requests cover +1 round trips, retained omega/i and controlled Z, reference and separate-owner frames. Public and private mutants first obtain native acceptance for a consistent but wrong scalar; unchanged external requests or original direct-map source metadata then reject them. Independent review found no actionable defect. The actual CLI accepts ten selected cases; all 22 finite observations remain byte-identical. Raw and packaged quantum tuples remain explicit limitations.
+
+The previous e01e98a hosted run completed with a stale Q<Unit>-unsupported test failure in latest Rust, MSRV and distribution source tests. [Exact hosted evidence](https://github.com/MGYamada/Qleisli/tree/9a1ecef79f2f1e42f94093b6f4822f282f6e9129/tests/fixtures/review_v030alpha/hosted-unit-profile-37254752247) and the test-only repair are retained. Lean/native-comparison/macOS/interop/docs producer jobs passed; the full run did not. New full CI is required on this pushed commit. This checkpoint neither closes #43/#32 nor admits a constitutional guarantee.
+
+## Next implementation contract: packaged quantum products and explicit unitors — 2026-10-05
+
+Continue the adopted #27/#43/#84 exact-tree rules through the common selected-source hierarchy path, using existing source syntax and native structural constructors. Ordinary technical implementation remains under QS/PR/RS and EXACT; no new constitutional interpretation, semantic primitive or guarantee is proposed. Preserve a first-source study before production edits in `authoring_sessions/quantum-tuple-unitors-v030`.
+
+**Types and public maps.** Admit quantum basis trees recursively built from Unit, Bit, Bits<n> and ordered tuples, and matching closed Op<basis> providers, without introducing abstract Basis polymorphism. A packaged Q<(A,B)> is one linear owner; an ordinary (Q<A>,Q<B>) contains two. A readonly concrete source-type basis view may expose the retained exact tree; ordinary fields() must not silently unpack a Q owner. Keep Unit/Bits0, Bit/Bits1, flat/nested trees and all immediate arities distinct. No implicit destructuring, packing, reassociation or coercion is inserted.
+
+Use the existing binary source entries `std::quantum::split(q)` and `std::quantum::join(a,b)`, with no static arguments. split consumes exactly Q<(A,B)> and creates the two fresh owners (Q<A>,Q<B>); join consumes two distinct quantum owners and creates one Q<(A,B)>. Native support for more immediate fields does not widen this source binary contract. Left/right Unit removal combines split with finish; insertion combines unit with join. The maps have exact coefficient +1 and preserve ordered axes and arbitrary external references, without assuming separate owners are separable. Phase applied to the separated Unit factor must survive finish and rejoining. Keep phase_eighth's current selected atom-only contract; this unit adds no direct scalar API on packaged tuples.
+
+**Checking and lowering.** Reuse the shared source type tree and a common input-dependent split/join type rule for symbolic and concrete checking. Preserve complete source-order argument evaluation, effects, unused/zero-fold body checking and fresh owner identity. Charge the basis tree's actual nodes/depth, including zero-width nodes, and checked summed widths before allocation; retain current structural/profile limits (including eight axes per hierarchy owner and sixteen in its complete frame) rather than raising capacity. Reuse checked split_tuple/join_tuple, pack_unit/unpack_unit and exact tree interfaces. Compare complete types, ordered partition/concatenation and actual structural tags in independent source-event validation; same endpoints or a producer equation alone cannot substitute for canonical +1. Preserve surrounding frames, Fourier's Bit/Bits requirements and exact provider binding. No Lean/schema extension or fallback acceptance.
+
+**Bounded completion evidence.** Test left/right maps and round trips for Unit, Bit, Bits0/1/2 and nested products (at most two system qubits), independently authored exact structural requests and complex reference coefficients. Include nontrivial scalar on a removed Unit factor, controlled four-eighths = Z, nonidentical axis amplitudes, same-width wrong trees, implicit-destructure rejection, arity/static-arity, alias/lost/revived zero-width owners, invalid unused/zero-fold bodies and fresh-native-accepted phased impostors rejected against fixed requests and original source metadata. Preserve first diagnostics and named repairs. Existing finite split/join/coherent-lift unitors are comparison controls; finite unit/finish and selected coherent lifts remain separate unfinished parity work. Explicit Raw profile limitations must reject honestly. Passing this bounded integration does not complete general Basis support, #32/#43, full source preservation or release validation.
+
+
+## Published tuple and unitor implementation — 2026-10-05
+
+Commit **bbd3134521d11a82ea8b03b0582eeca4108f69e8** implements the preceding exact-tree split/join contract through the common selected hierarchy path. The same basis tree is retained by Q/Op typing, frames, native ports and independent original-source event checking. Explicit unitors retain coefficient +1 and separated Unit phase; owner aliasing, implicit destructuring and wrong tree/profile uses reject. Source trace storage charges every retained basis node before cloning, including idle zero-width products.
+
+[Validation packet](https://github.com/MGYamada/Qleisli/tree/bbd3134521d11a82ea8b03b0582eeca4108f69e8/tests/fixtures/frontend_v030/quantum-tuple-unitors) binds **162 passed tests per actual Rust 1.98.1 and 1.85.0** to the same 594 inputs, including 11 independent tuple-map tests, all selected native ignored tests, all-target lint and warnings-denied docs. Exact independent requests test nested/zero-width tree distinctions, +1 round trips, scalar phase, controlled Z, ordered axes and entangled references. Fresh native acceptance of a wrong-phase map does not satisfy original canonical source events. Forty-four CLI observations are recorded; all 22 finite observations are unchanged. Initial genuine failures and repairs are preserved, not overwritten.
+
+This is a bounded implementation checkpoint. The Issue remains open for its full common-profile/general-basis requirements; no acceptance criterion, source theorem, guarantee admission or release gate is completed by test count alone. Current CI is [37261033271](https://github.com/MGYamada/Qleisli/actions/runs/37261033271).
+
+
+## Reproduced Iso-root/Unit profile limit — 2026-10-05
+
+The operator decision study for #83 now retains a minimal existing-source reproducer: `pub fn entry(q:Q<Unit>)->Q<Bit>{finish(q);init0()}`, with both helpers explicitly imported. The ordinary body is inferred Iso; auto routing selects Raw because the current hierarchy eligibility excludes Iso roots. Raw then honestly rejects Q<Unit> before native invocation. This is the already recorded unfinished common-profile parity obligation, now demonstrated by actual original/repaired sources and text/JSON results rather than a claim that checking a pure Unit identity completes preparation.
+
+Local unpushed `21b58b90dfe9f60b4a3d34d1171df5adf3a7db32` retains the complete twelve-project study under `authoring_sessions/operator-arrow-v030`, with first-file SHA-256 `683c123eddae1c76ae18f4f8b0fcf51a29f411ccc8c9f6f2e00590a81e07a2e0` and414-member packet SHA-256 `8f81319aa45e254798b01463b2cfaf7c2692b77647c206d9c6d000a97349080f`. All72 observations, real authoring mistakes, source snapshots and metadata repairs are preserved. The final five native-checked controls and seven rejected projects agree in both formats. No semantic oracle or fresh Lean replay ran for this study; record/edition/docs/continuity guards pass.
+
+**Required repair contract before implementation:** preserve the existing +1 unit/finish meaning and the isometry `alpha -> alpha|0>`, exact scalar phase, distinct Unit/Bits0 trees, complete external-reference/caller frames and linear zero-width owners. Removing Raw's type guard alone is insufficient: its primitive emitter/replay and native opcode representation lack pure Unit creation/elimination. Observing discard cannot substitute for finish, and a prefix cannot manufacture Unitary. Select an explicit general representation/checking path, independently validate its original source-step correspondence and actual native artifacts, and preserve the admitted current-artifact meanings with checked transport if native representations change. Native failure must remain final; no fallback, hash-only continuity claim or special-case source pattern acceptance. These obligations apply under the existing QS/PR/quantitative RS and EXACT interpretations, not a new AI-adopted constitutional ruling.
+
+The subsequent bounded implementation must cover preparation, zero-width identity/call frames, retained phase, introduced/consumed/lost/duplicated/revived owners and native-valid wrong-artifact mutations. A check-only positive or typed AST does not establish exact action, universal source preservation, target realization or quantitative resource bounds. General Basis support, full common-profile parity and every original #43 acceptance criterion remain open. No new guarantee or completion count is claimed.
+
+## Before-code contract: Iso source roots with empty native readout — 2026-10-05
+
+Target 0.3.0/edition2026, under the already adopted QS/PR/quantitative RS and EXACT requirements. This implements the existing isometry/Unit source meanings; it selects no new operator grammar, primitive meaning, constitutional interpretation or guarantee. Fourteen complete existing-source programs and28 actual first text/JSON observations are frozen in `authoring_sessions/isometry-preparation-v030` at baseline21b58b9, first-file SHA-256 `83b336e6d49be35a95e995864c37866d184fbc217ee09430fe2776ce2dce96fd`. Closed finite zero preparation and the pure scalar control already pass; real profile/owner/effect/type failures remain. No original result will be overwritten.
+
+Use the existing native initialize/unitary/readout composition with zero measurements for supported principal-Iso source roots. Its formal empty-readout calibration already retains every quantum owner and has one empty outcome. Quantum-entry/ordinary-Unit parameters and existing quantum result trees remain exact; optionally retain a single ordinary Bits<0> source result. For quantum-only source results, the required empty classical transport label is internal carrier bookkeeping, not a source type conversion, measurement or Observe inference. Preserve principal Iso metadata and expose a sized-isometry source profile. NativeChecked's instrument flag continues to describe its actual checked transport components, not an inferred source effect or a new isometry certificate.
+
+Extend independent original-source event/frame validation to the no-measurement return case. The output frame, preparation extraction, exact +1 Unit nodes, scalar phase, dependency identity, fresh owners/axes and complete suspended caller frame must remain checked. The actual native packet/request retains the existing format/profile and all original gates. For run, project the sole empty branch to its unchanged residual coefficient vector, without phase removal or numerical renormalization. Reject sampling/named observing providers for principal-Iso entries before emission; isometry supplies no measurement, inverse or coherent-control capability. Auto may select this explicit supported hierarchy path; forced Raw retains its honest current limits and never retries after native failure.
+
+Bounded completion evidence must preserve arbitrary reference coefficients for zero preparation, scalar-before-finish/init, helper/caller frames and controlled preparation, plus retained zero-width owners. Independently authored exact requested pure equations must complement small complex oracles; producer-consistency alone is insufficient. Include native-valid wrong-phase/output artifacts rejected against original source events or unchanged independent requests, missing/incompatible checker rejection, all first negative owner/effect/type cases, text/JSON, old pure/observer routes and forced-Raw controls. Reuse the bounded target and both supported Rust toolchains; no maximum-size case. No native/Lean semantic definition changes, source theorem, broad constitutional discharge or completion of #43/#32/#83 is claimed by this component. Current ordinary QLV1 guarantees and their exact current-artifact bindings remain protected.
+
+## Actual native version-error diagnostic during bounded validation — 2026-10-05
+
+The new public Iso CLI regression passes six tests but its actual wrong-version wrapper exposes a diagnostic mismatch: Main emits the established generic `qleisli.qirf-native 1 / error / version` response, while hierarchy framing currently reports `format: unknown runtime response`. The checker correctly rejects; no execution or fallback occurs. The genuine failure is retained in `tests/fixtures/frontend_v030/isometry-preparation/focused-latest-final`.
+
+Repair only this error decoding: recognize the exact existing generic version-error bytes in every hierarchy mode and return an explicit product-version mismatch. Continue to reject malformed/trailing data, wrong headers and every generic success receipt. This compatible diagnostic repair does not admit a new result, semantic capability or guarantee. Add strict framing regressions and rerun the actual native incompatible-version source checks before recording success. The earlier ignored-test harness failure (missing the distinct QLEISLI_HIERARCHY_KERNEL selection) is also retained separately; the explicit-selection retry passes all three selected native regressions.
+
+## Published bounded Iso adapter checkpoint — 2026-10-06 (Asia/Tokyo)
+
+Functional [238e1f0](https://github.com/MGYamada/Qleisli/commit/238e1f0869c96c8da18f215a4569dd68e2cc98b9), published in branch head9256fe9, implements the preceding before-code contract through existing native preparation/pure/zero-measurement-readout checking. Principal effects remain body-derived Iso; ordinary empty transport bookkeeping is not source observation. Quantum/Unit result trees and caller/reference frames are retained, run returns the unchanged unnormalized complex branch, and sample/named-QPE reject non-Observe before lowering. Explicit Raw limits remain; native failure is final. The exact established version-error frame now produces an explicit incompatible-version error; malformed/generic success frames still reject in all modes.
+
+[Evidence](https://github.com/MGYamada/Qleisli/tree/238e1f0869c96c8da18f215a4569dd68e2cc98b9/tests/fixtures/frontend_v030/isometry-preparation) retains14 first projects/56 actual observations, nine independent exact composition requests with fixed ports/+1 Unit/phase/X/H leaves, same-arity wrong-phase/X requests, unnormalized external-reference coefficients, and a fresh-native-valid wrong source artifact that fails original-event comparison. The unsupported whole-root finite-matrix attempt and all actual compilation/profile/version/harness/sandbox/timeout/metadata failures remain unsuccessful records.
+
+Actual Rust1.85.0 completes one all-target command:801 passed,0 failed,52 existing ignores across91 groups, plus3 doctests. Actual Rust1.98.1 completes every same default target through explicitly split successful observations after two stale Iso-refusal test repairs; this is not labeled a single full pass. Both actual toolchains pass final warnings-denied all-target Clippy and formatting. The bounded200-input manifest is e155488e8bcfa53dc7fc8256e9b7dcce29cc37cdd696c2bd403597bb58211ab4; native remains39effde0. The557-member retained-file map is3d0bbddc8978299853aa666e94c5642defccea77cbf51abec227a022e68f21e6. Its map is not a complete dynamic dependency closure; final lint separately observes unchanged stdlib bytes.
+
+New [CI37336154083](https://github.com/MGYamada/Qleisli/actions/runs/37336154083) is in progress for9256fe9; terminal integration and actual checked-merge binding remain pending. No new local Lean replay/native semantic rule/primitive, general source-preservation proof, guarantee admission or release validation is claimed. General Basis/arrow/Meaning requirements, full finite/Raw convergence, every original #43 criterion and broader QS/PR/quantitative RS/EXACT remain open. This bounded unit does not close #43.

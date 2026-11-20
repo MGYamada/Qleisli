@@ -652,10 +652,10 @@ Limits of the implementation:
 - A source-root path, a module-import graph, a private source snapshot or a
   successful check does not establish a complete resolved qrate graph.
 - The embedded-manifest gate and the qargo records bind the linked pair of
-  toolchain and std. Official package validation, installation validation
-  and release validation are unfinished.
-- Official registry, package and native installation checks are open. So are
-  the supported-host extraction checks.
+  toolchain and std. A prerelease candidate can exercise this pairing with
+  the exact checked Qleisli crate and the four locally built companion tools.
+  The official linked distribution requires the registry package and
+  supported-host installation evidence.
 - Edition binding: the migration to QLV3 and to its helpers is implemented,
   as is the authorized qargo minimum. Complete conformance of the head
   commit, CI and distribution validation are open.

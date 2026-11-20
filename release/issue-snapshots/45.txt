@@ -1,0 +1,163 @@
+## Status
+
+Design issue for **Qleisli 0.3.0**.
+
+Related:
+- #16 operation representation unification
+- #19 controlled application
+- #27 static operator language
+- A020-09 capability derivation
+- current M1 `Apply` / `Adjoint` / `Controlled` constraints
+
+## Problem
+
+Qleisli correctly distinguishes:
+
+> the mathematical existence of an inverse/controlled operator
+
+from:
+
+> having a verified implementation/access path that the compiler is allowed to use.
+
+Current M1 exposes capabilities such as:
+
+```text
+Applicable(U)
+Adjointable(U)
+Controllable(U)
+```
+
+but their derivation rules are not yet a complete language-level calculus.
+
+Some constructed descriptions can expose capabilities that the underlying provider does not expose directly. This is semantically meaningful and must not remain an implementation accident.
+
+## Goal
+
+Define a small compile-time judgment such as:
+
+```text
+Γs ⊢ U : Op<A>
+Γs ⊢ capability(U, Apply)
+Γs ⊢ capability(U, Adjoint)
+Γs ⊢ capability(U, Controlled)
+```
+
+with explicit derivation rules for operation constructors.
+
+## Questions to decide
+
+1. Which base providers grant `Apply`?
+2. Which grant `Adjoint`?
+3. Which grant `Controlled`?
+4. Does a transparent ordinary circuit automatically grant more capabilities than an opaque external provider?
+5. What does `adjoint(U)` require and expose?
+6. What does `controlled(U)` require and expose?
+7. What does `power(U,n)` require and expose, especially for `n=0`?
+8. What capabilities do `then(U,V)` and `tensor(U,V)` expose?
+9. Can capability derivation depend on semantic evidence such as unitarity or phase?
+10. How are capabilities retained through `Op<A,M>` refinement?
+11. Can capabilities be explicitly supplied by external evidence?
+12. How are unavailable capabilities diagnosed?
+
+## Core principle
+
+> **Unitarity is a semantic fact; access is an implementation capability. One does not automatically imply the other.**
+
+Similarly:
+
+> **Controlled access must retain exact phase.**
+
+A backend/compiler must not manufacture a controlled implementation merely from channel equality or an arbitrary black-box apply capability.
+
+## Candidate structure
+
+Separate three concepts:
+
+- **meaning**: what operator the object denotes;
+- **implementation identity/evidence**: what concrete provider realizes it;
+- **capability set**: which transformations/applications are justified for that provider.
+
+Then compile-time constructors transform all three in checked ways.
+
+## Non-goals
+
+This issue does not make operations runtime first-class.
+
+It does not assume every unitary can be efficiently inverted or controlled.
+
+It does not permit capability inference from approximate numerical coincidence.
+
+## Acceptance criteria
+
+1. Publish inference rules for every enabled static operation constructor.
+2. Cover transparent source-defined operations, sealed gates, and opaque/certified providers.
+3. Preserve phase-sensitive controlled cases.
+4. Reject direct application when only controlled access exists unless a constructor explicitly changes the capability object.
+5. Cover zero powers and zero-width targets.
+6. Keep capability derivation independent of surface legacy syntax.
+7. Show QPE controlled powers use the same calculus as ordinary clients.
+8. Bind capabilities to exact implementation identity and evidence.
+
+## Design intent
+
+The capability system is not incidental API metadata.
+
+It is the compile-time logic that answers:
+
+> **What transformations of this verified operation are we actually entitled to perform?**
+
+## Retrospective constitutional impact — 2026-10-05
+
+This #140 assessment covers #31, #39, #45, #46, #47, #83 and #89. It applies the already adopted QS-2026-01, PR-2026-01 and RS-2026-01 interpretations. It records obligations of the current proposals and implementation; it neither adopts their unresolved syntax nor closes their acceptance criteria.
+
+**Distinct contracts.** #31 separates exact source meaning from an explicitly certified approximate target, keeps cleanup exact, and separates synthesis, statistical and algorithmic error. #39 requires canonical symbolic literals, deterministic normalization and explicit exact-domain rejection. #45 binds Apply/Adjoint/Controlled derivations to the actual provider, including zero powers and zero-width interfaces; mathematical unitarity alone supplies no inverse or controlled access. #46 requires independently specified compositional Meaning, exact phase, ordered interfaces, reference extension and separate observing meanings; a candidate's own emitted artifact cannot be its independent expected meaning. #47 unifies numeric, shape and capability obligations while distinguishing symbolic definition checking from closed specialization; exhausted or unresolved checking rejects rather than assumes a proposition. #83 requires one explicit domain/codomain judgment for preparation, isometries, composition and tensoring, without inferring executable inversion from an isometry's mathematical adjoint. #89 enumerates first-order functions and static operation construction, forbids unrestricted live-quantum capture, and binds callable identity across modules. Future general linear closures and the later meta layer keep their stated scope.
+
+**QS / PR / quantitative RS.** QS is affected by each new static/type/meaning judgment: retain exact argument/result trees, owners, effects, phase and reference behavior through constructor expansion and runtime invocation. PR requires the selected implementation/capability evidence and actual output artifact to realize that exact meaning under an explicit target/encoding/workspace contract; a mathematically defined operator or equivalent channel alone does not supply that evidence. Quantitative RS requires closed provider/constraint identity, terminating static construction and checked resource bounds for the actual resulting execution; compiler termination, work limits and zero-power simplification alone are not a resource theorem. Approximation must satisfy a separately admitted metric/composition contract and cannot discharge exact clean return.
+
+**Definitions, assumptions and production binding.** The affected normative objects are operator/arrow and effect judgments, capability inference, Meaning constructors/equality, exact coefficient domains and static propositions. Their enabled forms need explicit Reference rules and corresponding independent checks. No extra axiom, trusted solver, matrix literal oracle, trusted provider or algorithm-name recognizer is authorized by this record. Rust elaboration, resolution, normalization and evidence construction remain untrusted. Ordinary QLV1/finite-contract and dedicated hierarchy/instrument gates retain their artifact/request/profile boundaries; the responsible adapters retain source/provider identity, while semantic correspondence remains a separate obligation. Keep producer consistency distinct from a caller's independent request. Unsupported domains/capabilities fail in the selected route, without a weaker verification fallback. The observed finite eighth-turn Raw target and finer-phase hierarchy target are different implementation capacities, not different types or editions.
+
+**Ledger, transport and proof status.** The admitted QS-QLV1-OWNERSHIP-2026-01 and QS-QLV1-SCOPE-2026-01 still protect the actual original ordinary decoded root. Existing ledger/current-evidence checks retain their meanings and identity correspondence; those two theorems do not prove source typing, Meaning adequacy, source/runtime preservation, general PR or quantitative RS. Changing an accepted representation, primitive semantics or evidence interface requires justified transport of applicable guarantees; unchanged native representations use the existing identity binding. Unsupported representation changes remain rejected by the current verifier. Current finite contract checks, static specialization/capability checks and bounded independent source-step comparisons are useful components, not completion of the full operation/Meaning/constraint calculus. New rules, exact QFT meanings, observing contracts and compiler/target/resource preservation remain explicit obligations in these Issues.
+
+**Edition and human judgment.** The migration stays in edition 2026 and uses 0.3.0 compatibility/migration rules. Covered implementation and proof maintenance follow the adopted interpretations without a new ruling per commit. A new constitutional case, new semantic assumption or formalization-adequacy dispute must be presented concretely to the human Guardian; guarantee admission requires its separate recorded judgment and evidence. This analysis grants none of those decisions. Protected-text changes require the Constitution's own procedure.
+
+
+## Adopted exactness boundary — EXACT-2026-01 (2026-10-05)
+
+The human Guardian adopted the exact supplement recorded in #311 (reviewed SHA-256 `b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179`; actual adoption record SHA-256 `e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59`). Its interpretation is now binding; implementation, mechanical continuity integration and proof discharge remain separate.
+
+For edition 2026, an epsilon-bound approximation to a source meaning does not discharge that source's constitutional PR or target-RS obligations. Such an artifact may carry separately checked engineering approximation/resource claims, and all this Issue's metric, composition, closed-budget, actual-artifact, control/reference and rejection requirements remain in force where applicable. None is waived or postponed by this clarification. An independently checked exact admitted artifact is not excluded merely because an internal numerical/search parameter is named epsilon. Exact phase, cleanup and existing guarantees remain protected; numerical assistance may produce checked evidence for exact propositions. #309 remains 0.3.1 and #310 remains v1+.
+
+
+## 2026-10-07 capability naming decision
+
+Capability predicates use adjective forms:
+
+```text
+Applicable(U)
+Adjointable(U)
+Controllable(U)
+```
+
+Operator constructors remain distinct:
+
+```text
+adjoint(U)
+controlled(U)
+```
+
+This prevents `Controlled(U)` from looking like a constructed controlled operator and `Adjoint(U)` from looking like the mathematical adjoint itself.
+
+
+## 2026-10-07 adjoint/inverse decision
+
+The general constructor is:
+
+```text
+adjoint(U)
+```
+
+and requires `Adjointable(U)`.
+
+Do not use `inverse(U)` as the general constructor. For an isometry, the adjoint exists as a linear map but need not be a two-sided inverse. The identifier `inverse` is reserved for a future API whose two-sided inverse law is explicitly established.
+
+For a unitary, `adjoint(U)` equals the mathematical inverse.

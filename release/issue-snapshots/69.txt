@@ -1,0 +1,204 @@
+## Active beta scope clarification — maintainer decision, 2026-10-12
+
+The maintainer explicitly instructed 「qlippyは除外してください」 and clarified 「`&q`・`&mut q`はctrl/exclに改名しました」 in the active 127-Issue beta task.
+
+External **qlinty implementation, compatibility and diagnostics are excluded from the v0.3.0-beta completion criteria**. Original criterion 10 below is retained as history and is excluded, not implemented or passed. The other thirteen criteria remain applicable. Qleisli compiler diagnostics, current `ctrl` / `excl` syntax, independent native checking and Rust Cargo Clippy checks remain required. This does not exclude qlirgo or other tool requirements.
+
+`ctrl q` and `excl q` are the current forms. The saved `&q` / `&mut q` sources are negative migration/false-friend diagnostic inputs, not requested supported syntax. The old external qlippy 0.1.9 / linked Qleisli 0.2.1 results in [the audit observation](https://github.com/MGYamada/Qleisli/issues/69#issuecomment-6117952927) are historical consumer observations; they are neither a defect in the renamed syntax nor beta completion evidence. No external repository or dependency pin is changed by this exclusion.
+
+The current criterion audit below supersedes older open-status/completion statements without deleting their provenance. This is an ordinary development-scope decision; it does not waive constitutional obligations or admit a guarantee.
+
+## Status
+
+**Important / breaking surface-language design for Qleisli 0.3.0.**
+
+Related:
+- #29 — Qleisli `excl` exclusive quantum access and resource correspondence
+- #70 / #157 — independent exact workspace-restoration obligations
+- #72 — structured uncomputation
+- #280 — quantitative Resource Safety
+- #67 — Rust-style surface syntax umbrella
+- #68 — deliberately diverge from Rust where quantum meaning differs
+- #14 — every syntactic distinction should correspond to a physical fact or theorem
+
+## Problem
+
+Rust shared borrowing,
+
+```rust
+&q
+```
+
+carries two intuitions at once:
+
+1. multiple readers may coexist, but mutation is excluded;
+2. the borrowed value is not changed by the borrow.
+
+Only the first intuition transfers safely to a live quantum subsystem.
+
+A quantum subsystem used only as a coherent control can still change physically through phase kickback and entanglement. In particular, if
+
+```text
+U = Σ_z |z><z| ⊗ U_z
+```
+
+acts on a control register and target, then the computational-basis sectors of the control are preserved, but relative phases of a superposition of control states may change.
+
+Therefore a Rust-looking shared reference is a dangerous **semantic false friend**:
+
+> `&q` must not suggest that the quantum state of `q` is unchanged.
+
+This is worse than an invalid Rust analogy that simply fails to compile, because the wrong intuition can survive type checking.
+
+## Proposed direction
+
+Do **not** use plain Rust `&q` as the public spelling for coherent quantum control.
+
+The adopted public vocabulary is the Qleisli-specific access form `ctrl`:
+
+```qli
+ctrl q
+```
+
+Detailed parameter grammar, access lifetimes and verified elaboration remain to be specified with #29. The public access name and its semantic distinction are settled; the earlier `&ctrl` alternative is not adopted.
+
+## Semantic contract
+
+A `ctrl` access is **not read-only access**.
+
+It grants coherent use of a subsystem only through operations that preserve its computational-basis sectors.
+
+For a control space with basis projectors `P_z = |z><z|`, admitted operations should satisfy the block-diagonal condition
+
+```text
+[U, P_z ⊗ I] = 0   for every z
+```
+
+or the equivalent representation used by the authoritative semantics.
+
+Operationally:
+
+- the control basis label is preserved;
+- coherent phase accumulation is allowed;
+- entanglement with the target is allowed;
+- phase kickback is allowed;
+- no claim is made that the reduced state is unchanged;
+- no claim is made that the control is separable from its environment.
+
+A useful phrase for the Language Reference is:
+
+> **basis-preserving coherent access, not read-only access.**
+
+## Why `ctrl` rather than `const`
+
+Silq's `const` is related conceptually but carries its own language-specific uncomputation semantics.
+
+Qleisli should keep the initial concept narrower and easier to verify:
+
+```text
+ctrl
+  =
+computational-basis block-diagonal access
+```
+
+Also, Rust already uses `const` for compile-time constants, so adopting `const` here would create another semantic false friend.
+
+## Interaction with `excl`
+
+The intended 0.3.0 split is:
+
+```text
+excl q  -> exclusive temporary quantum access
+ctrl q  -> coherent computational-basis control access
+```
+
+This is deliberately asymmetric.
+
+`excl` is Qleisli-specific even though its exclusivity discipline is Rust-inspired. Plain Rust `&` and `&mut` are kept out of the public quantum access vocabulary.
+
+As clarified in #29, `qft(excl q)` is an in-place quantum-state update at the source ownership interface: the same logical owner survives with its updated state. `ctrl` restricts the admitted coherent action to basis-sector-preserving operations, which can still update phases and correlations. Ending either access restores the appropriate authority; neither access form implies clean/dirty restoration or automatic uncomputation (#70/#72/#157).
+
+This distinction also preserves quantitative RS (#280): an access is not a new quantum allocation, and an ending view does not free its backing owner. Apply #29's checked resource correspondence to the actual lowered artifact, including any generated workspace, inverse and routing operations. Multiple permitted control views must not be counted as copies of the underlying qubits or used to infer commutation, parallel scheduling or reduced depth without the required evidence.
+
+## Aliasing / access discipline
+
+The existing ownership/access checker should remain responsible for structural exclusivity.
+
+For example, a live `excl` access to a subsystem must exclude overlapping `ctrl` or `excl` access that would violate the operation's access contract.
+
+Multiple `ctrl` aliases may be admissible only when the exact coherent-control semantics and ordering rules make the combined use well defined.
+
+This issue does not weaken linear ownership.
+
+## Diagnostics
+
+Compiler and qlinty diagnostics should teach the quantum distinction.
+
+For example, if an operation requiring arbitrary coherent access is applied through a `ctrl` access:
+
+```text
+error: coherent control access is basis-preserving, not read-only
+
+this access may only be used by operations block-diagonal in
+the computational basis of the controlled subsystem
+
+note: phase kickback may still change the control state
+help: use excl if exclusive arbitrary quantum access is intended
+```
+
+For migration from any existing/plain shared-reference syntax, diagnostics should explicitly explain why Rust `&` intuition is insufficient.
+
+## Language principle
+
+This issue should become a canonical example of #68:
+
+> **Reuse Rust syntax when the semantics agree. Fork the syntax when the quantum semantics materially differ.**
+
+The difference in spelling is therefore not cosmetic. It corresponds to a physical restriction.
+
+## Non-goals
+
+This issue does not propose:
+
+- measuring the control;
+- treating the control as classical data;
+- requiring the control to be in a basis state;
+- forbidding phase kickback;
+- proving separability;
+- introducing a general read-only quantum reference;
+- adopting Silq's full `const` semantics;
+- changing the trusted Core merely to support surface syntax.
+
+## Acceptance criteria
+
+- [ ] Plain shared Rust `&q` is not the normative spelling for coherent quantum control.
+- [ ] The Language Reference defines a dedicated coherent-control access concept.
+- [ ] `ctrl` is the adopted public spelling; detailed grammar and verified lowering are specified with #29.
+- [ ] Its denotation is specified as computational-basis block-diagonal / basis-sector-preserving access.
+- [ ] The specification explicitly states that phase kickback and entanglement are allowed.
+- [ ] The specification explicitly rejects the interpretation "the quantum state is unchanged".
+- [ ] Interaction with `excl` exclusive access is specified.
+- [ ] Overlap/alias checks are stated independently of quantum-state separability.
+- [ ] Diagnostics explain the false-friend distinction.
+- [ ] qlinty can identify misleading Rust-shaped shared quantum access.
+- [ ] Lowering preserves exact phase and reference-entangled behavior.
+- [ ] No new trusted acceptance rule is introduced solely for the surface form.
+- [ ] Access exit is distinguished from restoration, uncomputation and resource release; views neither duplicate the quantum allocation nor erase its live interval.
+- [ ] Resource/scheduling claims use checked lowering and actual costs; shared control access alone does not prove a smaller depth or omitted work.
+
+## Compact formulation
+
+> **`excl`: exclusive quantum access.**
+>
+> **`ctrl`: basis-preserving coherent access.**
+>
+> **There is no Rust-style quantum "read-only reference".**
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #29 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Control access.** A control-access contract must account for block-diagonal action, phase kickback and entanglement with external references. Distinct owners are not a separability or commutativity proof. Any permitted reordering requires the actual footprint/access premises and #303's corresponding theorem; a syntactic ctrl annotation is not evidence. The language rules, counterexamples and production integration remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

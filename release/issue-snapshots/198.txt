@@ -1,0 +1,46 @@
+## Status
+
+**0.3.0 semantic decision fixed; implementation/diagnostics remain open.**
+
+Related: #22, #68, #74, #89, #196.
+
+## Decision
+
+`Q<T>` does not inherit ordinary value equality, ordering, or hashing from `T`.
+
+The following are rejected for live quantum owners:
+
+```qli
+q1 == q2
+q1 < q2
+hash(q)
+```
+
+and live `Q<T>` does not satisfy ordinary `Eq`, `Ord`, or `Hash`-like interfaces.
+
+## Distinct concepts
+
+These must remain separate:
+
+- ordinary equality of classical/static values;
+- owner/provenance identity inside compiler/tooling;
+- physical/logical wire identity;
+- coherent basis-value comparison implemented by an explicit reversible operation;
+- quantum-state comparison/tomography/testing.
+
+None is silently spelled `q1 == q2`.
+
+Static program descriptions, evidence IDs, source identities, and ordinary classical values remain comparable/hashable when their own ordinary types justify it.
+
+## Acceptance criteria
+
+- [x] Ordinary equality/ordering/hash on live `Q<T>` reject.
+- [x] Owner identity is not exposed as quantum-state equality.
+- [x] Coherent comparison is an explicit quantum operation with its own contract.
+- [x] Static/classical values retain ordinary comparison where valid.
+- [x] Diagnostics explain the ambiguity rather than only saying “trait unavailable”.
+
+## Compact rule
+
+> **Ordinary value relations belong to ordinary values, not live quantum ownership.**
+

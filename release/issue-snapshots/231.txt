@@ -1,0 +1,226 @@
+> **Naming update — 2026-11-18:** The synchronized qlirgo linter is now named `qlinties` (see #615 and [qlirgo#45](https://github.com/MGYamada/qlirgo/issues/45)).
+
+## Status
+
+**Qleisli 0.3.0 important. Release-engineering and compatibility boundary.**
+
+Related:
+- #230 — ecosystem version domains and synchronized release trains
+- #171 — bundled `std` version locked to the Qleisli toolchain version
+- #106 — versioned QLT/QDB/QCP analysis protocol
+- #107 — qlirgo integration with pinned Qleisli toolchains
+
+## Goal
+
+Now that Qleisli has explicit version domains, freeze the minimum machinery that makes those domains reproducible and non-ambiguous.
+
+The core rule is:
+
+> **A release train is one atomic, machine-identifiable snapshot whose compatibility is declared explicitly rather than inferred from version numbers.**
+
+0.3.0 should fix four principles:
+
+1. Qleisli↔qlirgo compatibility is explicit and machine-readable.
+2. synchronized release trains update/rollback atomically.
+3. each release train has one authoritative version source.
+4. human release versions are distinct from exact build/artifact identity.
+
+## 1. Explicit Qleisli ↔ qlirgo compatibility contract
+
+Qleisli and qlirgo are independently versioned products.
+
+Therefore compatibility MUST NOT be guessed from version-number similarity.
+
+A supported relationship should be declared explicitly, conceptually:
+
+```text
+qlirgo 0.2.1
+supports:
+  Qleisli 0.4.x
+  analysis protocol v2
+```
+
+The exact schema may evolve, but the contract must be:
+
+- machine-readable;
+- explicit;
+- fail-closed for unknown combinations;
+- capable of expressing supported protocol/schema ranges;
+- capable of distinguishing unsupported from merely unavailable capabilities;
+- free of silent fallback to another installed toolchain.
+
+The compatibility relation belongs to release metadata, not human convention.
+
+## 2. Release trains are atomic
+
+The synchronized domains fixed by #230 are distributed as atomic units.
+
+For Qleisli:
+
+```text
+Qleisli
+= compiler/checker/verifier
++ std
++ QLT
++ QDB
++ QCP
+```
+
+For qlirgo:
+
+```text
+qlirgo
+= qlirgo
++ qlinties
++ qlifmt
++ qlidoc
+```
+
+Supported official installation/update/rollback must not create partially mixed trains such as:
+
+```text
+Qleisli 0.4.0 + QDB 0.4.1
+qlirgo 0.2.0 + qlinties 0.2.1
+```
+
+A train is selected and replaced as one coherent snapshot.
+
+## 3. One version source of truth per train
+
+Version synchronization should not depend on maintainers manually editing multiple manifests correctly.
+
+Each synchronized release train should have one authoritative release-version source.
+
+Conceptually:
+
+```text
+Qleisli release metadata
+       |
+       +--> compiler version
+       +--> std version
+       +--> QLT version
+       +--> QDB version
+       +--> QCP version
+```
+
+and:
+
+```text
+qlirgo release metadata
+       |
+       +--> qlirgo version
+       +--> qlinties version
+       +--> qlifmt version
+       +--> qlidoc version
+```
+
+Component manifests may repeat the version where packaging requires it, but CI/release tooling must derive or verify those values against the authoritative source.
+
+Version drift should be structurally difficult and release-blocking.
+
+## 4. Release identity is not exact build identity
+
+A human-facing release version such as:
+
+```text
+Qleisli 0.4.0
+```
+
+identifies the release line, but reproducibility may require a stronger exact identity.
+
+The release manifest should be able to bind, where applicable:
+
+- component names and synchronized versions;
+- source/revision identity;
+- artifact hashes;
+- platform/target identity;
+- compiler/checker/verifier build identity;
+- bundled std snapshot identity;
+- analysis protocol/schema versions;
+- required proof/kernel environment;
+- compatibility metadata.
+
+Therefore distinguish:
+
+```text
+release version  = human/product identity
+exact manifest   = reproducible distribution identity
+```
+
+A result should be able to state not merely “Qleisli 0.4.0” but which exact official snapshot produced it when that distinction matters.
+
+## 5. qleisliup consumes declared identity
+
+`qleisliup` remains independently versioned under #230.
+
+Its role should be to consume release/compatibility metadata rather than contain a growing hard-coded compatibility table.
+
+Conceptually:
+
+```text
+Qleisli release manifest ----+
+                             |
+qlirgo release manifest -------+--> qleisliup
+                             |
+compatibility metadata -------+
+```
+
+This keeps toolchain policy with the distributions that own it while allowing qleisliup to install/select compatible immutable snapshots.
+
+The exact qleisliup implementation is outside this 0.3.0 issue.
+
+## 6. Version numbers do not replace protocol versions
+
+Preserve the distinction fixed by #106/#107:
+
+```text
+product release version
+!= language edition
+!= analysis protocol version
+!= artifact/schema version
+!= qrate version
+!= target/cost-model version
+```
+
+A synchronized release train may contain several independently versioned internal protocols.
+
+The synchronization rule concerns product distribution, not the numbering of every internal interface.
+
+## 0.3.0 acceptance criteria
+
+- [ ] Specify that Qleisli↔qlirgo compatibility is declared explicitly, not inferred from version numbers.
+- [ ] Define a minimal machine-readable release/compatibility metadata model.
+- [ ] State that supported official Qleisli and qlirgo release trains install/update/rollback atomically.
+- [ ] Define one authoritative release-version source per synchronized train.
+- [ ] Add CI/release checks that reject internal version drift.
+- [ ] Distinguish human release identity from exact artifact/build identity.
+- [ ] Require enough exact identity to reproduce or reject stale/mismatched toolchain results.
+- [ ] Preserve separate protocol/schema/edition identities.
+- [ ] Keep qleisliup independently versioned and metadata-driven.
+- [ ] Cross-reference #230 as the normative version-domain rule.
+
+## Non-goals
+
+This issue does not yet freeze:
+
+- final CLI command topology;
+- public binary naming;
+- first-party registry namespace reservation;
+- registry design;
+- automatic network installation policy;
+- long-term stable compatibility promises between Qleisli and qlirgo.
+
+Those are later ecosystem/UI decisions.
+
+## Compact principle
+
+> **Versions name releases; manifests identify exact releases; compatibility is declared; synchronized trains move atomically.**
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #169 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Coherent distributions.** Current version/bundle checks provide bounded evidence but do not establish every cross-product compatibility rule or atomic snapshot property. A distribution must bind a complete coherent set of actual artifacts and reject stale or mixed components. No successful producer receipt alone certifies the full release. Compatibility, incomplete-snapshot and fresh-install acceptance criteria remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

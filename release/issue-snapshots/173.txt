@@ -1,0 +1,258 @@
+## Status
+
+**Qleisli 0.3.0 important. Priority: highest. Constitutional / build-time authority boundary.**
+
+Qleisli must decide before qlirgo grows whether package builds may execute arbitrary host-language programs with hidden authority over the resulting quantum program.
+
+The adopted direction should be:
+
+> **There is no trusted build script.**
+
+More precisely:
+
+> **A qrate does not acquire semantic authority through build-time execution. Any generated Qleisli program must pass through the same ordinary Qleisli checking and verification path as hand-written source.**
+
+Related:
+- #169 — .qli / external-artifact authority boundary
+- #170 — normative qrate semantics and authority
+- #60 — typed compile-time meta-layer
+- #61 — generative frontend / elaboration / desugaring
+- #53 / #107 — qlirgo direction
+- #164 — FFI/callback/plugin Resource Safety boundary
+
+## 1. Reject arbitrary trusted `build.rs`-style authority
+
+Qleisli should not adopt a model where:
+
+```text
+Qargo.toml
+    ↓
+arbitrary host program
+    ↓
+trusted generated IR / trusted semantics
+    ↓
+accepted Qleisli program
+```
+
+An arbitrary Rust/Python/shell program must never become an implicit extension of the Qleisli language just because it runs during package build.
+
+## 2. The normative rule
+
+Adopt:
+
+> **Build-time execution may produce inputs or ordinary artifacts, but it cannot manufacture Qleisli semantic authority.**
+
+In particular, build-time execution cannot directly:
+
+- create a trusted primitive;
+- inject accepted Core/IR;
+- mint Meaning evidence;
+- bypass ownership/effect checking;
+- mark ancillas clean;
+- authorize hidden measurement;
+- strengthen a semantic contract;
+- alter verifier rules;
+- install a package-local semantic extension.
+
+## 3. Preferred generation path: typed Qleisli meta/static layer
+
+For program generation that belongs to the language, the preferred long-term path is:
+
+```text
+typed Qleisli meta/static program
+          ↓
+generated ordinary Qleisli
+          ↓
+ordinary checking / verification
+```
+
+This connects directly to #60.
+
+The meta-layer may generate source/program structure, but it is itself part of the specified Qleisli compilation model and may not bypass the verifier.
+
+## 4. External generators remain untrusted
+
+Qleisli may still permit workflows such as:
+
+```text
+external generator
+        ↓
+generated .qli
+        ↓
+ordinary Qleisli parser / checker / verifier
+```
+
+This is acceptable because the generator's output receives no trust exemption.
+
+The security/semantic invariant is:
+
+> **Compromising the generator may change the generated source, but cannot cause invalid Qleisli to be accepted solely because the generator was trusted.**
+
+## 5. No trusted generated IR path by default
+
+Generated IR/Core is significantly more dangerous than generated `.qli`.
+
+0.3.0 should establish that a package build step cannot submit arbitrary generated IR as authoritative simply because it came from an official or declared build step.
+
+If future tooling accepts serialized checked IR for performance, it must:
+
+- bind strongly to source/toolchain identity;
+- be independently revalidated;
+- remain a cache/artifact path rather than a semantic escape hatch.
+
+## 6. Build scripts must not become an implicit FFI
+
+A build hook must not be used to smuggle host-language behavior into Qleisli execution.
+
+Distinguish:
+
+```text
+build-time generator
+    = produces ordinary checked inputs/artifacts
+
+runtime foreign provider
+    = crosses explicit FFI/provider boundary
+```
+
+The latter belongs under explicit rules such as #164, not under package build convenience.
+
+## 7. Determinism and reproducibility
+
+Any officially supported build-time generation model should be deterministic over declared inputs or explicitly record all non-deterministic/environmental inputs.
+
+The preferred default is no ambient dependence on:
+
+- network;
+- wall-clock time;
+- undeclared filesystem state;
+- random state;
+- mutable global environment.
+
+A reproducible qrate build should not depend on invisible host state.
+
+This matches the direction of #60 for typed meta evaluation.
+
+## 8. Build metadata is not proof
+
+A successful build script, generator, or qlirgo build step produces at most organizational/build evidence.
+
+It does not prove:
+
+- Soundness;
+- Physical Realizability;
+- Resource Safety;
+- semantic equivalence;
+- cleanup correctness.
+
+Those claims remain with the relevant Qleisli verifier/proof/evidence systems.
+
+## 9. Capability model for future external build actions
+
+If qlirgo later supports explicit external build actions, they should be capability-scoped and treated as tooling operations.
+
+For example, a future package may request:
+
+```text
+generate documentation
+invoke external code generator
+prepare target data
+compile foreign backend artifact
+```
+
+but these actions must remain outside the semantic authority of accepted Qleisli source.
+
+The package manager should make such capabilities visible rather than silently executing arbitrary code.
+
+## 10. Package installation must not imply arbitrary code execution by default
+
+This issue should also establish a package-security default:
+
+> **Obtaining or resolving a qrate must not automatically grant it arbitrary host execution authority.**
+
+If future build actions execute code, that should be explicit, inspectable, and outside the trusted Qleisli semantic kernel.
+
+This is valuable both for reproducibility and for a future public qrate ecosystem.
+
+## 11. Relationship to #169 and #170
+
+#169 says:
+
+```text
+.qli constructs executable meaning;
+external artifacts must declare their authority class.
+```
+
+#170 says:
+
+```text
+a qrate distributes programs;
+it does not redefine the language.
+```
+
+This issue closes the package-build loophole:
+
+```text
+build-time execution
+    does not become hidden semantic authority.
+```
+
+Together, these form a closed trust boundary around source, packaging, and generation.
+
+## Non-goals
+
+This issue does not require 0.3.0 to implement:
+
+- qlirgo build hooks;
+- the 0.4.0 meta-layer;
+- sandboxing;
+- a registry;
+- remote package installation;
+- a final build capability syntax;
+- cross-language generator APIs.
+
+It requires the authority rule to be fixed before those features exist.
+
+## 0.3.0 acceptance criteria
+
+- [x] The specification states that Qleisli has no trusted arbitrary build-script semantic path.
+- [x] Arbitrary host build programs cannot create primitives, verifier rules, Meaning evidence, or trusted IR.
+- [x] Generated `.qli` is always checked as ordinary Qleisli.
+- [x] The typed Qleisli meta/static layer is identified as the preferred in-language generation mechanism.
+- [x] External generators are explicitly untrusted.
+- [x] Generated IR/cache artifacts cannot become authoritative merely because they are generated.
+- [x] Build-time execution and runtime FFI/provider execution are kept distinct.
+- [x] Package resolution/installation does not imply arbitrary host-code execution by default.
+- [x] Reproducibility expectations for supported generation are documented.
+- [x] Build success is explicitly not semantic proof.
+- [x] #60, #169, #170, and #164 are cross-referenced.
+
+## Release principle
+
+> **There is no trusted build script.**
+
+Or equivalently:
+
+> **Generation may produce Qleisli; only Qleisli's ordinary acceptance path may authorize it.**
+
+
+## Beta criterion audit — 2026-10-19
+
+All 11 original criteria are satisfied for this issue's **normative authority/identity boundary**, reviewed at [main `7760aa3`](https://github.com/MGYamada/Qleisli/commit/7760aa3569984ff33f50e71c06535fd87f3564d0). [Reference](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/docs/src/reference/packages-and-artifacts.md) is the production specification; this audit implements none of the explicitly excluded future ecosystem features.
+
+| Criterion, in original order | Evidence |
+| --- | --- |
+| 1 | “There is no trusted build script” is normative. |
+| 2 | Host generators cannot mint primitives, verifier rules, Meaning receipts or accepted IR. |
+| 3 | Generated .qli receives ordinary source and native checking. |
+| 4 | Typed static/meta generation is the preferred future in-language path. |
+| 5 | External Rust/Python/shell generators remain untrusted. |
+| 6 | Generated IR/cache provenance supplies no acceptance authority. |
+| 7 | Build generation and runtime foreign providers have separate obligations. |
+| 8 | Obtaining/resolving a qrate grants no arbitrary host-code execution; future actions must be explicit/inspectable/scoped. |
+| 9 | Declared reproducible inputs exclude invisible ambient state. |
+| 10 | Build success is organizational evidence, not semantic proof. |
+| 11 | #60, #169, #170 and #164 are linked by the chapter. |
+
+Validation: #420 merged the specification; #421's [full-profile CI](https://github.com/MGYamada/Qleisli/actions/runs/39131240742) rechecked the same Reference and complete Rust coverage. Exact checked head `299e8f47bf9fb1973dd6ad2aba46fdee6a610f97` and main merge `7760aa3569984ff33f50e71c06535fd87f3564d0` have the identical tree `6bd7c71e7f5ed89e7ff5682678de379e175effa8`. All 42 checks succeeded; only two nonrelease readiness jobs skipped as expected. Practical retained regressions cover ordinary std visibility/public effects, invalid doc claims and ignored manifest metadata without privilege. The complete Rust remaining partition passed and its command includes `project`, `public_effects`, `body_effects`, `cli` and `review_v024`. Documentation/link checks also pass. No new Rust/Lean behavior change or proof replay was needed for this audit.
+
+This closes the specified conceptual/normative boundary only. #65's frontend criteria, #171's effective toolchain/std pairing, #255's native edition propagation, future registry/solver/build capabilities and source/target preservation remain under their own scopes. The two admitted QLV1 guarantees and pending broader QS/PR/RS/EXACT duties retain their status; no release approval or new guarantee is claimed. Historical implementation-gap observations above remain dated records.

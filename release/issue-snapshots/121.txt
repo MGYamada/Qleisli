@@ -1,0 +1,108 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+The 0.3.0 Language Reference should separate **semantic isometry** from **physical realization of that isometry on a target**.
+
+Related:
+- #57 — replace misleading `iso` terminology with isometry
+- #83 — decide whether operations are `Op<A>` or general arrows `Op<A,B>`
+- #120 — semantic unitarity vs same-wire realizability and synthesis workspace
+- #31 — exact source semantics vs backend synthesis
+- #70 — source-level clean/dirty ancilla contracts
+
+## Problem
+
+A well-typed isometry
+
+```text
+V : A -> B
+V† V = I_A
+```
+
+is a perfectly valid mathematical object. That does **not** by itself specify how a target realizes it.
+
+A physical implementation may require a unitary dilation, initialized workspace, a larger output interface, and an explicit rule for which auxiliary degrees of freedom are retained or discharged.
+
+Likewise, the mathematical adjoint `V†` exists as a linear map, but for a proper isometry it is not automatically a deterministic physical operation on the whole codomain.
+
+Therefore Qleisli must not infer any of the following merely from isometry typing:
+
+- same-interface unitary realizability;
+- ancilla-free realizability;
+- a callable deterministic implementation of `V†`;
+- a physical inverse operation;
+- a controlled realization;
+- permission to discard an environment.
+
+## Required distinction
+
+The specification should distinguish at least:
+
+```text
+semantic isometry
+        ↓
+chosen dilation / implementation correspondence
+        ↓
+target realization with initialized workspace
+```
+
+A target realization may have the conceptual form
+
+```text
+U (|ψ>_A ⊗ |0>_W)
+  =
+E(V|ψ>_B)
+```
+
+for an explicitly specified embedding/output correspondence `E`, with all workspace and restoration obligations stated.
+
+The exact formulation should follow the final `Op<A,B>` decision in #83.
+
+## Adjoint boundary
+
+For a proper isometry `V : A -> B`:
+
+```text
+V† V = I_A
+VV† = P_im(V)
+```
+
+so `V†` is not a unitary inverse on all of `B`.
+
+The language must therefore distinguish:
+
+- mathematical adjoint existence;
+- static `Adjoint` capability;
+- deterministic physical realizability of an adjoint operation on a declared domain;
+- inverse/uncompute use when the input is known to lie in the image of `V`.
+
+This should align with #45 rather than silently treating `Adjoint` as a consequence of semantic isometry.
+
+## Source workspace vs backend dilation workspace
+
+As in #120, backend-private dilation workspace must remain distinct from source-level `clean` / `dirty` resources.
+
+Backend dilation workspace:
+
+- need not appear as a source owner;
+- must be initialized according to the realization theorem used;
+- must be accounted for in target resources;
+- must not change the source denotation;
+- may be discharged only under the stated correspondence/evidence rule.
+
+## Acceptance criteria
+
+- [x] The Reference defines semantic isometry independently of target realizability.
+- [x] Physical Realizability states how isometries are represented on a target, including any dilation/workspace assumptions.
+- [x] `V†` is not treated as a deterministic physical inverse merely because `V†V=I`.
+- [x] Static `Adjoint` capability and physical adjoint realizability remain explicit evidence/capability questions.
+- [x] Image-restricted uncomputation is distinguished from arbitrary application of `V†`.
+- [x] Source `clean`/`dirty` resources remain distinct from backend dilation workspace.
+- [x] Target resource accounting includes dilation workspace.
+- [x] The rule composes with the final `Op<A,B>` / `Meaning<A,B>` design.
+- [x] No implicit discard/environment tracing is introduced by isometry typing.
+
+## Design principle
+
+> **An isometry is a mathematical promise about the denotation. A physical implementation requires an explicit dilation/correspondence theorem.**

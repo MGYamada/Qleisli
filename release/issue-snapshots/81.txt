@@ -1,0 +1,321 @@
+## Implementation status — 2026-10-06
+
+Completed scoped migration in [a6e09a59](https://github.com/MGYamada/Qleisli/commit/a6e09a5960d9615b1f4356dcbf32bc33fd608e1f); [criterion/evidence review](https://github.com/MGYamada/Qleisli/issues/81#issuecomment-6009264360). The former-form examples below are historical migration inputs. External qlinty diagnostics are explicitly excluded by the maintainer; other conditions are implemented and locally verified. Full release CI and mathematical proof gates remain separate in #142.
+
+---
+
+## Status
+
+**0.3.0 breaking surface-syntax migration.**
+
+Parent / related:
+- #80 — Haskell/Qleisli boundary
+- #32 — surface-language normalization
+- #34 — normative desugaring boundary
+- #38 — `pure` versus basis-state preparation
+- #23 — basis-state preparation / monadic-unit question
+- #68 — semantic false friends
+
+This issue adopts one concrete consequence of the Haskell/Qleisli boundary:
+
+> **Keep the coherent basis-map calculus; retire the Haskell `do/pure` spelling.**
+
+The current construct is useful and semantically distinctive, but its surface syntax strongly suggests ordinary Haskell monadic bind and `pure`, which is not what Qleisli means.
+
+---
+
+# Current form
+
+Today a coherent basis map can be written as:
+
+```qli
+pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
+    do x <- q;
+    pure (x, x)
+}
+```
+
+The bound `x` is not a measured runtime classical value.
+
+It is a **coherent basis index** used to define a basis map whose action is then extended coherently/linearly:
+
+```text
+|x⟩ ↦ |x,x⟩
+```
+
+Likewise, `pure` here is not a general return form, not Haskell `pure`, and not physical basis-state preparation.
+
+The calculus is valuable.
+
+The spelling is misleading.
+
+---
+
+# Adopted direction
+
+Replace the Haskell-shaped form
+
+```qli
+do x <- q;
+pure e
+```
+
+with an explicitly Qleisli-specific basis-map form:
+
+```qli
+basis q as x {
+    e
+}
+```
+
+For the Bell/entangling example:
+
+```qli
+pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
+    basis q as x {
+        (x, x)
+    }
+}
+```
+
+The block's final expression is the basis expression. No `pure` keyword is required.
+
+The exact final grammar may generalize the pattern position, for example:
+
+```qli
+basis q as p {
+    basis_expr
+}
+```
+
+where `p` is an allowed basis pattern under the same restrictions as the current `do` pattern.
+
+---
+
+# Semantic rule
+
+This is a **surface migration only**, not a new quantum operation.
+
+The new form must preserve the current coherent-basis semantics exactly.
+
+Conceptually:
+
+```text
+basis q as p { e }
+```
+
+means:
+
+1. interpret `p` as coherent basis indices for the basis of the owned quantum input;
+2. type/evaluate `e` in the isolated basis-expression context;
+3. construct the corresponding basis map;
+4. extend it coherently according to the existing semantics;
+5. preserve the declared `Iso` / `Unitary` obligations and exact phase semantics;
+6. independently verify the lowered Core/IR as before.
+
+It **does not**:
+
+- measure `q`;
+- expose a runtime classical value;
+- perform Haskell-style monadic bind;
+- introduce a general `Monad`;
+- make basis indices ordinary runtime values;
+- imply fresh quantum-state preparation.
+
+---
+
+# Why rename it
+
+The 0.3.0 Haskell/Qleisli boundary in #80 establishes:
+
+> **Qleisli should inherit Haskell's abstraction power, not Haskell's assumptions about ordinary duplicable values.**
+
+The current syntax
+
+```text
+do x <- q;
+pure ...
+```
+
+is a semantic false friend because Haskell users and coding agents naturally read it as:
+
+```text
+q >>= \x -> pure ...
+```
+
+That intuition is wrong here.
+
+The source form should instead teach the actual meaning:
+
+> **This block defines a coherent map on basis indices.**
+
+`basis ... as ... { ... }` makes that distinction visible without changing the underlying calculus.
+
+---
+
+# `pure` policy
+
+As part of this migration:
+
+> **Do not reuse `pure` for physical basis-state preparation in 0.3.0.**
+
+Fresh state preparation is a physical/resource/effectful operation and should use an explicit spelling such as:
+
+```qli
+prepare(a)
+```
+
+or the final preparation API selected by #23/#38.
+
+This keeps three concepts separate:
+
+```text
+basis q as x { e }   coherent basis-map construction
+prepare(a)           physical preparation of a fresh basis state
+return/final expr     ordinary block result
+```
+
+No single `pure` keyword should overload these meanings.
+
+After migration, `pure` should be removed from the quantum-core surface grammar unless a future, separately justified feature gives it one unambiguous meaning.
+
+---
+
+# Scope isolation must remain unchanged
+
+The new `basis` form should preserve the current strong isolation rules of the old `do` basis context.
+
+In particular, the body should continue to expose only the permitted basis/static context:
+
+- basis-pattern bindings are coherent basis indices;
+- outer live quantum owners are not captured;
+- outer runtime classical values are not silently captured if the current rule forbids them;
+- top-level permitted basis functions remain available;
+- name shadowing follows the current isolated basis-expression rules.
+
+The syntax migration must not accidentally turn a basis-map block into an ordinary closure.
+
+---
+
+# Desugaring / trust boundary
+
+`basis` remains surface syntax.
+
+It should lower through the untrusted frontend/elaborator to the same explicit semantic/Core representation used by the current construct.
+
+No new trusted verifier rule is justified merely by renaming the syntax.
+
+Required shape:
+
+```text
+basis surface block
+        ↓
+existing coherent basis-map representation
+        ↓
+ordinary type/effect/ownership checks
+        ↓
+canonical Core / IR
+        ↓
+independent verifier
+```
+
+The new syntax must not expand the trusted computing base.
+
+---
+
+# Grammar questions to settle during implementation
+
+The migration should decide the smallest grammar that covers the current use cases.
+
+At minimum:
+
+```text
+basis <quantum-expression> as <basis-pattern> {
+    <basis-expression>
+}
+```
+
+Questions:
+
+- Should the quantum expression be restricted to one owner initially?
+- Which existing `do` patterns are accepted unchanged?
+- Should multiple coherent inputs use tuple syntax rather than multiple bind clauses?
+- Does the final expression omit a semicolon like ordinary expression blocks?
+- Are nested `basis` blocks useful or unnecessary?
+- Is `basis` reserved only for this coherent-map construct?
+- Should diagnostics explicitly say "basis index" and "not measurement"?
+
+Prefer the smallest form that exactly replaces the existing calculus.
+
+---
+
+# Migration
+
+For every current source occurrence:
+
+```qli
+do p <- q;
+pure e
+```
+
+rewrite mechanically to:
+
+```qli
+basis q as p {
+    e
+}
+```
+
+The implementation should audit the repository for all accepted/rejected fixtures, examples, parser tests, documentation and generated references using the old form.
+
+If there are legacy `do` uses with a different meaning, they must be classified explicitly rather than silently migrated.
+
+No compatibility alias should remain indefinitely in the normative 0.3.0 grammar. A temporary parser diagnostic may recognize the old form solely to produce a targeted migration message.
+
+Suggested diagnostic:
+
+```text
+Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0.
+Write: basis q as x { ... }
+This is a coherent basis map, not monadic bind or measurement.
+```
+
+---
+
+# Acceptance criteria
+
+- [x] Add normative `basis q as p { e }` syntax for coherent basis-map construction.
+- [x] Preserve the exact semantics of the current `do p <- q; pure e` construct.
+- [x] Rewrite the Bell/entangle example to the new syntax.
+- [x] Audit and migrate every repository occurrence of the old coherent `do/pure` form.
+- [x] Remove `pure` from this calculus.
+- [x] Do not use `pure` for basis-state preparation; keep preparation explicitly named.
+- [x] Preserve basis-context isolation and non-capture rules.
+- [x] Preserve ownership, effect, exact-phase and reference-entanglement behavior.
+- [x] Preserve accepted/rejected semantic tests after migration.
+- [x] Ensure `basis` does not mean measurement and cannot expose runtime classical information.
+- [x] Lower to existing explicit Core/IR semantics without enlarging the trusted verifier.
+- [x] Update Language Reference, quick reference, examples and Qleisli frontend/CLI diagnostics. External qlinty diagnostic updates/validation are excluded by the maintainer's explicit authorization; see the implementation record below.
+- [x] Reject or give a targeted migration diagnostic for the old syntax after the 0.3.0 transition.
+- [x] Document that Qleisli has no general quantum-core `Monad/do` syntax as a consequence of #80.
+
+---
+
+# Compact formulation
+
+> **The calculus stays; the Haskell spelling goes.**
+
+```qli
+do x <- q;
+pure e
+```
+
+becomes
+
+```qli
+basis q as x {
+    e
+}
+```
+
+because this construct defines a coherent basis map, not monadic bind, measurement, or state preparation.

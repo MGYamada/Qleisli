@@ -1,0 +1,142 @@
+**Parent:** #32
+**Related:** #28, #33, #34, #40, #47
+
+## Current scope decision — 2026-10-11 (Asia/Tokyo)
+
+**Closed as not planned for all of v0.3.0 (out of scope), not completed.** The maintainer decided that the richer bounded `const` sugar, static collection/table generation, and remaining unchecked acceptance criteria do not belong to the v0.3.0 release gate. This supersedes the earlier **alpha-only deferral** below; none of those uncompleted criteria is represented as implemented, proved, or waived by completion.
+
+The v0.3.0 bounded static semantics and already-supported scalar Nat helpers remain intact. The unfinished static-table experiment remains archived, with original records preserved; this decision requests no code rollback. Any future public compile-time builder/meta language is to be designed under #60/#61 (v0.4.0), informed by #40, rather than by treating this v0.3.0 issue as an implementation prerequisite. No automatic transfer of uncompleted criteria or claim of v0.4.0 implementation is made.
+
+Release accounting: record this as an **approved scope exclusion**, not a completed issue, in the #142 release-gate review. Preserve the historical description and evidence below.
+
+## Historical 0.3.0-alpha status (superseded)
+
+Surface-language design issue for **Qleisli 0.3.0**.
+
+**Deferred for 0.3.0-alpha by explicit maintainer instruction (2026-10-06).** This Issue remains open and incomplete. Its original acceptance criteria and stable 0.3.0 milestone remain unchanged; alpha deferral is not completion. Existing scalar Nat helpers remain supported. The unfinished static-table experiment is archived under `experimental/static-nat-tables/` and is excluded from production alpha code.
+
+This issue treats richer `const` computation as **compile-time sugar over the existing bounded static language**, not as a new execution phase with independent semantics.
+
+## Motivation
+
+Quantum programs are naturally program families. Even before the full 0.4.0 meta-layer, 0.3.0 benefits from a pleasant way to express finite compile-time computation used by:
+
+- QFT angle tables;
+- register widths;
+- controlled-power schedules;
+- exact phase constants;
+- finite lookup tables;
+- generic specialization;
+- resource-independent circuit construction.
+
+Existing pieces already include `for const`, compile-time parameters, `const fn`, exact values, and compile-time constraints.
+
+The 0.3.0 goal should be to make these feel like **one small constant-evaluation surface**.
+
+## Design principle
+
+> If a compile-time expression can be reduced deterministically by the existing bounded static evaluator, the surface language may expose concise `const`/`static` syntax for it.
+
+No live quantum owner is available to this evaluator.
+
+## Candidate surface
+
+Illustrative only:
+
+```qli
+const angles = phase_table[n]();
+
+const rounds = 2 * n + 1;
+
+for const k in 0..rounds {
+    ...
+}
+```
+
+and, in the later 0.4.0 meta layer:
+
+```qli
+meta fn phase_table[const n: Nat]() -> ... {
+    ...
+}
+```
+
+under the same bounded compile-time semantics as #40.
+
+## Required lowering rule
+
+All forms lower to the single 0.3.0 static language:
+
+```text
+const binding
+    ↓
+bounded static expression evaluation
+
+const helper
+    ↓
+#40 compile-time function/builder
+
+for const
+    ↓
+finite elaborated repetition
+
+computed generic argument
+    ↓
+normalized static value used by #44 specialization
+```
+
+The result is ordinary elaborated Qleisli. There is no runtime `const` object and no alternate trusted path.
+
+## Initial restrictions
+
+- evaluation must terminate under #28's bounded model;
+- evaluation must be deterministic and reproducible;
+- no I/O;
+- no randomness;
+- no clock/environment dependence;
+- no inspection of live quantum state;
+- no mutation of quantum owners;
+- no direct IR injection;
+- no manufacture of trusted evidence;
+- no hidden floating-point approximation in exact semantic positions.
+
+## Questions to decide
+
+1. Keep `const` for compile-time values/parameters and use `meta fn` for compile-time-only helpers.
+2. Specify the boundary between ordinary `fn` and compile-time-only `meta fn`.
+3. Which static collections/tuples are permitted?
+4. Are bounded local loops/conditionals allowed inside static helpers?
+5. What normalization is required before specialization/cache keys are formed?
+6. What work limit and diagnostics apply when evaluation is too large?
+7. How are source spans retained through generated repetitions?
+
+## Non-goals
+
+This issue is not the 0.4.0 meta-layer.
+
+It does not introduce quotation/splicing, arbitrary syntax generation, reflection, hygienic macro expansion, or unbounded compile-time execution.
+
+## Acceptance criteria
+
+- [ ] QFT phase-table generation is expressible without runtime classical code;
+- [ ] a computed compile-time size can specialize a generic definition;
+- [ ] `for const` and helper evaluation use one bounded evaluator;
+- [ ] equivalent compile-time expressions normalize deterministically where required;
+- [ ] forbidden quantum/runtime dependencies are rejected at the compile-time boundary;
+- [ ] generated ordinary Qleisli is checked exactly like hand-written source;
+- [ ] the Language Reference classifies these forms as static/elaboration sugar.
+
+## Design intent
+
+0.3.0 should make compile-time construction pleasant enough for real algorithms while reserving the full **program-generating meta-language** for 0.4.0.
+
+> **Richer syntax, same bounded static semantics.**
+
+## 2026-10-07 spelling decision
+
+The public `static` spelling is retired from the canonical staging vocabulary. Use `const` when a source keyword is needed; describe the semantics as compile-time evaluation/specialization. Historical fixtures may retain `static` solely as migration evidence.
+
+
+## 2026-10-07 helper-spelling clarification
+
+`const fn` is intentionally not used for compile-time-only helpers. Rust's `const fn` remains ordinarily callable, so reusing that spelling would be a semantic false friend. Qleisli keeps `const` for values/parameters/loops and reserves `meta fn` for later compile-time-only helper declarations.

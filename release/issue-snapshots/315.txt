@@ -1,0 +1,345 @@
+## Status
+
+**Target: Qleisli 0.3.0. Priority: very important. Type: enhancement.**
+
+Qleisli 0.3.0 should stop treating hand-written effect contracts on ordinary derived stdlib functions as semantic authority.
+
+The standard library is ordinary checked `.qli` by #167. Therefore, for ordinary derived functions whose bodies are available to the normal checker, the default source of truth should be:
+
+```text
+.qli body
+    ↓
+ordinary type / ownership / effect checking
+    ↓
+inferred semantic effect
+```
+
+not:
+
+```text
+human reads body
+    ↓
+human guesses Unitarty / Iso / Observe
+    ↓
+annotation becomes the declared contract
+```
+
+The current explicit annotations are not necessarily wrong. They are useful pre-0.3.0 scaffolding. But keeping them as the primary semantic source duplicates information already present in ordinary checked `.qli`, creates drift risk, and weakens the architectural meaning of #167.
+
+Related:
+- #167 — stdlib is ordinary checked `.qli`; primitive vs derived boundary
+- #100 — infer uniquely determined effects; annotations may check/restrict but may not manufacture meaning
+- #27 — ownership and semantic effects are orthogonal
+- #48 — authoritative 0.3.0 Language Reference
+- #152 — later stdlib structural refactor
+- #154 — future primitive admission policy
+- #283 — **post-v1, unresolved** externally unitary/isometric realization rule
+
+---
+
+## Core principle
+
+> **For ordinary checked `.qli`, the body is the semantic evidence for its effect class.**
+
+Equivalently:
+
+> **Derived stdlib code should not need a second hand-maintained effect ledger.**
+
+For a normal source definition, Qleisli should compute the unique effect implied by the body:
+
+```text
+infer_effect(body) = Unitary | Iso | Observe | ...
+```
+
+subject to the adopted 0.3.0 effect lattice / composition rules.
+
+If a source-level annotation is retained, its role should be an **assertion checked against the inferred result**, not an unchecked declaration that supplies missing semantic authority.
+
+Conceptually:
+
+```text
+fn f(...) { body }              // effect inferred
+
+unitary fn f(...) { body }      // if retained: assert/check inferred effect
+```
+
+The second form must reject if the body does not satisfy the stated class.
+
+---
+
+## Why this matters specifically for stdlib
+
+#167 establishes:
+
+```text
+stdlib = ordinary derived Qleisli source
+```
+
+Therefore stdlib placement should grant no special need to hand-author semantic effect classifications.
+
+Today, much of the stdlib effectively does:
+
+1. inspect the implementation;
+2. classify it manually as unitary / isometry / observe;
+3. write that classification into the declaration.
+
+That is semantically reasonable but architecturally redundant.
+
+The desired 0.3.0 direction is:
+
+```text
+ordinary .qli implementation
+        ↓
+normal checker
+        ↓
+principal / uniquely determined effect
+        ↓
+qlidoc / interface metadata / diagnostics
+```
+
+This makes stdlib trustworthy for exactly the same reason as user code: the ordinary checker derives the accepted semantics from the source program.
+
+---
+
+## Public API contracts may still be recorded
+
+This issue does **not** require deleting all visible contract information from documentation or interfaces.
+
+A public API may still expose:
+
+- inferred effect class;
+- input/output ownership shape;
+- exact mathematical Meaning where separately specified and verified;
+- phase / axis / ordering conventions;
+- cleanup guarantees;
+- capabilities such as controllable / adjointable where independently justified.
+
+The distinction is authority:
+
+```text
+recorded contract  = checked/exported fact
+not
+recorded contract  = unchecked source of truth
+```
+
+`qlidoc` and other tooling should preferably print the inferred effect even when the source omits a redundant annotation.
+
+Exact mathematical `Meaning` may require explicit specification; this issue does not claim that arbitrary mathematical operator identities can always be inferred syntactically. The requirement is that mechanically derivable effect classification must not be maintained as an independent handwritten semantic ledger.
+
+---
+
+## Explicit annotations, if retained
+
+0.3.0 should decide whether explicit effect syntax remains mandatory, optional, or becomes primarily an assertion form.
+
+Whichever surface choice is adopted, the semantic law should be:
+
+> **An annotation on an ordinary body may constrain/check inference; it may not make an otherwise invalid body unitary or isometric.**
+
+Required behavior:
+
+- inferred `Unitary` + asserted `Unitary` → accept;
+- inferred stronger class where a normative weakening is allowed → handle only by explicit language rule;
+- inferred `Observe` + asserted `Unitary` → reject;
+- unresolved/ambiguous classification → reject rather than trust the annotation;
+- annotations must not downgrade away observation or ownership effects.
+
+This is consistent with #100.
+
+---
+
+## Stdlib migration
+
+Audit the current derived stdlib and classify existing effect annotations as one of:
+
+1. **redundant inferred fact** — remove from the semantic source of truth, and preferably from source where ergonomically appropriate;
+2. **checked public assertion** — retain only if it improves API stability/readability, but verify it against inference;
+3. **true primitive/kernel fact** — this item is not ordinary stdlib under #167 and must be moved to the primitive boundary;
+4. **not currently inferable** — identify the missing language/checker rule instead of silently retaining a trusted handwritten stdlib contract.
+
+Do not solve an inference limitation by giving ordinary stdlib privileged semantic authority.
+
+---
+
+## Critical non-goal: externally unitary / externally isometric
+
+**This issue must not introduce, solve, or silently assume `externally unitary` / `externally isometry`.**
+
+As already recorded in #283:
+
+> externally unitary/isometric realization is a **long-term, post-v1 verified extension** and remains unresolved.
+
+In particular, #283 concerns implementations whose internal realization may include hidden measurement / feed-forward while the induced public channel is independently certified as unitary or isometric.
+
+That is a fundamentally different boundary from ordinary body-derived effect inference.
+
+For 0.3.0:
+
+```text
+ordinary checked .qli body
+    -> infer effect from the body
+
+opaque / foreign / externally certified realization
+    -> NOT solved here
+    -> remains the long-term open problem in #283
+```
+
+Do **not** add an `externally unitary` or `externally isometry` escape hatch merely to make stdlib migration easier.
+
+Do **not** reinterpret a handwritten stdlib annotation as an external certificate.
+
+If a function cannot be justified through ordinary `.qli` checking, #167/#154 determine whether it belongs at the primitive boundary; #283 remains the future extension point for externally certified implementations.
+
+---
+
+## Trust-boundary consequence
+
+The desired architecture is:
+
+```text
+small constitutional primitive boundary
+        ↓
+ordinary .qli checker
+        ↓
+body-derived effect classification
+        ↓
+stdlib and user code uniformly
+```
+
+not:
+
+```text
+primitive contracts
+        +
+stdlib handwritten contracts
+        +
+user-code inference
+```
+
+There should be only one ordinary derived-code rule.
+
+This keeps the trusted semantic surface small and prevents stdlib from becoming a second quasi-primitive layer.
+
+---
+
+## Acceptance criteria
+
+- [x] The Language Reference states that ordinary checked `.qli` effects are derived from the body by the normative checker.
+- [x] Effect inference is deterministic and uniquely determined under #100.
+- [x] A handwritten effect annotation on an ordinary body cannot manufacture semantic authority.
+- [x] If explicit annotations remain, their assertion/checking semantics are specified.
+- [x] An annotation cannot hide or downgrade `Observe`.
+- [x] The current derived stdlib is audited for redundant hand-written effect contracts.
+- [x] Redundant stdlib effect annotations are removed or converted into checked assertions rather than trusted declarations.
+- [x] `qlidoc` / interface metadata can expose inferred effect classes without requiring duplicate source annotations.
+- [x] Exact mathematical `Meaning` specifications remain distinguished from mechanically inferred effect classification.
+- [x] Anything that genuinely requires trusted semantic authority is classified under the primitive boundary of #167/#154, not ordinary stdlib.
+- [x] No ordinary stdlib function gains privileged effect authority because of its module/path/name.
+- [x] #152's later structural refactor consumes these checked/inferred contracts without redefining them.
+- [x] **`externally unitary` / `externally isometry` are explicitly left unresolved and deferred to the long-term post-v1 work in #283.**
+- [x] No 0.3.0 escape hatch is introduced that approximates the future #283 mechanism.
+
+---
+
+## Design principle
+
+> **If Qleisli can read the body, Qleisli should derive the effect.**
+
+And:
+
+> **The standard library should not tell the checker what its ordinary Qleisli source already proves.**
+
+The future external-contract problem is separate:
+
+> **If Qleisli cannot justify the implementation through ordinary source checking, that is a trust-boundary problem — not a reason to make stdlib annotations authoritative.**
+
+
+## Scope and ordinary impact record — 2026-10-05
+
+The maintainer explicitly added this Issue to the active0.3.0 plan. [1eedf65](https://github.com/MGYamada/Qleisli/commit/1eedf65) adds #315 to G10 and the110-Issue release scope; all original108 targets and #311 remain. Thirty release-gate tests reject old108/109 snapshots that omit added criteria/evidence. This accounting change satisfies none of the fourteen implementation criteria above; #315 remains open.
+
+The work falls under adopted QS-2026-01 (actual ordinary typing/ownership/effects and independent meanings), PR-2026-01 (actual output correspondence), RS-2026-01 (explicit quantitative obligations) and EXACT-2026-01. It must derive deterministic ordinary-body effects without an annotation/path privilege or inference of physical evidence/access. The two admitted ordinary QLV1 ownership/scope meanings remain unchanged. No new constitutional interpretation or guarantee is admitted by this record; any genuinely new jurisdiction case or proposed admission needs the human procedure. Exact Meaning and Apply/Adjoint/Controlled remain separate. #283 stays unresolved post-v1. The source/type/common-frontend and primitive-boundary dependencies remain required.
+
+
+## Ordinary implementation decision and before-code contract — 2026-10-05
+
+**Target:** 0.3.0, edition2026. Make the effect prefix optional on ordinary body-bearing functions: `fn f` uses the same runtime AST/checking rules as explicitly annotated functions. Retain `unitary`/`iso`/`observe` as checked upper-bound assertions under Unitary <= Iso <= Observe. Publish/export the inferred principal fact and the optional assertion separately. Calls, provider eligibility and generated proposal declarations consume principal facts, never an inflated source assertion. Legacy default-main eligibility is an ordinary closed signature/classical-result condition, independent of an effect prefix. This changes source/metadata/proposal classification, not the constitutional edition or native constructors.
+
+**Typed rule:** derive the least effect of the completely checked body. Compose/join typed local operations and checked callee principal effects, including both classical/static arms and zero-fold bodies. A type-checked same-width injective finite coherent lift is Unitary; an expanding lift is Iso. Preparation is Iso, observation/reset/discard Observe, and explicit zero-axis Unit structure retains its existing Unitary rule. Ordinary copying/drop at fixed classical inputs changes no quantum effect. Decreasing self-recursion uses the least monotone call-graph solution only after the existing termination check; mutual recursion remains rejected. One common effect lattice/fact/solver/assertion layer serves the current typed consumers. Missing/unsupported/ambiguous checking yields no published fact; annotations never seed inference or rescue missing access, owner, type, termination or native checks.
+
+**Public contracts:** add immutable checked source-effect/interface metadata and documentation rendering from those facts. Preserve the existing explicitly source-only documentation mode and its truthful lack of semantic checking. Audit every current derived stdlib declaration and remove redundant runtime prefixes, keeping independent mathematical contract comments and distinct basis/Meaning syntax. Ordinary library and user definitions receive the same rules regardless of path/name. Keep true sealed facts at #167/#154's existing primitive boundary; introduce no new primitive or external unitary/isometric certificate (#283 remains unresolved post-v1). Effect facts grant neither Apply/Adjoint/Controlled access nor arbitrary exact mathematical Meaning.
+
+**Migration/verification:** original annotations remain parseable as assertions; narrower assertions reject, wider assertions cannot inflate the principal fact or hide Observe. Preserve historical sources, original diagnostics and fixed raw-input/native meanings. The [informed first-source study](https://github.com/MGYamada/Qleisli/tree/codex/v0.3.0-foundation/tests/fixtures/authoring_sessions/body-effects-v030) freezes20 small source projects before any Rust change (first source/manifest map SHA-256 d31435b21c964151e9fcbf4ebbe2571c6001a6f6258aff8ba5ab151db5ff2768). Retain actual first diagnostics, then verify metadata, assertion failures, shadowed names, dependencies/recursion, typed lifts, all body arms/zero folds, independent small complex/reference action and actual native boundaries. Check current stdlib contracts and active clients with exact migration/evidence maps; no newly generated maximum-size quantum case. Completion still requires all14 criteria above, not just syntax or a passing round trip.
+
+**Impact:** this ordinary decision applies existing QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01. Actual source/effect preservation, emitted-artifact correspondence and quantitative resource duties remain distinct and pending. Both scoped QLV1 ownership/scope guarantees retain their exact definitions/premises/acceptance binding. No new Guardian interpretation, guarantee admission, primitive authority, full certification or release approval is asserted. #27/#32/#48/#100/#167 dependencies retain their remaining scope; #152 consumes the checked facts rather than redefining them.
+
+
+## Local implementation and diagnostic checkpoint — 2026-10-05
+
+Local commit `39e360cc8676626e8da3939bc76572f533286f98` implements the before-code contract above. It is not yet pushed: the preceding published `21a488024b278fecf0ea5e43be6cc2e846bcc3fe` has a useful exhaustive Rust CI job still running in run 37282352898. No current-commit full-CI success or Issue closure is claimed.
+
+Ordinary `fn` shares the runtime AST and body checking; deterministic principal effects, optional upper-bound assertions and provider/caller facts use the common effect layer. Checked metadata renders its retained immutable source and separates the principal class from assertions; the existing source-only documentation mode remains explicitly unverified. The ten redundant runtime prefixes in current derived stdlib are removed, with every original body and mathematical comment preserved. The three basis definitions and sealed primitive inventories are unchanged. No library path/name grants effect authority.
+
+The maintainer explicitly requested this user-facing explanation, without any GitHub Issue reference in the diagnostic:
+
+```text
+Semantic error: "externally unitary" is not supported; an external unitarity claim cannot override the effect inferred from the body
+```
+
+This identifies an unsupported semantic justification; it does not assert that an independently specified public channel is mathematically non-unitary. Actual finite/sized text/JSON calls reject false assertions with exit 1 and zero native invocations. Hidden observation and transitive calls cannot be hidden by an annotation. External certification remains unsupported, with no bypass.
+
+Evidence is committed under `tests/fixtures/frontend_v030/body-effects/` and `tests/fixtures/authoring_sessions/body-effects-v030/`. The same twenty frozen first projects have fifteen actual-native successes and five pre-native rejections after inference, retaining all original baseline failures. On each Rust 1.98.1 and 1.85.0, broad suites passed 253 integration +57 frontend tests (8+2 existing ignores). The initial MSRV lint failure and equivalent one-predicate repair are preserved; final current-source maps bind 77 direct integration +57 frontend passes (3+2 existing ignores) and all-target Clippy on both compilers. Formatting, constitutional continuity against reviewed faa5cfb, source/route inventory and coverage, docs, fixed mdBook 0.5.4 and generated HTML/print links pass. The 361-member evidence map matches committed blobs; the entire committed tree passes whitespace checking. No new maximum-size quantum case or fresh local Lean replay ran.
+
+All fourteen original criteria remain intact and #315 stays open pending complete criterion-level review and publication/integration. Exact Meaning, access, source/runtime preservation, broader QS/PR/RS/EXACT obligations and #152's future structural work retain their separate scope. The two admitted ordinary QLV1 ownership/scope guarantees remain unchanged. Confirmed whole-plan completion remains **13/110 = 11.82%**.
+
+
+### Ordinary diagnostic review repair contract — 2026-10-05
+
+Before changing code, five further original projects are frozen in `tests/fixtures/authoring_sessions/body-effects-host-review-v030/`. Review found that host-selected sized providers still report an Observe body as a `type` error without the requested unsupported-semantic explanation, while direct body assertions already report `effect`. Split host provider effect rejection from independent quantum shape checking: the former uses the same unsupported `"externally unitary"` semantic diagnostic, the latter remains a shape/type error. Retain rejected/accepted programs, owners, access, native checks and capacities. Update stale diagnostic suggestions to teach ordinary `fn` wrappers and optional effect assertions. This is a compatible diagnostic repair within the existing #315 contract and QS/PR/RS/EXACT boundary; it creates no new interpretation, primitive or guarantee. Actual original outcomes precede implementation and will remain unchanged.
+
+
+### Actual host diagnostic review results — 2026-10-05
+
+The current uncommitted successor to local 39e360c fixes the host-selected provider gap: Observe/Iso principal bodies produce the same unsupported-external-justification effect/semantic diagnostic; pure principal-Unitary bodies remain eligible despite an Observe assertion, and actual shape failures remain type errors. Ordinary fn suggestions replace stale mandatory-prefix wording. Original .qli programs and every original result are retained. Five initial invalid manifests hit the real schema error; their exact bytes remain historical .original.txt artifacts, with no exemption added to edition/production checks. The corrected second projects change only manifests and have unchanged accepted/rejected outcomes and native invocation counts before/after the diagnostic repair.
+
+Actual additional review exposed three old repair_diagnostics expectations: annotation-inflated empty bodies, declared-vs-asserted wording and an unnecessarily annotated suggested wrapper. Their original tests and failed run are preserved; active negatives now contain real measurement, retain strongest-cause/imported-call spans and check the unsupported explanation. Rust1.98.1 passes **198 integration +57 frontend tests**, retaining 3+2 existing ignores, plus all-target Clippy. Eleven identity/inventory/coverage/record/edition/docs/fixed-book/format checks pass. #152 now explicitly records the immutable inferred-fact consumer contract without implementing or closing its 0.4.0 migration.
+
+All-target validation first hit sandbox EPERM in an existing process-management test; outside-sandbox retry passed 346 tests across31 completed groups before the harness's600-second timeout. That is incomplete validation, not a full pass. Zero residual dedicated-target processes were found. A new identical all-target run uses a longer harness deadline and process-group cleanup; production limits, cases and ignores are unchanged. Its result, current-source MSRV and published/hosted integration remain pending. `tests/fixtures/frontend_v030/body-effects-host-review/criterion-review.json` maps all14 unchanged criteria to local evidence with those explicit limits. #315 remains open; no additional guarantee or Issue completion is claimed.
+
+
+### Completed current-source all-target run — 2026-10-05
+
+Rust1.98.1 now passes the actual current-source `cargo test --offline --all-targets`: **788 passed,0 failed,52 existing default ignores;90 reported groups;969 seconds**. Raw command logs, the unchanged184-source map and native binary identity are retained under `tests/fixtures/frontend_v030/body-effects-host-review/validation-latest-all-escalated-retry-01/`. Existing ignored tests remain explicitly unexecuted in this default run; this is not a claim that every optional lane was run. The sandbox EPERM and first600-second harness timeout remain separate unsuccessful/incomplete records. The actual1.85.0 all-target/Clippy run is live; current-head publication/CI remain pending. All14 original criteria, post-v1 external-effect boundary and broad pending proof duties remain unchanged. No new guarantee, closure or release.
+
+### Published ordinary effect implementation and diagnostic review — 2026-10-05
+
+[eb9c36e](https://github.com/MGYamada/Qleisli/commit/eb9c36ef9c13b5b968fda6858e61ea4419430144) now publishes [39e360c](https://github.com/MGYamada/Qleisli/commit/39e360cc8676626e8da3939bc76572f533286f98) plus the reviewed host-provider semantic diagnostic, plain-fn suggestions and actual stale-client repairs. The [258-member completed record snapshot](https://github.com/MGYamada/Qleisli/blob/eb9c36ef9c13b5b968fda6858e61ea4419430144/tests/fixtures/frontend_v030/body-effects-host-review/packet-files.json) has SHA-25689a551aba9fa4166f8e735766eed27463d626a538af44a9a7a4f0290a7de13d5 and explicitly excludes live MSRV output. Readback verifies exact published effect-source/packet blob identities and updated draft PR307 description.
+
+Actual latest all-target tests pass788/0 with52 default ignores; current-source1.85.0 all-target/Clippy is still running. [Current CI37303925654](https://github.com/MGYamada/Qleisli/actions/runs/37303925654) has started; its docs producer passed. Previous21a4880 full CI succeeded, but does not validate these changes. No full current-head CI, optional-lane completion or release approval is asserted.
+
+All14 original criteria and the local criterion review remain unchanged. #152 retains its0.4.0 target and all twelve original criteria; only its future inferred-fact consumer boundary is recorded. Exact Meaning, access and source-preservation duties remain separate. This ordinary repair changes no Lean/native definition, primitive, adopted interpretation or guarantee. The Issue remains open for final validation/integration; overall completion remains13/110 (11.82%).
+
+
+### Completed actual current-source MSRV — 2026-10-05
+
+Rust1.85.0 completed all-target runtime validation: **788 passed,0 failed,52 default ignores across90 reported groups**, followed by successful warnings-denied all-target Clippy. The184-source and native maps exactly match the complete Rust1.98.1 run; neither source nor original ignore status changed. Completed raw MSRV logs and the15-member addendum (SHA-2568eecd3ce9b9b1c5709a33326667843d9dfcc8bb58a95feece370dcc742de9141) are in local unpushed729d153d27407a05cce83807150852ec383162d7. The first258 published record members remain byte-identical, including their historical then-pending notice. Publication is held while useful current CI37303925654 runs on the functional eb9c36e head. Its docs/interop/Lean producers have passed; remaining producers/current-head integration are pending. No new closure or proof/release claim:13/110 (11.82%).
+
+### Completion reviewed against all fourteen original criteria — 2026-10-06 (Asia/Tokyo)
+
+All fourteen implementation criteria are satisfied for published functional [eb9c36e](https://github.com/MGYamada/Qleisli/commit/eb9c36ef9c13b5b968fda6858e61ea4419430144). An independent read-only review freshly compared every original criterion with the actual Reference, both typed effect consumers, metadata/rendering, all derived stdlib sources, primitive catalogs, original Git diff, adversarial tests, #152's future consumer contract and #283's unresolved boundary. The earlier local criterion index was not assumed authoritative. The checkboxes above change status only; their exact text and scope are retained.
+
+| Criteria | Verified evidence |
+| --- | --- |
+| 1–4 | Normative body/callee inference, deterministic ordered joins/least solution, private independently inferred/asserted facts and optional Unitary<=Iso<=Observe bounds. Six declaration-order permutations agree; assertions never seed or inflate principal facts. |
+| 5 | Direct/transitive/internal observation and source/host provider contradictions reject in both profiles; text/JSON expose the requested unsupported semantic explanation without Issue links. |
+| 6–7 | Every current derived declaration accounted for: ten runtime functions plus three basis helpers. Git diff removes precisely seven unitary and three observe prefixes, preserving bodies and mathematical comments. |
+| 8–9 | Immutable checked ProjectEffects/ParsedProgram interface facts and documentation retain original source identity and separate principal effects from assertions, exact Meaning/access and preservation. The criterion's interface-metadata option is implemented; source-only doc remains unverified. |
+| 10–11 | Both existing sealed catalogs remain unchanged; bundled/user code shares ordinary checking, with misleading names/module paths and prohibited std injection tested. No namespace grants authority. |
+| 12 | Independently read #152's recorded immutable inferred-fact/source consumer requirement; its later structural implementation and twelve original criteria remain intact. |
+| 13–14 | External unitarity/isometry remains unresolved post-v1 in #283; no annotation/provider/native-check bypass or external certificate mechanism is introduced. |
+
+Both preserved local runtime logs independently total **788 passed,0 failed,52 default ignores across90 reported groups** on actual Rust1.98.1 and1.85.0. Every one of their184-source maps matches published eb9c36e, and both native identities agree. All-target Clippy also passed. [Hosted37303925654](https://github.com/MGYamada/Qleisli/actions/runs/37303925654) completed successfully: eight producer lanes and required aggregates passed on exact PR merge **a416dcd0a9dad6c8495f9ba36d0ccf7d3382a9ea**, merging eb9c36e into ba83c5c97a9c67bf3904423745b3e9c019a083cb. Release readiness/receipt steps were skipped.
+
+The complete MSRV raw addendum is committed in729d153d27407a05cce83807150852ec383162d7; the verbatim fourteen-criterion independent review and111-scope accounting are committed locally in386bb93f75b25c075c4af49fe7e526d685b9a5f2, awaiting the next combined publication. Actual functional code and hosted integration are already public. Earlier pending/failure notices remain unchanged history. Current Iso adapter work has separate retained failures/results and is not claimed complete by closing #315.
+
+This is ordinary implementation completion, not a new human Guardian act, guarantee admission, full source/runtime preservation theorem, broad QS/PR/RS/EXACT discharge or release approval. #317's twenty namespace criteria remain required, with111 total selected Issues. Confirmed completion is now **14/111 =12.61%**.

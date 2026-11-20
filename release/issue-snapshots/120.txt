@@ -1,0 +1,364 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+The 0.3.0 Language Reference must distinguish **semantic unitarity** from **ancilla-free realizability on the same logical wires**.
+
+A function accepted as `unitary` may denote a perfectly valid unitary operator while still being impossible to synthesize exactly over the declared target gate set without additional workspace. This is not a type-soundness bug; it is a boundary condition on the future **Physical Realizability** and **Resource Safety** theorems.
+
+Related:
+
+- #48 — authoritative 0.3.0 Language Reference
+- #27 — type-theory synthesis
+- #28 — static language and resource bounds
+- #31 — exact source semantics vs backend synthesis
+- #70 — explicit source-level `clean` / `dirty` ancilla contracts
+- #103 — QCP circuit profiler and target/resource bridge
+- #281 — constitutional PR is checked forward correspondence
+- #135 / #280 — guarantee ledger and reserved RS jurisdiction
+
+## New design constraint
+
+The language must not equate
+
+```text
+unitary denotation
+```
+
+with
+
+```text
+exactly synthesizable over the selected gate set
+on exactly the source program's logical wires
+```.
+
+The intended separation is:
+
+```text
+typing / verification
+    ↓
+exact mathematical denotation U
+    ↓
+physical-realizability / synthesis contract
+    ↓
+target circuit on logical wires + synthesis workspace
+```
+
+In particular:
+
+> **`unitary` means that the denotation is unitary. It does not promise ancilla-free synthesis on the same wire set.**
+
+This distinction belongs in the current formal realizations of the constitutional jurisdictions. v1 requires proof coverage, not a freeze of theorem statements.
+
+## Motivating obstruction: determinant
+
+For an embedded (k)-qubit gate (G) acting on (n) wires,
+
+```text
+det(G ⊗ I_(2^(n-k))) = det(G)^(2^(n-k)).
+```
+
+This gives a cheap invariant that can rule out same-wire exact synthesis.
+
+### Three-wire QFT
+
+For the standard three-qubit Fourier transform (F_8),
+
+```text
+det(F_8) = i
+```
+
+for the current Fourier convention.
+
+For the ordinary exact Clifford+T generators embedded on three wires, the reachable determinant is restricted to `±1`.
+
+Therefore the exact `std::transform::qft3` meaning cannot be synthesized by such a circuit on only its original three wires, even though its denotation is a valid unitary.
+
+The obstruction is visible already in a controlled-T component: embedded on three wires,
+
+```text
+det(CT ⊗ I) = ω² = i
+```
+
+with `ω = exp(iπ/4)`.
+
+### Four-wire reversible example
+
+The following valid Qleisli program denotes the reversible map
+
+```qli
+unitary fn c3x(q: Q<((Bit,Bit),(Bit,Bit))>) -> Q<((Bit,Bit),(Bit,Bit))> {
+    do ((a,b),(c,d)) <- q;
+    pure ((a xor (b and (c and d)), b), (c, d))
+}
+```
+
+On the computational basis it performs one transposition, hence
+
+```text
+det(c3x) = -1.
+```
+
+But on four wires the embedded Clifford+T / NCT generators in this profile have determinant `+1`, so any same-wire circuit generated from them has determinant `+1`.
+
+Thus this `unitary` is again mathematically valid while failing ancilla-free exact realizability on the original wire set.
+
+The reversible-logic version is the familiar parity obstruction: sufficiently small NCT gates embedded into four or more wires generate even permutations only.
+
+## Theorem boundary
+
+The constitutional Physical Realizability obligation is forward correspondence for an **accepted realization**, including its implementation workspace (#281).
+
+For a clean-workspace unitary realization, a representative instance is:
+
+```text
+Accepted_now(P)
+and CheckedRealization_now(P, target, C, W, evidence)
+  imply
+
+C (|ψ> ⊗ |0...0>_W)
+  =
+Meaning_now(P)|ψ> ⊗ |0...0>_W
+
+for every |ψ>,
+```
+
+with the equality/phase convention, workspace contract, and arbitrary-reference behavior made explicit.
+
+This is not a constitutional promise to synthesize every operator in a coefficient domain. A theorem establishing that such a circuit and workspace **exist for an entire domain** is optional target/profile completeness mathematics. If used, it may help produce evidence for the forward checker; it does not replace checking the actual accepted artifact.
+
+For the Giles–Selinger exact Clifford+T domain, matrices over `Z[1/√2, i]` admit exact synthesis with at most one clean ancilla, even when ancilla-free synthesis is obstructed by determinant conditions.
+
+Reference:
+
+- Giles & Selinger, *Exact synthesis of multiqubit Clifford+T circuits*, 2013: https://arxiv.org/abs/1212.0506
+- Shende et al., reversible-circuit parity obstruction: https://arxiv.org/abs/quant-ph/0207001
+
+The Language Reference should state the general contract independently of any one synthesis theorem or gate set.
+
+## Distinguish two kinds of workspace
+
+This issue must not collapse backend synthesis workspace into #70's source-level ancilla syntax.
+
+### Source-level workspace
+
+`clean` / `dirty` in #70 are resources explicitly requested and manipulated by the Qleisli author.
+
+They are part of source semantics and carry explicit restoration obligations.
+
+### Backend synthesis workspace
+
+A backend may require additional implementation qubits solely to realize an already verified exact operator over a selected gate set.
+
+These qubits:
+
+- need not appear as source-level owners;
+- must not change the source denotation;
+- must be initialized/restored according to the synthesis theorem used;
+- must be represented in the backend correspondence/evidence;
+- count toward target physical resource requirements.
+
+For Giles–Selinger, the directly justified auxiliary resource is a **clean ancilla**. A future claim involving borrowed/dirty workspace requires a separate theorem; it must not be inferred automatically from the clean-ancilla result.
+
+## Resource Safety consequence
+
+Resource Safety must count both logical and synthesis resources.
+
+A source-level width bound such as
+
+```text
+logical_width(p) <= 12
+```
+
+does not imply that the program fits on a 12-qubit target.
+
+The relevant target-side condition is conceptually
+
+```text
+logical_live_width
++ explicit_source_workspace
++ backend_synthesis_workspace
++ routing / target-required workspace
+<= target_capacity.
+```
+
+The exact accounting model can be refined later, but 0.3.0 must not state Resource Safety in a way that silently identifies logical width with physical implementation width.
+
+This should connect directly to the later QCP design in #103.
+
+## Cheap realizability invariants
+
+The design should reserve a place for target-specific invariants that can detect mandatory workspace before full synthesis.
+
+For exact Clifford+T-style profiles:
+
+- determinant can rule out ancilla-free synthesis;
+- for classical reversible permutations, permutation parity is the corresponding cheap invariant.
+
+A checker/profiler may therefore report information such as:
+
+```text
+semantic_unitary: yes
+same_wire_exact_realizable: no
+reason: determinant/parity obstruction
+backend_workspace_required: yes
+workspace_contract: clean
+```
+
+This is a realizability/resource diagnostic, **not** a reason to reject the program as non-unitary.
+
+Full synthesis need not be implemented in 0.3.0; the normative distinction and evidence/resource contract must be.
+
+## Global phase must be explicit
+
+Because determinant changes under global phase, the theorem statements must also fix the equality notion used at each layer.
+
+The Language Reference must distinguish, where relevant:
+
+```text
+exact operator equality
+vs
+projective equality up to global phase.
+```
+
+Qleisli already treats phase as semantically relevant when it can become relative under coherent control. The Physical Realizability statement must therefore not silently quotient by global phase unless the exact boundary and compositional consequences are specified.
+
+Coordinate this with #31.
+
+## Required 0.3.0 specification
+
+The Language Reference should define at least:
+
+1. **Semantic unitarity** — what `unitary` promises.
+2. **Target realizability** — what additional target/gate-set assumptions are required.
+3. **Same-wire realizability** — explicitly a stronger, optional property.
+4. **Synthesis workspace** — backend-private workspace distinct from source `clean`/`dirty`.
+5. **Workspace restoration** — what state/equality obligation permits workspace removal from the target correspondence.
+6. **Resource accounting** — logical width and physical implementation width are separate quantities.
+7. **Phase equality** — exact vs projective equality at the realizability boundary.
+8. **Evidence** — target artifacts record gate set/profile, workspace assumptions, and correspondence status.
+9. **Diagnostics** — determinant/parity obstructions may report required workspace without invalidating `unitary` typing.
+
+## Non-goals for 0.3.0
+
+This issue does not require:
+
+- a complete Clifford+T synthesis implementation;
+- an optimal ancilla-count algorithm;
+- a universal minimal-workspace theorem;
+- target routing;
+- hardware noise modeling;
+- QCP implementation before 0.4.0;
+- weakening the `unitary` effect;
+- turning backend workspace into implicit source ownership;
+- claiming that dirty/borrowed workspace is available when only a clean-ancilla synthesis theorem has been established.
+
+## Acceptance criteria
+
+- [x] The 0.3.0 Language Reference explicitly states that `unitary` is a semantic property, not a same-wire synthesis guarantee.
+- [x] Physical Realizability proves forward correspondence for accepted target realizations, including their actual implementation workspace.
+- [x] Domain-wide synthesis/existence theorems are identified as optional profile mathematics, not constitutional obligations.
+- [x] Source-level `clean`/`dirty` resources and backend synthesis workspace are specified as distinct layers.
+- [x] The theorem/evidence contract states initialization and restoration requirements for backend workspace.
+- [x] Resource Safety distinguishes logical/source width from target physical width.
+- [x] Backend synthesis workspace is included in physical resource accounting.
+- [x] Exact operator equality vs equality up to global phase is explicit at the realizability boundary.
+- [x] The `qft3` determinant obstruction is recorded as a regression/specification example.
+- [x] The four-wire odd-permutation `c3x` example is recorded as a regression/specification example.
+- [x] Determinant/parity are documented as sound cheap obstruction checks for target profiles where their hypotheses apply.
+- [x] Failure of same-wire synthesis never causes a mathematically valid `unitary` to be reclassified as non-unitary.
+- [x] #28, #31, #48, #70, and #103 reference the resulting boundary where appropriate.
+
+## Design principle
+
+> **Qleisli proves what the program means before asking how many physical wires are needed to realize it.**
+
+Equivalently:
+
+> **Semantic validity belongs to the language. Target realizability belongs to a correspondence theorem, and correspondence is allowed to require workspace.**
+
+
+## 0.2.4 follow-up review — 2026-10-01
+
+Use Giles–Selinger **Theorem 1 and Corollary 2** precisely for the finite exact-unitary profile. The current `Z[ζ8,1/2]` coefficient ring is the same ring as `Z[1/√2,i]`; for a `2^n × 2^n` unitary over that ring, the theorem supplies an exact Clifford+T realization with at most one **clean** ancilla. Under the paper's gate/phase profile, zero ancillas are possible exactly when the determinant lies in: powers of ω for n≤1; {1,i,-1,-i} for n=2; {1,-1} for n=3; {1} for n≥4. These conditions include the scalar-ω convention and must be rechecked for a different target vocabulary. A determinant obstruction alone is only a necessary test for an arbitrary target.
+
+If this profile-level completeness result is developed, state it with exact operator equality and arbitrary-reference extension, plus a target-specific 0/1 workspace criterion where Corollary 2 applies. This is optional profile mathematics; the constitutional requirement remains forward correspondence of accepted realizations under #281. Resource evidence must bind the **actual emitted circuit**, initialization, zero return and peak physical live width. The bounded terminal rewrite in #160 exports QFT2 with zero additional qubits and QFT3 with one clean qubit; independent complex-amplitude tests are validation, not a general synthesis theorem, optimal-resource proof or Resource Safety certificate.
+
+Correct the review's proposed proof shortcut: proving the LiftBasis table-synthesis checker (#132) does **not** by itself formalize Giles–Selinger's general unitary synthesis. General column/denominator reduction, all emitted generators, termination and the clean embedding equation still need proofs. Primary reference: https://arxiv.org/html/1212.0506v3 .
+
+## 0.3.0 Reference implementation unit — 2026-10-04
+
+Implement the already adopted PR-2026-01 / RS-2026-01 boundary in a normative realization/resource Reference chapter. Define closed-specialization identity, checked forward correspondence with the actual output artifact, exact phase/ordered axes, source versus backend workspace, and quantitative resource accounting independently of optional synthesis completeness. Preserve all current native/source/export proof gaps; a content hash or successful export is not a realizability/resource certificate. This unit selects no universal gate set, concrete target schema or new source syntax.
+
+Reuse and re-run the existing small exact QFT3/C3X determinant and exported-workspace regressions rather than creating a new maximum-size case. The original sources and historical observations remain intact. Record diagnostics as current existing behavior, without promising a new profiler or falsely upgrading tests to a general theorem. Cross-reference #28/#31/#48/#70/#103/#127/#280/#281 as applicable; implementation obligations beyond this boundary remain open.
+
+## Reference and bounded regression checkpoint — 2eff16e
+
+[2eff16e](https://github.com/MGYamada/Qleisli/commit/2eff16e0cea96f6988f72def038a43dbe37d3013) adds the normative [realization/resource chapter](https://github.com/MGYamada/Qleisli/blob/2eff16e0cea96f6988f72def038a43dbe37d3013/docs/src/reference/realization.md): exact forward correspondence, typed reference/workspace embedding, source versus backend scratch, actual artifact identity, physical resource accounting and optional synthesis completeness. Independent review corrected an initially implicit workspace/reference permutation and verified the final equation's types.
+
+The existing exact QFT3/C3X determinant regression passed on isolated 44e23e4 sources. The existing independent emitted-target oracle passed 16 small cases/352 complex coefficients with at most five physical qubits, including phase, axes and zero-return workspace. Records: tests/fixtures/review_v030alpha/realization-boundary/. No historical source or maximum-size case was changed. This is bounded validation, not a general exporter/synthesis theorem or quantitative RS certificate. General diagnostic/target implementation and hosted integration retain their stated outstanding scope.
+
+
+## Retrospective constitutional impact — 2026-10-05
+
+This record covers #120, #121, #122, #123, #124, #126, #127 and #161–165. It applies the already adopted QS-2026-01, PR-2026-01 and RS-2026-01 interpretations. It neither changes those interpretations nor declares these issues complete.
+
+**Scope and distinct risks**
+
+| Issue | Obligation that must remain visible |
+|---|---|
+| #120 | Semantic unitarity does not imply same-wire synthesis. Actual backend workspace, initialization, restoration and physical live width must be accounted for. |
+| #121 | Isometry realization requires the stated dilation/interface correspondence. Mathematical adjoint existence grants neither unrestricted deterministic inverse execution nor environment disposal. |
+| #122 | Apply-realizability does not imply controlled-realizability. Scalar phase, provider identity, controlled workspace and capability evidence remain explicit. |
+| #123 | Exact source meaning and target exact-domain membership are different judgments. Unsupported synthesis must not silently approximate or invalidate the source meaning. |
+| #124 | Instrument realization must preserve outcome-indexed quantum maps and retained interfaces, not only output probabilities. Measurement, reset and feed-forward capabilities are explicit target premises. |
+| #126 | Logical axis order remains semantic. Initial/final physical layouts, routing and actual SWAP instructions require explicit correspondence. |
+| #127 | Claims bind closed specializations, or quantify over admissible substitutions with their premises. Generic totality, computed resource bounds and target feasibility are distinct. |
+| #161 | Meaning, callable capability and resource evidence are independent. Opaque-provider annotations cannot authorize unknown cost. |
+| #162 | Cost-relevant provider resolution must close before concrete certification; analysis and execution must select the same implementation. |
+| #163 | Approximation metric, finite precision and composition budgets must close before target/resource certification. Search success or timeout is not such evidence. |
+| #164 | Foreign execution is outside quantitative certification unless it re-enters through the required checked semantic/resource contract. Hidden allocation, measurement, retries or callbacks cannot bypass that boundary. |
+| #165 | Exact phase words, literal IR counts, optimized target counts and proved resource bounds must remain distinct. Changing a public phase representation requires explicit codec/profile migration and preservation evidence. |
+
+Related #125 preserves unnormalized outcome maps whose sum is trace preserving and the distinction from postselection; this record does not introduce postselection.
+
+**QS / PR / quantitative RS impact**
+
+QS requires preservation of exact interfaces, ordered axes, linear owners including zero-width owners, effects, phase, arbitrary-reference behavior and clean/dirty restoration. PR requires checked forward correspondence between the accepted meaning and the **actual** target artifact under its declared encoding, gate actions, workspace and equality contract. Quantitative RS requires independently checked bounds for the actual admitted instance/artifact, including live workspace, permitted branches and the selected cost/scheduling model. Ownership safety, checker work limits, sampled averages and successful export do not discharge quantitative RS.
+
+The normative definitions are the exact type/Meaning and instrument contracts, closed-specialization identity, typed encoding/layout relations, workspace restoration and explicit resource measures described in the Reference. Target gate actions, physical-device assumptions, exact-domain hypotheses and any approximation metric must be stated rather than inferred. No universal gate set, projective quotient, approximation facility or new primitive is adopted here.
+
+**Actual boundary, retained guarantees and transport**
+
+The ordinary path checks original QLV1 bytes through `Protocol.Validity.check`; hierarchy, finite-contract and instrument paths have their separately recorded checker boundaries. A future realization/resource certificate must additionally bind the resolved specialization, accepted meaning and any independently supplied requested meaning, actual emitted bytes, target/model identity, layouts, providers, workspace and applicable evidence. A hash identifies an artifact; it does not establish correspondence or a bound.
+
+The ledger currently admits only the two scoped ordinary QLV1 ownership/scope guarantees. Its identity-transport verifier preserves their actual byte/root witness, meanings and current checker theorem types; representation changes outside that supported equivalence fail closed. Future changes must preserve these guarantees and supply checked transport where their representations change. No old closed theorem or producer receipt substitutes for current-artifact binding.
+
+**Current evidence and remaining work**
+
+The realization Reference already states the adopted forward-PR and quantitative-RS boundary. Current Lean ordinary/finite-contract bridges and hierarchy component theorems provide limited proof components. They do not establish general source lowering, compiled I/O, simulation, target emission, synthesis or quantitative-resource preservation.
+
+The terminal exporter performs bounded untrusted rewrites and accounts for its synthesis scratch/capacity. Retained exact determinant examples and independent emitted-circuit comparisons are bounded validation, not a general synthesis theorem or resource certificate. General target/resource certificate rules, provider/precision closure, specialization-aware diagnostics and the remaining child criteria still require implementation and evidence. The concrete #179 capability schema and later QCP implementation are not pulled forward.
+
+**Edition and human decision boundary**
+
+This work remains within constitutional edition 2026. Ordinary implementation, evidence checking and covered proof maintenance do not require new constitutional ratification. A genuinely new application or mathematical adequacy judgment outside the adopted interpretations must receive the responsible human Guardian decision; ledger admission remains a separate recorded human adequacy judgment plus formal discharge. Changing protected constitutional text requires its constitutional procedure. Neither this analysis nor an implementation approval grants either form of authority.
+
+
+## Adopted exactness boundary — EXACT-2026-01 (2026-10-05)
+
+The human Guardian adopted the exact supplement recorded in #311 (reviewed SHA-256 `b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179`; actual adoption record SHA-256 `e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59`). Its interpretation is now binding; implementation, mechanical continuity integration and proof discharge remain separate.
+
+For edition 2026, an epsilon-bound approximation to a source meaning does not discharge that source's constitutional PR or target-RS obligations. Such an artifact may carry separately checked engineering approximation/resource claims, and all this Issue's metric, composition, closed-budget, actual-artifact, control/reference and rejection requirements remain in force where applicable. None is waived or postponed by this clarification. An independently checked exact admitted artifact is not excluded merely because an internal numerical/search parameter is named epsilon. Exact phase, cleanup and existing guarantees remain protected; numerical assistance may produce checked evidence for exact propositions. #309 remains 0.3.1 and #310 remains v1+.
+
+## 2026-10-07 scope clarification: known Clifford+T theorem vs cyclotomic generalization
+
+For the Clifford+T coefficient domain `Z[1/sqrt(2), i]` (equivalently `Z[zeta_8,1/2]` in the present exact profile), the reverse-direction realizability statement is **not a research unknown**: Giles–Selinger gives exact synthesis with at most one clean ancilla, with the ancilla-free determinant conditions handled separately. The remaining Qleisli work is formalization, evidence transport, and binding the theorem to the actual emitted artifact/resource account.
+
+Do **not** extrapolate that result automatically to the full cyclotomic tower or arbitrary `R_k`/colimit paradigms. The admissible ancilla count, dimension dependence, gate vocabulary, and relation between the level `k` and system size may change. Any such generalized completeness claim requires a separately checked theorem before it becomes part of a first-class paradigm contract.
+
+Accordingly:
+
+- Clifford+T / `R_3`-profile completeness may rely on the precise Giles–Selinger theorem after formalization;
+- higher cyclotomic paradigms retain only the forward realizability obligations already established unless and until a matching converse theorem is verified;
+- no dirty-workspace or arbitrary-`R_k` conclusion is inherited from the one-clean-ancilla Clifford+T result.

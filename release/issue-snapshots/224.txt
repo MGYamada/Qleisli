@@ -1,0 +1,313 @@
+## Summary
+
+Qleisli should treat compiler diagnostics as part of the **AI-first language interface**.
+
+An LLM may have little or no Qleisli-specific training data, and in particular may not already know constructs such as `qif`, `qfor`, or `qmatch`. The compiler therefore should not assume prior familiarity with Qleisli syntax.
+
+When ordinary classical syntax crosses a semantic classical/quantum boundary, the diagnostic should do more than reject the program: it should **state the boundary rule and teach the local Qleisli construct required to proceed**.
+
+Related:
+- #196 — three-level surface boundary: `q***` / `Q<T>` / unmarked syntax
+- #194 — `qfor`
+- #195 — `qmatch`
+- existing `qif` semantics
+
+Labels: **important**, **enhancement**
+
+## Motivation
+
+A conventional compiler error such as:
+
+```text
+error: condition must be classical
+```
+
+is insufficient for Qleisli.
+
+For a human who already knows the language, that may be enough. For an LLM authoring Qleisli zero-shot, it leaves the critical next step implicit.
+
+For example, given:
+
+```qli
+if q {
+    ...
+}
+```
+
+where `q: Q<Bit>`, Qleisli should preferably explain that ordinary `if` is classical control flow and that coherent quantum control requires `qif`.
+
+The same principle applies to:
+
+```text
+if      -> qif
+for     -> qfor
+match   -> qmatch
+```
+
+when quantum semantics changes the construct itself.
+
+## Design principle
+
+> **The compiler must not assume that the programmer already knows Qleisli.**
+>
+> At every semantic boundary, diagnostics should teach the local Qleisli rule needed to proceed.
+
+Compiler diagnostics are therefore part of the Qleisli harness, not merely implementation UX.
+
+The intended authoring loop is:
+
+```text
+LLM writes familiar Rust-like syntax
+    ->
+compiler identifies the semantic boundary
+    ->
+diagnostic explains the local Qleisli rule
+    ->
+LLM rewrites using qif / qfor / qmatch / Q<T>
+    ->
+program progresses
+```
+
+Qleisli should remain usable even when the model has effectively **zero Qleisli training examples**.
+
+## Proposed diagnostic shape
+
+Boundary diagnostics should have stable semantic structure.
+
+For example:
+
+```text
+error[QLEISLI-E021]: quantum value used at a classical control-flow boundary
+
+`if` is classical control flow and cannot branch on `Q<Bit>`.
+
+Use `qif` when the branch remains coherent:
+
+    qif q {
+        ...
+    }
+
+Boundary rule:
+  if / for / match     — classical control
+  qif / qfor / qmatch  — quantum semantic forms
+  Q<T>                 — ordinary syntax over quantum ownership
+```
+
+The exact wording may evolve, but diagnostics should communicate at least:
+
+1. **what happened**;
+2. **why the ordinary construct is invalid here**;
+3. **which semantic boundary was crossed**;
+4. **the appropriate Qleisli construct or rewrite**, when one exists;
+5. **the local boundary rule**, rather than only a parser/type-checker symptom.
+
+## The diagnostic should teach semantics, not token substitution
+
+The compiler must not mechanically say:
+
+```text
+replace `if` with `qif`
+```
+
+unless that rewrite is actually semantically valid.
+
+For example, diagnostics should distinguish:
+
+- classical branch over classical/static data;
+- illegal attempt to branch classically on quantum data;
+- coherent quantum control requiring `qif`;
+- measurement/observation followed by classical control;
+- cases where no automatic rewrite is valid.
+
+Likewise for `qfor` and `qmatch`.
+
+The diagnostic is a **semantic tutor**, not an unconditional autofixer.
+
+## Stable machine-readable diagnostics
+
+The same diagnostic model should support coding agents directly.
+
+Add or reserve a structured diagnostic form such as:
+
+```json
+{
+  "code": "QLEISLI-E021",
+  "category": "semantic-boundary",
+  "boundary": "classical-to-quantum-control",
+  "found": "if",
+  "expected": "qif",
+  "rewrite_kind": "suggested",
+  "rule": "q-prefix-boundary"
+}
+```
+
+Possible CLI surface:
+
+```text
+--diagnostic-format=json
+```
+
+The human-readable and machine-readable forms should be generated from the same semantic diagnostic categories where practical.
+
+## Initial boundary diagnostic families
+
+### Classical control used where a quantum semantic form is required
+
+Examples:
+
+```text
+if    -> qif
+for   -> qfor
+match -> qmatch
+```
+
+Diagnostics should explicitly name both sides of the boundary.
+
+### Quantum ownership misunderstood as quantum syntax
+
+If ordinary syntax is valid over `Q<T>`, diagnostics should avoid inventing or encouraging forms such as:
+
+```text
+qlet
+qreturn
+qmove
+```
+
+Instead, explain that the syntax remains ordinary and that quantum behavior is carried by `Q<T>` ownership/type rules.
+
+### Classical/static code unnecessarily written as quantum syntax
+
+When a `q***` construct is inappropriate because the operation is purely classical/static, diagnostics should point back toward the unmarked form where this is unambiguous.
+
+### Observation boundary
+
+Where measurement changes quantum data into classical data, diagnostics should make clear that this is a different semantic route from coherent control.
+
+For example, the compiler should distinguish conceptually:
+
+```text
+coherent quantum control -> qif
+observe first, then branch -> classical if after observation
+```
+
+without pretending these are interchangeable programs.
+
+## AI-first diagnostic requirements
+
+Diagnostics intended to guide LLMs should have several properties:
+
+- stable error codes;
+- stable semantic categories;
+- concise first paragraph;
+- explicit names of the relevant Qleisli constructs;
+- minimal but valid local rewrite examples when possible;
+- no dependence on prose-only wording for machine interpretation;
+- no requirement to search the Language Reference merely to discover the next syntactic form;
+- enough semantic explanation to prevent blind token replacement.
+
+The compiler should optimize for **self-correction after one failed compile**.
+
+## Testing
+
+Add diagnostic/conformance cases in which an authoring model starts from plausible non-Qleisli syntax.
+
+At minimum:
+
+### `if` / `qif`
+
+Input:
+
+```qli
+if q {
+    ...
+}
+```
+
+Expected diagnostic:
+- identifies classical/quantum control boundary;
+- names `qif`;
+- explains coherent control;
+- does not recommend measurement unless observation was requested.
+
+### `for` / `qfor`
+
+Input should represent a case where ordinary iteration cannot express the required quantum state threading.
+
+Expected diagnostic:
+- names `qfor`;
+- explains why ordinary `for` is insufficient;
+- does not imply every loop over quantum values is automatically `qfor`.
+
+### `match` / `qmatch`
+
+Input:
+
+```qli
+match selector {
+    ...
+}
+```
+
+with quantum selector.
+
+Expected diagnostic:
+- identifies classical pattern discrimination vs coherent quantum selection;
+- names `qmatch`;
+- distinguishes observation from coherent control.
+
+### invented q-prefix syntax
+
+Input:
+
+```qli
+qlet q = ...
+```
+
+Expected diagnostic:
+- rejects `qlet`;
+- explains that ordinary binding syntax is used over `Q<T>`;
+- points back to the three-level rule from #196.
+
+## Documentation
+
+The Language Reference should define a short diagnostic principle alongside the q-prefix boundary rule:
+
+> Qleisli diagnostics teach semantic boundaries locally. A programmer or coding agent should be able to recover the relevant Qleisli construct from the compiler response without prior knowledge of the language.
+
+This should be cross-linked from the compiler diagnostics section and the three-level surface boundary specification.
+
+## Acceptance criteria
+
+- [ ] Define an AI-first diagnostic design principle for Qleisli.
+- [ ] Boundary errors identify the semantic boundary, not only the immediate type/parser failure.
+- [ ] Diagnostics for `if` / `qif`, `for` / `qfor`, and `match` / `qmatch` explicitly teach the corresponding local rule.
+- [ ] Diagnostics distinguish coherent quantum control from observation followed by classical control.
+- [ ] Diagnostics preserve the #196 rule that ordinary syntax over `Q<T>` remains ordinary.
+- [ ] Invalid invented forms such as `qlet` receive a useful explanation rather than a generic parse failure where practical.
+- [ ] Stable semantic error codes/categories are introduced or reserved.
+- [ ] A machine-readable diagnostic representation is designed, preferably supporting `--diagnostic-format=json`.
+- [ ] Human-readable and machine-readable diagnostics share the same semantic categories.
+- [ ] Conformance tests cover LLM-style first-attempt mistakes and verify actionable self-correction.
+- [ ] Language Reference documents diagnostics as part of the AI-first authoring interface.
+
+## Non-goal
+
+This issue does **not** require the compiler to automatically repair arbitrary programs.
+
+The goal is narrower:
+
+> **When Qleisli rejects code at a language boundary, the rejection should contain enough local semantics for a human or LLM to understand what boundary was crossed and what Qleisli concept should be considered next.**
+
+This makes the compiler itself part of the language-learning harness and removes the assumption that Qleisli must already exist in an LLM's training distribution.
+
+
+
+## v0.3.0 diagnostic contract and Rust migration
+
+The common source checker identifies the existing rejection boundaries for ordinary `if` and `match`, coherent `qif` and `qmatch`, and ordinary and quantum static fold carries. Existing check order, error categories, byte spans and resource debits stay in force. The initial teaching explains coherent selection and explicit observation as distinct operations. Examples must use current grammar and describe the required owner and arm contracts. The parser retains its own located guidance for invalid invented forms, including `qlet`.
+
+In both project and selected-entry mode, a version-1 JSON diagnostic may include `control_flow_boundary` with `boundary: "classical_quantum_control"` and one of the reasons `if_condition`, `qif_control`, `match_selector`, `qmatch_selector`, `for_carry` or `qfor_carry`. Unrelated diagnostics omit this object. Existing error codes and locations remain stable. The text diagnostic names the same construct and gives the local rule.
+
+Rust `CompileError` and `Diagnostic` expose a single optional `boundary` field with typed control-flow and quantum-ownership reasons. Public Rust literals for unrelated diagnostics set `boundary: None`, and patterns that only need the previous fields can use `..`. This shares the diagnostic migration with #226 and leaves the wire objects independently named. This display metadata supplies no execution evidence.
+
+Conformance must cover original rejected source and successful corrections, explicit observation followed by ordinary control, coherent selection and the two carry directions. Tests also pin precedence for nested invalid expressions and confirm that ordinary bindings over `Q<T>` keep the current ownership rules.

@@ -1,0 +1,463 @@
+## Priority
+
+**Critical / release-blocking semantic design for 0.3.0.**
+
+This issue defines the inverse principle to #67.
+
+#67 establishes Rust as the default author-facing vocabulary. That is valuable, but it is not sufficient. Qleisli must also define where **not** to look like Rust.
+
+The central risk is a *semantic false friend*: syntax that looks familiar enough that a Rust programmer or coding agent automatically imports the wrong meaning.
+
+For Qleisli, this is especially dangerous when the difference is not cosmetic but physical.
+
+---
+
+# Design principle
+
+> **Familiar syntax for familiar semantics; distinct syntax for genuinely distinct quantum semantics.**
+
+Equivalently:
+
+> **Copy Rust where the semantics commute. Fork the syntax where they do not.**
+
+Rust is the default vocabulary, not the semantic authority.
+
+The 0.3.0 surface should therefore follow a three-way rule:
+
+1. **Same concept, same semantics**  
+   Reuse Rust syntax directly.
+
+2. **Close analogue whose Rust intuition remains sound**  
+   Reuse Rust syntax, with Qleisli-specific checking.
+
+3. **Quantum operation whose meaning materially differs from the Rust construct it resembles**  
+   **Deliberately use different syntax.**
+
+The third case is not an exception of last resort. It is a core language-design mechanism.
+
+---
+
+# Why this matters
+
+A Rust-like surface gives Qleisli an enormous ergonomic advantage for both humans and AI.
+
+But that advantage reverses when familiar syntax causes the reader to infer semantics that are physically wrong.
+
+The surface language should therefore act as a semantic teaching layer:
+
+```text
+same spelling  => intentionally transferable intuition
+different spelling => stop: a genuinely quantum distinction is present
+```
+
+The places where Qleisli diverges from Rust should correspond, as much as possible, to real mathematical or physical distinctions.
+
+This is important for:
+
+- human readability;
+- AI code generation;
+- diagnostics;
+- the Language Reference;
+- QLT / QDB;
+- qlinties;
+- the future resource-safety theorem;
+- preserving a small and auditable semantic core.
+
+---
+
+# 1. The canonical example: no Rust-like quantum `drop`
+
+A live quantum owner must not acquire ordinary Rust `Drop` intuition.
+
+In Rust:
+
+```rust
+drop(x);
+```
+
+means, operationally, that the value is consumed and its destruction semantics run now.
+
+For a quantum value, several physically distinct operations can hide behind the informal phrase "drop the qubit":
+
+```text
+clean release / deallocation
+measurement
+discard / partial trace
+uncomputation followed by release
+ordinary lexical scope exit
+```
+
+These are **not the same operation**.
+
+Therefore Qleisli should not use `drop(q)` as a generic quantum spelling.
+
+The surface should force the programmer to say which physical operation is intended.
+
+Illustrative direction:
+
+```qli
+release(q);       // legal only when discharge/cleanliness is justified
+measure(q);       // quantum -> classical observation/effect
+discard(q);       // explicit non-unitary loss, only where the effect system permits it
+```
+
+Exact names remain designable, but the semantic distinction does not.
+
+In particular:
+
+> **scope exit is not quantum destruction.**
+
+A scope ending with an undischarged quantum owner remains an error unless the language can justify a specific legal discharge.
+
+---
+
+# 2. `release` must not secretly mean `drop`
+
+If `release(q)` is adopted, it should have a positive quantum meaning:
+
+```text
+release(q)
+    =
+assert / prove / verify that q satisfies the legal discharge condition
+    +
+return the physical resource
+```
+
+It is not merely a renamed destructor.
+
+For a clean ancilla this might mean, conceptually:
+
+```text
+q is proven to be back in the required clean state
+        ↓
+resource obligation is discharged
+        ↓
+physical qubit may be returned
+```
+
+Failure is a compile-time / verification failure, not a destructor side effect.
+
+---
+
+# 3. Explicit `discard` is semantically different
+
+If Qleisli supports irreversible disposal / partial trace, it must be visibly distinct from clean release.
+
+For example:
+
+```qli
+discard(q);
+```
+
+should mean an explicitly effectful operation whose legality depends on the current semantic/effect class.
+
+It must never be generated merely because a quantum variable went out of scope.
+
+This distinction should remain visible through lowering until the relevant effect/resource obligations have been checked.
+
+---
+
+# 4. `measure` is neither `drop` nor `release`
+
+Measurement is another semantic boundary and should remain explicit:
+
+```qli
+let b = measure(q);
+```
+
+The syntax should make the quantum-to-classical transition visible.
+
+A measured qubit may cease to exist as the same source-level quantum owner, but that consumption is a consequence of measurement semantics, not generic destruction.
+
+---
+
+# 5. `Clone` / `Copy`: familiar names are dangerous on quantum owners
+
+Rust's `Clone` and `Copy` carry extremely strong expectations.
+
+A quantum owner must not accidentally participate in those expectations.
+
+The initial rule should be:
+
+```text
+Q<T>: !Copy
+Q<T>: !Clone
+```
+
+unless a future construct has a precise semantics that does **not** falsely suggest cloning an unknown quantum state.
+
+If Qleisli introduces operations that duplicate *descriptions*, *static circuit values*, *classical basis data*, or other copyable metadata, those should be typed so that the copyability belongs to the correct classical/static object rather than to a live quantum owner.
+
+No quantum-specific operation should be called `clone` merely for Rust familiarity if it is not semantically Rust-like cloning.
+
+---
+
+# 6. Exclusive quantum access is a counterexample: reuse the idea, not misleading Rust reference spelling
+
+This issue does **not** argue for gratuitous syntax novelty.
+
+For example, Qleisli's adopted exclusive access:
+
+```qli
+h(excl q);
+```
+
+keeps the useful ownership intuition while avoiding Rust reference/mutation false friends:
+
+```text
+exclusive access
+no competing incompatible alias
+temporary authority
+owner survives the call
+```
+
+Qleisli may reuse Rust-inspired implementation techniques, but the public spelling should name the quantum access contract directly when Rust punctuation suggests a stronger or different semantic story.
+
+So the rule is not:
+
+> quantum concept => new syntax
+
+It is:
+
+> misleading Rust intuition => new syntax
+
+---
+
+`excl` is the adopted exclusive-access spelling from #29. Binding `mut` is separate and does not gate quantum access (#77).
+
+# 7. Candidate false friends to audit for 0.3.0
+
+The 0.3.0 syntax review should explicitly audit at least:
+
+- [x] `drop`
+- [x] implicit scope destruction
+- [x] `Clone`
+- [x] `Copy`
+- [x] `forget` / `mem::forget` analogues
+- [x] `ManuallyDrop` analogues
+- [x] unchecked casts / `transmute`
+- [x] `as` where basis/layout/physical interpretation changes
+- [x] early `return` when resource obligations remain live
+- [x] panic/unwinding semantics for live quantum owners
+- [x] destructor-like trait hooks
+- [x] any syntax that conflates measurement, discard, release, reset, or uncompute
+
+For each construct, the language reference should answer:
+
+```text
+Does the ordinary Rust intuition remain semantically valid?
+    ├─ yes -> reuse the Rust spelling
+    └─ no  -> introduce an explicitly Qleisli spelling or reject the construct
+```
+
+---
+
+# 8. The syntax difference should carry semantic information
+
+The desired property is that source-level differences are informative.
+
+Example:
+
+```qli
+let anc = Qubit::zero();
+
+compute(excl data, excl anc);
+uncompute(excl data, excl anc);
+
+release(anc);
+```
+
+A Rust programmer should notice immediately that the final line is not ordinary destruction.
+
+That moment of friction is desirable: it marks the physical obligation.
+
+Likewise:
+
+```qli
+discard(q);
+```
+
+should look intentionally stronger than simply letting `q` fall out of scope.
+
+The language should use unfamiliarity selectively, exactly where unfamiliar semantics deserve attention.
+
+---
+
+# 9. Interaction with qlinties / qlifmt / qlidoc / qlirgo
+
+This distinction should be reflected across the ecosystem.
+
+### qlinties
+
+Detect Rust-shaped quantum false friends and suggest the Qleisli-native operation.
+
+Examples:
+
+```text
+drop(q)
+^^^^^^^
+live quantum owners do not use Rust Drop semantics;
+did you mean release(q), measure(q), or discard(q)?
+```
+
+### qlidoc
+
+Documentation should explicitly contrast the relevant Rust intuition with the Qleisli meaning.
+
+### qlifmt
+
+Formatting should keep these quantum boundary operations visually ordinary but syntactically unmistakable; no special formatting magic is required.
+
+### qlirgo / compiler diagnostics
+
+Diagnostics should teach the semantic distinction rather than merely say "unsupported syntax".
+
+---
+
+# 10. Relationship to #67
+
+#67 currently states:
+
+> "When in doubt, spell it like Rust."
+
+That should be refined into a two-part rule:
+
+> **When the semantics agree, spell it like Rust.**
+
+> **When Rust syntax would imply the wrong quantum semantics, deliberately diverge.**
+
+This issue should be treated as a semantic companion to #67, not a minor exception.
+
+The pair defines the actual 0.3.0 syntax philosophy:
+
+```text
+Rust familiarity
+      +
+semantic honesty
+      =
+Qleisli surface language
+```
+
+---
+
+# Non-goals
+
+This issue does **not** propose:
+
+- inventing new syntax for every quantum concept;
+- making Qleisli intentionally exotic;
+- rejecting Rust-inspired ergonomics;
+- exposing category theory in ordinary source code;
+- using syntax novelty as branding;
+- weakening the "AI should be able to write Qleisli by instinct" goal.
+
+The purpose is the opposite: preserve transferable Rust instincts by ensuring that reused Rust syntax is trustworthy.
+
+---
+
+# Acceptance criteria
+
+0.3.0 should not freeze its public syntax until:
+
+- [x] the Language Reference states the "semantic false friend" rule;
+- [x] #67's Rust-default principle is refined accordingly;
+- [x] quantum `drop` semantics are explicitly rejected;
+- [x] clean release, measurement, discard, reset, and scope exit are distinguished;
+- [x] no live quantum owner can be silently destroyed at scope exit;
+- [x] `Q<T>` does not accidentally inherit ordinary `Copy` / `Clone` intuition;
+- [x] each Rust-inspired ownership construct is audited for semantic transferability;
+- [x] misleading Rust constructs receive Qleisli-native syntax or are forbidden;
+- [x] compiler/qlinties diagnostics explain the physical distinction;
+- [x] examples demonstrate both sides: syntax intentionally copied from Rust and syntax intentionally forked from Rust;
+- [x] the resulting rules remain compatible with the authoritative verifier and future Resource Safety theorem.
+
+---
+
+Verified on merged main in the [beta acceptance audit](https://github.com/MGYamada/Qleisli/issues/68#issuecomment-7010348956). External qlippy is excluded under the approved scope.
+
+# Compact formulation
+
+The 0.3.0 syntax philosophy should be:
+
+> **Rust-compatible instincts, Qleisli-native semantics.**
+
+More operationally:
+
+> **Copy Rust where the semantics commute. Fork the syntax where they do not.**
+
+And for the most important concrete case:
+
+> **Quantum resources are released, measured, discarded, reset, or uncomputed — never implicitly "dropped".**
+
+
+## 0.3.0 Rust/Qleisli boundary addendum: complete implicit-operation audit
+
+The false-friend audit should explicitly include the additional Rust mechanisms surfaced in the 2026-09-30 design review:
+
+- assignment to initialized places (implicit replacement/drop behavior);
+- indexing and `Index` / `IndexMut`;
+- method-call autoref/autoderef;
+- `mem::swap` versus binding exchange / axis permutation / physical SWAP;
+- `mut` versus physical quantum-state change;
+- ordinary `for` / `IntoIterator` over quantum-owned data;
+- `Default` for live quantum owners;
+- wildcard/rest patterns hiding linear resources;
+- `?`, panic, assertion, and unwinding paths.
+
+The common design rule is stronger than a syntax-only audit:
+
+> **Rust's explicit syntax may be copied; Rust's implicit coercions, destruction, control-flow and trait machinery must be audited wherever they can acquire physical/resource meaning.**
+
+Track the dedicated issues created for these boundaries and keep this issue as the umbrella semantic-false-friend checklist.
+
+
+## 2026-10-07 resolved false-friend matrix
+
+The current 0.3.0 direction resolves the major false friends as follows:
+
+```text
+Rust / familiar form            Qleisli decision
+----------------------------    ---------------------------------------------
+&q                              ctrl q
+&mut q                          excl q
+mut on live quantum binding     rejected as quantum-access concept
+assignment to live Q-containing place
+                                rejected; consume + let-rebind instead
+q[i]                            static place/axis selector only
+Index / IndexMut                not used for live quantum ownership
+autoref / autoderef / DerefMut  cannot infer/forward quantum access
+mem::swap                       not a quantum-owner binding primitive
+swap                            physical SWAP unitary
+structural reordering           permute_axes
+return / ? / panic / unwind     outside verified quantum core
+ordinary closure capturing Q    rejected
+Drop / Copy / Clone / Default   unavailable for live Q<T>
+Eq / Ord / Hash                 unavailable for live Q<T>
+RAII                            not normative quantum terminology
+static (Rust storage/lifetime prior)
+                                use compile-time semantics / const spelling
+Apply(U)                        Applicable(U)
+Adjoint(U)                      Adjointable(U)
+Controlled(U)                   Controllable(U)
+do / pure coherent map          basis ... as ... { ... }
+borrow                          not public quantum vocabulary
+```
+
+Internal compiler implementation may still use ordinary engineering terms such as borrow checker, but public source semantics use the Qleisli vocabulary above.
+
+Legacy issue text, fixtures, or historical observations may retain old spellings only when they are explicitly evidence of a prior language state or migration behavior.
+
+
+### Additional resolved vocabulary
+
+```text
+const fn (Rust: runtime-callable + const-eligible)
+    -> not used for Qleisli compile-time-only helpers
+meta fn
+    -> preferred compile-time-only helper spelling
+
+inverse(U)
+    -> not the general operation constructor
+adjoint(U)
+    -> general constructor under Adjointable(U)
+```

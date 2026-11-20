@@ -1,0 +1,1056 @@
+{
+  "capture_completed_at": "2026-11-19T15:27:41.729548+00:00",
+  "capture_index_sha256": "5e624993c72399a64b55aa059135369c99f07a55ff405930ba3ceed2eb8b84c6",
+  "capture_started_at": "2026-11-19T15:27:21.931389+00:00",
+  "decision": "https://github.com/MGYamada/Qleisli/issues/142",
+  "format": "qleisli.beta-issue-snapshot-index",
+  "groups": {
+    "G01": [
+      129,
+      134,
+      137,
+      138,
+      149
+    ],
+    "G02": [
+      135,
+      136,
+      139,
+      140,
+      154,
+      280,
+      281,
+      311,
+      362,
+      365
+    ],
+    "G03": [
+      141,
+      142,
+      343,
+      364,
+      366,
+      367
+    ],
+    "G04": [
+      22,
+      27,
+      43,
+      44,
+      84,
+      100,
+      342
+    ],
+    "G05": [
+      28,
+      30,
+      31,
+      38,
+      39,
+      40,
+      45,
+      46,
+      47,
+      63,
+      83,
+      89,
+      355
+    ],
+    "G06": [
+      29,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      79,
+      85,
+      86,
+      156,
+      157,
+      158,
+      198,
+      303,
+      352
+    ],
+    "G07": [
+      37,
+      64,
+      78,
+      81,
+      87,
+      88,
+      125,
+      194,
+      195,
+      215
+    ],
+    "G08": [
+      14,
+      25,
+      32,
+      33,
+      34,
+      35,
+      57,
+      67,
+      68,
+      80,
+      82,
+      196,
+      250
+    ],
+    "G09": [
+      120,
+      121,
+      122,
+      123,
+      124,
+      126,
+      127,
+      161,
+      162,
+      163,
+      164,
+      165
+    ],
+    "G10": [
+      41,
+      58,
+      65,
+      131,
+      167,
+      315,
+      317,
+      369
+    ],
+    "G11": [
+      169,
+      170,
+      171,
+      172,
+      173,
+      174,
+      230,
+      231,
+      255
+    ],
+    "G12": [
+      133,
+      224,
+      225,
+      226,
+      237,
+      245,
+      270,
+      272,
+      363,
+      368
+    ],
+    "G13": [
+      48,
+      234,
+      253,
+      254,
+      350
+    ]
+  },
+  "issues": [
+    {
+      "bytes": 6596,
+      "id": 14,
+      "path": "release/issue-snapshots/14.txt",
+      "sha256": "7cb7fac4c74b1b9170eb5abbe90e1ac6266b0f06c41969fca1e0e8bf42914b4c",
+      "url": "https://github.com/MGYamada/Qleisli/issues/14"
+    },
+    {
+      "bytes": 9529,
+      "id": 22,
+      "path": "release/issue-snapshots/22.txt",
+      "sha256": "cc830af7bcf204d5e04611a234aeb3f280466002cd177978dc94b37252481b4f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/22"
+    },
+    {
+      "bytes": 11026,
+      "id": 25,
+      "path": "release/issue-snapshots/25.txt",
+      "sha256": "6cb0bf52d2f52f591220ec64f362d6562aaa200c36bcc693079bf194abd794c9",
+      "url": "https://github.com/MGYamada/Qleisli/issues/25"
+    },
+    {
+      "bytes": 26000,
+      "id": 27,
+      "path": "release/issue-snapshots/27.txt",
+      "sha256": "785bf2fd732ca0a0ad4f5f407c0dcce03818f5ec14e4ee28e9fb9bf19f39026f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/27"
+    },
+    {
+      "bytes": 8683,
+      "id": 28,
+      "path": "release/issue-snapshots/28.txt",
+      "sha256": "d14e90a8b87332447c1fc149c54947008e46ab0187fa258d64cc954c2a69fb94",
+      "url": "https://github.com/MGYamada/Qleisli/issues/28"
+    },
+    {
+      "bytes": 31665,
+      "id": 29,
+      "path": "release/issue-snapshots/29.txt",
+      "sha256": "58f762b09e088a58f80c29be0885623af8ed30a30b643bf9174860326d67c30f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/29"
+    },
+    {
+      "bytes": 8353,
+      "id": 30,
+      "path": "release/issue-snapshots/30.txt",
+      "sha256": "cf74b19fe0396f7414f9eb312e08089f4ad5a370d9438d4b63bbd5cc7066ba7f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/30"
+    },
+    {
+      "bytes": 10520,
+      "id": 31,
+      "path": "release/issue-snapshots/31.txt",
+      "sha256": "8b6b89b2b443eb6ac4684f36a1a573f3b078a9f68b4fe78669ecfbfb3df20627",
+      "url": "https://github.com/MGYamada/Qleisli/issues/31"
+    },
+    {
+      "bytes": 131447,
+      "id": 32,
+      "path": "release/issue-snapshots/32.txt",
+      "sha256": "d2ef2902f9ba897f82ce9c0f76b66e66327d83668f019a9d0fb3e4231d1f8d73",
+      "url": "https://github.com/MGYamada/Qleisli/issues/32"
+    },
+    {
+      "bytes": 1865,
+      "id": 33,
+      "path": "release/issue-snapshots/33.txt",
+      "sha256": "382803cfb13028c75e892c1f3a1318a142312a9fd6620b66657e58b569eca7ec",
+      "url": "https://github.com/MGYamada/Qleisli/issues/33"
+    },
+    {
+      "bytes": 1362,
+      "id": 34,
+      "path": "release/issue-snapshots/34.txt",
+      "sha256": "090aabe51bc3444c09435ca78f191176a7fb16d1ce060d395f51454718096be3",
+      "url": "https://github.com/MGYamada/Qleisli/issues/34"
+    },
+    {
+      "bytes": 4722,
+      "id": 35,
+      "path": "release/issue-snapshots/35.txt",
+      "sha256": "7a72750ee87ae7baa55ab49f46d05bf5ba0ad6cc7bd03df8f56e938d528598b4",
+      "url": "https://github.com/MGYamada/Qleisli/issues/35"
+    },
+    {
+      "bytes": 2283,
+      "id": 37,
+      "path": "release/issue-snapshots/37.txt",
+      "sha256": "a20249ad4d214618697b20923e69960560b1ba7984b4cb141dc0ac9f6a510659",
+      "url": "https://github.com/MGYamada/Qleisli/issues/37"
+    },
+    {
+      "bytes": 624,
+      "id": 38,
+      "path": "release/issue-snapshots/38.txt",
+      "sha256": "bd21e1b656f6af56cc80dc653173c2e7371ccfcaca70ed3ea1114b15a325711f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/38"
+    },
+    {
+      "bytes": 3746,
+      "id": 39,
+      "path": "release/issue-snapshots/39.txt",
+      "sha256": "49b5557ae7b887054a2a777b3c471cbe41280842698ac743618d642387ab35b8",
+      "url": "https://github.com/MGYamada/Qleisli/issues/39"
+    },
+    {
+      "bytes": 2668,
+      "id": 40,
+      "path": "release/issue-snapshots/40.txt",
+      "sha256": "f106564d2f5116c33f9fd2912aabad19e3ee035bb62a3be59e0fd91afaa82729",
+      "url": "https://github.com/MGYamada/Qleisli/issues/40"
+    },
+    {
+      "bytes": 17925,
+      "id": 41,
+      "path": "release/issue-snapshots/41.txt",
+      "sha256": "9fcefc48ea470fb2b4213890c6e2484fd171d0d19046608bb37e022c11f12f55",
+      "url": "https://github.com/MGYamada/Qleisli/issues/41"
+    },
+    {
+      "bytes": 41184,
+      "id": 43,
+      "path": "release/issue-snapshots/43.txt",
+      "sha256": "b92f8cca95701cca3410ce75009c24c843b2a6379f3a128f6206520c589f2b43",
+      "url": "https://github.com/MGYamada/Qleisli/issues/43"
+    },
+    {
+      "bytes": 12790,
+      "id": 44,
+      "path": "release/issue-snapshots/44.txt",
+      "sha256": "5bc635ac2f55cdcd72be4d544a20d8aaf60b4b482fb7a89d2ea7e3d57eb24e84",
+      "url": "https://github.com/MGYamada/Qleisli/issues/44"
+    },
+    {
+      "bytes": 10744,
+      "id": 45,
+      "path": "release/issue-snapshots/45.txt",
+      "sha256": "cc9651843436813b8d89fa297a519152e96e903a27a387b08a8f012fae6e6d9d",
+      "url": "https://github.com/MGYamada/Qleisli/issues/45"
+    },
+    {
+      "bytes": 9162,
+      "id": 46,
+      "path": "release/issue-snapshots/46.txt",
+      "sha256": "7a8d21c7046de544d1d3571efd7cf1a770dfaacb2b1649e37ba04e512eb2b49e",
+      "url": "https://github.com/MGYamada/Qleisli/issues/46"
+    },
+    {
+      "bytes": 5484,
+      "id": 47,
+      "path": "release/issue-snapshots/47.txt",
+      "sha256": "6421eff55ad5b927c56e5ee74d9759cb0ee3241e1c9bf63ba64b34324541e88e",
+      "url": "https://github.com/MGYamada/Qleisli/issues/47"
+    },
+    {
+      "bytes": 15858,
+      "id": 48,
+      "path": "release/issue-snapshots/48.txt",
+      "sha256": "10ae87e55f4713f85b26706288bd552fce05b14f294bd0fd5ea8cda1c9d84abd",
+      "url": "https://github.com/MGYamada/Qleisli/issues/48"
+    },
+    {
+      "bytes": 4150,
+      "id": 57,
+      "path": "release/issue-snapshots/57.txt",
+      "sha256": "577464d433a45e6e26d6eddc37d84ba9e7a7bc4168b9c61301b211389def981d",
+      "url": "https://github.com/MGYamada/Qleisli/issues/57"
+    },
+    {
+      "bytes": 32926,
+      "id": 58,
+      "path": "release/issue-snapshots/58.txt",
+      "sha256": "2b4132f51731c5b35849447820d03b8827cebaa906a6e2375242b9aa563bd1e8",
+      "url": "https://github.com/MGYamada/Qleisli/issues/58"
+    },
+    {
+      "bytes": 6096,
+      "id": 63,
+      "path": "release/issue-snapshots/63.txt",
+      "sha256": "9ce0a873ed5dd9b1dee03cb377f29c6c19d33ac910160e4004563ab9c721b8f0",
+      "url": "https://github.com/MGYamada/Qleisli/issues/63"
+    },
+    {
+      "bytes": 63339,
+      "id": 64,
+      "path": "release/issue-snapshots/64.txt",
+      "sha256": "081181e61edc69123650af8897a6f77f0745885b20b875f54af1fd7ec5bf6780",
+      "url": "https://github.com/MGYamada/Qleisli/issues/64"
+    },
+    {
+      "bytes": 15359,
+      "id": 65,
+      "path": "release/issue-snapshots/65.txt",
+      "sha256": "c02c7faa81e1ed1c54814e0d27b05c86c4aa50a12f5852ee08f2084e6761ef64",
+      "url": "https://github.com/MGYamada/Qleisli/issues/65"
+    },
+    {
+      "bytes": 4521,
+      "id": 67,
+      "path": "release/issue-snapshots/67.txt",
+      "sha256": "b4f5ac39343e2f095e12d5f8f107a3c739e96389bf523aa566f267db6d101f3a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/67"
+    },
+    {
+      "bytes": 14494,
+      "id": 68,
+      "path": "release/issue-snapshots/68.txt",
+      "sha256": "b243d4aed1327d6dcae8625d0c72fd2cb3adc3395985b1de65da6963520504b3",
+      "url": "https://github.com/MGYamada/Qleisli/issues/68"
+    },
+    {
+      "bytes": 10237,
+      "id": 69,
+      "path": "release/issue-snapshots/69.txt",
+      "sha256": "c2fb914f81c1f56fa401916cdefd291f82eae7be61f31a665da36a674f4d1c6a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/69"
+    },
+    {
+      "bytes": 11692,
+      "id": 70,
+      "path": "release/issue-snapshots/70.txt",
+      "sha256": "ed973861417d0fe69f258da6a7888b779478a45e73f814b2c7da1b0d7016397a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/70"
+    },
+    {
+      "bytes": 3815,
+      "id": 71,
+      "path": "release/issue-snapshots/71.txt",
+      "sha256": "689595e688397dc8208ac1ccf9912cea13c7b116f8868eb1f8d13e9374029be1",
+      "url": "https://github.com/MGYamada/Qleisli/issues/71"
+    },
+    {
+      "bytes": 10913,
+      "id": 72,
+      "path": "release/issue-snapshots/72.txt",
+      "sha256": "2187de3fc71d8c1afd1278b97a4e42ef3a775133660e4c2e150ad40ad4dd4769",
+      "url": "https://github.com/MGYamada/Qleisli/issues/72"
+    },
+    {
+      "bytes": 2516,
+      "id": 73,
+      "path": "release/issue-snapshots/73.txt",
+      "sha256": "bbe8387a88eba50240daf440c1f0e6c9a4bbaab3449b27faa3f1d2551177b192",
+      "url": "https://github.com/MGYamada/Qleisli/issues/73"
+    },
+    {
+      "bytes": 2654,
+      "id": 74,
+      "path": "release/issue-snapshots/74.txt",
+      "sha256": "7c2150ba480897800fb00ec04d6b0f23834049ed7f22c821fcf79dd4ee4093d4",
+      "url": "https://github.com/MGYamada/Qleisli/issues/74"
+    },
+    {
+      "bytes": 2272,
+      "id": 75,
+      "path": "release/issue-snapshots/75.txt",
+      "sha256": "fa473287f48cdcd0c4e37789063bf891190e5583e779d1d0b72bb32985122307",
+      "url": "https://github.com/MGYamada/Qleisli/issues/75"
+    },
+    {
+      "bytes": 4786,
+      "id": 76,
+      "path": "release/issue-snapshots/76.txt",
+      "sha256": "91fa896c41d7bc425a92cb1274a55931c5d89d93b5f569ff8a1a3b24c7bcced1",
+      "url": "https://github.com/MGYamada/Qleisli/issues/76"
+    },
+    {
+      "bytes": 1606,
+      "id": 77,
+      "path": "release/issue-snapshots/77.txt",
+      "sha256": "167d5e80560443f31fca1859338860ebb767c680d4a56c3e7122d6e1998f5a1a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/77"
+    },
+    {
+      "bytes": 2865,
+      "id": 78,
+      "path": "release/issue-snapshots/78.txt",
+      "sha256": "a75490c0ff83d193776a51ed8419b82606175d500a2e5e2486429aa87e129273",
+      "url": "https://github.com/MGYamada/Qleisli/issues/78"
+    },
+    {
+      "bytes": 4556,
+      "id": 79,
+      "path": "release/issue-snapshots/79.txt",
+      "sha256": "fe32de49ecebfd3f722189532c55ebc704253662474d9c70d986fed97b0e7157",
+      "url": "https://github.com/MGYamada/Qleisli/issues/79"
+    },
+    {
+      "bytes": 19035,
+      "id": 80,
+      "path": "release/issue-snapshots/80.txt",
+      "sha256": "67ca13a3b574a3f952f909b2f9b3eafe57a40c47506d0cfb843c4bf3f9ab3dbf",
+      "url": "https://github.com/MGYamada/Qleisli/issues/80"
+    },
+    {
+      "bytes": 8959,
+      "id": 81,
+      "path": "release/issue-snapshots/81.txt",
+      "sha256": "fc31f0243ab101100d08f7e7ea8f2e5fbb3d7adbd2f58d317141312aae4607f0",
+      "url": "https://github.com/MGYamada/Qleisli/issues/81"
+    },
+    {
+      "bytes": 1241,
+      "id": 82,
+      "path": "release/issue-snapshots/82.txt",
+      "sha256": "d8ff982575f7f02ad97bde7a131a5af84622e54704b4c4be1a7a173ee7cb599c",
+      "url": "https://github.com/MGYamada/Qleisli/issues/82"
+    },
+    {
+      "bytes": 11845,
+      "id": 83,
+      "path": "release/issue-snapshots/83.txt",
+      "sha256": "bf3cce8417631ea664655a32e204c89d5cc38716d1236e54e2ef30593f940df1",
+      "url": "https://github.com/MGYamada/Qleisli/issues/83"
+    },
+    {
+      "bytes": 8162,
+      "id": 84,
+      "path": "release/issue-snapshots/84.txt",
+      "sha256": "86be65fae4b2f91de7a8ed68497780d8cf6d5ee3b2cda5dc09b6b7eb7de958cc",
+      "url": "https://github.com/MGYamada/Qleisli/issues/84"
+    },
+    {
+      "bytes": 4038,
+      "id": 85,
+      "path": "release/issue-snapshots/85.txt",
+      "sha256": "4c47e2db37e3627f49f53460ed1a260cf5014fa004e6c5b886f431ca8a412092",
+      "url": "https://github.com/MGYamada/Qleisli/issues/85"
+    },
+    {
+      "bytes": 1948,
+      "id": 86,
+      "path": "release/issue-snapshots/86.txt",
+      "sha256": "863bf6037722dadb30034232a329ee74c96f997582922fc5457922d2d8a692d1",
+      "url": "https://github.com/MGYamada/Qleisli/issues/86"
+    },
+    {
+      "bytes": 4183,
+      "id": 87,
+      "path": "release/issue-snapshots/87.txt",
+      "sha256": "6dbd51248838cbb8979b7c31070f2e206f41c1c2b83dff7b342cbf92e88d65a1",
+      "url": "https://github.com/MGYamada/Qleisli/issues/87"
+    },
+    {
+      "bytes": 4063,
+      "id": 88,
+      "path": "release/issue-snapshots/88.txt",
+      "sha256": "b1b1e0385a42df0eb6357f612fbc0f0cbb15335e4eca3fd10da088bb1ca3089b",
+      "url": "https://github.com/MGYamada/Qleisli/issues/88"
+    },
+    {
+      "bytes": 2108,
+      "id": 89,
+      "path": "release/issue-snapshots/89.txt",
+      "sha256": "25a20643e06209a06838381bf3c372d9d1eb8f8a61a2556e9ef0a3b85d264b4b",
+      "url": "https://github.com/MGYamada/Qleisli/issues/89"
+    },
+    {
+      "bytes": 11040,
+      "id": 100,
+      "path": "release/issue-snapshots/100.txt",
+      "sha256": "5f1db2f7aefc77dfeff1eae9d7ef6f534cd8d1a335bfb65013021e801d2ddb79",
+      "url": "https://github.com/MGYamada/Qleisli/issues/100"
+    },
+    {
+      "bytes": 24167,
+      "id": 120,
+      "path": "release/issue-snapshots/120.txt",
+      "sha256": "8fcdb574083ffe6acaa8f97fab2331d12594ed61a945faca5e3d8b96db7f8fc8",
+      "url": "https://github.com/MGYamada/Qleisli/issues/120"
+    },
+    {
+      "bytes": 3915,
+      "id": 121,
+      "path": "release/issue-snapshots/121.txt",
+      "sha256": "4217b3c33a5a3ef9d5d2f7268226662f3eebeffeb40b2ecca52be7b9590aca3a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/121"
+    },
+    {
+      "bytes": 3227,
+      "id": 122,
+      "path": "release/issue-snapshots/122.txt",
+      "sha256": "986b0350fd83db560c7d263f6487aeff22220747cb9a7b18018e060895d052ac",
+      "url": "https://github.com/MGYamada/Qleisli/issues/122"
+    },
+    {
+      "bytes": 5706,
+      "id": 123,
+      "path": "release/issue-snapshots/123.txt",
+      "sha256": "c576cca7f130d0cecc29203da6e2ae993d1bcada84cbf4d2a0ec83f478fe8e6b",
+      "url": "https://github.com/MGYamada/Qleisli/issues/123"
+    },
+    {
+      "bytes": 4306,
+      "id": 124,
+      "path": "release/issue-snapshots/124.txt",
+      "sha256": "c014fccc5e243fdb4afedeaab8a9f24b3e1d0eeec7c5989c38d2db1568fdc9cd",
+      "url": "https://github.com/MGYamada/Qleisli/issues/124"
+    },
+    {
+      "bytes": 3502,
+      "id": 125,
+      "path": "release/issue-snapshots/125.txt",
+      "sha256": "0d1dcf085478d72341a1c2bea84adc0ab107a08f4d9045973ca093f84f0ace35",
+      "url": "https://github.com/MGYamada/Qleisli/issues/125"
+    },
+    {
+      "bytes": 4444,
+      "id": 126,
+      "path": "release/issue-snapshots/126.txt",
+      "sha256": "8b2007c82aad33bc4e3c3d1003d0f78ab1b60e913352b25249402453913f5ef5",
+      "url": "https://github.com/MGYamada/Qleisli/issues/126"
+    },
+    {
+      "bytes": 12106,
+      "id": 127,
+      "path": "release/issue-snapshots/127.txt",
+      "sha256": "f02683f466647c7872a43dec572297086de84732ff822a8765ef9679da74aa41",
+      "url": "https://github.com/MGYamada/Qleisli/issues/127"
+    },
+    {
+      "bytes": 37571,
+      "id": 129,
+      "path": "release/issue-snapshots/129.txt",
+      "sha256": "c97ace965d295334d6f4728510e1066749d2ae728856c3d1e7d858fbca52bdde",
+      "url": "https://github.com/MGYamada/Qleisli/issues/129"
+    },
+    {
+      "bytes": 7768,
+      "id": 131,
+      "path": "release/issue-snapshots/131.txt",
+      "sha256": "430f8bc39cb2d99be945649c7ff70e3111c7515381b432e98d24726afb354880",
+      "url": "https://github.com/MGYamada/Qleisli/issues/131"
+    },
+    {
+      "bytes": 3767,
+      "id": 133,
+      "path": "release/issue-snapshots/133.txt",
+      "sha256": "2737ba50b554bda5a001fa15edeec929c552838a127ffe5a98ffa9ae97b486a7",
+      "url": "https://github.com/MGYamada/Qleisli/issues/133"
+    },
+    {
+      "bytes": 11976,
+      "id": 134,
+      "path": "release/issue-snapshots/134.txt",
+      "sha256": "4c7d0f37771ba1b1fc8313ef543a5dedb5604bfe8836222545445843dae297a7",
+      "url": "https://github.com/MGYamada/Qleisli/issues/134"
+    },
+    {
+      "bytes": 17411,
+      "id": 135,
+      "path": "release/issue-snapshots/135.txt",
+      "sha256": "f217c373bde94b09b8fe63b01f09f8f9ce67b20ac02a75a0472c0dafadcde23f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/135"
+    },
+    {
+      "bytes": 13381,
+      "id": 136,
+      "path": "release/issue-snapshots/136.txt",
+      "sha256": "19dcecb367e5998d32a326048db55bc2c938cbaa36d554ff1cdf881f312204b5",
+      "url": "https://github.com/MGYamada/Qleisli/issues/136"
+    },
+    {
+      "bytes": 13558,
+      "id": 137,
+      "path": "release/issue-snapshots/137.txt",
+      "sha256": "d99903cab3a561c5acaafed9d3138a661d971d6ad05819c9bd58ca3744578df5",
+      "url": "https://github.com/MGYamada/Qleisli/issues/137"
+    },
+    {
+      "bytes": 6843,
+      "id": 138,
+      "path": "release/issue-snapshots/138.txt",
+      "sha256": "487ba7aad1136a4ab1fee782e076a8fec13ebcce9672d3959e0f72cd7f7c0899",
+      "url": "https://github.com/MGYamada/Qleisli/issues/138"
+    },
+    {
+      "bytes": 18562,
+      "id": 139,
+      "path": "release/issue-snapshots/139.txt",
+      "sha256": "f3b1636fefeb6f9b75889c342981d9ba9b4782fcab33d5a189072797b96882ac",
+      "url": "https://github.com/MGYamada/Qleisli/issues/139"
+    },
+    {
+      "bytes": 23803,
+      "id": 140,
+      "path": "release/issue-snapshots/140.txt",
+      "sha256": "a4c3400764964a8e327366b02e52973f6a0102958810bf18c21349e50ff4fe1f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/140"
+    },
+    {
+      "bytes": 24113,
+      "id": 141,
+      "path": "release/issue-snapshots/141.txt",
+      "sha256": "630bdff9a57559a141b9777ae4c5c1914c6f54ee2f667ccd5aecae7b599c3b40",
+      "url": "https://github.com/MGYamada/Qleisli/issues/141"
+    },
+    {
+      "bytes": 85410,
+      "id": 142,
+      "path": "release/issue-snapshots/142.txt",
+      "sha256": "3bded65eda954cd5262c850f2353c3f086e1e4bb569c7def1656f15a8bec6a8c",
+      "url": "https://github.com/MGYamada/Qleisli/issues/142"
+    },
+    {
+      "bytes": 25362,
+      "id": 149,
+      "path": "release/issue-snapshots/149.txt",
+      "sha256": "d8c78b6ff265e3cb8e1ea562a06b7e0afc78e5a0ae34b9942e0ce07ead32fc66",
+      "url": "https://github.com/MGYamada/Qleisli/issues/149"
+    },
+    {
+      "bytes": 10278,
+      "id": 154,
+      "path": "release/issue-snapshots/154.txt",
+      "sha256": "937480b66677c9d988f97d767ab7c47a25d183b3d19d8ba35669b989ce669f72",
+      "url": "https://github.com/MGYamada/Qleisli/issues/154"
+    },
+    {
+      "bytes": 2981,
+      "id": 156,
+      "path": "release/issue-snapshots/156.txt",
+      "sha256": "58c534a08c7f60926a1bf420fe4e050fb276d18ce1f1a24450a68cba2deaca9b",
+      "url": "https://github.com/MGYamada/Qleisli/issues/156"
+    },
+    {
+      "bytes": 8770,
+      "id": 157,
+      "path": "release/issue-snapshots/157.txt",
+      "sha256": "946a39841ebaa52a52529e5533194e8febf4a01363854c898ff41d287ff346f9",
+      "url": "https://github.com/MGYamada/Qleisli/issues/157"
+    },
+    {
+      "bytes": 2636,
+      "id": 158,
+      "path": "release/issue-snapshots/158.txt",
+      "sha256": "f77bb115cc0841c69cf43ec66b52bf4fba2fb647261de18ac0edbe61cb016fce",
+      "url": "https://github.com/MGYamada/Qleisli/issues/158"
+    },
+    {
+      "bytes": 5066,
+      "id": 161,
+      "path": "release/issue-snapshots/161.txt",
+      "sha256": "8871b66cbffdd19373b6b3e392de3512d051d83a558dc1abd71424ab20eba554",
+      "url": "https://github.com/MGYamada/Qleisli/issues/161"
+    },
+    {
+      "bytes": 3591,
+      "id": 162,
+      "path": "release/issue-snapshots/162.txt",
+      "sha256": "7f7ef847e9bd80e9fb88b00410cb78d3fc41891f0087c48f73903d620808f8c3",
+      "url": "https://github.com/MGYamada/Qleisli/issues/162"
+    },
+    {
+      "bytes": 10014,
+      "id": 163,
+      "path": "release/issue-snapshots/163.txt",
+      "sha256": "09c21e361bf09b75b9ad7425c805ca92de8f7af2d186372f9cf5d3dedd45d97f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/163"
+    },
+    {
+      "bytes": 5482,
+      "id": 164,
+      "path": "release/issue-snapshots/164.txt",
+      "sha256": "abba217affcabd65f8ee4e4246d4317763a81b99479d35a2be7c15f91cc159ac",
+      "url": "https://github.com/MGYamada/Qleisli/issues/164"
+    },
+    {
+      "bytes": 2294,
+      "id": 165,
+      "path": "release/issue-snapshots/165.txt",
+      "sha256": "752903af7ea43030948b5708d40cee74323d0edcad570924d69a199b0940b693",
+      "url": "https://github.com/MGYamada/Qleisli/issues/165"
+    },
+    {
+      "bytes": 15527,
+      "id": 167,
+      "path": "release/issue-snapshots/167.txt",
+      "sha256": "df245040fd68744d8fbb1eacd163242d31b88627a45f0b60f7eed06ed4716df5",
+      "url": "https://github.com/MGYamada/Qleisli/issues/167"
+    },
+    {
+      "bytes": 24750,
+      "id": 169,
+      "path": "release/issue-snapshots/169.txt",
+      "sha256": "2dbac59567a7e2b21b28a1194dd2b8b84d92f4343ab3a338e27c1b44ea01a2c3",
+      "url": "https://github.com/MGYamada/Qleisli/issues/169"
+    },
+    {
+      "bytes": 12777,
+      "id": 170,
+      "path": "release/issue-snapshots/170.txt",
+      "sha256": "96445dab07f288eaa37ac71392455660f2df9b0f0b1d3b6d12b3e915c689a51d",
+      "url": "https://github.com/MGYamada/Qleisli/issues/170"
+    },
+    {
+      "bytes": 12290,
+      "id": 171,
+      "path": "release/issue-snapshots/171.txt",
+      "sha256": "2ff0f6a2cf86b2225b47255603732e5e3f92d9bf8daf0b9f983bda1cce1043d6",
+      "url": "https://github.com/MGYamada/Qleisli/issues/171"
+    },
+    {
+      "bytes": 8421,
+      "id": 172,
+      "path": "release/issue-snapshots/172.txt",
+      "sha256": "0b0c1c844ffc6b98109c84757e97818cc487ef00b0b05189ed1e7b2277c33217",
+      "url": "https://github.com/MGYamada/Qleisli/issues/172"
+    },
+    {
+      "bytes": 10094,
+      "id": 173,
+      "path": "release/issue-snapshots/173.txt",
+      "sha256": "b9d9692b58224a6ee7fa48cc597487733f80461421132218594304c18d700696",
+      "url": "https://github.com/MGYamada/Qleisli/issues/173"
+    },
+    {
+      "bytes": 9669,
+      "id": 174,
+      "path": "release/issue-snapshots/174.txt",
+      "sha256": "5b2c923759cd6f8d42f758341a0f1828f9cf6b18e32b417e849a49017713cd96",
+      "url": "https://github.com/MGYamada/Qleisli/issues/174"
+    },
+    {
+      "bytes": 7049,
+      "id": 194,
+      "path": "release/issue-snapshots/194.txt",
+      "sha256": "1a5fd62fc49a5fe3a8ba9f65087752d51335984112688a52d46f088b5cca4c62",
+      "url": "https://github.com/MGYamada/Qleisli/issues/194"
+    },
+    {
+      "bytes": 11484,
+      "id": 195,
+      "path": "release/issue-snapshots/195.txt",
+      "sha256": "591975582122283515a1352a5a6a2766aa55a54ce382ab03a75a7e2705cf7a9a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/195"
+    },
+    {
+      "bytes": 3785,
+      "id": 196,
+      "path": "release/issue-snapshots/196.txt",
+      "sha256": "a0259d909c864765fcd1edb5f2911fbd091f3bf9073abbf9cee8daae079d017a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/196"
+    },
+    {
+      "bytes": 1401,
+      "id": 198,
+      "path": "release/issue-snapshots/198.txt",
+      "sha256": "b8f53ce680a2bf04f941e61a435d58d9a536295638533bad34998d0981212029",
+      "url": "https://github.com/MGYamada/Qleisli/issues/198"
+    },
+    {
+      "bytes": 5012,
+      "id": 215,
+      "path": "release/issue-snapshots/215.txt",
+      "sha256": "5b2628c4aad4c86bdb40d4fd9762c4a46f9392249759b3a086fe031b66dbdb2d",
+      "url": "https://github.com/MGYamada/Qleisli/issues/215"
+    },
+    {
+      "bytes": 10815,
+      "id": 224,
+      "path": "release/issue-snapshots/224.txt",
+      "sha256": "a3aa21531ae299112446e0c4f4da68588fbaba9d5cfd5a092dcd97d5b5c49f24",
+      "url": "https://github.com/MGYamada/Qleisli/issues/224"
+    },
+    {
+      "bytes": 17520,
+      "id": 225,
+      "path": "release/issue-snapshots/225.txt",
+      "sha256": "fd03c431d10350a6f7fec7a81cab5ec16262e9d45735b0fb16f489dfae4e55b0",
+      "url": "https://github.com/MGYamada/Qleisli/issues/225"
+    },
+    {
+      "bytes": 8906,
+      "id": 226,
+      "path": "release/issue-snapshots/226.txt",
+      "sha256": "b2607206cbc870afbc286028e8cda154606fdcd56949211c1ad52ce4eb8c45e9",
+      "url": "https://github.com/MGYamada/Qleisli/issues/226"
+    },
+    {
+      "bytes": 8366,
+      "id": 230,
+      "path": "release/issue-snapshots/230.txt",
+      "sha256": "e49e357c6d5124efd1c6d881a0a41081d00d64476c9723045d90e14059a3ac1d",
+      "url": "https://github.com/MGYamada/Qleisli/issues/230"
+    },
+    {
+      "bytes": 7542,
+      "id": 231,
+      "path": "release/issue-snapshots/231.txt",
+      "sha256": "83c918291df0d855a05128c51a020b03918fbd11e54352df119503f21de9b025",
+      "url": "https://github.com/MGYamada/Qleisli/issues/231"
+    },
+    {
+      "bytes": 7143,
+      "id": 234,
+      "path": "release/issue-snapshots/234.txt",
+      "sha256": "759a79c669c24a7f88c3518aafdb39bdede01ae7c4cadf84ad980e19d7421c91",
+      "url": "https://github.com/MGYamada/Qleisli/issues/234"
+    },
+    {
+      "bytes": 7747,
+      "id": 237,
+      "path": "release/issue-snapshots/237.txt",
+      "sha256": "c379777fe743e695e7266ac1c47ed549cbc491215db0d1344f801fb73e74a27a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/237"
+    },
+    {
+      "bytes": 2720,
+      "id": 245,
+      "path": "release/issue-snapshots/245.txt",
+      "sha256": "3a8309efd2c9490fb36d31403ae914122c3357c50cd359b6ee32a818e8f38445",
+      "url": "https://github.com/MGYamada/Qleisli/issues/245"
+    },
+    {
+      "bytes": 9393,
+      "id": 250,
+      "path": "release/issue-snapshots/250.txt",
+      "sha256": "227350fcfa89bc22bfd9b022b354e6ef2260a73b0220745dd1657c6e75b0b4fb",
+      "url": "https://github.com/MGYamada/Qleisli/issues/250"
+    },
+    {
+      "bytes": 15834,
+      "id": 253,
+      "path": "release/issue-snapshots/253.txt",
+      "sha256": "570375e6bd511fa90f03cdf43d6857d2805f56cf71a5353e42c098322de1be2f",
+      "url": "https://github.com/MGYamada/Qleisli/issues/253"
+    },
+    {
+      "bytes": 16231,
+      "id": 254,
+      "path": "release/issue-snapshots/254.txt",
+      "sha256": "d7144719c869dca9444f19ae85147fec9c78e826a364210b6980cde0ff97aa4a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/254"
+    },
+    {
+      "bytes": 58253,
+      "id": 255,
+      "path": "release/issue-snapshots/255.txt",
+      "sha256": "798f732a3ad57d0ecda088aabcfd0617c6f1fcd67bb27ecf596fb3b9edcc79a4",
+      "url": "https://github.com/MGYamada/Qleisli/issues/255"
+    },
+    {
+      "bytes": 1991,
+      "id": 270,
+      "path": "release/issue-snapshots/270.txt",
+      "sha256": "f18cb58ff816cec5a85e54927cc718db70d4274fc4790f1660575223722ae322",
+      "url": "https://github.com/MGYamada/Qleisli/issues/270"
+    },
+    {
+      "bytes": 1620,
+      "id": 272,
+      "path": "release/issue-snapshots/272.txt",
+      "sha256": "da3d801d25548f4510ffe360eeeefe1b4bd9130e0ab81c4d12d2a217e1ccb840",
+      "url": "https://github.com/MGYamada/Qleisli/issues/272"
+    },
+    {
+      "bytes": 20990,
+      "id": 280,
+      "path": "release/issue-snapshots/280.txt",
+      "sha256": "c87610c328b2143c0ea753c2692aacfc715aa3c16e5f82bbeaa4d8ad2c1f56f2",
+      "url": "https://github.com/MGYamada/Qleisli/issues/280"
+    },
+    {
+      "bytes": 12243,
+      "id": 281,
+      "path": "release/issue-snapshots/281.txt",
+      "sha256": "3de6811a7720bdad08dbab715195a03c62625bcf47cf12e2a96c01af65365fb9",
+      "url": "https://github.com/MGYamada/Qleisli/issues/281"
+    },
+    {
+      "bytes": 16522,
+      "id": 303,
+      "path": "release/issue-snapshots/303.txt",
+      "sha256": "c87e62d61e60626eac7769ff523cefb18ce3c2d69e4f6f98d28cc888b0cc1a84",
+      "url": "https://github.com/MGYamada/Qleisli/issues/303"
+    },
+    {
+      "bytes": 19365,
+      "id": 311,
+      "path": "release/issue-snapshots/311.txt",
+      "sha256": "786ec1cd10e6f25c1967b5d549f48b90dd817de9215cabffc87d4f372cf379f3",
+      "url": "https://github.com/MGYamada/Qleisli/issues/311"
+    },
+    {
+      "bytes": 28262,
+      "id": 315,
+      "path": "release/issue-snapshots/315.txt",
+      "sha256": "4a7672e8fc831967a810a4acb3b8cd175e51633bb5822d841ded7963b014eba8",
+      "url": "https://github.com/MGYamada/Qleisli/issues/315"
+    },
+    {
+      "bytes": 44508,
+      "id": 317,
+      "path": "release/issue-snapshots/317.txt",
+      "sha256": "5ba276c867b4d496617a3d4d4bcdf45e79075c7967ebf2120cdde3a8a6ca5286",
+      "url": "https://github.com/MGYamada/Qleisli/issues/317"
+    },
+    {
+      "bytes": 5542,
+      "id": 342,
+      "path": "release/issue-snapshots/342.txt",
+      "sha256": "be54b3426b1e40efe54a80d8e4d92282792656aed589daa7266fdf39118749a0",
+      "url": "https://github.com/MGYamada/Qleisli/issues/342"
+    },
+    {
+      "bytes": 4438,
+      "id": 343,
+      "path": "release/issue-snapshots/343.txt",
+      "sha256": "5ad69a321bdfc3e1f55d6a36ce02ac93451988e2dcd1fcaee2e84d161a60ba5a",
+      "url": "https://github.com/MGYamada/Qleisli/issues/343"
+    },
+    {
+      "bytes": 6403,
+      "id": 350,
+      "path": "release/issue-snapshots/350.txt",
+      "sha256": "4cd93db00f483eb0e1d5c5bcd2e4bb1b98da2717c7e5d0c3caa9e5ce88411610",
+      "url": "https://github.com/MGYamada/Qleisli/issues/350"
+    },
+    {
+      "bytes": 607,
+      "id": 352,
+      "path": "release/issue-snapshots/352.txt",
+      "sha256": "bf9ae63bf90b5d2dcfac4deae507ce2b8433eabb3d18e14445ac727407799296",
+      "url": "https://github.com/MGYamada/Qleisli/issues/352"
+    },
+    {
+      "bytes": 11671,
+      "id": 355,
+      "path": "release/issue-snapshots/355.txt",
+      "sha256": "455ec5c880e265026521db1e6cae5765afebbb91aa770a6b4cc8d70ae3fd54c3",
+      "url": "https://github.com/MGYamada/Qleisli/issues/355"
+    },
+    {
+      "bytes": 3937,
+      "id": 362,
+      "path": "release/issue-snapshots/362.txt",
+      "sha256": "ed94c742e1039a78f192f92a914f1560cdb0824269392908acf9295ab87d22ee",
+      "url": "https://github.com/MGYamada/Qleisli/issues/362"
+    },
+    {
+      "bytes": 2555,
+      "id": 363,
+      "path": "release/issue-snapshots/363.txt",
+      "sha256": "445eb10e32bfbec6d65405cff8440ebc2a505a0331a7dab24c800bc8d42a41d8",
+      "url": "https://github.com/MGYamada/Qleisli/issues/363"
+    },
+    {
+      "bytes": 2233,
+      "id": 364,
+      "path": "release/issue-snapshots/364.txt",
+      "sha256": "5cd2fcca8e726fc13a37e716d4a9fd8e8b6e4c77522bb238a327da1732359ad9",
+      "url": "https://github.com/MGYamada/Qleisli/issues/364"
+    },
+    {
+      "bytes": 1997,
+      "id": 365,
+      "path": "release/issue-snapshots/365.txt",
+      "sha256": "3a32de6a26d8e4c1fb50eee7e26486f35b4bf865501d48b85dbade1552942d3d",
+      "url": "https://github.com/MGYamada/Qleisli/issues/365"
+    },
+    {
+      "bytes": 2169,
+      "id": 366,
+      "path": "release/issue-snapshots/366.txt",
+      "sha256": "4ca1ea334d7a6f2537a71e7e218ae40ed11f94f7dea69280c05ae0a592f530a7",
+      "url": "https://github.com/MGYamada/Qleisli/issues/366"
+    },
+    {
+      "bytes": 1936,
+      "id": 367,
+      "path": "release/issue-snapshots/367.txt",
+      "sha256": "69397d0c75ae36bfc492d911d5b2efc17d2381c8e34c706f46d37a1e024af028",
+      "url": "https://github.com/MGYamada/Qleisli/issues/367"
+    },
+    {
+      "bytes": 2822,
+      "id": 368,
+      "path": "release/issue-snapshots/368.txt",
+      "sha256": "45ab7d4e8e1c4032fd48a10be6ae6fcc6dd6b85be837261a725b5de84411575d",
+      "url": "https://github.com/MGYamada/Qleisli/issues/368"
+    },
+    {
+      "bytes": 4634,
+      "id": 369,
+      "path": "release/issue-snapshots/369.txt",
+      "sha256": "b078f2633c155b5b21010b5712a7984b14f5304085f6975eb44c8797dd26e7fe",
+      "url": "https://github.com/MGYamada/Qleisli/issues/369"
+    }
+  ],
+  "purpose": "Verbatim sources for the fixed beta requirement audit.",
+  "repository": "MGYamada/Qleisli",
+  "version": 1
+}

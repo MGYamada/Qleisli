@@ -1,0 +1,36 @@
+## Reproduced during the CI and whole-codebase review
+
+Target: the current 0.3.0-alpha maintenance scope. This is a process-lifetime repair, not a language change or a new constitutional guarantee.
+
+At commit `ed462c8bc8db16cbb17e66a3770628dfc45ab530`, `Client._process` uses `subprocess.run(..., timeout=...)`. On POSIX, timeout kills the immediate process, but its descendants can keep running. The real Rust CLI gives each native-checker invocation a separate process group, so merely putting the Python child in a new group and killing that group would not completely repair the production path.
+
+## Local reproduction (macOS, 2026-10-07)
+
+1. A bounded Python child launched through `Client(timeout=0.2)._process(...)` starts another Python process. The descendant waits 0.6 seconds and writes a marker. The parent waits 2 seconds.
+2. The client reports the existing `limit` diagnostic after 0.206 seconds. The descendant still writes the marker after the timeout.
+3. With the actual built Rust CLI, select a fake native checker which first writes an entry marker, waits 3 seconds, then writes a completion marker. Call `from_openqasm` with a one-qubit prepare/measure program and `timeout=1.5`.
+4. The native checker entry marker exists, the host reports `limit` after 1.504 seconds, and the native checker writes its completion marker after the host timeout.
+
+A preliminary 0.3-second host timeout did not reach the native checker and is not evidence of containment. The bounded reproductions exited on their own; no large input or persistent workload was generated.
+
+Relevant code: `python/qleisli/__init__.py:Client._process`, `src/interchange/process.rs:invoke` and `Invocation::drop`.
+
+## Required repair and validation
+
+- Define ownership/cancellation of the complete ordinary Python → Rust → native invocation, preserving the existing timeout diagnostic and rejection behavior.
+- Cover native process groups as well as direct children; do not claim a single-group kill handles both.
+- Reap the directly owned process and close its pipes on timeout, errors and interruption. Cover successful and failed children which leave descendants or inherited pipes.
+- Keep cleanup bounded and scoped to processes owned by the invocation; never kill unrelated jobs. State supported platform/containment limits explicitly.
+- Add small process regressions for direct children and the actual Rust/native path, with no sleeping process left after the test. Verify fresh installed-package behavior.
+- Preserve all original artifact/request acceptance checks, checker version binding, and the two ledgered scoped guarantees. This does not authorize an alternate acceptance path.
+
+Status: fixed in `6bd9d62ec3dbde1c01e62b0a55a975ae1611118d`; integrated validation passed in [CI 37611888516](https://github.com/MGYamada/Qleisli/actions/runs/37611888516), attempt 1, for PR head `df944782ff102b9a4bbda627ce7d3747f77291f9` / checked merge `0b1b1079fb0207f773998be8d9efdeb2831229b8` (identical source trees). This finding is separate from the already repaired native-CI task scratch-directory cleanup and does not close any of the original 111 feature issues.
+
+
+## Repair evidence
+
+The Python host owns a POSIX session and stops/discovers its ordinary descendants before killing them, including the Rust checker's separate process group. It reaps the direct child and closes pipes in the common finally path. Discovery/stopping has a two-second deadline; session membership is renewed before signals and a reaped-leader PID-reuse guard protects unrelated sessions. Missing process inspection fails explicitly.
+
+The new regression fails in all four subcases on the old implementation (normal exit, failure, timeout and inherited pipes), with test-owned cleanup. The corrected four-test host suite and freshly installed thirteen-test suite pass on macOS locally and Linux CI, including the actual Rust/native-group timeout path and an unrelated sentinel. Source hashes and bounded reproduction evidence are preserved in `tests/fixtures/review_v030alpha/codebase-review/process-lifetime.json`.
+
+The documented boundary remains ordinary POSIX descendants. Deliberately escaped sessions are excluded, and non-POSIX cleanup remains direct-child-only; no Windows descendant-containment claim is made. Acceptance, protocol versions, scoped guarantees and dependency versions are unchanged. This maintenance defect is separate from the 111-feature goal.

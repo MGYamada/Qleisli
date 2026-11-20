@@ -1,0 +1,119 @@
+## Current beta scope — maintainer decision, 2026-10-12 (Asia/Tokyo)
+
+The maintainer explicitly chose: 「alphaでの比較説明削除を維持し、#234の当該基準を更新する」 during the 127-Issue beta re-audit. Preserve the alpha removal of the ecosystem naming comparison from the Book. The original criterion requiring `cargo -> qargo` / `crates -> qrates` examples is superseded; restoring that comparison is not required or authorized by the beta audit. Preserve the original proposal and historical completion below as provenance.
+
+Current acceptance criteria:
+
+- Fix Qleisli's pronunciation to be exactly Kleisli's.
+- Fix the initial Q as semantic rather than phonetic.
+- State the canonical name origin as a Kleisli-style lift of the classical software ecosystem into a quantum ecosystem.
+- Preserve the alpha removal of the ecosystem naming comparison; no cargo/qargo or crates/qrates comparison is required in the Book.
+- State that the etymology imposes no particular categorical/monadic formalization.
+- Keep one canonical project-identity page and expose it from the README and Book introduction.
+
+The canonical Reference retains the first five criteria. The README link is being repaired in `codex/beta-closed-audit`, based on d1a09fd8146da1534e3b9dae660fe9861cf65ca4. Fresh `check_docs.py`, pinned mdBook 0.5.4 build and rendered Book link checks passed. This is a documentation repair; acceptance semantics, constitutional interpretations and guarantee scopes do not change. Completion awaits the committed repair and required CI.
+
+## Historical proposal and completion — original criterion 4 superseded above
+
+## Status
+
+Target: **Qleisli 0.3.0**.
+
+Labels: **important**, **enhancement**.
+
+This is a language/project identity decision, not a change to acceptance semantics.
+
+Related:
+- #23 — historical design note already states that the language name is related to Kleisli composition
+
+## Problem
+
+The repository already uses the name **Qleisli**, but its exact etymology and pronunciation are not yet normative.
+
+As the surrounding ecosystem becomes explicit — especially `qargo`, `qrates`, and `qleisliup` — the naming system has acquired a coherent meaning that should be fixed while 0.3.0 is defining what Qleisli is.
+
+Without a short canonical statement, the project can drift into several incompatible explanations:
+
+- “Qleisli” is merely a pun on “quantum Kleisli”;
+- the initial `Q` changes the pronunciation;
+- the name commits the language to one specific categorical implementation;
+- `qargo` / `qrates` are only Rust jokes rather than part of the same design vocabulary.
+
+## Decision
+
+Define the canonical origin of the name as:
+
+> **Qleisli is the Kleisli-style lift of the classical software ecosystem into a quantum ecosystem.**
+
+The spelling is **Q + Kleisli**.
+
+The initial **Q** denotes the move to the quantum world. It is **semantic, not phonetic**.
+
+Therefore:
+
+> **Qleisli is pronounced exactly like Kleisli.**
+
+The spelling change marks the lift; the pronunciation does not change.
+
+This same naming principle is reflected in the surrounding ecosystem:
+
+```text
+classical ecosystem        quantum ecosystem
+
+cargo                  ->  qargo
+crates                 ->  qrates
+```
+
+The `c -> q` transition is intentional: mature classical software-engineering structures are retained where appropriate and lifted across the classical/quantum boundary rather than reinvented merely for novelty.
+
+## Scope and interpretation
+
+“Kleisli-style lift” is the project’s **name origin and design metaphor**.
+
+It does **not**, by itself, require every future Qleisli construct, compiler layer, or theorem to be formalized as a literal Kleisli category or as one particular monad.
+
+Any formal categorical semantics remains a separate technical claim and must be specified and justified independently.
+
+This distinction keeps the name meaningful without letting the etymology accidentally constrain the language theory.
+
+## Canonical wording
+
+A concise normative/documentation form should be approximately:
+
+> **Qleisli** is pronounced exactly like **Kleisli**.  
+> The name expresses the project’s central idea: a **Kleisli-style lift of the classical software ecosystem into a quantum ecosystem**.  
+> The initial **Q** denotes *quantum*: it changes the semantic world indicated by the spelling, not the pronunciation.
+
+Optionally, ecosystem-facing documentation may add:
+
+> This naming principle is echoed by `cargo -> qargo` and `crates -> qrates`: classical software-engineering structures are lifted into the Qleisli ecosystem where their abstractions remain appropriate.
+
+## Documentation locations
+
+The final wording should be visible at least in:
+
+- [x] the top-level README / project introduction;
+- [x] the design-philosophy or language-introduction documentation;
+- [x] any canonical pronunciation / naming section used by future website or Book material.
+
+One source should be treated as canonical and the others should point to or reproduce it without semantic drift.
+
+## Acceptance criteria
+
+- [x] Fix the pronunciation of **Qleisli** to be exactly the pronunciation of **Kleisli**.
+- [x] Fix the initial **Q** as semantic rather than phonetic.
+- [x] Document the canonical name origin: **a Kleisli-style lift of the classical software ecosystem into a quantum ecosystem**.
+- [x] Document `cargo -> qargo` and `crates -> qrates` as intentional examples of the same classical-to-quantum naming principle.
+- [x] Explicitly state that the etymology does not itself impose a particular categorical/monadic formalization on the language.
+- [x] Put the canonical wording in the 0.3.0 normative/project-identity documentation and expose it from the README.
+
+## Core principle
+
+> **The Q changes the world, not the pronunciation.**
+
+
+## Verified completion — 2026-10-05
+
+All six acceptance criteria and three required documentation locations are complete in **8a6a7167f0abd359fb8cac695033778cbca6203f**, in #307. [Canonical project identity](https://github.com/MGYamada/Qleisli/blob/8a6a7167f0abd359fb8cac695033778cbca6203f/docs/src/reference/project-identity.md) fixes identical Kleisli pronunciation, semantic Q, the classical-to-quantum ecosystem lift, intentional cargo/qargo and crates/qrates naming, and the distinction from any particular categorical/monadic formalization. [README](https://github.com/MGYamada/Qleisli/blob/8a6a7167f0abd359fb8cac695033778cbca6203f/README.md), [Book introduction](https://github.com/MGYamada/Qleisli/blob/8a6a7167f0abd359fb8cac695033778cbca6203f/docs/src/introduction.md) and SUMMARY expose that canonical source.
+
+[Actual validation record](https://github.com/MGYamada/Qleisli/blob/8a6a7167f0abd359fb8cac695033778cbca6203f/tests/fixtures/review_v030alpha/project-identity-234/result.json) binds the unchanged input bytes and successful check_docs, pinned mdBook 0.5.4 build, and rendered HTML/print link checks. This documentation-only change alters no acceptance rule, constitutional text, interpretation, guarantee or dependency. Rust/Lean tests were not required or claimed for this naming change. No criterion was reduced.

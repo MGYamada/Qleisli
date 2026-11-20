@@ -1,0 +1,58 @@
+## Authorized decision — 2026-10-11 (Asia/Tokyo)
+
+The maintainer explicitly instructed:
+
+> verifier以外のバックエンドをLeanに移す必要がなくなったのでdocs/src/lean-backend-plan-v0.3.md計画を削除してください。破壊的変更ですので、関連するv0.3バックエンド計画も削除してください。Lean 4-kernelによるbackend移行は長期的な目標に変更します。ロードマップを修正してください。
+
+## Target, reason and contract
+
+Target: the current unpublished v0.3.0-alpha planning/documentation contract, covering all of the retired v0.3.1–v0.3.9 non-verifier backend acceleration schedule.
+
+Remove that plan and its obligations to replace Rust transformations, hierarchy builders, target lowering, emitters and simulation/execution with Lean implementations in v0.3.x. A broader backend implementation using Lean 4 and its proof kernel is a long-term goal with no assigned release or completion date, and no v0.3.x release gate.
+
+The existing Mathlib-free Lean production verifier remains required under #276. Rust may continue frontend preparation, untrusted candidate/evidence generation, transformations, simulation and experimental output adapters. Independent checking must still bind actual artifacts and claimed input/output correspondence. Implementing a backend in Lean is distinct from proving its preservation or its target realization.
+
+This is an intentional breaking change to a future implementation/planning commitment. No currently supported public syntax, API, CLI, JSON, IR/protocol, package/dependency version or acceptance behavior is removed by this documentation change. Constitutional edition remains 2026.
+
+## Migration
+
+- Delete docs/src/lean-backend-plan-v0.3.md and its Book entry, active links and retention requirements.
+- Remove the v0.3.1–v0.3.9 accelerated migration section and its cross-references from ROADMAP.md.
+- Replace the blanket substantive-Lean-backend requirement in the mutable trust policy with the explicit long-term goal; retain verifier authority and Lean implementation/audit restrictions.
+- Update contribution/agent/documentation guidance and document checks/tests to match the remaining source tree. Do not restore the retired plan in another document.
+- Preserve existing source, Lean proofs, independent oracles, counterexamples, historical validation and licensing. Historical changelog records remain history.
+- #273's separate generic-contract/pipeline integration and #132's independently checked realization experiment are not completed or cancelled by removing this Lean implementation schedule. Neither is a mandate to rewrite all backend producers in Lean.
+
+## Constitutional impact
+
+QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01 keep their adopted meanings, current production/artifact binding requirements and pending broader proof/enforcement duties. Both admitted QLV1 ownership and classical-scope guarantees retain their exact scope, premises, evidence and protection. No protected text, adoption/admission event, guarantee or independent meaning changes. No new interpretation or discharge is asserted.
+
+PR remains forward correspondence for actual admitted realizations; it does not require the synthesis producer to be implemented in Lean. Rust/backend implementation language is not semantic authority and does not waive a required check. Native compiler/runtime, decoder, source and execution correspondence assumptions remain explicit. A newly implemented accepted capability still requires its applicable independent checking and proof duties.
+
+## Acceptance criteria
+
+- [x] The v0.3 backend plan is deleted; no active Book, contributor, agent or roadmap dependency remains.
+- [x] The accelerated v0.3.1–v0.3.9 non-verifier migration obligations are removed.
+- [x] ROADMAP.md states broader Lean 4 backend migration as a long-term goal without a selected release; QS/PR/RS milestones and artifact correspondence are kept distinct.
+- [x] Document-layout and package-facing link regressions match the retirement and reject stale dependencies.
+- [x] Local documentation tests, repository links, fixed mdBook build/HTML/print links, source inventory and trusted-base constitutional identity/continuity pass with performed/skipped checks recorded.
+- [x] No proof/code/fixture deletion, new feature, hosted CI run, merge, publication or claim of broader goal completion occurs.
+
+This policy/documentation task is separate from the paused 109-Issue feature goal; it earns no feature completion credit.
+
+
+## Local implementation and validation checkpoint
+
+Applied to the existing development working tree based on `dc0e43a41ad37ec85f2ec4b9445f5d6680d9050d`. The plan's 425 lines and generated Book page are removed. The roadmap, mutable trust policy, contributor/agent guidance and Book sources no longer depend on the retired plan. The document checker no longer requires it and rejects its restoration or stale active links. Historical changelog entries remain historical.
+
+Local results:
+- `python3 scripts/test_check_docs.py`: 40 passed.
+- `python3 scripts/test_check_distribution.py`: 40 passed, including current documentation and stale registry-link regressions. Synthetic failure-log previews are expected rejection-test data.
+- `python3 scripts/check_docs.py`: 2,361 local links, 59 Markdown anchors and 227 Lean root modules checked.
+- Pinned mdBook 0.5.4 build and `scripts/check_book.py`: 28 HTML files, 1,288 local links and 555 anchors, including print-page links.
+- Verification source inventory, schema registry source identity and edition checks passed.
+- `python3 scripts/check_constitution.py --base-ref dc0e43a41ad37ec85f2ec4b9445f5d6680d9050d`: recorded identities and continuity passed. This is not fresh Lean replay or full constitutional CI.
+- AGENTS.md and CLAUDE.md remain identical: 99 lines / 5,983 UTF-8 bytes each.
+- Version-maintenance plan has no version/dependency edits or outstanding inventoried source reviews. `git diff --check` passed.
+
+Rust/Lean rebuilds, fresh proof replay, packaging/install execution and hosted CI were not run for this documentation/checker change. No production acceptance implementation or proof definition changed. No commit, push, merge or publication is claimed; this Issue remains open for integration. The broader feature goal remains paused and receives no completion credit.

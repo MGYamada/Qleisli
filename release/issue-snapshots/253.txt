@@ -1,0 +1,209 @@
+## Current beta contract — 2026-10-12
+
+The alpha cleanup remains in force. The canonical inference/discovery contract is now the current architecture Reference section, with current Reference/Rust/primitive-stdlib navigation. The standalone ecosystem help introduction remains available without project/kernel access. This supersedes the old bounded contract's standalone discovery-chapter location and exact embedded-chapter identity requirement; it restores none of the retired chapter or ecosystem naming comparison. All ten original acceptance criteria remain. External qlinty implementation/compatibility/diagnostics are excluded by the maintainer; core diagnostics and Cargo Clippy remain required. See [criterion audit](https://github.com/MGYamada/Qleisli/issues/253#issuecomment-6118963947) and integrated commit [bf8a6ab](https://github.com/MGYamada/Qleisli/commit/bf8a6abe3f0685a7f351220c536a135a7eef9f39). Historical text below is preserved.
+
+---
+
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: docs / architecture umbrella.**
+
+Related:
+- #48 — authoritative Qleisli Language Reference
+- #167 — primitive/derived boundary; ordinary checked `.qli` stdlib
+- #169 — `.qli` / external-artifact authority boundary
+- #196 — three-level surface boundary: `q***`, `Q<T>`, unmarked syntax
+- #224 — diagnostics teach the classical–quantum boundary
+- #225 — diagnostics are part of the harness
+- #237 — parser diagnostics teach canonical Qleisli syntax
+- #229 — later 0.4.0 work: stdlib as canonical authoring corpus for coding agents
+
+## Goal
+
+Document, before the 0.3.0 language boundary is frozen, which parts of the Qleisli language and ecosystem are expected to be **inferable by an LLM with no prior Qleisli knowledge**, and which parts are **Qleisli-specific concepts that must be explicitly discoverable**.
+
+The design goal is not:
+
+> make every name look familiar.
+
+It is:
+
+> **An LLM with generic programming knowledge but zero Qleisli-specific prior should be able to reconstruct the ecosystem wherever inference is intended, and should encounter an explicit discovery path wherever inference is impossible or unsafe.**
+
+This boundary is part of the language/tooling documentation contract.
+
+## Motivation
+
+Qleisli is deliberately structured so that a coding agent can begin with ordinary classical programming priors, make predictable mistakes, and use the language/tooling response to recover the Qleisli model.
+
+Examples of intentionally inferable ecosystem structure include:
+
+- Cargo → qargo
+- crate → qrate
+- clippy → qlippy
+- formatter conventions → qlifmt
+- documentation tooling conventions → qlidoc
+- classical/quantum syntax boundaries such as `if` / `qif`, `for` / `qfor`, and `match` / `qmatch`
+
+The point is not superficial spelling similarity. The point is that repeated structure lets an agent infer the **classical/quantum boundary rule** and transfer it to previously unseen parts of the ecosystem.
+
+By contrast, important Qleisli-native tools such as:
+
+- **QLT**
+- **QDB**
+- **QCP**
+
+cannot be reconstructed reliably from generic Rust/C/Cargo prior alone. They are closer to the semantic core of the Qleisli ecosystem, yet their roles must be **discovered**, not guessed.
+
+The documentation must therefore draw the boundary explicitly.
+
+## Core distinction
+
+### 1. Zero-prior inferable domain
+
+A component belongs here only when a generic coding agent can reasonably infer its role from stable ecosystem structure, naming, nearby source, or deterministic diagnostics.
+
+Requirements:
+
+- inference should lead to the correct conceptual role, not merely the correct spelling;
+- predictable classical habits may fail, but the failure must expose the Qleisli boundary rather than dead-end;
+- diagnostics should name the canonical Qleisli counterpart where appropriate;
+- repeated naming/structural rules should remain consistent enough to transfer to unseen components;
+- documentation should state the intended inference path.
+
+Examples: `qargo`, `qrate`, `qlippy`, `qlifmt`, `qlidoc`, and the q-prefixed classical/quantum surface boundary where specified elsewhere.
+
+### 2. Explicitly discoverable Qleisli-native domain
+
+A component belongs here when no reasonable generic prior determines its meaning.
+
+Requirements:
+
+- do not pretend it is inferable by giving it a misleading classical analogue;
+- provide a stable first discovery path from the ordinary CLI/docs/toolchain;
+- state what problem the component solves before requiring detailed knowledge of its protocol;
+- make relationships among the native components explicit;
+- unknown-tool or help flows should point agents toward the canonical description.
+
+Primary examples: **QLT, QDB, and QCP**.
+
+These tools may be central precisely because they are Qleisli-specific. Centrality does not imply zero-prior inferability.
+
+## Stdlib and source-level inspectability
+
+The primitive/derived boundary in #167 is part of this design.
+
+When a derived stdlib abstraction is unfamiliar, the fallback should be:
+
+```text
+recognize / infer usage
+        ↓
+inspect its type/signature
+        ↓
+read the ordinary checked .qli implementation
+        ↓
+follow the primitives and language rules it uses
+```
+
+Thus ordinary derived stdlib code being written in `.qli` is not merely aesthetic consistency. It preserves an **inspectable recovery path** for agents that do not already know the abstraction.
+
+The documentation should distinguish:
+
+- inferable by ecosystem prior;
+- inspectable from ordinary `.qli` source;
+- explicitly discoverable Qleisli-native concept;
+- sealed primitive / external authority that requires specification rather than source-level reconstruction.
+
+## Failure modes to forbid
+
+The most dangerous category is neither clearly inferable nor clearly native, but **apparently inferable with the wrong semantics**.
+
+Document and audit against:
+
+- classical false friends whose names suggest a stronger analogy than the semantics permit;
+- tools that look like q-prefixed mirrors but have fundamentally unrelated roles;
+- diagnostics that report only an unknown name without exposing the intended boundary;
+- native Qleisli concepts that are documented only after the user somehow already knows their names;
+- stdlib abstractions whose behavior cannot be recovered from either source or a canonical contract;
+- hidden ecosystem conventions that require repository-specific folklore.
+
+A zero-prior agent should either infer correctly or be routed to discovery. It should not be rewarded for a plausible but semantically wrong guess.
+
+## Documentation deliverable
+
+Add a normative or near-normative architecture section, linked from the Language Reference / contributor-facing docs, that contains at least:
+
+1. the **zero-prior inference vs explicit discovery** principle;
+2. a table/classification of first-party language and ecosystem concepts;
+3. the intended inference/discovery path for each category;
+4. the role of compiler/parser diagnostics as the repair channel (#224, #225, #237);
+5. the role of ordinary checked `.qli` stdlib source as an inspectable semantic corpus (#167);
+6. the explicit status of QLT/QDB/QCP as Qleisli-native concepts that must be introduced, not guessed;
+7. guidance for naming future first-party tools and concepts;
+8. examples of acceptable inference failures and unacceptable false friends.
+
+## Proposed classification seed
+
+| Component / concept | 0-prior status | Recovery path |
+| --- | --- | --- |
+| qargo | inferable | ecosystem naming + CLI/help |
+| qrate | inferable | classical package prior + diagnostics/docs |
+| qlippy | inferable | lint-tool prior + ecosystem naming |
+| qlifmt | inferable | formatter prior + ecosystem naming |
+| qlidoc | inferable | documentation-tool prior + ecosystem naming |
+| q-prefixed surface forms | inferable where specified | parser/compiler diagnostics + Language Reference |
+| derived stdlib | inspectable | signatures + ordinary checked `.qli` source |
+| QLT | explicitly discoverable | canonical ecosystem docs/help |
+| QDB | explicitly discoverable | canonical ecosystem docs/help |
+| QCP | explicitly discoverable | canonical ecosystem docs/help |
+| sealed primitives / external semantic authority | specified, not reconstructed | normative specification / constitutional boundary |
+
+This table is a starting point, not permission to classify by spelling alone.
+
+## Acceptance criteria
+
+- [x] 0.3.0 documentation defines **zero-prior inferable** and **explicitly discoverable** as distinct design categories.
+- [x] First-party language/ecosystem concepts are classified, with QLT/QDB/QCP explicitly treated as Qleisli-native discovery targets.
+- [x] The docs state that superficial code/name similarity is not sufficient; the intended semantic role must be recoverable.
+- [x] Inferable components have a deterministic correction path from predictable classical mistakes.
+- [x] Non-inferable components have a canonical discovery path that does not require prior knowledge of their names.
+- [x] The stdlib `.qli` source path is documented as a fallback for unfamiliar derived abstractions.
+- [x] Sealed primitives and external semantic authority are separated from source-level reconstruction.
+- [x] Naming guidance forbids misleading pseudo-analogues / semantic false friends.
+- [x] The issue is cross-linked from the Language Reference and relevant diagnostics/stdlib architecture docs.
+- [x] Future first-party ecosystem additions are expected to declare which side of this boundary they occupy.
+
+## Design principle
+
+> **Qleisli should not require an LLM to know Qleisli before it can learn Qleisli.**
+
+And equally:
+
+> **What can be inferred should be reliably inferable; what cannot be inferred should be reliably discoverable.**
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #48 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Discoverable language contracts.** Claims about what a reader or LLM can infer must follow the actual grammar, contracts, diagnostics and available discovery tools. Planned tooling is not current availability, and a plausible guess is not type, capability or proof evidence. The final inferable/discoverable boundary and executable examples remain open; documentation must not overstate semantic certification.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.
+
+## Bounded discovery implementation contract — 2026-10-05
+
+Publish one canonical Reference discovery chapter, prominently linked from Reference, architecture, primitive/stdlib guidance and contributor documentation. Classify inferable structure, inspectable derived source, native discoverable tools and specification-only authority; give concrete correction paths and availability status, with no zero-prior benchmark claim. QLT/QDB/QCP roles follow #50/#51/#103, while their implementation and the later public topology #232 remain later work. qargo tooling is a separate distribution, not a new set of compiler aliases.
+
+Add exact standalone text-only `qleisli --help`, `qleisli help` and `qleisli help ecosystem` discovery requests. Basic help points to a built-in ecosystem introduction and the canonical chapter; the ecosystem request renders that exact chapter without filesystem/project/kernel access. Invalid or extra flags remain usage errors; existing JSON usage envelopes and all native acceptance paths retain their contract. Every shared usage/unknown-command response points to the same discovery path and introduces the native tools by role, without pretending to execute them. This is discoverability/diagnostic maintenance, no new analysis tool, theorem, authority or JSON success variant.
+
+Preserve actual before/after CLI probes, including ordinary/selected/sized/interop text/JSON failures and unchanged existing explicit-binding source failures. Validate zero native invocation for help/usage probes, invalid-help rejection, canonical rendered/embedded document identity, pinned Book/links and relevant CLI transport/source regressions on both supported toolchains. No original criterion is removed and no protected record changes. This ordinary contract falls within the adopted interpretations; a plausible discovery hint is not evidence or semantic authority.
+
+## Completed discovery contract — 2026-10-05
+
+Published in [faa5cfb](https://github.com/MGYamada/Qleisli/commit/faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2), PR #307. The [canonical Reference chapter](https://github.com/MGYamada/Qleisli/blob/faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2/docs/src/reference/discovery.md) and [criterion-level validation packet](https://github.com/MGYamada/Qleisli/tree/faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2/tests/fixtures/frontend_v030/discovery-paths) satisfy all ten original criteria. Reference/architecture/primitive-stdlib/contributor navigation and the Book link the same chapter. It defines four recovery categories, semantic naming rules, six correction/false-friend examples and explicit native tool roles/availability. Future additions must declare role, category, availability and first discovery/correction path.
+
+Actual standalone `qleisli --help`, `qleisli help` and `qleisli help ecosystem` work without a project/kernel. The latter embeds the exact chapter at compile time. Main/selected/sized/interop and JSON usage failures lead to that same introduction; invalid options/topics and unavailable tools still reject. No JSON success variant, analysis alias or later #232 topology is introduced.
+
+All 18 final before/after pairs have zero native calls, only three exact help requests change to success, and the three borrowed immutable #100 source rejections retain byte-identical output. The intermediate missing selected/sized usage hint and its repair are preserved. Rust 1.98.1 and actual 1.85.0 each pass 12 Rust CLI integration tests plus 12 independently decoded JSON tests (two Linux-only cases skipped on macOS), all-target Clippy and formatting on identical 105 inputs. Pinned mdBook build, HTML/print links, source docs, current inventory/coverage, 14 coverage policy tests, authoring integrity and constitutional continuity pass. Packet SHA-256: 1ec1172dc54af3fc4e7659dabb6c0520be22895cc5a170dbb905da973de984cc.
+
+This is the original documentation/discovery completion with executable recovery paths. It implements no QLT/QDB/QCP, measures no zero-prior model-learning benchmark, waives no source/stdlib/diagnostic obligation and admits no guarantee. [CI 37264563243](https://github.com/MGYamada/Qleisli/actions/runs/37264563243) failed on stale text/JSON usage expectations. [1250b50](https://github.com/MGYamada/Qleisli/commit/1250b50b74be4729d9c2257c681bbfe7894a5374) repairs them while retaining the original fixtures and failures in the [CI repair packet](https://github.com/MGYamada/Qleisli/tree/1250b50b74be4729d9c2257c681bbfe7894a5374/tests/fixtures/frontend_v030/discovery-ci-repair). Rust 1.98.1 all-target tests pass (765 passed, 52 existing ignored); actual Rust 1.85.0 passes 28 focused CLI tests. Both toolchains pass all-target Clippy and formatting. Final pinned Book and HTML/print checks pass without the repaired markup warning. [Current CI 37270021338](https://github.com/MGYamada/Qleisli/actions/runs/37270021338) is running for f9eef6c; full same-commit release readiness remains in #142.

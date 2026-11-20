@@ -18,6 +18,7 @@ exclude = [
     "/assets/logo-concepts/**",
     "/experimental/**",
     "/corpus/migrations/**",
+    "/release/issue-snapshots/**",
     "/tests/fixtures/**/*.gz",
     "/tests/fixtures/**/*.tar.xz",
     "/tests/fixtures/**/*.rs",

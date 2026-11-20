@@ -1,0 +1,303 @@
+## Status
+
+**Adopted 0.3.0 cutover (2026-10-12; coordinated with #369):** The *public* `std::quantum` namespace is transitional and **must be retired before final 0.3.0**. Irreducible primitives become directly available as **language-owned, unqualified intrinsic operations**, not as `std::` library imports. Derived quantum gates live exclusively as **ordinary checked `.qli`** under `std::gate`; `std::gate` is never a primitive facade. No persistent `std::quantum` compatibility aliases remain in 0.3.0. This concretizes and supersedes earlier unresolved surface-spelling options in this issue; it does not assert the migration is implemented or change edition-2026 constitutional authority.
+
+**Primary Qleisli 0.3.0 important. Priority: highest. Constitutional / semantic boundary.**
+
+This issue fixes the most important architectural boundary in Qleisli 0.3.0:
+
+> **What is a language primitive, and what must remain an ordinary derived Qleisli program?**
+
+The adopted direction is:
+
+> **Everything called the standard library should, in principle, be ordinary checked `.qli` source. Anything that cannot be expressed that way is not stdlib; it belongs to the constitutional language/kernel primitive boundary.**
+
+This issue supersedes the weaker framing of “freeze stdlib contracts” alone. The stdlib semantic freeze is now a consequence of first fixing the primitive/derived boundary.
+
+Related:
+- #169 — companion boundary: accepted `.qli` meaning versus external evidence, observation, realization and organization
+- #48 — authoritative 0.3.0 Language Reference
+- #129 — Qleisli 2026 Constitution
+- #135 / #136 — constitutional dependency closure / kernel boundary
+- #154 — admission policy for new sealed primitives
+- #152 — 0.4.0 stdlib structural refactor
+- #58 — prelude design
+- #369 — 0.3.0 `std::quantum` retirement, `std::gate`-only derived gates, and T from controlled global phase
+
+## Core architectural rule
+
+Qleisli 0.3.0 should establish this layering:
+
+```text
+Constitutional language / kernel primitives
+        ↓
+ordinary checked Qleisli source
+        ↓
+stdlib (.qli)
+        ↓
+user qrates (.qli)
+```
+
+The semantic distinction is not “stdlib vs user code.”
+
+It is:
+
+```text
+primitive
+    = trusted semantic authority admitted at the language/kernel boundary
+
+derived
+    = ordinary Qleisli source checked through the normal language/verifier path
+```
+
+The standard library belongs entirely on the **derived** side.
+
+## 1. Define the primitive boundary
+
+A primitive is any operation or semantic constructor whose correctness/meaning is assumed or directly owned by the language/kernel rather than derived by checking ordinary Qleisli source.
+
+The primitive inventory may include only operations genuinely required at the semantic boundary, for example categories such as:
+
+- irreducible quantum state/unitary constructors;
+- irreducible observation/instrument transitions;
+- irreducible ownership/effect structure operations;
+- Core forms that cannot themselves be expressed as ordinary checked Qleisli.
+
+The exact inventory must be audited and minimized.
+
+A primitive is **not** justified merely because:
+
+- users write it frequently;
+- it is convenient;
+- a backend has a native instruction for it;
+- it is hard to optimize;
+- it is mathematically important;
+- it historically lived under `std::quantum` or `std::observe`.
+
+## 2. Stdlib is ordinary checked `.qli`
+
+Adopt the project rule:
+
+> **If something is called stdlib, its semantic implementation is ordinary checked Qleisli source.**
+
+Therefore:
+
+- stdlib definitions receive the same ownership/type/effect/Meaning/verifier path as user code;
+- stdlib placement gives no semantic privilege;
+- stdlib code cannot manufacture trusted evidence;
+- stdlib code cannot introduce new primitive authority;
+- stdlib correctness is inherited from Qleisli's ordinary acceptance machinery.
+
+This is the intended long-term meaning of “standard library.”
+
+## 3. Embed primitives in the language; remove `std::quantum` by final 0.3.0
+
+**Final 0.3.0 source surface (decision coordinated with #369):**
+
+- **Primitive**: an admitted, irreducible language/kernel operation, exposed directly by the language as an unqualified intrinsic spelling. Compiler recognition is not an exemption from independent meaning, native acceptance or QS/PR/RS obligations. The Reference and typed catalog must give its exact signature and semantics. A primitive is not an ordinary `std::` import.
+- **`std::gate`**: only ordinary checked `.qli` **gate** definitions built from the language primitives. Gate names do not receive special sealed admission or hidden semantic authority. `std::gate::t` is the initial migration exemplar: coherent control of a primitive `global_phase_eighth` scalar on `Q<Unit>` yields exactly `diag(1, exp(iπ/4))`.
+- **Other derived stdlib modules**: e.g. `std::transform`, `std::reflection`, `std::measurement` retain their own mathematical admission rules. `std::gate` is not a catch-all for everything quantum.
+- **Structural helpers are not automatically gates**: the present provisional `std::gate::permute_axes` is an axis-order/representation map, not physical SWAP. Reclassify it to an appropriate *ordinary checked* semantic location or make it private before the 0.3.0 surface is frozen; do not promote it to a primitive merely to preserve the old path.
+
+For every member of the present `std::quantum`, classify its necessity and migrate it either to a justified language primitive or to an ordinary checked `.qli` definition in the appropriate derived module. Specifically, rename the whole-system scalar `phase_eighth` to language primitive `global_phase_eighth` (not a synonym for T), derive `std::gate::t` in `.qli`, and audit aliases/compositions such as `s`, `sdg`, `tdg` and `id`; preserve full former polymorphic contracts when migrating, or explicitly record missing support. Exact primitive inventory and surface names must be frozen in the normative Language Reference.
+
+**No public `std::quantum` name, re-export, prelude shim or hidden compatibility alias should survive the final 0.3.0 cutover.** Update active source, imports, diagnostics, tests, inventories and docs together; preserve frozen historical evidence. Rejections of legacy imports should give a concrete migration path.
+
+The same primitive/derived truth must hold for other compiler-owned catalogues, including `std::observe`, `std::registers` and `std::classical`: audit them separately and resolve any falsely stdlib-labelled primitive by the language/core boundary. This decision specifically commits to the retirement of **`std::quantum`** now; it does not silently choose all other replacement names.
+
+## 4. Derived forms should dominate
+
+The T construction and public `std::quantum` retirement are a **0.3.0** requirement, not deferred to the 0.4.0 stdlib refactor (#152). A backend is free to recognize `std::gate::t` as a physical T instruction only after checked exact realization and resource accounting; this never makes its source API a language primitive.
+
+Adopt a strong presumption:
+
+> **If an operation can be represented faithfully as ordinary checked Qleisli source, it must remain derived.**
+
+Examples that should normally be derived include:
+
+- QFT;
+- arithmetic routines;
+- Grover reflections;
+- QPE subroutines;
+- derived measurements such as X-basis or parity measurements;
+- generic controlled/power constructions where supported by the language;
+- algorithmic subroutines;
+- reusable decompositions;
+- target-specific compound instructions exposed semantically through an existing contract.
+
+Optimization may recognize or lower a derived routine specially without promoting it into the primitive boundary.
+
+## 5. Audit the current primitive inventory
+
+Before 0.3.0 ships, audit every current “sealed” or special operation.
+
+For each candidate primitive answer:
+
+1. Can it be written as ordinary checked `.qli`?
+2. If not, what exact semantic capability is missing?
+3. Why must that capability live at the language/kernel boundary?
+4. What exact operator/instrument/ownership/effect meaning is primitive?
+5. What is its exact phase/order/reference behavior?
+6. How does it enter Soundness?
+7. How is it physically realizable?
+8. How is it accounted under Resource Safety?
+9. Could a smaller primitive basis express it instead?
+10. Is it really semantic, or merely an optimizer/backend intrinsic?
+
+Any operation failing this audit should be demoted to derived source.
+
+## 6. Freeze the derived stdlib contracts
+
+Once the primitive boundary is fixed, freeze the semantic contracts of the public stdlib definitions that remain.
+
+For every public stdlib item at the 0.3.0 boundary, record as applicable:
+
+- declaration/effect class;
+- input/output basis and owner shape;
+- exact operator / permutation / instrument meaning;
+- exact phase convention;
+- logical-axis / bit-order convention;
+- reference-system behavior;
+- coherent-control behavior;
+- cleanup obligations;
+- exact vs approximate status;
+- static parameters and semantic constraints;
+- declared `Meaning` identity.
+
+These contracts must be independent of file/module path.
+
+## 7. Keep the theorem boundary small
+
+This issue is central to all three Fundamental Theorems.
+
+The intended theorem architecture is:
+
+```text
+small primitive kernel
+      ↓
+ordinary accepted Qleisli program
+      ↓
+Soundness / Physical Realizability / Resource Safety
+      ↓
+stdlib and user code uniformly
+```
+
+The stdlib should not require a second trusted semantic layer.
+
+A desirable consequence is:
+
+> **The stdlib is trustworthy for exactly the same reason user Qleisli programs are trustworthy: it is accepted ordinary Qleisli.**
+
+## 8. Coordinate with primitive admission policy
+
+#154 should be interpreted as the **future growth rule** for the primitive set fixed here.
+
+This flagship decides the initial boundary.
+
+#154 decides how difficult it is to expand that boundary later.
+
+The default must remain:
+
+```text
+can be .qli
+    -> derived
+
+cannot be faithfully .qli
+    -> primitive candidate
+    -> constitutional admission review
+```
+
+## 9. Coordinate with 0.4.0 stdlib structure
+
+#152 must operate only after this issue is settled.
+
+0.4.0 may reorganize:
+
+- namespaces;
+- modules;
+- file layout;
+- public reexports;
+- discoverability;
+- qlidoc/tool metadata;
+- family structure.
+
+It must not blur the primitive/derived boundary or introduce hidden primitive authority through naming.
+
+## 10. Prelude consequence
+
+#58 must also follow this boundary.
+
+A future prelude may expose convenient names, but prelude membership must not imply stdlib or primitive status.
+
+Primitive invocations **are** surfaced as unqualified language-owned operations in final 0.3.0, with explicit language name-resolution rules; this is not an implicit `std::prelude` import of trusted operations. `std::gate::t` remains an ordinary library import.
+
+Derived stdlib names may enter a prelude only as ordinary reexports/imports of checked `.qli` definitions.
+
+## Non-goals
+
+This issue does not yet require:
+
+- new primitive kinds or unrelated future syntax beyond the inventoried 0.3.0 language-owned primitives;
+- final 0.4.0 stdlib module hierarchy;
+- large stdlib expansion;
+- qrate registry design;
+- completion of all three theorem proofs;
+- proving every generic stdlib family in 0.3.0.
+
+It does require the semantic category boundary to be fixed.
+
+## 0.3.0 flagship acceptance criteria
+
+- [x] The Language Reference normatively defines **primitive** vs **derived**.
+- [x] The initial primitive inventory is explicit and audited.
+- [x] Every candidate primitive has a documented necessity justification.
+- [x] Anything faithfully expressible as ordinary checked `.qli` is derived by default.
+- [x] The standard library is defined as ordinary checked `.qli` source, not as a mixed trusted/untrusted layer.
+- [x] True primitives are removed from the conceptual stdlib category.
+- [x] Final 0.3.0 exposes **no public `std::quantum`** names or compatibility shims; active clients and diagnostics migrate to unqualified language primitives or correctly classified ordinary `.qli`.
+- [x] `std::gate` contains **only ordinary checked `.qli` gate functions**; derived `t` has exact controlled-global-phase meaning, and provisional structural `permute_axes` is reclassified or made private.
+- [x] Each former compiler-owned `std::quantum` entry is audited into an irreducible language primitive or an ordinary `.qli` definition, with no loss of exact phase, polymorphism, ownership, coherent control, PR/RS evidence or source support silently accepted.
+- [x] Other compiler-owned sealed namespace entries, including `std::observe`, are audited under the same primitive/derived truth and are not falsely treated as ordinary stdlib.
+- [x] Optimizer/backend intrinsics are explicitly distinguished from semantic primitives.
+- [x] Stdlib placement grants no verifier or trust privilege.
+- [x] Public derived stdlib contracts are frozen independently of path.
+- [x] The three Fundamental Theorem schemas quantify over ordinary accepted programs above the small primitive boundary.
+- [x] #154 is aligned as the future primitive-admission policy.
+- [x] #152 is aligned as post-freeze structural refactoring only.
+- [x] #58 is aligned so prelude resolution does not blur primitive vs derived status.
+- [x] CI or protected manifests can detect unreviewed growth of the primitive inventory.
+
+## Release identity
+
+The most important statement of Qleisli 0.3.0 should become:
+
+> **Qleisli 0.3.0 fixes the line between what the language must trust and what the language can prove/check as ordinary Qleisli.**
+
+Equivalently:
+
+```text
+primitive = constitutional kernel
+derived   = Qleisli itself
+stdlib    = derived Qleisli
+```
+
+This boundary should be treated as more fundamental than any particular surface syntax or module layout.
+
+## Design intent
+
+The goal is not merely to shrink a builtin list.
+
+It is to make Qleisli's architecture structurally honest:
+
+> **Anything that needs trust is language. Anything that does not need trust should be written in Qleisli.**
+
+That is the boundary from which the three Fundamental Theorems, the standard library, tooling, optimization and the future package ecosystem should all follow.
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #41 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Minimal primitive admission.** Each privileged primitive needs an irreducible semantic/evidence justification and the applicable admission review; a familiar library name is not authority. Derived operations should pass ordinary checking rather than acquire hidden native-name privileges. The current native inventory and axiom audit are evidence for their stated scope, not completion of the final minimal inventory or privilege migration.
+
+The original constitutional obligations remain in force, with the **explicit 0.3.0 public-name cutover** and corresponding acceptance-criterion refinement stated above. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

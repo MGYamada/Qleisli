@@ -517,6 +517,15 @@ repository's root `bin/` directory before testing the companion bundle.
 Run bundle and runtime validation using explicit paths to those four files,
 which must come from the same checked build.
 
+Before registry publication, validate the companion pairing against the
+Qleisli candidate's checked `.crate`. Verify its digest and commit against the
+distribution report. Use its extracted source as an explicit Cargo override
+for the isolated development build and pass that same source to the companion
+bundle verifier. Keep the exact dependency declaration and lockfile. Record
+the selected crate, companion revision, native checker and four binaries in
+the test evidence. The official distribution checks require the published
+registry dependency and supported-host installation.
+
 When executable implementations are available, also extract `qlt`, `qdb` and
 `qcp` into this same repository-root `bin/` directory and validate them using
 explicit paths. QLT, QDB and QCP remain planned until those implementations and

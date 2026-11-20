@@ -1,0 +1,60 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Related: #70, #72, #120, #127 and the v1 QSVT goal.
+
+## Problem
+
+QSVT, LCU, qubitization and block-encoding constructions use auxiliary-looking registers whose role is not temporary scratch cleanup.
+
+For a block encoding, the encoded operator is defined through a distinguished signal subspace, schematically:
+
+```text
+(<0|_S ⊗ I) U (|0>_S ⊗ I) = A / α
+```
+
+up to the declared normalization/approximation convention.
+
+After U, the signal register generally need not be returned to |0>. Treating it as clean scratch would impose the wrong semantic contract.
+
+## Proposed boundary
+
+### Scratch workspace
+
+A local resource introduced with a cleanup obligation, e.g. a future `clean a { ... }` region. Scope exit requires proof of the declared clean-return contract.
+
+### Signal/interface register
+
+An ordinary linear quantum owner that remains part of the operation's typed semantic interface. It has no implicit clean-return obligation merely because the algorithm literature calls it an ancilla.
+
+Future stdlib abstractions should be able to express concepts such as `BlockEncoding<System, Signal>` without requiring `Signal` to become a new primitive ownership kind.
+
+## Resource Safety consequence
+
+Signal registers are outside clean-discharge obligations, **not** outside Resource Safety. They remain fully counted in live width, gates, depth, measurements and target/layout resources.
+
+## Terminology
+
+The Language Reference should reserve clean/dirty for workspace restoration contracts. The word 'ancilla' alone must not determine an ownership or cleanup rule.
+
+## Non-goals
+
+- complete BlockEncoding trait/API;
+- full QSVT implementation;
+- automatic verification of arbitrary block encodings;
+- a special core `signal` ownership primitive.
+
+## Acceptance criteria
+
+- [x] The spec distinguishes workspace restoration contracts from live interface registers.
+- [x] Clean implies exact clean-return discharge; ordinary signal/interface ownership does not.
+- [x] Signal registers remain linear and cannot be silently discarded.
+- [x] Signal registers remain included in Resource Safety accounting.
+- [x] Future block-encoding/QSVT contracts can expose signal subspaces without changing core ownership semantics.
+- [x] 'Ancilla' terminology alone never determines cleanup obligations.
+- [x] #70 source workspace and #120 backend workspace remain distinct from stdlib-level signal interfaces.
+
+## Design principle
+
+> **Whether a register must return to zero is determined by its contract, not by whether an algorithm calls it an ancilla.**

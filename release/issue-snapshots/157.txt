@@ -1,0 +1,103 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Related: #29 (`excl` and checked resource correspondence), #70 (clean/dirty contracts), #72 (structured uncomputation), #127 (families), #280 (quantitative RS), #311 (exactness), #344 (effect terminology), and the v0.5 Qleisli Soundness milestone.
+
+## Problem
+
+Two distinct guarantees must not be collapsed:
+
+1. **clean workspace discharge** — local scratch workspace returns exactly to its declared clean state with no residual entanglement;
+2. **Resource Safety** — the already adopted quantitative theorem that finite, statically computable resource bounds are produced and preserved through compilation.
+
+The first is a semantic Soundness obligation. It must not redefine or shrink the second.
+
+A third, independent event is **ending an `excl` access** (#29): the updated owner regains operation rights and remains live. `qft(excl q)` does not promise to restore its input state, uncompute itself, release its owner, or return any ancillary workspace merely because the access ends. Clean/dirty restoration already matters for explicit consume/return programs; `excl` preserves that obligation through elaboration.
+
+## Proposed theorem boundary
+
+For finite-dimensional clean workspace A and live input/output interfaces R_in/R_out, let E_p be the admitted CPTP map from A ⊗ R_in to A ⊗ R_out. For observing programs, R_out includes the declared classical outcome register; use the complete instrument with its unnormalized branch probabilities, not a renormalized selected branch. The exact cleanliness property may be written as the marginal condition
+
+```text
+Tr_R E_p ( |0><0|_A ⊗ ρ_R ) = |0><0|_A
+```
+
+for every density operator ρ_R on the declared live input space R_in. Here the partial trace is over the live output R_out; R is used as shorthand in the equations below. The all-input premise is essential to the claimed channel-level equivalence.
+
+Because the returned workspace marginal is the fixed pure state `|0><0|`, this already forces factorization. Equivalently, defining
+
+```text
+Φ(ρ_R) = Tr_A E_p ( |0><0|_A ⊗ ρ_R ),
+```
+
+the channel automatically satisfies, for every arbitrary external reference E,
+
+```text
+(E_p ⊗ id_E)( |0><0|_A ⊗ ρ_RE )
+  =
+|0><0|_A ⊗ (Φ ⊗ id_E)(ρ_RE).
+```
+
+Thus, for **exact clean return**, the all-input reduced-state formulation and the arbitrary-reference separation formulation are equivalent. The stronger-looking form may still be used in the Soundness statement, but it must not be presented as an additional independent requirement.
+
+This equivalence is special to return to a fixed pure clean state. It does not collapse the dirty-workspace identity obligation in #70.
+
+## Coherent operator contract and control lifting
+
+The channel-level cleanliness lemma does not establish an arbitrary requested live operation or recover its global phase. For a coherent implementation W and specified live operation V, establish the exact operator identity on the clean input subspace:
+
+```text
+W (|0>_A ⊗ |ψ>_R) = |0>_A ⊗ V|ψ>_R
+for every allowed |ψ>.
+```
+
+Preserve the specified operator phase and the induced action with arbitrary references. For ordinary controlled/qif lifting, workspace must match the inactive branch's distinguished clean state, and exact phase must match the specified controlled operation. Returning a different fixed state or proving only stand-alone channel equality does not establish that controlled contract.
+
+A reset can restore the workspace marginal to zero while dephasing the live system. Such an explicit operation may belong to a valid declared observing channel, but it cannot silently replace coherent uncomputation or prove the requested unitary meaning. Effect and live-meaning checks remain separate Soundness obligations.
+
+## Structured sufficient rule
+
+For the restricted conjugation rule, a local Lean lemma should justify clean return when the compute region has the required basis-preserving dependency contract and apply uses the computed values only through admitted coherent-control roles.
+
+The local rule must have a proved Soundness lemma and compose through the ordinary Soundness proof. Typing/structured rules can discharge the exact semantic obligation automatically; supported independently checked certificates may discharge the same obligation through another evidence path. This is not a choice between “type safety” and “proof”: the rule itself must justify the accepted semantic claim.
+
+Users need not provide a manual proof when an admitted rule suffices. Unsupported provenance, solver exhaustion or missing evidence must reject the proposed discharge, never assume restoration or insert reset/discard. Generated inverse code and evidence pass the ordinary independent checker, and any claimed source guarantee must include its source-to-Core correspondence.
+
+## Relationship to Resource Safety
+
+The quantitative Resource Safety theorem remains the existing statement about finite statically computable bounds preserved by compilation. Clean scratch qubits still count throughout their live interval, including preparation, use and cleanup. Generated inverse/uncompute operations and physical routing also count under the declared resource model. Returning a workspace to zero proves semantic discharge, not its quantitative bound.
+
+For `excl`, #29 requires correspondence with the explicit Core consume/apply/return flow. Costs agree when both forms lower to the same artifact under the same model and schedule; otherwise a transformation needs a checked bound for its actual output while preserving the applicable budget/capacity contract. Access exit or a surface `Unit` result must not remove a still-live owner from the count. Compose those links with Core/realization resource proofs to establish the claimed RS scope; do not infer completed RS from this local clean-return lemma.
+
+## Relationship to dirty
+
+This issue does not weaken #70. Dirty workspace retains the stronger arbitrary-state restoration contract, including reference-entangled inputs. General automatic dirty restoration need not be supported merely because the clean structured rule is.
+
+## Acceptance criteria
+
+- [ ] The Reference distinguishes clean semantic discharge from quantitative Resource Safety.
+- [ ] Clean discharge is stated with arbitrary-reference preservation / separation.
+- [ ] The Reference states that, for exact clean return to a fixed pure state, all-input reduced-state return is equivalent to arbitrary-reference separation.
+- [ ] Structured conjugation has a local lemma suitable for the Lean Soundness proof.
+- [ ] Soundness composes clean discharge through larger programs.
+- [ ] Scratch qubits remain counted by Resource Safety while live.
+- [ ] Dirty keeps its stronger arbitrary-state identity/restoration contract.
+- [ ] No existing quantitative Resource Safety statement is weakened or renamed.
+- [ ] `excl` access exit is distinguished from clean/dirty restoration and owner lifetime.
+- [ ] The coherent clean-subspace identity preserves the specified exact phase and supports the stated controlled-lifting condition.
+- [ ] Proved typing/structured rules and supported checked certificates discharge the same exact obligation; missing evidence fails closed.
+- [ ] Generated cleanup and routing costs remain in the bound for the actual accepted artifact.
+- [ ] Negative cases distinguish clean marginals from the requested live unitary and distinguish updated live owners from released workspace.
+
+## Design principle
+
+> **Clean return is a semantic proof obligation. Resource Safety is quantitative accounting. Qleisli must prove both, but they are different theorems.**
+
+## Exactness and proof status
+
+Edition 2026 requires exact clean/dirty restoration under the adopted #311 / EXACT-2026-01 boundary. A high zero-return probability, an epsilon bound, numerical simulation, or an approximate cleanup certificate cannot authorize exact release or discharge QS, PR or RS by tolerance. #163 remains subordinate approximation/tooling work under that boundary and is not a cleanup escape hatch.
+
+The fixed-pure-state equivalence above must not be reused as an approximate equivalence with the same error parameter. Any separately supported approximate backend analysis needs its own engineering contract and cannot replace this exact obligation.
+
+This issue specifies local Soundness work and its composition with #29/#70/#72/#280. It does not claim a completed general source, realization or quantitative-resource theorem. Proof rules and evidence mechanisms belong in the specification and formalization under the existing interpretations; this update changes no constitutional text or historical adoption/guarantee record.

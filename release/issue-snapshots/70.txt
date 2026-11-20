@@ -1,0 +1,238 @@
+## Status
+
+**Important / breaking resource-semantics design for Qleisli 0.3.0.**
+
+Related:
+- #29 — exclusive `excl` quantum access and resource-preserving elaboration
+- #72 — structured automatic uncomputation
+- #157 — local clean-discharge Soundness theorem
+- #280 — quantitative Resource Safety
+- #344 — `Observe` / `Channel` version boundary
+- #67 — scoped linear quantum ownership without implicit destruction
+- #68 — distinguish physically different resource operations
+- #14 — syntax should correspond to a physical fact or theorem
+
+## Problem
+
+Ancilla cleanliness is a state-restoration contract, independent of access authority. As specified in #29, `qft(excl q)` updates the state of the surviving owner `q` in place and need not restore its input state. Ending that access restores authority, not cleanliness.
+
+Qleisli needs to distinguish at least two physically different workspace contracts:
+
+1. a **clean ancilla** supplied in a known standard state, initially `|0...0>`, which must be returned clean;
+2. a **dirty ancilla** supplied in an arbitrary unknown state, which must be restored exactly.
+
+These are standard quantum-algorithmic distinctions and should be visible in the language.
+
+They must not be encoded indirectly through Rust borrowing vocabulary.
+
+## Proposed direction
+
+Introduce explicit Qleisli-native resource forms based on the established terminology:
+
+```qli
+clean a {
+    ...
+}
+
+dirty d {
+    ...
+}
+```
+
+Exact allocation/binding grammar remains designable, but the public concepts should be named **clean** and **dirty**.
+
+The terms describe the ancilla's state contract; ownership/access inside the scope remains governed independently by the ordinary Qleisli access rules.
+
+## Clean contract
+
+For a clean ancilla register `A` and program workspace `R`, the scope must establish a denotation of the form
+
+```text
+U (|0>_A ⊗ |ψ>_R)
+  =
+|0>_A ⊗ V|ψ>_R
+```
+
+for every allowed input `|ψ>`, with the specified exact operator phase retained and the corresponding action on arbitrary external references. #157 states the CPTP/instrument formulation and the exact fixed-pure-state marginal/separation equivalence. The live operation's declared semantics and effects must also be checked; workspace cleanliness alone does not establish them.
+
+The important facts are:
+
+- `A` starts in the declared clean state;
+- `A` may be used during the computation;
+- on successful discharge, `A` is restored to the required clean state;
+- no residual entanglement with the live result may remain;
+- scope exit is justified by the clean-return proof, not by destruction.
+
+
+### Control-lifting side condition
+
+For ordinary coherent control/qif lifting, a clean workspace is branch-compatible only when the active computation returns it to the same distinguished clean state used by the inactive identity branch, initially `|0...0>`, with no residual entanglement. Returning a fixed but different state is not a clean discharge for this purpose.
+
+This requirement is independent of `excl` / `ctrl` access lifetimes: ending an access restores authority, not the workspace state. The coherent implementation must also match the specified operator's exact phase; a phase invisible in a stand-alone channel can become relative under coherent control.
+
+## Dirty contract
+
+For a dirty ancilla register `D`, the initial state is arbitrary and must not be assumed known. `dirty` names a valid unknown-input restoration contract; it does not mean leftover garbage or a failed clean return.
+
+The strongest and cleanest denotational contract is:
+
+```text
+U_DR = I_D ⊗ V_R
+```
+
+on the relevant live interface under the specified axis and exact-phase conventions. Equivalent representations require checked semantic correspondence; this is not equality merely up to global phase.
+
+This must hold even when `D` is initially entangled with an arbitrary external reference system.
+
+Therefore "restored" means more than "same reduced density matrix".
+
+It means:
+
+> **the dirty resource is denotationally identity on return.**
+
+This preserves arbitrary pre-existing phase and entanglement information.
+
+## Orthogonality to access syntax
+
+The language should keep two independent axes:
+
+```text
+ACCESS
+------
+owned Q<T>
+excl q
+ctrl q
+
+ANCILLA CONTRACT
+----------------
+clean
+dirty
+```
+
+A clean ancilla may still be accessed through `excl` or as coherent control according to the operation being performed.
+
+Likewise a dirty ancilla is not a different ownership category; it is a stronger restoration obligation on a workspace whose initial state is unknown.
+
+This separation is important for both the type theory and the verifier. A dirty resource may remain entangled with its pre-existing reference on return: the obligation is the exact identity action on that interface, not forced separation or return to zero.
+
+## Why not `use`
+
+Q# uses `use` for clean qubit allocation, but Qleisli is intentionally Rust-shaped at the surface, where `use` already means import/name resolution.
+
+Using `use` for ancillas would create a severe syntax and LLM prior collision.
+
+Prefer `clean`.
+
+## Why not `borrow`
+
+Q# uses `borrow` specifically for dirty ancillas, while Rust uses borrow terminology for temporary aliasing/access.
+
+Qleisli is influenced by both ecosystems and is explicitly designed for LLM authoring.
+
+Therefore using the word `borrow` for either concept would create two incompatible prior meanings.
+
+Prefer `dirty` for the ancilla contract and keep access semantics separate.
+
+## Scope exit
+
+Neither clean nor dirty scopes authorize implicit quantum destruction.
+
+A scope closes only when its exact semantic restoration obligation is discharged:
+
+```text
+clean scope exit
+    -> prove clean return
+
+dirty scope exit
+    -> prove exact restoration
+```
+
+Failure is a verification/type-checking failure.
+
+No `unsafe` or unchecked escape hatch exists.
+
+## Proof mechanism and quantitative accounting — 2026-10-08
+
+Clean/dirty restoration is always a Soundness obligation. A proved typing or structured compute/use/uncompute rule may discharge it automatically; a supported alternative may supply independently checked evidence for the same exact contract. These are ways to establish the obligation, not competing definitions of it. Users need not hand-write a proof when an admitted rule suffices. Unsupported or unproved cases are rejected. The actual Core output, its evidence and the claimed source correspondence must remain connected to the independent acceptance boundary.
+
+Resource Safety (#280) separately counts all live workspace and generated work. An `excl` view neither creates another quantum owner nor frees its backing owner on access exit. Count initialization, the use interval, cleanup/uncompute, and target routing under the declared resource model. Restore the workspace semantically before treating the relevant consuming/reuse boundary as valid; do not infer a reduced live-width bound merely from a source scope or a `Unit` result. A proof of exact restoration does not by itself prove a quantitative bound.
+
+Measurement, reset and discard have explicit declared observing semantics (`Observe` in v0.3.0, `Channel` in v0.4.0 under #344). They cannot be silently inserted to repair a coherent clean/dirty contract. An explicit reset in a valid observing program can return a workspace marginal to zero while changing the live channel; its complete declared semantics still require checking, and it does not establish a dirty identity contract.
+
+This applies the existing QS/PR/RS separation; it neither changes constitutional text nor declares the planned rules or full theorems implemented.
+
+## Diagnostics
+
+Diagnostics should state the failed contract directly.
+
+Examples:
+
+```text
+error: clean ancilla is not discharged
+expected: ancilla returned to |0>
+found: residual dependence on live quantum output
+```
+
+and
+
+```text
+error: dirty ancilla is not restored
+the scope must act as identity on the dirty resource
+for every initial state, including reference-entangled states
+```
+
+## Non-goals
+
+This issue does not by itself decide:
+
+- how general automatic uncomputation should be;
+- whether every clean scope is automatically uncomputed;
+- physical qubit allocation policy;
+- hardware reset semantics;
+- partial trace/discard;
+- measurement of an ancilla;
+- lifetime syntax;
+- a general-purpose effect inference algorithm.
+
+Those should be specified separately.
+
+## Acceptance criteria
+
+- [x] `clean` and `dirty` are first-class language/resource concepts for 0.3.0.
+- [x] Clean and dirty are specified as ancilla-state/restoration contracts, not borrow kinds.
+- [x] Clean input is a known canonical state (initially `|0...0>` in the base profile).
+- [x] Clean discharge proves return to that state with no residual entanglement.
+- [x] Dirty input is arbitrary and may be entangled with an external reference.
+- [x] Dirty discharge proves identity on the dirty resource, not merely equality of a reduced state.
+- [x] Access rights (`excl`, `ctrl`, ownership) remain a separate axis.
+- [x] `use` is not repurposed as clean-ancilla syntax.
+- [x] `borrow` is not repurposed as dirty-ancilla syntax.
+- [x] Scope exit never implies implicit destruction.
+- [x] Diagnostics name the failed clean/dirty obligation directly.
+- [x] The contracts are expressible in the authoritative verifier without an unchecked bypass.
+- [x] Reference-entangled regression tests are included for dirty restoration.
+- [x] Access ending, semantic restoration and quantitative accounting are documented as separate obligations, with no implicit inverse at `excl` exit.
+- [x] Automatic typing/structured rules and supplied evidence establish the same exact restoration contract at the independent acceptance boundary.
+- [x] Resource certificates include live workspace, preparation, generated cleanup and routing; a clean proof or surface `Unit` result cannot erase these costs.
+- [x] Explicit observing operations remain distinct from coherent cleanup, preserving the v0.3.0 / v0.4.0 effect names.
+
+## Compact formulation
+
+> **`clean` says what state the workspace starts and ends in.**
+>
+> **`dirty` says the workspace may start arbitrarily and must be restored exactly.**
+>
+> **Neither one is a borrowing mode.**
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #29 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Clean and dirty workspace.** Clean release must hold for every permitted input and external reference; dirty workspace must return the promised state and correlations. A lifetime ending, reset or successful small simulation cannot substitute for those obligations. Ownership-only safety is distinct from quantitative workspace bounds. Workspace contracts, discharge evidence and negative entangled cases remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.
+
+## Target realization cross-reference
+
+See [#120](https://github.com/MGYamada/Qleisli/issues/120) for backend-private synthesis workspace. The explicit source `clean` and `dirty` contracts govern source owners. Target correspondence and physical resource evidence include both the source workspace and additional implementation workspace.

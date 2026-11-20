@@ -1,0 +1,99 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Related:
+- #44 — generic specialization
+- #45 — operation capabilities
+- #62/#98 — static trait/generic resolution
+- #127 — closed specialization theorem boundary
+- Resource Safety theorem work
+
+## Problem
+
+Generic quantum functions may abstract over operation providers:
+
+```text
+fn phase_estimation[static U: Op<A>, static n: Nat](...)
+```
+
+The source family may be well typed and finite for every admissible specialization while its concrete resource bound depends on which implementation of `U` is selected.
+
+A generic semantic operation parameter is therefore not automatically a quantitative resource parameter with a known finite value.
+
+If Resource Safety attempts to certify a generic body before provider selection is closed, it can accidentally treat unknown implementation cost as known.
+
+## Required boundary
+
+For quantitative acceptance, all operation providers that affect cost must be **closed** before a concrete resource certificate is issued.
+
+Conceptually:
+
+```text
+generic source
+    ↓
+static/generic specialization
+    ↓
+unique provider/capability resolution
+    ↓
+closed implementation identities
+    ↓
+resource analysis/certificate
+```
+
+This extends #127's closed-specialization principle from sizes/types to operation implementations.
+
+## Generic resource expressions
+
+The language may optionally support symbolic resource functions such as:
+
+```text
+R_qpe(n, R_U, R_ctrlU, ...)
+```
+
+but 0.3.0 must not require this sophistication.
+
+A conservative initial rule is sufficient:
+
+> **Generic definitions may be resource-parametric internally, but concrete quantitative Resource Safety is issued only after all cost-relevant providers are resolved.**
+
+## Trait / capability interaction
+
+Trait or generic resolution may compress static requirements, but it must not silently choose a provider after resource certification.
+
+Required invariant:
+
+> The implementation identity used by resource analysis is the same implementation identity used by lowering/execution.
+
+Changing an implementation after certification requires recomputation/revalidation of the resource contract.
+
+## Higher-order/static operation values
+
+The same rule applies to static higher-order operation descriptions.
+
+If a static builder returns an operation whose implementation is not yet fixed, its semantic type may be valid while its quantitative resource certificate remains pending.
+
+## Non-goals
+
+This issue does not require:
+
+- dependent resource types;
+- runtime dynamic dispatch;
+- resource-polymorphic trait objects;
+- proving one constant bound for an entire generic family;
+- forbidding generic algorithms.
+
+## Acceptance criteria
+
+- [x] Quantitative Resource Safety certificates are issued only after cost-relevant operation providers are uniquely resolved.
+- [x] Provider identity is part of the certificate/provenance boundary.
+- [x] Changing the provider invalidates or recomputes the quantitative certificate.
+- [x] Generic semantic well-typedness is not confused with concrete implementation cost.
+- [x] Generic definitions may remain reusable without carrying one universal constant bound.
+- [x] Static traits/generics cannot hide unresolved resource-bearing providers.
+- [x] The selected provider for analysis matches the selected provider for lowering/execution.
+- [x] This rule composes with #127 closed specialization.
+
+## Design principle
+
+> **A generic operation describes what may be supplied; Resource Safety is certified only after what will actually run is known.**

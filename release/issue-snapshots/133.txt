@@ -1,0 +1,19 @@
+The 0.2.3 review reports numerical zero residues such as 6.16e-33 in `run`. Current finite execution uses floating complex arithmetic; exact evidence arithmetic does not make its displayed probabilities exact. Keep raw/JSON probabilities and genuinely small outcomes intact.
+
+Target a reviewed presentation contract for 0.3.0 (or an additive, explicitly selected presentation mode earlier). Define displayed precision and approximate-zero notation separately from numerical data. Alternatively add bounded exact simulation with declared domain/overflow/unsupported behavior and explicit authority, rather than silently replacing numeric execution.
+
+Affected public contract: CLI text/JSON distributions and sampling input. Changing default omission/zeroing requires compatibility review; an opt-in formatter must leave sampling and machine data unchanged. Arbitrary tolerance cannot issue semantic evidence.
+
+Acceptance: distinguish an exactly zero interference outcome from a genuine small outcome; retain normalization, branch distributions, phases under control and machine values; specify fallback when exact arithmetic overflows or the supported profile is exceeded. Document numerical reference execution separately from exact contract validation. This is lower priority than #130/#132 and does not imply hardware simulation or exact current `run`.
+
+
+## v0.3.0 presentation contract
+
+`qleisli run PROJECT --show-exact-zeros` is an opt-in text presentation of the existing numerical distribution of an accepted closed project. It keeps each displayed value and output word in the original order and retains twelve digits after the decimal point in scientific notation. A row receives `[exact zero]` only when an independent bounded evaluation of the same retained Raw operations obtains a zero exact amplitude. No probability tolerance or threshold is used. The unannotated numeric data still reports the observed value. An exact zero classification never creates acceptance evidence.
+
+The classifier covers up to six allocated axes, 2,048 Raw operations and 1,024 expanded circuit steps over the existing dyadic complex coefficient ring. It preserves logical owner order, signed controls and full phases, including zero-width targets. Its supported profile comprises vacuum allocations, structural Unit and register operations, injective `LiftBasis` tables, gates and sealed coherent selection, and a complete terminal measurement sequence. `LiftBasis` retains the input axes in their order, appends fresh zero axes, and uses the original table on the occupied input subspace. The diagnostic completes the injection to a permutation only on the unreachable labels. The separate exact calculation has a one-million-unit work bound. The ordered result contains each measured axis exactly once. Other Raw operations or an incomplete or repeated readout are outside this profile. A resource limit or arithmetic overflow cannot certify a zero.
+
+The opt-in text output reports a clear unavailable status when the projection, resource bound or arithmetic cannot classify the output, and retains the original numeric distribution. Default text, raw data, JSON and seeded sampling retain their numerical behavior. The flag is for project-mode text `run`. JSON, selected-entry, and other commands continue to use their existing formats and reject this text-only option.
+
+Acceptance evidence should show a genuinely nonzero tiny probability and an exact cancellation with a nonzero floating residue, reordered readout and conditional scalar phase, and unchanged numerical branches, JSON and seeded sampling. Exercise explicit fallback for unsupported operations and arithmetic or resource limits. Document this diagnostic scope separately from exact contract validation.
+

@@ -1,0 +1,115 @@
+## Status
+
+**Important terminology / AI-authoring design for Qleisli 0.3.0.**
+
+Related:
+- #29 — `excl` exclusive quantum access
+- #69 — `ctrl` coherent-control access
+- #70 — clean/dirty ancilla contracts
+- #67 / #68 — Rust familiarity vs quantum semantic false friends
+
+## Decision
+
+Do not use **borrow** as a public Qleisli quantum-resource concept, and do not expose Rust `&mut` as the exclusive quantum-access spelling.
+
+The public vocabulary is:
+
+```text
+excl q   -> temporary exclusive arbitrary coherent access
+ctrl q   -> basis-preserving coherent access
+clean    -> known-state workspace contract
+dirty    -> arbitrary-state exact-restoration contract
+move     -> ownership transfer / consumption
+```
+
+The compiler implementation may still use ordinary borrow-checker techniques internally. The public language should describe the semantic contract as **access**, not as a borrow kind.
+
+A useful implementation slogan remains:
+
+> **borrow checker internally; no ambiguous `borrow` construct in the language.**
+
+## Why
+
+Rust and Q# already give `borrow` incompatible strong meanings:
+
+- Rust: temporary reference access governed by alias/lifetime rules;
+- Q#: dirty ancilla acquisition with exact restoration.
+
+Qleisli needs both access control and workspace restoration, so overloading the same public word is especially hostile to human readers and coding agents.
+
+Rust `&mut` also brings unnecessary mutation/reference intuition. Qleisli now names the physically relevant property directly: **`excl`**.
+
+## Relationship to #29
+
+`excl q` means:
+
+- temporary exclusive operation authority over the exact access footprint;
+- no overlapping incompatible access;
+- the owner survives the call;
+- access authority returns at the specified end point.
+
+It does **not** mean:
+
+- the basis value was mutated;
+- the state is restored;
+- the subsystem is separable;
+- an ancilla is clean;
+- a binding must be declared `mut`.
+
+## Relationship to clean / dirty
+
+`clean` and `dirty` are state/restoration contracts, not access modes.
+
+```text
+excl / ctrl
+    -> who may coherently act on an owner
+
+clean / dirty
+    -> what workspace state/correlations must be established at discharge
+```
+
+In particular, ending an `excl` access is never zero-return evidence.
+
+## Reserved-word policy
+
+For 0.3.0, reserve `borrow` if doing so is cheap during the breaking syntax window; otherwise declare explicitly that it has no built-in quantum semantics. In either case, no public resource feature is named `borrow`.
+
+## Diagnostics
+
+A proposed construct such as:
+
+```qli
+borrow q
+```
+
+should not guess whether the author intended Rust or Q# semantics.
+
+```text
+error: Qleisli does not use 'borrow' as a quantum resource construct
+
+help: use excl for temporary exclusive quantum access
+help: use ctrl for basis-preserving coherent access
+help: use dirty for arbitrary-state workspace that must be restored
+```
+
+Legacy Rust-shaped quantum input should also teach the migration:
+
+```text
+error: Rust '&mut' is not a Qleisli quantum access form
+help: write 'excl q'
+```
+
+## Acceptance criteria
+
+- [ ] `borrow` is not a public Qleisli quantum-resource keyword.
+- [ ] Rust `&mut` is not the public exclusive quantum-access spelling.
+- [ ] `excl` is documented normatively as temporary exclusive quantum access.
+- [ ] `ctrl` remains the distinct basis-preserving coherent access.
+- [ ] `clean` / `dirty` remain independent workspace contracts.
+- [ ] Binding `mut` is not required for `excl`.
+- [ ] Diagnostics migrate legacy `&mut` to `excl` without calling clean/dirty a borrow kind.
+- [ ] Internal compiler documentation may still use ordinary borrow-checker terminology.
+
+## Compact formulation
+
+> **`excl` / `ctrl` are access contracts. `clean` / `dirty` are workspace contracts. `borrow` is not public quantum vocabulary.**

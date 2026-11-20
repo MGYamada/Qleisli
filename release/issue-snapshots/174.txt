@@ -1,0 +1,258 @@
+## Status
+
+**Qleisli 0.3.0 important. Constitutional / configuration-identity boundary.**
+
+Once qrate manifests and dependency resolution exist, configuration can become a hidden source of program variation.
+
+Qleisli should fix this before introducing a Cargo-style feature ecosystem.
+
+The core rules are:
+
+> **Manifest configuration may select program inputs, but it may not silently redefine language semantics.**
+
+and:
+
+> **Any resolved configuration that changes the selected executable Qleisli program is part of the resolved qrate identity/provenance.**
+
+Related:
+- #170 — normative qrate semantics and authority
+- #169 — package/build metadata is outside executable semantics
+- #171 — toolchain/std version lock
+- #53 / #107 — qlirgo direction
+- #60 — typed meta/static generation
+- #137 — editions and release versions
+
+## 1. Separate language semantics from package configuration
+
+Manifest/configuration data may select:
+
+- dependencies;
+- optional source components;
+- target profiles;
+- test/doc inputs;
+- declared static parameters;
+- explicitly supported package features.
+
+But it must not redefine:
+
+- typing rules;
+- ownership rules;
+- effects;
+- primitive meanings;
+- verifier rules;
+- language syntax/semantics;
+- theorem statements.
+
+A qrate cannot use configuration as a package-local language extension mechanism.
+
+## 2. Program-changing configuration is identity-relevant
+
+If two configurations select different executable Qleisli programs, they must not be treated as the same resolved program merely because they share:
+
+```text
+name = foo
+version = 1.2.0
+```
+
+For example:
+
+```text
+foo 1.2.0 [A]
+```
+
+and
+
+```text
+foo 1.2.0 [B]
+```
+
+must have distinct resolved build/program identities when A and B affect selected source, dependencies, generated program structure, or semantics.
+
+## 3. Distinguish package version from resolved instance identity
+
+0.3.0 should distinguish:
+
+### Logical package version
+
+```text
+foo@1.2.0
+```
+
+### Resolved qrate instance
+
+A concrete instance including relevant inputs such as:
+
+- selected dependency graph;
+- active configuration/features;
+- toolchain/edition;
+- canonical std/toolchain pairing;
+- source content identity;
+- generation inputs where applicable.
+
+The exact hash format may be deferred, but the conceptual distinction must be normative.
+
+## 4. Prevent hidden semantic switches
+
+Reject manifest options with effects such as:
+
+```toml
+[semantics]
+ignore_phase = true
+allow_dirty_ancilla = true
+implicit_measurement = true
+unsafe_external_ops = true
+```
+
+unless such a concept is itself an explicit language-level/profile-level judgment with clearly specified meaning.
+
+Package metadata must not weaken the language by configuration.
+
+## 5. Exact/approximate behavior must be explicit
+
+Configuration that selects an approximate algorithm, target-dependent implementation, or resource tradeoff may be legitimate.
+
+But it must be visible in the resolved program/profile/evidence identity.
+
+For example, an approximation tolerance or synthesis profile cannot be an invisible manifest knob if it changes the implemented operator or certified cost.
+
+This should compose with existing exact-vs-approximate and target/resource issues.
+
+## 6. Feature flags are not automatically adopted
+
+0.3.0 should avoid assuming Cargo-style additive feature semantics before there is a demonstrated need.
+
+If Qleisli later introduces package features, their semantics must answer:
+
+- Are features additive?
+- Can they remove API?
+- Can they change Meaning?
+- Can mutually exclusive features exist?
+- Are features unified transitively?
+- Do feature choices affect evidence/cache identity?
+- Can dependencies activate features in parents?
+- How are incompatible configurations diagnosed?
+
+Until specified, “feature” should not be treated as a free design primitive.
+
+## 7. Configuration closure belongs in reproducibility records
+
+A lock/build record should capture enough configuration to reconstruct the same selected program.
+
+It is insufficient to record only:
+
+```text
+foo@1.2.0
+```
+
+if actual compilation also depended on:
+
+- feature A;
+- target profile T;
+- approximation budget ε;
+- alternate dependency D;
+- generated static parameter N.
+
+Identity/evidence systems must bind to the relevant resolved closure.
+
+## 8. Manifest values do not gain semantic authority through hashing
+
+Even if configuration is included in a qrate hash/identity, that does not make arbitrary manifest fields semantic language constructs.
+
+Hashing answers:
+
+```text
+which resolved artifact/program instance is this?
+```
+
+It does not answer:
+
+```text
+what does Qleisli mean?
+```
+
+That remains controlled by the language/kernel/specification.
+
+## 9. Keep target configuration separate from logical source meaning
+
+A target profile may change:
+
+- decomposition;
+- physical realizability;
+- resource cost;
+- native gate selection.
+
+It should not silently alter the logical denotation of accepted source.
+
+If configuration intentionally selects a different source-level algorithm, that program selection must be explicit and identity-relevant rather than hidden as backend behavior.
+
+## 10. AI-generated builds need canonical configuration
+
+Because Qleisli is designed for AI-driven authoring, the resolved configuration should be machine-readable and unambiguous.
+
+An agent should be able to determine:
+
+```text
+exact source
+exact dependencies
+exact toolchain/std
+exact relevant configuration
+exact target/profile
+```
+
+without relying on ambient shell state or undocumented defaults.
+
+## Non-goals
+
+This issue does not require:
+
+- implementing package features in 0.3.0;
+- final lockfile syntax;
+- final registry identity scheme;
+- final target-profile syntax;
+- final approximation-policy syntax;
+- a general configuration language.
+
+It fixes the boundary before configuration becomes public ecosystem surface.
+
+## 0.3.0 acceptance criteria
+
+- [x] Manifest/configuration is explicitly non-authoritative for language semantics.
+- [x] Program-changing configuration is part of resolved qrate/program identity.
+- [x] Logical package version and concrete resolved qrate instance are distinguished.
+- [x] Configuration cannot weaken typing/ownership/effects/verifier rules.
+- [x] Approximation/target choices that affect implementation or evidence are identity/provenance relevant.
+- [x] Cargo-style feature semantics are not assumed without a separate specification.
+- [x] Reproducibility records capture the relevant configuration closure.
+- [x] Target configuration cannot silently redefine logical source denotation.
+- [x] Ambient undeclared configuration is rejected as a reproducibility dependency.
+- [x] #170, #171, and relevant target/approximation issues are cross-referenced.
+
+## Release principle
+
+> **Configuration may select a program; it may not redefine the language.**
+
+And:
+
+> **If configuration changes the program, configuration is part of that program's resolved identity.**
+
+
+## Beta criterion audit — 2026-10-19
+
+All 10 original criteria are satisfied for this issue's **normative authority/identity boundary**, reviewed at [main `7760aa3`](https://github.com/MGYamada/Qleisli/commit/7760aa3569984ff33f50e71c06535fd87f3564d0). [Reference](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/docs/src/reference/packages-and-artifacts.md) is the production specification; this audit implements none of the explicitly excluded future ecosystem features.
+
+| Criterion, in original order | Evidence |
+| --- | --- |
+| 1 | Configuration is non-authoritative for language semantics. |
+| 2 | Program-changing selection belongs to resolved program identity. |
+| 3 | The identity table and foo@1.2.0 example separate logical version from resolved instance. |
+| 4 | No configuration waiver of types, owners, effects, phase or verifier rules. |
+| 5 | Target/approximation/synthesis choices affecting output/evidence bind the corresponding profile and artifact. |
+| 6 | Cargo-style additive features are explicitly not adopted implicitly. |
+| 7 | Reproducibility exposes the source/dependency/configuration/generation closure. |
+| 8 | Targets cannot silently change logical source denotation. |
+| 9 | Undeclared ambient inputs cannot silently support reproducibility claims. |
+| 10 | #170/#171 and the realization/exactness requirements are linked. |
+
+Validation: #420 merged the specification; #421's [full-profile CI](https://github.com/MGYamada/Qleisli/actions/runs/39131240742) rechecked the same Reference and complete Rust coverage. Exact checked head `299e8f47bf9fb1973dd6ad2aba46fdee6a610f97` and main merge `7760aa3569984ff33f50e71c06535fd87f3564d0` have the identical tree `6bd7c71e7f5ed89e7ff5682678de379e175effa8`. All 42 checks succeeded; only two nonrelease readiness jobs skipped as expected. Practical retained regressions cover ordinary std visibility/public effects, invalid doc claims and ignored manifest metadata without privilege. The complete Rust remaining partition passed and its command includes `project`, `public_effects`, `body_effects`, `cli` and `review_v024`. Documentation/link checks also pass. No new Rust/Lean behavior change or proof replay was needed for this audit.
+
+This closes the specified conceptual/normative boundary only. #65's frontend criteria, #171's effective toolchain/std pairing, #255's native edition propagation, future registry/solver/build capabilities and source/target preservation remain under their own scopes. The two admitted QLV1 guarantees and pending broader QS/PR/RS/EXACT duties retain their status; no release approval or new guarantee is claimed. Historical implementation-gap observations above remain dated records.

@@ -1,0 +1,189 @@
+## Qrate and canonical-identity cross-reference
+
+#170 defines the qrate package unit; #172 separates qrate identity, canonical module/declaration identity and physical source storage. This issue covers module/import/visibility ergonomics under #41, and must preserve those distinctions. Resolver sugar and source-collection-local ModuleId/DefId do not define a resolved qrate/dependency identity or give a package semantic privilege. The neighboring authority boundaries remain #167 and #169.
+
+The original shared-resolution checkpoints below retain their historical temporary profile policies. They do not override the current Language Reference or complete #65, #170 or #172. All original acceptance criteria remain in force; this cross-reference grants no implementation or proof credit.
+
+**Parent:** #32
+**Related:** #34, #41, #48
+
+## Status
+
+Surface-language design issue for **Qleisli 0.3.0**.
+
+#41 defines the semantic/name-resolution problem. This issue is narrower: define a pleasant module/import/visibility surface that **erases to fully qualified deterministic names**.
+
+## Motivation
+
+As stdlib and qrates grow, source needs ordinary organizational tools:
+
+```text
+std::transform
+std::arithmetic
+std::code
+...
+```
+
+Authors should not have to write fully qualified paths everywhere, but import convenience must not create semantic ambiguity.
+
+## Design principle
+
+> Modules organize names; they do not create runtime semantics.
+
+Import and visibility syntax should be resolved completely before later elaboration/Core verification.
+
+## Candidate surface
+
+Illustrative only:
+
+```qli
+mod fourier;
+
+use std::phase::controlled_phase;
+
+pub fn qft[...] (...) { ... }
+```
+
+Potential minimal visibility:
+
+```text
+private    -- default
+pub
+```
+
+A richer `pub(qrate)` / `pub(super)` model can be deferred unless there is an immediate qrate-management need.
+
+## Required lowering rule
+
+```text
+module path
+    ↓
+canonical fully qualified symbol identity
+
+use/import
+    ↓
+local alias in the resolver only
+
+visibility
+    ↓
+compile-time accessibility check
+
+resolved call/type/Meaning name
+    ↓
+same fully qualified identity used by elaboration/evidence
+```
+
+Nothing about an imported name bypasses ordinary static typing, ownership, capability, Meaning or verification checks.
+
+## Initial restrictions
+
+Prefer a small deterministic profile:
+
+- explicit imports;
+- no glob imports initially;
+- no implicit prelude except a deliberately specified tiny one;
+- no ambiguous fallback search;
+- no runtime module initialization;
+- no import-time side effects;
+- no source-order-dependent resolution.
+
+## Questions to decide
+
+1. File-to-module mapping.
+2. Absolute path root and `std::` / qrate paths.
+3. Whether `use x as y` is needed in 0.3.0.
+4. Minimal visibility vocabulary.
+5. Re-export policy.
+6. Cyclic module handling.
+7. Import collision diagnostics.
+8. Whether modules and qrates share the same namespace root.
+9. How canonical symbol identity is retained in evidence and diagnostics.
+
+## Relationship to #41
+
+#41 remains authoritative for:
+
+- namespace partitioning;
+- shadowing;
+- declaration-kind resolution;
+- ambiguity rules.
+
+This issue should not duplicate those semantics.
+
+Instead:
+
+> #41 answers **which declaration a name denotes**; this issue answers **how authors conveniently spell and expose that declaration across files/modules**.
+
+## Non-goals
+
+- no dynamic loading;
+- no module constructors;
+- no import side effects;
+- no package solver in the language;
+- no qlirgo/qrate dependency-resolution semantics here.
+
+## Acceptance criteria
+
+- [x] a small multi-file stdlib example resolves to canonical qualified identities;
+- [x] explicit imports are pure resolver sugar;
+- [x] private items cannot be accessed externally;
+- [x] import collisions reject deterministically;
+- [x] evidence/cache identity does not depend on local import aliases;
+- [x] no module construct reaches canonical Core as a runtime operation;
+- [x] the Language Reference specifies modules as frontend/name-resolution structure.
+
+## Design intent
+
+Qleisli needs namespace ergonomics early because the stdlib is part of the language's teaching surface.
+
+But this should remain one of the cheapest features semantically:
+
+> **Good module syntax should disappear completely by the time Core is verified.**
+
+## Shared resolution implementation unit — 2026-10-04
+
+Under #32, introduce one private declaration table with source-collection-local ModuleId/DefId, explicit visibility/import lookup and common graph traversal. Both finite compilation and sized generic/concrete elaboration must consume this table for actual declaration calls, Meaning/contracts and static providers. IDs are not serialized evidence identity: retain canonical paths, original source/dependency snapshots, static bindings and provider identity. Preserve every declaration and original source/span/order; rebuild the immutable view at the finite Project boundary because its public modules remain mutable. Loaders retain filesystem confinement, explicit module-map scope and edition checks.
+
+This is a shared implementation boundary before the final language cutover. Retain current profile policies explicitly: finite rejects unused import cycles and self-import collisions; sized permits its current unused-import/self-import cases but still rejects actual cross-module call/provider cycles and only permits already-checked decreasing self-recursion. Preserve each profile's module-name validation and primitive set. Do not add aliases/globs, fallback lookup, implicit sized bundled modules, sized multiple-function acceptance, or new source syntax. Local owner/static-binder scopes remain in the checkers and a moved local must never fall back to a global declaration. A later common source contract must resolve the temporary policy differences before final cutover; this unit does not complete #41/#65.
+
+Validation retains the ten actual pre-change cases, including source errors, and adds small cross-module identity/diamond/private/Meaning/contract/unused-provider cases. Check both static branches and zero-iteration dependencies. Compare native acceptance, actual diagnostics and small proposal bytes; resolver success is not a source-preservation proof. Run relevant project/compiler/sized/ownership suites and independent review. QS keeps all owner/effect/native checks, PR providers and output binding unchanged, and RS engineering bounds retained without a new quantitative claim. No admitted guarantee meaning or Guardian interpretation is changed.
+
+
+## Shared declaration-resolution checkpoint — af21dd5
+
+[af21dd5](https://github.com/MGYamada/Qleisli/commit/af21dd5d3e4373083edcf207ef9890967d4c7dab), in draft #307, adds one immutable ModuleId/DefId declaration table for finite compilation, sized generic checking and concrete elaboration. Canonical declaration paths, visibility/import lookup and graph traversal are shared; Meaning/contract and static-provider lookups use those identities. Public finite Projects are re-resolved at compilation, preserving the original source/dependency binding. Local owner/static-binder checks remain explicit and a moved local does not fall back to a global.
+
+The recorded unit's temporary profile differences are preserved, including unused imports/self-import policy, primitive sets, decreasing self-recursion and sized one-function lowering. This is not the canonical syntax cutover or complete checking convergence.
+
+Validation: **171 tests passed, nine existing cases ignored** in the focused selection; latest Rust and MSRV 1.85.0 all-target Clippy and formatting pass. Twenty-five actual pre/post observations (stdout, stderr, exit code) and five small proposal byte sequences are identical; bounded proposals use at most one qubit. Independent review verified the actual comparisons and all retained fixture hashes. Evidence: `tests/fixtures/frontend_v030/shared-resolution/`. No source-preservation proof, new guarantee admission or issue completion is claimed. Full hosted integration remains pending.
+
+## Current resolver audit (2026-10-19; not completion)
+
+The current source contract is [declaration resolution](https://github.com/MGYamada/Qleisli/blob/bd90461908b71388e658e0399cb30ca99a693a47/docs/src/reference/source-text.md): one declaration/import policy, canonical collection-local DefIds, ordinary visibility, lexical bindings before declarations/imports, and primitive fallback only for a genuinely unbound spelling. The historical profile split in the earlier checkpoint is superseded in current code: unused import-only cycles are permitted, and self-import/declaration collisions reject consistently. Actual call/provider/Meaning cycles and owner/category checks remain separate obligations.
+
+At source head `b7e472b3` (the later `bd904619` changes only a documentation link), both actual Rust 1.98.1 and 1.85.0 pass all 23 declaration/lexical-resolution tests and 14 project/import tests, zero failed/ignored. The selection covers canonical IDs, local/static shadow identities, import/private/collision errors and source spans, ordinary std imports, retired paths, diamonds and deep import-only graphs. Recorded Rust/std/test inputs and the selected checker remain unchanged during those four runs. No new Rust target/cache or maximum-size quantum case was introduced.
+
+This is targeted evidence, not complete source-preservation or independent semantic equivalence. Final canonical import/evidence identity and module-erasure review remains open, along with complete current-head CI/review. No alias/reexport/prelude API is adopted by these tests; #58 retains its separate derived-member/default/opt-out decisions. This issue stays open without completion credit.
+
+## Canonical import/evidence and module-erasure review (2026-10-19)
+
+At [`74e1149a`](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/frontend/resolve.rs), the following checks address the original acceptance criteria without adding import syntax:
+
+| Criterion | Current evidence |
+| --- | --- |
+| Multifile std/canonical identity | Ordinary imported std declarations use the same source table as callers. The fresh declaration-module test imports ordinary `std::gate`/`std::state` members through a separate helper and checks the ordered three-Bit result. The shared provider test distinguishes `a::gate` from `b::gate` and reproduces the same proposal when selecting `a::gate` again. |
+| Imports are resolver sugar | An accepted `use` inserts `Target::Declaration(original DefId)` into the import map; it creates no new declaration, body, effect or acceptance route. |
+| Private access/collisions | The common import resolver checks visibility and duplicate/declaration collisions before use. Current private-helper and historical-convergence regressions reject the selected access with its original category/span. |
+| Canonical evidence/cache target | [Finite evidence](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/frontend/compile/operations.rs) and [selected Raw evidence](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/frontend/specialize/raw/contracts.rs) derive implementation/specification identities from `resolution.path(original DefId)`. Closed static/provider selections and original source/dependency bytes remain bound. Collection-local numeric IDs are not persistent cache identities. |
+| Module erasure | The runtime [RawOp inventory](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/src/ir.rs) contains no module/import/visibility operation. Names and complete relevant sources may remain as evidence/provenance metadata; that retention is not runtime module initialization. |
+| Reference contract | [Source text](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/docs/src/reference/source-text.md) and [package/source identity](https://github.com/MGYamada/Qleisli/blob/74e1149ae694c37f8233b0d4fe634a795a3e9776/docs/src/reference/packages-and-artifacts.md) specify canonical module/declaration identity, source mapping, visibility and imports as frontend organization. |
+
+For the evidence criterion, distinguish the canonical selected declaration from the complete checked subject: changing actual retained source bytes may change an artifact/cache digest even when it still selects the same declaration. Ignoring changed source/dependency bytes would weaken binding. Arbitrary `as` aliases, reexports and globs are not accepted APIs; this audit does not add them or use them to waive any future canonical-identity obligation. The illustrative old `mod`/qualification candidates are not adopted syntax.
+
+Fresh normal/MSRV validation passes 18 namespace/static/source tests and two composed-Meaning tests per toolchain, in addition to the earlier recorded 37 resolver/project tests. These include real native checks where required and preserve complete source windows; provider-proposal equality alone is not advertised as native acceptance or a source-preservation theorem. The implementation audit is recorded; current-head CI/review remain open. #58's derived prelude/default/opt-out work remains separate. The issue stays open without completion credit.
+
+## Completion audit — 2026-10-19
+
+The implemented criteria above are complete at [verified head `6eb45164`](https://github.com/MGYamada/Qleisli/commit/6eb451647f599cb0f1589f5e75de1c91d3f7325e), integrated by [PR #423](https://github.com/MGYamada/Qleisli/pull/423) as [`d74d60ce`](https://github.com/MGYamada/Qleisli/commit/d74d60ce95c81cf4fc4b060040d2a168a098dc24). Both [push CI](https://github.com/MGYamada/Qleisli/actions/runs/39233547130) and [PR CI](https://github.com/MGYamada/Qleisli/actions/runs/39233553436) pass all eight required shared contexts on that exact head: normal/MSRV Rust, macOS source, interop, Lean, native kernel, distribution and docs. The release-only readiness job is intentionally not selected for an ordinary PR; final beta/package/install gates remain separate. Both automated P1/P2 findings are repaired and resolved; final local review of those repair deltas found no additional actionable issue. Submitted automated reviews retain their original `74e1149a`/`e67da70f` anchors.
+
+The recorded criterion-by-criterion implementation review and actual normal/MSRV checks supply the completion evidence: 23 resolver plus 14 project tests, then 18 category/static/source tests plus two composed-Meaning tests per toolchain, all zero failed/ignored in those selections. Their original source windows and filtered-test limits remain as recorded, supplemented by the complete current-head hosted checks. The seven original criteria are checked above: imported std members retain original canonical declaration identities; visibility and collisions are checked; imports introduce no runtime operation or independent effect/evidence authority; actual source/dependency bytes remain part of the checked subject. No `as`, glob, reexport or expression-qualified-call API is implied. #58's prelude remains a separate unfinished issue. This completion is the module/import contract and its implementation, not general source-preservation or broader QS/PR/RS/EXACT discharge. The requested `std::transform`, `std::arithmetic`, `std::code` naming is retained.

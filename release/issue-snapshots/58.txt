@@ -1,0 +1,211 @@
+## Superseding primitive/prelude boundary — #167 / #369
+
+The adopted final-0.3.0 cutover in #167 and #369 fixes language primitives as directly available, language-owned unqualified operations. They are not `std::` exports, explicit primitive imports or an implicit `std::prelude` import. In particular, `h`, `measure_z`, `split` and `join` in the earlier candidate discussion below belong to that language boundary; neither this issue nor a future prelude restores retired `std::quantum` paths or grants primitive authority through a library name.
+
+Any future prelude exposes derived stdlib definitions only as ordinary imports/reexports of checked `.qli`, with the same type, ownership, caller-visible effect, access, Meaning and native-checking obligations. Examples include the ordinary `std::state::init0` and `std::gate` gates. Ordinary `std::gate::id` retains its complete Basis parameter and explicit `type(A)` actuals; prelude membership must not infer missing static arguments or turn it into a sealed primitive. This states the already adopted boundary, not an implemented prelude/reexport syntax or a newly selected member list.
+
+The earlier body is preserved below as design history/proposals. Its primitive-import wording and primitive candidate entries are superseded by this boundary. #58 remains open: the derived member list, default availability, explicit mode/opt-out, collision/versioning behavior and implementation/equivalence tests still require the separate work recorded here. This alignment adds no implementation, issue-completion, theorem, guarantee or release credit, and changes none of #167/#369's remaining validation duties.
+
+---
+
+## Scope
+
+Design work at the **Qleisli 0.3.0 boundary**, requested on 2026-09-30. This records the prelude direction; it does not make implicit imports an implemented API.
+
+Related: #14 design criterion, #32 surface-language normalization, #41 name resolution, #48 Language Reference.
+
+## Problem
+
+Ordinary quantum programs repeatedly spell a collection of individual imports before expressing their algorithm. The current contract requires explicit imports for every library function and has no implicitly opened `std::prelude`.
+
+This boilerplate obscures small textbook examples and adds repetitive work for human and AI authors. Under the project's “when uncertain, follow Rust” policy, a small standard prelude is a natural way to make common names available.
+
+## Preferred direction
+
+Introduce a **`std::prelude`** with a small, documented set of commonly used names, and define its default availability in ordinary source modules.
+
+Prefer a Rust-like default prelude so basic examples need no repetitive import header. Decide an explicit opt-out or equivalent fully explicit mode as part of the name-resolution contract. The exact member set remains to be selected.
+
+Candidate members include common preparation, gates and observation operations such as `init0`, `h`, `x`, `z`, `t`, `cnot` and `measure_z`. Algorithm-specific routines need not all enter the default namespace.
+
+Illustrative proposed program under the default prelude:
+
+```qli
+observe fn main() -> (Bit, Bit) {
+    let (a, b) = cnot(h(init0()), init0());
+    (measure_z(a), measure_z(b))
+}
+```
+
+The import-free example is a design target, not a claim about current syntax.
+
+## Name-resolution decisions
+
+Coordinate these rules with #41:
+
+1. Specify exactly which names the prelude supplies, and in which modules it is available.
+2. Specify precedence among local declarations/bindings, explicit imports and prelude names. Use deterministic resolution with an explicit Rust comparison and diagnostics for ambiguous cases.
+3. Keep qualified `std::...` paths available, and define how users opt out or write programs with explicit resolution.
+4. Decide how prelude additions are versioned: introducing a name must not silently resolve an existing program to a different declaration.
+5. Specify whether the prelude needs dedicated internal resolution or public reexports/import syntax; do not treat unrestricted glob imports as an automatic prerequisite.
+6. Keep the bundled `std` identity, visibility, source limits and dependency checking explicit.
+
+## Elaboration and trust boundary
+
+Prelude lookup should resolve to the same already specified library declarations and sealed operations that explicit imports select.
+
+It must introduce no quantum primitive or new verifier rule. Ordinary library definitions remain subject to the same checks as user code; selecting a prelude name does not grant evidence or bypass ownership, effects, phase or clean-return obligations.
+
+## Acceptance
+
+- Basic Bell/preparation/gate/measurement examples lose the repeated import header.
+- The prelude and explicitly imported versions resolve to the same declarations and produce equivalent independently verified IR/evidence.
+- Tests cover local shadowing, explicit-import conflicts, qualified calls and the chosen opt-out behavior.
+- Prelude changes cannot silently alter algorithm meaning through name capture.
+- The member list, resolution order, diagnostics and migration are documented in the Language Reference and quick reference.
+
+
+## 0.2.4 follow-up review — 2026-10-01
+
+Prioritize a separately reviewed **structural minimum** containing `split`, `join` and `id`, because repeated missing-import failures obstruct ownership plumbing before authors reach their algorithm. The wider gate/preparation/observation candidate list above remains a design choice; explicit gate imports are compatible with the structural minimum and must not be silently replaced during 0.2.x.
+
+Compare first-attempt and repaired small sources under both explicit imports and the proposed prelude. Require deterministic local shadowing, explicit-import collision handling, an explicit mode/opt-out, and unchanged independently checked meaning. The improved public-module import hints in #160 are a compatible present repair; they do not adopt implicit lookup.
+
+## Concrete beta implementation contract — 2026-10-19
+
+This records the implementation choices before source changes, under the existing #58 task and adopted QS/PR/RS/EXACT boundaries. These forms remain **unimplemented** at this checkpoint; this is no new constitutional interpretation, primitive admission, guarantee or completion credit.
+
+### Ordinary prelude and resolution
+
+Use a small fixed derived-only prelude:
+
+- `std::gate::{id,x,z,t,cnot}`
+- `std::state::init0`
+
+An ordinary, readable `stdlib/src/prelude.qli` will publicly reexport those original declarations:
+
+```qli
+#![no_implicit_prelude]
+
+pub use std::gate::{id,x,z,t,cnot};
+pub use std::state::init0;
+```
+
+The implicit opening denotes those same original canonical DefIds; it is not a forwarding function or an extra implementation/evidence identity. No algorithm is added to std. Bare `h`, `measure_z`, `split`, `join` and the other language primitives are not prelude exports and retain their language-owned behavior. `id[type(A)]` keeps its complete Basis actual; membership never infers a missing static argument.
+
+Resolution is deterministic: original lexical runtime/static binding first; then same-module declaration or explicit import (their existing collisions reject); then the implicit derived prelude; finally a genuinely unbound bare language primitive. Wrong category, moved owner, failed effect/type/access or missing static arguments cannot retry another tier. Existing declarations and explicit imports retain precedence. Prelude members must not collide with bare primitive identities; future additions must pass that compatibility check and cannot capture an already resolved program. Changing an existing selected meaning requires the ordinary versioned breaking-change process.
+
+### Explicit mode, public reexports and qualified references
+
+A module can opt out with the single supported leading header `#![no_implicit_prelude]`. Comments/whitespace may precede it; it must occur once before any import/declaration. This introduces no general attribute/macro facility. Opt-out disables only implicit prelude lookup: bare language primitives, explicit `use std::prelude::...;` and qualified ordinary references still work.
+
+Add transparent `pub use module::item;` and existing brace-group forms, without `as`, glob or relative imports. Public reexports resolve to the original public declaration through the common declaration table. Visibility, public effect, static/Meaning/provider category and dependency identity are checked at that original target; a facade cannot leak private access or same-module effect precision. Explicit duplicate/declaration collisions still reject. Resolve export graphs without source-order dependence under existing work limits; reject unanchored export cycles, while retaining ordinary unused import-only cycles.
+
+Allow root-qualified ordinary declaration references/calls such as `std::gate::x(q)`, including their existing explicit static actuals. Qualified lookup uses the common canonical table and original visibility/category checks, not lexical or primitive fallback. Retired foundation paths and qualified primitive aliases remain rejected. No module/import/visibility operation enters runtime Core.
+
+### Binding, impact and required validation
+
+The fixed prelude is part of the captured canonical std sources/content identity. Load and check it as ordinary source in the common frontend; preserve all original files, spans, dependencies and public-effect checks. The additional bundled module shares the existing file/aggregate/module/work budgets; migrate exact boundary expectations without raising any cap. No ambient manifest switch or independent std selector is introduced.
+
+QS requires unchanged owner, effect, phase, type/axis and reference contracts through the same independently checked IR route. PR and quantitative RS gain no primitive/cost privilege from opening or reexporting a name; source/runtime/target preservation and the broader exact obligations remain separate. Preserve both admitted ordinary-QLV1 guarantees and their current evidence; no new native acceptance rule or Lean axiom is planned.
+
+Compare import-free/explicit/opt-out/qualified forms at the original canonical targets and independently accepted IR/evidence. Complete checked-subject/source digests may legitimately differ with retained source bytes and must not be ignored to manufacture equality. Add small positive/fault cases for shadowing, collisions, missing Basis actuals, primitive separation, private/reexport chains and cycles, original public effects, hidden observation and work limits. Document members, lookup, diagnostics and migration in the Reference/quick reference. Companion compatibility changes, if needed, are limited to preserving the new AST/header/export information through existing operations; general qlinty features/lints remain excluded. Test/stage the four binaries in workspace `bin/` as already required.
+
+### Actual pre-implementation observations
+
+Nineteen complete first projects and 24 fresh CLI observations are saved at local `qleisli-prelude-first-n83gud2i`, before any feature edit. Plan SHA-256: `9d2b1294f110eb81ef209e929990c2ae1ff144382d1367a3fa4caae2ad3b4af2`; report: `9fed81be9d4d79b6f8f5e542a8426c95656a92524d27d792bc6f33c304fc6a57`. Sources, predictions, stdout/stderr, native selection and complete monitored input coordinates remain unchanged across the observations. Source head is `6eb45164`; merged main `d74d60ce` has the identical source tree.
+
+The explicit Bell control checks/runs/emits accepted IR; observed `00`/`11` probabilities are approximately 0.5. Local/explicit-import identity shadows and explicit static identity each run to zero. Existing explicit collision, wrong-category local, missing static actual and false pure annotation reject with their actual diagnostics. Desired implicit names, the opt-out header, public reexports and qualified calls currently refuse at their recorded name/parser boundaries. Those early refusals do not establish later private-access or effect checks: in particular, the prelude false-pure case currently fails on missing `init0`, whereas its explicit-import control reaches the actual effect rejection.
+
+All first predictions matched. The saved 5,338-byte explicit Bell artifact is `fad9063dc1b00e9c513f1d8c95b5dfa2696053752b7941e0c2ec2fa85685e9f0`. These bounded controls use at most two qubits and observed existing binaries; they are an informed requirements study, not a blind usability benchmark, a clean-commit/source-binary attestation, a general semantic proof or implementation completion. Preserve this first packet inertly before adding separate repairs/replay results.
+
+## Implemented candidate and current checks — 2026-10-20
+
+[PR #424](https://github.com/MGYamada/Qleisli/pull/424), commit `4cabd37fdc246fd05c9cfb85e31d8cb104937dff`, implements the selected six-member ordinary prelude, module opt-out, transparent public reexports and root-qualified references. Original canonical targets, visibility/category/public effects and relevant implicit/export source dependencies are retained. The additional eighth std module uses the unchanged budgets (56 user-module slots). No new primitive, runtime module opcode, native acceptance rule or Lean definition is added.
+
+Acceptance evidence is separated by kind:
+
+- Implementation/specification: the common parser/resolver, bounded iterative export graph, `stdlib/src/prelude.qli`, and the new Reference/quick-reference chapter are in that commit.
+- Conformance: normal Rust 1.98.1 and MSRV 1.85.0 each pass the initial 110 focused tests and subsequent complete 11-test shared-resolution target, with strict Clippy. Ordinary project forms and four separately authored public-entry Raw CLI translations exercise default/explicit/opt-out/qualified/facade resolution. Native checks compare independent exact X meanings and complete observing instruments; wrong phase, wrong category/moved owner, private exports/cycles, missing Basis actuals and hidden observation reject. Issued receipt-ID equality is not used as semantic equality. Cases use at most two qubits.
+- Guard checks: all 14 shared source-integrity commands, 39 production-coverage and 29 inventory regressions, docs, formatting, whitespace and continuity against trusted `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb` pass. All Rust targets also compile on normal Rust at the candidate. Exact committed size checks allow 1,467 changed text lines, one separately counted binary history packet, and 17,179 fixture files / 141,150,767 bytes.
+- Companion minimum: [qargo PR #41](https://github.com/MGYamada/qargo/pull/41), `15cf009a95f7712e3b8e9c1f163f77f97a501ba4`, preserves the header/export AST through existing formatter/documenter behavior and prevents the existing unused-import rule from removing public exports. No new qlippy feature/rule is added. Each toolchain passes 176 bundle tests and independent engine totals 61/18/21 plus strict Clippy. All four rebuilt workspace `bin/` tools pass 17 actual build/version/parent-child/standalone/Bell commands, including the expected initial formatting refusal and successful idempotent recheck.
+
+Retained reports: initial root `39086e896d91f30ed9859ba5bf1c5d9727d16947b161ed922aeb7a95b6f2b84c`; added selected-path `2a48609e2363fa183ac905a4c4a267597fd5ff42edbc075e75a3b913f1d205f7`; final companion supplement `ebf31fa4e8770cd9a9a9b09a4309be586f265b7bb18116d7e13f424f41bb552d` retains the earlier normal-bundle result; workspace-bin report `d08dbcf54a649ca8466df3a04db50e644cec1dae620c5b9e9c09695b0d7b9058`. Monitored inputs/native bytes remain unchanged inside their recorded windows. Final later source changes are Changelog/Reference prose only; these are not clean-build/source-binary attestations.
+
+The first nineteen projects, actual early diagnostics and observer remain inert and unchanged. Sandbox `ps` refusals, Clippy override placement and runtime-probe schema mistakes are separately retained; their repaired successes do not rewrite those observations. Both admitted scoped QLV1 guarantees and pending broader QS/PR/RS/EXACT duties remain unchanged; no fresh Lean replay or general source/runtime/target-preservation proof is claimed.
+
+**Still open:** exact-head hosted CI/review and the final acceptance audit. PR #424 has no submitted review/inline thread at this checkpoint. Companion Linux/macOS/native CI at `15cf009` still stops because crates.io has no exact beta dependency; keep qargo #41 draft. Its registry/package/isolated-extraction/host-matrix gates remain separate in #171/#255. This checkpoint closes no Issue and grants no new guarantee or release/publication approval.
+### Retention-gate repair — 2026-10-20
+
+Current PR #424 head is `f57899e4f0b52a600342f8c02725e10eb7a5f50e`. The first `4cabd37f` hosted changes job rejected the scope README as unrooted; downstream suites were skipped and required aggregators failed. The Markdown index already linked it, but retention roots are code/manifests. Add one explicit static scope-note reference in the actual passive reader, preserving its two successful tests and every original packet byte; do not weaken the guard or execute history. Exact local inspection now reaches all 1,251/1,251 new fixtures, with zero unreferenced paths. Final PR size is 1,468 text lines plus the separate binary packet; fixture totals remain unchanged. Fresh hosted CI/review and completion audit remain pending. The repair changes no Rust/Lean executable definition and closes no Issue.
+### Current conformance migration — 2026-10-20
+
+PR #424 now has head `30a2435e4ef860a85f2dc9de05c6845fed6e5e92`. Actual `f57899e4` normal remaining/distribution logs reached `checked_operations`: 27 passed, one obsolete assertion expected `main::power(q)` to remain a parse error. Replace it with project checking, original selected dependency identity and fresh native Raw/source-step checks under the adopted qualified-call contract. All original zero/count/access/effect/phase checks remain.
+
+Both normal/MSRV now pass all 28 checked-operation tests plus strict Clippy (report SHA-256 `0092be4e96cebdc0be43cc609b3d175dc4164ece673bf459026ac78557cd8282`). A separate static audit found legacy mandatory-init0-import assumptions: retain that diagnostic/span/Unicode test in explicit no-prelude mode; keep every saved fixture byte and add default-mode positive plus explicit-mode negative handling of its historical missing-import label. Both toolchains pass four focused diagnostic/default-prelude/catalog/guardrail tests and strict Clippy (report `92397d509e0cf5fbc3b2321f7d85fa30c773fee99bfa2a38255599979fa44381`). Other filtered tests receive no new credit. Monitored source/native inputs remain unchanged inside each window; the retained guardrail includes a small three-Bit tuple, not a newly generated maximum-profile case.
+
+Correct the remaining current inventory boundary descriptions to eight bundled modules, derived-prelude/opt-out/transparent-export lookup and 56 supplied slots within the unchanged total 64. Reviewed VM29 surface is `0f4fed59eb230cda914947d9c5e2cfe0f6a661f0b51d8ca533f9d5de1f23fd69`; current inventory/coverage checks pass, with modes, authority, proof/cutover statuses and caps unchanged. No production Rust/Lean definition changed in this repair.
+
+Exact candidate preflights pass: 1,526 changed text lines plus separate binary packet, 17,179 fixture files / 141,151,006 bytes, all 1,251 new fixture references rooted. Fresh hosted CI/review and the final #58 acceptance audit remain pending. Original CI/local failures stay recorded; no Issue completion, new guarantee, release tag or publication is claimed.
+
+Latest `30a2435e` CI observation: push differential job [118407708861](https://github.com/MGYamada/Qleisli/actions/runs/39354544234/job/118407708861) fails before tests because the pinned Lean 4.30.0 download has an SSL/TLS connection error. Individual-job retry was requested; GitHub refuses while the containing workflow is still running. Retry after run completion. Other candidate checks and review remain pending; no merge or completion credit.
+
+### Qualified-reference diagnostic repair — 2026-10-20
+
+Current PR #424 head is `083c21ade97db9dbcd248430a3341964725ad1d4`. At `30a2435e`, normal/MSRV remaining and distribution jobs all reached the same three obsolete `common_authoring_diagnostics` assertions. Preserve the first fixture and its earlier retired-`std::quantum::init0` refusal; current translations test unknown/missing-module qualified paths separately. Add an ordinary nested qualified project/native execution positive. The parser now retains the whole incomplete prefix through its final `::` and explains the missing declaration name; valid-reference semantics and native acceptance definitions are unchanged.
+
+Both Rust 1.98.1 and 1.85.0 pass all 43 parser/common-authoring tests and strict Clippy, without skipped tests (report SHA-256 `f456233ff0474beb51e2f5e517425b782b887d10832defc004d3688f076e1606`). Rebuilt/staged workspace `bin/{qargo,qlippy,qlifmt,qlidoc}` pass 17 actual build/version/digest/parent-child/standalone/Bell commands (report `c82eae432abfc8338641ecfa037e6879a4390c01e009bcdf74df4b077e07ee8e`). Monitored root/qargo/native inputs remain unchanged inside both windows; the four unrelated qargo metadata files remain untouched. The inherited generic observer scope wording does not add checked-operation, proof or clean-build evidence to this diagnostic run; its actual argv/output is authoritative.
+
+Fresh inventory, production coverage, formatting, whitespace and constitutional continuity against trusted `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb` pass. Exact committed PR size is 1,593 changed text lines plus one binary packet; fixture totals remain 17,179 / 141,151,006 bytes. The current exact base/head retention gate passes its two newly added fixture paths. No budget was raised.
+
+New-head hosted CI/review and final acceptance audit remain pending. The prior-head TLS retry is superseded by the new commit's own required checks; no prior failed/skipped suite receives success credit. Both scoped QLV1 guarantees and broader pending QS/PR/RS/EXACT duties are unchanged. No Issue is closed, no new guarantee or release is claimed.
+
+### Host-selected reexport source binding — 2026-10-20
+
+Current head is `21cda86e0ef80e3d439fad55d0f9a1b161010fc2`. The exact-`083c21ad` [P1 review finding](https://github.com/MGYamada/Qleisli/pull/424#discussion_r4320780993) is reproduced for the default project entry: `main::main` is supplied by an export chain without a lexical UseInfo, and its modules are absent from issued source receipts. The first native regression fails with `missing host selection source main` (unchanged inputs; original report SHA-256 `99a7f52d6a23081944cfeb0da9faa8587af86a7a09b2511aea31c4f305a2b05a`).
+
+Retain that project entry chain through the existing source collector, before body roots, using the same charging, byte caps and interning. Direct entries keep their prior closure. Regression checks exact main/facade/intermediate/leaf bytes, excludes an unrelated module, and changes facade bytes while retaining the same checked gate meaning. A separate selected-API regression confirms that arbitrary host entry/provider aliases and their complete source packet already survive operation lowering and fresh native source-step replay. Its first draft omitted `Applicable(U)`; preserve that actual access refusal separately, then supply the required premise rather than weakening access checks.
+
+Normal/MSRV each pass 22 tests (5 frontend types,13 shared resolution,4 current source snapshots) and strict Clippy. Report SHA-256: `cab86f400af663cc65809515eef9a98f00ee702c5df032bf2786a5c379a54f3d`. The observer's prose says five snapshot tests; actual argv/output records four and is authoritative. Two already-ignored historical 256-case stresses remain filtered, unexecuted and uncredited. The later CI failure in `frontend_types` was an obsolete parse expectation for qualified `std::classical::empty_bits`; its name refusal and bare-primitive migration guidance remain required.
+
+The inert supplement `tests/fixtures/authoring_sessions/prelude-v030/host-entry-first.json.gz` retains first test source, raw streams and observers, plus explicit compact coordinate/full-report bindings (stored SHA-256 `c692e39ff485364cca263a3386016915bbd087d09f7bfc8d158b3af1539ffb16`). Three bounded passive preservation tests pass. Four workspace bin tools are rebuilt/staged and pass 17 expected build/runtime results (report `23d6b1fd721aa7f393bc909cd862ed217c19053b00eccb4a7dbfcbe0f92ecde2`). Monitored source/native inputs are unchanged inside both validation windows; subsequent changes are passive history/prose/current-identity metadata.
+
+VM22 source digest and VM29 reviewed surface `52fbaec93ed6cc40b33fdaa1671c36a0a25d98d4b61c85c1f59a61784d604e3e` bind the changed source-collector body; routes, native modes, public interfaces, capacities, authority and proof/cutover statuses are unchanged. Fresh inventory/coverage/docs/fmt/whitespace checks pass. Exact PR size:1,757 changed text lines plus two binary history packets; total17,180 fixture files/141,178,712 bytes. No cap increase.
+
+Fresh `21cda86e` CI/review and final acceptance audit remain pending; #58 stays open. Companion #41 remains draft with its separate unpublished-beta registry barrier. No broader proof/guarantee, Issue-completion, release or publication credit.
+
+
+### Complete std namespace expectation — 2026-10-20
+
+Current PR #424 head is `0bd108183649e0462cb5c5b1c8bae29d07e1c9fc`. The `21cda86e` normal/MSRV remaining and Lean-kernel comparison jobs all reached the same Rust test failure at `tests/sized_source.rs:359`: its independent expected module list omitted the new ordinary `std::prelude`. This is not a failed Lean theorem. Add that eighth module to the expected set; retain all original source-byte, concrete provider/entry, size-refusal and visibility assertions. Exact source at `21cda86e` and all three actual logs remain retained separately.
+
+Both Rust versions pass the single focused source-preparation test and strict sized_source Clippy (report SHA-256 `670d922fc440ecae5ec39a19f38685d68cb9e714dd4d4af98ff142a3d295483d`; monitored inputs/native unchanged). The other 42 tests are filtered and receive no fresh local credit. This performs no matrix/simulation/max-size case, generic-QFT implementation or fresh proof replay. The one-line test change leaves production code and the latest staged four tool binaries unchanged.
+
+The P1 thread is resolved after the reproduced fix and local regression checks; that is not an approval review of this new head. Exact current PR growth is 1,758 changed text lines plus the two binary packets; total fixture bytes/count stay 141,178,712/17,180, and the preceding exact retention gate covers all three new fixture paths. Fresh current-head hosted CI/review and final acceptance audit remain pending; #58 stays open with no completion/guarantee/release credit.
+
+
+### Current-head CI and final source review — 2026-10-20
+
+At exact `0bd108183649e0462cb5c5b1c8bae29d07e1c9fc`, discovery reports 23 successful checks, four running and one failed. Both normal/MSRV differential producers and both MSRV remaining producers pass; docs, interop, macOS source and Lean pass on both events. The PR-side kernel log passes all 72 native groups, including verification-baseline (237.5 seconds for the whole group), fresh kernel/Main replay, audit and bundle checks. The PR tests merge `6c1b863c6eed6eaa775e3fe5c1704fcf6feb0723`, whose tree `16903b632b629747ad79ee899601bd1b90cab886` equals the source head, with the expected ordered base/head parents.
+
+The push-side kernel failure is a 60-second child timeout in `scripts/test_verification_baseline.py`, invoking the existing frozen-hierarchy Rust test. Its four cases are one-bit cases. No semantic mismatch or failed theorem is reported, and the helper did not retain the child's partial output, so no particular contention cause is established. A separately warmed standalone run passes: compilation 5.51 seconds, Cargo invocation 1.85 seconds, test body 0.13 seconds; source/native bytes remain unchanged. Report SHA-256 `d97640a1f73986edca9be3d8f81e101806c6d2babd05e04094d675cd8ebd5cb2`. No timeout/cap is increased. Retry only that failed job once its containing workflow completes.
+
+A fresh in-thread final source read maps all five #58 acceptance criteria to implementation, Reference, canonical resolution/source binding and bounded native gate/instrument regressions. No new actionable finding was found. This is not a separate independent review or new automated approval; the earlier P1 thread remains resolved after its reproduced fix. Current normal Rust remaining and distribution jobs on both events, the failed push-job retry and the final CI/review guard remain outstanding. Keep #58 open and PR #424 unmerged. No new issue, guarantee or release credit is added.
+
+## Completed acceptance audit — 2026-10-20
+
+Merged [PR #424](https://github.com/MGYamada/Qleisli/pull/424) as `007aa917809e57e2b0675e2fd303c910047381e9`. The actual Git tree `16903b632b629747ad79ee899601bd1b90cab886` equals tested head `0bd108183649e0462cb5c5b1c8bae29d07e1c9fc` and tested PR merge `6c1b863c6eed6eaa775e3fe5c1704fcf6feb0723`; actual ordered parents are the reviewed base `d74d60ce95c81cf4fc4b060040d2a168a098dc24` and head.
+
+All five acceptance criteria are complete for the selected derived-only prelude:
+
+- Import-free Bell/preparation/gate programs work in the ordinary project and separately authored public-entry Raw routes. Language primitives retain their own bare identities.
+- Explicit, implicit, opt-out, qualified and facade forms select original declarations. Native comparisons cover independent exact X meanings and complete observing instruments; source receipts retain actual implicit/export/host-selection chains. Issued receipt equality is not substituted for semantic equality.
+- Tests cover local/runtime shadows, explicit-import collisions, qualified references, the leading module opt-out, static Basis actuals and deterministic errors without fallback.
+- Existing local/import resolution cannot be captured by the prelude; primitive spellings cannot enter its exports. Original visibility, caller-visible public effects and access remain binding. Hidden observation, wrong full phase and invalid source substitutions refuse.
+- The Reference, quick reference, primitive/source migration pages, stdlib policy and quickstart document the six members, precedence, opt-out, diagnostics and compatibility behavior.
+
+Current-head final CI has 48 terminal contexts: **46 success and two expected ordinary-event release-readiness skips**. Both events select full validation. All eight stable required contexts pass twice; all sixteen actual nine-NEEDS maps contain only successful required dependencies. [PR CI](https://github.com/MGYamada/Qleisli/actions/runs/39369029887) passes on its merge ref. [Push CI](https://github.com/MGYamada/Qleisli/actions/runs/39369025108) passes after retrying only the failed kernel job and its dependent gates. Its original 60-second child timeout and downstream failures remain recorded; no deadline, capacity or required case was removed. Both native jobs pass the exact 72 manifest task IDs / 112 mandatory commands; retry verification-baseline completes in 176.7 seconds for the entire group. Normal/MSRV, source contracts, strict lint/research, docs, interop, native/proof policy, offline package/install/source-distribution and CodeQL checks pass in their actual selected scopes.
+
+The P1 source-retention finding was reproduced, fixed and regression-tested, and its thread is resolved. The final in-thread source/criterion review has no new actionable finding; no new automated approval or separate independent review is asserted. Final local audit SHA-256: `09c125b9da201ab7db6ee817a2c2336712e44e6fcecb9554eec00f06189d6640`; its 53-file inventory: `e8fbee597c0f93f655d5ff645f91e6c9d2625372621098bda0787638c6c1ab4d`.
+
+Limits remain explicit: Rust CodeQL log checkout detail is unavailable in the truncated log; API head/job identity and successful analysis are retained. Individual inner package/tar payload hashes and unexposed child test totals are not asserted. macOS has one optional PyQIR skip per original event. Partial retry reuses original successful producers; it is not a same-attempt release-readiness run. All four workspace bin tools retain their separately recorded local compatibility/build/runtime checks; official qargo registry/package/host gates remain open in #171/#255 because exact beta is unpublished. This completion does not discharge broader QS/PR/RS/EXACT, source/runtime/target preservation, or beta release readiness. Both admitted scoped QLV1 guarantees and original first sources/diagnostics remain intact. No tag or publication is made.

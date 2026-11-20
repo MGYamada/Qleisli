@@ -1,0 +1,155 @@
+## Completed beta checkpoint — 2026-10-13
+
+Completed through [PR #384](https://github.com/MGYamada/Qleisli/pull/384), merge `d5d44d3c3f1553ddc75eb4fdbb50e5b0cfa77b3d`, after original-criterion review and successful same-candidate push/PR checks. [All eight criteria, first-source history, tests, CI identities and limits](https://github.com/MGYamada/Qleisli/issues/47#issuecomment-6143915162). The original design and criteria below are retained; candidate-only forms were not adopted. This closes the scoped implementation Issue, not broader constitutional or source-preservation duties.
+
+## Status
+
+Design issue for **Qleisli 0.3.0**.
+
+Related:
+- #28 static language
+- #33 static specialization syntax
+- #40 `const fn`
+- current M1 `requires Applicable(U)` / capability syntax
+- future size and type polymorphism
+
+## Problem
+
+Qleisli already has static operation requirements, and sized source will need predicates such as:
+
+```text
+n >= 1
+m <= 8
+bits(A) > 0
+Controllable(U)
+```
+
+If these are added independently, the language will accumulate several unrelated mini-languages for compile-time obligations.
+
+A unified compile-time constraint system should be designed before public generics/sized source stabilize.
+
+## Goal
+
+Introduce a small decidable proposition/constraint layer, conceptually:
+
+```text
+Γs ⊢ P : Prop_static
+Γs ⊢ P true
+```
+
+used for function/static-builder requirements.
+
+Possible surface form:
+
+```qli
+fn qpe[
+    static A: Basis,
+    static m: Nat,
+    static U: Op<A>,
+](...)
+requires
+    m >= 1,
+    Controllable(U)
+{
+    ...
+}
+```
+
+The exact syntax is not adopted by this issue.
+
+## Candidate constraint classes
+
+### Numeric/static
+
+```text
+n == m
+n < m
+n <= K
+n >= 1
+```
+
+### Type/shape
+
+```text
+bits(A) == n
+A supports ...
+```
+
+Only if such predicates remain decidable and well-defined.
+
+### Capability
+
+```text
+Applicable(U)
+Adjointable(U)
+Controllable(U)
+```
+
+### Evidence/profile
+
+Potentially explicit named predicates for supported exact phase or backend profiles, if these can be checked statically without enlarging trust.
+
+## Questions to decide
+
+1. Is there one `requires` language for all compile-time obligations?
+2. Which propositions are permitted?
+3. Are arbitrary Boolean combinations allowed?
+4. Is implication allowed?
+5. Are constraints normalized canonically?
+6. Must every constraint be decidable during specialization?
+7. Can constraints remain symbolic in a generic definition?
+8. Which constraints are checked at definition time versus instantiation time?
+9. How are failed constraints reported?
+10. Are constraints part of evidence identity/cache keys?
+11. Can an external certificate discharge a constraint, or only built-in decision procedures?
+12. How do constraints interact with `const fn` termination and resource bounds?
+
+## Recommended restriction
+
+Keep the initial language intentionally small:
+
+- finite decidable propositions only;
+- no user-defined theorem proving;
+- no unrestricted quantifiers;
+- no proof terms in ordinary source;
+- no hidden SMT dependency in the trusted core.
+
+A constraint should either:
+
+- be decided by the compile-time elaborator and reified into checked specialization data; or
+- require explicit independently checked evidence under a separately specified rule.
+
+## Non-goals
+
+This issue does not turn Qleisli into a dependent theorem prover.
+
+It does not make Lean proofs part of ordinary `.qli` syntax.
+
+It does not permit undecidable type checking.
+
+## Acceptance criteria
+
+1. One `requires` mechanism expresses numeric and operation-capability constraints.
+2. Invalid sizes reject before unsafe elaboration.
+3. Missing capabilities use the same constraint system as generic algorithms.
+4. Generic definitions may retain symbolic constraints in a specified way.
+5. Instance checking is deterministic and terminating.
+6. Constraint failures have source-local diagnostics.
+7. Constraints are included in specialization/evidence identity where semantically relevant.
+8. The design composes with #28, basis-type polymorphism, and the capability calculus.
+
+## Design intent
+
+The compile-time constraint layer should answer a simple question:
+
+> **Under which compile-time facts is this definition well-formed and this specialization permitted?**
+
+It should do that uniformly for sizes, types, and operation access without becoming a general proof language.
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #45 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Closed constraints.** Static numeric, shape, capability and semantic constraints must have explicit scope and deterministic closure rules. Successful specialization of a few instances is not a proof for an unbounded family. Unresolved obligations must reject before certification; evidence must bind the actual resolved instance and provider. Termination, overflow, checking limits and quantitative bounds remain explicit obligations.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

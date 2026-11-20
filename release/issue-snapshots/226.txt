@@ -1,0 +1,232 @@
+## Summary
+
+Add a concrete diagnostic-design rule under #225:
+
+> **When possible, teach Qleisli as a semantic delta from familiar Rust ownership intuition.**
+
+The canonical first case is implicit disposal of quantum resources, especially ancillas.
+
+Rust ownership is primarily **affine** for ordinary owned values: a value may be used at most once, but it may also be discarded.
+
+Qleisli quantum ownership should make the quantum side **linear** at the language boundary: a live `Q<T>` resource must be explicitly accounted for rather than silently dropped.
+
+A diagnostic for `drop(q)` or an ancilla escaping scope should therefore explain this distinction directly.
+
+Related:
+- #225 — diagnostics are part of the harness
+- #224 — compiler diagnostics teach the classical–quantum boundary
+- #196 — three-level surface boundary
+
+Labels: **important**, **enhancement**
+
+## Motivation
+
+An LLM is likely to know Rust ownership extremely well before it knows Qleisli.
+
+That is an opportunity.
+
+Instead of presenting Qleisli as an entirely new conceptual system, diagnostics can explain the **difference from a familiar model**:
+
+```text
+Rust:
+    affine ownership
+    use <= 1
+    implicit discard allowed
+
+Qleisli quantum ownership:
+    linear resource accounting
+    no silent discard of live Q<T>
+```
+
+This makes compiler output itself a bridge from existing model knowledge to Qleisli semantics.
+
+The same principle may later apply beyond ownership, but this issue should start with the strongest case: quantum resource disposal.
+
+## Canonical example: dropping a quantum value
+
+Given conceptually:
+
+```qli
+let anc: Q<Bit> = ancilla();
+...
+drop(anc);
+```
+
+a generic diagnostic such as:
+
+```text
+error: cannot drop quantum value
+```
+
+is too weak.
+
+Prefer a diagnostic that teaches the semantic distinction:
+
+```text
+error[QLEISLI-E-QOWN-DROP]: quantum resource cannot be implicitly dropped
+
+Rust ownership is affine for ordinary classical values:
+an owned value may be used at most once and may be discarded.
+
+Qleisli quantum ownership is linear:
+a live Q<T> resource must be explicitly accounted for before leaving scope.
+
+`anc` is still live here.
+
+help: satisfy the resource contract for this value before scope exit
+```
+
+For a borrowed clean ancilla, the help text may additionally point to the relevant clean-return obligation once that contract is formally stabilized.
+
+## Important semantic caveat
+
+Do **not** freeze unresolved Resource Safety statements through this diagnostic.
+
+In particular, the diagnostic should not casually hard-code a theorem statement before the 0.3.0 semantics are finalized.
+
+The stable lesson is:
+
+```text
+classical affine disposal != quantum linear resource accounting
+```
+
+The exact permitted discharge/return conditions belong to the authoritative language/resource specification.
+
+## Diagnostic pattern
+
+This issue proposes a reusable pattern:
+
+```text
+familiar rule
+    ->
+Qleisli semantic delta
+    ->
+why the attempted program is invalid
+    ->
+valid correction space
+```
+
+For this case:
+
+```text
+Rust affine ownership
+    ->
+Qleisli linear quantum ownership
+    ->
+silent drop of live Q<T> is invalid
+    ->
+return / transfer / permitted consumption / observation,
+as allowed by the resource contract
+```
+
+The compiler should teach the difference, not merely reject the token sequence.
+
+## Ancilla-specific case
+
+A live ancilla leaving scope is an especially useful teaching point.
+
+Conceptually:
+
+```text
+error: ancilla leaves scope while still live
+
+Rust may discard an owned classical value here because ordinary ownership is affine.
+
+Qleisli does not silently discard a live quantum resource.
+
+This ancilla must satisfy its resource contract before scope exit.
+```
+
+For a clean borrowed ancilla, once the formal rule is fixed, diagnostics may say that it must be returned according to the clean-borrow contract.
+
+The diagnostic should avoid suggesting measurement as a generic escape hatch when that would change program semantics.
+
+## Why Rust comparison is especially valuable for LLMs
+
+Qleisli deliberately resembles Rust in surface syntax and ownership vocabulary.
+
+Coding agents therefore arrive with strong prior expectations such as:
+
+- unused values may be dropped;
+- `drop(x)` is a normal ownership operation;
+- scope exit may destroy an owner;
+- move errors are about duplication/use-after-move, not mandatory use.
+
+For `Q<T>`, some of these intuitions are wrong.
+
+A compiler diagnostic can correct the prior **at the exact point where it becomes invalid**.
+
+This is a concrete instance of the #225 principle that compiler output is part of the harness.
+
+## Machine-readable diagnostics
+
+The structured diagnostic should preserve the semantic distinction, for example:
+
+```json
+{
+  "code": "QLEISLI-E-QOWN-DROP",
+  "category": "quantum-ownership",
+  "boundary": "affine-to-linear",
+  "operation": "drop",
+  "resource": "Q<T>",
+  "reason": "live-quantum-resource-must-be-accounted-for"
+}
+```
+
+The exact schema is not frozen here, but coding agents should not have to parse prose to learn that this is an affine-vs-linear boundary.
+
+## Initial cases to cover
+
+- explicit `drop(q)` on `Q<T>`;
+- live `Q<T>` falling out of scope;
+- borrowed ancilla leaving scope without satisfying its return contract;
+- unused quantum binding that would otherwise be silently discarded;
+- attempts to “fix” a linearity error using classical destruction idioms.
+
+## Guardrails
+
+Diagnostics must not:
+
+- imply that every classical Rust type is governed by Qleisli linearity;
+- imply that all Qleisli values are linear;
+- suggest cloning a quantum resource;
+- suggest observation merely to silence an ownership error;
+- conflate implementation limitations with the language's linear resource rule;
+- overstate unsettled Resource Safety or ancilla-cleanliness theorems.
+
+The message should be scoped explicitly to quantum-owned resources such as `Q<T>`.
+
+## Acceptance criteria
+
+- [ ] Add a dedicated diagnostic for explicit disposal of a live `Q<T>`.
+- [ ] Add a diagnostic for a live quantum owner falling out of scope.
+- [ ] Explain the relevant Rust affine intuition and the Qleisli linear quantum rule.
+- [ ] Ensure the wording is explicitly scoped to quantum ownership, not all values.
+- [ ] Add an ancilla-specific version that references the resource contract without prematurely freezing unresolved theorem statements.
+- [ ] Add machine-readable metadata for the affine-to-linear boundary.
+- [ ] Add conformance tests for `drop(q)`, scope-exit disposal, and ancilla disposal.
+- [ ] Verify that diagnostics do not recommend cloning or semantically destructive observation as generic fixes.
+- [ ] Cross-link this rule from #225 and the ownership/resource sections of the Language Reference.
+
+## Design principle
+
+> **Use familiar language intuition as a coordinate system, then explain exactly where Qleisli diverges.**
+
+For quantum ownership, the first lesson should be memorable:
+
+> **Rust may discard an affine classical owner. Qleisli must account for a linear quantum owner.**
+
+That semantic delta belongs in the compiler error itself.
+
+
+
+## v0.3.0 diagnostic contract and Rust migration
+
+The existing #68 decision governs both source entry paths. The unresolved `drop` and `forget` cases retain their original error category, location and checking priority. They carry conditional teaching about quantum ownership. Argument expressions are neither evaluated nor inspected to choose the explanation. Ordinary values and resolved user functions keep their current checks.
+
+The version-1 CLI diagnostic may include an optional `ownership_boundary` object. It has `boundary: "affine_to_linear"`, a `reason` and an `applies_to` value. The reasons distinguish an unresolved disposal name, implicit disposal of a known quantum owner and unsatisfied clean, dirty or computed workspace return obligations. The unresolved-name reason has `applies_to: "if_live_quantum_owner"`. The known ownership reasons have `applies_to: "live_quantum_owner"`. Ordinary diagnostics omit the object. The existing `code`, source spans and acceptance behavior are preserved.
+
+The Rust `CompileError` and `Diagnostic` structs carry the optional typed reason in `boundary`, shared with #224. Callers constructing these structs set `boundary: None` for unrelated diagnostics and use `..` in patterns that only need the previous fields. The release changelog will record this source-level migration so clients can update direct construction when moving to v0.3.0.
+
+Tests should exercise both project and selected-entry JSON, an unresolved `drop(q)` and `drop(0)` without inferring an argument type, rejection of an unused live zero-width owner, and a missing workspace return. Text must explain the applicable rule without suggesting observation or duplication to silence the error. This is diagnostic metadata at the existing rejection sites and carries no acceptance evidence.
+

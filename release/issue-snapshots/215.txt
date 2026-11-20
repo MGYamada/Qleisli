@@ -1,0 +1,188 @@
+## Status
+
+Target: **Qleisli 0.3.0**.
+
+Labels: **important**, **enhancement**.
+
+Related:
+- #195 — `qmatch` for coherent multiway quantum control
+- #196 — q-prefix / `Q<T>` / unmarked surface boundary
+- existing `qif` semantics and static-operation rules
+
+## Problem
+
+The current coherent-control surface syntax is too restrictive if branch arms can only refer to already-defined named operations.
+
+Conceptually, forms like these are natural:
+
+```qli
+qif(control, target) {
+    0 => U0,
+    1 => U1,
+}
+```
+
+and:
+
+```qli
+qmatch(selector, target) {
+    0 => U0,
+    1 => U1,
+    2 => U2,
+    3 => U3,
+}
+```
+
+But programmers should also be able to write the branch bodies directly:
+
+```qli
+qif(control, target) {
+    0 => {
+        h(excl target);
+        x(excl target);
+    },
+    1 => {
+        z(excl target);
+    },
+}
+```
+
+and:
+
+```qli
+qmatch(selector, target) {
+    0 => {
+        h(excl target);
+    },
+    1 => {
+        x(excl target);
+        z(excl target);
+    },
+    2 => {
+        ...
+    },
+    3 => {
+        ...
+    },
+}
+```
+
+Requiring every coherent branch to be manually extracted into a named function/operator is an accidental surface restriction, not a semantic requirement.
+
+## Proposal
+
+Allow both `qif` and `qmatch` arms to contain either:
+
+1. a named static operation; or
+2. an inline quantum block that elaborates to an anonymous static operation.
+
+Conceptually:
+
+```text
+inline branch block
+    ↓ elaborate
+anonymous static operation
+    ↓ type/effect/resource verification
+coherent-control arm
+```
+
+The inline form is syntax/elaboration sugar only. It must **not** weaken coherent-control semantics.
+
+## Semantic requirements
+
+An inline branch must satisfy exactly the same obligations as a named operation used by `qif` or `qmatch`.
+
+In particular:
+
+- coherent control is preserved;
+- selector/control ownership is preserved exactly once;
+- target ownership is consumed/returned consistently;
+- all branches have compatible input/output and ownership shapes;
+- measurement / `Observe` behavior is rejected;
+- branch effects/capabilities are admissible under coherent control;
+- ancilla/resource obligations are checked normally;
+- relative phase is preserved;
+- phase-fixed/static-operation evidence is produced exactly as required for named arms;
+- inline blocks must not provide an escape hatch around verifier obligations.
+
+The parser or AST should not encode “named function only” as a semantic restriction.
+
+## Design principle
+
+`qif` means **binary coherent quantum branching**.
+
+`qmatch` means **multiway coherent quantum branching**.
+
+Neither should mean “coherent branching where every branch happens to have been separately named elsewhere”.
+
+The q-prefix boundary describes a semantic distinction, not an incidental syntactic limitation.
+
+## Lowering
+
+A preferred implementation model is to elaborate inline arms into anonymous static operations before the existing coherent-control verification/lowering path.
+
+For example:
+
+```qli
+qif(control, target) {
+    0 => { ... },
+    1 => { ... },
+}
+```
+
+and:
+
+```qli
+qmatch(selector, target) {
+    0 => { ... },
+    1 => { ... },
+    2 => { ... },
+}
+```
+
+should lower through the same semantic path as if each arm had first been written as a named operation.
+
+The exact internal representation is not prescribed by this issue.
+
+## Diagnostics
+
+If an inline arm is not admissible, diagnostics should explain the semantic reason, for example:
+
+- branch performs observation;
+- branch ownership shape differs;
+- branch is not admissible under coherent control;
+- branch fails ancilla/resource obligations;
+- branch capability/effect differs from another arm;
+- branch cannot be elaborated into the required static operation class.
+
+Once inline blocks are supported, do not report a generic “branch must be a function name” error.
+
+## Acceptance criteria
+
+- `qif` accepts inline branch blocks.
+- `qmatch` accepts inline branch blocks.
+- Named operation arms continue to work unchanged.
+- Inline blocks elaborate to the same semantic contract as named arms.
+- Inline blocks cannot bypass ownership, phase, effect, ancilla, or coherent-control checks.
+- Mismatched branch ownership/input/output shapes are rejected.
+- Observation inside an inline coherent-control branch is rejected.
+- Diagnostics identify the actual semantic violation.
+- Language Reference documents both named-arm and inline-block forms for `qif` and `qmatch`.
+- Positive and negative conformance/authoring cases cover both forms.
+- `qif` and `qmatch` use one consistent branch-body rule.
+
+## Non-goals
+
+This issue does not introduce:
+
+- runtime-created quantum closures;
+- unrestricted dynamic dispatch inside coherent control;
+- measurement-driven classical branching;
+- weaker resource or phase guarantees;
+- a new semantic meaning for `qif` or `qmatch`.
+
+It only removes an accidental restriction on how a valid coherent branch may be written.
+
+## Design principle
+
+> **Branch admissibility is a semantic property, not a naming requirement.**

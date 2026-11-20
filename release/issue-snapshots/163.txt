@@ -1,0 +1,140 @@
+## Current application of #311 — 2026-10-13 (Asia/Tokyo)
+
+Apply the adopted **EXACT-2026-01** boundary from [#311](https://github.com/MGYamada/Qleisli/issues/311): the precision-dependent certification below is an **engineering target-resource claim about the actual approximate artifact**, outside edition-2026 constitutional semantic truth conditions. A closed error budget does not establish source equality, exact cleanup, coherent-control access, constitutional PR or constitutional target RS.
+
+Engineering claim kinds, artifact/profile/metric/budget identities and their API/CLI results must remain mechanically distinct from exact correspondence and resource evidence. A zero-labeled engineering bound does not bypass independent exact checks. Conversely, independently checked exact artifacts/proofs remain eligible even if numerical search assisted their construction. Search cost and emitted-circuit cost remain distinct.
+
+All twelve acceptance criteria below remain required and uncompleted. This terminology repair does not implement the certificate or close this Issue, select a universal metric, admit epsilon into source Meaning, or alter the adopted interpretation/guarantee records.
+
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+**Adopted terminology:** for an epsilon-approximate implementation of the source, the target/resource certification discussed below is engineering certification, not edition-2026 constitutional RS for that source realization. Earlier capitalized Resource Safety wording must be read with the explicit EXACT-2026-01 boundary below; all twelve acceptance criteria remain required.
+
+Related:
+- #31 — exact/approximate semantics boundary
+- #120 — target realizability and synthesis workspace
+- #122 — controlled realizability
+- #127 — closed specializations
+- Resource Safety theorem work
+
+## Problem
+
+Approximate synthesis cost generally depends on the requested precision.
+
+Conceptually:
+
+```text
+synthesize(U, epsilon)
+```
+
+may require increasingly large circuits as `epsilon` decreases.
+
+If the approximation budget remains runtime-dependent, unresolved, symbolic without a finite admissible range, or otherwise open at the point of target certification, Qleisli cannot necessarily compute a concrete finite target resource bound.
+
+Therefore an exact source meaning plus a target name is not enough to issue even a bounded *engineering* target-resource certificate for approximate synthesis. Constitutional target RS additionally requires a separately admitted exact realization and checked resource evidence (#311).
+
+## Required boundary
+
+Before concrete target resource certification, the following must be closed:
+
+```text
+exact source Meaning
++ selected target/profile
++ selected implementation/synthesis path
++ approximation metric
++ finite approximation budget epsilon
++ relevant composition budget
+```
+
+or an equivalent finite symbolic specialization accepted by the resource model.
+
+The approximation contract must be part of the resource-certificate identity.
+
+## Runtime precision
+
+The initial 0.3.0 rule should be conservative:
+
+> **Runtime-chosen or unbounded precision may not drive target synthesis under a closed engineering target-resource certificate.**
+
+If an algorithm accepts a runtime accuracy request, one of the following must happen before issuing that engineering target-resource certificate:
+
+- it is specialized to a closed finite precision;
+- a declared finite upper/lower precision range yields a checked worst-case bound;
+- the adaptive host process remains outside the claimed certificate scope.
+
+## Search time vs emitted-circuit cost
+
+Compiler/search cost remains separate from emitted quantum execution resources unless the declared resource model explicitly includes it. A quantum execution-resource claim does not by itself certify synthesis-search time.
+
+However, successful target certification must produce a finite bound for the **actual emitted implementation**.
+
+A timeout, unknown synthesis result, unresolved epsilon, or incomplete search cannot issue an engineering target-resource certificate, let alone constitutional target RS evidence.
+
+## Composition
+
+When several approximate components are combined, the selected composition rule for error budgets must also be fixed before final certification.
+
+The compiler must not silently tighten or relax epsilon after resource analysis without rechecking the resource contract.
+
+## Controlled operations
+
+Where coherent control makes phase relevant, the approximation metric and bound must remain compatible with #31/#122. A cheap resource estimate for an uncontrolled channel is not automatically valid for the controlled realization.
+
+## Non-goals
+
+This issue does not:
+
+- choose one approximation metric for every effect class;
+- require exact synthesis;
+- include synthesis-search CPU time in the quantum cost vector;
+- select a specific rotation-synthesis algorithm;
+- forbid approximate target execution.
+
+## Certificate separation and fail-closed admission
+
+Edition 2026 (#311) requires **mechanically distinct claim kinds**:
+
+1. **Engineering numerical/refinement and approximate-resource evidence** states an error metric, closed precision budget, composition assumptions and checked quantitative bound for the **actual emitted approximate artifact**. It does not establish exact equality to the source meaning.
+2. **Constitutional exact PR and target-RS evidence** requires independent exact correspondence for the actual admitted artifact and checked quantitative bounds for that exact realization. Approximate evidence cannot supply either premise merely by being finite or accurate.
+
+Every receipt, cache entry, CLI/API result and resource certificate must bind its claim kind, exact source meaning, emitted artifact identity, semantic paradigm, realization profile, numerical/error metric, finite error/precision budget, composition assumptions and resource model. Relabeling a receipt, removing an epsilon field, or accepting a tolerance comparison as exact equality never upgrades engineering evidence to constitutional acceptance.
+
+**Required negative and positive regressions:**
+
+- A valid finite-budget engineering resource certificate can be issued **as engineering only**; using it as constitutional PR/target RS must be rejected.
+- Changed/missing metric, epsilon, artifact, realization profile or composition parameters invalidate the old certificate. Timeout and unresolved/unbounded budgets fail closed.
+- Even a displayed zero numerical error or an explicitly named `epsilon = 0` does not bypass independent exact checking.
+- Numerical methods may construct an exact artifact/proof; if independently checked against the actual artifact, that exact path remains admissible and is not rejected just because the search used numerical approximations.
+- Uncontrolled channel/error evidence cannot silently certify a coherently controlled, phase-sensitive realization.
+
+This is an admission/identity constraint for the existing approximation-resource problem, not a new effect or amendment of the Constitution. General certified complex numerics remain the v1+ responsibility of #310.
+
+## Acceptance criteria
+
+[Acceptance evidence for the merged beta commit](https://github.com/MGYamada/Qleisli/issues/163#issuecomment-6938560916).
+
+- [x] Target resource certification records the approximation metric and finite budget.
+- [x] Runtime/unbounded precision cannot silently drive certified synthesis.
+- [x] Unresolved approximation parameters prevent quantitative certification.
+- [x] The actual selected implementation is bounded, not merely the ideal source meaning.
+- [x] Error-budget composition and resource analysis use the same fixed approximation contract.
+- [x] Changing epsilon or the metric invalidates/recomputes the certificate.
+- [x] Controlled/phase-sensitive implementations use a compatible approximation contract.
+- [x] Synthesis search failure or timeout cannot produce Resource Safety evidence.
+- [x] Compiler/search work remains distinct from emitted quantum execution resources unless separately modeled.
+- [x] Approximate engineering and exact constitutional certificate kinds remain mechanically distinct; relabeling, dropping epsilon data or changing artifact/profile cannot promote approximate evidence to exact PR/RS.
+- [x] Tests reject altered/missing metrics, budgets, profiles, artifacts, composition assumptions, timeouts and zero-labeled tolerance reports as exact admission.
+- [x] Tests admit independently checked exact PR and RS even when numerical search assisted; coherent-control claims require their own phase-aware evidence.
+
+## Design principle
+
+> **Precision is a resource parameter. A target cost certificate is meaningful only after the precision contract is fixed.**
+
+## Adopted exactness boundary — EXACT-2026-01 (2026-10-05)
+
+The human Guardian adopted the exact supplement recorded in #311 (reviewed SHA-256 `b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179`; actual adoption record SHA-256 `e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59`). Its interpretation is now binding; implementation, mechanical continuity integration and proof discharge remain separate.
+
+For edition 2026, an epsilon-bound approximation to a source meaning does not discharge that source's constitutional PR or target-RS obligations. Such an artifact may carry separately checked engineering approximation/resource claims, and all this Issue's metric, composition, closed-budget, actual-artifact, control/reference and rejection requirements remain in force where applicable. None is waived or postponed by this clarification. An independently checked exact admitted artifact is not excluded merely because an internal numerical/search parameter is named epsilon. Exact phase, cleanup and existing guarantees remain protected; numerical assistance may produce checked evidence for exact propositions. #309 remains 0.3.1 and #310 remains v1+.
+

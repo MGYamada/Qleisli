@@ -1,0 +1,257 @@
+## Status
+
+**Constitutional language-design issue for Qleisli 0.3.0.**
+
+Related:
+- #129 — Qleisli 2026 Constitution
+- #135 — monotone interpretation ledger and current acceptance identity
+- #136 — constitutional kernel and theorem boundary
+- #149 — Constitution Guardian Office interpretation authority
+- #280 — Resource Safety as a reserved edition-2026 obligation
+- #281 — checked forward Physical Realizability
+- #127 — realizability/resource claims over generic and closed programs
+- #48 — authoritative Language Reference
+
+## Problem
+
+The Constitution identifies three Fundamental Theorems:
+
+1. **Qleisli Soundness Theorem**
+2. **Physical Realizability Theorem**
+3. **Resource Safety Theorem**
+
+The wrong model is to treat these as three Lean theorem types that must eventually be frozen word-for-word.
+
+That would make future same-edition language growth constitutionally brittle. A new feature could create a genuine new proof obligation that the old theorem syntax did not quantify over, forcing either an artificial edition change or an illicit escape from the theorem.
+
+The Constitution is intended to prevent exactly that.
+
+## Adopted model: theorem jurisdiction, not frozen theorem syntax
+
+Each Fundamental Theorem names an **enduring constitutional proof jurisdiction** of edition 2026.
+
+The Constitution fixes:
+
+- the existence of the three jurisdictions;
+- their protected purpose;
+- the rule that every admitted edition-2026 feature remains subject to them;
+- the prohibition on weakening or evading them.
+
+It does **not** freeze one forever-complete Lean proposition that must anticipate every future construct.
+
+Conceptually:
+
+```text
+Constitution 2026
+    ├── Soundness jurisdiction
+    ├── Physical Realizability jurisdiction
+    └── Resource Safety jurisdiction
+
+current language L_t
+    ↓
+current formal realization of each jurisdiction
+    ↓
+Lean theorem(s) / checked evidence for L_t
+```
+
+When the language grows from `L_t` to `L_{t+1}`, the concrete theorem statements may grow as well while remaining realizations of the same constitutional obligations.
+
+## Constitution Guardian Office interpretation authority
+
+The **Constitution Guardian Office has final and exclusive authority to interpret how the three Fundamental-Theorem jurisdictions apply to new same-edition features and constitutional disputes**.
+
+For a proposed feature `F`, the Guardian determines:
+
+- which Fundamental-Theorem jurisdictions apply;
+- what new constitutional proof obligation is activated;
+- whether the existing formal realization already covers `F`;
+- whether a stronger theorem or additional evidence is required;
+- whether the change remains constitutionally continuous within edition 2026.
+
+The Guardian does not establish mathematical truth by interpretation.
+
+The authority split is:
+
+```text
+Constitution
+    fixes enduring jurisdiction
+
+Constitution Guardian Office
+    interprets that jurisdiction for the new case
+
+Lean / independent checker
+    proves or rejects the resulting obligation
+
+ordinary maintainers
+    choose implementation inside the interpreted boundary
+```
+
+A Constitution Guardian Office interpretation cannot waive a failed proof or redefine a false proposition as true.
+
+## Current formal realizations
+
+0.3.0 should still draft concrete theorem schemas because the implementation needs actual objects to prove today.
+
+For example:
+
+```text
+Soundness_t:
+  Accepted_t(P)
+    -> current ownership/effect/semantic promises hold
+
+PhysicalRealizability_t:
+  Accepted_t(P)
+  ∧ CheckedRealization_t(P, τ, C, E)
+    -> C realizes Meaning_t(P) under the checked target/workspace contract
+
+ResourceSafety_t:
+  Accepted_t(P)
+    -> current admitted resource obligations are finitely/statically accountable
+```
+
+But these are **current formal realizations**, not constitutional articles.
+
+If edition 2026 later admits parametric families, the current RS realization may legitimately strengthen to something such as:
+
+```text
+AcceptedFamily_{t+1}(P<n>)
+  -> Resource(P<n>) <= f(n)
+```
+
+without an edition change, because the Resource Safety jurisdiction already existed.
+
+## Required 0.3.0 decisions
+
+For each jurisdiction, document:
+
+- its protected constitutional purpose;
+- the current language objects to which it applies;
+- the current formal theorem/evidence realization;
+- the checker/Lean boundary that discharges it;
+- which definitions are implementation-era formalization details;
+- which changes merely strengthen/adapt the current proof;
+- which changes require constitutional amendment and a new edition, and which would violate non-weakening even with an edition change.
+
+Do not require the current schema to anticipate every future Qleisli construct.
+
+## Monotonicity rule
+
+Same-edition language growth may increase the proof burden.
+
+It may not escape it.
+
+```text
+new feature
+    ↓
+Constitution Guardian Office interpretation
+    ↓
+existing constitutional jurisdiction(s) activate
+    ↓
+formal theorem/evidence strengthened as necessary
+    ↓
+proof required before acceptance
+```
+
+A stronger current theorem is ordinary same-edition development when it merely discharges an already-existing jurisdiction.
+
+## Accumulated guarantees and current acceptance
+
+The formal realizations above govern the current accepted language. They must also preserve the discharged interpretation ledger from #135.
+
+A binding Constitution Guardian Office interpretation, once formally discharged and recorded, becomes a minimum guarantee. Later interpretations may clarify or strengthen it but may not repeal or relax it within the edition. This protection concerns the recorded property, domain, premises, and semantic meaning, not one Lean declaration's spelling.
+
+Every release must relate its actual production acceptance and accepted artifacts to both:
+
+- the three jurisdictions over the whole current admitted scope; and
+- every applicable historical ledger obligation, with justified semantic transport.
+
+Changing theorem premises is permitted for new cases only when it does not exempt currently accepted cases from a previously protected obligation. A proof over a narrower ghost predicate does not establish production conformance.
+
+The v1.0.0 milestone is full discharge of these duties, not a freeze of `Accepted_t` or the top-level theorem types. Earlier proof-maturity and certification claims follow #129 Article VIII and #142.
+
+Forward PR is the chosen admission-scoped contract under #281. General synthesis completeness remains optional target/profile mathematics; this is a scope decision, not a claim that implication syntax alone logically forbids an existence theorem.
+
+## Non-goals
+
+This issue does **not**:
+
+- freeze final Lean theorem types for the lifetime of edition 2026;
+- predict every future type, control form, target profile, or resource model;
+- make theorem syntax part of `CONSTITUTION.md`;
+- let the Guardian waive proof obligations or alter mathematical truth;
+- let ordinary maintainers redefine constitutional jurisdiction without Constitution Guardian Office interpretation.
+
+## Acceptance criteria
+
+- [x] Define the three Fundamental Theorems as constitutional jurisdictions rather than frozen theorem syntax.
+- [x] Document the protected purpose of Soundness, Physical Realizability, and Resource Safety.
+- [x] Draft useful current formal realizations without constitutionalizing their exact Lean types.
+- [x] State that those formal realizations may strengthen or expand within edition 2026 as the language grows.
+- [x] Make Constitution Guardian Office interpretation binding on how new features fall under the three jurisdictions.
+- [x] Require new proof/evidence whenever Constitution Guardian Office interpretation activates a new obligation.
+- [x] Distinguish theorem strengthening from constitutional amendment.
+- [x] Preserve the #135 ledger against current production acceptance and artifacts, including semantic transport.
+- [x] State that the ledger is a minimum and does not exempt new features from current jurisdiction.
+- [x] Cross-reference #149, #280 and #281.
+- [x] Preserve implementation freedom inside the interpreted constitutional boundary.
+
+## Core principle
+
+> **The Constitution freezes theorem jurisdiction, not theorem syntax.**
+
+> **The Guardian interprets the jurisdiction; Lean proves the resulting obligation.**
+
+## Draft 5 institutional synchronization
+
+Under #129 Draft 5, the **Constitution Guardian Office** is the permanent constitutional institution. Constitutional authority is exercised only by its natural-human holder or human members. Artificial intelligence, autonomous agents, software systems, or analogous non-human computational entities may assist with research, drafting, criticism, formalization, search, or analysis, but may never hold, receive, exercise, vote on, or proxy the Office's constitutional authority.
+
+This institutional rule does not change the theorem jurisdictions in this issue; it fixes who may issue the binding interpretation that activates them.
+
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and, at that initial checkpoint, zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.
+
+
+## Scoped guarantee admission and production review — 2026-10-04
+
+The appointed human Guardian explicitly answered **「2件とも提示された範囲・前提で妥当と認め、保証登録を承認する」** for the two exact scoped proposals:
+
+- `QS-QLV1-OWNERSHIP-2026-01`: ownership of the original ordinary QLV1 decoded root.
+- `QS-QLV1-SCOPE-2026-01`: classical lexical scope of that same actual accepted root.
+
+Reviewed proposal: `governance/proposals/initial-guarantees.json`, SHA-256 `bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02`. Subsequent human adequacy/admission event: `governance/guarantees/initial-2026-admission.json`, SHA-256 `9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2`.
+
+The live ledger now records **two discharged scoped QS guarantees and three pending broader obligations**. QS-2026-01, PR-2026-01 and RS-2026-01 are not fully discharged. The admitted theorems bind actual `Protocol.Validity.check bytes` success to an `Acceptance` witness, its decoded artifact and selected original root. Their independent OwnershipSafe/ScopeSafe properties do not certify source lowering, Rust re-materialization, native compiler/runtime, hierarchy, native-contract, PR or quantitative RS.
+
+The exact reviewed source closure and registry are preserved beside the initial validation. Initial proof evidence includes both Lean builds/audits, fresh kernel/Main replay and exact elaborated theorem/axiom output. The initial proposal checker passed 18 regressions and live Lean-output comparison; an independent review found no scope/premise mismatch. The subsequent v3 ledger/current-evidence enforcement is being integrated and tested separately. Historical approved meaning and mutable current implementation evidence are distinct; unrelated source changes must refresh current proof binding, while changes of semantic representation require justified transport.
+
+The production inventory now distinguishes **21 paths and all nine native modes**, with 12 passing coverage regressions. It separates ordinary fresh acceptance, hierarchy/component checking, proposal-only output, source configuration, display and host execution. The corresponding Reference is `docs/src/reference/production-boundary.md`; S05-C1–C5 remain open.
+
+These are working-tree results. No integration commit, full hosted CI, completed issue, release readiness or publication is claimed.
+
+## Acceptance audit and completion — 2026-10-05
+
+All **11 original criteria** are satisfied for this jurisdiction/current-formalization-policy issue. The complete list was reviewed against the adopted text and functioning current ledger boundary, not inferred from previous checkboxes or a general plan approval:
+
+1. **Jurisdictions, not theorem spelling:** [Constitution Articles I–IV](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/CONSTITUTION.md) establish the three permanent duties while allowing implementation-era formalizations to evolve.
+2. **Protected purposes:** the [human-adopted initial interpretations](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/governance/interpretations/initial-2026-reviewed.txt) identify accepted-program semantic/ownership/effect duties, forward correspondence to actual target artifacts, and quantitative resource bounds/preservation, with explicit scopes and premises.
+3. **Useful current realizations:** the actual two scoped QLV1 theorems give concrete current QS evidence; the [realization Reference](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/docs/src/reference/realization.md) gives a typed exact workspace/reference equation and artifact-bound resource measures, peak-width and preservation contracts. These fulfill the criterion to draft realizations; PR/RS implementation and general proofs are not falsely marked discharged.
+4. **Same-edition expansion:** the Constitution and [authority Reference](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/docs/src/reference/authority.md) permit stronger formalizations within edition 2026 while preserving protected meanings and all applicable obligations.
+5. **Binding human interpretation:** Article V and the separately recorded affirmative adoption of QS-2026-01, PR-2026-01 and RS-2026-01 establish the natural-human Office's exclusive role for new cases.
+6. **New evidence duties:** the interpretation/discharge and change-review rules require corresponding proof/evidence for an activated obligation; adoption, tests or an old out-of-scope theorem cannot waive it. The pre-v1 disclosure/full-conformance distinction remains intact.
+7. **Strengthening versus amendment:** Articles II–IV/IX and the Reference distinguish same-edition proof development, interpretation, entrenched-text amendment and the restricted rectification procedure.
+8. **Actual current ledger preservation:** the [v4 ledger](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/governance/guarantees.json), fixed registered-verifier policy and [continuity checker](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/scripts/check_guarantee_continuity.py) retain both human-admitted immutable guarantee identities and bind current evidence to the actual original-byte QLV1 acceptance witness/root and elaborated checker theorem types. The current representation maps identically to the admitted one. A changed meaning/witness/theorem type is rejected: representation-changing semantic transport is explicitly not implemented and cannot be used unchecked. This establishes preservation of the current two-entry scope, not arbitrary future transport or completion of #135/#141.
+9. **Minimum, not exemption:** the adopted interpretations require new capabilities to satisfy the applicable current obligations even when outside the two historical fragments; the ledger retains three broader pending obligations separately.
+10. **Related decisions:** this Issue and the adopted documents explicitly link #149, #280 and #281, retaining the exclusively human Office, quantitative RS and admission-scoped forward PR distinctions.
+11. **Implementation freedom:** the Constitution, GOVERNANCE and Reference leave ordinary design/implementation choices with maintainers inside the interpreted boundary.
+
+The substantive documents, human records, ledger, Lean sources and fixed ledger/continuity enforcement are already published in **10553a9f94f6fd6a4555961244e0e9be41154f8f** and unchanged in current local **a26e29bc19e06324e8b394d9d1dbb97ea2d163e1**. The local authority chapter has only the separately reviewed navigation-link change, not changed rules. Constitutional text remains SHA-256 **40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b**; the adopted interpretation packet remains **7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3**, with adoption event **bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e**.
+
+A fresh `python3 scripts/check_constitution.py --base-ref 10553a9f94f6fd6a4555961244e0e9be41154f8f` passes. That run checks current source/evidence identity and continuity, not fresh Lean replay. The existing hosted native/Lean validation jobs for [run 37233042845](https://github.com/MGYamada/Qleisli/actions/runs/37233042845) have passed their build/audit/replay and registered-guarantee checks; the overall run is still in progress and is not called complete here.
+
+No original criterion is deleted, narrowed or deferred. Closing this policy/realization-draft issue neither admits a new guarantee nor completes broader QS/PR/RS proofs, resource certificates, all production coverage, full CI, the release gate or publication. Those actual implementation/proof obligations remain in their existing Issues.

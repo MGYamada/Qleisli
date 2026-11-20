@@ -1,0 +1,355 @@
+## Three-theorem design alignment — 2026-10-08
+
+**Maintainer-level design direction only.** This is not a new binding Constitution Guardian Office interpretation, constitutional amendment, theorem discharge, or guarantee-ledger admission. Existing ratified Constitution (#129), jurisdiction framework (#139), ledger (#135), and EXACT-2026-01 (#311) retain authority.
+
+1. **QS / Soundness:** semantic acceptance proves the specified exact owner/access/effect/phase/meaning contracts, including clean return and dirty identity restoration. Ending `excl` restores *access authority* over the changed, still-live owner, not its prior state, and does not release it (#29/#70/#72/#157).
+2. **PR / Physical Realizability:** separately admitted, independently checked target realization implements the accepted semantic meaning with its exact phase, ordered axes, workspace and target assumptions. The obligation is **forward correspondence**, not completeness of exact synthesis. Semantic acceptance does not imply target execution (#281/#120).
+3. **RS / Resource Safety:** quantitative bounds and budgets apply to the actual admitted Core/realization artifact under its selected profile. Count live owners once, allocated ancillas, generated uncomputation, routing, physical SWAPs, measurements/feed-forward where relevant. A restored clean ancilla proves a QS state property, **not** a numerical cost bound. Access exit and `Unit` return do not erase cost (#280).
+
+Current illustrative schemas (not frozen constitutional theorem statements):
+
+```text
+Accepted_R(P) -> SemanticSafe_R(P)
+Accepted_R(P) AND AdmittedRealization_{R,rho}(P,C,Epr)
+  -> Realizes_{R,rho}(C, Meaning_R(P), Epr)
+Accepted_R(P) AND AdmittedRealization_{R,rho}(P,C,Epr)
+  AND CheckedResourceEvidence_{R,rho}(C,b,Ers)
+  -> Cost_{R,rho}(C) <= b
+```
+
+A resource claim for **Core alone** may instead use its independently checked Core-cost relation without asserting existence of a target circuit. Neither cost schema permits untrusted producer assertions as certificates. A production path advertising target/quantitative certification must require its actual corresponding evidence, not evade proof via empty premises.
+
+**Independent axes:** exact coefficient paradigm `R` (initially `R_3`, `R_infty`, #309/#339), gate/target realization profile `rho`, and resource cost model. Exact typed base change preserves denotation, not automatic target admission, optimally minimal cost, or cost-certificate transport. No epsilon approximate correspondence discharges edition-2026 constitutional guarantees.
+
+**Specialization:** closed finite instances can have concrete verified cost certificates; a family-level RS guarantee requires an explicit, checked symbolic bound for all admitted parameter choices and provider contracts. Totality and fixed-target feasibility are separate (#127/#161/#162/#164). No single target must handle every instance of an accepted generic family.
+
+**Acceptance boundary:** the frontend, LLM, Rust optimizers, synthesis engines, and caches may only propose unchecked artifacts. Lean/independent checking must validate exact meaning, transformed artifact correspondence, applicable target admission and artifact-bound resource evidence before certification (#136/#309). The three pending broad QS/PR/RS obligations are not automatically discharged by this issue edit. All preexisting implementation checkboxes stay open until independently verified; scope and ledger guarantees remain unchanged.
+
+See #136 (joint boundary), #280 (RS), #281 (PR), #127 (families), #157 (workspace QS), #142 (release gate).
+
+## Status
+
+**Constitutional theorem-boundary correction for Qleisli 0.3.0 / edition 2026.**
+
+This issue **retains Resource Safety as a Fundamental Theorem of edition 2026**.
+
+The correction is not to remove or postpone the theorem. It is to define Resource Safety as a **reserved constitutional obligation whose proof burden grows automatically when the language acquires features that make resource safety nontrivial**.
+
+Related:
+- #129 — Qleisli 2026 Constitution draft
+- #135 — monotone guarantee ledger and current acceptance identity
+- #136 — constitutional kernel and theorem boundary
+- #139 — three jurisdictions and evolving formal realizations
+- #29 / #69 — coherent access and checked elaboration
+- #70 / #72 / #157 — exact workspace restoration and uncomputation under Soundness
+- #311 — adopted edition-2026 exactness boundary
+- #28 / #88 / #127 / #161–#164 — static/resource-accounting design
+
+## Problem
+
+The current design mixes three distinct guarantees under the phrase **Resource Safety**:
+
+1. **linear ownership / no silent disposal**, which belongs to typing and Soundness;
+2. **clean-workspace return**, which is a semantic Soundness obligation (#157);
+3. **quantitative resource boundedness/accountability**, which is the proper subject of the Resource Safety Theorem.
+
+For the current finite 2026 Core, the third guarantee can be easy to discharge:
+
+```text
+accepted finite program
+    ↓
+finite checked elaboration / compilation
+    ↓
+count finite resource use
+```
+
+That does **not** mean Resource Safety is absent from edition 2026.
+
+It means the current language fragment happens to make the theorem comparatively simple.
+
+Removing the theorem from edition 2026 would create the wrong edition boundary: a later language feature could suddenly require a real Resource Safety theorem and force a new edition merely because the constitutional slot had not been reserved.
+
+## Adopted direction
+
+Edition 2026 keeps all three Fundamental Theorems from the beginning:
+
+1. **Qleisli Soundness Theorem**
+2. **Physical Realizability Theorem**
+3. **Resource Safety Theorem**
+
+Resource Safety is therefore part of the **edition contract**, even when the currently admitted language makes its proof nearly mechanical.
+
+The intended model is:
+
+```text
+edition 2026 Constitution
+    ├── Soundness
+    ├── Physical Realizability
+    └── Resource Safety
+            │
+            ├── current finite fragment:
+            │       finite/static resource accounting may discharge it simply
+            │
+            └── later language growth inside edition 2026:
+                    stronger proof obligations activate automatically
+```
+
+No edition change is required merely because Resource Safety becomes mathematically nontrivial.
+
+## Constitutional reservation rule
+
+The Constitution should state Resource Safety broadly enough that later language changes inside edition 2026 cannot evade it.
+
+Conceptually:
+
+```text
+Accepted_2026,t(P)
+  -> ResourceUse(P) is bounded/accountable
+     according to the resource semantics admitted by edition 2026
+```
+
+Here `t` denotes the current release/formalization within edition 2026, not a frozen acceptance relation. The exact statement may quantify over:
+
+- source programs;
+- closed specializations;
+- size-parametric families;
+- target/profile realizations;
+- resource-bound expressions;
+
+depending on which of those objects the language admits.
+
+The crucial rule is:
+
+> **When edition 2026 admits a new construct whose resource behavior is not already covered by the existing proof, the Resource Safety proof must be extended before that construct becomes constitutionally accepted.**
+
+The feature activates the dormant proof obligation; it does not create a new theorem.
+
+## Examples of activation triggers
+
+The current finite fragment may allow Resource Safety to reduce largely to checked finite accounting.
+
+The theorem becomes substantively stronger if edition 2026 later admits features such as:
+
+### Size-parametric program families
+
+```text
+QFT<n>
+Adder<n>
+QPE<n,m>
+```
+
+Then Resource Safety may need to establish a bound function:
+
+```text
+Resource(P<n>) <= f(n)
+```
+
+without expanding every concrete instance.
+
+### Bounded runtime control
+
+If runtime-dependent loops or recursion are admitted, the theorem must show that the accepted evidence still produces a finite bound.
+
+### Opaque or external providers
+
+If a callable operation can hide its implementation, Resource Safety must require a checked resource contract or keep it outside the certified boundary.
+
+### Owner-preserving coherent access and generated uncomputation
+
+`excl` (#29) adds an owner-preserving in-place quantum-state update at the source interface. It lowers to explicit checked owner flow rather than adding a trusted semantic primitive. It is therefore compatible with quantitative RS, provided the resource correspondence of elaboration is established:
+
+- Forming an access does not copy or allocate its underlying quantum owner. Count physical/logical qubits under the specified model, not the number of access expressions.
+- An owner remains live when an access ends or a source call returns `Unit`. Clean/dirty restoration is a separate Soundness obligation and does not itself prove a resource bound.
+- When `excl` and explicit consume/apply/return forms yield the same artifact under the same resource model and schedule, their costs agree. Different synthesis or routing choices require checked bounds for their actual artifacts.
+- Generated ancilla preparation, inverse/uncompute, routing and physical SWAP operations remain in the accounting, including peak live width across pending arguments, scopes and branches.
+- Every transformation preserves the applicable bound contract or supplies an independently checked replacement bound that still satisfies declared budgets/capacities and preserves ledgered guarantees.
+
+Combine the Core/realization resource proof with the established source/elaboration and current-artifact correspondence. No completed end-to-end RS theorem follows merely from non-aliasing, a clean-return proof, finite syntax, or the existence of a helper lemma. Opaque operations and admitted size-parametric families retain their checked-contract/bound-function obligations.
+
+The division is common to #29/#69/#70/#72/#157: access returns authority, restoration proves the required state relation, and RS bounds actual resource use. It does not require freezing one proof method in the constitutional text.
+
+### Target-dependent synthesis
+
+If an admitted realization introduces backend workspace, routing, measurement, feed-forward or synthesis cost, RS must account for those resources under the selected profile and bind its evidence to the actual emitted artifact. Constitutional PR still requires the declared exact correspondence.
+
+### Approximation boundary
+
+The adopted #311 / EXACT-2026-01 rule keeps edition-2026 constitutional obligations exact. Approximate backend/tooling contracts, including #163, do not discharge QS, PR or RS by tolerance. An internal numerical/search parameter does not forbid exact accounting of a concrete admitted artifact when the final proposition and its checked evidence remain exact. A future constitutional approximation jurisdiction requires the explicit edition-level decision and non-weakening review specified in #311; it is not admitted by this activation list.
+
+A stronger Resource Safety proof burden is **not by itself a reason for a new edition**. Each proposed capability must still respect the existing semantic contracts and ledger; the examples do not pre-authorize incompatible features.
+
+## Monotonic theorem principle
+
+Edition evolution should be monotone at the level of constitutional obligations.
+
+A language feature may:
+
+- introduce checked premises for new cases, without exempting accepted cases from an existing ledgered guarantee;
+- require new proof machinery;
+- enlarge the resource algebra;
+- introduce a new resource certificate form;
+
+but it may not silently step outside the theorem.
+
+Conceptually:
+
+```text
+2026 initial fragment
+    RS proof: simple
+
+2026 + parametric families
+    RS proof: stronger
+
+2026 + bounded runtime control
+    RS proof: stronger again
+```
+
+while the constitutional theorem identity remains:
+
+```text
+Resource Safety Theorem — edition 2026
+```
+
+This lets the edition absorb compatible language growth without repeatedly redefining its constitution.
+
+## Proper theorem boundary
+
+Resource Safety should own **quantitative boundedness/accountability**, not every resource-adjacent semantic fact.
+
+### Soundness owns
+
+- unique quantum ownership;
+- no implicit discard;
+- clean return;
+- dirty restoration;
+- effect correctness;
+- semantic preservation.
+
+### Physical Realizability owns
+
+- correspondence between accepted semantic meaning and accepted target realization;
+- target gate/profile assumptions;
+- realization workspace correctness.
+
+### Resource Safety owns
+
+- finite/static resource bounds;
+- live width;
+- ancilla/workspace bounds;
+- gate / non-Clifford counts where selected;
+- measurement/feed-forward counts where selected;
+- target capacity obligations;
+- symbolic bound expressions for admitted program families;
+- closure of resource obligations through composition and compilation.
+
+A fact may interact with more than one theorem, but its primary semantic role should remain clear.
+
+## Relationship to #127
+
+#127 distinguishes generic program families from closed specializations.
+
+Resource Safety must be capable of covering both regimes without changing edition:
+
+- for a closed finite specialization, a concrete checked resource certificate may suffice;
+- for an admitted family, the theorem may require a symbolic bound over static parameters.
+
+This is exactly why the theorem must be present **before** the family language becomes powerful enough to need it.
+
+## Relationship to #161–#164
+
+The existing provider/FFI/resource-contract issues illustrate the reserved theorem becoming active at extension boundaries. #163's approximate backend/tooling certification remains subject to #311 and must not be relabeled edition-2026 constitutional RS.
+
+Compatible accepted extensions remain within the existing theorem jurisdiction.
+
+Instead:
+
+```text
+new language capability
+        ↓
+new resource obligation
+        ↓
+must be discharged under edition-2026 RS
+        ↓
+only then may the capability join the certified language
+```
+
+## Acceptance criteria
+
+- [ ] Keep Resource Safety as the third Fundamental Theorem in #129, #135, #136 and #139.
+- [ ] Remove any wording that postpones Resource Safety to a later edition.
+- [ ] State the 2026 RS broadly enough to remain valid as compatible resource-relevant features are added.
+- [ ] Document that the current finite fragment may discharge RS by comparatively simple checked accounting.
+- [ ] Define the rule that any new 2026 language feature with novel resource behavior must extend/discharge RS before constitutional acceptance.
+- [ ] Keep ownership and clean-return obligations under Soundness rather than redefining them as Resource Safety.
+- [ ] Keep Physical Realizability and Resource Safety distinct: a realization may be semantically correct while still violating resource bounds/capacity.
+- [ ] Treat #28, #88, #120, #127 and #161–#164 as potential RS activation points rather than reasons to create a new edition.
+- [ ] Permit future symbolic statements such as `Resource(P<n>) <= f(n)` inside edition 2026 without changing the identity of the theorem.
+- [ ] Require any resource-semantic extension to be monotone: it may strengthen the RS proof obligation but may not bypass or weaken the theorem.
+- [ ] Establish the `excl` resource correspondence in #29: unique live-owner accounting, no release at access exit, and checked bounds for actual generated artifacts.
+- [ ] Include generated preparation/uncomputation/routing costs and preserve applicable budget/capacity contracts when validating replacement bounds.
+- [ ] Apply the adopted #311 exactness boundary to #163 and all approximation-related examples.
+
+## Design principle
+
+> **Resource Safety is part of edition 2026 even when the current language makes it easy to prove.**
+
+> **Reserve the theorem first. When the language grows enough to need it, the same theorem activates automatically — no edition change required.**
+
+> **A compatible language feature may strengthen the proof burden; it may not escape the Constitution.**
+
+## Constitution Guardian Office interpretation authority
+
+The Constitution cannot enumerate every future language feature that may make Resource Safety nontrivial. Therefore the **Constitution Guardian Office has final and exclusive authority to interpret whether a new same-edition feature activates or strengthens the edition-2026 Resource Safety obligation**.
+
+The Constitution Guardian Office decides, for example:
+
+- whether a new construct falls within the Resource Safety jurisdiction;
+- whether the existing RS realization already covers it;
+- whether new premises, resource contracts, bound expressions, or proof machinery are constitutionally required;
+- whether the proposed change remains a same-edition extension or would actually alter constitutional meaning.
+
+This interpretation is binding on constitutional acceptance, but it is **not itself a proof**.
+
+The separation is:
+
+```text
+new feature
+    ↓
+Constitution Guardian Office interprets RS jurisdiction
+    ↓
+concrete proof/evidence obligation is identified
+    ↓
+Lean / independent checker discharges that obligation
+    ↓
+same-edition constitutional acceptance
+```
+
+The Constitution Guardian Office may not waive a failed proof, make a false theorem true, or use interpretation to weaken the entrenched Constitution. Except for a valid pre-v1 rectification authorized under #129 Article IX, a constitutional-text change requires an edition-level amendment; #129 Article IV still prohibits weakening entrenched guarantees while claiming continuity.
+
+> **The Constitution Guardian Office decides what Resource Safety requires of the new feature; Lean decides whether that requirement has actually been proved.**
+
+## Discharged resource guarantees accumulate
+
+Under #135 and #149, a binding RS interpretation that has been formally discharged and recorded becomes a ledgered minimum. Later interpretations may strengthen its bound/accountability contract, generalize it, or replace its proof, but may not withdraw the protected guarantee or silently weaken its resource definitions.
+
+Every release must check that minimum against its **current** production acceptance and current resource/realization evidence, with semantic transport when the vocabulary changes. Current RS obligations must also cover newly admitted features beyond the historical ledger.
+
+A pending binding interpretation is not an already proved guarantee; it remains an obligation before certification. No additional edition or constitutional amendment is needed merely to extend the proof within the existing jurisdiction.
+
+- [ ] Record discharged binding RS interpretations in the guarantee ledger.
+- [ ] Re-discharge them against current acceptance and artifacts; preserve resource semantics through justified transport.
+- [ ] Distinguish current proof coverage from pending obligations under #129 Article VIII and #142.
+
+
+## Draft 5 authority synchronization
+
+Binding interpretation of the Resource Safety Theorem (RS) belongs to the **Constitution Guardian Office** under #129 Draft 5. That authority is exercised exclusively by natural-human holders or members; AI or analogous non-human systems may assist but may not hold, exercise, vote on, proxy, or automatically issue constitutional authority.
+
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.

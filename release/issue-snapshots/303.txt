@@ -1,0 +1,189 @@
+## Summary
+
+Qleisli 0.3.0 should make the interaction between `ctrl` coherent-control access and exclusive `excl` quantum access precise enough to prove a local **commutation theorem** for compatible accesses.
+
+This is the theorem-level counterpart of the intended access discipline in:
+
+- #29 — exclusive temporary quantum `excl` access
+- #69 — basis-preserving coherent `ctrl` access
+- #85 — evaluation order, temporaries, and quantum lifetime boundaries
+- #20 — symmetric authoring for diagonal phase operations
+
+The goal is not to make source evaluation order unspecified. Source semantics should remain deterministic. The goal is to identify a mechanically checkable condition under which a compiler or proof may safely exchange two already well-typed quantum operations.
+
+The syntax migration does not alter the theorem shape: `excl` supplies the exclusive arbitrary-access footprint and `ctrl` supplies the basis-preserving shared footprint.
+
+## Motivation
+
+Rust obtains race freedom from an aliasing discipline:
+
+> aliasing XOR mutability
+
+Qleisli has a quantum analogue.
+
+Arbitrary quantum mutation is exclusive through `excl`. Overlap may remain possible through `ctrl`, but `ctrl` is restricted to computational-basis-preserving coherent access.
+
+This suggests a local theorem of the form:
+
+> **overlap only through compatible `ctrl` access implies commutation.**
+
+If this theorem holds under the exact Qleisli access contracts, the language gains a strong semantic result directly from its type/access system:
+
+- safe reordering of independent quantum operations;
+- evaluation-order independence for specific typed fragments;
+- a proof basis for scheduling and optimization;
+- a precise explanation of why QFT controlled-phase layers admit reordering;
+- a theorem-level justification for the `ctrl` / `excl` split.
+
+This should be treated as a Soundness-local lemma, not merely an optimization heuristic.
+
+## Candidate theorem shape
+
+For operations `U` and `V`, distinguish:
+
+- `M_U`, `M_V`: axes/subsystems accessed through arbitrary exclusive `excl`;
+- `C_U`, `C_V`: axes/subsystems accessed only through `ctrl`.
+
+A candidate compatibility condition is:
+
+```text
+M_U ∩ (M_V ∪ C_V) = ∅
+M_V ∩ (M_U ∪ C_U) = ∅
+```
+
+so that any overlap is confined to
+
+```text
+C_U ∩ C_V
+```
+
+and both operations are basis-preserving on every shared controlled subsystem.
+
+Under the authoritative semantics, prove the corresponding commutation result, conceptually:
+
+```text
+U ; V  ≡  V ; U
+```
+
+with the exact equality notion chosen by the language semantics.
+
+The final theorem statement may differ from this schematic form. The important requirement is that the proof be derived from the actual access contracts, not postulated as an optimizer rule.
+
+## Proof idea to validate
+
+On the union of shared `ctrl` subsystems, decompose in the computational basis.
+
+Because each admitted `ctrl` use is block diagonal in those basis projectors, both operations decompose into control sectors.
+
+Inside each fixed sector, the non-control quantum actions are on disjoint mutable subsystems by the compatibility conditions above. Those sectorwise actions therefore commute.
+
+The proof must account explicitly for:
+
+- multiple shared controlled axes;
+- entanglement with arbitrary external reference systems;
+- phase kickback;
+- owner ordering / tensor-factor bookkeeping;
+- exact semantics of nested or composite `ctrl` uses;
+- any zero-width / unit cases;
+- the equality notion used by Qleisli.
+
+## QFT consequence
+
+The current textbook-shaped example in #29 uses:
+
+```qli
+controlled_phase[1, k-j+1](ctrl q[k], ctrl q[j]);
+```
+
+but the diagonal controlled-phase operation should be reviewed against #69.
+
+If both operands need only basis-preserving coherent access, the example should use the final `ctrl` spelling instead of arbitrary `excl` access for those operands.
+
+Then the inner QFT phase layer becomes a canonical example of this theorem: the typed access contract itself explains why compatible diagonal phase operations may be reordered.
+
+This issue should update #29/#69 examples as necessary once the exact rule is adopted.
+
+## Relationship to evaluation order
+
+This issue must **not** make general quantum expression evaluation unordered.
+
+#85 should continue to define deterministic source evaluation.
+
+Instead:
+
+- source order remains normative;
+- arbitrary optimizations may not reorder noncommuting operations;
+- a compiler may exchange operations only when a proved semantics-preserving rule applies;
+- this commutation theorem may provide one such rule.
+
+## Acceptance criteria
+
+- [x] Define the precise access footprints used by the theorem.
+- [x] Define compatibility for two operations using `ctrl` and `excl`.
+- [x] Prove that compatible accesses commute under the authoritative quantum semantics.
+- [x] Preserve correctness with arbitrary external entanglement/reference systems.
+- [x] Account for phase kickback and shared coherent controls.
+- [x] State exactly which equality/equivalence notion is proved.
+- [x] Connect the theorem to #85 without weakening deterministic source evaluation.
+- [x] Review and correct the QFT access example in #29 against #69.
+- [x] Add positive and negative conformance/proof examples.
+- [x] Do not add a trusted optimizer exception; reordering must be justified by the proved rule.
+
+## Design principle
+
+> **Qleisli should turn its quantum access discipline into a theorem: overlap through coherent control may be shareable, arbitrary quantum mutation may not be, and compatible typed accesses should carry their commutation proof with them.**
+## First bounded proof unit — 2026-10-04
+
+The current source AST has no ctrl/excl borrow or footprint representation; existing Apply/Adjoint/Controlled values are static operation capabilities, not those accesses. Implement the first local lemma over the already executable Raw.Use.phase / Protected.physicalUse semantics: two adjacent diagonal phase actions commute exactly, then lift the exchange through an existing prefix/suffix and, where available, actual successful protected matrix reconstruction. Include arbitrary reference amplitudes, shared controls, scalar/zero-target phase, and a phase-versus-X counterexample outside the compatibility condition. This adds no source reordering, acceptance rule, optimizer exception or guarantee admission.
+
+The next general lemma uses common control sectors and disjoint tensor factors: block(U_c tensor I) commutes with block(I tensor V_c). A future source-footprint application must establish a complete support/locality account, compatible computational bases and actual owner/axis maps, rather than assuming the decomposition from a control-preservation label. Empty physical axis sets must not erase the identity/lifetime obligations of Q<Unit>. Source typing, borrow lifetimes, general access compatibility, QFT example migration and deterministic evaluation order remain required work; these smaller mathematical results do not close this issue.
+
+
+## Protected phase exchange checkpoint — ef111ea
+
+[ef111ea](https://github.com/MGYamada/Qleisli/commit/ef111ea6fffc8a76e9e239ad8402fa79e342836b) implements the first bounded #303 proof component. Five public theorems connect literal protected phase actions, original prefix/suffix execution and compute/use/uncompute coefficients to equal actual matrix dimensions/complex entries **when both evaluations succeed**, then arbitrary-reference action equality. Ten small executable assertions, one rejecting protected-use example and two named example theorems retain shared controls, zero targets/Unit phase, arbitrary references and a noncommuting phase/X case. Independent review and all 14 recorded source/evidence hashes passed. This does not establish general ctrl/excl permissions, source evaluation reordering, preservation of success/failure/work or a new constitutional guarantee.
+
+Both Lean packages build/audit; fresh QleisliKernel/Main replay, schema rebuilding, exact admitted theorem review and current Acceptance review passed. Current Lean source closure: 1132c5d56826b0fefb361128c41103abfc50a0bf03ff2b442bb420d1665a7e13. Current evidence SHA-256: 327198443eb6db926e0df1ea30bc099ea92f8026537b98586f0f3dc5cb968136. The two scoped guarantees and three broader pending obligations are unchanged. The isolated staged checkpoint passed documentation, current evidence identity, inventory/coverage and their 31 regressions.
+
+The same commit repairs the strict packaged rustdoc failure found by hosted run 37203327934. An isolated baseline with only that comment correction packages and builds strict rustdoc; all three doctests pass with the native checker selected. The initial missing-selector failure is retained. Full hosted CI and release readiness are not claimed. Shared declaration resolution and checked identity transport are the next implementation units.
+
+
+## Next proof unit: shared control sectors and disjoint ordered targets
+
+Under the existing #303 contract, prove exact complex-matrix equality for `block (c => tensor (U c) I)` and `block (c => tensor I (V c))` in either order. Quantify over a finite shared control basis and the ordered target factors; include zero-width target factors without identifying their source owners. No normalization, separability or basis-input restriction is permitted. Derive equality of action on arbitrary external-reference amplitudes.
+
+Connect this algebra to the actual existing hierarchy operator definitions: tensor application, first-bit coherent control and sequence composition. Use the existing `apply_tensor_matrix`, `apply_control_matrix` and `matrix_compose` bridges so the conclusion concerns the original constructed operators, not a substituted desired decomposition. Retain exact C/A/B order, dimensions, phase and common control polarity. Finite shared control sectors and the actual single-control constructor bridge must have separately stated scopes.
+
+Bounded positive examples cover a common coherent control with H on one target and X on the other, zero-width scalar phase, multiple abstract control sectors and correlated reference amplitudes. Negative examples cover a shared mutable target (X/Z) and changing the control basis (H versus controlled-X). Maximum new physical example width is three qubits; preserve first failed attempts and actual build/axiom outputs. Build/audit the actual definitions and refresh current evidence only after verification; no additional guarantee admission is inferred.
+
+This proof-only unit does not implement ctrl/excl syntax, source access footprints, borrow lifetimes, arbitrary owner/axis permutation, deterministic source reordering permissions or a byte-acceptance theorem. Those remain explicit completion requirements of #303 and its parent access issues. QS gains a supporting local equality lemma within the adopted meaning obligation; PR/RS acceptance and certified scope remain unchanged.
+
+
+### Checked proof component: shared control and disjoint ordered target factors
+
+[Commit d128327](https://github.com/MGYamada/Qleisli/commit/d1283270f25f062871ec34634268e25ee29720a6) adds `lean/Qleisli/SharedControlCommutation.lean`. Five theorems prove blockwise tensor exchange, actual Bool-controlled tensor exchange, connection to hierarchy `apply`, adjacent exchange inside actual prefix/suffix sequences, and equality of the resulting action on arbitrary joint reference amplitudes. Arbitrary finite control sectors and zero-width target phases are included; no separability, normalization or unitarity assumption is used for the algebraic equality.
+
+Validation: Mathlib package build and 3,446-declaration audit passed; five public theorem and three example axiom checks use only the existing standard three axioms. Eighteen bounded runtime assertions cover asymmetric/zero-width phases, shared-control examples, noncommuting counterexamples and a correlated complex reference state (at most three physical qubits). Root independently checked the definitions and 18 source/record hashes; current constitutional evidence was refreshed and live-replayed.
+
+This is a local semantic component. It does not authorize source `ctrl`/`excl` permissions, general routed-footprint reordering, or claim equal acceptance/work counts after reordering. Those source/access obligations remain part of this issue, so the issue stays open.
+
+### Next bounded proof unit: actual routed hierarchy bodies
+
+The completed ordered-factor theorem does not by itself cover the distinct routing generated for each operation by `src/frontend/sized/lower.rs::Graph::frame/route`. The next unit connects **actual current hierarchy bodies and exact complex coefficients** to a common ordered coordinate frame `(control, target A, target B, rest)`, applies the existing shared-control exchange theorem, and transports the result back through the actual routes.
+
+Begin with small current consume/return source programs and preserve their actual emitted artifacts before changing any proof: a non-leading shared control, asymmetric target order, a disjoint untouched frame, and a wrong-inverse-route counterexample. These are executable translations of the intended local exchange, not adoption of future borrowed-call syntax.
+
+Required theorem premises must remain explicit and tied to the same actual artifact/body: complete input/output interfaces and owner order from the relevant `NodeTyping.checkAll` conditions; actual wiring nodes and freshly checked summaries; a real bijection with two-sided inverse equations for the forward map and the computed inverse; and evaluations of the original provider/leaf definitions. `Wiring.valid` or a successful wiring inspection alone proves neither bijectivity nor an inverse. Different step routes may not simply be assumed identical. Retain zero-width owners and phase where the selected interfaces admit them.
+
+The desired conclusion is equality of both actual evaluations' coefficients and their action on arbitrary external-reference amplitudes, without a separability assumption. Connect through existing executable `apply`/routing definitions and checked routing lemmas. A generic conjugation equality detached from the concrete body constructors is insufficient.
+
+Validation requires building/auditing the actual definitions and theorem types, bounded positive and noncommuting/wrong-routing examples, independent review, and refreshing current source/proof bindings before integration. No new maximum-size cases, project axioms, unsafe definitions or admission record is introduced.
+
+Source access contracts remain a separate prerequisite: ordered footprints, range/overlap checks, locality beyond control-sector preservation, lifetime/owner restoration, clean/dirty behavior and assignment semantics are not yet a complete adopted packet. This IR proof unit grants no source reordering permission and proves neither equal acceptance/work costs nor general Rust lowering preservation.
+
+
+### Original-body theorem and experiment scope checkpoint — 2026-10-05
+
+[952e874](https://github.com/MGYamada/Qleisli/commit/952e874) adds 17 theorems in lean/Qleisli/RoutedControlCommutation.lean connecting actual original Spine evaluation, same-artifact typing, fresh wiring, computed inverses, literal frames and provider semantics to matrix and arbitrary-reference action. The conditional statements retain their real premises. Seven small native-valid programs contributed 1,312 compared coefficients (maximum error 1.5700924586837752e-16); both Lean builds, audits and replay passed with the standard three axioms. Exact records and initial failed attempts are in tests/fixtures/constitution_v030/routed-control-commutation. This is not source access permission, acceptance/work-order preservation, or a new admitted guarantee; those Issue obligations remain open.
+
+A later edition audit found that Generate.rs passed .qli strings directly to ParsedProgram and never read its 14 recorded Qargo.toml files. Their old [qrate].schema field is not valid schema-2 filesystem admission. [cc11429](https://github.com/MGYamada/Qleisli/commit/cc11429) therefore retains the exact 42 sources/14 unused manifests as explicitly pinned historical in-memory inputs, without rewriting the 168-file experiment record. Eleven mutation tests reject changed/missing inputs and exception expansion; normal filesystem projects still require valid schema-2 manifests. This corrects the scope of the evidence; it does not claim those historical manifests were accepted by the CLI.
