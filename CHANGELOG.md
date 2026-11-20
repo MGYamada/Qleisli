@@ -4,6 +4,18 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+## Unreleased
+
+- Move the beta entries listed above the 0.3.0-beta heading into that section,
+  date it like its tag and open it with its scope statement (#645, #646).
+
+## 0.3.0-beta — 2026-11-20
+
+Unpublished development snapshot. Selecting beta does not complete the v0.3.0
+feature or proof gates and does not extend the alpha-only release approval.
+Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
+and exactness obligations retain their recorded scopes and status.
+
 - Restore navigation from the diagnostics and primitive chapters to the
   inference and discovery contract (#253).
 - Retain the 127 fixed GitHub Issue bodies for the beta acceptance review
@@ -153,8 +165,6 @@ development milestones from the scope of their evidence.
 - Teach ordinary binding and ownership syntax after invented quantum statements.
   Show canonical local forms for malformed quantum headers in text and JSON
   diagnostics (#237).
-
-## 0.3.0-beta — 2026-10-12
 
 - Reconstruct controlled phases in written workspace logical operations using
   the independently checked workspace source fragment.
@@ -1625,11 +1635,6 @@ development milestones from the scope of their evidence.
   behind the existing required checks and scoped release receipts.
 - Reject missing, failed, skipped or stale Rust pair dependencies before receipt
   inspection; expected hashes alone do not establish artifact or suite success.
-
-Unpublished development snapshot. Selecting beta does not complete the v0.3.0
-feature or proof gates and does not extend the alpha-only release approval.
-Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
-and exactness obligations retain their recorded scopes and status.
 
 - Specify qrate, module and file identity and the semantic, evidence,
   observational, realization and organizational roles of external artifacts.
