@@ -26,7 +26,7 @@ fn standalone_help_discovers_native_tools_without_project_or_checker() {
         ] {
             assert!(text.contains(role));
         }
-        assert!(text.contains("planned, not executable"));
+        assert!(text.contains("These analysis commands are planned for future releases."));
     }
 }
 
@@ -51,7 +51,7 @@ fn ecosystem_help_explains_independent_tools_and_unavailable_analysis() {
     }
     assert!(text.contains("independent projects"));
     assert!(text.contains("not affiliated with"));
-    assert!(text.contains("planned, not executable commands"));
+    assert!(text.contains("These analysis commands are planned for future releases."));
     assert!(text.contains("documentation only"));
 }
 
@@ -84,4 +84,13 @@ fn unavailable_tools_and_invalid_help_keep_usage_failures_and_discovery() {
             assert!(text.contains("\"outcome\":\"error\""), "{text}");
         }
     }
+}
+
+#[test]
+fn selected_source_usage_reports_analysis_command_availability() {
+    let output = run(&["check", "--entry=main::main", "--format=json"]);
+    assert_eq!(output.status.code(), Some(2));
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.contains("\"code\":\"usage\""));
+    assert!(text.contains("These analysis commands are planned for future releases."));
 }

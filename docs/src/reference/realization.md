@@ -955,15 +955,19 @@ a fresh check. Timeouts and refusals return an error.
 
 ## Quantitative resource claims
 
-A resource certificate states a checked bound for one emitted artifact. The
-subsections below describe the bounded checks of the canonical terminal
-OpenQASM profile.
+Resource Safety is the third permanent obligation of edition 2026. The
+[adopted resource interpretation](../design/initial-interpretations.md#3-interpretation-rs-2026-01--quantitative-resource-accountability)
+applies to finite quantitative bounds on the actual accepted program and its
+claimed realization. A resource certificate states a checked bound for one
+emitted artifact. The subsections below describe the bounded checks of the
+canonical terminal OpenQASM profile.
 
 Rules:
 
 - A resource certificate must identify the actual closed instance, the
   emitted artifact, the target and profile, the resource measures, the
-  schedule or interpretation of those measures, and the checked bounds.
+  input and scheduling premises, and the checked bounds over all admitted
+  execution paths.
 - Changing providers, layout, target, workspace or output bytes invalidates
   reuse, unless a checked correspondence establishes the changed claim.
 - A content hash establishes identity, not the bound.
@@ -977,14 +981,20 @@ Rules:
 - Compiler memory, checker work limits, static termination, ownership safety
   and target resource bounds are different claims. In particular, the
   ownership-only predicate does not discharge quantitative RS.
-- An admitted symbolic family bound may strengthen RS within edition 2026. It
-  needs the corresponding current proof and the actual compilation and
-  resource binding.
-- A family or construct may be admitted later with resource behavior outside
-  current coverage. Its bound and its preservation obligations must be
-  discharged before it is certified. Existing guarantees stay in force.
+- A closed finite specialization can meet its stated obligations by checked
+  accounting on its actual artifact. A family can use a symbolic bound such
+  as `Resource(P<n>) <= f(n)` within edition 2026. Its proof must cover the
+  claimed parameters and the actual compilation and resource binding.
+- Resource behavior outside current coverage can occur in a sized family,
+  bounded runtime control, specialization, target synthesis or provider
+  composition. The Guardian interprets the applicable obligation under the
+  existing edition. The required bound and preservation proofs must pass
+  before the scope can claim constitutional conformance. Previously admitted
+  guarantees continue to bind the current acceptance path.
 - A failure to meet a target budget rejects that target claim. It does not
   change the mathematical denotation of the program.
+- A quantitative claim about a behavior-preserving realization requires a
+  separate resource certificate.
 
 The QCP implementation and concrete target schemas have a separately
 scheduled scope. This chapter is not their implementation.
@@ -1000,6 +1010,28 @@ Rules:
 - Peak width is the maximum simultaneous live count. A sum of separate peaks
   is a conservative upper bound, not necessarily the realized peak.
 - Logical width alone does not bound the physical implementation width.
+
+### Exclusive access and generated work
+
+An [indexed exclusive call](elaboration.md#static-ordered-axis-places)
+temporarily partitions its parent into selected and remainder owners. The
+caller resumes with the reassembled parent. The exit from this access keeps
+its wires live. Logical owner identity and exact clean return belong to
+Soundness. Count every active physical location for its whole live interval.
+
+Include any generated preparation, inverse calls, uncomputation and physical
+routing in the bound for the implementation that uses them. A replacement
+bound must be checked on the actual replacement artifact against the
+applicable target budget and capacity. Structural splitting and joining
+rearrange the logical owner map. Physical SWAPs contribute to the target count.
+
+> **Implementation note.** The bounded indexed Raw proof
+> `RuntimeExclusiveResources.indexed_access_live_wires` relates the actual
+> access boundaries to the original owner map and counts each live wire once.
+> `routed_prefix_live_wires` checks that accounting throughout each structural
+> split/join route. The inner operation has its own resource obligations.
+> The terminal placement check replays the emitted gate word and checks its
+> actual width and costs, including caller spectators and checked scratch.
 
 ### Routing segments
 
@@ -1620,8 +1652,7 @@ Specification review:
   [#121](https://github.com/MGYamada/Qleisli/issues/121),
   [#127](https://github.com/MGYamada/Qleisli/issues/127),
   [#280](https://github.com/MGYamada/Qleisli/issues/280) and
-  [#281](https://github.com/MGYamada/Qleisli/issues/281). #280, which reserves
-  the Resource Safety theorem inside edition 2026, is open.
+  [#281](https://github.com/MGYamada/Qleisli/issues/281).
 - [#124](https://github.com/MGYamada/Qleisli/issues/124) separated instrument
   semantics from target measurement and feed-forward realizability.
   [#126](https://github.com/MGYamada/Qleisli/issues/126) defined the

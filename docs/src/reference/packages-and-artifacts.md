@@ -221,7 +221,9 @@ Rules:
   concrete constitutional edition in schema-2 `[qrate].edition`. There is no
   fallback to a default, to "current" or to "latest". The loader rejects a
   tree without a manifest with the code `project`.
-- Updating the toolchain does not change that selection.
+- Edition selects the constitutional regime independently of the toolchain
+  release and source grammar. Changing the selection requires an explicit edit
+  to the manifest. Updating the toolchain preserves the declared edition.
 - `schema-version` must be the integer `2`. `[qrate].edition` must be a
   string that names a supported edition, and `"2026"` is the only one. The
   loader rejects a manifest that breaks either requirement with the code
@@ -545,6 +547,79 @@ Rules:
 - These records describe observed inputs and checking. A hash is not
   publisher authentication and not mathematical evidence.
 
+## Release identity and compatibility
+
+Select one complete release of each product. The ecosystem has three
+independently versioned products.
+
+| Product | Components with the product's exact release version | Version authority |
+| --- | --- | --- |
+| Qleisli | Compiler, native checker and canonical std. QLT, QDB and QCP join the same release when shipped. | Qleisli root Cargo `[package].version` |
+| qlirgo | `qargo`, the bundled linter, `qlifmt` and `qlidoc` | qlirgo root Cargo `[package].version` |
+| qleisliup | The installer and selector use their own release | qleisliup root Cargo `[package].version` |
+
+The adopted linter name is `qlinties`. Existing companion bundles use the
+binary name `qlippy` until the companion rename ships. The current Qleisli
+release inventory comprises the compiler, checker and std. QLT, QDB and QCP
+have planned implementation scope.
+
+A supported official install, update or rollback selects a complete product
+snapshot. Verify its inventory before switching the active selection to that
+snapshot. Each bundled component inherits the product's full version,
+including the prerelease identifier. Reject incomplete or mixed-version
+snapshots. The exact
+[canonical std pairing](#canonical-std-and-the-selected-toolchain) is one
+application of this rule.
+
+### Declared pairing and exact identity
+
+One release may support a separately versioned release of the other product.
+Resolve that pairing from machine-readable metadata supplied with the
+distributions. Require an explicit declaration for the requested Qleisli and
+qlirgo pair. Reject an unknown pairing. Treat a capability declared
+unavailable as unavailable and keep the selected toolchain.
+
+The minimum contract uses the following fields. A format may store them
+in a signed index, a distribution manifest or its referenced receipts.
+
+| Identity | Contents |
+| --- | --- |
+| Product and release | Product name, complete version and the component inventory with each exact component version |
+| Exact build | Source revision, host or target, each artifact's SHA-256 and size, and the emitted compiler/checker build and bundled std identities |
+| Interfaces | Supported constitutional edition, analysis protocol, artifact schemas and target/cost-model identities, recorded separately |
+| Compatibility | Explicitly supported other product and release, applicable protocol/schema versions or supported ranges, and capability availability |
+| Required environment | The checker, proof/kernel environment and evidence identities for the validation the release claims |
+
+Use the artifact identities to check the selected bytes before use. Where a
+result promises reproducibility, retain the exact source, checker and artifact
+identities that produced it. A human-facing version identifies the release.
+The manifest and its associated receipts identify the exact build.
+
+qleisliup consumes the declared metadata to select an immutable snapshot.
+The bound std descriptor and native-result identities provide current
+Qleisli coordinates. A linked qlirgo build binds an exact Qleisli package
+version and verifies its actual std and checker. A distribution with both
+standalone and linked checking records the two Qleisli identities separately.
+The registry artifact and host checks control which linked pair may be
+described as an official distribution.
+
+> **Implementation note.** The qleisliup toolchain manifest records
+> `qleisli`, `std`, `qargo` and `qargo_checker_qleisli` separately. Its
+> release manifest binds a host archive by SHA-256 and size. The Qleisli
+> distribution report binds the checked commit and tree to the crate digest,
+> complete source archive and installation checks. A qleisliup development
+> link selects a local directory under its own inspection contract.
+
+### Version-drift checks
+
+Derive or check repeated manifests and runtime version fields from their
+product's root version. Qleisli's shared documentation and edition checks
+reject drift in the native, Python and Lean version fields and bundled std.
+The packaged source and installed binaries run separate distribution checks.
+The qlirgo source and package verifiers check the component manifests and all
+four executables against its root version. The complete supported-host
+distribution retains the exact build and installation evidence.
+
 ## Status and limits
 
 Scope:
@@ -639,6 +714,13 @@ Proof status:
   binding of native acceptance, alongside
   [#137](https://github.com/MGYamada/Qleisli/issues/137). The QLV3 and helper
   migration and the authorized qargo minimum landed under it.
+- [#230](https://github.com/MGYamada/Qleisli/issues/230) defines the three
+  release domains. [#231](https://github.com/MGYamada/Qleisli/issues/231)
+  defines the release and compatibility metadata. The analysis protocol work
+  in [#106](https://github.com/MGYamada/Qleisli/issues/106) and tool integration
+  in [#107](https://github.com/MGYamada/Qleisli/issues/107) have their own
+  interface versions. [#615](https://github.com/MGYamada/Qleisli/issues/615)
+  records the linter naming decision.
 - The qargo contract that this chapter links is the beta development contract
   of that tool, pinned to one commit.
 

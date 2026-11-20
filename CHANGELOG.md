@@ -4,6 +4,15 @@ Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
 
+- Explain constitutional edition selection in project manifest diagnostics (#255).
+- Specify synchronized product releases and the compatibility metadata that
+  binds their exact distribution snapshots (#230, #231).
+- Keep CLI help for planned analysis commands independent of the release stage
+  (#230).
+- State how the edition-2026 resource obligation applies to closed resource
+  accounting, exclusive access and generated target work (#280).
+- Enforce the two approved whole-Issue exclusions in the beta requirements
+  index (#142).
 - Enable equation rendering in the Book and link the Rust API from the README (#48).
 - Raise the repository-wide fixture count limit from 18,000 to 20,000 files.
   The 150 MiB storage limit and per-PR growth limits continue to apply.

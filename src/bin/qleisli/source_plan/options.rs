@@ -21,7 +21,7 @@ pub(super) const USAGE: &str =
   Module-map checking covers every declaration, native checking the selected instance.
 discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
   QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
-  These analysis tools are planned, not executable commands in this alpha.
+  These analysis commands are planned for future releases.
   Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md";
 
 #[derive(Clone, Copy, Default, PartialEq, Eq)]

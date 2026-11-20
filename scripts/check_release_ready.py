@@ -59,6 +59,7 @@ ISSUES = {number for numbers in GROUPS.values() for number in numbers}
 # #39 was excluded again from all v0.3.0 by the maintainer on 2026-10-13,
 # like #63. Its exclusion still needs the caller-trusted reviewed snapshot;
 # it is not implementation credit. #83 remains resumed for beta.
+EXCLUDED_ISSUES = {39, 63}
 RESUMED_ISSUES = {83}
 ROLES = {"implementation", "reference", "migration", "positive", "negative", "jurisdictions",
          "production", "compatibility"}
@@ -252,6 +253,11 @@ def requirements(root, base, snapshot, *, product_version=None):
             require(bool(roles) if criterion["scope"] == "required" else not roles,
                     "required criteria need evidence; later scope must be explicit in trusted snapshot")
             all_roles.update(roles)
+        has_required = any(criterion["scope"] == "required" for criterion in criteria.values())
+        if number in EXCLUDED_ISSUES:
+            require(not has_required, f"Issue {number}: approved v0.3.0 exclusion cannot earn implementation credit")
+        else:
+            require(has_required, f"Issue {number}: applicable v0.3.0 Issue requires at least one required criterion")
     require(all_roles == ROLES, "reviewed criteria omit a required evidence category")
     return data, raw
 
