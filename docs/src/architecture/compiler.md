@@ -17,8 +17,9 @@ the resulting artifacts.
 ## Loading and parsing
 
 Project loading fixes the source modules, imports and edition. This stage
-read your `Qargo.toml` and found `pair.qli` when `main.qli` imported from
-it. The `project` diagnostic about a function that
+read your `Qargo.toml` and every `.qli` file of the project. It reads and
+checks a module whether or not another module imports it. The `project`
+diagnostic about a function that
 [is not public](../learn/functions-and-modules.md#move-the-function-into-a-module)
 comes from here.
 
@@ -47,8 +48,8 @@ describes the checks.
 
 **Specialization** resolves static arguments to concrete types, sizes and
 operation providers. In [Stating what an operation means](../learn/contracts.md),
-`client[checked_op(direct, Flip)]` is a static argument. Specialization
-produced one concrete copy of `client` for `direct` and one for `sandwich`.
+`checked_op(direct, Flip)` is a static argument of `client`. Specialization
+resolved `U` to `direct` in the first call and to `sandwich` in the second.
 
 **Elaboration** expands supported surface forms into operations in a
 selected intermediate representation. For example, the source checker

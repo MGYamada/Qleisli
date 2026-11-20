@@ -110,8 +110,10 @@ brace is not one of those ways. The rest of the diagnostic compares this
 rule with Rust, where an unused value may simply go out of scope.
 
 Qleisli asks for more because losing a qubit is a physical event. If the
-qubit is entangled with others, dropping it changes what their measurements
-show. The language makes you say so. Add this line after the binding of `spare`.
+qubit is entangled with others, they stay correlated with something the
+program can no longer reach. Interference that a later gate would have
+produced from them is lost. The language makes you say so. Add this line
+after the binding of `spare`.
 
 ```qli
     discard(spare);

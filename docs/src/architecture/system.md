@@ -10,7 +10,7 @@ after it look inside the [compiler](compiler.md) and the
 
 Qleisli uses a Rust host and a separate native Lean verifier. The **host** is
 the `qleisli` command you have been running. It reads source programs or
-external artifacts and prepares an **intermediate representation** (IR) for
+external artifacts and prepares an intermediate representation (IR) for
 checking. The **verifier** is the executable you named in `QLEISLI_KERNEL`.
 It decides whether the submitted artifact meets the checks for the requested
 mode. An **execution decision** from the verifier authorizes the host to use
@@ -22,7 +22,13 @@ the checked representation for a supported run, sample or export.
 
 The host proposes and the verifier decides. The host has no path around a
 rejection. When the verifier is missing or incompatible, the host rejects
-the command.
+every command that needs a decision. A command that only reads source, such
+as `qleisli doc`, runs without it.
+
+The lessons said "the checker" for whatever accepted or rejected a program.
+From here on the two programs have their own names. The compiler inside the
+host checks source and reports the diagnostics you repaired. The verifier
+decides acceptance.
 
 ## Components
 
@@ -53,11 +59,12 @@ came from the verifier, which saw only the file.
 
 ## Why the decision is separate
 
-The compiler is large. It parses, resolves names, specializes and lowers,
-and it grows with every convenience the language gains. A mistake in any of
-those steps could let a wrong program through. So the system does not rely
-on the compiler being right. The compiler's output is a proposal, and a
-smaller independent program checks it.
+The compiler does many things. It parses, resolves names, specializes and
+lowers, and it grows with every convenience the language gains. A mistake in
+any of those steps could let a wrong program through. So the system does not
+rely on the compiler being right. The compiler's output is a proposal, and
+an independent program checks it. That program is written in Lean, and it
+decodes its input itself.
 
 The same rule covers every way a program can arrive. Source you write,
 source a tool generates and an IR file from elsewhere all reach the same

@@ -41,14 +41,22 @@ The counts depend on your program and on the bundled standard library.
 | --- | --- |
 | `checked source` | The project directory that the command read. |
 | `native checks` | The checks that the native verifier ran, and the number of functions it checked. One is yours. The others belong to the standard library. |
-| `checker` | The verifier executable that made the decisions. It is the one you named in `QLEISLI_KERNEL`. |
+| `checker` | The path of the native verifier, the separate executable that made the decisions. It is the one you named in `QLEISLI_KERNEL`. |
 | `checker identity` | `unpinned` means the tool ran that file without comparing it to a known build. |
 | `native decisions` | The number of times the verifier accepted something during this check. Repeated decisions count each time. |
-| `entry request checked` | `false` means the verifier received no separate statement of what `main` must compute, so it compared `main` with none. |
+| `entry request checked` | `false` means the verifier checked `main` without a separate request. A request asks the verifier to check one more stated property of an artifact. Without one, the decision covers the checks on the `native checks` line. |
 | `source preservation` | `not proved` means the checks cover the program that the compiler handed to the verifier. They do not prove that it matches your source. |
 
 The report is careful about what it claims. Two of its lines say what the
-check did not establish.
+check did not establish. The
+[production boundary](../reference/production-boundary.md#cli-success-reports)
+defines every field.
+
+Notice the word `checker` in the report. The lessons have said "the checker"
+for whatever accepted or rejected your program. Two programs share that
+work. The `qleisli` command checks your source and prints the diagnostics
+you have repaired. The native verifier decides acceptance, and the report's
+`checker` line names it.
 
 ## Run and sample
 

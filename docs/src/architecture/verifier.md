@@ -1,9 +1,9 @@
 # Verifier architecture
 
 The [compiler](compiler.md) ends by handing over a proposal. This chapter
-follows the proposal into the native verifier. It explains the last three
-lines of the check report from [Working with the tools](../learn/tools.md):
-the checker identity, the entry request and source preservation.
+follows the proposal into the native verifier. It explains three lines of
+the check report from [Working with the tools](../learn/tools.md): the
+checker identity, the entry request and source preservation.
 
 The native verifier is the `qleisli-kernel` executable built from the
 Mathlib-free Lean package in `lean-kernel/`. You built it in the first
@@ -62,12 +62,12 @@ envelope, scope, comparison and reply formats.
 
 ## What a decision does not cover
 
-The report states three limits, and each has a reason.
+The report states three limits of a decision.
 
 | Report line | The limit |
 | --- | --- |
 | `checker identity: unpinned` | The host ran the executable you selected. It did not compare that file with a known build. |
-| `entry request checked: false` | The verifier checked `main` for ownership and scope. It received no separate statement of what `main` must compute. |
+| `entry request checked: false` | The verifier checked `main` without a separate request. The decision covers the checks on the `native checks` line. It establishes no independently requested property of `main`. |
 | `source preservation: not proved` | The decision covers the IR. No proof connects that IR to the source text. |
 
 ## Status and limits
