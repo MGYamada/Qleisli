@@ -318,3 +318,12 @@ fn contextual_naturals_do_not_unreserve_runtime_global_or_operation_names() {
         assert!(parse_module(&source).is_err(), "{source}");
     }
 }
+
+#[test]
+fn finite_classical_if_points_to_ordinary_conditionals() {
+    let source = "classical fn pick(b: Bit) -> Bit { if b { 0 } else { 1 } }";
+    let error = parse_module(source).unwrap_err();
+    assert_eq!(&source[error.span.start..error.span.end], "if");
+    assert!(error.message.contains("ordinary `fn`"));
+    parse_module(&source.replace("classical fn", "fn")).unwrap();
+}

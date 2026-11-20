@@ -13,13 +13,17 @@ development milestones from the scope of their evidence.
 - Allow the leakage each certified cleanup may retain in the sampling norm
   check, so `sample_closed` accepts what `run_closed` accepts (#648).
 - Check each QDV1 record's declared field count in debug builds (#649).
+- Audit QPTL declarations in both CI workflows and exercise rejection of a
+  private project axiom (#653).
+- Keep nested Git checkouts out of the edition scan (#654).
+- Name the missing adjoint capability for zero-input isometries and explain
+  conditional expressions in the finite classical grammar (#662, #664).
 
 ## 0.3.0-beta — 2026-11-20
 
-Unpublished development snapshot. Selecting beta does not complete the v0.3.0
-feature or proof gates and does not extend the alpha-only release approval.
-Edition 2026, both admitted scoped QLV1 guarantees and the pending QS, PR, RS
-and exactness obligations retain their recorded scopes and status.
+Tagged beta snapshot for edition 2026. The two admitted QLV1 guarantees retain
+their recorded scopes. The broader QS, PR, quantitative RS and exactness
+obligations and the v0.3.0 final-release gates remain open.
 
 - Restore navigation from the diagnostics and primitive chapters to the
   inference and discovery contract (#253).

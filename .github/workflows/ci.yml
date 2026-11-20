@@ -398,6 +398,7 @@ jobs:
             Mathlib.Analysis.Complex.Basic Mathlib.Data.Complex.BigOperators Mathlib.LinearAlgebra.Matrix.PosDef
           lake build
           lake test
+          lake env python3 test_audit.py
       - name: Bind and retain successful producer evidence
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
         id: release-receipt
