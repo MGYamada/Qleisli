@@ -133,6 +133,11 @@ retain original bytes and budgets, optional-request behavior, decoded artifact
 and root selection. They do not certify every dependency, source program,
 hierarchical path or native-contract path by implication.
 
+The [beta production proof review](release/beta-proof-scope.md) states the
+checked evidence and remaining limits in each jurisdiction for every current
+registered path. It records the maintainer's beta evaluation of #135 and
+retains the broader Article VIII duties.
+
 [check_initial_guarantees.py](scripts/check_initial_guarantees.py) and
 [check_guarantee_continuity.py](scripts/check_guarantee_continuity.py) must
 preserve independent protected predicates, theorem types, Acceptance/Artifact
@@ -250,8 +255,8 @@ GitHub remains the decisions/progress ledger.
 These files are evidence indices, not another backlog or authority for adoption.
 The [Issue snapshot index](release/issue-snapshots/index.json) records the
 origin and digest of each verbatim body in the fixed inventory. The complete
-source archive retains the bodies for criterion review. Cargo excludes the
-issue snapshots from the published crate.
+source archive retains the bodies, criterion indices and related review
+records. Cargo excludes these release verification inputs from the crate.
 The criterion review references the
 [primitive admission and replacement policy](docs/src/reference/primitive-boundary.md#admission-and-replacement-process)
 for any new sealed semantic authority, including its independent contract,
@@ -338,13 +343,11 @@ preservation, general hierarchy semantics, PR or quantitative RS. Ownership
 `ResourceSafe` and checker work limits are not quantitative RS. Epsilon bounds
 and floating-point oracle agreement cannot replace an applicable exact duty.
 
-The readiness checker exists, but no completed real requirements/acceptance
-index is present. Its active inventory contains 13 groups/127 Issue IDs and
-retains the historical 111 separately. Historical alpha exclusions do not
-authorize the beta gate.
-Release use requires a reviewed complete index reflecting the authorized
-criteria, not automatic generation of completion evidence. No release readiness
-is claimed by writing this specification.
+The readiness index contains 13 groups and 127 Issue IDs. It retains the
+historical 111 separately and applies the reviewed beta requirements.
+Release use requires verification of every applicable criterion and the
+candidate's actual same-run receipts. The alpha approval has its own version
+and scope.
 
 Current checks do not mechanically decide all semantic non-weakening, prove
 coverage of every production path, authenticate human transcripts, attest

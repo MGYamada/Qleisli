@@ -854,9 +854,9 @@ applicable criteria and the maintainer-approved exclusions,
 immutable Issue snapshot references and an explicit review record. The checker
 reads these from Git blobs at the base. A candidate `release/acceptance.json` supplies evidence for
 exactly those criteria. GitHub remains the only decisions/progress ledger;
-these files are verification indices, not another backlog. There is currently
-no real completed index. Missing reviewed requirements or acceptance evidence
-is an actionable failure, not a request to auto-generate completion records.
+these files are verification indices. The complete source archive retains
+both indices and the linked review records. Missing reviewed requirements
+or acceptance evidence is an actionable failure.
 The checker retains the historical 111-Issue groups separately and adds exactly
 the sixteen beta-scope Issues. Closed Issues require the same criterion evidence.
 #83 remains resumed: its historical deferral cannot pass the complete feature

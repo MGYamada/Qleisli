@@ -1682,9 +1682,8 @@ Specification review:
   OpenQASM gate comparison after that release, under #163.
 - [#165](https://github.com/MGYamada/Qleisli/issues/165) defined the exact
   phase words and the target-dependent non-Clifford costs. It is closed.
-- General specialization certificates and diagnostic coverage are part of the
-  Language Reference work in
-  [#48](https://github.com/MGYamada/Qleisli/issues/48), which is open. #120
-  and #127 are closed.
+- [#48](https://github.com/MGYamada/Qleisli/issues/48) integrated the
+  Language Reference, including the closed-specialization contract and its
+  diagnostic coverage.
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.

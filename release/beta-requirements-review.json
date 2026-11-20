@@ -1,0 +1,170 @@
+{
+  "status": "proposed for explicit maintainer review",
+  "baseline": "a178672556d6408a20549a989044b95074a20819",
+  "reason": "Human review of the exact criteria, evidence roles and scope remains required before this packet may become a trusted release base.",
+  "scoped_criteria": [
+    {
+      "issue": 363,
+      "criterion": "C03",
+      "reason": "Conditional on the pinned-checker work in #302"
+    },
+    {
+      "issue": 39,
+      "criterion": "C01",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 39,
+      "criterion": "C02",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 39,
+      "criterion": "C03",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 39,
+      "criterion": "C04",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 63,
+      "criterion": "C01",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 63,
+      "criterion": "C02",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 63,
+      "criterion": "C03",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 63,
+      "criterion": "C04",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 63,
+      "criterion": "C05",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 63,
+      "criterion": "C06",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 63,
+      "criterion": "C07",
+      "reason": "Whole issue excluded from v0.3.0 by maintainer"
+    },
+    {
+      "issue": 317,
+      "criterion": "C21",
+      "reason": "maintainer-approved generic-QFT exclusion"
+    },
+    {
+      "issue": 317,
+      "criterion": "C22",
+      "reason": "maintainer-approved generic-QFT exclusion"
+    },
+    {
+      "issue": 317,
+      "criterion": "C23",
+      "reason": "maintainer-approved generic-QFT exclusion"
+    },
+    {
+      "issue": 69,
+      "criterion": "C10",
+      "reason": "maintainer-excluded external qlinty feature"
+    }
+  ],
+  "proof_limits": "The two current QLV1 admissions retain their exact scopes. Article VIII preserves the applicable QS, PR, RS and EXACT obligations and the full-conformance gate.",
+  "role_notes": "The proposal keeps the eight schema evidence roles. Criterion review still checks the concrete positive and negative outcomes of grouped regression evidence. Exact proofs, specifications, and observations retain their individual scopes.",
+  "snapshot_index_sha256": "5fe43ef33a6695df24f55065f59241ee5cc2e08042ac9037934adefe02ff8cae",
+  "criteria_counts": {
+    "required": 1066,
+    "explicit-later-version": 16
+  },
+  "evidence_sources": {
+    "criterion-roles-review-draft.json": "3cb6cdcd89abcd716331c10809f082a8d2417fb0750c23cec3236f55b11bed12",
+    "approved-exclusions-review-draft.json": "a32841ad54331155f9f3d61af7052a4a6bbcb6ad66007da157722d1a9f560b4a",
+    "234-253-254-criteria-evidence-draft.json": "2015a3d16071d193eb39d49b5c9f74ff15deb712e3a75a73c832a9d0c37d1e65",
+    "g04-type-criteria-evidence-draft.json": "a5b516b7628c5fe3621a1fb65c7fba5d2c2aaaefbd2c7f449001406a2cf68633",
+    "g05-static-and-general-arrow-criteria-evidence-draft.json": "02645125a3b27b6565a8587a3c2f91d65f4cffb738788d02e04e1de79bcbe0cd",
+    "constitutional-policy-criteria-evidence-draft.json": "eb0007675cf566cdc1a64a29acf8fc2f754ee2e5d6d8ed54039c38efa0305978",
+    "diagnostics-criteria-evidence-draft.json": "60dde236af7065f9a231718e122a64be082648b1998950e1fc8f72d93ed4e49b",
+    "qrate-policy-criteria-evidence-draft.json": "5a39e56b754def319b4b6bcafe20b70f35fc4cd0220f4e1a665f2ab0f810f186",
+    "stdlib-and-resolution-criteria-evidence-draft.json": "5e76d95fd2817d5841322e20bcd055d53f99ba338ef8b427565068e731c53bc9",
+    "current-realization-proof-criteria-evidence-draft.json": "3befedded71c0a3020854d1525f495af45ce770298d6ed17ab48f16b8d415dbb",
+    "target-profiles-criteria-evidence-draft.json": "d2f569743190b2500a280b2433065864408f097f3794dd8db6df5e5daef9d6cc",
+    "surface-and-functional-criteria-evidence-draft.json": "febebf1c5b560dbac7d184ac8939072c2d7d34766e4b58ba35f7693a749fd139",
+    "ownership-access-and-workspace-criteria-evidence-draft.json": "7886b59e8599694426e79428ad4655f287f65e6b3312551142afd6c56b30a645",
+    "finite-control-and-observation-criteria-evidence-draft.json": "cbd5b073f69d06054d0e39057c2e803d554ba9c60502ab5071c58bfc85de5929"
+  },
+  "approved_beta_scope_decisions": [
+    {
+      "issues": [
+        39,
+        63
+      ],
+      "scope": "Excluded from all v0.3.0. Retained as separate audit entries.",
+      "record": "https://github.com/MGYamada/Qleisli/issues/142"
+    },
+    {
+      "issues": [
+        83
+      ],
+      "scope": "Resumed and required for beta.",
+      "record": "https://github.com/MGYamada/Qleisli/issues/142"
+    },
+    {
+      "issues": [
+        69,
+        81
+      ],
+      "scope": "External linter changes are excluded. Compiler diagnostics and the user-authorized minimal compatibility migration retain their existing scopes.",
+      "record": "https://github.com/MGYamada/Qleisli/issues/69#issuecomment-6118012827"
+    },
+    {
+      "issues": [
+        234
+      ],
+      "scope": "Keep the alpha removal of the ecosystem naming comparison.",
+      "record": "https://github.com/MGYamada/Qleisli/issues/234"
+    },
+    {
+      "issues": [
+        317
+      ],
+      "scope": "Exclude generic QFT delivery and generic specialization equivalence from v0.3.0. Retain the general namespace rule and checked fixed variants.",
+      "record": "https://github.com/MGYamada/Qleisli/issues/317#issuecomment-6118143695"
+    },
+    {
+      "issues": [
+        135
+      ],
+      "criterion": "C05",
+      "scope": "Disclose current registered routes under all three jurisdictions, bind and replay the two admitted guarantees, and carry forward the broader proof obligations under Article VIII.",
+      "record": "https://github.com/MGYamada/Qleisli/issues/135#issuecomment-7030099290"
+    },
+    {
+      "issues": [
+        171,
+        255
+      ],
+      "scope": "Use verified candidate crate and companion development results. Perform official registry publication and associated official host verification after the beta goal.",
+      "record": "https://github.com/MGYamada/Qleisli/issues/142#issuecomment-7030043781"
+    }
+  ],
+  "proof_scope": {
+    "path": "release/beta-proof-scope.md",
+    "sha256": "6fffb6c0d4b3726295417fdc821c44f4bb587ebbcab1f3bdaec4e93aeff4ea97"
+  },
+  "evidence_sources_note": "These checksums identify the working criterion audit inputs. The issue snapshots, linked completion records and final acceptance evidence are the durable repository and GitHub references."
+}
