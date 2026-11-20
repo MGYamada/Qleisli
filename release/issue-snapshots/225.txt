@@ -1,0 +1,365 @@
+## Status
+
+Umbrella design issue for **Qleisli 0.3.0**.
+
+Labels: **important**, **enhancement**.
+
+Primary child issue:
+- #224 — make compiler diagnostics teach the classical–quantum boundary
+
+Related design:
+- #196 — three-level surface boundary: `q***` / `Q<T>` / unmarked syntax
+- ownership / ancilla / effect / Resource Safety / Physical Realizability issues
+
+## Thesis
+
+Qleisli should treat compiler diagnostics as part of the **language harness**.
+
+A compiler error should not merely report that a program is invalid. At a Qleisli-specific semantic boundary, it should return the smallest local piece of the language needed for a human or coding agent to understand:
+
+1. **what semantic rule was crossed**;
+2. **why the attempted program is invalid, unsupported, or outside the current policy**;
+3. **which Qleisli concept applies instead**;
+4. **what kind of next correction is semantically legitimate**.
+
+> **Diagnostics are part of the Qleisli harness.**
+
+This is especially important for an AI-first language: an LLM should not need Qleisli to already exist in its training distribution in order to make progress.
+
+## Motivation
+
+Conventional compiler loop:
+
+```text
+source
+  ->
+valid / invalid
+```
+
+Qleisli should aim for:
+
+```text
+source
+  ->
+semantic diagnosis
+  ->
+local Qleisli rule
+  ->
+legitimate correction space
+  ->
+next attempt
+```
+
+Compiler output becomes the next model input. Therefore diagnostic output is effectively part of the authoring prompt and should be designed intentionally.
+
+Instead of requiring a coding agent to carry the entire Language Reference in context, the compiler can inject only the rule relevant to the failed program.
+
+## Core design principle
+
+> **The compiler must not assume that the programmer already knows Qleisli.**
+>
+> When rejection occurs at a Qleisli semantic boundary, the diagnostic should teach that boundary locally.
+
+This does **not** mean every error becomes a tutorial. The target is Qleisli-specific semantics, not generic implementation noise.
+
+## Semantic diagnostic structure
+
+Where applicable, a diagnostic should expose:
+
+1. **Immediate failure** — what construct/value/effect/resource caused rejection.
+2. **Semantic category** — what kind of Qleisli rule is involved.
+3. **Local rule** — the compact semantic rule relevant here.
+4. **Correction space** — valid conceptual alternatives, not blind token substitution.
+5. **Machine-readable metadata** — stable enough for coding agents to consume.
+
+Initial semantic categories may include:
+
+```text
+quantum-control
+quantum-ownership
+borrow / move
+ancilla-lifecycle
+effect-boundary
+observation-boundary
+phase-semantics
+resource-safety
+physical-realizability
+primitive-vs-derived
+stdlib / qrate contract
+surface-boundary
+```
+
+The exact taxonomy is not frozen by this issue.
+
+## Initial diagnostic families
+
+### A. Classical / quantum control
+
+Tracked concretely by #224.
+
+```text
+if    <-> qif
+for   <-> qfor
+match <-> qmatch
+```
+
+The diagnostic should distinguish coherent control, classical control after observation, and ordinary classical/static control.
+
+### B. Quantum ownership / move / borrow
+
+A linear-ownership failure should not stop at `use after move`. It should identify that the value is quantum-owned and state the applicable ownership rule.
+
+Where meaningful, diagnostics may distinguish conceptual next steps such as ownership transfer, an allowed borrow, an allowed quantum transformation, or an explicit observation boundary. They must never suggest cloning a quantum resource.
+
+### C. Ancilla lifecycle
+
+If a borrowed clean ancilla cannot leave scope under the current resource policy, the diagnostic should explain the lifecycle obligation rather than surfacing only a generic linearity error.
+
+This issue must **not** prematurely freeze the final formal statement of Resource Safety; diagnostic wording should follow the semantics once stabilized.
+
+### D. Effect boundary
+
+If an operation crosses from a stronger effect class into observation or another effect class, the diagnostic should name that transition instead of saying only `operation not allowed`.
+
+### E. Observation vs coherent manipulation
+
+When quantum data is treated as inspectable classical data, the compiler should explicitly distinguish:
+
+```text
+coherent quantum manipulation
+```
+
+from
+
+```text
+observe -> obtain classical information -> ordinary classical control
+```
+
+These are not interchangeable repairs.
+
+### F. Phase semantics
+
+When a tracked phase obligation matters locally, diagnostics should identify the relevant semantic contract rather than returning a vague `phase mismatch`.
+
+The exact phase model remains governed by the language specification and is not frozen here.
+
+### G. Resource Safety
+
+When code violates a resource discipline, diagnostics should name the violated resource rule and admissible conceptual exits. This umbrella does not pre-commit Qleisli to a final theorem statement before it is ready.
+
+### H. Physical Realizability
+
+A semantically meaningful Qleisli program may fail the current realizability policy for reasons distinct from ordinary typing.
+
+Diagnostics should preserve the distinction between:
+
+```text
+semantic rejection
+```
+
+and
+
+```text
+well-defined Qleisli operation, but not accepted under the current realizability model
+```
+
+so an agent knows what kind of repair is appropriate.
+
+### I. Primitive vs derived
+
+When a construct belongs in derived `.qli` rather than the trusted primitive layer, diagnostics/tooling should reinforce that architecture where practical rather than encourage ad hoc primitive growth.
+
+### J. qrate / stdlib / language-version contract
+
+Compatibility failures that reflect a Qleisli invariant should state the invariant, not only emit a generic dependency mismatch.
+
+### K. Invented Qleisli syntax
+
+AI authors may plausibly generate forms such as:
+
+```text
+qlet
+qreturn
+qmove
+qborrow
+```
+
+Where practical, parser recovery should explain the rule from #196:
+
+```text
+q***  -> construct semantics itself changes
+Q<T>  -> ordinary syntax over quantum ownership
+plain -> ordinary classical/static syntax
+```
+
+This turns a parser failure into language learning.
+
+## Human-readable diagnostics
+
+A useful general shape is:
+
+```text
+error[...]: <semantic headline>
+
+<what happened>
+
+<local Qleisli rule>
+
+<suggested conceptual next step>
+
+help: <small valid example, when safe>
+```
+
+The semantic structure matters more than fixed prose.
+
+## Machine-readable diagnostics
+
+The compiler should define or reserve structured diagnostics for coding agents, for example:
+
+```json
+{
+  "code": "QLEISLI-E...",
+  "category": "quantum-ownership",
+  "boundary": "linear-owner-reuse",
+  "expected_rule": "...",
+  "rewrite_kind": "conceptual",
+  "related_constructs": ["..."]
+}
+```
+
+Potential CLI:
+
+```text
+--diagnostic-format=json
+```
+
+Human-readable and machine-readable forms should derive from the same semantic diagnostic object where practical.
+
+## Diagnostics as local prompt injection
+
+Qleisli should deliberately exploit the fact that **compiler output becomes the next model input**.
+
+That yields an authoring loop:
+
+```text
+small initial prompt
+    +
+source attempt
+    +
+compiler-selected semantic rule
+    ->
+self-correcting authoring loop
+```
+
+This is not incidental error-message polish. It is part of the AI-first language architecture.
+
+## Guardrails
+
+Diagnostics must:
+
+- teach semantics rather than blindly rewrite tokens;
+- distinguish multiple legitimate correction paths;
+- avoid suggesting observation when coherent behavior was intended;
+- never weaken ownership/resource guarantees for convenience;
+- distinguish semantic invalidity from unsupported implementation or realizability policy;
+- avoid freezing unresolved theorem statements through casual error wording;
+- keep machine-readable categories stable even if human wording evolves.
+
+## Conformance strategy
+
+Add a dedicated diagnostic corpus containing plausible first attempts from humans and LLMs.
+
+Each case should specify:
+
+1. source input;
+2. expected semantic category;
+3. stable diagnostic code/category where applicable;
+4. minimum conceptual information that must be present;
+5. fixes that must **not** be suggested;
+6. whether a mechanically applicable rewrite exists.
+
+Representative cases should cover at least:
+
+- `if` / `qif`;
+- `for` / `qfor`;
+- `match` / `qmatch`;
+- use-after-move of `Q<T>`;
+- illegal duplication of quantum ownership;
+- ancilla scope/lifecycle failure;
+- observation inside a stronger effect context;
+- classical inspection of quantum data;
+- phase-related contract failure;
+- resource-policy failure;
+- realizability-policy failure;
+- invented `qlet` / `qreturn`;
+- stdlib/qrate compatibility violation.
+
+## Documentation
+
+The Language Reference should contain a short normative principle:
+
+> **Diagnostics are part of the Qleisli harness.**
+>
+> Qleisli-specific semantic errors should expose the relevant local language rule so that a programmer or coding agent can recover without prior knowledge of the full language.
+
+## Acceptance criteria
+
+- [x] Adopt `diagnostics are part of the harness` as an explicit Qleisli design principle.
+- [x] Define an initial semantic diagnostic taxonomy.
+- [x] Keep parser/type/effect/resource/realizability failures distinguishable when they represent different semantic situations.
+- [x] Implement #224 as the first concrete boundary-teaching family.
+- [x] Specify guidance for ownership/move/borrow diagnostics.
+- [x] Specify guidance for ancilla-lifecycle diagnostics.
+- [x] Specify guidance for effect and observation-boundary diagnostics.
+- [x] Specify guidance for phase/resource/realizability diagnostics without prematurely freezing unresolved theorem statements.
+- [x] Specify useful diagnostics for invented `q***` forms.
+- [x] Define or reserve stable semantic diagnostic codes/categories.
+- [x] Design a machine-readable diagnostic format for coding agents.
+- [x] Add a diagnostic conformance corpus built from plausible human/LLM first attempts.
+- [x] Ensure diagnostics teach valid correction spaces rather than functioning as unsound token-level autofixes.
+- [x] Document the principle in the Language Reference.
+
+## Non-goals
+
+This umbrella does not require:
+
+- automatic repair of arbitrary programs;
+- frozen wording for every error;
+- freezing unresolved formulations of the three foundational theorems;
+- turning every compiler error into a tutorial;
+- exposing compiler implementation details as language semantics.
+
+The target is the semantic layer:
+
+> **When a user or coding agent hits a Qleisli-specific boundary, the compiler should return enough of Qleisli itself to make the next attempt meaningfully better.**
+
+In an AI-first language, the error channel is not merely where compilation stops.
+
+**It is one of the places where the language teaches itself.**
+
+## Retrospective constitutional impact — 2026-10-05
+
+This ordinary maintainer record covers the complete diagnostics group #133, #224, #225, #226, #237, #245, #270 and #272 under adopted QS-2026-01, PR-2026-01 and quantitative RS-2026-01. It is not a new interpretation, implementation approval for unresolved choices, or proof claim. Source inspection baseline: a26e29bc19e06324e8b394d9d1dbb97ea2d163e1; no validation was rerun for this assessment.
+
+| Issue | Specific constitutional/compatibility risk |
+| --- | --- |
+| #133 | Probability presentation can hide genuine outcomes. Distinguish approximate display from machine data and sampling; do not zero/omit small nonzero branches, renormalize them away or substitute probabilities for exact phase/instrument evidence. Exact simulation, if added, needs its own domain/overflow/unsupported contract. This is not uniformly impact-free wording. |
+| #224 | Teach classical control versus coherent control and explicit observation without claiming that if→qif or match→qmatch is a semantics-preserving token rewrite. New canonical examples must follow the actually adopted grammar and supported profile. |
+| #225 | Distinguish parse/type/effect/ownership, implementation-capability, physical-realization and quantitative-resource failures. Stable structured categories must report the original failure and verification scope, not turn a producer receipt or repaired program into acceptance of the original source. |
+| #226 | Explain quantum linear accounting versus ordinary unrestricted/affine intuition. Do not recommend cloning, silent drop or observation as a generic repair. Clean/dirty return obligations follow QS-2026-01; they are not themselves the quantitative RS theorem. |
+| #237 | A parser may explain an identifiable surface boundary, but cannot certify a proposed rewrite or adopt qfor/qmatch/return from an illustration. Removed forms may receive migration guidance without becoming accepted aliases. |
+| #245 | Rejecting invisible/default-ignorable characters changes the accepted source language and documentation input, including comments bound into evidence. Specify the exact character policy, original UTF-8 byte/code-point diagnostics, and identical scanner/doc behavior. Never normalize or silently strip original source bytes. Current bidi/control checking does not establish completion of the wider proposed character set. |
+| #270 | Render a counterexample using the contract's actual exact type tree and first-leaf least-significant-bit convention. Keep raw row/column indices and exact actual/expected coefficients in structured output. A flattened/reversed label could teach the wrong physical operation despite unchanged rejection. Current code still reports matrix indices. |
+| #272 | Distinguish a malformed operation interface from an operand whose exact type differs. Show both ordered/nested types and the operand location. Same width is insufficient; any suggested split/join must preserve axes and phase and remain subject to checking. Current generic static-operation message does not complete this criterion. |
+
+**QS — reporting-only changes preserve; #133/#245 affect public boundaries.** The accepted artifact, failure and semantic distinction must remain accurate. Diagnostics cannot grant evidence, silently repair the source, mask a native failure, or weaken owners/effects/phase/observation. Character rejection narrows source acceptance and therefore requires the recorded breaking migration, even though it does not weaken the safety implication for accepted IR. Outcome presentation must preserve the declared classical output map and distinguish numeric execution from exact validation.
+
+**PR — preservation/reporting impact; no discharge.** A target-capability failure must not be described as mathematical non-unitarity or repaired by unchecked realization. Printed matrices/outcomes do not certify an emitted target. The actual target, workspace, artifact and correspondence evidence remain governed by PR-2026-01, unchanged by prose formatting.
+
+**Quantitative RS — reporting impact; pending.** A work/depth/input limit is an implementation limit unless a separately specified theorem binds it to program resources. Diagnostics must distinguish those limits from certified peak width/workspace/gate/measurement/depth bounds. Sampling averages, tiny probabilities and ignored branches cannot justify removing permitted execution paths from a safe bound. Diagnostic generation itself remains bounded and must not repeat unbounded exact work merely to improve a message.
+
+**Definitions, assumptions and current acceptance.** The diagnostic taxonomy, result schema, numeric presentation policy and lexical character set are explicit public contracts; only #245 changes lexical acceptance in this group. Pure wording/pretty-printing adds no trusted assumption or checker rule. `frontend/diagnostic.rs` and `bin/qleisli/json.rs` currently provide original source locations and the versioned `qleisli.result` envelope; they confer no acceptance. Ordinary/native-contract/hierarchy checks and their immutable original bytes/request bindings remain authoritative. Diagnostic or rendering success is not an accepted handle. Original rejected sources and historical observations remain preserved beside current conformance cases.
+
+**Ledger, transport and proof status.** Preserve `QS-QLV1-OWNERSHIP-2026-01` and `QS-QLV1-SCOPE-2026-01`, their admitted premises and current `governance/guarantees.json` bindings. Their semantic representation does not change through presentation alone, so no new semantic transport theorem is needed for a genuinely output-only change. Any actual source rewrite, simulator replacement or changed result map instead needs its own preservation analysis. Existing JSON/lexical/contract regressions are component evidence; the full semantic diagnostic corpus, unchanged-acceptance checks where promised, invisible-character cases, exact-tree/phase snapshots and small-real-outcome tests remain applicable criteria. No broad QS/PR/RS discharge is claimed.
+
+**Edition and authority.** Retain edition 2026; lexical/schema/default-display compatibility belongs to the release migration policy. Ordinary guidance consistent with the adopted interpretations does not require a new Guardian ruling. Escalate any proposal that changes protected meaning/premises, declares a new resource/realization guarantee, adds a trusted semantic assumption or raises an unresolved constitutional case. Diagnostic wording must not settle such a question by implication. These eight issues remain implementation/conformance obligations; this record does not close or defer them.

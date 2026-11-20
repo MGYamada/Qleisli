@@ -1,0 +1,203 @@
+## docs/ cleanup boundary at v0.3.0
+
+**Adopted user decision, 2026-09-30; supersedes the earlier preservation-first migration rule.**
+
+- Keep the active v0.2.x goals and the VM-22–VM-29 verification migration plan usable throughout v0.2.x. Do not empty `docs/` while those goals remain current.
+- Aggressively delete obsolete plans, completed progress reports and historical narratives now. Deletion does not wait for a Reference migration.
+- By v0.3.0, retire every remaining pre-v0.3.0 file under `docs/`, including v0.2.x specifications, plans, proof accounts, status data and release records. Write the v0.3.0 documentation from scratch using adopted decisions, actual code, proofs and executable examples.
+- Do not transplant or archive the old tree. Historical lookup uses Git history and published tags. Preserve executable source attempts, counterexamples, validation artifacts, proofs and required notices outside `docs/`.
+- The enduring project direction is the three theorems (Qleisli Soundness, Physical Realizability, Resource Safety) and six v1 algorithm goals (QPE, Grover, amplitude estimation, Shor, quantum walks, QSVT). Their implementation/proof status must stay explicit.
+- This issue is the tracking record; no duplicate backlog entry is required.
+
+The first cleanup removes 30 legacy files and about 753 KiB, retires generated status history, repairs references and retains the active v0.2.2 and v0.2.2–0.2.9 plans. Documentation checks pass with 24 regressions. This is not completion of the v0.3.0 rewrite.
+
+## Status
+
+**0.3.0 flagship documentation/specification task.**
+
+This issue turns the 0.3.0 language-design work into a single authoritative, buildable language reference.
+
+Related umbrella issues:
+- #27 — type-theory synthesis
+- #32 — surface-language normalization and desugaring
+- #28–#31 — static language, borrowing, basis computation, exact/approximate boundary
+- #43–#47 — unit coherence, kinds/generics, capability calculus, Meaning DSL, constraints
+
+## Goal
+
+From 0.3.0 onward, Qleisli language development should proceed in the order:
+
+> **static semantics / type theory → normative language specification → implementation → conformance/proof evidence**
+
+The current repository has rich design notes, historical decisions, implementation records and proof notes. The 0.3.0 goal is to write a new reference from scratch that reads like a programming-language specification.
+
+The authoritative language source should be a buildable **mdBook Language Reference**.
+
+## Documentation architecture
+
+```text
+docs/
+├── reference/   # authoritative current language reference (mdBook)
+├── design/      # rationale, decisions, proposals
+├── proofs/      # theorem/proof architecture and formalization notes
+├── releases/    # newly written records from v0.3.0 onward
+└── dev/         # compiler/developer documentation
+```
+
+Compiler crate/API documentation remains separate under rustdoc / `cargo doc`.
+
+A future user-oriented tutorial/book may be a second mdBook; it is not the normative reference.
+
+## Normative principle
+
+> **GitHub issue → design decision → normative Reference chapter**
+
+Issues and design notes are inputs to the specification. Once a decision is adopted, the Reference—not the issue—is authoritative for the current language.
+
+## Proposed Reference structure
+
+1. Introduction
+2. Lexical Structure
+3. Names and Modules
+4. Static Language
+   - static values
+   - naturals and sizes
+   - static functions
+   - termination
+   - constraints
+5. Types and Kinds
+   - Basis
+   - Nat
+   - Unit and Bit
+   - products
+   - `Bits<n>`
+   - `Q<A>`
+   - `Op<A>`
+   - `Meaning<A>`
+   - generic parameters
+6. Linear Ownership
+   - linear context
+   - moves
+   - register views
+   - borrowing
+   - zero-width ownership
+   - `Q<Unit>`
+7. Effects
+   - Unitary
+   - Iso
+   - Observe
+   - effect ordering
+8. Expressions
+9. Patterns
+10. Static Operations
+11. Capability Calculus
+12. Meaning Language
+13. Exact Phases
+14. Measurement and Instruments
+15. Coherence
+   - associators
+   - unitors
+   - strong monoidal `Q`
+   - explicit permutations
+16. Desugaring
+17. Resource Semantics
+18. Formal Judgments
+19. Core / IR Correspondence
+
+The final table of contents may change as the 0.3.0 issues are resolved.
+
+## Formal presentation
+
+The Reference should present the language from its static judgments rather than from implementation order.
+
+A central judgment may take a form such as
+
+```text
+Γs ; Γ ; Δ ⊢ e : T ! ε
+```
+
+where:
+
+- `Γs` is the static context;
+- `Γ` is the unrestricted classical context;
+- `Δ` is the linear quantum-ownership context;
+- `ε` is the effect.
+
+The exact judgment is adopted only after the relevant design issues are resolved.
+
+## Build requirements
+
+- mdBook source under `docs/reference/`
+- checked `SUMMARY.md`
+- MathJax enabled for formal rules/equations
+- `mdbook build` in CI
+- broken-link/document-reference checking
+- generated HTML treated as a build artifact, not hand-edited source
+- clear status markers for normative versus informative material
+- links from README to Reference, Guide, and rustdoc/API docs
+
+## Cleanup and rewrite rule
+
+Follow the adopted cleanup boundary above. Active v0.2.x goals remain available until the boundary; legacy documentation is then retired, and the v0.3.0 Reference is newly written. Do not require migrating old prose, preserving old anchors or keeping historical release/design pages before deletion. Repair links and checks in the same change. The new Reference must derive its rules from the adopted v0.3.0 design and actual implementation/proofs, with explicit scope and conformance evidence.
+
+## Completion criteria
+
+The 0.3.0 documentation milestone is complete when:
+
+- [ ] the mdBook skeleton and CI build exist;
+- [ ] every implemented public language form is covered by the Reference;
+- [ ] #27's type-theoretic core is represented normatively;
+- [ ] #32's surface/desugaring decisions are represented normatively;
+- [ ] #28–#31 and #43–#47 are either resolved into the Reference or explicitly marked future;
+- [ ] grammar, typing, ownership, effects, static semantics, meanings, constraints and desugaring do not conflict across documents;
+- [ ] each public rule has accepted/rejected examples or linked conformance cases where appropriate;
+- [ ] all pre-v0.3.0 `docs/` material is retired, with active v0.2.x goals retained until that boundary;
+- [ ] `mdbook build` and repository documentation checks pass in CI.
+
+## Design intent
+
+This is a central 0.3.0 deliverable, not cosmetic documentation work.
+
+> **Qleisli 0.3.0 should be the point where the project acquires a real Language Reference whose structure follows the language's static semantics and type theory.**
+
+
+
+## Further cleanup during v0.2.3 development — 2026-09-30
+
+The user explicitly requested the usual documentation reduction and corpus expansion, then reaffirmed that `docs/` may be reduced aggressively. This bounded continuation deletes eleven completed proof/implementation/review reports (1,904 lines, 119,101 bytes): the phase hierarchy/layout/layout-DAG/phase-layout/interference packets, the QFT circuit/graph and QPE packets, the old resource theorem ledger, the adopted semantic-contract proposal review, and the old bounded connection report. Authoring feedback is rewritten from 649 to 91 lines around current source obligations, removing completed proof chronology and stale implementation claims.
+
+References now reach actual executable/proof modules, preserved fixture evidence, and current connection contracts. Current component bounds, registry identity/review rules and conditional proof limits are stated beside their packages. No old documentation tree is archived or transplanted. Source attempts, numerical reports, proofs, notices and the active v0.2.x goals/VM-22–VM-29 remain intact. The v0.3.0 rewrite and this issue's completion criteria remain pending.
+
+The companion corpus change grows 36 to 42 finite cases (fourteen per existing approved source) at 1–3 data qubits using only frozen input files. It preserves first sources, licenses, analytic phase/order oracles and six deliberate type-correct faults. Full validation passes 42 shipped mains, 12,629 semantic probes, four rejection cases and eighteen semantic fault detections. VM-22's original 36-case/12-fault manifests retain their original bytes/hashes beside the fixtures, and current additions must preserve the exact original census prefix. No comparison artifact is rebaselined and no maximum-size corpus case is newly run.
+
+Documentation/edition checks and their 24/6 mutation regressions, 26 corpus-checker regressions and 17 inventory regressions pass. This is working-tree development; no new tag or publication is implied.
+
+
+## Retrospective constitutional impact — 2026-10-05
+
+This ordinary maintainer assessment covers the approved documentation group #48, #234, #253 and #254. It applies the human-adopted QS-2026-01, PR-2026-01 and RS-2026-01 interpretations and the five-layer authority hierarchy. It is not a new Guardian ruling, normative decision on unresolved child proposals, proof or guarantee admission. Source inspection baseline: a26e29bc19e06324e8b394d9d1dbb97ea2d163e1; no new build or validation is claimed.
+
+| Issue | Distinct scope and risk |
+| --- | --- |
+| #48 | The single mdBook under docs/src must distinguish normative Reference from informative Guide/design material and document every implemented public form against adopted decisions, actual acceptance and conformance. A buildable skeleton or links are not semantic completeness. Current type/source/authority/production/primitive/realization chapters are a foundation, not completion of all grammar, static, ownership, effect, Meaning, constraint, measurement, desugaring and resource chapters. |
+| #234 | Pronunciation and the Kleisli-style ecosystem metaphor change project description only. They do not impose a Monad/Kleisli formalization, add an operation or prove categorical laws. This narrow naming record has no program-semantic or quantitative-resource effect. |
+| #253 | Separate inferable names, inspectable ordinary checked source, explicitly discoverable QLT/QDB/QCP concepts and specified sealed/external authority. Names or an LLM's successful guess cannot establish capabilities. Document each tool's actual availability; planned tools and informed authoring studies are not implemented APIs or zero-prior benchmarks. |
+| #254 | Explain human interpretation, formal discharge, ledger continuity and compiler enforcement as separate acts. The compiler executes authorized rules; it does not decide constitutional meaning. Do not imply that all currently accepted programs already satisfy fully discharged QS/PR/RS, or that the Fundamental Theorems certify Rust/source/runtime correctness wholesale. |
+
+**QS — normative/reporting impact.** Reference rules constrain intended typing, ownership, effects, exact phase, ordered interfaces, clean/dirty obligations and complete instrument semantics under QS-2026-01. Documentation must expose unsupported profiles and source/IR/runtime preservation gaps, never infer semantic authority from a name, source example, std placement or theorem title. Pure relocation/formatting has no semantic effect when the adopted rule and links to its evidence remain identical; adding or changing a normative rule requires its own feature impact record.
+
+**PR — normative/reporting impact.** State forward correspondence between the accepted meaning and actual admitted target artifact, with gate/device, coordinate, encoding and workspace premises. Keep this distinct from synthesis completeness, a same-wire assumption or successful numerical execution. Exact phase and arbitrary-reference obligations must survive explanatory simplification. Documentation does not discharge PR-2026-01.
+
+**Quantitative RS — normative/reporting impact.** Distinguish safe finite program/target bounds from ownership safety, exact cleanup, checker work counters and simulator limits. Describe counted peak width, clean/dirty/backend workspace, gates, measurements/feed-forward, depth/schedule, all branches and size premises where a resource claim is made. No resource certificate or production-wide RS discharge follows from a table or build check.
+
+**Definitions, assumptions and authority.** Reference definitions are normative language rules below the Constitution and binding interpretations, and must agree with the formal boundary; they cannot amend QS/PR/RS. No trusted assumption, semantic primitive or constitutional text is added by this documentation group. Human specification review of intended reference meanings remains required, independently of Lean proof checking. The adopted one-book arrangement supersedes the older proposed docs/reference layout in #48. Retired docs-old content is not restored; historical source, proof, artifacts and notices remain in their original evidence locations/Git history.
+
+**Production and ledger binding.** The production-boundary chapter must name the real ordinary QLV1, native-contract and dedicated hierarchy/component routes, immutable artifact/request/candidate bindings, and execution/export gaps. It must distinguish constructors/doc/proposal output from native acceptance and published 0.2.9 evidence from the unpublished alpha tree. `governance/guarantees.json` records only the two admitted ordinary-root ownership/scope guarantees plus the three broader pending obligations; current evidence/continuity checks bind those protected meanings to present Lean definitions. Describing a new theorem does not register a guarantee. Source markers, registry inventories and rendered-link checks are integrity checks, not proof of semantic adequacy or actual test execution.
+
+**Semantic transport, proof status and dependencies.** Documentation-only reorganization needs no mathematical transport if definitions/meaning are unchanged. A changed formal representation or intended meaning must preserve applicable ledger guarantees; where representations differ this requires checked transport. A proposed protected-meaning or premise change also requires the applicable human review, which cannot waive non-weakening or substitute for proof. Rewording cannot conceal a changed premise. Keep #27 and #32 impact records linked for implemented foundation/common-frontend rules, and the distinct #28/#30 static/basis, #29 access, #31 exact/approximate and #43–#47 type/capability/Meaning/constraint duties visible. The explicitly later #197 conveniences and public meta syntax are not grounds to relabel unfinished selected 0.3.0 requirements as future. All public rules still need their promised positive/negative and proof/evidence coverage. Full supported-profile Soundness remains the separate 0.5.0 duty.
+
+**Edition and escalation.** Edition 2026 denotes the constitutional regime; release 0.3.0 and manifest/IR/CLI schema versions are separate. Documentation may explain ordinary adopted decisions without a new ruling. A new constitutional case, disputed interpretation, changed protected scope/premise, trusted assumption or guarantee admission needs the corresponding substantive human judgment; constitutional text changes use the Constitution's amendment/rectification procedure. This retrospective coverage preserves all 108 selected issue criteria and makes no release-readiness or publication claim.
+
+## Target realization cross-reference
+
+The Reference's [target-realization boundary](https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/realization.md#semantic-validity-and-a-target-realization) covers the distinction required by [#120](https://github.com/MGYamada/Qleisli/issues/120), including forward correspondence for the actual emitted artifact and its ordered encoding and workspace.

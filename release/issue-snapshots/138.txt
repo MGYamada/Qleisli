@@ -1,0 +1,80 @@
+## Status
+
+Constitutional governance issue for **Qleisli 0.3.0**.
+
+Related: #129 (Draft 5, Articles I/III/IV), #135 (guarantee ledger), #139 (jurisdictions), #149 (Guardian).
+
+## Problem
+
+Adding a Fundamental Theorem adds an enduring **constitutional proof jurisdiction**. It is not merely promoting a particular Lean proposition or helper lemma.
+
+Article IV makes the set of such jurisdictions monotone across constitutionally continuous editions. Admission is therefore an irreversible constitutional act and needs explicit review.
+
+## Admission requirements
+
+A candidate additional jurisdiction should:
+
+- protect a clear language-level or user-visible guarantee;
+- have a purpose that survives implementation and representation replacement;
+- explain why the existing Soundness, PR and RS jurisdictions do not already cover the duty;
+- explain how it applies to current admitted behavior and future extensions;
+- state its relationship to the Guardian Office, current production acceptance, and ledger;
+- identify relevant assumptions and the semantic concepts needed for current formalization;
+- include credible formal evidence for its current application and an explicit proof-coverage assessment;
+- be adopted only by a recorded constitutional amendment and edition transition.
+
+The exact theorem syntax and transitive Lean dependency graph must not be entrenched as the jurisdiction itself.
+
+## Jurisdiction admission versus ledger discharge
+
+These are different acts:
+
+1. Adding a **new Fundamental-Theorem jurisdiction** changes the constitutional text and requires an edition transition.
+2. Applying an **existing jurisdiction** to a feature is Guardian interpretation and can occur within the edition.
+3. Proving and recording that binding interpretation adds a **ledgered guarantee** without adding a new Fundamental Theorem.
+4. Proving a helper lemma alone performs none of these constitutional acts.
+
+The three jurisdictions in edition 2026 are established at ratification even before all production proofs are complete. That initial proof-maturity schedule is governed by #129 Article VIII; it does not make Resource Safety provisional or absent.
+
+For a later jurisdiction proposed after v1, the full-conformance release must discharge it for the current admitted scope before claiming conformance. A complete future-proof theorem statement covering unknown syntax is neither required nor possible as an admission mechanism.
+
+## Questions
+
+- What review record demonstrates that a genuinely new jurisdiction is needed?
+- How are its protected purpose, scope and assumptions stated without freezing implementation-era syntax?
+- Which current proofs/evidence and coverage report accompany adoption?
+- How does it interact with existing ledgered guarantees without weakening them?
+- How is constitutional adoption distinguished from an ordinary derived theorem?
+
+## Acceptance criteria
+
+- [x] Define eligibility for a new constitutional jurisdiction.
+- [x] Require a standalone constitutional amendment and edition transition.
+- [x] Preserve existing jurisdictions and guarantees under Article IV.
+- [x] Require current formalization, semantic assumptions and proof-coverage evidence.
+- [x] Distinguish jurisdiction adoption, binding interpretation, ledger discharge and helper lemmas.
+- [x] Do not accidentally constitutionalize one implementation or theorem spelling.
+- [x] Preserve the initial three-jurisdiction ratification and proof-maturity schedule.
+- [x] Require complete applicable proof coverage for any post-v1 full-conformance claim.
+
+## Core principle
+
+> **Fundamental-Theorem status is scarce because its jurisdiction is permanent; proofs within that jurisdiction may continue to grow.**
+
+
+## Acceptance audit and completion — 2026-10-05
+
+All eight original criteria are satisfied as **rules for admission**, not as the addition or proof of a fourth jurisdiction. A separate read-only audit and integration review checked each criterion against the actual adopted artifacts, rather than treating existing checkboxes or the plan's adoption as evidence.
+
+1. **Eligibility:** the [normative authority Reference](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/docs/src/reference/authority.md#conflicts-and-corrections) requires a distinct enduring purpose, relationship to existing duties, relevant assumptions and current coverage; it directly incorporates this Issue's full admission requirements.
+2. **Amendment and edition transition:** [Constitution Articles I and III](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/CONSTITUTION.md) require a separately reviewable constitutional amendment and recorded new-edition transition for an additional Fundamental-Theorem obligation.
+3. **Non-weakening:** Article IV preserves all established jurisdictions and ledgered guarantees across that transition.
+4. **Current formalization and evidence:** the Reference's admission rule and the detailed requirements above require current semantic assumptions, formal evidence and proof-coverage assessment; theorem syntax and an implementation dependency graph are not the entrenched jurisdiction.
+5. **Distinct acts:** Article III, Article VI and the Reference's interpretation/obligation/discharge section separate jurisdiction amendment, binding human interpretation, formal ledger discharge and ordinary helper lemmas.
+6. **Representation independence:** the Preamble and Articles I–IV explicitly permit changing formalizations without constitutionalizing one theorem spelling or implementation.
+7. **Initial maturity:** Articles I and VIII establish all three jurisdictions at ratification, distinguish pending from discharged obligations and preserve the pre-v1 disclosure schedule.
+8. **Post-v1 conformance:** Article VIII and the Reference's proof-status section require full applicable current coverage before a full-conformance claim; admitting a later jurisdiction cannot evade its admission requirements or that coverage condition.
+
+These files are already present in pushed commit **10553a9f94f6fd6a4555961244e0e9be41154f8f**, with identical bytes in local af26fad. The current adopted-record/ledger checker and pinned documentation/rendered-link checks pass. Exact constitutional text SHA-256 remains **40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b**; the authority Reference is **e972b5b3df2e423f2d825286af93accebd046f56f951f54e233044c283a45f94**.
+
+Closing this rules-definition Issue does not add a jurisdiction, issue a new Guardian ruling, admit a guarantee, certify the whole production scope, close #129/#141 or approve a release. No acceptance criterion is removed or deferred. Main merge and a completed release are not among this Issue's eight criteria; broader integration remains tracked in #142 and PR #307.

@@ -1,0 +1,40 @@
+**Parent:** #32
+
+## Problem
+
+Qleisli already relies on the principle that convenience syntax lowers outside the trusted acceptance boundary, but the set of permitted implicit elaborations is not yet a single normative contract.
+
+## Proposed rule
+
+> A desugaring may insert only uniquely determined structural or convenience code. It does not prove semantic obligations and does not extend trusted acceptance.
+
+Candidate permitted elaborations include:
+- canonical product reassociation;
+- canonical split/join owner packaging;
+- controlled-operation identity arm;
+- static operation application constructors;
+- basis-state preparation expansion;
+- register-view partition/reassembly;
+- legacy syntax migration.
+
+The generated core/IR must still be independently verified.
+
+## Specify
+
+For each sugar:
+1. source form;
+2. target core form;
+3. evaluation order;
+4. inserted ownership transitions;
+5. exact phase;
+6. source-span attribution;
+7. failure/diagnostic behavior;
+8. proof obligation that remains for the verifier.
+
+## Non-goal
+
+Do not allow desugaring to infer arbitrary isomorphisms, permutations, cleanup, operator equality, or unavailable capabilities.
+
+## Acceptance
+
+Publish a whitelist/table of surface forms and their explicit elaborations, and show old/new forms produce equivalent checked core artifacts where migration compatibility is promised.

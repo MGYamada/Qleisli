@@ -1,0 +1,138 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Related:
+- #45 — static operation capability calculus
+- #122 — controlled-operation realizability certificates
+- #127 — resource theorems over closed specializations
+- #154 — admission policy for sealed primitives
+- Resource Safety theorem work
+
+## Problem
+
+An operation may be semantically valid and callable while still having no statically known implementation cost.
+
+For example, an opaque or external provider may satisfy:
+
+```text
+U : Op<A, M>
+Applicable(U)
+```
+
+without Qleisli knowing any finite bound for:
+
+```text
+qubits
+ancillas
+T / non-Clifford count
+depth
+measurements
+routing/workspace
+```
+
+If such a provider can appear inside a resource-certified program without additional evidence, the whole-program Resource Safety bound does not close.
+
+Therefore:
+
+> **Apply capability is not a resource bound. Semantic validity and callability do not imply quantitative resource knowledge.**
+
+## Required 0.3.0 distinction
+
+Keep three independent axes:
+
+```text
+Meaning
+Capability
+Resource contract
+```
+
+Conceptually:
+
+```text
+U : Op<A, M>
+Applicable(U)
+ResourceBound(U, sigma, R)
+```
+
+where `sigma` identifies the relevant versioned cost / target model and `R` is a checked finite upper bound in that model.
+
+The exact syntax is not fixed by this issue. The semantic distinction is normative.
+
+## Opaque / external providers
+
+Any opaque provider, external oracle, backend-native intrinsic, sealed implementation, or foreign implementation used inside the Resource Safety theorem boundary must do one of the following:
+
+1. carry independently checkable finite resource evidence for the selected model; or
+2. remain outside the quantitative Resource Safety boundary.
+
+A provider annotation is never authoritative by itself.
+
+## Derived capabilities do not derive cost for free
+
+The language must not assume simple cost laws merely from semantic constructors.
+
+In particular:
+
+```text
+adjoint(U)
+controlled(U)
+power(U, n)
+tensor(U, V)
+compose(U, V)
+```
+
+require explicit resource-composition rules or provider-specific evidence.
+
+For example:
+
+- `Controllable(U)` capability does not imply a known controlled-`U` cost;
+- `Adjointable(U)` does not imply the implementation cost equals `U` unless the selected provider/cost model justifies that rule;
+- `power(U,n)` requires a finite composition rule for the closed `n`.
+
+## Trust boundary
+
+Resource certificates produced by Rust, Python, target plugins, external search, users, or LLMs are untrusted proposals.
+
+The authoritative acceptance path must independently validate:
+
+- provider identity;
+- target/cost-model identity;
+- finite bound shape;
+- composition premises;
+- actual selected implementation;
+- any synthesis/workspace assumptions.
+
+## Non-goals
+
+This issue does not require:
+
+- one universal cost model;
+- exact optimal cost;
+- proving external search termination;
+- requiring every semantic `Op` to carry a resource contract;
+- treating compiler work as quantum execution cost.
+
+## Acceptance criteria
+
+- [ ] The Language Reference distinguishes Meaning, Capability, and Resource contract.
+- [ ] `Applicable(U)` alone is insufficient for quantitative Resource Safety.
+- [ ] Opaque/external providers inside the theorem boundary require checked finite resource evidence.
+- [ ] Providers without such evidence are excluded from quantitative certification rather than assigned guessed costs.
+- [ ] Controlled/inverse/power/tensor/composition have explicit resource rules or require evidence.
+- [ ] Resource evidence is bound to implementation identity and cost/target model.
+- [ ] Producer annotations are not authoritative.
+- [ ] Unsupported/unknown resource behavior fails closed for Resource Safety certification.
+- [ ] #45/#122 remain capability/realizability rules rather than implicit cost rules.
+
+## Design principle
+
+> **Being allowed to call an operation is not the same as knowing what it costs.**
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #120 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Capabilities and cost.** An operation capability describes permitted use; it is not quantitative cost evidence. Opaque operations with unknown cost cannot receive a certified resource bound merely because they type-check or carry a provider name. Resource assumptions must be explicit and bound to the actual realization. The complete resource model, propagation and rejection behavior remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

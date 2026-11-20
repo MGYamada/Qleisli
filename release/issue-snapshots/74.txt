@@ -1,0 +1,81 @@
+## Status
+
+**0.3.0 semantic decision fixed; implementation/diagnostics remain open.**
+
+Related:
+- #29 — `excl` access
+- #69 — `ctrl` access
+- #73 — no assignment to quantum-containing places
+- #85 — evaluation order / access lifetimes
+- #67 / #68 — Rust/Qleisli semantic firewall
+
+## Decision
+
+For a quantum register, `q[i]` is a **pure place / ordered-axis selector**.
+
+It does not by itself:
+
+- move an owner;
+- form a Rust reference;
+- select `excl` or `ctrl`;
+- emit a physical SWAP/permutation;
+- perform a runtime bounds check;
+- produce a first-class quantum value.
+
+The access class is always explicit:
+
+```qli
+h(excl q[i]);
+controlled_phase(ctrl q[i], ctrl q[j]);
+```
+
+## 0.3.0 indexing profile
+
+Quantum indexing and slicing are **compile-time-only** in 0.3.0.
+
+Every index/range must be established at compile time in range under the supported constraint system. Failure to prove a bound or disjointness obligation is a compile-time diagnostic, never a runtime panic.
+
+Slices use explicit ordered half-open ranges and preserve axis order:
+
+```qli
+excl q[a..b]
+ctrl q[c..d]
+```
+
+where the relevant bounds and overlap obligations are proved at compile time.
+
+## Bare indexing
+
+Bare `q[i]` is not an ordinary value expression that extracts ownership.
+
+It is admitted only where the grammar expects a quantum place/axis selector, such as explicit access formation. Ownership extraction/repartition remains an explicit structural operation.
+
+## No Rust `Index` / `IndexMut` semantics
+
+Live `Q<T>` does not participate in generic Rust-style `Index` / `IndexMut`, autoref, autoderef, or panic-on-bounds behavior.
+
+Ordinary classical/static containers remain free to use ordinary indexing semantics where separately supported.
+
+## Invariants
+
+- no implicit duplication;
+- no implicit move;
+- no implicit permutation;
+- no implicit access class;
+- no runtime bounds panic in verified quantum code;
+- original ordered axis identity is preserved.
+
+## Acceptance criteria
+
+- [ ] `q[i]` is represented as a place/axis selector, not a value/reference operation.
+- [ ] `excl q[i]` and `ctrl q[i]` are distinct explicit access forms.
+- [ ] Bare indexing cannot move ownership.
+- [ ] Quantum indices/ranges are compile-time-only in 0.3.0.
+- [ ] Bounds/disjointness failure is compile-time and fail-closed.
+- [ ] Quantum `Q<T>` does not use generic `Index` / `IndexMut`.
+- [ ] Slices preserve explicit order and half-open range meaning.
+- [ ] Lowering preserves owner identity, phase, wire order, zero-width owners, and reference entanglement.
+
+## Compact rule
+
+> **Indexing selects a quantum place; `excl` or `ctrl` says how that place is accessed.**

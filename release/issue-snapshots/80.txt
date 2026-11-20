@@ -1,0 +1,507 @@
+## Current beta boundary — 2026-10-12
+
+All fourteen boundary criteria are re-audited in [the beta review](https://github.com/MGYamada/Qleisli/issues/80#issuecomment-6118963161), integrated at [bf8a6ab](https://github.com/MGYamada/Qleisli/commit/bf8a6abe3f0685a7f351220c536a135a7eef9f39). Current arrows use `Op<A -> B[, M]>`; `Op<A,B>` below is historical conceptual notation, not the adopted API. External qlinty implementation/compatibility/diagnostics are excluded by explicit maintainer instruction; criterion 13 is satisfied through current compiler diagnostics and documentation. Core diagnostics, Cargo Clippy and all separate feature obligations remain required. Historical design text below is preserved.
+
+---
+
+## Status
+
+**Important language-design umbrella for Qleisli 0.3.0.**
+
+This issue defines the **Haskell/Qleisli boundary**: which functional-programming abstractions Qleisli should inherit, which belong only in the static/meta layer, and which must stop at the quantum semantic boundary.
+
+This is complementary to the Rust boundary work:
+
+- #67 — Rust-inspired surface syntax, scoped linear quantum ownership, and no `unsafe`
+- #68 — deliberately diverge from Rust syntax where quantum meaning differs
+- #27 — type-theory synthesis: ownership, effects, static operators, coherence
+- #28 — static language / sizes / termination
+- #32 — surface-language normalization and desugaring boundary
+- #34 — normative desugaring boundary
+- #40 — `const fn` and compile-time builders
+- #45 — static operation capability calculus
+- #46 — `Meaning`
+- #48 — authoritative Language Reference
+- #62 — generic / trait surface sugar
+- #64 — finite ADTs / `match`
+- #66 — effect-boundary sugar
+
+This umbrella does **not** adopt every Haskell-inspired feature. Its purpose is to establish the boundary before those features are allowed to accrete independently.
+
+---
+
+# Release thesis
+
+Qleisli has two historical influences that should play different roles:
+
+- **Rust** contributes author-facing vocabulary, ownership ergonomics, tooling culture and familiar syntax.
+- **Haskell** contributes functional abstraction, composition, higher-order program construction and the idea that semantics should be organized algebraically.
+
+Neither language is the semantic authority for live quantum computation.
+
+A useful design mnemonic is:
+
+> **Rust surface, Haskell abstraction, quantum core.**
+
+More normatively:
+
+> **Qleisli should inherit functional abstraction from Haskell, but a Haskell abstraction may cross into the quantum layer only when it preserves linear ownership, explicit physical effects, exact semantics, and finite independently verifiable elaboration.**
+
+Or more compactly:
+
+> **Functional programming belongs above the quantum boundary; physics decides what may cross it.**
+
+This is the Haskell analogue of #68's rule that familiar Rust syntax must stop where familiar semantics become false.
+
+---
+
+# Why this boundary matters
+
+Many Haskell ideas are extremely attractive for Qleisli:
+
+- higher-order functions;
+- compositional operators;
+- parametric polymorphism;
+- algebraic data types;
+- type-class-like capability abstraction;
+- equational reasoning;
+- program construction by combinators.
+
+But ordinary Haskell semantics also assumes freedoms that are dangerous or simply false for live quantum ownership:
+
+- unrestricted closure capture;
+- implicit duplication of ordinary values;
+- ordinary pattern matching revealing data;
+- non-strict evaluation;
+- bottom / partiality;
+- unrestricted general recursion;
+- ordinary algebraic sums;
+- monadic syntax that can hide the nature of an effect.
+
+Qleisli should therefore **borrow the abstraction layer without importing classical value semantics into quantum ownership**.
+
+The boundary should be explicit before 0.3.0 stabilizes the source language.
+
+---
+
+# 1. Higher-order programming belongs primarily over static descriptions
+
+The most important distinction is between live quantum ownership and duplicable program descriptions.
+
+Conceptually:
+
+```text
+Q<A>          live linear quantum ownership
+Op<A, B>      static/classical operation description
+```
+
+(`Op<A>` or the final adopted spelling may differ; the semantic distinction is what matters.)
+
+The Haskell-like higher-order layer should be strongest over duplicable/static descriptions:
+
+```text
+compose
+tensor
+repeat
+controlled
+adjoint
+map/generate/fold over static structure
+specialize
+build
+```
+
+This suggests a major boundary rule:
+
+> **Higher-order functional abstraction should normally manipulate quantum programs, not duplicate or hide live quantum owners.**
+
+This also aligns directly with the planned 0.4.0 meta/elaboration layer: powerful functional construction can live above a deliberately small quantum core.
+
+Questions:
+
+- Which operator/program descriptions are first-class static values?
+- Which higher-order combinators belong in the 0.3.0 language versus later meta-layer work?
+- Can operation descriptions be copied freely while their application still obeys linear quantum ownership?
+- Which abstractions must elaborate completely before Core/verifier checking?
+
+---
+
+# 2. Kleisli semantics does not imply a general surface `Monad`
+
+The name **Qleisli** comes from a genuine compositional idea, but that does not imply that the source language should expose a Haskell-style general `Monad` interface or `do` notation.
+
+The current semantic structure is closer to effect-indexed quantum morphisms:
+
+```text
+Γ ; Δ ⊢ e : T ! ε
+
+ε ∈ {Unitary, Iso, Observe}
+```
+
+with independent linear ownership and tensor composition.
+
+Sequential composition, tensor composition, effect refinement and quantum ownership carry more structure than an undifferentiated `m a`.
+
+A surface form such as
+
+```text
+do {
+    ...
+}
+```
+
+must therefore not become a mechanism that hides:
+
+- measurement;
+- preparation;
+- discard;
+- classical feed-forward;
+- the distinction between coherent and observed control;
+- ancilla-cleanup obligations;
+- exact phase semantics.
+
+Provisional boundary:
+
+> **Keep Kleisli/compositional structure in the semantics; do not import a general Haskell `Monad/do` surface into the quantum core merely because the project is named Qleisli.**
+
+A future host/I/O layer may revisit monadic presentation independently.
+
+---
+
+# 3. Quantum owners must not be captured by unrestricted closures
+
+Ordinary functional closures may capture surrounding values and the resulting closure can often be duplicated and called repeatedly.
+
+That intuition is unsound for live quantum ownership.
+
+For example, a closure that captures
+
+```text
+q : Q<A>
+```
+
+cannot become an unrestricted duplicable callable without duplicating access to a unique quantum owner.
+
+0.3.0 should therefore decide explicitly:
+
+- unrestricted/static closures may not capture live quantum owners; or
+- quantum-capturing closures receive an explicit linear/one-shot function type.
+
+The conservative initial rule is attractive:
+
+```text
+higher-order static Op/program values     YES
+unrestricted closure capturing Q         NO
+```
+
+Linear closures can be added later if there is a compelling quantum programming case and a precise typing rule.
+
+Acceptance must never rely on “the programmer will only call it once”.
+
+---
+
+# 4. Pattern matching must separate three different meanings
+
+Haskell makes pattern matching a uniform way to inspect ordinary algebraic data.
+
+Qleisli cannot transfer that intuition directly.
+
+The language should distinguish:
+
+1. **classical pattern matching**  
+   inspect ordinary classical/static data;
+
+2. **structural quantum destructuring**  
+   split/repackage an ownership structure without observing the quantum state;
+
+3. **physical observation**  
+   obtain classical information by measurement or another declared observable effect.
+
+For example, destructuring
+
+```text
+Q<A ⊗ B>
+```
+
+into owners of the ordered factors is structural ownership manipulation, not measurement.
+
+But branching on whether a live `Q<Bit>` is `0` or `1` is observation and must cross an explicit physical effect boundary.
+
+Required principle:
+
+> **No pattern syntax may make physical observation look like ordinary data deconstruction.**
+
+This issue should constrain #64 and any future pattern extensions accordingly.
+
+---
+
+# 5. Classical algebraic sums are not automatically quantum coherent sums
+
+A Haskell-like finite ADT is straightforward in the classical/static fragment.
+
+The same syntax must not silently imply an ordinary classical coproduct for a coherent quantum object.
+
+For example, a future construct resembling
+
+```text
+Either<A, B>
+```
+
+is harmless as classical data, but a quantum direct-sum sector can support coherent superpositions between alternatives. Ordinary pattern matching would destroy that coherence.
+
+Therefore:
+
+> **Classical ADTs may be Haskell/Rust-like; coherent quantum sum structure requires separate semantics and cannot be inherited from classical `Either` intuition.**
+
+0.3.0 need not add quantum sum types. It should prevent classical ADT syntax from accidentally committing the language to incorrect quantum semantics.
+
+---
+
+# 6. `Unit`, terminal objects and the quantum tensor unit must remain distinct
+
+The classical unit value and the quantum monoidal unit are mathematically related but semantically different roles.
+
+Qleisli should not identify
+
+```text
+Unit
+()
+Q<Unit>
+```
+
+merely because all look “unit-like”.
+
+The Language Reference must preserve the distinction between:
+
+- classical terminal/unit data;
+- the basis-level/tensor unit;
+- ownership of a zero-width quantum system;
+- any exact scalar/phase information that can remain observable in the semantics.
+
+This is another place where importing Haskell intuition too literally would erase quantum structure.
+
+---
+
+# 7. Type-class-style abstraction is welcome; unchecked laws are not
+
+Haskell's type classes are an excellent source of abstraction ideas.
+
+Qleisli may want capability interfaces corresponding to notions such as:
+
+```text
+Adjointable
+Controllable
+Tensorable
+Measurable
+ExactMeaning
+...
+```
+
+However, in Haskell the semantic laws of a class instance are generally conventions outside ordinary type checking.
+
+For Qleisli, a semantically meaningful quantum capability should not be merely a bag of methods when correctness depends on a physical or mathematical law.
+
+Preferred direction:
+
+> **Use trait/type-class-like syntax for abstraction, but require verifier-checkable evidence for capabilities whose meaning participates in trusted quantum semantics.**
+
+This should connect #45, #46 and #62 rather than creating a second unchecked abstraction system.
+
+---
+
+# 8. Laziness should not enter the verified quantum Core
+
+Haskell's non-strict evaluation model is not an appropriate default for the accepted quantum core, especially given the planned Resource Safety Theorem.
+
+The verifier/backend eventually needs finite, statically meaningful answers to questions such as:
+
+- how many live qubits/owners are required?
+- how many ancillas?
+- how many operations?
+- what static loop bounds exist?
+- what compilation/resource bound is being certified?
+
+Therefore the verified Core should not depend on runtime lazy thunks or evaluation order that changes which quantum operations exist.
+
+But Qleisli should retain the useful *program-construction* lesson:
+
+> **Lazy/symbolic representation is useful; lazy quantum semantics is not required.**
+
+An `Op`, circuit DAG, builder or meta-program may represent a large computation symbolically and elaborate it later, while the accepted Core remains explicit and finite.
+
+---
+
+# 9. General recursion and bottom belong outside accepted finite Core
+
+Unrestricted general recursion and partial values conflict directly with a strong static resource story.
+
+The preferred split is:
+
+```text
+meta/static computation
+        ↓ elaboration / specialization
+finite Core
+        ↓ independent verification
+accepted quantum program
+```
+
+Meta-level computation may fail to terminate; in that case compilation simply does not produce an accepted program.
+
+But an **accepted Core program** should not acquire Haskell-style `bottom`, `undefined`, or unbounded runtime recursion by default.
+
+This preserves the possibility that resource bounds are properties of accepted programs rather than optimistic analyses.
+
+This section should be coordinated with #28 rather than creating an independent termination model.
+
+---
+
+# 10. Currying and partial application require a linearity audit
+
+Ordinary Haskell currying assumes that partially applied functions can behave as ordinary reusable values.
+
+That is safe for const/classical descriptions.
+
+It is not automatically safe when a partial application captures live quantum ownership.
+
+Therefore:
+
+- currying/partial application over classical/static parameters may be ordinary;
+- partial application that captures `Q<...>` must be rejected or receive explicit linear callable semantics;
+- syntactic convenience must not create a duplicable value that secretly owns quantum state.
+
+This is the same fundamental issue as quantum closure capture and should share one rule.
+
+---
+
+# 11. Host I/O is a separate future boundary
+
+A future host layer may eventually need filesystem/network/device interaction, asynchronous orchestration, job submission or ordinary classical effects.
+
+That is the natural place to reconsider more conventional effect/monadic APIs.
+
+It should not force a general I/O/Monad abstraction into the small verified quantum language in 0.3.0.
+
+The present effect lattice:
+
+```text
+Unitary / Iso / Observe
+```
+
+describes quantum-program meaning and should not be conflated prematurely with arbitrary host effects.
+
+---
+
+# Boundary table
+
+The 0.3.0 design review should classify at least the following:
+
+| Haskell idea | Qleisli direction |
+|---|---|
+| Pure functions | strongly inherit in classical/static/meta layers |
+| Parametric polymorphism | inherit where it preserves the type/effect boundary |
+| Higher-order functions | strongly support over static operation/program descriptions |
+| Algebraic data types | support in classical/static fragment |
+| Pattern matching | classical matching yes; quantum structural decomposition and observation remain distinct |
+| Type classes | adapt as traits/capabilities; semantic laws require evidence where trusted |
+| Linear types | borrow ideas, but keep Qleisli's explicit `Γ ; Δ` ownership discipline |
+| Currying / partial application | ordinary for const values; audit/restrict quantum-owner capture |
+| Closures | unrestricted closures must not silently capture live quantum owners |
+| `do` notation | do not adopt as generic quantum-core syntax by default |
+| General `Monad` abstraction | not the organizing interface of the verified quantum Core |
+| Laziness | no runtime/Core semantic dependence; symbolic construction is fine |
+| General recursion | outside the finite verified Core unless a bounded rule is proved |
+| `bottom` / `undefined` | not values of accepted verified Core programs |
+| I/O monad | future host-layer question, not a reason to enlarge the 0.3.0 quantum core |
+
+---
+
+# Interaction with the Rust boundary
+
+The Rust and Haskell influences should not compete.
+
+A coherent division of labor is:
+
+```text
+Rust:
+  author-facing syntax
+  ownership ergonomics
+  familiar tooling vocabulary
+
+Haskell:
+  composition
+  higher-order static abstraction
+  algebraic program construction
+
+Qleisli:
+  quantum ownership
+  physical effects
+  coherent control
+  exact phase
+  ancilla obligations
+  semantic evidence
+  verification authority
+```
+
+Thus:
+
+> **Rust is not the semantic authority. Haskell is not the semantic authority. The checked quantum meaning is the semantic authority.**
+
+This should become a stable design principle of 0.3.0.
+
+---
+
+# Non-goals
+
+This umbrella does not by itself:
+
+- add a `Monad` class;
+- add `do` notation;
+- add linear closures;
+- add quantum sum types;
+- add lazy evaluation;
+- add general recursion;
+- add host I/O;
+- replace Rust-like public syntax with Haskell syntax;
+- create a second effect system;
+- weaken the independent verifier.
+
+Child decisions should be made only where a concrete programming need justifies them.
+
+---
+
+# Acceptance criteria for the 0.3.0 boundary
+
+Before the 0.3.0 language is considered semantically stable:
+
+- [x] The Language Reference states the Haskell/Qleisli boundary explicitly.
+- [x] Static/program-description values and live quantum owners are clearly separated.
+- [x] Higher-order abstraction over static operations has a defined typing/lowering story.
+- [x] Unrestricted closure capture cannot duplicate or hide live quantum ownership.
+- [x] Classical pattern matching, structural quantum destructuring and physical observation are semantically distinct.
+- [x] Classical ADTs do not silently define coherent quantum sum semantics.
+- [x] `Unit` / `Q<Unit>` / zero-width ownership behavior is documented consistently with exact semantics.
+- [x] Trait/type-class-like semantic capabilities identify where verifier evidence is required.
+- [x] The verified Core does not depend on laziness, `bottom`, or unrestricted general recursion.
+- [x] Currying/partial application cannot create reusable closures over hidden live quantum owners.
+- [x] No generic `Monad/do` abstraction can hide `Unitary` / `Iso` / `Observe` boundaries.
+- [x] Future host I/O remains outside the current three-effect quantum core.
+- [x] qlinty/docs can diagnose or explain at least the major Haskell semantic false friends.
+- [x] Any surface sugar introduced under this umbrella lowers to finite explicit structure that the independent verifier checks.
+
+---
+
+# Compact formulation
+
+> **Qleisli should inherit Haskell's abstraction power, not Haskell's assumptions about ordinary duplicable values.**
+
+And:
+
+> **Functional programming belongs above the quantum boundary; only abstractions that preserve quantum ownership and physical meaning may cross it.**
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #32 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Total eager abstractions.** Ordinary or static abstractions must respect the chosen total/eager evaluation contract, finite checking limits and linear quantum ownership. Laziness, a generic Monad interface or unrestricted vector bind does not become a physical execution API. Quantum captures and hidden deferred work need explicit admissibility rules. The full abstraction surface and migration remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

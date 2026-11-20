@@ -1,0 +1,85 @@
+**Beta completion (2026-10-25):** all six criteria verified in the [final audit](https://github.com/MGYamada/Qleisli/issues/88#issuecomment-6385755544) at merged commit `0da5c11dc7fec2bdceb2baf46eb277f182c17d76` (PR #432). Tested and merged trees are identical. Dated earlier status text below is historical; broader quantitative RS and source/runtime preservation remain pending.
+
+## Status
+
+Core control-flow/resource-semantics issue for **Qleisli 0.3.0**.
+
+Related:
+- #28 static language, sizes, termination, and resource bounds
+- #30 total basis computation
+- #37 control-flow syntax
+- #47 static constraints
+- #48 Language Reference
+- future Resource Safety theorem work
+
+## Problem
+
+#28 defines much of the **static** termination story, but Qleisli also needs a rule for runtime classical control inside quantum programs.
+
+The language must decide which of the following are legal:
+
+```text
+statically bounded for
+runtime bounded for
+while
+general recursion
+mutual recursion
+measurement-driven retry loops
+repeat-until-success algorithms
+```
+
+This choice directly affects whether resource use is computable from accepted source.
+
+## Questions to decide
+
+1. Are all quantum-core loops statically bounded?
+2. Can a runtime classical integer determine a loop count?
+3. If yes, what bound/evidence must accompany it?
+4. Is general recursion forbidden in verified quantum code?
+5. Is structural recursion over finite static data allowed?
+6. Are measurement-driven loops permitted?
+7. How would repeat-until-success algorithms state termination/resource guarantees?
+8. Is probabilistic termination sufficient for any theorem, or is a hard bound required?
+9. Which control-flow constructs belong only in the host layer?
+10. How is loop resource cost represented in QLT/QDB/resource analysis?
+
+## Recommended initial restriction
+
+For 0.3.0, prefer:
+
+```text
+statically bounded loops        YES
+finite structurally checked loops YES
+general recursion               NO
+unbounded while                 NO
+measurement-driven retry loop   future / explicit resource contract
+```
+
+This keeps accepted core programs finitely realizable and resource-analyzable.
+
+## Acceptance criteria
+
+- [x] Every runtime control-flow construct has a termination/resource rule.
+- [x] General recursion/unbounded loops are explicitly accepted or rejected.
+- [x] Accepted loops compose with linear ownership and ancilla cleanup.
+- [x] Measurement-conditioned control has a defined branch/resource model.
+- [x] Resource Safety can quantify over the resulting finite execution structure.
+- [x] Future RUS support has a clear extension point rather than an accidental loophole.
+
+## Non-goals
+
+This issue does not require implementing repeat-until-success in 0.3.0.
+
+## Design intent
+
+Qleisli should make a deliberate connection between language control flow and its third theorem:
+
+> **resource guarantees require a precise notion of which executions the source language can denote.**
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #37 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Finite control.** The admitted control language needs explicit finite bounds or other accepted termination evidence. Every branch and iteration must satisfy owner, effect and workspace contracts, including the zero-iteration case. A bounded example does not authorize unrestricted recursion or repeat-until-success. The later RUS scope remains separate; complete finite-control rules and conformance remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

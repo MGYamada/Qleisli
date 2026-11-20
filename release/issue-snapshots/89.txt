@@ -1,0 +1,45 @@
+## Status
+
+**0.3.0 callable-model decision fixed; implementation/conformance remain open.**
+
+Related: #44, #45, #67, #68, #196, and the later Qartesian work.
+
+## Decision
+
+The 0.3.0 quantum core uses:
+
+```text
+ordinary quantum fn                  first-order
+compile-time operation descriptions  duplicable only under their own ordinary/static rules
+compile-time higher-order builders   allowed under bounded specialization
+ordinary classical closures          only over ordinary classical/compile-time values
+closure capturing live Q<T>          forbidden
+linear/one-shot quantum closure       deferred
+```
+
+An unrestricted callable value may not hide live linear ownership.
+
+## Why
+
+Ordinary closure intuition says a callable may be copied, stored, returned, invoked later, or invoked multiple times. Those assumptions are incompatible with an invisible captured live quantum owner unless the function type itself carries a linear usage theorem.
+
+0.3.0 therefore does not infer or simulate such a theorem through ordinary closure syntax.
+
+## Higher-order quantum programming
+
+Higher-order manipulation of **program descriptions / typed functions** remains allowed where the value being manipulated is not a hidden live quantum owner.
+
+Future Qartesian/Qurry work may introduce stronger typed higher-order function values. That future system must make usage/effect/access contracts explicit rather than retroactively treating ordinary 0.3.0 closures as quantum-linear.
+
+## Acceptance criteria
+
+- [ ] Live `Q<T>` cannot be captured by an unrestricted closure.
+- [ ] Quantum functions are first-order at the live-owner boundary.
+- [ ] Compile-time/program-description higher-order composition remains available under bounded rules.
+- [ ] Callable values cannot duplicate hidden owner capability.
+- [ ] Diagnostics identify live-quantum capture rather than reporting a generic closure error.
+- [ ] Future linear/higher-order quantum callables require a separately specified type.
+
+## Compact rule
+
+> **Higher-order code may carry quantum programs; ordinary closures may not carry hidden live quantum owners.**

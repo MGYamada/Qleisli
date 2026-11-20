@@ -1,0 +1,108 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+The Language Reference should fix the semantic boundary between **logical axis identity/order** and **physical qubit placement/routing** before target lowering is formalized.
+
+Related:
+- #27 — exact axis/order semantics
+- #76 — binding exchange vs axis permutation vs physical SWAP
+- #84 — definitional equality, coherence, and physical maps
+- #120 — target correspondence and synthesis workspace
+- #103 — future QCP routing/target profiles
+
+## Problem
+
+Qleisli correctly treats logical tensor-leaf order as semantically exact.
+
+A backend, however, must be free to map logical axes to arbitrary physical qubits and to change that placement while routing.
+
+For example:
+
+```text
+logical q[0] -> physical qubit 17
+logical q[1] -> physical qubit 4
+```
+
+is not a semantic permutation of the Qleisli value. It is an implementation layout.
+
+Likewise, a backend may insert physical SWAP operations and finish with a different physical placement, provided the final logical correspondence is tracked correctly.
+
+If the specification does not distinguish these layers, routing risks colliding with the rule that logical axis permutation is a real semantic operation.
+
+## Correspondence structure
+
+Target lowering should therefore carry explicit layout/encoding information.
+
+Conceptually, rather than requiring bare matrix equality
+
+```text
+C = U,
+```
+
+the correspondence may take a form such as
+
+```text
+D_final ◦ C ◦ E_initial = U
+```
+
+where `E_initial` and `D_final` represent the declared logical/physical encoding-layout correspondence.
+
+The exact formalism can be refined later; 0.3.0 should fix the distinction.
+
+## Required invariants
+
+A target layout system must:
+
+- preserve logical axis identity and order at the semantic boundary;
+- make every physical placement/routing transformation explicit in target evidence;
+- distinguish compiler metadata relabeling from an actual physical SWAP gate;
+- track final placement rather than assuming it equals initial placement;
+- compose with synthesis workspace from #120;
+- include any routing qubits/resources in target-side accounting;
+- never authorize a source-level axis permutation by treating it as "just layout".
+
+## Zero-width and compound interfaces
+
+The rule should also be compatible with:
+
+- `Q<Unit>` / zero-width semantic factors;
+- nested products / `Bits<n>`;
+- source-level split/join/coherence maps;
+- ancilla/workspace axes;
+- measurement outputs and dynamically retired qubits where supported.
+
+## Acceptance criteria
+
+- [x] The Reference distinguishes logical axis identity/order from physical qubit placement.
+- [x] Target correspondence carries an explicit initial/final layout or equivalent encoding relation.
+- [x] Backend routing may change physical placement without changing source semantics.
+- [x] Physical SWAP instructions and metadata-only relabeling are not conflated.
+- [x] Final layout need not equal initial layout if the correspondence records the difference.
+- [x] Source-level semantic permutations remain explicit physical/logical operations as required by #76/#84.
+- [x] Synthesis/routing workspace participates in target resource accounting.
+- [x] The model is reusable by QCP routing analysis without moving routing into source semantics.
+
+## Design principle
+
+> **Logical axes are part of program meaning. Physical placement is part of implementation evidence.**
+
+## Version boundary: abstract obligation now, capability schema later
+
+This v0.3.0 issue fixes a **normative abstract realizability obligation**. It does not require the complete concrete backend/target capability schema to exist in v0.3.0.
+
+The intended dependency direction is:
+
+```text
+v0.3.0 semantic / realizability law
+        ↓ normative input
+v0.4.0 #179 backend + target capability schema
+        ↓ implementation/profile vocabulary
+QCP / backend lowering / later Physical Realizability proof
+```
+
+Therefore #179 depends on the distinction fixed here; this issue does not depend on the final concrete schema of #179.
+
+v0.3.0 may use abstract premises such as a target/profile `P`, capability relation, layout/encoding relation, or exact-domain judgment without committing to the complete serialized/profile representation that v0.4.0 will define.
+
+The v0.4.0 capability model must faithfully implement this boundary and may not collapse source validity into target support.

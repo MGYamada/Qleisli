@@ -1,0 +1,178 @@
+## Status
+
+Design issue for **Qleisli 0.3.0**. This issue concerns the long-term meaning of `basis fn` as source scales beyond finite truth-table checking.
+
+Related:
+- #22 basis/classical staging
+- #25 predicate-domain convention
+- #27 type-theory synthesis
+- R06 and R09 in `docs/imaginary-v1/requirements.md`
+- A020-19 general predicates and arithmetic cannot be delivered as tables
+
+## Problem
+
+The current finite implementation gives `basis fn` a clean semantics as a total function over a finite basis domain, often checked through complete tables.
+
+That does not scale.
+
+Grover needs predicates
+
+```text
+f : Bits<n> -> Bit
+```
+
+to become reversible compute/use/uncompute circuits.
+
+Shor needs arithmetic such as
+
+```text
+x -> a*x mod N
+```
+
+to become reversible circuits over the entire declared register space.
+
+For realistic widths, Qleisli cannot define the language by enumerating all `2^n` inputs.
+
+The language therefore needs to decide what a basis computation *is* independently of whole-space truth tables.
+
+## Proposed direction
+
+Treat `basis fn` as a **total, first-order, side-effect-free classical sublanguage with checked reversible synthesis**.
+
+Conceptually:
+
+```text
+basis fn f : A -> B
+```
+
+means:
+
+1. `f` is total over its declared finite basis type;
+2. evaluation terminates;
+3. it has no quantum side effects;
+4. when used as a coherent computation, Qleisli synthesizes or verifies a reversible embedding;
+5. scratch introduced by synthesis is returned exactly clean when required.
+
+For a non-injective predicate
+
+```text
+f : A -> Bit
+```
+
+the coherent oracle should be understood via a reversible embedding such as
+
+```text
+|x,b> -> |x, b xor f(x)>
+```
+
+rather than by pretending `f` itself is unitary.
+
+## Candidate initial language
+
+A deliberately small fragment could include:
+
+- `Bit` and `Bits<n>`;
+- tuples/products;
+- total Boolean operators;
+- bounded integer/word arithmetic;
+- conditionals;
+- statically bounded loops;
+- calls to other total basis functions.
+
+General recursion and unbounded runtime loops should remain excluded initially.
+
+## Questions to decide
+
+1. Are basis functions usable both in basis/static contexts and runtime classical contexts, as proposed in #22?
+2. Which integer/word types exist?
+3. What are overflow semantics?
+4. Is arithmetic mathematical, modular by type, or explicitly checked?
+5. Which conditionals are allowed?
+6. Which loops are allowed?
+7. Are local mutable accumulators allowed as surface sugar?
+8. What is the exact termination discipline?
+9. Which basis functions can be automatically synthesized reversibly?
+10. When synthesis is unavailable, can users provide a certified implementation?
+11. How is scratch cost represented?
+12. How is the function meaning bound to the synthesized circuit/evidence?
+13. How is action outside a promised subdomain specified for arithmetic such as modular multiplication?
+
+## Required semantic distinction
+
+Three notions must not be conflated:
+
+```text
+classical total function f
+reversible embedding of f
+unitary permutation
+```
+
+For injective equal-width `f`, these may coincide.
+
+For non-injective `f`, they do not.
+
+The language should make the embedding rule explicit rather than relying on finite-table accidents.
+
+## Synthesis boundary
+
+The intended scalable path is:
+
+```text
+basis source
+   ↓
+checked total classical IR
+   ↓
+reversible synthesis
+   ↓
+compute / use / uncompute
+   ↓
+verified quantum IR
+```
+
+The trusted verifier should not trust the synthesis procedure merely because it ran successfully. It should check the emitted reversible structure and the retained binding to the requested function meaning.
+
+## Non-goals
+
+This issue does not require:
+
+- optimizing all Boolean circuits;
+- unrestricted classical programming;
+- heap allocation;
+- general recursion;
+- symbolic theorem proving for arbitrary mathematics;
+- whole-space dense matrices at scalable widths.
+
+## Acceptance criteria
+
+1. A Grover predicate over `Bits<n>` can be defined once and used coherently without enumerating `2^n` rows.
+2. The same predicate can be evaluated classically after measurement if #22 adopts unified bit staging.
+3. A non-injective predicate lowers to a reversible XOR-style oracle or equivalent certified construction.
+4. Scratch is returned exactly clean.
+5. A wrong synthesized circuit is rejected independently.
+6. Resource/checking cost is bounded in source/circuit size rather than truth-table size.
+7. A first bounded arithmetic example compiles without a whole-space permutation table.
+8. Invalid or unsupported synthesis fails explicitly.
+9. Integer/overflow behavior is normative.
+10. The specification distinguishes definition-time totality from implementation capacity.
+
+## Design intent
+
+The long-term role of `basis fn` should be stronger than “a convenient finite table”:
+
+> **It is the total classical language from which Qleisli can derive verified coherent computation.**
+
+## Retrospective constitutional impact — 2026-10-05
+
+**Scope and authority.** This #140 analysis applies QS-2026-01, PR-2026-01 and RS-2026-01 to total basis computation and its checked coherent implementation. It preserves the ordinary-type and exact argument-tree contracts in #22/#25/#27 and does not silently admit additional integer, overflow, recursion or approximation semantics.
+
+**QS.** A total classical function, its reversible embedding and a unitary permutation are different objects. For a non-injective predicate, the coherent implementation must retain the required input and implement the specified XOR-style embedding or an explicitly equivalent checked construction. Actual compute/use/uncompute must preserve exact phase, ordered axes, owners and arbitrary-reference behavior, and restore declared clean workspace.
+
+Current finite basis lifting enumerates input labels, evaluates the source body and emits an injective LiftBasis table. The native checker independently validates that table and its structural use. This does not prove that a future synthesized circuit implements the requested source function, nor meet this issue's scalable, non-table synthesis criteria. Merely producing another native-valid unitary is insufficient.
+
+**PR.** A target claim must bind the requested function/embedding, selected provider, actual emitted circuit, interface, encoding and workspace to the checked realization. Successful synthesis is an untrusted proposal, not correspondence evidence or a promise of complete synthesis.
+
+**Quantitative RS.** Checking and resource accounting must be bounded in the relevant source/emitted-circuit representation without requiring a complete table solely because the domain contains 2^n values. Scratch counts while live even when returned clean. Compiler limits and finite table checks are not quantitative resource certificates; target costs require their own explicit model and checked composition.
+
+**Definitions, ledger and transport.** Total basis IR, embedding semantics and function-to-circuit evidence require reviewed definitions and proofs of the actual enabled checking rules. They introduce no trusted synthesizer or axiom shortcut. Original QLV1/finite-contract bytes and requests still pass their actual native gates; proposed source synthesis must bind its declared total function independently of the candidate circuit. The two existing QLV1 ownership/scope guarantees and their current original-root evidence remain protected. The current identity verifier covers unchanged native meanings/representations and rejects unsupported changes; changed accepted representations require checked transport, and source preservation remains separate.
+
+**Proof status, edition and review.** Development stays within edition 2026. Small non-injective predicates, arithmetic examples, exact cleanup/reference probes and deliberately wrong but otherwise native-valid circuits should test the new correspondence boundary. Such tests do not replace its proof. General scalable synthesis, integer semantics and required evidence remain pending. Ordinary implementation under existing interpretations needs no new ruling per change; new constitutional cases, semantic assumptions, adequacy disputes or guarantee admissions require the actual designated human judgment and evidence. This analysis neither closes #30, changes protected text nor adopts a new interpretation.

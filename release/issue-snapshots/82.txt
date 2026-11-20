@@ -1,0 +1,43 @@
+## Status
+
+Short 0.3.0 naming audit.
+
+Related:
+- #80 — Haskell/Qleisli boundary
+- #81 — replace coherent `do/pure` with `basis`
+- #24 — exact specifications: `apply_contract` vs `meaning` / `bind_op`
+
+## Question
+
+Audit the name:
+
+```qli
+bind_op(implementation, Meaning)
+```
+
+The operation does **not** mean Haskell/Kleisli monadic bind. It verifies/binds an implementation to an exact mathematical meaning and produces checked static operation evidence.
+
+After #80/#81 remove Haskell semantic false friends from the surface, `bind_op` may be the remaining misleading Haskell-adjacent vocabulary.
+
+Consider whether a name such as:
+
+```text
+certify_op
+checked_op
+```
+
+would communicate the actual role more directly.
+
+## Decision criterion
+
+Keep `bind_op` only if “bind” is clearly the best domain-neutral description and does not invite `>>=` / Monad intuition.
+
+Otherwise rename it in 0.3.0 while the surface language is still intentionally breaking.
+
+## Acceptance
+
+- [x] Decide whether `bind_op` survives 0.3.0.
+- [x] If renamed, migrate grammar, docs, examples, fixtures, and diagnostics.
+- [x] Preserve the operation's semantics and evidence/trust boundary exactly.
+
+> **This is a vocabulary audit, not a semantic redesign.**

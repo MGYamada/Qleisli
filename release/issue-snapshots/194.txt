@@ -1,0 +1,191 @@
+## Status
+
+Core language-design issue for **Qleisli 0.3.0**.
+
+This issue should be resolved before the sized/static source syntax is treated as stable.
+
+Related:
+- #89 callable model / quantum-capturing closures
+- sized-source corpus and static-loop experiments
+
+## Motivation
+
+The original sized-source experiments used forms such as (historical spelling, not current syntax):
+
+```qli
+for const k in 0..n carry register = q {
+    let (bit, rest) = take_bit[n,k](register);
+    let bit = h(bit);
+    yield put_bit[n,k](bit, rest);
+}
+```
+
+The semantics are sound and useful: a live quantum owner is threaded linearly from one statically elaborated iteration to the next.
+
+The surface problem is that ordinary `for` already has a strong, familiar meaning in mainstream languages. Adding `carry ... yield ...` to `for` makes an ordinary-looking construct acquire Qleisli-specific linear ownership semantics.
+
+The unusual part is therefore not `carry` itself. The unusual part is asking ordinary `for` to mean a quantum linear fold.
+
+## Proposal
+
+Introduce a dedicated `qfor` construct for finite static iteration with explicit linear quantum state threading:
+
+```qli
+qfor static k in 0..n carry register = q {
+    let (bit, rest) = take_bit[n,k](register);
+    let bit = h(bit);
+    yield put_bit[n,k](bit, rest);
+}
+```
+
+Semantically, if the initial owner is (q_0), the loop body defines
+
+```text
+q_0 -> q_1 -> ... -> q_n
+```
+
+where each iteration consumes the current carried owner and `yield` supplies the owner(s) for the next iteration. The final yielded owner(s) are the value of the `qfor` expression.
+
+## Design intent
+
+`qfor` is **not** merely "for, but quantum".
+
+It should have a narrow meaning:
+
+> **finite static iteration with explicit linear quantum state threading**
+
+This distinction matters because it keeps three concepts separate:
+
+```text
+for                         ordinary/classical iteration
+for static                 compile-time classical/static iteration
+qfor static ... carry ...   compile-time iteration that threads live quantum ownership
+```
+
+The language should not silently reinterpret mutation or ordinary closure capture as quantum ownership transfer.
+
+## Why keep `carry` and `yield`
+
+With a dedicated `qfor`, the existing `carry` / `yield` vocabulary becomes substantially clearer:
+
+- `carry` names the live owner state entering an iteration.
+- `yield` explicitly returns the owner state for the next iteration.
+- the construct exposes ownership transfer rather than disguising it as mutation.
+- no unrestricted closure needs to capture live `Q<A>`, preserving the boundary being fixed in #89.
+
+This is preferable to an imperative spelling such as:
+
+```qli
+let mut register = q;
+for static k in 0..n {
+    ...
+    register = next;
+}
+```
+
+because that syntax visually suggests destructive mutation even though the semantics are linear consumption and rebinding.
+
+It is also preferable, for the 0.3.0 core, to a closure-based `fold` spelling, because that immediately couples static iteration to the unresolved semantics of closures capturing live quantum ownership.
+
+## Keep `static` explicit
+
+The initial design should retain:
+
+```qli
+qfor static k in 0..n ...
+```
+
+rather than shortening it to:
+
+```qli
+qfor k in 0..n ...
+```
+
+`qfor` identifies the ownership discipline; `static` identifies when the iteration structure is determined.
+
+Keeping both words prevents `qfor` from being misread as a runtime loop executed by the quantum device.
+
+Iteration uses `static`, independently of the `const` marker for generic parameters. The v0.4.0 generic-syntax migration in #396 leaves `qfor static` / `for static` unchanged.
+
+## Boundary questions to resolve
+
+1. Is `qfor` restricted to statically finite ranges in 0.3.0?
+2. Must every carried value be linear/quantum, or may tuples mix quantum owners with unrestricted static/classical values?
+3. Must the carried type be invariant across iterations?
+4. Are zero-iteration `qfor` expressions exactly the initial carried owner(s)?
+5. Can multiple owners be carried as tuples?
+6. May the body reference non-carried live quantum owners, or must every live owner crossing an iteration boundary appear explicitly in `carry`?
+7. Is `yield` permitted only as the terminator of a `qfor` body?
+8. How do `if static` branches prove that every path yields the same ownership shape?
+9. What IR construct is the canonical lowering target?
+10. Should ordinary `for static` be forbidden from threading live `Q<A>` values across iterations?
+
+## Recommended initial restriction
+
+For 0.3.0, keep the verified core small:
+
+```text
+qfor range            statically finite
+iteration variable    static Nat
+carried quantum state explicit
+cross-iteration Q     must appear in carry/yield
+carried shape         invariant
+zero iterations       return initial carry unchanged
+closure capture       not involved
+runtime qfor          unsupported
+```
+
+## Migration
+
+If adopted, migrate the experimental sized corpus from the historical quantum-carry form (shown here with the current `static` iteration marker):
+
+```qli
+for static k in 0..n carry ...
+```
+
+to:
+
+```qli
+qfor static k in 0..n carry ...
+```
+
+before the 0.3.0 source grammar is frozen.
+
+This should be treated as a syntax/semantic-boundary cleanup, not merely a keyword rename: ordinary `for` and quantum linear iteration should become distinct constructs in the language reference.
+
+## Validation
+
+Because `qfor` is intentionally Qleisli-specific surface syntax, validate it empirically before freezing it:
+
+- add first-attempt / zero-shot authoring cases to the conformance corpus;
+- test whether an LLM given only the relevant Reference section correctly produces `qfor static ... carry ... yield ...`;
+- compare error-repair rates against the historical `for const ... carry ... yield ...` spelling;
+- verify that diagnostics make missing carried owners and malformed yields obvious.
+
+## Acceptance criteria
+
+- `qfor` has a precise static and ownership semantics in the Language Reference.
+- Ordinary `for` does not acquire hidden quantum-owner threading semantics.
+- Every live quantum owner crossing an iteration boundary is statically accounted for.
+- `qfor` lowers deterministically to the verified IR without introducing unrestricted quantum-capturing closures.
+- Zero-iteration and multi-owner cases are specified.
+- Branching inside `qfor` has explicit ownership-shape rules.
+- The sized corpus is migrated and passes.
+- First-attempt authoring tests cover representative QFT/QPE/GHZ/arithmetic loops.
+
+## Non-goals
+
+This issue does not require:
+
+- runtime quantum-device looping;
+- general linear closures;
+- unrestricted mutation of quantum owners;
+- a general-purpose effectful loop calculus.
+
+## Design principle
+
+Qleisli should reuse ordinary syntax where the ordinary concept is genuinely sufficient.
+
+When the semantics are genuinely quantum-specific, the syntax should say so explicitly rather than overloading a familiar construct with hidden ownership rules.
+
+`qfor` gives the linear quantum fold a name of its own.

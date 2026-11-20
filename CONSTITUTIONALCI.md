@@ -248,6 +248,10 @@ decisions govern any future assignment. Each of the other 125 Issues
 retains at least one required criterion in the reviewed index.
 GitHub remains the decisions/progress ledger.
 These files are evidence indices, not another backlog or authority for adoption.
+The [Issue snapshot index](release/issue-snapshots/index.json) records the
+origin and digest of each verbatim body in the fixed inventory. The complete
+source archive retains the bodies for criterion review. Cargo excludes the
+issue snapshots from the published crate.
 The criterion review references the
 [primitive admission and replacement policy](docs/src/reference/primitive-boundary.md#admission-and-replacement-process)
 for any new sealed semantic authority, including its independent contract,

@@ -1,0 +1,81 @@
+## Status
+
+Breaking surface-language implementation and migration for **Qleisli 0.3.0 within constitutional edition 2026**. The target is named as AGENTS.md requires. Found in the v0.2.7 code review of the published source `7844a10d63880a2b6984c093e2dc7a75033d1e1e`. The unified frontend and one-shot migration direction are approved; detailed syntax, typing, effects, and lowering still require their recorded decisions. This work does not move acceptance authority.
+
+Related:
+
+- #131: consolidate pipelines around generic contracts and library algorithm proofs. That Issue covers the architecture and acceptance side. Its 0.2.4 follow-up proposes evaluating the finite profile as the literal-size sublanguage of one frontend. This Issue is the user-facing language counterpart.
+- #32: the surface normalization umbrella ("one semantic concept should have one canonical surface spelling").
+- #22 (`CBit`/`CBits`), #28 (static language and sizes), #29 (`excl` views), #33 (static specialization vs runtime application), #36 and #74 (indexing and slicing), #44 (basis-type polymorphism), #47 (static constraints), #194 (`qfor`), #81 (`do/pure`), #48 (language reference).
+- #93 (closed: duplicated sized primitive semantics) and #94 (scattered limits).
+
+## Problem
+
+The comparison below records the historical v0.2.7 review baseline. In particular, its Rust-production-authority entry is historical: the adopted #276 cutover has since established Lean-only production acceptance. The remaining language unification work must preserve that current boundary. Sharing edition 2026 does not imply sharing a grammar; the defect is the competing source frontends, not the constitutional edition identifier.
+
+Qleisli has two source languages. They share the `.qli` extension and edition `"2026"`, but not a grammar, type system, checker, module model, CLI or trust path.
+
+| | Finite production frontend | Experimental sized frontend |
+| --- | --- | --- |
+| Spec status | Normative (language-spec, syntax-v0, type-system) | "a separate experimental API/CLI profile, not an extension of this grammar" (language-spec §1) |
+| Types | `Unit`/`Bit`/exact tuple trees, `CBit`, `Q<A>` | `Bit`, `Bits<n>`, `CBit`, `CBits<m>`, tuples, `static n: Nat` |
+| Static parameters | `[const U: Op<A>]` with `requires Apply/Adjoint/Controlled` | Adds `Nat` sizes and size predicates (`requires n >= 1`) |
+| Control flow | Runtime `if` on `CBit`, `qif`, `repeat_static` | `for const … carry … yield` and `if static` only; no runtime branching or feedback |
+| Register access | `split`/`join` over tuple trees | `take_bit[n,k]`/`put_bit[n,k]` over `Bits<n>` |
+| Other forms | Basis functions and `do/pure`, `with_computed` (2/3 arguments), `apply_contract`, `meaning`/`bind_op`, `reset`/`discard` | None of these; instead `controlled(…)`, `phase[j,d]`, `controlled_phase[j,k]` |
+| Primitives and std | Sealed `std::quantum`/`std::observe` plus the bundled std qrate | Experimental `std::registers::*` and `std::classical::*` ("not std APIs") |
+| Loading and entry | Project directory, root-relative modules, `observe fn main()` | CLI map `--module=name=PATH`, `--entry`, `--nat`, `--operation` |
+| IR and checking | Flat finite IR, checked by Rust `verify` (production authority) | Hierarchical IR proposal, checked by an explicitly selected Lean kernel (`--kernel`); default scope is producer consistency |
+| Results | Exhaustive distribution or samples | Amplitudes, instrument branches or packed outcomes |
+| Limits | Registers ≤ 12 bits; exact contracts ≤ 6 bits | Registers ≤ 8; live ≤ 16; phases k ≤ 8 |
+| Size | ~9.5k lines of Rust | ~8.1k lines of Rust plus a ~1.4k-line Python producer/oracle |
+
+### Consequences
+
+- The same algorithm exists twice with different spellings: std `qft2`/`qft3` (fixed widths, tuple trees) and the corpus `fourier[n]` (generic `Bits<n>`). An author, human or AI, must pick a dialect, and neither expresses everything. The sized language has no measurement feedback, computed scopes or meaning bindings; the finite language has no sizes or loops.
+- Shared concepts are implemented twice and can drift: `adjoint`, `Op<…>`, `requires`, controlled and repeated descriptors, primitives and limits (cf. #93, #94).
+- Coding agents and reviewers face two grammars under one extension and one edition.
+
+## Approved unification direction; detailed decisions remain
+
+Make one surface language for 0.3.0. The current finite language becomes its literal-size sublanguage, as in the #131 follow-up, and the sized features become ordinary language features.
+
+1. **One frontend.** One grammar and AST, one name-resolution and module model (qrate/project loading), one type/ownership/effect checker, and one diagnostics path.
+2. **First-class sizes and static parameters.** `Nat` parameters and size predicates become part of the language, unified with access requirements as in #47. `Bits<n>` and tuple trees coexist with explicit, checked conversions. Decide whether `Bit` is identical to `Bits<1>` and `Unit` to `Bits<0>`.
+3. **Register access through views.** Use the views/indexing design (#29, #36, #74) instead of `take_bit`/`put_bit` index arithmetic or `split`/`join` trees. Static iteration follows #28 and #194.
+4. **A decision for every existing form.** Each current form is kept, renamed or desugared under #32/#34: `qif`, `with_computed`, `apply_contract`, `meaning`/`bind_op`, `do/pure` (#81), runtime `if`, `reset`/`discard`.
+5. **One CLI and one result format.** `check`/`run`/`sample` with explicit instantiation for generic entries. Whether results are checked for producer consistency or against a caller request stays explicit.
+6. **IR.** Generic programs elaborate to the hierarchical profile. Fully literal programs may keep the published flat IR as a versioned compatibility profile (#131). Rust/Lean authority continues to follow the VM gates.
+
+## Affected contracts
+
+syntax-v0, type-system, size-expressions, language-spec, static-operations, sized-corpus-source, frontend-v0, machine-interface-spec (CLI), the std qrate APIs, and the corpus sources.
+
+## Migration
+
+- Introduce the unified language in release 0.3.0 while retaining constitutional edition `"2026"`. An edition identifies the constitutional regime, not a grammar generation. Syntax, type-system, frontend, and CLI changes belong to the release compatibility and migration policy under #137; they do not by themselves require an edition transition.
+- Use one 0.3.0 cutover with a published mapping for every existing source construct and CLI option. Migrate repository sources to the selected canonical forms. Do not retain legacy syntax as a parallel accepted frontend in the new release.
+- Preserve fixed 0.2.9 source, tooling, and artifacts as historical regression oracles. They retain their recorded meaning and identity; they do not become an alternate 0.3.0 acceptance path.
+- Translate the sized corpus and fixed-width std routines, including the Fourier examples, into the unified language. Preserve their independent semantic oracles and compare small-system complex amplitudes and instruments for every migrated program.
+- Remove `qleisli sized …` from the 0.3.0 interface once the unified CLI covers check, run, sample, and emit-proposal, with a published option mapping.
+- Retain the Python sized producer only as an independent differential oracle under #131, not as a third public frontend or an acceptance authority.
+
+## Acceptance
+
+- [ ] A recorded decision on the items above, reflected in the language reference (#48).
+- [ ] One grammar and one checker accept all examples, the std qrate and both corpora. Old and new frontends agree on small-system semantics (complex amplitudes and instruments) for every migrated program.
+- [ ] A feature table lists every current construct as kept, renamed, desugared (with its target) or removed (with its migration).
+- [ ] The 0.3.0 interface removes the separate `qleisli sized` CLI and the statement that sized source is not an extension of the grammar. Historical tooling and artifacts remain explicitly identified as regression oracles, not parallel accepted 0.3.0 frontends.
+
+## Non-goals
+
+No change to acceptance authority or the VM gates. No new trusted rule. No capacity increase by itself.
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #32 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**One frontend.** One public grammar, shared checking and a common CLI are the 0.3.0 objective. Temporary finite/sized input adapters and checking profiles are transitional implementation boundaries, not permission for permanent dialects. The later generic-acceptance/library-proof implementation migration in #273 does not postpone this issue. A syntax change does not select a new constitutional edition; edition 2026 remains explicit.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

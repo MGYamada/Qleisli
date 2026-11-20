@@ -1,0 +1,71 @@
+## Status
+
+**Target: Qleisli 0.3.0 architectural review.**
+
+This issue now owns only the **0.3.0 architectural contract** for generic acceptance and library-owned algorithm meaning/proofs.
+
+The **0.4.0 implementation migration** has been split into #273.
+
+### 0.3.0 responsibility
+
+Freeze the reviewed architectural rules before implementation consolidation:
+
+- separate producer, acceptance, specification/proof, execution and compatibility duties;
+- generic acceptance must bind actual gates/operations, interfaces, encodings, independent expected meaning, roots and dependencies;
+- algorithm-specific mathematical meaning belongs to library/proof modules, not trusted name-specific acceptance;
+- Rust/Python recognizers and producers remain untrusted candidate discovery/construction;
+- keep the Mathlib-free executable acceptance package distinct from the Mathlib specification/proof package;
+- preserve VM-22–VM-29 authority gates and exact finite contracts while evaluating consolidation;
+- define the architectural disposition of root/module loading without silently changing 0.2.x compatibility behavior.
+
+### 0.3.0 acceptance
+
+- [x] Publish one reviewed responsibility table for producer / acceptance / proof / execution / compatibility paths.
+- [x] Fix the generic-contract binding requirements independently of QFT/QPE names.
+- [x] Fix the rule that algorithm-specific semantic theorems live on the library/proof side.
+- [x] Fix the separation between executable acceptance and Mathlib specification/proof duties.
+- [x] Record the required root/dependency identity obligations for the later production migration.
+- [x] Identify every compatibility path that the 0.4.0 migration must preserve or explicitly version.
+
+Implementation consolidation, deletion of duplicate production paths, and compatibility-path migration are deferred to #273.
+
+---
+
+## Historical review record
+
+The text below is retained as the review record that motivated the split. Where it discusses 0.4.0 implementation work, #273 is now normative.
+
+The 0.2.3 review identifies algorithm-aware QFT/QPE acceptance and parallel frontend/proof pipelines. Target a reviewed architectural contract in 0.3.0 and versioned implementation migration in 0.4.0; do not remove public APIs during 0.2.4 or supersede VM-22–VM-29 authority gates.
+
+Inventory the finite production Rust path, hierarchical interchange, experimental Rust sized source path, Python sized producer/oracle, research/semantic-kernel and both Lean packages. Choose one production source/elaboration/desugaring path into independently checked profile families; retain published flat IR as an explicitly versioned compatibility profile. Python remains an independent differential oracle, research remains an experiment. The Mathlib-free executable acceptance package and separate Mathlib specification/proof package have different duties and must remain separated; counting them as duplicate production checkers is misleading.
+
+Move algorithm-specific contract construction and Fourier/QPE semantic lemmas to the library/proof side. Generic checking must bind actual gates, interfaces, encodings, independent expected meaning and root/dependencies; producers in Rust fourier.rs/qpe.rs are untrusted recognition/search, not authority. Evaluate existing PathSum.compile_sound: it proves individual path-state correspondence, not alone complex summation, expected Fourier meaning, source preservation, general completeness or controlled/observing integration. Literal symbolic equality is a bounded sufficient experiment, not a complete semantic normal form. Require independent specification modules and actual-definition soundness for the complete enabled generic rule.
+
+Affected contracts: public Lean checker declarations, hierarchy profiles/serialization and source APIs. Keep compatibility wrappers built/audited until replacement accepts the supported contracts; any removal or changed profile needs a 0.x.0 target, published mapping and migration tests. Fix modulus-256 scope explicitly; phase-domain generalization is separately specified and proved, never an implicit increase.
+
+Acceptance:
+- [ ] One reviewed table assigns producer, acceptance, specification/proof, execution and compatibility duties to every path.
+- [ ] Generic checker prototype binds original circuits and independent library contracts; accept semantics-preserving commuting schedules and reject phase, axis, control, stale-root and dependency mutations on small systems.
+- [ ] Fourier and QPE reference lemmas establish intended meaning independently of acceptance modules.
+- [ ] Public migration and proof coverage are reviewed before deleting algorithm-specific acceptance.
+- [ ] Runtime source policy, compiled declaration audits, fresh kernel replay and independent native comparisons pass.
+
+Related #34/#61 (generative boundary), #46 (Meaning composition), #94 (typed capacity groups), #128 (current finite migration). This issue does not authorize production Lean authority or expand current capacities.
+
+
+## 0.2.4 follow-up review — 2026-10-01
+
+Evaluate the production finite source profile as the **literal-size sublanguage of one specified frontend**, while retaining its published grammar, ownership, tuple shapes, diagnostics and public APIs through a versioned migration. This is a 0.3.0 architectural evaluation, not authorization to delete either implementation during 0.2.5. Record which incompatible changes require the 0.4.0 implementation boundary.
+
+Prototype generic rules for calls with independently proved contracts, invariant-bearing static loops, and composition; attach algorithm-specific mathematical proofs to library components. Show with a small Fourier/QPE example and a structurally different algorithm that adding an algorithm does not require another trusted name-specific recognizer/checker/proof trio. The current Rust recognizers are untrusted candidate discovery and actual-body factoring; the review corrected its earlier characterization of them as algorithm implementations. Their debt remains real but their role must be described accurately.
+
+Inventory root loading separately: #160 provides opt-in declared-qrate source selection while default all-source checking remains compatible. A future reachable-module policy must define entry roots, independently checked dependencies, bundled-library validation, stale references and diagnostics. Keep exact finite contracts and VM-22–VM-29 proofs/authority gates while evaluating consolidation; do not conflate the separate Mathlib specification package with the Mathlib-free executable kernel.
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #41 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Responsibility and generic architecture.** The 0.3.0 responsibility split and generic-contract architecture must distinguish irreducible primitives from derived code checked under ordinary user rules. Generic acceptance/library-proof migration explicitly assigned to #273 remains later work. That boundary does not defer #250's 0.3.0 common frontend. The present responsibility table, contracts and applicable ordinary-checking obligations remain to be completed.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

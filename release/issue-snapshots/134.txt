@@ -1,0 +1,106 @@
+## Status
+
+Constitutional design issue for **Qleisli 0.3.0**.
+
+Related: #129 (Constitution Draft 5), #135 (guarantee ledger), #139 (jurisdictions), #149 (Guardian).
+
+## Problem
+
+Qleisli needs an explicit authority model that distinguishes constitutional interpretation, mathematical verification, specification, and implementation.
+
+A frozen Lean declaration cannot replace constitutional interpretation as the language grows. Conversely, interpretation cannot make an unproved proposition into a verified theorem.
+
+## Adopted authority model
+
+1. **CONSTITUTION.md** defines the entrenched jurisdictions and institutional rules.
+2. **Binding Guardian interpretations and the discharged guarantee ledger** apply those rules and record the accumulated minimum guarantees.
+3. **Current formal obligations and their checked proofs/evidence** implement those requirements against the actual production acceptance boundary.
+4. **The Language Reference** specifies admitted language behavior consistently with those requirements.
+5. **Implementation, conformance tests, and examples** must conform to the applicable specification and verified boundary.
+
+This is a normative authority model, not a ranking that lets prose overrule a failed Lean proof. Mathematical derivability is checked under the recorded proof system and assumptions. The Guardian decides whether the formalization expresses the constitutional obligation; the checker establishes that formal proposition.
+
+## Conflict resolution
+
+- If a current formalization omits a protected case, revise and prove the obligation; do not treat the incomplete formalization as a constitutional exemption.
+- If a required proof fails, a Guardian ruling cannot certify it. Repair the implementation/proof or withhold the affected acceptance/certification.
+- If a later interpretation conflicts with a discharged guarantee, clarification must preserve or strengthen the guarantee. Apply the explicit correction process; no ordinary interpretation can repeal it.
+- If Reference and implementation disagree, resolve the specification/conformance defect under the constitutional requirements. Passing tests cannot redefine the language.
+- Except for a valid pre-v1 rectification authorized under #129 Article IX, if constitutional text must change, use the edition-level amendment process, subject to Article IV's non-weakening protection.
+
+## Evolving artifacts
+
+Within an edition, the ratified constitutional text stays fixed except for a valid pre-v1 rectification authorized under #129 Article IX. Interpretations and ledger guarantees accumulate; current theorem syntax, checker implementation, and dependency graphs may evolve while preserving those guarantees.
+
+Neither the entire transitive Lean dependency graph nor the extension of the current acceptance predicate is frozen. #135 defines preservation and production identity; compatibility continuity belongs to #137 and conformance policy.
+
+## Acceptance criteria
+
+- [x] Publish the authority model above.
+- [x] Make the Guardian's exclusive constitutional interpretation role explicit.
+- [x] Distinguish adequacy of formalization from mechanical verification of its proposition.
+- [x] Define conflicts, proof gaps, and corrections without an exemption or override path.
+- [x] Make the discharged ledger a binding minimum for current formal realizations.
+- [x] Keep tests and implementation subordinate to the normative requirements.
+- [x] Cross-reference the authority model from the Language Reference and the ratification companion maintained outside the immutable constitutional text; link both documents to the exact ratified Constitution without modifying its protected bytes.
+
+## Core principle
+
+> **The Constitution establishes jurisdiction; the Guardian interprets its application; the checker verifies the resulting formal obligations.**
+
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.
+
+
+## Integration and acceptance audit — 2026-10-04
+
+The five-layer Reference and conflict/adequacy rules are implemented. The cross-reference criterion remains unchecked: the immutable Constitution is not being edited to add a documentation link; the adoption record and Book reference it. No approval of a constitutional-text change is inferred.
+
+Source: [foundation commit 0605d716](https://github.com/MGYamada/Qleisli/commit/0605d716c2a79e2b6776476981c3e25cdfa1709b), [draft integration PR #307](https://github.com/MGYamada/Qleisli/pull/307), [authority Reference](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/reference/authority.md), [governance](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/GOVERNANCE.md). The live ledger has two explicitly admitted scoped QS guarantees and three pending broader obligations; earlier zero-guarantee checkpoints above are historical. Current enforcement validation has 75 passing policy/evidence regressions and a fresh elaborated Lean review. The hosted docs, Lean and interop jobs for 061636d have passed; other full-CI jobs remain in progress. This is not a full-CI, release or full-conformance claim.
+
+## Proposed navigation-criterion clarification — 2026-10-05
+
+**Not adopted; the original final acceptance checkbox remains unchecked and this issue remains open.**
+
+The complete edition-2026 constitutional text was ratified without an excluded editable navigation area. Article II protects its exact bytes. Adding a link within that text to satisfy the present wording would therefore require a constitutional-text procedure for a documentation-navigation concern. The approved 0.3.0 implementation plan reserves changes to issue acceptance criteria for a reasoned human decision.
+
+Concrete proposed replacement of the last criterion:
+
+> Cross-reference the authority model from the Language Reference and the ratification companion maintained outside the immutable constitutional text; link both documents to the exact ratified Constitution without modifying its protected bytes.
+
+This replaces only the location of a navigation link. The five authority layers, exclusive natural-human constitutional interpretation, separation of formalization adequacy from mechanical verification, protected ledger minimum, conflict rules and subordinate implementation/tests remain the same. It introduces no constitutional amendment, interpretation or guarantee, and does not complete #141.
+
+The reviewable implementation is in local commit `9ef1593a7a777de58455f1a9cc4dcb97bcfe8c76` (not pushed yet, to avoid cancelling the live full-CI run on `10553a9f94f6fd6a4555961244e0e9be41154f8f`):
+
+- `docs/src/reference/authority.md`, SHA-256 `c3c2872931f778bfa076cddea390cbcb688ba26ccf1f4c6852e6876ac192e292`, directly links the exact ratified text.
+- `docs/src/design/ratification.md`, SHA-256 `6470f21e5f0c0162ffa36cfaafd3f69aa51c2a45c4b160dae9ab9ff6404fcbd9`, links both that text and the authority model while expressly remaining outside the protected text.
+- Constitution SHA-256 remains `40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b`; governance and the ratification event are unchanged.
+- `tests/fixtures/constitution_v030/authority-navigation/final-validation.json`, SHA-256 `843a9fed5fa2597d042123f42ce67875881eb49e2d57f8fd3ec22be266a13c87`, records successful constitutional identity, Markdown links, pinned mdBook 0.5.4 build, rendered/print-page links and whitespace checks. A code-span formatting fix removes the prior literal `Q<Bit>` HTML warning; the initial observation is retained separately.
+- An independent assistant review found the navigation adequate but confirmed that the old literal criterion is not yet met. That review is not human adoption.
+
+Human approval of the stated replacement and publication of the reviewed navigation are still required before updating the checkbox and closing this issue. No approval is inferred from previous general implementation authorization.
+
+## Human adoption of the navigation criterion — 2026-10-05
+
+The human maintainer explicitly approved the concrete replacement above, answering:
+
+> 本文を固定したまま、この条件変更を承認
+
+The actual question named the old and new locations, the inspected ratification/Reference files, Article II and the approved plan's human-decision requirement. The final acceptance criterion above is now replaced by that approved wording. The historical original and unadopted proposal remain in the checkpoint above for review.
+
+The verbatim event is retained in local commit `a26e29bc19e06324e8b394d9d1dbb97ea2d163e1`, file `tests/fixtures/constitution_v030/authority-navigation/human-approval.json`, SHA-256 `88f1c99c348c87544819ee3932d0de9f6b20873f6fe4e18d1661807eb81691bc`. It identifies the reviewed source hashes, implementation commit and completed checks. This is an ordinary project acceptance-criterion decision; no constitutional text, binding interpretation or discharged guarantee changes.
+
+The implemented navigation and approval record are committed locally but await the next push after the current exhaustive CI run finishes. The final checkbox and this issue remain open until that publication is verified. This approved local work is not yet added to the 108-issue completed count.
+
+
+## Verified publication and completion — 2026-10-05
+
+The approved navigation, actual human approval and existing authority model are now published in [d753962de3eedd39629c8441f2b82521ce01d70f](https://github.com/MGYamada/Qleisli/commit/d753962de3eedd39629c8441f2b82521ce01d70f), via draft #307. Remote reads of the authority Reference, ratification companion and human-approval record match the exact Git blobs of that commit. The original adoption/protected Constitution hashes above remain unchanged. Subsequent companion changes record actual EXACT adoption and the corrected 109-Issue scope; they do not alter the approved navigation location or constitutional text.
+
+All seven current acceptance criteria are met. The final approved criterion is checked and this design/process Issue is complete. Validation is the published authority-navigation packet plus current pinned mdBook/rendered-link and document checks (20 HTML files, 753 local links, 277 anchors). The preceding head's CI37233042845 succeeded; current CI37242938514 runs separately. This closure does not complete #141, mathematical QS/PR/RS, same-commit full release validation or release publication.

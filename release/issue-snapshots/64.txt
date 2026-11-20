@@ -1,0 +1,470 @@
+**Parent:** #32  
+**Related:** #22, #35, #41, #195, #196, #197
+
+## Status
+
+Surface-language design issue for **Qleisli 0.3.0**.
+
+**Completion status (2026-11-13): the eight original criteria are verified for the documented initial finite-ADT profile.** PR #429 merged only a validated foundation checkpoint. Its unintended automatic closure was reversed; no criterion or beta completion credit was awarded.
+
+This issue defines finite algebraic data types as part of the **ordinary finite type universe `T`**. It does not introduce a second quantum ADT hierarchy.
+
+## Adopted type-theory alignment
+
+Under the 0.3.0 type model:
+
+```text
+T       ordinary value
+Q<T>    quantum ownership over T
+```
+
+Therefore, if a finite enum is admitted as an ordinary finite type:
+
+```qli
+enum Pauli {
+    I,
+    X,
+    Y,
+    Z,
+}
+```
+
+then both of these are meaningful in principle:
+
+```text
+Pauli
+Q<Pauli>
+```
+
+No separate `QEnum`, `CEnum`, or quantum-sum type constructor is required merely to place the finite basis under quantum ownership.
+
+## Ordinary `match`
+
+Ordinary `match` remains ordinary classical/static pattern selection:
+
+```qli
+match p {
+    Pauli::I => ...,
+    Pauli::X => ...,
+    Pauli::Y => ...,
+    Pauli::Z => ...,
+}
+```
+
+where `p : Pauli` is an ordinary value.
+
+The initial ADT surface may lower to a canonical finite tag representation.
+
+## Quantum boundary: `Q<Enum>` is allowed; ordinary `match` is not
+
+The previous wording suggested that `Q<Enum>` itself required a separate quantum-sum design.
+
+That is superseded by the adopted `T / Q<T>` model.
+
+The correct boundary is:
+
+```text
+p  : Pauli       -> ordinary match may inspect p
+qp : Q<Pauli>    -> ordinary match must not inspect qp
+```
+
+A coherent selector uses the separate construct defined by #195:
+
+```qli
+qmatch(selector, target) {
+    Pauli::I => U0,
+    Pauli::X => U1,
+    Pauli::Y => U2,
+    Pauli::Z => U3,
+}
+```
+
+subject to the final `qmatch` pattern policy.
+
+Thus:
+
+> **The enum type is ordinary. Quantum ownership is supplied by `Q<...>`. Classical inspection and coherent control remain different operations.**
+
+## What 0.3.0 fixes
+
+0.3.0 should fix only the semantic laws:
+
+- finite ADTs are ordinary finite types;
+- ordinary `match` acts on ordinary/static values;
+- `Q<ADT>` is the ordinary application of the quantum ownership constructor;
+- ordinary pattern matching cannot inspect a live `Q<ADT>`;
+- coherent basis-space selection uses `qmatch`;
+- no pattern syntax may create implicit measurement.
+
+## What moves to 0.4.0
+
+Detailed boundary ergonomics belong to #197, including:
+
+- which enum/product patterns `qmatch` accepts;
+- wildcard/complement arms;
+- range/set patterns;
+- canonical tag ordering and representation conveniences;
+- pattern reuse between `match` and `qmatch`;
+- implicit coherence around nested products.
+
+0.3.0 need not freeze those conveniences.
+
+## Initial ordinary ADT profile
+
+Candidate 0.3.0 scope remains deliberately finite:
+
+- finite fieldless enums;
+- finite product/record sugar whose fields are ordinary finite types;
+- optionally finite tagged payload variants with statically known representation;
+- exhaustive ordinary `match` over static/runtime classical values;
+- recursive/open/extensible ADTs deferred.
+
+The exact surface breadth can remain conservative as long as the semantic classification above is preserved.
+
+## Lowering principles
+
+For ordinary values:
+
+```text
+finite enum
+    ↓
+canonical finite representation
+
+ordinary match
+    ↓
+static selection or classical branch
+```
+
+For quantum-owned values:
+
+```text
+Q<finite enum>
+    ↓
+ordinary quantum ownership over that finite basis
+
+qmatch
+    ↓
+coherent basis-space control
+```
+
+No lowering may turn `Q<Enum>` into an ordinary discriminant read.
+
+## Non-goals
+
+- no implicit measurement;
+- no ordinary `match` on live `Q<T>`;
+- no separate classical `C<Enum>` hierarchy;
+- no separate quantum enum constructor;
+- no recursive heap data structures or garbage collection in the initial profile;
+- no open variants;
+- no claim that every classical sum-type operation automatically has a coherent analogue.
+
+## Acceptance criteria
+
+- [x] Finite ADTs are classified as ordinary finite types `T`.
+- [x] `Q<FiniteADT>` is legal in principle under the general `Q<T>` rule.
+- [x] Ordinary `match` works only on ordinary/static data.
+- [x] Attempts to ordinary-match a live `Q<FiniteADT>` are rejected.
+- [x] Coherent multiway control is expressed through `qmatch`, not implicit inspection.
+- [x] No ADT convenience creates an implicit measurement.
+- [x] Detailed `qmatch` pattern/coherence policy is deferred to #197.
+- [x] Canonical source encodings remain deterministic and evidence/cache-safe where relevant.
+
+## Completion evidence — 2026-11-13
+
+The documented initial finite-ADT profile is integrated at
+[`7ed1ba4c`](https://github.com/MGYamada/Qleisli/commit/7ed1ba4cb47cb4d43d34c453c36a47437d895778).
+The eight criteria and their evidence are recorded in the
+[acceptance review](https://github.com/MGYamada/Qleisli/issues/64#issuecomment-6840237487).
+The final integration contains the original Meaning and protected/certified
+predicate work, including the product split/join regression. Both
+[PR CI](https://github.com/MGYamada/Qleisli/actions/runs/43340119101) and
+[push CI](https://github.com/MGYamada/Qleisli/actions/runs/43340112124)
+passed every required context on the identical tested tree.
+
+The documented usage and resource boundaries remain tracked by #540,
+#547, #472, #517, #521 and #522. Later pattern/coherence policy remains
+in #197.
+
+## Design intent
+
+> **`Pauli` is an ordinary finite type. `Q<Pauli>` is its quantum-owned form. `match` reads the former; `qmatch` coherently controls on the latter.**
+
+## Concrete beta implementation contract and bounded study — 2026-10-20
+
+This records the implementation/checking contract before production changes, under the existing #64/#195 laws and QS/PR/RS/EXACT interpretations. It does not admit new syntax, a primitive, a guarantee or a completed criterion. The current common frontend still has no enum/record declaration, ordinary match or qmatch implementation.
+
+### Ordinary source and type identity
+
+Use nonempty finite fieldless enums and finite named records whose fields are ordinary finite types as the initial profile. Optional tagged payloads and recursive/open ADTs remain outside this initial surface as already permitted above. A singleton enum or an empty record has one basis value; it is distinct from Unit and Bits<0>, even when its quantum owner has no wires. No empty carrier is silently replaced by Unit.
+
+Proposed forms retain Rust-like names and explicit constructors:
+
+```qli
+pub enum Pauli { I, X, Y, Z }
+
+classical fn is_x(p: Pauli) -> Bit {
+    match p {
+        Pauli::I => 0,
+        Pauli::X => 1,
+        Pauli::Y => 0,
+        Pauli::Z => 0,
+    }
+}
+```
+
+These examples are design inputs, not current executable APIs. Constructors/patterns resolve to original canonical type and variant declarations. Private access, duplicate declarations/fields/variants, ambiguous paths and wrong categories reject; no fallback by width or spelling. Record identity includes its declaration, ordered fields and complete field type trees. Distinct enums/records and equal-width Unit/Bit/Bits/product types do not become definitionally equal.
+
+Ordinary match inspects only ordinary data and executes one arm. It uses the existing branch effect/ownership-frame rules; it may not inspect Q<T> or insert measurement/coherent control. Initially use exact finite labels with disjoint exhaustive arms. Constructor/closed-expression selection does not add general const<T> bindings or revive excluded #63. The existing Nat static language and #39 exclusion stay unchanged. Rich patterns, wildcard/complement conveniences and implicit coherence remain #197 work.
+
+### Logical cardinality and physical code are separate
+
+Support the three-variant case as a real finite carrier, rather than declaring every non-power-of-two enum to be Bits<N>. Preserve an enum's logical cardinality and nominal tree separately from its physical bit layout. A deterministic initial ordinal encoding may follow retained declaration order; this is a toolchain-bound implementation representation, not a new permanent external serialization ABI or adoption of #197 conveniences.
+
+For a three-element carrier, the canonical example is E: C^3 -> C^4 with E|j> = |j> for j=0,1,2. Physical label3 is outside the image. Products/records use ordered component encodings; they do not infer tuple reassociation, separability or an implicit quantum-owner split. Sources, type descriptors, member/field order and encoding coordinates belong to dependency/evidence/cache identity, including type references appearing only in signatures or host bindings.
+
+An implementation must independently establish the relevant code-space and actual-body equations, schematically:
+
+```text
+E_in† E_in = I
+E_out† E_out = I
+actualPhysicalBody * E_in = E_out * logicalBody
+```
+
+An explicit Meaning supplies a separate required logical map; a producer matrix, valid physical IR or matching probabilities cannot replace its actual-body/dependency/type/phase binding. Without an independent algorithm request, report only the actual checked typing/code-space scope. All-input/reference obligations and existing proof gaps stay explicit.
+
+Logical effects must use logical cardinalities and actual purity. A physical 4x4 unitary body cannot make a logical 3->4 map Unitary: that map can at most be Isometry, after its own exact check. A left inverse on the three-state code cannot grant a whole-space inverse/control API. Retain both ports, exact interface conditions, explicit access evidence and inverse implementation requirements. Observation/reset/discard cannot be hidden by an encoding or a pure label. Unsupported coefficient/type/transport profiles refuse explicitly.
+
+Reuse the common source judgment, ordinary project and selected Raw routes, original body/dependency reconstruction and existing native checks. Extend logical-carrier/encoding checking at the Lean boundary; do not create Rust acceptance or an erasing fallback to Bits<N>. Keep old physical Raw representations and admitted ownership/scope meanings intact where possible. Any required internal format change is explicit, versioned and fail-closed; no unbound external schema is enabled. Retain the existing source/tree/work/matrix/width capacities without raising them.
+
+### Coherent selection and remaining validation
+
+Coordinate actual qmatch integration with #195. Its exact labels partition the selector's finite basis; all arms have the same target tree and the verified phase-fixed Unitary/Controlled access required by the existing qif boundary. Consume/return distinct selector and target owners exactly once, including zero-width owners. No branch exposes the selector as classical data. Preserve original arm identities, public effects, phases and code coordinates; check the actual emitted multiway operation independently. The Bit specialization must agree exactly with qif. Do not close this boundary using an early parse refusal or a future API description.
+
+Required conformance includes ordinary enum/record construction and exhaustive match, rejection of ordinary match on a live quantum owner, legal quantum-owned ADTs, three/four-label coherent controls, singleton/empty-record owner retention, equal-width different-type substitutions, incomplete/overlapping arms, phase/axis/dependency faults, stale type/encoding evidence and unavailable inverse/control. Run small systems only. Later initial-authoring evaluation must distinguish informed cases from a genuine independent first-attempt study. Implementation, tests, proof and specification review remain separate.
+
+### Actual pre-implementation evidence
+
+The retained initial source study contains ten complete projects and twelve actual CLI observations: four successful existing Bit/qif controls and eight refusals. Seven desired enum/record/match/qmatch forms stop at parsing; a direct ordinary if on Q<Bit> reaches its actual type refusal. Those parser refusals are not type/ownership/qmatch evidence. The two-qubit coherent control retains its Bell correlation. Original source, predictions, streams and observer are unchanged. Plan SHA-256: `7157fb69d310ebd55541a8ac956a89c1a29d240bbea757e70b9b8d8ed2f140dc`; report: `433643c74b2936595d4feccfcc4d3e439a8885359a55b939890ae870c2c8ea7a`.
+
+A separate local Mathlib-free Lean 4.30.0 study freshly checks fifteen concrete facts about existing executable R8 arithmetic and the current finite Encoding reader, at unchanged source commit `0bd108183649e0462cb5c5b1c8bae29d07e1c9fc`. It checks a 4x3 isometric encoding, a three-cycle and its physical extension, phase-fixed scalar arms 1/-1/i, and refuses wrong dependency/axis/relative-phase equations. P=E† obeys P E=I3 but E P!=I4 and is not a four-state isometry. The current reader rejects the 4x3 map described as Bits<2>, because it still requires 2^width logical columns. This identifies a real native logical-carrier extension, not permission to erase the type.
+
+The first Lean file fails to elaborate some equalities because the standard Except wrapper has no inferred DecidableEq here; its diagnostics/placeholder axioms are retained as a failed attempt, not accepted proofs. A separate version adds structural equality and corrects the overstrong axiom-free expectation. The successful file uses only the already recorded standard propext assumption, with no sorry/project axiom, native_decide, unsafe/partial definition or runtime override. Root/qargo/native/study bytes and 161 observed project import artifacts are unchanged during each window.
+
+Successful study source SHA-256: `dd24cb3113fe4ba9c5fb7203d8053add6694c83b2080d14b4589839b2de3c306`; report: `6ea46c8bb819a3ce3dc56afac5a6374d2cea0bd948cb56082bfa95c0bbd48d4d`. These local first sources/logs will be retained before implementation. This is not a fresh replay of imported proofs, a generic/reference-safe ADT or source-preservation theorem, an accepted handle, an independent human specification review or criterion completion. All eight checkboxes remain open.
+
+
+### Local implementation foundation — 2026-10-20
+
+Local, **not yet pushed**, branch `codex/beta-finite-adts` now contains `012e6484c531462d53dcdd87ed1d4bfb93d51ed5` and retention-only repair `dbe40dd72b9fde2b2317e99ad3dc283b83990c9c`. This is a foundation checkpoint, not completed ADT support or an accepted language/API.
+
+`QleisliKernel.Semantics.FiniteCarrier` represents full nominal prefix trees with original source-identity bytes and declared variant/field order, separately from logical cardinality and physical coordinates. The bounded `QleisliKernel.FiniteCarrier` reader reuses current exact arithmetic, work accounting and matrix/isometry checks. Its generic `read_reference` and `code_conditions` theorems connect actual successful computations to the independent layout and fresh exact Gram check. They use only standard `propext`; no project axiom, native proof evaluation, unsafe/partial definition or runtime override is introduced.
+
+Small reduction cases distinguish three/four-state carriers with the same physical width, the first-field-fast record layout and reversed axes, singleton nominal types/empty records/Unit/Bits<0>, malformed/duplicate names and prefix trees, and exhausted work. The largest new matrix is 8x6 on three physical bits. They do not prove source typing, canonical declaration lookup, ownership or body/qmatch preservation.
+
+The initial example compile has a recursion-limit failure and the wrong spelling of the existing arithmetic work-limit error. A separate repair uses the existing kernel `decide +kernel` mode and real `workLimit` constructor, without raising capacities. An audit-wrapper `Except`/CoreM type error is likewise preserved separately and repaired. Actual compiled declaration/import audits include the new modules. The first current-source guards correctly refuse unregistered modules/stale source evidence. Register the modules at the normal audit root and put reduction cases in the existing Tests root; shared schema rebuild/audits, complete kernel Tests, fresh kernel/Main replay and fixed ownership/scope binding/Basis/Raw transport/extraction then succeed. Every protected printed type/extraction matches its saved bytes. Only current evidence and its ledger binding are refreshed, preserving historical proposals, adoption records and both original guarantee scopes.
+
+Current Lean source closure: `42506ddd2aef389ebe030108c81cecbc863f8195b99ad3699cfde2bd38678d93` (303 files); current scoped evidence: `d33dfe316f7594eabb24845aff275deab1adfce22866d0187f34eb48b3a3be44`. Full shared validation report SHA-256: `f0a968bb1e914a3d1c682ebb13df67980b886bccfb33dfdca84ff3a409474d94`. The selected native binary remains unchanged; no native mode/decoder/accepted handle is enabled. Existing physical Raw/checker definitions are unchanged. No Rust source changed, so Rust/MSRV rebuilds are not repeated for this foundation.
+
+The complete first source/Lean studies are now retained in the inert `finite-adts-v030` archive: 60 originals / 30,807,429 expanded file bytes in 862,696 stored bytes. Three passive preservation tests pass; a compact separate validation record binds full local reports. The exact local commit gate initially detects that validation record as unrooted; add an explicit static retention reference without executing history. All four new fixture paths are now rooted; exact budgets pass at 17,184 files / 142,066,559 bytes, with no exceptions or raised limits. Source-check runner regressions, docs, whitespace, schema identity and reviewed-base constitutional continuity pass.
+
+**Still required:** ordinary enum/record constructors and match; canonical type/variant lookup and source dependencies; typed ports, actual bodies/dependencies and caller-visible effects; versioned native/QDV transport and accepted-handle binding; coherent qmatch integration and independent semantic/fault regressions; current-head hosted CI/review and final acceptance audit. No checkbox is completed by this checkpoint. Broader QS/PR/RS/EXACT and source/runtime/target obligations remain pending; no new guarantee, release or publication is claimed.
+
+
+### Original-body/code checkpoint — 2026-10-20
+
+Local, not yet pushed, commit `e2aad4a7ab43215cc8c08d918c31d7c629c8086f` extends the foundation with `Semantics.CarrierInterface` and `Qirf.Carrier`. It retains complete nominal input/output owner forests, including zero-width owners, and the requested public effect. The existing QIRF root/graph/dependency checks and original body reconstruction are reused before comparing `physical * E_in = E_out * logical`. Both canonical codes and the logical map receive fresh exact Gram checks. Logical dimensions govern the Unitary condition; a physical 4x4 identity cannot certify logical 3->4 Unitary. A checked square map retains public Isometry. Observe, hidden discard and false raw pure labels refuse. No inverse/control access is granted.
+
+Generic postconditions cover the actual successful computation, original root/body reconstruction, complete port bindings, per-owner layouts, logical dimensions, public effects and exact code/body equation. The source declaration lookup and native typed-interface binding are still missing: matching proposed/requested metadata is not a source-preservation theorem, a public ADT API or an accepted handle.
+
+Small reductions cover three/four-state carriers, code leakage, phase/axis/dependency faults, stale nominal order, zero-owner loss/reordering and hidden observation. The largest new physical matrix is 4x4, two bits. The per-owner malformed-prefix regression now first proves that its concatenated forest has a valid code, then refuses its separately malformed owner trees; the earlier refusal did not isolate that boundary.
+
+The first bridge compile error is retained. A recursive reader passes reductions but the compiled audit correctly refuses its generated partial helper. Replace it with the existing total library fold, preserving the refusal and first failed proof repair; do not weaken the audit. Complete kernel Tests and compiled audit then pass. Both shared Lean package builds/audits, fresh QleisliKernel/Main replay, and all six fixed guarantee review/binding/Raw/Basis/extraction outputs pass unchanged. Current source closure: `dfda3910159bf9c3433fac7ad8a3a77b053c83415115e4c79e05b37ecd98cf9e` (305 files); scoped evidence: `caa0b347983d533bf3f4db9451cf6a61e87fb5adf9a676972a1fc9aa6df10f20`. Full fresh validation report SHA-256: `5e5aa144848f7e56b450c779dc0c17dc89aff30474dd91337e5cb03ced32232d`.
+
+Thirty-eight focused first records are retained as inert history with pinned byte/mode checks. All six passive history tests, docs, schema identity, whitespace, reviewed-base constitutional continuity and exact committed fixture budget pass. Root is clean after the local commit. No Rust/dependency change requires a Rust/MSRV rebuild for this component; no hosted CI or independent review is claimed. Existing selected native binary and all four unrelated companion dirty files remain unchanged. No maximum quantum case, release/tag/publication, guarantee admission or checkbox completion is claimed.
+
+Remaining acceptance work is unchanged: ordinary enum/record construction and match, canonical source/type-only/host dependency binding and caller-visible contracts, explicit versioned native/QDV transport and private handles, coherent qmatch and public-path/fault regressions, then hosted CI/review and the full criterion audit.
+
+
+### Source declaration integration contract — 2026-10-20
+
+Add separate source AST declarations for finite fieldless `enum Name { Variant, ... }` and finite named `struct Name { field: Type, ... }`, with optional `pub`. Preserve original spans, declaration/member order and documentation. They are ordinary finite types, not function-shaped fake declarations or aliases to Bits. The initial named-record profile has no generics, tuple structs, payload variants or recursive/open records. Fields must eventually resolve to ordinary finite trees; quantum fields do not acquire ordinary copy semantics.
+
+`enum` and `struct` become reserved declaration keywords in the unpublished beta language. Existing functions, local/static names or module paths using those words must be renamed; no compatibility alias is introduced. Qualified named type occurrences retain their whole source paths/spans for original canonical lookup and dependency binding. Parsed syntax alone confers no execution/evidence authority. Until common type checking and versioned typed native transport are connected, every production source route must explicitly refuse modules containing these declarations, including unused declarations; it must never ignore them or certify an erased program.
+
+
+### Common declaration syntax checkpoint — 2026-10-20
+
+Local unpublished commit `00c5521881a1561103d765212dae745d9cb7c1dd` retains separate enum/record AST declarations rather than fake functions or width aliases. Variant/field order, visibility markers, complete original spans and type/member documentation are retained. Named type paths keep their complete qualified spelling/span. The initial bounded parser accepts at most64 members, rejects payload/discriminant/generic/tuple declaration forms, and reserves enum/struct as recorded above. Source-only documentation renders those declarations without a verification claim.
+
+Canonical nominal elaboration is still pending. The mandatory common source entry point explicitly refuses every module containing these declarations, including unused ones, before concrete lowering/native invocation. Both filesystem and selected-source regressions use this boundary; a later malformed module still supplies its real parse diagnostic. Parsing Q<Named> does not establish a legal quantum-owned ADT or an accepted handle. This is temporary fail-closed integration, not completion of a #64 criterion.
+
+Normal Rust1.98.1 and MSRV1.85.0 run sequentially in the same existing debug0 target. Relevant library results are199 passed,115 native-gated ignored,137 filtered on each toolchain. The three integration targets have50 passed and1 native-gated ignored on each. Normal strict lint for the library/three targets and format pass. The first documentation expectation wrongly dropped a preserved trailing comment space, and a subsequent strict lint rejects a redundant reference in a test; both original sources/diagnostics remain as inert history. No original comment or lint policy is weakened.
+
+Twenty-three focused history records have exact byte/mode checks; all eight passive history tests pass. Normal report SHA-256: `d5eb1b73adb506928ebfad756fe69bfbb1ed735630b9599a61ca24e70ebf260d`; MSRV: `311dbae966795ba6d22af1d4e58a026835f9001d610c91aa357f8ba9ef0d5633`; current syntax validation: `922ca2ad4e0c6702d585a24db65661a3d2a9ec6ed910a3a9b38a51e8f2e6dab5`. Docs, whitespace, unchanged schema identity and reviewed-base constitutional continuity pass. Exact committed budget:17,190 files/143,336,186 bytes, no exceptions or increased capacities. Root is clean after commit.
+
+No Lean/proof source changed in this syntax component, so the preceding actual shared build/audit/replay is not repeated; its dfda3910 source closure and caa0b347 scoped evidence remain unchanged. No new native case, hosted CI/review, companion rebuild/bin restaging, source preservation theorem or guarantee admission is claimed. The existing four binaries retain their prior checkpoint only. All eight acceptance checkboxes stay open; canonical type resolution/checking and dependency identity, ordinary constructors/match, typed native/QDV/private handles, coherent qmatch and final public-path/companion/CI/review validation remain required.
+
+
+### Canonical type-name integration contract — 2026-10-20
+
+Register nominal declarations as a distinct collection-local TypeId category in the existing common resolver; never reinterpret them as function DefIds or persistent evidence identities. Preserve complete original AST indices and public/private status through imports and transparent reexports, including every resolution-source module. The conservative initial source profile keeps one unambiguous module/import binding per spelling: colliding function/type declarations or imports reject at the later original occurrence. Empty enums and duplicate variant/field names reject; this does not establish record-field typing or recursive-type validity.
+
+Public Project import metadata distinguishes Function(FnKind) from Type instead of assigning a fake function kind. Rust callers that inspect ResolvedImport.kind must match that category explicitly. Callable/provider/Meaning consumers reject a Type target with a located category error and cannot acquire inverse/control/effect evidence from it. Canonical carrier elaboration, source-only type dependencies and native transport remain subsequent required work. Keep the production nominal-declaration gate until those paths are actually connected; loading/resolution is not execution approval.
+
+
+### Original type-name/category checkpoint — 2026-10-20
+
+Local unpublished commit `5a70f8fb0e380c76c8794e9917e1671d22ec4455` registers nominal declarations in the existing common resolver with separate collection-local TypeIds. Original AST indices, declaration visibility and type/function categories survive imports and transparent public reexports. Iterative alias traversal retains the original resolution-source chain. Empty enums, duplicate variants/fields, private exports/imports, export cycles and function/type binding collisions reject at original names. Registration merges function/type occurrences in source order before assigning sorted identities.
+
+Public Project metadata now uses `ImportKind::Function(FnKind)` or `ImportKind::Type`; `declaration_span` identifies the original declaration separately from the import-use span. Function/operation/provider/Meaning/access consumers explicitly refuse a Type target. Type-only source-closure construction refuses until canonical carrier elaboration is available; it cannot silently drop the dependency. This is not yet a proof of complete type-only source/evidence/cache binding.
+
+The first compile correctly reports eight unhandled category cases, whose sources/diagnostics remain inert history. After the explicit refusals, normal1.98.1 and sequential MSRV1.85 each pass202 relevant library and66 integration tests, with115library+1integration native-gated ignores and137 library filters. Normal strict lint for the library/four integration targets and format pass. Both compilers also pass `cargo check --all-targets` after the public metadata change; that is compilation, not execution of skipped native cases. Source windows retain identical current sources, companion dirty files and selected native binary. Normal report SHA-256: `ef2abaded2de8e62c0ae42342c8ba816ce1b40fdd0ea5e10195a1bea10acf795`; MSRV: `0f8ba71d710fa990aed25b53ff441d936e0be2b25c1072391037ed6bd46597ac`; current validation: `2fd28a7ba72906e6ab7a9b4d5faa606b1d2cbea670357eefbf5638a71ac765e0`.
+
+All nine passive history checks, docs, whitespace, unchanged schema identity and reviewed-base constitutional continuity pass. Exact committed budget:17,193files/143,951,637bytes, no exception or increased capacity. The nominal production gate is retained after registration/import resolution; loading and name metadata grant no source execution or native handle. No Lean/proof source changed and no new replay, hosted CI/review, companion rebuild/bin restaging, release or guarantee admission is claimed.
+
+**Still open:** finite type-tree elaboration, record-field typing/privacy and unknown/recursive type rejection; ordinary constructors/match and legal Q<ADT>; original type-only/host source identity through typed native/QDV/private handles; coherent qmatch and full public-path/fault/companion/hosted validation. All eight checkboxes remain open. This checkpoint does not count as completed ADT support or completion of #64.
+
+
+### Common finite type-tree checkpoint — 2026-10-20
+
+Local unpublished commit `08eb2d2b6dea963fdab02f900e15db9c2a6ce42e` elaborates ordinary nominal enum/record trees in the common frontend. Original module/declaration/source bytes, variant order, field names/visibility and complete field types survive equality, substitution, closure and bounded walks. T and Q<T> signatures retain their exact nominal trees and zero-width owners; three/four-state enums remain distinct despite equal physical width. Closed field sizes share the existing Nat-helper arithmetic and premise checking. Unknown, recursive, wrong-category and quantum-owned fields reject. No general const<T> or excluded #39/#63 work is added.
+
+Original AST/source matching is required for nominal elaboration, including helper/import modules. A first negative regression exposed a deletion bypass when only AST type entries triggered validation. Its failing source and diagnostic are retained before repair: actual original enum/struct tokens now also trigger the complete source-pair check. Comments and identifier substrings are not declarations. Existing non-nominal constructed-AST consumers retain their prior boundary, as confirmed by focused native-enabled snapshot tests; this is not a general source-preservation theorem.
+
+The first compile's sixteen errors, mistaken Nat-call spelling, strict lint refusal and AST-deletion counterexample remain inert history: 101 records / 10,294,380 original bytes / 737,456 stored bytes. Archive SHA-256: `e899297cfb3b1fe6ad609eaed1f5b9fe38f955efa6cfaf0629d79c4c4335ea16`. Current validation: `e1aef5808676d4b9c27b48b1e51501c04914e33e6512a6a790ff4d948d9d535f`.
+
+Normal1.98.1 and sequential MSRV1.85 each pass211 relevant library and66 integration cases, plus6 focused native-enabled snapshot/metadata/constructed-pattern cases. Default115library+1integration native ignores and137library filters, and focused457filters, remain explicit. Both all-target compile; normal strict lint/format pass. Normal full report: `21f53f338672acd493c477c7e1a01d2289110b0cb3988fc894823f6c89364cc2`; MSRV: `2f06483abbd68f9f2bbfcf2024cbf2bb031df0c3a3ffdd4d18e9a377ef746eb0`. All12 passive history tests, docs, whitespace, schema identity and reviewed-base constitutional continuity pass. Exact0bd->08eb committed budget:17,196files/144,723,551bytes;2,721added fixture text lines, no exception/cap raise. All16 new fixture paths are rooted.
+
+The nominal production gate remains after common type/interface preparation and before body/concrete/native execution. Physical-only consumers explicitly refuse Nominal. Constructors, field access/privacy enforcement, ordinary exhaustive match, complete type-only/host source dependencies, versioned typed native/QDV/private handles, coherent qmatch and public-path/fault/companion/hosted validation remain required. All eight checkboxes stay open. Lean/proof sources, selected native binary and companion dirty files remain unchanged; previous real Lean replay is not repeated. No new Rust target/cache, maximum quantum case, bin restaging, hosted review, source/runtime/target proof, guarantee admission or release is claimed.
+
+
+### Original nominal dependency checkpoint — 2026-10-21
+
+Local unpublished commit `d30dd10b0c21965ed8bc8e68db46eb89e3b81b9d` retains original record field type and Nat-helper references (names, spans and collection-local targets) beside canonical nominal trees. The ordinary source collector now traverses Function/Type worklists, rechecks original declarations/source/occurrence targets, follows transparent alias modules and reuses the helpers' original lexical roots. Type-only metadata cases retain aliases and empty records and reject missing facts, equal-width target substitution and changed source. The test adapter returns only read-only metadata: it creates no body/effect judgment, IR program or accepted handle. Public typed compilation is still gated, and selected/host native provenance remains unfinished.
+
+All-target compilation caught a real regression in the existing public ParsedProgram/Instantiation/ElaboratedProgram Send+Sync contract after retaining an Rc map. Use Arc instead of an unsafe implementation. Execute the existing clone/thread/fold-activation regression on normal1.98.1 and sequential MSRV1.85; both pass. Earlier slice/fixture, Rc-qualification and Send+Sync failures remain inert history:28records/7,318,408original bytes/616,624stored bytes. The unchanged sized-source caller was copied after diagnosis and matched both observed window hashes. Archive: `d66e225d82a55f76a6a5dabe817a77c113132885722648c1b7606b340fdecedd`; current validation: `16ee5202e3ce07bfe438a250ec48858bcb0908c23693f29f954426c540d50ff5`.
+
+Normal/MSRV each pass212 relevant library+66integration cases,6native-enabled snapshot cases,4source-collector cases and1thread case. Default116library+1integration native ignores and137library filters remain; focused snapshot/source/thread filters are459/461/42. Both all-target compile; normal strict lint/format pass. Normal report: `947bb0b4c768750200434b5de0ded4620b9500863c2e409c59a55d549d5379f3`; normal thread: `625e631336330d6eefcd75433f6d049c54150acf3cba49a4956a3a122e36ae07`; MSRV: `cad5b9fd1f578ef0e9f4c202bdb1426d1ccbabc8fedac63b3e875377f6255b92`. All14 passive history tests, docs, whitespace, unchanged schema identity and reviewed-base constitutional continuity pass. Exact0bd->d30 committed budget passes17,199files/145,360,867bytes,3,238added fixture text lines, no exception/cap raise; all19 new fixture paths are rooted.
+
+All eight #64 criteria remain open. Actual selected/host source binding through versioned typed native/QDV/private handles, ordinary constructors/field privacy/exhaustive match, coherent qmatch, public typed execution/fault validation, companion compatibility/bin restaging and hosted CI/review remain required. Source/type metadata collection is not typed native acceptance or source preservation. Lean/proof sources, selected native binary and companion files remain unchanged; no new proof replay, maximum quantum case, target/cache/worktree/agent, dependency/version change, guarantee admission, release or publication is claimed.
+
+
+### Typed native connection contract — 2026-10-21
+
+The next component uses the explicit internal mode `--carrier-pure-check` with a version-1 `qleisli.carrier-request`, profile `finite-carrier-pure-v1`, inside the existing edition-aware QLV3 envelope. Existing QIRF1/2 bodies and ordinary modes keep their meanings. The request retains separate attached/required ordered owner forests, original nominal source bytes, public effect and an exact logical matrix. A canonical QDV1 view includes the freshly decoded original graph and those retained typed data; an inspection or caller frame cannot authorize this execution-only mode. Unknown versions/fields/profiles, absent requests and stale views reject without fallback.
+
+The Lean gate must resolve every nominal descriptor against an unambiguous top-level original declaration in the artifact's source table and reconstruct its ordered carrier tree, rather than trusting a producer's names, width or member list. Direct primitive/product fields and local or qualified nominal references are the first bounded reader slice; unsupported alias/static-expression syntax must refuse explicitly until its independent reader is added. This staging does not change the final common-Nat/import/host-binding requirements or narrow the Issue's acceptance criteria. Original declaration bytes, private/public access and same-width different identities remain distinct.
+
+After source binding, reuse the existing original-body/dependency carrier gate: actual purity, every owner including zero-width owners, exact logical dimensions/Gram and `physical * E_in = E_out * logical`. Retain a private subject-bound handle only after fresh native checking and exact view comparison. This raw pure component does not authorize ordinary runtime discriminant inspection, ordinary-match on quantum owners, implicit measurement, inverse/control access, a new external schema, source preservation or a guarantee admission. Constructors, exhaustive ordinary match, coherent qmatch, complete common-source integration and review remain required; all eight acceptance checkboxes stay open.
+
+
+### Local native carrier connection checkpoint — 2026-10-21
+
+Local, **unpushed** commit `21f094b8fe73de15f54035701f57a376ca4d176c` connects the bounded raw pure profile. The independent Lean source reader reconstructs top-level nominal declarations and complete ordered primitive/product/nominal field trees; it checks original bytes, category, member order and cross-module visibility. Prefix, metadata, depth, width and work limits remain unchanged. General import/static-expression readers and host-selected type roots remain pending.
+
+The explicit `--carrier-pure-check` request compares both retained owner forests, public effects and exact logical matrix with the actual original QIRF graph through QDV1. Fresh decisions alone construct the private subject-bound handle; it exposes no ordinary source execution or raw/inverse/control escape. Existing dependency/Raw/code equations reject leakage, phase/axis/dependency faults, stale metadata/views, hidden observation and false 3->4 Unitary labels. Square public Isometry stays Isometry; singleton/empty-record owners and their scalar phase remain retained.
+
+Actual shared builds/audits, complete kernel Tests, fresh kernel/Main replay and the six fixed protected output comparisons pass. Sequential Rust 1.98.1 and MSRV1.85 each pass all-target compilation and17 native boundary tests, zero ignored/conditional native skips; normal strict lint/format pass. The CI inventory and prebuilt-driver tests pass (26/18), retaining the historical inventory digest. Current Lean closure: `a6aceb4db07fa2cb7cd34cd52dff087b6454fd52edd0a76531e80ce974f9c7fa`; scoped evidence: `6c423093927aed497f3d7aef49ed1692bc73cd4d0f8d4bd079d1b05e2da2f60c`.
+
+408 inert history records retain first sources/failures and actual input-bearing native logs. The general decimal parser's concrete proof-evaluation failure is isolated; a direct bounded decimal fold fixes it without raising limits or dropping the original nested-source test. Archive SHA: `8598d9e9caf991c6a1464afeae13cb4551ad9607c0ac862ed5694a0bae33a18f`; current validation: `9cd5fce217670567373063eaa1a4d57003f7a267fc2a272ce727af4d455de199`. Exact committed budget:17,202 files/146,188,717 bytes,5,842 added fixture text lines since0bd;22/22 new fixtures are rooted, with no exception/cap raise.
+
+**All eight criteria remain open.** Ordinary constructors/access/privacy/exhaustive match, coherent qmatch, common source/native integration, full import/Nat/host provenance, companion/tool staging and CI/review remain required. The production source gate remains; this raw component is not source preservation, a reference-adequacy judgment, a new guarantee, Issue completion or beta readiness. No PR, hosted CI, tag or publication is claimed.
+
+
+### Next native source-binding slice: transparent type paths — 2026-10-21
+
+Keep canonical declaration lookup separate from field-reference resolution. The latter will read original grouped/ordinary `use` and `pub use` paths, follow public export chains without wrappers or width/member-based fallback, retain original declaration/category/visibility, and reject collisions, wrong categories, inaccessible targets and unanchored traversed cycles. A qualified selection uses the module namespace directly; private imports are not qualified exports. A public export cannot expose an original private declaration. No `as`, glob, relative import or new type syntax is introduced. Reuse the existing source bounds (64 parser nesting,65,536 copied prefix identifiers/1 MiB copied name bytes, existing source/work/module limits). Bare `_` stays unavailable as an identifier; the existing contextual `std::{basis,observe,classical}` module spellings retain their common-parser behavior.
+
+A bounded first study now preserves three nominal projects, a Bit control and three original native packets. The first ordinary-project Bit control fails `invalid_entry`: its quantum-argument main belongs to the selected entry route. A separate command-only repair uses the same original sources through the selected Raw route and succeeds for Bit. Both nominal paths reach the actual source gate; the private facade fails name resolution. The native qualified control reaches `decoded_view` with its deliberately framed null view, while the reexport/private facade reaches `contract`. These are exact intermediate refusals, not accepted handles, source execution or a first-attempt benchmark. Initial sources, diagnostic and caller mistake are preserved unchanged.
+
+
+### Type-import native checkpoint — 2026-10-21
+
+Local unpushed commit `586f5a63b7f038200ffae7547107b47e3720fe39` extends the bounded raw profile only. Original ordinary/grouped imports and public reexports now resolve field types to their canonical declaration and source bytes. Private imports remain local; qualification uses the module namespace. Visibility/category changes, duplicate bindings, missing source rows, alias-as-declaration claims and equal-width canonical substitutions refuse. Traversed cycles reject, including by the existing source-count fuel. No renaming, glob, relative syntax, fallback, new primitive or capacity increase is introduced.
+
+**Performed:** shared Lean builds/audits, full kernel Tests, fresh QleisliKernel/Main replay and six fixed protected type/binding/Raw/Basis output comparisons all pass. Current 310-file Lean closure: `e2311ee70f2d12d72430ae4aa2ff1b3501cce17171c61da287f637ec5e503c26`; scoped evidence: `ce0512020cce48e143b35cea8bcf505158681ee67a655f46e57665582868d27b`. Freshly selected checker: `ccdd13dee53b5ffe50611933d1ebf057d41557439cfdb051e548b855bc5a34ec`. Normal Rust1.98.1 and sequential MSRV1.85 each pass all-target compilation and18 native boundary tests, zero ignored/conditional skips; normal strict lint/format pass. Source/checker windows are recorded separately. Constitution/source continuity passes against reviewed base `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb`; identity checking alone is not the separately recorded proof replay.
+
+The new inert `finite-adts-v030/aliases-first.tar.xz`, index and validation retain263 records /36,743,615 original bytes /801,416 stored bytes. Archive SHA256: `0bacaa8c939d15c718e09be8cc6dfdedaee42aa0304e9135cce6c00e474ffab3`. The original Bit entry mistake and command-only repair, wrong Lean build target and incorrect native cycle-error prediction remain failed observations. No acceptance rule or input was relaxed to change the cycle's actual `limit` refusal. Original null-QDV packets show the public reexport advancing to `decoded_view`, while the private facade remains `contract`; these are intermediate refusals, not handles. Full-view positive/fault controls are separate native tests.20 passive history tests and docs pass. Exact cumulative fixture budget:17,205 files /147,064,009 bytes /7,557 added text lines; caps unchanged.
+
+**Still open:** all8 criteria. General Nat field expressions and host-selected roots, ordinary constructors/access/privacy/exhaustive match, coherent qmatch, common source/native dispatch, companion/bin staging and hosted CI/review remain. The production source gate stays. Declaration resolution/raw handles do not prove source-function preservation, add inverse/control access, admit a guarantee or establish beta readiness. No PR, push, tag or publication is claimed.
+
+
+### Follow-up source numeral conformance — 2026-10-21
+
+While preparing the existing Nat-expression reader, inspection and a separate two-bit first study found a spelling mismatch: common source parsing rejects `Bits<02>`, but the current native nominal reader reaches final `decoded_view` for that same original declaration in a deliberately null-view packet. The canonical `Bits<2>` control reaches the same stage; ordinary source remains gated. This stage observation is not an accepted handle. Preserve the first programs, exact packets and streams. Add a full-view native control/counterexample and reject leading zeroes except `0` at the actual independent decimal reader. This is conformance to the existing source-number grammar, not a new Nat/const feature or waiver of #39/#63 exclusions. Earlier leading-zero helper tests and history stay historical; their claim of ordinary source spelling was too broad.
+
+
+### Canonical source numeral repair — 2026-10-21
+
+Local unpushed commit `09617c810504055c51cf9bcd9bc330880c7779ce` fixes the independent reader, without changing the original reproducer. A full-view native test confirmed actual BAD raw `CarrierChecked` acceptance for original `Bits<02>`; its rejecting assertion failed with the accepted handle. This goes beyond the earlier null-view stage observation. The ordinary source parser already refused the spelling. The bounded decimal reader now enforces that only `0` can begin with zero; the same native test rejects the malformed declaration while retaining the `Bits<2>` positive handle. No source repair, tolerance, new syntax or capacity increase was used.
+
+**Performed:** shared Lean builds/audits, full Tests, fresh kernel/Main replay and all six fixed protected output comparisons pass. Normal Rust1.98.1 and sequential MSRV1.85 each pass all-target compilation and19 native tests, zero ignored/conditional skips; normal strict lint/format pass. Rust validation overlapped only the later read-only Lean stages, after registry/build mutation completed; source/checker windows remain separate records, not a controlled performance comparison. Current Lean closure: `db8c0fe481dfa9ffa8bbb1ebfdb595e181c4d7e19bd7ec4e6d21db35ce12252e` (310 files); scoped evidence: `ef29e234b31e89e57ada46b2658c1c651ceb798b43b47ae48ef37c780f134a5b`; observed checker: `8cd82cfb3d5252dcc9e7e0fded2084237e6db041400508bb45ff57029a8644bd`. Guarded evidence refresh and trusted-base constitutional/source continuity pass without widening either admitted guarantee.
+
+The separate `numerals-first.tar.xz`, index and validation retain133 inert records /42,346,961 original bytes /1,011,980 stored bytes, including the accepted bad handle, original sources/packets, failed assertion, fresh raw refresh output and successful later checks. Archive SHA256: `b1eea4b33b2f160105ccf96c1b6f98038cf89b719ea8f8734878e6e1ee079e82`. All23 passive history tests and docs pass. Exact cumulative fixture budget:17,208 files /148,117,358 bytes /8,537 added text lines, with unchanged caps.
+
+All8 criteria remain open. General field Nat expressions/helpers and host-selected roots, ordinary constructors/access/privacy/match/qmatch, ordinary source/native routing, companion/bin staging and hosted review still require work. Historical leading-zero behavior remains intact as history, not current source grammar. No #39/#63 expansion, source-function preservation theorem, guarantee admission, PR, push, tag or release is claimed.
+
+
+### Existing field-Nat integration contract and first study — 2026-10-21
+
+A separate informed first study preserves14 original projects and28 actual source/native calls, at most two physical bits. Six valid declarations reach the existing source ADT gate: literal control, multiplication precedence, left-associated subtraction, a temporary value above u32, an imported/reexported guarded helper and simultaneous parameter substitution. Eight negative declarations retain actual size/nonlinear/premise/overflow/privacy/category/cycle diagnostics. The literal native control reaches final null-view comparison; other native `contract` results are missing-reader barriers, not evidence that the intended generic rules were checked. These are first observations, not source execution, accepted handles or a model benchmark.
+
+The independent reader must implement the existing field language, not revive #39/#63: canonical nonnegative decimal literals up to i128, original static Nat binders, parentheses, left-associated +/-, tighter *, and complete positional calls to original acyclic static Nat helpers. The existing field classifier normalizes checked signed-i128 affine expressions, then requires a closed nonnegative u32 result. Ordinary concrete u32 arithmetic is a different context: do not reject a valid field merely for a temporary value above u32, or allow an i128 overflow because later cancellation produces a small width.
+
+Helper validation must retain original source/category/visibility, lexical binder identity, simultaneous substitution and the existing premises. A convenient closed argument cannot repair a generically unguarded subtraction or nonlinear body. Unused/private original helper bodies remain checked. Preserve exact nonnegativity, checked affine intermediate values, all six comparisons and the bounded rational-relaxation implication rules; unresolved obligations and capacity failures refuse. Keep existing parser/natural nesting, 32-variable/4,096-row/50,000-pair solver bounds, aggregate source/work bounds and the carrier's physical/code limits. No Rust-derived width, supplied template, fallback, modular arithmetic or producer result can supply acceptance.
+
+Implement syntax/reference and exact affine/constraint components with tests/proofs before enabling their source-carrier dispatch. The parser is necessary to bind the actual original field/helper expression, and grants no source-function theorem or new guarantee. Ordinary constructors, match/qmatch, host roots, public source execution and all8 criteria remain outstanding.
+
+
+### Total Nat syntax/reference checkpoint — 2026-10-21
+
+Local unpushed commit `f36c051fbd42242c326d720ea55415dafb01145b` adds the existing Nat expression parser and an independent exact arithmetic `Value` relation/evaluator. It preserves precedence, left association, complete qualified paths, positional static arguments, mandatory empty runtime calls, canonical decimal/i128 literal and metadata depth bounds. The actual evaluator's successful result is proved to satisfy `Value` under its explicit lookup/call interpretation. That interpretation is not an original helper binding or a trusted supplied template.
+
+Compilation alone exposed a real policy problem in the prototypes: nested equality/printing derivation and equation-compiled evaluation generated partial helpers; the whole-module check also caught private `mapValues`. Those attempts remain inadmissible history. Plain recursive data, explicit total recursors/folds and exact parser-tree equations replace them. The final compiled inspection audits268 definitions, including private/generated declarations, with no project axiom, partial/unsafe definition or runtime replacement.
+
+**Performed:** shared Lean builds/audits, complete Tests, fresh kernel/Main replay and all six fixed protected output comparisons pass. Current312-file Lean closure: `b56d47cff68cfe4b12e87921ce3a9d7d180a9a5c9052244142de41b54fe8b36a`; current scoped evidence: `1b6653c4cf2c512152962eb23ba64c6f49deeb8c546243bcbe3154af0f790a3c`; observed checker: `b35c8c557c9b64f24c5cec552f9fc9fd5d426482d2ed21455122dbb90082103e`. Guarded evidence refresh and trusted-base continuity pass. Normal Rust1.98.1 and sequential MSRV1.85 each pass all-target compilation and19 existing native boundary tests, zero ignored/conditional skips; normal strict lint/format pass.
+
+The separate `naturals-syntax-first.tar.xz`, index and validation retain571 inert records /38,792,408 original bytes /818,488 stored bytes, including14 first projects/28 observations and every failed prototype/test/audit. Archive SHA256: `14f9f900086faf87d6672af34fbed26e5b55d6e3e9348b5c00b69a6e9d65337e`.26 passive history tests and docs pass. Exact cumulative fixture budget:17,211 files /149,073,972 bytes /11,846 added text lines; no cap increase.
+
+**No additional field acceptance is enabled yet.** Original helper/source binding, exact affine normalization and generic/premise validation must be implemented before dispatch. The first nonliteral native refusals remain reader barriers, not successful negative semantic checks. Host roots, ordinary constructors/access/privacy/match/qmatch, source routing, companion/bin staging and hosted review remain required; all8 criteria stay open. No #39/#63 extension, source-preservation theorem, new guarantee, PR, push, tag or release is claimed.
+
+
+### Exact affine/predicate and original-helper header checkpoint — 2026-10-21
+
+Local unpushed commit `1cd87f79b2a2becf34f2bf065928fa3631d2795b` adds checked signed-i128 affine operations and proofs of their exact integer meanings. Bounded elimination retains a proof for every derived inequality and returns a contradiction over the original input rows. All six comparisons, context conjunction/disjunction and caller implication carry their exact mathematical properties. Rational relaxation supplies no integer-existence witness. Difference/negation/one construction and checked intermediate failures remain explicit; unresolved implications refuse.
+
+Complete provisional static Nat-helper headers and expression bodies now use the shared original declaration/import resolver. Canonical origin, category, visibility and public reexport rules are retained; duplicate formals, invalid helper categories, nonempty runtime parameters and malformed clauses refuse at this component boundary. Parsing is not generic helper validation.
+
+**Performed:** all50 new kernel examples and complete Tests pass;759 private/generated definitions pass the compiled audit. Shared builds/audits, fresh kernel/Main proof replay and all six fixed protected output comparisons pass. The current318-file Lean closure is `f3c0b764047caa575d7f704e6d85f893f233e3f5df79098ff6fa8e89c2d245c1`; scoped evidence `8ac1a420495e97a1b1d2b56780c44cc7e62563764bbd31a78fa6fefe6587c11f`; observed checker `6872ed8d062db0552f6c53fe2c4a65941003c3891505c2480f9c9f347ffc28c2`. Guarded evidence refresh and trusted-base constitutional continuity pass. Normal Rust1.98.1 and sequential MSRV1.85 each pass all-target compilation and19 existing native tests, zero ignored/conditional skips; normal strict lint/format pass.29 passive history tests and docs pass.
+
+The separate `naturals-affine-first.tar.xz`, index and validation preserve174 inert records /1,464,256 original bytes /99,288 stored bytes. Changed sources are deduplicated by exact content, with per-observation manifests and diagnostics. Failed elaboration, unsupported dependent List.rec compilation, equality-instance failures and a reduction heartbeat limit remain failed authoring attempts, not source-language rejection evidence. Archive SHA256: `a0f16b36bab15a784294af44518a4c4d7deb0b8e4ec61be5ba54166053ad5a5f`. Exact cumulative fixture budget:17,214 files /149,219,074 bytes /12,889 added text lines; all1286 new fixture references are rooted, without changing caps.
+
+**No additional field acceptance is enabled.** Generic body normalization, original formal-frame interpretation, simultaneous substitution, dependency/all-unused-helper validation and actual field dispatch remain pending. Host roots, ordinary constructors/access/privacy/match/qmatch, source routing, companion/bin and hosted CI/review remain required; all8 criteria stay open. The earlier14/28 native reader barriers still supply no generic-rule evidence. No #39/#63 extension, source-preservation theorem, new guarantee, PR, push, tag or release is claimed.
+
+
+### Original Nat-helper and field-dispatch checkpoint — 2026-10-21
+
+Local unpushed commit `9654f78ccca0c54a3c5446d2f7b569da05f683cd` connects the existing field-Nat contract to the bounded finite-carrier native source reader. Every original helper, including unused/private definitions, is checked generically in acyclic dependency order. Original positional formal ordinals survive canonical name-first affine order; caller replacement forms are substituted simultaneously. Each callee premise must follow from the caller's preceding context. Original category, visibility and public reexports remain bound to actual source declarations. Reference calls execute the original predicates/body independently of the generated affine template. No producer template or success receipt supplies authority.
+
+The actual field expression retains its original parse and module call bindings. Checked signed-i128 arithmetic preserves exact meanings and intermediate failures, followed by the final nonnegative u32 and existing physical limits. Valid above-u32 intermediates remain valid; later arithmetic cannot repair an earlier negative/overflowing intermediate, an unguarded generic body or a nonlinear generic definition. One checked helper environment serves all four ordered owner forests, including empty forests.
+
+**Performed:**61 bounded external executable Lean assertions pass (26 generic,17 original-call,18 field cases); these assertions are tests, not generic theorem proofs. Exact computation/normalization/substitution postconditions remain separate checked Lean proofs. The focused compiled audit checks1332 declarations, including private/generated helpers. Current shared audit checks16653 kernel/transport and4897 proof declarations using only the existing standard axiom basis. Full shared build/audit, complete Tests, fresh kernel/Main replay and all six fixed protected output comparisons pass. Normal Rust1.98.1 and sequential MSRV1.85 each pass all-target compilation and21 native boundary tests:0 ignored,0 conditional skips,452 unrelated library cases filtered. Normal strict lint/format and35 passive history tests pass; docs check2610 links,91 anchors and312 Lean roots.
+
+The324-file Lean closure is `5044a5649c0638b66a28ab93b8d64683f7eff6848ba21c4d2e6ab7803d55e03e`; scoped evidence `fcd0201d9b5de928f66f74b8905419847c8acb89ba2733a2d5b66d67c1a425f9`; observed checker `ee9521b6a8de86a4c56e6275c8cda6cb953a649709a7aa04f7ca30b4e2de2ee5`. Guarded evidence refresh preserves both admitted scopes; constitutional continuity passes against trusted base `28c6e75ac7341e53f8a06c22bd6634b8cbbc38cb`. This is not native compiler/IO/runtime correctness, source-function preservation, a new human adequacy judgment or broader QS/PR/RS/EXACT discharge.
+
+**First observations remain distinct.** The earlier external temporary directory disappeared;25 exact retained authoring events and the first test source were recovered as inert data. Unavailable full reports/before-after maps are not recreated. The first generic kernel test lacks a terminal report and remains unknown. New first elaboration failures and the old native arithmetic-reader barrier are retained. The first rebuilt-native run correctly rejected intermediate overflow as `limit`; its test incorrectly expected `contract`. That expectation was repaired separately, then all21 native tests passed. New quantum cases use two physical bits; no maximum-size case was generated.
+
+The separate `helpers-first.tar.xz`, index and validation retain193 inert records /1,913,960 original bytes /79,872 stored bytes, with deduplicated source objects and complete relevant diagnostics. Archive SHA256:`55e376fdd8e7eaeb83915551047d46ae3078363f985e28727a45b81301649b00`. Committed fixture totals are17,219 files /149,435,292 bytes; cumulative additions since `0bd108183649e0462cb5c5b1c8bae29d07e1c9fc` are14,622 text lines, within unchanged budgets.
+
+All1291 newly retained fixture paths have rooted static references; this is retention reachability, not execution or semantic coverage.
+
+**All8 #64 criteria remain open.** Ordinary source ADT execution, host-selected roots, constructors/access/privacy/match/qmatch, source routing, companion/bin integration and hosted CI/review remain required. Companion dirty files and the four prior bin executables are preserved. No #39/#63 extension, new guarantee, #64 PR, push, tag or release is claimed.
+
+
+### Host type-root integration contract — 2026-10-21
+
+The next component prepares source-bound host Basis descriptions through the common type grammar, original public declarations/reexports and exact canonical trees. The intended `ParsedProgram::basis_binding` API is not implemented by this plan text. Revalidate named selections against the receiving immutable preparation before closure/cache lookup; changed aliases, private/category substitutions, foreign original trees and equal-width replacements must not pass. Check every supplied binding, including unused arguments and provider-owned maps, under existing storage/work limits. Context-free `BasisBinding::parse` retains its current built-in-only contract.
+
+Separate complete original type/body/effect preparation from concrete execution eligibility. Until nominal values/owners have their actual native source route, both execution adapters must retain an explicit transport refusal. Read-only preparation or a host type description grants no accepted handle, inverse/control capability, implicit measurement, source-preservation theorem or guarantee. Preserve first sources and actual diagnostic ordering; all eight Issue criteria and the full beta scope remain required.
+

@@ -1,0 +1,60 @@
+## Current scope decision — maintainer instruction, 2026-10-13 (Asia/Tokyo)
+
+**Closed as not planned for all of v0.3.0, including beta, and excluded from the current development goal. This is not implementation completion.**
+
+The maintainer explicitly instructed: 「#39は#63と同様の理由で除外してください」. As with #63, the unfinished exact-literal/normalization design and remaining acceptance criteria are outside the v0.3.0 release gate. This supersedes the beta resumption below. Preserve the original criteria and evidence without treating them as implemented, proved or waived by completion; no later release is automatically assigned.
+
+Already supported exact phase behavior, existing bounded Nat syntax, Raw/hierarchy profile refusals, regressions and historical records remain. This decision requests no rollback and adopts no new literal spelling, modulo behavior or floating-point semantic fallback. EXACT-2026-01, the other adopted interpretations, existing protected guarantees and obligations on accepted capabilities remain unchanged.
+
+Release accounting in #142 retains all 127 audit entries: 125 applicable Issues plus the two explicitly approved exclusions #39 and #63. Exclusions receive no implementation-completion credit. The parallel #39 investigation is stopped; no phase implementation was added to PR #384.
+
+## Historical beta resumption (superseded)
+
+## Beta scope — maintainer decision, 2026-10-12 (Asia/Tokyo)
+
+The maintainer approved implementation of the 127-Issue v0.3.0-beta completion plan in #142, including this Issue. Its alpha exclusion below remains historical and does not exclude it from beta. All original acceptance criteria remain required; no completion credit is granted by resuming it.
+
+Use the existing dyadic phase spelling `phase[j,k]` and exact turns `j / 2^k mod 1` as the canonical basis; specify sign/modulo normalization and explicit supported-domain refusals without an implicit floating-point fallback. This does not pull the broader #309 coefficient tower or generic QFT implementation into beta, or change EXACT-2026-01. #83 is first; this Issue follows #47 in the approved order.
+
+## Historical alpha scope
+
+## Release scope
+
+**Excluded from v0.3.0-alpha at the maintainer’s explicit request on 2026-10-09 (Asia/Tokyo).**
+
+This Issue remains open with its original acceptance criteria. It is outside the current alpha development goal, not a completed Issue or an alpha release blocker. The earlier temporary hold is superseded by this explicit alpha-scope exclusion. No later release target is assigned by this decision. Existing exact phase behavior and the adopted EXACT-2026-01 boundary remain unchanged.
+
+**Parent:** #32
+**Related:** #21, #31
+
+## Problem
+
+The exact/approximate semantic boundary requires a corresponding lexical and grammar decision. Core `.qli` should not drift into floating-point semantic literals by accident.
+
+## Proposed principle
+
+Core semantic literals are exact.
+
+For phases, choose a canonical exact representation, likely based on dyadic turns:
+
+```text
+j / 2^k  mod 1
+```
+
+with meaning `exp(2*pi*i*j/2^k)`.
+
+## Decide
+
+- surface spelling for exact phases;
+- whether rational/static numeric literals are general expressions or phase-specific syntax;
+- normalization of signs and modulo-one equivalence;
+- allowed denominator/profile bounds;
+- whether decimal floating-point literals are forbidden in quantum core;
+- relationship to future approximate/backend configuration syntax.
+
+## Acceptance
+
+- exact `pi/8`-class phases are writable without floats;
+- lexical equality/normalization is deterministic;
+- wrong sign/power remains phase-sensitive;
+- unsupported exact domains fail explicitly rather than approximating silently.

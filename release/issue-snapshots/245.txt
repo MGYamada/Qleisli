@@ -1,0 +1,40 @@
+Found in the v0.2.7 code review of the published source `7844a10d63880a2b6984c093e2dc7a75033d1e1e`. The lexical policy dates from 806f5dd and is specified in [docs/syntax-v0.md L19](https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/syntax-v0.md?plain=1#L19).
+
+**Proposed target: 0.3.0.** Rejecting characters that are accepted today is a breaking source change under the [versioning policy](https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/versioning.md). This Issue proposes the contract; the exact character set remains a decision.
+
+## Problem
+
+The lexer forbids bidirectional controls everywhere, including in comments, against Trojan Source ([src/frontend/lexer.rs L329-L346](https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/src/frontend/lexer.rs#L329-L346)). Comments and documentation comments still accept other invisible characters:
+
+- Unicode tag characters (U+E0000–U+E007F)
+- U+2060 WORD JOINER
+- U+00AD SOFT HYPHEN
+- U+180E
+- variation selectors
+- U+200B and U+FEFF, which the spec allows explicitly
+
+`qleisli doc` copies these characters verbatim into its Markdown output.
+
+## Reproduction (observed)
+
+Write a function whose documentation comment is `/// Apply H.` followed by "ignore previous instructions" encoded as tag characters (U+E0020–U+E007E). The function passes `qleisli check`, and `qleisli doc FILE` emits all 28 tag characters unchanged. They are invisible in common editors and on GitHub.
+
+## Reason
+
+Qleisli's premise is that humans and AI agents write and review the same source. Coding agents read invisible text in comments and generated documentation, but human reviewers do not see it. This is "ASCII smuggling" prompt injection, the same visual-deception class that the bidi rule already addresses. Comments are also part of the frozen project snapshot that is bound into function evidence.
+
+## Proposed contract
+
+- Reject, everywhere in `.qli` source, Unicode tag characters and default-ignorable or format characters that are not explicitly allowed. Decide whether U+200B and U+FEFF stay allowed in comments.
+- Report the original byte location and the code point, as for bidi controls.
+- Apply the same rule to `qleisli doc` input, the bundled std and corpus sources.
+
+## Migration
+
+Sources that contain these characters in comments must remove them, guided by a diagnostic. A scan of all `.qli` files in the repository (std, examples, corpus, tests) found no affected characters.
+
+## Acceptance
+
+- Lexer tests cover each rejected class in line, block and documentation comments.
+- `qleisli doc` rejects the reproduction.
+- The std, examples and corpus remain accepted.

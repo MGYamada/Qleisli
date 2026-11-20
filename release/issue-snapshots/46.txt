@@ -1,0 +1,159 @@
+## Active beta audit — 2026-10-12 (Asia/Tokyo)
+
+The maintainer-approved 127-Issue beta plan resumes #83, including ordinary general-arrow integration and rectangular Meaning. That decision supersedes the general-arrow scheduling exclusion below. The prior endomorphic/reference/instrument completion record and its evidence remain historical; the current beta audit must also check regressions after #83. Generic QFT implementation remains excluded. No completed implementation, proof or new constitutional guarantee is inferred from this scheduling update. Track the complete beta audit in #142.
+
+## Historical scope clarification — superseded for general arrows
+
+## Current scope clarification — 2026-10-11 (Asia/Tokyo)
+
+The maintainer has [deferred general operation arrows beyond all of v0.3.0](https://github.com/MGYamada/Qleisli/issues/83), with no later release assigned. This also defers the rectangular/general-arrow portion of Meaning and its native gate; it must not return as a prerequisite of this Issue.
+
+This Issue stays **open in the 0.3.0 milestone**. Its independent endomorphic/reference-program, exact composition/equality, phase/axes, dependency/evidence and instrument requirements remain active. QFT2/QFT3 exact-specification requirements remain distinct from the already excluded QFT implementation. Existing bounded support and all original evidence are retained. The deferral is neither implementation/proof completion nor a new constitutional interpretation.
+
+The proposal and observations below retain their history; any general-arrow scheduling requirement is superseded by this explicit scope decision.
+
+## Status
+
+Design issue for **Qleisli 0.3.0**.
+
+Related:
+- #24 exact specification unification
+- #27 `Meaning<A>` / `Op<A,M>`
+- #21 phase values
+- #31 exact semantics boundary
+
+## Problem
+
+The 0.3.0 type-theory direction proposes:
+
+```text
+M : Meaning<A>
+U : Op<A, M>
+```
+
+but the language of meanings itself is not yet defined.
+
+Current meanings primarily cover monomial operators through forms such as:
+
+```text
+permutation_by(f)
+phase_by(phi)
+```
+
+This is not enough to state textbook-level meanings such as QFT, general exact compositions, reflections, or complete observation instruments.
+
+If `Meaning` becomes the semantic index of reusable operations, its own syntax, typing, composition, equality, and evidence boundary must be specified.
+
+## Goal
+
+Define a static semantic specification language that can express the exact mathematical meanings needed by reusable Qleisli components without turning arbitrary user prose or matrices into trusted acceptance.
+
+## Candidate forms
+
+Pure-operation meanings may eventually include:
+
+```text
+identity
+permutation_by(f)
+phase_by(phi)
+reference(program)
+compose(M, N)
+tensor(M, N)
+inverse(M)
+controlled(M)
+Fourier<n>
+reflection(P)
+```
+
+Observation/instrument meanings may require a separate family or effect-indexed extension.
+
+The exact set for 0.3.0 should remain deliberately small.
+
+## Questions to decide
+
+1. Is the type `Meaning<A>` or `Meaning<A,B>`?
+2. Does effect belong in the meaning type?
+3. Are observation instruments represented by the same language or a separate `InstrumentMeaning`?
+4. Is a meaning a static term, type index, or both through elaboration?
+5. Which meaning constructors are primitive?
+6. Which are derived by composition?
+7. How are meanings normalized/canonicalized?
+8. What counts as equality of two meanings?
+9. Which equalities are decidable by the checker?
+10. When is external proof/evidence required?
+11. Can a reference program define a meaning?
+12. How is source/dependency identity retained for reference-program meanings?
+13. How do exact phase and axis order appear in meaning equality?
+14. How does approximation attach without contaminating exact `Meaning`?
+
+## Recommended principle
+
+> **Meaning syntax may describe mathematical structure, but acceptance still requires independent evidence that an implementation realizes that meaning.**
+
+The meaning language is therefore a specification DSL, not a trusted evaluator that bypasses verification.
+
+## Composition
+
+The design should support compositional meaning formation:
+
+```text
+M : Meaning<A,B>
+N : Meaning<B,C>
+-----------------
+compose(M,N) : Meaning<A,C>
+```
+
+or the corresponding endomorphism-only profile if 0.3.0 keeps `Op<A>`.
+
+Composition must preserve:
+
+- exact phase;
+- ordered interfaces;
+- type trees/coherence;
+- effect/instrument structure;
+- reference extension.
+
+## Non-goals
+
+This issue does not require a complete symbolic algebra for arbitrary unitary equality.
+
+It does not require arbitrary matrix literals.
+
+It does not allow an algorithm name alone to define semantics.
+
+## Acceptance criteria
+
+1. Express existing permutation/phase meanings in the new language.
+2. Express a QFT2/QFT3 exact specification without falling back to ad-hoc prose.
+3. Unify #24's reference-program and static-meaning use cases under one evidence story.
+4. Define compositional typing rules.
+5. Preserve exact phase and output ordering.
+6. State normalization/equality limits explicitly.
+7. Reject unsupported semantic equality rather than guessing.
+8. Bind `Op<A,M>` evidence to the exact `M`, source dependencies, and implementation identity.
+
+## Design intent
+
+If `Op<A,M>` is the type-theoretic heart of reusable verified operations, then `Meaning` must be a real language with explicit rules—not just a placeholder type parameter.
+
+## 0.2.4 follow-up review — 2026-10-01
+
+Provide a minimal source-level expected-meaning foothold **before QLT** without waiting for a complete indexed `Meaning` language. The current finite `apply_contract(provider, expected, q)` form already compares a user composition with an explicit reference function. #160 adds a copyable one-call example and a regression accepting H∘H against identity and rejecting H against identity. This is current finite functionality, not a newly adopted syntax.
+
+Specify the remaining gap: complete observing/instrument expectations, an independent user-selected request, exact phase/output axes, ordered classical outcomes, effect and source/dependency identity binding. A program's own emitted IR or an algorithm-name annotation must not serve as an independent expected request. Keep source preservation, implementation/reference equality and adequacy as distinct obligations; `request_checked:false` must never be described as checking the author's intended algorithm. Coordinate #24, #31 and #50; QLT implementation remains deferred to 0.4.0 or later.
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #45 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Independent Meaning.** A Meaning obligation refers to an independently specified requested meaning, with its signature, effect, phase and axis conventions. Re-describing a candidate's own IR cannot certify its correspondence to an external request. Current native validity and bounded source-step comparisons do not establish the full Meaning calculus or all provider correspondence. Meaning representation, checking and negative substitution cases remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.
+
+
+## Observed exact-equation boundary during Iso integration — 2026-10-05
+
+The bounded #43 empty-readout preparation study exposed a concrete native request limitation: a single independently authored whole-root `finite` matrix cannot currently replace a structurally composed sequence/tensor root. The unchanged checker rejects it with `requested meaning has different child arity` (and the closed-zero finite-root attempt also rejects). The actual failed `cargo test --lib isometry_` run is preserved under `tests/fixtures/frontend_v030/isometry-preparation/exact-native-first`, together with `first-matrix-request-tests.rs.txt`; these are failures, not exact semantic passes.
+
+For this bounded integration, use independently authored structural/sequence/tensor/control equations with fixed exact scalar and X matrix leaves, plus independent small complex-coefficient/reference oracles. Transport labels may follow the documented existing convention, but the producer's claimed Meaning or comparison request is not the oracle. Keep the earlier whole-matrix failure and reject wrong exact phase against unchanged external requests. This does not extend native equality, prove arbitrary extensional equivalence or complete any of this Issue's eight criteria. A general matrix-vs-composite equality path remains a real specification/evidence obligation under the existing QS/PR/RS and EXACT interpretations; it is not waived by choosing the current compositional test interface.

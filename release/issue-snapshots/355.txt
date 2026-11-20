@@ -1,0 +1,98 @@
+## Target and decision
+
+**Target: Qleisli 0.3.0. Priority: important. Type: public-effect contract / breaking source-API refinement of the current alpha behavior.**
+
+The maintainer explicitly requested this 0.3.0 Issue and the following policy:
+
+> **External callers use only the checked public effect. They must not depend on a more precise effect inferred from the implementation behind a `pub` boundary.**
+
+The non-negotiable premise is:
+
+> **Hiding observation to present an implementation as Unitary is forbidden. A false `Unitary` or `Isometry` label is always an error. Public abstraction must never weaken implementation checking.**
+
+Related: #315 (body-derived effects), #100 (inference law), #27 (types/ownership/effects), #41/#65 (modules and visibility), #167 (ordinary checked stdlib), #170 (qrate boundary), #48 (Reference), #142 (0.3.0 release gate). #283/#159 remain unresolved post-v1 work; #344's Observe-to-Channel rename remains 0.4.0.
+
+## Problem with the current alpha contract
+
+Under #315 and the current Reference, an ordinary effect prefix is only a checked upper-bound assertion. Calls, provider eligibility and interface metadata use the implementation's inferred principal effect even when the declaration is public.
+
+For example, the current rules infer Unitary for:
+
+```qli
+// library.qli
+pub observe fn f(q: Q<Bit>) -> Q<Bit> { q }
+```
+
+Consequently, an external caller may currently use that implementation fact:
+
+```qli
+// consumer.qli
+use library::f;
+
+pub unitary fn g(q: Q<Bit>) -> Q<Bit> { f(q) }
+```
+
+If the library later introduces internal preparation/measurement while preserving the written Observe declaration and owner interface, downstream Unitary checking can fail. The caller depended on a stronger implementation fact than the public effect it was shown.
+
+Treating inferred effects as exported API can be internally consistent, but it does not provide a stable abstraction boundary. This Issue establishes that boundary without making annotations trusted semantic authority.
+
+## Required rules
+
+1. **Keep independent implementation checking.** Infer/check the complete body, dependencies and all applicable type, ownership, effect, access and termination obligations. An author-supplied or generated label is never an inference seed or substitute for evidence.
+2. **Retain a distinct checked public effect.** For the existing supported order `Unitary <= Isometry <= Observe`, require the checked implementation effect to fit within the public effect, in addition to all existing interface/semantic obligations. Unsupported, unresolved or contradictory facts reject.
+3. **Use only that public effect outside the boundary.** Cross-module imports and external qrate callers must compose effects using the checked public interface, even when the compiler has the source or inlines/specializes the implementation. A hidden stronger implementation fact cannot make an external Unitary context accept an Observe API.
+4. **Keep internal precision separate.** Internal implementation analysis and private-function inference may retain more precise facts. Specify same-module calls explicitly; neither their treatment nor optimization may change the contract seen by an external caller.
+5. **Apply the boundary to every relevant consumer.** Runtime calls, static/host-selected providers, generic checking, transformations, aliases/re-exports where supported, and generated documentation/interface metadata must respect the public contract. They cannot recover hidden eligibility by inspecting the body. A wrapper exposing a stronger public contract needs its own independent validation; naming or wrapping alone grants nothing.
+6. **Keep capabilities and Meaning separate.** A public Unitary/Isometry effect does not by itself grant inverse, control, exact Meaning, cleanup or realization evidence.
+7. **Keep stdlib ordinary.** Bundled derived functions and user code obey the same rules; module/path/package identity grants no privilege.
+8. **Preserve actual operations and validation.** Interface abstraction cannot delete observation/reset/discard histories, alter source-to-artifact obligations, inflate or rewrite the actual IR classification without justification, or bypass fresh native Lean acceptance.
+
+### Absolute prohibition on false pure labels
+
+A body containing observation, reset or discard retains the effect required by the current compositional rules, including transitive calls, internal work and checked branches/folds. It must not acquire a public Unitary or Isometry label merely because measurement outcomes are hidden, an auxiliary owner is consumed, the returned owner is unchanged, or someone claims that the induced external channel is pure.
+
+For ordinary 0.3.0 source checking:
+
+- implementation Observe + public Unitary: **reject**;
+- implementation Observe + public Isometry: **reject**;
+- implementation Isometry + public Unitary: **reject**;
+- unresolved/unverified implementation + any asserted pure label: **reject**;
+- valid implementation Unitary + public Observe: a conservative public bound may be admitted, but external callers see **Observe**.
+
+These examples concern effect bounds; exact types, ownership, phase, access and other required checks remain independent. No handwritten annotation, generated interface, foreign artifact or certificate may launder a failed check. This Issue introduces no externally-unitary/isometric rule or escape hatch. Passing implementation tests must not be presented as completion of a general soundness proof.
+
+## Public contract representation and migration
+
+Before implementation, specify how the public effect is fixed: explicit checked source information or a checked generated/frozen interface. The approved beta implementation plan selects explicit checked `unitary` / `isometry` / `observe` prefixes for every public quantum-processing function. Existing ordinary classical public functions may retain inference. This changes #315's exported-principal rule without trusting annotations or introducing new syntax.
+
+If public effects are generated, silently regenerating a different effect is an API change, not a contract-preserving body edit. Bind interface facts to the checked declaration/source/dependencies and invalidate stale or tampered metadata; metadata is not an alternate acceptance authority.
+
+Record the precise visibility boundary, forms/APIs, diagnostics and lowering together. Migrate the current Reference, finite and sized consumers, provider checks, interface/documentation consumers, stdlib and affected clients. Explain the deliberate change to #315's rule that all callers consume principal implementation facts, while preserving its independent body checking and ban on annotation authority. Preserve historical evidence. Edition 2026 and the 0.3.0 Observe vocabulary remain unchanged.
+
+## Acceptance criteria
+
+- [x] The Reference distinguishes independently checked implementation effects from checked public effects and states the external-call rule.
+- [x] Cross-module and external-qrate consumers, where supported, use only public effects even with source available, inlining or specialization; unsupported interface routes fail closed.
+- [x] The public Observe/identity example above is usable from an appropriate Observe context but rejected from an external Unitary context.
+- [x] Contract-preserving body changes leave external effect checking unchanged. Changing the public effect is recognized as an API change.
+- [x] Adversarial direct/transitive/internal observation, reset and discard cannot obtain false Unitary or Isometry labels in either source path or provider/interface consumer.
+- [x] Unresolved bodies, stale/tampered public metadata and unchecked external assertions cannot create usable effect facts or bypass native validation.
+- [x] Finite and sized checking, source/host providers, generic contracts, supported wrappers/transforms and public metadata obey the same boundary; private/internal analysis remains explicitly specified.
+- [x] Exact interface/owners, phase, Meaning, access, cleanup and actual operation histories remain checked separately. Generic checking cannot exploit a fortunate later implementation.
+- [x] Stdlib and user code share the same rules; no trusted handwritten effect ledger or package-name exception is introduced.
+- [x] Preserve first sources, actual diagnostics and deliberate counterexamples before behavior changes; add bounded acceptance/rejection and body-replacement regressions, without new maximum-size cases.
+- [x] Complete the source/API migration and update #315-related specification/consumer references, with performed/skipped validation recorded.
+- [x] Preserve the two admitted QLV1 guarantees, existing native acceptance and pending QS/PR/RS/EXACT duties. No new guarantee, external-effect certification or completed source/runtime preservation is claimed.
+
+This is ordinary source/API maintenance under the existing adopted interpretations. It records the maintainer's public-abstraction decision, not a new constitutional interpretation or guarantee admission.
+
+
+## Beta mechanism and current concrete-profile boundary — 2026-10-14
+
+The source contract distinguishes checked internal inference, the checked public effect, and actual emitted-artifact classification. Same-original-module calls use internal inference, which itself retains any further external boundary. External calls and host-selected public providers use the public contract; explicitly supported private host bindings retain their existing entry-module visibility. All provider/Meaning/FunctionEquality/transform eligibility and cache paths must apply that context before reuse. Public documentation renders the public contract; inspectable internal metadata supplies no acceptance or capability.
+
+Quantum-processing detection includes complete Q types, zero-width owners, intermediates, operation formals, both branches/zero folds and checked callees. Across modules it uses the stable public declaration contract, not the implementation's current quantum-use flag: an explicit effect prefix permits quantum work behind an ordinary-only signature. A bare public classical declaration cannot acquire such work without changing its public declaration and passing the complete checks.
+
+Source effect checking and concrete realization/profile availability remain distinct. In particular, the existing native observing FunctionEquality gate requires genuinely observing original artifacts. A conservative public Observe annotation on an actual Unitary/Isometry artifact must not rewrite its Raw label, manufacture observation histories, select pure-contract evidence, or reuse an internal pure cache entry. That currently unsupported concrete pair must refuse explicitly, including dormant obligations. Ordinary calls from an appropriate Observe context may still consume genuinely pure implementations with their actual Raw classification retained. This records the existing native-profile limit; it neither changes native acceptance nor waives any criterion above. New actual-body/native support would require its own checked implementation and evidence.
+
+Original19-project/38-check first records remain unchanged. A separate two-program check of the initially implemented executable confirmed a quantum-use metadata leak: identical public unitary signature and caller, but identity versus closed Q<Unit> work changed the bare caller's annotation requirement. Both original programs, real streams and observed binary identities are preserved separately before the repair is rebuilt. These are bounded observations, not source-build attestation, proof, completion or a new guarantee.

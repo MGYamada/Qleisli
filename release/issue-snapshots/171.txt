@@ -1,0 +1,269 @@
+## Status
+
+**Qleisli 0.3.0 important. Priority: highest. Constitutional / toolchain compatibility rule.**
+
+If `std` is an ordinary qrate semantically but is bundled as part of the official Qleisli distribution, its version relationship to the language/toolchain must be fixed now.
+
+Adopt the normative rule:
+
+> **For every official Qleisli release `vX.Y.Z`, the bundled `std` qrate MUST have exactly version `vX.Y.Z`.**
+
+The user chooses a **Qleisli toolchain version**, not an independent standard-library version.
+
+## 1. Exact release-version lock
+
+For an official release:
+
+```text
+Qleisli 0.3.0
+├── compiler/toolchain 0.3.0
+├── verifier/kernel  0.3.0
+└── std qrate        0.3.0
+```
+
+Likewise:
+
+```text
+Qleisli X.Y.Z  <=>  bundled std X.Y.Z
+```
+
+The official distribution must not produce states such as:
+
+```text
+Qleisli 0.3.0 + std 0.3.1
+Qleisli 0.3.0 + std 0.4.0
+Qleisli 0.4.0 + std 0.3.0
+```
+
+as supported official toolchain configurations.
+
+For prereleases, the same principle should apply to the canonical release identifier.
+
+## 2. Eliminate the Qleisli × std compatibility matrix
+
+The purpose of this rule is not cosmetic version-number synchronization.
+
+It removes an entire compatibility dimension.
+
+Without the rule:
+
+```text
+Which std versions work with which Qleisli versions?
+```
+
+becomes a permanent compatibility matrix.
+
+With the rule:
+
+```text
+choose Qleisli 0.3.0
+        ↓
+receive std 0.3.0
+```
+
+There is exactly one canonical bundled std for each official toolchain release.
+
+## 3. Users do not independently select std
+
+The ordinary qrate manifest should not require users to write:
+
+```toml
+[dependencies]
+std = "0.3.0"
+```
+
+for normal Qleisli programs.
+
+Instead:
+
+> **The active Qleisli toolchain determines the canonical std qrate version implicitly.**
+
+A normal package may declare its own package version and third-party dependencies while receiving the toolchain-matched std automatically.
+
+Conceptually:
+
+```toml
+[package]
+name = "foo"
+version = "0.1.0"
+
+[dependencies]
+some_qrate = "1.2"
+```
+
+means that `std` comes from the selected Qleisli toolchain, not from an independent dependency choice.
+
+## 4. To select an older std, select an older toolchain
+
+The supported model should be:
+
+> **You do not downgrade or upgrade std independently. You select another Qleisli toolchain.**
+
+For example, if a project requires the 0.3.0 standard library contract, its reproducible environment should select Qleisli 0.3.0 rather than attempting to combine std 0.3.0 with Qleisli 0.4.0.
+
+This keeps language semantics, primitive boundary, verifier behavior, and canonical std contracts aligned.
+
+## 5. `std` remains semantically ordinary
+
+Version locking must **not** be interpreted as semantic privilege.
+
+The distinction is:
+
+```text
+semantic status:
+    std == ordinary checked qrate
+
+distribution/version policy:
+    std == toolchain-coupled distinguished qrate
+```
+
+Therefore the version-lock rule is compatible with #167:
+
+- stdlib remains derived `.qli`;
+- it receives no verifier bypass;
+- it defines no new primitive authority;
+- its special status is release coupling and compatibility policy.
+
+## 6. qlirgo must enforce the invariant
+
+qlirgo/toolchain resolution should treat the matching std as part of the selected Qleisli environment.
+
+For official toolchains:
+
+- qlirgo resolves the bundled/matched std automatically;
+- explicit mismatched std selection should be rejected;
+- the resolved environment should record the effective toolchain/std pair;
+- diagnostics should explain that std is selected by toolchain version;
+- dependency resolution must not silently replace the canonical std with another version.
+
+The implementation may evolve, but the invariant must not.
+
+## 7. Lockfiles and reproducibility
+
+The lock/build record should preserve enough information to reconstruct the effective environment.
+
+At minimum, reproducibility should make the following pair unambiguous:
+
+```text
+Qleisli toolchain version
+canonical std qrate version
+```
+
+Because the versions are normatively equal, the lockfile may avoid redundant user-facing configuration, but tooling should still be able to verify the invariant.
+
+A stale or manually modified environment with a mismatched pair should fail clearly rather than compiling under an unsupported mixed state.
+
+## 8. Release engineering invariant
+
+Official release automation should enforce:
+
+```text
+toolchain_version == std_qrate_version
+```
+
+before publishing/releasing.
+
+This should ideally become a CI/release assertion so version drift cannot occur accidentally.
+
+The invariant applies to at least:
+
+- source version metadata;
+- bundled std manifest/version;
+- release artifact metadata;
+- qlirgo/toolchain package records.
+
+## 9. Compatibility policy becomes simpler
+
+The version lock means compatibility statements can be made at the toolchain level:
+
+```text
+Qleisli 0.3.0 environment
+Qleisli 0.4.0 environment
+...
+```
+
+rather than separately versioning:
+
+```text
+language version
+compiler version
+verifier version
+stdlib version
+```
+
+for users as independent choices.
+
+Internal components may still have implementation identities where needed, but the official language distribution exposes one coherent release boundary.
+
+## 10. Relationship to qrate semantics
+
+This issue depends on the companion 0.3.0 qrate-definition flagship:
+
+- qrate defines the general package abstraction;
+- `std` is one qrate under that abstraction;
+- this issue adds the special **official release-coupling policy** for std.
+
+The key distinction should remain explicit:
+
+> **`std` is privileged in distribution and version coupling, not in semantics.**
+
+## Non-goals
+
+This issue does not require:
+
+- forbidding third-party qrate versions from evolving independently;
+- a final public registry design;
+- freezing every future std API at 0.3.0;
+- preventing internal compiler component versions from existing;
+- making std a language primitive.
+
+It fixes only the official toolchain/std release identity rule.
+
+## 0.3.0 acceptance criteria
+
+- [ ] The normative specification states that official Qleisli `X.Y.Z` bundles std qrate `X.Y.Z`.
+- [ ] Normal user manifests do not independently select the standard-library version.
+- [ ] Selecting a Qleisli toolchain deterministically selects the corresponding std.
+- [ ] Supported official configurations reject mismatched Qleisli/std versions.
+- [ ] qlirgo records/verifies the effective toolchain/std pairing.
+- [ ] Release CI checks `toolchain_version == std_qrate_version`.
+- [ ] Reproducibility metadata is sufficient to detect a mismatched or stale std.
+- [ ] Documentation states that using an older/newer canonical std means selecting the corresponding Qleisli toolchain.
+- [ ] The rule is explicitly described as distribution/compatibility privilege, not semantic privilege.
+- [ ] #167 and the qrate-definition flagship are cross-referenced.
+
+## Release principle
+
+> **You choose a Qleisli version; its standard library comes with it.**
+
+Equivalently:
+
+> **One official Qleisli release = one canonical std qrate of the same version.**
+
+## Implementation checkpoint (2026-10-19; not completion)
+
+Canonical std selection, descriptor binding and version checks are implemented in [Qleisli draft PR #423](https://github.com/MGYamada/Qleisli/pull/423) and [qargo draft PR #41](https://github.com/MGYamada/qargo/pull/41). The latter is pushed at `18e1bc5`: one captured Project supplies its edition for native checking and metadata; no later source/manifest reload substitutes the checked subject.
+
+Retained local source windows pass normal Rust 1.98.1 and MSRV 1.85.0 bundle tests (173 each), independent qlippy/qlifmt/qlidoc tests (60/17/20 each), strict Clippy and component documentation checks. Four binaries are deployed under the Qleisli workspace `bin/`; the actual runtime verifier and 310 standalone/bundle pairs pass against explicit intended Qleisli/std/native inputs. General qlippy features remain excluded; only the approved compatibility migration is included.
+
+These runs use frozen locks with an explicit local Qleisli override and the existing shared target. Four unrelated sibling changes remain preserved/excluded; isolated extraction, clean-commit and source/binary attestation are not claimed. Exact-head hosted qargo CI fails at registry fetch because Qleisli `=0.3.0-beta` is not yet published. No fallback, gate weakening or publication is introduced.
+
+The explicit-std refusal explanation is repaired at [qargo `bbce16a`](https://github.com/MGYamada/qargo/commit/bbce16aed2830eb52cc78ac4b8873e1817663736). Five complete first projects and 25 before/after CLI pairs preserve all non-prose refusal/source/std/native fields; the ordinary no-dependency control still reaches native checking. Its normal build, formatting and direct workspace-bin checks pass; original sources/diagnostics remain inert history. Earlier full normal/MSRV and four-tool matrices retain their original source windows.
+
+Acceptance remains under audit, including stale-pair metadata, official release checks, latest-head CI/review, registry availability and package/installation gates. The Issue remains open without completion credit. See #255 for the detailed source/proof boundaries; #167 and #170 retain the ordinary-qrate and distribution/semantics distinction.
+
+## Actual build/reuse audit (2026-10-19; not completion)
+
+The [Reference](https://github.com/MGYamada/Qleisli/blob/bd90461908b71388e658e0399cb30ca99a693a47/docs/src/reference/packages-and-artifacts.md) now describes the implemented qargo version-2 `effective_std` and `source_configuration_id` records rather than their former planned status. Descriptor/content identity and native observation remain metadata, not semantic evidence or publisher authentication.
+
+The actual workspace `bin/qargo` (`bbce16a` executable body) completed 13 nonempty build invocations against the real selected native checker and an unchanged one-Bit identity qrate. Its independent qrate version `9.8.7` is accepted with the linked Qleisli/std `0.3.0-beta` pair. Initial build and exact reuse succeed. Ten changed build records reject as `artifact_mismatch` without overwrite: toolchain version, std version, manifest digest, module digest, missing module, extra module, content identity, captured configuration, fabricated native summary and obsolete record schema. Restoring original bytes permits exact reuse again.
+
+First source/manifest bytes, all actual commands/results, original/tampered metadata and monitored head/binary/checker identities are retained locally outside fixtures as routine validation output. The monitored head and sibling diff/binary/checker coordinates remain unchanged; this is not a full filesystem trace, clean-commit build or source/binary attestation. It complements the existing [stale-record regression](https://github.com/MGYamada/qargo/blob/bbce16aed2830eb52cc78ac4b8873e1817663736/src/qargo/build.rs) and earlier normal/MSRV windows, not official registry/package/native installation or supported-host extraction.
+
+Release coupling assertions, public contracts and the implemented negative paths have concrete evidence; current-head CI/review and distribution validation remain open. Exact beta registry fetch still fails before compilation. No fallback, independent std selector, product/dependency version change, publication or completion credit is introduced.
+
+## Integrated Qleisli-side status — 2026-10-19
+
+Qleisli PR #423 is now merged as `d74d60ce95c81cf4fc4b060040d2a168a098dc24`, from head `6eb451647f599cb0f1589f5e75de1c91d3f7325e`. Complete normal/MSRV Rust, macOS source, interop, Lean/native kernel, docs and distribution CI pass on that exact head in both push/PR runs. The two review findings are resolved and their repair deltas were locally reviewed; no new-head automated receipt or release-readiness result is claimed.
+
+The linked qargo PR #41 remains draft at `bbce16a`; exact `qleisli =0.3.0-beta` registry fetch, official package/native installation and supported-host extraction still lack passing evidence. Existing local pairing/reuse/runtime results retain their recorded windows and do not replace those gates. This issue remains open without additional completion credit; no fallback, independent std selection, version bump or publication.

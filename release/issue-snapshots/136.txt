@@ -1,0 +1,137 @@
+## Three-theorem design alignment — 2026-10-08
+
+**Maintainer-level design direction only.** This is not a new binding Constitution Guardian Office interpretation, constitutional amendment, theorem discharge, or guarantee-ledger admission. Existing ratified Constitution (#129), jurisdiction framework (#139), ledger (#135), and EXACT-2026-01 (#311) retain authority.
+
+1. **QS / Soundness:** semantic acceptance proves the specified exact owner/access/effect/phase/meaning contracts, including clean return and dirty identity restoration. Ending `excl` restores *access authority* over the changed, still-live owner, not its prior state, and does not release it (#29/#70/#72/#157).
+2. **PR / Physical Realizability:** separately admitted, independently checked target realization implements the accepted semantic meaning with its exact phase, ordered axes, workspace and target assumptions. The obligation is **forward correspondence**, not completeness of exact synthesis. Semantic acceptance does not imply target execution (#281/#120).
+3. **RS / Resource Safety:** quantitative bounds and budgets apply to the actual admitted Core/realization artifact under its selected profile. Count live owners once, allocated ancillas, generated uncomputation, routing, physical SWAPs, measurements/feed-forward where relevant. A restored clean ancilla proves a QS state property, **not** a numerical cost bound. Access exit and `Unit` return do not erase cost (#280).
+
+Current illustrative schemas (not frozen constitutional theorem statements):
+
+```text
+Accepted_R(P) -> SemanticSafe_R(P)
+Accepted_R(P) AND AdmittedRealization_{R,rho}(P,C,Epr)
+  -> Realizes_{R,rho}(C, Meaning_R(P), Epr)
+Accepted_R(P) AND AdmittedRealization_{R,rho}(P,C,Epr)
+  AND CheckedResourceEvidence_{R,rho}(C,b,Ers)
+  -> Cost_{R,rho}(C) <= b
+```
+
+A resource claim for **Core alone** may instead use its independently checked Core-cost relation without asserting existence of a target circuit. Neither cost schema permits untrusted producer assertions as certificates. A production path advertising target/quantitative certification must require its actual corresponding evidence, not evade proof via empty premises.
+
+**Independent axes:** exact coefficient paradigm `R` (initially `R_3`, `R_infty`, #309/#339), gate/target realization profile `rho`, and resource cost model. Exact typed base change preserves denotation, not automatic target admission, optimally minimal cost, or cost-certificate transport. No epsilon approximate correspondence discharges edition-2026 constitutional guarantees.
+
+**Specialization:** closed finite instances can have concrete verified cost certificates; a family-level RS guarantee requires an explicit, checked symbolic bound for all admitted parameter choices and provider contracts. Totality and fixed-target feasibility are separate (#127/#161/#162/#164). No single target must handle every instance of an accepted generic family.
+
+**Acceptance boundary:** the frontend, LLM, Rust optimizers, synthesis engines, and caches may only propose unchecked artifacts. Lean/independent checking must validate exact meaning, transformed artifact correspondence, applicable target admission and artifact-bound resource evidence before certification (#136/#309). The three pending broad QS/PR/RS obligations are not automatically discharged by this issue edit. All preexisting implementation checkboxes stay open until independently verified; scope and ledger guarantees remain unchanged.
+
+See #136 (joint boundary), #280 (RS), #281 (PR), #127 (families), #157 (workspace QS), #142 (release gate).
+
+## Status
+
+Constitutional architecture issue for **Qleisli 0.3.0**.
+
+Related: #129 (Constitution Draft 5), #135 (ledger and production acceptance), #139 (jurisdictions), #149 (Guardian).
+
+## Problem
+
+The Fundamental Theorems should not be constitutionally tied directly to surface syntax.
+
+Qleisli source syntax, elaboration conveniences, diagnostics, and front-end representation may evolve substantially across future releases. If constitutional guarantees are phrased over unstable surface structures, ordinary language evolution becomes unnecessarily constitutional.
+
+The project therefore needs a stable boundary at which the Constitution begins to constrain acceptance and semantics.
+
+A candidate architecture is:
+
+```text
+Qleisli source
+    ↓
+elaboration / desugaring
+    ↓
+constitutional core IR / checked representation
+    ↓
+independent acceptance / verification
+    ↓
+semantics
+```
+
+## Decision required
+
+Define the **constitutional kernel / theorem boundary**:
+
+- what object is accepted;
+- what checker or judgment determines acceptance;
+- which semantics interprets that accepted object;
+- where the Fundamental Theorems are stated.
+
+The intended result is that syntax above the boundary may evolve, while changes below the boundary must preserve the constitutional guarantees.
+
+## Stable guarantee, evolving representation
+
+The boundary must be explicit for **each current release**; this does not freeze one Core representation or acceptance predicate for edition 2026.
+
+A same-edition replacement must preserve current jurisdiction-wide guarantees and the accumulated ledger against the actual production gate. Where representations differ, provide faithful embeddings and checked semantic transport under #135. Proofs about an obsolete checker are not sufficient.
+
+The Guardian determines which constitutional obligations a boundary change activates. The checker/Lean proof establishes them. A source-level correctness claim also needs the stated source-to-checked-representation connection; acceptance of a Core object alone does not prove an untrusted frontend translated the user's source correctly.
+
+No certified execution or export path may bypass the current proved boundary. Failure or unsupported evidence cannot become success through a compatibility route.
+
+## Questions
+
+- What is the smallest stable object over which the Fundamental Theorems should quantify?
+- Is elaboration outside the constitutional kernel?
+- Which preservation obligation connects source programs to the constitutional core?
+- Which parts of Core are normative versus serialisation/implementation detail?
+- Does the trusted boundary contain a checker, a judgment, or both?
+- How are future frontends permitted without creating alternative acceptance authorities?
+
+## Acceptance criteria
+
+- [x] Draw and document one normative trust / theorem-boundary diagram.
+- [x] Identify the exact accepted representation or judgment.
+- [x] State the Fundamental Theorems over that boundary rather than unstable surface syntax.
+- [x] Define the obligation required of elaboration/desugaring before entering the constitutional boundary.
+- [x] Prevent alternative frontend or backend paths from bypassing constitutional acceptance.
+- [x] Preserve freedom to evolve surface syntax without unnecessary edition changes.
+
+## Core principle
+
+> **The Constitution should freeze Qleisli's guarantees, not its parser.**
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and, at that initial checkpoint, zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.
+
+
+## Scoped guarantee admission and production review — 2026-10-04
+
+The appointed human Guardian explicitly answered **「2件とも提示された範囲・前提で妥当と認め、保証登録を承認する」** for the two exact scoped proposals:
+
+- `QS-QLV1-OWNERSHIP-2026-01`: ownership of the original ordinary QLV1 decoded root.
+- `QS-QLV1-SCOPE-2026-01`: classical lexical scope of that same actual accepted root.
+
+Reviewed proposal: `governance/proposals/initial-guarantees.json`, SHA-256 `bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02`. Subsequent human adequacy/admission event: `governance/guarantees/initial-2026-admission.json`, SHA-256 `9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2`.
+
+The live ledger now records **two discharged scoped QS guarantees and three pending broader obligations**. QS-2026-01, PR-2026-01 and RS-2026-01 are not fully discharged. The admitted theorems bind actual `Protocol.Validity.check bytes` success to an `Acceptance` witness, its decoded artifact and selected original root. Their independent OwnershipSafe/ScopeSafe properties do not certify source lowering, Rust re-materialization, native compiler/runtime, hierarchy, native-contract, PR or quantitative RS.
+
+The exact reviewed source closure and registry are preserved beside the initial validation. Initial proof evidence includes both Lean builds/audits, fresh kernel/Main replay and exact elaborated theorem/axiom output. The initial proposal checker passed 18 regressions and live Lean-output comparison; an independent review found no scope/premise mismatch. The subsequent v3 ledger/current-evidence enforcement is being integrated and tested separately. Historical approved meaning and mutable current implementation evidence are distinct; unrelated source changes must refresh current proof binding, while changes of semantic representation require justified transport.
+
+The production inventory now distinguishes **21 paths and all nine native modes**, with 12 passing coverage regressions. It separates ordinary fresh acceptance, hierarchy/component checking, proposal-only output, source configuration, display and host execution. The corresponding Reference is `docs/src/reference/production-boundary.md`; S05-C1–C5 remain open.
+
+These are working-tree results. No integration commit, full hosted CI, completed issue, release readiness or publication is claimed.
+
+## Current guarantee enforcement and native-contract proof checkpoint — 2026-10-04
+
+The v3 ledger/current-evidence implementation now passes **75 policy/evidence tests** (35 constitutional + 27 current-evidence + 13 historical-candidate). A real `check_initial_guarantees.py --verify-lean` run checks both the historical theorem review and the elaborated current Acceptance/Artifact structures.
+
+Independent review found and repaired an enforcement defect: weakening `Acceptance.packetBound` to `True` still compiled and left the old theorem-review output unchanged. The preserved compiled mutation at `tests/fixtures/constitution_v030/witness-weakening/` now rejects even after mutable source identities are refreshed. The enforcer protects the 11-file independent semantic dependency closure, the original byte-binding witness fields and fresh elaborated field types. This was an evidence-enforcement defect, not a counterexample to the admitted theorems. Changes to the protected representation fail closed pending justified checked transport.
+
+Current source binding is separate from immutable human-reviewed meaning. Current Lean source closure: `b9da4e7f2e29a56f6e531e0a29f112b9fa13457ab5d51cbb679ab04a58b716be`. Current evidence record: `governance/guarantees/current-evidence.json`, SHA-256 `76f3f166c1389b8deac0dc17327eab8af9481e6850215a24b7b8422429ebb37d`. Both Lean builds/audits, fresh native Main replay and rebuilt schema binding succeeded.
+
+Additional proof-only native-contract bridges now connect actual successful encoded/leaf requests to their decoded original root meaning. Leaf requests also retain the exact requested matrix, interface, ordered ports and arbitrary-reference inverse laws. Encoded wrapper-matrix/root-matrix correspondence remains unproved. The executable checker body is unchanged; these new proofs are **not new ledger admissions**. Evidence: `tests/fixtures/constitution_v030/native-contract-bridge/`. Bounded Rust contract/leaf tests: **37 passed**. Production coverage: 21 paths, nine modes and **14 passing regressions**.
+
+Two scoped QS guarantees remain admitted; the three broader QS/PR/RS obligations remain pending. General transport, production-wide enforcement and final release readiness remain open. No full hosted CI or release is claimed.

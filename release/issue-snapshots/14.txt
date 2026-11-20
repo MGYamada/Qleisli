@@ -1,0 +1,82 @@
+## Historical design-review index
+
+This issue is the completed discovery/index record for the 0.2.0 authoring review that seeded the later 0.3.0 language-design issues. It is not itself a normative 0.3.0 specification.
+
+Authoritative decisions now live in the dedicated 0.3.0 issues and the Language Reference tracked by #48. Individual discovery issues may remain open only where they still contain a distinct unresolved design question.
+
+---
+
+## Criterion
+
+Design review of 0.2.0, 2026-09-29. The criterion proposed for Qleisli's surface language:
+
+> Every syntactic distinction an author must write should correspond to a physical fact or a mathematical theorem.
+
+The effect system (`unitary`/`iso`/`observe`), coherent control, exact phase and certified uncomputation already meet it. Each of their distinctions is either a physical fact (isometry vs. unitary, measurement, controlled phase) or a checked equation.
+
+The sub-issues below make authors write distinctions that have no physical counterpart. That conflicts with the project principle that [quantum bookkeeping is a language responsibility](https://github.com/MGYamada/Qleisli/blob/32e1cc22cb34f69338d27e23240d20dd7ed81203/docs/quantum-bookkeeping.md).
+
+The user asked to address these around **0.3.0**. This issue records that intent only; it selects no version and adopts no syntax. Each change still needs:
+- its English specification;
+- meaning-preserving desugaring into already specified core operations, with no new trusted acceptance rule;
+- independent checks and migration notes;
+- for breaking changes, the MINOR bump required by [versioning](https://github.com/MGYamada/Qleisli/blob/32e1cc22cb34f69338d27e23240d20dd7ed81203/docs/versioning.md).
+
+Supporting Japanese statement from the review supplied by the user:
+
+> 今のQleisliの美しさの基準は「すべての構文上の区別が物理的事実か数学的定理に対応しているか」で、効果系・control・位相・uncomputationの部分はすでにそれを満たしています。0.3.0で型の細部を詰めるときに、同じ基準をassociatorと演算の二重表現にも当てはめれば、かなり完成度の高い言語設計になると思います。
+
+## Items
+
+Raised in the review:
+- [ ] #15 Tuple reassociation: authors hand-write the monoidal associator
+- [ ] #16 Operations have two parallel representations: application forms vs static descriptions
+- [x] #17 `for const … carry` cannot bind a pattern
+
+Found while re-reading the 0.2.0 sources for this review:
+- [ ] #18 Owner packaging, `Q<(A,B)>` vs `(Q<A>,Q<B>)`: split/join are hand-written structure maps
+- [ ] #19 Controlled application requires an identity arm and a per-type `identity`
+- [ ] #20 Diagonal phase gates force an arbitrary control/target choice
+- [ ] #21 Phase exponents are encoded as a right-nested bit tuple `(Bit,(Bit,Bit))`
+- [x] #22 `Bit` vs `CBit`: one two-element set with two types and two literal spellings
+- [ ] #23 No monadic unit: basis-state preparation is spelled as init0/x/join trees
+- [ ] #24 Exact specifications use two mechanisms: `apply_contract` vs `meaning`/`bind_op`
+- [ ] #25 Multi-parameter basis predicates are silently left-folded
+
+These groups should be designed together:
+- **Products:** #15, #18, #25 and the `Bits<n>` work.
+- **Operation world:** #16 and #19, together with A020-04, A020-09 and A020-12.
+- **Phase:** #20 and #21, together with M2's dyadic profile.
+- **Classical data:** #22 and #23, before `CBits<m>` is implemented.
+
+The repository backlog records each item with a stable A020 ID.
+
+## Obligations shared by every item
+
+- Linear ownership with no implicit discard. Separate owners may be entangled with each other and with references.
+- Exact phase, including under coherent control. Leaf/axis order and bit weights never change silently; permutations stay explicit.
+- Conveniences are untrusted desugaring ([trusted-core principle](https://github.com/MGYamada/Qleisli/blob/32e1cc22cb34f69338d27e23240d20dd7ed81203/docs/design-philosophy.md?plain=1#L137-L145)). The independent verifier and evidence binding are unchanged.
+- When uncertain, follow Rust. Record any intentional difference together with its quantum-semantic or evidence obligation ([policy](https://github.com/MGYamada/Qleisli/blob/32e1cc22cb34f69338d27e23240d20dd7ed81203/docs/design-philosophy.md?plain=1#L25-L39)).
+- Keep existing examples as regressions, and keep first attempts and counterexamples (program-first method).
+
+## Converse direction (tracked elsewhere)
+
+The criterion also has a converse: physical distinctions that the syntax does not show, for example same-typed `CBit` results with different roles ([A020-05](``https://github.com/MGYamada/Qleisli/blob/32e1cc22cb34f69338d27e23240d20dd7ed81203/docs/v0.2.0-backlog.md#a020-05--same-typed-results-conceal-algorithmic-roles)).`` Those remain in the backlog.
+
+## Evidence method
+
+Claims in the sub-issues were reproduced with `qleisli check` built from 32e1cc22 on 2026-09-29 using small probe projects. Diagnostics are quoted verbatim, with paths shortened. Links are permalinks to that commit.
+
+One probe corrected a draft claim before filing. For a parameter typed `Op<A, M>`, a plain provider whose extracted operator equals `M` is accepted without `bind_op`. #24 records that as an observation rather than as a restatement requirement.
+
+## Additional 0.3.0 requests (2026-09-30)
+
+The user requested these three additions at the 0.3.0 design boundary:
+
+- [ ] #57 Replace the misleading `iso` spelling with `isometry` or another mathematically justified name, retaining the distinction between dagger-monomorphisms and unitary/dagger-isomorphisms and specifying the public migration.
+- [ ] #29 Define Qleisli-native `excl` temporary exclusive quantum access, using the earlier Rust `&mut` QFT experiment as historical design evidence. Check affine range/disjointness obligations, restore operation rights when access ends, and elaborate to existing independently verified ownership transformations.
+- [ ] #58 Introduce a small `std::prelude` for common quantum operations, with explicit name-resolution, collision and compatibility rules.
+
+#29 was expanded rather than duplicated. Its concrete Rust-style direction replaces the earlier completely open borrow spelling. Coordinate the prelude with #41 and static borrow obligations with #28/#47.
+
+These are user-requested design directions, not newly implemented syntax or validated authoring results. The implementation, exact phase/reference preservation, migration and independent-checking obligations above remain.

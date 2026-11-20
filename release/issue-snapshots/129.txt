@@ -1,0 +1,509 @@
+## Status
+
+**Ratified for edition 2026, effective 2026-10-04 (Asia/Tokyo). Constitutional enforcement and the remaining acceptance criteria stay open.**
+
+This draft retains Draft 4's nine-Article structure, jurisdiction-and-ledger model, strictly pre-v1 constitutional rectification procedure, and separation between constitutional interpretation and mathematical verification.
+
+Draft 5 adds one narrow but permanent institutional safeguard:
+
+> **Constitutional authority in the Constitution Guardian Office is exclusively human authority. Artificial intelligence, autonomous agents, software systems, or analogous non-human computational entities may assist, but may never hold, receive, exercise, vote on, or act as a proxy for that authority.**
+
+Draft 4's foundational clarification is retained:
+
+> **The Constitution permanently fixes the existence of the three Fundamental-Theorem proof obligations, but does not itself define their mathematical meaning.**
+
+The binding mathematical interpretation of Qleisli Soundness (QS), Physical Realizability (PR), and Resource Safety (RS) belongs exclusively to the **Constitution Guardian Office** under Articles V and VI. Mathematical truth and proof discharge remain the responsibility of Lean or the designated independent proof checker.
+
+Accordingly, issue text, RFCs, implementation choices, theorem names, Lean declarations, documentation, tests, or release notes do not acquire constitutional authority merely by assigning a meaning to QS, PR, or RS.
+
+The exact final text derived from Draft 5 has now been affirmatively ratified by the natural-human project maintainer. The separate governance candidate and initial Guardian appointment were approved in the same recorded human answer. The event and exact hashes are recorded below. The later 0.3.0 release verifies that event and text identity; it does not repeat ratification. Approval of a work plan, Issue edits or passing checks alone would not have constituted these acts.
+
+Related:
+- #134 — normative authority and the interpretation/proof distinction
+- #135 — interpretation ledger, semantic transport, and current acceptance identity
+- #136 — production theorem boundary
+- #137 — editions and release versions
+- #138 — admission of additional Fundamental-Theorem obligations
+- #139 — three permanent obligations and evolving formal realizations
+- #140 — constitutional impact analysis
+- #141 — constitutional CI
+- #142 — release readiness and proof-status claims
+- #149 — Constitution Guardian Office and governance
+- #280 / #281 — current Resource Safety / Physical Realizability proposals and formalizations
+
+---
+
+# Qleisli 2026 Constitution
+
+## Preamble
+
+Qleisli may grow through new language features, implementations, libraries, semantic models, and target realizations. Every such development remains subject to the constitutional proof obligations of its edition.
+
+This Constitution establishes enduring proof obligations, continuity rules, and the institutions that interpret and enforce them.
+
+It deliberately does **not** prescribe one permanent mathematical definition, theorem statement, formal representation, quantifier structure, proof method, or implementation of those obligations.
+
+The Constitution fixes what Qleisli must never cease to answer for. The mathematics by which those obligations are made precise belongs to constitutional interpretation and formal verification.
+
+## Article I — The Fundamental Theorems
+
+Qleisli edition 2026 recognizes three permanent Fundamental-Theorem proof obligations from the time of ratification:
+
+1. **Qleisli Soundness Theorem (QS)**
+2. **Physical Realizability Theorem (PR)**
+3. **Resource Safety Theorem (RS)**
+
+These three obligations are permanent and constitutionally distinct.
+
+The Constitution does not itself define their mathematical content. In particular, it does not fix their predicates, quantifiers, semantic domains, target conditions, resource measures, theorem types, proof strategies, completeness properties, or exclusions.
+
+Their binding mathematical interpretation is determined under Articles V and VI by the **Constitution Guardian Office**.
+
+Their mathematical discharge is established by Lean or the designated independent proof checker under the recorded proof boundary and assumptions.
+
+For any constitutionally accepted scope, all applicable QS, PR, and RS obligations must be identified and discharged before full constitutional conformance may be claimed for that scope.
+
+A single mathematical theorem or proof artifact may discharge more than one constitutional obligation. Such proof reuse does not merge, remove, or diminish the separate constitutional status of QS, PR, or RS.
+
+New syntax, types, semantic objects, providers, targets, optimizations, implementations, or other capabilities cannot obtain exemption merely because they were absent when this Constitution was ratified.
+
+Additional Fundamental-Theorem obligations may be adopted through constitutional amendment. The three obligations established here may not be removed.
+
+## Article II — Edition Immutability
+
+The ratified constitutional text shall remain unchanged within one Qleisli edition, except for mechanically generated metadata explicitly excluded from that text at ratification and the strictly pre-v1 rectification procedure authorized by Article IX.
+
+The immutable text defines the permanent proof obligations and their governing rules. Binding interpretations, current formal realizations, the guarantee ledger, implementation details, proof artifacts, and governance records are maintained separately under those rules.
+
+Updating such subordinate artifacts in accordance with this Constitution is permitted within the same edition.
+
+Neither a new Lean declaration, a changed theorem statement, a changed formal representation, nor a changed implementation dependency graph is, by itself, a constitutional amendment.
+
+## Article III — Constitutional Amendment
+
+Except for a rectification validly authorized under Article IX before v1.0.0, changing the ratified constitutional text requires an explicit new edition, a separately reviewable constitutional diff, and a recorded transition.
+
+A release-version change alone does not authorize constitutional amendment. A new edition is necessary for amendment but is not sufficient to override Article IV.
+
+The following are distinct acts:
+
+- **same-edition extension**: an admitted language or implementation capability grows while remaining subject to the existing constitutional obligations;
+- **constitutional interpretation**: the Constitution Guardian Office determines the binding mathematical meaning or application of an existing constitutional obligation for a defined case or scope;
+- **formal discharge or strengthening**: proofs or checked evidence establish, generalize, or strengthen the resulting obligations;
+- **constitutional amendment**: the constitutional text changes through an edition transition.
+
+A correction procedure may not serve as an unrecorded amendment.
+
+Corrections to subordinate interpretations, records, formalizations, or proofs may be made under the ordinary rules of this Constitution, subject to Article IV and the guarantee ledger.
+
+Correction of the ratified constitutional text itself is permitted only through Article IX before v1.0.0. Any proposed change that is an amendment rather than a rectification remains governed by this Article and Article IV.
+
+## Article IV — Constitutional Continuity and Non-Weakening
+
+The set of Fundamental-Theorem obligations may grow through constitutional amendment. It may not shrink.
+
+No constitutionally continuous edition, amendment, release, implementation, interpretation, or correction may:
+
+- remove an adopted Fundamental-Theorem obligation;
+- merge an obligation away so that its separate constitutional status disappears;
+- waive the requirement that an applicable obligation be discharged;
+- render an obligation vacuous merely by definition;
+- evade an obligation by renaming, rerouting, reclassifying, or moving an accepted capability outside an artificially narrowed formal boundary; or
+- withdraw or weaken a guarantee already protected under Article VI; or
+- transfer, delegate, proxy, automate, or otherwise vest any constitutional authority of the Constitution Guardian Office in an artificial intelligence, autonomous agent, software system, or analogous non-human computational entity.
+
+Because this Constitution does not itself define the mathematical content of QS, PR, or RS, constitutional continuity does not require one global theorem statement to remain unchanged forever.
+
+Instead, continuity protects the permanent existence of the obligations together with all binding guarantees already accumulated for their recorded scopes.
+
+A later interpretation may introduce new mathematics, stronger formulations, broader domains, different representations, or new proof techniques. It may not use that freedom to invalidate, silently narrow, or weaken an existing protected guarantee over the scope to which that guarantee applies.
+
+Discharged guarantees recorded under Article VI form a minimum that later releases must preserve within the edition.
+
+An edition transition may not erase historical guarantees or be used to claim constitutional continuity for their weakening. Historical guarantees remain attached to their recorded domain, premises, and meaning; this does not assert that every future language has the same accepted programs.
+
+The amendment and non-weakening protections themselves may not be repealed or weakened to authorize what this Article prohibits.
+
+A development that abandons these protections is not constitutionally continuous with Qleisli under this Constitution.
+
+## Article V — The Constitution Guardian Office
+
+Qleisli shall maintain a **Constitution Guardian Office**.
+
+The Constitution Guardian Office has final and exclusive constitutional authority to issue binding interpretations of the QS, PR, and RS obligations and to determine how this Constitution applies to new features and constitutional disputes.
+
+This authority includes determining:
+
+- which constitutional obligations apply to a case;
+- the binding mathematical meaning required of those obligations for that case or scope;
+- whether a proposed formal statement adequately represents the constitutional obligation;
+- the relationship of a new obligation to existing binding interpretations and ledgered guarantees; and
+- whether a proposed change is interpretation, formalization, extension, rectification, or constitutional amendment.
+
+A binding interpretation must identify the case or scope, the applicable constitutional obligation or obligations, the required proposition or evidence sufficiently to make verification possible, its relationship to existing guarantees, and the reasons the ruling remains within the existing Constitution.
+
+No issue, RFC, implementation, compiler behavior, documentation page, theorem name, Lean declaration, test, release note, or other subordinate artifact acquires authority to define the constitutional meaning of QS, PR, or RS merely by asserting or implementing such a meaning.
+
+Only a binding interpretation issued under this Article and recorded under Article VI has such constitutional authority.
+
+The Constitution Guardian Office determines **what must be proved**.
+
+It does not determine mathematical truth by decree.
+
+Mathematical derivability is established by Lean or the designated independent proof checker under the recorded proof boundary and assumptions. A ruling of the Constitution Guardian Office is therefore not itself a mathematical proof.
+
+The Constitution Guardian Office may require constitutional review and suspend a proposed merge or release on a reasoned constitutional ground.
+
+It has no general governing or veto authority over ordinary language design, implementation, libraries, tooling, releases, or project management that remain within the constitutional boundary.
+
+The Constitution Guardian Office may not waive a Fundamental-Theorem obligation, deem a failed proof or check successful, withdraw a protected guarantee, redefine an obligation solely to evade an existing guarantee, or amend the Constitution by interpretation.
+
+The current holder or holders, succession, and possible council form belong in governance documentation.
+
+**Every holder, member, or other person exercising the constitutional authority of the Constitution Guardian Office must be a natural human person.**
+
+An artificial intelligence, autonomous agent, language model, software system, algorithmic governance process, or analogous non-human computational entity may not:
+
+- hold membership or office in the Constitution Guardian Office;
+- exercise or share its binding interpretive authority;
+- cast or determine a vote of the Office;
+- issue, approve, or automatically adopt a binding interpretation;
+- exercise its suspension or rectification authority;
+- act as a proxy, delegate, substitute, or successor for a human holder; or
+- acquire constitutional authority through automation, default rules, preauthorization, delegation, or failure of a human holder to intervene.
+
+Artificial intelligence and other computational systems may be used as advisory tools for research, drafting, criticism, formalization, search, or analysis. Such assistance has no constitutional force by itself. Any resulting constitutional judgment must be knowingly reviewed and affirmatively adopted by the responsible human holder or human members of the Constitution Guardian Office as their own judgment.
+
+A human holder may not evade this requirement by nominally retaining office while delegating the substance of constitutional judgment to a non-human system. Human review and responsibility must be substantive rather than ceremonial.
+
+The Constitution Guardian Office may be occupied by one natural human person or by multiple natural human persons organized as a governance body defined by the governance documentation. Institutional succession must preserve the constitutional scope of the Constitution Guardian Office, its exclusively human authority, and the distinction between interpretation and mathematical verification.
+
+## Article VI — Binding Interpretations and the Guarantee Ledger
+
+A binding interpretation issued by the Constitution Guardian Office determines a constitutional obligation for its recorded case or scope. It has constitutional force only when affirmatively adopted by the human holder or human members authorized to act for the Office; no machine-generated or automatically generated interpretation becomes binding by default.
+
+Before discharge, that interpretation is a binding pending obligation.
+
+When its required proposition or evidence has been formally discharged and the result has been recorded, the discharged obligation enters the constitutional guarantee ledger as a protected guarantee.
+
+A ledger entry identifies at least:
+
+- the binding interpretation;
+- the relevant QS, PR, or RS obligation or obligations;
+- the language fragment, realization scope, accepted artifacts, and applicable premises;
+- the mathematical property or evidence required by the interpretation;
+- the semantic definitions or other formal objects needed to preserve its meaning;
+- the proof or evidence binding; and
+- its discharge status.
+
+A pending obligation is not a discharged guarantee.
+
+An ordinary helper lemma, implementation choice, experimental theorem, issue statement, or proof artifact does not enter the ledger merely because it exists or has been proved.
+
+One proof may discharge several obligations or ledger entries when the correspondence is explicit and mechanically justified.
+
+Within an edition, discharged ledger guarantees accumulate.
+
+Later interpretations may clarify, generalize, or strengthen them, but may not repeal, relax, contradict, or silently narrow their recorded protection over their applicable scope.
+
+Formal representations, theorem statements, semantic models, proof architectures, or implementations may be refactored or replaced. Such changes must preserve every applicable ledgered guarantee, with checked semantic transport where representations differ.
+
+A binding interpretation that has not yet produced a discharged guarantee may be corrected or superseded by the Constitution Guardian Office with recorded reasons, provided that the change does not evade an applicable constitutional obligation or weaken any already protected guarantee.
+
+Every later release must discharge all applicable ledger obligations against its current production acceptance machinery and current accepted artifacts.
+
+Merely retaining an old proof about an old checker, old semantics, or old implementation does not satisfy this duty.
+
+The ledger is a minimum accumulated guarantee. It is not an exhaustive definition of QS, PR, or RS.
+
+Capabilities absent from historical ledger entries remain subject to all applicable Fundamental-Theorem obligations under Article I.
+
+## Article VII — Production Acceptance and Mechanical Enforcement
+
+The acceptance judgments appearing in constitutional proofs must correspond to the acceptance decisions actually used by the released implementation.
+
+No narrower reference-only predicate, unchecked producer assertion, compatibility route, provider, backend, export path, or alternative implementation path may confer constitutional acceptance outside the proved boundary.
+
+Each release must connect its accepted representations, semantics, realizations, resource evidence where applicable, and other constitutionally relevant artifacts to that boundary.
+
+Historical obligations must remain connected to the behavior and evidence of the current accepted implementation through justified embeddings or semantic transport.
+
+Release checks must enforce constitutional-text identity, ledger continuity, production-acceptance coverage, and the required proof or evidence verification.
+
+They must distinguish the institutional judgment that a formal proposition adequately expresses a constitutional obligation from the mathematical judgment that the proposition is proved.
+
+Reducing the set of accepted programs does not by itself weaken a safety implication.
+
+Source compatibility, accepted-language continuity, and continued toolchain support are governed separately by published compatibility policy and conformance or regression checks. Those policies cannot justify accepting programs outside the constitutionally verified boundary.
+
+## Article VIII — Ratification and Proof Maturity
+
+This Constitution takes effect when the natural-human project maintainer affirmatively ratifies its exact text for Qleisli edition 2026 through an explicit ratification record. The record identifies the adopted text, the adopting human authority, and the effective date. Ratification precedes completion and publication of v0.3.0. That release verifies the identity of the ratified text and the applicable release conditions; it does not repeat ratification. Earlier drafts may be revised without creating a new edition.
+
+Ratification permanently establishes QS, PR, and RS as the three Fundamental-Theorem obligations of edition 2026 together with the constitutional process by which they are interpreted, proved, and preserved.
+
+Ratification does **not** elevate any then-current issue text, implementation convention, theorem statement, or working definition of QS, PR, or RS into constitutional text.
+
+Nor does ratification assert that complete production proofs for all three obligations already exist in v0.3.0.
+
+Before v1.0.0, releases must publish the binding interpretations applicable to their claimed scope, their proof coverage, provisional or incomplete formalizations, and outstanding obligations.
+
+A pre-v1 capability lacking completed required coverage must not be represented as constitutionally certified for that scope.
+
+Already discharged ledger guarantees remain binding; pre-v1 status does not authorize their withdrawal.
+
+From v1.0.0 onward, every release claiming full constitutional conformance must discharge all applicable QS, PR, and RS obligations over the full scope of its accepted language and accepted realizations under the binding interpretations then governing that scope, and must preserve the accumulated guarantee ledger.
+
+v1.0.0 therefore establishes full discharge as a release requirement.
+
+It does not freeze one acceptance relation, one top-level Lean theorem type, one semantic representation, or one permanent global mathematical definition of QS, PR, or RS.
+
+Later same-edition extensions may require new binding interpretations and stronger or different formal realizations under the same permanent Fundamental-Theorem obligations, subject always to Article IV and the accumulated ledger.
+
+## Article IX — Pre-v1 Constitutional Rectification
+
+Before the release of Qleisli v1.0.0, and only before that release, the Constitution Guardian Office may authorize correction of the ratified constitutional text when a defect is discovered in its logic, semantics, formalization, internal consistency, or textual expression.
+
+The Constitution Guardian Office may authorize such a change only through its human holder or human members, and only if they determine, with recorded reasons, that the change is a **rectification rather than an amendment**. No artificial intelligence, autonomous agent, software system, or analogous non-human computational entity may exercise or be delegated this authority.
+
+A rectification repairs the expression of an already adopted constitutional principle.
+
+It must not introduce a new constitutional policy, Fundamental-Theorem obligation, guarantee, or proof obligation except insofar as logically necessary to make an already adopted principle coherent and correctly expressed.
+
+Every constitutional rectification must publicly record at least:
+
+- the previous text and the proposed corrected text;
+- the defect in the previous text;
+- why the previous text fails to express the already adopted constitutional principle;
+- why the change is a rectification rather than an amendment;
+- the constitutional and proof-theoretic consequences of the change; and
+- the evidence that the change preserves Article IV and all applicable ledgered guarantees.
+
+This authority may not be used to weaken or evade Article IV, withdraw a discharged guarantee, expand the Constitution Guardian Office's own constitutional jurisdiction, redefine a Fundamental-Theorem obligation merely to avoid an existing obligation, or replace an existing constitutional policy choice merely because a different design is later preferred.
+
+The authority granted by this Article expires permanently upon the release of Qleisli v1.0.0.
+
+After that release, any change to the ratified constitutional text requires an edition transition under Article III and remains subject to Article IV.
+---
+
+## Explanatory notes — not proposed constitutional text
+
+### The theorem names are constitutional hooks, not mathematical definitions
+
+QS, PR, and RS are permanent constitutional obligations.
+
+The Constitution intentionally does not attempt to predict their final mathematical form.
+
+A current formalization may turn out to be elementary, unexpectedly deep, incorrectly scoped, or inadequate for later features. Such facts concern interpretation and proof, not the continued constitutional existence of the obligation itself.
+
+The architecture is therefore:
+
+```text
+Constitution
+    |
+    | permanently requires QS / PR / RS
+    v
+Constitution Guardian Office
+    |
+    | issues binding mathematical interpretation
+    v
+Current proof obligation
+    |
+    | Lean / independent checker
+    v
+Formal discharge
+    |
+    v
+Protected guarantee ledger
+```
+
+Schematic notation such as
+
+```text
+Accepted_E(x)
+  -> QS_E(x) ∧ PR_E(x) ∧ RS_E(x)
+```
+
+may be useful for explanation, but is not itself a frozen constitutional theorem statement.
+
+The meanings of `QS_E`, `PR_E`, and `RS_E` arise from binding interpretation, not from this notation.
+
+### No second constitution in the issue tracker
+
+Issues such as #157, #280, #281, #287, or future design discussions may contain mathematically valuable proposals, working definitions, implementation plans, or candidate theorem statements.
+
+They do not acquire constitutional force merely by being adopted engineering directions.
+
+If such a proposal is intended to determine what QS, PR, or RS constitutionally requires for a scope, it must enter through a binding interpretation of the Constitution Guardian Office under Articles V and VI.
+
+This prevents the issue tracker, compiler implementation, or Lean source tree from silently becoming a second constitution.
+
+### What v1.0.0 fixes
+
+v1.0.0 fixes the requirement that the full accepted product discharge all three permanent obligations under the applicable binding interpretations and preserve the accumulated guarantee ledger.
+
+It does not claim that humanity has discovered the final mathematical meaning of QS, PR, or RS.
+
+A future language feature may expose a new aspect of one of those obligations and therefore require a new interpretation and new mathematics without constitutional amendment.
+
+What cannot be escaped is the obligation itself and the guarantees already accumulated beneath it.
+
+### Current release and historical guarantees
+
+#135 should determine the formal ledger representation.
+
+A schematic historical-preservation requirement may have the form:
+
+```text
+for every discharged ledger entry s
+and every accepted case P in its recorded scope:
+
+  ProductionAccepts_now(embed_s(P), current_artifact)
+    -> protected_property_s(
+         P,
+         observed_behavior_s(current_artifact)
+       )
+```
+
+The embedding and observation or semantic transport must be justified.
+
+This is not a frozen constitutional formula.
+
+Proving an implication between two old closed propositions does not establish that the current implementation preserves an old guarantee. The current acceptance decision and current implementation behavior must remain connected to the obligation.
+
+### Interpretation, proof, and release claims
+
+The Constitution Guardian Office determines what constitutional proposition or evidence must be established and whether its formalization covers the constitutional case.
+
+Lean or the designated independent checker determines whether that proposition follows under its declared assumptions.
+
+Maintainers choose implementations inside the resulting verified boundary.
+
+These are deliberately separate authorities:
+
+```text
+constitutional meaning  -> Constitution Guardian Office
+mathematical truth       -> Lean / independent proof checker
+implementation choice    -> maintainers
+```
+
+No one layer may substitute for another.
+
+Proof reuse and general theorems capable of discharging many interpretations or ledger entries are permitted.
+
+This Constitution does not require a separate proof file, CI job, or manual Constitution Guardian Office decision for every ordinary code change.
+
+### Correction without a loophole
+
+Before v1.0.0, Article IX permits the Constitution Guardian Office to repair a defect in the constitutional text itself only when it records why the change restores an already adopted principle rather than amending policy.
+
+This is a temporary constitutional bug-fix authority, not a general power to redesign the Constitution.
+
+A proof gap must be disclosed and repaired, or the affected certification or acceptance withheld.
+
+Relabeling a weaker guarantee, weakening a binding interpretation over an already protected scope, or presenting a preferred new policy as a rectification does not preserve constitutional continuity.
+
+The Article IX authority disappears permanently at v1.0.0.
+
+### Terminology
+
+The institutional name is **Constitution Guardian Office**.
+
+The Constitution Guardian Office is an office, not necessarily an individual. Governance documents may define one human holder or multiple human holders without changing the constitutional office itself.
+
+Its constitutional authority is permanently human. AI systems may advise the Office in the same broad sense that other software, proof assistants, search systems, or external analyses may assist human judgment, but they may never become constitutional decision-makers. The decisive act is the informed and affirmative adoption of a judgment by the responsible human authority.
+
+This restriction concerns **authority**, not computation. Lean, independent proof checkers, automated theorem provers, AI systems, and other computational tools may continue to perform mathematical verification or provide assistance within their declared roles. None thereby acquires the constitutional power to decide what must be proved.
+
+Ordinary language changes such as #159/#283 are same-edition verified extensions subject to the existing Fundamental-Theorem obligations. They are not constitutional amendments merely because they require new interpretations or new proofs.
+
+## Intended lifecycle
+
+```text
+First dedicated 0.3.0 stage:
+  obtain affirmative human ratification of the exact text;
+  establish QS / PR / RS as permanent constitutional proof obligations;
+  ratify Constitution Guardian Office authority, ledger rules,
+  constitutional CI, and the temporary pre-v1 rectification procedure
+
+0.3.x–0.4.x:
+  develop binding interpretations and formal realizations;
+  publish proof coverage and outstanding obligations
+
+0.5.x:
+  establish the production proof boundary and major formal discharge
+
+1.0.0:
+  require full QS / PR / RS discharge for claimed constitutional conformance;
+  preserve the accumulated ledger;
+  permanently close the Article IX rectification window
+
+later:
+  grow the language, interpretations, and mathematics within the edition;
+  never escape QS / PR / RS;
+  never weaken the accumulated ledger
+```
+
+## Acceptance criteria
+
+- [x] Review and affirmatively ratify the exact nine-Article candidate derived from Draft 5, including the pre-release Article VIII adoption event.
+- [x] Establish QS, PR, and RS as permanent and distinct Fundamental-Theorem proof obligations of edition 2026.
+- [x] Do not place a positive or negative mathematical definition of QS, PR, or RS in the constitutional text.
+- [x] Establish the Constitution Guardian Office as the sole authority for binding constitutional interpretation of their mathematical meaning and application.
+- [x] Reserve every exercise of Constitution Guardian Office authority exclusively to natural human persons.
+- [x] Forbid AI, autonomous agents, software systems, and analogous non-human computational entities from holding, receiving, voting on, proxying, or exercising constitutional authority.
+- [x] Permit computational assistance while requiring substantive human review and affirmative human adoption of every binding constitutional judgment.
+- [x] Preserve the separation between constitutional interpretation and mathematical proof.
+- [x] Prevent issues, RFCs, implementations, Lean declarations, documentation, or tests from silently acquiring constitutional interpretive authority.
+- [x] Define binding interpretations, pending obligations, formal discharge, and ledgered guarantees.
+- [x] Adopt the monotone guarantee ledger and semantic-preservation requirements.
+- [ ] Bind constitutional proofs to current production acceptance and current artifacts.
+- [x] Preserve all three permanent obligations while allowing their formal realization to evolve.
+- [x] Keep compatibility and regression duties separate from constitutional proof obligations.
+- [x] Specify pre-v1 proof-maturity disclosure and the v1 full-conformance gate.
+- [x] Preserve Article IX's strictly pre-v1 constitutional rectification authority and its permanent expiry at v1.0.0.
+- [ ] Implement constitutional CI under #141 without freezing future theorem syntax or theorem meaning.
+- [x] Record ratification and the active edition explicitly.
+- [x] Adopt the prepared repository `CONSTITUTION.md` only through the agreed affirmative human ratification process; candidate existence is not adoption.
+
+## Core principle
+
+> **The Constitution fixes the obligations. Human authority in the Constitution Guardian Office interprets their mathematical meaning and application. Lean checks the resulting propositions. Discharged guarantees accumulate.**
+## Historical candidate preparation before adoption — 2026-10-04
+
+- Constitutional edition: **2026**, identifying the constitutional regime, not syntax.
+- `CONSTITUTION.md` SHA-256: `40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b`.
+- Separate `GOVERNANCE.md` candidate SHA-256: `60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721`; proposed initial sole human holder: **Masahiko G. Yamada**.
+- Compared with the saved Draft 5 constitutional text, only the title and the first paragraph of Article VIII changed. Explanatory notes remain outside the text.
+- Review packet: `tests/fixtures/constitution_v030/packet.json`; review guide: `docs/src/design/ratification.md`. At this earlier checkpoint these files were prepared in the working tree and were not yet ratified or published.
+- The frozen candidate packet retains `human_ratification = null` as its historical state; the subsequent actual event is recorded separately. No interpretation or discharge was created by preparation.
+- The affirmative decisions required at this preparation stage were subsequently supplied by the human adopter, as recorded below.
+- The 108-issue execution tracker and eventual release gate remain in #142.
+
+## Recorded human adoption — 2026-10-04
+
+The natural-human project maintainer **Masahiko G. Yamada** explicitly ratified the identified edition-2026 Constitution, adopted the identified governance candidate, and accepted appointment as the initial sole human Constitution Guardian, effective **2026-10-04 (Asia/Tokyo)**. The actual answer to the question identifying both hashes and these acts was:
+
+> 両候補を批准・採択し、初代Guardianに任命する
+
+- Constitution SHA-256: `40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b`.
+- Approved governance candidate SHA-256: `60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721`; preserved at `tests/fixtures/constitution_v030/governance-candidate.txt`.
+- Actual event: `governance/ratification-2026.json`, SHA-256 `3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a`. It transcribes the question, answer and conversation provenance; it is not a cryptographic human signature.
+- `CONSTITUTION.md` remains byte-identical. Active `GOVERNANCE.md` updates status and conditional wording to reflect the adopted event.
+- This act does not adopt a QS/PR/RS interpretation, discharge a proof, approve a release or publish any artifact. Source changes remain uncommitted at this checkpoint.
+
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.
+
+
+## Integration and acceptance audit — 2026-10-04
+
+The ratified constitutional rules and human adoption criteria are implemented. Production-wide binding and complete constitutional CI remain open under #136/#141; the umbrella stays open.
+
+Source: [foundation commit 0605d716](https://github.com/MGYamada/Qleisli/commit/0605d716c2a79e2b6776476981c3e25cdfa1709b), [draft integration PR #307](https://github.com/MGYamada/Qleisli/pull/307), [authority Reference](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/reference/authority.md), [governance](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/GOVERNANCE.md). The live ledger has two explicitly admitted scoped QS guarantees and three pending broader obligations; earlier zero-guarantee checkpoints above are historical. Current enforcement validation has 75 passing policy/evidence regressions and a fresh elaborated Lean review. The hosted docs, Lean and interop jobs for 061636d have passed; other full-CI jobs remain in progress. This is not a full-CI, release or full-conformance claim.

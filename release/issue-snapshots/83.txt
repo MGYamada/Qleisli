@@ -1,0 +1,137 @@
+## Active beta scope — maintainer decision, 2026-10-12 (Asia/Tokyo)
+
+The maintainer explicitly approved implementation of the **127-Issue v0.3.0-beta completion plan**, with this Issue first. This resumes #83 and supersedes its 2026-10-11 deferral below. Ordinary differing-port project integration, rectangular Meaning and the native rectangular pure-leaf gate are required before this Issue closes; no implementation or proof completion is asserted by rescheduling.
+
+The approved source contract uses `Op<A -> B>` and `Op<A -> B, M>`, with `Op<A>` as the endomorphic abbreviation; the comma Meaning slot is not reinterpreted as a codomain. Rectangular declarations use `meaning M: A -> B = reference(f);`, with existing `meaning M: A = ...;` as the endomorphic abbreviation. Preserve exact type trees, zero-width owners, phase, ordered axes, dependencies and the live caller frame. Compose only matching intermediate types; tensor ordered interfaces. Inverse requires two-sided unitarity and usable reverse evidence; control/repeat retain the same-interface requirements.
+
+Use the common source checker and existing Raw/native paths. Add independently checked native `pure-leaf` requests binding original body/dependencies, domain/codomain, exact requested matrix and `V†V = I`; preserve the existing square unitary gate. Observation/reset/discard histories cannot be hidden to obtain Unitary/Isometry. The original seven acceptance criteria remain required, including actual checking/proof duties. Preserve all first sources and previous failures; start with small Unit-to-Bit, shape, phase, composition/tensor and deliberate false-evidence cases.
+
+QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01 apply with unchanged meanings. The two admitted QLV1 guarantees and their premises remain protected. This ordinary implementation decision adopts no new constitutional interpretation or guarantee and claims no source/runtime or full QS/PR/RS completion. Generic QFT remains excluded as recorded in #142. Current progress and the complete frozen target set belong in #142.
+
+## Historical scheduling decision — superseded on 2026-10-12
+
+## Current scope — maintainer decision, 2026-10-11 (Asia/Tokyo)
+
+**Deferred beyond all of v0.3.0; future release target unassigned.** The maintainer explicitly instructed: 「一般矢印型は0.3.0のscopeから外し、延期してください」.
+
+This supersedes the earlier alpha-only/further-implementation exclusion in [comment 6103225809](https://github.com/MGYamada/Qleisli/issues/83#issuecomment-6103225809). The remaining general-operation-arrow work is outside the current development goal and every v0.3.0 release gate, including ordinary differing-port project integration, rectangular Meaning and the proposed rectangular `pure-leaf` native gate. It must not return indirectly as a prerequisite of #46 or another 0.3.0 Issue.
+
+Keep already committed bounded support, ordinary function-return `->`, regression tests, first sources, counterexamples and evidence. This deferral requests no rollback, adopts no additional syntax and grants no new acceptance or constitutional guarantee. Existing supported capabilities retain their current obligations.
+
+Keep this Issue **open and deferred**, with no v0.3.0 milestone. Its remaining work is not implemented, proved or completed by this scheduling decision. #46 stays active for its independent endomorphic/reference/instrument requirements; only its general-arrow/rectangular portion is deferred.
+
+Progress accounting removes #83 from the active goal denominator: **38/109 Issues (34.86%)**, formerly 38/110. The numerator is unchanged; #57 remains pending its own completion CI. Preserve the historical 111-Issue release inventory and record this explicit deferral through reviewed criterion dispositions when preparing a release, rather than deleting provenance or bypassing the release gate.
+
+## Historical design and implementation record
+
+The following original proposal and observations remain as history. Their earlier 0.3.0 scheduling statements are superseded above.
+
+## Status
+
+Core language-design issue for **Qleisli 0.3.0**.
+
+This issue records a semantic fork that should be decided at the 0.3.0 boundary. It does **not** adopt syntax yet.
+
+Related:
+- #27 type-theory synthesis
+- #44 basis-type polymorphism
+- #45 operation capability calculus
+- #46 `Meaning` language
+- #57 isometry terminology
+- #80 Haskell/Qleisli boundary
+
+## Problem
+
+Much of the current design is phrased around endomorphisms:
+
+```text
+Op<A>
+Meaning<A>
+```
+
+but several fundamental quantum operations are naturally typed as arrows between different interfaces:
+
+```text
+unitary      A -> B
+isometry     A -> B
+prepare      Unit -> A
+discard/observe variants may also change interface
+```
+
+If Qleisli makes `Op<A>` primitive, dimension-changing pure operations and preparation require special cases.
+
+If instead the core is
+
+```text
+Op<A, B>
+```
+
+then endomorphisms become the special case
+
+```text
+Op<A> := Op<A, A>
+```
+
+and composition takes the ordinary categorical form
+
+```text
+Op<A, B> × Op<B, C> -> Op<A, C>.
+```
+
+## Questions to decide
+
+1. Is the semantic core `Op<A>` or `Op<A, B>`?
+2. Are unitaries restricted to equal finite dimension while isometries may change dimension?
+3. Is basis-state preparation literally an arrow `Unit -> A`?
+4. Should `Meaning` mirror the same domain/codomain structure?
+5. How do capabilities such as `Apply`, `Adjoint`, and `Controlled` generalize to non-endomorphisms?
+6. What is the adjoint type of an isometry `Op<A, B>`?
+7. Can controlled application be defined for arbitrary `A -> B`, or only selected classes?
+8. How do tensor products type:
+   `Op<A,B> × Op<C,D> -> Op<A⊗C, B⊗D>`?
+9. How are source-defined functions related to static `Op<A,B>` descriptions?
+10. Is `Op<A>` retained as surface sugar for the common endomorphism case?
+
+## Recommended design criterion
+
+Choose the representation that requires the fewest semantic exceptions.
+
+Preparation, isometry, composition, tensoring, and semantic refinement should all be expressible by the same arrow calculus.
+
+## Acceptance criteria
+
+- The Reference gives one normative operator typing judgment.
+- Preparation does not require an unrelated special semantic category.
+- Sequential and tensor composition have explicit domain/codomain rules.
+- Endomorphisms remain ergonomic.
+- Capability derivation and `Meaning` refinement remain compatible.
+- Exact phase, axis order, ownership, and evidence identity are preserved.
+- No new trusted acceptance path is introduced.
+
+## Non-goals
+
+This issue does not decide final spelling, generic syntax, or implementation layout.
+
+## Design intent
+
+Qleisli should decide whether its reusable quantum objects are fundamentally **operators on one space** or **typed morphisms between interfaces** before 0.3.0 freezes the language.
+
+## Bounded first-source operator study — 2026-10-05
+
+The active approved 0.3.0 plan groups this decision with #44/#45/#46/#57/#89. Local commit `21b58b90dfe9f60b4a3d34d1171df5adf3a7db32` preserves `tests/fixtures/authoring_sessions/operator-arrow-v030/`: twelve complete first projects, three honest source snapshots and72 actual text/JSON CLI observations. It is not yet published; useful functional-head CI37303925654 is still running on eb9c36e. First-source/manifest SHA-256: `683c123eddae1c76ae18f4f8b0fcf51a29f411ccc8c9f6f2e00590a81e07a2e0`. The414-member retained packet SHA-256 is `8f81319aa45e254798b01463b2cfaf7c2692b77647c206d9c6d000a97349080f`.
+
+All24 original observations rejected before native checking due to real private-host-entry/missing-import mistakes or deliberate unadopted syntax. Later complete snapshots repair visibility, explicit imports and an accidental prefix-order error; original bytes/results remain. The final24 calls agree across text/JSON: five native-checked controls per format (identity, scalar phase, explicit first-order unitor, observation, static endomorphism) and seven pre-native rejections. No check-only success is relabeled as an independently verified exact scalar or instrument. A context chronology overstatement and a summary-reader metadata-key failure are explicitly clarified with original files retained. Record/edition/docs/constitutional continuity checks and seven record-checker regressions pass; no new executable source or Lean definition changed.
+
+**Design friction:** current `Op<A,M>` already uses the comma slot for Meaning. Therefore `Op<A,B>` cannot silently acquire a codomain there. The arrow candidate `Op<A -> B>` and a quantum-capturing closure currently fail parsing; those failures establish no downstream capture/capability/effect theorem. No new operator spelling is adopted by this study. Resolve input/output structure, Meaning, first-order specialization and capability evidence together before production changes. An isometry's mathematical adjoint is not automatically a deterministic inverse execution API, and coherent control of a dimension-changing arrow needs an explicit compatible alternative, not an assumed identity arm.
+
+The preparation control `fn entry(q:Q<Unit>)->Q<Bit>{finish(q);init0()}` has principal Iso but hits the previously recorded profile gap: auto routes Iso roots to finite Raw, which excludes Q<Unit>; Raw also lacks pure Unit introduction/elimination. #43 records the repair obligations. Preparation cannot be declared Unitary to evade this limit; its false assertion returns the unsupported external-justification semantic diagnostic. Same-width wrong-tree providers remain type errors.
+
+This is ordinary design research under QS-2026-01/PR-2026-01/RS-2026-01 and EXACT-2026-01, with both admitted QLV1 meanings/premises unchanged. All original questions and seven acceptance criteria remain; general source preservation, local proof/acceptance binding and the complete operator decision remain required. No criterion is weakened, Issue closed or guarantee admitted. Verified plan completion remains13/110 (11.82%).
+
+## Verified beta completion — 2026-10-12
+
+Completed in PR #374, reviewed head `d1a09fd8146da1534e3b9dae660fe9861cf65ca4`, merged as `1322234d760e422ff533c2ead0d6f1a788c1c4d1`. The [seven-criterion audit](https://github.com/MGYamada/Qleisli/issues/83#issuecomment-6116452488) maps the normative judgment, ordinary Unit preparation, separate-port composition/tensor, endomorphic shorthand, capabilities/Meaning, exact phase/axes/owners/evidence, and common native authority to current source and independent regressions. All eight required contexts and security checks passed in [PR CI 38190826306](https://github.com/MGYamada/Qleisli/actions/runs/38190826306) and [push CI 38190822749](https://github.com/MGYamada/Qleisli/actions/runs/38190822749). Logs confirm actual Rust/MSRV/source-contract checks, independent native comparisons, fresh kernel/Main replay, and distribution/package/installation validation. The PR workflow tested merge candidate `78f29fb8a008d0f89f083dc5dc2dde02d40d7276`; the push workflow tested the reviewed head. No alpha exclusion supplied completion credit.
+
+The resumed local focused suite passed 81/81; the earlier local full run was interrupted by the maintainer's pause and is not counted as passed. Historical first sources, diagnostics and failed CI remain retained. No new maximum-size case was generated or checked for this work; the pre-existing dense six-bit maximum test remains retained and ignored by default.
+
+This completes the bounded general-arrow/rectangular-Meaning contract. Rectangular refined hierarchy still requires Raw, selected coherent basis consolidation remains #250, and general source/runtime preservation, full QS/PR/RS/EXACT obligations and beta release readiness remain open. The two admitted QLV1 guarantees keep their exact scopes/premises. No tag or publication was performed.

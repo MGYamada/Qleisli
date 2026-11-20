@@ -1,0 +1,44 @@
+## Decision
+
+Adopt the exact-global-phase naming correction and a strict implementation boundary:
+
+- **Final 0.3.0: retire `std::quantum` entirely.** Irreducible primitives are language-owned, unqualified built-in operations (not stdlib imports or an enduring primitive facade). Every current `std::quantum` name must be audited and migrated; no permanent old-path aliases or implicit prelude imports.
+- **`std::gate` = ordinary checked `.qli` gate implementations only.** These are derived from language primitives, with the same type/ownership/effect, exact-meaning and verification path as user `.qli`; no privileged gate intrinsics disguised as stdlib. Do not place non-gate structural helpers here: reclassify the provisional `permute_axes` (or make it private) without confusing it with physical `swap`. Other derived operations retain their own semantic stdlib namespaces.
+- Rename **`std::quantum::phase_eighth` → unqualified language primitive `global_phase_eighth`**. Its meaning is the whole-system scalar `ζ₈ I`, `ζ₈ = exp(iπ/4)`, on any supported `Q<A>`, *not* the single-qubit T gate.
+- Implement the canonical **`std::gate::t`** as a derived `.qli` operation by coherently controlling that exact global phase on `Q<Unit>`. The zero-width target is explicitly introduced and consumed; it is **not** a physical ancilla. Then retire the independent sealed `std::quantum::t` as part of removing the entire `std::quantum` namespace after exact equivalence and migration. Audit existing compiler-owned convenience aliases (e.g. `s`, `sdg`, `tdg`, `id`) against the same primitive-vs-derived rule rather than blindly retaining their privileged status.
+
+Conceptual `.qli` implementation (adapt the provider form to the actually supported compiler profile):
+
+```qli
+// global_phase_eighth, unit and finish are language-owned primitives;
+// they require no std::quantum import.
+
+unitary fn scalar_eighth(u: Q<Unit>) -> Q<Unit> {
+    global_phase_eighth(u)
+}
+
+pub unitary fn t(q: Q<Bit>) -> Q<Bit> {
+    let (q, u) = controlled(scalar_eighth)(q, unit(()));
+    finish(u);
+    q
+}
+```
+
+**Exact identity:** `controlled(ζ₈ I_Unit) = diag(1, ζ₈) = T`. Controlling a phase is not the same as discarding it. In particular, `global_phase_eighth(q)` on a qubit applies `ζ₈ I`, **not** `T`.
+
+## Requirements
+
+- Prove/check exact equality to the existing T meaning, including coherent/nested control, adjoint, arbitrary reference systems, full phase, ownership and axis order; test both positive and phase-erasure counterexamples.
+- Preserve zero *additional physical wires*, but do **not** assign zero synthesis/gate cost to the controlled phase: PR and quantitative RS must account for the actual realized T operation. Keep backend/profile limitations explicit until supported and checked.
+- Remove all active public `std::quantum` paths; migrate its genuine primitives to directly resolved language-owned names and its faithfully expressible gate definitions to `std::gate` or another mathematically appropriate ordinary `.qli` module. Migrate active imports, aliases, corpus clients, stdlib inventory, error guidance and `docs/src/reference/{stdlib,primitive-boundary}.md`. Legacy imports must give actionable errors. Distinguish global scalar phase from relative one-qubit phase conspicuously for both human and LLM authors. Do not rewrite frozen historical evidence.
+- Align with **#167**: the final 0.3.0 language directly embeds admitted primitives and abolishes `std::quantum`; `std::gate` is only ordinary `.qli` gate code. An optimizer/backend T intrinsic is permitted behind verified lowering but supplies no primitive source authority. Respect #154's primitive-admission boundary and #317's semantic naming rules.
+
+## Acceptance
+
+- [x] Final 0.3.0 retires every public `std::quantum` name and import, with no compatibility shim; actual primitives are unqualified language operations and derived gates are ordinary `std::gate` `.qli`.
+- [x] Non-gate `permute_axes` is removed from the public `std::gate` surface (reclassified as ordinary checked structure or made private), while physical `swap` remains a gate.
+- [x] `global_phase_eighth` has an exact global-scalar contract, a clear name and no misleading T synonym.
+- [x] `std::gate::t` is an ordinary `.qli` definition with checked exact T equivalence; sealed `std::quantum::t` and all other obsolete quantum paths retire after supported consumers migrate, **within 0.3.0**.
+- [x] Controlled-phase, zero-width owner, reference, PR/RS and regression tests pass within explicitly stated production profiles.
+
+Related: #43, #120, #122, #130, #154, #167, #317.

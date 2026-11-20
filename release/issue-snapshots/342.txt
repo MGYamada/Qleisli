@@ -1,0 +1,64 @@
+## Problem and target
+
+Maintainer-reported bug, targeting **0.3.0**: valid ordinary classical `Bits<N>` source is rejected wholesale by selected Raw source emission. This is an implementation gap, not a semantic prohibition, an ownership rule, or an edition change. `Bits<0>` is a copyable singleton distinct from Unit; `Bits<1>` remains distinct from Bit.
+
+Related: #32 #250 #44 #30 #28. Do not pull #325's 0.4.0 Bit/Bits unification into 0.3.0, revive generic QFT, or change #63's alpha deferral.
+
+## Actual minimal reproductions
+
+Create schema-2 Qargo.toml with `[qrate].edition = "2026"`. Check these sources separately:
+
+```qli
+use std::classical::empty_bits;
+pub unitary fn f() -> Bits<0> { empty_bits() }
+```
+
+```qli
+pub unitary fn f(b: Bits<0>) -> Bits<0> { b }
+```
+
+```qli
+pub unitary fn f(b: Bits<1>) -> Bits<1> { b }
+```
+
+Command:
+
+```text
+qleisli check --format=json --ir-profile=raw --entry=main::f --module=main=main.qli --lean-kernel=<current native checker>
+```
+
+All three actually returned exit 1 with diagnostic `unsupported`:
+
+```text
+finite source lowering requires ordinary Unit/Bit products or exact packaged quantum bases; ordinary Bits values need explicit target support
+```
+
+CLI SHA-256: 6f743e9f57279231e1bfbab315658b6c2e2b7a88e23105acc55684638d63c7b3. An initial observer attempt omitted Qargo.toml and failed at the separate project boundary; that failure is not evidence of this bug. Existing ordinary_booleans tests independently demonstrate that parsing, instantiation and elaboration succeed before lower_raw() refuses the type.
+
+## Cause and required migration
+
+In src/frontend/sized/raw.rs, supported() rejects every ordinary Kind::Bits(_). Input/read/bind accounting and the independently implemented replay in raw/preservation.rs lack ordinary register representation; EmptyBits/PrependBit lack Raw emission/replay support. Packaged quantum Q<Bits<N>> support is separate.
+
+Implement bounded ordinary register transport; replace obsolete refusal expectations with positive conformance and independent negative tests. Preserve exact type identity instead of coercing Bits<0> to Unit, Bits<1> to Bit, or registers to same-width tuples. Unsupported operators and exceeded bounds must continue to fail at their actual cause.
+
+## Acceptance criteria
+
+1. Ordinary Bits<0> supports inputs/results, empty_bits construction, helpers, aliases, copying and drop, with its exact type retained.
+2. Support bounded ordinary Bits<N> through shared source checking, Raw emission and independent source-step replay, including existing empty_bits/prepend_bit operations. Preserve widths, nested product trees and element/axis order; do not special-case only N=0.
+3. Preserve generic/closed-instance responsibilities, Basis/Nat substitutions, provider/source/dependency identities, eager effects and caller order; integrate classical fn rules.
+4. Bind replay to the actual emitted artifact and fresh native acceptance. Wrong ordering, changed type/width, stale source, wrong classical SSA and changed computation faults must reject; valid output IR alone is insufficient.
+5. Independently test N=0,1,2, all four two-bit combinations, mixed Unit/Bit/Bits products, repeated helpers and measured classical results. Preserve quantum-reference and measurement effects; ordinary copy/drop cannot copy or erase Q<Bits<N>> owners.
+6. Retain existing storage/work/native/fixture limits. Reject overflow/capacity before allocation; no new maximum-size quantum cases, convenience acceptance primitive or bypass.
+7. Update Reference, diagnostics, regression tests and verification/production coverage. Documentation or checker-only examples do not complete the bug.
+
+## Constitutional impact
+
+Edition remains 2026 under adopted QS/PR/RS/EXACT interpretations. Preserve both admitted ordinary QLV1 ownership/classical-scope guarantees and current artifact bindings. This work does not automatically establish a new interpretation, guarantee admission, source-preservation theorem, quantitative RS discharge or release approval.
+
+## Final acceptance audit and integrated CI — 2026-10-12
+
+The implementation and additional coverage described in the three earlier comments are now integrated in [main `04d8f6a`](https://github.com/MGYamada/Qleisli/commit/04d8f6a063af4aa0f6cdf97ebb5615f742911c85). The tree matches reviewed PR #354 head `afd1f70806f7e0fea3f39075b736f692f2529f96`; all applicable [hosted CI](https://github.com/MGYamada/Qleisli/actions/runs/38176660180) contexts passed, including Rust/MSRV, native and proof/package checks.
+
+The final audit confirms all seven criteria for the selected Raw route: exact Unit/Bit/Bits identity and ordered register storage; zero-width copy/drop and helpers; Basis/Nat/provider bindings and eager effects; fresh native artifacts plus independent replay; all four two-bit rows and correlated measured results; existing pre-allocation bounds; updated Reference and required production-coverage registrations. Rechecked locally: all 16 `ordinary_booleans` tests, the native-valid register order/computation mutation test, the pre-emission storage test, and the complete library suite (173 passed, three separately documented existing ignores). No maximum-size quantum stress case was run.
+
+Closing this selected Raw-source bug. Finite-project register/static-Nat convergence remains under #32/#44, as specified in the earlier scope clarification; full source preservation and broader QS/PR/quantitative RS/EXACT duties remain open. This closure is not a release or a new guarantee admission.

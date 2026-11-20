@@ -1,0 +1,94 @@
+## Superseded
+
+This design question is superseded by #194 and #196.
+
+The adopted boundary is now explicit:
+
+- ordinary `for` remains ordinary/classical or static iteration;
+- quantum linear iteration uses dedicated `qfor` semantics;
+- the three-level surface rule in #196 determines when a dedicated `q***` construct is required.
+
+This issue remains as the historical record of the design fork that led to that decision.
+
+---
+
+## Status
+
+**Open control-flow/ownership question for Qleisli 0.3.0.**
+
+Related:
+- static-loop work in 0.3.0
+- #29 — indexed exclusive access
+- #67 / #68 — Rust syntax policy
+
+## Problem
+
+Rust ordinary iteration carries substantial implicit ownership behavior:
+
+```rust
+for x in values { ... }
+```
+
+desugars through iterator machinery and the ownership mode of `values`.
+
+For quantum-owned registers or aggregates, that raises semantic questions which should not be answered implicitly by Rust habits:
+
+- is the register moved?
+- are factors moved one by one?
+- are factors temporarily accessed exclusively?
+- what is the axis order?
+- can iteration escape/reorder/skip factors?
+- what happens on early exit?
+
+Qleisli already has a useful distinct concept:
+
+```qli
+for const i in 0..n {
+    h(excl q[i]);
+}
+```
+
+which keeps index/resource structure explicit.
+
+## Design question
+
+Decide whether 0.3.0 should:
+
+- support ordinary Rust-like `for` only for classical/static iterables;
+- support quantum-owned iterables under a special linear iteration contract;
+- defer `IntoIterator`-style quantum iteration entirely;
+- introduce another explicit quantum iteration form.
+
+No choice is fixed here.
+
+## Questions
+
+- Can `Q<Bits<n>>` implement anything analogous to `IntoIterator`?
+- Does iteration preserve the parent owner or consume it?
+- Can each quantum factor be yielded exactly once?
+- Can an iterator reorder factors?
+- Is `break` allowed with unconsumed quantum items?
+- Can iterators be stored or returned?
+- Does ordinary `for` belong only to future host/classical code?
+- Should static loops remain the sole quantum-core loop in 0.3.0?
+
+## Required invariants
+
+- no implicit discard of unvisited factors;
+- no implicit duplication;
+- explicit axis order;
+- structured exit with complete resource accounting;
+- no hidden access mode.
+
+## Acceptance criteria
+
+- [ ] The Language Reference states whether ordinary `for` exists in quantum functions.
+- [ ] The status of `IntoIterator`-style abstractions over quantum ownership is explicit.
+- [ ] Static-loop semantics remain distinct from runtime iteration.
+- [ ] Early exit and partial traversal are accounted for.
+- [ ] Axis order and ownership of yielded factors are specified.
+- [ ] No Rust iterator desugaring silently determines quantum semantics.
+
+## Compact question
+
+> **Rust iteration is ownership semantics, not just loop syntax. Should quantum code import it at all?**

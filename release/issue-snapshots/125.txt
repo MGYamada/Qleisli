@@ -1,0 +1,79 @@
+## Target and status
+
+Completed in [PR #431](https://github.com/MGYamada/Qleisli/pull/431), merge `fdf0806282b674d38754c8302d8988555b439d4b`. [Final seven-criterion audit and exact CI/review evidence](https://github.com/MGYamada/Qleisli/issues/125#issuecomment-6381289570). The documented finite instrument profile satisfies these criteria; general ordinary-root EffectSound/CPTP and source/runtime preservation remain separate obligations.
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Before `Observe` is frozen, Qleisli should explicitly decide that ordinary observation/instrument semantics does not silently include postselection or arbitrary non-trace-preserving maps.
+
+Related:
+- #27 — effect/type-theory synthesis
+- #31 — exact/approximate semantics boundary
+- #46 — semantic `Meaning` language
+- #87 — `Observe` as instrument semantics
+
+## Problem
+
+"Contains a measurement" is too broad a semantic category.
+
+A normalized quantum instrument has branches whose total map is trace preserving. By contrast, postselection keeps only selected outcomes and is naturally represented by a trace-nonincreasing map together with a success probability / conditioning rule.
+
+These are different computational effects.
+
+For example:
+
+```text
+measure q;
+keep only outcome 0;
+continue on the renormalized branch
+```
+
+must not be treated as ordinary deterministic `Observe` merely because it uses measurement.
+
+If Qleisli allows this distinction to remain implicit, a future Physical Realizability theorem becomes ambiguous about whether accepted programs are deterministic instruments, probabilistic protocols, or conditioned mathematical maps.
+
+## Proposed 0.3.0 boundary
+
+The simplest 0.3.0 rule is:
+
+> **Ordinary `Observe` denotes normalized instrument/CPTP behavior. Postselection is not silently part of `Observe`.**
+
+0.3.0 does not need to add postselection syntax.
+
+It may instead explicitly defer postselection to a future separate effect/construct.
+
+## If postselection is added later
+
+A future construct would need to expose at least:
+
+- success/failure outcomes;
+- trace-nonincreasing branch map;
+- normalization/conditioning semantics;
+- success probability;
+- ownership on failure as well as success;
+- compositional semantics;
+- resource accounting for retries if operational repetition is requested.
+
+None of these should be smuggled into ordinary branch syntax.
+
+## Relationship to failure
+
+Language/runtime failure is also distinct from postselection.
+
+A branch being mathematically rejected is not the same concept as panic, abort, target failure, or verification failure.
+
+Keep this aligned with #86.
+
+## Acceptance criteria
+
+- [x] The Reference states whether `Observe` is normalized instrument/CPTP semantics.
+- [x] Ordinary `Observe` does not silently authorize postselection.
+- [x] Trace-nonincreasing conditioned maps are either forbidden in 0.3.0 or assigned a future distinct semantic category.
+- [x] Classical branching on a measurement outcome is not confused with discarding unwanted branches.
+- [x] Failure/abort semantics are distinct from postselection.
+- [x] Any future postselection construct must expose success probability and ownership semantics explicitly.
+- [x] Physical Realizability for ordinary `Observe` can be stated without hidden conditioning assumptions.
+
+## Design principle
+
+> **Measurement creates classical information. Postselection changes the semantic contract by conditioning on an outcome. They are not the same effect.**

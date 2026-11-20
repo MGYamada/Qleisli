@@ -1,0 +1,90 @@
+**Parent:** #32
+
+## Problem
+
+Qleisli already uses destructuring patterns in `let`, coherent `do`, and basis parameters, while future static folds need pattern carries. These should not evolve as separate mini-grammars.
+
+## Proposed direction
+
+Define one recursive `Pattern` grammar, conceptually:
+
+```text
+Pattern ::= Ident | _ | (Pattern, Pattern, ...)
+```
+
+and reuse it wherever destructuring is semantically valid:
+- `let`;
+- basis-function parameters;
+- coherent `do`;
+- `for const ... carry`;
+- selected static bindings.
+
+## Important distinction
+
+Pattern structure does **not** change function arity.
+
+```text
+f(a,b)
+```
+
+remains two arguments, while
+
+```text
+f((a,b))
+```
+
+is one product argument.
+
+## Decide
+
+- which binder positions allow patterns;
+- whether ordinary quantum/runtime function parameters allow destructuring;
+- wildcard rules around linear fields;
+- duplicate-name rejection;
+- interaction with canonical product reassociation;
+- diagnostic locations.
+
+## Acceptance
+
+All binder forms that mean "bind components of one value" share one grammar and one shape-checking rule.
+
+## 0.3.0 Rust/Qleisli boundary addendum: wildcard/rest patterns over linear quantum data
+
+As part of the Rust/Qleisli boundary audit, 0.3.0 must explicitly extend the existing wildcard rule to any future Rust-like rest-pattern surface.
+
+The current rule is already correct:
+
+- `_` may discard only classical values in ordinary runtime patterns;
+- a live linear/quantum binding cannot be hidden by shadowing.
+
+If Rust-like patterns such as
+
+```rust
+Foo { a, .. }
+```
+
+or tuple/slice rest syntax are introduced, `..` must **not** become an implicit linear-resource sink.
+
+Required design question:
+
+> **Can every elided field/component be proven classical or otherwise explicitly discharged?**
+
+Acceptance extension:
+
+- [x] any future rest pattern over an aggregate containing live quantum ownership is rejected unless every omitted component is non-linear/classical or explicitly consumed by a separate language rule;
+- [x] rest-pattern syntax never implies discard, reset, release, or measurement;
+- [x] diagnostics identify the hidden linear field/component;
+- [x] this rule is documented as an intentional divergence from ordinary Rust pattern ergonomics.
+
+
+## Verified completion — 2026-10-05
+
+The common-pattern criterion and all four future-conditional rest obligations are satisfied at **9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43**, in #307, without reducing an original criterion.
+
+All currently admitted component binders use [one recursive parser](https://github.com/MGYamada/Qleisli/blob/9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43/src/frontend/parser.rs) and shared [Type::pattern_fields](https://github.com/MGYamada/Qleisli/blob/9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43/src/frontend/types.rs): ordinary/basis parameters, let/coherent do and static-fold carry. Finite basis/runtime and sized symbolic/concrete consumers enforce exact Unit/product shape. Ordinary signature patterns are implemented. Function arity remains separate from destructuring one product. Duplicate names/static collisions, nested/zero-width quantum wildcards, shadowing, effects and locations retain their checks. No new aggregate-valued static-binding syntax is claimed.
+
+The [normative Reference](https://github.com/MGYamada/Qleisli/blob/9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43/docs/src/reference/type-model.md) retains every conditional rest duty: omitted components must be unrestricted or separately consumed; rest implies no discard/reset/release/measurement; future rejections identify hidden linear fields including zero-width owners; this intentionally differs from Rust. **Rest is not in today's grammar.** This records the Issue's future-conditional contract, not a rest implementation or present field-level rest diagnostic.
+
+[Acceptance review and evidence](https://github.com/MGYamada/Qleisli/tree/9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43/tests/fixtures/frontend_v030/type-pattern-classification) link the published Unit-map validation. Independent read-only review inspected immutable 9fcd4fc and actual latest/MSRV outputs: runtime_parameter_patterns **8/8** and unit_patterns **8/8** pass per toolchain, with no ignored test in either target. They cover exact arity/nesting, located errors, wildcard rejection in zero-fold/unused contexts, full argument/effect evaluation and retained scalar/control/reference behavior. The Reference supplement and pinned mdBook/render checks pass.
+
+This closes common grammar/shape and conditional rest design, not a general source theorem, fresh Lean replay, complete frontend, new guarantee or release approval. Remaining common-profile work stays in #32 and existing feature Issues.

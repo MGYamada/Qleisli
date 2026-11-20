@@ -1,0 +1,226 @@
+## Status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: enhancement.**
+
+Related:
+- #196 — three-level surface boundary: `q***` / `Q<T>` / unmarked syntax
+- #224 — compiler diagnostics teach the classical–quantum boundary
+- #225 — diagnostics are part of the harness
+- #226 — teach affine Rust vs linear quantum ownership in diagnostics
+- #48 — authoritative Qleisli Language Reference
+
+## Problem
+
+Qleisli 0.3.0 already adopts the principle that:
+
+> **Diagnostics are part of the Qleisli harness.**
+
+That principle must also hold when source fails **before semantic analysis**.
+
+A coding agent with little or no Qleisli-specific training data will often invent plausible syntax from familiar languages or from Qleisli's visible naming conventions. Examples include:
+
+```qli
+qlet q = ...
+qreturn q
+qif q { ... }
+qfor q in ...
+```
+
+If these programs fail only with generic parser messages such as:
+
+```text
+unexpected token
+expected '('
+unknown keyword
+```
+
+then the compiler stops teaching precisely when a Qleisli-naive author needs guidance most.
+
+The parser should not merely describe the token-level failure when it can identify a likely Qleisli-specific misconception.
+
+## Principle
+
+> **A syntax error at a Qleisli semantic boundary should teach the canonical Qleisli surface rule whenever that rule is locally identifiable.**
+
+Parser diagnostics are therefore part of the same AI-first harness as semantic diagnostics.
+
+This does **not** mean arbitrary parser recovery, heuristic program synthesis, or guessing user intent.
+
+The parser may teach a canonical rule only when the attempted spelling corresponds to a well-defined Qleisli boundary.
+
+## Canonical example: invented `qlet`
+
+Given conceptually:
+
+```qli
+qlet q = init0();
+```
+
+prefer a diagnostic shaped like:
+
+```text
+error[...]: `qlet` is not a Qleisli construct
+
+Quantum ownership does not change binding syntax.
+Use ordinary `let` with a `Q<T>` value:
+
+    let q: Q<Bit> = ...
+
+Boundary rule:
+    q***  — quantum mechanics changes the construct itself
+    Q<T>  — ordinary syntax over quantum ownership
+    plain — ordinary classical/static syntax
+```
+
+The point is not the exact wording. The diagnostic should teach the #196 surface boundary rather than exposing only a parser implementation detail.
+
+## Initial diagnostic families
+
+### 1. Invented q-prefixed ordinary syntax
+
+Examples:
+
+```text
+qlet
+qreturn
+qmove
+qmut
+```
+
+When the ordinary construct remains ordinary under quantum ownership, explain that `Q<T>` carries the quantum ownership semantics and the syntax itself remains unmarked.
+
+Do not encourage a general rule that all quantum operations receive a `q` prefix.
+
+### 2. Malformed dedicated quantum constructs
+
+For actual Qleisli constructs such as:
+
+```text
+qif
+qfor
+qmatch
+```
+
+a parse failure should show the smallest canonical local form when that is unambiguous.
+
+For example, if an author writes a Rust-like or guessed spelling that is close to the normative `qif` grammar, the diagnostic may show the canonical `qif` shape rather than only a token expectation.
+
+This must follow the final 0.3.0 grammar and must not freeze examples ahead of the Language Reference.
+
+### 3. Rust syntax whose Qleisli meaning deliberately differs
+
+Where 0.3.0 deliberately diverges from Rust because the quantum semantics differs, parser diagnostics should name that distinction when syntax alone is sufficient to identify it.
+
+This issue does not duplicate semantic checking: once the source parses, #224/#225 and the ordinary type/effect/ownership diagnostics remain responsible.
+
+### 4. Removed or superseded Qleisli syntax
+
+If 0.3.0 removes a historical spelling and there is one canonical replacement, the parser may teach the new form directly.
+
+Compatibility syntax should not become a permanent second authoring dialect merely because it is easy to recognize.
+
+## Parser diagnostics must teach syntax, not invent semantics
+
+The parser must not claim that a token-level replacement is semantically valid when later typing/effect/ownership information is required.
+
+For example:
+
+- it may say that `qlet` does not exist and that binding remains `let`;
+- it must not invent the correct type or ownership flow of the binding;
+- it may show the canonical grammar of `qif`;
+- it must not claim that replacing an `if` with `qif` is semantically valid unless the semantic checker can establish that.
+
+The rule is:
+
+> **Parser diagnostics may teach canonical syntax and surface boundaries; semantic diagnostics decide whether the resulting program is valid.**
+
+## Machine-readable form
+
+Parser diagnostics intended for coding agents should use the same stable diagnostic infrastructure as the rest of the compiler.
+
+Where useful, structured output should distinguish fields such as:
+
+```json
+{
+  "category": "syntax-boundary",
+  "attempted": "qlet",
+  "canonical_construct": "let",
+  "rule": "q-prefix-boundary"
+}
+```
+
+The exact schema is not frozen here.
+
+Human-readable wording may evolve. Stable tooling should rely on diagnostic codes/categories and structured fields rather than prose.
+
+## Relationship to #196
+
+#196 defines the three-level surface rule:
+
+```text
+q***       quantum semantics changes the construct
+Q<T>       ordinary syntax over quantum ownership
+unmarked   ordinary classical/static syntax
+```
+
+This issue requires parser diagnostics to reinforce that rule.
+
+A coding agent should be able to arrive with the naive assumption:
+
+```text
+"quantum thing" -> add q prefix
+```
+
+and have the compiler correct that assumption at the first invalid spelling.
+
+## Relationship to #224 and #225
+
+- #224 teaches the classical/quantum boundary when source reaches semantic analysis.
+- #225 makes diagnostics generally part of the language harness.
+- **This issue closes the parser-level gap:** malformed or invented Qleisli syntax should still receive local semantic-surface guidance where possible.
+
+Together, the intended authoring loop becomes:
+
+```text
+invented / malformed source
+    ->
+parser teaches canonical Qleisli syntax
+    ->
+parsable source
+    ->
+semantic diagnostics teach ownership/control/effect boundaries
+    ->
+accepted program
+```
+
+## Non-goals
+
+This issue does **not** require:
+
+- full parser error recovery;
+- reporting every independent parse error;
+- machine-applicable automatic edits;
+- speculative intent inference;
+- fuzzy rewriting of arbitrary invalid programs;
+- a new agent bootstrap protocol;
+- a public symbol-discovery API;
+- changing which valid programs are accepted;
+- duplicating the 0.4.0 diagnostic UX work.
+
+## Acceptance criteria
+
+- [ ] The Language Reference states that parser diagnostics may teach canonical surface syntax at recognized Qleisli boundaries.
+- [ ] Representative invented q-prefixed forms such as `qlet` receive a Qleisli-specific diagnostic rather than only a generic unknown-token error.
+- [ ] At least one malformed `qif`, `qfor`, or `qmatch` case shows the canonical local grammar when the intended construct is unambiguous.
+- [ ] Parser guidance is generated from or tested against the authoritative 0.3.0 grammar so examples do not drift.
+- [ ] Parser diagnostics never claim semantic validity for a rewrite that requires later type/effect/ownership analysis.
+- [ ] Text and structured diagnostic outputs are covered by regression tests.
+- [ ] No new syntax or semantic acceptance rule is introduced merely for diagnostics.
+
+## Design intent
+
+Qleisli should remain usable even when the coding agent does not already know its syntax.
+
+The compiler should be able to correct a plausible invented surface form into the **canonical Qleisli vocabulary** before the deeper semantic harness takes over.
+
+> **If the language is the harness, the harness must begin at the parser.**

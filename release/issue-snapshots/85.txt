@@ -1,0 +1,85 @@
+## Status
+
+Core operational-semantics issue for **Qleisli 0.3.0**.
+
+Related:
+- #29 quantum `excl` access
+- #67 Rust-style surface syntax
+- #68 Rust/Qleisli semantic fork
+- #69/#70/#72 coherent control and ancilla contracts
+- #73 assignment
+- #74 indexing
+- #75 autoref/autoderef
+- #77 quantum `mut`
+- #80 Haskell/Qleisli boundary
+
+## Problem
+
+Rust-like syntax introduces expressions whose evaluation and lifetime rules can affect real quantum operation order:
+
+```qli
+f(a(), b())
+(x(), y())
+foo(excl q[i], excl q[j])
+{ let t = ...; ... }
+```
+
+For classical code, some temporary/lifetime choices can be treated as implementation detail.
+
+For quantum code, **operation order, ownership release, exclusive-access end points, and ancilla cleanup are semantic facts**.
+
+Qleisli therefore needs normative rules for evaluation order and temporary quantum ownership.
+
+Binding `mut` does not affect these access lifetimes; it is a separate rebinding property (#77).
+
+## Questions to decide
+
+1. Is expression evaluation strictly left-to-right?
+2. What is the evaluation order of function arguments, tuples, indexing expressions, and method-style calls?
+3. When does a temporary classical value die?
+4. May a temporary own live `Q<A>`?
+5. If so, what must happen before that temporary ends?
+6. When exactly does a quantum `excl`/view end and restore operation rights?
+7. Does lexical scope determine access end, or can the compiler shorten lifetimes?
+8. Can lifetime shortening alter the availability of `ctrl`, `clean`, or `dirty` operations?
+9. How are nested exclusive views sequenced?
+10. Are destructors/drop glue forbidden for live quantum owners?
+11. Can elaboration reorder independent quantum expressions for optimization, or must reordering require a proved commutation transformation?
+12. Which ordering facts are retained into Core/evidence?
+
+## Recommended initial direction
+
+Prefer a deterministic, simple source semantics:
+
+- strict source-order evaluation;
+- no implicit destruction of live quantum ownership;
+- quantum `excl` accesses/views have explicitly specifiable end points;
+- compiler optimizations may reorder quantum operations only under a separately justified semantics-preserving transformation.
+
+## Acceptance criteria
+
+- Evaluation order is normative and testable.
+- Exclusive-access restoration points are deterministic.
+- No live quantum owner can disappear because a temporary ended.
+- Ancilla cleanup obligations cannot be bypassed by lifetime shortening.
+- Equivalent surface syntax lowers deterministically to Core.
+- Optimizations cannot silently change noncommuting operation order.
+- Diagnostics can identify the lifetime/order rule being violated.
+
+## Non-goals
+
+This issue does not require Rust's exact MIR/NLL behavior.
+
+## Design intent
+
+Rust-like syntax is useful, but Qleisli must define its own rule:
+
+> **When evaluation order is physical, it is part of the language semantics.**
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #29 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Evaluation order.** Source evaluation order determines temporary owners, access intervals and failure points. Implementations may reorder only where the specified premises and corresponding proof permit it, including phase and external-reference behavior. Backend scheduling convenience does not silently change source semantics. The final evaluation-order rules, lowering and positive/negative conformance cases remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

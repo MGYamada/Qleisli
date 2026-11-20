@@ -1,0 +1,510 @@
+## Status
+
+Important type-system design issue for **Qleisli 0.3.0**.
+
+**Updated user direction, 2026-09-30:** extend the Rust ownership default from moves to **exclusive temporary quantum access, spelled `excl`**. Prioritize this in the 0.3.0 type-system design. The grammar, typing/lifetime rules and verified elaboration remain to be specified; no current implementation is claimed.
+
+Related:
+- #18 owner packaging
+- #27 type-theory synthesis
+- #69 coherent-control access
+- #70 clean/dirty restoration contracts
+- #72 structured automatic uncomputation
+- #157 local clean-discharge Soundness theorem
+- #280 quantitative Resource Safety
+- #344 effect terminology (v0.4.0 only)
+- #57 isometry terminology
+- #58 standard prelude
+- R04 in `docs/imaginary-v1/requirements.md`
+- future `Bits<n>` work
+
+## 0.3.0 terminology and access semantics — updated 2026-10-08
+
+The public spelling is now **`excl`**, not Rust `&mut`.
+
+```qli
+h(excl q[j]);
+controlled_phase(ctrl q[k], ctrl q[j]);
+controlled_u(ctrl control, excl target);
+```
+
+Normative access vocabulary:
+
+```text
+excl  — temporary exclusive arbitrary coherent access
+ctrl  — basis-preserving coherent access
+move  — ownership transfer / consumption boundary
+
+clean / dirty — independent workspace state-restoration contracts
+```
+
+`excl` is the public name for an access capability. Its owner-preserving call behavior may be understood as an **in-place update of the quantum state**: `qft(excl q)` updates the state of the surviving owner `q` to the specified QFT output. The previous state is not retained as a separate value and is not automatically restored when access ends. An explicitly applied inverse QFT can undo that update.
+
+“In-place” describes the source ownership interface; it does not promise a workspace-free implementation or fixed physical qubit addresses. “Destructive update” in this programming sense does not authorize copying, measurement, erasure, discard, or implicit cleanup. The operation remains coherent and reversible within the initial `excl` profile. It need not change a computational-basis label, preserve a reduced state, or leave subsystems separable. Ancilla restoration is a separate contract.
+
+Binding `mut` is independent. An owner does **not** need to be declared `mut` to be passed through `excl`; #77 governs binding reassignment only.
+
+### Unified access, restoration and resource principle — 2026-10-08
+
+| Layer | Required meaning |
+| --- | --- |
+| `excl` access | Temporarily exclusive coherent operation rights over the same ordered logical interface; the updated owner survives the call. |
+| `clean` / `dirty` restoration | A separate exact semantic obligation under Soundness: clean return to the declared state, or dirty identity restoration including arbitrary-reference correlations. |
+| Physical Realizability | The actual admitted realization implements that accepted meaning under its declared target and workspace contract. |
+| Resource Safety | The actual admitted program/realization respects independently checked quantitative bounds, including every live owner and generated operation. |
+
+Ending an access restores authority. Ending a clean/dirty scope requires the corresponding restoration evidence. Neither event alone removes a live owner from resource accounting. A surface `Unit` result does not consume or release the underlying owner.
+
+These obligations are compatible: `excl` can be added through checked elaboration without changing the quantitative RS jurisdiction. Existing Core proofs may be reused only over their actual proved scope, with the source/elaboration and artifact correspondence established. This is a proof architecture, not a claim that general source-level `excl` or end-to-end RS has already been proved.
+
+### Control lifting and clean workspace
+
+Access exclusivity and clean return are separate obligations. If a controlled/qif lifting leaves a clean workspace untouched on the inactive branch, then the active branch must return that workspace to the same distinguished clean state (initially `|0...0>`) with no residual correlation to the live system.
+
+Returning an ancilla merely to some fixed state `|g>` with `|g> != |0...0>` is insufficient for the ordinary controlled lifting: the inactive branch carries `|0...0>` while the active branch carries `|g>`, so a superposed control can retain which-branch information and become entangled with the workspace.
+
+Therefore:
+
+> **`excl` discharges aliasing/access obligations; clean-zero restoration discharges the workspace condition needed for coherent control lifting. Neither implies the other.**
+
+## Problem
+
+A scalable register type such as
+
+```text
+q : Q<Bits<n>>
+```
+
+is not useful if every operation on a subregister requires materializing a tree of `split`/`join` operations or copying the whole owner shape into helper functions.
+
+For scalable QFT, QPE, arithmetic, Grover oracles and QSVT, authors need to operate on:
+
+- one bit of a register;
+- a contiguous slice;
+- disjoint slices;
+- selected ordered axes;
+- the remaining untouched register.
+
+The existing Core uses explicit linear ownership flow. This issue specifies temporary access views into a larger owner; it does not claim complete source-level Soundness or quantitative RS for those planned views.
+
+## Semantic requirement
+
+A register view must never duplicate quantum ownership.
+
+Conceptually, if
+
+```text
+q : Q<Bits<n>>
+```
+
+then a view of axis `i` grants a temporary operation right to that factor while preserving one coherent ownership story for the full register.
+
+The important property is **non-aliasing**, not separability.
+
+The register may be entangled internally and with an arbitrary reference system.
+
+### Examples
+
+These should be admissible when statically provably disjoint:
+
+```text
+view q[0]
+view q[1]
+```
+
+and
+
+```text
+view q[0..4]
+view q[4..8]
+```
+
+while overlapping accesses such as
+
+```text
+view q[4]
+view q[4]
+```
+
+or
+
+```text
+view q[0..5]
+view q[4..8]
+```
+
+must be rejected unless sequencing makes the first view end before the second begins.
+
+## Proposed direction
+
+Extend Rust-style exclusive temporary quantum access to statically selected quantum-register factors:
+
+```qli
+for const j in 0..n {
+    h(excl q[j]);
+    for const k in j+1..n {
+        controlled_phase[1, k-j+1](ctrl q[k], ctrl q[j]);
+    }
+}
+```
+
+This is the user-supplied textbook-shaped QFT design target, not currently accepted source.
+
+An `excl` access temporarily grants an exclusive operation right to an exact ordered subset of the owner's axes. The parent cannot simultaneously operate on overlapping factors or move the full register. When the `excl` access ends, the complete owner regains those operation rights automatically. The quantum state may have changed and may remain entangled.
+
+For the initial coherent gate-access profile, require operations that return the same complete accessed interface. Define the `excl`-call signatures and result convention explicitly, including whether the surface calls above return `Unit` while the elaborator threads the returned owner internally. Consumption/measurement/reset and escaping or stored access handles need separately specified rules; they must not accidentally be accepted by a syntactic rewrite.
+
+### Static obligations through requires
+
+Use the affine/linear static constraint direction and the `requires` context from #28 and #47 for range and non-overlap checking.
+
+For the example, retain the loop premises:
+
+```text
+0 <= j < n
+j + 1 <= k < n
+```
+
+They establish `j != k`, both in-range accesses, and the nonnegativity of `k-j+1`. For slices, prove disjointness of their actual half-open intervals. Unproved obligations or solver exhaustion must produce a diagnostic rather than an aliasing assumption.
+
+The project has a specified linear-arithmetic direction; a complete production symbolic solver is not established merely by this issue.
+
+### Desugaring
+
+`excl` itself should add **no IR constructor, primitive meaning or trusted verifier rule**. Lower it to explicit move/extraction, application and restoration: the conceptual take/apply/put pattern, implemented by the existing profile's checked partition/reassembly and operation calls.
+
+Specify single evaluation of each register/index expression, left-to-right argument evaluation, the exact accessed-axis set, identity action on untouched axes, and reconstruction of the full owner. Preserve type trees and zero-width ownership; equal dimensions alone never authorize a conversion.
+
+The lowered program and all retained evidence still pass independent checking, with the source-to-Core correspondence established for any claimed source guarantee. Sized registers, the controlled-phase family and its selected exact coefficient/realization profile remain dependencies of the general QFT example (#28, #39, #45 and #46); the exclusive-access feature does not establish those implementations. #311 forbids approximation from replacing the exact accepted meaning. State the QFT convention and any final bit reversal explicitly.
+
+### Resource correspondence of elaboration
+
+Resource certification is attached to the actual checked Core program and, where claimed, its actual admitted realization. The resource model must identify its size premises, counted quantities, target, allowed branches and scheduling assumptions.
+
+1. Forming or ending an `excl` view does not itself allocate, duplicate, or release the underlying quantum storage. Core extraction/reassembly transfers the existing resource through explicit owners; changes in bookkeeping identities must not be mistaken for qubit allocation or deallocation. Count each live subsystem once, including the suspended parent and pending arguments; do not double-count a view or drop its backing owner from the live set.
+2. Access lifetime and owner lifetime are different. An owner remains live after the access ends until an explicit, semantically justified consuming boundary ends its ownership. Clean workspace still counts throughout its live interval.
+3. Logical partition/reassembly must preserve the ordered interface. If implementation requires allocation, routing, physical SWAPs, initialization, inverse/uncompute operations or other work, count that work in the relevant resource model. Source “in-place” is not a zero-workspace or zero-routing promise.
+4. When an `excl` call and its explicit consume/apply/return form lower to the same checked artifact under the same resource model and schedule, their resource costs agree. No equality across different targets, schedules or synthesis choices is assumed.
+5. Each transformation must preserve the applicable bound contract or produce an independently checked replacement bound for its actual output. A replacement must still satisfy declared capacity/budget constraints and preserve applicable ledgered guarantees.
+6. Opaque calls or admitted families need the corresponding checked resource contracts or bound functions. Non-aliasing, finite syntax, a successful small simulation, or a function signature alone does not establish those bounds.
+
+Combine Core/resource proofs with checked elaboration and realization correspondence to obtain the source-level guarantee. Type/access checking and clean-return proofs support that construction but do not substitute for quantitative accounting. #280 owns the general RS obligation; #157 owns local clean-discharge Soundness.
+
+### Core principle
+
+> An `excl` access is a temporary exclusive capability over an exact ordered subset of axes of a unique live owner. Ending the access restores operation rights to the updated owner; it is not a proof that the state is unchanged or that an auxiliary is clean.
+
+Non-aliasing does not imply separability, and an access lifetime is not zero-return evidence. Preserve the existing exact clean/dirty restoration obligations independently of access syntax.
+
+## Questions to decide
+
+1. What are the exact type, lifetime, scope-ending and reaccess rules for the selected `excl` accesses?
+2. Can multiple disjoint views coexist?
+3. Are slices limited to contiguous ranges or arbitrary ordered index sets?
+4. Is index order significant? It should be if it changes axis order.
+5. Can a view be passed to an ordinary function?
+6. Can a function return a view?
+7. Can a view survive a branch?
+8. Can a view be stored in tuples?
+9. How are static indices proven in range and disjoint?
+10. How does temporary access interact with `Q<Unit>` and zero-width slices?
+11. How do views interact with `Op<A>` interfaces that currently consume one register?
+12. What diagnostics identify overlapping or escaped accesses?
+13. How are `excl` parameter signatures, source results and explicit Core owner threading specified alongside by-value calls? Binding `mut` remains independent under #77 and is not a prerequisite for `excl`.
+
+## Obligations
+
+- No duplicated ownership.
+- No implicit discard.
+- No implicit permutation of axes.
+- No inference of separability.
+- Elaboration preserves the specified operation's exact phase; the operation itself may change phases.
+- Elaboration preserves the specified joint action with arbitrary external references; the operation itself may change entanglement.
+- `excl`/view formation must be statically checkable in the supported profile.
+- Elaboration must remain independently verifiable in the core IR.
+- The full owner must be reconstructed with the same ordered axes when the exclusive access ends.
+
+## Relation to #18
+
+#18 addresses canonical packaging:
+
+```text
+Q<(A,B)>  <->  (Q<A>, Q<B>)
+```
+
+This issue is different.
+
+For `Bits<n>`, repeated structural decomposition is not a scalable programming model. We need a principled subregister access mechanism even if #18 makes canonical split/join invisible.
+
+## Non-goals
+
+This issue does not require:
+
+- arbitrary runtime pointer arithmetic;
+- unsafe aliasing;
+- interior mutability;
+- proving state separability;
+- exposing physical qubit addresses;
+- a complete implementation of every Rust reference feature.
+
+## Acceptance criteria
+
+1. Express the nested static-loop QFT design target above using `excl q[j]` for Hadamard and #69's admitted `ctrl` roles for controlled phases, with checked footprints and no hand-written split/join or take/put chains.
+2. Apply a gate to one statically selected bit of `Q<Bits<n>>`.
+3. Apply operations to two disjoint slices concurrently within one expression/body.
+4. Reject overlapping live views.
+5. Reject out-of-range indices.
+6. Reject implicit reordering.
+7. Preserve reference-entangled behavior exactly.
+8. Cover zero-width and one-width boundary cases.
+9. Lower temporary accesses to explicit verified IR without changing its constructors or extending the trusted acceptance boundary; establish the claimed source correspondence and compare small supported cases with independently checked explicit move/partition/apply/reassembly programs.
+10. State a clear lifetime/ending rule for every temporary view, including automatic restoration of access authority and rejection of whole-owner access while an overlapping exclusive access is live; do not imply state restoration.
+11. Show that the nested loop's affine premises prove index bounds/disjointness; test missing premises, overlapping slices, unsupported arithmetic and exhausted checking.
+12. Retain exact phase, reference-entangled behavior and explicit output-axis order; `excl` ending must not substitute for auxiliary zero-return evidence.
+
+## Design intent
+
+The intended analogy to Rust is narrow but useful:
+
+> **Quantum ownership should be linear; scalable subregister access should use checked non-aliasing exclusive accesses rather than manual ownership surgery.**
+
+## 0.2.4 follow-up review — 2026-10-01
+
+The review identifies a concrete in-range misrouting risk in `corpus/sized/qualtran_qft/fourier.qli`: after `take_bit[n,n-1-stage]`, the author tracks the shrinking `n-1` index space and reconstructs it with `put_bit[n-1,n-2-k]`. Add a small valid-but-wrong index mutation as a semantic counterexample, not merely an out-of-range rejection test.
+
+Acceptance must demonstrate two disjoint accesses expressed against the **original** register axes, static proof of their distinctness, and automatic reconstruction at scope end. Compare exact phase and ordered outputs with the explicit take/apply/put program, including entangled-reference inputs. The user's adopted surface direction remains Rust-style `excl`; the review's illustrative `with q[k], q[j] as ...` is not adopted syntax. Scope ending restores ownership rights and shape, never a clean-zero claim. Keep this work at 0.3.0 with the migration above; #160's compatible diagnostic fixes do not implement temporary quantum access.
+
+
+## 0.3.0 important semantic expansion — 2026-10-02
+
+This issue is no longer only a scalable `Bits<n>` access proposal. The same `excl` model appears naturally across several independent quantum-programming patterns, so 0.3.0 should specify it as a general quantum access rule.
+
+### Normative semantic direction
+
+An `excl` call performs an owner-preserving in-place quantum-state update, with temporary exclusive authority over the accessed subsystem:
+
+> **`excl Q<A>` is temporary exclusive authority to let the owned quantum subsystem participate in coherent reversible evolution, while the owner itself survives the call.**
+
+The same owner remains available after the call with the updated state. No independent copy of the old state or automatic inverse is implied.
+
+A controlled unitary may change the control's reduced state through phase kickback or entanglement while preserving its computational-basis sectors. Under #69 that supports the narrower `ctrl` role:
+
+```qli
+controlled_u(ctrl control, excl target);
+```
+
+Both owners participate coherently. Use `excl` where arbitrary coherent access is required and `ctrl` only where the basis-sector-preserving contract is established. Neither access role promises an unchanged state, clean return, or automatic uncomputation.
+
+### Cross-algorithm design test
+
+The feature should be accepted only if one rule makes all of the following natural without algorithm-specific exceptions.
+
+#### QFT / basis transforms
+
+```qli
+qft(excl q);
+inverse_qft(excl q);
+```
+
+For disjoint subregister operations:
+
+```qli
+h(excl q[j]);
+controlled_phase(ctrl q[k], ctrl q[j]);
+```
+
+This remains the key subsystem-access test already tracked above.
+
+#### Reversible arithmetic
+
+Current consume/return style:
+
+```qli
+let q = add_k[n,K](q);
+```
+
+should admit the ownership-preserving surface:
+
+```qli
+add_k[n,K](excl q);
+```
+
+The elaborator may still thread the unique owner explicitly in Core. Surface `Unit` return does not erase the underlying ownership transfer proof.
+
+#### Coherent equality / predicates
+
+A representative target is:
+
+```qli
+equals(ctrl left, ctrl right, excl flag);
+```
+
+Even a logically “preserved” input such as `left` may become entangled during the operation. “Returned with the same basis label” is therefore not sufficient to justify read-only quantum access.
+
+#### Grover / amplitude amplification
+
+```qli
+phase_oracle(good)(excl q);
+preparation_reflection(A)(excl q);
+grover_iterate(excl q, A, good);
+```
+
+The same owner persists while its state undergoes successive reversible transformations.
+
+#### QPE / coherent control
+
+```qli
+hadamard_all(excl phase);
+
+for const k in 0..m {
+    controlled_power(
+        U,
+        k,
+        ctrl phase[k],
+        excl target,
+    );
+}
+
+inverse_qft(excl phase);
+```
+
+This is an important test because both control and target participate in one coherent unitary even when the control basis label is unchanged.
+
+#### Quantum walks
+
+```qli
+coin(excl coin);
+shift(ctrl coin, excl position);
+```
+
+Again, the coherent-control subsystem must not be misclassified as an immutable classical-style read.
+
+### Ownership/effect boundary
+
+The intended 0.3.0 surface model should distinguish at least these cases:
+
+| Semantic role | Surface ownership direction |
+| --- | --- |
+| prepare / allocate / encode new resource | produce a fresh `Q<...>` owner |
+| ownership-preserving unitary on the same interface | `excl Q<A>` and surface `()` |
+| joint ownership-preserving unitary | multiple disjoint `excl Q<...>` arguments |
+| type/interface-changing isometry or owner repartition | by-value consume/return unless separately justified |
+| measurement | consume `Q<...>`, produce classical result and any explicitly returned residual owners |
+| discard / irreversible loss | consume `Q<...>` under the appropriate effect |
+| clean release | consume ownership only after its separate discharge/cleanliness obligation is proved |
+
+A useful candidate correspondence is therefore:
+
+```text
+ownership-preserving  U : Q<A> -> Q<A>
+                ≈
+surface application   U(excl Q<A>) -> ()
+```
+
+and for a joint unitary preserving an owner partition:
+
+```text
+U : Q<A> × Q<B> -> Q<A> × Q<B>
+        ≈
+U(excl Q<A>, excl Q<B>) -> ()
+```
+
+This is a source-level correspondence, not a change to the mathematical meaning or the independently checked Core ownership flow.
+
+### Important negative boundary
+
+The rule must **not** turn every quantum operation into `excl`.
+
+These should remain consuming boundaries:
+
+```qli
+let bit = measure(q);
+discard(q);
+release(q); // if/when adopted, with its own discharge proof
+```
+
+In particular,
+
+```qli
+let bit = measure(excl q);
+```
+
+must not imply that the same live owner automatically reappears after measurement.
+
+Likewise, a type-changing isometry such as `Q<A> -> Q<B>` is not automatically an `excl` call merely because it is reversible.
+
+### Subsystem access becomes a consequence of the general rule
+
+The original `Bits<n>` problem remains essential, but it should now be understood as the scalable access mechanism required by the general semantic rule.
+
+If
+
+```qli
+qft(excl q);
+```
+
+is the correct whole-register interface, then its implementation should be able to obtain statically checked, non-overlapping temporary access such as:
+
+```qli
+h(excl q[j]);
+controlled_phase(ctrl q[k], ctrl q[j]);
+```
+
+without manual `take_bit` / `put_bit` ownership surgery.
+
+The type checker must prove disjointness and range obligations; lifetime ending restores access rights to the parent owner, not the prior quantum state.
+
+### Additional acceptance criteria
+
+13. Specify `excl Q<A>` for arbitrary basis type `A`, not only `Bits<n>`, while retaining the specialized static-index rules for register factors.
+14. Demonstrate the same rule on at least QFT, reversible `add_k`, coherent `equals`, one Grover iterate, QPE controlled power, and one quantum-walk step.
+15. State explicitly that basis-label preservation does not imply immutable quantum access; test a control register that becomes entangled with its target.
+16. Specify the source-level correspondence between ownership-preserving `Q<A> -> Q<A>` unitary APIs and `excl Q<A> -> ()` calls, including elaboration to explicit Core owner threading.
+17. Specify joint calls with multiple provably disjoint exclusive quantum accesses.
+18. Reject using `excl` to disguise measurement, discard, implicit release, or a type/interface-changing ownership transfer.
+19. Keep ancilla cleanliness/restoration proofs independent of access lifetime ending.
+20. Preserve exact phase and coherent-reference behavior for every `excl` elaboration.
+21. Document the resulting prepare / reversible-access / observe-or-dispose ownership boundary in the 0.3.0 Language Reference; #344 changes `Observe` to `Channel` only in v0.4.0.
+22. Demonstrate that `qft(excl q)` leaves the updated owner usable and does not insert inverse QFT, clean release, reset, or discard at access end.
+23. Establish resource correspondence with the explicit consume/apply/return form under the same artifact/profile/schedule, preserving owner liveness and counting every generated workspace, inverse and routing operation.
+24. Cover counterexamples where a surface `Unit` result or an ending view incorrectly removes a live owner from the bound, or generated cleanup/routing cost is omitted.
+25. State which local rules and preservation links are proved and which remain pending; feature acceptance alone must not claim completed production-wide QS, PR or RS.
+
+### Revised compact principle
+
+> **Quantum ownership is linear; `excl` is exclusive temporary authority for coherent reversible evolution of an owner that survives the call.**
+
+> **It describes participation in a joint quantum evolution, not merely mutation of a computational-basis label.**
+
+If this rule survives QFT, arithmetic, Grover, QPE and quantum walks without special cases, `excl` is a language-level abstraction rather than QFT-specific syntax.
+
+
+## Current access classification of the retained QFT design example
+
+The earlier user-supplied `controlled_phase(... excl ..., excl ...)` source remains the historical exclusive-access design example, not an adopted requirement that diagonal phase operations need arbitrary mutable access. Under #69's computational-basis-preserving coherent contract, an exact diagonal controlled phase preserves both operands' basis sectors; both operands are candidates for `ctrl` access. Hadamard still requires arbitrary exclusive access. The final parser spelling and `excl`-call signature are settled with #69/#45; the earlier example cannot settle them by itself.
+
+#303 now retains a compiled local proof for exchange of adjacent literal protected phases and is adding the shared-control/disjoint-target factor lemma. Neither result authorizes a source optimizer to reorder the present program or grants an access rule. The final QFT migration must express phase operands with their adopted coherent-access form, retain Hadamard/phase sequencing, prove original-axis range/overlap obligations, preserve exact phase and arbitrary-reference behavior, and state its bit-order convention. The first design sources and counterexamples remain historical evidence.
+
+
+## Retrospective constitutional impact — 2026-10-05
+
+This #140 assessment covers #29, #69–77, #79, #85, #86, #156–158, #198 and #303 under the existing QS-2026-01, PR-2026-01 and RS-2026-01 interpretations. The child-specific duties below are part of this assessment; unsettled grammar and source-access rules are not adopted merely by recording them.
+
+**Distinct contracts.**
+
+- #29 requires exclusive temporary access to an exact ordered subsystem and full owner reconstruction, including original-axis affine range/disjointness obligations, arbitrary-reference behavior and zero-width ownership. `excl` ending restores access rights, not the previous state.
+- #69 permits only the specified basis-sector-preserving coherent action; phase kickback and entanglement remain allowed. #71 requires terminology that does not promise a classical read-only state. Shared coherent access does not by itself justify commuting arbitrary controlled operations.
+- #70 and #157 distinguish all-input exact clean return/separation from dirty identity restoration with arbitrary references. #158 keeps a live algorithmic signal distinct from disposable workspace. These are QS obligations; workspace also counts quantitatively under RS while live.
+- #72 and #156 require bounded, explicit compute/use/uncompute structure, preserved dependencies and independently checked inverse/cleanup evidence. Unsupported provenance or an irreversible step cannot fall back to reset/discard or heuristic restoration.
+- #73 forbids overwriting a live owner. #77 distinguishes binding mutability from ownership/access permission. #74 checks the original ordered places/slices and overlap; #75 must not infer quantum access or insert an operation from a familiar autoref spelling.
+- #76 separates exchanging bindings, logical axis relabeling and a physical SWAP; only the specified transformation may occur. #79 forbids Default-like derivation from manufacturing, copying or dropping a quantum owner.
+- #85 fixes expression/argument order, temporary owners and access-ending points; cleanup cannot be erased by lifetime shortening. #86 forbids implicit panic/unwind/abort paths from abandoning owners and distinguishes static rejection, explicit legal program branches and host/device failure.
+- #198 must not let Eq/Ord/Hash inspect an unknown quantum state or turn numeric comparison into semantic equality. #303 requires the actual local commutation hypotheses, exact operator/axis/reference correspondence and noncommuting counterexamples before any access scheduling or rewrite relies on its lemmas.
+
+**QS / PR / quantitative RS.** QS is affected directly: disjoint ownership is not separability, basis-label preservation is not unchanged reduced state, and lifetime ending is not clean-release evidence. Preserve exact phase, coherent/reference behavior, effects and every owner on every legal branch. PR requires explicit extraction/application/reassembly, inverse construction and physical routing to realize the same accepted meaning on the actual emitted artifact and declared workspace. Quantitative RS must count live data/workspace across pending arguments, scopes and branches, including any generated inverse and routing cost. Static termination, an alias proof, current checker budgets or an isolated cost count do not discharge the resource obligation.
+
+**Definitions, assumptions and boundary.** The affected definitions are access footprints, lifetimes/evaluation order, block-diagonal coherent access, assignment/place rules, cleanup and failure contracts, not new trusted syntactic primitives. The intended borrow/uncompute conveniences elaborate into explicit checked owner flow and evidence; any irreducible semantic addition must independently satisfy primitive admission. No trusted inverse synthesizer, separability oracle, scope-exit destructor or unchecked solver is authorized. Current finite/hierarchy/native-contract acceptance checks retain their profile and artifact/request boundaries; no source exclusive-access or source scheduler is accepted solely because a component lemma exists. The old QFT examples remain historical; the current #29 note requires the adopted coherent-access classification and original-axis convention rather than deriving grammar from those examples.
+
+**Ledger, transport and evidence.** Preserve both admitted original-root QLV1 ownership/scope guarantees and their exact premises. Current identity-based evidence continuity is applicable while those native meanings/representations are unchanged; an altered root/evidence/axis representation requires checked semantic transport, not an implication between old closed theorems. Current finite owner/branch/compute checks, the shared physical Raw state and bounded entangled pending-argument tests are components. Retained #303 local phase/factor/routed-IR lemmas have explicit limited premises; they neither establish general commutativity nor implement the planned source-access system. General borrow, clean/dirty surface discharge, legal-path failure semantics and their required local/source-preservation proofs remain unfinished. No general source/runtime, PR or quantitative RS theorem is claimed.
+
+**Edition and review.** These changes remain in edition 2026 with explicit 0.3.0 source/API migration. Existing adopted interpretations already require exact reference-safe semantics and restoration. Routine implementation inside them needs no new Guardian act; a new constitutional application, changed semantic assumption or formalization-adequacy question requires a concrete human ruling. Registering a new guarantee remains separate from implementing or testing the feature. No protected text or existing guarantee is weakened by this assessment.

@@ -1,0 +1,25 @@
+## Resolution
+
+Superseded by #81.
+
+Qleisli 0.3.0 adopts the explicit coherent basis-map form:
+
+```qli
+basis q as p {
+    e
+}
+```
+
+and retires the Haskell-shaped coherent `do ... pure ...` spelling.
+
+Fresh basis-state preparation remains a distinct physical operation and must use an explicit preparation API; `pure` is not reused for it.
+
+Therefore the ambiguity tracked by this issue is resolved:
+
+```text
+basis ... { ... }   coherent basis-map construction
+prepare(...)        fresh-state preparation
+ordinary final expr ordinary block result
+```
+
+See #81 for the normative 0.3.0 migration and trust-boundary requirements.

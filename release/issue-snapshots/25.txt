@@ -1,0 +1,65 @@
+## Status
+
+**Qleisli 0.3.0 important semantic consistency fix.**
+
+This issue is not boundary sugar: the current predicate path silently imposes a left-nested product convention that conflicts with the language rule that function arity and tuple structure are explicit.
+
+## Problem
+
+For a multi-parameter basis predicate, `with_computed` currently aggregates arguments by a legacy left fold. That makes one semantic concept depend on an implicit associator that other Qleisli paths reject.
+
+0.3.0 must choose one explicit rule and remove the silent left fold.
+
+Preferred direction: a predicate over one register takes one product parameter; argument lists remain argument lists and do not become tuples implicitly.
+
+## Obligations
+
+- preserve totality, injectivity, cleanup and basis-order checks;
+- preserve bit/leaf order;
+- migrate existing multi-parameter predicates explicitly;
+- keep `Meaning` and `with_computed` on the same convention;
+- do not introduce implicit product reassociation as a repair.
+
+## Acceptance
+
+Representative stdlib/examples use one explicit predicate-domain convention, produce equivalent intended tables/IR after migration, and no compiler path silently left-folds source parameters into a product.
+
+## Explicit predicate-domain implementation contract — 2026-10-05
+
+Under the adopted #27 type boundary, #84 exact tree equality and the approved 0.3.0 plan, select one explicit parameter for a function used as a predicate over one quantum register. This is an ordinary source contract within the existing QS/PR/RS obligations, not a new Guardian interpretation or guarantee admission. Edition remains 2026.
+
+**Rule.** In both forms of `with_computed`, a referenced basis predicate must have exactly one ordinary basis parameter whose complete type tree is the source register's basis, and exactly `Bit` as its result. Zero parameters are not an implicit `Unit` parameter; multiple parameters are not implicitly associated into a product. The existing Meaning function rule already requires one exact domain parameter and remains the same. Ordinary basis calls retain their explicitly declared argument-list arity: `f(a,b)` and `f((a,b))` remain distinct, including nullary calls outside predicate use.
+
+**Semantics and lowering.** Preserve the predicate truth table and low-axis-first leaf order, totality checks, both existing cleanup/contract checks, and all actual native gates. Predicates need not be injective: constant, AND and other noninjective Boolean predicates remain legal because computed cleanup has its own obligation. Coherent basis lifting retains its separate injectivity requirement. Do not insert a physical reassociation, permutation, preparation, observation or discard to repair a mismatch. Keep `Q<Unit>` ownership and controlled scalar phase. Remove the two implicit domain folds; use a shared frontend check so the two forms cannot drift. No native schema, capacity or acceptance authority changes.
+
+**Migration.** Write the intended domain explicitly. For the old left-folded three-parameter meaning, change `p(a: Bit,b: Bit,c: Bit)` to `p(((a,b),c): ((Bit,Bit),Bit))`; a flat or right-nested source register instead needs its own exact flat or right-nested parameter. For zero-width input, write `p(u: Unit)` or `p(_: Unit)` rather than `p()`. If the old helper also serves ordinary multi-argument calls, update those calls explicitly or introduce a separately named unary predicate wrapper; no automatic call packing or legacy alias is added. Migrate active stdlib, examples, corpus translations and executable test clients, preserving upstream provenance and licenses. Retain historical sources, first diagnostics and fixed old artifacts byte-for-byte; use separately recorded current translations where old sources are replayed for migration. Never enable old arity in the production parser/checker to keep a historical test green.
+
+**First bounded experiment.** The preserved 26-source study observes both old folds accepting three-parameter predicates only against a left-nested tree; unary flat/left/right signatures accept only matching trees. Current Meaning already rejects zero/three-parameter functions, while both computed forms treat nullary predicates as Unit. Ordinary basis calls retain distinct arities. The source and actual diagnostic records precede this implementation.
+
+**Completion evidence.** Test zero/one/multiple parameter cases in both computed forms and Meaning, exact flat/left/right tuple distinctions, unchanged ordinary-call arity, noninjective predicates, and zero-width controlled phase. Compare old and explicitly migrated small predicate tables and complete complex actions, including an external reference and a phase-sensitive state. Verify intended rejection diagnostics at predicate use and preserve ordinary ownership/cleanup failures. Run the affected source/contract/stdlib/corpus/CLI tests and both supported Rust lint toolchains, bounded native checks and fixed documentation builds. Inventory all remaining active multi-parameter predicate consumers rather than changing only the example that exposed the bug. A successful source check alone is not source preservation, a new QS/PR/RS discharge, or release validation.
+
+## Corpus migration provenance correction — 2026-10-05
+
+The additional actual corpus validator run on the explicit-predicate implementation found a metadata omission: current migrated sources no longer match the latest historical authoring attempts. Six selected semantic runs stopped at this provenance check before any probes; their failed observations are retained. The earlier bounded Rust tests do not establish that this separate corpus gate passed.
+
+Preserve all historical source/session/observation bytes, including the VM-22-pinned session records. Add an explicit append-only source-migration chain in the current corpus manifest instead of rewriting old hashes or weakening the latest-source check. Each migration must identify its Issue/context/version, bind the previous current source hashes, contain complete snapshots for its affected registered projects with after hashes, and retain actual per-project observations. Resolve current expected hashes from the immutable historical latest attempts through this strict chain, then compare every active source. Reject missing/duplicate migrations, unknown projects/files, stale predecessors, incomplete snapshots, changed snapshot bytes and contradictory/missing observations. No new upstream source, license relaxation or native acceptance authority is introduced.
+
+For #25 the new record covers the six affected positive projects; the separately named intentional semantic fault remains in its existing negative inventory. After recording actual checks, replay the affected small corpus semantic probes and fault calibration with the frozen compiler/source snapshot. This correction also supplies the same history-preserving mechanism for the subsequent #27 source cutover. It does not certify semantic equivalence solely from migration metadata.
+
+
+### Integration evidence — 2026-10-05
+
+Implementation [18f5569](https://github.com/MGYamada/Qleisli/commit/18f55693e31585dde67eeddeb064e77c138f9a57) and provenance integration [2bd9731](https://github.com/MGYamada/Qleisli/commit/2bd9731) retain explicit unary predicate domains and their original source experiments. Six migrated corpus projects passed native checking; the bounded semantic run passed 452 probes and four negative cases and detected the retained majority/parity fault. Initial failed attempts remain recorded. Ordered migration overlays preserve complete project snapshots and predecessor identities; no old authoring-session JSON or upstream source identity was rewritten.
+
+Canonical ordinary spelling is integrated in [5ce1778](https://github.com/MGYamada/Qleisli/commit/5ce1778). The fixed 799 native input/result archive remains byte-identical; that identity check is not a new 799-pair replay. Current integration CI is [run 37217706111](https://github.com/MGYamada/Qleisli/actions/runs/37217706111) on cc114298d29293f0f1550656c89af5d15951120e and is pending. This checkpoint does not close the Issue before its integration acceptance is verified.
+
+
+## Acceptance completed — 2026-10-05
+
+Closing as implemented and verified, without changing the criteria. The shared `Compiler::check_predicate_domain` serves both computed forms and requires one exact domain tree and Bit result; Meaning uses the same unary-domain convention. Ordinary function argument lists remain distinct. No accepting compiler path retains implicit source-parameter left folding; unsupported selected-profile forms do not confer acceptance.
+
+- **Explicit migration and equivalent behavior:** the active-consumer inventory and retained [26-source experiment](https://github.com/MGYamada/Qleisli/tree/9a1ecef79f2f1e42f94093b6f4822f282f6e9129/tests/fixtures/frontend_v030/predicate-domain) cover stdlib/examples/corpus. [Independent migration evidence](https://github.com/MGYamada/Qleisli/tree/9a1ecef79f2f1e42f94093b6f4822f282f6e9129/tests/fixtures/frontend_v030/predicate-domain-independent) retains eight byte-identical before/after finite QIRF pairs and separately checked exact complex actions, rather than inferring equivalence from compilation alone.
+- **Preserved checks and shape:** seven independent tests cover total/noninjective predicates versus injective coherent lifting, both computed forms, cleanup, explicit ordinary-call arity, all eighteen cross-tree substitutions, Unit/zero-width ownership and controlled scalar phase with an external reference. [Current 9a1ecef validation](https://github.com/MGYamada/Qleisli/tree/9a1ecef79f2f1e42f94093b6f4822f282f6e9129/tests/fixtures/frontend_v030/quantum-unit-maps) reruns all seven successfully on actual Rust 1.98.1 and 1.85.0, with all-target Clippy. The latest immutable selected-input manifest binds the current helper/callers/tests.
+- **Corpus provenance and integration:** [six-project native/452-probe/four-negative migration record](https://github.com/MGYamada/Qleisli/tree/9a1ecef79f2f1e42f94093b6f4822f282f6e9129/corpus/migrations/predicate-domain-v030) preserves original sources and catches the intentional semantic fault. The strict migration-chain checks reject stale/incomplete overlays. Full [CI 37233042845](https://github.com/MGYamada/Qleisli/actions/runs/37233042845) succeeded at 10553a9f94f6fd6a4555961244e0e9be41154f8f; independent review confirmed the predicate rule and test identities and subsequent caller preservation. Current focused reruns cover the present integration.
+
+Independent criterion review found no remaining #25 acceptance gap. The newer e01e98a full run failed on an unrelated stale Q<Unit> profile assertion, repaired and retained in 9a1ecef; new full CI on the latter remains separate. Issue closure does not claim a general source-preservation theorem, new constitutional guarantee, completion of #32 or release readiness. Broader obligations remain open in their original Issues.

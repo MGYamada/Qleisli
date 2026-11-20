@@ -1,0 +1,52 @@
+## Status
+
+**0.3.0 failure-model decision fixed; implementation/diagnostics remain open.**
+
+Related: #28, #37, #67, #68, #70, #72, #74.
+
+## Decision
+
+Within the verified quantum core, accepted execution is total over the declared finite model.
+
+```text
+implicit panic/unwind       NO
+hidden abort                NO
+partial quantum function    NO
+runtime quantum bounds trap NO
+implicit exception cleanup  NO
+```
+
+Unsupported sizes, shapes, indices, capabilities, resource obligations, or bounded-elaboration cases fail during checking/specialization rather than creating a runtime quantum exception edge.
+
+## Recoverable conditions
+
+Recoverable alternatives may be represented as **explicit ordinary classical data and explicit structured control flow** only when all branches preserve the declared linear ownership/resource interface.
+
+There is no Rust exception/unwind model for live quantum owners.
+
+## Host / device faults
+
+Operating-system failure, backend crash, device loss, and other external faults are outside the proved quantum-core operational semantics unless a future target contract models them explicitly.
+
+They must never be used as an implicit source-language escape hatch.
+
+## Resource consequence
+
+Failure handling cannot:
+- drop a live owner;
+- shorten an `excl` lifetime to evade cleanup;
+- reset/discard a workspace;
+- weaken clean/dirty restoration;
+- erase exact phase or owner ordering.
+
+## Acceptance criteria
+
+- [ ] Reference states the total verified-quantum failure model.
+- [ ] Bounds/shape/access failures are static or specialization failures.
+- [ ] No accepted runtime path performs stack unwinding across live quantum ownership.
+- [ ] Explicit recoverable branches preserve identical required ownership/resource shape.
+- [ ] Host/device faults are clearly outside the core theorem unless separately modeled.
+
+## Compact rule
+
+> **Verification failure rejects the program; it is not a quantum runtime exception.**

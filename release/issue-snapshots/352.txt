@@ -1,0 +1,7 @@
+## Problem
+The current two-argument `with_computed` accepts only hard-coded identity and expanded Z/T sequences. This makes valid compute–use–uncompute programs depend on a gate whitelist.
+
+## Fix
+- Replace gate-specific recognition with generic, exact semantic/contract validation; preserve structured uncomputation in IR (#156).
+- Prove clean ancilla return, ownership, and phase correctness before acceptance (#72, #157). Require an explicit logical contract where inference is insufficient; never silently accept unverified bodies.
+- Add positive non-Z/T and negative dirty-ancilla regression tests.

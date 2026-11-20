@@ -1,0 +1,196 @@
+## Status
+
+**Constitutional enforcement issue for Qleisli 0.3.0.**
+
+Related: #129 (Draft 5), #135 (ledger/transport/current acceptance), #136 (theorem boundary), #137 (version model), #139 (jurisdictions), #149 (Guardian), #142 (release gate).
+
+## Goal
+
+Implement constitutional CI that preserves the ratified text and accumulating guarantees while allowing current formalizations and implementations to evolve.
+
+The former proposal to freeze theorem/schema roots and their normative dependency closure at v1.0.0 is superseded. Hashes may identify historical artifacts; they must not freeze future theorem syntax or replace interpretation and preservation proofs.
+
+## Ratification-first bootstrap
+
+Ratification is the first dedicated stage of the approved 0.3.0 work, before dependent language implementation. Prepare the exact constitutional text, a compact manifest, and a reviewable ratification record first. Until the natural-human project maintainer affirmatively adopts that exact text, record `awaiting human ratification`; a draft hash, an approved work plan, passing CI, or an AI-authored record is not ratification.
+
+The initial adoption record identifies edition 2026, the adopting human authority, the exact text identity, and the effective date. Appointment of the Constitution Guardian Office is a separate recorded act; initial ratification does not depend on an already constituted Office.
+
+After human ratification, bind the protected text identity to that event and enforce the same-edition text and Article IX rules immediately. Ratification does not discharge any proof obligation. The later 0.3.0 release gate verifies the recorded ratification and all applicable readiness checks; it is not the first ratification event.
+
+The historical candidate-integrity checker validates the review packet only. The subsequent real ratification is recorded in #129, and a separate adopted-identity checker enforces that event, its approved artifacts and the archived bootstrap plus the active interpretation/pending-obligation ledger. Neither checker independently authenticates a human or completes this constitutional-enforcement issue. A valid Article IX correction would need its concrete human record and separately reviewed enforcement support; editing a hash cannot authorize it.
+
+## Minimal constitutional manifest
+
+Record, using a small maintainable format:
+
+- active edition, ratification status, and the initial human adoption record identifying the adopting authority, exact text identity, and effective date;
+- identity of the ratified constitutional text;
+- binding Guardian interpretation records and pending/discharged status;
+- ledger entry identities, protected contracts, and semantic dependencies;
+- current production acceptance boundary and artifact binding;
+- proof/evidence verification entrypoints and declared assumptions;
+- justified transports from historical ledger representations where needed;
+- release proof coverage and outstanding obligations.
+
+Do not serialize the whole transitive Lean dependency graph as immutable constitutional law.
+
+## Required checks
+
+### Constitutional text
+
+A same-edition change to ratified `CONSTITUTION.md` fails **unless** it is a valid pre-v1 rectification explicitly authorized and recorded under #129 Article IX. Otherwise, an explicit edition transition must record its constitutional diff and satisfy non-weakening review; incrementing a number does not waive Article IV.
+
+### Guarantee ledger
+
+Detect deletion, relaxation, or silent semantic redefinition of a discharged guarantee. Keep historical records auditable.
+
+Allow appended interpretations and meaning-preserving proof/representation refactors, with checked transport or preservation evidence. A general proof may discharge multiple entries; a separate CI job for every entry is not required.
+
+### Current production acceptance
+
+Verify that the release gate and all certified program/realization paths are within the acceptance boundary used by the proofs. Track the actual emitted artifacts, resource evidence, target/profile contracts, and relevant checker identity.
+
+A proof over an unused or narrower reference predicate is not sufficient. A review marker cannot authorize a bypass.
+
+### Proof replay
+
+For every release claiming full conformance, re-check:
+
+1. the three current jurisdiction-wide obligations over the current admitted scope;
+2. every applicable discharged historical ledger obligation against current acceptance and artifacts;
+3. the semantic transport/preservation needed to connect old contracts to current behavior.
+
+Existing proof terms and general preservation theorems may be reused. "Re-check" does not require reconstructing proofs manually.
+
+Do not use only `NewTheorem -> OldTheorem` between closed proved propositions as a continuity check. The current acceptance and behavior must be part of the preservation obligation.
+
+### Separate compatibility gate
+
+Use corpus/QLT and compatibility policy to detect regressions in accepted-language continuity. Acceptance shrinkage is not, by itself, loss of a safety implication; it may still fail the separate release compatibility gate.
+
+## 0.3.0 and v1.0.0
+
+0.3.0 may introduce constitutional-text checks, interpretation/ledger records, boundary binding, and explicit proof-status reporting before all three production proofs are complete.
+
+A pending obligation must never be marked discharged because a test passes or the Guardian approves a plan. Pre-v1 certification claims must state their verified scope.
+
+From v1.0.0, full conformance requires complete current-scope and ledger discharge under #129 Article VIII. No theorem-statement freeze occurs at v1.
+
+## Enforcement limits
+
+CI verifies declared artifacts and formal proofs; the Guardian determines whether a formalization adequately addresses the constitutional case. Neither is a substitute for the other.
+
+Make checks deterministic and runnable locally. Keep the implementation small and allow ordinary refactors that preserve the guarantees.
+
+## Acceptance criteria
+
+- [ ] Define a compact manifest for text identity, interpretations, ledger, current acceptance binding, and proof coverage.
+- [ ] Enforce same-edition constitutional-text identity.
+- [ ] Detect removal or weakening of discharged ledger guarantees.
+- [ ] Support verified semantic transport and proof-preserving refactors.
+- [ ] Re-check current three-jurisdiction coverage as well as historical ledger entries.
+- [ ] Bind verification to production acceptance and current artifacts.
+- [ ] Record pending and discharged obligations distinctly.
+- [ ] Keep compatibility regressions as an explicit separate check.
+- [ ] Prevent review markers or edition increments from bypassing non-weakening.
+- [ ] Provide deterministic local and GitHub CI entrypoints.
+- [ ] Implement the pre-v1 status disclosure and v1 full-conformance gate.
+
+## Core principle
+
+> **CI preserves constitutional text and accumulated guarantees while checking the acceptance mechanism that the release actually ships.**
+
+
+### Article IX rectification gate
+
+Before v1.0.0 only, CI may admit a same-edition constitutional-text change solely when the protected record identifies it as a **Draft 5 Article IX rectification** authorized by the human Constitution Guardian Office, records the reasons it restores an already adopted principle rather than changing policy, and demonstrates that it does not weaken or evade any discharged guarantee.
+
+No AI-generated or automatically generated authorization can satisfy this gate by itself.
+
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and, at that initial checkpoint, zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.
+
+
+## Scoped guarantee admission and production review — 2026-10-04
+
+The appointed human Guardian explicitly answered **「2件とも提示された範囲・前提で妥当と認め、保証登録を承認する」** for the two exact scoped proposals:
+
+- `QS-QLV1-OWNERSHIP-2026-01`: ownership of the original ordinary QLV1 decoded root.
+- `QS-QLV1-SCOPE-2026-01`: classical lexical scope of that same actual accepted root.
+
+Reviewed proposal: `governance/proposals/initial-guarantees.json`, SHA-256 `bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02`. Subsequent human adequacy/admission event: `governance/guarantees/initial-2026-admission.json`, SHA-256 `9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2`.
+
+The live ledger now records **two discharged scoped QS guarantees and three pending broader obligations**. QS-2026-01, PR-2026-01 and RS-2026-01 are not fully discharged. The admitted theorems bind actual `Protocol.Validity.check bytes` success to an `Acceptance` witness, its decoded artifact and selected original root. Their independent OwnershipSafe/ScopeSafe properties do not certify source lowering, Rust re-materialization, native compiler/runtime, hierarchy, native-contract, PR or quantitative RS.
+
+The exact reviewed source closure and registry are preserved beside the initial validation. Initial proof evidence includes both Lean builds/audits, fresh kernel/Main replay and exact elaborated theorem/axiom output. The initial proposal checker passed 18 regressions and live Lean-output comparison; an independent review found no scope/premise mismatch. The subsequent v3 ledger/current-evidence enforcement is being integrated and tested separately. Historical approved meaning and mutable current implementation evidence are distinct; unrelated source changes must refresh current proof binding, while changes of semantic representation require justified transport.
+
+The production inventory now distinguishes **21 paths and all nine native modes**, with 12 passing coverage regressions. It separates ordinary fresh acceptance, hierarchy/component checking, proposal-only output, source configuration, display and host execution. The corresponding Reference is `docs/src/reference/production-boundary.md`; S05-C1–C5 remain open.
+
+These are working-tree results. No integration commit, full hosted CI, completed issue, release readiness or publication is claimed.
+
+## Current guarantee enforcement and native-contract proof checkpoint — 2026-10-04
+
+The v3 ledger/current-evidence implementation now passes **75 policy/evidence tests** (35 constitutional + 27 current-evidence + 13 historical-candidate). A real `check_initial_guarantees.py --verify-lean` run checks both the historical theorem review and the elaborated current Acceptance/Artifact structures.
+
+Independent review found and repaired an enforcement defect: weakening `Acceptance.packetBound` to `True` still compiled and left the old theorem-review output unchanged. The preserved compiled mutation at `tests/fixtures/constitution_v030/witness-weakening/` now rejects even after mutable source identities are refreshed. The enforcer protects the 11-file independent semantic dependency closure, the original byte-binding witness fields and fresh elaborated field types. This was an evidence-enforcement defect, not a counterexample to the admitted theorems. Changes to the protected representation fail closed pending justified checked transport.
+
+Current source binding is separate from immutable human-reviewed meaning. Current Lean source closure: `b9da4e7f2e29a56f6e531e0a29f112b9fa13457ab5d51cbb679ab04a58b716be`. Current evidence record: `governance/guarantees/current-evidence.json`, SHA-256 `76f3f166c1389b8deac0dc17327eab8af9481e6850215a24b7b8422429ebb37d`. Both Lean builds/audits, fresh native Main replay and rebuilt schema binding succeeded.
+
+Additional proof-only native-contract bridges now connect actual successful encoded/leaf requests to their decoded original root meaning. Leaf requests also retain the exact requested matrix, interface, ordered ports and arbitrary-reference inverse laws. Encoded wrapper-matrix/root-matrix correspondence remains unproved. The executable checker body is unchanged; these new proofs are **not new ledger admissions**. Evidence: `tests/fixtures/constitution_v030/native-contract-bridge/`. Bounded Rust contract/leaf tests: **37 passed**. Production coverage: 21 paths, nine modes and **14 passing regressions**.
+
+Two scoped QS guarantees remain admitted; the three broader QS/PR/RS obligations remain pending. General transport, production-wide enforcement and final release readiness remain open. No full hosted CI or release is claimed.
+
+## Original encoded-root correspondence — 2eff16e
+
+[2eff16e](https://github.com/MGYamada/Qleisli/commit/2eff16e0cea96f6988f72def038a43dbe37d3013) closes the previously identified native encoded wrapper/root matrix gap. Actual successful circuitMatrix execution yields exactly the original dependency's dimensions and complex coefficients, including zero-width phase and ordered axes. check_encoded_sound / encoded_meaning connect byte-bound actual acceptance to the original root's BodyMeaning, exact interface and Encoded equation; encoded_reference admits arbitrary reference amplitude functions. No desired matrix equality is assumed and no executable acceptance or protected semantic definition changed.
+
+Both Lean packages build/audit; fresh QleisliKernel and Main replay, current schema rebuilding, exact initial theorem review and current elaborated Acceptance review passed. Seven new public theorem axiom reports use only the three standard axioms; three small operators give nine executable checks and five decide proofs. Independent review found no outstanding issue. The current Lean source closure is 68e1317698d9304f7239f7520fb08be90a04bd3b61abdbda7d680ef1630cf516; current-evidence.json SHA-256 is e4524172a35893c461cdb9ff08e1d8c784fb84ae0f97bf0f60c383c43975a524.
+
+These are helper/acceptance proof results, not new guarantee admissions. Two scoped QS guarantees and three broader pending obligations remain. General checked semantic transport, complete production enforcement and release readiness remain open. Current integration #307 at 6daea68 is under hosted run 37203327934.
+
+
+## Next enforcement unit: current-artifact identity transport — 2026-10-04
+
+Replace the conservative whole-file freeze for the two existing admitted guarantees with a checked identity-transport boundary. Preserve all historical proposal/admission/archive bytes and the admitted scope. The new proof entrypoint must quantify current input bytes and successful current checker execution, retain the actual decoded artifact and original selected root, and prove the protected ownership and classical-scope predicates on that root. No implication merely between two closed proved propositions, vacuous mapping to an unrelated program, or True witness field qualifies.
+
+The first unit permits proof additions/moves and source formatting only when the relevant elaborated data constructors, definition bodies, types and actual byte/root binding retain their protected meanings. Pin the small checker/contract entrypoint and derive the baseline from the immutable reviewed archive; do not rebaseline from editable current outputs. Add adversarial cases for predicate weakening, packet/root substitution, stale evidence and nonsemantic edits. Preserve normal build/audit/fresh replay and mutable current-source binding. A genuinely changed representation still fails closed until a concrete structure-preserving transport is implemented and reviewed. Append-only extensible ledger and claim-aware release enforcement remain subsequent work; this unit neither admits a third guarantee nor discharges QS/PR/RS as a whole.
+
+
+## Current-artifact identity continuity checkpoint — 509783a
+
+[509783a](https://github.com/MGYamada/Qleisli/commit/509783a6623c48df6eb54a318349c8e6c7f05831), draft #307, implements the conservative identity-transport unit. A fixed Lean extractor traverses the actual current checker, exact success theorem types, original-byte/root Acceptance witness, both admitted predicates and their definition/constructor/recursor dependencies. Its baseline is independently rebuilt from the immutable 213-source reviewed archive: **1,244 declarations (965 project/279 external)**. It checks tagged elaborated expressions and allowed module origins, not formatted type strings or rebaselined mutable hashes. Current theorem proof bodies may change while their types and dependency meanings remain fixed; the actual checker body may vary only within the protected closure. Binder/universe renaming, module movement and representation changes conservatively reject.
+
+Independent actual Lean mutations reject `packetBound := True`, a meaning-changing private decoder offset, and a byte-identical declaration moved to an unknown module. A proof-only change plus semantic-source comments/formatting rebuilds and retains exact output. A 13-byte packet separately confirms the decoder mutation changes behavior. An independently reproduced Python race that swapped source and all mutable evidence during replay now rejects. The first attempts and final results are retained at `tests/fixtures/constitution_v030/initial-guarantees-continuity/`; 77 independent regression file hashes and six decompressed streams were separately checked.
+
+Validation: **84 policy/evidence/candidate tests** (38 constitutional, 33 scoped evidence, 13 historical packet), fixed live Lean type/axiom/identity replay, source identities, docs and pinned mdBook pass. Trusted-base checks freeze the historical baseline and generation records after introduction while permitting the later stage on an already-admitted base. Current evidence SHA-256: `d0fb9ff93148a0aa680a3164789011d7e1438e74ac7472433dbf63fe01a7ebe1`; unchanged current Lean closure: `1132c5d56826b0fefb361128c41103abfc50a0bf03ff2b442bb420d1665a7e13`.
+
+The original human decisions, two admitted scoped guarantees and three broader pending duties are unchanged. This does not implement representation-changing transport, arbitrary ledger growth, native IO/compiler correspondence or complete constitutional/release enforcement. Hosted full integration is pending on current fae0e6a. No issue closure, new admission or release approval is claimed.
+
+
+## Next enforcement unit: append-only guarantee identities and current bindings
+
+Implement ledger schema v4 under the already-adopted Article VI/initial-interpretation procedure. Preserve the current **two scoped guarantees and three pending broader obligations**. Separate immutable admitted identity from mutable proof/source evidence: an identity binds ID, edition, jurisdiction, interpreted obligation, exact admitted proposal/entry and human admission event; current bindings associate covered guarantee IDs with a fixed verifier profile and evidence path/hash. Semantic scope/premises/exclusions remain in the approved immutable proposal, not editable display text. Use strict duplicate-free JSON and canonical identity digests.
+
+Derive permitted guarantees from explicitly registered human admission records, not a hardcoded total count. Only the existing independently recorded admission is registered in live data. Unknown or self-authored approval JSON must reject; adding future registrations requires an actual explicit human adequacy/admission judgment and reviewed exact hashes. A synthetic registration in isolated tests is not a repository admission. Verifier profiles are a fixed code-owned dispatch table; do not execute record-provided shell commands. Every admitted guarantee must have exactly one current binding, with the existing QLV1 identity profile able to cover the two related scopes together.
+
+Trusted-base checks must retain every historical identity and frozen proposal/admission/evidence baseline, reject deletion/meaning substitution or rollback, and allow only current evidence refresh or separately authorized append. Archive exact v3 ledger bytes for the v3-to-v4 migration and compare normalized protected contents across versions. Three pending obligations cannot disappear or become discharged merely because scoped entries grow. Pin the validated ledger/binding snapshot throughout any live verification and reject concurrent rebinding.
+
+Required regressions cover admitted-entry deletion/narrowing, unknown human approval, fabricated discharge, duplicate IDs/keys, missing/overlapping evidence coverage, unknown verifier/argv injection, stale or wrong-source/checker evidence, rollback and replay-time rebinding. Positive tests cover the exact current migration, shared evidence, verified evidence refresh and explicitly registered synthetic append within an isolated test root. Preserve historical tests and source/proof identities; no fresh full proof or human authentication follows from saved hashes.
+
+This unit does not add a guarantee, change the two admitted meanings, implement arbitrary semantic-representation transport, or open the release gate. A following release unit must distinguish pre-v1 scoped disclosure/readiness from full constitutional conformance as Article VIII/#142 already require. Pending production-wide QS/PR/RS must remain disclosed; their pending status alone is not a permanent prohibition on a properly validated pre-v1 release.
+
+
+### Implemented checkpoint: v4 dispatch and two independently reproduced timing fixes
+
+[Commit d128327](https://github.com/MGYamada/Qleisli/commit/d1283270f25f062871ec34634268e25ee29720a6) implements the preceding fixed-profile ledger contract. The exact v3 ledger is archived; immutable guarantee identities and mutable current evidence are separated. CI's Lean job now calls `check_constitution.py --verify-lean` to replay every registered profile and then validate all selected evidence again. Candidate data cannot supply a command, import, verifier registration or human approval.
+
+The independent reviewer found two concrete failures in the first implementation: invalid start/end frozen bytes with genuine intermediate checked reads, and ledger-selected invalid evidence with a different valid record visible only to the profile. Both original drivers now reject. All 35 frozen historical snapshots are authenticated directly; their manifest is the 36th protected artifact. The profile returns the digest of the exact bytes it validated, checked on both dispatch passes.
+
+Final tests: 54 constitutional + 33 initial-guarantee tests passed; root actual Lean dispatch/replay passed; staged-tree identity, inventory, coverage, docs, six CI-profile tests, and pinned mdBook/rendered-link checks passed. Logs and original failing evidence remain in `tests/fixtures/constitution_v030/ledger-continuity/`. No new admission, complete constitutional enforcement or release approval is claimed.

@@ -1,0 +1,86 @@
+## Completion — 2026-10-11 (Asia/Tokyo)
+
+Implemented and validated at `eb56721b675e0adb085fc661609c0ba26671f9cf`. [Acceptance mapping and successful same-commit CI](https://github.com/MGYamada/Qleisli/issues/57#issuecomment-6104457670) record the result. Canonical source spelling is `isometry fn`; the earlier proposal/status wording below is retained as history. Versioned transport compatibility is unchanged. This completes the naming/migration scope, not broader proof or release obligations.
+
+## Decision — 2026-10-06
+
+The terminology is now fixed for Qleisli:
+
+```text
+unitary / isometry / observe
+```
+
+Use **`isometry`**, not `iso`, in the source language, Language Reference, public effect names, diagnostics, stdlib signatures, examples, and new design work.
+
+This is a terminology correction only: the semantic contract remains the isometric condition (V†V = I_input), with the conceptual ordering
+
+```text
+Unitary <= Isometry <= Observe
+```
+
+Legacy `iso` may exist only as explicitly managed pre-0.3.0 migration history/diagnostics; it is not the canonical spelling.
+
+---
+
+## Scope
+
+Design work at the **Qleisli 0.3.0 breaking-change boundary**, requested on 2026-09-30. This records the naming concern and preferred direction; it does not rename implemented syntax by itself.
+
+Related: #14 design criterion, #27 effects/type-theory synthesis, #41 names and reserved words, #48 Language Reference.
+
+## Problem
+
+The source keyword `iso` currently denotes a pure isometry with
+
+```text
+V† V = I_input.
+```
+
+In categorical terminology, `iso` conventionally means an invertible morphism. A non-surjective isometric embedding is a **dagger-monomorphism**, not an isomorphism. A unitary satisfies both
+
+```text
+U† U = I_input,    U U† = I_output
+```
+
+and is a dagger-isomorphism. These terms should not be conflated with arbitrary invertible linear maps.
+
+For example, zero-state preparation `V : C -> C²` has `V†V=1`, while `VV†=|0><0|` is a projector rather than `I_2`. Calling that operation `iso` invites precisely the wrong reading for mathematical users.
+
+Qleisli's name deliberately refers to Kleisli, and its readers include people who use category theory. A short spelling that suggests the wrong mathematical class is a significant vocabulary problem.
+
+## Preferred direction
+
+Replace the source spelling `iso` with **`isometry`**, or another explicitly justified word that cannot be mistaken for a categorical isomorphism.
+
+The underlying contract stays the same. In particular:
+- retain the distinction between isometries and unitaries;
+- retain the effect ordering, written conceptually as `Unitary <= Isometry <= Observe`;
+- a renamed isometry declaration does not acquire adjoint/controlled access;
+- no change to exact phase, reference-system semantics, or auxiliary cleanup follows from the rename.
+
+Illustrative proposed syntax:
+
+```qli
+isometry fn prepare_zero() -> Q<Bit> {
+    init0()
+}
+```
+
+This is a proposed spelling, not currently accepted source.
+
+## Decisions and migration
+
+1. Select the final keyword and public effect name before the Language Reference is fixed.
+2. Specify the treatment of legacy `iso`: migration diagnostic, temporary alias, or removal at the breaking-change boundary.
+3. Inventory source keywords, public Rust/Lean names, diagnostics, documentation, standard-library signatures and any serialized effect spellings. A source rename must not silently change a versioned transport format.
+4. Update examples and the quick reference consistently, while preserving historical release records.
+5. Explain isometry, dagger-monomorphism and unitary/dagger-isomorphism with their actual equations.
+
+## Acceptance
+
+- The selected word denotes `V†V=I` without implying surjectivity.
+- Preparation and dimension-increasing injective lifts remain isometries.
+- Existing unitary and observation distinctions remain intact.
+- Migrated programs retain identical checked meanings, effects and ownership behavior.
+- Legacy syntax and external/public API migration have specified diagnostics and compatibility behavior.
+- No new trusted acceptance rule is introduced by this vocabulary change.

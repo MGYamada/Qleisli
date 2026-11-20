@@ -1,0 +1,152 @@
+## Status
+
+Core semantic classification issue for **Qleisli 0.3.0**.
+
+**2026-10-02 release-boundary decision:** 0.3.0 freezes the distinction between equality/coherence/physics. The concrete catalogue of implicit coherence conveniences is deferred to **#197 (0.4.0)**.
+
+Related:
+- #15 — tensor reassociation
+- #18 — owner packaging
+- #27 — type-theory synthesis
+- #43 — `Unit / Q<Unit>`
+- #76 — binding exchange vs axis permutation vs physical SWAP
+- #100 — inference law
+- #196 — three-level surface boundary
+- #197 — 0.4.0 boundary-condition umbrella
+
+## Problem
+
+Several relations can look superficially like “the same type”:
+
+```text
+((A × B) × C)  ~  (A × (B × C))
+A × Unit        ~  A
+Q<(A,B)>        ~  (Q<A>, Q<B>)
+Bits<0>         ~  Unit
+```
+
+but Qleisli must not collapse distinct notions of sameness.
+
+## Frozen 0.3.0 classification
+
+The language distinguishes exactly these semantic categories:
+
+### 1. Definitional equality
+
+Two forms are literally the same for type checking.
+
+No physical or structural operation is inserted.
+
+### 2. Canonical coherence
+
+Two forms are not definitionally identical, but there may exist a **unique theorem-justified structural map** that preserves the intended meaning.
+
+Any map admitted as canonical coherence must preserve:
+
+- ordered leaves/axes;
+- ownership accounting;
+- exact phase required by the structural law;
+- surrounding/reference semantics.
+
+### 3. Physical map
+
+A real semantically visible transformation remains explicit.
+
+Examples include:
+
+- axis permutation;
+- SWAP/routing with physical meaning;
+- preparation;
+- observation;
+- discard/reset;
+- nontrivial phase;
+- any transformation that changes the requested quantum meaning.
+
+## Constitutional 0.3.0 rules
+
+0.3.0 freezes these laws:
+
+1. **Physical maps are never ordinary coercions.**
+2. **Leaf/axis permutation is never mere coherence.**
+3. **Canonical coherence, when later enabled, must be unique and theorem-justified.**
+4. **Coherence must not duplicate/drop owners or infer separability.**
+5. **Coherence must preserve exact phase and reference behavior.**
+6. **Equal physical width or equal Hilbert-space dimension does not imply type equality.**
+7. **Evidence/cache identity may not silently identify semantically different interfaces.**
+8. **No elaborator may choose among multiple distinct quantum meanings by preference.**
+
+These are 0.3.0 laws independent of which conveniences 0.4.0 ultimately adopts.
+
+## Deferred to 0.4.0 (#197)
+
+0.4.0 decides concrete boundary policy such as:
+
+- whether tuple associativity is definitional or elaborated coherence;
+- whether unitors are implicit;
+- whether `Bits<0>` is definitionally `Unit` or canonically related;
+- when `Q<(A,B)>` may implicitly pack/unpack to `(Q<A>,Q<B>)`;
+- which canonical maps the surface elaborator inserts automatically;
+- how diagnostics expose inserted coherence;
+- which canonical normal form is used for authoring and inference.
+
+Those decisions must satisfy the 0.3.0 laws above.
+
+## Relationship to Core
+
+The trusted/verified Core may remain more explicit than the surface language.
+
+A future surface coercion may elaborate to explicit structure, but:
+
+- the elaborator does not gain semantic authority;
+- the emitted structure remains independently checkable;
+- source convenience must not quotient away phase, ownership or axis order in the verifier.
+
+## Acceptance criteria for 0.3.0
+
+- [x] The Reference distinguishes definitional equality, canonical coherence and physical maps.
+- [x] Physical maps cannot be inserted as ordinary type coercions.
+- [x] Axis permutation is explicitly outside coherence.
+- [x] Any future canonical coherence is constrained to preserve phase, ownership and reference semantics.
+- [x] Equal width/dimension is explicitly insufficient for type/evidence identity.
+- [x] Inference cannot choose between multiple semantic maps.
+- [x] The concrete catalogue of implicit coherence maps is explicitly deferred to #197.
+
+## Non-goals
+
+0.3.0 does **not** need to:
+
+- enumerate every future implicit coherence map;
+- choose all tuple/unit/zero-width normalization rules;
+- quotient the trusted IR by coherence;
+- implement general theorem proving.
+
+## Design principle
+
+> **0.3.0 decides what kinds of sameness exist. 0.4.0 decides which canonical sameness conveniences become implicit.**
+
+## 2026-10-04 target type contract
+
+Use structural definitional equality over constructor tags, normalized static sizes, immediate tuple arity, nesting and ordered leaves. In 0.3.0, Bit differs from Bits<1>, Unit differs from Bits<0>, tuple trees retain their shape, and Q<(A,B)> differs from (Q<A>,Q<B>). Introduce no implicit coherence. Explicit checked structural maps must preserve axes, ownership and phase +1 under arbitrary references. #197 retains the later implicit-convenience catalogue.
+
+The [target Language Reference](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/reference/type-model.md) and [foundation analysis](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/design/type-foundation.md) record this ordinary implementation decision under the approved 0.3.0 plan and adopted authority hierarchy. Edition remains 2026. This is not a new Guardian interpretation or guarantee admission.
+
+Status: target rules selected; implementation and conformance remain in progress in #307. Current alpha syntax still contains CBit/CBits and general Basis polymorphism is not yet implemented. Required positive and negative tests, exact lowering/interface preservation and native acceptance evidence remain open. Documentation alone does not complete this issue.
+
+
+## Verified completion — 2026-10-05
+
+All seven actual 0.3.0 acceptance criteria are satisfied at **9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43**, in #307. No criterion is reduced and no new deferral is created.
+
+| Criterion | Evidence |
+| --- | --- |
+| Three categories distinguished | [Reference type model](https://github.com/MGYamada/Qleisli/blob/9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43/docs/src/reference/type-model.md) distinguishes definitional equality, explicit coherence and physical maps. |
+| No physical coercions | The Reference forbids them; [shared Type equality](https://github.com/MGYamada/Qleisli/blob/9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43/src/frontend/types.rs) compares full constructors, arity, nesting and sizes without inserting operations. Former silent reassociation rejects. |
+| Axis permutation outside coherence | The Reference retains ordered axes; explicit-layout/reference tests distinguish a wrong same-width permutation. |
+| Future coherence preserves phase/owners/references | Unique theorem-justified structural maps require coefficient +1 and arbitrary-reference preservation; no duplication/drop or separability inference is permitted. |
+| Width insufficient for type/evidence identity | Unit/Bits0, Bit/Bits1 and flat/nested trees remain distinct. Exact FunctionEvidence attachment and Meaning phase/tree counterexamples reject. |
+| No semantic choice by inference | The Reference requires unique exact solutions and forbids selecting a physical map, provider or Meaning by name, width or numerical coincidence. |
+| Implicit catalogue stays #197 | The original 0.4.0 decision is explicitly retained; no implicit unitor or reassociation is admitted. |
+
+[Recorded bounded validation](https://github.com/MGYamada/Qleisli/tree/9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43/tests/fixtures/frontend_v030/type-pattern-classification) contains five named tests on each actual Rust 1.98.1 and 1.85.0 (ten passes), input hashes and document checks. Independent read-only review matched all seven live criteria, the 108-input and 37-file manifests, and all ten raw outputs to immutable 9fcd4fc. The canonical ordinary-type cutover is implemented; the earlier CBit/CBits progress sentence is historical.
+
+These are selected tests, not complete target suites, general preservation, new guarantees or same-current-commit full CI. General Basis and common-profile integration retain their existing Issues; this classification Issue explicitly does not require those implementations.

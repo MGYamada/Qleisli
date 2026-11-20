@@ -1,0 +1,184 @@
+## Three-theorem design alignment — 2026-10-08
+
+**Maintainer-level design direction only.** This is not a new binding Constitution Guardian Office interpretation, constitutional amendment, theorem discharge, or guarantee-ledger admission. Existing ratified Constitution (#129), jurisdiction framework (#139), ledger (#135), and EXACT-2026-01 (#311) retain authority.
+
+1. **QS / Soundness:** semantic acceptance proves the specified exact owner/access/effect/phase/meaning contracts, including clean return and dirty identity restoration. Ending `excl` restores *access authority* over the changed, still-live owner, not its prior state, and does not release it (#29/#70/#72/#157).
+2. **PR / Physical Realizability:** separately admitted, independently checked target realization implements the accepted semantic meaning with its exact phase, ordered axes, workspace and target assumptions. The obligation is **forward correspondence**, not completeness of exact synthesis. Semantic acceptance does not imply target execution (#281/#120).
+3. **RS / Resource Safety:** quantitative bounds and budgets apply to the actual admitted Core/realization artifact under its selected profile. Count live owners once, allocated ancillas, generated uncomputation, routing, physical SWAPs, measurements/feed-forward where relevant. A restored clean ancilla proves a QS state property, **not** a numerical cost bound. Access exit and `Unit` return do not erase cost (#280).
+
+Current illustrative schemas (not frozen constitutional theorem statements):
+
+```text
+Accepted_R(P) -> SemanticSafe_R(P)
+Accepted_R(P) AND AdmittedRealization_{R,rho}(P,C,Epr)
+  -> Realizes_{R,rho}(C, Meaning_R(P), Epr)
+Accepted_R(P) AND AdmittedRealization_{R,rho}(P,C,Epr)
+  AND CheckedResourceEvidence_{R,rho}(C,b,Ers)
+  -> Cost_{R,rho}(C) <= b
+```
+
+A resource claim for **Core alone** may instead use its independently checked Core-cost relation without asserting existence of a target circuit. Neither cost schema permits untrusted producer assertions as certificates. A production path advertising target/quantitative certification must require its actual corresponding evidence, not evade proof via empty premises.
+
+**Independent axes:** exact coefficient paradigm `R` (initially `R_3`, `R_infty`, #309/#339), gate/target realization profile `rho`, and resource cost model. Exact typed base change preserves denotation, not automatic target admission, optimally minimal cost, or cost-certificate transport. No epsilon approximate correspondence discharges edition-2026 constitutional guarantees.
+
+**Specialization:** closed finite instances can have concrete verified cost certificates; a family-level RS guarantee requires an explicit, checked symbolic bound for all admitted parameter choices and provider contracts. Totality and fixed-target feasibility are separate (#127/#161/#162/#164). No single target must handle every instance of an accepted generic family.
+
+**Acceptance boundary:** the frontend, LLM, Rust optimizers, synthesis engines, and caches may only propose unchecked artifacts. Lean/independent checking must validate exact meaning, transformed artifact correspondence, applicable target admission and artifact-bound resource evidence before certification (#136/#309). The three pending broad QS/PR/RS obligations are not automatically discharged by this issue edit. All preexisting implementation checkboxes stay open until independently verified; scope and ledger guarantees remain unchanged.
+
+See #136 (joint boundary), #280 (RS), #281 (PR), #127 (families), #157 (workspace QS), #142 (release gate).
+
+## Status
+
+**Constitutional theorem-boundary clarification for Qleisli 0.3.0 / v1.**
+
+Related:
+- #120 — semantic unitarity vs same-wire realizability and synthesis workspace
+- #127 — theorem boundary over closed specializations
+- #136 — constitutional kernel/theorem boundary
+- #139 — Fundamental-Theorem jurisdictions and current formal realizations
+- #129 / #135 / #149 — Constitution, guarantee ledger, and Guardian interpretation
+- #154 — sealed primitive admission policy
+- #167 / #169 — primitive/.qli/external-artifact authority boundaries
+
+## Problem
+
+Physical Realizability can accidentally be read as requiring two different statements.
+
+### Forward correspondence
+
+For an accepted Qleisli program and an admitted realization artifact:
+
+```text
+CheckedRealization(P, target, C, evidence)
+  -> C implements the accepted meaning of P
+```
+
+including the declared workspace, phase/equality and effect obligations.
+
+### Synthesis completeness
+
+For every semantic object in some mathematical domain:
+
+```text
+U in Domain(target)
+  -> there exists an admitted target circuit C implementing U
+```
+
+The first statement is a safety/acceptance theorem.
+
+The second is a gate-set-specific exact-synthesis completeness theorem and can require substantial external mathematics. Constitutionalizing it would make Qleisli v1 depend on formalizing whichever synthesis-completeness theorem happens to characterize the selected target family.
+
+That is unnecessary for safe acceptance.
+
+## Adopted direction
+
+The v1 **Physical Realizability theorem is forward-only**.
+
+It should prove that every realization Qleisli accepts is a correct realization of the already accepted semantic object.
+
+Conceptually:
+
+```text
+Accepted(P)
+∧ AdmittedRealization(P, τ, C, E)
+--------------------------------
+Realizesτ(C, Meaning(P), E)
+```
+
+where `E` carries whatever checked workspace, exact-phase, gate/profile and correspondence evidence the target requires.
+
+The theorem does **not** promise that every mathematically definable unitary, isometry or exact matrix has such a realization.
+
+## Relationship to the admission-scoped constitutional model
+
+#139 makes the Fundamental Theorems obligations on the language and realizations that the current release admits. Under this chosen scope, forward correspondence is the PR release duty: if correspondence cannot be checked, that target realization is not certified.
+
+Shrinking Qleisli's accepted language does not establish a completeness theorem over an independently specified coefficient domain. Such a theorem is therefore not part of this constitutional minimum.
+
+This is a consequence of the **chosen admission-scoped contract**, not a mathematical claim that an implication `Accepted(P) -> ...` could never include an existential conclusion. A profile may separately promise existence or complete synthesis and prove the additional claim.
+
+Semantic acceptance alone must not be advertised as successful target-realization acceptance. If the product claims that a program is executable on a target, its production gate must require the corresponding checked realization evidence. Unavailable synthesis is an unsupported/unproved realization, not a soundness failure of an otherwise valid semantic object.
+
+Binding Guardian interpretations of correspondence, phase, workspace, and target assumptions become ledger entries once formally discharged and recorded. Later releases must preserve those guarantees against current artifacts and the actual production realization gate, with justified semantic transport. A new profile cannot retroactively relax a recorded contract.
+
+## Consequence for exact synthesis
+
+A theorem such as
+
+```text
+matrix entries lie in coefficient ring R
+  <-> exact synthesis over target gate family G
+```
+
+may be extremely useful, but it belongs to a **target/profile synthesis library theorem**, not the constitutional minimum.
+
+If formalized, such a theorem can *produce* admissible realization evidence that the forward PR checker then verifies.
+
+If not formalized, Qleisli may still accept independently supplied realizations whose correspondence is checked directly.
+
+This preserves the de Bruijn-style architecture:
+
+```text
+untrusted / replaceable search or synthesis
+        ↓ candidate + certificate
+small independent checker
+        ↓
+forward Physical Realizability theorem
+```
+
+## Leaf boundary
+
+The strength of required synthesis mathematics should follow the admitted semantic leaf language.
+
+For example:
+
+- basis permutations / reversible injections may use elementary reversible-synthesis results;
+- richer exact matrix leaves may require stronger target-specific synthesis theorems;
+- a future profile may add a completeness theorem without changing the constitutional forward PR jurisdiction; concrete correspondence statements may evolve with the profile.
+
+Therefore the Constitution should not force the leaf language to be as broad as the strongest known synthesis theorem.
+
+## No gate-set freeze here
+
+This issue deliberately does **not** select a universal v1 target gate set.
+
+In particular, it does not constitutionalize Clifford+T, Clifford-cyclotomic families, or any specific coefficient ring.
+
+Those are profile decisions.
+
+Likewise, this issue does not reintroduce approximation/epsilon into the 2026 edition.
+
+## Interaction with #120
+
+#120 remains correct that semantic unitarity does not imply same-wire synthesis and that backend workspace may be required.
+
+Amend its theorem wording so the constitutional claim is:
+
+> if Qleisli admits a target realization, the realization and its workspace evidence implement the accepted meaning.
+
+Any theorem guaranteeing the **existence** of a realization for an entire coefficient domain should be cited as a target/profile completeness theorem rather than a premise of the Constitution itself.
+
+## Acceptance criteria
+
+- [ ] Rewrite the PR schema in #139 as a forward checked-correspondence theorem.
+- [ ] Make clear in #120/#127 that target-domain completeness is optional profile mathematics, not a v1 constitutional obligation.
+- [ ] Keep synthesis/search outside the trusted boundary; only checked evidence grants acceptance.
+- [ ] Permit independently supplied realizations even when Qleisli has no complete synthesis algorithm for the whole semantic domain.
+- [ ] State workspace initialization/restoration and exact/projective equality explicitly in the forward relation.
+- [ ] Keep Controllable/Adjointable and other structural capabilities separate from mere realizability.
+- [ ] Do not select or freeze one universal gate set in this issue.
+- [ ] Do not add approximate synthesis to the 2026 edition through this issue.
+- [ ] Bind PR to the actual production realization gate and emitted artifact/evidence.
+- [ ] Preserve discharged PR interpretations through the #135 ledger.
+
+## Design principle
+
+> **Physical Realizability proves that accepted implementations are real, not that Qleisli can synthesize every mathematically expressible operator.**
+## First-stage implementation checkpoint — 2026-10-04
+
+- Ratification and initial appointment are recorded in #129; they are no longer pending.
+- `docs/src/reference/authority.md` states the five authority layers and impact-review process.
+- `scripts/check_constitution.py` pins adopted identities, checks the strictly recorded interpretation/pending ledger and, with a caller-selected trusted Git base, rejects protected-record replacement and rollback from populated records.
+- Historical candidate validation remains separate. The current identity-check suites pass **40 tests** (13 historical-candidate + 27 adopted-record/ledger tests), including fabricated discharge, altered records, stale bindings, v1-to-v2 adoption and rollback rejection. These checks cannot independently authenticate a human transcript or complete #141.
+- `governance/guarantees.json` now records **three binding pending obligations and zero discharged guarantees**. The appointed Guardian explicitly answered **「3件とも提示された本文どおり採択する」** for QS-2026-01, PR-2026-01 and RS-2026-01. Exact reviewed text SHA-256: `7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3`, preserved at `governance/interpretations/initial-2026-reviewed.txt`. Actual adoption record: `governance/interpretations/initial-2026-adoption.json`, SHA-256 `bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e`. Current Book wording updates only adoption status. Existing proofs have not been promoted automatically.
+- Full hosted CI, a release commit and publication are not claimed. Remaining acceptance criteria stay open.

@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 - Restore navigation from the diagnostics and primitive chapters to the
   inference and discovery contract (#253).
+- Retain the 127 fixed GitHub Issue bodies for the beta acceptance review
+  in the complete source archive (#142).
 - Explain constitutional edition selection in project manifest diagnostics (#255).
 - Specify synchronized product releases and the compatibility metadata that
   binds their exact distribution snapshots (#230, #231).

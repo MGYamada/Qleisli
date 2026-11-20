@@ -1,0 +1,175 @@
+## Current application of #311 — 2026-10-13 (Asia/Tokyo)
+
+At the maintainer's request, apply the already adopted **EXACT-2026-01** decision from [#311](https://github.com/MGYamada/Qleisli/issues/311) throughout this Issue. This clarification changes no constitutional text, reviewed interpretation bytes, admission or proof status.
+
+- Source Meaning, semantic equality, effects, exact phase/control and exact clean/dirty restoration remain exact. An approximation bound cannot replace those obligations or grant a pure label, inverse, control access or exact release.
+- Approximation is an optional, separately checked **engineering synthesis/export claim** about an identified ideal and actual artifact. Its metric, finite bound, reference domain and composition rules are outside the constitutional semantic truth conditions; epsilon is not part of source Meaning or an `Op<A,M>` promise.
+- An engineering claim, including a reported zero error or `epsilon = 0`, cannot bypass the separate independent exact-correspondence and resource gates or promote itself to edition-2026 PR/RS. Numerical methods may still construct exact artifacts/proofs that pass those exact gates.
+- Independently accepting the actual circuit as a program establishes its own exact meaning within the checked scope; it does not identify that meaning with the source ideal. Missing source/runtime/target correspondence remains disclosed.
+- The ten acceptance criteria below remain required. In particular, engineering metric/bound, conservative composition, full reference-safe instruments, distinct error categories and fail-closed artifact binding need real implementation and checked evidence. Rejecting all approximations or editing this text alone does not complete them.
+
+#39 and #63 are excluded from all of v0.3.0 by separate maintainer instructions. Use currently supported exact profiles here; this Issue does not reintroduce their literal/const extensions, generic QFT completion, #309's coefficient tower or #310's later paradigm implementation. #31 is **completed for the bounded contracts below** at merged commit `fb04f45a7bbab80ed28348f6d0ae97de5358cce1`. The [ten-criterion completion and exact-head CI audit](https://github.com/MGYamada/Qleisli/issues/31#issuecomment-6145340948) records the specifications, actual implementation/proofs, positive/refusal cases, full/full CI and remaining exclusions. #163's quantitative target-resource criteria and broader QS/PR/RS/EXACT duties remain open; no release or new guarantee is claimed.
+
+## Status
+
+Design issue for **Qleisli 0.3.0**. This issue fixes a semantic boundary before adding more phase/rotation expressiveness.
+
+Related:
+- #20 diagonal phases
+- #21 phase representation
+- #24 meaning/evidence
+- #27 type-theory synthesis
+- R08 / R12 in `docs/imaginary-v1/requirements.md`
+- `docs/coefficient-domains.md`
+- `docs/hierarchical-ir-spec.md`
+
+## Problem
+
+Qleisli's strongest current semantic property is that pure meanings are checked **exactly**, including global phase when that phase can become relative under coherent control.
+
+Scalable QFT/QPE and QSVT introduce phases such as `pi/8` and eventually arbitrary synthesized rotations.
+
+If arbitrary floating-point angles are admitted directly into core source semantics, several current invariants become unclear:
+
+- what exact equality means;
+- how meanings compose;
+- whether controlled versions preserve the intended phase;
+- how evidence is checked;
+- how synthesis error accumulates;
+- whether approximate cleanup can accidentally authorize pure ancilla release.
+
+This boundary should be fixed before arbitrary-angle syntax becomes public.
+
+## Proposed principle
+
+> **Qleisli source meanings are exact. Approximation belongs to an explicitly separate synthesis/backend contract.**
+
+Conceptually:
+
+```text
+exact source meaning and exact ideal IR / Meaning
+      + actual synthesized target artifact
+      ↓
+separately checked engineering approximation contract
+(metric, finite bound, reference domain and artifact identity)
+```
+
+The exact layer may grow its coefficient domains symbolically; it should not silently become floating-point semantics.
+
+## Exact semantic layer
+
+A source operation should denote an exact mathematical object in a declared exact domain.
+
+Examples:
+
+- permutations;
+- roots of unity;
+- symbolic dyadic phases;
+- exact Fourier meanings over supported finite dimensions;
+- exact instruments for measurement.
+
+Possible future source phase values may use a canonical symbolic representation, e.g. dyadic turns, rather than floating-point radians.
+
+## Separate engineering approximation layer
+
+If a backend cannot realize the exact meaning, the approximation contract must bind:
+
+- the exact ideal target;
+- the actual synthesized implementation;
+- an explicit error bound `ε`;
+- the metric;
+- the admitted input/reference domain;
+- the composition rule;
+- the actual target gate set and synthesis evidence.
+
+For pure controllable components, a phase-sensitive bound such as
+
+```text
+op_norm(U_actual - U_ideal) <= ε
+```
+
+is appropriate.
+
+For observations/instruments, use a metric strong enough to cover arbitrary references, e.g. a declared diamond-norm bound.
+
+## Exact cleanup remains exact
+
+Approximation must never weaken ancilla cleanup.
+
+A statement such as
+
+```text
+Pr[ancilla != 0] < 1e-12
+```
+
+does **not** justify pure release.
+
+Private scratch promised clean must still be returned exactly to the required state/separation condition, or remain part of the output/environment according to an observation/approximation contract.
+
+## Questions to decide
+
+1. What exact coefficient/phase domains are supported in source?
+2. Is the initial generalized phase domain dyadic only?
+3. How are exact phase literals written?
+4. Are arbitrary real literals forbidden in `.qli` core source?
+5. Is approximation expressed in source, backend configuration, evidence, or a separate contract form?
+6. What norm is used for pure operators?
+7. What norm is used for instruments?
+8. How are composition budgets accumulated?
+9. How are synthesis and sampling/statistical errors reported separately?
+10. How does coherent control constrain approximation of phase?
+11. Can exact and approximate operations coexist in one program, and how is the total contract represented?
+12. Which approximation claims are allowed to pass through reusable `Meaning`/`Op<A,M>` interfaces?
+
+## Non-goals
+
+This issue does not select:
+
+- a specific hardware gate set;
+- a specific synthesis algorithm;
+- a physical noise model;
+- a fault-tolerance architecture;
+- a universal real-number implementation.
+
+## Acceptance criteria
+
+1. QFT/QPE phase conventions remain exact at the source/meaning layer.
+2. A `pi/8`-class phase can be represented exactly in the selected symbolic profile.
+3. Wrong sign/global phase remains detectable under coherent control.
+4. No floating-point equality is used as semantic equality.
+5. An approximate backend artifact carries a declared metric and bound.
+6. Composition of several approximate operations has a specified conservative budget rule.
+7. Instrument approximation is reference-safe by construction of its metric/contract.
+8. Sampling error, algorithmic resolution error, and synthesis error are separate fields/concepts.
+9. Approximation cannot authorize exact ancilla release.
+10. Unsupported exact phases or unsupported approximation contracts fail explicitly.
+
+## Theorem boundary
+
+This separation should align with the project's theorem structure:
+
+- the **Qleisli Soundness Theorem** reasons about the exact checked semantics of the accepted IR/profile;
+- constitutional **Physical Realizability** requires the exact correspondence of an admitted realization to its accepted meaning; a separately certified approximate backend contract is an engineering claim and does not discharge edition-2026 PR (EXACT-2026-01, #311).
+
+The source language should not blur that distinction.
+
+## Design intent
+
+The goal is to preserve one of Qleisli's defining advantages:
+
+> **Exact mathematical meaning first; approximation only where implementation genuinely requires it, with an explicit certified error contract.**
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #45 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Exact and approximate operations.** Exact phase, axis order and cleanup conditions cannot be weakened by an approximation annotation. An approximation obligation needs a named metric, bound and actual output binding; resource/budget consequences also use #120. Existing finite exact-phase checks and tests do not discharge general approximation or quantitative RS. The issue's exact/approximate contracts, lowering, rejection cases and evidence remain implementation obligations.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.
+
+
+## Adopted exactness boundary — EXACT-2026-01 (2026-10-05)
+
+The human Guardian adopted the exact supplement recorded in #311 (reviewed SHA-256 `b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179`; actual adoption record SHA-256 `e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59`). Its interpretation is now binding; implementation, mechanical continuity integration and proof discharge remain separate.
+
+For edition 2026, an epsilon-bound approximation to a source meaning does not discharge that source's constitutional PR or target-RS obligations. Such an artifact may carry separately checked engineering approximation/resource claims, and all this Issue's metric, composition, closed-budget, actual-artifact, control/reference and rejection requirements remain in force where applicable. None is waived or postponed by this clarification. An independently checked exact admitted artifact is not excluded merely because an internal numerical/search parameter is named epsilon. Exact phase, cleanup and existing guarantees remain protected; numerical assistance may produce checked evidence for exact propositions. #309 remains 0.3.1 and #310 remains v1+.

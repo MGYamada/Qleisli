@@ -1,0 +1,55 @@
+Found while writing small `.qli` programs against v0.2.8 (`18020190b1c80037442be29d74e90fd9e07253e0`). Child of #112; related to #225 (F. Phase semantics) and #51 (QDB).
+
+## Problem
+
+When an `apply_contract` equation fails, the counterexample is reported by matrix position ([src/contract/mod.rs L102-L125](https://github.com/MGYamada/Qleisli/blob/18020190b1c80037442be29d74e90fd9e07253e0/src/contract/mod.rs#L102-L125)).
+
+To read it, the author must know the basis-index convention (the first leaf is the least significant bit) and decode the indices by hand.
+
+## Reproduction (observed)
+
+The program is a SWAP implementation missing its third CNOT:
+
+```qli
+unitary fn swap_by_cnots(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    let (a, b) = cnot(a, b);
+    let (b, a) = cnot(b, a);
+    join(a, b)
+}
+unitary fn swap_spec(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    do (a, b) <- q;
+    pure (b, a)
+}
+// ... apply_contract(swap_by_cnots, swap_spec, q)
+```
+
+It is rejected with:
+
+```text
+main.qli:19:5: invalid_ir: function semantic contract: exact equation U E_in = E_out u does not hold; input column 2, output row 1 (zero-based): actual 0, expected 1
+```
+
+Here column 2 is |a=0, b=1⟩ and row 1 is |a=1, b=0⟩.
+
+Phase errors are reported the same way. Replacing `z` with `s` in a CZ specification reports:
+
+```text
+input column 3, output row 3 (zero-based): actual -1, expected 1*i
+```
+
+## Suggested direction
+
+Render the input and output as basis values of the contract signature's tree. For example:
+
+```text
+input |(0, 1)⟩, output |(1, 0)⟩: actual 0, expected 1
+```
+
+Print `i` rather than `1*i`. Keep the raw indices in the structured (JSON) output for tools. This changes presentation only, not which programs are accepted.
+
+## Acceptance
+
+- Text diagnostics for equation failures show the input and output basis states in the signature's tree shape.
+- JSON keeps a machine-readable form.
+- Snapshot tests cover one permutation mismatch and one phase mismatch.

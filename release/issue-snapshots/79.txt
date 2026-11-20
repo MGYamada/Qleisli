@@ -1,0 +1,78 @@
+## Completion checkpoint — 2026-10-06
+
+All six original 0.3.0 conditions are implemented and verified in [a89a4af7](https://github.com/MGYamada/Qleisli/commit/a89a4af7fa4b0b640bade0afa8970d7c8bb4de26), now pushed and integrated in [6db68d05](https://github.com/MGYamada/Qleisli/commit/6db68d05607556a893e9d65e66138b486313ad9a) / draft PR #307. The [criterion/evidence packet](https://github.com/MGYamada/Qleisli/tree/a89a4af7fa4b0b640bade0afa8970d7c8bb4de26/tests/fixtures/frontend_v030/default-construction) and [normative construction boundary](https://github.com/MGYamada/Qleisli/blob/a89a4af7fa4b0b640bade0afa8970d7c8bb4de26/docs/src/reference/rust-boundary.md#explicit-construction-instead-of-default) bind the recorded decision, actual source/diagnostics, independent review and performed checks.
+
+Default is unavailable for every live quantum-containing type, including nested owners and zero-width Q<Unit>/Q<Bits<0>>. Ordinary data stays ordinary, and resolved user functions named default retain explicit body/effect/owner checking. Absent general trait/impl/associated-Default machinery does not grant a quantum construction path or claim implementation of future traits. Explicit initialization retains its own semantics; general clean/dirty and quantitative resource obligations stay separate.
+
+Latest Rust and actual 1.85.0 each pass 20 focused tests, all-target Cargo Clippy and formatting. Six unchanged first projects preserve 30 actual before/after calls, 13 byte-identical stream pairs and three unchanged successful outputs. Original failed test assumptions and the coverage timing correction remain separate records. Pinned mdBook/rendered links, authoring/edition/VM22/VM29 and reviewed-base constitutional continuity pass.
+
+[Current full CI](https://github.com/MGYamada/Qleisli/actions/runs/37422505870) is pending beyond its successful size/routing gate. Completion of this bounded construction exclusion is not full release/package/install/bundle readiness, trait machinery, a fresh Lean replay or any broader QS/PR/RS/EXACT discharge. External qlinty is omitted as explicitly authorized. The original questions and alternatives below remain the historical design context.
+
+## Status
+
+**Completed 0.3.0 construction boundary; original design discussion follows.**
+
+Related:
+- #67 — Rust-like traits and std vocabulary
+- #70 — clean ancilla contracts
+- #68 — semantic false friends
+
+## Problem
+
+In Rust, `Default::default()` is ordinary value construction.
+
+For a live quantum owner, producing a default value would normally imply real quantum resource effects, for example:
+
+- allocate a fresh qubit;
+- prepare `|0>`;
+- construct a clean workspace;
+- choose a physical/logical initialization convention.
+
+Those are not ordinary zero-cost/default value semantics.
+
+Generic Rust-shaped code such as
+
+```rust
+T::default()
+```
+
+must not accidentally allocate or prepare quantum hardware/resources merely because `T = Q<...>`.
+
+## Design question
+
+Decide whether live quantum owner types may ever implement a Rust-like `Default` abstraction.
+
+Candidate possibilities:
+
+- `Default` is permanently unavailable for `Q<T>`;
+- `Default` is classical/static-only;
+- quantum initialization uses explicit `clean` / `init0` / constructors with effect/resource semantics;
+- a future resource-factory trait exists but is intentionally not named `Default`.
+
+This issue does not fix the final choice.
+
+## Questions
+
+- Is `Q<Bit>::default()` ever meaningful?
+- What about `Q<Unit>`?
+- Can generic trait bounds accidentally create quantum resources?
+- Is clean initialization an `Iso`, allocation effect, or separate resource capability?
+- Should qlinty reject generic `Default` bounds that might instantiate with quantum owners?
+- What is the boundary between default **basis data** and default **live quantum ownership**?
+
+## Required invariant
+
+> **Ordinary generic value construction must not hide quantum allocation/preparation.**
+
+## Acceptance criteria
+
+- [x] The `Default` status of live `Q<T>` is explicit.
+- [x] Classical/static default values are distinguished from quantum-resource initialization.
+- [x] Generic trait resolution cannot silently allocate quantum resources.
+- [x] Clean ancilla creation remains explicit in effect/resource semantics.
+- [x] `Q<Unit>` is covered explicitly.
+- [x] Diagnostics/docs explain why "default quantum value" is not ordinary Rust default construction.
+
+## Compact question
+
+> **A default value is cheap syntax in Rust; a default qubit is a physical operation. Should they share a trait name?**

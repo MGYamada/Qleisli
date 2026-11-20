@@ -1,0 +1,237 @@
+## Status
+
+**Qleisli 0.3.0 important. Constitutional / package-identity boundary.**
+
+Now that qrate itself has a normative role (#170), Qleisli must distinguish three different organizational layers before package layout becomes accidental semantics:
+
+```text
+qrate
+  └─ module
+      └─ source file
+```
+
+The core rule is:
+
+> **A qrate is a distribution/version/public-API unit, a module is a namespace/visibility unit, and a file is only source storage.**
+
+In particular:
+
+> **File layout must not define semantic identity.**
+
+Related:
+- #65 — module/import/visibility ergonomics
+- #41 — name resolution
+- #170 — normative qrate semantics and authority
+- #169 — .qli / external-artifact authority boundary
+- #48 — authoritative Language Reference
+
+## 1. Fix the three-layer model
+
+### Qrate
+
+A qrate owns package-level identity such as:
+
+- qrate name;
+- qrate version;
+- dependency identity;
+- public API boundary;
+- distribution/reproducibility identity.
+
+### Module
+
+A module owns language-level organization such as:
+
+- canonical namespace path;
+- visibility;
+- re-export structure;
+- name resolution scope.
+
+### File
+
+A source file is a storage/authoring artifact.
+
+Its path may participate in locating source during compilation, but must not silently become language meaning.
+
+## 2. File movement must not change meaning by itself
+
+Moving a declaration between physical files without changing its canonical qrate/module identity should not change:
+
+- denotation;
+- Meaning identity;
+- verifier semantics;
+- evidence binding;
+- public symbol identity.
+
+Reject designs where:
+
+```text
+src/a/foo.qli
+```
+
+and
+
+```text
+src/b/foo.qli
+```
+
+become different semantic entities solely because the filesystem path changed.
+
+## 3. Canonical symbol identity
+
+0.3.0 should define the canonical identity of exported declarations.
+
+A likely shape is conceptually:
+
+```text
+qrate identity
++ canonical module path
++ declaration identity
+```
+
+rather than:
+
+```text
+absolute filesystem path
++ source line
+```
+
+Source locations remain diagnostic/provenance metadata, not semantic identity.
+
+The exact hash/serialization format may remain implementation-defined in 0.3.0, but the semantic inputs must be specified.
+
+## 4. Module paths are semantic names; file paths are not
+
+A canonical module path may legitimately affect identity because it is part of the language namespace:
+
+```text
+foo::algebra::qft
+```
+
+is a different public symbol from:
+
+```text
+foo::transforms::qft
+```
+
+if the module path itself is changed.
+
+By contrast, implementing either module in another physical file must not create a new declaration solely due to the storage change.
+
+## 5. File-to-module mapping is frontend policy
+
+Qleisli may adopt conventions such as:
+
+```text
+src/foo.qli          -> module foo
+src/foo/bar.qli      -> module foo::bar
+```
+
+but the specification must distinguish:
+
+- the **convenient mapping rule**, from
+- the **canonical module identity** that results.
+
+A future alternate source layout should be possible without changing the language's semantic model.
+
+## 6. Qrate roots and namespace roots
+
+#65 asks whether qrates and modules share a namespace root.
+
+0.3.0 should resolve this explicitly.
+
+The intended model should support canonical external identities of the form:
+
+```text
+qrate_name::module::item
+```
+
+or an equivalent specified representation.
+
+The syntax may differ, but package identity and module identity must remain conceptually distinct.
+
+## 7. Visibility belongs to modules/qrate API, not files
+
+Visibility decisions such as:
+
+- private;
+- public within a module;
+- public within a qrate;
+- public outside the qrate;
+
+must be defined in terms of language/package structure, not filesystem directories.
+
+A directory must not accidentally grant or remove authority.
+
+## 8. Evidence and cache identity
+
+Proof/evidence/cache systems should bind to canonical program identity, not unstable local paths.
+
+Source paths may appear in diagnostics and provenance, but moving a source file should not invalidate semantic identity unless the move also changes a canonical module or qrate identity.
+
+This is especially important for:
+
+- verifier evidence;
+- qlidoc;
+- QLT/QDB/QCP provenance;
+- qlirgo cache keys;
+- reproducible qrate builds.
+
+## 9. Generated source follows the same rule
+
+Generated `.qli` should ultimately acquire ordinary canonical qrate/module identities.
+
+Temporary generation paths must not become semantic authority.
+
+A generated file is still storage for a Qleisli program, not a new naming layer.
+
+## Non-goals
+
+This issue does not require:
+
+- final filesystem conventions;
+- workspace design;
+- registry design;
+- qlirgo cache implementation;
+- final qlidoc URL layout;
+- 0.4.0 metaprogramming implementation.
+
+It fixes only the conceptual and normative boundary.
+
+## 0.3.0 acceptance criteria
+
+- [x] The Reference distinguishes qrate, module, and file as separate concepts.
+- [x] Qrate is the version/distribution/public-API unit.
+- [x] Module is the namespace/visibility unit.
+- [x] File is explicitly a source-storage unit.
+- [x] File location is not part of semantic declaration identity by itself.
+- [x] Canonical public symbol identity is defined independently of absolute/local source paths.
+- [x] Module path changes and file path changes are distinguished semantically.
+- [x] Visibility is defined over module/qrate structure, not filesystem directories.
+- [x] Evidence/provenance rules distinguish canonical identity from diagnostic source location.
+- [x] #65 and #170 are updated/cross-referenced consistently.
+
+## Release principle
+
+> **Packages and modules name programs. Files merely store them.**
+
+
+## Beta criterion audit — 2026-10-19
+
+All 10 original criteria are satisfied for this issue's **normative authority/identity boundary**, reviewed at [main `7760aa3`](https://github.com/MGYamada/Qleisli/commit/7760aa3569984ff33f50e71c06535fd87f3564d0). [Reference](https://github.com/MGYamada/Qleisli/blob/7760aa3569984ff33f50e71c06535fd87f3564d0/docs/src/reference/packages-and-artifacts.md) is the production specification; this audit implements none of the explicitly excluded future ecosystem features.
+
+| Criterion, in original order | Evidence |
+| --- | --- |
+| 1 | Qrate, module and file have separate definitions. |
+| 2 | Qrate owns package/version/public-API distribution. |
+| 3 | Module is the canonical namespace/visibility unit. |
+| 4 | File stores source. |
+| 5 | Absolute/local locations and generation paths are storage/provenance, not declaration identity. |
+| 6 | Canonical declaration identity combines qrate, module and declaration in a resolved context. |
+| 7 | The unchanged-storage move example is distinguished from algebra→transforms namespace change. |
+| 8 | Declared language/module access governs visibility; directories grant no authority. |
+| 9 | Canonical subject identity, actual evidence bytes and diagnostic paths are explicitly distinct; no automatic evidence reuse is claimed. |
+| 10 | #65 and #170 already contain reciprocal canonical-identity sections and retain their separate criteria. |
+
+Validation: #420 merged the specification; #421's [full-profile CI](https://github.com/MGYamada/Qleisli/actions/runs/39131240742) rechecked the same Reference and complete Rust coverage. Exact checked head `299e8f47bf9fb1973dd6ad2aba46fdee6a610f97` and main merge `7760aa3569984ff33f50e71c06535fd87f3564d0` have the identical tree `6bd7c71e7f5ed89e7ff5682678de379e175effa8`. All 42 checks succeeded; only two nonrelease readiness jobs skipped as expected. Practical retained regressions cover ordinary std visibility/public effects, invalid doc claims and ignored manifest metadata without privilege. The complete Rust remaining partition passed and its command includes `project`, `public_effects`, `body_effects`, `cli` and `review_v024`. Documentation/link checks also pass. No new Rust/Lean behavior change or proof replay was needed for this audit.
+
+This closes the specified conceptual/normative boundary only. #65's frontend criteria, #171's effective toolchain/std pairing, #255's native edition propagation, future registry/solver/build capabilities and source/target preservation remain under their own scopes. The two admitted QLV1 guarantees and pending broader QS/PR/RS/EXACT duties retain their status; no release approval or new guarantee is claimed. Historical implementation-gap observations above remain dated records.

@@ -1,0 +1,48 @@
+## Status
+
+**0.3.0 semantic decision fixed; implementation/diagnostics remain open.**
+
+Related: #29 (`excl`), #69 (`ctrl`), #73 (no assignment to live quantum-containing places).
+
+## Decision
+
+`mut` is an ordinary binding/place-reassignment concept only.
+
+It has **no quantum-state or quantum-access meaning**.
+
+Because #73 forbids assignment to places that currently contain live quantum ownership, 0.3.0 should reject or diagnose `mut` when it is applied solely to a live quantum-containing binding.
+
+```qli
+let q = prepare();
+h(excl q);        // valid
+
+let mut q = prepare();  // reject / targeted diagnostic in the quantum core
+```
+
+`excl` and `ctrl` never require `mut`.
+
+## Ordinary data
+
+Ordinary classical/static variables may use `mut` if ordinary reassignment is supported and carries ordinary semantics.
+
+Mixed aggregates are quantum-containing if reassignment would replace a live nested owner; #73's transitive rule applies.
+
+## Diagnostics
+
+```text
+error: 'mut' does not grant quantum access
+help: use 'excl q' for exclusive quantum access
+note: assignment to live quantum-containing places is not supported
+```
+
+## Acceptance criteria
+
+- [ ] `mut` never means “the wavefunction may change”.
+- [ ] `excl`/`ctrl` do not require mutable bindings.
+- [ ] Live quantum-containing bindings do not gain assignment through `mut`.
+- [ ] Ordinary classical/static mutability remains separate.
+- [ ] Diagnostics do not suggest `mut` for quantum access errors.
+
+## Compact rule
+
+> **`mut` changes bindings; `excl` / `ctrl` govern quantum access. In 0.3.0 live quantum bindings are not assignable.**

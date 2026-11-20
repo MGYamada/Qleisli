@@ -1,0 +1,34 @@
+Found while writing small `.qli` programs against v0.2.8 (`18020190b1c80037442be29d74e90fd9e07253e0`). Child of #112; related to #15 and #18 (tuple-shape friction) and #225.
+
+## Problem
+
+Passing a register with different tuple nesting to a static operation is rejected. But the message names neither type, and it blames the operation ([src/frontend/compile/lower/mod.rs L988-L996](https://github.com/MGYamada/Qleisli/blob/18020190b1c80037442be29d74e90fd9e07253e0/src/frontend/compile/lower/mod.rs#L988-L996)).
+
+The check already has both the operation's signature and the operand type in hand.
+
+## Reproduction (observed)
+
+```qli
+use std::transforms::qft3;   // Q<((Bit, Bit), Bit)>
+// ...
+let counting = adjoint(qft3, join(c0, join(c1, c2)));   // operand: Q<(Bit, (Bit, Bit))>
+```
+
+```text
+main.qli:12:28: type_mismatch: static operation requires one Q<A> input and the same Q<A> result
+```
+
+The span points at `qft3`, so the message reads as if `qft3` itself were malformed.
+
+## Suggested direction
+
+The single check covers two different situations. Report them separately:
+
+- **Wrong operand type:** for example, "`qft3` expects `Q<((Bit, Bit), Bit)>`, but the argument has type `Q<(Bit, (Bit, Bit))>`", with a related location on the argument.
+  - When the two types have the same leaves but different nesting, add a note that tuple nesting is significant, and show how to regroup with `split`/`join`.
+- **Operation whose own input and result types differ:** keep the current message.
+
+## Acceptance
+
+- Text and JSON diagnostics name both types and point at the argument.
+- A snapshot test covers the nesting case.

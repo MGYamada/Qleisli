@@ -1,0 +1,149 @@
+## Status
+
+Constitutional versioning issue for **Qleisli 0.3.0**.
+
+Related: #129 (Constitution Draft 5), #135 (ledger and acceptance identity), #139 (jurisdictions), #141 (CI), #255 (explicit qrate edition).
+
+## Problem
+
+Release versions and constitutional editions are different axes. A version may change without amending the Constitution, and the language may gain expressive power within the same edition.
+
+The previous model of one frozen `Accepted_e` and one complete semantic vocabulary per edition would incorrectly make such growth require an edition transition.
+
+## Adopted version model
+
+An edition identifies the entrenched constitutional framework and its continuing obligations. A release/formalization state identifies the current implementation, acceptance judgments, and semantic realization.
+
+Conceptually:
+
+```text
+Constitution_e
+Jurisdictions_e
+Ledger_e,t
+
+Accepted_e,t(P)
+Meaning_e,t(P)
+RealizationAccepted_e,t(P, target, artifact, evidence)
+```
+
+The indices are explanatory notation, not names or syntax mandated by the Constitution.
+
+For example, different releases may all belong to edition 2026 while using stronger current formal realizations. The edition's constitutional text stays fixed; its ledgered guarantees accumulate.
+
+An edition identifies the constitutional regime, not a syntax generation, grammar, source dialect, or compiler release. Syntax, type-system, frontend, CLI, and compatibility changes are governed by release versioning and the published migration policy. The unified 0.3.0 frontend remains in edition 2026; grammar changes must not implicitly select or require another edition.
+
+Initial ratification is the first dedicated stage of the approved 0.3.0 work. The natural-human project maintainer affirmatively adopts the exact constitutional text for edition 2026, with the adopting authority, text identity, and effective date recorded. Appointment of the Constitution Guardian Office is a separate recorded act. Selecting release 0.3.0, approving a work plan, or generating a manifest does not itself constitute ratification.
+
+## What changes require a new edition?
+
+- Except for a valid pre-v1 rectification authorized under #129 Article IX, a change to ratified constitutional text requires a new edition and an explicit amendment.
+- Addition of another Fundamental-Theorem jurisdiction requires that amendment process (#138).
+- Applying an existing jurisdiction to a new case is constitutional interpretation (#149).
+- Extending proofs, changing source syntax or types, adding a language feature, replacing an implementation, or recording a discharged interpretation does not by itself require a new edition. Such changes remain subject to constitutional obligations, non-weakening, and the published release compatibility and migration policy.
+- A new edition does not override #129 Article IV's non-weakening rule.
+
+Use **same-edition extension**, **constitutional interpretation**, **formal strengthening**, and **constitutional amendment** distinctly.
+
+## Historical integrity without freezing the language
+
+Historical releases and ledger entries retain their recorded meaning; they must not be silently redefined. The current acceptance mechanism may change, but it must discharge current jurisdiction-wide obligations and every applicable historical ledger guarantee.
+
+A translation of an old fragment must have a justified relation to its recorded semantics and the current accepted artifacts. #135 owns this transport requirement.
+
+No law such as
+
+```text
+Accepted_e,t ⊆ Accepted_e,t+1
+```
+
+is imposed merely by the safety Constitution. Acceptance-set continuity is a separate compatibility promise. In particular, restricting acceptance is not by itself weakening a safety implication, although it may violate release/source compatibility policy.
+
+## Compatibility and support
+
+Distinguish:
+
+1. **Constitutional continuity** — preserved jurisdictions, accumulated guarantees, semantic transport, and current production proof coverage.
+2. **Language/source compatibility** — whether old programs remain accepted with the promised behavior.
+3. **Implementation support** — maintained parsers, toolchains, backends, and migration paths.
+
+Preserving recorded guarantees does not imply perpetual support for every old binary or frontend. Compatibility policy and QLT/corpus regression must state the actual support promise.
+
+An implementation may not exploit this separation to accept a historical program while evading its applicable ledgered guarantee.
+
+## v1.0.0
+
+v1.0.0 requires full discharge for constitutional conformance under #129 Article VIII. It does not freeze the acceptance relation or concrete theorem types.
+
+Same-edition language growth can continue after v1.0.0. The new feature's obligations must be discharged before certification, and historical guarantees remain in force.
+
+## Questions to settle
+
+- How is the edition/release tuple recorded in manifests, compiler output, artifacts, and CI?
+- How does the explicit `Qargo.toml` edition declaration in #255 bind compilation and tests?
+- What compatibility guarantees apply within pre-v1 and post-v1 releases?
+- What migration or old-edition support is promised separately?
+- How is initial human ratification bound to the exact adopted text, and how are later constitutional edition transitions recorded?
+- What SemVer policy accompanies an edition transition?
+
+## Acceptance criteria
+
+- [ ] Define edition independently from release version.
+- [ ] Permit release-indexed acceptance and current formal semantics within one edition.
+- [ ] Preserve historical ledger semantics without freezing future expressive power.
+- [ ] Define when constitutional amendment requires an edition transition.
+- [ ] Preserve Article IV at every transition.
+- [ ] Bind explicit schema-2 `[qrate].edition` selection consistently with #255.
+- [ ] Separate constitutional continuity, source compatibility, and implementation support.
+- [ ] Record v1.0.0 as a proof-coverage milestone rather than a theorem-type freeze.
+- [ ] Document the version tuple in the Reference, artifact metadata, and release process.
+
+## Core principle
+
+> **An edition fixes the constitutional framework. Releases may grow within it; accumulated guarantees constrain every current acceptance mechanism.**
+
+## Recorded human adoption — 2026-10-04
+
+The natural-human project maintainer **Masahiko G. Yamada** explicitly ratified the identified edition-2026 Constitution, adopted the identified governance candidate, and accepted appointment as the initial sole human Constitution Guardian, effective **2026-10-04 (Asia/Tokyo)**. The actual answer to the question identifying both hashes and these acts was:
+
+> 両候補を批准・採択し、初代Guardianに任命する
+
+- Constitution SHA-256: `40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b`.
+- Approved governance candidate SHA-256: `60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721`; preserved at `tests/fixtures/constitution_v030/governance-candidate.txt`.
+- Actual event: `governance/ratification-2026.json`, SHA-256 `3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a`. It transcribes the question, answer and conversation provenance; it is not a cryptographic human signature.
+- `CONSTITUTION.md` remains byte-identical. Active `GOVERNANCE.md` updates status and conditional wording to reflect the adopted event.
+- This act does not adopt a QS/PR/RS interpretation, discharge a proof, approve a release or publish any artifact. Source changes remain uncommitted at this checkpoint.
+
+The authority/edition Reference is implemented at `docs/src/reference/authority.md`. Native edition propagation and release artifact binding retain their separate acceptance criteria; no source syntax selects a new constitutional edition.
+
+
+## Explicit-selection implementation link — planned 2026-10-18
+
+The concrete beta implementation contract is now recorded in #255. It requires explicit retained source/manifest edition selection, edition-bound checked APIs, a strict new QLV3/native-result-3 transport, and proofs tied to the actual native dispatcher and reply. Edition 2026, complete product release, external protocol, route/mode and checked scope remain separate coordinates; version equality alone is not semantic evidence. Old external envelopes/replies reject without fallback, while original internal QLV1 meanings and both admitted scoped guarantees retain their exact premises and continuity duties.
+
+This is a planned technical migration under the existing human-adopted model, not completed implementation, a new constitutional interpretation or any discharge. Keep this issue open until its Reference/artifact/release-process criteria and #255's actual acceptance binding are verified. Source compatibility, implementation support and constitutional continuity remain distinct; no new product release, edition transition, publication or general QLT execution is selected.
+
+## Current technical audit (2026-10-19; not completion)
+
+Draft [PR #423](https://github.com/MGYamada/Qleisli/pull/423) is pushed at `bd90461908b71388e658e0399cb30ca99a693a47`. This is an audit of the already adopted model and its implementation, not another constitutional interpretation or guarantee admission.
+
+| Criterion | Current evidence / remaining boundary |
+| --- | --- |
+| Edition independent of release | [Authority Reference](https://github.com/MGYamada/Qleisli/blob/bd90461908b71388e658e0399cb30ca99a693a47/docs/src/reference/authority.md): constitutional edition, complete product release and format revisions are separate coordinates. |
+| Release-indexed acceptance/semantics | The same chapter permits changing current language/formalization within edition 2026; it does not freeze an acceptance set or theorem type. |
+| Historical ledger semantics | [Current evidence](https://github.com/MGYamada/Qleisli/blob/bd90461908b71388e658e0399cb30ca99a693a47/governance/guarantees/current-evidence.json) binds the two original ordinary-QLV1 guarantees through the fixed semantic baseline and checked Raw/Basis transports. Earlier actual builds/audits/replays retain their exact source window. |
+| Amendment/edition transition | Articles III/IX and the Authority chapter distinguish constitutional amendment, the limited human rectification procedure, interpretation and ordinary formal strengthening. |
+| Article IV continuity | Protected text, adoption records, guarantee meanings and pending obligations remain unchanged; the trusted-base identity/continuity check is separate from a fresh proof replay. |
+| Explicit schema-2 selection | [Source/package Reference](https://github.com/MGYamada/Qleisli/blob/bd90461908b71388e658e0399cb30ca99a693a47/docs/src/reference/packages-and-artifacts.md) and [QLV3 boundary](https://github.com/MGYamada/Qleisli/blob/bd90461908b71388e658e0399cb30ca99a693a47/docs/src/reference/execution-view.md) describe retained manifest selection through the actual native dispatcher/reply. Full #255 conformance/CI remains open. |
+| Continuity / compatibility / support | The Authority Reference states all three separately; removing old frontend support does not erase applicable historical guarantees. |
+| v1 proof milestone | Article VIII and the pre-v1 disclosure rules require applicable proof coverage, without freezing concrete theorem types or future same-edition growth. |
+| Tuple in Reference/artifacts/release process | The Reference records `(2026, 0.3.0-beta)` separately from Qargo schema 2, QLV3 and native-result 3. The actual native context/reply and [release-readiness gate](https://github.com/MGYamada/Qleisli/blob/bd90461908b71388e658e0399cb30ca99a693a47/scripts/check_release_ready.py) retain their own subject/version/format and scoped evidence bindings. |
+
+The shared Book plan now passes all three commands (build, rendered-link regressions, actual generated-HTML validation) using the existing exact mdBook 0.5.4 binary. The original bad rendered-book link and its actual hosted failure are preserved privately; the corrected link points to the exact public CI source. Documentation-only follow-ups introduce no Rust/Lean definition change and do not rerun or extend earlier proof claims.
+
+All nine original criteria remain required. This issue stays open pending complete current-head CI/review and the linked #255 binding/conformance closure. Registry/package/native installation and final same-commit beta checks remain separate; no source/native/runtime preservation or broader QS/PR/RS/EXACT discharge is inferred from metadata.
+
+## Integrated implementation status — 2026-10-19
+
+PR #423 is now merged as `d74d60ce95c81cf4fc4b060040d2a168a098dc24`, from verified head `6eb451647f599cb0f1589f5e75de1c91d3f7325e`. Both push/PR runs pass all eight required shared contexts on that head; both automated P1/P2 findings are resolved and the repair deltas received final local review. The original automated receipts retain their earlier commit anchors. The release-only readiness jobs are intentionally not selected, not passed release gates.
+
+The edition/native dispatcher, Reference/artifact tuple and current scoped evidence are integrated. This issue remains open for the linked #255 binding/conformance closure already required above; the companion qargo draft still cannot fetch the unpublished exact beta from the registry. Source compatibility/support, constitutional continuity and final release validation retain their separate contracts. No new interpretation, guarantee, edition transition or publication.

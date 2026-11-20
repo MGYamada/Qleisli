@@ -1,0 +1,88 @@
+## Status
+
+Completed in [PR #431](https://github.com/MGYamada/Qleisli/pull/431), merge `fdf0806282b674d38754c8302d8988555b439d4b`. [Final seven-criterion audit and exact CI/review evidence](https://github.com/MGYamada/Qleisli/issues/87#issuecomment-6381289394). The documented finite instrument profile satisfies these criteria; general ordinary-root EffectSound/CPTP and source/runtime preservation remain separate obligations.
+
+Core effect/type-system issue for **Qleisli 0.3.0**.
+
+Related:
+- #27 effect/type-theory synthesis
+- #31 exact/approximate boundary
+- #46 `Meaning` language
+- #48 Language Reference
+- #66 explicit effect boundaries
+- #80 Haskell/Qleisli boundary
+
+## Problem
+
+The current effect lattice distinguishes
+
+```text
+Unitary <= Isometry <= Observe
+```
+
+but the semantic content of `Observe` needs a more precise language-level account.
+
+A measurement operation is not adequately specified by writing only
+
+```text
+Q<Bit> -> Bit
+```
+
+because different instruments can have the same classical outcome type while leaving different post-measurement quantum states.
+
+Likewise, classical feed-forward after measurement affects ownership and branch typing.
+
+## Questions to decide
+
+1. Is `Observe` semantically an instrument rather than a plain function?
+2. What is the result type of measurement?
+3. Does measurement consume a quantum owner, retain a post-measurement owner, or support both forms explicitly?
+4. How is destructive measurement represented?
+5. How is nondestructive/projective measurement represented?
+6. How are general POVMs/instruments represented or deferred?
+7. Must classical branches after observation return the same linear ownership shape?
+8. Can a measured classical bit control later unitary/isometric operations?
+9. How is coherent control distinguished syntactically and semantically from classical feed-forward?
+10. How are instrument meanings represented in #46?
+11. What exact semantics is required in the presence of arbitrary reference systems?
+12. How do repeated measurements and reset/preparation compose?
+
+## Required distinction
+
+Qleisli should separate:
+
+```text
+coherent control
+classical control after observation
+structural ownership manipulation
+```
+
+These are physically different and must not share one ambiguous surface mechanism.
+
+## Acceptance criteria
+
+- The Reference gives a normative measurement/instrument judgment.
+- At least destructive and state-retaining measurement have unambiguous typing.
+- Branch merge rules preserve linear ownership.
+- Classical feed-forward is explicit and cannot be mistaken for coherent control.
+- Instrument semantics are reference-safe.
+- `Meaning` or a dedicated instrument-meaning family can specify observations.
+- The effect lattice has a precise operational interpretation.
+
+## Non-goals
+
+0.3.0 need not expose arbitrary continuous-outcome POVMs or hardware noise models.
+
+## Design intent
+
+`Observe` should mean more than “not unitary”:
+
+> **it should identify a precisely typed quantum instrument boundary where classical information is created.**
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #37 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Instrument semantics.** An instrument must specify the complete unnormalized outcome maps and their trace-preserving sum, distinguishing state-retaining from destructive observation. Per-branch normalization would erase probabilities and cannot establish the contract. Classical feed-forward is distinct from coherent control and postselection. General instrument typing, lowering and independent outcome-map checks remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

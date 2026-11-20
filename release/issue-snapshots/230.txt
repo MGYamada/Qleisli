@@ -1,0 +1,270 @@
+## Status
+
+**Qleisli 0.3.0 important. Ecosystem version-topology / release-engineering boundary.**
+
+Qleisli should freeze its ecosystem version domains before the tool suite and package workflow grow further.
+
+The goal is to eliminate unnecessary compatibility matrices by defining exactly which components share one release identity and which products version independently.
+
+Related:
+- #615 — final linter spelling (`qlinties`); [qlirgo#45](https://github.com/MGYamada/qlirgo/issues/45) owns tool-side rename
+- #171 — bundled `std` version is exactly locked to the Qleisli toolchain version
+- #106 — versioned QLT/QDB/QCP analysis protocol
+- #107 — qlirgo integration with pinned Qleisli toolchains and the analysis suite
+- #53 — stabilized qrate/package workflow and stdlib integration
+
+## Normative rule
+
+Qleisli adopts **three version domains**:
+
+### 1. Qleisli release train
+
+The following components share exactly one release version:
+
+```text
+Qleisli X.Y.Z
+├── compiler / checker / verifier   X.Y.Z
+├── std                              X.Y.Z
+├── QLT — Qleisli Test Suite         X.Y.Z
+├── QDB — Qleisli Debugger           X.Y.Z
+└── QCP — Qleisli Circuit Profiler   X.Y.Z
+```
+
+For an official release, these components are not independently selectable.
+
+Normative invariant:
+
+```text
+qleisli_version
+== std_version
+== qlt_version
+== qdb_version
+== qcp_version
+```
+
+A user selects a **Qleisli release**, not an arbitrary tuple of language-core and analysis-tool versions.
+
+This generalizes the existing `Qleisli == std` rule in #171 to the full first-party language distribution.
+
+### 2. qlirgo release train
+
+The following components form a second synchronized release domain:
+
+```text
+qlirgo A.B.C
+├── qlinties  A.B.C
+├── qlifmt  A.B.C
+└── qlidoc  A.B.C
+```
+
+Normative invariant:
+
+```text
+qlirgo_version
+== qlinties_version
+== qlifmt_version
+== qlidoc_version
+```
+
+These three internal qrates/tools are part of one qlirgo development-tool distribution and are not independently user-selectable products.
+
+This does **not** mean the qlirgo version must equal the Qleisli version.
+
+For example, a supported pairing may be:
+
+```text
+Qleisli 0.4.0
+qlirgo   0.2.1
+```
+
+provided the compatibility contract explicitly supports that pairing.
+
+### 3. qleisliup versions independently
+
+`qleisliup` is a separate product and has its own version lifecycle:
+
+```text
+qleisliup P.Q.R
+```
+
+It must not be release-locked to either Qleisli or qlirgo.
+
+This is intentional: qleisliup must be able to manage multiple generations of Qleisli/qlirgo distributions from outside those distributions.
+
+Conceptually:
+
+```text
+qleisliup
+   ├── install/use Qleisli 0.3.x
+   ├── install/use Qleisli 0.4.x
+   ├── install/use Qleisli 0.5.x
+   └── install/select compatible qlirgo tooling
+```
+
+Its updater/installer role requires an independent release cadence.
+
+## Why freeze this in 0.3.0
+
+Without an explicit rule, the ecosystem can accidentally grow a compatibility space such as:
+
+```text
+Qleisli version
+× std version
+× QLT version
+× QDB version
+× QCP version
+× qlirgo version
+× qlinties version
+× qlifmt version
+× qlidoc version
+× qleisliup version
+```
+
+Most of those dimensions provide no user value.
+
+The intended model collapses the space to:
+
+```text
+Qleisli release
+× qlirgo release
+× qleisliup release
+```
+
+Only genuine product boundaries remain independently versioned.
+
+## Product identity versus protocol identity
+
+This issue freezes **product/release versions**, not every internal protocol or schema number.
+
+Keep these identities distinct:
+
+```text
+release version
+language edition
+analysis protocol version
+artifact/schema version
+qrate identity/version
+target/cost-model version
+```
+
+For example, QLT/QDB/QCP may all ship as `0.4.0` while speaking analysis protocol `v2`.
+
+Likewise, qlirgo `0.2.1` may support Qleisli `0.4.0` through a separately versioned protocol contract.
+
+Therefore:
+
+> **same release version inside a release train does not imply that every internal schema or protocol number must equal that release version.**
+
+This preserves the explicit protocol/version boundaries already required by #106 and #107.
+
+## Distribution semantics
+
+The synchronized version domains are release/distribution policy, not semantic privilege.
+
+In particular:
+
+- `std` remains an ordinary checked qrate semantically;
+- QLT/QDB/QCP do not gain verifier authority by sharing the Qleisli release number;
+- qlinties/qlifmt/qlidoc do not become language-semantic authorities by sharing qlirgo's release number;
+- qleisliup remains an external installer/toolchain selector rather than part of the language semantics.
+
+## Compatibility policy
+
+Supported compatibility should therefore be expressed between **release trains**, not arbitrary component tuples.
+
+Good:
+
+```text
+qlirgo 0.2.x supports Qleisli 0.4.x under protocol P
+```
+
+Avoid:
+
+```text
+qlinties 0.2.3 works with qlifmt 0.2.1
+QDB 0.4.2 works with QLT 0.4.0
+std 0.4.1 works with Qleisli 0.4.0
+```
+
+Those mixed states should not exist as supported official distributions.
+
+## Release engineering requirements
+
+Official release automation should check the synchronization invariants.
+
+For Qleisli:
+
+```text
+Qleisli == std == QLT == QDB == QCP
+```
+
+For qlirgo:
+
+```text
+qlirgo == qlinties == qlifmt == qlidoc
+```
+
+A release should fail rather than publish a partially drifted first-party distribution.
+
+The check should cover, where applicable:
+
+- package manifests;
+- crate/qrate metadata;
+- generated artifacts;
+- bundled tool metadata;
+- release archives;
+- reported `--version` output;
+- CI/release assertions.
+
+## User-facing version model
+
+The intended mental model is deliberately small:
+
+```text
+Qleisli version
+    = the language distribution
+
+qlirgo version
+    = the package/development-tool distribution
+
+qleisliup version
+    = the installer/toolchain-manager version
+```
+
+Users should not need to learn a separate first-party version number for every bundled component.
+
+## 0.3.0 acceptance criteria
+
+- [ ] The ecosystem documentation defines exactly three version domains: Qleisli, qlirgo, and qleisliup.
+- [ ] Official Qleisli releases require `Qleisli == std == QLT == QDB == QCP`.
+- [ ] Official qlirgo releases require `qlirgo == qlinties == qlifmt == qlidoc`.
+- [ ] qleisliup is explicitly independently versioned.
+- [ ] Components within a synchronized release train are not independently user-selectable in supported official configurations.
+- [ ] Qleisli and qlirgo remain independently versioned products.
+- [ ] Release versions remain distinct from language-edition, protocol, schema, qrate, and target-model identities.
+- [ ] Release CI detects and rejects version drift inside each synchronized train.
+- [ ] #171 is retained as the concrete std specialization of this broader rule.
+- [ ] #106/#107 documentation is consistent with the distinction between release identity and protocol identity.
+
+## Compact rule
+
+> **One Qleisli release, one language-and-analysis version. One qlirgo release, one development-tool version. qleisliup evolves independently.**
+
+Equivalently:
+
+```text
+Qleisli = std = QLT = QDB = QCP
+
+qlirgo = qlinties = qlifmt = qlidoc
+
+qleisliup = independent
+```
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #169 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Version trains.** Version policy must describe actual shipped products separately from planned ones. Qleisli/std synchronization, the separate qlirgo train, constitutional edition, protocol/schema and target-model identity are distinct contracts. A synchronized version string is not proof of compatibility or semantic preservation. Exact manifests, supported relationships and published-artifact checks remain open.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.

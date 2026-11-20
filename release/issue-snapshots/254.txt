@@ -1,0 +1,324 @@
+## Target and status
+
+**Target: Qleisli 0.3.0. Priority: important. Type: docs / architecture umbrella.**
+
+Related:
+- #129 — Qleisli 2026 Constitution
+- #134 — normative authority hierarchy
+- #136 — constitutional kernel and theorem boundary
+- #139 — statement schemas for the three Fundamental Theorems
+- #142 — constitution-compatible release gate
+- #167 — primitive/derived boundary and ordinary checked `.qli` stdlib
+- #169 — `.qli` / external-artifact authority boundary
+- #196 — three-level surface boundary: `q***`, `Q<T>`, unmarked syntax
+- #224 — compiler diagnostics teach the classical–quantum boundary
+- #225 — diagnostics are part of the harness
+- #253 — zero-prior LLM inference / discovery boundary
+- #202 — production Lean acceptance and Soundness
+
+## Goal
+
+Make the following the **top-level documented architecture principle of Qleisli**:
+
+> **Policy as Theorem. Constitution as Harness. Compiler as Executor.**
+
+These three phrases name three distinct layers.
+
+### Policy as Theorem
+
+A Qleisli policy that affects constitutional acceptance should not remain an implementation convention, prose expectation, or maintainer preference.
+
+It should ultimately become a mechanically checkable proof obligation.
+
+The Constitution does not itself freeze the mathematical content of QS, PR, or RS. Under #129 Draft 5, the human Constitution Guardian Office determines the binding constitutional interpretation for a defined scope; that interpretation is then formalized as the proposition or evidence that must be discharged.
+
+Thus:
+
+> **Policy becomes authoritative through human constitutional interpretation, and becomes enforceable mathematics through theorem-level formalization.**
+
+### Constitution as Harness
+
+The Constitution permanently fixes the existence of the Fundamental-Theorem obligations, the authority and procedure by which their binding meanings are determined, and the non-weakening / guarantee-ledger rules that preserve discharged semantic guarantees across the edition.
+
+The Constitution is therefore not merely descriptive prose around the language.
+
+It is the harness that prevents future syntax, implementations, backends, tools, releases, or formalizations from escaping the obligations or silently weakening accumulated guarantees.
+
+### Compiler as Executor
+
+The compiler is not an independent source of constitutional policy.
+
+It executes the currently authorized language rules, acceptance boundary, and mechanically checkable obligations.
+
+It may reject programs, elaborate source, produce evidence, invoke verification, and teach the boundary through diagnostics, but it does not acquire authority to decide what QS, PR, RS, or the Constitution mean.
+
+The governing rule is:
+
+> **The compiler executes policy; it does not create policy.**
+
+When source crosses a protected classical/quantum, ownership, effect, semantic-authority, resource, or other accepted boundary, compilation must fail closed and explain the violated boundary rather than silently weakening the policy.
+
+The language and ecosystem are the executable surface through which this architecture becomes usable by humans and coding agents.
+
+## Core architectural picture
+
+```text
+Qleisli Constitution
+        ↓
+permanent obligations + non-weakening harness
+        ↓
+human Constitution Guardian Office
+        ↓
+binding constitutional interpretation
+        ↓
+Policy as Theorem
+formal proposition / evidence obligation
+        ↓
+Lean / designated independent proof checker
+        ↓
+discharged guarantee + acceptance rules
+        ↓
+Language Reference + Core
+        ↓
+Compiler as Executor
+        ↓
+diagnostics, stdlib, qlirgo, QLT/QDB/QCP, tooling
+        ↓
+human / LLM interaction with one consistent system
+```
+
+The authority directions are deliberate:
+
+- the Constitution constrains constitutional interpretation;
+- human constitutional authority determines what must be proved;
+- formal verification determines whether it has been proved;
+- the compiler executes the resulting accepted rules;
+- diagnostics and ecosystem tooling expose those rules to users and agents.
+
+No lower layer may silently manufacture authority belonging to a higher layer.
+
+The surface language and ecosystem are therefore not independent product layers. They are **interfaces through which the constitutional structure becomes executable and discoverable**.
+
+## Constitution as a harness
+
+In conventional agent workflows, the harness is often external:
+
+```text
+prompt
+tests
+lint
+CI
+policy checks
+```
+
+Qleisli should instead internalize the critical constraints into the language and acceptance architecture:
+
+```text
+constitutional rule
+        ↓
+language / Core boundary
+        ↓
+machine-checkable acceptance condition
+        ↓
+compiler/verifier rejection when violated
+        ↓
+diagnostic exposing the violated boundary
+```
+
+Thus an agent should not need an external prompt to remember fundamental Qleisli rules.
+
+Where a rule is constitutive of Qleisli, the preferred design is:
+
+> **make violating it unrepresentable, untypable, unverifiable, or explicitly rejected.**
+
+External guidance may help usability, but it must not be the only mechanism preserving a constitutional guarantee.
+
+## Compiler as Executor
+
+The compiler should be documented as executing and enforcing the already-authorized boundaries that make Qleisli Qleisli.
+
+It is a boundary enforcer **because it is an executor of policy**, not because it possesses independent semantic or constitutional authority.
+
+Examples include:
+
+- classical vs quantum control;
+- affine classical values vs linear quantum ownership;
+- `q***` / `Q<T>` / unmarked syntax boundaries;
+- legal borrowing / temporary access to quantum owners;
+- clean workspace and uncomputation obligations;
+- effect boundaries such as Unitary / Iso / Observe;
+- primitive vs derived authority;
+- ordinary `.qli` vs external artifacts;
+- exact phase / axis-order obligations where semantically relevant;
+- qrate/module/toolchain boundaries;
+- unsupported or unproved semantic claims.
+
+The desired user/agent experience is not:
+
+> “the documentation says this is discouraged.”
+
+It is:
+
+> **“cross this boundary and the compiler/verifier stops you, with a diagnostic that explains why.”**
+
+This is not punishment for its own sake. Rejection is the mechanism by which the constitutional model remains visible and learnable.
+
+## Diagnostics are constitutional pedagogy
+
+Compiler and parser diagnostics are part of the same architecture.
+
+A rejected program should, where possible, expose:
+
+1. which boundary was crossed;
+2. what classical or generic prior likely caused the mistake;
+3. what Qleisli construct or mental model applies instead;
+4. how to recover without weakening the guarantee.
+
+This links directly to #224, #225, #237 and #253.
+
+A predictable mistake should become a route into the Qleisli model, not a dead end.
+
+## Stdlib and ecosystem consequences
+
+This principle explains why ordinary stdlib definitions should be checked `.qli` source (#167).
+
+If a user or LLM does not understand a derived abstraction, it can inspect the source and see the same constitutional constraints applied recursively.
+
+Likewise, first-party tools should either:
+
+- expose the same inferable boundary structure; or
+- be explicitly discoverable as Qleisli-native concepts.
+
+No tool may silently create an alternative semantic authority.
+
+## Policy as Theorem and the three Fundamental Theorems
+
+The three Fundamental Theorems are not a proof that one particular Rust compiler implementation is correct, and this architecture document must not independently define their mathematical meaning.
+
+Under #129 Draft 5:
+
+- **Qleisli Soundness Theorem (QS)**,
+- **Physical Realizability Theorem (PR)**, and
+- **Resource Safety Theorem (RS)**
+
+are permanent and constitutionally distinct proof obligations.
+
+Their binding mathematical interpretation for a scope belongs exclusively to the human Constitution Guardian Office. Their mathematical discharge belongs to Lean or the designated independent proof checker.
+
+Accordingly, this issue, the Language Reference, compiler source, theorem names, tests, and other subordinate artifacts may describe or implement a current binding interpretation, but may not independently create one.
+
+The architectural invariant is instead schematic:
+
+```text
+human binding interpretation
+        ↓
+current constitutional proof obligation Φ
+        ↓
+Lean / independent checker
+        ↓
+formal discharge
+        ↓
+protected guarantee ledger
+        ↓
+current production acceptance / execution
+```
+
+For an accepted scope, the constitutional obligations can be viewed schematically as:
+
+```text
+Accepted_E(P) -> QS_E(P) ∧ PR_E(P) ∧ RS_E(P)
+```
+
+but this notation is explanatory only. The Constitution and this issue do not freeze the predicates `QS_E`, `PR_E`, or `RS_E`.
+
+This is the intended meaning of **Policy as Theorem**:
+
+> a binding policy is not merely implemented; it is translated into a proposition or evidence obligation whose discharge can be independently checked.
+
+The frontend/compiler implementation may change. The binding interpretations, discharged guarantees, and constitutional non-weakening rules remain the source of semantic continuity.
+
+## Design consequence: reject first, explain second, never weaken silently
+
+When a requested construct cannot be admitted without violating or bypassing a constitutional guarantee, Qleisli should prefer:
+
+1. explicit rejection;
+2. precise explanation;
+3. a safe expressible alternative where one exists;
+
+over:
+
+- implicit coercion;
+- hidden discard/reset;
+- silently weaker semantics;
+- unchecked backend escape hatches;
+- “best effort” acceptance;
+- implementation folklore.
+
+A false negative is often repairable. A false acceptance at a constitutional boundary is architectural corruption.
+
+## Documentation requirement
+
+The 0.3.0 docs should contain a short top-level architecture statement, linked prominently from the Language Reference and contributor documentation, that states:
+
+> **Policy as Theorem. Constitution as Harness. Compiler as Executor.**
+
+and explains that:
+
+- binding constitutional policy is turned into formal proof/evidence obligations;
+- the Constitution preserves the obligations and accumulated guarantees across the edition;
+- the human Constitution Guardian Office determines binding constitutional interpretation;
+- Lean / the designated independent checker determines mathematical discharge;
+- the compiler executes the authorized language and acceptance rules but does not create constitutional policy;
+- compiler/verifier rejection is the ordinary mechanism for boundary enforcement;
+- diagnostics teach the violated boundary;
+- stdlib and tools must not create parallel semantic authority;
+- the three Fundamental Theorems justify the guarantees of the accepted side of the boundary under their binding interpretations;
+- compiler implementation correctness is not itself the constitutional theorem claim;
+- all future language and ecosystem design should be evaluated against this architecture.
+
+## Acceptance criteria
+
+- [x] Publish **“Policy as Theorem. Constitution as Harness. Compiler as Executor.”** as a top-level Qleisli architecture principle.
+- [x] Document that binding constitutional policy becomes a formal proposition/evidence obligation rather than remaining implementation convention.
+- [x] Document the Constitution as the non-weakening harness preserving obligations and accumulated semantic guarantees across the edition.
+- [x] Document the language/ecosystem as the executable surface of constitutional constraints.
+- [x] Document the compiler/verifier as the executor and ordinary enforcer of authorized classical/quantum and related semantic boundaries.
+- [x] State explicitly: **the compiler executes policy; it does not create policy.**
+- [x] Preserve the separation between human constitutional interpretation, mathematical verification, and compiler execution.
+- [x] State that crossing a protected boundary must fail closed rather than silently weaken semantics.
+- [x] Connect diagnostics explicitly to constitutional pedagogy and agent recovery.
+- [x] Connect ordinary checked `.qli` stdlib to recursive inspectability of the same rules.
+- [x] Explain how QLT/QDB/QCP and other tools remain subordinate to the same authority structure.
+- [x] State the role of the three Fundamental Theorems over the constitutional acceptance boundary.
+- [x] Explicitly avoid claiming that the Fundamental Theorems prove the Rust frontend/compiler implementation correct.
+- [x] Cross-link #129, #136, #139, #167, #169, #196, #224, #225, and #253.
+- [x] Require future major language/tooling design docs to identify how they preserve this architecture.
+
+## Design principle
+
+> **Policy as Theorem. Constitution as Harness. Compiler as Executor.**
+
+Expanded:
+
+> **Human constitutional authority determines what must be proved. Policy is formalized as theorem-level obligation. The Constitution prevents semantic escape and backward weakening. Lean checks mathematical discharge. The compiler executes the resulting accepted rules.**
+
+And operationally:
+
+> **The compiler executes policy; it does not create policy. When a program crosses a protected Qleisli boundary, the compiler must stop it, explain the boundary, and preserve the guarantee rather than silently accepting a weaker meaning.**
+
+
+## Retrospective constitutional impact — scoped application (2026-10-05)
+
+This issue incorporates the full retrospective analysis in #48 (2026-10-05), including its QS/PR/RS treatment, normative definitions and trusted assumptions, actual acceptance/artifact binding, ledger and semantic-transport obligations, proof status, and human/edition escalation. This is a scoped maintainer impact review under the adopted interpretations, not a new binding interpretation or a claim that the feature is complete.
+
+**Human and formal judgments.** The human Guardian judges the adequacy and constitutional meaning of a formalization; Lean checks derivability under its stated definitions and assumptions. CI, compiler acceptance or an AI interpretation cannot replace the reserved human judgment, and human judgment cannot replace required proof or non-weakening evidence. Explanations must preserve the two scoped QS guarantees versus the three broader pending obligations.
+
+All original acceptance criteria remain in force. Edition 2026 is unchanged; any new constitutional case still requires the concrete human judgment specified by the shared analysis.
+
+## Architecture documentation complete — 2026-10-05
+
+Published in [7cc6b5f](https://github.com/MGYamada/Qleisli/commit/7cc6b5f7f659859b01c74966bea3dc31285ada3e), draft PR #307. [Canonical architecture chapter](https://github.com/MGYamada/Qleisli/blob/7cc6b5f7f659859b01c74966bea3dc31285ada3e/docs/src/reference/architecture.md), README opening, Book SUMMARY, Reference authority and contributor build guide publish and prominently link the triad. [All fifteen original criteria are mapped to final text and recorded validation](https://github.com/MGYamada/Qleisli/tree/7cc6b5f7f659859b01c74966bea3dc31285ada3e/tests/fixtures/review_v030alpha/architecture-254).
+
+The chapter preserves human interpretation versus derivability versus execution, exact scoped continuity and artifact obligations, fail-closed boundaries, diagnostic recovery, ordinary checked-source inspectability, subordinate tooling and mandatory review of future major designs. It explicitly separates the two admitted QLV1 guarantees from broad pending duties and future workspace/access/realization/stdlib/tool work. It defines no new theorem predicate, interpretation or admission and claims no Rust compiler correctness theorem.
+
+Actual mdBook 0.5.4 build, rendered HTML/print local links, source-document checks and constitutional identity pass on stable documented inputs. Packet manifest SHA-256: 4154b3a1c7d5f8bacb8f1e39a5540af70529335da60e4dcb07c1f8423ff3eaff. This is documentation completion with unchanged original criteria; separate implementation/tooling/release Issues remain open. No new Rust/Lean proof or full release validation is claimed by this document.

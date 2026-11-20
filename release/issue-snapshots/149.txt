@@ -1,0 +1,413 @@
+## Current institutional status
+
+The Office and initial holder are now established by the explicit human adoption recorded below. The original design and full acceptance criteria remain for traceability; this issue is not closed by appointment alone.
+
+## Summary
+
+Qleisli should establish the **Constitution Guardian Office** as part of the v0.3.0 constitutional framework.
+
+The purpose of this office is not to govern ordinary language development. Its purpose is narrower:
+
+> to protect the constitutional boundary when a proposed change may weaken, evade, or silently redefine Qleisli's entrenched guarantees.
+
+The Constitution Guardian Office must therefore have enough authority to force constitutional review, but must **not** acquire general authority over the language, compiler, standard library, tooling, or ordinary project governance.
+
+For the initial constitutional period, the sole current human holder of the Constitution Guardian Office should be:
+
+> **Masahiko G. Yamada**
+
+The office and its powers should be defined separately from the identity of its current holder so that future succession does not require redefining the Constitution itself.
+
+In addition, Qleisli should begin an explicit transition away from founder-centered project identity immediately after v0.3.0. At an early post-v0.3.0 stage, project-level attribution should move to:
+
+> **Qleisli Project Contributors**
+
+and Masahiko G. Yamada should cease using **Founder** as a current project title or source of governance authority.
+
+Historical authorship and repository provenance remain factual and unchanged. This policy concerns present project identity and authority, not revision of project history.
+
+---
+
+## 1. Establish the Constitution Guardian Office as a constitutional office
+
+`CONSTITUTION.md` should define the existence and purpose of the office.
+
+A possible normative statement is:
+
+> Qleisli shall maintain a Constitution Guardian Office with final and exclusive constitutional interpretation authority, and reasoned suspension power to protect the constitutional boundary. The Office determines how the Fundamental-Theorem jurisdictions apply; it does not govern ordinary design within that boundary.
+
+The Guardian is therefore a **guardian of the constitutional boundary**, not the chief designer or permanent technical authority of Qleisli.
+
+The office exists to preserve the guarantees of the project even after ordinary language-design authority has been delegated to future maintainers and teams.
+
+---
+
+## 2. Name the current human holder of the Constitution Guardian Office separately
+
+The Constitution should define the office, while a governance document should identify the current office holder.
+
+For v0.3.0:
+
+> **Current holder of the Constitution Guardian Office: Masahiko G. Yamada**
+
+This should preferably live in `GOVERNANCE.md` or another non-entrenched governance document rather than hard-coding an individual's identity into the constitutional articles themselves.
+
+This separation allows:
+
+```text
+constitutional office
+        !=
+current office holder
+```
+
+and makes succession possible without unnecessary constitutional amendment.
+
+---
+
+## 3. Define a deliberately narrow veto power
+
+The Constitution Guardian Office should have a limited **constitutional veto / suspension authority**.
+
+The Guardian may object only when a proposed change plausibly:
+
+- weakens a Fundamental-Theorem jurisdiction or a ledgered guarantee;
+- changes the constitutional trust boundary;
+- introduces a mechanism that evades a constitutional guarantee;
+- alters an entrenched constitutional article contrary to the amendment rules;
+- changes the effective meaning of a protected guarantee while preserving only its wording.
+
+The Guardian should **not** possess general veto authority over:
+
+- ordinary language syntax;
+- type-system design that remains constitution-compatible;
+- compiler architecture;
+- implementation strategy;
+- standard-library admission;
+- tooling;
+- diagnostics;
+- release planning;
+- performance tradeoffs;
+- naming;
+- ordinary API design;
+- routine maintainer decisions.
+
+A useful principle is:
+
+> **The Constitution Guardian Office may protect the boundary, but does not govern the space inside it.**
+
+---
+
+## 4. Require written constitutional justification for every veto
+
+A Guardian objection must never be based solely on preference, founder status, authorship history, or general architectural disagreement.
+
+Any constitutional veto or suspension must be accompanied by a written record that:
+
+1. identifies the proposed change;
+2. identifies the specific constitutional Article, protected theorem, or constitutional dependency allegedly affected;
+3. explains how the proposed change may weaken, evade, or alter that guarantee;
+4. distinguishes the constitutional objection from ordinary technical or design disagreement;
+5. states what would be required to resolve the objection.
+
+A veto without such a written constitutional argument should have no constitutional force.
+
+Conceptually:
+
+```text
+"I disagree with this design"
+    -> no Guardian authority
+
+"This change weakens Article III because ..."
+    -> constitutional review may be triggered
+```
+
+---
+
+## 5. Provide for future succession and possible council governance
+
+The initial Guardian may be a single person, but the Constitution should not assume that this must remain permanent.
+
+The governance framework should permit future transition from:
+
+```text
+single founding human holder
+        ↓
+successor human holder
+        ↓
+possible Constitutional Council
+```
+
+when the project has enough mature maintainers and governance capacity.
+
+The exact succession procedure, procedural review, term structure, and possible Constitutional Council composition do **not** need to be fully specified in v0.3.0. None may create an external override of binding constitutional obligations or waive required verification.
+
+However, v0.3.0 should establish that:
+
+- the office is transferable;
+- no individual has an inherent permanent claim to it;
+- future governance may replace the single-holder model with a council or equivalent mechanism;
+- such changes must preserve the narrow constitutional scope of the office.
+
+---
+
+## 6. Sunset founder-centered project identity after v0.3.0
+
+Qleisli should explicitly distinguish historical authorship from present project identity.
+
+At an early stage after v0.3.0, project-level attribution should move toward:
+
+> **Qleisli Project Contributors**
+
+Masahiko G. Yamada should thereafter cease using **Founder** as a current title within Qleisli governance, project documentation, release identity, or authority claims.
+
+The intended principle is:
+
+```text
+historical origin
+        !=
+present governance authority
+```
+
+This does **not** require rewriting Git history, removing historical copyright or authorship records, or denying the factual origin of the project.
+
+Instead, it establishes that:
+
+- `Founder` is not a permanent Qleisli governance office;
+- founder status confers no standing authority over language design or project decisions;
+- the current personal constitutional role is **holder of the Constitution Guardian Office**, and only the authority explicitly attached to that office applies;
+- general project identity should increasingly belong to the contributor community rather than to an individual author.
+
+A suitable public statement would be:
+
+> Beginning shortly after v0.3.0, Qleisli will transition its project-level identity to **Qleisli Project Contributors**. Masahiko G. Yamada will no longer use *Founder* as a current Qleisli title. Historical authorship and provenance remain unchanged; present authority derives only from documented project roles and governance.
+
+This transition should occur early rather than waiting for v1.0, so that future community growth develops around the project rather than around personal founder authority.
+
+---
+
+## Suspensive rather than ordinary governing authority
+
+The intended power should be closer to a **suspensive constitutional veto** than to an unrestricted final veto.
+
+The Guardian's essential power is:
+
+> **to force a proposed change into explicit constitutional review before it can silently cross the protected boundary.**
+
+The office should therefore be strong enough to temporarily block or suspend a merge or release when a genuine constitutional question exists.
+
+It should not be interpreted as a permanent right to decide ordinary technical questions.
+
+Future governance may define procedural review of a suspension and succession to a Constitutional Council. Ordinary maintainers cannot override a binding constitutional interpretation by vote or waive an undischarged obligation. Final constitutional interpretation remains with the Office (including a duly constituted successor council), within the entrenched text and accumulated guarantees.
+
+---
+
+## Relationship to future project governance
+
+This office is especially important because Qleisli is intended eventually to become less founder-directed.
+
+A possible long-term evolution is:
+
+```text
+v0.3–v0.5
+Masahiko G. Yamada strongly leads initial language and constitutional design.
+
+early post-v0.3
+Project-level identity begins moving to Qleisli Project Contributors.
+"Founder" ceases to be a current project title.
+
+v0.5+
+Community development and delegated maintenance expand.
+
+Later
+Language, compiler, stdlib, and tooling teams make ordinary decisions autonomously.
+
+Long term
+Masahiko G. Yamada may retain only the Constitution Guardian Office role, with no
+general technical authority derived from project origin or authorship.
+```
+
+The constitutional structure should therefore allow Qleisli to become independent of its original author while preserving the original guarantees.
+
+The intended end state is:
+
+> **Qleisli is not defined by what its original author currently prefers.  
+> Qleisli is constrained by what its Constitution permits.**
+
+---
+
+## Acceptance criteria
+
+- [x] Define the Constitution Guardian Office in the v0.3.0 constitutional framework.
+- [x] Define its purpose as protection of constitutional guarantees rather than general project governance.
+- [x] Name **Masahiko G. Yamada** as the sole current human holder of the Constitution Guardian Office in a non-entrenched governance document.
+- [x] Define the Guardian's veto/suspension authority narrowly around constitutional violations or plausible constitutional weakening.
+- [x] Grant the Constitution Guardian Office final and exclusive authority to interpret how the entrenched Constitution and the three Fundamental-Theorem jurisdictions apply to new same-edition features and constitutional disputes.
+- [x] Explicitly exclude ordinary language design, stdlib admission, implementation, tooling, and release management from general Guardian authority.
+- [x] Require every Guardian veto to cite the affected constitutional provision and provide written reasoning.
+- [x] Record binding interpretations, pending proof obligations, and discharged ledger entries distinctly.
+- [x] Permit later interpretation to clarify or strengthen, never repeal or relax a discharged guarantee.
+- [x] Apply explicit correction procedures without bypassing #129 Article IV.
+- [x] State that founder status or historical authorship by itself grants no additional constitutional authority.
+- [x] Define the office as transferable and permit future succession.
+- [x] Permit eventual replacement of the single-holder model by a Constitutional Council or equivalent mechanism.
+- [x] Declare the intention to move project-level attribution to **Qleisli Project Contributors** at an early stage after v0.3.0.
+- [x] Declare that Masahiko G. Yamada will cease using **Founder** as a current Qleisli project title.
+- [x] Preserve historical authorship, copyright, and repository provenance while separating them from present governance authority.
+- [x] Defer detailed procedural-review/council rules while preserving the Office's final interpretation authority and the prohibition on waiving proofs or ledgered guarantees.
+
+## Non-goals
+
+This issue does **not**:
+
+- define the final maintainer governance model;
+- define the final stdlib governance model;
+- grant the Guardian ordinary technical leadership authority outside constitutional interpretation;
+- establish a permanent personal veto for the original author;
+- erase or rewrite historical authorship or repository provenance;
+- require the succession mechanism or Constitutional Council to be fully implemented in v0.3.0;
+- resolve every future constitutional amendment procedure.
+
+The goal is to establish a narrow, explicit constitutional boundary now, while deliberately beginning the transition from a person-centered project to a contributor-governed language whose long-term identity and authority are institutional rather than personal.
+
+---
+
+## Sole constitutional interpretation authority within the entrenched text
+
+The Constitution Guardian Office has the **final and exclusive authority to interpret the application of the Constitution to new language features, semantic capabilities, theorem obligations, and constitutional disputes**.
+
+This authority is especially important because the three Fundamental Theorems are not frozen Lean theorem types. They are enduring constitutional jurisdictions whose concrete proof obligations may become stronger as edition 2026 grows.
+
+For a proposed same-edition feature, the Guardian decides questions such as:
+
+- whether the feature falls under Soundness, Physical Realizability, Resource Safety, or more than one;
+- which new proof obligation is activated by admitting the feature;
+- whether an existing proof still discharges the constitutional obligation;
+- whether a proposed implementation/profile is merely an ordinary extension or would actually change constitutional meaning;
+- whether a claimed same-edition change is constitutionally continuous.
+
+A useful separation is:
+
+```text
+CONSTITUTION.md
+    = entrenched constitutional source
+
+Constitution Guardian Office
+    = sole authority to interpret its application to new cases
+
+Lean / checker / proof artifacts
+    = demonstrate that the resulting interpreted obligation is actually satisfied
+
+Language Reference / implementation / tests
+    = ordinary normative and engineering artifacts subordinate to that interpretation
+```
+
+The Guardian therefore interprets **constitutional jurisdiction**; the Guardian does not decide mathematical truth by decree.
+
+If the Guardian determines that a new feature activates a Resource Safety obligation, the project must still prove the required theorem or provide the required checked evidence. A Guardian interpretation cannot make a false Lean proposition true, waive a failed proof, or substitute opinion for verification.
+
+Likewise, interpretation is **not amendment**. The Guardian may not use interpretation to:
+
+- add a fourth Fundamental Theorem while pretending it was already present;
+- remove or weaken one of the three adopted Fundamental Theorems;
+- contradict the entrenched constitutional text;
+- exempt a feature from an obligation that the Constitution protects merely for convenience;
+- change the edition while calling the change an interpretation.
+
+If a proposal requires changing the entrenched text, it must enter the edition-level constitutional amendment process. An edition transition does not override #129 Article IV: abandoning an entrenched guarantee cannot be made constitutionally continuous merely by calling it amendment.
+
+### Binding interpretation record
+
+A constitutional interpretation should be recorded in writing and should:
+
+1. identify the new feature or dispute;
+2. identify the relevant constitutional jurisdiction(s);
+3. state the proof/evidence obligation activated by that interpretation;
+4. explain why the result is interpretation rather than amendment;
+5. distinguish constitutional consequences from ordinary implementation preferences.
+
+Once issued within the Office's authority, an interpretation binds the affected acceptance/certification scope. Record its status as pending or formally discharged. Once discharged and entered in #135's ledger, its guarantee becomes a protected minimum.
+
+Later interpretations may clarify, generalize, or strengthen a discharged obligation. They may not repeal it, relax it, or narrow its protected domain/premises to excuse currently accepted cases. Superseding a record's wording or proof representation must preserve the guarantee.
+
+An ordinary helper lemma is not a binding interpretation merely because Lean proves it. Conversely, a pending binding interpretation cannot be ignored simply because it is not yet a discharged ledger entry.
+
+Corrections require an explicit record. Meaning-preserving repairs may remain within the edition with appropriate verification. Reducing a protected guarantee is not ordinary interpretation; constitutional review and Article IV apply, and changing edition alone does not authorize weakening.
+
+The Guardian decides whether a formalization addresses the constitutional case. Lean/the designated independent checker verifies that formal proposition under its recorded assumptions. Neither task substitutes for the other.
+
+This is the missing institutional counterpart of the three-theorem model:
+
+> **The Constitution fixes the enduring jurisdictions; the Guardian interprets their application; Lean proves the resulting obligations.**
+
+## Transitional ordinary maintainer authority
+
+Removing `Founder` as a current governance title must not create an authority vacuum before #150 takes effect.
+
+Until the ordinary maintainer-governance framework adopted under #150 is in force:
+
+> **Masahiko G. Yamada remains the current repository maintainer for ordinary project decisions and operational maintenance.**
+
+This temporary ordinary authority:
+
+- does **not** derive from historical Founder status;
+- does **not** derive from the Constitution Guardian Office;
+- grants no additional constitutional interpretation power;
+- ends or is delegated according to the maintainer model adopted under #150.
+
+Thus the transitional structure is explicitly:
+
+```text
+ordinary repository maintainer authority
+        !=
+Constitution Guardian Office authority
+        !=
+historical founder attribution
+```
+
+The Constitution may define the **existence and narrow constitutional scope** of the Guardian office. Holder identity, succession, ordinary maintainer authority and operational governance belong in non-entrenched governance documentation.
+
+
+## Draft 5 permanent human-authority rule
+
+This issue is subordinate to the exact ratified Constitution derived from #129 Draft 5.
+
+The **Constitution Guardian Office** is the permanent constitutional institution. Its constitutional authority is exclusively human authority:
+
+- every holder or member exercising Office authority must be a natural human person;
+- artificial intelligence, autonomous agents, language models, software systems, algorithmic governance processes, or analogous non-human computational entities may not hold Office membership;
+- they may not vote, issue a binding interpretation, exercise suspension power, authorize Article IX rectification, or act as a proxy for a human holder/member;
+- AI and software may assist with research, drafting, criticism, formalization, search, or analysis, but the resulting judgment has constitutional force only after knowing, affirmative adoption by the authorized human holder/member as their own judgment.
+
+The Office may have one human holder or multiple human members. A future council is therefore a possible **holder structure of the same Constitution Guardian Office**, not a replacement constitutional institution.
+
+## Recorded human adoption — 2026-10-04
+
+The natural-human project maintainer **Masahiko G. Yamada** explicitly ratified the identified edition-2026 Constitution, adopted the identified governance candidate, and accepted appointment as the initial sole human Constitution Guardian, effective **2026-10-04 (Asia/Tokyo)**. The actual answer to the question identifying both hashes and these acts was:
+
+> 両候補を批准・採択し、初代Guardianに任命する
+
+- Constitution SHA-256: `40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b`.
+- Approved governance candidate SHA-256: `60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721`; preserved at `tests/fixtures/constitution_v030/governance-candidate.txt`.
+- Actual event: `governance/ratification-2026.json`, SHA-256 `3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a`. It transcribes the question, answer and conversation provenance; it is not a cryptographic human signature.
+- `CONSTITUTION.md` remains byte-identical. Active `GOVERNANCE.md` updates status and conditional wording to reflect the adopted event.
+- This act does not adopt a QS/PR/RS interpretation, discharge a proof, approve a release or publish any artifact. Source changes remain uncommitted at this checkpoint.
+
+
+## Integration and acceptance audit — 2026-10-04
+
+All listed institutional/governance criteria are represented by the ratified Constitution, adopted GOVERNANCE.md and separate interpretation/admission records. The intended post-0.3 attribution change and detailed council/succession procedures remain exactly the explicitly later work described by the criteria. Integration review in #307 remains open; no new appointment or human ruling is inferred.
+
+Source: [foundation commit 0605d716](https://github.com/MGYamada/Qleisli/commit/0605d716c2a79e2b6776476981c3e25cdfa1709b), [draft integration PR #307](https://github.com/MGYamada/Qleisli/pull/307), [authority Reference](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/docs/src/reference/authority.md), [governance](https://github.com/MGYamada/Qleisli/blob/codex/v0.3.0-foundation/GOVERNANCE.md). The live ledger has two explicitly admitted scoped QS guarantees and three pending broader obligations; earlier zero-guarantee checkpoints above are historical. Current enforcement validation has 75 passing policy/evidence regressions and a fresh elaborated Lean review. The hosted docs, Lean and interop jobs for 061636d have passed; other full-CI jobs remain in progress. This is not a full-CI, release or full-conformance claim.
+
+
+## Acceptance audit and completion — 2026-10-05
+
+All **17 original institutional criteria** are met. A separate read-only audit and integration review checked the complete list against the actual human-adopted text and event, not appointment alone or a CI result:
+
+- [Constitution Article V](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/CONSTITUTION.md#article-v--the-constitution-guardian-office) establishes the permanent exclusively human Office, its final interpretive role, narrowly reasoned suspension power, limits on ordinary governance and nondelegation to machines.
+- [Adopted GOVERNANCE.md](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/GOVERNANCE.md) separately records the sole human holder and ordinary maintenance; written suspension grounds and resolution; transferable office and possible human council; preserved historical attribution; the declared early post-0.3 contributor-identity/Founder-title direction; and the expressly later detailed succession/council procedures. Those later actions are not silently moved out of this Issue: the original criteria require their declaration and expressly defer the details.
+- Articles IV/VI/IX, GOVERNANCE and the [authority Reference](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/docs/src/reference/authority.md) distinguish binding interpretation, pending obligation and formally admitted guarantee, prohibit weakening or proof overrides, and retain the explicit correction rules.
+- [The actual ratification/appointment event](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/governance/ratification-2026.json) records the user's affirmative adoption of the exact candidates and initial appointment. Constitution SHA-256 is **40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b**; approved governance candidate **60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721**; event **3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a**. The preserved candidate is unchanged. Current GOVERNANCE (**19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469**) differs only by the previously recorded adoption/status rendering, not the approved institutional powers.
+- The separately adopted interpretation and scoped-guarantee admission records are represented distinctly in the live ledger. The current constitutional identity/record checker passes; hashes bind the recorded evidence but do not independently authenticate the human transcript.
+
+The reviewed files are already in pushed commit **10553a9f94f6fd6a4555961244e0e9be41154f8f**, unchanged in local af26fad. No criterion requires a main merge or completed release, and no such result is inferred. #142 and PR #307 continue tracking integration and release conditions. This completion records satisfaction of the adopted institutional specification; it is not a new appointment, binding interpretation, guarantee admission, general proof discharge or release approval.

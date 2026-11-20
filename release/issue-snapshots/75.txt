@@ -1,0 +1,71 @@
+## Status
+
+**0.3.0 semantic decision fixed; implementation/diagnostics remain open.**
+
+Related:
+- #29 — `excl`
+- #69 — `ctrl`
+- #74 — quantum place/index selection
+- #67 / #68 — Rust/Qleisli semantic firewall
+
+## Decision
+
+Qleisli 0.3.0 does **not** use Rust method-resolution magic to select quantum access.
+
+For live `Q<T>`:
+
+- no implicit autoref;
+- no implicit quantum autoderef;
+- no `Deref` / `DerefMut` path that changes or forwards quantum access authority;
+- no receiver coercion that inserts `excl` or `ctrl`;
+- no overload resolution between physically different access contracts.
+
+The compiler never guesses a quantum access mode.
+
+## Canonical 0.3.0 form
+
+Access-sensitive quantum operations are ordinary function calls with explicit access arguments:
+
+```qli
+h(excl q);
+controlled_u(ctrl control, excl target);
+```
+
+not an implicitly adjusted call such as:
+
+```qli
+q.h();
+target.controlled_u(control);
+```
+
+when method resolution would need to choose a quantum access contract.
+
+Method syntax may remain available for ordinary classical/static values or for future quantum APIs whose receiver semantics are proven not to hide an access distinction. It is not part of the 0.3.0 quantum-access core.
+
+## Wrappers / newtypes
+
+A wrapper around `Q<T>` cannot expose the contained live owner through ordinary `Deref` / `DerefMut` or silently forward `excl` / `ctrl`.
+
+Any quantum-place projection must be explicit and preserve the same ownership/access checks as direct access.
+
+## Diagnostics
+
+```text
+error: quantum access cannot be inferred through method receiver adjustment
+
+help: call the operation explicitly with 'excl ...' or 'ctrl ...'
+```
+
+## Acceptance criteria
+
+- [ ] No quantum autoref inserts `excl` or `ctrl`.
+- [ ] No quantum autoderef/`DerefMut` changes an access footprint.
+- [ ] Access-sensitive quantum method sugar is absent from the 0.3.0 core.
+- [ ] Wrappers cannot silently forward quantum access.
+- [ ] Ordinary classical/static method syntax remains unaffected where its semantics are ordinary.
+- [ ] Diagnostics expose the required quantum access contract.
+- [ ] Explicit-call lowering is verifier-equivalent to the declared access semantics.
+
+## Compact rule
+
+> **Quantum access is written, never inferred by receiver magic.**
