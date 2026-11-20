@@ -1,5 +1,8 @@
 # Changelog
 
+**Unreleased security update.** Build the Python package with setuptools 84.1.0
+to address [GHSA-xmj3-9gf7-h52w](https://github.com/advisories/GHSA-xmj3-9gf7-h52w).
+
 Versions follow the versioning and compatibility policy.
 The [VM plan](https://github.com/MGYamada/Qleisli/issues/276) and fixture records distinguish
 development milestones from the scope of their evidence.
