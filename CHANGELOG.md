@@ -42,6 +42,11 @@ obligations and the v0.3.0 final-release gates remain open.
   discard and branches, and add lessons on effects, checked meanings and the
   command-line tools. Move the architecture chapters ahead of the Language
   Reference and rewrite them to follow the lesson projects.
+- Reword the Language Reference and the boundary chapters in plain wording:
+  each section says what its construct is for before its rules, and noun
+  stacks and intransitive refusals name the component that acts. No rule,
+  heading, code block or diagnostic code changes. Add "Plain wording" to the
+  Book's style guide.
 - Restore navigation from the diagnostics and primitive chapters to the
   inference and discovery contract (#253).
 - Retain the 127 fixed GitHub Issue bodies for the beta acceptance review

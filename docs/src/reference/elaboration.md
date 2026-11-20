@@ -1,26 +1,33 @@
 # Surface-to-core elaboration
 
 An **elaboration** is the expansion of one surface form of a `.qli` program
-into operations of an existing core representation. This chapter specifies
-the convenience elaborations that edition 2026 permits. For each one it gives
-a contract: the surface form, the target, the evaluation order, the owners,
-the exact phase, the source spans, the refusals and the obligations that the
-expansion leaves open. The chapter is subordinate to the
+into operations of an existing core representation. A surface form is a
+construct as the program writes it, such as a call, a pattern or a fold.
+
+This chapter specifies the convenience elaborations that edition 2026
+permits. It gives a contract for each one. A contract names the surface form
+and the target of the expansion. It states the evaluation order, the owners,
+the exact phase and the source spans. It lists the refusals, and it lists the
+obligations that the expansion leaves open. The chapter is subordinate to the
 [authority hierarchy](authority.md).
 
-The chapter introduces no syntax, primitive, implicit conversion, evidence
-authority or supported emitter.
+The chapter introduces no syntax, no primitive, no implicit conversion, no
+evidence authority and no supported emitter.
 
 Rules:
 
 - An elaboration may insert only the uniquely determined operations that its
   section describes.
-- An elaboration must preserve evaluation order, complete type trees, logical
-  owners, exact phase and original source attribution.
+- An elaboration must preserve five things: the evaluation order, the
+  complete type trees, the logical owners, the exact phase and the original
+  source attribution.
 - An elaboration must not infer an arbitrary isomorphism, a permutation,
   cleanup, operator equality or an unavailable capability.
 
 ## Source and acceptance boundary
+
+This section names the check that comes before elaboration and the check
+that decides acceptance after it.
 
 The **common checker** applies the [common source judgment](source-text.md)
 to the complete original AST of a program. Elaboration comes after this
@@ -41,23 +48,23 @@ one converged emitter has replaced them. Each target supports a bounded
 **profile** of programs.
 
 The **native checker** is the checker executable that `lean-kernel/` builds.
-It decides the acceptance of a proposal independently of the component that
-produced the proposal.
+It decides whether a proposal is accepted. It decides this independently of
+the component that produced the proposal.
 
 Rules:
 
 - The common checker checks every declaration, both arms of every branch and
-  the body of a zero-iteration fold.
+  the body of a fold with zero iterations.
 - Static bindings and immutable facts are inputs to concrete elaboration. They
-  are not native accepted handles.
+  are not accepted handles of the native checker.
 - A supported surface form may have an unsupported projection or target. A
   failure must not select a weaker checker.
 - Every resulting artifact, dependency and independent request must pass the
   [production gate](production-boundary.md) that applies to it.
-- Handwritten IR and generated IR have the same independent acceptance
-  requirements.
-- Rust normalization, source checking, source-step comparison and proposal
-  generation confer no acceptance.
+- Handwritten IR and generated IR have the same requirements for independent
+  acceptance.
+- Four activities confer no acceptance: Rust normalization, source checking,
+  source-step comparison and proposal generation.
 - Valid output alone does not prove source preservation.
 
 > **Implementation note.** The common checker is `src/frontend/check.rs` with
@@ -74,22 +81,22 @@ Issue candidate does not enlarge the whitelist.
 
 | Surface form | Permitted expansion | Section |
 | --- | --- | --- |
-| Runtime products, patterns and ordinary calls | Exact value-tree binding and checked call-body expansion | [Runtime products, patterns and calls](#runtime-products-patterns-and-calls) |
-| Whole-owner `excl` calls | One checked consuming call and retention of returned values on the same lexical binders | [Whole-owner exclusive calls](#whole-owner-exclusive-calls) |
-| Static indexed/slice access | Ordered partition, one checked call, and reconstruction from updated selected owners | [Static ordered-axis places](#static-ordered-axis-places) |
-| Ordinary Boolean expressions and `classical fn` calls | Eager ordinary-value operations | [Ordinary expressions and classical functions](#ordinary-expressions-and-classical-functions) |
+| Runtime products, patterns and ordinary calls | Binding of the exact value tree, and expansion of the checked body of the callee | [Runtime products, patterns and calls](#runtime-products-patterns-and-calls) |
+| Whole-owner `excl` calls | One checked consuming call. The same lexical binders retain the returned values. | [Whole-owner exclusive calls](#whole-owner-exclusive-calls) |
+| Static indexed access and slice access | An ordered partition, one checked call, and reconstruction from the updated selected owners | [Static ordered-axis places](#static-ordered-axis-places) |
+| Ordinary Boolean expressions and `classical fn` calls | Eager operations on ordinary values | [Ordinary expressions and classical functions](#ordinary-expressions-and-classical-functions) |
 | Enum values, record values and `value.field` | Ordinary values that keep their nominal type | [Nominal values](#nominal-values) |
-| Runtime classical `if` | Classical branches with complete result/frame joins | [Runtime classical branches](#runtime-classical-branches) |
-| Ordinary `match` | Classical branches on the enum tag, with complete result/frame joins | [Ordinary match](#ordinary-match) |
-| Static naturals, aliases and bounded helpers | Exact checked substitution; no runtime instruction | [Static natural computation](#static-natural-computation) |
-| Bracket specialization and `if static` | Closed checked instances and selected arm | [Specialization and static selection](#specialization-and-static-selection) |
-| `for static` and `qfor static` | Explicit carry threading over a closed finite range | [Finite folds](#finite-folds) |
-| Static operation descriptions and application | Provider-bound operations and checked transformation proposals | [Operation descriptions and application](#operation-descriptions-and-application) |
-| `controlled(U)(c,q)` and two-arm `qif` | Exact controlled action retaining inactive identity action | [Coherent control](#coherent-control) |
-| `qmatch(s,q) { label => arm, ... }` | Exact selected action on the target, one arm for each selector label | [Exact-label coherent selection](#exact-label-coherent-selection) |
-| `basis q as p { e }` | The specified coefficient-`+1` coherent lift | [Coherent basis maps](#coherent-basis-maps) |
-| Existing `with_computed` forms | Checked compute/use/uncompute construction | [Computed workspace](#computed-workspace) |
-| `apply_contract(F, S, q)` | One application of the implementation `F`, with a checked function-equality obligation against `S` | [Function contracts](#function-contracts) |
+| Runtime classical `if` | Classical branches, with complete joins of the result and the frame | [Runtime classical branches](#runtime-classical-branches) |
+| Ordinary `match` | Classical branches on the enum tag, with complete joins of the result and the frame | [Ordinary match](#ordinary-match) |
+| Static naturals, aliases and bounded helpers | Exact checked substitution, with no runtime instruction | [Static natural computation](#static-natural-computation) |
+| Bracket specialization and `if static` | Closed checked instances and the selected arm | [Specialization and static selection](#specialization-and-static-selection) |
+| `for static` and `qfor static` | Explicit threading of the carry over a closed finite range | [Finite folds](#finite-folds) |
+| Static operation descriptions and application | Operations bound to their providers, and checked transformation proposals | [Operation descriptions and application](#operation-descriptions-and-application) |
+| `controlled(U)(c,q)` and two-arm `qif` | The exact controlled action, which retains the inactive identity action | [Coherent control](#coherent-control) |
+| `qmatch(s,q) { label => arm, ... }` | The exact selected action on the target, with one arm for each selector label | [Exact-label coherent selection](#exact-label-coherent-selection) |
+| `basis q as p { e }` | The specified coherent lift with the coefficient `+1` | [Coherent basis maps](#coherent-basis-maps) |
+| Existing `with_computed` forms | The checked construction of compute, use and uncompute | [Computed workspace](#computed-workspace) |
+| `apply_contract(F, S, q)` | One application of the implementation `F`, with a checked obligation of function equality against `S` | [Function contracts](#function-contracts) |
 
 The whitelist is not a list of every accepted surface form.
 [Status and limits](#status-and-limits) names the accepted forms that this
@@ -128,14 +135,14 @@ body of that function.
 
 | Field | Contract |
 | --- | --- |
-| Source | Ordered runtime products, `let`/parameter patterns and resolved ordinary function calls |
-| Target | Exact value-tree bindings and the checked callee body, as Raw operations or as supported selected source steps |
+| Source | Ordered runtime products, `let` patterns and parameter patterns, and resolved calls of ordinary functions |
+| Target | Bindings of the exact value tree and the checked body of the callee, as Raw operations or as supported selected source steps |
 | Evaluation order | Each right-hand side and each argument evaluates completely, once, from left to right, before binding. An argument list is not one automatically packed tuple. |
-| Owners | Each quantum leaf moves once. Destructuring `(Q<A>,Q<B>)` never splits `Q<(A,B)>`. Pending arguments and suspended caller owners are preserved. Ordinary leaves may be copied or ignored. |
-| Exact phase | Binding, grouping and call expansion insert no gate and no phase. The callee action and its ordered interface are preserved. |
-| Source spans | The original parameter, right-hand side and call spans are kept. An argument failure identifies the argument or the call. Emitted callee operations retain their original body origins. |
+| Owners | Each quantum leaf moves once. Destructuring `(Q<A>,Q<B>)` never splits `Q<(A,B)>`. The expansion preserves pending arguments and the suspended owners of the caller. Ordinary leaves may be copied or ignored. |
+| Exact phase | Binding, grouping and call expansion insert no gate and no phase. The expansion preserves the action of the callee and its ordered interface. |
+| Source spans | The expansion keeps the original spans of the parameter, the right-hand side and the call. A failure of an argument identifies the argument or the call. Emitted operations of the callee retain their origins in its original body. |
 | Refusal | A mismatch of the exact arity or tree; duplicate names within one pattern or parameter list; a wildcard, an implicit drop or a reuse of a live quantum owner; an unresolved callee; an invalid body; an unsupported projection. Ordinary runtime shadowing keeps its lexical rules. |
-| Open obligations | The emitted ownership, scope and effect rules and the dependencies need an independent check. Call expansion needs original-body correspondence. Fresh IR validity alone does not supply it. |
+| Open obligations | The emitted ownership, scope and effect rules and the dependencies need an independent check. Call expansion needs correspondence with the original body. The validity of fresh IR alone does not supply it. |
 
 See [exact trees](type-model.md#structural-equality-coherence-and-physical-maps)
 and [functional abstraction](functional-boundary.md).
@@ -160,10 +167,13 @@ This section states when the parts of an expression evaluate and where the
 lifetime of a quantum owner may end.
 
 An **access call** is a call that marks at least one argument with `excl` or
-`ctrl`. A **place** is such a marked argument: a whole lexical owner, or a
-static selection of its axes.
+`ctrl`. A **place** is such a marked argument. It is a whole lexical owner,
+or a static selection of the axes of one.
 
 ### Evaluation order
+
+Statements, arguments and tuple fields evaluate in the order in which the
+source writes them.
 
 Rules:
 
@@ -179,53 +189,63 @@ Rules:
 
 ### Owner lifetime
 
+The rules below say when a temporary owns a quantum value, and what the end
+of a scope does to a live owner.
+
 Rules:
 
 - A temporary may own a quantum value while that value flows to an explicit
   consumer, a binding or a result. `measure_z(h(init0()))` is such a chain.
 - The end of an expression statement, a wildcard binding, a shadowed binding
-  or a local block must not silently destroy a live quantum owner. An
-  unreturned local owner rejects at its binding. A discarded quantum
-  expression rejects at that expression. Both routes report the code
-  `ownership`.
+  or a local block must not silently destroy a live quantum owner. The
+  checker rejects an unreturned local owner at its binding. It rejects a
+  discarded quantum expression at that expression. Both routes report the
+  code `ownership`.
 - Ordinary Bit, Unit and product values may be ignored.
 - The language has no observable classical destructor and no quantum drop
   glue.
-- Scope exit cannot choose measurement, discard, reset or clean discharge for
-  the programmer.
+- The exit from a scope cannot choose measurement, discard, reset or clean
+  discharge for the programmer.
 
 ### Places and access calls
 
+The rules below say what a place is and when the caller can use its owners
+again after an access call.
+
 Rules:
 
-- A place is call-formed. It is not a reference value with an inferred
+- A place is formed by its call. It is not a reference value with an inferred
   lifetime.
 - An access call supplies its owners in argument order and executes the callee
   once.
 - The call restores the lexical operation rights only after it retains the
   returned values and completes any reassembly of a selected parent. This
   happens before the next argument, tuple field or statement starts.
-- A call inside the callee body completes before the enclosing call returns.
+- A call inside the body of the callee completes before the enclosing call
+  returns.
 - The end of a surrounding block preserves the updated outer owner. It does
   not restore an earlier state.
-- Stored or escaping views, nested place projections, implicit method autoref
-  and arbitrary reference lifetimes are unsupported.
+- Four forms are unsupported: stored or escaping views, nested place
+  projections, implicit method autoref and arbitrary reference lifetimes.
 - A static axis selector uses the original resolved static context and has no
   runtime effect.
-- No shortening of a lifetime grants a control capability, restores dirty
-  workspace or proves clean release. The distinct effect, sector and exact
-  workspace obligations apply. These rules supply no workspace syntax and no
-  evidence.
+- A shorter lifetime grants no control capability, restores no dirty
+  workspace and proves no clean release. The distinct obligations for
+  effect, sector and exact workspace apply. These rules supply no workspace
+  syntax and no evidence.
 
 ### Order of operations
+
+The rules below say what elaboration retains of the written order, and what
+a reordering needs.
 
 Rules:
 
 - Elaboration retains the ordered source steps, the call boundaries, the
-  original owners and the source locations. Raw instructions retain their
-  ordered owner-token edges.
-- Neither scheduling convenience nor apparently separate names permits a
-  noncommuting reorder.
+  original owners and the source locations. Raw instructions retain the
+  ordered edges of their owner tokens.
+- Scheduling convenience does not permit a reorder of operations that do not
+  commute. Neither do names that appear to be separate.
 - A proposed reordering needs a separately justified transformation that
   preserves exact phase, reference behavior and all applicable contracts.
 - Source evaluation follows the written order. A transformation of executable
@@ -260,32 +280,34 @@ observe fn main() -> Unit { let q = init0(); () }
 
 ## Whole-owner exclusive calls
 
-A whole-owner exclusive call such as `h(excl q)` supplies the live lexical
-owner `q` to one consuming call and retains the returned quantum value on the
-same binder.
+A whole-owner exclusive call lets a program transform an owner and keep its
+name. A call such as `h(excl q)` supplies the live lexical owner `q` to one
+consuming call. The same binder then retains the returned quantum value.
 
 | Field | Contract |
 | --- | --- |
 | Source | `U(excl q)`, or a call whose arguments all mark distinct whole lexical `Q<A>` owners. A retained concrete `ctrl` call is admitted after a fresh native sector check, on the targets that [Status and limits](#status-and-limits) names. |
-| Target | The consuming call, followed by replacement of the value of each argument binder by its exact ordered returned owner. The access expression returns ordinary Unit. |
-| Evaluation order | Original source occurrences are resolved. Owners are supplied once in argument order, and the callee executes once. No copied AST occurrence acquires a second lexical identity. |
-| Owners | The same lexical owner identities hold the returned values. The form requires a caller-visible checked Unitary effect, independent body checking and the exact original owner interface. A later consuming call makes its binder spent. A shadow cannot restore it. |
-| Exact phase | The complete callee action is preserved, including entanglement, ordered axes and zero-width phase. No inverse and no cleanup is inserted. |
-| Source spans | The original callee and argument identifiers, their byte spans and the callee-body origins are retained. A contextual marker span does not replace an owner-identifier span. |
-| Refusal | Overlap; a spent, hidden or nonquantum argument; a changed owner partition or tree; a nonunitary body; mixed arguments outside the [checked profile](#ordinary-unit-arguments-in-access-calls); an escaping access; a failed native control-sector check; an unavailable concrete projection. Static selections follow [their own rule](#static-ordered-axis-places). Checker-free `ctrl` is unsupported. An original control obligation without a concrete interval in each retained specialization rejects. |
-| Open obligations | Emitted artifacts and requests need independent checks. The lookup-level scope-update model has finite-map, type-embedding and update-provenance premises. It is not a source-preservation proof and not a quantitative resource certificate. General footprints, lifetimes and access declarations are pending. |
+| Target | The consuming call. After it, the value of each argument binder is replaced by its exact ordered returned owner. The access expression returns ordinary Unit. |
+| Evaluation order | The expansion resolves the original source occurrences. It supplies the owners once, in argument order, and the callee executes once. A copied AST occurrence acquires no second lexical identity. |
+| Owners | The same lexical owner identities hold the returned values. The form requires three things: a checked Unitary effect that the caller can see, an independent check of the body, and the exact original owner interface. A later consuming call makes its binder spent. A shadow cannot restore it. |
+| Exact phase | The expansion preserves the complete action of the callee, including entanglement, ordered axes and zero-width phase. It inserts no inverse and no cleanup. |
+| Source spans | The expansion retains the original identifiers of the callee and of the arguments, their byte spans and the origins in the body of the callee. The span of a contextual marker does not replace the span of an owner identifier. |
+| Refusal | Overlap; a spent, hidden or nonquantum argument; a changed owner partition or tree; a nonunitary body; mixed arguments outside the [checked profile](#ordinary-unit-arguments-in-access-calls); an escaping access; a failed native check of the control sectors; an unavailable concrete projection. Static selections follow [their own rule](#static-ordered-axis-places). Checker-free `ctrl`, which is `ctrl` in a lowering that runs without the native checker, is unsupported. An original control obligation without a concrete interval in each retained specialization rejects. |
+| Open obligations | Emitted artifacts and requests need independent checks. The lookup-level scope-update model has premises on finite maps, type embedding and update provenance. It is not a proof of source preservation and not a quantitative resource certificate. General footprints, lifetimes and access declarations are pending. |
 
 See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).
 
 The effect of the callee follows the
 [public-effect rule](source-text.md#ordinary-function-effects-and-assertions).
+The effect that counts depends on the module that contains the call.
 
 Rules:
 
 - Outside the original module of the callee, the checked public contract
   counts. Inside that module, internal inference counts.
-- Specialization, inlining and cache reuse cannot turn a sharper body effect
-  into external source eligibility.
+- A body can have a sharper effect than its public contract. Specialization,
+  inlining and cache reuse cannot turn that sharper effect into eligibility
+  for external source.
 
 > **Implementation note.** Native-checked Selected Raw lowering also checks
 > unused closed functions that lead to control obligations. It invents no
@@ -303,7 +325,8 @@ unitary fn bad(q:Q<Bit>)->Q<Bit>{h(ctrl q);q} pub observe fn main()->Bit{0}
 
 ### Ordinary Unit arguments in access calls
 
-A checked mixed call passes `()` or a lexical `Unit` value beside its marked
+An access call can take ordinary arguments beside its marked places. A
+checked mixed call passes `()` or a lexical `Unit` value beside its marked
 places.
 
 Rules:
@@ -350,8 +373,9 @@ pub unitary fn update(data: Q<Bit>) -> Q<Bit> {
 
 ### Declared access parameters
 
-A finite function with a closed selected specialization may declare a marked
-owner slot, as in `target: excl Q<Bit>`, and write a `Unit` result.
+A function can write the access marker in its own signature. A finite
+function with a closed selected specialization may declare a marked owner
+slot, as in `target: excl Q<Bit>`, and write a `Unit` result.
 
 Rules:
 
@@ -362,8 +386,8 @@ Rules:
   or a value of type `Unit`, including a parameter.
 - The returned quantum owners carry the updated state, including its exact
   phase.
-- A declared access requires the finite original-body check and, for every
-  `ctrl` slot, the applicable exact sector check.
+- A declared access requires the finite check of the original body. For
+  every `ctrl` slot it also requires the applicable exact sector check.
 
 The selected-entry route with the native checker accepts `update`:
 
@@ -387,18 +411,19 @@ pub unitary fn update(target: Q<Bit>) -> Q<Bit> {
 
 ## Static ordered-axis places
 
-A static ordered-axis place selects axes of a live `Q<Bits<N>>` owner, the
-**parent**, as an argument of an access call. `excl q[i]` and `ctrl q[i]`
-select one axis. `excl q[a..b]` and `ctrl q[a..b]` select the explicit
-half-open range `q[a..b]`.
+A static ordered-axis place lets an access call act on selected axes of a
+register. It selects axes of a live `Q<Bits<N>>` owner as an argument of the
+call. That owner is the **parent**. `excl q[i]` and `ctrl q[i]` select one
+axis. `excl q[a..b]` and `ctrl q[a..b]` select the explicit half-open range
+`q[a..b]`.
 
 | Field | Contract |
 | --- | --- |
 | Source | `excl q[i]`, `ctrl q[i]`, `excl q[a..b]` and `ctrl q[a..b]` as arguments of an access call, where `q` is a live lexical `Q<Bits<N>>` parent. An index selects `Q<Bit>`. A range selects `Q<Bits<b-a>>`. The two interfaces are distinct even at width one. |
-| Target | An ordered partition of the parent into selected and remainder owners, one call of the callee with all selected arguments, and reconstruction of the parent in reverse extraction order from the updated returned values. Existing Split/Join instructions perform the partition on the Finite project and Selected Raw targets. The Selected hierarchy target uses its bit extraction, reinsertion and empty-owner operations. |
+| Target | Three steps. The expansion partitions the parent, in order, into selected owners and remainder owners. It calls the callee once with all selected arguments. It reconstructs the parent from the updated returned values, in the reverse of the extraction order. Existing Split/Join instructions perform the partition on the Finite project and Selected Raw targets. The Selected hierarchy target uses its operations for bit extraction, reinsertion and empty owners. |
 | Evaluation order | A selector uses the original resolved static context and has no runtime effect. The callee executes once. The parent is reassembled before the next argument, tuple field or statement starts. |
 | Owners | The parent is live after the call, and the access expression has ordinary Unit type. The callee has a Unitary effect and returns the exact ordered selected interface. Empty selected owners and empty remainder owners retain their logical identities. An empty range selects no axes. A whole-owner access overlaps every other access on that parent, including an empty range. |
-| Exact phase | The partition inserts no physical SWAP, preparation, measurement or cleanup. Empty owners retain their scalar phase. The callee action on the ordered selected interface is preserved. |
+| Exact phase | The partition inserts no physical SWAP, preparation, measurement or cleanup. Empty owners retain their scalar phase. The expansion preserves the action of the callee on the ordered selected interface. |
 | Source spans | Each selection retains its parent-owner occurrence, its static selector, its access role and the original byte spans. |
 | Refusal | A parent that is not a live lexical `Q<Bits<N>>`; a bound that the common checker cannot prove, `0 <= a <= b <= N` for a range or `0 <= i < N` for an index, under the original static context; two selections on the same parent that are not provably disjoint; a runtime index; arithmetic overflow; budget exhaustion; a callee without a Unitary effect; a callee that does not return the exact ordered selected interface; bare indexing as a value or as an ownership-extraction operation; a `ctrl` selection without its sector check; checker-free control emission. Each failure occurs at compile time. No runtime bounds panic exists. |
 | Open obligations | The emitted program needs native Raw checking. A `ctrl` selection needs a fresh native sector check of the concrete callee on its ordered selected ports. General source preservation and quantitative resource correspondence are proof obligations. |
@@ -411,9 +436,10 @@ Rules:
   no permission.
 - The common checker checks every original declaration, both branch bodies
   and the body of every fold.
-- Static branch premises and loop premises take part in the arithmetic proof,
-  including impossible contexts, as for other static obligations.
-- Names, types, effects and ownership are checked in unexecuted code as well.
+- The premises of static branches and of loops take part in the arithmetic
+  proof. This includes impossible contexts, as for other static obligations.
+- The checks of names, types, effects and ownership cover unexecuted code as
+  well.
 
 > **Implementation note.** The common AST represents each selection as a
 > parent-owner occurrence and a static selector. The project compiler submits
@@ -447,17 +473,18 @@ unitary fn unused(q:Q<Bits<2>>)->Q<Bits<2>>{h(excl q[2]);q}pub unitary fn f(q:Q<
 
 ## Ordinary expressions and classical functions
 
-An ordinary expression computes a Unit, Bit or product value. A
-`classical fn` is a total function on ordinary values.
+This section covers the classical computation of a program. An ordinary
+expression computes a Unit, Bit or product value. A `classical fn` is a total
+function on ordinary values.
 
 | Field | Contract |
 | --- | --- |
-| Source | Ordinary Unit/Bit/product expressions, eager `not`/`and`/`xor` and supported `classical fn` calls |
-| Target | Ordinary evaluation and Raw classical operations, including selected Raw register transport where the target supports it. No runtime truth-table substitution occurs. |
+| Source | Ordinary expressions of Unit, Bit or product type, the eager operators `not`, `and` and `xor`, and supported calls of a `classical fn` |
+| Target | Ordinary evaluation and Raw classical operations, including selected Raw register transport where the target supports it. No truth table is substituted at runtime. |
 | Evaluation order | Operands and complete arguments evaluate once, in source order. `and` is eager, including its right operand. |
 | Owners | An ordinary result has no quantum owner. Input expressions keep their effects and their quantum consumption. Ignoring a result cannot omit its measurement. |
 | Exact phase | Ordinary Boolean evaluation inserts no quantum action. Input expressions keep their complete action or instrument. |
-| Source spans | The original operand, call, parameter and definition byte spans are kept. |
+| Source spans | The expansion keeps the original byte spans of the operand, the call, the parameter and the definition. |
 | Refusal | Wrong exact types or arity; a forbidden capture; an invalid classical body or dependency; unavailable transport. A live `Q<A>` is not an ordinary `A` argument. |
 | Open obligations | Lexical use, complete phi inputs and value operations need a check. The original computation and the surrounding instrument must be preserved. Coherent use needs the separate lift obligation in addition. |
 
@@ -488,7 +515,7 @@ one field of an ordinary record.
 | Owners | Every field has an ordinary finite type. `Q<Record>` is one owner, with no implicit decomposition or observation. Initializer calls keep their ownership transitions. |
 | Exact phase | Construction and projection are ordinary computation and insert no quantum action. Initializer calls keep their effects and dependencies, so observation cannot hide behind a Unitary or Isometry annotation. |
 | Source spans | Type references use the original occurrence table, including public reexports and local shadowing. Member names and diagnostics retain their original source spans. |
-| Refusal | A missing or repeated field; a field value of another type; a private field outside its declaring module; a projection from a value that is not an ordinary record; a local Basis or runtime name in place of a same-spelled global type; a payload variant; an imported bare variant; shorthand, record update and method forms. |
+| Refusal | A missing or repeated field; a field value of another type; a private field outside its declaring module; a projection from a value that is not an ordinary record; a local Basis name or runtime name in place of a global type with the same spelling; a payload variant; an imported bare variant; shorthand, record update and method forms. |
 | Open obligations | Common preparation supplies no accepted handle. Execution requires a typed native route. That gate does not prove original AST lowering, the decoder and native compiler, or numerical runtime preservation. |
 
 The [type model](type-model.md#opaque-basis-specialization-in-the-selected-profile)
@@ -516,9 +543,9 @@ route rejects that program with the code `effect`.
 
 ## Runtime classical branches
 
-A runtime classical branch selects one of two arms by an ordinary Bit.
-Runtime selection is distinct from coherent control and from static
-selection.
+A runtime classical branch selects one of two arms by an ordinary Bit, such
+as a measurement result. Runtime selection is distinct from coherent control
+and from static selection.
 
 | Field | Contract |
 | --- | --- |
@@ -526,10 +553,10 @@ selection.
 | Target | Raw `ClassicalBranch` with both operation lists and simultaneous classical and quantum phis, or the supported selected branch representation |
 | Evaluation order | The condition evaluates once. Runtime executes the selected arm. Source checking visits both arms. |
 | Owners | Both arms agree on the exact returned trees and on outer consumption. The join merges the returned leaves and the complete surviving frame of the caller and of pending arguments. IDs are globally fresh across arms. Phi renaming prepares no state and loses no reference correlation. |
-| Exact phase | The action and the unnormalized outcome weight of each arm are preserved. No coherent superposition and no branch normalization is inserted. |
-| Source spans | Arm operations retain their original spans and nested branch-index paths. Inserted joins use the branch span. |
+| Exact phase | The expansion preserves the action and the unnormalized outcome weight of each arm. It inserts no coherent superposition and no branch normalization. |
+| Source spans | The operations of an arm retain their original spans and their nested branch-index paths. An inserted join uses the span of the branch. |
 | Refusal | A quantum condition; different types or owner frames; lost branch-local owners; invalid phis or an invalid body; an unsupported target. |
-| Open obligations | Both arms, the scope, the ownership and the simultaneous phis need a native check. The complete source instrument must be preserved, with external references and caller-frame correlations. |
+| Open obligations | Both arms, the scope, the ownership and the simultaneous phis need a native check. The complete source instrument must be preserved, with external references and the correlations of the caller frame. |
 
 The Finite project target accepts this program, and `main` returns 1. The
 selected-entry route rejects it with the code `unsupported`: the form is
@@ -590,18 +617,19 @@ enum Tri { A, B, C } classical fn unused() -> Bit { match Tri::A { Tri::A => 0 }
 ## Static natural computation
 
 Static natural computation evaluates natural expressions during checking. A
-static binding is not a runtime value.
+program uses it for values such as a width or a repetition count. A static
+binding is not a runtime value.
 
 | Field | Contract |
 | --- | --- |
-| Source | Supported natural expressions, `static let` and provisional bounded acyclic Nat helpers |
+| Source | Supported natural expressions, `static let`, and Nat helpers that are provisional, bounded and acyclic |
 | Target | Exact affine templates, substitution and closed checked naturals. A checked unused alias inserts no runtime instruction. |
-| Evaluation order | Ordered static binders and helper arguments resolve in their static context. Substitution is simultaneous. Callee names cannot rewrite caller binders. |
+| Evaluation order | Ordered static binders and helper arguments resolve in their static context. Substitution is simultaneous. The names of a callee cannot rewrite the binders of its caller. |
 | Owners | None. The static environment contains no live quantum owner and no runtime input. |
 | Exact phase | Normalization inserts no phase. A result that an explicit phase operation uses is the exact specified parameter of that operation. |
-| Source spans | The original arithmetic, argument, premise and binder spans are kept, never generated replacement text. |
-| Refusal | A runtime-dependent value; a forward kind dependency; a duplicate or shadowing binding; nonlinear arithmetic; an unproved subtraction or premise; a cycle; overflow; work exhaustion. Acyclic forward helper references keep normal declaration resolution. |
-| Open obligations | Closed values and their uses need a check under exact constraints. Compiler work counters do not certify program resources. |
+| Source spans | The expansion keeps the original spans of the arithmetic, the argument, the premise and the binder. It never keeps spans of generated replacement text. |
+| Refusal | A value that depends on a runtime value; a forward kind dependency; a duplicate or shadowing binding; nonlinear arithmetic; an unproved subtraction or premise; a cycle; overflow; work exhaustion. Acyclic forward references to helpers keep normal declaration resolution. |
+| Open obligations | Closed values and their uses need a check under exact constraints. The work counters of the compiler do not certify the resources of a program. |
 
 See [static arithmetic and helpers](static-language.md).
 
@@ -621,19 +649,20 @@ pub observe fn main()->Bit{let a=1;static let n=a+1;0}
 
 ## Specialization and static selection
 
-Bracket specialization closes a declaration by complete static arguments.
-`if static` selects one arm by a static comparison.
+Bracket specialization closes a declaration by supplying its complete static
+arguments, as in `run[2]`. `if static` selects one arm by a static
+comparison.
 
 | Field | Contract |
 | --- | --- |
 | Source | Ordered `const` parameters, complete bracket arguments and `if static comparison` |
-| Target | A supported closed instance and the selected static arm, after complete original-source checking |
+| Target | A supported closed instance and the selected static arm, after the complete check of the original source |
 | Evaluation order | Explicit static bindings and provider identities resolve before runtime application. Static selection evaluates no runtime condition. |
-| Owners | The exact interface and the owners of the runtime instance are preserved. A dead source arm is checked. |
-| Exact phase | Parameters are substituted without quotienting phase or changing axis order. The selected action is retained. |
-| Source spans | The definition, argument, comparison and arm spans are kept. |
-| Refusal | Incomplete or wrong bindings; unproved constraints or access; an invalid dead arm; non-decreasing dependencies; an unsupported instance. No width-based inference and no fallback exists. |
-| Open obligations | The closed artifact and the provider evidence need a native check. General specialization preservation and family resource bounds are separate obligations. |
+| Owners | The expansion preserves the exact interface and the owners of the runtime instance. A dead source arm is checked. |
+| Exact phase | The substitution of parameters does not quotient phase and does not change axis order. The expansion retains the selected action. |
+| Source spans | The expansion keeps the spans of the definition, the argument, the comparison and the arm. |
+| Refusal | Incomplete or wrong bindings; unproved constraints or access; an invalid dead arm; non-decreasing dependencies; an unsupported instance. No inference from width and no fallback exists. |
+| Open obligations | The closed artifact and the provider evidence need a native check. General preservation under specialization and resource bounds for a family are separate obligations. |
 
 The [static rules](static-language.md) specify termination and capacities.
 Helper spellings are provisional where those rules say so.
@@ -660,17 +689,18 @@ pub unitary fn f(q: Q<Bit>) -> Q<Bit> { if static 0 == 0 { q } else { missing(q)
 
 ## Finite folds
 
-A finite fold threads a carry through a closed static range. `for static`
-carries ordinary values. `qfor static` carries quantum owners.
+A finite fold repeats its body over a closed static range and threads a
+carry from each iteration to the next. `for static` carries ordinary values.
+`qfor static` carries quantum owners.
 
 | Field | Contract |
 | --- | --- |
-| Source | Ordinary `for static` or quantum-owner `qfor static`, with an explicit range, carry pattern, initializer and `yield` |
+| Source | `for static` for ordinary values or `qfor static` for quantum owners, with an explicit range, carry pattern, initializer and `yield` |
 | Target | Closed finite iteration of existing fold and source steps, then a supported Raw or hierarchy proposal |
 | Evaluation order | The initializer evaluates once. The carry threads in increasing index order over `[start,end)`. Zero iterations return the evaluated initial value. |
-| Owners | The exact carry tree is preserved. `qfor` carries a quantum owner, including empty-width owners. A non-carried owner cannot be a hidden capture. No exit discard and no reassembly is inserted. |
+| Owners | The expansion preserves the exact carry tree. `qfor` carries a quantum owner, including empty-width owners. An owner outside the carry cannot be a hidden capture. The expansion inserts no discard at exit and no reassembly. |
 | Exact phase | Serial composition retains the phase of every iteration. An empty iteration sequence is the identity on the retained carry. |
-| Source spans | The bound, carry, body and yield spans are kept in every instance. |
+| Source spans | The expansion keeps the spans of the bound, the carry, the body and the yield in every instance. |
 | Refusal | An invalid range or a runtime bound; the wrong fold category; a carry-tree mismatch; a missing `yield`; a hidden capture; an invalid zero-count body. A limit failure keeps its category. |
 | Open obligations | The complete composition, the owners and the dependencies need a check. Finite unrolling proves neither a general family theorem nor a quantitative bound. |
 
@@ -692,18 +722,19 @@ pub unitary fn f(q:Q<Bit>)->Q<Bit>{for static i in 0..0 carry a=q{yield a;}}
 
 ## Operation descriptions and application
 
-A static operation description names a provider-bound operation. A
-constructor builds a description from other descriptions, and an application
-applies a description to runtime owners.
+A static operation description names an operation that is bound to its
+provider. A constructor builds a description from other descriptions, such
+as the adjoint of an operation or a power of it. An application applies a
+description to runtime owners.
 
 | Field | Contract |
 | --- | --- |
-| Source | `adjoint`, `power`, `then_op`, `tensor_op`, `conjugate_op`, `controlled` and `checked_op` in the specified static-description and application positions |
-| Target | Provider-bound descriptions and existing untrusted circuit, finite-contract or hierarchy transformation proposals. No runtime closure exists. |
+| Source | `adjoint`, `power`, `then_op`, `tensor_op`, `conjugate_op`, `controlled` and `checked_op`, in the specified positions of a static description and of an application |
+| Target | Descriptions bound to their providers, and existing untrusted transformation proposals for a circuit, a finite contract or a hierarchy. No runtime closure exists. |
 | Evaluation order | The complete description is checked before application. Runtime arguments evaluate once in source order, including at power zero. Adjoint reverses the operation order and conjugates the action. |
 | Owners | The exact basis tree and the runtime group are retained. A tensor description uses its packed basis. It does not implicitly join separate owners. |
 | Exact phase | Adjoint conjugates phase. Power repeats the complete action. Serial, tensor and conjugate descriptions retain the ordered action. Meaning is a separate obligation, never an access grant. |
-| Source spans | The original constructor, operand, count, Meaning and input spans are kept through nested descriptions. |
+| Source spans | The expansion keeps the original spans of the constructor, the operand, the count, the Meaning and the input through nested descriptions. |
 | Refusal | Missing access; a wrong basis, interface or Meaning; an unsupported provider, transform or count; an unresolved obligation; a capacity failure. These reject in unused and zero-count contexts as well. Constructing `adjoint(U)` itself requires `Adjointable(U)`. |
 | Open obligations | Providers, retained bodies, exact transformations and requested Meanings need an independent binding to the emitted artifacts. A valid unbound circuit is insufficient. |
 
@@ -712,9 +743,9 @@ See [access derivations](functional-boundary.md),
 [checked operations](checked-operations.md).
 
 The same eight fields apply to each constructor below. The constructors are
-the existing endomorphic description actions. They are not a general
-isometry-adjoint admission. Runtime-order arrows describe execution. Matrix
-products act right to left.
+the existing endomorphic description actions. They do not admit the adjoint
+of an isometry in general. An arrow gives the order of execution at runtime.
+A matrix product acts right to left.
 
 | Description | Exact expansion/action |
 | --- | --- |
@@ -727,11 +758,11 @@ products act right to left.
 | `conjugate_op(C,U)` | The ordering `C† → U → C`, with matrix action `C U C†`. Do not silently substitute `C† U C`. |
 | `checked_op(U,M)` | Retain the implementation of U and attach the independent exact M obligation. This inserts no runtime gate and no capability. |
 
-Description composition does not automatically transport an attached
-`Op<A,M>` refinement. The refinement and obligation rules of the common
-judgment and the concrete independent checks are as
-[functional abstraction](functional-boundary.md#admitted-operation-construction)
-specifies them.
+Composing descriptions does not automatically transport an attached
+`Op<A,M>` refinement.
+[Functional abstraction](functional-boundary.md#admitted-operation-construction)
+specifies the refinement rules and the obligation rules of the common
+judgment, and the concrete independent checks.
 
 The project route accepts this program. `power(eighth_phase,4)` is four
 serial copies of T, and both `checked_op` descriptions carry the same exact
@@ -784,12 +815,12 @@ control is zero and `G` when it is one.
 | Evaluation order | The control evaluates, then the target, each completely and once. The control is not measured and is not used as a classical condition. |
 | Owners | The form consumes two inputs, packages them temporarily for the finite controlled action and returns `(Q<Bit>,Q<A>)` in order, even for zero-width A. The complete target tree and the reference frame are retained. Packaging prepares no state. A block arm binds the written target name and returns one owner of the exact target type. Other runtime owners of the enclosing scope are unavailable in the block. |
 | Exact phase | The control is the first low axis. The inactive identity has coefficient +1. The active phase is retained, including scalar Unit phase and kickback. |
-| Source spans | The control and target arguments and the provider or arm names are kept. Generated control structure retains the expression origin. |
+| Source spans | The expansion keeps the control argument, the target argument and the names of the provider or of the arms. Generated control structure retains the origin of the expression. |
 | Refusal | A missing Controllable capability; wrong owners or arity; aliases; an invalid arm; an omitted or reordered arm; a block arm whose target is not a name, whose body is not Unitary, or that does not return the target owner; an unsupported interface. Unitarity grants no control access. |
-| Open obligations | The provider or body identity, the exact action, the axes and the owners need an independent check. Probabilities or known-input tests do not discharge coherent or reference correspondence. |
+| Open obligations | The provider or body identity, the exact action, the axes and the owners need an independent check. Probabilities, or tests on known inputs, do not discharge coherent correspondence or reference correspondence. |
 
 The inactive identity belongs to the specified controlled meaning. No
-omitted-arm `qif` rewrite is admitted.
+rewrite of a `qif` with an omitted arm is admitted.
 [Exact-label coherent selection](source-text.md#exact-label-coherent-selection)
 specifies the block arms that `qif` shares with `qmatch`.
 
@@ -812,9 +843,10 @@ unitary fn keep(q:Q<Bit>)->Q<Bit>{q} pub observe fn f(s:Q<Bit>,q:Q<Bit>)->(Q<Bit
 
 ## Exact-label coherent selection
 
-`qmatch(selector, target) { label => arm, ... }` applies one arm to the
-target for each basis label of the selector. It does not measure the
-selector. On a `Bit` selector it agrees exactly with `qif`.
+`qmatch(selector, target) { label => arm, ... }` selects among its arms
+coherently. It applies one arm to the target for each basis label of the
+selector. It does not measure the selector. On a `Bit` selector it agrees
+exactly with `qif`.
 
 | Field | Contract |
 | --- | --- |
@@ -825,7 +857,7 @@ selector. On a `Bit` selector it agrees exactly with `qif`.
 | Exact phase | With arm `s` denoting the exact operator `U_s`, the action maps `\|s,y>` to `sum_z U_s[z,y] \|s,z>` and extends linearly, including to inputs entangled with an external reference. All arm phases are exact. Selector axes precede target axes, so `(s,y)` has the coordinate `s + 2^selector_bits * y`. |
 | Source spans | Each selection retains its own source position and its ordered arms. On the route that checks the original source, it also retains its literal Raw interval. |
 | Refusal | A wildcard, range, payload or guard label; a dynamic arm call; a missing, repeated or out-of-range label; more than 64 arms; a selector that is not one `Q<A>` owner of a supported basis; a target that is not one distinct `Q<B>` owner; an arm with another target interface, without a Unitary effect or without the Controllable capability; an unsupported target. Unitarity alone grants neither control nor inverse access. |
-| Open obligations | The proposed circuit needs a fresh native encoded equation against the independently obtained exact block meaning. The emitted Raw root needs ordinary native checking. Common enum checks, native acceptance of a proposed circuit and conformance tests do not prove original-source preservation. |
+| Open obligations | The proposed circuit needs a fresh native encoded equation against the independently obtained exact block meaning. The emitted Raw root needs ordinary native checking. Three things do not prove preservation of the original source: common enum checks, native acceptance of a proposed circuit, and conformance tests. |
 
 [Source text](source-text.md#exact-label-coherent-selection) specifies the
 form, its block arms and its routes.
@@ -847,7 +879,8 @@ enum E{A,B,C} unitary fn keep(q:Q<Bit>)->Q<Bit>{q} fn f(s:Q<Bit>,q:Q<Bit>)->(Q<B
 ## Coherent basis maps
 
 A coherent basis map applies an injective function on basis labels to one
-quantum owner.
+quantum owner. The program writes the function as an expression on a label
+pattern.
 
 | Field | Contract |
 | --- | --- |
@@ -856,9 +889,9 @@ quantum owner.
 | Evaluation order | `q` evaluates once, before the labels are bound. The restricted total expression evaluates in a separate basis scope. |
 | Owners | The form consumes one `Q<A>` and returns one `Q<B>`. Label patterns do not split runtime owners. Separate inputs are not implicitly joined. |
 | Exact phase | Each transition has coefficient +1, linearly, with the identity on an arbitrary external reference. Amplitudes and ordered output labels are retained. |
-| Source spans | The original input, label pattern and body spans are kept. |
+| Source spans | The expansion keeps the original spans of the input, the label pattern and the body. |
 | Refusal | A wrong owner or tree; an outer capture; an unsupported body or callee; a noninjective complete map; reuse; an unavailable profile. |
-| Open obligations | The complete lift, its injectivity and its effects need an independent check. Source-to-table correspondence is separate from table validity. |
+| Open obligations | The complete lift, its injectivity and its effects need an independent check. The correspondence of the source to the table is separate from the validity of the table. |
 
 See [coherent basis maps](coherent-basis.md), including Unit and the
 difference between label copying and state copying.
@@ -884,18 +917,19 @@ pub unitary fn f(q:Q<Bit>)->Q<Bit>{basis q as a {0}}
 
 ## Computed workspace
 
-`with_computed` computes one ancilla from a source register by a classical
-predicate, runs a scoped body, and uncomputes the ancilla.
+`with_computed` gives a scoped body one temporary ancilla. It computes the
+ancilla from a source register by a classical predicate, runs the body, and
+uncomputes the ancilla.
 
 | Field | Contract |
 | --- | --- |
-| Source | The two-argument `with_computed(source,predicate)` form, or the three-argument logical-contract form |
+| Source | The two-argument form `with_computed(source,predicate)`, or the three-argument form with a logical contract |
 | Target | Raw `ComputeUseUncompute`, or the certified retained-body construction with finite evidence, within each supported profile |
 | Evaluation order | The source evaluates once. The form computes the specified ancilla, executes the checked scoped body and then uncomputes. |
 | Owners | The predicate takes one ordinary parameter of the exact tree of the source. The two-argument body returns the ancilla. The three-argument body returns the data and the ancilla. Capture and protection rules are explicit. No standalone Release0 is inserted. |
-| Exact phase | The specified use or logical action is preserved, and an exact all-input clean return is required. A cleanliness check alone cannot certify the live action or its phase. Approximate cleanup cannot discharge this obligation. |
-| Source spans | The source, predicate, body, returned owner and logical-contract origins are kept. |
-| Refusal | A wrong predicate arity or tree; an unsupported body; an Observe effect; lost, aliased or protected owners; a failed equality or cleanup; capacity exhaustion. A one-Bit ancilla body outside the canonical empty/Z/T token chain must act as an exact eighth-root diagonal. Non-diagonal or unrepresentable actions reject. No name-based exception supplies evidence. |
+| Exact phase | The expansion preserves the specified use or logical action. An exact all-input clean return is required. A cleanliness check alone cannot certify the live action or its phase. Approximate cleanup cannot discharge this obligation. |
+| Source spans | The expansion keeps the origins of the source, the predicate, the body, the returned owner and the logical contract. |
+| Refusal | A wrong predicate arity or tree; an unsupported body; an Observe effect; lost, aliased or protected owners; a failed equality or cleanup; capacity exhaustion. A one-Bit ancilla body outside the canonical empty/Z/T token chain must act as an exact eighth-root diagonal. Non-diagonal or unrepresentable actions reject. No exception that is based on a name supplies evidence. |
 | Open obligations | The retained compute, use and uncompute steps and the exact logical and cleanup contract, with references, need an independent check. Syntax and Unitary annotations supply no clean evidence. |
 
 See [scoped bodies](functional-boundary.md#scoped-bodies-finite-elaboration-and-effects)
@@ -938,18 +972,19 @@ classical fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { measure_z(with_co
 
 ## Function contracts
 
+A function contract pairs an implementation with a specification.
 `apply_contract(implementation, specification, input)` applies
 `implementation` to one quantum owner. It records the obligation that
-`implementation` equals `specification`. The form has a pure overload and an
-observing overload.
+`implementation` equals `specification`. The form has two overloads, a pure
+one and an observing one.
 
 | Field | Contract |
 | --- | --- |
-| Source | `apply_contract(implementation, specification, input)`. In the pure overload, both names denote closed functions with a caller-visible Unitary effect and the interface `Q<A> -> Q<A>`; a declared finite Meaning may supply the specification instead. In the observing overload, both names denote closed ordinary functions with a caller-visible Observe effect, one `Q<A>` argument and the same complete finite result type. |
+| Source | `apply_contract(implementation, specification, input)`. In the pure overload, both names denote closed functions with the interface `Q<A> -> Q<A>` and a Unitary effect that the caller can see. A declared finite Meaning may supply the specification instead. In the observing overload, both names denote closed ordinary functions with an Observe effect that the caller can see, one `Q<A>` argument and the same complete finite result type. |
 | Target | Pure overload on Raw: a circuit `Contract` step that carries the checked receipt. Pure overload on the hierarchy: a checked finite leaf that embeds the complete receipt-bearing wrapper bytes. Observing overload: the emitted call interval of the implementation, with a private native instrument equation. |
 | Evaluation order | The input evaluates first, once. A declared Meaning supplies the request and is never projected as a runtime function. The observing overload executes only the implementation. |
 | Owners | The form consumes one exact quantum owner and returns the result of the implementation. In the observing overload, the complete result nesting, the ordered quantum and classical projections, zero-width owners, hidden histories and residual states are significant. |
-| Exact phase | The function-equality check is an exact equation between the implementation and the specification. An equal-matrix replacement with different implementation or specification bytes cannot substitute for the original source-bound receipt. |
+| Exact phase | The function-equality check is an exact equation between the implementation and the specification. A replacement with an equal matrix and different implementation or specification bytes cannot substitute for the original receipt, which is bound to the source. |
 | Source spans | The obligation binds both original definitions, the interface, the category, the effect and the source span. Raw emission keeps the original pair, owner, direction and ordered axes for source replay. |
 | Refusal | A local value in place of a function name; a `classical fn` or a Meaning as the implementation; a function with static parameters; a function without exactly one `Q<A>` parameter of the input basis; different result types; a failed equation; an observing Meaning; lowering without the native checker. |
 | Open obligations | The function-equality obligation is pending until the independent native evidence gate discharges it. Binding the identity of a Meaning or a provider is not matrix equality, injectivity, all-input clean return, provider correspondence or source preservation. Both emitted artifacts need fresh native acceptance. |
@@ -991,8 +1026,9 @@ observe fn main() -> Bit { apply_contract(implementation,reference,init0()) }
 
 ## Explicit maps and unsupported candidates
 
-Some maps are explicit operations of the source program. No elaboration
-inserts them.
+Some maps are explicit operations of the source program. The program writes
+them, and no elaboration inserts them. This section also names conveniences
+that the language does not admit.
 
 Rules:
 
@@ -1000,8 +1036,9 @@ Rules:
   explicit [specified maps](primitive-boundary.md). They keep their original
   ordered interfaces and the coefficient +1.
 - An elaboration must not insert such a map to repair an argument tree.
-- `Bit`, `Bits<1>`, `Unit`, `Bits<0>`, tuple arity and nesting, and packed
-  versus separate owners are distinct.
+- `Bit`, `Bits<1>`, `Unit` and `Bits<0>` are distinct. Tuples of different
+  arity or nesting are distinct. Packed owners are distinct from separate
+  owners.
 - Canonical reassociation is not definitional equality. It is not an admitted
   implicit elaboration.
 - An ordinary literal does not prepare a quantum state.
@@ -1009,7 +1046,8 @@ Rules:
   [standard-library](stdlib.md) function `std::state::init0`, declared
   `pub isometry fn init0() -> Q<Bit>` and defined by
   `basis unit(()) as _ { 0 }`. It keeps its explicit Isometry contract.
-- `basis` is a coherent map. It is not arbitrary state-preparation sugar.
+- `basis` is a coherent map. It is not sugar for arbitrary state
+  preparation.
 - Beyond explicit selected-place access, no implicit view partition and no
   implicit reassembly is admitted.
 - No insertion of `excl` or `ctrl`, no arbitrary wire permutation and no
@@ -1033,11 +1071,12 @@ Rules:
 - The expansion emits no physical SWAP, preparation, measurement or implicit
   discard.
 
-These primitives and selected-place lowering use the same structural
-instructions. Explicit indexed and slice access connects common checking to
-ordered partition and reconstruction under the
-[static-place rules](#static-ordered-axis-places). It does not insert a source
-`take_bit`/`put_bit` call, and it does not infer an access mode.
+These primitives and the lowering of selected places use the same structural
+instructions. Explicit indexed access and slice access connect common
+checking to ordered partition and reconstruction under the
+[static-place rules](#static-ordered-axis-places). Such access does not
+insert a source `take_bit`/`put_bit` call, and it does not infer an access
+mode.
 
 > **Implementation note.** Independent source-step replay checks the original
 > partition, the intermediate fresh owners and the returned wire order of each
@@ -1056,12 +1095,15 @@ pub unitary fn main(input:Q<(Bits<2>,Bit)>)->Q<(Bits<2>,Bit)>{
 
 ## Original locations and failure
 
+This section states the original location that each emitted operation
+retains, and how kinds of failure stay distinct.
+
 Rules:
 
 - A span is a half-open UTF-8 byte interval in the unnormalized original
   source.
-- Emitted operations retain their original expression and body origins.
-  Finite nested branches retain operation and arm-index paths.
+- Emitted operations retain their origins in the original expression and
+  body. Finite nested branches retain operation and arm-index paths.
 - An enclosing expression must not overwrite the origin of a child or of a
   callee.
 - An inserted operation without a more specific origin uses the span of its
@@ -1077,13 +1119,14 @@ Rules:
 
 ## Migration correspondence
 
-The table below maps each retired form to its explicit form. A migration
-derivative is a separate source that uses the explicit form.
+Some earlier spellings of these forms are retired. The table below maps each
+retired form to its explicit form. A **migration derivative** is a separate
+source that uses the explicit form.
 
 Rules:
 
 - Production rejects retired forms. It does not retry a legacy grammar, and it
-  applies no accepting compatibility rewrite.
+  applies no compatibility rewrite that accepts them.
 - A migration derivative has its own bytes and provenance.
 - A migration must preserve the original source, its diagnostics and its
   artifacts, and must validate the complete derivative.
@@ -1094,21 +1137,24 @@ Rules:
 | --- | --- | --- |
 | `[static n: Nat, ...]` | `[const n: Nat, ...]` | Ordered explicit kinds and arguments; no inferred specialization |
 | `adjoint(U,q)` / earlier `inverse(U)(q)` | `adjoint(U)(q)` | Adjoint action and its access premise |
-| `repeat_op(k,U)` / `repeat_static(k,U,q)` | `power(U,k)` / `power(U,k)(q)` | Count, exact provider/group, once-only input evaluation |
-| `inverse_op(U)` / `controlled_op(U)` | `adjoint(U)` / `controlled(U)` | Bound description identity and access |
-| `Apply` / `Adjoint` / `Controlled` predicates | `Applicable` / `Adjointable` / `Controllable` | Provider access; no annotation grant |
-| `do p <- q; pure e` | `basis q as p { e }` | Same CoherentLift, coefficient +1 and injectivity |
-| `bind_op(U,M)` | `checked_op(U,M)` | Exact interface/Meaning and original provider evidence |
+| `repeat_op(k,U)` / `repeat_static(k,U,q)` | `power(U,k)` / `power(U,k)(q)` | The count, the exact provider and group, and evaluation of the input exactly once |
+| `inverse_op(U)` / `controlled_op(U)` | `adjoint(U)` / `controlled(U)` | The identity and the access of the bound description |
+| `Apply` / `Adjoint` / `Controlled` predicates | `Applicable` / `Adjointable` / `Controllable` | Provider access; an annotation grants nothing |
+| `do p <- q; pure e` | `basis q as p { e }` | The same CoherentLift, coefficient +1 and injectivity |
+| `bind_op(U,M)` | `checked_op(U,M)` | The exact interface and Meaning, and the original provider evidence |
 
 The table is not a general automatic rewriter. An unimplemented draft
-acquires no historical equivalence claim. [Types](type-model.md) and
+acquires no claim of historical equivalence. [Types](type-model.md) and
 [stdlib](stdlib.md) keep their separate migration contracts.
 
-A source-bearing artifact can change bytes after a source edit even when the
-operator and the interface meaning are equal. A migration must never erase
-identity to force byte equality.
+An artifact that carries source can change its bytes after a source edit.
+This can happen even when the operator and the interface meaning are equal.
+A migration must never erase identity to force byte equality.
 
 ## Status and limits
+
+This section gives the limits of each target, and it keeps apart what tests,
+proofs and admitted guarantees establish for the forms of this chapter.
 
 ### Accepted forms without a contract in this chapter
 
@@ -1128,7 +1174,7 @@ means that the chapter states no limit for that target.
 
 | Form | Finite project | Selected Raw | Selected hierarchy |
 | --- | --- | --- | --- |
-| `ctrl` places | Admits a retained concrete `ctrl` call after a fresh native sector check | Admits the same call when lowering runs with the native checker. Checker-free lowering rejects every control obligation. | Supported pure `ctrl` calls only. Each control decision covers at most six physical input bits and uses the exact scalar ring. Unretained control occurrences and observing or Meaning-bound entries are outside the profile. |
+| `ctrl` places | Admits a retained concrete `ctrl` call after a fresh native sector check | Admits the same call when lowering runs with the native checker. Checker-free lowering rejects every control obligation. | Supported pure `ctrl` calls only. Each control decision covers at most six physical input bits and uses the exact scalar ring. Three things are outside the profile: control occurrences that are not retained, observing entries and entries bound to a Meaning. |
 | Static ordered-axis places | Concrete places within the bounded profile | Concrete places within the bounded profile | `excl` indices and slices on owners of up to eight axes |
 | Runtime classical `if` | Raw `ClassicalBranch` | The supported selected branch representation. The selected projection can reject a runtime `if` as unsupported. | — |
 | `take_bit[N,K]`, `put_bit[N,K]` | — | Supported within the bounded concrete profile | — |
@@ -1144,10 +1190,10 @@ Further limits:
   selected specialization.
 - [Coherent basis maps](coherent-basis.md) gives the limits of each profile
   for `basis`.
-- Nominal values and ordinary `match` execute in eligible closed ordinary
-  project roots and in nongeneric public selected roots, through a typed
-  native route. The legacy selected projection rejects them as unsupported.
-  General selected integration is unfinished.
+- Nominal values and ordinary `match` execute through a typed native route.
+  They execute in eligible closed ordinary project roots and in nongeneric
+  public selected roots. The legacy selected projection rejects them as
+  unsupported. General selected integration is unfinished.
 - An ordinary `match` and a `qmatch` each have at most 64 arms.
 - A built-in `qmatch` selector is `Unit`, `Bit` or a closed `Bits<n>` with
   `0 <= n <= 6`. The legacy hierarchy projection refuses `qmatch`.
@@ -1200,6 +1246,9 @@ or instrument, phase, axis, provider and reference.
 
 ### Proofs
 
+The items below describe the theorems that concern the forms of this
+chapter, and what those theorems do not establish.
+
 - The compatible access theorem uses the ordered physical wires of each
   checked call as its footprint. Any wire that both calls use must be `ctrl`
   in both. The exact local reconstruction preserves every shared control bit,
@@ -1213,23 +1262,23 @@ or instrument, phase, axis, provider and reference.
   original physical action.
 - `Qleisli.SharedControlCommutation` proves exact matrix equality for common
   control sectors that act on disjoint ordered target factors. Its
-  single-control bridge concerns the hierarchy tensor, control and sequence
-  definitions, including unchanged surrounding operations and arbitrary
-  external-reference amplitudes. Zero-width factors retain their scalar
-  phases.
+  single-control bridge concerns the hierarchy definitions of tensor,
+  control and sequence. The bridge includes unchanged surrounding operations
+  and arbitrary amplitudes of an external reference. Zero-width factors
+  retain their scalar phases.
 - `Qleisli.RoutedControlCommutation` extends that connection to two original
   hierarchy entry bodies with distinct intermediate routes. Its explicit
   premises bind the original definition records, same-artifact node typing,
   fresh wiring summaries, computed two-sided inverse permutations and provider
   evaluations. Literal coordinate decompositions identify a common control,
   disjoint ordered targets and untouched factors. The resulting exact matrix
-  equality preserves arbitrary external-reference amplitudes.
+  equality preserves arbitrary amplitudes of an external reference.
 - Typing alone establishes neither those coordinate decompositions nor
   matching provider meanings. The two commutation results derive no source
-  footprint from `ctrl` or `&mut`, prove no arbitrary routing of owners or
-  axes, and authorize no source reordering. Width premises do not discharge
-  `Q<Unit>` ownership. The source-footprint, general lowering, acceptance and
-  work-preservation obligations are open.
+  footprint from `ctrl` or `&mut`. They prove no arbitrary routing of owners
+  or axes, and they authorize no source reordering. Width premises do not
+  discharge `Q<Unit>` ownership. Four obligations are open: source
+  footprint, general lowering, acceptance and work preservation.
 - Neither commutation proof is a constitutional guarantee or a guarantee
   admission. Their bounded examples and proof records are in
   `tests/fixtures/constitution_v030/shared-control-commutation/` and
@@ -1269,9 +1318,10 @@ or instrument, phase, axis, provider and reference.
 - Two scoped guarantees are admitted: `QS-QLV1-OWNERSHIP-2026-01` for
   ownership and `QS-QLV1-SCOPE-2026-01` for classical scope. Both keep their
   original decoded-root premises.
-- The broader source and semantic QS obligation, the forward PR obligation,
-  the quantitative RS obligation and the EXACT obligation are pending. Their
-  interpretations are QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01.
+- Four obligations are pending: the broader source and semantic QS
+  obligation, the forward PR obligation, the quantitative RS obligation and
+  the EXACT obligation. Their interpretations are QS-2026-01, PR-2026-01,
+  RS-2026-01 and EXACT-2026-01.
 - The contracts of this chapter are adopted source contracts. A contract
   table discharges no guarantee and adds no ledger entry.
 

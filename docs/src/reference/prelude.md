@@ -1,14 +1,17 @@
 # Prelude, imports and qualified names
 
-The **prelude** is the ordinary module `std::prelude`. It makes six derived
-names available in every module without an import:
-`std::gate::{id,x,z,t,cnot}` and `std::state::init0`. Each name is a public
-reexport that denotes the original declaration, with its signature and its
-contract. The prelude defines no forwarding function, no language primitive
-and no verification rule. The [stdlib contracts](stdlib.md) are authoritative
-for the meanings of the six names.
+The **prelude** is the ordinary module `std::prelude`. Every module can use
+its names without an import. It holds six derived names:
+`std::gate::{id,x,z,t,cnot}` and `std::state::init0`.
 
-This chapter gives the lookup order of unqualified names, the
+The prelude adds nothing of its own. Each name is a public reexport, so `x`
+in your module is the original declaration `std::gate::x`, with its signature
+and its contract. The prelude defines no forwarding function, no language
+primitive and no verification rule. The [stdlib contracts](stdlib.md) are
+authoritative for the meanings of the six names.
+
+This chapter explains how the checker finds the declaration behind a name.
+It covers the lookup order of unqualified names, the
 `#![no_implicit_prelude]` header, public reexports and qualified names.
 To try an import in a small project, [move the Bell circuit into a
 module](../learn/functions-and-modules.md#move-the-function-into-a-module)
@@ -18,14 +21,14 @@ and use the compiler's visibility diagnostic to finish the move.
 
 | Form | Behavior |
 | --- | --- |
-| `x(q)` | Lexical binding, declaration or explicit import first; otherwise the derived prelude X. |
-| `use std::gate::x;` | Explicitly import the original public declaration. |
-| `use std::prelude::{init0,cnot};` | Explicitly import original targets through public reexports. |
-| `std::gate::x(q)` | Select a root-qualified ordinary declaration, checking its original visibility and category. |
-| `id[type((Bit,Bit))]` | Apply to an owner with this complete Basis tree; prelude membership infers no static argument. |
-| `#![no_implicit_prelude]` | Leading module header: disable only implicit derived-prelude lookup. |
-| `pub use gates::x;` | Publicly reexport the original public `gates::x`, without a wrapper or an added effect. |
-| `h(q)`, `measure_z(q)`, `split(q)`, `join(a,b)` | Bare language primitives; unaffected by prelude opt-out. |
+| `x(q)` | Uses a lexical binding, a declaration or an explicit import if one exists. Otherwise it is the derived prelude X. |
+| `use std::gate::x;` | Imports the original public declaration explicitly. |
+| `use std::prelude::{init0,cnot};` | Imports the original targets explicitly, through the public reexports. |
+| `std::gate::x(q)` | Selects an ordinary declaration by its path from the root. The checker checks the original visibility and category. |
+| `id[type((Bit,Bit))]` | Applies to an owner with this complete Basis tree. Being in the prelude infers no static argument. |
+| `#![no_implicit_prelude]` | A header at the top of a module. It turns off the implicit lookup in the derived prelude and nothing else. |
+| `pub use gates::x;` | Reexports the original public `gates::x`. It adds no wrapper and no effect. |
+| `h(q)`, `measure_z(q)`, `split(q)`, `join(a,b)` | Bare language primitives. The prelude opt-out does not affect them. |
 
 The checker accepts this program with the default prelude:
 
@@ -50,39 +53,47 @@ observe fn main() -> (Bit, Bit) {
 }
 ```
 
-Both forms undergo the same source checks and the same independent native
-checks. A name supplies no ownership, effect, inverse, control, Meaning or
-cleanup permission.
+The two forms differ only in how the names are found. Both undergo the same
+source checks and the same independent native checks. A name is only a name:
+it supplies no ownership, effect, inverse, control, Meaning or cleanup
+permission.
 
 ## Lookup order
 
-An unqualified reference resolves to the first of these that applies:
+An **unqualified** reference is a name written without a path, such as `x`.
+The checker looks in four places, in this order, and takes the first one
+that applies:
 
-1. The original lexical runtime or static binding. This includes a consumed
-   owner and a binding of the wrong category.
+1. The original lexical binding, whether runtime or static. A binding is
+   found here even when its owner is consumed or its category is wrong for
+   the use.
 2. A declaration of the same module, or an explicit import.
 3. An original declaration that the implicit prelude selects, unless the
    module has opted out.
 4. A bare language primitive, where nothing else binds the name.
 
-Lexical bindings and explicit imports precede the prelude, as in Rust's
-ordinary-name model. Qleisli keeps its own canonical declaration table, its
-quantum contracts and its separate boundary for bare primitives.
+Lexical bindings and explicit imports come before the prelude, as in Rust's
+ordinary-name model. Qleisli keeps three things of its own: its canonical
+declaration table, its quantum contracts and its separate boundary for bare
+primitives.
 
 Rules:
 
 - A declaration and an explicit import of the same name do not form an
   overload set. A duplicate or a collision between them is an error.
-- A failed type, static arity, owner, effect, access, concrete-profile or
-  native check never retries another tier.
+- The search ends at the first place that applies. When the selected
+  declaration then fails a check, the checker reports that failure and never
+  retries another tier. This holds for a failed type, static arity, owner,
+  effect, access, concrete-profile or native check.
 - A local or explicitly imported identity named `x` therefore keeps its
   identity behavior. A runtime value named `x` is not callable, and it does
   not fall back to the prelude gate.
 
 ## The `#![no_implicit_prelude]` header
 
-The header disables the implicit opening of the prelude for one module. It is
-the single supported header.
+Write this header when a module should name everything it uses. The header
+disables the implicit opening of the prelude for that one module. It is the
+single supported header.
 
 Rules:
 
@@ -98,17 +109,20 @@ Rules:
 
 ## Public reexports
 
-`pub use module::item;`, and the form with a brace group, exposes the original
-public declaration.
+A **reexport** makes a declaration from one module available under the name
+of another. `pub use module::item;`, and the form with a brace group, exposes
+the original public declaration. The reexport is a second path to the same
+declaration. It is not a copy and not a wrapper.
 
 Rules:
 
-- A reexport chain retains the canonical declaration identity, the original
-  source dependencies, the visibility, the category and the caller-visible
-  public effect of its target.
+- A reexport chain retains everything about its target: the canonical
+  declaration identity, the original source dependencies, the visibility,
+  the category and the caller-visible public effect.
 - A facade must not expose a private target.
-- A facade must not sharpen an external Observe contract by using the more
-  precise inference that the target has inside its own module.
+- Inside its own module, a target can have a more precise inferred effect
+  than the one it declares to callers. A facade must not use that inference
+  to sharpen an external Observe contract.
 - Exports resolve over the complete module table, independently of file order.
 - A duplicate import is an error. An import that clashes with a local
   declaration is an error.
@@ -119,8 +133,9 @@ Rules:
 
 ## Qualified names
 
-A root-qualified reference, such as `std::gate::x` or `library::Meaning`, uses
-the same canonical declaration table.
+A **root-qualified** reference spells out the path from the root, as in
+`std::gate::x` or `library::Meaning`. It uses the same canonical declaration
+table as an unqualified name. The path leaves the checker one place to look.
 
 Rules:
 
@@ -134,6 +149,9 @@ Rules:
   with their migration guidance.
 
 ## Compatibility
+
+Adding a name to the prelude does not change a program that already
+resolves.
 
 Rules:
 
@@ -158,10 +176,11 @@ Rules:
 
 - The prelude is the eighth bundled module. It counts toward the unchanged
   source byte, module and work limits.
-- Canonical target identity does not erase the implicit opening or the
-  reexport chain from the relevant source snapshots.
-- Project source receipts include the export chain when the host selects a
-  reexported `main::main`, even without a reference in a function body.
+- Two names with one canonical target are the same declaration. The source
+  snapshots keep the implicit opening and the reexport chain all the same.
+- When the host selects a reexported `main::main`, the project source
+  receipts include the export chain. This holds even without a reference in
+  a function body.
 - Selected-source preparation retains its entry selector and its
   operation-binding selectors with the original source collection through
   lowering.

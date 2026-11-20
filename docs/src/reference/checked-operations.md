@@ -1,14 +1,17 @@
 # Checked operations
 
 A **checked operation** is the static constructor
-`checked_op(implementation, Meaning)`. It requests a check that a source
-operation has a declared exact meaning. A **Meaning** is a declaration
-`meaning M: A -> B = ...;` that specifies the exact action of an operation
-from basis tree `A` to basis tree `B`.
+`checked_op(implementation, Meaning)`. A program writes one where it passes an
+operation to a function that asks for an operation with a stated meaning. The
+constructor requests a check that a source operation has a declared exact
+meaning.
 
-`checked_op` is used inside the existing explicit operation arguments. It is
-not a monadic bind, a runtime function value or a constitutional
-certification.
+A **Meaning** is a declaration `meaning M: A -> B = ...;`. It specifies the
+exact action of an operation from basis tree `A` to basis tree `B`.
+
+A program writes `checked_op` inside the existing explicit operation
+arguments. It is not a monadic bind, a runtime function value or a
+constitutional certification.
 
 ## The `checked_op` constructor
 
@@ -16,8 +19,8 @@ certification.
 CheckedOperation ::= checked_op ( Identifier , Identifier )
 ```
 
-The first identifier names an existing operation. The second resolves to an
-existing finite Meaning declaration.
+The constructor takes two names. The first identifier names an existing
+operation. The second resolves to an existing finite Meaning declaration.
 
 Rules:
 
@@ -27,11 +30,12 @@ Rules:
   or an explicitly specialized provider expression.
 - An outer static constructor may contain a checked operation. Its own rules
   do not change.
-- A general `Op<A -> B, M>` formal checks both ports against the declared
-  domain and codomain of `M`. An endomorphic Meaning requires both ports to
-  equal its single basis tree. The
-  [type model](type-model.md#general-pure-operation-arrows) specifies the
-  typing of general pure arrows and their materialization limits.
+- For a general formal `Op<A -> B, M>`, the checker checks both ports against
+  the declared domain and codomain of `M`. An endomorphic Meaning has one
+  basis tree for its input and its output. It requires both ports to equal
+  that single basis tree. The
+  [type model](type-model.md#general-pure-operation-arrows) specifies how
+  general pure arrows are typed and the limits on materializing them.
 - Attaching a Meaning name does not discharge the equality. Equal
   probabilities, equal bit width or equality up to global phase must not
   replace the check.
@@ -39,7 +43,7 @@ Rules:
   inverse access and no controlled access from a Meaning name.
 
 The checker accepts this fragment. It uses an endomorphic Meaning and the
-operation-parameter grammar:
+grammar of operation parameters:
 
 ```qli
 use std::gate::z;
@@ -88,9 +92,11 @@ Rules:
 
 ## Meaning declarations
 
-A finite Meaning declares `meaning M: A -> B = ...;`. The form
-`meaning M: A = ...;` abbreviates equal input and output trees. A Meaning has
-one of these bodies:
+A Meaning declaration names a specification: the exact action of an operation
+from one basis tree to another. A finite Meaning declares
+`meaning M: A -> B = ...;`. The form `meaning M: A = ...;` is short for a
+Meaning whose input and output trees are equal. A Meaning has one of these
+bodies:
 
 ```text
 MeaningBody ::= permutation_by ( Identifier )
@@ -115,13 +121,15 @@ Rules:
 
 ### Composition
 
-For `First: A -> B` and `Second: B -> C`, `compose(First, Second)` has type
+A `compose` body specifies one Meaning followed by another. For
+`First: A -> B` and `Second: B -> C`, `compose(First, Second)` has type
 `A -> C`. It applies `First` and then `Second`.
 
 Rules:
 
 - The codomain of `First` and the domain of `Second` must be the same tree
-  `B`. Equal physical dimension admits no implicit conversion.
+  `B`. The checker makes no implicit conversion between trees of equal
+  physical dimension.
 - In the endomorphic monomial case, where `First` and `Second` both have the
   basis tree `A`, `meaning M: A = compose(First, Second);` applies `First` and
   then `Second`. Write the actions as `First|x> = zeta_8^a[x] |p[x]>` and
@@ -130,14 +138,15 @@ Rules:
 
 ### Tensor
 
-For `Left: A -> B` and `Right: C -> D`, `tensor(Left, Right)` has type
+A `tensor` body specifies two Meanings side by side, one on each field of a
+pair. For `Left: A -> B` and `Right: C -> D`, `tensor(Left, Right)` has type
 `(A,C) -> (B,D)`. It assigns the left operand to the low-order axes.
 
 Rules:
 
-- In the endomorphic monomial case, where `Left` has basis `A` and `Right`
-  has basis `C`, `meaning T: (A, C) = tensor(Left, Right);` requires that
-  ordered pair.
+- In the endomorphic monomial case, `Left` has basis `A` and `Right` has
+  basis `C`. The declaration `meaning T: (A, C) = tensor(Left, Right);` then
+  requires that ordered pair.
 - The first field occupies the low-order axes. For dimensions `dA` and `dC`,
   column `x + dA*y` goes to `p[x] + dA*q[y]` with phase `(a[x] + b[y]) mod 8`.
 - Nested products and zero-width fields retain their type identity. In
@@ -145,7 +154,8 @@ Rules:
 
 ### Equality of Meanings
 
-The checker accepts these declarations:
+A check against a Meaning is a check of exact equality. The rules below say
+what that equality observes. The checker accepts these declarations:
 
 ```qli
 classical fn flip(b: Bit) -> Bit { not b }
@@ -162,12 +172,13 @@ Rules:
   probability equality, and it is not equality up to global phase. For
   example, `compose(X, Z)` differs from `ZX` by a minus sign.
 - Either operand of `compose` or `tensor` may contain references or monomial
-  targets. The exact complex phase, the ordered basis trees and the zero-axis
-  scalar action on `Q<Unit>` are observable in equality.
+  targets. Equality observes the exact complex phase and the ordered basis
+  trees. It also observes the scalar action on `Q<Unit>`, which has zero
+  axes.
 - Forming a target does not prove a provider correct. `checked_op` and refined
   parameters require a fresh native comparison against the independently
-  formed request. That comparison retains the original source, dependency and
-  provider identities.
+  formed request. That comparison retains the original identities of the
+  source, of the dependencies and of the provider.
 - Forming a Meaning creates no live owner and no inverse or control
   capability. The capability checks and the source-control checks govern
   those uses.
@@ -180,17 +191,19 @@ Rules:
 
 ### Reference programs
 
-`meaning H: Bit = reference(reference_h);` names one closed ordinary function
-as the specification.
+A `reference` body uses a program as the specification. A program writes one
+when an ordinary function already states the action that it wants. For
+example, `meaning H: Bit = reference(reference_h);` names one closed ordinary
+function as the specification.
 
 Rules:
 
 - For the equal-tree form `meaning M: A = reference(f);`, `f` must have the
-  interface `Q<A> -> Q<A>`, and its caller-visible checked effect must be
+  interface `Q<A> -> Q<A>`. The checked effect that callers of `f` see must be
   Unitary. In the example, the interface is `Q<Bit> -> Q<Bit>`.
 - For the rectangular form `meaning M: A -> B = reference(f);`, `f` must have
-  the interface `Q<A> -> Q<B>`, and its caller-visible checked effect must be
-  at most Isometry.
+  the interface `Q<A> -> Q<B>`. The checked effect that callers of `f` see
+  must be at most Isometry.
 - The argument must be a single resolved function identifier. Static
   arguments, constructed operations, classical or static functions and other
   Meaning names are not accepted.
@@ -199,10 +212,10 @@ Rules:
 - A declared effect assertion must not replace independent checking of the
   complete body and its dependencies.
 - The [public-effect rule](source-text.md#ordinary-function-effects-and-assertions)
-  uses the checked public effect outside the original module of the provider,
-  and internal inference inside it. Reference selection, specialization and
-  cached evidence must not recover a sharper external eligibility from the
-  body.
+  applies. Outside the original module of the provider, it uses the checked
+  public effect. Inside that module, it uses internal inference. Reference
+  selection, specialization and cached evidence must not recover a sharper
+  external eligibility from the body.
 
 The checker accepts these declarations:
 
@@ -270,7 +283,8 @@ use these targets in `apply_contract` or `Op<A,M>` under the same evidence rules
 
 ## Migration from `bind_op`
 
-Replace `bind_op(implementation, Meaning)` with the identical arguments to
+`bind_op` is the retired spelling of the constructor. To migrate a source,
+replace `bind_op(implementation, Meaning)` with the identical arguments to
 `checked_op(implementation, Meaning)`.
 
 Rules:
@@ -297,10 +311,10 @@ Limits:
 | Depth of a reference expression graph | 64 |
 | Aggregate materialized artifact bytes of a reference expression graph | 100,000 |
 
-- The selected adapter also applies its call and dependency depth, operation,
-  source-snapshot and aggregate provider limits. An expression within the
-  limits above is not a promise that every concrete profile can materialize
-  it.
+- The selected adapter also applies limits of its own: on call depth and
+  dependency depth, on operations, on source snapshots and on aggregate
+  providers. An expression within the limits above is not a promise that
+  every concrete profile can materialize it.
 - Exhaustion or an unsupported equality is rejected without approximation.
 - The native acceptance profiles are unchanged.
 
@@ -320,16 +334,16 @@ Profiles:
 - Observing contracts use the separately adopted
   [function instrument overload](type-model.md#direct-runtime-transforms-and-opaque-operations),
   not a pure Meaning constructor.
-- General symbolic equality and arbitrary matrix-versus-composite hierarchy
-  requests are outside this bounded profile. An unsupported comparison is
-  rejected.
+- Two things are outside this bounded profile: general symbolic equality, and
+  arbitrary hierarchy requests that compare a matrix with a composite. An
+  unsupported comparison is rejected.
 - A provider outside its concrete profile is rejected. It does not lose its
   Meaning request. Other static constructors retain their explicit projection
   restrictions.
 
 The selected concrete projection retains the `checked_op` constructor and its
-original Meaning request. Within the supported closed-provider profile it
-checks Meanings as follows:
+original Meaning request. Within the profile of supported closed providers,
+it checks Meanings as follows:
 
 - `ElaboratedProgram::check_operation_meanings` checks the original binding
   requests and the annotated constructor descendants through the native finite
@@ -363,8 +377,9 @@ checks Meanings as follows:
 - Every original control obligation requires a retained concrete call
   interval, including unused bodies and specializations. Unclosed generic
   intervals and erased intervals are rejected.
-- Symbolic inverse or control transformation of a body that contains source
-  `ctrl` is unsupported. The failure selects no other profile.
+- A body can contain source `ctrl`. Symbolic inverse transformation or
+  symbolic control transformation of such a body is unsupported. The failure
+  selects no other profile.
 - The complete emitted artifact requires fresh native validity and source
   replay before execution.
 

@@ -3,22 +3,27 @@
 The **standard library** is the `std` [qrate](packages-and-artifacts.md) that
 an official Qleisli distribution bundles. It consists of ordinary checked
 `.qli` source. A **semantic namespace** is a top-level namespace of `std`,
-such as `std::gate`, that admits a public member by one mathematical
-admission rule.
+such as `std::gate`. Each semantic namespace admits a public member by one
+mathematical admission rule.
 
-This chapter is normative for edition 2026. It specifies the canonical
-distribution version, the naming and admission rules, the contract of every
-public definition, and the retired paths. It is subordinate to the
+Use this chapter to find where a library function lives and what its
+contract is. The chapter is normative for edition 2026. It specifies the
+canonical distribution version, the naming and admission rules, the contract
+of every public definition, and the retired paths. It is subordinate to the
 [authority hierarchy](authority.md) and the
 [primitive boundary](primitive-boundary.md).
 
 The chapter specifies intended contracts. A namespace, a source comment or a
-successful source check is not a proof of a mathematical implementation. The
+successful source check is not a proof of a mathematical implementation.
+When you meet a derived abstraction that you do not know, the
 [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
-specifies how an unfamiliar derived abstraction leads to its contract and to
-ordinary source.
+specifies how it leads to its contract and to ordinary source.
 
 ## Canonical distribution version
+
+A toolchain and its standard library are distributed as one pair. This
+section says which `std` belongs to a toolchain and how the loader checks
+the pair.
 
 The **product version** of a toolchain is its complete version identifier,
 including every prerelease and build suffix. The **canonical `std`** of a
@@ -42,13 +47,16 @@ Rules:
 - A user qrate keeps its own version. That version need not match Qleisli.
 - The embedded manifest must declare schema 2, edition `"2026"`, the string
   `[qrate].name = "std"` and a string `[qrate].version` equal to the product
-  version. The gate rejects a missing, non-string or mismatched identity
-  field with the code `project`, before the loader loads the bundle.
+  version. The name and the version are the identity fields. The gate
+  rejects an identity field that is missing, that is not a string or that
+  does not match. It does so with the code `project`, before the loader
+  loads the bundle.
 - The schema check and the edition check precede the identity check. Their
   diagnostics are those of any manifest.
 
-The pairing is distribution and compatibility coupling. It gives `std` no
-semantic privilege: `std` is ordinary checked source. The
+The pairing couples `std` to the toolchain for distribution and for
+compatibility. It gives `std` no semantic privilege: `std` is ordinary
+checked source. The
 [qrate and artifact Reference](packages-and-artifacts.md#canonical-std-and-the-selected-toolchain)
 specifies the coupling between canonical `std` and the toolchain.
 
@@ -78,7 +86,8 @@ qrate keeps its own version.
 
 ## Names follow mathematical meaning
 
-A canonical name states the mathematical meaning of an operation.
+A canonical name states the mathematical meaning of an operation. It tells a
+caller what the operation computes, not how an implementation computes it.
 
 Rules:
 
@@ -96,18 +105,20 @@ Rules:
   collection is not a mathematical classification.
 - The layout of the source files does not determine membership.
 - A genuine parameterized mathematical family owns its canonical semantic API
-  identity. A fixed-size name describes its bounded contract and cannot
+  identity. A fixed-size name describes its own bounded contract. It cannot
   replace the identity of the family.
 - A reserved identity is not an available API. It is no evidence of
   specialization correspondence.
 
 `qft2` and `qft3` are fixed-size names, and their contracts are supported
-fixed interfaces. [Status and limits](#status-and-limits) states the exclusion
-of generic QFT.
+fixed interfaces. [Status and limits](#status-and-limits) states that generic
+QFT is excluded.
 
 ## Admission rules
 
-Each namespace admits a public API by one rule.
+Each namespace admits a public API by one rule. Read the table to decide
+where an API belongs, or to learn what the members of a namespace have in
+common.
 
 | Namespace | An API belongs here if and only if ... | Ordinary source |
 | --- | --- | --- |
@@ -122,7 +133,9 @@ Each namespace admits a public API by one rule.
 
 ### Reserved arithmetic identities
 
-The reserved namespace `std::arithmetic` holds two design identities.
+The reserved namespace `std::arithmetic` holds two design identities. The
+design sets these names aside. Neither is an operation that a program can
+call.
 
 | Reserved identity | Meaning |
 | --- | --- |
@@ -138,7 +151,8 @@ Rules:
 
 ### Language primitives
 
-Language primitives are bare typed identities of the language. The
+Language primitives are bare typed identities of the language. They are not
+part of the standard library, and this section says how the two relate. The
 [primitive boundary](primitive-boundary.md) specifies all 13 retained
 identities, the 27-entry migration and the concrete profile limits.
 
@@ -179,13 +193,15 @@ Rules:
 
 ## Interfaces and contracts
 
-Each table in this section quotes the header of a declaration as its source
-file writes it. A header describes an interface. It is not a function type.
+This section gives the contract of every public definition, one namespace at
+a time. Each table quotes the header of a declaration as its source file
+writes it. A header describes an interface. It is not a function type.
 
 Rules:
 
-- A public quantum function has an explicit checked effect contract under
-  `Unitary <= Isometry <= Observe`. The checker checks its body independently.
+- A public quantum function has an explicit effect contract, which the
+  checker checks under the order `Unitary <= Isometry <= Observe`. The
+  checker checks the body of the function independently.
 - An external caller uses the public effect. Inference within the same module
   keeps its precision and any further external boundary.
 - Bundled source and user source follow the
@@ -195,8 +211,8 @@ Rules:
 - A classical function preserves the effects of its evaluated arguments. It
   cannot inspect a live quantum owner.
 - The truth table of a classical function grants no quantum preparation, no
-  observation, no inverse or control access and no coherent injectivity
-  evidence. Coherent use keeps its separate checks.
+  observation, no inverse or control access and no evidence of coherent
+  injectivity. Coherent use keeps its separate checks.
 - Every quantum contract applies to an arbitrary permitted input, tensored
   with the identity on an external reference.
 - Separate owners may be entangled with each other or with a reference.
@@ -246,8 +262,9 @@ elsewhere. The computed auxiliary of that predicate supplies the phase +1 on
 
 Rules:
 
-- The protected computed scope requires exact zero return and separation of
-  the temporary auxiliary, for all permitted inputs and references.
+- The protected computed scope requires two things of the temporary
+  auxiliary: an exact return to zero, and separation. It requires them for
+  all permitted inputs and references.
 - Moving the helper or naming the reflection does not supply that evidence.
 - The helper is private. `std::reflection` imports the ordinary public
   Hadamard transform.
@@ -300,10 +317,11 @@ Rules:
 
 #### The exact phase of `t`
 
-The private scalar helper `scalar_eighth` has the exact meaning
-`zeta_8 I_Unit`. Coherent control of that helper gives `diag(1,zeta_8)` on the
-retained Bit. The zero-width target is a logical owner: the body introduces it
-with `unit(())` and consumes it with `finish`.
+This section says how the body of `t` obtains its exact phase. The private
+scalar helper `scalar_eighth` has the exact meaning `zeta_8 I_Unit`. Coherent
+control of that helper gives `diag(1,zeta_8)` on the retained Bit. The
+zero-width target is a logical owner: the body introduces it with `unit(())`
+and consumes it with `finish`.
 
 Rules:
 
@@ -373,6 +391,7 @@ rejects the calls `transpose_axes[3,1,1]`, `transpose_axes[3,2,1]` and
 
 ### Physical swap and axis reordering
 
+This section compares two functions that exchange two Bits.
 `std::gate::swap` and `std::structure::permute_axes` are ordinary checked
 `.qli`, as is every function of `std::gate` and `std::structure`. Under fixed
 input and output coordinates, both denote `|a,b> -> |b,a>` with phase +1.
@@ -393,7 +412,7 @@ Rules:
 ## Retired paths
 
 A **retired path** is an earlier public path of the standard library that no
-module provides.
+module provides. The table says where the members of each retired path are.
 
 | Retired path | Canonical location |
 | --- | --- |
@@ -453,14 +472,15 @@ Rules:
 
 ## Checking
 
-The standard library receives the checks of any source.
+The standard library receives the checks of any source. Its place in the
+distribution exempts it from none of them.
 
 Rules:
 
 - All eight modules, their private and unused declarations, and the source of
   the caller undergo the same mandatory common-source judgment.
-- Concrete lowering and fresh native acceptance are separate stages, each
-  with profile-specific support.
+- Concrete lowering and fresh native acceptance are separate stages. The
+  support for each stage is specific to a profile.
 - A path grants no sealed status, no body-derived effect, no independent exact
   Meaning, no provider capability and no acceptance exception.
 - Migrated source must be rechecked. A cached fact must not be rebound to
@@ -471,9 +491,10 @@ Rules:
 Limits of the library:
 
 - Generic QFT is excluded from all of v0.3.0 and from the adopted development
-  goal. The exclusion covers its implementation, its public integration, the
-  equivalence of the fixed and generic forms, and QFT-specific proof
-  completion. This chapter promises neither `qft<N>` nor a completion target.
+  goal. The exclusion covers four things: its implementation, its public
+  integration, the equivalence of the fixed and generic forms, and the
+  completion of proofs that are specific to QFT. This chapter promises
+  neither `qft<N>` nor a completion target.
 - The library contains no arithmetic implementation and no mechanism that
   selects an algorithm.
 - A single first-class permutation argument is unsupported.

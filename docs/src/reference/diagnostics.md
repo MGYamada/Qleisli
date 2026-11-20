@@ -1,26 +1,27 @@
 # Diagnostics and recovery
 
 A **diagnostic** reports one failed check on a source program, a project or an
-artifact. It identifies the failed premise, explains the local rule and, where
-one exists, describes a correction that preserves the intended semantics. An
-author starts from the rejected expression and its diagnostic, revises the
-program, and submits it to the same checker.
+artifact. It identifies the premise that failed and explains the local rule.
+Where a correction exists that preserves the intended semantics, the
+diagnostic describes it. An author starts from the rejected expression and its
+diagnostic, revises the program, and submits it to the same checker.
 
 A diagnostic describes a failed check. It is not evidence. An accepted handle,
 a realization claim or a resource claim requires its own successful check on
 the source or artifact that the claim names.
 
-This chapter covers the diagnostics of the `qleisli` CLI for edition 2026: the
-two routes that produce them, their JSON form, their codes, and the guidance
-that each language boundary gives.
+This chapter covers the diagnostics of the `qleisli` CLI for edition 2026. It
+describes the two routes that produce them, their JSON form and their codes.
+It also gives the guidance that each language boundary offers.
 
 The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
 explains how to find the canonical rule behind a predictable classical mistake.
 
 ## Routes
 
-The CLI checks source through two routes. Both use the common checker. They
-differ in the codes and the locations that they report.
+The CLI checks source through two routes. The table shows which commands
+take each one. Both routes use the common checker. They differ in the codes
+and the locations that they report.
 
 | Route | Commands |
 | --- | --- |
@@ -28,12 +29,14 @@ differ in the codes and the locations that they report.
 | **Selected-entry route** | `qleisli check`, `run`, `sample` and `emit-proposal` with `--entry=MODULE::FUNCTION` and `--module=NAME=PATH` |
 
 The sections below state each difference where it applies. A consumer that
-handles both routes must not assume the fields or the codes of one route on the
-other.
+handles both routes must not assume that one route has the fields or the codes
+of the other.
 
 ## The result envelope
 
-With `--format=json`, a command writes one `qleisli.result` version-1 object:
+A tool that runs a command reads its outcome from one JSON object, the result
+envelope. With `--format=json`, a command writes one `qleisli.result`
+version-1 object:
 
 | Field | Value |
 | --- | --- |
@@ -55,7 +58,8 @@ Rules:
 
 ## The diagnostic record
 
-A diagnostic record has these fields:
+Each entry of the `diagnostics` array is a diagnostic record. A diagnostic
+record has these fields:
 
 | Field | Value |
 | --- | --- |
@@ -100,12 +104,12 @@ Rules:
   line break.
 - On the project route, a file of the bundled standard library has a `path`
   that begins with `std://`.
-- On the project route, a location whose file has no label relative to the
-  source root is not reported. The record then has `primary` equal to `null`
+- The project route does not report a location whose file has no label
+  relative to the source root. The record then has `primary` equal to `null`
   and the code `project`.
-- On the selected-entry route, `path` comes from the `--module` binding of the
-  module where the failure does not name a file itself. It is `null` when
-  neither names one.
+- On the selected-entry route, a failure does not always name a file itself.
+  Where it names none, `path` comes from the `--module` binding of the module.
+  It is `null` when neither names one.
 
 > **Implementation note.** The selected-entry loader reports the original byte
 > span of a failure and no line or column. The CLI does not reread the file to
@@ -113,7 +117,8 @@ Rules:
 
 ## Codes
 
-The common checker classifies each source failure. The project route maps that
+The `code` of a record is its stable category. The common checker classifies
+each source failure. The project route maps that
 class to its closed version-1 vocabulary. The selected-entry route reports the
 class with three spellings merged.
 
@@ -164,8 +169,9 @@ Rules:
 
 ## Refinements
 
-Three optional fields refine a record where the checker identifies the source
-rule or a concrete witness.
+A record can say more than its code and its message. Three optional fields
+refine a record where the checker identifies the source rule or a concrete
+witness.
 
 | Field | Content | Routes |
 | --- | --- | --- |
@@ -181,25 +187,26 @@ the exact coefficients.
 | `ownership_boundary` | `unresolved_disposal`, `implicit_quantum_disposal`, `clean_workspace_return`, `dirty_workspace_return`, `computed_workspace_return` |
 | `control_flow_boundary` | `if_condition`, `qif_control`, `match_selector`, `qmatch_selector`, `for_carry`, `qfor_carry` |
 
-In an `ownership_boundary`, `applies_to` is `"if_live_quantum_owner"` for the
-reason `unresolved_disposal`, because the checker inferred no argument type. It
-is `"live_quantum_owner"` for every other reason.
+In an `ownership_boundary`, the value of `applies_to` depends on the reason.
+It is `"if_live_quantum_owner"` for the reason `unresolved_disposal`, because
+the checker inferred no argument type. It is `"live_quantum_owner"` for every
+other reason.
 
 ## Guidance by boundary
 
 The code, the command, the location and the message together identify a
-failure. The guidance describes the corrections that are available. The
-table gives the project-route code first, and the selected-entry code where it
-differs.
+failure. The guidance describes the corrections that are available. The table
+groups the guidance by language boundary. For each boundary, it gives the
+project-route code first, and the selected-entry code where it differs.
 
 | Boundary and codes | Guidance |
 | --- | --- |
-| Source form (`parse`) | Show the recognizable local grammar and the original byte span. Invented statements such as `qlet` and `qreturn` can point to ordinary `let` and the block's tail expression. A rewritten example undergoes the name, type, effect and ownership checks like any other source. |
-| Project and names (`project`, `unknown_name` or `name`, `invalid_entry`) | State the missing or incompatible manifest, edition, entry or binding. Resolve the declared source identity and use the canonical primitive or checked library path. A derived operation is defined in checked `.qli`. |
-| Interface and calls (`type_mismatch` or `type`, `arity`, `recursive_call` or `cycle`) | Identify the required and the supplied interface where available. Regroup a quantum product only when its leaf types and order agree, and thread existing owners through the corrected call or carry. Calls must meet the applicable finite termination rules. |
-| Ownership and access (`ownership`, `capability` or `access`) | Identify the live or consumed owner, or the access obligation. Use the owner returned by the consuming operation, or supply the documented access mode after checking its premise. Preserve linear accounting even for a zero-width owner. An unresolved disposal spelling gets conditional guidance about a live quantum owner. |
+| Source form (`parse`) | Show the recognizable local grammar and the original byte span. The guidance for an invented statement such as `qlet` or `qreturn` can point to ordinary `let` and to the tail expression of the block. A rewritten example undergoes the name, type, effect and ownership checks like any other source. |
+| Project and names (`project`, `unknown_name` or `name`, `invalid_entry`) | State which manifest, edition, entry or binding is missing or incompatible. Resolve the declared source identity and use the canonical primitive or checked library path. A derived operation is defined in checked `.qli`. |
+| Interface and calls (`type_mismatch` or `type`, `arity`, `recursive_call` or `cycle`) | Identify the required and the supplied interface where available. Regroup a quantum product only when its leaf types and order agree. Thread existing owners through the corrected call or carry. Calls must meet the applicable finite termination rules. |
+| Ownership and access (`ownership`, `capability` or `access`) | Identify the live or consumed owner, or the access obligation. Use the owner that the consuming operation returns, or check the premise of the documented access mode and then supply that mode. Preserve linear accounting even for a zero-width owner. An unresolved disposal spelling gets conditional guidance about a live quantum owner. |
 | Workspace return (`ownership`, `contract`) | Explain the missing return role or the checked restoration equation. Return the clean scratch at zero, restore dirty scratch including its relationship with the reference, or return the owners that `with_computed` requires for checked uncomputation. |
-| Effects and observation (`effect`, `type_mismatch` or `type`) | State the body or callee effect and the assertion that it exceeds. For ordinary control on a measurement result, use explicit observation in an `observe` context. For coherent control, retain the quantum selector, the checked arms and the phase. |
+| Effects and observation (`effect`, `type_mismatch` or `type`) | State the effect of the body or of the callee, and the assertion that it exceeds. For ordinary control on a measurement result, use explicit observation in an `observe` context. For coherent control, retain the quantum selector, the checked arms and the phase. |
 | Exact equations (`contract`, `invalid_ir`) | Identify the rejected equation. Where the check yields a concrete witness, show exact coefficients and label input and output in the declared basis order. Investigate phase, axis order and the dependencies of the checked artifact. |
 | Realization eligibility (`unsupported`, `limit`) | Name the requested target and the failed premise where known. Retain the closed instance and the available source origin. An unsupported synthesis profile or an insufficient target width describes a restriction on realization. |
 | Work and resources (`limit`) | Identify the bound, for example source capacity, exact checking work, or a gate or workspace budget for a target artifact. Use the command and the profile to distinguish these scopes. A checked resource count applies to the artifact that was counted. |

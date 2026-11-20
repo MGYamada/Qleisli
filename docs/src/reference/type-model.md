@@ -35,45 +35,51 @@ The CLI checks source through two [routes](diagnostics.md#routes): the
 
 Rules:
 
-- The common judgment precedes every concrete eligibility check. It retains
-  exact type trees, owners, static premises, access and principal effects.
+- The common judgment runs before every check of concrete eligibility. It
+  retains exact type trees, owners, static premises, access and principal
+  effects.
 - The common judgment covers every original declaration, owner rule, effect
   rule, capability, dependency and static branch. This includes private and
-  unused declarations, both arms of a branch, zero-iteration bodies and all
-  eight ordinary bundled modules.
-- A source-semantic error precedes concrete profile eligibility.
-- A directory or qrate input and an explicit-module input differ in loader,
-  provenance and concrete consumer. After the common judgment, the project
-  route requires its concrete declarations to fit the Finite project profile.
-  The selected-entry route seeks native acceptance only for the requested
-  concrete specialization.
+  unused declarations, both arms of a branch, the body of a loop with zero
+  iterations and all eight ordinary bundled modules.
+- The checker reports a source-semantic error before it decides whether the
+  program is eligible for a concrete profile.
+- An input that is a directory or a qrate and an input of explicit modules
+  differ in three ways: the loader, the provenance and the concrete consumer.
+  After the common judgment, the project route requires its concrete
+  declarations to fit the Finite project profile. The selected-entry route
+  seeks native acceptance only for the requested concrete specialization.
 - Native results distinguish those scopes. They do not certify every possible
   specialization, and they do not establish general source preservation.
-- Closed host bindings, concrete capacity, emitted evidence and native
-  acceptance have their own checks after the common judgment.
-- Successful generic checking does not imply successful concrete lowering.
-- All frontend output is an untrusted proposal. The native root, request,
-  contract, hierarchy and finite-leaf gates are mandatory.
+- Four things have their own checks after the common judgment: closed host
+  bindings, concrete capacity, emitted evidence and native acceptance.
+- A generic check that succeeds does not imply that concrete lowering
+  succeeds.
+- All frontend output is an untrusted proposal. The native gates are
+  mandatory: the root, request, contract, hierarchy and finite-leaf gates.
 
-A rule names, in parentheses, the common checker class of a program that
-breaks it, as in (`ownership`). The code `parse` marks a syntax error.
-[Codes](diagnostics.md#codes) maps each class to the `code` that a route
-reports.
+After a rule, the chapter names in parentheses the common checker class of a
+program that breaks the rule, as in (`ownership`). The code `parse` marks a
+syntax error. [Codes](diagnostics.md#codes) maps each class to the `code`
+that a route reports.
 
 > **Implementation note.** The selected projection consumes the original
-> resolved identities and the completed lexical and effect facts of the common
-> judgment. It records a projection restriction per declaration. A restriction
-> does not excuse the check of an unused definition, of either branch or of an
-> empty loop.
+> resolved identities of the common judgment, with its completed lexical
+> facts and effect facts. It records a projection restriction per
+> declaration. A restriction excuses no check: the checker checks an unused
+> definition, both branches and an empty loop all the same.
 
 <a id="one-finite-type-universe"></a>
 
 ## Ordinary finite types
 
+An ordinary finite type describes classical data. The same type also serves
+as the basis of a quantum owner `Q<A>`.
+
 The ordinary finite types are `Unit`, `Bit`, `Bits<n>` and ordered tuples of
-finite types, plus nonempty fieldless enums and records with finite ordinary
-fields. `n` is a checked static natural. **`Basis`** is the static kind of
-these finite type trees.
+finite types. Nonempty fieldless enums and records with finite ordinary
+fields are ordinary finite types too. `n` is a checked static natural.
+**`Basis`** is the static kind of these finite type trees.
 
 | Type | Value and ownership |
 | --- | --- |
@@ -94,65 +100,69 @@ Rules:
 
 ### Bit literals
 
-The Bit literal spelling is `0` / `1` in both ordinary and basis computations.
+A program writes a Bit literal as `0` / `1`. The spelling is the same in
+ordinary computations and in basis computations.
 
 Rules:
 
 - `false` / `true` migrate explicitly to `0` / `1` (`parse`). Every other Bit
   numeral is rejected (`parse`).
-- A numeral in a static-Nat position denotes a natural. This distinction of
-  stage and category does not inspect quantum data.
-- No literal creates a quantum owner. Expected typing must not implicitly
-  prepare or measure data.
-- `0`, `1`, `not`, `and` and `xor` use one exact Bit judgment and eager,
-  left-to-right operand evaluation on both routes. Both operands of `and`
-  evaluate even when the left value is zero.
-- A quantum operand, a `Bits<1>` value, a static natural or a product is not
-  coerced to `Bit`.
+- A numeral in a position that takes a static Nat denotes a natural. The
+  distinction is one of stage and category, and it does not inspect quantum
+  data.
+- No literal creates a quantum owner. Typing an expression against an
+  expected type must not implicitly prepare or measure data.
+- Both routes type `0`, `1`, `not`, `and` and `xor` by one exact Bit
+  judgment. Both routes evaluate the operands eagerly, from left to right.
+  Both operands of `and` evaluate even when the left value is zero.
+- The checker does not coerce a quantum operand, a `Bits<1>` value, a static
+  natural or a product to `Bit`.
 
 ### `Bits<n>` registers
 
-An ordinary `Bits<n>` value is one typed value with ordered classical
-elements. `Bits<0>` has one empty value. It is a copyable singleton basis
-distinct from `Unit`.
+A `Bits<n>` register holds `n` bits in a fixed order. An ordinary `Bits<n>`
+value is one typed value with ordered classical elements. `Bits<0>` has one
+empty value. It is a copyable singleton basis distinct from `Unit`.
 
 Rules:
 
 - `empty_bits()` constructs `Bits<0>`.
 - `prepend_bit` with static argument `n` takes `Bit` and `Bits<n>` and returns
-  `Bits<n+1>`, with head before tail.
-- An ordinary register may be copied or ignored. A quantum `Q<Bits<n>>` owner
-  retains the linear rules.
-- No profile identifies equal-width types or infers a missing static argument.
-- Exact `Unit`, `Bit` and `Bits` tags and tuple trees stay in the retained
-  source graph. Flattening classical transport ports creates no type coercion.
-- A closed zero size retains the `Bits` tag. The ordinary empty value is
+  `Bits<n+1>`. The head comes before the tail.
+- A program may copy or ignore an ordinary register. A quantum owner
+  `Q<Bits<n>>` retains the linear rules.
+- No profile treats two types of equal width as one type. No profile infers a
+  missing static argument.
+- The retained source graph retains the exact `Unit`, `Bit` and `Bits` tags and
+  the tuple trees. Flattening the classical transport ports creates no type
+  coercion.
+- A closed size of zero retains the `Bits` tag. The ordinary empty value is
   copyable and emits no classical identity. `Q<Bits<0>>` retains a distinct
   linear owner and branch phi even with no wires.
 
 > **Implementation note.** Selected Raw retains an ordinary `Bits<n>` value as
 > one typed source value with ordered classical elements. Source-step replay
-> checks the ordered elements against the native-accepted artifact. This
-> bounded check is not an AST preservation theorem. Finite project also
-> retains ordered classical elements and exact quantum register owners.
-> [Capacities](#capacities) gives the width limit of each profile.
+> checks the ordered elements against the artifact that the native checker
+> accepted. This bounded check is not an AST preservation theorem. Finite
+> project also retains ordered classical elements and exact quantum register
+> owners. [Capacities](#capacities) gives the width limit of each profile.
 
 ## Quantum owners
 
-`Q<A>` is linear quantum ownership over the finite value space `A`. Typing
-keeps ordinary bindings, static bindings, linear owners and semantic effects
-distinct.
+A program holds a quantum system through an owner. `Q<A>` is linear quantum
+ownership over the finite value space `A`. Typing keeps four things distinct:
+ordinary bindings, static bindings, linear owners and semantic effects.
 
 Rules:
 
-- Every quantum owner must be moved, returned or explicitly consumed according
-  to an admitted rule (`ownership`).
-- An ordinary binding operation on `Q<A>` does not require a `qlet` spelling.
-- Moving a value removes its linear ownership from subsequent use. Copying an
-  ordinary value neither creates nor consumes a quantum owner.
+- A program must move, return or explicitly consume every quantum owner
+  according to an admitted rule (`ownership`).
+- An ordinary binding of a `Q<A>` value does not require a `qlet` spelling.
+- A move takes the linear ownership of a value away from every later use.
+  Copying an ordinary value neither creates nor consumes a quantum owner.
 - A static binding must not be used as a runtime value.
-- Effects are not inferred from ownership alone. An annotation must not
-  downgrade the effect of its body.
+- The checker does not infer effects from ownership alone. An annotation
+  must not downgrade the effect of its body.
 - Measurement explicitly consumes a supported `Q<A>` and produces ordinary
   data with Observe semantics.
 - An ordinary `if` consumes an ordinary `Bit` condition. It cannot read a
@@ -165,7 +175,9 @@ explain the linear obligation at the rejected source location.
 
 ### The typing judgment
 
-The conceptual typing judgment is `Γ ; Δ ⊢ e : T ! ε`.
+The conceptual typing judgment is `Γ ; Δ ⊢ e : T ! ε`. It says that the
+expression `e` has the type `T` and the effect `ε` under the environments `Γ`
+and `Δ`.
 
 | Part | Content |
 | --- | --- |
@@ -173,7 +185,7 @@ The conceptual typing judgment is `Γ ; Δ ⊢ e : T ! ε`.
 | `Δ` | Live linear quantum ownership, including quantum fields of ordinary products |
 | `ε` | The semantic effect computed from the complete body and its callees |
 
-The judgment describes the source contract. It is not a claim that a general
+The judgment describes the source contract. It does not claim that a general
 source-soundness theorem has been discharged. The normative
 [Observe instrument judgment](source-text.md#instruments-and-ordinary-feed-forward)
 relates this effect to complete outcome maps and quantum-owner interfaces.
@@ -212,35 +224,36 @@ identify the failed selector or carry rule.
 
 ## Structural equality, coherence and physical maps
 
-Definitional type equality compares constructor tags, evaluated static sizes,
-immediate tuple arity, nesting and ordered leaves:
+Two types are equal only when they are the same tree. Definitional type
+equality compares constructor tags, evaluated static sizes, immediate tuple
+arity, nesting and ordered leaves:
 
 - `Bit` and `Bits<1>` are distinct.
 - `Unit` and `Bits<0>` are distinct.
 - `((A,B),C)`, `(A,(B,C))` and `(A,B,C)` are distinct.
 - `Q<(A,B)>` and `(Q<A>,Q<B>)` are distinct ownership interfaces.
 
-**Canonical coherence** is a separately justified structural map. It is not
-definitional equality. A **physical map** is SWAP, preparation, observation,
-reset, discard or a nontrivial phase.
+**Canonical coherence** is a structural map with its own separate
+justification. It is not definitional equality. A **physical map** is SWAP,
+preparation, observation, reset, discard or a nontrivial phase.
 
 Rules:
 
-- Equal width, cardinality or Hilbert-space dimension is insufficient for
-  equality (`type`).
+- Equal width, cardinality or Hilbert-space dimension does not make two types
+  equal (`type`).
 - For symbolic sizes, the bounded static solver must establish equality under
-  the same explicit premises. Failure to find a counterexample is not
-  equality.
+  the same explicit premises. A search that finds no counterexample does not
+  establish equality.
 - An admitted coherence must preserve ownership and ordered axes with exact
-  phase `+1`, including extension by an arbitrary reference system.
+  phase `+1`. This includes extension by an arbitrary reference system.
 - The checker introduces no implicit coherence. `split`, `join` and any
   subsequent reassociation or unit map are explicit and independently checked.
-- A physical map is never inserted as ordinary type coercion.
-- Rearranging bindings is not permission to rearrange axes.
-- Pattern destructuring of a tuple does not implicitly split a quantum owner
-  whose basis is a tuple.
-- A same-width value of a different tree needs an explicit specified
-  conversion, or it is rejected. No implicit cast exists.
+- The checker never inserts a physical map as an ordinary type coercion.
+- A program that rearranges bindings gains no permission to rearrange axes.
+- Destructuring a tuple with a pattern does not implicitly split a quantum
+  owner whose basis is a tuple.
+- A value of the same width and a different tree needs an explicit specified
+  conversion. Without one it is rejected. No implicit cast exists.
 - The common frontend must retain the full source tree. It must use an
   explicit representation mapping or reject an unsupported lowering profile.
   It must not silently map `Bits<1>` to `Bit` or `Bits<0>` to `Unit` to obtain
@@ -252,18 +265,20 @@ Rules:
 
 ## Predicate domains and argument lists
 
-A predicate used by either form of `with_computed` takes **one** ordinary
-basis parameter of the exact basis type of the source register, and it returns
-`Bit`. This is the exact single-domain convention that a `Meaning` function
-also follows.
+This section fixes the parameter list of a predicate that a program passes
+to `with_computed`. A predicate used by either form of `with_computed` takes
+**one** ordinary basis parameter. The parameter has the exact basis type of
+the source register, and the predicate returns `Bit`. A `Meaning` function
+follows the same exact single-domain convention.
 
 Rules:
 
-- An argument list is not implicitly folded into a tuple.
+- The checker does not implicitly fold an argument list into a tuple.
 - A predicate on `Q<Unit>` takes `u: Unit` or `_: Unit`. A nullary function is
-  not an implicit Unit-domain predicate.
-- A classical function call uses the declared argument-list arity. `f(a,b)`
-  and `f((a,b))` are distinct, and an ordinary nullary call is nullary.
+  not an implicit predicate on the Unit domain.
+- A call of a classical function uses the arity of the declared argument
+  list. `f(a,b)` and `f((a,b))` are distinct, and an ordinary nullary call is
+  nullary.
 - For a predicate used in both roles, update its ordinary callers or write a
   separate unary wrapper with an explicit product pattern. No implicit
   packing, reassociation or physical conversion repairs a mismatch.
@@ -271,8 +286,9 @@ Rules:
   predicates are valid, and their computed auxiliary must satisfy the
   applicable exact cleanup rule.
 - Coherent basis lifting retains its separate injectivity check.
-- Truth-table leaf order, retained phase, external reference correlations and
-  the exact type of the original owner are unchanged.
+- Four things are unchanged: the leaf order of the truth table, the retained
+  phase, the correlations with an external reference and the exact type of
+  the original owner.
 
 The checker accepts this predicate for a register of basis
 `((Bit,Bit),Bit)`:
@@ -286,35 +302,36 @@ requires a parameter with that precise tree.
 
 ## Unit owners retain phase
 
-`H(Unit)` is one-dimensional, not zero-dimensional. `Q<Unit>` is a linear
-owner although it has zero physical wires. So is `Q<Bits<0>>`.
+An owner without wires is an owner all the same. `H(Unit)` is
+one-dimensional, not zero-dimensional. `Q<Unit>` is a linear owner although
+it has zero physical wires. So is `Q<Bits<0>>`.
 
 Rules:
 
-- Copying, silently dropping or reviving either owner is rejected
+- A program that copies, silently drops or revives either owner is rejected
   (`ownership`).
 - The scalar operator `[-1]` cannot be erased. Under coherent control it
   becomes the nontrivial relative phase `diag(1,-1)`. Structural
   simplification must retain that action and the owner and evidence interface.
-- A pure introduction or elimination map for a Unit owner needs its own
+- A pure map that introduces or eliminates a Unit owner needs its own
   explicit checked rule. Ordinary `()` supplies neither such a map nor an
   implicit `Q<A> -> A` conversion.
 - The common judgment retains `Q<Unit>` and `Op<Unit>` alongside `Q<Bit>`,
   `Q<Bits<n>>` and complete packaged Basis trees. Helpers and operation
-  providers retain the exact basis and the linear owner even with an empty
-  physical axis list.
-- `Q<Unit>` inputs and returns retain distinct linear owners with empty wire
-  lists through ordinary calls and exact products. Ordinary `Unit` supplies no
-  owner.
+  providers retain the exact basis and the linear owner even when the list of
+  physical axes is empty.
+- An input or a return of type `Q<Unit>` retains a distinct linear owner, with
+  an empty wire list, through ordinary calls and exact products. Ordinary
+  `Unit` supplies no owner.
 
 The [primitive boundary](primitive-boundary.md) lists the primitives of this
 section.
 
 ### `global_phase_eighth`
 
-`global_phase_eighth(q)` consumes one `Q<A>` owner for any Basis tree `A`. It
-returns an owner of the same exact type, with the scalar action
-`exp(i*pi/4) I`.
+`global_phase_eighth(q)` applies a scalar phase to a complete owner. It
+consumes one `Q<A>` owner for any Basis tree `A`. It returns an owner of the
+same exact type, with the scalar action `exp(i*pi/4) I`.
 
 Rules:
 
@@ -332,7 +349,8 @@ Rules:
 - Removing a Unit factor cannot remove the scalar.
 - Concrete preparation preserves the original tree and axes. It neither
   splits the owner nor erases a zero-width factor.
-- Preceding argument work and subsequent observation stay in source order.
+- The work of the argument, which comes before, and an observation that
+  follows stay in source order.
 - The type, width, work and backend limits of the requested profile apply.
 
 > **Implementation note.** Hierarchy lowering retains the scalar through
@@ -347,7 +365,9 @@ Rules:
 
 ### `unit` and `finish`
 
-The common source catalog exposes two explicit structural maps:
+A program creates a `Q<Unit>` owner with `unit` and gives one up with
+`finish`. The common source catalog exposes these two explicit structural
+maps:
 
 - `unit(u)` takes exactly one ordinary `Unit` argument and returns one fresh
   `Q<Unit>` owner.
@@ -372,21 +392,21 @@ Rules:
   reference.
 - The maps can form explicit left and right maps on separate-owner products,
   such as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`.
-- No observing discard and no retry after a native failure supplies a
-  substitute.
+- An observing discard is no substitute for either map. A retry after a
+  native failure is no substitute either.
 
 > **Implementation note.** The maps lower to the checked `pack_unit` and
 > `unpack_unit` constructors, `RawOp::PackUnit` and `RawOp::UnpackUnit` in
 > Raw. Hierarchy, Finite project and shared Raw lowering retain the explicit
 > maps. Raw `pack_unit` creates a fresh zero-axis owner, and `unpack_unit`
-> consumes an existing one. Their zero-axis owner transitions retain the
+> consumes an existing one. Each transition of a zero-axis owner retains the
 > complete live caller frame and the scalar phase. The native checker retains
 > issued identities after consumption and rejects their reuse.
 
 ### `split` and `join`
 
-`Q<(A,B)>` is one owner, and `(Q<A>,Q<B>)` is two. Two explicit maps convert
-between them:
+`Q<(A,B)>` is one owner, and `(Q<A>,Q<B>)` is two. A program converts
+between the two types with two explicit maps:
 
 - `split(q): Q<(A,B)> -> (Q<A>,Q<B>)` consumes one owner and returns two fresh
   owners in left/right order.
@@ -400,8 +420,8 @@ Rules:
 - `split` has one argument and requires an immediate binary basis tuple.
   `join` has two arguments, not one ordinary tuple argument.
 - The arguments evaluate completely, once, from left to right.
-- Nested trees, zero-axis factors, correlations with retained owners and the
-  physical axis order are preserved.
+- Both maps preserve nested trees, zero-axis factors, correlations with
+  retained owners and the physical axis order.
 - Neither map asserts separability, flattens a tuple, changes a basis tag,
   measures or silently discards an owner.
 - An ordinary tuple pattern cannot unpack a `Q<(A,B)>` owner.
@@ -409,13 +429,13 @@ Rules:
 > **Implementation note.** The maps use the native `split_tuple` and
 > `join_tuple` rules. Native support for other arities does not widen the
 > source signature. Selected hierarchy admits packaged quantum bases built
-> recursively from `Unit`, `Bit`, `Bits<n>` and ordered tuples, including
+> recursively from `Unit`, `Bit`, `Bits<n>` and ordered tuples. It also admits
 > `Op<A>` for those bases.
 
 > **Implementation note.** The source Raw leaf adapter supports the two maps
 > for packaged bases built from exact Unit/Bit product trees. Each logical
-> owner retains its complete ordered wire vector, including an empty vector
-> for a zero-width factor. The independent ordered replay checks fresh owner
+> owner retains its complete ordered wire vector, which is an empty vector for
+> a zero-width factor. The independent ordered replay checks fresh owner
 > identities, exact source field trees, split partitions and join operand
 > order. Raw transport widths do not replace source types. The unary native
 > finite request also retains the complete original Basis signature and the
@@ -425,27 +445,29 @@ Rules:
 
 ### Unitors
 
-An explicit left unitor on `Q<(Unit,A)>` is `split` followed by `finish` on
-its Unit owner. Its inverse is `join(unit(()), a)`. The right unitor uses the
-other factor.
+A unitor removes a Unit factor from a packaged owner, and its inverse adds
+one. An explicit left unitor on `Q<(Unit,A)>` is `split` followed by `finish`
+on its Unit owner. Its inverse is `join(unit(()), a)`. The right unitor uses
+the other factor.
 
 Rules:
 
 - The coefficient is exactly `+1` on every basis value and retained reference.
 - Scalar work already performed on an eliminated Unit factor stays in the
   composition.
-- A unitor is never inserted by implicit coercion.
+- Implicit coercion never inserts a unitor.
 
 ## Tuples and patterns
 
-Ordinary `Unit` has no quantum owner identity. Ordinary function parameters,
-`let` bindings, classical function parameters and coherent basis maps use one
-pattern shape rule.
+A pattern takes a value apart by its shape. One rule for the shape of a
+pattern applies in four places: ordinary function parameters, `let`
+bindings, classical function parameters and coherent basis maps. Ordinary
+`Unit` has no quantum owner identity.
 
 Rules:
 
 - An ordinary `Unit` value may be copied, dropped or matched by the empty
-  pattern `()`, including inside an ordinary tuple.
+  pattern `()`. This holds inside an ordinary tuple too.
 - The pattern `()` matches only ordinary `Unit`. It does not match an empty
   tuple, `Bits<0>`, `Q<Unit>` or `Q<Bits<0>>`.
 - A nonempty tuple pattern preserves the immediate arity and recursively
@@ -455,8 +477,8 @@ Rules:
 - Parameter names must be unique across the complete parameter list and
   distinct from static parameters.
 - An ordinary wildcard may ignore unrestricted data. It cannot discard a
-  quantum owner, including one nested inside an ordinary product or one of
-  zero width.
+  quantum owner. This holds for an owner nested inside an ordinary product
+  and for an owner of zero width.
 - Empty parentheses are value and pattern syntax, and an empty argument list
   is nullary. In a type position, write `Unit`.
 
@@ -477,7 +499,8 @@ work. Omitting its result port does not omit its body.
 
 > **Implementation note.** Selected Raw implements the Unit basis map through
 > the `LiftBasis` proposal and a separate source-step comparison. Selected
-> hierarchy admits the singleton coefficient-`+1` table `[0]` under the narrow
+> hierarchy admits the singleton table `[0]` with the coefficient `+1` under
+> the narrow
 > [zero-basis conversion and preparation profile](coherent-basis.md#concrete-profiles-and-proof-boundary).
 > Other tables and table-dependent static transforms are unsupported there,
 > and its quantum Unit, depth and work limitations apply. Lowering of the
@@ -486,24 +509,27 @@ work. Omitting its result port does not omit its body.
 
 ### Rest patterns
 
-Rest patterns such as `..` are not part of the source grammar. This is an
-intentional divergence from ordinary Rust pattern ergonomics.
+A rest pattern such as `..` would stand for components that a pattern leaves
+out. Rest patterns are not part of the source grammar. Qleisli diverges here
+from the ergonomics of ordinary Rust patterns on purpose.
 
 Rules for a future pattern form that elides components:
 
 - Every omitted component must be proven unrestricted or already explicitly
   consumed under a separate language rule.
 - Rest syntax never implies discard, reset, release or measurement.
-- The rejection of an elided live quantum component must identify that field
-  or component, including nested and zero-width owners.
+- When the checker rejects an elided live quantum component, the rejection
+  must identify that field or component. This includes nested and zero-width
+  owners.
 
 These rules do not admit rest syntax, and they promise none of these
 diagnostics before the syntax is implemented.
 
 ## Callable values and scoped bodies
 
-At the live-owner boundary, ordinary quantum functions are first-order.
-Arguments and results explicitly expose their quantum owners.
+A function cannot hide a live quantum owner inside a callable value. At the
+live-owner boundary, ordinary quantum functions are first-order. Arguments
+and results explicitly expose their quantum owners.
 [Closure-shaped expressions](functional-boundary.md#closure-shaped-expressions)
 gives the surrounding boundary.
 
@@ -515,23 +541,24 @@ Rules:
   identities. It contains no captured live `Q<A>` owner. The
   [static language](static-language.md#capability-derivation-for-enabled-descriptions)
   specifies the bounded composition and capability rules.
-- Unrestricted closure capture of a live quantum owner is forbidden, including
-  nested and zero-width owners.
+- Unrestricted capture of a live quantum owner by a closure is forbidden.
+  This includes nested and zero-width owners.
 - A future linear or one-shot quantum callable requires a separately specified
   type, usage, effect and access contract.
-- Ordinary closure values are unsupported. The parser retains the bounded
-  `||expr`, `|pattern, ...|expr` and block-body forms solely for rejection
-  diagnostics, with optional contextual `move`, parameter annotations and
-  block return annotations. None can be lowered or executed.
+- Ordinary closure values are unsupported. The parser retains three bounded
+  forms solely to report their rejection: `||expr`, `|pattern, ...|expr` and
+  the form with a block body. The forms include an optional contextual
+  `move`, parameter annotations and block return annotations. None can be
+  lowered or executed.
 - An annotation supplies no type or ownership evidence for this rejected
   syntax.
 - A closure body that refers to an outer live quantum owner is rejected
-  (`ownership`) at the original resolved use, with the checked type of the
-  outer binding.
+  (`ownership`). The checker reports the rejection at the original resolved
+  use, with the checked type of the outer binding.
 - An ordinary classical value named `q` is not a quantum capture.
 - Closure parameters and body-local bindings retain separate lexical
   identities, so shadowing does not capture the outer binding.
-- An already consumed outer binding retains its consumption error.
+- An outer binding that is already consumed retains its consumption error.
 - Every other closure value is refused (`unsupported`). Parsing the diagnostic
   syntax does not admit callable values.
 
@@ -547,12 +574,14 @@ Rules:
   outer live quantum owners.
 - The three-argument certified form hides all outer runtime values and exposes
   the explicit data and auxiliary binders.
-- A forbidden outer use is diagnosed at the use of that resolved binding.
+- The checker reports a forbidden outer use at the use of that resolved
+  binding.
 - A body-local binding with the same name has its own identity and is not an
   outer capture. An already consumed binding retains its consumption
   diagnostic.
-- These checks do not replace the separate exact compute/use/uncompute and
-  logical-operation evidence obligations. See the
+- These checks do not replace two separate evidence obligations: the exact
+  compute/use/uncompute obligation and the logical-operation obligation. See
+  the
   [workspace boundary](rust-boundary.md#checked-cleanup-is-a-separate-contract).
 
 ## Inference and generic responsibilities
@@ -564,19 +593,21 @@ operation parameters.
 
 ### Inference
 
+These rules limit what the checker infers.
+
 Rules:
 
 - The checker infers only uniquely determined static structure under
   specified rules. It rejects ambiguous type substitutions, callable
   categories and provider choices.
-- No search for a convenient implementation, numerical coincidence or matching
-  name may manufacture meaning, an inverse, coherent control or semantic
-  evidence.
+- No search may manufacture meaning, an inverse, coherent control or semantic
+  evidence. This holds for a search for a convenient implementation, for a
+  numerical coincidence or for a matching name.
 - For a fixed source, dependency set and selected toolchain, preparation is
-  deterministic. It terminates under its published static work, storage and
-  depth limits.
-- An unresolved constraint is rejected. Exhaustion of a checking budget is not
-  a successful inference or a proof of impossibility.
+  deterministic. It terminates under its published static limits on work,
+  storage and depth.
+- An unresolved constraint is rejected. A check that exhausts its budget is
+  neither a successful inference nor a proof of impossibility.
 - Trait or capability resolution must not use cyclic guessing or the absence
   of a contradiction as evidence.
 - Callable resolution must establish a unique declared category before
@@ -585,26 +616,28 @@ Rules:
 
 ### Explicit static bindings
 
-The conservative profile requires complete explicit closed Nat and Op
-bindings. Even an unused static parameter must be bound.
+The conservative profile requires Nat and Op bindings that are complete,
+explicit and closed. Even an unused static parameter must be bound.
 
 Rules:
 
-- A binding mismatch reports the selected entry, the binding category, and the
-  missing and unexpected names in lexical order.
-- A missing Nat binding of a provider also identifies the affected Op binding
-  and the resolved provider.
-- A source call arity error identifies the resolved declaration, its ordered
-  static parameter names and categories, and the supplied count.
+- The report of a binding mismatch names the selected entry, the binding
+  category, and the missing and unexpected names in lexical order.
+- When a provider lacks a Nat binding, the report also identifies the
+  affected Op binding and the resolved provider.
+- An arity error at a source call identifies the resolved declaration, the
+  names and categories of its static parameters in order, and the supplied
+  count.
 - These diagnostics choose no missing value and no provider.
-- Natural-binding errors precede operation-binding errors. Basis-binding
-  errors precede natural-binding errors when the declaration introduces Basis
-  parameters. A declaration with only Nat and Op parameters keeps the first
-  priority.
+- The checker reports an error in a natural binding before an error in an
+  operation binding. When the declaration introduces Basis parameters, it
+  reports an error in a Basis binding before an error in a natural binding. A
+  declaration with only Nat and Op parameters keeps the first priority.
 
 ### Closed instances and the specialization cache
 
-After the common judgment, specialization checks closed substitutions, exact
+Specialization substitutes closed values for the static parameters of a
+declaration. After the common judgment, it checks closed substitutions, exact
 type trees, provider identity, premises and aggregate work.
 
 Rules:
@@ -613,7 +646,8 @@ Rules:
   [ordered `requires` mechanism](static-language.md#unified-requires-obligations).
   The closed check consumes its normalized facts. It does not reclassify the
   source definition.
-- Instance success is not a proof about every member of a generic family.
+- The success of an instance is not a proof about every member of a generic
+  family.
 - The specialization cache belongs to one immutable checked program and its
   resolved dependency universe. The owning checked program supplies the source
   and dependency identity. The key is not a process-wide name or width cache.
@@ -627,8 +661,8 @@ Rules:
   the selected type, Nat and provider bindings, the original source and
   dependencies, and local identities. Width alone never selects a cache entry
   or a conversion.
-- Cache reuse retains aggregate call accounting. It supplies no native
-  acceptance and no source-preservation proof.
+- Reusing a cache entry retains the aggregate call accounting. It supplies no
+  native acceptance and no source-preservation proof.
 - A concrete instance lowers to the native representation and receives a
   fresh decision of the native checker. Specialization introduces no native
   primitive and no accepted-handle constructor.
@@ -638,7 +672,10 @@ gives the identity of an operation description.
 
 ### Capability requirements of operation parameters
 
-An endomorphic `Op<A>` formal starts with no executable access.
+A capability requirement is an entry of a `requires` clause that names a
+capability of an operation parameter. It states one kind of access that the
+body has to that parameter. An endomorphic `Op<A>` formal starts with no
+executable access.
 
 Rules:
 
@@ -648,7 +685,8 @@ Rules:
 - Repeating a capability requirement is rejected (`access`). One capability
   does not grant the other two.
 - The body and every forwarded call must satisfy their own capability
-  requirements, even when unused or inside a zero-iteration fold (`access`).
+  requirements (`access`). This holds even when they are unused or inside a
+  fold with zero iterations.
 - A mathematical Meaning refinement or a Unitary effect is not a capability.
 - A concrete provider requires its checked implementation paths. A generic
   assumption is not evidence for an arbitrary external provider.
@@ -657,39 +695,42 @@ Rules:
 
 ## Opaque Basis parameters and nominal types
 
-The common grammar admits `const A: Basis`, `Q<A>` and `Op<A>`. A **nominal
-type** is a declared fieldless enum or record.
+A declaration can take a basis as a static parameter, and a program can
+declare finite types of its own. The common grammar admits `const A: Basis`,
+`Q<A>` and `Op<A>`. A **nominal type** is a declared fieldless enum or
+record.
 [Parsed finite type declarations](source-text.md#parsed-finite-type-declarations)
 gives the declaration forms. [Typed routes](#typed-routes) gives the routes
 that execute nominal source.
 
 ### Opaque `Basis` parameters
 
-An abstract `A : Basis` is opaque. The identity of `A` is its resolved
-declaration binder, not its spelling or an inferred width.
+A generic body cannot look inside a Basis parameter. An abstract `A : Basis`
+is opaque. The identity of `A` is the binder of its resolved declaration, not
+its spelling or an inferred width.
 
 Rules:
 
-- An abstract ordinary `A` value may be copied.
+- An ordinary value of the abstract type `A` may be copied.
 - A body may move and return a `Q<A>` owner. It may pass the owner to an
   operation that an explicit capability requirement justifies.
 - A body must not inspect `A` as a tuple, assume a width or prepare a state
   merely because `A` is finite. Abstract decomposition, reflection and quantum
   preparation are unavailable.
 - A favorable instance does not rescue an invalid generic body.
-- Static parameters are explicit and ordered. A parameter kind may refer only
-  to earlier parameters.
+- Static parameters are explicit and ordered. The kind of a parameter may
+  refer only to earlier parameters.
 - A runtime value never determines a static size or a provider.
-- The common judgment checks all supplied declarations, branches and
-  zero-iteration fold bodies before any selected type or provider binding is
-  considered.
+- The common judgment checks all supplied declarations, all branches and the
+  bodies of folds with zero iterations. It does so before it considers any
+  selected type binding or provider binding.
 
 ### Static arguments and `type(T)`
 
-A source call forwards a resolved opaque parameter by name. An explicit
-concrete static argument is `type(T)`. The common judgment accepts both
-forms. The first call forwards the parameters `A` and `U`, and the second
-supplies the concrete tree `Bit`:
+A call supplies a Basis argument in one of two forms. A source call forwards
+a resolved opaque parameter by name. An explicit concrete static argument is
+`type(T)`. The common judgment accepts both forms. The first call forwards
+the parameters `A` and `U`, and the second supplies the concrete tree `Bit`:
 
 ```qli
 inner[A,U](q)
@@ -701,19 +742,19 @@ Rules:
 - `type(T)` creates no runtime type value and no quantum owner.
 - A runtime function named `type` is an ordinary function. Contextual static
   Nat names such as `Bit` retain their category.
-- No argument is inferred from an expected width, a type or an available
-  provider.
-- `type(T)` also retains an original resolved finite enum or record, including
-  aliases and closed Nat-helper field sizes. Field sizes stay rooted in the
-  type declaration. They are not invented Nat occurrences in the calling
-  function.
-- An ordinary Basis/Nat dependency may forward the same nominal trees,
-  including concrete `type(T)` arguments and nested tuples. The original
-  caller and callee binders, numeric premises and module-public effects stay
-  distinct.
-- A closed unused argument is checked. Ordinary forwarding grants no operation
-  capability, and this preparation grants no execution, inverse or control
-  capability.
+- The checker infers no argument from an expected width, a type or an
+  available provider.
+- `type(T)` also retains an original resolved finite enum or record. This
+  includes aliases and field sizes that closed Nat helpers give. Field sizes
+  stay rooted in the type declaration. They are not invented Nat occurrences
+  in the calling function.
+- An ordinary Basis/Nat dependency may forward the same nominal trees. This
+  includes concrete `type(T)` arguments and nested tuples. The original
+  binders of the caller and of the callee, the numeric premises and the
+  module-public effects stay distinct.
+- The checker checks a closed argument even when it is unused. Ordinary
+  forwarding grants no operation capability, and this preparation grants no
+  execution, inverse or control capability.
 
 > **Implementation note.** The common static plan binds the original type
 > occurrence of `type(T)` to its canonical declaration in the same checked
@@ -733,21 +774,23 @@ Rules:
 
 - A provider binds the types of its own declaration separately. It does not
   inherit the parameters of the caller by name.
-- A missing, extra or wrong-category binding is rejected.
+- A binding that is missing, extra or of the wrong category is rejected.
 - `--basis=N` has a distinct role: it is the runtime input of a hierarchy
   execution.
 - A closed description uses the same type grammar and requires EOF. It rejects
   unavailable names, quantum owners, unresolved sizes and invalid bounded
   arithmetic.
-- The context-free `BasisBinding::parse` has a built-in-only contract. A
-  portable built-in description needs no source context.
+- `BasisBinding::parse` works without a source context, and its contract
+  covers built-in types only. A portable built-in description needs no source
+  context.
 - `basis_binding` also resolves fully qualified public finite type names and
   public reexports, for example `program.basis_binding("labels::Tri")`. It
-  retains the original canonical tree and the source bytes of the relevant
-  declaration, alias and transitive Nat helpers.
-- Every receiving preparation rechecks that selection before closure or cache
-  use. Private names, changed dependencies and same-width substitute trees are
-  rejected. Host selection grants no module-private privilege.
+  retains the original canonical tree. It also keeps the source bytes of the
+  relevant declaration, of its alias and of its transitive Nat helpers.
+- Every preparation that receives that selection rechecks it before closure
+  or cache use. Private names, changed dependencies and substitute trees of
+  the same width are rejected. Host selection grants no module-private
+  privilege.
 - The `instantiate` method and the provider `new` method supply empty type
   maps.
 - A host Basis description and an `Instantiation` are untrusted preparation
@@ -764,59 +807,64 @@ pub unitary fn keep[const A:Basis,const n:Nat](q:Q<A>,word:Bits<n>)->(Q<A>,Bits<
 
 ### Nominal values
 
-The common judgment checks fieldless `Type::Variant` values, explicit
-`Type { field: expression, ... }` records and ordinary `value.field`
-projection, in runtime blocks and in classical bodies.
+A program builds a value of a nominal type with one of two forms and reads a
+record field with a third. The common judgment checks fieldless
+`Type::Variant` values, explicit `Type { field: expression, ... }` records
+and ordinary `value.field` projection. It checks them in runtime blocks and
+in classical bodies.
 [Nominal values](elaboration.md#nominal-values) gives the elaboration
 contract.
 
 Rules:
 
-- A type reference uses the original occurrence table, including public
+- A type reference uses the original occurrence table, with its public
   reexports and local shadowing. A local Basis or runtime name does not fall
-  back to a same-spelled global type.
+  back to a global type of the same spelling.
 - Member names and diagnostics retain their original source spans.
 - A qualified call is a function call. No payload variant and no imported
   bare-variant API exists.
 - A record supplies every field exactly once, with its exact declared ordinary
   type.
-- Initializers are checked in written evaluation order. The resulting type
-  retains the declaration order and the nominal identity.
-- Field privacy is checked in the original declaring module, including for
-  zero-width fields.
+- The checker checks initializers in their written order of evaluation. The
+  resulting type retains the declaration order and the nominal identity.
+- The checker checks field privacy in the original declaring module. This
+  holds for zero-width fields too.
 - Projection checks its receiver once and requires an ordinary record.
   `Q<Record>` is one owner, with no implicit decomposition or observation.
-- Initializer calls retain their normal effects, dependencies and ownership
-  transitions. Observation cannot be hidden behind a Unitary or Isometry
-  annotation.
+- A call in an initializer retains its normal effects, dependencies and
+  ownership transitions. A Unitary or Isometry annotation cannot hide
+  observation.
 - Empty records and singleton enums are distinct from `Unit` and `Bits<0>`.
 - Shorthand, record updates, methods and general `const<T>` are outside these
   forms.
-- Execution requires a typed route. Successful common preparation supplies no
-  accepted handle.
+- Execution requires a typed route. Common preparation that succeeds supplies
+  no accepted handle.
 
 ### Ordinary `match`
 
-The common judgment checks `match value { Type::A => expression, ... }` in
-both ordinary expression grammars.
+An ordinary `match` chooses one arm by the variant of an ordinary enum
+value. The common judgment checks
+`match value { Type::A => expression, ... }` in both ordinary expression
+grammars.
 [Ordinary match](elaboration.md#ordinary-match) gives the elaboration
 contract.
 
 Rules:
 
-- The scrutinee must have an ordinary enum type. A live `Q<T>` cannot be
-  inspected by ordinary `match`.
+- The scrutinee, which is the value that the `match` inspects, must have an
+  ordinary enum type. An ordinary `match` cannot inspect a live `Q<T>`.
 - Labels resolve through their original type declarations and visibility.
-  Equal spelling, width or cardinality cannot substitute a foreign enum.
+  A foreign enum cannot substitute through equal spelling, width or
+  cardinality.
 - Every declared variant must occur exactly once. Wildcard, payload and
   complement patterns are outside this form.
 - A normal arm may contain a block. A classical arm is an ordinary expression.
 - Parenthesize a record literal in a scrutinee, to distinguish its braces from
   the arm list.
-- The checker visits the scrutinee once and checks every arm, including the
-  arms of a constant constructor in an unused function.
+- The checker visits the scrutinee once and checks every arm. This includes
+  the arms of a constant constructor in an unused function.
 - All arms have the same complete result type tree. Each arm preserves the
-  same outer owner frame, including zero-width owners.
+  same outer owner frame, zero-width owners included.
 - Calls and observation in any arm contribute their normal dependencies and
   effects. Constant selection cannot hide an observing body behind a pure
   public label.
@@ -826,7 +874,8 @@ Rules:
 
 ### Coherent selection
 
-The coherent
+A `qmatch` selects an operation on a target owner by the label of a selector
+owner. It preserves coherence across the selector sectors. The coherent
 [exact-label `qmatch` form](source-text.md#exact-label-coherent-selection)
 checks a `Q<A>` selector and a distinct `Q<B>` target. An arm is a resolved
 static operation or an inline block. That section specifies both arm forms.
@@ -840,18 +889,20 @@ Rules:
   declaration and the logical variant order. A built-in label retains its
   exact ordinal.
 - Neither padding tags nor equal physical width identify a label or a target.
-- A nominal target retains its full enum or record tree, including an empty
-  record, with a built-in ordinal selector or an enum selector.
+- A nominal target retains its full enum or record tree, and an empty record
+  is such a tree. This holds with a built-in ordinal selector and with an
+  enum selector.
 - No inverse or control capability follows merely from a label.
 - Common nominal preparation alone grants no execution.
 
 > **Implementation note.** The finite executable built-in slice uses a fresh
-> native whole-circuit encoded equation. A small closed named-arm function
-> with a nominal selector or target also submits its complete callee
-> fragment, the original two-owner frame and the separate controlled arm
-> bodies to the native source/arm gate, before runtime-root acceptance. The
-> physical arm proposal does not erase the target type or confer a provider
-> capability. The native code/body and controlled equations are required.
+> native whole-circuit encoded equation. A small closed function with named
+> arms and a nominal selector or target also uses the native source/arm gate,
+> before runtime-root acceptance. It submits its complete callee fragment,
+> the original two-owner frame and the separate controlled arm bodies to
+> that gate. The physical arm proposal does not erase the target type or
+> confer a provider capability. The native code/body and controlled equations
+> are required.
 > [Coherent selection components](#coherent-selection-components) gives the
 > limits.
 
@@ -862,8 +913,10 @@ Op<A -> B>
 Op<A -> B, M>
 ```
 
-`Op<A -> B>` retains separate exact input and output basis trees. `Op<A>`
-abbreviates `Op<A -> A>`. The comma slot is a Meaning refinement, so
+The type `Op<A -> B>` describes a pure operation whose input and output
+bases can differ. It retains the exact input basis tree and the exact output
+basis tree separately. These two trees are the ports of the operation.
+`Op<A>` abbreviates `Op<A -> A>`. The comma slot is a Meaning refinement, so
 `Op<A -> B, M>` is unambiguous. [Checked operations](checked-operations.md)
 specifies Meanings.
 
@@ -872,13 +925,14 @@ Rules for the type:
 - Both ports use only preceding static binders and undergo ordered
   substitution. Equal width does not identify distinct trees.
 - Given `U: Op<A -> B>` and `requires Applicable(U)`, applying `U` consumes
-  one `Q<A>` owner and returns one `Q<B>` owner. The upper effect bound is
-  Isometry for general ports.
+  one `Q<A>` owner and returns one `Q<B>` owner. For general ports, the upper
+  bound of the effect is Isometry.
 - When the common exact-tree judgment establishes `A = B`, the explicit form
   retains the Unitary bound of its endomorphic abbreviation.
 - Preparation is the ordinary `Unit -> A` case. `Q<Unit>` is a logical owner.
-- A generic body uses its declared capability and effect bounds, never a more
-  fortunate later concrete provider.
+- A generic body uses the capability bounds and effect bounds that it
+  declares. It never uses a more fortunate concrete provider that is bound
+  later.
 - The common judgment checks the port rules and the capability rules before
   profile selection.
 
@@ -887,15 +941,17 @@ Rules for a provider:
 - A concrete provider must be an ordinary unary quantum function. Its checked
   effect, as visible in the original module of the caller, must be at most
   Isometry.
-- An external provider and a host-selected public provider use their public
-  effect. Same-module private or internal analysis retains checked inference.
+- An external provider uses its public effect. So does a public provider that
+  the host selects. Private or internal analysis within the same module
+  retains checked inference.
 - An annotation cannot make an Observe body pure or make an Isometry body
   Unitary.
 
 Rules for the capabilities and the constructors:
 
-- `Adjointable(U)` requires a caller-visible Unitary provider and a supported
-  reverse implementation. An adjoint exchanges the ports.
+- `Adjointable(U)` requires a provider whose effect is Unitary as its caller
+  sees it, and a supported reverse implementation. An adjoint exchanges the
+  ports.
 - For an opaque formal `U: Op<A -> B>`, direct `adjoint(U)(q)` consumes `Q<B>`
   and returns `Q<A>`. Applying the static adjoint through another operation
   parameter does the same.
@@ -904,7 +960,7 @@ Rules for the capabilities and the constructors:
   [runtime-group rule](#direct-runtime-transforms-and-opaque-operations) is
   endomorphic.
 - `Controllable(U)` also requires the exact endomorphism `A = B`.
-- Repetition requires `A = B`, including for a zero count.
+- Repetition requires `A = B`, even for a count of zero.
 - Sequential construction matches the exact middle tree. Tensor construction
   retains the ordered pairs of both input and output trees.
 - Conjugation preserves the order `C† -> U -> C`. For `C: A -> B`, the middle
@@ -922,7 +978,7 @@ Rules for Meaning refinements:
   obligation.
 
 > **Implementation note.** Finite project and Selected Raw retain separate
-> operation and Meaning ports within their finite checking bounds, and they
+> operation and Meaning ports within their finite checking bounds. They also
 > retain the original provider and Meaning requests of an adjoint. Both check
 > the original pure body of a rectangular Meaning and its exact rectangular
 > matrix with native `pure-leaf`, including `V†V = I`.
@@ -932,14 +988,16 @@ Rules for Meaning refinements:
 ## Direct runtime transforms and opaque operations
 
 A **direct runtime transform** applies `adjoint`, `controlled` or `power` to a
-target that is an ordinary function name, its explicit static specialization
-or a transparent `power` wrapper. Its **runtime target type** `T` is the
-complete input type of a function with one runtime parameter. With more
-parameters, `T` is the exact ordered tuple of the complete input types.
+target. The target is an ordinary function name, its explicit static
+specialization or a transparent `power` wrapper. A program writes one to run
+the adjoint, a controlled form or a power of a function on live owners. Its
+**runtime target type** `T` is the complete input type of a function with one
+runtime parameter. With more parameters, `T` is the exact ordered tuple of
+the complete input types.
 
-The unary differing-port adjoint rule of
-[General pure operation arrows](#general-pure-operation-arrows) is the one
-exception to the rules below.
+The rules below have one exception: the adjoint rule for a unary function
+with differing ports, in
+[General pure operation arrows](#general-pure-operation-arrows).
 
 Rules:
 
@@ -954,37 +1012,39 @@ Rules:
   `T`.
 - Direct `controlled` evaluates the control, then the target, once each. It
   returns `(Q<Bit>,T)`.
-- Each original owner is consumed and returned exactly once. No implicit
-  split, join, packing or reassociation occurs.
-- The named body must have a caller-visible Unitary effect and the required
-  implementation path.
+- The transform consumes and returns each original owner exactly once. No
+  implicit split, join, packing or reassociation occurs.
+- The named body must have a Unitary effect as its caller sees it, and the
+  required implementation path.
 - A transparent Repeat checks its count and its child even at zero.
-- Only a directly transformed runtime self-call to the same DefId may use the
-  checked Nat decrease. This permits neither recursive opaque providers nor
-  mutual dependency cycles.
+- Only a runtime self-call to the same DefId under a direct transform may use
+  the checked Nat decrease. This permits neither recursive opaque providers
+  nor mutual dependency cycles.
 
-The checker records a located RuntimeGroupProvider obligation. It retains the
-original provider DefId, the complete runtime interface and the visible
-effect. Its source association is not transformed-operator equality, provider
-correspondence or a source-preservation proof.
+The checker records a located RuntimeGroupProvider obligation. The obligation
+retains the original provider DefId, the complete runtime interface and the
+visible effect. Its association with the source is not an equality of
+transformed operators, a provider correspondence or a source-preservation
+proof.
 
 ### Opaque operations
 
-This runtime-group rule does not widen an opaque `Op<A>`, a static or host
-provider, a Meaning refinement, a certified logical operation or a
+The runtime-group rule lets a direct transform act on a function with several
+runtime parameters. This rule does not widen an opaque `Op<A>`, a static or
+host provider, a Meaning refinement, a certified logical operation or a
 FunctionEquality contract.
 
 Rules:
 
-- Opaque `Op<A>`, static or host provider and certified logical-operation
-  interfaces keep one input `Q<A> -> Q<A>`.
+- Three interfaces keep one input `Q<A> -> Q<A>`: an opaque `Op<A>`, a static
+  or host provider and a certified logical operation.
 - Pure FunctionEquality keeps that interface for its checked implementation
   and for any ordinary specification function.
 - A declared Meaning is a semantic object, not a runtime function.
 - A `tensor_op` description acts on one packed quantum basis, so it also keeps
   one input.
 - Transparent specialization derives access conservatively from every Op
-  argument, including unused ones. Inverse access requires the `Applicable`
+  argument, unused ones included. Inverse access requires the `Applicable`
   and `Adjointable` paths of each argument. Controlled access also requires
   `Controllable`.
 - A body annotation or a mathematical Unitary property grants none of those
@@ -993,20 +1053,23 @@ Rules:
 
 ### Function contracts
 
-`apply_contract` evaluates its input first and consumes one exact quantum
-owner. [Function contracts](elaboration.md#function-contracts) gives the
+A function contract pairs an implementation with a specification.
+`apply_contract` applies the implementation and records the obligation that
+it equals the specification. `apply_contract` evaluates its input first and
+consumes one exact quantum owner.
+[Function contracts](elaboration.md#function-contracts) gives the
 elaboration contract.
 
 Rules for the pure overload:
 
-- The implementation and the ordinary specification are closed caller-visible
-  Unitary `Q<A> -> Q<A>` declarations. A declared finite Meaning may supply
-  the specification instead.
+- The implementation and the ordinary specification are closed declarations
+  of type `Q<A> -> Q<A>`, with a Unitary effect that the caller can see. A
+  declared finite Meaning may supply the specification instead.
 - The common judgment records a located FunctionEquality obligation. It binds
   both exact original DefIds, the interface, category and effect, and the
   source span.
-- Binding the identity of a Meaning or a provider is not matrix equality,
-  injectivity, all-input clean return, provider correspondence or source
+- Binding the identity of a Meaning or of a provider is not matrix equality,
+  injectivity, clean return on all inputs, provider correspondence or source
   preservation. Those properties are pending until the independent concrete
   evidence gates discharge them.
 - A declared Meaning supplies the request. It is never projected as a runtime
@@ -1014,21 +1077,23 @@ Rules for the pure overload:
 
 Rules for the observing overload:
 
-- It compares two closed ordinary functions with caller-visible Observe
-  effects, one `Q<A>` argument and the same complete finite result type.
-- The native instrument profile also requires genuinely observing original
-  bodies. A conservative Observe declaration over a pure body does not select
-  pure-contract evidence. That concrete route is explicitly unsupported,
-  including for dormant obligations.
-- Complete result nesting, ordered quantum and classical projections,
-  zero-width owners, hidden histories and residual states are significant.
+- It compares two closed ordinary functions. Each has an Observe effect that
+  the caller can see and one `Q<A>` argument. Both have the same complete
+  finite result type.
+- The native instrument profile also requires original bodies that genuinely
+  observe. A conservative Observe declaration over a pure body does not
+  select pure-contract evidence. That concrete route is explicitly
+  unsupported, and this holds for dormant obligations too.
+- The comparison treats all of these as significant: the complete result
+  nesting, the ordered quantum and classical projections, zero-width owners,
+  hidden histories and residual states.
 - The overload admits no observing `Meaning` and no inverse or coherent
   control access.
 - An unsupported result shape or lowering shape is rejected explicitly.
 
-When a rejected exact equation yields a mismatched coefficient within the
-diagnostic work limit, the diagnostic shows the input and output basis values
-with the declared tree shapes:
+A rejected exact equation can yield a mismatched coefficient within the
+diagnostic work limit. The diagnostic then shows the input basis value and
+the output basis value with the declared tree shapes:
 
 - The first bit leaf is the least significant coordinate.
 - `Unit` contributes no bit and stays visible in the printed value.
@@ -1064,7 +1129,8 @@ The retired type and literal spellings are rejected with migration diagnostics
 
 ## Selected-entry commands
 
-On the selected-entry route, the commands `check`, `run`, `sample` and
+The selected-entry route takes one selected entry function and explicit
+module bindings. On this route, the commands `check`, `run`, `sample` and
 `emit-proposal` take these arguments:
 
 | Argument | Role |
@@ -1083,38 +1149,38 @@ On the selected-entry route, the commands `check`, `run`, `sample` and
 Rules for the commands:
 
 - The `sized` prefix is removed. `qleisli sized ACTION ...` is a usage error
-  (`usage`) with exit status 2 and a migration hint, before any source or
-  native work. Write `qleisli ACTION ...`. Both the text error and the JSON
-  error identify the removed prefix.
+  (`usage`) with exit status 2 and a migration hint. The CLI reports it
+  before any source or native work. Write `qleisli ACTION ...`. Both the text
+  error and the JSON error identify the removed prefix.
 - A selected command returns a JSON result object. With `--format=json` it
   uses the envelope for success and for diagnostics. Without that flag, an
   error is text on stderr.
-- A result retains the entry, the IR profile and the source and native scope
-  fields. A consumer must not require the narrower JSON object of the removed
-  hierarchy-command wrapper. Protocol, schema and machine profile identifiers
-  are unchanged.
-- Duplicate checker aliases are rejected. No download and no alternate checker
-  fallback occurs.
+- A result retains the entry, the IR profile and the fields for the source
+  scope and the native scope. A consumer must not require the narrower JSON
+  object of the removed hierarchy-command wrapper. Protocol, schema and
+  machine profile identifiers are unchanged.
+- Duplicate checker aliases are rejected. The CLI downloads nothing and falls
+  back to no alternate checker.
 - `emit-proposal` writes an untrusted proposal. It invokes the native checker
-  only for a source with function contracts or operation Meaning requests,
-  which it must check before emission. It is distinct from the project command
-  `emit-ir`, which freshly verifies its emitted artifact.
+  only for a source with function contracts or operation Meaning requests.
+  It must check those before emission. It is distinct from the project
+  command `emit-ir`, which freshly verifies its emitted artifact.
 
 Rules for the root:
 
-- An explicit public `main::main` selection uses exported-function
-  eligibility.
+- An explicit selection of a public `main::main` uses the eligibility of an
+  exported function.
 - Project invocation has a separate contract: an ordinary zero-argument
   `fn main` with a closed classical result. A private project `main` does not
   become an exported selection.
 - A selection may name a public `classical fn` as its ordinary root, subject
   to its input and profile restrictions. The typed route uses the original
   classical header and body. It invents no ordinary wrapper.
-- An unselected valid quantum declaration is source checked without being an
-  execution root.
+- A valid quantum declaration that is not selected is source checked. It is
+  not an execution root.
 - On Raw and typed ordinary or mixed routes, `run` and `sample` require
-  zero original runtime parameters, including parameters of zero physical
-  width. Hierarchy execution can take a quantum basis input. Its
+  zero original runtime parameters. A parameter of zero physical width counts
+  as a parameter. Hierarchy execution can take a quantum basis input. Its
   [root and effect requirements](#hierarchy-roots) also govern sampling.
 
 Rules for `--ir-profile`:
@@ -1127,25 +1193,26 @@ Rules for `--ir-profile`:
 - A caller request or a named-QPE provider fixes the hierarchy route.
   Combining one with explicit Raw is rejected before native checking.
 - After a route is selected, its lowering failure or native failure
-  propagates. No weaker route is retried.
+  propagates. The CLI retries no weaker route.
 - For a source that needs the typed route, `auto` and `raw` select that route.
 
 ### Raw execution
 
-Raw checking retains the original source signature.
+Raw execution runs a selected entry that takes no runtime input. Raw checking
+retains the original source signature.
 
 Rules:
 
 - Raw `run` and `sample` require zero declared runtime parameters and no
   quantum result. A `Unit` parameter is an argument, although it has zero
   physical width.
-- Any explicit `--basis`, including zero, is rejected on Raw.
-- Native acceptance precedes the independent source-step comparison and the
-  Raw execution.
+- Any explicit `--basis` is rejected on Raw, even one of zero.
+- Native acceptance comes before the independent source-step comparison and
+  the Raw execution.
 - The result reports native validity, no caller request, the step comparison
   and `source_meaning_verified: false`.
-- Acceptance of the Unit maps does not make quantum-result Raw execution
-  available.
+- Acceptance of the Unit maps does not make Raw execution with a quantum
+  result available.
 
 ### Hierarchy roots
 
@@ -1169,18 +1236,18 @@ returns outcomes `[1,1,1]`. Sampling `main::keep` fails with `unsupported`
 because this entry performs no observation.
 
 The preparation profile admits a root with a checked public Isometry effect
-and an actual Unitary or Isometry effect. It has quantum entry values and
-quantum results, optionally accompanied by one ordinary `Bits<0>` result.
+and an actual Unitary or Isometry effect. The root has quantum entry values
+and quantum results, optionally accompanied by one ordinary `Bits<0>` result.
 
 Rules:
 
-- An Isometry root must fit the preparation and pure-operation profile: fresh zero
-  initialization where needed, followed by checked unitary hierarchy
-  operations, with no observation.
+- An Isometry root must fit the preparation and pure-operation profile. That
+  profile is fresh zero initialization where needed, followed by checked
+  unitary hierarchy operations, with no observation.
 - A unitary implementation needs no fresh preparation. Its `SourceDefinition`,
   `SourceStep` and Raw effects stay Unitary.
-- The public Isometry bound governs external provider, Meaning and inverse or
-  control eligibility.
+- The public Isometry bound governs eligibility as an external provider,
+  eligibility for a Meaning and eligibility for inverse or control access.
 - A public Observe bound over that implementation cannot recover the sharper
   hierarchy eligibility.
 - Ordinary `Unit` result ports are omitted, as
@@ -1194,8 +1261,8 @@ Rules:
 - `sample` and named-QPE selection require a public Observe contract and an
   observing supported artifact. A broader annotation does not fabricate
   observing operations or rewrite the Raw effect.
-- A hierarchy result retains its separate producer-consistency,
-  caller-composition or named-QPE scope. It does not claim the Raw step
+- A hierarchy result retains its separate scope: producer-consistency,
+  caller-composition or named-QPE. It does not claim the Raw step
   comparison.
 - An unsupported combination of source and profile is refused explicitly. Raw
   retains its own classification.
@@ -1210,9 +1277,11 @@ Rules:
 
 ## Status and limits
 
+This section states what the implementation supports and what is proved.
 Finite project and the selected projection both implement bounded opaque
-Basis specialization. Concrete emitter convergence, Meaning evidence
-integration and general source preservation are in progress.
+Basis specialization. Three pieces of work are in progress: the convergence
+of the concrete emitters, the integration of Meaning evidence and general
+source preservation.
 
 ### Capacities
 
@@ -1243,31 +1312,36 @@ Limits that apply to these capacities:
   type and lexical cells, and for normalization and solver work.
 - The selected producer applies a conservative work ceiling. The source,
   metadata and native caps are separate from it.
-- Substitution expansion is checked before copied trees are allocated.
-  Retained type bindings and cache data count against the 100000-cell
-  preparation budget.
+- The expansion of a substitution is checked before copied trees are
+  allocated. Retained type bindings and cache data count against the
+  100000-cell preparation budget.
 - Finite project has its own aggregate, type and snapshot limits. The limits
   of this table are separate from them and from native and evidence work.
 - The carrier type profile does not replace the twelve-bit contract of the
   broader finite language.
 - Logical cardinality and code coordinates are separate from physical width.
-- Packaged hierarchy bases retain the selected-entry width limits. Every
-  basis-tree node, including a zero-width factor, is charged to the
-  preparation storage and depth limits before copied trees are materialized.
-- These are implementation limits, not source-type prohibitions. They
-  establish no separate type universes.
+- Packaged hierarchy bases retain the width limits of the selected-entry route.
+  Every node of a basis tree, a zero-width factor included, is charged to the
+  preparation limits on storage and depth before copied trees are
+  materialized.
+- These are limits of the implementation, not prohibitions on source types.
+  They establish no separate type universes.
 - A capacity refusal is not a proof of a semantic impossibility. The
   preparation limits and the shot capacities are adapter limits. They are not
   a discharged quantitative RS theorem or a quantitative resource certificate.
 
 ### Lowering profiles
 
+Each lowering profile supports a part of the language. The lists below give
+that part for each profile.
+
 Finite project:
 
 - It supports ordinary `Unit`, `Bit` and `Bits` values and exact products,
   together with their supported quantum owners.
-- Complete explicit Basis, Nat and Op substitutions close each original
-  checked interface before body lowering, including nonzero registers.
+- Complete explicit substitutions for Basis, Nat and Op parameters close each
+  original checked interface before the body is lowered. This includes
+  nonzero registers.
 - Static branches and carry folds use their original resolved plans. Unused
   declarations, inactive arms and empty fold bodies retain their contract
   checks.
@@ -1279,26 +1353,26 @@ Selected Raw:
   are rejected.
 - It supports `phase[j,k]` only when the exact angle is an integral multiple
   of an eighth turn. The source domain requires `k <= 8` and `j < 2^k`, and
-  `8*j / 2^k` must be an integer. That many T gates implement the phase,
-  including zero gates for the identity. Smaller angles are not rounded.
+  `8*j / 2^k` must be an integer. That many T gates implement the phase, and
+  zero gates implement the identity. Smaller angles are not rounded.
 - `phase[1,3]` and `phase[2,4]` are exactly T. `phase[1,4]` requires the
-  hierarchy phase target. This is a target capability distinction, not a
-  source type or edition distinction.
+  hierarchy phase target. This distinction is one of target capability, not
+  of source type or edition.
 - It supports retained quantum Unit inputs and returns, exact
   `global_phase_eighth` and the explicit Unit maps.
 - Closed Definition/Repeat providers support forward, inverse and controlled
   access through ordinary calls within the exact pure-circuit profile. This
   includes conditional scalar action on a Unit owner. Their original Meaning
-  requests are mandatory, including unused bindings and zero repetitions.
+  requests are mandatory, even for unused bindings and zero repetitions.
 - Coherent lifting evaluates complete bounded ordinary label bodies and emits
   Raw `LiftBasis`, with separate native acceptance and source-step comparison.
 - Independent source-step comparison checks the ordered owner result. Native
   validity alone cannot establish that a source returned the intended
   zero-width owner.
-- Exact unary `Q<Unit>` and `Q<Bit>` endomorphisms retain their source-derived
-  finite root interface. A separate native finite request can then bind the
-  same artifact to an independently supplied matrix. No width-based conversion
-  to a different basis is inferred.
+- Exact unary `Q<Unit>` and `Q<Bit>` endomorphisms retain the finite root
+  interface that is derived from their source. A separate native finite
+  request can then bind the same artifact to an independently supplied
+  matrix. No conversion to a different basis is inferred from width.
 - Checked open runtime invocation and runtime branches are unfinished.
 
 Selected hierarchy:
@@ -1308,22 +1382,22 @@ Selected hierarchy:
   [coherent-basis profile](coherent-basis.md#concrete-profiles-and-proof-boundary).
   The restrictions on other tables, static transforms and preparation after
   observation apply.
-- Its Unit owner port, its `Bits(0)` owner port and its empty quantum-port
-  list are three distinct interfaces.
+- Its Unit owner port, its `Bits(0)` owner port and its empty list of quantum
+  ports are three distinct interfaces.
 
 Shared behaviour:
 
-- Finite project and Selected Raw emission share quantum registers, fresh
-  identities and the init0, H, X, CNOT and measurement transitions. A
-  measurement consumes its owner and produces an ordinary `Bit` that Boolean
-  operations may use.
+- Finite project emission and Selected Raw emission share quantum registers
+  and fresh identities. They also share the transitions for init0, H, X, CNOT
+  and measurement. A measurement consumes its owner and produces an ordinary
+  `Bit` that Boolean operations may use.
 - Each call gets its own source-ID environment. The global token, wire and
   classical supplies stay fresh.
 - A total `classical fn` body is reusable as an ordinary runtime computation.
   Supported Unit, Bit and product calls use the same checked expression nodes
   and eager ordinary operations in both consumers.
-- Runtime argument effects stay in the caller. An ordinary call grants no
-  coherent injectivity and no Meaning evidence.
+- The effects of runtime arguments stay in the caller. An ordinary call
+  grants no coherent injectivity and no Meaning evidence.
 - Both Raw adapters transport ordered ordinary `Bits` values within their
   finite widths.
 
@@ -1339,13 +1413,13 @@ Selected Raw:
 
 - Its structural `unit` and `finish` maps retain zero-width logical owners
   without allocating or discarding a physical qubit.
-- Original finite endomorphic Meaning requests on whole constructor trees and
-  on their annotated descendants are checked against their materialized Raw
-  bodies before checked hierarchy construction. This includes descendants
-  under zero repetition.
+- Original finite endomorphic Meaning requests are checked against their
+  materialized Raw bodies before checked hierarchy construction. This holds
+  for requests on whole constructor trees and on their annotated descendants,
+  and for descendants under zero repetition.
 - The checked collection also supports refined Raw direct, sequential, tensor,
-  inverse and controlled application, with instruction-interval and
-  transformed-substep checks under the finite bounds.
+  inverse and controlled application. Instruction-interval checks and
+  transformed-substep checks apply under the finite bounds.
 
 Selected hierarchy:
 
@@ -1355,9 +1429,9 @@ Selected hierarchy:
 - A separate replay checks the canonical split/join boundaries of the tensor
   and the stable initialization extraction. It is not a proof of the source
   meaning of every gate.
-- Principal-Unitary adjoints exchange exact ports, including differing trees.
-  Packed control requires an exact endomorphism. Powers check that condition
-  even at zero.
+- Principal-Unitary adjoints exchange exact ports, even when the trees
+  differ. Packed control requires an exact endomorphism. Powers check that
+  condition even at zero.
 - All proposals require fresh native acceptance under the capacity bounds.
 
 Native acceptance of produced IR does not establish source preservation.
@@ -1367,11 +1441,15 @@ general QS or PR theorem.
 
 ### Typed routes
 
+A typed route carries the original source types to the native checker in a
+typed root request. The lists below say when a route is typed and what each
+request checks.
+
 Selection:
 
-- Complete original type, body and effect preparation retains nominal
-  declarations. It does not silently omit their unused functions or quantum
-  effects.
+- Preparation of the complete original types, bodies and effects retains
+  nominal declarations. It does not silently omit their unused functions or
+  quantum effects.
 - For a source with nominal declarations, `--ir-profile=auto` and `raw`
   execute a public runtime function through the common finite emitter and the
   `finite-ordinary-root-v2` or `finite-runtime-root-v2` gate.
@@ -1381,8 +1459,8 @@ Selection:
   `--type=A=labels::Tri` is bound by its name and source, and an unused
   nominal actual retains its original source.
 - A typed route refuses a selected root with an operation formal or with
-  operation bindings (`unsupported`). Operation-formal closure has no typed
-  transport.
+  operation bindings (`unsupported`). The closure of an operation formal has
+  no typed transport.
 - The selected projection refuses a source with a finite type declaration
   (`unsupported`).
 - `emit-proposal` is refused on a typed route (`unsupported`). Portable export
@@ -1398,24 +1476,25 @@ Selection:
 
 The `finite-ordinary-root-v2` request:
 
-- The request retains the original selected function, the ordered ordinary
-  parameter and result forests, the complete input and output SSA storage, the
-  proposed input rows and the public effect.
+- The request retains the original selected function and the ordered forests
+  of ordinary parameters and results. It also keeps the complete SSA storage
+  of the inputs and outputs, the proposed input rows and the public effect.
 - The native checker independently reads the original signature, checks the
   nominal declarations and the Raw root, and enumerates every canonical input
   from those types. The proposed rows must equal that entire ordered domain.
-- For every input it checks the complete input storage, reconstructs every
-  hidden instrument history, including zero-probability histories, and
-  interprets the complete result storage.
+- For every input the native checker checks the complete input storage. It
+  reconstructs every hidden instrument history, zero-probability histories
+  included. It interprets the complete result storage.
 - Flattened storage must equal the ordered classical input and output lists
   exactly. A changed enum axis, record field order, nominal identity or
   zero-width node is refused.
 - This ordinary-only component enables no quantum input or output carrier. A
   version-1 request is refused without fallback.
-- Original parameter and result type reads retain every import and public
-  reexport lookup, including type references inside record fields. The same
-  independent reader reconstructs the nominal tree and these original source
-  rows. An alias keeps the identity of its terminal declaration.
+- A read of an original parameter type or result type retains every lookup of
+  an import and of a public reexport. This includes type references inside
+  record fields. The same independent reader reconstructs the nominal tree
+  and these original source rows. An alias keeps the identity of its terminal
+  declaration.
 - When a supplied source row needs body provenance, the same native root check
   uses the original body and callee reader to justify the extra type paths.
   Row projection and coverage comparisons are charged. Unused Nat helpers and
@@ -1431,20 +1510,21 @@ The `finite-ordinary-root-v2` request:
 - This gate does not prove original AST lowering, the decoder and native
   compiler, or numerical runtime preservation.
 - The simulation APIs require closed roots. Parameter checking grants no
-  unchecked arbitrary-input runtime.
+  unchecked runtime for arbitrary inputs.
 
 The `finite-runtime-root-v2` request:
 
 - The project emitter and the selected emitter connect mixed runtime
-  interfaces to this gate, including `Q<enum>`, `Q<record>`, mixed tuples,
-  zero-width owners and structural split/join. Nominal quantum owners use it.
+  interfaces to this gate. These include `Q<enum>`, `Q<record>`, mixed
+  tuples, zero-width owners and structural split/join. Nominal quantum owners
+  use it.
 - The emitters snapshot the input storage before expansion consumes it. They
   retain complete output types and ordered owner ports. Native reconstruction
   checks the emitted body and does not trust its descriptor.
 - An internal runtime-signature reader retains complete parameter and result
-  prefixes, not only a flattened quantum-owner list. Ordinary `Unit`, every
-  tuple boundary and each explicit `Q` node stay present. The original finite
-  type queries retain nominal declarations and source paths.
+  prefixes, not only a flattened list of quantum owners. Ordinary `Unit`,
+  every tuple boundary and each explicit `Q` node stay present. The original
+  finite type queries retain nominal declarations and source paths.
 - Reading a declared effect annotation does not check its body or certify that
   effect. The reader alone provides no runtime capability. Typed-root
   execution needs the full type tree, the body and effect, and the native
@@ -1452,22 +1532,22 @@ The `finite-runtime-root-v2` request:
 - The internal mixed-runtime root component matches those complete types to
   ordinary storage and ordered Raw quantum ports. It then reuses fresh
   original-root validation.
-- For every independently enumerated ordinary input, the component checks
-  every reconstructed hidden history, the exact quantum code-space equations
-  and the complete logical Gram sum.
+- The component independently enumerates every ordinary input. For each one
+  it checks every reconstructed hidden history, the exact quantum code-space
+  equations and the complete logical Gram sum.
 - Logical cardinalities and the Raw effect bound the public label. A physical
   square matrix cannot justify a rectangular logical Unitary label.
   Observation is Observe, even at logical dimension one.
 - The mode reads the full original request. Through QLV3/QDV it compares the
   request with the retained Rust objects. The comparison covers the freshly
-  checked graph, the full parameter and result types, the ordinary storage,
-  the ordered quantum ports, the complete named Basis/Nat actuals, the
-  canonical inputs and the public effect.
+  checked graph, the full parameter and result types, the ordinary storage
+  and the ordered quantum ports. It also covers the complete named Basis/Nat
+  actuals, the canonical inputs and the public effect.
 - Its execution-only decision retains the complete request in the accepted
   program and in every clone. Rechecking walks those same objects again.
   Altered types, storage or graph metadata are refused.
 - Closed simulation and sampling also inspect the original runtime parameters,
-  including zero-width arguments.
+  zero-width arguments included.
 
 Nominal source:
 
@@ -1482,11 +1562,11 @@ Nominal source:
   selects a typed route when the final result is a built-in type.
 - Ordinary nominal classical calls lower their checked original bodies in the
   internal producer. They require no enumeration of physical label tables.
-- Table preparation follows original resolved type and callee uses. It defers
-  a table whose parameter or result types contain nominal nodes, or whose
-  original resolved body uses nominal values, including through classical
-  callees. It defers the callers too. It does not interpret nominal values as
-  untyped physical labels.
+- Table preparation follows the original resolved uses of types and callees.
+  It defers a table whose parameter or result types contain nominal nodes. It
+  also defers a table whose original resolved body uses nominal values,
+  directly or through classical callees. It defers the callers too. It does
+  not interpret nominal values as untyped physical labels.
 - Unused original bodies are checked. Built-in-only tables stay eager. A
   basis or Meaning consumer refuses a function whose nominal table semantics
   are not implemented.
@@ -1515,10 +1595,11 @@ Nominal source:
   limits.
 - Closed function-equality and Meaning obligations in unused declarations and
   zero-count regions use the shared finite evidence gates before a selected
-  result is returned. Their original Meaning, table and native body
-  dependencies are prepared in dependency order, including references outside
-  the selected closure. Each dependency retains its original declaration.
-  Source checking alone does not discharge those semantic obligations.
+  result is returned. Their dependencies on original Meanings, tables and
+  native bodies are prepared in dependency order. This includes references
+  outside the selected closure. Each dependency retains its original
+  declaration. Source checking alone does not discharge those semantic
+  obligations.
 - The exact computation witnesses have a separate scope from complex
   denotation, original source-body preservation and numerical-runtime
   correspondence.
@@ -1528,15 +1609,18 @@ theorem.
 
 ### Coherent selection components
 
+This section gives the routes that carry a coherent selection and the
+components that check one.
+
 Routes:
 
 - Selected built-in `qmatch` and ordinary Basis/Nat callers use the common
   source emitter. They prepare named arms through the provider evidence gates.
 - The hierarchy projection is separate.
-- The bounded adapter for small closed named-arm functions does not support
-  general bodies.
-- The full twelve-joined-bit, 64-label extension and original-source
-  preservation are separate required work.
+- The bounded adapter for small closed functions with named arms does not
+  support general bodies.
+- The full extension to twelve joined bits and 64 labels is separate required
+  work. So is original-source preservation.
 
 The internal `Qirf.ContextSector` component:
 
@@ -1548,37 +1632,38 @@ The internal `Qirf.ContextSector` component:
   bound to the same checked entry, with its complete input, body and
   dependency snapshot. Keeping an evidence table and an index cannot change
   the resolved function name.
-- Exact code-space, phase and controlled-action checks are required.
+- Exact checks of the code space, the phase and the controlled action are
+  required.
 - Original quantum parameter patterns and structural `let` and tuple moves
   identify the selector and the target in a complete linear source frame.
 - The complete original function keeps every quantum parameter and returned
-  owner, including additional zero-width owners and a differing parameter and
-  result order. The independently derived local pair stays in selector/target
-  order.
+  owner. This includes additional zero-width owners and a differing parameter
+  and result order. The independently derived local pair stays in
+  selector/target order.
 - The pure contract of the pair cannot sharpen the public Isometry or Observe
   label of the outer function. Neither can the whole-subject Unitary request.
 - The two-port subject uses the exact original parameter and result order. It
   retains distinct logical identities even when both types and physical widths
   coincide.
-- The complete structural suffix and the final expression retain the returned
-  owner order. An unswapped Raw subject cannot implement a reordered return
-  merely because both owners have equal or zero physical width.
+- The complete structural suffix and the final expression retain the order of
+  the returned owners. An unswapped Raw subject cannot implement a reordered
+  return merely because both owners have equal or zero physical width.
 - Unknown prefix and suffix expressions are refused.
 - Direct `h` and `global_phase_eighth` calls are checked as exact primitive
   events before, between and after selections. This includes grouped and
   nested calls, with their original callee-token coordinates.
-- The source traversal derives the argument evaluation order independently of
-  the proposed literal positions.
+- The source traversal derives the evaluation order of the arguments
+  independently of the proposed literal positions.
 - Arbitrary calls, control flow and a general source-to-Raw mapping are
   required separate work.
 - The enclosing internal native/QDV route checks this component. It grants no
-  ordinary source execution handle, it proves no general source-body lowering,
-  and it does not complete the twelve-bit scope.
+  handle for ordinary source execution. It proves no general lowering of
+  source bodies. It does not complete the twelve-bit scope.
 
 The source component:
 
-- It derives logical owner transport from the original Raw operations,
-  independently of coincident wire lists.
+- It derives the transport of logical owners from the original Raw
+  operations, independently of coincident wire lists.
 - Explicit join/split pairing retains complete source roles through unitary
   owner moves. It checks each returned token against the source result.
 - Matching zero-width source and Raw permutations are allowed. Mismatched
@@ -1590,29 +1675,31 @@ The source component:
 ### Function contracts and Meaning requests
 
 [Checked operations](checked-operations.md) specifies `checked_op` and the
-Meaning forms. This section gives the checks of the selected projection.
+Meaning forms. This section gives the checks of the selected projection, one
+API at a time.
 
 Function contracts:
 
 - `ElaboratedProgram::check_function_contracts(kernel, budget)` returns an
   immutable preparation. It contains checked receipts for every original
-  FunctionEquality obligation, including unused callers and zero-count bodies.
-  The receipts retain the exact implementation, specification and source
-  dependencies.
+  FunctionEquality obligation, those of unused callers and zero-count bodies
+  included. The receipts retain the exact implementation, specification and
+  source dependencies.
 - One shared exact-work budget covers these checks and their dependency
-  checks. The depth and aggregate artifact-byte limits apply.
+  checks. The limits on depth and on aggregate artifact bytes apply.
 - Unchecked Raw lowering and hierarchy lowering reject outstanding function
   contracts. `lower_raw_with_kernel` performs the checks before emission. The
   CLI checks them before it selects its concrete IR profile.
 - Pure Raw emission carries the receipt in its Contract step. Independent
   source replay checks the original pair, the owner, the direction and the
   ordered axes.
-- Hierarchy emission embeds the complete receipt-bearing wrapper bytes in a
-  checked finite leaf, including its dependency evidence. Initialization
-  replay checks that wrapper and its surrounding coordinate renaming.
-- Both emitted artifacts require fresh native acceptance. An equal-matrix
-  replacement with different implementation or specification bytes cannot
-  substitute for the original source-bound receipt.
+- Hierarchy emission embeds the complete bytes of the wrapper that bears the
+  receipt in a checked finite leaf, with its dependency evidence.
+  Initialization replay checks that wrapper and its surrounding coordinate
+  renaming.
+- Both emitted artifacts require fresh native acceptance. A replacement with
+  an equal matrix and different implementation or specification bytes cannot
+  substitute for the original receipt, which is bound to the source.
 - For the observing overload, selected compilation uses the finite Raw
   profile. Its separate source replay checks the original call and the ordered
   result before a fresh native equation checks the interval. Hierarchy
@@ -1622,7 +1709,7 @@ Function contracts:
 Meaning tables:
 
 - Selected preparation evaluates every declared finite Meaning from its
-  original classical body and resolved dependencies, including unused targets.
+  original classical body and resolved dependencies, unused targets included.
 - A permutation target must be a total bijection. A phase target returns the
   exact three-Bit product for powers of zeta_8, including a scalar phase on
   `Unit`.
@@ -1631,7 +1718,7 @@ Meaning tables:
 - The immutable preparation retains the tables under the original resolved
   Meaning definition IDs, with the complete basis tree and the permutation or
   phase rows. Closed operation binding checks that same requested basis. It
-  does not substitute another same-width target.
+  does not substitute another target of the same width.
 - Tables are untrusted requested data. They do not establish provider equality
   or authorize execution. Providers must separately satisfy the original
   requested tables through the native comparison below.
@@ -1644,7 +1731,7 @@ Meaning tables:
   product trees. Its Bits width is an explicit unsigned 32-bit field.
   `Bits<0>` is distinct from `Unit`, `Bits<1>` from `Bit`, and `Bits<2>` from
   a two-Bit product. Neither conversion nor native checking substitutes a
-  same-width type.
+  type of the same width.
 - The native finite-leaf gate can compare the request with provider bytes. The
   caller must bind that result to the source instance and its dependencies.
   Requesting a target alone does not enable a refined operation.
@@ -1660,11 +1747,11 @@ Meaning tables:
 - The profile requires a unary Unitary endomorphism on an exact
   Unit/Bit/Bits/product quantum basis. The Unit maps `unit` and `finish` do
   not widen that interface.
-- Unsupported interfaces, same-width type substitutions and invalid work
-  budgets are rejected before native IO.
+- Unsupported interfaces, substitutions of a type of the same width and
+  invalid work budgets are rejected before native IO.
 - This single-leaf API is not an AST-to-step theorem. It does not
   automatically check a declared `Op<A,M>` annotation. Generic admission
-  requires the all-binding collection below, including unused providers.
+  requires the all-binding collection below, which covers unused providers.
 
 `ElaboratedProgram::lower_raw_operation(name)` and
 `lower_raw_operation_at(caller, name)`:
@@ -1676,12 +1763,12 @@ Meaning tables:
   original instantiation. `operation_binding()` identifies the original caller
   and binding. `definition()` identifies the underlying closed provider
   definition. `operation()` retains the complete operation wrapper.
-- A repeated subject is the entire repeated operator, including the exact
-  zero-count identity. It is never only the base definition. Emission and
-  independent ordered replay apply each retained repetition within the
-  aggregate call, work and depth limits.
-- A zero count retains the quantum owner and does not bypass the dependency
-  capability preflight.
+- A repeated subject is the entire repeated operator, and the exact
+  zero-count identity is such a subject. It is never only the base
+  definition. Emission and independent ordered replay apply each retained
+  repetition within the aggregate call, work and depth limits.
+- A zero count retains the quantum owner and does not bypass the capability
+  preflight of the dependencies.
 - The interface, the emitted bytes and the ordered replay derive from that
   subject, not from the caller or a rewritten caller identity.
 - Closed Definition/Repeat operation bindings may be forwarded through
@@ -1715,8 +1802,8 @@ native gate:
   each retained specialization. This includes unused bindings and nested
   callers.
 - It checks the closed exact basis against the original Meaning. It compares
-  the complete provider operation, including repetition, with that fixed
-  target through fresh native finite checking, and it replays the source
+  the complete provider operation, repetition included, with that fixed
+  target through fresh native finite checking. It then replays the source
   steps.
 - One shared exact-work budget covers all bindings. Exhaustion and unsupported
   interfaces are rejected.
@@ -1724,10 +1811,10 @@ native gate:
   `checked_op(implementation, M)` requests by their original resolved Meaning
   ID. These requests apply even when the receiving formal is unrefined or
   unused.
-- A request attached to a repeated child is checked against that child,
-  including under a zero-count repetition. It is not compared against the
-  outer identity. Forwarding an operation and requesting another Meaning
-  retains both requirements.
+- A request attached to a repeated child is checked against that child, even
+  under a zero-count repetition. It is not compared against the outer
+  identity. Forwarding an operation and requesting another Meaning retains both
+  requirements.
 - A direct operation-valued step, such as
   `adjoint(checked_op(implementation, M))(q)`, checks the underlying
   implementation before it applies the requested transformation.
@@ -1756,8 +1843,8 @@ The private `CheckedSourceMeanings` collection:
   exact sector gate. Finite equations and their sector replay share the budget
   of the caller.
 - Expanded closed audit roots check every original request in their own
-  concrete graph, including unused bodies. All original control obligations
-  must retain concrete call coverage.
+  concrete graph, requests in unused bodies included. All original control
+  obligations must retain concrete call coverage.
 - Unclosed generics, erased call intervals and symbolic inverse or control
   bodies that contain source `ctrl` are rejected.
 - The selected-entry commands use the same all-binding gate. A native failure
@@ -1768,19 +1855,21 @@ The private `CheckedSourceMeanings` collection:
 Scope of these checks:
 
 - They connect exact Unit/Bit/Bits/product provider bindings to emitted finite
-  nodes. A zero-width Bits owner retains its scalar phase, including when
-  control makes it a relative phase.
-- The finite width, shape, depth and work limits apply. Unsupported provider
-  capabilities and ordinary runtime Bits materialization are rejected
-  explicitly in this leaf profile.
-- Original source-to-table, AST-to-step, execution and general hierarchy
-  preservation are separate proof obligations. A successful collection is not
-  a full source-preservation theorem or a constitutional guarantee.
+  nodes. A zero-width Bits owner retains its scalar phase, even when control
+  makes it a relative phase.
+- The finite limits on width, shape, depth and work apply. Unsupported
+  provider capabilities and the materialization of ordinary runtime Bits are
+  rejected explicitly in this leaf profile.
+- Four kinds of preservation are separate proof obligations: original
+  source-to-table, AST-to-step, execution and general hierarchy preservation.
+  A successful collection is not a full source-preservation theorem or a
+  constitutional guarantee.
 
 ### Rust API
 
-Import `ParsedProgram`, `BasisBinding`, `OperationBinding`, `Instantiation`,
-the elaborated source types and the proposal types from
+A Rust program reaches the selected-entry route through the types of this
+section. Import `ParsedProgram`, `BasisBinding`, `OperationBinding`,
+`Instantiation`, the elaborated source types and the proposal types from
 `qleisli::frontend::compile`. No `qleisli::frontend::sized` module and no
 compatibility alias exists. The internal `specialize` module is private. A
 prepared source or an emitted proposal grants no native acceptance authority.
@@ -1795,17 +1884,17 @@ prepared source or an emitted proposal grants no native acceptance authority.
 `BasisBinding::carrier_description()`:
 
 - It produces the ordered prefix atoms for an untrusted internal carrier
-  request. It retains exact nominal source bytes, variant and field order,
-  product shape and singleton and zero-width nodes.
+  request. It retains the exact nominal source bytes, the order of variants and
+  fields, the product shape, and singleton and zero-width nodes.
 - Constructing these atoms grants no accepted handle and no
   source-preservation result. The complete typed ports, the body and
   dependencies, and the exact logical request need fresh native checking.
 
 `Instantiation::check_carrier(kernel, logical, budget)`:
 
-- It is a separate bounded, check-only route. It uses the common judgment, the
-  selected Builder and the Raw emitter for pure quantum owners and ordinary
-  Unit products, and it retains complete nominal trees.
+- It is a separate bounded route that only checks. It uses the common
+  judgment, the selected Builder and the Raw emitter for pure quantum owners
+  and ordinary Unit products, and it retains complete nominal trees.
 - The caller supplies the independent exact logical matrix. The adapter never
   infers the requested action from its emitted physical matrix.
 - Fresh native checking binds the typed input and output owner forests, the
@@ -1813,11 +1902,13 @@ prepared source or an emitted proposal grants no native acceptance authority.
   the exact code/body equation. A second reader replays the retained source
   steps against that same immutable native-compared body.
 - Original source rows must be covered by exact nominal origins in the
-  request. Unrelated rows and uncovered helper-only or import-only modules are
-  refused. Ordinary native checking retains its evidence-only source-use rule.
+  request. Unrelated rows are refused. So is an uncovered module that holds
+  only helpers or only imports. Ordinary native checking retains its
+  evidence-only source-use rule.
 - The returned `CheckedSourceCarrier` retains its complete source preparation
-  privately and offers artifact and request inspection. It offers no ordinary
-  accepted-program escape, runtime invocation, inverse or controlled access.
+  privately and lets a caller inspect the artifact and the request. It offers
+  no escape to an ordinary accepted program, no runtime invocation and no
+  inverse or controlled access.
 - `source_meaning_verified()` is false. Retained-step replay does not prove
   original AST elaboration.
 - The route checks real enum and record identity and scalar bodies. It enables
@@ -1840,8 +1931,8 @@ The public `SourceType` view:
 `ElaboratedProgram::lower_raw`:
 
 - It produces an untrusted finite proposal for Unit, Bit and Bits values and
-  exact ordinary or packaged quantum products, including specialized ordinary
-  helper calls and static folds.
+  exact ordinary or packaged quantum products. The proposal includes
+  specialized ordinary helper calls and static folds.
 - Its `source()` retains whole parameter and result trees and the original
   source instance. Native `Kernel::accept` must check `proposal()` before
   execution.
@@ -1883,8 +1974,9 @@ Proof:
 
 Preservation:
 
-- Concrete Meaning evidence, emitter and projection convergence and the
-  source-preservation proofs are separately recorded obligations.
+- Three obligations are recorded separately: concrete Meaning evidence, the
+  convergence of the emitter and the projection, and the source-preservation
+  proofs.
 
 Specification review:
 
