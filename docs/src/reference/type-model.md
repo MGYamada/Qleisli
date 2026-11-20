@@ -13,6 +13,9 @@ selected-entry commands. It is subordinate to the
 [authority hierarchy](authority.md). The frontend uses the canonical ordinary
 spellings `Unit`, `Bit`, `Bits<n>`, `0` and `1`.
 
+To see the linear rule in a running program, [follow a quantum owner
+through measurement](../learn/ownership.md) and try using its ordinary result twice.
+
 ## Routes, profiles and checks
 
 The CLI checks source through two [routes](diagnostics.md#routes): the

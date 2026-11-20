@@ -18,6 +18,16 @@ development milestones from the scope of their evidence.
 - Keep nested Git checkouts out of the edition scan (#654).
 - Name the missing adjoint capability for zero-input isometries and explain
   conditional expressions in the finite classical grammar (#662, #664).
+- Name the three Fundamental Theorems in the Book introduction and place the
+  constitutional chapters after the Language Reference and design material.
+- Retire the imaginary-v1 requirements chapter and explain the six v1 algorithm
+  goals in the Book, with links to their design issues.
+- Place illustrated chapters on the system, compiler, verifier, and proposed
+  Rust core crate layout after the Language Reference.
+- Open the Book with hands-on lessons on measuring a qubit, repairing an
+  ownership error, extracting a Bell circuit into a module, teleporting a
+  qubit and detecting a missing phase correction, and building a
+  four-input Grover search one operation at a time.
 
 ## 0.3.0-beta — 2026-11-20
 
