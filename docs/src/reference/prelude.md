@@ -10,6 +10,9 @@ for the meanings of the six names.
 
 This chapter gives the lookup order of unqualified names, the
 `#![no_implicit_prelude]` header, public reexports and qualified names.
+To try an import in a small project, [move the Bell circuit into a
+module](../learn/functions-and-modules.md#move-the-function-into-a-module)
+and use the compiler's visibility diagnostic to finish the move.
 
 ## Quick reference
 

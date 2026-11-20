@@ -345,8 +345,7 @@ def current_doc(root: Path, relative: str) -> bool:
 def check_docs_layout(root: Path) -> list[str]:
     """Require the single chapter sources and reject retired or duplicate roots."""
     errors = []
-    for name in ("docs/src/building.md",
-                 "docs/src/imaginary-v1/index.md", "docs/src/imaginary-v1/requirements.md"):
+    for name in ("docs/src/building.md", "docs/src/imaginary-v1/index.md"):
         if not (root / name).is_file():
             errors.append(f"missing retained document: {name}")
     for name in ("docs/README.md", "docs/lean-backend-plan-v0.3.md", "docs/imaginary-v1"):

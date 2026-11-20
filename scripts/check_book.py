@@ -26,13 +26,12 @@ DEFAULT_ROOT = Path(__file__).resolve().parents[1] / "target" / "mdbook"
 DEFAULT_SOURCE = Path(__file__).resolve().parents[1] / "docs" / "src"
 HTML_SUFFIXES = {".html", ".htm"}
 
-# Chapters that keep the wording their adopted records or retained drafts bind.
+# Adopted constitutional records and the roadmap with per-goal design links.
 EXEMPT = frozenset({
     "design/initial-guarantees.md",
     "design/initial-interpretations.md",
     "design/ratification.md",
     "imaginary-v1/index.md",
-    "imaginary-v1/requirements.md",
     "reference/authority.md",
 })
 # Chapters that predate the style guide. Remove a chapter from this list in

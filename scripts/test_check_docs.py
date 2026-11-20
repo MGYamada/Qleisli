@@ -24,8 +24,7 @@ class DocumentationReferences(unittest.TestCase):
         return path
 
     def book_sources(self):
-        for name in ("building.md",
-                     "imaginary-v1/index.md", "imaginary-v1/requirements.md"):
+        for name in ("building.md", "imaginary-v1/index.md"):
             self.write("docs/src/" + name, "Current chapter source.")
 
     def check(self, markdown):
@@ -254,10 +253,12 @@ class DocumentationReferences(unittest.TestCase):
                        "docs/README.md", "docs/lean-backend-plan-v0.3.md",
                        "docs/src/lean-backend-plan-v0.3.md",
                        "docs/imaginary-v1/README.md", "docs/imaginary-v1/requirements.md",
+                       "docs/src/imaginary-v1/requirements.md",
                        "https://github.com/MGYamada/Qleisli/blob/main/docs/README.md",
                        "https://github.com/MGYamada/Qleisli/blob/main/docs/src/lean-backend-plan-v0.3.md",
                        "https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/docs/src/lean-backend-plan-v0.3.md",
                        "https://github.com/MGYamada/Qleisli/blob/main/docs/imaginary-v1/README.md",
+                       "https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/docs/src/imaginary-v1/requirements.md",
                        "docs/%2e%2e/docs-old/design.md",
                        "https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/type-system.md",
                        "https://github.com/MGYamada/Qleisli/blob/main/docs-old/design.md"]:
