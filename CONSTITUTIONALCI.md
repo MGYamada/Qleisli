@@ -133,6 +133,11 @@ retain original bytes and budgets, optional-request behavior, decoded artifact
 and root selection. They do not certify every dependency, source program,
 hierarchical path or native-contract path by implication.
 
+The [beta production proof review](release/beta-proof-scope.md) states the
+checked evidence and remaining limits in each jurisdiction for every current
+registered path. It records the maintainer's beta evaluation of #135 and
+retains the broader Article VIII duties.
+
 [check_initial_guarantees.py](scripts/check_initial_guarantees.py) and
 [check_guarantee_continuity.py](scripts/check_guarantee_continuity.py) must
 preserve independent protected predicates, theorem types, Acceptance/Artifact

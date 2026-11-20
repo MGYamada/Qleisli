@@ -656,9 +656,9 @@ Limits of the implementation:
   the exact checked Qleisli crate and the four locally built companion tools.
   The official linked distribution requires the registry package and
   supported-host installation evidence.
-- Edition binding: the migration to QLV3 and to its helpers is implemented,
-  as is the authorized qargo minimum. Complete conformance of the head
-  commit, CI and distribution validation are open.
+- The finite source and QLV3 paths bind the declared edition. The
+  companion qargo manifest gate uses the same explicit edition rule.
+  The final release verification binds these checks to one candidate.
 - Product-version checks, source hashes and this chapter do not replace
   native checking. They do not implement QLT.
 

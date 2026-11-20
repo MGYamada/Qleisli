@@ -10,6 +10,8 @@ development milestones from the scope of their evidence.
   in the complete source archive (#142).
 - Document companion-tool verification with the checked Qleisli crate
   before registry publication (#171, #255).
+- Record the beta proof scope for the current production paths and the
+  two admitted QLV1 guarantees (#129, #135, #141).
 - Explain constitutional edition selection in project manifest diagnostics (#255).
 - Specify synchronized product releases and the compatibility metadata that
   binds their exact distribution snapshots (#230, #231).
