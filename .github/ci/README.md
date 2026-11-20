@@ -57,9 +57,10 @@ The v0.3.0 full-profile and scoped release-readiness gates also require
 **`check-julia`** and **`check-qptl`** in the main workflow. Julia 1.13.1
 instantiates `julia/Project.toml` in an isolated load path and runs
 `julia/test/runtests.jl`. The QPTL job uses its pinned Lean 4.30.0/mathlib
-environment, runs `lake build` and `lake test`, and includes the tactic
-regressions in `QPTLTests.lean`. The standalone path-filtered `qptl.yml`
-remains useful for focused feedback, but its result cannot substitute for the
+environment, builds the library, and runs the tactic regressions in
+`QPTLTests.lean`. Both workflows audit the compiled QPTL declarations and
+run a negative regression for a private project axiom. The standalone
+path-filtered `qptl.yml` provides focused feedback. The release gate uses the
 same-run `check-qptl` release receipt. A skipped, failed or absent selected
 job rejects all stable required contexts and release readiness. These checks
 are regression/proof-build evidence, not constitutional guarantee admissions.

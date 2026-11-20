@@ -491,6 +491,16 @@ fn runtime_transforms_check_the_complete_endomorphic_interface_even_when_unused(
         check_project(&SourceRoot::new(&source).0).unwrap_err().code,
         ErrorCode::TypeMismatch
     );
+
+    let preparation = "observe fn main() -> Bit { measure_z(adjoint(init0)(init0())) }";
+    let error = ParsedProgram::parse(
+        qleisli::edition::Edition::E2026,
+        BTreeMap::from([("main".into(), preparation.into())]),
+    )
+    .unwrap_err();
+    assert_eq!(error.code(), "type");
+    assert!(error.message().contains("isometry `init0`"));
+    assert!(error.message().contains("`Adjointable` access"));
 }
 
 #[cfg_attr(

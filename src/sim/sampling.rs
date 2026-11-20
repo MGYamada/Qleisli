@@ -104,7 +104,21 @@ impl<E> From<SimulationError> for SampleError<E> {
     }
 }
 
-fn normalize<E>(state: &mut Component, executed_steps: usize) -> Result<(), SampleError<E>> {
+/// Certified auxiliary releases performed by one operation. Each release keeps
+/// up to `AUXILIARY_LEAKAGE_ALARM` of the projected mass instead of
+/// renormalizing, so the following norm check must allow that same amount.
+fn certified_cleanups(operation: &RawOp) -> usize {
+    match operation {
+        RawOp::CertifiedCompute { .. } | RawOp::StructuralCompute { .. } => 1,
+        _ => 0,
+    }
+}
+
+fn normalize<E>(
+    state: &mut Component,
+    executed_steps: usize,
+    cleanups: usize,
+) -> Result<(), SampleError<E>> {
     if state
         .amplitudes
         .iter()
@@ -114,9 +128,12 @@ fn normalize<E>(state: &mut Component, executed_steps: usize) -> Result<(), Samp
     }
     let norm = state.weight();
     // Account only for work since the previous normalization, including gates
-    // nested inside one IR operation. This is a numerical guard, not evidence
-    // or a certified forward-error bound. Configured unused work grants nothing.
-    let tolerance = TOLERANCE + 16.0 * f64::EPSILON * executed_steps as f64;
+    // nested inside one IR operation, and for the leakage each certified
+    // cleanup may retain. This is a numerical guard, not evidence or a
+    // certified forward-error bound. Configured unused work grants nothing.
+    let tolerance = TOLERANCE
+        + 16.0 * f64::EPSILON * executed_steps as f64
+        + AUXILIARY_LEAKAGE_ALARM * cleanups as f64;
     if !norm.is_finite() || norm <= 0.0 || (norm - 1.0).abs() > tolerance {
         return Err(SampleError::Numerical("trajectory norm differs from one"));
     }
@@ -133,7 +150,7 @@ fn observe<R: RandomSource>(
     random: &mut R,
     budget: &mut ExecutionBudget,
 ) -> Result<(Component, bool), SampleError<R::Error>> {
-    normalize(&mut state, 0)?;
+    normalize(&mut state, 0, 0)?;
     let axis = state.position(wire)?;
     let p0: f64 = state
         .amplitudes
@@ -160,7 +177,7 @@ fn observe<R: RandomSource>(
     for amplitude in &mut state.amplitudes {
         *amplitude = amplitude.scaled(1.0 / weight.sqrt());
     }
-    normalize(&mut state, 0)?;
+    normalize(&mut state, 0, 0)?;
     Ok((state, outcome))
 }
 
@@ -235,7 +252,7 @@ fn trajectory<R: RandomSource>(
                 // error, so they must not relax the trajectory norm alarm.
                 let arithmetic_steps =
                     before - budget.remaining - (budget.copied_entries - copies_before);
-                normalize(&mut state, arithmetic_steps)?;
+                normalize(&mut state, arithmetic_steps, certified_cleanups(operation))?;
             }
         }
     }
@@ -282,7 +299,7 @@ pub fn sample_closed<R: RandomSource>(
         limits,
         &mut budget,
     )?;
-    normalize(&mut state, 0)?;
+    normalize(&mut state, 0, 0)?;
     if !state.tokens.is_empty() || !state.axes.is_empty() {
         return Err(SampleError::InconsistentVerifiedIr(
             "live quantum output remains",
@@ -308,13 +325,13 @@ mod tests {
             let mut state = Component::vacuum();
             state.amplitudes[0].re = value;
             assert!(matches!(
-                normalize::<Infallible>(&mut state, 0),
+                normalize::<Infallible>(&mut state, 0, 0),
                 Err(SampleError::Numerical(_))
             ));
         }
         let mut state = Component::vacuum();
         state.amplitudes[0].re += f64::EPSILON;
-        normalize::<Infallible>(&mut state, 0).unwrap();
+        normalize::<Infallible>(&mut state, 0, 0).unwrap();
         assert_eq!(state.weight(), 1.0);
     }
 
@@ -322,12 +339,54 @@ mod tests {
     fn norm_allowance_tracks_executed_work_and_remains_bounded() {
         let mut state = Component::vacuum();
         state.amplitudes[0].re += 2e-12;
-        assert!(normalize::<Infallible>(&mut state, 0).is_err());
-        normalize::<Infallible>(&mut state, 12_000).unwrap();
+        assert!(normalize::<Infallible>(&mut state, 0, 0).is_err());
+        normalize::<Infallible>(&mut state, 12_000, 0).unwrap();
         assert_eq!(state.weight(), 1.0);
         for value in [0.0, f64::NAN, f64::INFINITY, 1.001] {
             state.amplitudes[0].re = value;
-            assert!(normalize::<Infallible>(&mut state, 1_000_000).is_err());
+            assert!(normalize::<Infallible>(&mut state, 1_000_000, 0).is_err());
         }
+    }
+
+    #[test]
+    fn certified_cleanup_leakage_below_the_alarm_passes_the_norm_check() {
+        // Leakage above the base norm tolerance but within the cleanup alarm
+        // passes `run_closed`; the trajectory must accept the same release.
+        let leak = 9.5e-13;
+        assert!(TOLERANCE < leak && leak < AUXILIARY_LEAKAGE_ALARM);
+        let wire = WireId(0);
+        let component = |leak: f64| Component {
+            axes: vec![wire],
+            amplitudes: vec![
+                Complex {
+                    re: (1.0 - leak).sqrt(),
+                    im: 0.0,
+                },
+                Complex {
+                    re: leak.sqrt(),
+                    im: 0.0,
+                },
+            ],
+            tokens: BTreeMap::new(),
+            classical: BTreeMap::new(),
+        };
+        let mut budget = ExecutionBudget {
+            copied_entries: 0,
+            remaining: 100,
+            max: 100,
+        };
+        let cleaned = component(leak)
+            .remove_certified_zero(wire, &mut budget)
+            .unwrap();
+        let mut without_allowance = cleaned.clone();
+        assert!(normalize::<Infallible>(&mut without_allowance, 1, 0).is_err());
+        let mut with_allowance = cleaned;
+        normalize::<Infallible>(&mut with_allowance, 1, 1).unwrap();
+        // Leakage above the alarm is still refused before any normalization.
+        assert!(
+            component(2.0 * AUXILIARY_LEAKAGE_ALARM)
+                .remove_certified_zero(wire, &mut budget)
+                .is_err()
+        );
     }
 }
