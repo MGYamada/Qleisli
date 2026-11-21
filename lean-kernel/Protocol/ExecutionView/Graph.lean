@@ -20,7 +20,7 @@ the return order, rather than the order of the checker's live store. -/
 def graph (artifact : Qirf.Artifact) (root : Qirf.Validity.Root) : WorkM Value := do
   let receipts ← lift (root.receipts.toList.mapM readOption)
   let programs ← lift ((artifact.programs.toList.mapM program).mapError (fun _ => .invalid))
-  let evidence ← receipts.mapM functionEvidence
+  let evidence ← receipts.mapM (functionEvidence root.dependencies)
   let actual ← lift ((program root.program).mapError (fun _ => .invalid))
   let state := root.checked.state
   let outputs ← lift (root.program.outputs.mapM fun token =>

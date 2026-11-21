@@ -152,21 +152,19 @@ fn observe<R: RandomSource>(
 ) -> Result<(Component, bool), SampleError<R::Error>> {
     normalize(&mut state, 0, 0)?;
     let axis = state.position(wire)?;
-    let p0: f64 = state
-        .amplitudes
-        .iter()
-        .enumerate()
-        .filter(|(index, _)| !bit(*index, axis))
-        .map(|(_, z)| z.norm_squared())
-        .sum();
-    if !p0.is_finite() || !(-TOLERANCE..=1.0 + TOLERANCE).contains(&p0) {
+    let mut weights = [0.0; 2];
+    for (index, amplitude) in state.amplitudes.iter().enumerate() {
+        weights[usize::from(bit(index, axis))] += amplitude.norm_squared();
+    }
+    let total = weights[0] + weights[1];
+    if !total.is_finite() || (total - 1.0).abs() > TOLERANCE {
         return Err(SampleError::Numerical("invalid observation probability"));
     }
     let projection = state.prepare_projection(wire, budget)?;
     // Deterministic measurements consume a word too, fixing the trace contract.
     let word = random.next_u64().map_err(SampleError::RandomSource)?;
     let u = (word >> 11) as f64 * (1.0 / ((1_u64 << 53) as f64));
-    let outcome = u >= p0.clamp(0.0, 1.0);
+    let outcome = weights[1] > 0.0 && u >= weights[0] / total;
     let mut state = projection.project(outcome);
     let weight = state.weight();
     if !weight.is_finite() || weight <= 0.0 {
@@ -318,6 +316,32 @@ pub fn sample_closed<R: RandomSource>(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn deterministic_observations_consume_one_word_and_select_the_supported_sector() {
+        for (supported, word) in [(false, u64::MAX), (true, 0)] {
+            let mut state = Component::vacuum();
+            state.axes = vec![WireId(0), WireId(1)];
+            state.amplitudes = vec![Complex::ZERO; 4];
+            // After normalization these two squared amplitudes sum to the
+            // largest 53-bit draw. The opposite sector is exactly empty.
+            state.amplitudes[usize::from(supported)].re = 0.0211717239656068;
+            state.amplitudes[2 + usize::from(supported)].re = 0.9997758539314322;
+            let mut words = 0;
+            let mut random = || {
+                words += 1;
+                Ok::<_, Infallible>(word)
+            };
+            let mut budget = ExecutionBudget {
+                remaining: 10,
+                max: 10,
+                copied_entries: 0,
+            };
+            let (_, outcome) = observe(state, WireId(0), &mut random, &mut budget).unwrap();
+            assert_eq!(outcome, supported);
+            assert_eq!(words, 1);
+        }
+    }
 
     #[test]
     fn rejects_nonfinite_zero_and_excessive_norm_error() {

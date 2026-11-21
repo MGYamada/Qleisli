@@ -17,6 +17,15 @@ def require (condition : Bool) : Check Unit :=
 def unique {α : Type} [BEq α] (values : List α) : Bool :=
   values.eraseDups.length == values.length
 
+/-- Issued identities normally increase. Unordered histories use a sorted copy
+so each uniqueness scan costs at most O(n log n). -/
+def increasing : List Nat → Bool
+  | x :: y :: tail => x < y && increasing (y :: tail)
+  | _ => true
+
+def freshHistory (ids : List Nat) : Bool :=
+  increasing ids || increasing (ids.mergeSort (· ≤ ·))
+
 structure State where
   live : List Port := []
   seenTokens : List Nat := []
@@ -30,7 +39,7 @@ deriving instance ReflBEq, LawfulBEq for State
 /-- Complete coverage includes zero-width owners: their tokens are not erased.
 Frame wires are the persistent ordered axes, not a new identity for each move. -/
 def stateValid (state : State) : Bool :=
-  unique (state.live.map (·.token)) && unique state.seenTokens && unique state.seenWires &&
+  unique (state.live.map (·.token)) && freshHistory state.seenTokens && freshHistory state.seenWires &&
   unique state.frame && unique (state.live.flatMap (·.wires)) &&
   state.live.all (fun port => port.bits == port.wires.length && port.bits ≤ 12 &&
     state.seenTokens.contains port.token) &&
@@ -528,9 +537,9 @@ theorem prepare_conditions (dependencies : List Basis) (program : Program) (resu
   subst result
   exact ⟨initial,body,hi,hb,require_success _ ho,rfl,operations_trace _ _ _ _ hb⟩
 
-/-- Complete ownership/effect safety for every constructor in this pure profile.
-The proof follows the actual input reader and every actual dispatch; it neither
-assumes Rust verification nor omits zero-width owners from output coverage. -/
+/-- Successful preparation establishes final state validity, complete live output
+coverage and the effect restriction recorded by the iso flag. The independent
+ownership judgment is proved in `Ownership.prepare_ownershipSafe`. -/
 theorem prepare_safety (dependencies : List Basis) (program : Program) (result : Prepared)
     (ok : prepare dependencies program = .ok result) :
     stateValid result.state = true ∧

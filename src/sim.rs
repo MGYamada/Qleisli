@@ -481,14 +481,10 @@ fn execute_op(
             fresh_wire,
         } => {
             let wires = component.take(*input)?;
-            let mut branches = Vec::with_capacity(2);
-            for outcome in [false, true] {
-                let mut branch = component.project_remove(wires[0], outcome, budget)?;
-                if branch.weight() > 0.0 {
-                    branch.add_zero_wire(*fresh_wire, limits)?;
-                    branch.tokens.insert(*output, vec![*fresh_wire]);
-                    branches.push(branch);
-                }
+            let mut branches = component.trace_wire(wires[0], budget)?;
+            for branch in &mut branches {
+                branch.add_zero_wire(*fresh_wire, limits)?;
+                branch.tokens.insert(*output, vec![*fresh_wire]);
             }
             return Ok(branches);
         }
@@ -497,14 +493,8 @@ fn execute_op(
             let mut branches = vec![component];
             for wire in wires {
                 branches = map_ensemble(branches, limits, |branch, available| {
-                    let mut next = Vec::new();
-                    for outcome in [false, true] {
-                        let projected = branch.project_remove(wire, outcome, budget)?;
-                        if projected.weight() > 0.0 {
-                            next.push(projected);
-                            check_components(next.len(), available)?;
-                        }
-                    }
+                    let next = branch.trace_wire(wire, budget)?;
+                    check_components(next.len(), available)?;
                     Ok(next)
                 })?;
             }

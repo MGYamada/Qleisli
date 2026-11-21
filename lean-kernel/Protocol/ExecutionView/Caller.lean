@@ -15,7 +15,7 @@ private def record (tag : String) (fields : List Value) : Value :=
 fresh receipt. A missing original slot cannot mint replacement evidence. -/
 def alias (root : Qirf.Validity.Root) (index : Nat) : WorkM Value := do
   let receipt ← lift (readOption ((root.receipts[index]?).join))
-  let description ← FiniteView.functionEvidence receipt
+  let description ← FiniteView.functionEvidence root.dependencies receipt
   return record "evidence-alias" [.natural index,description]
 
 theorem alias_bound (root : Qirf.Validity.Root) (index : Nat)
@@ -23,7 +23,7 @@ theorem alias_bound (root : Qirf.Validity.Root) (index : Nat)
     (ok : (alias root index).run work = (.ok value,left)) :
     ∃ receipt description,
       root.receipts[index]? = some (some receipt) ∧
-      (FiniteView.functionEvidence receipt).run work = (.ok description,left) ∧
+      (FiniteView.functionEvidence root.dependencies receipt).run work = (.ok description,left) ∧
       value = record "evidence-alias" [.natural index,description] := by
   unfold alias at ok
   obtain ⟨receipt,a,hr,h⟩ := bind_success _ _ _ _ _ ok

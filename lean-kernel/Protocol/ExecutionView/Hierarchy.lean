@@ -106,8 +106,23 @@ def program (artifact : Hierarchical.Artifact.Artifact) (matrices : Matrices) : 
     return (used+(size-4),value :: nodes)) (initial,[])
   return describe nodes.reverse
 
-def purePlan (artifact : Hierarchical.Artifact.Artifact) (matrices : Matrices) : WorkM Value := do
-  let description := record "hierarchy-plan" [record "pure" [← program artifact matrices]]
+private def controlRequest (request : ControlAccess.Request) : Value :=
+  let ports : List Value := request.ports.toList.map fun port => .array (port.toList.map fun atom =>
+    match atom with
+    | .unit => record "unit" []
+    | .bit => record "bit" []
+    | .bits width => record "bits" [.natural width]
+    | .tuple 2 => record "pair" []
+    | .tuple arity => record "tuple" [.natural arity])
+  record "control-request" [.natural request.root,.array ports,
+    .array (request.controls.toList.map Value.boolean)]
+
+def purePlan (artifact : Hierarchical.Artifact.Artifact) (matrices : Matrices)
+    (controls : Array ControlAccess.Request := #[]) : WorkM Value := do
+  let actual ← program artifact matrices
+  let body := if controls.isEmpty then record "pure" [actual] else
+    record "controlled-request" [actual,.array (controls.toList.map controlRequest)]
+  let description := record "hierarchy-plan" [body]
   let _ ← byteSize description
   return description
 

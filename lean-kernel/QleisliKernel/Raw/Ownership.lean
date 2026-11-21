@@ -1,3 +1,4 @@
+import Init.Data.List.Sort.Lemmas
 import QleisliKernel.Raw.Trace
 import QleisliKernel.Semantics.Ownership
 
@@ -32,10 +33,41 @@ theorem unique_nodup {α : Type} [BEq α] [LawfulBEq α] (xs : List α)
   have facts := dedup_facts xs
   exact (facts.2.eq_of_length length) ▸ facts.1
 
+theorem increasing_iff (ids : List Nat) : increasing ids = true ↔ ids.Pairwise (· < ·) := by
+  induction ids using increasing.induct with
+  | case1 x y rest ih =>
+    simp only [increasing, Bool.and_eq_true, decide_eq_true_eq, ih, List.pairwise_cons]
+    constructor
+    · rintro ⟨xy, h, tail⟩
+      exact ⟨fun a m => (List.mem_cons.mp m).elim (fun e => e ▸ xy) (fun m => Nat.lt_trans xy (h _ m)), h, tail⟩
+    · rintro ⟨first, h, tail⟩
+      exact ⟨first _ List.mem_cons_self, h, tail⟩
+  | case2 ids short =>
+    cases ids with
+    | nil => simp [increasing]
+    | cons x rest =>
+      cases rest with
+      | nil => simp [increasing]
+      | cons y tail => exact (short x y tail rfl).elim
+
+theorem freshHistory_iff (ids : List Nat) : freshHistory ids = true ↔ ids.Nodup := by
+  have perm := List.mergeSort_perm ids (fun (a b : Nat) => decide (a ≤ b))
+  simp only [freshHistory, Bool.or_eq_true, increasing_iff]
+  constructor
+  · rintro (h | h)
+    · exact h.imp Nat.ne_of_lt
+    · exact perm.nodup_iff.mp (h.imp Nat.ne_of_lt)
+  · intro h
+    right
+    have sorted := List.pairwise_mergeSort (le := fun (a b : Nat) => decide (a ≤ b))
+      (by simp; omega) (by simp; omega) ids
+    simp only [decide_eq_true_eq] at sorted
+    exact (sorted.and (perm.nodup_iff.mpr h)).imp (fun a => Nat.lt_of_le_of_ne a.1 a.2)
+
 theorem valid (state : Raw.State) (ok : Raw.stateValid state = true) : Semantics.Ownership.Valid (view state) := by
   simp only [Raw.stateValid,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem,beq_iff_eq] at ok
   rcases ok with ⟨⟨⟨⟨⟨⟨⟨⟨owners,tokens⟩,wires⟩,frame⟩,exclusive⟩,ports⟩,issued⟩,count⟩,covered⟩
-  exact ⟨unique_nodup _ owners,unique_nodup _ tokens,unique_nodup _ wires,
+  exact ⟨unique_nodup _ owners,(freshHistory_iff _).mp tokens,(freshHistory_iff _).mp wires,
     unique_nodup _ frame,unique_nodup _ exclusive,
     fun port member => ⟨(ports port member).1.1,(ports port member).2⟩,issued,count,covered⟩
 
