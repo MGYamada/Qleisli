@@ -101,6 +101,28 @@ the wording that their records bind:
 - Use "actual", "exact" and "complete" only where the word carries a technical
   meaning, as in "an exact phase".
 
+### Plain wording
+
+A reader who has finished the lessons should be able to follow a Reference
+section on first reading. [Prelude, imports and qualified names](reference/prelude.md)
+shows the wording.
+
+- Open a section by saying what its construct is for and when a program uses
+  it. Then give the rules. Where a section begins with its syntax, this
+  description follows the syntax, as
+  [Rules and their placement](#rules-and-their-placement) lays out.
+- Give each sentence a subject that acts: the checker, the program, the
+  caller. Write "the checker reports that failure", not "failure reporting
+  occurs".
+- Take a stack of nouns apart. Write "the effect that callers of the target
+  see", not "the caller-visible target effect".
+- When a rule covers a list of cases, state the rule first and name the cases
+  in a second sentence.
+- Give the reason for a rule only where the chapter or a linked rule states
+  that reason. Do not invent one.
+- Plain wording changes no rule. Keep the force of every "must", "must not"
+  and "may", and keep every diagnostic code, limit and identifier.
+
 ### Terms
 
 - Define a term before you use it. Set the term in bold where the text defines

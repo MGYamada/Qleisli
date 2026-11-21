@@ -1,52 +1,56 @@
 # Primitive boundary and admission
 
-A **language primitive** is an operation that the language supplies under a
-bare spelling, such as `h` or `measure_z`. Edition 2026 has 13 language
-primitives. Each one has a typed identity that fixes its typing rule and its
-effect. A language primitive grants no native acceptance and no general
-inverse or control capability.
+A **language primitive** is an operation that the language itself supplies. A
+program calls it by a bare spelling, such as `h` or `measure_z`. Edition 2026
+has 13 language primitives. Each one has a typed identity that fixes its
+typing rule and its effect. A language primitive grants no native acceptance
+and no general inverse or control capability.
 
 This chapter specifies the source primitive boundary of edition 2026. It
-covers the lookup of a bare spelling, the contract of each primitive and the
-migration of the 27 retired qualified names. It also covers the ordinary
-library, the roles of each production path, and **primitive admission**: the
-reviewed decision to add semantic authority.
+covers how the checker looks up a bare spelling, the contract of each
+primitive and the migration of the 27 retired qualified names. It also covers
+the ordinary library and the roles of each production path. Its last subject
+is **primitive admission**: the reviewed decision to add semantic authority.
 
-The chapter is subordinate to the [authority hierarchy](authority.md),
-`TRUSTBOUNDARY.md` and `STDLIB.md`. Its inventory is a technical
-classification. It is neither a human adoption of a minimal generating set
-nor a constitutional interpretation or guarantee. Source access by bare
-spelling and by ordinary definitions changes neither the meaning of the
+Three documents rank above this chapter: the
+[authority hierarchy](authority.md), `TRUSTBOUNDARY.md` and `STDLIB.md`. The
+inventory of this chapter is a technical classification. It is neither a
+human adoption of a minimal generating set nor a constitutional
+interpretation or guarantee. A program reaches an operation through a bare
+spelling or through an ordinary definition. This form of source access
+changes neither the meaning of the
 [Raw constructors](#core-forms-and-independent-meaning) nor the native
 acceptance authority.
 
 The [project route and the selected-entry route](diagnostics.md#routes) both
-use the common checker. A rule in this chapter names the class that the common
-checker gives to the diagnostic of a program that breaks the rule, such as
-`name`. [Codes](diagnostics.md#codes) gives the code that each route reports
+use the common checker. When a program breaks a rule, the common checker gives
+the diagnostic a class, such as `name`. A rule in this chapter names that
+class. [Codes](diagnostics.md#codes) gives the code that each route reports
 for a class.
 
 The [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
 shows where to find a primitive's contract or inspect a derived definition.
 
 A **concrete adapter** lowers a checked program to a concrete proposal under
-fixed capacities. The **finite adapter** lowers a program to finite Raw IR.
-The **selected adapter** is the concrete preparation of a selected entry for
-the ordinary Raw gate or a dedicated hierarchy gate. The capacities and the
-supported forms of an adapter are its **concrete profile**.
-[Status and limits](#status-and-limits) gives both profiles.
+fixed capacities. This chapter names two of them. The **finite adapter**
+lowers a program to finite Raw IR. The **selected adapter** prepares a
+selected entry concretely for the ordinary Raw gate or a dedicated hierarchy
+gate. The capacities and the supported forms of an adapter are its
+**concrete profile**. [Status and limits](#status-and-limits) gives both
+profiles.
 
 ## Meaning, spelling and implementation
 
-The project separates four categories of meaning. Each category has its own
-authority and its own obligation.
+An operation has a meaning, a spelling in source and an implementation. This
+section keeps them apart. The project separates four categories of meaning.
+Each category has its own authority and its own obligation.
 
 | Category | Authority and obligation |
 | --- | --- |
-| **Semantic primitive**, or irreducible semantic rule | An existing operation, instrument, ownership transition or effect rule at the independent semantic and checking boundary. Its intended meaning, its premises and the acceptance that the checker implements require review. Moving the rule into a backend or a package does not remove these duties. |
-| Language primitive | One typed `PrimitiveId`. Its bare spelling is available only when lexical resolution and the resolution of ordinary declarations and imports leave that spelling unbound. The identity fixes the typing rule and the effect. It grants no native acceptance and no general inverse or control capability. |
-| **Derived library definition** | Inspectable ordinary `.qli` source that the checker checks like user source, with a separately reviewed contract. Its home under `std::` grants no privilege. |
-| **Backend implementation intrinsic** | An implementation of an existing meaning. The target output, phase, axes, workspace and resources keep their separate preservation and realization obligations. An internal operation tag is not an additional source primitive. |
+| **Semantic primitive**, or irreducible semantic rule | A rule at the independent semantic and checking boundary: an existing operation, instrument, ownership transition or effect rule. Three things about it require review: its intended meaning, its premises and the acceptance that the checker implements. Moving the rule into a backend or a package does not remove these duties. |
+| Language primitive | One typed `PrimitiveId`. A program can use its bare spelling only where lexical resolution leaves that spelling unbound and the resolution of ordinary declarations and imports does too. The identity fixes the typing rule and the effect. It grants no native acceptance and no general inverse or control capability. |
+| **Derived library definition** | Ordinary `.qli` source that you can inspect. The checker checks it like user source, and its contract is reviewed separately. Its home under `std::` grants no privilege. |
+| **Backend implementation intrinsic** | An implementation of an existing meaning. The target output, the phase, the axes, the workspace and the resources keep their separate preservation and realization obligations. An internal operation tag is not an additional source primitive. |
 
 Rules:
 
@@ -54,37 +58,46 @@ Rules:
   catalogs, lowering, simulation and exporter output issue none.
 - An intended mathematical specification must stay independent of
   acceptance. It requires specification review.
-- A technical inventory, a refreshed source hash or a successful test is not
-  primitive admission, proof of irreducibility or source preservation.
+- None of these is primitive admission, proof of irreducibility or source
+  preservation: a technical inventory, a refreshed source hash, a successful
+  test.
 
 ## Bare lookup and ordinary shadowing
 
+A program calls a primitive by writing its name alone. A local binding or a
+declaration of the program can have the same name, and it then takes the
+place of the primitive. This section gives the order in which the checker
+decides what a name refers to.
+
 A **bare spelling** is an unqualified callable name. An **ordinary
 declaration** is a declaration in `.qli` source, which receives the same checks
-as user source. The checker resolves a bare spelling to the first of these
-that applies:
+as user source. The checker looks in four places, in this order, and resolves
+a bare spelling to the first one that applies:
 
-1. A lexical runtime or static binding. This includes a moved binding and a
-   binding of the wrong callable category.
-2. An ordinary declaration of the same module, or an explicitly imported
-   ordinary public declaration, under the ordinary visibility and collision
-   rules.
+1. A lexical binding, whether runtime or static. The checker finds a binding
+   here even when the binding is moved or has the wrong callable category.
+2. An ordinary declaration of the same module, or an ordinary public
+   declaration that the module imports explicitly. The ordinary visibility
+   and collision rules apply.
 3. One of the six original public declarations that the
    [derived prelude](prelude.md) supplies, unless the module opts out.
 4. The language primitive with that spelling.
 
 Rules:
 
-- Resolution is lexical. It is not overload selection by argument type.
-- A lexical binding determines the use. Its ownership or category error is
-  final. Lookup never retries a declaration or a primitive of the same name.
+- Resolution is lexical. The checker does not select among overloads by the
+  types of the arguments.
+- A lexical binding determines the use. When that binding has an ownership or
+  category error, the error is final. Lookup never retries a declaration or a
+  primitive of the same name.
 - An ordinary declaration determines the use even when its spelling matches a
   primitive. Its signature, public effect, access requirements and body
   obligations apply.
 - A spelling resolves to a primitive only when steps 1 to 3 leave it unbound.
   A name that no step binds is an error (`name`).
-- A failed type, arity, effect, capability, concrete-profile or native check
-  never selects another callee or another authority.
+- Once lookup has selected a callee, a failed check never selects another
+  callee or another authority. This holds for a failed type, arity, effect,
+  capability, concrete-profile or native check.
 - Parameters, `let` bindings, fold binders, static providers and restricted
   classical or basis expressions keep their category and scope rules.
 - A primitive is not an import, a prelude declaration, a reserved identifier
@@ -94,9 +107,9 @@ Rules:
   checking, and its name grants no Hadamard meaning. A moved local `h` shadows
   both that function and the primitive.
 - The prelude must not reexport a bare primitive spelling (`name`).
-- Ordinary gates and the state and structure definitions use ordinary
-  declarations, imports or qualified references. Six common derived
-  definitions are also in the prelude.
+- A program reaches the ordinary gates and the state and structure
+  definitions through ordinary declarations, imports or qualified references.
+  Six common derived definitions are also in the prelude.
 - The bare name `phase_eighth` is not an alias of `global_phase_eighth`. It is
   an unresolved name (`name`).
 - A retired qualified path is never a lookup path.
@@ -144,10 +157,11 @@ observe fn main() -> Bit { measure_z(init0()) }
 
 ## Primitive inventory
 
-The table lists the 13 language primitives. Static arguments stand in square
-brackets after the spelling, as in `phase[1,2]`. `A` and `B` stand for
-complete supported Basis trees, not for bit counts. The effect is the
-principal effect of a call.
+The table lists the 13 language primitives. Use it to see what a primitive
+takes and what it returns; each spelling links to the section with its rules.
+Static arguments stand in square brackets after the spelling, as in
+`phase[1,2]`. `A` and `B` stand for complete supported Basis trees, not for
+bit counts. The effect is the principal effect of a call.
 
 | Spelling | Identity | Static arguments | Runtime arguments | Signature | Effect | Typing |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -165,20 +179,22 @@ principal effect of a call.
 | [`empty_bits`](#empty_bits-and-prepend_bit) | `EmptyBits` | None | 0 | `() -> Bits<0>` | Unitary | Fixed |
 | [`prepend_bit`](#empty_bits-and-prepend_bit) | `PrependBit` | `[n]` | 2 | `(Bit,Bits<n>) -> Bits<n+1>` | Unitary | Fixed |
 
-A primitive with fixed typing has the signature of the table for its static
-arguments. A primitive with inferred typing takes its result type from the
-type of its arguments.
+The last column says how the checker types a call. A primitive with fixed
+typing has the signature that the table gives for its static arguments. A
+primitive with inferred typing takes its result type from the type of its
+arguments.
 
 Rules:
 
-- A call must supply the static arguments of the table (`static-arity`) and
-  the number of runtime arguments of the table (`arity`).
+- A call must supply the static arguments that the table lists
+  (`static-arity`) and the number of runtime arguments that it lists
+  (`arity`).
 - The runtime argument list and the tuple shape of the result are separate.
   `join(a,b)` takes two arguments, and `unit(())` takes one.
 - Each quantum argument evaluates once, in source order. The call consumes its
   owner. The primitive returns or eliminates that owner explicitly.
-- Every quantum equation of this section extends with the identity on an
-  arbitrary retained reference.
+- Every quantum equation of this section extends to an arbitrary retained
+  reference, on which it acts as the identity.
 - Distinct owners may be entangled. A zero-axis owner is linear.
 - A concrete adapter may refuse an identity that it does not support
   (`unsupported`). The refusal does not restore qualified lookup, and it does
@@ -218,8 +234,8 @@ unitary fn f(b:Bit,z:Bits<0>)->Bits<1>{prepend_bit[0](b,z)}
 Rules:
 
 - The argument must have type `Q<Bit>` (`type`).
-- `h` keeps the amplitude-mixing action as a primitive rule. A deterministic
-  basis map alone cannot express that superposition.
+- `h` keeps, as a primitive rule, the action that mixes amplitudes. A
+  deterministic basis map alone cannot express that superposition.
 
 ### `phase`
 
@@ -257,7 +273,8 @@ pub unitary fn f(q: Q<Unit>,r: Q<Bit>) -> (Q<Unit>,Q<Bit>) { global_phase_eighth
 
 ### `unit` and `finish`
 
-`unit` introduces a fresh zero-axis owner with coefficient +1. `finish`
+These two primitives begin and end an owner of type `Q<Unit>`, which has no
+axis. `unit` introduces a fresh zero-axis owner with coefficient +1. `finish`
 consumes a zero-axis owner with coefficient +1.
 
 Rules:
@@ -273,15 +290,17 @@ Rules:
 
 ### `split` and `join`
 
-`split` partitions one product owner into two owners. `join` combines two
-owners into one ordered product owner. Both have coefficient +1.
+These two primitives take a product owner apart and put one together. `split`
+partitions one product owner into two owners. `join` combines two owners into
+one ordered product owner. Both have coefficient +1.
 
 Rules:
 
 - The argument of `split` must have type `Q<(A,B)>`, a product of two fields
   (`type`).
 - `split` keeps the complete child trees and the left and right axes. It does
-  not flatten implicitly, and it promises no separability.
+  not flatten implicitly, and it does not promise that the two owners are
+  separable.
 - Each argument of `join` must be a quantum owner (`type`). The two owners
   must be distinct: a second use of one owner is an error (`ownership`).
 - `join(a,b)` is a call with two arguments. It is not a call with one tuple
@@ -298,7 +317,8 @@ pub unitary fn f(q:Q<Unit>)->Q<(Unit,Unit)>{join(q,q)}
 
 ### `measure_z`
 
-`measure_z` is the complete destructive Z instrument with the Kraus operators
+`measure_z` measures one Bit owner and returns the result as an ordinary
+`Bit`. It is the complete destructive Z instrument with the Kraus operators
 `K_b=<b|`. It includes every unnormalized reference branch.
 
 Rules:
@@ -318,8 +338,9 @@ unitary fn f(q:Q<Bit>)->Bit{measure_z(q)}
 
 ### `discard`
 
-`discard` takes the explicit partial trace of one complete subsystem. It keeps
-the marginal of the reference and every erasure history.
+A program calls `discard` to give up an owner explicitly. `discard` takes the
+explicit partial trace of one complete subsystem. It keeps the marginal of the
+reference and every erasure history.
 
 Rules:
 
@@ -329,10 +350,12 @@ Rules:
 
 ### `take_bit` and `put_bit`
 
-`take_bit[n,k]` extracts coordinate `k` of a `Bits<n>` register and keeps the
-order of the other coordinates. `put_bit[n,k]` inserts its first argument at
-coordinate `k` and keeps the other coordinates. Both have phase +1. They are
-the explicit routing and typing rules of an atomic register.
+A program uses these two primitives to take one Bit owner out of a register
+and to put one in. `take_bit[n,k]` extracts coordinate `k` of a `Bits<n>`
+register and keeps the order of the other coordinates. `put_bit[n,k]` inserts
+its first argument at coordinate `k` and keeps the other coordinates. Both
+have phase +1. They are the explicit routing and typing rules of an atomic
+register.
 
 Rules:
 
@@ -345,9 +368,10 @@ Rules:
 
 ### `empty_bits` and `prepend_bit`
 
-`empty_bits()` returns the exact ordinary empty label of type `Bits<0>`. The
-label is copyable and has no owner. `prepend_bit[n]` builds an ordinary label
-with the head before the tail. It has no quantum action.
+These two primitives build ordinary labels. Neither one touches a quantum
+owner. `empty_bits()` returns the exact ordinary empty label of type
+`Bits<0>`. The label is copyable and has no owner. `prepend_bit[n]` builds an
+ordinary label with the head before the tail. It has no quantum action.
 
 Rules:
 
@@ -380,15 +404,16 @@ Rules:
 
 ### Derivation and removal
 
-These rules constrain a later derivation of a primitive rule in ordinary
-source, and its removal.
+A later change can derive a primitive rule in ordinary source, or remove it.
+These rules constrain such a change.
 
 Rules:
 
 - A further derivation or a removal of a primitive rule must first express the
   whole recorded interface in ordinary checked source.
-- It must also provide the applicable independent correspondence of phase,
-  type, reference, owner and effect, cleanup and resources.
+- It must also provide the applicable independent correspondence. The
+  correspondence covers phase, type, reference, owner and effect, cleanup and
+  resources.
 - A gate identity that holds only up to phase, or a match of widths, is
   insufficient.
 - The [admission process](#admission-and-replacement-process) applies to an
@@ -398,7 +423,9 @@ Rules:
 
 A **retired name** is one of the 27 qualified entries of the four retired
 compiler namespaces `std::quantum`, `std::observe`, `std::registers` and
-`std::classical`. The table accounts for every one of them.
+`std::classical`. The table accounts for every one of them. For each retired
+name it gives the source access to write instead, and the derivation or the
+semantic rule that the language retains.
 
 | Retired name | Source access | Derivation or retained semantic rule |
 | --- | --- | --- |
@@ -409,20 +436,20 @@ compiler namespaces `std::quantum`, `std::observe`, `std::registers` and
 | `std::quantum::finish` | bare `finish` | Explicit elimination of a Unit owner, with the phase retained. |
 | `std::quantum::split` | bare `split` | Explicit ordered binary partition of an owner. |
 | `std::quantum::join` | bare `join` | Explicit ordered combination of owners. |
-| `std::quantum::init0` | ordinary `std::state::init0` | `basis unit(()) as _ { 0 }`: the injective singleton-to-Bit rule with table `[0]` and coefficient +1. Isometry; one fresh physical wire. |
+| `std::quantum::init0` | ordinary `std::state::init0` | `basis unit(()) as _ { 0 }`: the injective singleton-to-Bit rule with table `[0]` and coefficient +1. It is an isometry with one fresh physical wire. |
 | `std::quantum::x` | ordinary `std::gate::x` | `h(z(h(q)))`, the exact X including coefficient +1. |
 | `std::quantum::z` | ordinary `std::gate::z` | `phase[1,1]`, the exact `diag(1,-1)`. |
-| `std::quantum::t` | ordinary `std::gate::t` | Coherent control of `global_phase_eighth` on an explicit Unit owner, then `finish`. The exact `diag(1,ζ)`, with no auxiliary physical wire. |
+| `std::quantum::t` | ordinary `std::gate::t` | Coherent control of `global_phase_eighth` on an explicit Unit owner, then `finish`. The result is the exact `diag(1,ζ)`, with no auxiliary physical wire. |
 | `std::quantum::s` | ordinary `std::gate::s` | `phase[1,2]`, the exact `diag(1,i)`. Readability does not require a power of T. |
 | `std::quantum::sdg` | ordinary `std::gate::sdg` | `adjoint(s)`, the exact `diag(1,-i)`. |
 | `std::quantum::tdg` | ordinary `std::gate::tdg` | `adjoint(t)`, the exact `diag(1,ζ^-1)`. |
-| `std::quantum::id` | ordinary `std::gate::id[type(A)]` | Returns the same owner with coefficient +1. The explicit Basis argument preserves the complete tree. |
-| `std::quantum::cnot` | ordinary `std::gate::cnot` | Ordinary coherent control of X, control first and target second. Both owners return in order. |
+| `std::quantum::id` | ordinary `std::gate::id[type(A)]` | It returns the same owner with coefficient +1. The explicit Basis argument preserves the complete tree. |
+| `std::quantum::cnot` | ordinary `std::gate::cnot` | Ordinary coherent control of X, with the control first and the target second. Both owners return in order. |
 | `std::quantum::toffoli` | ordinary `std::gate::toffoli` | Ordinary control of the packed CNOT. Three distinct owners and the original nested result tree. |
 | `std::quantum::controlled_phase` | ordinary `std::gate::controlled_phase[j,k]` | Ordinary control of the phase provider, in the exact order of control and target, under the same coefficient and profile premises. |
 | `std::observe::measure_z` | bare `measure_z` | The complete destructive measurement rule. |
 | `std::observe::discard` | bare `discard` | The explicit subsystem erasure rule. |
-| `std::observe::reset` | ordinary `std::state::reset` | `discard(q); init0()`, Observe. Returns a fresh zero owner. The erased input is not cleanly uncomputed. |
+| `std::observe::reset` | ordinary `std::state::reset` | `discard(q); init0()`, with the effect Observe. It returns a fresh zero owner. The erased input is not cleanly uncomputed. |
 | `std::registers::take_bit` | bare `take_bit` | The typed extraction rule of an atomic register. |
 | `std::registers::put_bit` | bare `put_bit` | The typed insertion rule of an atomic register. |
 | `std::registers::empty` | ordinary `std::structure::empty` | `basis unit(()) as _ { empty_bits() }`: the explicit singleton representation from Unit to Bits<0>, with phase +1 and one zero-axis owner. |
@@ -435,15 +462,16 @@ Rules:
 - A retired name is not a callable alias. The four retired namespaces have no
   callable entry and no compatibility alias. The table preserves the migration
   and nothing else.
-- An import of a retired name is an error with migration guidance. The project
-  route reports the code `project`, and the selected-entry route reports
-  `name`.
+- An import of a retired name is an error, and its diagnostic carries
+  migration guidance. The project route reports the code `project`, and the
+  selected-entry route reports `name`.
 - A qualified call of a retired name is an error with the same guidance. The
   project route reports `unknown_name`, and the selected-entry route reports
   `name`.
 - Migration guidance is never a lookup path.
-- A derived replacement has its ordinary public interface and its declared
-  static arguments. Replacing an import is not a fallback to the same name.
+- A derived replacement has its ordinary public interface and the static
+  arguments that it declares. Replacing an import is not a fallback to the
+  same name.
 - The channel of `std::state::reset` is
   `rho_AR -> |0><0|_A tensor Tr_A(rho_AR)`, with a fresh output owner. This
   formula includes arbitrary reference correlations.
@@ -484,9 +512,9 @@ claim requires.
 
 Rules:
 
-- An ordinary call retains its original definition, its caller instance, its
-  static arguments, its public effect and its complete source and dependency
-  identity.
+- An ordinary call retains five things: its original definition, its caller
+  instance, its static arguments, its public effect and its complete source
+  and dependency identity.
 - A checked Meaning override retains the exact original Raw witness, the
   checked leaf, the matrix, both ports and the reference receipts. An endpoint
   of the same width or a digest alone is not source correspondence.
@@ -498,19 +526,19 @@ Rules:
   mapping of the fresh wire and owner. It must not replace an arbitrary
   rectangular map by an initialization.
 - A structural singleton map retains its complete Unit or Bits<0> tree and
-  its original root under composition, repeat, control and adjoint, wherever
-  the concrete profile supports them. Explicit cleanup and the rejected
-  observation, phase and width cases are part of that profile.
+  its original root. It retains them under composition, repeat, control and
+  adjoint, wherever the concrete profile supports them. Explicit cleanup and
+  the rejected observation, phase and width cases are part of that profile.
 - Source recognition alone enables none of these emitters.
 - Semantic ownership, clean and dirty scratch, and target workspace are
   separate.
 - The Unit owner in the definition of `std::gate::t` has zero physical wires.
-  It promises no zero target T cost.
+  It does not promise that the target T cost is zero.
 - The three ordinary CNOT calls of `std::gate::swap` differ from the
   structural output routing of `permute_axes`, even when a fixed-coordinate
   matrix agrees.
-- A representation sharing count, a logical instruction count or a
-  checker-work budget is not quantitative Resource Safety.
+- None of these is quantitative Resource Safety: a count of representation
+  sharing, a count of logical instructions, a budget of checker work.
 - Every target or resource claim needs its own artifact, model, units and
   evidence.
 - Exact cleanup must hold for every permitted input and reference.
@@ -518,8 +546,9 @@ Rules:
 
 ## Core forms and independent meaning
 
-A **Raw constructor** is one variant of the public Rust type `RawOp` in
-`src/ir.rs`. `RawOp` has 22 constructors.
+This section lists the Raw constructors and says where the meaning of the
+core forms comes from. A **Raw constructor** is one variant of the public Rust
+type `RawOp` in `src/ir.rs`. `RawOp` has 22 constructors.
 
 | Family | Constructors |
 | --- | --- |
@@ -553,13 +582,17 @@ The meaning of the core forms comes from these layers:
 | Layer | Source and scope |
 | --- | --- |
 | Data and interfaces | `src/ir.rs`; `lean-kernel/QleisliKernel/Semantics/{Raw,Observation,Finite}.lean`. These expose the original operations, ports, finite actions and effects. Data construction is untrusted. |
-| Pure reference meaning | `lean/Qleisli/Semantics/Finite.lean` supplies literal gate amplitudes, controlled and monomial actions, and encoded equations. `Semantics/Raw.lean` retains the original events, ordered axes, full complex composition and clean-scope meanings. These references do not define meaning as successful checking. |
+| Pure reference meaning | `lean/Qleisli/Semantics/Finite.lean` supplies literal gate amplitudes, controlled and monomial actions, and encoded equations. `Semantics/Raw.lean` retains the original events, the ordered axes, the full complex composition and the meanings of clean scopes. These references do not define meaning as successful checking. |
 | Instrument reference meaning | `lean/Qleisli/Semantics/RawInstrument.lean` retains all erasure outcomes, classical values, hidden histories and unnormalized operators. Reset is erasure followed by fresh-zero preparation. The reference does not select only a successful sampled branch. |
-| Hierarchy operator specification | `lean/Qleisli/HierarchicalOperators.lean` specifies positive dyadic phase, ordered wiring, control and composition. This specification is separate from a complete theorem from production hierarchy acceptance to an operator. |
+| Hierarchy operator specification | `lean/Qleisli/HierarchicalOperators.lean` specifies positive dyadic phase, ordered wiring, control and composition. A complete theorem that leads from production hierarchy acceptance to an operator is separate from this specification. |
 | Executable acceptance | `lean-kernel/QleisliKernel/Raw/{Structure,Pure,Observation}.lean`, the finite and QIRF checks and the dedicated hierarchy checks validate the IR fields, the owners and effects, and the enabled evidence. The source catalog is not their authority. |
 | Production composition and proof limits | `Protocol.Validity`, `Protocol.NativeContract` and their bridges `Qleisli.NativeValidity` and `Qleisli.NativeContract` keep their precise artifact and request scopes. Dedicated hierarchy components have separate bridges. The [production boundary](production-boundary.md) records their exact coverage. |
 
 ## Ordinary library and module resolution
+
+The library that comes with the compiler is ordinary source. This section
+lists its modules and gives the rules by which the imports of a program
+resolve.
 
 The **bundled library** is the set of eight ordinary source modules that the
 compiler embeds under `std::`. It has 26 public definitions, six transparent
@@ -569,11 +602,11 @@ scalar phase, parameterized phase, packed CNOT and fixed Bit identity.
 | Module and source | Public definitions | Contract provenance |
 | --- | --- | --- |
 | `std::basis`, `stdlib/src/basis.qli` | `xor2`, `and2` | Total finite ordinary maps of basis labels. Neither is injective over its two-input domain. A coherent enclosing construction must meet its own obligations. |
-| `std::transform`, `stdlib/src/transform.qli` | `hadamard2`, `qft2`, `qft3` | Ordered H tensor H. Positive finite Fourier phase, first leaf least significant, output reversal included, no auxiliary and no promise about the input state. The Fourier interfaces have fixed width. |
+| `std::transform`, `stdlib/src/transform.qli` | `hadamard2`, `qft2`, `qft3` | Ordered H tensor H. Positive finite Fourier phase, with the first leaf least significant and the output reversal included. No auxiliary and no promise about the input state. The Fourier interfaces have fixed width. |
 | `std::reflection`, `stdlib/src/reflection.qli` | `reflect_uniform2` | Phase-fixed reflection about the uniform state, with exact cleanup of the computed auxiliary. The private `nonzero2` is a normal basis helper. Hadamard comes from ordinary transform source. |
 | `std::gate`, `stdlib/src/gate.qli` | `id`, `t`, `s`, `sdg`, `tdg`, `z`, `x`, `controlled_phase`, `cnot`, `toffoli`, `swap` | Ordinary phase-fixed gates. T controls a scalar phase on a zero-width Unit owner. The phase, Pauli and controlled gates derive through ordinary providers. The Bit SWAP uses three CNOTs. No library definition grants primitive authority or a target-cost guarantee. |
-| `std::state`, `stdlib/src/state.qli` | `init0`, `reset` | Ordinary explicit singleton-to-Bit preparation, and observing discard followed by preparation. The original owner, the phase and the complete reference instrument are retained. |
-| `std::structure`, `stdlib/src/structure.qli` | `permute_axes`, `transpose_axes`, `empty`, `consume_empty` | The structural two-axis map `[1,0]` and statically indexed register transpositions, with exact phase +1 and no physical gate instructions. Explicit introduction and elimination of a zero-width Bits owner use singleton basis maps. |
+| `std::state`, `stdlib/src/state.qli` | `init0`, `reset` | `init0` is the ordinary explicit singleton-to-Bit preparation. `reset` is an observing discard followed by a preparation. The original owner, the phase and the complete reference instrument are retained. |
+| `std::structure`, `stdlib/src/structure.qli` | `permute_axes`, `transpose_axes`, `empty`, `consume_empty` | The structural two-axis map `[1,0]` and statically indexed register transpositions, with exact phase +1 and no physical gate instructions. The explicit introduction and the explicit elimination of a zero-width Bits owner use singleton basis maps. |
 | `std::measurement`, `stdlib/src/measurement.qli` | `measure_x`, `measure_z2`, `parity_zz` | Complete destructive X and Z instruments and a nondestructive data-parity measurement, with their original owner and result trees and their reference behavior. |
 | `std::prelude`, `stdlib/src/prelude.qli` | Reexports `id`, `x`, `z`, `t`, `cnot`, `init0` | The original ordinary declarations. The reexports add no body, primitive, effect or evidence authority. |
 
@@ -583,13 +616,13 @@ admission rule, the exact public interfaces and the migration mapping of every
 mathematical module.
 
 A **loader** collects the source modules of a program. The **finite loader**
-loads a project from its source root. The **selected loader** loads explicitly
-supplied modules.
+loads a project from its source root. The **selected loader** loads modules
+that are supplied to it explicitly.
 
 Rules:
 
-- A bundled module receives the common declaration, type, owner, access,
-  dependency and effect checks. It has no compiler-import exception.
+- A bundled module receives the common checks: the declaration, type, owner,
+  access, dependency and effect checks. It has no compiler-import exception.
 - Concrete materialization and native checking occur under the scope of the
   consumer. Selected source checking alone does not natively certify every
   bundled specialization.
@@ -605,8 +638,8 @@ Rules:
   module (`name`).
 - A mutual dependency through a body, a provider, a Basis or a Meaning is an
   error (`cycle`). Only a checked decreasing runtime self-call is permitted.
-- A private declaration is available to lookup in its own module. An import
-  from another module and a host entry require a public declaration.
+- Lookup finds a private declaration in its own module. An import from
+  another module and a host entry require a public declaration.
 - An import spelling supplies no runtime initialization and no evidence.
 - The [prelude contract](prelude.md) admits transparent public reexports. It
   admits no `as`, glob or relative import.
@@ -620,7 +653,8 @@ Rules:
 - `std::arithmetic` is reserved for parameterized arithmetic and number
   theory. A reserved family name promises no callable API.
 - The English source contracts and `STDLIB.md` state intended meanings and
-  conventions. Their presence alone does not prove implementation conformance.
+  conventions. Their presence alone does not prove that the implementation
+  conforms.
 - Until version 0.5.0, an algorithm addition ordinarily belongs in the
   approved corpus, not in an expansion of stdlib. This chapter adopts no
   library algorithm.
@@ -636,6 +670,9 @@ The project route reports every import that fails to resolve with the code
 
 ## Generic acceptance and library-owned algorithms
 
+This section gives the responsibilities of each production path. It then
+lists the data that a generic rule binds, whatever the name of the algorithm.
+
 A **role** is a responsibility of a production path. Each path below has five
 roles: producer, independent acceptance, specification and proof, execution or
 emission, and compatibility. A role is not a claim that every required proof
@@ -645,7 +682,7 @@ records the predicates, the native modes and the theorem limits of each path.
 
 | Path and source | Producer | Independent acceptance | Specification and proof | Execution or emission | Compatibility responsibility |
 | --- | --- | --- | --- | --- | --- |
-| Project and qrate source: `frontend::project`, `frontend::check`, `frontend::compile` | Loads original sources and produces typed and lowered proposals. | Fresh ordinary native checking of every materialized concrete ordinary function root and of its retained obligations. | Reviewed source rules and library meanings. Source preservation is a separate obligation. | Simulates or exports the privately retained accepted artifact. | Preserve source selection, diagnostics, unused declarations and complete interfaces through explicit versioned changes. |
+| Project and qrate source: `frontend::project`, `frontend::check`, `frontend::compile` | Loads original sources and produces typed and lowered proposals. | A fresh ordinary native check of every concrete ordinary function root that is materialized, and of the obligations that it retains. | Reviewed source rules and library meanings. Source preservation is a separate obligation. | Simulates or exports the privately retained accepted artifact. | Preserve source selection, diagnostics, unused declarations and complete interfaces through explicit versioned changes. |
 | Explicit module-map source: `frontend::compile::ParsedProgram`, internal `frontend::specialize` | Closes explicit bindings, retains original source identities and selects a concrete profile before checking. The Fourier and QPE recognizers discover candidates only. | Ordinary Raw checking, or the required dedicated hierarchy or request gate. A failed check cannot select another route. | Source-step comparisons and finite contract lemmas, each within its bounded scope. | Runs the checked selected root. `emit-proposal` emits untrusted data. | Retain the module, entry and binding identity and the supported finite and hierarchical contracts. The retired public sized namespace is not restored. |
 | Flat Raw IR and QIRF: `ir::RawProgram`, `interchange::{native,codec}` | Constructs original operations, evidence DAGs and versioned bytes. | `Kernel` checks the submitted root and dependencies and, for execution, the complete retained QLV3/QDV1 view. | Independent Raw and Observation meanings and the ordinary native bridge theorems. | Consumes the exact checked graph. Output validity alone is not translation preservation. | Retain the published flat IR and the QIRF profiles `finite-v0` and `finite-meaning-v1`, or publish an explicit versioned mapping before changing them. |
 | Finite contracts and leaves: `contract`, `finite_leaf`, `pure_leaf` | Constructs independent requested equations and untrusted implementation candidates. | The native contract gate binds the original bodies, complete interfaces, encodings and exact equations. | Library and operator equations and arbitrary-reference lemmas, under their stated premises. | A private checked contract is usable only for its retained artifacts and capabilities. | Preserve the distinctions between a square leaf, a rectangular pure leaf, and an encoded or control contract. No substitution by equal width or by effect. |
@@ -665,10 +702,10 @@ records the predicates, the native modes and the theorem limits of each path.
 
 ### Required generic-contract bindings
 
-A generic rule must bind all of the following data, independently of QFT, QPE
-or any other algorithm name. The list is a contract for the planned migration
-to generic rules. It enables no serialized schema and claims no generic
-completeness.
+A generic rule must bind all of the following data. It binds them
+independently of QFT, QPE or any other algorithm name. The list is a contract
+for the planned migration to generic rules. It enables no serialized schema
+and claims no generic completeness.
 
 1. **Original implementation.** Retain the original artifact bytes, the
    complete operation bodies, the selected root, and the checked dependency
@@ -689,8 +726,9 @@ completeness.
    unnormalized hidden history and the ordered public projection. State the
    premises on arbitrary inputs and references. Distinct owners are not
    evidence of separability.
-4. **Independent expected meaning.** Fix the requested library, operator or
-   instrument meaning before candidate search. Retain its original
+4. **Independent expected meaning.** Fix the requested meaning before the
+   search for candidates, whether it is a library, operator or instrument
+   meaning. Retain its original
    definition, its request bytes, its source and specification identity, and
    its dependencies. The match of a recognizer cannot define it, and neither
    can a probability table derived from the implementation. Review the
@@ -704,10 +742,10 @@ completeness.
 6. **Actual checking execution.** Identify the protocol, schema, profile and
    checker compatibility separately from the edition and the product version.
    Retain the original byte decoding, the requested root, the derived
-   obligations and continuous checking states. Compare the complete retained
-   host execution representation independently where it crosses the Lean
-   boundary. A serialized success flag or an old receipt cannot replace a
-   fresh decision.
+   obligations and continuous checking states. Where the execution
+   representation that the host retains crosses the Lean boundary, compare
+   the complete representation independently. A serialized success flag or an
+   old receipt cannot replace a fresh decision.
 7. **Consumed or emitted artifact.** Bind a checked conclusion to the
    immutable object that execution or emission consumes. A claim about
    source, runtime or targets requires its own preservation link. Accepting
@@ -721,9 +759,9 @@ completeness.
 Rules:
 
 - The generic checker may establish a reusable composition or contract rule.
-- The Fourier sum, the QPE distribution and other algorithm-specific
-  mathematical results belong to the library, specification and proof modules
-  that instantiate those rules.
+- A mathematical result that is specific to an algorithm belongs to the
+  library, specification and proof modules that instantiate those rules. The
+  Fourier sum and the QPE distribution are such results.
 - Adding an algorithm must not require granting its name a trusted semantic
   rule.
 - An intended definition must stay independent of acceptance.
@@ -736,10 +774,10 @@ Rules:
 
 ## Admission and replacement process
 
-The adopted interpretations require an explicit review before any addition of
-semantic authority. The decision is recorded in an Issue, and this chapter
-keeps no second backlog. The account of a proposal must contain all of the
-following:
+This section gives the steps of primitive admission. The adopted
+interpretations require an explicit review before any addition of semantic
+authority. The decision is recorded in an Issue, and this chapter keeps no
+second backlog. The account of a proposal must contain all of the following:
 
 1. **Identify the addition.** Specify whether it changes semantic rules,
    exposes an existing rule under a source name, derives checked source, or
@@ -818,8 +856,8 @@ an edition and across editions.
 
 Rules:
 
-- A proposal must distinguish the retirement of a spelling or an
-  implementation from a change of the meaning of the primitive.
+- A proposal must distinguish two things: retiring a spelling or an
+  implementation, and changing the meaning of the primitive.
 - It must record the exact source and Core forms before and after the change,
   the semantic contracts, the profile and API mapping, the release
   compatibility, and the proof and guarantee dependencies.
@@ -834,8 +872,8 @@ Rules:
 - A later edition may deprecate source access under its explicit migration
   policy. It must not erase or weaken an accumulated guarantee for its
   historical scope.
-- Within edition 2026, implementation evolution preserves the old intended
-  meaning. An incompatible source removal requires the ordinary
+- Within edition 2026, the evolution of an implementation preserves the old
+  intended meaning. An incompatible source removal requires the ordinary
   breaking-release process, even when it preserves the safety implication.
 - A changed constitutional regime follows the amendment procedure of the
   Constitution.
@@ -844,7 +882,8 @@ Rules:
 
 ## Guardrails
 
-These checks detect drift of the inventories of this chapter.
+These checks detect when the source and the inventories of this chapter drift
+apart.
 
 | Check | What it fixes or rejects |
 | --- | --- |
@@ -858,8 +897,8 @@ These checks detect drift of the inventories of this chapter.
 
 Rules:
 
-- A refresh of the metadata of these checks is not primitive admission and
-  not proof.
+- Refreshing the metadata of these checks is not primitive admission and not
+  proof.
 - An added source identity cannot pass by a refreshed file digest or by an
   inserted row of an internal selected emitter.
 - The mutation calibration is a drift and coverage check. It is not a
@@ -888,8 +927,9 @@ The regression sources include:
 
 ## Status and limits
 
-All 13 identities have common source typing. Each concrete profile has its own
-capacities. A code in the table is the code that the adapter reports.
+The common checker types all 13 identities. Each concrete profile has its own
+capacities, and the table gives them. A code in the table is the code that
+the adapter reports.
 
 | Form | Finite adapter | Selected adapter |
 | --- | --- | --- |
@@ -932,9 +972,9 @@ review:
 | --- | --- |
 | Code | The common checker types the 13 identities. The finite adapter lowers all 13, and the selected adapter lowers every one except `discard`. Acceptance is solely by the native Lean checker in `lean-kernel/`. |
 | Tests | The regression sources of [Guardrails](#guardrails) exercise the inventory. Listing a regression in this chapter does not report a test run. A successful test is not admission. |
-| Proof | An ordinary accepted root has the two admitted scoped guarantees `QS-QLV1-OWNERSHIP-2026-01` and `QS-QLV1-SCOPE-2026-01`, for ownership and classical scope. They are protected. The general QS, PR, quantitative RS and EXACT duties are binding and pending. An optional finite request or leaf contract establishes an additional result only within its premises. `PathSum.compile_sound` proves the correspondence of individual path states. Alone it proves neither the complete complex sum nor a Fourier or QPE specification, source preservation, completeness, control or observation integration. No theorem establishes the complete analytic operator composition of a hierarchy. The inventory is not a mathematical proof of global minimality: retaining a rule records the semantic interface that the implementation needs. The audit does not prove that no alternative algebraic derivation of `global_phase_eighth` exists. |
+| Proof | An ordinary accepted root has the two admitted scoped guarantees `QS-QLV1-OWNERSHIP-2026-01` and `QS-QLV1-SCOPE-2026-01`, for ownership and classical scope. They are protected. The general QS, PR, quantitative RS and EXACT duties are binding and pending. An optional finite request or leaf contract establishes an additional result only within its premises. `PathSum.compile_sound` proves the correspondence of individual path states. Alone it proves none of these: the complete complex sum, a Fourier or QPE specification, source preservation, completeness, control or observation integration. No theorem establishes the complete analytic operator composition of a hierarchy. The inventory is not a mathematical proof of global minimality: retaining a rule records the semantic interface that the implementation needs. The audit does not prove that no alternative algebraic derivation of `global_phase_eighth` exists. |
 | Preservation | The contracts of the inventory are intended contracts. They do not claim completed general preservation proofs. The bounded engineering source checks of [Source retention and resources](#source-retention-and-resources) claim no general source-preservation theorem. This chapter asserts no general source or runtime, CPTP, clean-release, target-realization or quantitative resource theorem. |
-| Specification review | A reference definition and any added sealed semantics require human specification review. No hash, guardrail or test supplies that review. The inventory has no human adoption as a minimal generating set. |
+| Specification review | A reference definition and any added sealed semantics require human specification review. No hash, guardrail or test supplies that review. No human has adopted the inventory as a minimal generating set. |
 
 The [authority hierarchy](authority.md) records the adoption and the proof
 status of the constitutional obligations.

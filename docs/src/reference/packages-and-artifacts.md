@@ -1,21 +1,26 @@
 # Qrates, source identity and external artifacts
 
-A **qrate** is the smallest independently versioned and distributable unit of
-Qleisli programs. A qrate or a source tree declares itself in a **manifest**,
-a file named `Qargo.toml`.
+A **qrate** is the smallest unit of Qleisli programs that has a version of
+its own and that can be distributed by itself. A qrate or a source tree
+declares itself in a **manifest**, a file named `Qargo.toml`.
 
-This chapter specifies the authority boundary of packages and artifacts for
+This chapter specifies how much authority packages and artifacts have in
 edition 2026, under the [authority hierarchy](authority.md). It states what a
 qrate, a source file or an external artifact may establish, and what it
-cannot authorize by itself. It also gives the manifest format and the source
-selection of the `qleisli` CLI. [Status and limits](#status-and-limits)
+cannot authorize by itself. It also gives the format of the manifest and
+says how the `qleisli` CLI selects source. [Status and limits](#status-and-limits)
 states the limits of that CLI adapter.
 
 ## Source and the five artifact roles
 
-The language, its kernel and accepted ordinary `.qli` define executable
-Qleisli meaning. An artifact has one or more of five **roles**. A role states
-what the artifact may establish or select. The
+Source files are not the only files around a program. Proofs, test reports,
+target profiles and manifests accompany it. This section sorts all of them
+into five **roles**, so that you can tell what a given file is able to
+decide.
+
+The language, its kernel and accepted ordinary `.qli` define the executable
+meaning of Qleisli. An artifact has one or more of the five roles. A role
+states what the artifact may establish or select. The
 [primitive boundary](primitive-boundary.md) answers which meanings require
 language rules. This chapter answers which artifacts may claim each role.
 
@@ -25,40 +30,44 @@ Qleisli Debugger, and QCP is the Qleisli Circuit Profiler.
 | Role | What it may establish or select | What it cannot authorize by itself |
 | --- | --- | --- |
 | Semantic | The normative language, its kernel and accepted `.qli` define the requested computation, types, owners, effects and specified contracts. | A source name or an annotation cannot manufacture the required evidence or waive a failed check. |
-| Evidence | Checked Lean proofs, certificates and verifier decisions establish their stated claims about exact subjects under recorded premises. | They cannot redefine the source denotation, silently strengthen a contract or replace a missing source/target correspondence. |
+| Evidence | Checked Lean proofs, certificates and verifier decisions establish the claims that they state. Each claim is about an exact subject and holds under recorded premises. | They cannot redefine what the source denotes or silently strengthen a contract. They cannot stand in for a missing correspondence between source and target. |
 | Observation | QLT, QDB, QCP, diagnostics, simulations and analyses report bounded denotation, behavior or cost under explicit profiles. | A test pass, a resource estimate or a diagnosis cannot issue production acceptance or trusted Meaning evidence. |
-| Realization | Target profiles, decompositions, routing and associated evidence describe or justify an implementation on a selected target. | A native gate set, a recognizer or a successful synthesis cannot change logical source meaning or supply an absent resource bound. |
+| Realization | Target profiles, decompositions, routing and associated evidence describe or justify an implementation on a selected target. | A native gate set, a recognizer or a successful synthesis cannot change the logical meaning of the source. It cannot supply a resource bound that is absent. |
 | Organization | Qrate manifests, dependency and build records, package provenance and documentation organize and identify inputs and artifacts. | Packaging, a hash, version equality or prose cannot install a semantic rule or certify a program. |
 
 Rules:
 
-- A bundled, user-authored or generated definition receives the same
-  applicable source checks and independent native checks. Its origin supplies
-  no primitive, ownership, effect, inverse, control or Meaning privilege.
-- A file may contain several roles. Classification follows the claim that the
-  file makes, not its extension and not its distribution origin.
+- Every definition receives the same applicable source checks and the same
+  independent native checks. This holds whether the definition is bundled,
+  written by a user or generated. The origin of a definition supplies no
+  primitive, ownership, effect, inverse, control or Meaning privilege.
+- A file may contain several roles. The claim that a file makes decides its
+  classification. Its extension does not, and neither does the origin of its
+  distribution.
 - Documentation tooling must distinguish prose, machine-readable
   declarations, requested contracts, test observations and checked evidence.
-- Removing an external proof may remove required acceptance evidence. It
-  cannot change the denotation of the declared program.
+- Removing an external proof may remove evidence that acceptance requires. It
+  cannot change what the declared program denotes.
 
 For example, a doc comment that says “exact Fourier transform” is not a
 Fourier equation and not a proof.
 
 ### Observation tools
 
-QLT is an external observational and testing surface.
+QLT is a surface for observing and testing a program. It is external to the
+program.
 
 Rules:
 
-- The bounded amplitude or cost inspection that QLT permits does not become a
-  `.qli` primitive that inspects live coherent state or a program's own
-  denotation.
+- QLT permits a bounded inspection of amplitudes or of cost. That inspection
+  does not become a `.qli` primitive that inspects live coherent state or a
+  program's own denotation.
 - QDB, QCP and other analyses cannot upgrade acceptance.
 
 ### Generated source
 
-A generator may produce `.qli` source or typed program structure.
+Some source is written by a program and not by a person. A generator may
+produce `.qli` source or typed program structure.
 
 Rules:
 
@@ -69,32 +78,38 @@ Rules:
 
 ### Derived artifacts
 
-Serialized Core or IR, caches and generated artifacts are derivative.
+Serialized Core or IR, caches and generated artifacts are derivative: a tool
+produces each of them from source or from another artifact.
 
 Rules:
 
 - A supported artifact path must bind its source and its context where it
-  makes a source claim. It must obtain the applicable fresh independent check.
-- Valid output IR alone does not prove source preservation.
-- An optimizer or a backend intrinsic implements an existing requested
-  meaning. Recognizing a pattern cannot decide what the source means.
+  makes a claim about source. It must obtain the applicable fresh independent
+  check.
+- Valid output IR alone does not prove that the source was preserved.
+- An optimizer or a backend intrinsic implements a meaning that the source
+  has already requested. Recognizing a pattern cannot decide what the source
+  means.
 - Output, phase, axis order, workspace, references and resources keep the
   obligations of [realization](realization.md) and of the
   [production boundary](production-boundary.md).
 
 ## Qrate, module and file
 
-A **module** is a canonical namespace and visibility unit. A **file** stores
-source. A qrate may contain ordinary source, documentation, tests or QLT,
-proofs, resource metadata and explicitly permitted build artifacts.
+This section separates three units that are easy to confuse: the qrate, the
+module and the file. A **module** is a namespace with a canonical name, and
+it is the unit of visibility. A **file** stores source. A qrate may contain
+ordinary source, documentation, tests or QLT, proofs, resource metadata and
+explicitly permitted build artifacts.
 
 Rules:
 
-- Bundling an item in a qrate confers no extra authority on it.
+- Bundling an item in a qrate gives the item no extra authority.
 - A qrate may depend on other qrates. It must not extend, weaken or bypass
   the language semantics or the required verifier gates.
-- A qrate owns its package, version and public-API boundary. The module rules
-  and the declared visibility rules of the language determine access.
+- A qrate owns its package, its version and the boundary of its public API.
+  The module rules and the declared visibility rules of the language
+  determine access.
 - A filesystem directory never grants an additional public, private,
   qrate-local or semantic permission.
 - These definitions fix concepts. They add no visibility modifier.
@@ -104,21 +119,24 @@ Rules:
   follow this contract. This requirement applies to qargo, a separate tool
   that this repository does not contain.
 - The behavior of such a tool does not define what a qrate means.
-- A registry, an installer, a solver, a lockfile syntax, a duplicate-version
-  policy and a dependency-cycle policy each require a supported package
-  specification of their own.
+- Six parts of a package system each require a supported package
+  specification of their own. They are a registry, an installer, a solver, a
+  lockfile syntax, a policy for duplicate versions and a policy for
+  dependency cycles.
 
 ### Identities
 
-A package, a declaration, a program instance and a distribution have
-distinct identities.
+Two things can share a name and differ in content. This section therefore
+keeps four identities apart: a package, a declaration, a program instance and
+a distribution have distinct identities. The table states what each identity
+has to distinguish.
 
 | Identity | Required distinction |
 | --- | --- |
-| Logical package | Qrate name and package version, with declared edition and toolchain compatibility. Equal names and versions alone do not identify the selected content. |
-| Canonical declaration | Qrate identity, canonical module path and declaration identity. A resolved context selects the package instance. Absolute paths, line numbers and temporary generation names are diagnostic and storage coordinates. |
+| Logical package | The qrate name and the package version, with the declared edition and toolchain compatibility. Equal names and versions alone do not identify the selected content. |
+| Canonical declaration | The qrate identity, the canonical module path and the declaration identity. A resolved context selects the package instance. Absolute paths, line numbers and temporary generation names are coordinates for diagnostics and storage. |
 | Resolved program instance | The selected source and dependency closure, the relevant configuration and static actuals, the requested edition, the pair of toolchain and [canonical std](#canonical-std-and-the-selected-toolchain), and the declared generation inputs. Required profiles and evidence additionally bind the artifact and the checker. |
-| Distribution artifact | The exact package or archive bytes and their provenance. Archive layout and content hashes identify a distribution. They do not define the mathematical meaning of a declaration. |
+| Distribution artifact | The exact bytes of the package or archive, and their provenance. Archive layout and content hashes identify a distribution. They do not define the mathematical meaning of a declaration. |
 
 Rules:
 
@@ -134,13 +152,16 @@ Rules:
 
 ### Relocation
 
-A canonical identity and a storage location are separate.
+Source moves: a directory is renamed, a package is repacked, a generator
+writes into a temporary directory. This section says which moves change a
+name and which do not. A canonical identity and a storage location are
+separate.
 
 Rules:
 
-- Moving unchanged source while preserving its canonical qrate, module and
-  declaration identity does not rename the declaration. It does not change
-  the denotation of the declaration.
+- Suppose that unchanged source moves and that the move preserves its
+  canonical qrate, module and declaration identity. The move does not rename
+  the declaration. It does not change what the declaration denotes.
 - A move of the packaging layout may change archive bytes and provenance
   without changing that canonical name.
 - Moving a declaration from canonical `algebra::operation` to
@@ -148,13 +169,14 @@ Rules:
 - The distinction also applies to generated files. A temporary directory is
   not a semantic identity of its own.
 - Evidence and caches must distinguish canonical program identity from
-  storage locations. They must bind the source, dependency and artifact bytes
-  and the exact interfaces.
-- Stable names or equal widths do not authorize evidence substitution.
+  storage locations. They must bind the bytes of the source, of the
+  dependencies and of the artifacts, and the exact interfaces.
+- Stable names or equal widths do not authorize substituting one piece of
+  evidence for another.
 - A storage move alone supplies neither a proof nor permission to rebind an
   accepted handle.
-- A changed checked subject or a changed representation requires its
-  applicable fresh checks and its preservation or transport support.
+- When a checked subject or a representation changes, the change requires
+  its applicable fresh checks and its preservation or transport support.
 
 ### Module names and storage paths
 
@@ -162,17 +184,18 @@ Rules:
 --module=NAME=PATH --entry=MODULE::FUNCTION
 ```
 
-The filesystem convention maps `src/algebra.qli` to the module `algebra` when
-`src` is the selected root. Nested relative components form nested module
-names. This mapping is a convention of the frontend. The explicit binding
-form above names a module and its storage path separately.
+A module has a name, and its source has a place on disk. The filesystem
+convention derives the name from the place. It maps `src/algebra.qli` to the
+module `algebra` when `src` is the selected root. Nested relative components
+form nested module names. This mapping is a convention of the frontend. The
+explicit binding form above names a module and its storage path separately.
 
 Rules:
 
 - The module name participates in identity. The absolute source path is
   provenance.
-- The source tree of each bound file must separately satisfy the explicit
-  edition check of its manifest.
+- Each bound file belongs to a source tree. That tree must separately satisfy
+  the explicit edition check of its manifest.
 
 Both of these option forms are supported:
 
@@ -202,9 +225,10 @@ edition = "2026"
 root = "src"
 ```
 
-The block shows the supported spelling of a source-tree manifest. A source
-file uses the nearest `Qargo.toml` in its directory or in an ancestor
-directory. The `qleisli` CLI knows these keys:
+A source tree states its edition in a manifest. The block shows the supported
+spelling of a source-tree manifest. A source file uses the nearest
+`Qargo.toml` in its directory or in an ancestor directory. The `qleisli` CLI
+knows these keys:
 
 | Key | Value | Use by the `qleisli` CLI |
 | --- | --- | --- |
@@ -221,17 +245,18 @@ Rules:
   concrete constitutional edition in schema-2 `[qrate].edition`. There is no
   fallback to a default, to "current" or to "latest". The loader rejects a
   tree without a manifest with the code `project`.
-- Edition selects the constitutional regime independently of the toolchain
-  release and source grammar. Changing the selection requires an explicit edit
-  to the manifest. Updating the toolchain preserves the declared edition.
+- The edition selects the constitutional regime. The selection does not
+  depend on the toolchain release or on the source grammar. Changing the
+  selection requires an explicit edit to the manifest. Updating the toolchain
+  preserves the declared edition.
 - `schema-version` must be the integer `2`. `[qrate].edition` must be a
   string that names a supported edition, and `"2026"` is the only one. The
   loader rejects a manifest that breaks either requirement with the code
   `project`.
 - A manifest that declares only the schema version and the edition is valid
   for an ordinary source tree. That tree is not thereby a full qrate.
-- The schema and edition check does not validate every name, version or
-  package contract of a qrate.
+- The check of the schema version and the edition does not validate every
+  name, version or package contract of a qrate.
 - The CLI ignores an unknown key and reports a warning for it. A known key
   implements no feature, no dependency selection and no build action.
 - Dependency tables are unsupported. The CLI treats `[dependencies]` as an
@@ -281,11 +306,13 @@ unused manifest key `unused`; this Qleisli command ignores it; check the schema-
 qleisli check <qrate-directory> --qrate
 ```
 
-`--qrate` opts into the explicit source root beneath the selected qrate
-directory. The manifest of that directory names the root in `[source].root`.
-`check`, `run`, `sample` and `emit-ir` accept the option. `verify-ir` and
-`doc` do not. Root selection checks ordinary sources. It is not package,
-dependency, test or documentation orchestration.
+Pass `--qrate` when the directory that you name is a qrate and its manifest
+says where the sources are. `--qrate` opts into the explicit source root
+beneath the selected qrate directory. The manifest of that directory names
+the root in `[source].root`. `check`, `run`, `sample` and `emit-ir` accept
+the option. `verify-ir` and `doc` do not. Root selection checks ordinary
+sources. It does not orchestrate packages, dependencies, tests or
+documentation.
 
 Rules:
 
@@ -306,13 +333,15 @@ The loader accepts the roots `src`, `./src` and `src/./`. It rejects `../x`,
 
 A **captured manifest** is the validated manifest text that selected the
 edition of a source. A loader retains it with the project that it loads.
+Later work on that project uses the retained text and does not read the
+manifest file again.
 
 Rules:
 
 - A qrate selection retains the exact validated manifest bytes that selected
   its source root. Later loading from that selection inherits the captured
   request. It does not reread the selecting manifest.
-- A fresh selection observes an explicit edit of the manifest.
+- A fresh selection sees an explicit edit of the manifest.
 - Discovery captures each nested manifest. It associates the manifest with
   the original paths of its `.qli` and `.qlt` files.
 - Project preparation rejects a changed root or a changed module inventory
@@ -336,7 +365,8 @@ Rules:
 
 ## Input limits
 
-The bounded loader limits the bytes that it reads.
+The bounded loader limits the bytes that it reads. It applies one limit to
+each manifest, one to each source file and one to the project as a whole.
 
 | Limit | Value | Scope |
 | --- | --- | --- |
@@ -346,8 +376,8 @@ The bounded loader limits the bytes that it reads.
 
 Rules:
 
-- Retained manifest text shares the aggregate project input budget with
-  source text.
+- Retained manifest text and source text share one budget, the aggregate
+  input budget of the project.
 - Each manifest that the loader reads counts once. The sources that inherit
   that manifest share its bytes.
 - The limit for a source file and the limit for a manifest are separate.
@@ -362,15 +392,17 @@ Rules:
 ## Configuration selects inputs, not language rules
 
 A manifest configures the inputs of a program. It does not configure the
-language.
+language. This section lists what a manifest can select and what it cannot
+change.
 
 Rules:
 
 - A manifest may select supported source inputs and environment inputs.
 - A manifest must not redefine typing, ownership, effects, primitive meaning,
   verifier rules or theorem statements.
-- A field that purports to ignore phase, allow dirty clean-release, insert
-  measurement or trust external operations grants no such permission.
+- A field can purport to ignore phase, to allow dirty clean-release, to
+  insert measurement or to trust external operations. Such a field grants no
+  such permission.
 - Unknown metadata does not become an executable feature by being present or
   hashed.
 - Cargo-style additive features are not adopted implicitly.
@@ -378,15 +410,15 @@ Rules:
   the resolved program identity. The selected dependencies and source
   components, the closed static actuals and the declared generation inputs
   must be reproducible.
-- A target, approximation or synthesis choice that affects implementation or
-  evidence must be recorded in the corresponding realization, profile or
-  evidence identity.
-- Such a choice must not silently alter logical source denotation or weaken
-  an exact obligation. The
+- A choice of target, approximation or synthesis can affect implementation or
+  evidence. Such a choice must be recorded in the corresponding realization,
+  profile or evidence identity.
+- Such a choice must not silently alter the logical denotation of the source
+  or weaken an exact obligation. The
   [exactness rules](authority.md#exact-constitutional-obligations) apply.
 - A mere diagnostic path, a documentation choice or an archive layout is not
   a semantic switch. Storage and provenance must be recorded separately from
-  program-changing configuration.
+  configuration that changes the program.
 - A reproducibility record must expose the relevant closure. It must not rely
   on undeclared network, time, randomness, filesystem state or ambient
   environment.
@@ -395,14 +427,16 @@ Rules:
 - Hashing a recorded configuration identifies inputs. It supplies no language
   semantics, no proof and no acceptance authority.
 
-For example, the same logical `foo@1.2.0` with two different selected
-operation providers or static sizes is not interchangeable evidence for one
-resolved program. `foo@1.2.0` is conceptual package notation here. It is not
-a dependency syntax.
+For example, the same logical `foo@1.2.0` can be selected with two different
+operation providers or with two different static sizes. The two selections
+are not interchangeable evidence for one resolved program. `foo@1.2.0` is
+conceptual package notation here. It is not a dependency syntax.
 
 ## There is no trusted build script
 
-Build-time execution may produce ordinary inputs or artifacts.
+A build can run code of its own, such as a generator or a script. This
+section says what such code can produce and what it cannot. Build-time
+execution may produce ordinary inputs or artifacts.
 
 Rules:
 
@@ -414,8 +448,8 @@ Rules:
   checks.
 - A compromised generator may change source. Its provenance cannot make
   invalid output accepted.
-- Obtaining or resolving a qrate does not grant arbitrary host-code
-  execution.
+- Obtaining or resolving a qrate does not grant permission to execute
+  arbitrary code on the host.
 - An external build action must be explicit, inspectable and scoped to its
   declared inputs and capabilities.
 - The preferred generation defaults exclude undeclared ambient inputs.
@@ -445,7 +479,8 @@ Each claimed artifact needs its own applicable checking and correspondence.
 ## Canonical std and the selected toolchain
 
 The **canonical std** is the standard-library qrate that an official Qleisli
-product selects and bundles.
+product selects and bundles. Std comes with the toolchain: a user does not
+select it separately.
 
 Rules:
 
@@ -459,9 +494,9 @@ Rules:
   user upgrades independently.
 - A normal user manifest does not independently choose std.
 - A user qrate keeps an independent version.
-- The pairing is a distribution and compatibility privilege only. The
-  ordinary `.qli` of std follows the same source, public-effect, evidence and
-  native checking as user source and third-party source.
+- The pairing is a privilege of distribution and compatibility only. The
+  ordinary `.qli` of std follows the same checking as user source and
+  third-party source: source, public-effect, evidence and native checking.
 - The std namespace cannot hide an observation or introduce a primitive.
 - Resolution records, reproducibility records and official release records
   must make the effective pairing of toolchain and std unambiguous. They must
@@ -499,8 +534,9 @@ Rules:
 
 ### The bundled std descriptor
 
-The read-only Rust API `frontend::project::bundled_std()` returns a privately
-constructed descriptor after the embedded-manifest gate.
+A Rust caller can ask which std the linked library carries. The read-only
+Rust API `frontend::project::bundled_std()` answers after the
+embedded-manifest gate. It returns a privately constructed descriptor.
 
 | Accessor | Value |
 | --- | --- |
@@ -549,8 +585,9 @@ Rules:
 
 ## Release identity and compatibility
 
-Select one complete release of each product. The ecosystem has three
-independently versioned products.
+The ecosystem has three products, and each has a version of its own. This
+section says how an installation identifies a release of each and checks
+that the releases fit together. Select one complete release of each product.
 
 | Product | Components with the product's exact release version | Version authority |
 | --- | --- | --- |
@@ -558,42 +595,44 @@ independently versioned products.
 | qlirgo | `qargo`, the bundled linter, `qlifmt` and `qlidoc` | qlirgo root Cargo `[package].version` |
 | qleisliup | The installer and selector use their own release | qleisliup root Cargo `[package].version` |
 
-The adopted linter name is `qlinties`. Existing companion bundles use the
-binary name `qlippy` until the companion rename ships. The current Qleisli
-release inventory comprises the compiler, checker and std. QLT, QDB and QCP
-have planned implementation scope.
+The adopted name of the linter is `qlinties`. Existing companion bundles use
+the binary name `qlippy` until the companion rename ships. The current
+release inventory of Qleisli comprises the compiler, the checker and std.
+QLT, QDB and QCP have planned implementation scope.
 
-A supported official install, update or rollback selects a complete product
-snapshot. Verify its inventory before switching the active selection to that
-snapshot. Each bundled component inherits the product's full version,
-including the prerelease identifier. Reject incomplete or mixed-version
-snapshots. The exact
+A supported official install, update or rollback selects a complete snapshot
+of a product. Verify the inventory of that snapshot before switching the
+active selection to it. Each bundled component inherits the full version of
+the product, including the prerelease identifier. Reject a snapshot that is
+incomplete or that mixes versions. The exact
 [canonical std pairing](#canonical-std-and-the-selected-toolchain) is one
 application of this rule.
 
 ### Declared pairing and exact identity
 
 One release may support a separately versioned release of the other product.
-Resolve that pairing from machine-readable metadata supplied with the
-distributions. Require an explicit declaration for the requested Qleisli and
-qlirgo pair. Reject an unknown pairing. Treat a capability declared
-unavailable as unavailable and keep the selected toolchain.
+Resolve that pairing from the machine-readable metadata that the
+distributions supply. Require an explicit declaration for the requested pair
+of Qleisli and qlirgo. Reject an unknown pairing. When a capability is
+declared unavailable, treat it as unavailable and keep the selected
+toolchain.
 
 The minimum contract uses the following fields. A format may store them
 in a signed index, a distribution manifest or its referenced receipts.
 
 | Identity | Contents |
 | --- | --- |
-| Product and release | Product name, complete version and the component inventory with each exact component version |
-| Exact build | Source revision, host or target, each artifact's SHA-256 and size, and the emitted compiler/checker build and bundled std identities |
-| Interfaces | Supported constitutional edition, analysis protocol, artifact schemas and target/cost-model identities, recorded separately |
-| Compatibility | Explicitly supported other product and release, applicable protocol/schema versions or supported ranges, and capability availability |
+| Product and release | The product name, the complete version, and the component inventory with the exact version of each component |
+| Exact build | The source revision, the host or target, the SHA-256 and the size of each artifact, and the identities of the emitted compiler/checker build and of the bundled std |
+| Interfaces | The supported constitutional edition, the analysis protocol, the artifact schemas and the target/cost-model identities, recorded separately |
+| Compatibility | The other product and release that are explicitly supported, the applicable protocol/schema versions or supported ranges, and the availability of capabilities |
 | Required environment | The checker, proof/kernel environment and evidence identities for the validation the release claims |
 
 Use the artifact identities to check the selected bytes before use. Where a
-result promises reproducibility, retain the exact source, checker and artifact
-identities that produced it. A human-facing version identifies the release.
-The manifest and its associated receipts identify the exact build.
+result promises reproducibility, retain the exact identities of the source,
+the checker and the artifacts that produced it. A human-facing version
+identifies the release. The manifest and its associated receipts identify
+the exact build.
 
 qleisliup consumes the declared metadata to select an immutable snapshot.
 The bound std descriptor and native-result identities provide current
@@ -612,20 +651,23 @@ described as an official distribution.
 
 ### Version-drift checks
 
-Derive or check repeated manifests and runtime version fields from their
-product's root version. Qleisli's shared documentation and edition checks
-reject drift in the native, Python and Lean version fields and bundled std.
-The packaged source and installed binaries run separate distribution checks.
-The qlirgo source and package verifiers check the component manifests and all
-four executables against its root version. The complete supported-host
-distribution retains the exact build and installation evidence.
+A product repeats its version in several files, and the copies can drift
+apart. Derive or check repeated manifests and runtime version fields from
+the root version of their product. The shared documentation and edition
+checks of Qleisli reject drift in the native, Python and Lean version fields
+and in the bundled std. The packaged source and installed binaries run
+separate distribution checks. The source verifier and the package verifier
+of qlirgo check the component manifests and all four executables against the
+root version of qlirgo. The complete supported-host distribution retains the
+exact build and installation evidence.
 
 ## Status and limits
 
 Scope:
 
-- This chapter introduces no registry, dependency solver, feature system,
-  build hook, foreign-execution API or accepted-handle format.
+- This chapter introduces no registry, no dependency solver, no feature
+  system, no build hook, no API for foreign execution and no format for
+  accepted handles.
 - These rules admit no constitutional interpretation.
 
 Limits of the implementation:
@@ -638,8 +680,8 @@ Limits of the implementation:
 - The module-import rules are not a completed qrate dependency model.
   Frontend work on module and import ergonomics does not implement qrate
   dependency resolution.
-- General cross-qrate resolution and storage-independent reuse of evidence
-  are separate work.
+- Two tasks are separate work: general resolution across qrates, and reuse
+  of evidence that does not depend on storage.
 - This chapter implements no external build action.
 - A qrate selection holds the identity of its directory on Unix only. Other
   targets rely on their documented filesystem trust assumption.
@@ -681,8 +723,8 @@ Proof status:
 - The two admitted scoped QLV1 guarantees are protected.
 - These rules discharge none of the broader QS, PR, RS and EXACT
   obligations. Those obligations are pending under their recorded premises.
-  So are the general source, target and runtime preservation theorems and
-  the resource theorems.
+  So are the resource theorems and the general theorems of source, target
+  and runtime preservation.
 - The six boundary Issues have their individual acceptance duties and
   regression duties. This chapter does not close their umbrella, and it does
   not complete a qrate ecosystem.

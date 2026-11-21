@@ -3,13 +3,16 @@
 The **source text** of a Qleisli program is the UTF-8 bytes of its modules.
 This chapter specifies how the scanner and the parser read source text in
 constitutional edition 2026. It also specifies the source forms and the source
-obligations that the frontend checks on every program. The **common judgment**
-is the single mandatory check of each complete original AST. It runs before
-any concrete profile decides eligibility.
+obligations that the frontend checks on every program.
 
-Two loaders read source text. The **project loader** reads a source root for
-the project route. The **selected loader** reads explicitly supplied modules
-for the selected-entry route. The chapter also uses these terms:
+Every program goes through one mandatory check, the **common judgment**. It
+checks each complete original AST. It runs before any concrete profile
+decides eligibility.
+
+Two loaders read source text, one for each route of the CLI. The **project
+loader** reads a source root for the project route. The **selected loader**
+reads explicitly supplied modules for the selected-entry route. The chapter
+also uses these terms:
 
 | Term | Meaning | Defined in |
 | --- | --- | --- |
@@ -17,49 +20,56 @@ for the selected-entry route. The chapter also uses these terms:
 | Finite project, Selected Raw, Selected hierarchy | The three lowering profiles | [Elaboration](elaboration.md#source-and-acceptance-boundary) |
 | Native checker | The checker executable that `lean-kernel/` builds | [Elaboration](elaboration.md#source-and-acceptance-boundary) |
 
-A rule names the class that the common judgment reports for a program that
-breaks it. [Codes](diagnostics.md#codes) maps each class to the code of each
-route. A syntax error has the code `parse` on both routes, except for the
-limit refusals that [Status and limits](#status-and-limits) lists.
+Each rule names the class of diagnostic that the common judgment reports for
+a program that breaks the rule. [Codes](diagnostics.md#codes) maps each class
+to the code of each route. A syntax error has the code `parse` on both
+routes, except for the limit refusals that
+[Status and limits](#status-and-limits) lists.
 
-The [qrate and artifact Reference](packages-and-artifacts.md) distinguishes
-canonical module and declaration identity from source-file storage and
-resolved configuration. Its edition-binding gaps are separate from the scanner
-and parser checks. The [elaboration whitelist](elaboration.md) specifies the
-permitted surface-to-core expansion, evaluation order, owners, phase, original
-locations and the independent checking obligations that stay open. It grants
-no unsupported projection.
+Two other chapters cover neighboring subjects. The
+[qrate and artifact Reference](packages-and-artifacts.md) keeps two things
+apart. One is the canonical identity of a module or a declaration. The other
+is the storage of source files and the resolved configuration. The gaps that
+it records in edition binding are separate from the scanner and parser
+checks.
+
+The [elaboration whitelist](elaboration.md) specifies the permitted expansion
+from surface forms to core forms. It also specifies evaluation order, owners,
+phase, original locations and the independent checking obligations that stay
+open. It grants no unsupported projection.
 
 ## Source loading and the common judgment
 
-Both loaders produce one source representation, and the common judgment
-checks it.
+Loading turns the bytes of the modules into a form that the checker can
+read. Whichever loader reads a program, the result is one source
+representation, and the common judgment checks it.
 
 Rules:
 
 - Both loaders must use one scanner, one token stream, one parser and one
   source `Module`/`Span` representation.
-- The common judgment must check each complete original AST before finite or
-  selected concrete eligibility.
-- Declaration and lexical identities, types, static premises, owner and access
-  rules, body dependencies and principal effects come from the common
-  judgment.
+- The common judgment must check each complete original AST first. Finite or
+  selected concrete eligibility is decided after it.
+- The common judgment supplies these facts about a program: declaration and
+  lexical identities, types, static premises, owner and access rules, body
+  dependencies and principal effects.
 - The common judgment checks every declaration. This includes private and
-  unused siblings, both arms of a branch and the body of a zero-iteration
-  fold.
-- Parsing alone confers neither source approval nor native verification
-  evidence. Parsing or source checking adds no emitter support and no
-  `Op<A,B>` form.
-- A source-semantic error precedes an unsupported concrete form, including in
-  an unused declaration.
-- An unsupported projection of a declaration is a located eligibility failure
-  when that definition is requested. It is not a skipped original body, and it
-  is not a fallback source approval.
+  unused siblings, both arms of a branch and the body of a fold with zero
+  iterations.
+- A program that only parses has no source approval and no native
+  verification evidence. Neither parsing nor source checking adds emitter
+  support or an `Op<A,B>` form.
+- A source-semantic error takes precedence over an unsupported concrete
+  form. This holds even when the error is in an unused declaration.
+- When a profile does not support the projection of a declaration and that
+  definition is requested, the result is an eligibility failure with a
+  location. The original body is not skipped, and the failure is not a
+  fallback source approval.
 - Both loaders add the eight ordinary source modules of the fixed registry and
   validate its edition-2026 manifest. The bundled modules undergo the same
   common judgment as caller source.
 - Each loader applies its byte policy to bundled bytes before copying or
-  parsing. Placement under `std::` supplies no checking exemption.
+  parsing. A module placed under `std::` is exempt from no check.
 - The selected loader reserves all eight bundled module slots. It accepts 1
   through 56 supplied modules. [Status and limits](#status-and-limits) gives
   its byte limits.
@@ -70,19 +80,20 @@ Rules:
 > provenance. A filesystem entry retains its selected path. An in-memory entry
 > carries no invented file or manifest.
 
-> **Implementation note.** The project loader consumes the collection into the
-> mutable `Project` compatibility view. Finite checking, compilation and
-> checked-effect operations reconstruct facts from the original ASTs that the
-> view holds at that time. After a caller mutates the view, no stale parallel
-> collection or approval is reused. Source-only documentation and rendering
-> acquire no semantic checking from this. The selected loader retains its
-> immutable originals. It records a concrete projection result for each
-> declaration only after the complete common judgment.
+> **Implementation note.** The project loader moves the collection into the
+> mutable `Project` compatibility view. Three kinds of operation rebuild
+> their facts from the original ASTs that the view holds at the time they
+> run: finite checking, compilation and checked-effect operations. After a
+> caller mutates the view, nothing reuses a stale parallel collection or a
+> stale approval. Documentation and rendering that read source only gain no
+> semantic checking from this. The selected loader retains its immutable
+> originals. It records a concrete projection result for each declaration
+> only after the common judgment is complete.
 
 ### Native check modes
 
-The implementation notes and the status section of this chapter name four
-modes of the native checker by short names:
+The implementation notes and the status section of this chapter refer to
+four modes of the native checker. Each mode has a short name:
 
 | Short name | Mode of the native checker | Request | Specified in |
 | --- | --- | --- | --- |
@@ -98,8 +109,10 @@ for a record in that encoding.
 
 ## Bytes, characters and positions
 
-Source is a sequence of UTF-8 bytes. A **span** is a half-open byte interval
-in the original input.
+This section says which bytes and characters the scanner accepts, and how a
+diagnostic points into the source. Source is a sequence of UTF-8 bytes. A
+**span** is a half-open byte interval in the original input: it includes its
+first offset and excludes its last.
 
 Rules:
 
@@ -111,17 +124,18 @@ Rules:
   (`parse`).
 - Bidi controls and other control characters are rejected, including in
   comments (`parse`).
-- The scanner rejects every scalar with `Default_Ignorable_Code_Point` or
-  `General_Category=Format (Cf)` in Unicode 17.0.0 (`parse`). This covers
-  Unicode tags, variation selectors, U+200B ZERO WIDTH SPACE and U+FEFF,
-  including a leading U+FEFF.
+- The scanner rejects every Unicode scalar value that has either of two
+  properties in Unicode 17.0.0 (`parse`). The properties are
+  `Default_Ignorable_Code_Point` and `General_Category=Format (Cf)`. They
+  cover Unicode tags, variation selectors, U+200B ZERO WIDTH SPACE and
+  U+FEFF, including a leading U+FEFF.
 - The diagnostic of a rejected scalar prints the offending `U+XXXX` code point
   and its original byte span. The span covers the complete UTF-8 encoding of
   the scalar.
-- The scalar rule applies inside all comments, to documentation input such as
-  `qleisli doc`, and to bundled and project sources. The scanner preserves the
-  original bytes and rejects the scalar. An author removes the scalar from the
-  source.
+- The scalar rule applies everywhere: inside all comments, to documentation
+  input such as `qleisli doc`, and to bundled and project sources. The
+  scanner does not repair the text. It preserves the original bytes and
+  rejects the scalar, and the author removes the scalar from the source.
 - An identifier begins with an ASCII letter or an underscore. ASCII letters,
   digits and underscores follow.
 - A comment may contain ordinary Unicode prose that satisfies the same scalar
@@ -132,6 +146,11 @@ The pinned properties come from the Unicode 17.0.0
 and [general categories](https://www.unicode.org/Public/17.0.0/ucd/extracted/DerivedGeneralCategory.txt).
 
 ## Comments and documentation
+
+A comment holds prose for readers of the source. A documentation comment
+also belongs to an item. An **outer** documentation comment stands before
+its item, and an **inner** one stands at the start of the module or the body
+that it documents.
 
 | Spelling | Kind |
 | --- | --- |
@@ -153,13 +172,14 @@ Rules:
   `use` item (`parse`).
 - Inner documentation must start a module, a type body or a function body
   (`parse`).
-- Both loaders share the classification and the placement rules. The common
-  declaration attachment check rejects misplaced documentation before either
-  profile checks source. No profile may silently ignore invalid placement.
+- Both loaders classify comments and place documentation by the same rules.
+  One common check attaches documentation to declarations. It rejects
+  misplaced documentation before either profile checks source. No profile
+  may silently ignore invalid placement.
 - Type and member documentation attaches to the original occurrences of the
   type and the member.
-- Documentation metadata is descriptive. Source-only rendering makes no
-  verification claim.
+- Documentation metadata only describes. Rendering from source alone makes
+  no verification claim.
 
 > **Implementation note.** `parse_documented_module` returns the documentation
 > metadata. Ordinary module loading may retain only the syntax and the
@@ -167,8 +187,9 @@ Rules:
 
 ## Punctuation and tokens
 
-The physical scanner recognizes individual punctuation marks. The common lexer
-forms the tokens of the grammar from them.
+The grammar reads tokens, and tokens are built in two steps. The physical
+scanner recognizes individual punctuation marks. The common lexer then forms
+the tokens of the grammar from them.
 
 Rules:
 
@@ -179,20 +200,26 @@ Rules:
   followed by `>`. It is not an alternative arrow.
 - The scanner and the parser never retry another grammar. They never choose a
   backend from the input.
-- The lexer scans the complete file before parsing. A later retired token can
-  therefore precede an earlier grammar error.
-- Token capacity rejection keeps precedence over the migration diagnostic of
-  the token that exceeds the capacity.
+- The lexer scans the complete file before parsing. The diagnostic for a
+  retired token later in the file can therefore come before a grammar error
+  earlier in the file.
+- A file can exceed the token capacity at a token that also has a migration
+  diagnostic. The capacity rejection keeps precedence over that migration
+  diagnostic.
 - Empty parentheses in a type position are rejected (`parse`) with a
   diagnostic that directs the author to `Unit`. The value and the pattern are
   `()`.
-- The shared syntax represents the empty pattern and block, the empty `yield`,
-  empty specialization brackets and a trailing comma after a parameter.
+- The shared syntax can represent these forms: the empty pattern and block,
+  the empty `yield`, empty specialization brackets and a trailing comma after
+  a parameter.
 - The recursion budget of the parser counts the quantum wrapper and its basis
   parse together. [Status and limits](#status-and-limits) gives the scanner
   and parser limits.
 
 ## Reserved words and contextual words
+
+A **reserved word** has a fixed role in the grammar, so a program cannot use
+it as a name.
 
 The common grammar reserves these words in every identifier position:
 `use`, `meaning`, `static`, `Op`, `requires`, `Apply`, `Adjoint`, `Controlled`,
@@ -209,23 +236,25 @@ Rules:
   name. For example, a declaration or a finite filesystem module name that
   uses `checked_op`, `enum`, `struct`, `match` or `qmatch` as an ordinary
   identifier must be renamed.
-- A comment and a longer identifier are unaffected. `isotope` and `iso_value`
-  are ordinary identifiers.
-- The import exception admits `basis`, `observe` and `classical` immediately
-  after `std::` as module names.
-- The static-Nat grammar permits `Q`, `Op`, `Unit`, `Bit` and `CBit` as a
+- The rule does not reach a comment or a longer identifier that contains a
+  reserved word. `isotope` and `iso_value` are ordinary identifiers.
+- One exception serves imports. It admits `basis`, `observe` and `classical`
+  as module names immediately after `std::`.
+- A second exception serves static Nat positions. The static-Nat grammar
+  permits `Q`, `Op`, `Unit`, `Bit` and `CBit` in three positions: as a
   `const` Nat formal, as a static fold index, or as the first name atom of a
-  Nat expression. The exception is confined to those Nat positions. Ordinary
-  runtime identifiers, Basis and Op formal names and qualified path tails keep
-  the reserved-word rules.
+  Nat expression. The exception is confined to those Nat positions. The
+  reserved-word rules apply unchanged to ordinary runtime identifiers, to
+  Basis and Op formal names and to the tails of qualified paths.
 - `qfor` starts an explicitly static quantum-owner fold. `for static` starts
   an ordinary-only fold.
 - `checked_op` is the exact-meaning constructor that
   [Checked operations](checked-operations.md) specifies. `classical fn`
-  declares a total ordinary computation, and the distinct `basis` expression
-  is specified in [Coherent basis maps](coherent-basis.md).
-- Selected explicit module keys keep their separate validation rules. They
-  are not unified with finite filesystem module names.
+  declares a total ordinary computation. The `basis` expression is a
+  distinct form, and [Coherent basis maps](coherent-basis.md) specifies it.
+- The selected route names its modules by explicit keys. Those keys keep
+  their separate validation rules. They are not unified with finite
+  filesystem module names.
 
 Some words are reserved only so that the parser can reject a retired form with
 a located migration error. Such a word is never an accepted alias, and it is
@@ -242,8 +271,9 @@ not an ordinary identifier.
 | `CBit`, `true`, `false` | The old type and literal uses | `Bit`, and `0`/`1` |
 
 `do` and `pure` introduce no accepted expression, alias, monadic operation or
-state preparation. The retained tokens for `CBit`, `true` and `false` permit a
-targeted rejection of their old uses. They do not keep those uses accepted.
+state preparation. The lexer retains the tokens for `CBit`, `true` and
+`false` so that the parser can reject their old uses with a targeted
+diagnostic. Retaining the tokens does not keep those uses accepted.
 `adjoint(U)` is the static description and `adjoint(U)(q)` is its application.
 The two-argument form is retired.
 
@@ -257,68 +287,81 @@ elsewhere:
 | `as` | Separates the quantum input expression and the pattern in `basis input as pattern { expression }` | An ordinary identifier |
 | `mut` | The marker of `let mut name = ...`, which the common judgment rejects | An ordinary identifier: `let mut = 0; mut` is an ordinary immutable binding and its use |
 | `for`, `in`, `carry`, `yield` | `for` in `for static`, the `in` and `carry` parts of either fold header, and `yield` at the start of a fold tail | An identifier |
-| `controlled`, `inverse` | `controlled(op)(args)` is the controlled-application construct | Ordinary single-stage name resolution: `controlled(q)` is an ordinary call to an identifier |
+| `controlled` | `controlled(op)(args)` is the controlled-application construct | Ordinary single-stage name resolution: `controlled(q)` is an ordinary call to an identifier |
+| `inverse` | The two-stage form `inverse(U)(q)` is rejected (`parse`), and the diagnostic suggests `adjoint(U)(q)`. [Adjoint application](static-language.md#adjoint-application) gives the rules. | Normal name resolution: `inverse(q)` is an ordinary call, and a function or a local named `inverse` is an ordinary name |
 | `qlet` | None | An ordinary identifier |
 
-Neither spelling of `controlled` guesses a resolved provider category or
-grants control access.
+Neither spelling of `controlled` guesses the category of a resolved
+provider, and neither grants control access.
 
 ## Numerals and natural expressions
+
+A numeral is a run of decimal digits. A program writes numerals as Bit
+literals, as static Nat literals and inside natural expressions such as a
+repetition count.
 
 Rules:
 
 - A numeral token retains its decimal spelling. The scanner does not convert
   it to a machine integer, infer a Bit or Nat category, or grant a static
   value.
-- The common natural-expression parser rejects leading zeroes except `0`, and
-  it rejects a literal that exceeds `i128`.
+- The common parser for natural expressions rejects a numeral with leading
+  zeroes, except `0` itself. It also rejects a literal that exceeds `i128`.
 - The parser retains addition, subtraction, multiplication and parentheses
   with their source spans. Multiplication binds more tightly than addition or
   subtraction.
-- Static checks require nonnegative, bounded and supported expressions.
+- Static checks require an expression to be nonnegative, bounded and
+  supported.
 - A power repetition count has the `2^e` form, with a compound exponent in
   parentheses. This is not general exponentiation in the natural-expression
   language.
 - Finite lowering evaluates each original `power` count under its complete
-  static bindings. It uses checked ordinary-u32 intermediates and a
-  0-through-4096 bound on every nested count. An outer zero does not excuse an
-  invalid inner count or the closed contract of a child.
-- Ordinary and basis Bit expressions share the `0`/`1` literal recognizer.
-  Other numerals are not Bit values. This rule does not change static-Nat
-  literals, and it infers no quantum owner from a numeral.
+  static bindings. It computes with checked ordinary-u32 intermediates, and
+  it bounds every nested count to 0 through 4096. An outer count of zero
+  does not excuse an invalid inner count or the closed contract of a child.
+- Ordinary Bit expressions and basis Bit expressions recognize the literals
+  `0`/`1` with one shared recognizer. Other numerals are not Bit values.
+  This rule does not change static-Nat literals, and it infers no quantum
+  owner from a numeral.
 
 ## Bindings, patterns and evaluation order
 
-Runtime wildcard, duplicate-name and exact tuple and Unit rules use the common
-pattern traversal.
+A pattern names the parts of a value where a program binds it: in a
+parameter, a `let` or a fold carry. This section gives the rules for
+patterns, for the names they bind and for the order in which expressions
+evaluate before binding. One common traversal of patterns applies the
+runtime rules for wildcards, for duplicate names and for exact tuple and
+Unit shapes.
 
 Rules:
 
-- Ordered static kinds and runtime parameter names retain their original
-  declaration ordinals and binder identities.
-- A static kind may refer only to preceding static parameters. Complete
-  declaration registration does not make a forward static kind available.
-- Quantum values have fresh dynamic owner identities. These are distinct from
-  the lexical keys.
-- Arguments and right-hand-side expressions evaluate completely, once, from
-  left to right before binding.
-- Ordinary and classical function parameters use the name, wildcard and tuple
-  pattern syntax. The colon annotates the entire parameter pattern, and the
-  source argument list keeps that parameter as one argument. For example,
+- Ordered static kinds and runtime parameter names retain the ordinals of
+  their original declaration and their binder identities.
+- A static kind may refer only to static parameters that precede it.
+  Registering the complete declaration does not make a forward static kind
+  available.
+- Each quantum value has a fresh dynamic owner identity. These identities
+  are distinct from the lexical keys.
+- Arguments and right-hand-side expressions evaluate completely, once and
+  from left to right, before binding.
+- A parameter of an ordinary or a classical function uses the name, wildcard
+  and tuple pattern syntax. The colon annotates the entire parameter
+  pattern, and the source argument list keeps that parameter as one
+  argument. For example,
   `unitary fn first((a, _): (Bit, Bit)) -> Bit { a }` takes one ordinary pair.
 - Pattern checking preserves exact arity and nesting. It rejects duplicate
   parameter names (class `binding`), and it checks quantum ownership even in
   unused declarations.
 - A tuple pattern does not implicitly split a quantum register.
-- Argument expressions keep their evaluation order and their effects before
-  callee binding. A wildcard or Unit pattern does not erase the computation
-  that produced its argument.
+- Argument expressions keep their evaluation order and their effects, and
+  they run before the callee binds its parameters. A wildcard or Unit
+  pattern does not erase the computation that produced its argument.
 - A runtime parameter, a `let` binding or a fold-carry binding must not shadow
   an active static Nat, Basis, Op or fold-index binder (class `shadow`).
   Static formals may shadow global declarations.
-- A consumed quantum owner may be rebound after complete right-hand-side
-  evaluation. Hiding a live owner is rejected, including a zero-axis owner or
-  an owner nested in a product.
+- Once a right-hand side is completely evaluated, a consumed quantum owner
+  may be rebound. Hiding a live owner is rejected. This includes a zero-axis
+  owner and an owner nested in a product.
 - A static name used as a runtime value is a located type error. Reuse of a
   consumed runtime owner is an ownership error.
 - A resolved local value used as a callee is a wrong-category error. The
@@ -326,27 +369,30 @@ Rules:
 
 ### Assignment and `let mut`
 
-The raw AST retains bare lexical assignment and a `let mut name = ...` marker
-solely for typed refusal. See the
+A checked program contains no assignment and no mutable binding. The raw AST
+retains bare lexical assignment and a `let mut name = ...` marker solely so
+that the checker can refuse them with a typed diagnostic. See the
 [assignment and mutability boundary](rust-boundary.md).
 
 Rules:
 
 - Neither form can occur in a successfully checked program, and neither is
   lowered to replacement.
-- Assignment inspects the type of the resolved destination before it checks
-  the right-hand side. Even a consuming right-hand side does not authorize
-  replacing a quantum-containing place.
-- A mutable binding checks the type of its initializer, to distinguish quantum
-  ownership (class `ownership`) from unsupported ordinary mutability (class
-  `unsupported`).
+- For an assignment, the checker inspects the type of the resolved
+  destination before it checks the right-hand side. Even a consuming
+  right-hand side does not authorize replacing a place that contains a
+  quantum value.
+- For a mutable binding, the checker checks the type of the initializer. The
+  type tells quantum ownership (class `ownership`) apart from unsupported
+  ordinary mutability (class `unsupported`).
 - Both refusals retain the original byte locations.
 - General field and index assignment syntax and ordinary reassignment are
   unsupported. These diagnostic forms grant neither.
 
 ## Declaration resolution
 
-An unqualified call resolves its name in this order:
+Resolution finds the declaration that a name refers to. An unqualified call
+resolves its name in this order:
 
 1. Lexical runtime and static bindings.
 2. Ordinary declarations of the same module, and explicit imports.
@@ -355,45 +401,51 @@ An unqualified call resolves its name in this order:
 
 Rules:
 
-- A moved binding, a wrong callable category or a failed ordinary type, effect
-  or access check is the selected use and its error. No fallback exists.
-- A moved local binding shadows a declaration with the same name. Failed
-  local lookup does not fall back to that declaration.
+- The first place that binds the name selects the use. A fault in that use
+  is the error that the checker reports, and no fallback exists. This holds
+  for a moved binding, for a wrong callable category and for a failed
+  ordinary type, effect or access check.
+- A local binding that has been moved shadows a declaration with the same
+  name. When the local lookup fails, the checker does not fall back to that
+  declaration.
 - Primitives require no import and no prelude, and their names are not
   reserved. Qualified foundation paths and hidden aliases are unavailable.
-- Ordinary standard-library imports keep their visibility, public effects and
-  source and body obligations.
+- An ordinary standard-library import keeps its visibility, its public
+  effects and its source and body obligations.
 - An imported declaration keeps its canonical module and declaration name.
   Imports add no runtime action and no verification privilege.
 - Visibility is checked before use. A private declaration cannot be imported
   from another module or selected as a host entry. Cross-module imports and
   host-selected entries require public visibility.
-- A host-supplied provider of the selected-entry route is checked from the
-  context of the entry module, including when the provider is unused.
-- Both loaders resolve imports against the complete registered declaration
-  tables. Valid forward and backward sibling references resolve against the
-  same tables, and same-module sibling calls may use private declarations.
-- Unused import-only cycles are permitted, because imports have no runtime
-  action.
+- On the selected-entry route, the host can supply a provider. The checker
+  checks such a provider from the context of the entry module, even when the
+  provider is unused.
+- Both loaders resolve imports against the complete tables of registered
+  declarations. A valid reference to a sibling resolves against the same
+  tables, whether the sibling is declared before or after the reference. A
+  call to a sibling in the same module may use a private declaration.
+- A cycle that consists only of unused imports is permitted, because imports
+  have no runtime action.
 - Every self-import is a declaration-name collision. This includes a private
   or public declaration imported into its own module. Duplicate imports and
   clashes with local declarations are rejected.
-- A missing member, a private member, a collision or a retired foundation
-  entry points to the final path token. A missing module points to the
-  complete `use` span.
-- Runtime calls, static providers, classical dependencies and Meaning
-  dependencies from every original body enter the checked graph. Mutual
-  cycles are rejected.
-- Only a runtime self-call to the identical DefId with the checked Nat
-  decrease is permitted, including its directly transformed runtime form. A
-  recursive opaque provider, a classical or Meaning cycle or a failed decrease
-  does not qualify.
+- The diagnostic for a missing member, a private member, a collision or a
+  retired foundation entry points to the final path token. The diagnostic
+  for a missing module points to the complete `use` span.
+- The checker builds one graph from every original body. Runtime calls,
+  static providers, classical dependencies and Meaning dependencies all
+  enter this checked graph. Mutual cycles are rejected.
+- Only one kind of recursion is permitted: a runtime self-call to the identical
+  DefId with the checked Nat decrease. The directly transformed runtime form
+  of such a call is permitted too. A recursive opaque provider, a classical
+  or Meaning cycle or a failed decrease does not qualify.
 - Names, effect fixed points and zero-count repetition cannot stand for the
   required decrease proof.
 - Transparent `pub use`, root-qualified references and the explicit prelude
   opt-out follow the [prelude and import contract](prelude.md).
-- No ambient standard-library discovery exists, and a reserved `std` module
-  cannot be replaced. `as`, glob and relative imports are unsupported.
+- The checker discovers no standard library from its surroundings, and a
+  reserved `std` module cannot be replaced. `as`, glob and relative imports
+  are unsupported.
 - Evidence retains the original source, dependencies, canonical names and
   static bindings.
 
@@ -402,8 +454,8 @@ gives the canonical primitive identities and the complete migration of the 27
 retired qualified entries.
 
 > **Implementation note.** `src/frontend/resolve.rs` and `resolve/locals.rs`
-> retain the canonical declaration, lexical-use and original-span
-> associations. The common typed primitive catalog has 13 bare typed
+> retain the associations among canonical declarations, lexical uses and
+> original spans. The common typed primitive catalog has 13 bare typed
 > identities. The finite and selected concrete emitters keep their
 > profile-specific adapters. Private Rust debug representations are not
 > canonical names or evidence formats. Their printed fields change with the
@@ -416,11 +468,14 @@ enum Name { A, B, ... }
 struct Name { field: Type, ... }
 ```
 
-An `enum` declaration has fieldless variants. A `struct` declaration is a
+A program declares its own finite ordinary types with these two forms. An
+`enum` declaration has fieldless variants. A `struct` declaration is a
 record with named fields. Either may follow `pub`, and each record field has
-its own `pub` marker. The common judgment elaborates a declaration into an
-ordinary nominal type tree. The tree keeps the original module, declaration
-and source identity, the variant order and the complete ordered field types.
+its own `pub` marker.
+
+The common judgment elaborates a declaration into an ordinary nominal type
+tree. The tree keeps the original module, declaration and source identity,
+the variant order and the complete ordered field types.
 
 Four expression forms use these types:
 
@@ -441,26 +496,27 @@ Rules:
   declarations are not parsed.
 - An empty record is a distinct declaration. The parser does not replace it
   with Unit.
-- Parsing gives no semantic validity to an empty enum or to invalid or
-  duplicate type members. A function and type collision, an empty enum and a
-  duplicate variant or field name are rejected at the original offending name.
-  These name checks precede finite field elaboration.
+- Parsing does not make an empty enum, or invalid or duplicate type members,
+  semantically valid. Three faults are rejected at the original offending
+  name: a collision between a function and a type, an empty enum, and a
+  duplicate variant or field name. These name checks come before finite
+  field elaboration.
 - A field must have an ordinary finite type. Unknown, recursive, non-type and
   quantum-owned fields are rejected.
-- Closed field sizes reuse the Nat-helper arithmetic and premise checks. They
-  add no general `const<T>`.
+- A closed field size reuses the arithmetic and the premise checks of the Nat
+  helpers. It adds no general `const<T>`.
 - A signature keeps both `T` and `Q<T>`. Nominal identity is not reduced to
   physical width.
-- Nominal names take part in the common module, import and reexport resolver
-  as a distinct collection-local type category. A transparent reexport keeps
-  the original declaration and its visibility. Source-path traversal keeps
-  each alias module.
+- The common resolver for modules, imports and reexports also resolves
+  nominal names. They form a distinct type category that is local to the
+  collection. A transparent reexport keeps the original declaration and its
+  visibility. Source-path traversal keeps each alias module.
 - Each module or import spelling must have an unambiguous binding.
-- A local ordered Basis binder cannot fall back to a global enum. Callable and
-  operation consumers reject a type target.
-- The common judgment checks the variant, record and field forms with their
-  original type and member identity, their visibility and the written
-  initializer order.
+- A local ordered Basis binder cannot fall back to a global enum. A consumer
+  that expects a callable or an operation rejects a type target.
+- The common judgment checks the variant, record and field forms. It checks
+  them with their original type and member identity, their visibility and
+  the written initializer order.
 - An ordinary `match` must use exact qualified enum labels, and its arms must
   be exhaustive and disjoint. It has at most 64 arms. A runtime block allows
   an expression or a block for each arm. A classical body allows an ordinary
@@ -508,10 +564,14 @@ classical fn f(pattern: T, ...) -> U { expression }
 ```
 
 A `classical fn` declares a total, pure finite function on ordinary values.
-It is distinct from a provisional `static fn` declaration. A `static fn`
-returns a static Nat value through the
-[bounded helper rules](static-language.md#provisional-bounded-nat-helpers),
-and it has no runtime interface, effect or accepted-handle authority.
+A program writes one for a computation on ordinary data that it wants to use
+in several settings: at run time, in a Meaning or a predicate, and inside a
+coherent `basis` expression.
+
+A `classical fn` is distinct from a provisional `static fn` declaration. A
+`static fn` returns a static Nat value through the
+[bounded helper rules](static-language.md#provisional-bounded-nat-helpers).
+It has no runtime interface, no effect and no accepted-handle authority.
 
 The retired declaration spelling `basis fn` is rejected (`parse`) with a
 located migration diagnostic that directs the author to `classical fn`. No
@@ -520,6 +580,9 @@ compatibility alias exists. The coherent expression
 their meanings.
 
 ### The body of a classical function
+
+The body is a single expression that computes the result from the
+parameters.
 
 Rules:
 
@@ -530,9 +593,9 @@ Rules:
   and `.field`, and an ordinary `match` on exact qualified enum labels.
   [The body of a coherent basis map](coherent-basis.md#the-body) tabulates
   every form.
-- `empty_bits()` is the nullary ordinary language primitive constructor. It
-  requires no import, and it has the exact `Bits<0>` signature. Other quantum
-  primitive calls are excluded.
+- `empty_bits()` is the ordinary language primitive constructor that takes no
+  arguments. It requires no import, and it has the exact `Bits<0>` signature.
+  Other quantum primitive calls are excluded.
 - `word[k]` reads one ordinary `Bits<n>` coordinate and returns a `Bit`. The
   nonnegative integer literal `k` must satisfy `k < n` under the declared
   static premises. `Bits<0>` has no valid coordinate.
@@ -545,10 +608,12 @@ Rules:
 
 A `Bits<n>` word has an unsigned ordinal in `0 .. 2^n - 1`, and its first
 coordinate carries weight one. Each Boolean operation returns an exact Bit.
-Word arithmetic written explicitly with bit operations keeps the result width
-that its return type states. For example, the two-bit increment flips the low
-bit and XORs the original low bit into the high bit. It returns
-`(x + 1) mod 4`, and the carry beyond the high bit has no output coordinate.
+A program can write word arithmetic explicitly with bit operations. Such
+arithmetic keeps the result width that its return type states. For example,
+the two-bit increment flips the low bit and XORs the original low bit into
+the high bit. It returns `(x + 1) mod 4`, and the carry beyond the high bit
+has no output coordinate.
+
 Static `Nat` expressions follow the separate
 [bounded natural rules](static-language.md). No implicit conversion exists
 from a static natural or an arbitrary integer to a `Bits<n>` word.
@@ -565,6 +630,9 @@ fn main() -> Bit { flag() }
 ```
 
 ### Static parameters of a classical function
+
+A static parameter lets one classical declaration work at more than one
+size, as `width` does in the example below.
 
 Rules:
 
@@ -596,17 +664,21 @@ ordinary call can instantiate the same declaration with width 3 and pass
 
 ### Calls of a classical function
 
+A classical function has one checked body, and every kind of call uses that
+body.
+
 Rules:
 
 - A program may call the same checked body in ordinary runtime expressions,
   in Meaning and predicate construction and in coherent `basis` expressions.
 - Runtime arguments evaluate once, left to right, before parameter binding.
-  Their effects and their owner consumption stay in the caller, including
-  when an ordinary result is ignored.
+  Their effects and their owner consumption stay in the caller. This holds
+  even when the caller ignores an ordinary result.
 - A measured Bit is ordinary data. A live `Q<T>` cannot be passed as `T`
   without explicit observation.
-- Coherent lifting independently requires injectivity of the complete map.
-  Computed predicates keep their separate exact cleanup contracts.
+- Coherent lifting has a requirement of its own: the complete map is
+  injective. Computed predicates keep their separate exact cleanup
+  contracts.
 - A classical declaration or its name grants no inverse access, no controlled
   access, no Meaning evidence and no native acceptance. A Meaning declaration
   is a description, not a runtime callee.
@@ -626,7 +698,7 @@ fn read_flipped(q: Q<Bit>) -> Bit { flip(measure_z(q)) }
 > **Implementation note.** The Selected Raw route checks the original
 > declaration and its Nat arguments before use. The supported structural
 > predicate path synthesizes its literal control clauses directly. Structural
-> synthesis charges the processing of the original expression and the
+> synthesis charges work for processing the original expression and for the
 > intermediate and emitted control clauses. Conjunction can increase the
 > number of clauses, so a total predicate can exceed the work limit. A finite
 > consumer that needs a table must satisfy its own checked domain and work
@@ -639,24 +711,31 @@ fn read_flipped(q: Q<Bit>) -> Bit { flip(measure_z(q)) }
 qmatch(selector, target) { label => arm, ... }
 ```
 
-`qmatch` selects a coherent operation without measuring its selector. An
-**arm** is a resolved static operation or an inline block.
+`qmatch` selects a coherent operation without measuring its selector. Each
+label names a basis value of the selector, and the arm of that label acts on
+the target. An **arm** is a resolved static operation or an inline block.
 
 Let arm `s` denote the exact operator `U_s`. The operation maps each basis
 vector `|s,y>` to `sum_z U_s[z,y] |s,z>`. It extends linearly to every input,
 including an input entangled with an external reference. It therefore
 preserves coherence between selector sectors, and it agrees exactly with `qif`
-for `Bit`. Selector axes precede target axes, so `(s,y)` has the integer
-coordinate `s + 2^selector_bits * y`, independently of the written arm order.
+for `Bit`.
+
+Selector axes precede target axes. The pair `(s,y)` therefore has the integer
+coordinate `s + 2^selector_bits * y`, whatever the written order of the arms.
 
 ### Selector, target and labels
+
+The selector and the target are two separate quantum owners. The labels name
+the basis values of the selector.
 
 Rules:
 
 - The selector must be one `Q<A>` owner, and the target must be one distinct
   `Q<B>` owner (class `type`). The expression returns `(Q<A>, Q<B>)` with both
   complete type trees unchanged.
-- Zero physical width removes neither linear owner.
+- An owner of zero physical width is a linear owner like any other. Zero
+  width removes neither the selector owner nor the target owner.
 - For `Unit`, `Bit` and closed `Bits<n>` with `0 <= n <= 6`, a label is a
   canonical decimal ordinal from `0` to `cardinality(A)-1`.
 - For a fieldless nominal enum, a label is a qualified variant name of that
@@ -670,25 +749,32 @@ Rules:
 
 ### Arms
 
+Every arm acts on the same target, and the checker holds every arm to the
+same requirements.
+
 Rules:
 
 - An arm must have the exact target interface and a valid Unitary effect. It
   must permit controlled access under the operation rules (class `access`).
-- A generic earlier arm, a constant selector or an unused declaration cannot
-  skip the type, effect, access or dependency obligations of a later arm.
+- Each arm meets its own type, effect, access and dependency obligations. A
+  generic earlier arm, a constant selector or an unused declaration cannot
+  skip those obligations for a later arm.
 - Unitarity alone grants neither control nor inverse access.
-- All arm phases are exact.
-- `qif` keeps its fixed `0`, then `1` syntax and its access contract. It uses
-  the same labelled sectors as `qmatch`.
+- The phase of every arm is exact.
+- `qif` keeps its fixed syntax, with the `0` arm first and the `1` arm
+  second, and its access contract. It uses the same labelled sectors as
+  `qmatch`.
 
 ### Block arms
 
-A block arm is an inline block in place of a static operation.
+A block arm is an inline block in place of a static operation. It lets an
+arm spell out its steps on the target where the arm is written.
 
 Rules:
 
-- A block arm binds to the written target name. It must return one owner of
-  the exact quantum type of the target (class `ownership`).
+- Inside a block arm, the written target name is bound to the target owner.
+  The block must return one owner of the exact quantum type of the target
+  (class `ownership`).
 - Other quantum owners and ordinary runtime owners of the enclosing scope are
   unavailable in the block.
 - A block arm that ends in a semicolon returns its original target binding.
@@ -779,8 +865,10 @@ the module with the code `contract`.
 
 ## One structured quantum result boundary
 
-Verified quantum-core functions are expression-oriented. A body has one
-**structured result boundary**: its final block expression.
+Verified quantum-core functions are expression-oriented: a body produces its
+result as the value of its final block expression. That expression is the one
+**structured result boundary** of the body. A function leaves through it and
+through no other exit.
 
 Rules:
 
@@ -789,16 +877,17 @@ Rules:
   statically unreachable.
 - No early exit can discard, release, reset or uncompute a live owner
   implicitly.
-- Early `return q`, residual propagation `q?`, runtime `panic!`, `assert!` and
-  `unreachable!` macro edges, unwinding, hidden abort and partial quantum
-  functions are not admitted. The parser rejects the written exits (`parse`).
+- These exits are not admitted: early `return q`, residual propagation `q?`,
+  the runtime macro edges `panic!`, `assert!` and `unreachable!`, unwinding,
+  hidden abort and partial quantum functions. The parser rejects the written
+  exits (`parse`).
 - The rule applies to Unitary, Isometry and Observe bodies. An observing
   effect does not authorize a hidden exit.
-- A syntax refusal explains the final-expression alternative and keeps the
-  byte span of the original token.
-- A program uses explicit ordinary branches, admitted coherent control and
-  finite folds under their own owner and effect rules. `qmatch` keeps its
-  separate limits.
+- The diagnostic of a syntax refusal explains the alternative, a final
+  expression. It keeps the byte span of the original token.
+- For control flow, a program uses explicit ordinary branches, admitted
+  coherent control and finite folds, each under its own owner and effect
+  rules. `qmatch` keeps its separate limits.
 - This chapter grants no `qreturn` or `qtry` form.
 - Ordinary identifier names keep normal resolution. A variable or a checked
   ordinary function named `return`, or a function named `panic`, is not a
@@ -831,22 +920,25 @@ observe fn main()->Bit{1}
 ```
 
 A future host orchestration language may specify `Result`, residual exits,
-assertions or process failure separately. No such host failure semantics is
-imported into the present core. Ordinary error values, if separately admitted
-as data, would not themselves imply propagation or unwinding. The fail-closed
-refusal of the runtime checker or its transport is likewise not a source-level
-exit.
+assertions or process failure separately. The present core imports no such
+host failure semantics. If ordinary error values were separately admitted as
+data, they would not by themselves imply propagation or unwinding. The
+runtime checker and its transport refuse fail-closed. Such a refusal is
+likewise not a source-level exit.
 
 ## Checking failures and quantum execution
 
-Within the declared finite model, a supported verified quantum-core operation
-has no implicit exceptional execution edge. This applies to Unitary, Isometry
-and Observe. Measurement supplies its specified ordinary outcome and
-instrument. It gives no permission to panic, unwind, abort, partially return
-or abandon an owner. This totality requirement is the adopted failure
-contract.
+This section says where a failure can occur and where it cannot. Within the
+declared finite model, a supported verified quantum-core operation has no
+implicit exceptional execution edge. This applies to Unitary, Isometry and
+Observe. Measurement supplies its specified ordinary outcome and instrument.
+It gives no permission to panic, unwind, abort, partially return or abandon
+an owner. This totality requirement is the adopted failure contract.
 
 ### Rejection before execution
+
+The checker rejects an invalid program during checking or specialization. It
+does not turn the fault into a trap at run time.
 
 Rules:
 
@@ -862,6 +954,10 @@ Rules:
 
 ### Ordinary alternatives
 
+A program expresses an alternative outcome with ordinary data and an
+ordinary `if`. Each alternative returns through the normal structured
+boundary.
+
 Rules:
 
 - An explicit ordinary result such as a Bit may select an ordinary `if`. Both
@@ -873,12 +969,13 @@ Rules:
 - For example, an operation may return `(flag, q)` or `(flag, x(q))` in its
   two arms when their declared interfaces agree. Omitting `q` in one arm is
   invalid.
-- The unchanged caller frame takes part in the branch merge, including
+- The unchanged caller frame takes part in the branch merge. This includes
   correlated owners and zero-width quantum owners. An ordinary condition does
   not establish separability.
-- Source failure handling cannot reset or discard workspace, discharge a
-  clean or dirty restoration obligation, erase exact phase or owner ordering,
-  or shorten an access lifetime to omit required work.
+- Failure handling in source cannot do any of these: reset or discard
+  workspace, discharge a clean or dirty restoration obligation, erase exact
+  phase or owner ordering, or shorten an access lifetime to omit required
+  work.
 - The absence of an unwind construct does not prove pending access,
   restoration, target or quantitative resource contracts. Their
   implementations must obey this rule when they are admitted.
@@ -900,36 +997,47 @@ pub observe fn main()->(Bit,Bit,Bit,Bit){
 
 ### External faults
 
+Some failures happen outside the quantum core. The rules below say what such
+a failure does not give a program.
+
 Rules:
 
 - Operating-system failure, verifier or transport failure, backend crash and
   device loss are external faults. They are outside the quantum-core
   operational theorem unless an explicit future target contract models them.
   They provide no source escape hatch and no owner-disposal semantics.
-- Missing, incompatible, timed-out or malformed native checking is rejected
-  without an accepted handle and without a fallback. Such a refusal is a
-  failed attempt to check an artifact. It is not an executed quantum branch.
+- Native checking that is missing, incompatible, timed out or malformed
+  is rejected. No accepted handle is issued, and no fallback runs. Such a
+  refusal is a failed attempt to check an artifact. It is not an executed
+  quantum branch.
 - Reference simulation can separately refuse its host execution, component or
-  space budgets, or report a numerical or internal-consistency error. No
-  result distribution is thereby certified as the successful program result.
+  space budgets, or report a numerical or internal-consistency error. Such a
+  refusal or error certifies no result distribution as the successful
+  program result.
 - These host limits are not static quantum resource certificates. Reporting
   an error is not proof of physical state recovery, or of clean or dirty
   restoration after an external fault.
 
 ## Ordinary function effects and assertions
 
-An ordinary body-bearing function may use `fn`, `unitary fn`, `isometry fn` or
-`observe fn`. The prefix is an **effect assertion**: a declared upper bound on
-the effect of the body. The effect order is `Unitary <= Isometry <= Observe`,
-and composition takes the least upper bound.
+An effect prefix states how much quantum behavior a function permits itself.
+An ordinary function that has a body may use `fn`, `unitary fn`,
+`isometry fn` or `observe fn`. The prefix is an **effect assertion**: a
+declared upper bound on the effect of the body. The effect order is
+`Unitary <= Isometry <= Observe`. The effect of a composition is the least
+upper bound of the effects of its parts.
 
 An **isometry** satisfies `V†V = I_input`. The word claims no surjectivity and
-no executable inverse or control access. Zero-state preparation is an isometry
-but not a unitary between its different input and output dimensions. A unitary
-additionally satisfies `VV† = I_output`. In categorical terminology these are
-a dagger-monomorphism and a dagger-isomorphism, respectively.
+no executable inverse or control access. Zero-state preparation is an
+isometry. It is not a unitary, because its input and output dimensions
+differ. A unitary additionally satisfies `VV† = I_output`. In categorical
+terminology these are a dagger-monomorphism and a dagger-isomorphism,
+respectively.
 
 ### Effect assertions on declarations
+
+A public function that processes quantum values or operations states its
+effect explicitly. Other functions can leave their effect to inference.
 
 Rules:
 
@@ -941,29 +1049,33 @@ Rules:
 - Copying an ordinary Bit does not copy a quantum owner, and it adds no
   quantum effect.
 - An explicit effect prefix permits quantum processing even behind an
-  entirely classical signature. External quantum-use checking conservatively
-  keeps that public permission. It does not inspect the use flag of the
-  implementation.
-- An unannotated public classical API cannot acquire hidden quantum work
-  without a change of its public declaration and a pass of the complete
-  checks.
-- Changing the public effect is an API change. A body-only edit cannot
-  silently regenerate it.
+  entirely classical signature. Checking of quantum use from outside the
+  module conservatively keeps that public permission. It does not inspect
+  the use flag of the implementation.
+- A public classical API without an annotation cannot acquire hidden quantum
+  work. Such work requires a change of its public declaration and a pass of
+  the complete checks.
+- Changing the public effect is an API change. An edit to the body alone
+  cannot silently regenerate the public effect.
 
 ### Effect checking of a body
+
+The checker infers the effect of a body without using the declared prefix.
+It then compares the result with that prefix.
 
 Rules:
 
 - The complete body is checked independently. Its inferred effect must fit
-  the declared upper bound (class `effect`). A prefix is never an inference
-  seed.
+  the declared upper bound (class `effect`). A prefix is never a starting
+  point for inference.
 - An Observe body cannot assert Unitary or Isometry, and an Isometry body
   cannot assert Unitary.
 - An implementation inferred as Unitary may expose Isometry or Observe.
-  External callers use only that checked public effect, even with source
-  available, inlining, specialization or a cached provider.
-- Both arms of a branch and the body of a zero-iteration static fold take
-  part in effect inference.
+  External callers use only that checked public effect. This holds even when
+  the source is available, and under inlining, specialization or a cached
+  provider.
+- Both arms of a branch and the body of a static fold with zero iterations
+  take part in effect inference.
 - A decreasing runtime self-call uses the least effect solution only after
   the decrease check. Mutual dependencies are rejected.
 - An invalid or unresolved source body yields no checked effect fact.
@@ -973,25 +1085,31 @@ Rules:
 
 ### Effects that callers use
 
+The effect that a caller sees depends on whether the caller and the callee
+share a module.
+
 Rules:
 
-- A same-module call uses the checked internal inference of the original
-  callee.
-- A call across original module identities uses the checked public effect of
-  the callee. An import alias does not change that identity.
+- A call within one module uses the checked internal inference of the
+  original callee.
+- A call between modules with different original identities uses the checked
+  public effect of the callee. An import alias does not change that identity.
 - Internal inference keeps any further external boundary. An internal wrapper
   cannot wash an external Observe call into Unitary.
 
 ### Effects of providers
 
+The effect that a provider contributes depends on who selects the provider:
+the source or the host.
+
 Rules:
 
-- A source-selected provider uses the checked effect that is visible in the
-  original module of the caller.
-- A host-selected public provider always uses the public contract, including
-  for an unused binding. The host cannot claim same-module status.
-- An explicit private provider binding that is supported in the own module of
-  the selected entry keeps its internal visibility.
+- A provider that the source selects uses the checked effect that is visible
+  in the original module of the caller.
+- A public provider that the host selects always uses the public contract,
+  even for an unused binding. The host cannot claim same-module status.
+- Where the own module of the selected entry supports an explicit binding to
+  a private provider, that binding keeps its internal visibility.
 - A generic body uses its formal bounds. It cannot sharpen them from a
   fortunate later provider.
 - Adjoint, control and pure contracts require their separate evidence and a
@@ -1002,9 +1120,9 @@ Rules:
 
 ### The `isometry` spelling
 
-`iso` is a retired effect prefix. The parser rejects it with a lexical
-migration error at its original token, before native checking. Replace
-`iso fn` with `isometry fn`.
+Source spells the Isometry effect `isometry`. The shorter `iso` is a retired
+effect prefix. The parser rejects it with a lexical migration error at its
+original token, before native checking. Replace `iso fn` with `isometry fn`.
 
 The canonical names are:
 
@@ -1022,9 +1140,9 @@ Rules:
 - Rust callers use the `Isometry` variants in place of `Effect::Iso`,
   `FnKind::Iso` and `TokenKind::Iso`. No Rust compatibility alias exists.
   Body-effect diagnostics also use `Isometry`.
-- Versioned JSON and QIRF effect tags, the effect tag of the checked source
-  graph and the native hierarchy adapters keep `"iso"`. The binary hierarchy
-  effect tag is `1`.
+- Some transports keep the tag `"iso"`. They are the versioned JSON and QIRF
+  effect tags, the effect tag of the checked source graph and the native
+  hierarchy adapters. The binary hierarchy effect tag is `1`.
 - These explicit transport exceptions introduce no second source effect, and
   they grant no inverse or control access.
 - Naming alone establishes no semantic property and no constitutional
@@ -1046,8 +1164,11 @@ Rules:
 
 ### External effect justification
 
-The justification `"externally unitary"` is not supported. The compositional
-rules keep internal observation, reset and discard as Observe.
+A body can observe, reset or discard internally while a separate argument
+claims that the channel its callers see is unitary. An annotation cannot
+rest on such an argument: the justification `"externally unitary"` is not
+supported. The compositional rules keep internal observation, reset and
+discard as Observe.
 
 Rules:
 
@@ -1065,7 +1186,9 @@ Rules:
 
 ### Source effects and artifact effects
 
-Source contract effects and artifact effects are distinct.
+A function has an effect in its source contract, and the artifact lowered
+from it has an effect of its own. Source contract effects and artifact
+effects are distinct.
 
 Rules:
 
@@ -1073,7 +1196,8 @@ Rules:
   as observing.
 - The sharper classification of that Raw body grants no external source
   capability.
-- Operations and histories of the artifact reach fresh native checking.
+- The operations and histories of the artifact go through fresh native
+  checking.
 - A valid source body may keep its principal effect while its requested
   concrete projection or lowering is unsupported.
 - Source effect facts are not accepted IR handles and not a
@@ -1089,7 +1213,7 @@ Rules:
 | `function_effect` | The internal inferred effect, the checked assertion, the typed quantum-use flag and the distinct `public_effect()`, for inspection |
 | `public_effect()`, also `public_function_effect(path)` | The exported effect contract |
 | The `documentation` methods | The public contract of a public function, and the inferred and asserted diagnostic facts of a private function, rendered from retained source bytes |
-| The source-only `doc` command and `render_markdown` | A rendering with an explicit lack of semantic checking, which manufactures no inferred facts |
+| The source-only `doc` command and `render_markdown` | A rendering that states explicitly that it has no semantic checking. It manufactures no inferred facts. |
 
 Rules:
 
@@ -1101,6 +1225,10 @@ Rules:
   conditional on their checked source premises.
 
 ## Instruments and ordinary feed-forward
+
+An Observe expression can measure, so it can end with more than one ordinary
+result. This section gives the meaning of such an expression: an instrument,
+which has one map for each public result.
 
 The judgment `Γ ; Δ ⊢ e : T ! Observe` gives an upper bound on the quantum
 behavior of the complete expression. Fix the ordinary inputs `x`. Let `A` and
@@ -1126,6 +1254,9 @@ adds profile-specific capability and artifact evidence. The
 
 ### The instrument contract
 
+The contract counts every history, including the histories whose outcomes a
+function does not return.
+
 Rules:
 
 - Every history contributes its unnormalized weight. Hidden measurement,
@@ -1140,6 +1271,9 @@ Rules:
   does not establish this contract.
 
 ### Pure implementations and the effect order
+
+A pure implementation fits the same contract. Its density map is an
+instrument with a single public result.
 
 Rules:
 
@@ -1161,6 +1295,10 @@ Rules:
 
 ### Measurement
 
+A measurement produces an ordinary Bit from a quantum state. The rules give
+the maps of the destructive measurement, of a measurement that retains its
+owners, and of reset.
+
 Rules:
 
 - Destructive `measure_z : Q<Bit> -> Bit` consumes its input owner. For the
@@ -1171,10 +1309,12 @@ Rules:
   `P[s] = (I + (-1)^s Z tensor Z)/2`. Coherence within each parity sector is
   retained.
 - Retaining an owner does not promise an unchanged state.
-- The explicit discard-plus-preparation implementation of reset consumes the
-  original owner and returns a fresh zero owner.
+- The implementation of reset that explicitly discards and then prepares
+  consumes the original owner and returns a fresh zero owner.
 
 ### Ordinary feed-forward
+
+**Feed-forward** uses a measured Bit to choose what a program does next.
 
 Rules:
 
@@ -1191,18 +1331,19 @@ Rules:
 
 ## Observation and postselection
 
-Ordinary Observe has the complete-instrument contract above: the sum of all
-outcome maps is trace preserving. Qleisli provides no source postselection
-effect and no postselection construct.
+Postselection keeps only chosen outcomes and continues on their renormalized
+state. Qleisli provides no source postselection effect and no postselection
+construct. Ordinary Observe has the complete-instrument contract above: the
+sum of all outcome maps is trace preserving.
 
 Rules:
 
 - An individual outcome map may decrease trace. Its trace is the probability
-  of that outcome. It is not permission to discard the other outcomes and
-  advertise the selected map as the whole operation.
-- Observe, an ordinary `if`, a successful check or a clean-release operation
-  does not authorize keeping only chosen outcomes and continuing on their
-  renormalized state.
+  of that outcome. The decrease is not permission to discard the other
+  outcomes and advertise the selected map as the whole operation.
+- None of these authorizes keeping only chosen outcomes and continuing on
+  their renormalized state: Observe, an ordinary `if`, a successful check or
+  a clean-release operation.
 - Returning a success Bit together with the declared owners is an ordinary
   instrument only when both the success and the failure outcomes stay in its
   semantics.
@@ -1212,13 +1353,14 @@ Rules:
 - A zero-probability event supplies no conditional state.
 
 A future postselection proposal would need a distinct semantic category. For a
-chosen outcome set `S`, it would have to specify the trace-nonincreasing map
-`Φ_S = Σ_{c in S} Φ[c]`, its success probability `p_S(ρ) = Tr(Φ_S(ρ))`, and
-any conditional state `Φ_S(ρ) / p_S(ρ)` only where `p_S(ρ) > 0`. It must
-expose success and failure outcomes, ownership on both outcomes, composition
-with surrounding operations and reference systems, and resource accounting
-for any requested retries. This paragraph describes requirements for a future
-proposal. It is not an admitted API, and it does not extend the effect order.
+chosen outcome set `S`, it would have to specify three things: the
+trace-nonincreasing map `Φ_S = Σ_{c in S} Φ[c]`, its success probability
+`p_S(ρ) = Tr(Φ_S(ρ))`, and any conditional state `Φ_S(ρ) / p_S(ρ)` only where
+`p_S(ρ) > 0`. It must expose four things: success and failure outcomes,
+ownership on both outcomes, composition with surrounding operations and
+reference systems, and resource accounting for any requested retries. This
+paragraph describes requirements for a future proposal. It is not an
+admitted API, and it does not extend the effect order.
 
 Postselection is distinct from the
 [checking and external failures](#checking-failures-and-quantum-execution).
@@ -1230,9 +1372,9 @@ Rules:
 - The bounded host trial driver separately reports retries, exhaustion and
   execution errors. It retains no quantum state, and it grants no
   source-level postselection and no clean-release capability.
-- Exact clean release requires its independently checked all-input and
-  reference-safe zero-return obligation, without conditioning on a favorable
-  observation.
+- Exact clean release requires its independently checked obligation: a zero
+  return that holds for all inputs and is safe for references. The
+  obligation does not condition on a favorable observation.
 - Numerical trajectory sampling may normalize a branch after it draws the
   outcome from the supplied random source. That representation does not
   permit the source to choose a favorable outcome, erase its probability or
@@ -1244,8 +1386,8 @@ Rules:
 
 ## Parser guidance for surface syntax
 
-The parser may explain the canonical local form when it recognizes a Qleisli
-surface rule at a syntax error.
+Some syntax errors sit at a place where the parser recognizes a Qleisli
+surface rule. There the parser may explain the canonical local form.
 
 Rules:
 
@@ -1263,9 +1405,11 @@ Rules:
 
 ## Diagnostics at control boundaries
 
-At a source rejection, a diagnostic names the language rule and the nearby
-valid construct, so that authors and coding agents can revise the program
-from the diagnostic.
+Ordinary control branches on ordinary data, and coherent control acts on
+quantum owners. This section covers a rejection at the boundary between the
+two. At such a source rejection, a diagnostic names the language rule and
+the nearby valid construct, so that authors and coding agents can revise the
+program from the diagnostic.
 
 | Construct | Role |
 | --- | --- |
@@ -1285,9 +1429,9 @@ selection keeps the relative phase of the selector sectors. See
 
 Rules:
 
-- The common judgment adds the control explanation at a direct selector
-  rejection or carry rejection. A nested name, ownership, type or limit error
-  keeps its original diagnostic.
+- The common judgment adds the control explanation where it rejects a
+  selector or a carry directly. A name, ownership, type or limit error that
+  is nested inside keeps its original diagnostic.
 - Text output and `--format=json` output preserve the category and the
   location.
 - The optional `control_flow_boundary` object is available on both routes.
@@ -1299,6 +1443,9 @@ Rules:
   [linear ownership rules](type-model.md).
 
 ## Migration
+
+This section tells an author how to bring older source to the forms of this
+chapter.
 
 ### Finite and sized programs
 
@@ -1344,6 +1491,10 @@ parser and judgment reject.
 
 ### Predicate domains
 
+A legacy `with_computed` predicate listed the parts of its register as
+separate parameters. A migrated predicate takes the register as one
+parameter with an explicit pattern.
+
 Rules:
 
 - Both finite `with_computed` forms require the
@@ -1355,6 +1506,8 @@ Rules:
   or provide a separate unary wrapper.
 
 ### The coherent notation
+
+The retired notation `do p <- q; pure e` becomes `basis q as p { e }`.
 
 Rules:
 
@@ -1380,7 +1533,12 @@ Rules:
 
 ## Status and limits
 
+This section gives the limits of the implementation, the state of the
+concrete profiles and the proof status.
+
 ### Limits
+
+The loaders, the parser and the common judgment each stop at fixed limits:
 
 | Limit | Value | Applies to |
 | --- | --- | --- |
@@ -1395,26 +1553,26 @@ Rules:
 | Type size of one value | 4096 cells and depth 64 | Common judgment |
 | Retained-scope cells | 16,384 | Common judgment on the selected-entry route |
 
-- Comments and EOF do not consume the token allowance. The next excess token
-  is rejected before its owned text is allocated.
+- Comments and EOF do not consume the token allowance. The first token beyond
+  the allowance is rejected before its owned text is allocated.
 - The project loader processes comments iteratively, without a depth limit.
 - Source-byte limits and aggregate project limits are separate entry-point
   policies. The finite bounded byte-loading policy and the explicit legacy
   byte-loading policy are separate. The common source collection does not
   make an unbounded byte loader bounded.
-- The common judgment charges visits, allocated and copied type and lexical
-  cells, normalized arithmetic and solver work before the corresponding
-  operation.
-- The project route keeps its aggregate, type and snapshot capacities without
-  the retained-scope limit.
+- The common judgment charges work before it performs the corresponding
+  operation. It charges for visits, for the type and lexical cells that it
+  allocates and copies, for normalized arithmetic and for solver work.
+- The project route keeps its aggregate, type and snapshot capacities. The
+  retained-scope limit does not apply to it.
 - Both loaders charge all original bodies and bundled sources. A symbolic
   input can therefore reach the common work capacity before an inner solver
   limit.
 - Concrete elaboration, evidence, native work and the loader and parser
   limits are separate.
-- Exhaustion is rejected. It is not a discharged quantitative Resource Safety
-  certificate, and it is not evidence that the mathematical obligation of the
-  program is false.
+- A program that exhausts a limit is rejected. The rejection is not a
+  discharged quantitative Resource Safety certificate, and it is not evidence
+  that the mathematical obligation of the program is false.
 - These are engineering limits. They are not the constitutional quantitative
   Resource Safety theorem.
 
@@ -1426,22 +1584,29 @@ Rules:
 
 ### Loading, resolution and projection
 
+The common judgment establishes facts about source. Whether a concrete
+profile can lower a program, and whether the native checker accepts the
+result, are separate questions.
+
 - Source facts, concrete capability and independent native acceptance are
   separate responsibilities.
-- Lowering integration is unfinished. Retirement of the selected lowering
-  projection, canonical generic `std` APIs and source-preservation proofs are
-  separate, unfinished work.
+- Lowering integration is unfinished. Three further pieces of work are
+  separate and also unfinished: retirement of the selected lowering
+  projection, canonical generic `std` APIs and source-preservation proofs.
 - The Finite project profile may refuse to materialize a source definition
   with a decreasing self-call under its concrete profile.
 
 ### Nominal types and ordinary match
 
+This subsection says which native check each kind of program with nominal
+types goes through, and what is unfinished.
+
 - The Finite project adapter executes eligible closed ordinary callers through
   the strict ordinary-v2 check. This includes ordinary parameter functions
   that the common emitter inlines.
-- Nongeneric public selected ordinary runtime roots and classical roots use
-  that same emitter and native check, after a fresh complete original-source
-  judgment.
+- A nongeneric public selected root that is an ordinary runtime root or a
+  classical root uses that same emitter and native check. It does so after a
+  fresh, complete judgment of the original source.
 - Small quantum temporaries use the same Raw emitter and complete
   hidden-history checks.
 - Mixed interfaces use the separate runtime-v2 check with full original type
@@ -1458,13 +1623,14 @@ Rules:
   reader for additional type provenance. The reader keeps resolved original
   type paths and checks nominal declarations and member visibility. The v5
   source check also checks the original body.
-- An explicit Rust check-only carrier adapter uses the same complete judgment
-  and source lowering to check an independently requested exact logical
-  matrix. Its sealed typed result grants no ordinary execution. The linked
-  type model describes its precise scope and its open AST-preservation duty.
+- An explicit Rust carrier adapter checks without executing. It uses the same
+  complete judgment and source lowering to check an exact logical matrix
+  that is requested independently. Its sealed typed result grants no
+  ordinary execution. The linked type model describes its precise scope and
+  its open AST-preservation duty.
 - Common frontend facts alone provide no execution evidence and no accepted
   handle. A host Basis description alone grants no execution authority.
-- The original-byte check of nominal elaboration is not a general
+- Nominal elaboration checks the original bytes. That check is not a general
   source-preservation theorem. It is not the pending binding of source to
   native evidence and cache.
 - The parsed declarations do not complete finite algebraic data types.
@@ -1474,6 +1640,9 @@ and the [production boundary](production-boundary.md#mixed-runtime-root-requests
 specify the distinct capacities and the checked scope.
 
 ### Classical declarations
+
+This subsection says how a runtime call of a classical function executes in
+the concrete profiles.
 
 - Supported Unit, Bit and product runtime calls, and exact closed
   empty-register runtime calls, lower their original expression nodes through
@@ -1485,12 +1654,16 @@ specify the distinct capacities and the checked scope.
 
 ### Runtime branches and effects
 
+A concrete profile can refuse a program that is valid as source. Such a
+refusal is a limit of the profile. It is not an error in the source.
+
 - The Finite project profile supports runtime ordinary branches.
 - Selected elaboration can reject such a runtime expression as unsupported
   during preparation (`unsupported`). It must not turn the expression into an
   unchecked body or a runtime failure path.
-- This profile restriction is separate from the language contract and from
-  the shared original-body ownership and effect judgment.
+- This profile restriction is separate from the language contract. It is
+  also separate from the shared judgment of ownership and effects on the
+  original body.
 - Nongeneric public selected roots that use the common emitter execute an
   ordinary `if` on a measured Bit.
 - A concrete profile may refuse a contract that is valid as source. The
@@ -1513,11 +1686,12 @@ it differ:
 
 Arm forms:
 
-- The Finite project profile lowers the name of a function and an operation
-  formal that the specialization binds.
-- The Selected Raw profile lowers those forms, a constructed static operation
-  such as `checked_op(sign, Sign)` and an inline block. The tests of
-  constructed arms and of block arms run on the selected-entry route.
+- The Finite project profile lowers two arm forms: the name of a function,
+  and an operation formal that the specialization binds.
+- The Selected Raw profile lowers those forms and two more: a constructed
+  static operation such as `checked_op(sign, Sign)`, and an inline block.
+  The tests of constructed arms and of block arms run on the selected-entry
+  route.
 - For a nominal target, an arm must name a declared function without static
   parameters. A function with static parameters is refused (`unsupported`):
   instantiate it in an ordinary wrapper. A constructed static operation is
@@ -1531,16 +1705,18 @@ Route selection:
   emitter for the built-in slice. Before lowering, named arms obtain their
   original checked provider bodies through the native evidence checks. This
   includes arms in inactive static branches.
-- With the `raw` or `auto` value of `--ir-profile` and no independent
-  hierarchy request, the CLI selects this route from the original `qmatch`
-  occurrences in the lexical dependency closure of the entry. An unrelated
-  `qmatch` declaration or a comment does not redirect a built-in entry.
+- The next rule applies when `--ir-profile` has the value `raw` or `auto` and
+  no independent hierarchy request exists. The CLI then selects this route
+  from the original `qmatch` occurrences in the lexical dependency closure
+  of the entry. An unrelated `qmatch` declaration or a comment does not
+  redirect a built-in entry.
 - The selected CLI and the Rust API prefer the v5 source check for supported
   coherent selections, including built-in ordinal selectors.
-- Register primitives, access calls, function contracts, ordinary matches,
-  static folds and computed bodies keep the typed runtime-root check when the
-  v5 source check is optional. Optional v5 checks cover selected static blocks
-  with Hadamard, phase, global phase and coherent selection events.
+- When the v5 source check is optional, these forms keep the typed
+  runtime-root check: register primitives, access calls, function contracts,
+  ordinary matches, static folds and computed bodies. Optional v5 checks
+  cover selected static blocks with Hadamard, phase, global phase and
+  coherent selection events.
 - The compiler chooses the route from the original lowered body before it
   submits a request. A selection that requires the v5 source check goes
   through it.
@@ -1548,9 +1724,10 @@ Route selection:
 
 Small nominal enum selectors:
 
-- They use the shared emitter for a nongeneric named function with quantum
-  parameters, a flat quantum-owner result and a structural body that contains
-  one or more named-arm selections.
+- They use the shared emitter for one shape of function. The function is
+  nongeneric and named. It has quantum parameters, a flat result of quantum
+  owners and a structural body that contains one or more selections with
+  named arms.
 - A target may be a built-in basis, a fieldless enum or a finite record,
   including an empty record. A built-in ordinal selector may also select a
   nominal target.
@@ -1630,6 +1807,8 @@ Open work:
 
 ### Proof status
 
+The statements below separate what a check establishes from what is proved.
+
 - The failure contract is a totality requirement. It is not a claim that
   every source form or target has a completed production Soundness proof.
 - The Rust simulator and native IO keep their disclosed correspondence
@@ -1651,9 +1830,9 @@ Open work:
 - The postselection boundary does not discharge ordinary-root
   EffectSound/CPTP, source and runtime preservation or the broader QS, PR,
   quantitative RS and EXACT obligations.
-- For coherent selection, common enum checks, native acceptance of a proposed
-  circuit and conformance tests do not prove original-source preservation or
-  complete nominal integration.
+- For coherent selection, three things do not prove original-source
+  preservation or complete nominal integration: common enum checks, native
+  acceptance of a proposed circuit and conformance tests.
 - Source effect facts and the source facts of the common judgment are not
   accepted IR handles and not a source-preservation proof.
 

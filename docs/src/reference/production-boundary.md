@@ -5,34 +5,47 @@ the native checker, together with what each check establishes. The **native
 checker** is the Lean executable that `lean-kernel/` builds. A **mode** is one
 dispatch argument of the native checker, such as `--runtime-root-check`. An
 **entry path** is a Rust API or a CLI command that submits bytes to a mode.
-For each mode, this chapter states the request that the mode reads, the rules
-that the native checker applies, the Lean theorems that bind the check, and
-the obligations that no theorem discharges.
 
-The chapter is subordinate to the [authority hierarchy](authority.md), the
-adopted single-verifier decision that [History](#history) cites, and
-repository `TRUSTBOUNDARY.md`. It does not discharge a constitutional
-obligation or widen an existing theorem. Source paths identify files in the
+Read this chapter to find out what a successful check proves and what it
+leaves open. For each mode, the chapter states four things: the request that
+the mode reads, the rules that the native checker applies, the Lean theorems
+that bind the check, and the obligations that no theorem discharges. The
+section on a mode lists the theorems under the label "Proof scope" and the
+open obligations under the label "Not established".
+
+The chapter is subordinate to three documents: the
+[authority hierarchy](authority.md), the adopted single-verifier decision that
+[History](#history) cites, and repository `TRUSTBOUNDARY.md`. It does not
+discharge a constitutional obligation or widen an existing theorem. Source
+paths identify files in the
 [Qleisli repository](https://github.com/MGYamada/Qleisli).
 
-Production acceptance has one implementation, the native checker.
+Production acceptance has one implementation, the native checker. Rust does
+the work around the check and never accepts a program itself.
 
 Rules:
 
-- Rust generates proposals, selects and invokes the compatible checker,
-  retains immutable checked bytes, decodes views, reports diagnostics and
-  executes simulations.
-- A missing, incompatible or failing native checker rejects. The retired Rust
-  verifier and the dual-acceptance fallback are absent.
-- Not every public function invokes Lean or grants acceptance.
+- Rust generates proposals, and it selects and invokes the compatible
+  checker. It retains the checked bytes, which are immutable. It also decodes
+  views, reports diagnostics and executes simulations.
+- A missing, incompatible or failing native checker rejects. No other
+  verifier takes its place: the retired Rust verifier and the dual-acceptance
+  fallback are absent.
+- Invoking Lean and granting a semantic accepted handle are different
+  things. Not every public function does either.
   [Public operations that confer no acceptance](#public-operations-that-confer-no-acceptance)
-  lists the operations that do neither.
+  lists the operations that produce no acceptance. One of them invokes Lean
+  all the same: QIRF export has the native checker inspect its output. That
+  check establishes portable validity. It is neither a fresh execution
+  acceptance nor a translation theorem.
 
 ## Constitutional theorem boundary
 
-The boundary below applies to the implementation that this chapter describes,
-under [the adopted interpretations](../design/initial-interpretations.md) and
-the single-verifier decision.
+The diagram below places the native check between the proposal of an artifact
+and the three constitutional obligations QS, PR and RS. It applies to the
+implementation that this chapter describes, under
+[the adopted interpretations](../design/initial-interpretations.md) and the
+single-verifier decision.
 
 ```text
 Source or external artifact, with its requested contract when present
@@ -55,9 +68,9 @@ Accepted judgment binds the decoded artifact, contract and evidence
 The **accepted judgment** of a mode is the success of its Lean check on the
 submitted bytes.
 [Entrypoints and actual checked representations](#entrypoints-and-actual-checked-representations)
-identifies the judgment and the checked representation of each mode. The two
-[admitted scoped guarantees](../design/initial-guarantees.md) concern
-ownership and classical scope of the original decoded ordinary root.
+identifies the judgment and the checked representation of each mode. Two
+[scoped guarantees](../design/initial-guarantees.md) are admitted. They
+concern ownership and classical scope of the original decoded ordinary root.
 
 Under the adopted interpretations, the three obligations concern these
 subjects:
@@ -77,43 +90,46 @@ Rules:
   source scope. Its evidence links the original source and dependency
   contracts to the checked artifact, including its owners, ordered axes,
   effects and exact phase.
-- A successful artifact check establishes the covered artifact properties. A
-  preservation theorem or independent validation must establish the source
-  correspondence separately.
-- The same rule applies to an adapter that claims preservation of a foreign
-  input, and to a backend that claims preservation in emitted output.
+- A successful check of an artifact establishes the properties of that
+  artifact that the check covers. It does not establish that the artifact
+  corresponds to its source. A preservation theorem or independent validation
+  must establish the source correspondence separately.
+- The same rule applies to an adapter that claims to preserve a foreign
+  input, and to a backend that claims preservation in the output it emits.
 - Source syntax that a later change adds may elaborate under the same edition
   whenever it preserves the adopted contracts.
-- A replacement checked representation must carry the applicable current
-  guarantees through justified semantic transport.
+- A checked representation that replaces another must carry the applicable
+  current guarantees with it, through justified semantic transport.
 - Every frontend and backend that claims constitutional acceptance must use
   the applicable native gate and its current evidence.
 - Missing evidence or a failed check rejects the claimed scope.
 
 ## Entrypoints and actual checked representations
 
+Use this section to find the mode that a Rust API or a CLI command reaches.
 The table below maps each entry path to the bytes that its mode checks. It
 uses these names:
 
 - `native::Kernel` means `interchange::native::Kernel`.
 - The ordinary `NativeChecked` of that kernel retains the artifact, the
   optional request, the checker identity and the reported work.
-- An **accepted handle** is an `AcceptedProgram`. It retains its predecoded
-  execution view only after a fresh QLV3 native comparison of that exact graph
-  and its caches. Inspection alone does not authorize execution.
-  [QDV1 and the envelope](execution-view.md) specify the compared data and
-  scope.
-- The hierarchy module has a different `NativeChecked`, with its own payload,
-  request and candidate and its own finite-obligation scope. Its dedicated
-  protocol reports are not ordinary `AcceptedProgram` handles.
+- An **accepted handle** is an `AcceptedProgram`. The handle retains its
+  predecoded execution view only after the native checker has freshly
+  compared that exact graph and its caches under QLV3. Inspection alone does
+  not authorize execution. [QDV1 and the envelope](execution-view.md) specify
+  the compared data and scope.
+- The hierarchy module has a different `NativeChecked`. That type has its own
+  payload, request and candidate, and its scope is its own finite
+  obligations. The reports of the module's dedicated protocols are not
+  ordinary `AcceptedProgram` handles.
 
 | Entry path | Artifact or request that the mode checks | Mode and checker | Proof scope and open obligations |
 | --- | --- | --- | --- |
-| Source/project/qrate checks and compilation; raw IR; function/meaning evidence; QIRF import, export, conversion and `verify-ir`; foreign/Python imports | QLV3 envelope containing the original QLV1 QIRF/request packet and the actual retained execution view when execution is requested. Source, evidence and foreign adapters produce these bytes. | `native::Kernel` → `--qirf-native` → `Protocol.NativeContext.run` → `ExecutionView.Native.ordinary` → the original QIRF check and requested view comparison | [Ordinary QIRF root requests](#ordinary-qirf-root-requests) |
-| `CheckedContract::check`, its checked compositions, and `check_computed` | QIRF root and `qleisli.native-contract` encoded equation | `Kernel::check_encoded` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.checkContract` | [Encoded and square-leaf requests](#encoded-and-square-leaf-requests) |
-| `finite_leaf::{check_unitary,check_serialized_unitary}` | QIRF root, signature, ordered input/output ports and exact matrix request | `Kernel::check_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Validity.checkRoot` and `Qirf.check` | [Encoded and square-leaf requests](#encoded-and-square-leaf-requests) |
-| `pure_leaf::check_pure` | QIRF root, separate domain/codomain type trees, ordered owner ports and exact rectangular matrix | `Kernel::check_pure_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.PureLeaf.check` | [Rectangular pure-leaf requests](#rectangular-pure-leaf-requests) |
-| `Kernel::check_carrier`; explicit `Instantiation::check_carrier` source adapter | Original QIRF/dependencies, both ordered nominal owner forests, original declaration sources and an independent exact logical matrix | `--carrier-pure-check` → `ExecutionView.CheckedCarrier.run` → `Protocol.Carrier.check` → original source checks and `Qirf.Carrier.check` | [Finite nominal carrier requests](#finite-nominal-carrier-requests) |
+| Checks and compilation of a source, a project or a qrate; raw IR; function and meaning evidence; QIRF import, export, conversion and `verify-ir`; foreign and Python imports | A QLV3 envelope. It contains the original QLV1 packet of QIRF and request. When the caller requests execution, it also contains the actual retained execution view. Source, evidence and foreign adapters produce these bytes. | `native::Kernel` → `--qirf-native` → `Protocol.NativeContext.run` → `ExecutionView.Native.ordinary` → the original QIRF check and requested view comparison | [Ordinary QIRF root requests](#ordinary-qirf-root-requests) |
+| `CheckedContract::check`, its checked compositions, and `check_computed` | The QIRF root and an encoded equation in a `qleisli.native-contract` request | `Kernel::check_encoded` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.checkContract` | [Encoded and square-leaf requests](#encoded-and-square-leaf-requests) |
+| `finite_leaf::{check_unitary,check_serialized_unitary}` | The QIRF root and a request with the signature, the ordered input and output ports and an exact matrix | `Kernel::check_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Validity.checkRoot` and `Qirf.check` | [Encoded and square-leaf requests](#encoded-and-square-leaf-requests) |
+| `pure_leaf::check_pure` | The QIRF root, separate type trees for the domain and the codomain, the ordered owner ports and an exact rectangular matrix | `Kernel::check_pure_leaf` → `--qirf-contract` → `ExecutionView.Native.contract` → `Protocol.NativeContract.checkRetained` → `Qirf.PureLeaf.check` | [Rectangular pure-leaf requests](#rectangular-pure-leaf-requests) |
+| `Kernel::check_carrier`; explicit `Instantiation::check_carrier` source adapter | The original QIRF and dependencies, both ordered forests of nominal owners, the original declaration sources and an independent exact logical matrix | `--carrier-pure-check` → `ExecutionView.CheckedCarrier.run` → `Protocol.Carrier.check` → original source checks and `Qirf.Carrier.check` | [Finite nominal carrier requests](#finite-nominal-carrier-requests) |
 | `Kernel::check_ordinary_root` | Original QIRF/dependencies and the `qleisli.ordinary-root-request` version-2 request, profile `finite-ordinary-root-v2` | `--ordinary-root-check` → `CheckedOrdinaryRoot.run` | [Ordinary input/result requests](#ordinary-inputresult-requests) |
 | `Kernel::check_runtime_root` | Original QIRF/dependencies and the `qleisli.runtime-root-request` version-2 request, profile `finite-runtime-root-v2` | `--runtime-root-check` → `CheckedRuntimeRoot.run` | [Mixed runtime root requests](#mixed-runtime-root-requests) |
 | `Kernel::check_qmatch_source` | Original QIRF/dependencies and the `qleisli.qmatch-request` version-4 request | `--qmatch-source-check` → `CheckedQmatch.run` | [Version 4: named-arm component requests](#version-4-named-arm-component-requests) |
@@ -121,27 +137,28 @@ uses these names:
 | `engineering_pure::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-pure` | Original actual and ideal QIRF artifacts and the closed pure comparison request | `--engineering-pure-check` → `CheckedEngineeringPure.run` | [Native pure engineering comparison](realization.md#native-pure-engineering-comparison) states the checked bound. The reply is `engineering-checked`, not an accepted handle. |
 | `engineering_pure_tensor::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-pure-tensor` | Original actual and ideal QIRF artifacts and the closed ordered tensor comparison request | `--engineering-pure-tensor-check` → `CheckedEngineeringPureTensor.run` | [Native ordered pure tensor comparison](realization.md#native-ordered-pure-tensor-comparison) states the checked bound. The reply is `engineering-checked`, not an accepted handle. |
 | `engineering_instrument::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-instrument` | Original actual and ideal QIRF artifacts and the closed instrument comparison request | `--qirf-engineering-instrument-native` → `Native.engineeringInstrument` | [Instrument engineering comparison](realization.md#instrument-engineering-comparison) states the checked bound. The reply is `engineering-checked`, not an accepted handle. |
-| `engineering_openqasm::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-openqasm3` | Literal canonical target bytes, original ideal/dependencies, exact Unit/Bit signatures, closed epsilon/majorants and the complete retained QDV1 view | `--engineering-openqasm-check` → `CheckedEngineeringOpenQasm.run` → independent byte decode and unchanged complete instrument checks | `NativeEngineeringOpenQasmProtocol.run_meaning` binds the literal target and original ideal to the actual checking execution. `run_complete_adjoint_bound` covers every finite reference. The private report is engineering-only, without an actual `AcceptedProgram`, source/export-preservation, pure/control, cleanup, hardware, resources or constitutional PR/RS claim. |
-| `engineering_openqasm_gate::compare_serialized_with_kernel` and `engineering compare-openqasm3-gate` | Literal OpenQASM gate definition, exact ideal slices and the requested sequential or controlled approximation with resource accounting | `--engineering-openqasm-gate-check` → `CheckedEngineeringOpenQasmGate.run` → `Protocol.EngineeringOpenQasmGate.checkRetained` and retained QDV1 comparison | `NativeEngineeringOpenQasmGate.sequential_reference_bound` and `controlled_reference_bound` bound the literal operator difference on arbitrary finite references. Report authority is limited to the checked engineering request. |
+| `engineering_openqasm::{check_with_kernel,check_serialized_with_kernel}` and `engineering compare-openqasm3` | The literal canonical target bytes, the original ideal and dependencies, exact Unit and Bit signatures, the closed epsilon and majorants, and the complete retained QDV1 view | `--engineering-openqasm-check` → `CheckedEngineeringOpenQasm.run` → an independent decode of the bytes and the unchanged complete instrument checks | `NativeEngineeringOpenQasmProtocol.run_meaning` binds the literal target and the original ideal to the actual checking execution. `run_complete_adjoint_bound` covers every finite reference. The private report is for engineering only. It carries no actual `AcceptedProgram`. It makes no claim of source or export preservation, and no pure, control, cleanup, hardware, resources or constitutional PR or RS claim. |
+| `engineering_openqasm_gate::compare_serialized_with_kernel` and `engineering compare-openqasm3-gate` | Literal OpenQASM gate definition, exact ideal slices and the requested sequential or controlled approximation with resource accounting | `--engineering-openqasm-gate-check` → `CheckedEngineeringOpenQasmGate.run` → `Protocol.EngineeringOpenQasmGate.checkRetained` and retained QDV1 comparison | `NativeEngineeringOpenQasmGate.sequential_reference_bound` and `controlled_reference_bound` bound the difference of the literal operators on arbitrary finite references. The authority of the report is limited to the checked engineering request. |
 | `AcceptedProgram::check_openqasm_placement`, internal to OpenQASM export | The accepted program's retained version-5 qmatch request and execution view, the emitted OpenQASM target bytes and their alignment | `--openqasm-placement-check` → `CheckedQmatchV5.PlacementPacket.check` | The reply is `placement-checked` with target resource counts, not an accepted handle. This chapter states no proof for this mode. |
-| `hierarchical::Kernel::{inspect,inspect_native}` | Dedicated hierarchy payload and all required finite leaves | `--hierarchy-pending` → `Conditional.checkAll` and `HierarchicalFinite.checkLeaves` | `NativeHierarchy.conditional_derives` and `checkLeaves_semantics` bind structural derivation and finite meaning. Full analytic meaning-to-Operator composition is open. |
-| `hierarchical::Kernel::{check_against,check_against_native}`, ordinary request branch | Hierarchy payload and composition request | `--hierarchy-request-pending` → `Root.checkAll`, `checkLeaves` and `checkPairs` | `NativeHierarchy.requested_pairs` and finite-leaf results retain their stated premises; a producer comparison request proves consistency, not source preservation. |
-| Selected pure hierarchy source with `ctrl` | One hierarchy composition, compared plan and each original call's replayed node index, ordered basis forest and control roles | `--hierarchy-control-pending` → `Root.checkAll`, finite leaves and pairs, and `HierarchicalFinite.checkControls` | `ControlAccess.check_bound` binds the native sector predicate to the executable action of the selected node. Source occurrence replay and the general source/resource correspondence have separate scopes. |
-| The same methods' Fourier branch | Hierarchy payload and Fourier request, including Hadamard obligations | `--hierarchy-fourier-pending` → `FourierRoot.checkAll`, `checkLeaves` and `checkHadamards` | `NativeHierarchy.hadamard_semantics` and `checkHadamards_semantics` establish finite obligations; complete analytic/source/runtime composition is open. |
-| `check_instrument` / `check_instrument_native` | Instrument payload and preparation/evolution/readout request | `--instrument-pending` → `Instrument.checkAll`, `checkLeaves` and `checkPairs` | `Instrument.checkAll_stages` / `checkAll_boundary` and native finite results cover components. They do not establish complete source or host execution preservation. |
-| `check_qpe_instrument` / `check_qpe_instrument_native` | Instrument payload, named provider request and candidate binding | `--qpe-instrument-pending` → `QpeInstrument.checkAll`, `checkLeaves`, `checkPairs` and `checkHadamards` | Named structural and finite obligations are checked. The complete native analytic Operator bridge and general source-QPE meaning are open. |
-| Private readout and preparation protocols | QLM1 readout and QLZ1 preparation packets | `--readout-check` → `Readout.check`; `--preparation-check` → `Preparation.check` | Component `check_reference` / `check_boundary` results retain explicit premises. These reports are not complete program handles or runtime guarantees. |
-| Phase-word, phase DAG, layout, layout DAG and phase-layout file protocols | Separate component artifacts and requirements | `Cli.Finite` → `verify`, `Hierarchy.check`, `Layout.check`, `LayoutDag.check`, `PhaseLayout.check` | Existing phase/layout component results do not extend automatically to ordinary production programs. |
-| `Finite.check` / `checkAll`, `circuitMatrix`, `FiniteCodec.readMatrix` | Finite circuits, contracts or serialized matrices | Finite checking, evaluation or decoding, respectively | Finite component theorems have explicit inputs. Evaluation and decoding alone are not acceptance; composition with each actual production root is required. |
+| `hierarchical::Kernel::{inspect,inspect_native}` | Dedicated hierarchy payload and all required finite leaves | `--hierarchy-pending` → `Conditional.checkAll` and `HierarchicalFinite.checkLeaves` | `NativeHierarchy.conditional_derives` and `checkLeaves_semantics` bind structural derivation and finite meaning. The full analytic composition from meaning to Operator is open. |
+| `hierarchical::Kernel::{check_against,check_against_native}`, ordinary request branch | Hierarchy payload and composition request | `--hierarchy-request-pending` → `Root.checkAll`, `checkLeaves` and `checkPairs` | `NativeHierarchy.requested_pairs` and the finite-leaf results retain their stated premises. A comparison request from a producer proves consistency, not source preservation. |
+| Selected pure hierarchy source with `ctrl` | One hierarchy composition and the compared plan. For each original call: its replayed node index, its ordered basis forest and its control roles. | `--hierarchy-control-pending` → `Root.checkAll`, finite leaves and pairs, and `HierarchicalFinite.checkControls` | `ControlAccess.check_bound` binds the native sector predicate to the executable action of the selected node. The replay of source occurrences has a separate scope, and so does the general correspondence of source and resources. |
+| The same methods' Fourier branch | Hierarchy payload and Fourier request, including Hadamard obligations | `--hierarchy-fourier-pending` → `FourierRoot.checkAll`, `checkLeaves` and `checkHadamards` | `NativeHierarchy.hadamard_semantics` and `checkHadamards_semantics` establish finite obligations. The complete analytic, source and runtime composition is open. |
+| `check_instrument` / `check_instrument_native` | Instrument payload and preparation/evolution/readout request | `--instrument-pending` → `Instrument.checkAll`, `checkLeaves` and `checkPairs` | `Instrument.checkAll_stages` / `checkAll_boundary` and the native finite results cover components. They do not establish that the complete source or the host execution is preserved. |
+| `check_qpe_instrument` / `check_qpe_instrument_native` | Instrument payload, named provider request and candidate binding | `--qpe-instrument-pending` → `QpeInstrument.checkAll`, `checkLeaves`, `checkPairs` and `checkHadamards` | The mode checks the named structural and finite obligations. The complete native bridge to the analytic Operator and the general meaning of source QPE are open. |
+| Private readout and preparation protocols | QLM1 readout and QLZ1 preparation packets | `--readout-check` → `Readout.check`; `--preparation-check` → `Preparation.check` | The component results `check_reference` / `check_boundary` retain explicit premises. These reports are not handles of complete programs and not runtime guarantees. |
+| Phase-word, phase DAG, layout, layout DAG and phase-layout file protocols | Separate component artifacts and requirements | `Cli.Finite` → `verify`, `Hierarchy.check`, `Layout.check`, `LayoutDag.check`, `PhaseLayout.check` | The existing component results for phase and layout do not extend automatically to ordinary production programs. |
+| `Finite.check` / `checkAll`, `circuitMatrix`, `FiniteCodec.readMatrix` | Finite circuits, contracts or serialized matrices | Finite checking, evaluation or decoding, respectively | The finite component theorems have explicit inputs. Evaluation and decoding alone are not acceptance. Composition with each actual production root is required. |
 
-> **Implementation note.** `lean-kernel/Main.lean` dispatches the explicitly
-> versioned native modes, including mechanically separate engineering
-> comparisons. `lean-kernel/Cli/NativeContext.lean` invokes the pure
-> `Protocol.NativeContext.run` dispatcher and its single reply projection. It
-> checks the original QLV3 edition and compiled product before applying each
-> mode's existing gate. The strict version-3 reply binds that same context.
-> The older IO adapters are unused and await retirement after replacement
-> conformance coverage. They are not fallback entry points.
+> **Implementation note.** `lean-kernel/Main.lean` dispatches the native
+> modes, each of which has an explicit version. The engineering comparisons
+> are among them and are mechanically separate.
+> `lean-kernel/Cli/NativeContext.lean` invokes the pure dispatcher
+> `Protocol.NativeContext.run` and its single reply projection. It checks the
+> original QLV3 edition and the compiled product, and then applies the
+> existing gate of the mode. The strict version-3 reply binds that same
+> context. The older IO adapters are unused and await retirement after
+> replacement conformance coverage. They are not fallback entry points.
 
 These files contain the bridge theorems that the table and the sections below
 cite by name:
@@ -167,19 +184,21 @@ use. It contains none of the theorems that this chapter cites by name.
 
 ## Ordinary QIRF root requests
 
-The mode `--qirf-native` checks an ordinary QIRF root. The first row of the
+The mode `--qirf-native` checks an ordinary QIRF root. Checking or compiling
+a source, a project or a qrate reaches this mode. The first row of the
 entry-path table lists its entry paths and its bytes. The bytes are a
-[QLV3 envelope](execution-view.md#native-envelope-cutover) that holds the
-original QLV1 packet, with its optional independent request, and the retained
-execution view when the caller requests execution.
+[QLV3 envelope](execution-view.md#native-envelope-cutover). The envelope holds
+the original QLV1 packet, with its optional independent request. When the
+caller requests execution, it also holds the retained execution view.
 
 Rules:
 
 - The accepted judgment is the success of
   `QleisliKernel.Protocol.ExecutionView.Native.ordinary` on the QLV3 payload at
-  its requested scope, reached through `Protocol.NativeContext.run`.
-- Execution also requires comparison of the retained view against the view
-  that Lean decodes.
+  its requested scope. The checker reaches that function through
+  `Protocol.NativeContext.run`.
+- Execution requires one more check: a comparison of the retained view
+  against the view that Lean decodes.
 
 Proof scope:
 
@@ -194,16 +213,19 @@ Proof scope:
 Not established:
 
 - Full ordinary EffectSound/CPTP is a separate obligation.
-- Source translation preservation and foreign translation preservation are
-  separate obligations.
-- Emitted-output preservation and runtime preservation are separate
+- Preservation by source translation and preservation by foreign translation
+  are separate obligations.
+- Preservation in emitted output and preservation at runtime are separate
   obligations.
 
 ## Native contract requests
 
-The mode `--qirf-contract` reads a strictly decoded `qleisli.native-contract`
-version-1 request beside the original QIRF root. The field `kind` selects one
-of six request kinds:
+A caller uses the mode `--qirf-contract` when it needs a fact about a QIRF
+root beyond ordinary validity: an encoded equation, an exact matrix, a
+control sector or an observing instrument. The mode reads the original QIRF
+root and, beside it, a `qleisli.native-contract` request of version 1. It
+decodes the request strictly. The field `kind` selects one of six request
+kinds:
 
 | `kind` | Fields | Section |
 | --- | --- | --- |
@@ -218,19 +240,20 @@ Rules:
 
 - The inner QLV1 format is the same for every kind. An external call requires
   the QLV3 envelope and its scope.
-- The `control` kind changes neither the inner QLV1 format nor the encoded and
-  leaf request contracts.
+- The `control` kind changes neither the inner QLV1 format nor the contracts
+  of the encoded and leaf requests.
 
 Proof scope:
 
 - The native-contract bridge is specific to `Protocol.NativeContract.check`.
   It does not inherit the theorem for the ordinary `Protocol.Validity.check`
   root.
-- Its `Acceptance` witness retains the original QLV1 body and request bytes,
-  the UTF-8/JSON decoding, the artifact and order, the requested signature,
-  the ordered ports and the exact matrix or encoded contract, with continuous
-  work states. These are necessary success facts. They are not a converse
-  characterization of every parser constraint.
+- Its `Acceptance` witness retains what the check read and decoded: the
+  original QLV1 body and request bytes, the UTF-8/JSON decoding, the artifact
+  and order, the requested signature, the ordered ports and the exact matrix
+  or encoded contract. It retains them with continuous work states. These
+  facts are necessary for success. They are not a converse characterization
+  of every parser constraint.
 - `Protocol.NativeContract.check_acceptance` binds the original bytes, the
   decoded request and the actual checking states.
 - `tests/fixtures/constitution_v030/native-contract-bridge/` preserves the
@@ -241,13 +264,16 @@ Not established:
 
 - The identity and proof checks of that fixture admit no guarantee and do not
   close S05.
-- They establish no source/compiler, deployed-binary, Rust rematerialization,
-  target/runtime or quantitative Resource Safety claim.
+- They establish no claim about the source or the compiler, a deployed
+  binary, Rust rematerialization, the target or the runtime, or quantitative
+  Resource Safety.
 
 ### Encoded and square-leaf requests
 
-The entry-path table gives the entry paths and the checked bytes of the kinds
-`encoded` and `leaf`.
+A request of kind `encoded` states an encoded equation for the root. A
+request of kind `leaf` states a signature, ordered ports and an exact square
+matrix for it. The entry-path table gives the entry paths and the checked
+bytes of the kinds `encoded` and `leaf`.
 
 Rules:
 
@@ -257,53 +283,62 @@ Rules:
 Proof scope:
 
 - `Qleisli.NativeContract.check_encoded_sound` and `encoded_meaning` connect
-  success to original-root `BodyMeaning`, the exact Basis interface and the
-  requested encoded equation. Through `EncodedMeaning`, the encoded branch
-  retains that `BodyMeaning`, the complete Basis interface and the checked
-  encoded equation.
-- `Wrapper.circuitMatrix_entries` proves the coefficient equality of the
-  actual wrapper with the original matrix.
+  success to three things: the `BodyMeaning` of the original root, the exact
+  Basis interface and the requested encoded equation. Through
+  `EncodedMeaning`, the encoded branch retains that `BodyMeaning`, the
+  complete Basis interface and the checked encoded equation.
+- `Wrapper.circuitMatrix_entries` proves that the coefficients of the actual
+  wrapper equal those of the original matrix.
 - `encoded_reference` extends the equation to any reference amplitude
   function.
-- `Qleisli.NativeContract.check_sound` and `leaf_meaning` compose native byte
-  acceptance to original-body instrument meaning. They cover the bounded
-  closed unitary fragment, the exact requested matrix, the signature and the
-  ordered ports. The output port is tied to an actual verification.
+- `Qleisli.NativeContract.check_sound` and `leaf_meaning` compose the native
+  acceptance of the bytes to the instrument meaning of the original body.
+  They cover the bounded closed unitary fragment, the exact requested matrix,
+  the signature and the ordered ports. The output port is tied to an actual
+  verification.
 - `leaf_reference_laws` extends both whole-space inverse laws to every finite
-  reference. The leaf conclusion retains complex phase. Its arbitrary
-  finite-reference laws require no separability or normalization premise.
+  reference. The leaf conclusion retains complex phase. Its laws for an
+  arbitrary finite reference require no premise of separability or
+  normalization.
 
 Not established:
 
-- For the kind `encoded`: source/compiler, compiled I/O, runtime/export,
-  clean-release and quantitative resource claims are separate. The theorems
-  are not ledger admissions.
-- For the kind `leaf`: source/runtime claims and broader effect and
-  clean-release claims are separate.
-- The bounded original-root results of both kinds do not establish source,
-  deployed-binary or host execution correspondence.
+- For the kind `encoded`, these claims are separate: source and compiler,
+  compiled I/O, runtime and export, clean release and quantitative resources.
+  The theorems are not ledger admissions.
+- For the kind `leaf`, source and runtime claims are separate. Broader claims
+  about effects and clean release are separate too.
+- Both kinds give bounded results about the original root. These results do
+  not establish correspondence with the source, with a deployed binary or
+  with host execution.
 
 ### Rectangular pure-leaf requests
 
-The mode `--qirf-contract` accepts `qleisli.native-contract` version 1 with
-`kind: "pure-leaf"`. Its complete fields are `format`, `version`, `kind`,
-`domain`, `codomain`, `input`, `output` and `matrix`.
+A request of kind `pure-leaf` states that a unary pure function equals an
+exact matrix. The input type and the output type are independent, so the
+matrix can be rectangular. The mode `--qirf-contract` accepts
+`qleisli.native-contract` version 1 with `kind: "pure-leaf"`. Its complete
+fields are `format`, `version`, `kind`, `domain`, `codomain`, `input`,
+`output` and `matrix`.
 
 Rules:
 
 - Both types use exact QIRF basis trees. The ports retain token, ordered wires
   and bit shape.
-- Unknown fields, unknown versions and producer acceptance flags reject.
-- The original QIRF root interface describes a unary pure function with
-  independent input and output types. Its structural check requires a Unitary
-  or Isometry effect, no classical ports, one input and one actual live output
-  owner, and the corresponding input and output widths.
-- The literal original-body reader finds the output owner. The input width
-  does not stand for the output width.
+- The native checker rejects an unknown field, an unknown version and a
+  producer acceptance flag.
+- The interface of the original QIRF root describes a unary pure function
+  with independent input and output types. The structural check of that
+  interface requires four things: a Unitary or Isometry effect, no classical
+  ports, one input and one actual live output owner, and the corresponding
+  input and output widths.
+- The reader of the literal original body finds the output owner. The input
+  width does not stand for the output width.
 - Ordinary validity alone does not establish an external matrix equation.
 - `PureLeaf.check` freshly checks the original dependency graph and body. It
-  binds both exact type trees and both ordered ports, reconstructs every input
-  column, and checks exact equality to the requested matrix and `V†V = I`.
+  binds both exact type trees and both ordered ports. It reconstructs every
+  input column, and it checks exact equality to the requested matrix and
+  `V†V = I`.
 - Reconstruction retains the original effect checks, complete classical
   branches and hidden observation histories. Measurement, reset and discard
   cannot be relabeled pure or erased from the equation.
@@ -313,39 +348,44 @@ Rules:
 - Every receipt requires fresh native acceptance, including a receipt that
   uses previously checked dependency data.
 
-> **Implementation note.** `CheckedPureLeaf` is a private-construction receipt
-> over immutable original artifact and request bytes. Rust boundary
-> construction and matrix serialization validate untrusted data shape only.
+> **Implementation note.** `CheckedPureLeaf` is a receipt that only private
+> code can construct. It covers the immutable bytes of the original artifact
+> and of the request. On the Rust side, boundary construction and matrix
+> serialization validate only the shape of untrusted data.
 
 > **Implementation note.** The ordinary frontend retains `SourcePureEquation`
-> sidecars on its accepted entry. A sidecar holds independently checked
-> implementation and reference leaves, their exact matching domain, codomain
-> and matrix, the resolved names and the original source text. Constructor
-> lowering rechecks actual renamed Raw fragments against the derived matrix.
-> Selected Raw lowering retains its original Meaning requests and checks
-> actual instruction intervals. The refined finite-leaf path of the hierarchy
-> is square and refuses rectangular Meaning obligations.
+> sidecars on its accepted entry. A sidecar holds an implementation leaf and
+> a reference leaf, each independently checked. It also holds their exact
+> matching domain, codomain and matrix, the resolved names and the original
+> source text. Constructor lowering rechecks actual renamed Raw fragments
+> against the derived matrix. Selected Raw lowering retains its original
+> Meaning requests and checks actual instruction intervals. The refined
+> finite-leaf path of the hierarchy is square and refuses rectangular Meaning
+> obligations.
 
 Proof scope:
 
-- `pure_leaf_meaning` binds fresh graph and root checking to the original body
-  and the exact Gram identity.
+- `pure_leaf_meaning` binds the fresh check of the graph and the root to the
+  original body and the exact Gram identity.
 - `pure_leaf_reference` preserves inner products for arbitrary joint reference
   amplitudes.
 
 Not established:
 
-- The check grants neither inverse nor control access. It supplies no
-  source/runtime correspondence, target realization or quantitative resource
-  evidence.
-- Source snapshots provide provenance. Neither sidecar is a general
-  source-preservation proof, an arbitrary whole-entry functional specification
+- The check grants neither inverse nor control access. It supplies no source
+  or runtime correspondence, no target realization and no quantitative
+  resource evidence.
+- Source snapshots provide provenance. Neither sidecar is a general proof of
+  source preservation, a functional specification of an arbitrary whole entry
   or a constitutional guarantee.
 
 ### Original-artifact control-sector requests
 
-The mode `--qirf-contract` accepts two kinds that request a control-sector
-check of an original artifact:
+A control-sector check asks whether an action keeps the computational-basis
+sectors of the requested axes apart. The rules below state the exact
+condition. Each source `ctrl` call carries such a check as an obligation. The
+mode `--qirf-contract` accepts two kinds that request a control-sector check
+of an original artifact:
 
 | Request | Complete field set | Content |
 | --- | --- | --- |
@@ -354,40 +394,44 @@ check of an original artifact:
 
 Rules:
 
-- A `control` request with an extra field rejects, including a proposed
-  matrix or a producer success flag.
+- The native checker rejects a `control` request with an extra field. A
+  proposed matrix is such a field, and so is a producer success flag.
 - A `control-owners` request carries exactly its five fields. It accepts
   neither a proposed matrix nor a success receipt.
-- Lean checks the original graph, root, dependency evidence and identical
-  input/output interface. It reconstructs the actual action and checks
-  whole-space unitarity. It then requires every matrix entry between different
+- Lean checks the original graph, the root and the dependency evidence, and
+  it checks that the input and output interfaces are identical. It
+  reconstructs the actual action and checks that the action is unitary on the
+  whole space. It then requires every matrix entry between different
   requested computational-basis sectors to be exactly zero.
 - The six-bit finite reconstruction limit and continuous work accounting
   apply.
 - An empty axis list is meaningful for a zero-width logical owner. It does not
   erase ownership or nontrivial phase.
 - The internal `Qirf.ControlAccess.checkOwners` component checks an original
-  call with several ordered quantum ports, without constructing a single-port
-  packing wrapper. The requested basis forest must match the original input
-  and live returned owner widths and positions, including zero-width owners.
+  call with several ordered quantum ports. It constructs no wrapper that
+  packs them into a single port. The requested basis forest must match the
+  widths and positions of the original input owners and of the live returned
+  owners, including zero-width owners.
 - Raw bit widths do not establish source type trees. The requested forest
   requires binding to the original checked source.
 
 Rules for source `ctrl` calls:
 
-- The Finite project path binds the `control-owners` request to each actual
-  emitted control-call interval, to the original ordered owner ports and basis
-  forest, and to the returned tokens, before it updates source bindings. It
-  checks nested calls and unused concrete declarations. The complete final
-  artifact also requires ordinary native acceptance.
-- Selected source projection retains the original ordered access roles with
-  the source identities and positions of the call, including public `ctrl`
-  occurrences. Elaboration checks the exact owner shape and actual effect. It
-  neither grants sector authority nor rewrites the role to `excl`.
+- The Finite project path binds the `control-owners` request before it
+  updates source bindings. It binds the request to each interval of an actual
+  emitted control call, to the original ordered owner ports and basis forest,
+  and to the returned tokens. It checks nested calls and unused concrete
+  declarations. The complete final artifact also requires ordinary native
+  acceptance.
+- Selected source projection retains the original ordered access roles,
+  together with the source identities and positions of the call. This
+  includes public `ctrl` occurrences. Elaboration checks the exact owner
+  shape and actual effect. It neither grants sector authority nor rewrites
+  the role to `excl`.
 - Checker-free Raw lowering and hierarchical lowering reject retained control
   roles.
-- Native-checked Selected Raw lowering independently checks every retained
-  control-bearing concrete body and the selected root. It then replays its
+- Native-checked Selected Raw lowering independently checks the selected root
+  and every retained concrete body that bears a control. It then replays its
   actual decoded calls with fresh sector requests. Final consumption repeats
   native acceptance and source replay. Retaining a role or an earlier success
   is not acceptance authority.
@@ -399,7 +443,7 @@ Rules for source `ctrl` calls:
 - Unused original declarations, unselected branches, empty loops and
   zero-count providers cannot erase the obligation or its location. Retained
   zero-count provider bodies are checked before root emission.
-- Control replay without a native checker refuses.
+- Control replay refuses when it has no native checker.
 - Symbolic inverse or controlled replay refuses retained control roles. Its
   transformed trace does not supply the original call intervals that the
   native bridge requires.
@@ -410,8 +454,8 @@ Rules for source `ctrl` calls:
 > retained control obligation with the checker of the accepted original
 > artifact. It selects the actual instruction interval that replay consumes,
 > its input and returned tokens and its ordered source basis forest. It then
-> submits a fresh `control-owners` request. It takes no producer-supplied call
-> body, matrix or success receipt.
+> submits a fresh `control-owners` request. It takes no call body, matrix or
+> success receipt from a producer.
 >
 > Work is shared across these decisions within the exact-work ceiling. The
 > checked Raw entry shares this budget across all body and root decisions. It
@@ -424,13 +468,13 @@ Proof scope:
 - `Protocol.NativeContract.ControlAcceptance` and `check_acceptance` retain
   the original body and request bytes, the exact decoded signature and axes,
   and the actual checker execution.
-- `Qleisli.NativeContract.control_meaning` connects the same action to
-  original-root `BodyMeaning`, its exact interface, the sector condition and
-  the inverse laws.
+- `Qleisli.NativeContract.control_meaning` connects the same action to four
+  things: the `BodyMeaning` of the original root, its exact interface, the
+  sector condition and the inverse laws.
 - `control_reference` proves projector commutation on arbitrary joint complex
   amplitudes with any external reference. Phase kickback and entanglement are
-  permitted. The result does not assert an unchanged reduced control state or
-  separability.
+  permitted. The result does not assert that the reduced control state is
+  unchanged, and it does not assert separability.
 - `checked_owners_meaning` and `checked_owners_action_project` bind the actual
   root, its dependencies and the full complex action to the sector law.
 - `ControlOwnersAcceptance` retains the decoded ordered forest and
@@ -442,9 +486,10 @@ Proof scope:
 Not established:
 
 - The `control` request alone does not enable source `ctrl` calls.
-- Original source places, call-specific artifact identity, aliasing, access
-  lifetimes, lowering and execution correspondence, and quantitative resource
-  and scheduling claims are separate obligations.
+- These are separate obligations: original source places, the artifact
+  identity that is specific to a call, aliasing, access lifetimes, lowering
+  and execution correspondence, and quantitative resource and scheduling
+  claims.
 - The two kinds introduce no native mode, external schema admission or
   constitutional guarantee.
 - Neither an annotation nor native unitarity alone supplies control-sector
@@ -457,7 +502,9 @@ Not established:
 
 ### Original-artifact observing instrument requests
 
-The mode `--qirf-contract` accepts `kind = "instrument"` in
+A request of kind `instrument` compares two observing artifacts, the actual
+one and an expected one. The check succeeds only when the two are equal as
+instruments. The mode `--qirf-contract` accepts `kind = "instrument"` in
 `qleisli.native-contract` version 1. Its exact fields are `format`, `version`,
 `kind` and the four below:
 
@@ -479,8 +526,9 @@ The complete result tree uses these exact objects:
 
 Rules:
 
-- Supplied matrices, receipts, success flags, missing fields and extra fields
-  reject.
+- The native checker rejects a request that supplies a matrix, a receipt or
+  a success flag. It also rejects a request with a missing field or an extra
+  field.
 - The actual QIRF is the original QLV1 body. The checker freshly checks both
   complete graphs, both selected roots and the dependency evidence.
 - The kind changes neither the QLV1 framing, the QIRF representation nor the
@@ -489,10 +537,12 @@ Rules:
   zero-width quantum owners and product nodes.
 - The ordered quantum owners and the classical projection must match the
   original roots.
-- Source consumers select this contract by caller-visible Observe effects.
-- The native profile requires genuinely observing original artifacts. A
-  conservative Observe bound on a pure body neither rewrites its Raw
-  classification nor authorizes a pure contract fallback.
+- Source consumers select this contract by the Observe effects that callers
+  see.
+- The native profile requires original artifacts that genuinely observe. A
+  pure body can carry a conservative Observe bound. That bound neither
+  rewrites the Raw classification of the body nor authorizes a fallback to a
+  pure contract.
 - Unsupported concrete pairs refuse, including unused ones.
 - The native profile has one quantum input and no runtime classical inputs.
 - Signatures are requested type data. Native widths alone do not reconstruct
@@ -531,10 +581,10 @@ Proof scope:
   request, the original expected text, the fresh expected graph and continuous
   checking states.
 - `Qleisli.NativeContract.instrument_meaning`, `check_sound` and
-  `check_encoded_sound` connect success to both original-body instrument
-  meanings, complete Kraus sums and untruncated dimensions. They also connect
-  it to identical unnormalized public outcome maps on any joint matrix with a
-  finite external reference.
+  `check_encoded_sound` connect success to the instrument meanings of both
+  original bodies, to complete Kraus sums and to untruncated dimensions. They
+  also connect it to identical unnormalized public outcome maps on any joint
+  matrix with a finite external reference.
 - The independent reference in `Qleisli.Semantics.InstrumentEquality` sums all
   hidden histories. Neither their count nor their labels are public outcomes.
 
@@ -543,16 +593,18 @@ Not established:
 - The check grants no observing Meaning, coherent control or adjoint access.
   Pure Meaning retains its exact phase rule.
 - The sidecars do not change QIRF. They do not set `request_checked` or
-  `source_meaning_verified` of a request-free root to true. Request-free
-  whole-root inspection reports no independent requested meaning.
-- Source, decoder, native compilation/runtime and emitted-artifact
-  preservation are separate obligations.
+  `source_meaning_verified` of a request-free root to true. Inspection of a
+  whole root without a request reports no independent requested meaning.
+- Source preservation, decoder preservation, preservation by native
+  compilation and runtime, and emitted-artifact preservation are separate
+  obligations.
 - The lemmas admit no constitutional guarantee.
 
 ## Finite nominal carrier requests
 
-The internal mode `--carrier-pure-check` checks a pure body between two
-nominal owner forests against an independent exact logical matrix.
+The internal mode `--carrier-pure-check` checks a pure body that maps one
+forest of nominal owners to another. It checks the body against an
+independent exact logical matrix.
 
 | Item | Value |
 | --- | --- |
@@ -564,15 +616,16 @@ nominal owner forests against an independent exact logical matrix.
 Rules:
 
 - Both interfaces retain complete ordered owner forests and public effects.
-- Nominal atoms retain their original module, declaration and source
-  identities and their member order, independently of logical cardinality and
-  physical width.
+- A nominal atom retains the identities of its original module, declaration
+  and source, and it retains its member order. Its logical cardinality and
+  its physical width do not affect this.
 - Singleton enums and empty records are distinct from Unit and Bits<0>.
 - `Protocol.Carrier.check` reconstructs the original declarations, import
   paths and existing field Nat helpers before it checks the actual graph and
   root.
-- The core freshly checks both canonical code Gram equations, the Gram
-  equation of the logical map and `physical * E_in = E_out * logical`.
+- The core freshly checks three things: the Gram equations of both canonical
+  codes, the Gram equation of the logical map and
+  `physical * E_in = E_out * logical`.
 - Logical dimensions govern the Unitary label. A larger physical unitary does
   not justify a logical Unitary claim.
 - Observation, reset and discard cannot be hidden as pure.
@@ -597,14 +650,14 @@ Proof scope:
   ownership and classical-scope properties.
 - The core postcondition binds the actual body/code equations and the Gram
   equations.
-- The source adapter adds retained-step replay. It adds no ordinary runtime,
-  no inverse or control access and no AST-preservation theorem.
+- The source adapter adds a replay of the retained steps. It adds no ordinary
+  runtime, no inverse or control access and no AST-preservation theorem.
 
 Not established:
 
 - Neither this result nor the private native carrier holder converts to an
   ordinary execution handle or grants inverse or control access.
-- The closed ordinary-result runtime route is the separate mode of
+- The runtime route for closed ordinary results is the separate mode of
   [Ordinary input/result requests](#ordinary-inputresult-requests).
 - This component does not supply general nominal functions, quantum owners,
   full qmatch or original AST-to-step preservation.
@@ -613,9 +666,10 @@ Not established:
 
 ## Ordinary input/result requests
 
-The internal mode `--ordinary-root-check` checks the declared ordinary
-parameters and result of one original declaration over its complete input
-domain.
+The internal mode `--ordinary-root-check` checks one original declaration
+whose parameters and result are ordinary values. It checks the declared
+parameters and the result over the complete input domain of the declaration,
+that is, for every value of the parameters.
 
 | Item | Value |
 | --- | --- |
@@ -634,12 +688,12 @@ The field `selection` names one of three selections:
 
 Rules:
 
-- The fields are strict. Version1 requests and unknown fields or profiles
-  reject without fallback.
+- The fields are strict. The native checker rejects a Version1 request, an
+  unknown field and an unknown profile, and it tries no fallback.
 - Original parameter and result types must be ordinary finite types. This
   mode does not support quantum ports.
-- An explicit public `main` selection uses the exported rule. The project-main
-  restrictions are separate.
+- A selection that names a public `main` explicitly uses the exported rule.
+  The restrictions on a project main are separate.
 - The basis retains the complete nominal prefix representation. Storage
   separately retains Unit, Bit, Bits, pair, tuple, enum origin and SSA
   coordinates, and record origin and ordered named children. Zero-width nodes
@@ -647,11 +701,12 @@ Rules:
 - The checker freshly reads the original ordered parameter forest and the
   declared result, and compares them with the request. Argument count and
   zero-width arguments stay explicit.
-- The original Raw root, dependency, ownership, effect and scope checks run
-  before complete exact instrument reconstruction.
-- Lean independently enumerates the entire canonical parameter domain, first
-  argument on low coordinates. It requires exact equality with the proposed
-  `input_rows`.
+- Five original checks run first: the Raw root, dependency, ownership, effect
+  and scope checks. The complete exact reconstruction of the instrument
+  follows them.
+- Lean independently enumerates the entire canonical parameter domain, with
+  the first argument on the low coordinates. It requires exact equality with
+  the proposed `input_rows`.
 - Lean checks typed input storage for every row. It then interprets every
   actual hidden history, including zero-probability histories, with the
   independent ordinary-value relation.
@@ -680,7 +735,7 @@ Rules for source rows:
 Rules for execution and transport:
 
 - Closed simulation and sampling inspect the retained parameter forest. They
-  reject a nonempty forest even when every parameter has zero width: Unit,
+  reject a nonempty forest even when every parameter has zero width. Unit,
   Bits<0> and empty records require an actual invocation even when the Raw
   input lists are empty. A nullary typed result is closed.
 - The `run_closed`/`sample_closed` APIs reject any nonclosed root. Checking
@@ -689,8 +744,9 @@ Rules for execution and transport:
   artifact transport exists.
 - Untrusted portable nominal emission refuses until its complete typed request
   is transported.
-- Text and JSON reports distinguish this declared result and history check
-  from an independent external algorithm specification.
+- This mode checks the declared result and the histories. Text and JSON
+  reports distinguish that check from an independent external specification
+  of an algorithm.
 
 > **Implementation note.** Nongeneric public selected functions use this gate
 > through the common original-source compiler. The gate covers small quantum
@@ -728,9 +784,9 @@ Not established:
   also closes ordinary Basis/Nat dependencies.
 - Full qmatch and nominal finite-table consumers are separate work.
 - Source-to-Raw correspondence is a separate obligation.
-- No source-body, decoder, native-compiler, simulator or target preservation
-  theorem follows. No external schema, inverse or control capability or
-  guarantee follows.
+- No preservation theorem follows for the source body, the decoder, the
+  native compiler, the simulator or the target. No external schema, inverse
+  or control capability or guarantee follows.
 
 ## Mixed runtime root requests
 
@@ -746,21 +802,21 @@ ordinary values and quantum owners.
 
 Rules:
 
-- Version1 requests reject.
-- Full parameter and result prefixes preserve each `Q` boundary, nominal
-  declaration, ordinary tuple and zero-width owner.
+- The native checker rejects a Version1 request.
+- The full prefixes of the parameters and of the result preserve each `Q`
+  boundary, nominal declaration, ordinary tuple and zero-width owner.
 - Storage binds actual ordinary SSA values and ordered quantum ports.
-- The original runtime signature check and the shared Raw root checks are
-  independent of these producer descriptions.
-- The request must name complete Basis/Nat actuals, including unused formals.
-  The checker rechecks the original premises and nominal declarations before
-  it instantiates the actual header tokens.
+- A producer writes these descriptions. The original runtime signature check
+  and the shared Raw root checks are independent of them.
+- The request must name complete Basis and Nat actuals, including those of
+  unused formals. The checker rechecks the original premises and nominal
+  declarations before it instantiates the actual header tokens.
 - QLV3/QDV retains these actuals even when they do not change the runtime
   graph.
 - For every independently enumerated ordinary input, `RuntimeFamily`
-  reconstructs all hidden maps and checks ordinary results even on
-  zero-probability histories. It checks the exact input and output code-space
-  equations and their complete logical Gram sum.
+  reconstructs all hidden maps. It checks ordinary results even on
+  zero-probability histories. It checks the exact code-space equations of the
+  input and of the output, and their complete logical Gram sum.
 - Physical padding may not leak into a logical result.
 - Observation stays Observe, and a Unitary label requires equal logical
   dimensions.
@@ -778,11 +834,12 @@ Rules for the choice of request:
 - The selected entry uses this mode when every selection has its own
   whole-circuit check and the original operation closure does not require
   version 5.
-- Nominal source gates, wider selection sectors and original operation closure
-  transport use the bounded request of
-  [Version 5: source-body requests](#version-5-source-body-requests). That
-  section also specifies the checks of coherent basis lifts, `with_computed`,
-  access receipts, `qfor` and Meaning applications.
+- Three things use the bounded request of
+  [Version 5: source-body requests](#version-5-source-body-requests) instead:
+  nominal source gates, wider selection sectors and the transport of the
+  original operation closure. That section also specifies the checks of
+  coherent basis lifts, `with_computed`, access receipts, `qfor` and Meaning
+  applications.
 - A small nominal named-arm qmatch function also submits its complete actual
   callee fragment to the version-4 mode of
   [Qmatch source requests](#named-arm-qmatch-component-requests), before
@@ -816,8 +873,8 @@ Proof scope:
 - `RuntimeRoot.check_binding`, `CheckedRuntimeRoot.run_binding` and
   `NativeContext.run_typed_runtime_binding` connect actual reads and
   comparisons.
-- The root safety theorem reuses the original Raw gate without enlarging
-  either human-admitted guarantee.
+- The root safety theorem reuses the original Raw gate. It enlarges neither
+  of the two guarantees that humans admitted.
 
 Not established:
 
@@ -836,16 +893,18 @@ Not established:
 
 ## Qmatch source requests
 
-Two modes read a `qleisli.qmatch-request`. Each accepts one version of the
-request:
+A `qleisli.qmatch-request` asks the checker to compare the parts of a source
+function with their literal Raw intervals. Two modes read such a request.
+Each accepts one version of the request:
 
 | Version | Mode | Profile | Subject |
 | --- | --- | --- | --- |
 | 4 | `--qmatch-source-check` | `finite-source-qmatch-context-v4` | The named-arm component: [Version 4](#version-4-named-arm-component-requests) |
 | 5 | `--qmatch-source-v5-check` | One of four profiles | The original source body: [Version 5](#version-5-source-body-requests) |
 
-The **full qmatch profile** is the twelve-joined-bit, 64-label source contract
-of `qmatch`. Neither version validates the full qmatch profile.
+The **full qmatch profile** is the source contract of `qmatch` at its full
+size, with twelve joined bits and 64 labels. Neither version validates the
+full qmatch profile.
 
 The production compile path dispatches both versions, and a successful reply
 of either mode has the claim `accepted`. A version-4 success binds the private
@@ -867,19 +926,21 @@ function, together with every literal Raw interval of that function.
 
 Rules:
 
-- The request and the QDV record bind the complete typed interfaces of every
-  site, its original source byte occurrence, its literal Raw interval and its
-  actual evidence and control indices to one fresh graph.
+- The request and the QDV record bind every site to one fresh graph. For each
+  site they bind its complete typed interfaces, its original source byte
+  occurrence, its literal Raw interval and its actual evidence and control
+  indices.
 - Every original selection appears in order. The intervals exhaust the
   complete call without gaps or overlaps. Each interval retains its actual
   owner frame and passes its own exact equations.
 - Original source reads determine the canonical labels, types, owners, public
   effects and source rows. Actual receipt inputs and dependency snapshots bind
   the named arm bodies.
-- The pure finite/Raw/QIRF/nominal gates check exact main/U/CU sector
-  equations.
-- The request binds the selected pair separately, in selector/target order. It
-  retains additional arguments, zero-width owners and the outer public effect.
+- The pure finite, Raw, QIRF and nominal gates check the exact sector
+  equations of main, U and CU.
+- The request binds the selected pair separately, with the selector before
+  the target. It retains additional arguments, zero-width owners and the
+  outer public effect.
 - Nominal enum and record targets, including empty records, retain their full
   original types with enum or built-in ordinal selectors. Their physical arm
   entries and controls are untrusted proposals. The mode binds the full target
@@ -905,14 +966,15 @@ Rules for the ordered Raw frame:
   children. Owner-moving operations retain their complete source roles.
 - The actual output-token order must match the original source return.
   Reversing two empty Raw ports cannot pass for a canonical source return. A
-  matching source/Raw zero-width permutation is accepted.
+  zero-width permutation that matches between source and Raw is accepted.
 - Physical widths constrain a split without identifying a logical owner. A
   producer supplies no role table and no cached tree.
 
 > **Implementation note.** `Kernel::check_qmatch_source` invokes the mode. The
 > Rust walker describes the actual retained graph and the circuit and matrix
-> caches. The same allocations enter `QmatchChecked` only after exact QDV
-> matching and native product, edition, mode, scope and request matching.
+> caches. The same allocations enter `QmatchChecked` only after two matches
+> succeed: the exact QDV match, and the native match of product, edition,
+> mode, scope and request.
 
 > **Implementation note.** A small nominal named-arm qmatch function submits
 > its complete actual callee fragment to this mode before whole-root runtime
@@ -964,11 +1026,11 @@ Not established:
 - The component checks alone supply neither ordinary source execution nor the
   full qmatch profile. The bounded compiler adapter also requires separate
   whole-root runtime acceptance.
-- General source expressions and call frames, other valid mappings,
-  constructed, static and generic arms, and the full qmatch profile are
-  pending.
-- The structural-return check does not establish general source/arm lowering
-  or expose ordinary source execution.
+- These are pending: general source expressions and call frames, other valid
+  mappings, constructed, static and generic arms, and the full qmatch
+  profile.
+- The structural-return check does not establish general source or arm
+  lowering, and it does not expose ordinary source execution.
 - Splitting an opaque source owner, allocation and release, and a changed
   representation each need their own checked source rule or refinement. The
   structural component does not establish every valid Raw mapping or complete
@@ -981,9 +1043,10 @@ Not established:
 ### Version 5: source-body requests
 
 The mode `--qmatch-source-v5-check` checks the **source body** of one original
-invocation: its coherent selections, basis lifts, computed intervals, access
-calls and Meaning applications, each against its literal Raw interval. The
-request also carries the runtime-root request of the same root.
+invocation. The source body consists of the coherent selections, basis lifts,
+computed intervals, access calls and Meaning applications of the invocation.
+The mode checks each of them against its literal Raw interval. The request
+also carries the runtime-root request of the same root.
 
 `Kernel::check_qmatch_source_v5` submits the request that the compiler
 selects. The accepted program records the checked profile, which
@@ -1108,8 +1171,8 @@ Rules for Meaning applications:
 Rules for operation arguments and Meaning duties:
 
 - The internal common-body duty continuation authenticates every original
-  operation argument in scalar-free Op calls, including unused siblings,
-  against the complete ordered header keys. A forwarded formal retains its
+  operation argument in scalar-free Op calls against the complete ordered
+  header keys. This includes unused siblings. A forwarded formal retains its
   original mixed-header ordinal.
 - The supplying assertion and the enclosing arm retain separate original
   queue positions, source tokens, provider occurrences and exact Meaning
@@ -1129,12 +1192,13 @@ Rules for operation arguments and Meaning duties:
 > input bits, literal `Bits<n>` coordinates, Boolean operations, tuple
 > bindings and supported helper calls.
 
-> **Implementation note.** The retained two-qubit general-composition
-> development regression has an explicit preparation-work exception, which
-> [History](#history) cites. The regression runs nonaccepting source
-> preparation and the unchanged normal-budget whole-body action separately. It
-> reports aggregate work and independently checks all sixteen exact I4
-> entries. It issues no handle and is not one bounded production acceptance.
+> **Implementation note.** One retained development regression, for two-qubit
+> general composition, has an explicit exception for preparation work.
+> [History](#history) cites it. The regression runs two steps separately:
+> source preparation, which accepts nothing, and the unchanged whole-body
+> action under the normal budget. It reports aggregate work and independently
+> checks all sixteen exact I4 entries. It issues no handle and is not one
+> bounded production acceptance.
 > The public 20,000,000 ceiling and its entry guard are unchanged.
 
 #### Proof scope of version 5
@@ -1155,11 +1219,11 @@ Coherent selection:
   target. It relates the literal Raw events to both indexed logical arm
   matrices on the complete returned owner code. It covers a single `quantumIf`
   and the compiler's `join`, `apply_unitary`, `split` sequence. The original
-  logical selector and target determine which matrix and row act, including
-  when the selected wires are reversed or separated by spectators.
-- `RuntimeSelectionGram.logical_gram` proves inner-product preservation for
-  arbitrary joint caller and reference amplitudes under the same two arm
-  receipts.
+  logical selector and target determine which matrix and row act. This holds
+  also when the selected wires are reversed or separated by spectators.
+- `RuntimeSelectionGram.logical_gram` proves that inner products are
+  preserved for arbitrary joint caller and reference amplitudes, under the
+  same two arm receipts.
 - `RuntimeSelectionGram.checked_selection` obtains both receipts and the
   canonical order `[0, 1]` from the source layout reads and from the logical
   matrix comparison that the native selection node retains.
@@ -1182,11 +1246,13 @@ The three-call root and the source flow:
   event slices and its final output permutation. It retains complete
   intermediate history families, including hidden and zero-weight outcomes,
   without normalization or reassociation of the bounded evaluator.
-- `RuntimeNamedCodeTransport` proves that the checked original child-to-caller
-  return map preserves complete basis trees, ports, the independent
-  sparse-code interpretation and ordered axes in the same caller frame.
-- These two results are return-transport and Raw-instrument laws. They do not
-  compose the different source-level encodings and logical actions.
+- `RuntimeNamedCodeTransport` concerns the checked original return map from a
+  child to its caller. It proves that the map preserves complete basis trees,
+  ports, the independent sparse-code interpretation and ordered axes in the
+  same caller frame.
+- These two results are laws about return transport and about the Raw
+  instrument. They do not compose the different source-level encodings and
+  logical actions.
 - `RuntimeNamedSourceFlow.original_body` derives the named-boundary state
   chain from the actual common body loop and its retained successful
   traversal. It retains the real initial owner reorder and the final
@@ -1195,12 +1261,12 @@ The three-call root and the source flow:
   continuous work counter. It factors the recursive iteration without
   changing its guards, reads or charges.
 - `original_three` connects the actual pre, middle and post calls through
-  their complete source states, including ordered bindings, full bases, ports
-  and issuance history. Equal physical widths and assumed code equations are
-  not premises.
+  their complete source states. Those states include ordered bindings, full
+  bases, ports and issuance history. Equal physical widths and assumed code
+  equations are not premises.
 - The state-flow invariant is administrative. Other step kinds receive no
-  named-boundary assertion from it. It establishes no whole-source code,
-  logical-action or observing-history composition.
+  named-boundary assertion from it. It establishes no composition of
+  whole-source code, of logical action or of observing history.
 - `RuntimeNamedChildRuns.original_body` strengthens the same loop proof with
   the actual recursive run of every named child on its original callee and
   native block. The retained input read binds the original parameter owners of
@@ -1210,8 +1276,8 @@ The three-call root and the source flow:
   stored child steps, the returned history and the ordinary state.
 - The same stored step list carries an `OrdinaryRun` from the actual initial
   SSA state to the actual returned SSA state. It retains the tables and
-  measurement keys across gaps, observations, named calls and conditionals,
-  with pure steps preserving both. Its literal partition covers the complete
+  measurement keys across gaps, observations, named calls and conditionals.
+  Pure steps preserve both. Its literal partition covers the complete
   original Raw operation list in order.
 - `RuntimeLiteralBody.original_body_trace` reads each exact interval through
   the independent observing reader. Adjacent steps share the full Raw boundary
@@ -1253,10 +1319,11 @@ The pre and post calls:
   matching widths.
 - The input-action laws do not transport the output fibre to the complete
   caller output encoding or source order. They do not compose the logical
-  action or the observing history of the whole function. They are mathematical
-  laws, not an additional native acceptance gate, a bounded availability claim
-  or a guarantee admission. They change no executable kernel or Rust rule,
-  effect label, work limit or public capability.
+  action or the observing history of the whole function. They are
+  mathematical laws. They are not an additional native acceptance gate, a
+  bounded availability claim or a guarantee admission. They change no
+  executable kernel or Rust rule, effect label, work limit or public
+  capability.
 - `RuntimeNamedPrimitiveOutputs.original_pre_post_outputs` derives the native
   output carriers through each real callee run, its original return reorder
   and the actual caller owner mapping. It retains complete basis trees and
@@ -1349,8 +1416,8 @@ Composition of the three calls and observation:
 - `RuntimeNamedThreePackedInstrument.original_three_observing` connects that
   equation to the same independently read observing event list.
 - `RuntimeObservingPrefix.checkOps_reference` derives the same quantum
-  interface in the independent reader after each successfully checked prefix,
-  including erasure, reset and both sides of classical branches.
+  interface in the independent reader after each successfully checked prefix.
+  This includes erasure, reset and both sides of classical branches.
 - `root_interval_histories` uses that agreement to locate an adjacent pure
   interval in the original observing root. The interpreter preserves every
   inherited history. It applies the pure action to each operator before it
@@ -1371,8 +1438,9 @@ Composition of the three calls and observation:
   all hidden outcomes and the original visible measurement identifier. It
   requires the input code representation on finite Raw rows.
 - `RuntimeNamedObservationEntry.original_supplies_histories` transports every
-  outcome into the entry frame of an immediately following original named
-  call, through the exact source-state and Raw interval joins.
+  outcome into the entry frame of an original named call that follows
+  immediately. It does so through the exact joins of the source state and of
+  the Raw interval.
 - `RawFiniteRows.checked_slice` retains the finite input and output widths of
   the original checked event slices. Their action on each inherited history
   depends only on its finite input coefficients.
@@ -1475,8 +1543,9 @@ The complete original body:
   literal return order, visible SSA values and hidden outcomes.
 - `native_qmatch_input_rows` supplies the original row for every canonical
   ordinary input assignment.
-- The initial source/Raw encoding relation and successful independent
-  mathematical execution are explicit premises of these theorems.
+- These theorems have two explicit premises: the initial encoding relation
+  between source and Raw, and a successful independent mathematical
+  execution.
 
 #### Not established by version 5
 
@@ -1485,8 +1554,8 @@ The complete original body:
 - Nonstructural `qfor` bodies are pending.
 - The duty checks do not close all general nested duties or establish
   source-action composition.
-- Caller-frame construction and availability for arbitrary source bodies are
-  separate obligations.
+- For arbitrary source bodies, the construction of caller frames and their
+  availability are separate obligations.
 - The theorems do not prove native compilation, IO, Rust simulation or target
   preservation. They admit no guarantee.
 - Independent host-expression visibility and source/body preservation are
@@ -1503,23 +1572,24 @@ Rules for loading:
 
 - `frontend::project::Project` loads every `.qli` module beneath its selected
   source root and all bundled ordinary sources.
-- Ordinary project compilation checks every materialized concrete ordinary
-  function root, including unused functions.
-- Classical bodies and Meaning declarations have their separate preparation
-  and checking obligations.
+- Ordinary project compilation checks the root of every materialized concrete
+  ordinary function, including unused functions.
+- Classical bodies and Meaning declarations have their own obligations of
+  preparation and checking, which are separate.
 - Common source checking covers every declaration, including unused
   declarations and both branch bodies.
 - `QrateSource` in `src/frontend/project/manifest.rs` provides opt-in
   selection of an explicitly declared `[source].root`. That selection chooses
   the source tree. It does not introduce reachable-only loading or exempt
   unused siblings inside the tree.
-- Explicit module-map `ParsedProgram::parse` checks every supplied module and
-  the bundled registry before it selects a concrete entry.
+- With an explicit module map, `ParsedProgram::parse` checks every supplied
+  module and the bundled registry before it selects a concrete entry.
 
 Rules for the provenance of receipts:
 
-- Ordinary finite-frontend function and instrument receipts and local equation
-  sidecars retain source provenance separately from the loading policy.
+- The function receipts and instrument receipts of the ordinary finite
+  frontend retain source provenance separately from the loading policy. So do
+  local equation sidecars.
 - Each retained declaration contributes its original resolved lexical
   dependencies, including type and Nat expressions, Meaning references,
   inactive branches and zero-count operations.
@@ -1546,9 +1616,9 @@ Rules for a reachable-module policy, which this chapter does not enable:
   stale, missing or replaced references.
 - It must preserve the permitted import-only cycles. Imports have no runtime
   action.
-- Forbidden call, Meaning and provider dependency cycles retain the rules of
-  their actual profiles, including any explicitly admitted decreasing
-  recursion.
+- Forbidden dependency cycles through calls, Meanings and providers retain
+  the rules of their actual profiles, including any explicitly admitted
+  decreasing recursion.
 - Diagnostics and source-selection migration need review before a change of
   the all-source behavior.
 
@@ -1556,10 +1626,10 @@ Rules for compatibility:
 
 - The
   [five-role architecture](primitive-boundary.md#generic-acceptance-and-library-owned-algorithms)
-  assigns compatibility duties for flat Raw IR, both QIRF profiles, finite
-  contracts, five hierarchy modes, component protocols, source/qrate and
-  module-map entrypoints, Rust/Python clients, foreign adapters and research
-  comparisons.
+  assigns compatibility duties for these: flat Raw IR, both QIRF profiles,
+  finite contracts, five hierarchy modes, component protocols, the source,
+  qrate and module-map entrypoints, the Rust and Python clients, foreign
+  adapters and research comparisons.
 - The five hierarchy modes are `--hierarchy-pending`,
   `--hierarchy-request-pending`, `--hierarchy-fourier-pending`,
   `--instrument-pending` and `--qpe-instrument-pending`. The architecture
@@ -1570,9 +1640,9 @@ Rules for compatibility:
 - Replaced wrappers and their proofs must stay built and audited until their
   supported callers and obligations migrate.
 - Missing or incompatible native checking must reject through every route.
-- Retired APIs are not compatibility promises to resurrect. `frontend::sized`
-  moved to `frontend::compile`, and the `qleisli sized` command prefix was
-  removed with explicit migration diagnostics.
+- Compatibility does not promise to resurrect a retired API.
+  `frontend::sized` moved to `frontend::compile`. The `qleisli sized` command
+  prefix was removed, with explicit migration diagnostics.
 - The separate research and Python comparison readers do not restore that
   production namespace or supply alternative source acceptance.
 - Edition 2026 identifies the constitutional regime. Source, API and protocol
@@ -1582,10 +1652,10 @@ Rules for compatibility:
 
 ### Publication and proof are separate
 
-- Implementation unification, publication, proof compilation, tests and
-  audits are distinct evidence.
-- All of S05-C1–C5 are open. Full supported-profile Soundness is targeted at
-  version 0.5.0.
+- Five things are distinct evidence: the unification of the implementation,
+  publication, the compilation of proofs, tests and audits.
+- All of S05-C1–C5 are open. Full Soundness of the supported profile is
+  targeted at version 0.5.0.
 - Neither this inventory nor an existing helper theorem automatically
   discharges a guarantee in the constitutional ledger.
 - Two scoped guarantees are admitted: `QS-QLV1-OWNERSHIP-2026-01` for
@@ -1610,14 +1680,17 @@ Rules for compatibility:
 
 ### CLI success reports
 
+A successful check prints a report. This section states what the fields of
+that report claim and what they do not claim.
+
 Without an explicit `--entry`, `qleisli check <source-root>` and
 `qleisli check <directory> --qrate` use the
 [project route](diagnostics.md#routes). They check the source project and its
 concrete lowered roots.
 
-- A successful request-free native decision establishes the applicable IR
-  structure, ownership, interface and classical-scope checks. It does not
-  establish an independently requested algorithm, the full meaning of the
+- A successful native decision without a request establishes the applicable
+  checks of IR structure, ownership, interface and classical scope. It does
+  not establish an independently requested algorithm, the full meaning of the
   source, or preservation from source to IR.
 - The text success report names this scope and the actual canonical checker
   paths. It states whether independent requests were checked, and it states
@@ -1630,17 +1703,17 @@ The `result` of a whole-project source check has these fields:
 
 | Field | Meaning |
 | --- | --- |
-| `checker_paths` | Distinct canonical executable paths captured from actual successful native invocations, rather than resolved again after checking. Several paths can occur if a selected symlink changes between invocations. |
+| `checker_paths` | The distinct canonical paths of the executables. The report captures them from the actual successful native invocations and does not resolve them again after checking. Several paths can occur if a selected symlink changes between invocations. |
 | `checker_identity` | `"unpinned"`: the executable was selected and invoked, but its bytes were not checked against a trusted binary identity. A canonical path is not attestation. |
 | `native_decisions.count` | Number of successful native acceptance decisions observed during this source check, including repeated decisions and decisions for partial source contracts. |
 | `native_decisions.requests_checked` | Number of those decisions with a separate native request payload checked by Lean. This counts decisions, not distinct source declarations or whole-source meanings. |
 | `native_decisions.complete` | Whether the metadata covers every successful decision and its checker path. If false, the bounded report is incomplete and its path list or counts must not be treated as exhaustive. |
 | `entry.present` | Whether the ordinary project has a supported `main::main` entry. A library without that entry can check successfully. |
 | `entry.request_checked` | Whether that entry's own accepted artifact has a separately checked native request payload; `null` when there is no entry. Producer-generated typed requests count here without establishing an independent algorithm specification. Requests on other roots or partial contracts do not change this value. |
-| `entry.ordinary_result_checked` | Whether this entry retains the native ordinary-v2 input/result and all-hidden-history check. False for absent entries and other modes. |
-| `entry.runtime_result_checked` | Whether this entry retains the native `finite-runtime-root-v2` check of complete type/storage, quantum code space and all hidden histories. True also for a version-5 decision, whose request carries the runtime-root request. False for absent entries and other modes. |
+| `entry.ordinary_result_checked` | Whether this entry retains the native ordinary-v2 check of input and result over all hidden histories. False for absent entries and other modes. |
+| `entry.runtime_result_checked` | Whether this entry retains the native `finite-runtime-root-v2` check of complete type and storage, quantum code space and all hidden histories. True also for a version-5 decision, whose request carries the runtime-root request. False for absent entries and other modes. |
 | `entry.source_body_scope` | Optional. Present only when the entry retains a version-5 decision. Its value is the checked profile name, such as `finite-source-qmatch-context-v5`. The text report prints it on the line `entry source body checked:`. |
-| `concrete_ir_roots.local`, `concrete_ir_roots.bundled` | Counts of checked concrete ordinary function roots, separating loaded project/dependency modules from bundled library modules. |
+| `concrete_ir_roots.local`, `concrete_ir_roots.bundled` | Counts of the checked roots of concrete ordinary functions. The two fields separate loaded project and dependency modules from bundled library modules. |
 | `source_preservation_verified` | `false`: this command does not prove source-to-IR preservation. |
 
 Rules for reading the counts:
@@ -1669,10 +1742,11 @@ Rules for reading the counts:
 Reports of the other commands:
 
 - On the [selected-entry route](diagnostics.md#routes), `check --entry ...`
-  reports the singular actual `checker_path` of the selected root,
+  reports four fields beside its `verification` scope and `request_origin`:
+  the singular actual `checker_path` of the selected root,
   `checker_identity: "unpinned"`, `request_checked` and
-  `source_preservation_verified: false`, beside its `verification` scope and
-  `request_origin`. These fields describe the receipt of the selected root.
+  `source_preservation_verified: false`. These fields describe the receipt of
+  the selected root.
   They are not an aggregate of every native decision made while preparing and
   checking the source.
 - The native-validity scope of the Raw route is distinct from the hierarchy
@@ -1703,14 +1777,17 @@ Reports of the other commands:
 
 ### Public operations that confer no acceptance
 
+The public operations in this table confer no acceptance. The second column
+states what each operation does instead.
+
 | Operation | Scope |
 | --- | --- |
-| `RawProgram`, `RawOp`, `native::Proposal::{new,from_raw}` | Untrusted IR or serialized proposals. Structural validity does not imply native acceptance. The 22 RawOp constructor coverage entries describe their checking coverage, not constructor authority. |
+| `RawProgram`, `RawOp`, `native::Proposal::{new,from_raw}` | Untrusted IR or serialized proposals. Structural validity does not imply native acceptance. The 22 coverage entries of the RawOp constructors describe checking coverage. They do not describe constructor authority. |
 | `Circuit::new`, `Encoding::{new,identity}`, `Contract::new`, `FiniteMeaning::{permutation,phase,matrix,target_ir}`, `UnitaryBoundary::new`, matrix codecs | Descriptions, exact arithmetic and bounded host construction. A proposed meaning is not evidence that an implementation has that meaning. |
-| `qleisli doc` → `render_markdown` | Reads/parses documentation and returns before source compilation. It confers no type or semantic acceptance. |
+| `qleisli doc` → `render_markdown` | Reads and parses documentation, and returns before source compilation. It confers no type or semantic acceptance. |
 | Source loading, edition configuration and `Kernel::new` | Configure files or a checker path. Later checking can fail. |
-| Checked-object accessors and `check_binding` / `check_entry` | Retain or compare the original checked identity and scope; they do not perform a fresh semantic acceptance decision. |
-| Foreign export | Consumes `AcceptedProgram` and emits target text. The terminal OpenQASM adapter can project a closed typed source result to its ordered measured bits, or emit no bits for Unit. Input acceptance does not prove preservation of the emitted OpenQASM/QIR or target execution. QIRF export separately performs a fresh native validity check on its output; output validity alone is not a translation theorem. |
+| Checked-object accessors and `check_binding` / `check_entry` | Retain or compare the original checked identity and scope. They do not make a fresh decision of semantic acceptance. |
+| Foreign export | Consumes `AcceptedProgram` and emits target text. The terminal OpenQASM adapter can project a closed typed source result to its ordered measured bits, or emit no bits for Unit. Input acceptance does not prove preservation of the emitted OpenQASM/QIR or target execution. QIRF export separately performs a fresh native validity check on its output. Output validity alone is not a translation theorem. |
 | `sim`, `host`, hierarchy execution and sampling | Execute already checked descriptions numerically. Acceptance and bounded reference tests do not establish runtime or floating-point preservation. |
 
 Rules for the `H; Z; H` replacement in OpenQASM/QIR export:
@@ -1743,9 +1820,9 @@ Rules for the `H; Z; H` replacement in OpenQASM/QIR export:
   20,000,000 exact-work budget across all Raw operations.
 - Unavailable checking, rejection or exhausted capacity produces no artifact
   and no alternate acceptance path.
-- This bounded local comparison is not a general source, target-emission,
-  physical-resource or external-QIS preservation theorem. The local equations
-  do not establish general source/export, resource or external QIS
+- This bounded local comparison is not a general preservation theorem for
+  source, target emission, physical resources or external QIS. The local
+  equations do not establish general source/export, resource or external QIS
   preservation. The two adopted guarantees and the pending QS/PR/RS/EXACT
   obligations keep their scopes.
 
@@ -1805,6 +1882,9 @@ Rules for the Isometry profile of the hierarchy route:
 
 ### Numerical result presentation
 
+This section covers how `run` presents numerical results, and the optional
+annotation of exact zeros.
+
 - Closed-project `run` reports a numerical reference distribution. Text uses
   scientific notation with twelve digits after the decimal point. JSON retains
   numeric probabilities under the output range policy.
@@ -1839,17 +1919,21 @@ Rules for the Isometry profile of the hierarchy route:
 
 ### Coverage checks
 
-- `tests/fixtures/verification_v029/coverage.json.xz` separates current
-  implementation, published 0.2.9 validation, unpublished development and
-  open proof obligations. It records the current coverage groups, boundary
-  entry lists, constructor variants and classified paths.
+A coverage record holds the inventory of this boundary, and a script checks
+the repository against it.
+
+- `tests/fixtures/verification_v029/coverage.json.xz` separates four things:
+  current implementation, published 0.2.9 validation, unpublished development
+  and open proof obligations. It records the current coverage groups,
+  boundary entry lists, constructor variants and classified paths.
 - Engineering comparisons and the check-only nominal carrier component have
   distinct classifications. Mixed boundary rows refer to individually
   classified paths. A public surface that contains a constructor or `doc` is
   not counted wholesale as native acceptance.
-- `scripts/check_production_coverage.py` checks the reviewed public surface,
-  complete path classifications, all native modes and dispatch targets, named
-  source and declaration bindings and existing regression functions.
+- `scripts/check_production_coverage.py` checks five things: the reviewed
+  public surface, complete path classifications, all native modes and
+  dispatch targets, named source and declaration bindings and existing
+  regression functions.
 - The script fails on an omitted route, an exposed boundary that the inventory
   lacks, changed dispatch, a missing binding or a proposal misclassified as
   acceptance. The native-contract proof scope also retains the explicit

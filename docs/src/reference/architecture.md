@@ -2,58 +2,63 @@
 
 **Policy as Theorem. Constitution as Harness. Compiler as Executor.**
 
-This is Qleisli's top-level architecture principle. It is subordinate to
+This is Qleisli's top-level architecture principle. It has three parts, and
+this chapter gives a section to each. The principle is subordinate to
 [the authority hierarchy](authority.md), the ratified Constitution and the
 recorded human interpretations. It defines no mathematical interpretation
 and no discharged guarantee.
-The [qrate and external-artifact boundary](packages-and-artifacts.md) distinguishes
-semantic, evidence, observational, realization and organizational roles, with
-explicit current package and edition-binding limitations.
+
+The [qrate and external-artifact boundary](packages-and-artifacts.md)
+distinguishes five kinds of role: semantic, evidence, observational,
+realization and organizational. It states explicitly the current package
+limitations and edition-binding limitations.
 
 ## Policy as Theorem
 
-A policy affecting constitutional acceptance must become a formal proposition
-or evidence obligation whose discharge can be checked independently. An
-implementation convention, a theorem name, a test or a successful compilation
-cannot supply that authority.
+A policy that affects constitutional acceptance must become a formal
+proposition, or an evidence obligation, whose discharge can be checked
+independently. An implementation convention, a theorem name, a test or a
+successful compilation cannot supply that authority.
 
-The natural-human Constitution Guardian determines the binding constitutional
-interpretation for a defined case: what must be proved, the applicable scope
-and premises, and how the requirement relates to existing guarantees. Lean or
-the designated independent proof checker establishes derivability of the
-resulting proposition under its actual definitions and recorded assumptions.
-Human interpretation and mathematical verification are separate judgments.
-Ordinary maintainers select language and implementation designs within those
-requirements; routine covered maintenance needs no further interpretation.
+The Constitution Guardian, a natural human, determines the binding
+constitutional interpretation for a defined case. The interpretation says
+what must be proved, which scope and premises apply, and how the requirement
+relates to existing guarantees. Lean, or the designated independent proof
+checker, establishes that the resulting proposition is derivable under its
+actual definitions and recorded assumptions. Human interpretation and
+mathematical verification are separate judgments. Ordinary maintainers select
+language and implementation designs within those requirements. Routine
+covered maintenance needs no further interpretation.
 
 QS, PR and quantitative RS are three permanent, distinct proof obligations.
-Their binding meanings come from the adopted interpretations; this chapter
-freezes no predicate or theorem type. Evidence must connect the claimed property
-to the actual production acceptance and current accepted artifact. A source
-claim additionally requires its source-preservation link; a realization claim
-requires correspondence to the actual output; a resource claim requires the
-specified bound for the actual behavior or realization. Those links cannot be
-replaced by a proof about a convenient unused predicate.
+Their binding meanings come from the adopted interpretations. This chapter
+freezes no predicate and no theorem type. Evidence must connect the claimed
+property to the actual production acceptance and to the current accepted
+artifact. A source claim additionally requires its source-preservation link.
+A realization claim requires correspondence to the actual output. A resource
+claim requires the specified bound for the actual behavior or realization. A
+proof about a convenient unused predicate cannot replace those links.
 
 The [initial interpretations](../design/initial-interpretations.md) and
 [scoped guarantees](../design/initial-guarantees.md) record current coverage.
 Only ordinary QLV1 root ownership and classical scope have been admitted as
 scoped guarantees. Broader QS, PR, quantitative RS and the EXACT supplement
 retain pending duties. Passing a compiler check does not discharge them.
-The Fundamental Theorems do not themselves prove the Rust frontend, native
-compiler, decoder, simulator or exporter correct; each claimed correspondence
-retains its own obligations and assumptions.
+The Fundamental Theorems do not themselves prove any of these components
+correct: the Rust frontend, the native compiler, the decoder, the simulator
+or the exporter. Each claimed correspondence retains its own obligations and
+assumptions.
 
 ## Constitution as Harness
 
-The Constitution fixes permanent obligations, human interpretive authority,
-recording procedures and continuity. Discharged guarantees accumulate for
-their recorded scopes and premises. A future syntax, provider, backend,
-representation, release or tool cannot escape an applicable obligation by
-renaming or moving its acceptance path. Changed representations require the
-appropriate checked semantic transport; old proof files alone are insufficient.
-Edition identifies this constitutional regime. Syntax and release compatibility
-are separate matters.
+The Constitution fixes four things: permanent obligations, human interpretive
+authority, recording procedures and continuity. Discharged guarantees
+accumulate for their recorded scopes and premises. A future syntax, provider,
+backend, representation, release or tool cannot escape an applicable
+obligation by renaming its acceptance path or by moving it. A changed
+representation requires the appropriate checked semantic transport. Old proof
+files alone are insufficient. Edition identifies this constitutional regime.
+Syntax compatibility and release compatibility are separate matters.
 
 The harness must reach executable boundaries. Prefer making a prohibited
 operation unrepresentable, untypable, unverifiable or explicitly rejected.
@@ -61,34 +66,37 @@ External prompts, coding conventions and author identity cannot be the only
 protection for an accepted guarantee. Identity, continuity, production coverage
 and required evidence belong in mechanical enforcement, with their actual
 limitations exposed. The CI checks implement parts of that harness.
-Constitutional CI and the release gate have unfinished requirements, which
-[History](#history) links.
+Constitutional CI and the release gate have unfinished requirements.
+[History](#history) links to them.
 
-Pre-v1 proof maturity permits truthful disclosure of incomplete coverage. It
-never permits withdrawing an admitted guarantee, treating a failed check as
-successful or advertising an unproved scope as constitutionally certified.
+Pre-v1 proof maturity permits the truthful disclosure of incomplete coverage.
+It never permits any of these: withdrawing an admitted guarantee, treating a
+failed check as successful, or advertising an unproved scope as
+constitutionally certified.
 
 ## Compiler as Executor
 
 **The compiler executes policy; it does not create policy.**
 
-The language and ecosystem are the executable surface of these constraints.
-Parsing, name resolution, type/effect/ownership preparation, evidence generation
-and lowering apply the authorized contracts. Native Lean checking supplies each
-fresh semantic accepted handle under the
+The language and its ecosystem are the executable surface of these
+constraints. These steps apply the authorized contracts: parsing, name
+resolution, the preparation of types, effects and ownership, the generation
+of evidence, and lowering. Native Lean checking supplies each fresh semantic
+accepted handle under the
 [constitutional theorem boundary](production-boundary.md#constitutional-theorem-boundary).
 Rust proposals, authored source and external IR are all subject to the
-applicable independent checks. Native absence, incompatibility or failure rejects
-without fallback to another acceptance authority.
+applicable independent checks. When native checking is absent, incompatible
+or fails, the result is a rejection. Nothing falls back to another acceptance
+authority.
 
 | Boundary | Enforcement and user-visible meaning |
 | --- | --- |
-| Ordinary values and quantum owners | `T` and `Q<T>` are distinct. Preparation and measurement are explicit; expected typing cannot insert either. |
-| Ownership, axes and phase | Every owner, including zero-width owners, is accounted for. Width is not interface identity; permutation and nontrivial phase are explicit. |
-| Effects and capabilities | A body cannot downgrade Observe to Unitary, and unitarity alone supplies no inverse or control API. Declared evidence and access obligations must be checked. |
-| Workspace and temporary access | Clean/dirty and access features must enforce their adopted all-input/reference contracts when admitted; planned syntax or a successful known-input test is not such evidence. |
-| Source and external artifacts | An external provider or schema cannot manufacture semantic authority. Independently checking valid output IR alone does not prove its source or target correspondence. |
-| Qrate, module and toolchain | Explicit identities and closed substitutions govern checking; ambient names or a plausible provider are not evidence. |
+| Ordinary values and quantum owners | `T` and `Q<T>` are distinct. Preparation and measurement are explicit. Expected typing cannot insert either. |
+| Ownership, axes and phase | Every owner, including zero-width owners, is accounted for. Width is not interface identity. Permutation and nontrivial phase are explicit. |
+| Effects and capabilities | A body cannot downgrade Observe to Unitary. Unitarity alone supplies no inverse or control API. Declared evidence and access obligations must be checked. |
+| Workspace and temporary access | When they are admitted, clean/dirty features and access features must enforce their adopted all-input/reference contracts. Planned syntax is not such evidence, and neither is a successful known-input test. |
+| Source and external artifacts | An external provider or schema cannot manufacture semantic authority. An independent check of valid output IR does not alone prove that the IR corresponds to its source or to its target. |
+| Qrate, module and toolchain | Explicit identities and closed substitutions govern checking. Ambient names or a plausible provider are not evidence. |
 
 The [type model](type-model.md), [primitive boundary](primitive-boundary.md) and
 [realization contracts](realization.md) state the rules and the profile
@@ -97,49 +105,59 @@ realization or surface proposals.
 
 Crossing a protected boundary must fail closed and explain the violated rule.
 A safe expressible alternative may be suggested when one exists. Unsupported
-constructs, missing evidence and failed native checks must never silently become
-weaker semantics, hidden discard/reset, implicit physical coercions or unchecked
-backend acceptance. A diagnostic may explain a proof gap; it cannot waive it.
+constructs, missing evidence and failed native checks must never silently
+become any of these: weaker semantics, a hidden discard or reset, implicit
+physical coercions, or unchecked backend acceptance. A diagnostic may explain
+a proof gap. It cannot waive the gap.
 
 ## Diagnostics and inspectable recovery
 
 Diagnostics are constitutional pedagogy: they make an enforced boundary visible
-to humans and coding agents. A useful rejection identifies the boundary, the
-likely classical assumption, the canonical Qleisli construct where available,
-and a recovery that preserves the contract. For example, a missing explicit
-Op provider names the unresolved binding; it does not search for a convenient
+to humans and coding agents. A useful rejection identifies the boundary and
+the likely classical assumption. It also identifies the canonical Qleisli
+construct, where one is available, and a recovery that preserves the
+contract. For example, when an explicit Op provider is missing, the rejection
+names the unresolved binding. It does not search for a convenient
 implementation. A quantum wildcard must not silently consume an owner.
 Text and JSON describe the same failure and source location. The
 [diagnostic reference](diagnostics.md) lists categories, recovery guidance,
 and conformance cases.
 
 An unfamiliar derived stdlib abstraction should have an inspectable recovery
-path: read its signature, inspect the ordinary checked `.qli` implementation,
-then follow its calls to language rules and specified primitives. Derived code
-must undergo the same applicable checking as user code. Source location,
-first-party status and documentation generation confer no semantic authority.
-Language primitives require their canonical contracts and independent checks;
-reading an implementation cannot reconstruct or authorize a different meaning.
-The [primitive inventory and current limitations](primitive-boundary.md) separate
-this policy from the source cutover and its open proof and profile obligations.
+path. The path is to read its signature, inspect the ordinary checked `.qli`
+implementation, and then follow its calls to language rules and specified
+primitives. Derived code must undergo the same applicable checking as user
+code. Source location, first-party status and documentation generation confer
+no semantic authority. Language primitives require their canonical contracts
+and independent checks. Reading an implementation cannot reconstruct or
+authorize a different meaning. The
+[primitive inventory and current limitations](primitive-boundary.md) separate
+this policy from the source cutover and from the open proof obligations and
+profile obligations of that cutover.
 
-QLT — Qleisli Testsuite, QDB — Qleisli Debugger and QCP — Qleisli Circuit
-Profiler are planned Qleisli tools. They and qargo, qlidoc and other tools
-are subordinate interfaces: they may expose programs, facts, diagnostics
-or evidence, but cannot adopt interpretations, waive proof, create a parallel
-acceptance path or weaken accepted meaning. Their implementation is later work;
-this chapter installs none of those tools. mdBook is the separate documentation
-build environment and creates no language or API-introspection authority.
+Three Qleisli tools are planned: QLT, the Qleisli Testsuite; QDB, the Qleisli
+Debugger; and QCP, the Qleisli Circuit Profiler. They and qargo, qlidoc and
+other tools are subordinate interfaces. They may expose programs, facts,
+diagnostics or evidence. They cannot adopt interpretations, waive proof,
+create a parallel acceptance path or weaken accepted meaning. Their
+implementation is later work. This chapter installs none of those tools.
+mdBook is the separate build environment for the documentation. It creates no
+language authority and no API-introspection authority.
 
 ### Inference and explicit discovery
 
-For human authors and coding agents, **zero-prior inferable** means that the
-intended semantic role can be recovered without knowing Qleisli-specific names.
-Familiar spelling or similar-looking code alone is insufficient. **Explicitly
-discoverable** means that a canonical introduction exposes the role and its
-contract without requiring the author to guess the construct's name first.
-These are documentation and design categories, not claims about an LLM's
-measured success rate or permission to infer quantum meaning.
+This section sorts the concepts of the language and its tools into two
+categories. The categories say how an author who meets a concept for the
+first time finds its meaning.
+
+For human authors and coding agents, **zero-prior inferable** means that an
+author can recover the intended semantic role without knowing Qleisli-specific
+names. Familiar spelling or similar-looking code alone is insufficient.
+**Explicitly discoverable** means that a canonical introduction exposes the
+role and its contract. The author does not have to guess the name of the
+construct first. These are categories for documentation and design. They are
+not claims about the measured success rate of an LLM, and they are not
+permission to infer quantum meaning.
 
 | Concept | Category and recovery path |
 | --- | --- |
@@ -147,21 +165,24 @@ measured success rate or permission to infer quantum meaning.
 | Quantum owners, effects, access capabilities and Meaning | Explicit discovery through the type, Rust and functional boundary chapters. Classical familiarity cannot supply their quantum obligations. |
 | Derived stdlib abstractions | Explicit discovery through the signature and mathematical contract, then ordinary `.qli` source under `stdlib/src/` and its callees. Source inspection does not itself prove the contract. |
 | Language primitives and external providers | Explicit discovery through the primitive and production boundaries. Reading derived source cannot reconstruct or grant their semantic authority. |
-| First-party ecosystem tools, including QLT, QDB and QCP | Explicit discovery through `qleisli --help`, then `qleisli help ecosystem`; each tool's role and current availability are stated there. These are Qleisli-native discovery targets. |
+| First-party ecosystem tools, including QLT, QDB and QCP | Explicit discovery through `qleisli --help`, then `qleisli help ecosystem`. Each tool's role and current availability are stated there. These are Qleisli-native discovery targets. |
 
-The help path works without a project or native checker and issues no accepted
-handle. Planned tools are unavailable for execution. Predictable classical
-mistakes need deterministic, located correction paths that preserve owners,
-phase and evidence; semantic ambiguity must reject. Naming must avoid misleading
-pseudo-analogues and [semantic false friends](functional-boundary.md#false-friends-and-diagnostics).
-Every future first-party language or ecosystem addition must declare its
-category, intended semantic role and canonical recovery or discovery path.
-This implements the documentation boundary for inference and discovery within
-the Reference.
+The help path works without a project and without a native checker. It issues
+no accepted handle. Planned tools are unavailable for execution. Predictable
+classical mistakes need correction paths that are deterministic and located
+and that preserve owners, phase and evidence. Semantic ambiguity must reject.
+Naming must avoid misleading pseudo-analogues and
+[semantic false friends](functional-boundary.md#false-friends-and-diagnostics).
+Every future first-party addition to the language or to the ecosystem must
+declare its category, its intended semantic role and its canonical recovery
+or discovery path. This implements the documentation boundary for inference
+and discovery within the Reference.
 
 ## Required review of future designs
 
-Every major language or tooling design document must identify how it preserves:
+This section is a checklist for the author of a design document. Every major
+design document for the language or for its tooling must identify how it
+preserves:
 
 1. the applicable adopted interpretation, scope, premises and existing guarantees;
 2. formal obligations, actual acceptance/artifact bindings, checked evidence and
@@ -171,10 +192,10 @@ Every major language or tooling design document must identify how it preserves:
 4. diagnostic recovery, inspectable derived source and explicit tool discovery;
 5. the distinction between human interpretation, formal verification and execution.
 
-Use the existing constitutional impact procedure and GitHub decision record.
-An unresolved constitutional case that existing interpretations do not cover
-requires the concrete human judgment; ordinary implementation within existing
-interpretations is maintenance.
+Use the existing constitutional impact procedure and the GitHub decision
+record. An unresolved constitutional case that existing interpretations do not
+cover requires the concrete human judgment. Ordinary implementation within
+existing interpretations is maintenance.
 No design document gains constitutional authority by completing this checklist.
 
 ## History

@@ -1,14 +1,16 @@
 # Rust familiarity and quantum meaning
 
-A **false friend** is a Rust spelling or habit whose Rust reading would
-misdescribe a quantum operation in Qleisli. This chapter states, for each
-false friend, the Rust reading, the Qleisli rule, and the diagnostic or the
-correction.
+Qleisli source looks like Rust, and a Rust programmer reads it with Rust
+habits. A **false friend** is a Rust spelling or habit whose Rust reading
+would misdescribe a quantum operation in Qleisli. For each false friend, this
+chapter states three things: the Rust reading, the Qleisli rule, and the
+diagnostic or the correction.
 
-Qleisli reuses familiar syntax for familiar semantics. It uses distinct syntax
-where the familiar intuition would misdescribe a quantum operation. A familiar
-spelling is not evidence of a physical operation, an ownership transition or a
-checked mathematical law. The
+Where a piece of syntax means what Rust means by it, Qleisli keeps the
+familiar spelling. Where the familiar intuition would misdescribe a quantum
+operation, Qleisli uses a distinct spelling. A familiar spelling is not
+evidence of a physical operation, an ownership transition or a checked
+mathematical law. The
 [inference and discovery boundary](architecture.md#inference-and-explicit-discovery)
 connects predictable classical mistakes to diagnostics and explicit quantum
 contracts.
@@ -25,10 +27,10 @@ The chapter uses these terms:
 - A quantum owner is **live** from its creation until an operation consumes
   it.
 - A construct is **absent** when neither the source grammar nor the builtin
-  catalog contains it. A parser refusal or a name refusal for an absent
-  construct does not implement its future ownership law or adopt a pending
-  design. It does not forbid a valid user-defined identifier with the same
-  spelling.
+  catalog contains it. The parser or the name lookup refuses an absent
+  construct. That refusal does not implement the future ownership law of the
+  construct, and it does not adopt a pending design. It does not forbid a
+  valid user-defined identifier with the same spelling.
 - The **source checker** is the common checker of both
   [routes](diagnostics.md#routes). The **native checker** is the independent
   Lean checker.
@@ -38,30 +40,32 @@ The chapter uses these terms:
   the selected-entry route.
 
 A rule names the diagnostic code of a program that breaks it. The two routes
-report some failures with different codes. A rule then gives the
-project-route code first, as in `unknown_name` or `name`.
+report some failures with different codes. For such a failure, a rule gives
+the project-route code first, as in `unknown_name` or `name`.
 [Codes](diagnostics.md#codes) lists both vocabularies.
 
 ## Ordinary data may be ignored
 
-Rust's ordinary owned values are affine: a program uses each at most once and
-may leave it unused. Qleisli's ordinary `Bit`, `Unit` and products that
-contain only ordinary data are unrestricted. An unused ordinary value needs no
-physical operation.
+This section covers the values that hold no quantum owner. Rust's ordinary
+owned values are affine: a program uses each at most once and may leave it
+unused. Qleisli's ordinary data is unrestricted: a program uses a value any
+number of times, or not at all. Ordinary data is `Bit`, `Unit` and products
+that contain only ordinary data. An unused ordinary value needs no physical
+operation.
 
 Rules:
 
 - A program may reuse ordinary data, leave it unused, or match it with `_`.
 - A program need not insert a physical `discard` for an unused classical
   `Bit`.
-- Ignoring an ordinary measurement result does not destroy another live
-  quantum owner. The earlier measurement contributes Observe to the principal
-  effect of the body.
+- A program that ignores an ordinary measurement result does not destroy
+  another live quantum owner. The measurement itself happened earlier, and it
+  contributes Observe to the principal effect of the body.
 - This rule introduces none of Rust's `Drop`, `Clone`, `Copy` or trait
   machinery.
 - The source has no built-in `drop`, `forget`, `clone`, `copy` or `default`
-  function. These identifiers are ordinary names. They resolve by the same
-  declaration, import and lexical rules as other identifiers.
+  function. These identifiers are ordinary names. The checker resolves them
+  by the same declaration, import and lexical rules as other identifiers.
 - A call of an unresolved `drop`, as in `drop(0)`, is a name error about an
   absent builtin (`unknown_name` or `name`). It is not a quantum ownership
   error.
@@ -95,9 +99,9 @@ quantum destructor or an escape from effect inference.
 ## Explicit construction instead of Default
 
 In Rust, `T::default()` returns the default value of a type that implements
-`Default`. Qleisli has no such abstraction for a quantum-containing type.
-Preparation is an explicit operation, and each preparation has its own
-contract.
+`Default`. Qleisli has no such abstraction for a quantum-containing type. A
+program that needs a quantum owner prepares it with an explicit operation,
+and each preparation has its own contract.
 
 | Preparation | Result and action |
 | --- | --- |
@@ -111,8 +115,8 @@ Rules:
   contains a live quantum owner. This includes `Q<T>`, `Q<Unit>`,
   `Q<Bits<0>>` and ordinary products that contain any such field.
 - Ordinary and static basis data are not quantum resources. `0`, `()` and
-  explicit ordinary constructors are ordinary data, without preparation and
-  without a quantum owner.
+  explicit ordinary constructors are ordinary data. They prepare nothing and
+  create no quantum owner.
 - The checker inserts no default conversion between these types.
 - The language has no general trait or impl, no associated `Default` call and
   no generic `Default` bound.
@@ -122,12 +126,12 @@ Rules:
 - Neither zero physical width nor an ordinary `Unit` argument makes the
   returned owner unrestricted.
 - Explicit `finish` preserves the preceding scalar phase. Checked scoped
-  cleanup keeps its all-input fixed-state contract.
+  cleanup keeps its contract, which requires the fixed state for every input.
 - Default construction provides no hidden clean workspace and no cleanup. The
   source provides checked workspace only through the scoped forms `clean`,
   `dirty` and `with_computed`.
-- A source effect is not a resource bound. Quantitative resource certification
-  is a separate obligation.
+- A source effect is not a resource bound. The certification of quantitative
+  resources is a separate obligation.
 - A program may name an ordinary function `default`. Its caller keeps the
   effect of its body, and the checker rejects a false Unitary assertion
   (`effect`).
@@ -150,12 +154,14 @@ fn default() -> Q<Bit> { init0() }
 ## Ordinary relations and live quantum owners
 
 In Rust, `==`, `<` and hashing act on values through the `PartialEq`, `Eq`,
-`PartialOrd`, `Ord` and `Hash` traits. A live `Q<T>` has no such relation.
+`PartialOrd`, `Ord` and `Hash` traits. A live `Q<T>` has no such relation. A
+program compares ordinary values, or it writes the comparison of quantum data
+as an explicit operation with its own contract.
 
 Rules:
 
-- A live `Q<T>` has no ordinary value equality, ordering or hashing inherited
-  from `T`. This includes `Q<Unit>`, `Q<Bits<0>>` and products that contain a
+- A live `Q<T>` inherits no ordinary value equality, ordering or hashing from
+  `T`. This includes `Q<Unit>`, `Q<Bits<0>>` and products that contain a
   quantum owner.
 - Owner and provenance IDs that the compiler uses internally, physical wire
   IDs and logical wire IDs are distinct bookkeeping data. A comparison of them
@@ -167,23 +173,24 @@ Rules:
 - A program may compare ordinary `Bit` values with the Boolean operations.
   Such a comparison acts on ordinary values, including explicit measurement
   results. It does not read a quantum owner without observation.
-- Coherent basis comparison must be an explicit reversible operation with its
-  own ordered input and output, effect and phase contract.
+- A coherent comparison of basis values must be an explicit reversible
+  operation. It has its own ordered input and output, its own effect and its
+  own phase contract.
 - State comparison, tomography and testing have separate procedures and
   statistical or operational contracts. No comparison operator selects one.
-- There is no built-in `hash`, no general trait mechanism and no `Eq`, `Ord`
-  or `Hash` instance for live owners. A call of an unresolved `hash` is a name
-  error (`unknown_name` or `name`).
+- The language has no built-in `hash` and no general trait mechanism. Live
+  owners have no `Eq`, `Ord` or `Hash` instance. A call of an unresolved
+  `hash` is a name error (`unknown_name` or `name`).
 - A user-defined or imported function named `hash` is an ordinary checked
   function. Its name grants no special semantics.
 - Static descriptions, evidence IDs and ordinary values keep the comparisons
   that their types and APIs support. This section invents no missing ordinary
   operator. It does not turn a comparison of internal IDs into quantum-state
   equality.
-- A comparison diagnostic explains the distinction conditionally, because
-  parsing does not establish the operand types. The explanation for an
-  unresolved `hash` does not infer its argument type, and it does not
-  intercept a resolved ordinary declaration.
+- Parsing does not establish the types of the operands. A comparison
+  diagnostic therefore explains the distinction conditionally. The
+  explanation for an unresolved `hash` does not infer the type of the
+  argument, and it does not intercept a resolved ordinary declaration.
 - Neither diagnostic inserts a measurement, copies an owner or exposes an ID.
 
 The checker accepts this comparison of ordinary values:
@@ -226,8 +233,9 @@ Its signatures are interface descriptions, not first-class arrow syntax.
 | `adjoint(U)(q)` | It consumes its input and returns an owner | It reverses the specified operation only with the required checked access (`capability` or `access`). Uncomputation alone does not discharge the returned owner or prove it clean. |
 | Scope exit | A lexical boundary | It requires complete owner accounting. It performs none of the physical operations above. |
 
-Recognition by the source checker and support in a requested profile are
-distinct. The [primitive inventory](primitive-boundary.md) and
+That the source checker recognizes an operation does not mean that a
+requested profile supports it. Recognition and support are distinct. The
+[primitive inventory](primitive-boundary.md) and
 [Status and limits](#status-and-limits) state the support of each profile.
 
 Rules:
@@ -240,8 +248,9 @@ Rules:
 - The [disposal diagnostics](#conditional-teaching-diagnostics) explain the
   obligation at the original binder or use that triggered the rejection.
 - Ordinary `let` means binding. `let q = h(q);` is valid: the right-hand side
-  consumes the preceding owner and returns the replacement before the binder
-  is introduced. `let q = init0();` must not shadow a preceding live `q`.
+  consumes the preceding owner and returns the replacement before `let`
+  introduces the binder. `let q = init0();` must not shadow a preceding live
+  `q`.
 - This distinction introduces no assignment to places, no temporary reference
   and no automatic quantum destruction.
 - Separate owner names do not imply separate physical states. Observation or
@@ -250,12 +259,13 @@ Rules:
   external reference.
 - A name, a lifetime, a sampled result or an assertion of unitarity cannot
   establish cleanliness.
-- There is no supported standalone `release(q)` and no free-standing
-  `Release0` IR constructor. A diagnostic must not recommend that invented
-  call.
+- The language supports no standalone `release(q)`, and the IR has no
+  free-standing `Release0` constructor. A diagnostic must not recommend that
+  invented call.
 - Explicit `finish` for `Q<Unit>` and `consume_empty` for `Q<Bits<0>>` keep
-  their exact structural contracts. Neither is a general clean-release or
-  discard API. Preceding scalar work stays in the composed meaning.
+  their exact structural contracts. Neither is a general API for clean
+  release or for discard. Preceding scalar work stays in the composed
+  meaning.
 - A change of spelling to `drop(q)` cannot justify any of these different
   operations.
 
@@ -276,8 +286,10 @@ abandons the fresh quantum result.
 
 ## Signal registers remain in the interface
 
-A **signal register** is an ordinary linear quantum owner in the semantic
-interface of an operation. Scratch workspace differs: it has a declared
+Some operations, such as a block encoding, act on an extra register beside
+the system. A **signal register** is such a register: an ordinary linear
+quantum owner in the semantic interface of an operation. The caller passes it
+in and receives it back. Scratch workspace differs: it has a declared
 restoration contract. The word *ancilla* does not determine a cleanup
 obligation.
 
@@ -298,24 +310,25 @@ Rules:
   correlations.
 - A signal register need not return to zero unless the interface separately
   requires it.
-- The caller owns the full output of `U`, including the signal register.
-  Dropping the signal register changes the channel on the other owners and
-  requires explicit Observe semantics.
-- A signal register counts throughout its live interval. The count includes
-  its width, gates, depth, measurement, and the target and layout costs under
-  the stated resource model.
+- The caller owns the full output of `U`, including the signal register. A
+  program that drops the signal register changes the channel on the other
+  owners, and the drop requires explicit Observe semantics.
+- Resource accounting counts a signal register throughout its live interval.
+  The count includes its width, gates, depth, measurement, and the target and
+  layout costs under the stated resource model.
 - Renaming a signal register to *ancilla*, or excluding it from a cleanup
   contract, cannot remove those costs.
 - A quantitative resource bound is checked separately. The block equation and
   the ordinary ownership rules alone do not prove it.
 - This section defines no `signal` primitive, no further ownership kind, no
-  general `BlockEncoding` API and no automatic block-encoding checker. A later
-  block-encoding, LCU or QSVT contract can specify signal subspaces and
+  general `BlockEncoding` API and no automatic checker of block encodings. A
+  later block-encoding, LCU or QSVT contract can specify signal subspaces and
   normalization with these ordinary owners.
-- Source workspace, extra backend synthesis workspace and an exposed library
-  signal interface are separate roles with their own obligations.
-- EXACT-2026-01 applies. An approximation error certificate cannot replace an
-  applicable exact equation or an exact clean-return obligation.
+- Three roles are separate, each with its own obligations: source workspace,
+  the extra workspace of backend synthesis, and a signal interface that a
+  library exposes.
+- EXACT-2026-01 applies. A certificate of approximation error cannot replace
+  an applicable exact equation or an exact clean-return obligation.
 
 For example, apply H to a one-bit signal and then CNOT from signal to system.
 The signal-zero block is exactly `I / sqrt(2)`, but the input `|0,0>` produces
@@ -331,7 +344,9 @@ ScopeBody      ::= "{" "|" Ident "," Ident "|" BlockContents "}"
 ```
 
 A **workspace scope** gives its body one scratch `Q<Bit>` beside one data
-owner. It has two forms:
+owner. A program uses it when an operation on the data needs one temporary
+qubit, and the checker verifies how the body hands that qubit back. The scope
+has two forms:
 
 - `clean(data, logical) { |data, scratch| body }` supplies a fresh `Q<Bit>` in
   `|0⟩` and returns the data owner.
@@ -356,8 +371,8 @@ Rules:
   binds. The checker rejects a body that leaves either owner live
   (`ownership`). The [disposal diagnostics](#conditional-teaching-diagnostics)
   identify that owner and explain the return contract of the scope.
-- Clean release requires the exact logical action on the zero-initialized
-  subspace, with the same zero scratch at exit.
+- Clean release requires the exact logical action on the subspace where the
+  scratch starts in zero, with the same zero scratch at exit.
 - Dirty return requires identity on the entire scratch interface, including
   phase and correlations with an external reference.
 - The native checker checks the original body and the logical action against
@@ -369,8 +384,8 @@ Rules:
   `finish` consumes the exact owner. Both actions have coefficient +1 and use
   zero physical axes. The source checker records their owner history and
   checks the ordered returned owners.
-- A target resource certificate also needs the routing schedule and the costs
-  under the gate set of that target.
+- A resource certificate for a target also needs the routing schedule and the
+  costs under the gate set of that target.
 
 > **Implementation note.** The finite checker records the whole live Raw frame
 > at scope entry and the peak that includes fresh scratch. It records
@@ -415,17 +430,22 @@ ComputedScope ::= "with_computed" "(" Expr "," Name StaticArgs? ")"
 ```
 
 A **computed scope** computes a predicate of its source data into one private
-auxiliary `Q<Bit>`, runs its body, and uncomputes the auxiliary. The
-two-argument `with_computed(source, predicate)` exposes the auxiliary to the
-body and protects the source data. The three-argument form also supplies a
-logical operation, and it exposes a data binder and an auxiliary binder.
+auxiliary `Q<Bit>`, runs its body, and uncomputes the auxiliary. A program
+uses it when a step needs the value of a predicate in a qubit for the length
+of that step. The scope has two forms:
+
+- The two-argument `with_computed(source, predicate)` exposes the auxiliary
+  to the body and protects the source data.
+- The three-argument form also supplies a logical operation, and it exposes a
+  data binder and an auxiliary binder.
 
 Rules:
 
 - The source must be one `Q<A>` owner (`type_mismatch` or `type`).
-- The predicate must be a total `classical fn` with one ordinary argument of
-  the exact basis tree of the data and with result `Bit`. Another parameter
-  count is `arity`. Another type is `type_mismatch` or `type`.
+- The predicate must be a total `classical fn`. It must take one ordinary
+  argument, whose type is the exact basis tree of the data, and it must
+  return `Bit`. Another parameter count is `arity`. Another type is
+  `type_mismatch` or `type`.
 - The scope returns the data owner.
 - The three-argument form checks the bounded exact **computed-relation
   contract**. Let `E_f` embed each data basis value as `|x,f(x)>`. The use
@@ -433,7 +453,7 @@ Rules:
   `V`, with exact coefficients, phase and ordered axes.
 - The surrounding compute/uncompute construction then justifies the return of
   the auxiliary to zero.
-- A Unitary annotation or the names of the binders do not supply this
+- Neither a Unitary annotation nor the names of the binders supply this
   equation.
 
 > **Implementation note.** A body that is already a canonical empty, Z or T
@@ -450,20 +470,22 @@ Rules:
 >
 > The retained `SourceUnitaryEquation` associates the two native leaves, the
 > names and the source snapshot for local inspection only. It is not execution
-> input, an authority flag, a whole-source preservation proof or a target or
-> resource certificate. Retained provenance contains the complete original
-> module bytes for the relevant declaration, the bound-provider dependencies
-> and the evidence dependencies. Closures share module records. This sharing
-> selects receipt metadata. Project loading and checking cover all loaded
-> modules, as
+> input and not an authority flag. It is not a proof that the whole source is
+> preserved, and it is not a target or resource certificate. Retained
+> provenance contains the complete original module bytes for the relevant
+> declaration, the bound-provider dependencies and the evidence dependencies.
+> Closures share module records. This sharing selects receipt metadata.
+> Project loading and checking cover all loaded modules, as
 > [the production boundary](production-boundary.md#root-loading-and-compatibility-during-generic-migration)
 > specifies.
 
 ### Finite automatic-uncomputation rule
 
-The two `with_computed` forms admit the bounded rule of this table. The rule
-adds no way to declare a parameter, a type or a binding as clean or dirty
-workspace. It synthesizes no inverse for an arbitrary Unitary body.
+A computed scope uncomputes its auxiliary for the program: the source does
+not write the inverse of the compute step. The two `with_computed` forms
+admit that generated uncomputation under the bounded rule of this table. The
+rule adds no way to declare a parameter, a type or a binding as clean or
+dirty workspace. It synthesizes no inverse for an arbitrary Unitary body.
 
 | Premise | Required evidence or refusal |
 | --- | --- |
@@ -473,28 +495,28 @@ workspace. It synthesizes no inverse for an arbitrary Unitary body.
 | Two-argument action | The complete auxiliary action must be exactly `diag(zeta_8^a, zeta_8^b)` in the supported profile, where `zeta_8` is the eighth root of unity `exp(i*pi/4)`. Non-diagonal factors are permitted when their complete composition satisfies this equation. The check covers both entries, including their common phase. Another action is `unsupported`. |
 | General supported use | The three-argument form supplies an independent logical operation and checks the computed-relation contract for the use circuit. Merely adding a logical argument cannot make a failed cleanup equation valid. |
 | Generated cleanup | The ordinary structured Raw representation must retain compute, use and inverse. The independent checker validates the rule and the dependencies. The producer cannot assert successful restoration. |
-| Capacity | The checker rejects missing evidence and exhaustion of a source, dependency or exact-work limit. No reset, discard, heuristic equality or alternate acceptance path repairs the failure. |
+| Capacity | The checker rejects a program whose evidence is missing, or that exhausts a source, dependency or exact-work limit. No reset, discard, heuristic equality or alternate acceptance path repairs the failure. |
 
 Rules:
 
 - The diagnostic for an unsupported two-argument action reports the missing
-  diagonal contract. It points to the three-argument form, including its
-  required returned owners and its cleanup equation.
+  diagonal contract. It points to the three-argument form, and it names the
+  owners that form must return and its cleanup equation.
 - A capture diagnostic identifies the captured binding and explains how to
   pass the data through the three-argument form.
 - These conditions concern restoration and provenance. They do not claim that
   `ctrl` means an unchanged state: coherent controls keep their basis sectors,
   while phase kickback may change their correlations.
-- Dirty restoration requires identity on arbitrary, possibly
-  reference-entangled input. This clean rule does not infer it.
-- The clean obligation is exact return to the declared fixed pure state for
-  every permitted data input. Under the adopted all-input channel premises,
-  this is equivalent to factorization with that same fixed pure state for
-  every retained external reference.
+- Dirty restoration requires identity on arbitrary input, which can be
+  entangled with a reference. This clean rule does not infer it.
+- The clean obligation is that the auxiliary returns exactly to the declared
+  fixed pure state for every permitted data input. Under the adopted
+  all-input channel premises, this is equivalent to factorization with that
+  same fixed pure state for every retained external reference.
 - Separation alone is insufficient. An auxiliary in a different pure state is
   separable, but it has not returned to its declared state.
-- One known-input test, an approximate zero probability or an unchanged
-  unknown marginal is insufficient.
+- A test on one known input is insufficient. So is an approximate zero
+  probability, and so is an unchanged unknown marginal.
 - Dirty workspace instead needs restoration of its arbitrary state and its
   reference correlations. The explicit
   [clean and dirty scopes](#explicit-clean-and-dirty-scopes) state that
@@ -517,8 +539,8 @@ x(z(x(a)))  // X Z X = -Z: diag(-1, 1).
 ```
 
 Their standalone readout probabilities can agree. Their common sign matters
-under coherent control: replacing either specified operator by the other fails
-its exact request (`contract`).
+under coherent control: a program that replaces either specified operator by
+the other fails its exact request (`contract`).
 
 The checker rejects the auxiliary body `x(a)` (`unsupported`). It leaves the
 computed auxiliary dirty after the inverse. Unitarity of `x` is not evidence
@@ -526,11 +548,15 @@ of clean return.
 
 ## Clean discharge, live action and Resource Safety
 
-**Clean discharge** is the local semantic Soundness obligation that a
-workspace returns to its declared clean state. It does not identify which
-operation acts on the live system. **Quantitative Resource Safety** is the
-separate obligation to produce finite, statically computed bounds and to
-preserve them through compilation.
+A workspace that comes back clean answers one question. It does not say which
+operation acted on the data, and it does not say what the computation cost.
+This section states the three obligations separately.
+
+**Clean discharge** is an obligation of local semantic Soundness: a workspace
+returns to its declared clean state. It does not identify which operation
+acts on the live system. **Quantitative Resource Safety** is the separate
+obligation to produce finite, statically computed bounds and to preserve them
+through compilation.
 
 Rules:
 
@@ -544,14 +570,15 @@ Rules:
   contract. Neither does a standalone channel equality that loses global
   phase.
 - The equality alone grants no inverse access and no control access.
-- Reset is Observe. An observing caller cannot make a falsely Unitary reset
-  helper valid.
-- Scratch qubits count while live, across preparation, use and cleanup.
+- Reset is Observe. A reset helper that claims Unitary effect is false, and
+  an observing caller cannot make it valid.
+- Resource accounting counts a scratch qubit while it is live, across
+  preparation, use and cleanup.
 - Generated inverse operations and physical routing count in the bound for the
   accepted artifact.
 - Ending `excl` restores operation rights to the updated live owner. It does
-  not restore the input state of that owner, prove clean or dirty discharge,
-  or end its lifetime.
+  not restore the input state of that owner. It does not prove clean or dirty
+  discharge, and it does not end the lifetime of the owner.
 - A surface `Unit` result must not erase a live owner from resource
   accounting.
 
@@ -559,15 +586,17 @@ For example, compute `CNOT(q,a)` from `|+>_q |0>_a`. A second CNOT restores
 `|+>_q |0>_a`. An explicit reset of the correlated auxiliary instead produces
 `(I_q / 2) tensor |0><0|_a`. Both auxiliary marginals are exactly `|0><0|`,
 but an X readout of q distinguishes the live actions. This agrees with the
-all-input fixed-pure-state equivalence of the
-[finite rule](#finite-automatic-uncomputation-rule). That equivalence does not
+equivalence that the [finite rule](#finite-automatic-uncomputation-rule)
+states for a fixed pure state over all inputs. That equivalence does not
 require the channel on the other owners to equal an independently requested
 unitary.
 
 ## Conditional teaching diagnostics
 
-The source checker uses familiar ownership intuition to explain a rejection.
-The three disciplines differ:
+A Rust programmer expects the language to drop a value that the program
+leaves unused. The source checker uses this familiar ownership intuition to
+explain a rejection, and it says where the Qleisli discipline differs. The
+three disciplines differ:
 
 | Value | Discipline | May be left unused |
 | --- | --- | --- |
@@ -577,8 +606,8 @@ The three disciplines differ:
 
 Rules:
 
-- The source checker adds an explanation only after its unresolved-name
-  rejection or its implicit-owner-loss rejection. The explanation preserves
+- The source checker adds an explanation only after it has rejected an
+  unresolved name or an implicit loss of an owner. The explanation preserves
   the original diagnostic code, source span, checking order and limits.
 - The checker does not inspect or evaluate call arguments to decide whether an
   unresolved Rust-shaped name deserves a hint. `drop(q)` keeps the
@@ -598,9 +627,10 @@ Rules:
 - Text and JSON diagnostics describe rejections. Neither carries semantic
   evidence or grants acceptance.
 - Qleisli diagnostics are part of the source interface.
-- A clean or dirty scope that leaves a live owner behind describes its
-  distinct scratch-return contract. A `with_computed` scope explains which
-  owners its body must return for checked cleanup.
+- For a clean or dirty scope that leaves a live owner behind, the diagnostic
+  describes the distinct scratch-return contract of that scope. For a
+  `with_computed` scope, it explains which owners the body must return for
+  checked cleanup.
 - The resource checks establish the restoration equation against the scope
   body. The explanation does not replace them.
 
@@ -646,17 +676,18 @@ Rules:
 - An ordinary wrapper function must expose its interface and pass the same
   ownership, effect and access checks. A wrapper name grants no hidden
   projection and no forwarding.
-- There are no user-defined `Deref` or `DerefMut` hooks and no receiver
-  adjustments.
+- The language has no user-defined `Deref` or `DerefMut` hooks and no
+  receiver adjustments.
 - Method receiver syntax is absent for ordinary classical and static values as
   well. Ordinary first-order calls on those values are unaffected.
-- Common source preparation admits ordinary nominal record field projection
-  under the
+- Common source preparation admits the projection of a field from an ordinary
+  nominal record, under the
   [type-model rules](type-model.md#opaque-basis-specialization-in-the-selected-profile).
-- A method syntax diagnostic reports the unsupported form without guessing the
-  type of the receiver. It conditions its `excl`/`ctrl` advice on quantum
-  access. It does not mechanically rewrite a receiver into either access mode.
-- Explicit call lowering follows the
+- A diagnostic for method syntax reports the unsupported form without
+  guessing the type of the receiver. Its `excl`/`ctrl` advice is conditional:
+  it applies to quantum access. The diagnostic does not mechanically rewrite
+  a receiver into either access mode.
+- The lowering of an explicit call follows the
   [access and evaluation rules](elaboration.md) and the native obligations of
   [whole-owner exclusive calls](#whole-owner-exclusive-calls). Receiver sugar
   supplies no alternative acceptance route and no evidence.
@@ -682,10 +713,14 @@ pub unitary fn client(q: Q<Bit>) -> Q<Bit> { q.h(); q }
 
 ## Access vocabulary and workspace contracts
 
-**Access** is public authority to operate on a quantum owner. `excl` grants
-temporary exclusive arbitrary coherent access over its exact footprint. `ctrl`
-grants the distinct basis-sector-preserving coherent access. Rust's `&` and
-`&mut` borrow a value through a reference. Neither is an access spelling.
+This section separates two vocabularies that Rust's word "borrow" can
+suggest: access to an owner, and the contract of a workspace.
+
+**Access** is public authority to operate on a quantum owner. It has two
+modes. `excl` grants temporary exclusive access over its exact footprint, for
+arbitrary coherent operations. `ctrl` grants a distinct coherent access, one
+that preserves basis sectors. Rust's `&` and `&mut` borrow a value through a
+reference. Neither is an access spelling.
 
 Rules:
 
@@ -704,14 +739,14 @@ Rules:
   [`with_computed` forms](#checked-cleanup-is-a-separate-contract). Each gives
   its body one scratch or auxiliary `Q<Bit>`, and each has its own bounded
   contract.
-- No parameter, type or binding can be declared clean or dirty, and
-  `borrow q` is not a workspace form.
+- A program cannot declare a parameter, a type or a binding as clean or
+  dirty, and `borrow q` is not a workspace form.
 - The diagnostic for `borrow q` is a located syntax diagnostic. It does not
-  infer whether Rust access or dirty workspace was intended.
+  infer whether the author intended Rust access or dirty workspace.
 - Ordinary declarations, calls and bindings named `borrow` keep normal
   checking. Their name grants no access, restoration or ownership permission.
-- Consuming calls and bindings express ownership transfer. This vocabulary
-  adds no standalone `move q` form.
+- A program expresses a transfer of ownership through consuming calls and
+  bindings. This vocabulary adds no standalone `move q` form.
 - Internal Rust documentation may discuss normal borrowing of compiler data
   structures.
 
@@ -731,11 +766,13 @@ MarkedPlace ::= ("excl" | "ctrl") Ident Selection?
 Selection   ::= "[" Nat "]" | "[" Nat ".." Nat "]"
 ```
 
-An **access call** is a call with at least one marked place. `h(excl q)`
-temporarily supplies the live lexical owner `q` to the consuming call and
-keeps the returned quantum value on the same binder. The access call itself
-has ordinary type `Unit`. A joint call such as `cnot(excl c, excl t)` requires
-distinct owners and returns them internally in argument order.
+An **access call** is a call with at least one marked place. A program uses
+it to apply an operation to an owner in place, without a `let` that rebinds
+the result. `h(excl q)` temporarily supplies the live lexical owner `q` to
+the consuming call and keeps the returned quantum value on the same binder.
+The access call itself has ordinary type `Unit`. A joint call such as
+`cnot(excl c, excl t)` requires distinct owners and returns them internally
+in argument order.
 
 `excl` and `ctrl` are contextual. Each is a marker only before an identifier
 in an argument position. Elsewhere each is an ordinary identifier.
@@ -747,24 +784,27 @@ Rules:
   owner, or an index `q[i]` or a slice `q[a..b]` of a `Q<Bits<N>>` owner
   (`type_mismatch` or `type`).
 - Ordinary data and tuples that contain several owners are not access places.
-- Marked places must not overlap. The checker rejects duplicate owners and
-  selections without a compile-time proof of disjointness (`ownership`).
+- Marked places must not overlap. The checker rejects duplicate owners, and
+  it rejects selections that have no compile-time proof of disjointness
+  (`ownership`).
 - An index or a slice must satisfy the static bounds of the
   [static places](elaboration.md#static-ordered-axis-places)
-  (`type_mismatch` or `size`). Indexed selections have a common AST and one
-  static bounds and disjointness judgment.
-- The callee must have caller-visible checked `Unitary` effect under the
+  (`type_mismatch` or `size`). Indexed selections have a common AST, and one
+  judgment decides their static bounds and their disjointness.
+- The callee must have a checked `Unitary` effect that its caller can see,
+  under the
   [public-effect rule](source-text.md#ordinary-function-effects-and-assertions)
-  (`effect`). That effect is the public contract outside the original module
-  of the callee, and independently checked internal inference inside it.
+  (`effect`). Outside the original module of the callee, that effect is the
+  public contract. Inside that module, it is the internal inference, which is
+  checked independently.
 - An annotation does not override body checking. Inlining or cache reuse
   cannot sharpen an external contract.
 - The result of the callee must have exactly the original owner type for one
   argument, or the ordered tuple of those owner types for several arguments
   (`type_mismatch` or `type`). Exact basis trees and the owner partition
   matter, including `Q<Unit>`. Equal bit width is insufficient.
-- The callee executes once. Access closure inserts no inverse, reset, discard,
-  release or fresh preparation.
+- The callee executes once. The end of the access inserts no inverse, reset,
+  discard, release or fresh preparation.
 - Returned values keep their changed state and phase, even across a nested
   lexical boundary.
 - An access lasts for the written call. No mutable-binding marker is required.
@@ -780,13 +820,13 @@ Rules:
   branch. Another ordinary argument expression is `unsupported`.
 - A closed finite function may declare
   [access parameters](elaboration.md#declared-access-parameters). They use the
-  same original-call and returned-owner checks.
+  same checks of the original call and of the returned owners.
 - An access call must not have more than 64 arguments (`parse`).
 - Unsupported Rust reference notation receives a syntax explanation
-  (`parse`): for quantum access, `excl` grants arbitrary coherent access, and
-  `ctrl` requires the computational-basis sector condition. The lexer does not
-  infer that the expression is quantum, and it does not rewrite `&` into
-  `ctrl`.
+  (`parse`). The explanation says that, for quantum access, `excl` grants
+  arbitrary coherent access, and `ctrl` requires the computational-basis
+  sector condition. The lexer does not infer that the expression is quantum,
+  and it does not rewrite `&` into `ctrl`.
 
 > **Implementation note.** The finite project compiler and selected Raw
 > lowering partition the parent of an indexed selection and reassemble its
@@ -822,33 +862,36 @@ observe fn main() -> Bit {
 
 ### Whole-owner coherent control
 
-`cnot(ctrl c, excl t)` marks `c` as a control place. A `ctrl` place follows
-the distinct live-owner rule, the Unitary effect rule and the exact
-returned-interface rule of an `excl` place. It adds the sector rule below.
+A program marks a place with `ctrl` when the call uses that owner as a
+coherent control. `cnot(ctrl c, excl t)` marks `c` as a control place. A
+`ctrl` place follows three rules of an `excl` place: the rule of distinct
+live owners, the rule of Unitary effect and the rule of the exact returned
+interface. It adds the sector rule below.
 
 Rules:
 
-- `ctrl` requires computational-basis sector preservation. It does not require
-  an unchanged quantum state, and it is not read-only access. Phase kickback
-  and entanglement are allowed.
+- `ctrl` requires that the call preserve the computational-basis sectors of
+  the place. It does not require an unchanged quantum state, and it is not
+  read-only access. Phase kickback and entanglement are allowed.
 - The checker rejects H and X on a control owner (`contract`), although both
   are Unitary. CNOT preserves the sectors of its control but not those of its
   target.
 - Exact scalar phase on `Q<Unit>` is retained.
 - Control axes follow the original argument order and owner wire order. They
   do not follow sorted wire identifiers.
-- The checker checks each call occurrence, including nested calls and unused
-  concrete declarations.
-- Access exit neither restores the old state nor releases workspace.
+- The checker checks each occurrence of a call, including nested calls and
+  unused concrete declarations.
+- The end of an access neither restores the old state nor releases workspace.
 - The checker rejects overlapping arguments (`ownership`).
 - A fresh native decision must succeed before the updated owners are retained.
   The complete generated program must also pass ordinary native acceptance. No
   annotation and no cached decision replaces either check.
 - A missing, incompatible or failed checker refuses the program. A missing
   checker executable is `project`, or `io` on the selected-entry route.
-- A native control refusal explains that control is not read-only, that phase
-  kickback is permitted, and that arbitrary coherent access requires `excl`.
-  This guidance does not bypass the effect, alias or interface checks.
+- When the native checker refuses a control, the diagnostic explains three
+  things: control is not read-only, phase kickback is permitted, and
+  arbitrary coherent access requires `excl`. This guidance does not bypass
+  the effect, alias or interface checks.
 - The supported call-formed exit points follow the
   [evaluation and owner lifetime rules](elaboration.md#evaluation-and-owner-lifetime-boundaries).
 
@@ -890,9 +933,10 @@ preserve the computational-basis sectors of `c`.
 
 ## False-friend audit
 
-The tables give one row for each Rust habit of the audit checklist and its
-implicit-operation addendum. A cell that names a construct as absent follows
-the definition at the head of this chapter.
+Use these tables to look up a Rust habit. They give one row for each Rust
+habit of the audit checklist and of its addendum on implicit operations. A
+cell that names a construct as absent follows the definition at the head of
+this chapter.
 
 ### Disposal and duplication
 
@@ -906,7 +950,7 @@ the definition at the head of this chapter.
 | `ManuallyDrop` | `ManuallyDrop<T>` wraps a value so that Rust does not run its destructor automatically. | No wrapper type, no destructor suspension and no owner-accounting exception exist. | Account for the owner through the result or an explicit transition. |
 | Destructor-like trait hooks | The `Drop::drop` implementation of a type runs implicitly when Rust drops a value. | No trait or impl dispatch and no implicit cleanup hook exist. | Checked scoped cleanup has its [separate rule](#checked-cleanup-is-a-separate-contract). |
 | Conflating measure, discard, release, reset or uncompute | Scope exit and `drop` end a value by one mechanism, its destructor. | The [explicit transitions](#quantum-owners-require-an-explicit-transition) are distinct. No generic spelling and no scope exit selects among them. | Choose the transition by its type, effect and meaning. |
-| `Default` | `T::default()` returns the default value of a type that implements `Default`. | `Default` is unavailable for live quantum-containing types, including `Q<Unit>` and nested owners. Ordinary and static data construction and explicit quantum preparation keep their distinct contracts. A user function named `default` is a checked call. | An unresolved `default` is `unknown_name` or `name`. See [explicit construction](#explicit-construction-instead-of-default). |
+| `Default` | `T::default()` returns the default value of a type that implements `Default`. | `Default` is unavailable for live quantum-containing types, including `Q<Unit>` and nested owners. The construction of ordinary and static data and the explicit preparation of quantum owners keep their distinct contracts. A user function named `default` is a checked call. | An unresolved `default` is `unknown_name` or `name`. See [explicit construction](#explicit-construction-instead-of-default). |
 
 ### Types, patterns and relations
 
@@ -943,11 +987,11 @@ the definition at the head of this chapter.
 ## Status and limits
 
 The source checker verifies complete declarations and bodies before concrete
-eligibility. A diagnostic does not alter that judgment, issue an accepted
-handle or replace the independent native Lean gate. The
-[production boundary](production-boundary.md) and the
-[functional boundary](functional-boundary.md) state the source,
-concrete-profile and preservation limits that apply to this chapter.
+eligibility. A diagnostic does not alter that judgment. It does not issue an
+accepted handle, and it does not replace the independent native Lean gate.
+The [production boundary](production-boundary.md) and the
+[functional boundary](functional-boundary.md) state the limits that apply to
+this chapter: the limits of source, of concrete profiles and of preservation.
 
 ### Code
 
@@ -966,12 +1010,12 @@ Limits of the profiles:
   The project compiler reports a wider data owner, or a scope body of more
   than 1024 circuit steps, as `limit`.
 - A control decision uses the bounded exact native profile. It covers at most
-  six physical input bits, and the compiler budget is charged with the
-  cumulative exact work.
+  six physical input bits, and the cumulative exact work is charged to the
+  compiler budget.
 - A closed finite declared access uses the original-body profile.
-- Access exists as call-site markers on whole owners and static selections,
-  and as declared access parameters. The language has no other access
-  footprint and no access that outlives its call.
+- A program writes access in two ways: as call-site markers on whole owners
+  and static selections, and as declared access parameters. The language has
+  no other access footprint and no access that outlives its call.
 - In the selected Raw profile, every original control obligation must have a
   concrete call in each retained specialization of its declaration. A
   different specialization cannot supply its evidence.
@@ -988,11 +1032,12 @@ Limits of the profiles:
   reassembly. The
   [production boundary](production-boundary.md#version-5-source-body-requests)
   describes the bounded v5 request.
-- A supported selected root whose original lexical dependency closure contains
-  `with_computed` uses the common source emitter and fresh typed native
-  checks. The computed boundary and the local normalization receipts are
-  intact. This route supplies no source-preservation theorem, no
-  operation-formal closure and no acceptance rule.
+- Some supported selected roots reach `with_computed` through their original
+  lexical dependency closure. Such a root uses the common source emitter and
+  fresh typed native checks. The computed boundary and the local
+  normalization receipts are intact. This route supplies no
+  source-preservation theorem, no operation-formal closure and no acceptance
+  rule.
 - The two-argument `with_computed` check is subject to the native graph,
   dependency, source and shared-work limits. These include the separate
   FunctionEvidence limits on the dependencies of the body.
@@ -1004,8 +1049,9 @@ Limits of the profiles:
 - Concrete nominal execution is gated, as the
   [type model](type-model.md#opaque-basis-specialization-in-the-selected-profile)
   states.
-- The absence of trait grammar supplies no proof and no implementation of
-  later trait resolution. A facility admitted later must preserve the rules of
+- The language has no trait grammar. That absence supplies no proof and no
+  implementation of later trait resolution. A facility admitted later must
+  preserve the rules of
   [explicit construction](#explicit-construction-instead-of-default).
 - Integration with the external qlippy tool is outside this chapter.
 

@@ -1,34 +1,41 @@
 # Canonical execution-view encoding
 
-An **execution view** is a canonical description of the decoded data that the
-Rust host retains for execution: a finite graph, a contract, a caller or a
-hierarchy plan. The native checker derives its own description from the data
-that it decodes and checks, and it compares the two descriptions as exact
-bytes. This chapter specifies the formats of that comparison:
+The Rust host decodes its input and keeps the decoded data for execution. The
+native checker decodes and checks the same input on its own. An
+**execution view** lets the two sides compare what they hold. It is a
+canonical description of the decoded data that the Rust host retains for
+execution: a finite graph, a contract, a caller or a hierarchy plan. The
+native checker derives its own description from the data that it decodes and
+checks, and it compares the two descriptions as exact bytes.
 
-- The **QLV3 envelope** is the external request frame of the native checker.
-  It carries an original payload, at most two views and proposed alias
-  indices.
+This chapter specifies the formats of that comparison:
+
+- The **QLV3 envelope** is the frame of every external request to the native
+  checker. It carries an original payload, at most two views and proposed
+  alias indices.
 - **QDV1** is the byte encoding of one view. QDV1 describes decoded data. It
   is separate from the QIRF artifact version and from the version of the
   native request and reply.
 - A **scope** is the check that an envelope requests: 0 (`inspection`),
   1 (`execution`) or 2 (`caller`).
 - A **mode** is one dispatch argument of the native checker, such as
-  `--runtime-root-check`. It selects the checker of the original payload and
-  the view record that the comparison expects.
-- A **walker** derives a view from typed data. Rust and the native checker
-  each have their own walkers.
+  `--runtime-root-check`. It selects which checker reads the original payload
+  and which view record the comparison expects.
+- A **walker** is the code that reads typed data and derives a view from it.
+  Rust and the native checker each have their own walkers.
 
-Encoding a description grants no acceptance authority. The chapter also
-specifies the native reply and the view that each mode compares.
+A description that encodes successfully is not thereby accepted: encoding
+grants no acceptance authority. The chapter also specifies the native reply
+and the view that each mode compares.
 
 <a id="native-envelope-cutover"></a>
 
 ## The QLV3 envelope
 
-A request to the native checker is one QLV3 envelope. Its seven header fields
-are four magic bytes and six `u32` values. Integers are little endian.
+The envelope puts the parts of one request into one frame: the original
+payload, the views and the alias indices. A request to the native
+checker is one QLV3 envelope. Its seven header fields are four magic bytes and
+six `u32` values. Integers are little endian.
 
 | Offset | Size in bytes | Field |
 | --- | --- | --- |
@@ -44,12 +51,18 @@ are four magic bytes and six `u32` values. Integers are little endian.
 
 The payload begins at byte 28. The original payload is the request of the
 selected mode. A finite payload is the exact internal QLV1 packet, and a
-hierarchy payload keeps its original bridge encoding. The existing definitions
-check these inner payloads.
+hierarchy payload keeps its original bridge encoding. The envelope does not
+change how these inner payloads are checked: the existing definitions check
+them.
 
 The mode `--openqasm-placement-check` is the exception. It reads a packet
 that nests the envelope. [Status and limits](#status-and-limits) lists that
 packet.
+
+An alias index proposes an entry of the original evidence table for one piece
+of function evidence that a caller retains.
+[The caller view](#the-caller-view) gives the records and the rules of
+aliases.
 
 Rules:
 
@@ -61,14 +74,14 @@ Rules:
 - The complete envelope must not exceed 64 MiB.
 - The two views together must not exceed the QDV1 byte limit.
 - The alias count must not exceed 100,000.
-- These limits are not increased budgets. The original limits of each profile
-  apply unchanged.
+- These limits raise no budget. The original limits of each profile apply
+  unchanged.
 - The scope must be 0, 1 or 2. The views and the aliases must match it as
   [Scopes](#scopes) states.
 - A QLV1 packet and a hierarchy bridge payload must not be accepted as an
-  unwrapped external request. An external QLV2 or QLV1 request is rejected.
-  No compatibility retry is permitted. Compatibility of QIRF1/2 artifacts is
-  a separate contract.
+  external request without an envelope. An external QLV2 or QLV1 request
+  is rejected. No compatibility retry is permitted. Compatibility of QIRF1/2
+  artifacts is a separate contract.
 
 > **Implementation note.** `Packet.read` in
 > `lean-kernel/Protocol/ExecutionView/Packet.lean` reads the envelope. Rust
@@ -86,7 +99,8 @@ Rules:
 
 ## Scopes
 
-The scope fixes the views and the aliases that an envelope carries.
+The scope says how much an envelope asks the native checker to compare. It
+therefore fixes the views and the aliases that the envelope carries.
 
 | Scope | Name | Graph view | Caller view | Aliases |
 | --- | --- | --- | --- | --- |
@@ -120,11 +134,15 @@ Rules:
   scopes 0 and 1, except `--hierarchy-control-pending`, which refuses scope 0.
   The standalone preparation and readout components permit only scope 0.
 - Alias indices are proposals, not evidence.
-- Execution requires both the immutable subject identity and an
-  execution-capable native scope. An inspection for identical bytes cannot
+- Execution requires two things: the immutable subject identity, and a native
+  scope that is capable of execution. An inspection for identical bytes cannot
   substitute.
 
 ## The native reply
+
+The native checker answers each request with one reply. A successful reply
+names the claim of the checker and the context in which it checked: the
+edition, the product version, the mode and the scope.
 
 Each of the twenty-one native modes replies with `qleisli.native-result 3`.
 A reply is text with one field on each line. A final newline is required. A
@@ -155,8 +173,8 @@ The claim and the payload depend on the mode:
 The five claims are distinct. `Mode.status` and `payload` in
 `lean-kernel/Protocol/NativeContext.lean` define this table.
 
-An error reply has three lines: the header, `error` and one of these
-rejection codes:
+An ordinary error reply has three lines: the header, `error` and one of
+these rejection codes:
 
 | Code | Rejection |
 | --- | --- |
@@ -169,26 +187,29 @@ rejection codes:
 | `clean_workspace`, `dirty_workspace` | A failed workspace restoration equation |
 | `invalid_ir` | Another rejection of the original payload by its checker |
 
-A restoration rejection of the internal mode `--openqasm-placement-check` can
-also carry the original Raw workspace interval. After `error` and
-`clean_workspace` or `dirty_workspace`, this located form contains the checked
+The internal mode `--openqasm-placement-check` has one longer error reply,
+the located form. When this mode rejects a workspace restoration, its reply
+can also carry the original Raw workspace interval. After `error` and
+`clean_workspace` or `dirty_workspace`, the located form contains the checked
 edition, the product, the mode, the execution scope, the zero-based Raw start
-and the positive operation count.
+and the positive operation count. The located form is a rejection all the
+same. Its extra fields serve diagnostics only.
 
 Rules:
 
-- An error reply contains only the header, `error`, the rejection code and the
-  final newline. It asserts no successfully checked context.
-- A consumer must match the edition, the product, the actual mode and the
-  requested scope before it interprets its own bounded payload. It must
+- An ordinary error reply contains only the header, `error`, the rejection
+  code and the final newline. It asserts no context that was checked
+  successfully.
+- Before a consumer interprets its own bounded payload, it must match the
+  edition, the product, the actual mode and the requested scope. It must
   consume that payload fully.
 - A consumer must reject an old reply. No compatibility retry is permitted.
-- A hierarchy finite-decoder error keeps its classification. A malformed or
-  noncanonical finite description is `format`, a capacity failure is `limit`
-  and a failed finite equation is `contract`.
-- A packet-wide rejection of `--openqasm-placement-check` keeps the ordinary
-  error framing.
-- The host uses a valid located form only for diagnostics. It returns a
+- An error from the finite decoder of a hierarchy mode keeps its
+  classification. A malformed or noncanonical finite description is `format`,
+  a capacity failure is `limit` and a failed finite equation is `contract`.
+- When `--openqasm-placement-check` rejects a whole packet, the reply keeps
+  the ordinary error framing.
+- The host uses a valid located form only for diagnostics. The host returns a
   rejection with no resources.
 
 > **Implementation note.** The Main adapter invokes one pure
@@ -202,6 +223,9 @@ Rules:
 
 ## QDV1 byte grammar
 
+QDV1 is a binary format with six kinds of value. Every view in this chapter
+is written in it.
+
 An encoding starts with the four ASCII bytes `QDV1`, followed by exactly one
 value. A value is one tag byte and its payload:
 
@@ -214,9 +238,10 @@ value. A value is one tag byte and its payload:
 | `04` | text | four-byte unsigned little-endian UTF-8 byte count, then those bytes |
 | `05` | ordered array | four-byte unsigned little-endian element count, then each complete value in order |
 
-A record is an array with an explicit record tag and a fixed field order that
-its profile supplies. The notation `tag(field, field)` in this chapter denotes
-such a record.
+The grammar has no separate kind of value for a record. A **record** is an
+array with an explicit record tag and a fixed order of fields. The profile of
+the record supplies that order. The notation `tag(field, field)` in this
+chapter denotes such a record.
 
 Rules:
 
@@ -227,20 +252,20 @@ Rules:
 - The natural range is `0..18446744073709551615`. A larger value is rejected,
   never truncated.
 - Text preserves its decoded Unicode scalar sequence as UTF-8. There is no
-  Unicode normalization. A byte count concerns UTF-8 bytes, not character
-  counts.
+  Unicode normalization. A byte count counts UTF-8 bytes, not characters.
 - A valid surrogate pair in a source JSON string and the same literal non-BMP
   character yield the same decoded text. A replacement character is
-  different. An unpaired surrogate is not an admissible Rust string. A
-  conservative host parser refusal does not demonstrate execution divergence.
+  different. An unpaired surrogate is not an admissible Rust string. When a
+  host parser refuses an input conservatively, that refusal does not
+  demonstrate that execution diverges.
 - The encoder bounds a description to 67,108,864 bytes, including its header.
 - The root has depth zero. Depth 128 is allowed, and depth 129 is rejected.
 - A view frame must hold exactly one bounded value, with no trailing bytes.
   The native checker rejects a malformed view frame with `format`.
-- A capacity failure returns no encoding and cannot authorize a view.
+- A capacity failure returns no encoding, and it cannot authorize a view.
 
-For example, null is `5144563100`, false is `5144563101`, and zero is
-`51445631030000000000000000`. The string `𝄞` is
+For example, in hexadecimal, null is `5144563100`, false is `5144563101`, and
+zero is `51445631030000000000000000`. The string `𝄞` is
 `514456310404000000f09d849e`.
 
 > **Implementation note.** The framing reader checks exactly one bounded
@@ -249,10 +274,12 @@ For example, null is `5144563100`, false is `5144563101`, and zero is
 
 ## Typed finite records
 
+The typed finite records describe a finite program and each of its
+operations. The views later in this chapter are built from them.
+
 Every row below denotes an array that begins with the quoted tag, followed by
-the fields in the stated order. These records are data descriptions. They do
-not assert that the described data satisfies ownership, effects or a semantic
-contract.
+the fields in the stated order. These records describe data. They do not
+assert that the data satisfies ownership, effects or a semantic contract.
 
 | Tag | Fields after the tag |
 | --- | --- |
@@ -295,13 +322,16 @@ Rules:
 - IDs, widths, axis indices, table entries, gate codes and phase codes are
   naturals.
 - A list is an ordered array. A boolean is a boolean value.
-- The derived effect and the final live ports require separate binding in the
-  complete production profile. The `program` record does not supply that
+- The `program` record supplies neither the derived effect nor the final live
+  ports. The complete production profile requires a separate binding of that
   metadata. The [`finite-graph`](#the-finite-graph-view) record carries both.
 
 ### Circuit steps and protected uses
 
-Circuit steps use `step(controls, action)`, with each control described as
+Several records above hold lists of circuit steps, unitary steps or protected
+uses. This section gives the records inside those lists.
+
+A circuit step is `step(controls, action)`. Each of its controls is
 `control(index, when-one)`. The actions are `hadamard(target)`,
 `monomial(indices, permutation, phases)` and
 `contract(indices, original-evidence-table-index, adjoint)`.
@@ -309,24 +339,28 @@ Circuit steps use `step(controls, action)`, with each control described as
 Unitary steps inside a quantum conditional are `gate(gate-code, target-index)`,
 `cnot(control-index, target-index)`,
 `toffoli(first-index, second-index, target-index)` and `phase(phase-code)`.
-Their enclosing field distinguishes them from raw operations with similarly
-named tags.
+Some raw operations have similarly named tags. The field that encloses a step
+distinguishes it from such a raw operation.
 
 Protected uses are `protected-gate(bit, gate-code)`,
 `target-gate(controls, target-index, gate-code)` and
 `protected-phase(controls, phase-code)`. A protected bit is
-`protected-bit(region, index)`, with source region zero and ancilla region one.
-Each protected control is `protected-control(bit, when-one)`.
+`protected-bit(region, index)`. Region zero is the source, and region one is
+the ancilla. Each protected control is `protected-control(bit, when-one)`.
 
 ### Bases, matrices and exact scalars
+
+These records describe a basis, a matrix and the exact scalars that a matrix
+holds.
 
 A basis is its exact preorder list of `unit()`, `bit()`, `bits(width)`,
 `pair()` and `tuple(arity)` records. This list preserves zero-width fields,
 atomic registers and immediate tuple arity.
 
-A matrix is `matrix(rows, cols, entries)`. Each row-major entry is a
-four-element array of `dyadic(numerator-text, exponent)` records in `a,b,c,d`
-order. The four records are the ordered dyadic coefficients of
+A matrix is `matrix(rows, cols, entries)`, with its entries in row-major
+order. Each entry is an exact scalar: a four-element array of
+`dyadic(numerator-text, exponent)` records in `a,b,c,d` order. The four
+records are the ordered dyadic coefficients of
 `a + b sqrt(2) + i(c + d sqrt(2))`.
 
 Rules:
@@ -334,16 +368,18 @@ Rules:
 - No shape or coefficient is inferred from width. Matrix dimensions and
   row-major entry order are explicit.
 - An exact scalar description retains all four coefficients.
-- Each coefficient has a canonical signed decimal numerator and its
-  nonnegative power-of-two denominator exponent.
+- Each coefficient has a numerator and an exponent. The numerator is a
+  canonical signed decimal. The exponent is nonnegative, and it is the power
+  of two of the denominator.
 - Zero has exponent zero. Negative zero, leading zeroes and reducible nonzero
   dyadics are not canonical.
-- Exact phase data is bound before numerical interpretation. Numerical runtime
-  values are not a replacement for exact coefficients.
+- Exact phase data is bound before it is interpreted numerically. Numerical
+  runtime values do not replace exact coefficients.
 
 ### Function evidence
 
-The retained evidence of one function is the record
+The host retains evidence for a function, and a view describes that evidence
+as one record. The retained evidence of one function is the record
 `function-evidence(signature, implementation, specification, identity, circuit, meaning, depth, expanded-steps)`.
 The identity is `identity(implementation-name, specification-name, sources)`
 with `source(path, text)` records. The circuit is `circuit(basis, steps)`.
@@ -351,7 +387,8 @@ with `source(path, text)` records. The circuit is `circuit(basis, steps)`.
 Rules:
 
 - Dependency indices identify original graph entries.
-- Process addresses serve only as private lookup keys and are never encoded.
+- Process addresses serve only as private lookup keys. They are never
+  encoded.
 - A missing or ambiguous mapping fails before any bytes are returned.
 
 > **Implementation note.** The Rust retained-evidence walker reads the fields
@@ -365,6 +402,10 @@ Rules:
 > the same runtime objects for execution.
 
 ## The finite graph view
+
+The finite graph view describes what the host retains for a finite program:
+its tables of programs and function evidence, and the root that execution
+runs.
 
 The mode `--qirf-native` compares the record `finite-graph` in scopes 1 and 2.
 The record has eight fields after its tag:
@@ -384,14 +425,17 @@ Rules:
 
 - The root is described separately from the program table, so that a
   different runtime root cannot borrow the comparison of the table.
-- Output ports follow the return order of the program, including zero-width
-  owners. The live-store insertion order is not their order.
-- The derived effect is observing if any observing operation occurred,
-  otherwise isometry if allocation or a width change required it, otherwise
-  unitary. A conservative declared `observe` effect may therefore have a
-  derived unitary effect. Both fields are bound.
-- Full-graph dependency references use original artifact indices, including
-  when the successful checking order differs from table order.
+- Output ports follow the order in which the program returns them, and they
+  include zero-width owners. The order in which the live store inserted them
+  is not their order.
+- The derived effect is the first of these that applies. It is observing if
+  any observing operation occurred. It is isometry if allocation or a width
+  change required it. Otherwise it is unitary. A conservative declared
+  `observe` effect may therefore have a derived unitary effect. Both fields
+  are bound.
+- A dependency reference in the full graph uses the original artifact index.
+  This holds even when the order of successful checking differs from the
+  table order.
 
 > **Implementation note.** The native checker derives the effect from its
 > checked observation state. The walker reads fresh graph receipts produced by
@@ -402,6 +446,9 @@ Rules:
 
 ## The contract view
 
+The contract view describes a contract request together with the graphs that
+the request concerns.
+
 The mode `--qirf-contract` compares the record `native-contract` in scopes 1
 and 2. The record has three fields after its tag:
 
@@ -411,13 +458,13 @@ and 2. The record has three fields after its tag:
 | 2 | The actual `finite-graph` |
 | 3 | An expected `finite-graph` for instruments, or `null` for the other profiles |
 
-Both graphs include their original program and evidence tables, selected
-runtime root, exact cached function data, ordered interfaces, sources and
-derived metadata.
+Each of the two graphs includes its original program and evidence tables, its
+selected runtime root, its exact cached function data, its ordered
+interfaces, its sources and its derived metadata.
 
 The typed request is one of six obligation records: `encoded`, `leaf`,
-`pure-leaf`, `control`, `control-owners` or `instrument`. The other rows of
-this table are their components:
+`pure-leaf`, `control`, `control-owners` or `instrument`. The table below
+lists these six records. Its other rows are their components:
 
 | Tag | Fields after the tag |
 | --- | --- |
@@ -436,15 +483,15 @@ Instrument result atoms are `unit()`, `bit()`, `bits(width)`, `quantum(basis)`,
 
 Rules:
 
-- Quantum owners and classical values are distinct, including at zero width.
+- A quantum owner and a classical value are distinct, even at zero width.
 - The actual and the expected signatures are described separately.
 - Identity preserves names, source order and complete decoded strings.
 - The independently decoded expected artifact and the fresh checked roots
   belong in the complete instrument profile. The obligation record alone does
   not bind them.
-- The expected graph is taken from the independently decoded and freshly
-  checked reference of the instrument, even when its owner or wire identities
-  differ from the actual graph.
+- The expected graph comes from the reference of the instrument, which is
+  decoded independently and checked freshly. This holds even when the owner
+  or wire identities of the reference differ from those of the actual graph.
 - Neither side serializes the original request JSON as the execution view.
 
 > **Implementation note.** The common native-contract adapter retains its
@@ -477,6 +524,12 @@ Rules:
 
 ## The caller view
 
+The caller view describes what a caller actually holds: its root program, its
+optional interface and the function evidence that it retains. An alias pairs
+one retained piece of function evidence with the index of an entry in the
+original evidence table. The host proposes that index, and the native checker
+compares the alias against the entry.
+
 In scope 2, the modes `--qirf-native` and `--qirf-contract` also compare the
 caller view. The record is
 `caller-origin(interface-or-null, actual-root-program, aliases)`. Each alias is
@@ -486,19 +539,19 @@ specifies. The envelope carries the proposed index of each alias, in the order
 of the aliases.
 
 The caller-circuit walker describes the supplied actual `Circuit` as
-`circuit(basis, steps)`. It retains literal controls, phase tables, axis order
-and actual dependency references mapped to original indices. It does not use
-the synthetic single-action wrapper constructed by the encoded-contract
-checker. The QLV3 caller scope also binds the actual circuit steps and
-retained caches.
+`circuit(basis, steps)`. It retains literal controls, phase tables and axis
+order. It also retains the actual dependency references, mapped to original
+indices. It does not use the synthetic single-action wrapper that the
+encoded-contract checker constructs. The QLV3 caller scope also binds the
+actual circuit steps and retained caches.
 
 Rules:
 
-- An index is proposed by the canonical snapshot map of the original encoder.
+- The canonical snapshot map of the original encoder proposes each index.
   That lookup is not evidence that the actual body, matrix, circuit or
   descendants equal the fresh result of the native checker.
-- Repeated indices are permitted for distinct actual caller aliases. A missing
-  receipt is refused.
+- Distinct actual caller aliases are permitted to carry the same index. A
+  missing receipt is refused.
 - Repeated references to one Arc retain one entry. Distinct Arcs retain
   separate entries even when their snapshot keys are equal.
 - Private addresses identify objects during discovery and are never encoded.
@@ -510,8 +563,8 @@ Rules:
   divergent data are distinct refusals.
 
 > **Implementation note.** The caller collector retains the supplied root
-> program, its optional interface and every distinct actual
-> `Arc<FunctionEvidence>` reachable through implementation bodies,
+> program and its optional interface. It also retains every distinct actual
+> `Arc<FunctionEvidence>` that is reachable through implementation bodies,
 > specification bodies and cached circuit steps. It walks both complete
 > classical branch arms and both certified use/logical step lists. One shared
 > discovery counter charges operations, circuit steps and distinct Arcs
@@ -551,7 +604,9 @@ Rules:
 
 ## The hierarchy plan view
 
-The six hierarchy modes compare the record `hierarchy-plan` in scope 1.
+The hierarchy plan view describes the plan that the hierarchy runtime
+executes. The six hierarchy modes compare the record `hierarchy-plan` in
+scope 1. Each mode reads its own kind of original payload:
 
 | Mode | Original payload |
 | --- | --- |
@@ -586,11 +641,12 @@ compare a `pure` record.
 
 Rules:
 
-- All definitions participate, including unused and zero-repeat children.
-- A structural operation becomes the actual coordinate permutation consumed
-  by the runtime.
-- Literal phase parameters are retained before numerical evaluation;
-  `j = 9, k = 3` is not replaced by `j = 1, k = 3`.
+- All definitions participate. This includes a child that nothing uses and a
+  child that is repeated zero times.
+- A structural operation becomes the actual coordinate permutation that the
+  runtime consumes.
+- Literal phase parameters are retained as they stand before numerical
+  evaluation. For example, `j = 9, k = 3` is not replaced by `j = 1, k = 3`.
 - Preparation positions use the input axes of the circuit. Outcome and
   residual positions use its output axes.
 - Measurement order and pack order are separate fields.
@@ -603,8 +659,9 @@ Rules:
   `--hierarchy-control-pending` mode requires an execution view. It checks
   these obligations in the same invocation as composition and plan
   comparison. A successful response identifies that mode explicitly.
-- Inspection without an execution comparison is distinct from an
-  execution-capable result, so unsupported execution cannot narrow inspection.
+- An inspection without an execution comparison is a different result from
+  one that is capable of execution. Unsupported execution therefore cannot
+  narrow inspection.
 
 > **Implementation note.** Each call obtains one fresh structural result,
 > reconstructs the actual finite leaves of that result and checks its
@@ -659,8 +716,10 @@ Rules:
 
 ## The carrier view
 
-The internal mode `--carrier-pure-check` requires execution scope. It compares
-the QDV1 record `finite-carrier-pure-v1`, which has four fields after its tag:
+The carrier view describes a graph together with two interfaces and one
+logical matrix. The internal mode `--carrier-pure-check` requires execution
+scope. It compares the QDV1 record `finite-carrier-pure-v1`, which has four
+fields after its tag:
 
 | Field | Content |
 | --- | --- |
@@ -671,16 +730,17 @@ the QDV1 record `finite-carrier-pure-v1`, which has four fields after its tag:
 
 Rules:
 
-- The private component result of this mode grants no ordinary source
-  execution and no source-preservation claim. The
+- The result of this mode is a private component result. It grants no
+  ordinary source execution and no source-preservation claim. The
   [carrier boundary](production-boundary.md) states the checked equations and
   the open obligations.
 
 ## The ordinary root view
 
-The internal mode `--ordinary-root-check` requires execution scope. It
-compares the record `finite-ordinary-root-v2`, which contains these fields
-after its tag, in order:
+The ordinary root view describes one selected function of a graph, with its
+inputs and its result. The internal mode `--ordinary-root-check` requires
+execution scope. It compares the record `finite-ordinary-root-v2`, which
+contains these fields after its tag, in order:
 
 | Field | Content |
 | --- | --- |
@@ -699,8 +759,8 @@ Rules:
 
 - An inspection packet, a caller packet or an old-mode retry cannot authorize
   this mode.
-- This ordinary input/result checking supplies no original-body or numerical
-  runtime preservation theorem. See the
+- This checking of ordinary inputs and results supplies no preservation
+  theorem for the original body or for the numerical runtime. See the
   [ordinary-result boundary](production-boundary.md#ordinary-inputresult-requests).
 
 > **Implementation note.** The native checker freshly reads the original
@@ -710,6 +770,9 @@ Rules:
 > retained Rust program keeps the same graph and typed request objects.
 
 ## The engineering OpenQASM view
+
+The engineering OpenQASM view describes a literal OpenQASM target together
+with the ideal graph that the target is compared with.
 
 The separate mode `--engineering-openqasm-check` accepts execution scope only.
 Its original QLV1 body is the literal canonical OpenQASM byte array. Its
@@ -736,8 +799,8 @@ Rules:
 - A stale word, graph, full type, identity or budget is refused, even when the
   submitted original is individually valid.
 - The private report authorizes only the declared engineering inequality. It
-  does not authorize simulation, source/export preservation, control, exact
-  cleanup or resources, including at epsilon zero.
+  authorizes none of these, even at epsilon zero: simulation, source/export
+  preservation, control, exact cleanup or resources.
 - The existing work and size limits of the envelope and the view apply. The
   target profile separately limits bytes and gates.
 
@@ -751,6 +814,10 @@ Rules:
 
 ## The named-arm qmatch component view, version 4
 
+This view serves an internal component that checks one source function whose
+`qmatch` selections use named arms. The request names the function, the
+position of each source event and the sites of the selections.
+
 The internal mode `--qmatch-source-check` reads a strict internal
 `qleisli.qmatch-request` version 4 with profile
 `finite-source-qmatch-context-v4`. This section specifies version 4 only.
@@ -759,7 +826,7 @@ that this chapter does not specify.
 
 ### The version-4 request
 
-The exact request keys are `format`, `version`, `profile`, `source`,
+The request has exactly these keys: `format`, `version`, `profile`, `source`,
 `positions` and `sites`. The first three hold the values above.
 
 | Key | Content |
@@ -768,10 +835,10 @@ The exact request keys are `format`, `version`, `profile`, `source`,
 | `positions` | One literal interval for every supported source event |
 | `sites` | 1–128 ordered sites. Each contains `attached`, `required`, `position` and `arms`. |
 
-Both interfaces of a site use the existing complete carrier codec. `position`
-contains the original UTF-8 byte `offset` and the literal Raw operation
-`start` and `count`. Each arm contains an actual original function-`evidence`
-index and a separate `controlled` program index.
+The two interfaces of a site, `attached` and `required`, use the existing
+complete carrier codec. `position` contains the original UTF-8 byte `offset`
+and the literal Raw operation `start` and `count`. Each arm contains an actual
+original function-`evidence` index and a separate `controlled` program index.
 
 Rules:
 
@@ -779,22 +846,22 @@ Rules:
 - Indices are u32, names contain 1–4096 UTF-8 bytes and the arm list contains
   1–64 entries.
 - The request contains no logical matrix, label list, graph roots or success
-  flag. Fresh original-source reads determine labels, names, types, effects
-  and graph subjects. The shared Raw/nominal equations check the actual
-  bodies.
+  flag. Labels, names, types, effects and graph subjects are determined by
+  reading the original source afresh. The shared Raw/nominal equations check
+  the actual bodies.
 - Each pair of interfaces describes its selected pair in selector/target
   order. The graph retains the parameter and result order of the complete
   original function, including additional zero-width owners. Fresh
   original-source moves bind those two orders; equal widths or an arbitrary
   interval cannot replace that judgment.
-- `positions` contains one literal interval for every supported source event,
-  including direct `h`, `global_phase_eighth` and supported `phase[j,k]`
+- `positions` contains one literal interval for every supported source event.
+  This includes direct `h`, `global_phase_eighth` and supported `phase[j,k]`
   calls and every selection.
 - There is no separate 128-event cap on this array. The existing byte and work
   limits apply, and the selection count is bounded by 128.
-- Every original event must appear exactly once in evaluation order. Literal
-  intervals cover the complete Raw operation list without overlap or gaps.
-  Each uses its actual surrounding owner frame.
+- Every original event must appear exactly once in evaluation order. The
+  literal intervals cover the complete Raw operation list, with no overlap
+  and no gap. Each interval uses its actual surrounding owner frame.
 - Primitive intervals check the exact specified action. Selections use fresh
   arm/control evidence and exact sector equations. Cancellation between
   intervals cannot hide a wrong local operator.
@@ -802,21 +869,25 @@ Rules:
 
 ### Source events and coordinates
 
+These rules say how the source events of the function are read from the
+original source, and which source coordinate each event has.
+
 Rules:
 
 - Static parameters are read from original tokens and the actual lexical
   static environment. The request supplies neither their values nor a success
   receipt.
-- Body-local static initializers are checked even when unused and emit no Raw
-  interval of their own.
+- A static initializer that is local to the body is checked even when it is
+  unused. It emits no Raw interval of its own.
 - Each phase call retains its distinct literal interval after evaluation of
   its runtime argument.
-- Arguments are traversed before their enclosing call. The call coordinate is
-  the first callee token, while a selection uses its `qmatch` keyword.
-  Grouping parentheses and comments do not replace either coordinate.
+- Arguments are traversed before their enclosing call. The coordinate of a
+  call is its first callee token, and the coordinate of a selection is its
+  `qmatch` keyword. Grouping parentheses and comments do not replace either
+  coordinate.
 - Primitive resolution checks original lexical/module bindings and, when
-  enabled, the original `std::prelude` row. A producer-supplied primitive name
-  is insufficient.
+  enabled, the original `std::prelude` row. A primitive name that the
+  producer supplies is not sufficient.
 
 ### The version-4 view record
 
@@ -859,24 +930,25 @@ Rules:
 
 ## Walkers and the comparison
 
-QLV3 connects the walkers and the pure Lean gates to the production native
-entry points. The rules below apply to every profile.
+This section says what data a walker reads and what the comparison gate does
+with the two views. QLV3 connects the walkers and the pure Lean gates to the
+production native entry points. The rules below apply to every profile.
 
 Rules:
 
-- A profile walker must inspect actual retained typed data independently of
-  the existing QIRF JSON encoder and hierarchy bridge writer. It must not
-  merely copy original JSON fields or serialize a surrogate view that
-  execution discards.
-- The production gate compares the submitted actual-view encoding with the
-  decoded and derived view of the native checker, inside Lean. A well-framed
-  mismatch rejects with `decoded_view`. Missing or malformed data and
-  unsupported protocol versions reject separately.
+- A profile walker must inspect the typed data that is actually retained,
+  independently of the existing QIRF JSON encoder and of the hierarchy bridge
+  writer. It must not merely copy original JSON fields or serialize a
+  surrogate view that execution discards.
+- Inside Lean, the production gate compares two things: the submitted
+  encoding of the actual view, and the view that the native checker decodes
+  and derives. A well-framed mismatch rejects with `decoded_view`. Missing or
+  malformed data and unsupported protocol versions reject separately.
 - The primitive byte grammar grants no authority by itself. The typed profile
   walkers and the fresh comparison gates are required. Encoding success is
   never a fallback acceptance decision.
-- Any private inspection needed to construct a candidate must not expose an
-  accepted execution handle.
+- Constructing a candidate can need a private inspection. Such an inspection
+  must not expose an accepted execution handle.
 - After successful comparison, execution must retain the same immutable
   decoded/compiled data, rather than decode again.
 - Tests must mutate actual view fields while the original artifact stays
@@ -909,6 +981,8 @@ The record schemas and the shared vectors of the walkers must cover:
 
 ### Limits
 
+This table collects the limits that the sections above state.
+
 | Limit | Value |
 | --- | --- |
 | Complete QLV3 envelope | 64 MiB |
@@ -922,16 +996,17 @@ The record schemas and the shared vectors of the walkers must cover:
 | Arms of a version-4 qmatch site | 1–64 |
 | UTF-8 bytes of a version-4 qmatch name | 1–4096 |
 
-- The QDV1 limits are transport capacities, not quantitative program resource
-  certificates. The caller limits are host transport bounds, not quantitative
-  quantum resource certificates.
-- The separately configured repository fixture and pull-request budgets are
-  unchanged.
+- The QDV1 limits are capacities of the transport. They do not certify the
+  quantitative resources of a program. The caller limits are bounds of the
+  host transport. They do not certify quantitative quantum resources.
+- The budgets for repository fixtures and for pull requests are configured
+  separately. They are unchanged.
 
 ### Formats that this chapter does not specify
 
 The native checker compares each of these views. This chapter does not specify
-their records. The named file of `lean-kernel/Protocol/` defines each one.
+their records. For each one, the table names the file of
+`lean-kernel/Protocol/` that defines it.
 
 | Mode | View or packet | Lean definition |
 | --- | --- | --- |
@@ -963,9 +1038,13 @@ proof scope of the
 
 ### Binding theorems
 
-- `check_binding` of the finite gate retains the original packet/body/request,
-  the actual decoded graph and checking computations, and equality of the
-  candidate with the exact encoding of the view of that result.
+A binding theorem ties the result of a gate to the data and the computations
+that produced it. The Lean proofs below cover these gates.
+
+- `check_binding` of the finite gate retains three things. The first is the
+  original packet/body/request. The second is the actual decoded graph and
+  checking computations. The third is the equality of the candidate with the
+  exact encoding of the view of that result.
   `Binding.original` transports that success to the existing ordinary packet
   acceptance witness before view derivation. `check_ownershipSafe` and
   `check_scopeSafe` concern the same original selected root. View derivation
@@ -973,16 +1052,16 @@ proof scope of the
   whole-gate work or serializer/runtime correctness. This is technical
   preservation support, not an added admitted constitutional guarantee.
 - For the retained contract stages, universal Lean equalities preserve
-  successes, errors and the work left, and stage binding theorems identify the
+  successes, errors and the work left. Stage binding theorems identify the
   retained core results.
 - `NativeContract.checkRetained_bound` additionally ties every returned field
   to the original packet body/request, UTF-8 text, parsed JSON, decoded
   artifact/order and the exact returned request-stage result. Its work state
   runs continuously from artifact decoding to the existing six-kind dispatch.
-  This output-field binding is separate from `checkRetained_acceptance`, whose
-  original existential acceptance witness does not by itself identify every
-  field of the returned record. Neither theorem establishes an execution-view
-  match or runtime preservation.
+  This binding of output fields is separate from `checkRetained_acceptance`.
+  That theorem has the original existential acceptance witness, which does
+  not by itself identify every field of the returned record. Neither theorem
+  establishes an execution-view match or runtime preservation.
 - The binding theorem of `CheckedContract.check` retains the exact returned
   record, original-packet field binding, comparison and continuous work
   states.
@@ -990,9 +1069,9 @@ proof scope of the
   slot at the supplied index and the derivation of its function description.
 - The binding proofs of `CheckedCaller.finite` and `CheckedCaller.contract`
   preserve the actual base computation, caller derivation, compared encoding
-  and continuous work states. Original-byte and ownership/scope binding, or
-  native-contract returned-field binding, is inherited from that same base
-  execution.
+  and continuous work states. The binding of original bytes and of
+  ownership/scope, or the binding of the fields that the native contract
+  returns, is inherited from that same base execution.
 - `HierarchyView.reconstructLeaf_bound` connects each returned matrix to the
   original description decoding and original-body check in that computation.
   `checkInspect_binding` retains the original bridge, typed artifact,
@@ -1004,17 +1083,20 @@ proof scope of the
 
 ### Tests and fixtures
 
+The items below say what each set of tests and fixtures checks.
+
 - The [shared vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/canonical-vectors.json)
   fix type distinctions, unsigned width, endian order, nested array order,
   NUL, non-BMP/replacement characters and composed/decomposed text.
 - The [finite vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/finite-walker-vectors.json)
-  include three retained observing source roots, 21 of the 22 Raw constructors
-  (every constructor except `StructuralCompute`), both branch arms, zero-width
-  owners, exact type trees and rectangular matrices. The combined
-  all-constructors row is intentionally transport data, not an accepted
-  quantum program. Rust and Lean read their own typed data and compare against
-  these independently specified descriptions. This checks the walkers, not
-  execution binding or a source/runtime preservation theorem.
+  include three retained observing source roots and 21 of the 22 Raw
+  constructors: every constructor except `StructuralCompute`. They also
+  include both branch arms, zero-width owners, exact type trees and
+  rectangular matrices. The combined all-constructors row is intentionally
+  transport data, not an accepted quantum program. Rust and Lean read their
+  own typed data and compare against these independently specified
+  descriptions. This checks the walkers. It does not check execution binding
+  or a source/runtime preservation theorem.
 - The [function-cache vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/function-cache-vectors.json)
   add ten independently specified full retained-evidence descriptions. They
   cover Unit ownership, H–T–H exact coefficients, output permutations, branch
@@ -1024,8 +1106,8 @@ proof scope of the
   its own cache view.
 - Dependency zero in the last function-cache row identifies the first corpus
   entry. The test remaps actual retained Arc references to that explicit
-  corpus index. This test indexing is separate from the original-index
-  production graph mapping.
+  corpus index. This indexing belongs to the test. It is separate from the
+  production graph mapping, which uses original indices.
 - The [graph vectors](https://github.com/MGYamada/Qleisli/blob/51be9c8417c7ff7811d073c08bf43ec2ab17aa4d/tests/fixtures/verification_v030/execution-view-binding/finite-graph-vectors.json)
   retain three original observing sentinels and add Unit interfaces, ordered
   mixed-width output ports, conservative effects and an evidence table whose
@@ -1096,10 +1178,11 @@ proof scope of the
   This is bounded cross-implementation evidence; the generated graph/request
   structures are not independent source semantics.
 - The shared runner of the pure finite gate checks seven independently valid
-  original artifacts against their correct views and 71 divergent candidates,
-  including every graph field and retained evidence-cache fields. It
-  separately covers malformed frames, native work refusal and an original
-  optional request. These are tests of the pure comparison gate.
+  original artifacts against their correct views and against 71 divergent
+  candidates. The candidates include every graph field and retained
+  evidence-cache fields. The runner separately covers malformed frames,
+  native work refusal and an original optional request. These are tests of
+  the pure comparison gate.
 - The QLV3 native tests separately check the finite, complete contract and
   caller paths and five of the six hierarchy modes: every hierarchy mode
   except `--hierarchy-control-pending`. They include valid original inputs
@@ -1113,13 +1196,17 @@ proof scope of the
 
 ### What the comparison does not establish
 
-- The gate checks every emitted alias. Correspondence of the collector with
-  all objects actually consumed by execution is a runtime-preservation
-  assumption. The binding proofs do not prove the Rust collector or admit a
-  constitutional guarantee.
-- Faithfulness of Rust view serialization/materialization, native compilation,
-  IO and runtime, numerical interpretation and source lowering are explicit
-  proof duties.
+A successful comparison shows that two descriptions are the same bytes. It
+does not show the items below.
+
+- The gate checks every alias that the collector emits. That the collector
+  corresponds with all objects that execution actually consumes is an
+  assumption of runtime preservation. The binding proofs do not prove the
+  Rust collector or admit a constitutional guarantee.
+- The comparison does not prove that these are faithful: Rust view
+  serialization/materialization, native compilation, IO and runtime,
+  numerical interpretation and source lowering. Each is an explicit proof
+  duty.
 - Hierarchy bridge comparison alone does not prove correspondence to the
   original external JSON or source.
 - The ordinary ownership and classical-scope guarantees must stay connected

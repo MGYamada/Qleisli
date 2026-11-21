@@ -1,9 +1,13 @@
 # Coherent basis maps
 
 A **coherent basis map** applies a function on basis labels to one quantum
-owner. The expression `basis q as p { e }` consumes a `Q<A>` owner, sends each
-basis state `|a>` to `|f(a)>` with coefficient `+1`, and returns a `Q<B>`
-owner. The function `f` must be injective.
+owner. A program uses it to compute on the labels of a quantum state, for
+example to flip a bit or to copy a label, without a measurement.
+
+The expression `basis q as p { e }` consumes a `Q<A>` owner and returns a
+`Q<B>` owner. It sends each basis state `|a>` to `|f(a)>` with coefficient
+`+1`, where `f` is the function that the body `e` computes. The function `f`
+must be injective: no two inputs get the same label.
 
 This chapter is subordinate to the [authority hierarchy](authority.md). It
 uses the [ordinary types and quantum-owner rules](type-model.md).
@@ -20,7 +24,8 @@ this separator and an identifier elsewhere.
 
 ## The input
 
-The input is an existing quantum input expression.
+The input supplies the owner that the map transforms. The input is an existing
+quantum input expression.
 
 Rules:
 
@@ -28,15 +33,16 @@ Rules:
   owner, and the checker joins nothing implicitly. An input with another owner
   shape is a type error.
 - The input evaluates completely, and once, before the binder is bound.
-- The input may contain an ordinary call or another coherent map. Its effects
-  and its owner use are checked before this map.
+- The input may contain an ordinary call or another coherent map. The checker
+  checks its effects and its use of owners before this map.
 - The map consumes the input owner once and returns one `Q<B>` owner. Using
   the old binding again is an ownership error.
 
 ## The binder
 
-The binder is a pattern over the ordinary basis tree `A`. It uses the existing
-name, wildcard, Unit and ordered tuple forms.
+The binder gives names to the parts of an input label, so that the body can
+use them. It is a pattern over the ordinary basis tree `A`. It uses the
+existing pattern forms: a name, a wildcard, Unit and an ordered tuple.
 
 Rules:
 
@@ -50,7 +56,9 @@ Rules:
 
 ## The body
 
-The braces hold one `BasisExpr`. They do not hold an ordinary block.
+The body computes the output label from the labels that the binder binds. The
+braces hold one `BasisExpr`. They do not hold an ordinary block. A `BasisExpr`
+has one of these forms:
 
 | Form | Meaning |
 | --- | --- |
@@ -74,13 +82,14 @@ measured Bits.
 
 Rules:
 
-- A call must name a declared `classical fn` and must match its argument-list
-  arity and types. A call of an ordinary or a measuring function is rejected,
-  because that function is not a classical function.
-- `empty_bits()` is the nullary language primitive constructor. It needs no
-  import, and it introduces no quantum owner. The checker requires its resolved
-  primitive identity and its checked signature, so an ordinary function with
-  the same spelling gains no special permission.
+- A call must name a declared `classical fn`. It must match the arity and the
+  types of that function's argument list. A call of an ordinary or a measuring
+  function is rejected, because that function is not a classical function.
+- `empty_bits()` is the language primitive constructor that takes no argument.
+  It needs no import, and it introduces no quantum owner. The checker requires
+  the resolved identity of the primitive and its checked signature. An
+  ordinary function with the same spelling therefore gains no special
+  permission.
 - A coordinate read `word[k]` must use a literal `k` with `k < n`, as the
   ordinary `Bits<n>` rule requires.
 - The body must not call any other quantum primitive.
@@ -91,13 +100,14 @@ Rules:
   quantum owner, even an immutable one. An outer value in the body is unbound.
 - Declared classical functions, and the static premises that their checking
   needs, keep their normal resolution and dependency checks. A retained static
-  premise is not an outer runtime-value capture.
+  premise does not count as a capture of an outer runtime value.
 - The body may nest to 64 levels.
 
 ## Meaning
 
-For fixed valid static premises, the body denotes a total ordinary function
-`f: A -> B`. The map acts linearly:
+This section states what the map does to a quantum state. For fixed valid
+static premises, the body denotes a total ordinary function `f: A -> B`. The
+map applies `f` to the label of each basis state and acts linearly:
 
 ```text
 V_f |a> = |f(a)>
@@ -121,7 +131,8 @@ Rules:
 
 ## Effects
 
-Injectivity makes the map an isometry. A bijection between equal finite
+This section gives the effect that the checker assigns to a coherent basis
+map. Injectivity makes the map an isometry. A bijection between equal finite
 domains is unitary. A map into a larger basis space has the Isometry effect.
 
 Rules:
@@ -129,7 +140,8 @@ Rules:
 - The effect of the expression includes every operation that the input
   expression performs.
 - The checker records an injectivity obligation. It determines the effect
-  conservatively from the available basis and width premises.
+  conservatively from the basis premises and the width premises that are
+  available.
 - Equal width is an effect fact. It is not evidence of injectivity.
 - An annotation, a favourable example, a runtime test or a name must not
   replace an unresolved check.
@@ -165,8 +177,8 @@ unmeasured quantum input, and `pure 0` does not prepare one.
 
 The Unit case has the same contract. `basis q as () { () }` has coefficient
 `+1` on the one-dimensional basis and returns a `Q<Unit>` owner. It preserves
-any scalar phase already on `q`. That owner cannot disappear because its
-physical width is zero.
+any scalar phase already on `q`. A physical width of zero does not let that
+owner disappear.
 
 ## Removed `do` and `pure` forms
 
@@ -187,9 +199,10 @@ Rules:
 - A rewrite cannot repair a noninjective body, an outer capture, owner reuse or
   an unsupported concrete profile.
 - The parser rejects both words. Its message gives the `basis q as p { e }`
-  form and states that the form is a coherent basis map, that it is neither a
-  monadic bind nor a measurement, and that no `pure` preparation operation
-  exists. The message must not suggest that an old spelling is accepted.
+  form. The message states that the form is a coherent basis map and that it
+  is neither a monadic bind nor a measurement. It also states that no `pure`
+  preparation operation exists. The message must not suggest that an old
+  spelling is accepted.
 
 ## Diagnostics
 
@@ -212,9 +225,9 @@ codes of each route.
 
 ## Status and limits
 
-Both finite loading and selected loading parse the form into the same
-`CoherentLift` syntax tree and apply the same complete source judgment. The
-profiles differ in the maps that they lower:
+Finite loading and selected loading treat the source form alike. Both parse
+it into the same `CoherentLift` syntax tree, and both apply the same complete
+source judgment. The profiles differ in the maps that they lower:
 
 | Profile | Coherent basis maps that it lowers |
 | --- | --- |
@@ -224,9 +237,9 @@ profiles differ in the maps that they lower:
 
 Limits that apply to these profiles:
 
-- Selected elaboration retains the original binder, use-site and declaration
-  identities. It evaluates the complete bounded label domain, including closed
-  classical helpers.
+- Selected elaboration retains the original identities of the binder, of the
+  use site and of the declaration. It evaluates the complete bounded label
+  domain, including closed classical helpers.
 - Selected Raw lowering emits `LiftBasis`. A separate source-step comparison
   binds the retained table, the ordered wires, the owner transitions and the
   effects to the emitted instructions.
@@ -241,9 +254,10 @@ Limits that apply to these profiles:
   root and child links. They require independent native acceptance. This
   bounded untrusted replay is not a proof of source elaboration or of general
   source preservation.
-- The selected hierarchy profile does not support other coherent tables,
-  table-dependent static operation transforms, including zero repetition, or
-  preparation after observation.
+- The selected hierarchy profile does not support other coherent tables. It
+  does not support static operation transforms that depend on a table,
+  including zero repetition. It does not support preparation after
+  observation.
 - Selected roots and ordinary project roots can use coherent basis maps over
   nominal labels, as the [type model](type-model.md) describes.
 - `Bits<0>` is never replaced by Unit, and its quantum owner stays linear.
