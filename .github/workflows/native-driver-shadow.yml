@@ -1,0 +1,42 @@
+name: Compare native regression drivers
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/native-driver-shadow.yml'
+      - 'scripts/shadow_native_drivers.py'
+      - 'scripts/native_driver_bundle.py'
+      - 'scripts/native_harness.py'
+  workflow_dispatch:
+    inputs:
+      first:
+        description: First harness to execute on this runner
+        type: choice
+        options: [standalone, shared]
+        default: standalone
+
+permissions:
+  contents: read
+
+jobs:
+  shadow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: ./.github/actions/rust-toolchain
+        with:
+          toolchain: '1.98.1'
+      - name: Fetch the pinned Cargo dependencies
+        run: cargo +1.98.1 fetch --locked
+      - uses: ./.github/actions/native-runtime
+      - name: Compare all eleven original drivers on the same runner
+        env:
+          FIRST: ${{ inputs.first || 'standalone' }}
+        run: python3 scripts/shadow_native_drivers.py --first "$FIRST" --output "$RUNNER_TEMP/driver-shadow"
+      - name: Retain timings, original reports and any disagreements
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-driver-shadow-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/driver-shadow/
+          if-no-files-found: warn

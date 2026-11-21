@@ -206,6 +206,24 @@ Use the existing clean-checkout and pinned-tool requirements, for example:
 python3 scripts/run_native_ci.py --shared-drivers --output "$qleisli_validation_dir/native-shared"
 ```
 
+The **Compare native regression drivers** workflow runs a paired experiment
+on pull requests that change the harness and on manual dispatch. Run it locally
+after building the pinned native checker and fetching Cargo dependencies:
+
+```sh
+python3 scripts/shadow_native_drivers.py --first standalone --output "$qleisli_validation_dir/shadow"
+```
+
+Both arms run the same eleven manifest commands serially, adding `--record`
+where needed. They share the pinned toolchain, prepared kernel library and
+host compiler. Each arm runs the original test inputs and independent oracles.
+The comparison checks generated driver source, reported decisions, oracle
+results and input/output sidecars. Full per-arm logs retain timings and binary
+identities. The shared arm's elapsed time includes bundle preparation. Common
+setup and GitHub runner queue time are separate from those arm timings.
+Reverse `--first` to measure the other execution order. The required native
+suite continues to run its complete manifest independently.
+
 Named local `--task` reproduction retains explicit omitted-group reporting;
 hosted comparisons still require every group. Driver selectors and records are
 test interfaces only, not production acceptance paths, proof discharges or

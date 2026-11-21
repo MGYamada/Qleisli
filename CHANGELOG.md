@@ -9,6 +9,8 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Compare all eleven native regression drivers in standalone and shared modes
+  on the same CI runner, retaining their original oracle reports and timings (#223).
 - Move the beta entries listed above the 0.3.0-beta heading into that section,
   date it like its tag and open it with its scope statement (#645, #646).
 - Pin the crate documentation's Language Reference link to the release tag, so
