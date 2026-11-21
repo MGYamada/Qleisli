@@ -7,6 +7,9 @@ on:
       - 'scripts/shadow_native_drivers.py'
       - 'scripts/native_driver_bundle.py'
       - 'scripts/native_harness.py'
+      - 'scripts/test_lean_qft.py'
+      - 'scripts/test_lean_qft_graph.py'
+      - 'scripts/test_lean_qpe.py'
   workflow_dispatch:
     inputs:
       first:
@@ -34,7 +37,7 @@ jobs:
       - name: Fetch the pinned Cargo dependencies
         run: cargo +1.98.1 fetch --locked
       - uses: ./.github/actions/native-runtime
-      - name: Compare all eleven original drivers on the same runner
+      - name: Compare eleven drivers on identical small-qubit inputs
         env:
           FIRST: ${{ inputs.first || 'shared' }}
           WORKERS: ${{ inputs.workers || '4' }}

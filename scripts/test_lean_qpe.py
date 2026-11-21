@@ -28,15 +28,17 @@ def base(n, m, provider=7):
                 initial=[False]*m, preparation=[h(k) for k in range(m)], graph=graph_case(m))
 
 
-def suite():
-    cases = [(f"n{n}-m{m}", base(n, m), True) for n in range(1, 9) for m in range(1, 9)]
+def suite(*, shadow_small=False):
+    targets = range(1, 3 if shadow_small else 9)
+    precisions = range(1, 4 if shadow_small else 9)
+    cases = [(f"n{n}-m{m}", base(n, m), True) for n in targets for m in precisions]
     original = base(2, 3)
     def mutation(name, change):
         item = copy.deepcopy(original)
         change(item)
         cases.append((name, item, False))
     for parameter in ("n", "m"):
-        for value in (0, 9, 1000000):
+        for value in ((0,) if shadow_small else (0, 9, 1000000)):
             mutation(f"{parameter}-{value}", lambda c, p=parameter, v=value: c.update({f"request_{p}": v}))
     mutation("wrong-provider", lambda c: c.update(request_provider=8))
     mutation("dirty-precision", lambda c: c["initial"].__setitem__(0, True))
@@ -164,12 +166,12 @@ def main : IO Unit := do
 ''')
 
 
-def native(cases, log):
+def native(cases, log, *, shadow_small=False):
     with tempfile.TemporaryDirectory(prefix="qleisli-qpe-native-") as directory:
         project=Path(directory)
         schemas=schema_cases()
         (project/"Main.lean").write_text(driver_source(cases))
-        binary = native_harness.build(project, log, driver='lean-qpe')
+        binary = native_harness.build(project, log, driver='lean-qpe', shadow_small=shadow_small)
         run=subprocess.run(native_harness.argv(binary),capture_output=True,text=True,timeout=30)
         log.append(dict(command=["qpe-test"],exit=run.returncode,stderr=run.stderr,executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))
         assert run.returncode==0,run.stderr
@@ -195,7 +197,7 @@ def native(cases, log):
                 comparisons+=1
         return dict(native_decisions=len(cases),accepted=sum(c[2] for c in cases),
                     controlled_path_comparisons=comparisons,preparation_paths=comparisons,
-                    largest_target_calls=255,kernel_dense_dimension=0,
+                    largest_target_calls=max(2**item["m"] - 1 for _, item, accepted in cases if accepted),kernel_dense_dimension=0,
                     schema_decisions=len(schemas),schema_accepted=sum(row[3] for row in schemas),
                     schema_results=[dict(name=name,accepted=accepted) for name,_,_,accepted in schemas],
                     decisions=[dict(name=n,accepted=a) for n,_,a in cases])
@@ -245,7 +247,7 @@ def with_reference(K,r=2):
     return [[K[a//r][b//r] if a%r==b%r else 0j for b in range(d*r)] for a in range(d*r)]
 
 
-def quantum_checks():
+def quantum_checks(*, shadow_small=False):
     s=1/math.sqrt(2)
     H=[[s,s],[s,-s]]
     def phase(ticks):return [[1,0],[0,cmath.exp(2j*math.pi*ticks/256)]]
@@ -254,9 +256,10 @@ def quantum_checks():
     operators=[eye(2),phase(32),phase(16),multiply(multiply(H,phase(7)),H),
                [[0,cmath.exp(2j*math.pi/256)],[cmath.exp(2j*math.pi/256),0]],U4]
     entries=references=0;error=0.;largest=0
+    precisions = range(1, 4 if shadow_small else 5)
     for U in operators:
         d=len(U)
-        for m in (1,2,3,4):
+        for m in precisions:
             expected,actual=expected_kraus(U,m),literal_kraus(U,m)
             largest=max(largest,2**m*d)
             total=[[0j]*d for _ in range(d)]
@@ -296,8 +299,8 @@ def quantum_checks():
     assert max_error(wrong,eye(2))>.9
     assert error<2e-12,error
     return dict(kraus_entries=entries,joint_density_branches=references,
-                largest_oracle_vector=largest,maximum_error=error,unitary_completeness_cases=24,
-                joint_trace_cases=24,completeness_counterexamples=3)
+                largest_oracle_vector=largest,maximum_error=error,unitary_completeness_cases=len(operators)*len(precisions),
+                joint_trace_cases=len(operators)*len(precisions),completeness_counterexamples=3)
 
 
 def source_check(binary,log):
@@ -333,10 +336,12 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-only",type=Path)
     parser.add_argument("--record",type=Path)
+    parser.add_argument("--shadow-small", action="store_true", help="use at most two target and three precision qubits")
     args=parser.parse_args();log=[]
     if args.source_only: report=source_check(args.source_only,log)
     else:
-        report=native(suite(),log);report.update(quantum_checks())
+        report=native(suite(shadow_small=args.shadow_small),log,shadow_small=args.shadow_small)
+        report.update(quantum_checks(shadow_small=args.shadow_small))
     report["commands"]=log
     report["source_sha256"]={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in
         ["lean-kernel/QleisliKernel/ControlledPowers.lean","lean-kernel/QleisliKernel/Uniform.lean",

@@ -214,9 +214,12 @@ after building the pinned native checker and fetching Cargo dependencies:
 python3 scripts/shadow_native_drivers.py --first standalone --workers 4 --output "$qleisli_validation_dir/shadow"
 ```
 
-Both arms run the same eleven manifest commands, adding `--record`
-where needed. They share the pinned toolchain, prepared kernel library and
-host compiler. Each arm runs the original test inputs and independent oracles.
+Both arms run the same eleven driver selectors, adding `--record` where
+needed. The paired experiment passes `--shadow-small` to both QFT variants,
+QFT graph and QPE. QFT circuits and graphs use up to three qubits. QPE uses
+up to two target and three precision qubits, including in the dense oracle.
+Both arms use the same cases, independent oracles, pinned toolchain, prepared
+kernel library and host compiler.
 The comparison checks generated driver source, reported decisions, oracle
 results and the original emitted QIRF files. Each observation report must name
 the binary selected in its own arm, and its companion must repeat the same

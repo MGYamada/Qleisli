@@ -98,7 +98,7 @@ def direct(item, input_value, choices):
     return sum(bit << i for i, bit in enumerate(bits)), phase % 256, count
 
 
-def suite():
+def suite(*, shadow_small=False):
     cases = []
     def add(name, item, accepted, probes=True):
         width = item["width"]
@@ -110,12 +110,13 @@ def suite():
                 rng = random.Random(9100 + width)
                 pairs = [(rng.randrange(1 << width), rng.randrange(1 << width)) for _ in range(32)]
         cases.append((name, item, accepted, pairs))
-    for width in range(1, 9):
+    for width in range(1, 4 if shadow_small else 9):
         add(f"qft-{width}", case(width), True)
         add(f"calls-{width}", case(width, calls=True), True)
         add(f"shared-identity-{width}", case(width, calls=True, identities=5), True)
-    large = case(8, calls=True, identities=60)
-    add("no-expansion-2^59", large, True, probes=False)
+    if not shadow_small:
+        large = case(8, calls=True, identities=60)
+        add("no-expansion-2^59", large, True, probes=False)
     base = case(3, calls=True)
     def mutate(name, change):
         item = copy.deepcopy(base)
@@ -168,6 +169,8 @@ def suite():
     mutate("bad-entry", lambda c: c.update(entry=len(c["nodes"])))
     mutate("permutation-before-gates", lambda c: c["nodes"][-1].update(
         first=c["nodes"][-1]["second"], second=c["nodes"][-1]["first"]))
+    if shadow_small:
+        return cases
     for width in (0, 9):
         bad = copy.deepcopy(base)
         bad["width"] = width
@@ -246,11 +249,11 @@ def main : IO Unit := do
 ''')
 
 
-def native(cases, log):
+def native(cases, log, *, shadow_small=False):
     with tempfile.TemporaryDirectory(prefix="qleisli-qft-graph-") as directory:
         project = Path(directory)
         (project / "Main.lean").write_text(driver_source(cases))
-        binary = native_harness.build(project, log, driver='lean-qft-graph')
+        binary = native_harness.build(project, log, driver='lean-qft-graph', shadow_small=shadow_small)
         run = subprocess.run(native_harness.argv(binary), capture_output=True, text=True, timeout=30)
         log.append(dict(command=["graph-test"], exit=run.returncode, stderr=run.stderr,
                         executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))
@@ -263,10 +266,11 @@ def native(cases, log):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--record", type=Path)
+    parser.add_argument("--shadow-small", action="store_true", help="limit the paired experiment to three qubits and omit stress cases")
     args = parser.parse_args()
-    cases = suite()
+    cases = suite(shadow_small=args.shadow_small)
     log = []
-    lines = native(cases, log)
+    lines = native(cases, log, shadow_small=args.shadow_small)
     decisions, comparisons, largest = [], 0, None
     for (name, item, accepted, probes), line in zip(cases, lines):
         assert (not line.startswith("reject,")) == accepted, (name, line)
