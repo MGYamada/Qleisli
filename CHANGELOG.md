@@ -32,6 +32,9 @@ development milestones from the scope of their evidence.
 - Check each QDV1 record's declared field count in debug builds (#649).
 - Audit QPTL declarations in both CI workflows and exercise rejection of a
   private project axiom (#653).
+- Compare all eleven native regression drivers in standalone and shared modes
+  on the same runner at a selected worker count, retaining oracle reports
+  and timings (#223).
 - Keep nested Git checkouts out of the edition scan (#654).
 - Name the missing adjoint capability for zero-input isometries and explain
   conditional expressions in the finite classical grammar (#662, #664).

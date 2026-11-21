@@ -12,12 +12,75 @@ import threading
 import unittest
 from unittest.mock import patch
 import run_native_ci
+import shadow_native_drivers as shadow
 
 sys.dont_write_bytecode = True
 from run_native_ci import MANIFEST, ROOT, execute, execution_environment, launch_command, load_tasks, select_tasks, source_binding, verify_coverage
 
 
 class NativeCI(unittest.TestCase):
+    def test_shadow_requires_each_original_command_and_adds_only_report_output(self):
+        tasks = load_tasks(MANIFEST)
+        selected = shadow.shadow_tasks(tasks)
+        self.assertEqual({t['id'] for t in selected}, set(shadow.bundle.MODULES))
+        for task in selected:
+            original = next(t['commands'][0] for t in tasks if t['id'] == task['id'])
+            self.assertEqual(task['commands'][0], original if '{record}' in original
+                             else original + ['--record', '{record}'])
+        with self.assertRaisesRegex(ValueError, 'incomplete'):
+            shadow.shadow_tasks([t for t in tasks if t['id'] != 'lean-qft-semantic'])
+
+    def test_shadow_compares_observations_and_refuses_unexecuted_or_wrong_driver(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            driver = dict(driver_source_sha256='src', executable_sha256='exe')
+            report = dict(commands=[driver], source_sha256={'file': 'sha'}, independent_matrix_comparisons=2)
+            def observe(identity=None):
+                (directory / 'record.json').write_text(json.dumps(report))
+                return shadow.observation(directory, 'lean-exact', identity)
+            baseline = observe()
+            with self.assertRaisesRegex(ValueError, 'selection'):
+                observe(('bundle', 'shared'))
+            driver.update(native_driver='lean-exact', record_sha256='bundle', executable_sha256='shared')
+            self.assertEqual(observe(('bundle', 'shared')), baseline)
+            with self.assertRaisesRegex(ValueError, 'executable'):
+                observe(('stale', 'shared'))
+            report['independent_matrix_comparisons'] = 3
+            self.assertNotEqual(observe(('bundle', 'shared')), baseline)
+            report['independent_matrix_comparisons'] = 0
+            with self.assertRaisesRegex(ValueError, 'independent'):
+                observe(('bundle', 'shared'))
+
+    def test_shadow_observation_verifies_each_binary_and_compares_actual_outcomes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            selector = 'lean-observation'
+            for name in shadow.SIDECARS[selector]:
+                path = root / name
+                path.parent.mkdir(exist_ok=True)
+                path.write_text('[]')
+            driver = dict(driver_source_sha256='source', executable_sha256='standalone')
+            bindings = dict(lean_binary_sha256='standalone', lean_stdout_sha256='stdout')
+            observed = dict(bindings=bindings, lean=[1], rust={'case': True})
+            def read(identity=None):
+                (root / 'record.json').write_text(json.dumps(dict(commands=[driver],
+                    source_sha256={'input': 'hash'}, independent_operators=1, native_bindings=bindings)))
+                (root / 'native-observed.json').write_text(json.dumps(observed))
+                return shadow.observation(root, selector, identity)
+            standalone = read()
+            driver.update(native_driver=selector, record_sha256='record', executable_sha256='shared')
+            bindings['lean_binary_sha256'] = 'shared'
+            shared = ('record', 'shared')
+            self.assertEqual(standalone, read(shared))
+            observed['lean'] = [2]
+            self.assertNotEqual(standalone, read(shared))
+            observed['bindings'] = bindings | {'lean_stdout_sha256': 'other'}
+            with self.assertRaisesRegex(ValueError, 'inconsistent'):
+                read(shared)
+            bindings['lean_binary_sha256'] = 'other-executable'
+            with self.assertRaisesRegex(ValueError, 'different executable'):
+                read(shared)
+
     def test_host_prebuild_and_workers_share_the_bound_native_selection(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / 'run'
