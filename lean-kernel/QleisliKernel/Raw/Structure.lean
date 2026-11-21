@@ -1,4 +1,4 @@
-import Std.Data.TreeSet.Basic
+import Std.Data.TreeMap.Raw.Basic
 import QleisliKernel.Semantics.Raw
 import QleisliKernel.Semantics.RawTrace
 import QleisliKernel.Finite
@@ -23,10 +23,10 @@ so each uniqueness scan costs at most O(n log n). -/
 def increasing (ids : List Nat) : Bool :=
   (ids.zipWith (fun a b => decide (a < b)) ids.tail).all id
 
-def markFresh (seen : Std.TreeSet Nat) (id : Nat) : Option (Std.TreeSet Nat) :=
-  if seen.contains id then none else some (seen.insert id)
+def markFresh (seen : Std.TreeMap.Raw Nat Unit) (id : Nat) : Option (Std.TreeMap.Raw Nat Unit) :=
+  if seen.contains id then none else some (seen.insert id ())
 
-def unseenIds (seen : Std.TreeSet Nat) (ids : List Nat) : Bool :=
+def unseenIds (seen : Std.TreeMap.Raw Nat Unit) (ids : List Nat) : Bool :=
   (ids.foldlM markFresh seen).isSome
 
 def freshHistory (ids : List Nat) : Bool :=

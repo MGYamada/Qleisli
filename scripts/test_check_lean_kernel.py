@@ -503,9 +503,17 @@ def width : List Atom → Nat
         self.assertTrue("forbidden axiom" in output or "project axiom" in output, output)
 
     def test_compiled_pure_import_closure_cannot_add_lean_metaprogramming(self):
-        code, output = self.audit("import Lean\ndef value : Nat := 1\n")
+        for module, main_only in [("QleisliKernel", False), ("QleisliKernel.MainHelper", True)]:
+            with self.subTest(module=module):
+                code, output = self.audit("import Lean\ndef value : Nat := 1\n",
+                                          module=module, transport=main_only)
+                self.assertNotEqual(code, 0, output)
+                self.assertIn("forbidden runtime import Lean", output)
+
+    def test_compiled_audit_rejects_a_project_initializer(self):
+        code, output = self.audit("@[init] def noopOnImport : IO Unit := pure ()\n")
         self.assertNotEqual(code, 0, output)
-        self.assertIn("forbidden runtime import Lean", output)
+        self.assertIn("noopOnImport: project initializer", output)
 
 
 if __name__ == "__main__":

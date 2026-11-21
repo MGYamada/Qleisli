@@ -1,4 +1,5 @@
-import Std.Data.TreeSet.Lemmas
+import Std.Data.TreeMap.Raw.Lemmas
+import Std.Data.TreeMap.Raw.WF
 import QleisliKernel.Raw.Trace
 import QleisliKernel.Semantics.Ownership
 
@@ -49,24 +50,24 @@ theorem increasing_iff (ids : List Nat) : increasing ids = true ↔ ids.Pairwise
       · rintro ⟨first, h, tail⟩
         exact ⟨first _ List.mem_cons_self, h, tail⟩
 
-theorem unseenIds_iff (seen : Std.TreeSet Nat) (ids : List Nat) :
+theorem unseenIds_iff (seen : Std.TreeMap.Raw Nat Unit) (ids : List Nat) (wf : seen.WF) :
     unseenIds seen ids = true ↔ ids.Nodup ∧ ∀ id ∈ ids, id ∉ seen := by
   induction ids generalizing seen with
   | nil => simp [unseenIds]
   | cons id rest ih =>
     by_cases h : seen.contains id = true
-    · have member := Std.TreeSet.contains_iff_mem.mp h
+    · have member := Std.TreeMap.Raw.contains_iff_mem.mp h
       simp [unseenIds, List.foldlM_cons, markFresh, h, member]
-    · have next : unseenIds seen (id :: rest) = unseenIds (seen.insert id) rest := by
+    · have next : unseenIds seen (id :: rest) = unseenIds (seen.insert id ()) rest := by
         simp [unseenIds, List.foldlM_cons, markFresh, h]
-      rw [next, ih]
-      simp only [List.nodup_cons,List.mem_cons,Std.TreeSet.mem_insert]
-      have absent : id ∉ seen := fun m => h (Std.TreeSet.mem_iff_contains.mp m)
+      rw [next, ih _ wf.insert]
+      simp only [List.nodup_cons,List.mem_cons,Std.TreeMap.Raw.mem_insert wf]
+      have absent : id ∉ seen := fun m => h (Std.TreeMap.Raw.mem_iff_contains.mp m)
       grind
 
 theorem freshHistory_iff (ids : List Nat) : freshHistory ids = true ↔ ids.Nodup := by
-  simp only [freshHistory, Bool.or_eq_true, increasing_iff, unseenIds_iff]
-  simp only [Std.TreeSet.not_mem_emptyc, not_false_eq_true, implies_true, and_true]
+  simp only [freshHistory, Bool.or_eq_true, increasing_iff, unseenIds_iff _ ids Std.TreeMap.Raw.WF.emptyc]
+  simp only [Std.TreeMap.Raw.not_mem_emptyc, not_false_eq_true, implies_true, and_true]
   exact or_iff_right_of_imp (fun h => h.imp Nat.ne_of_lt)
 
 theorem valid (state : Raw.State) (ok : Raw.stateValid state = true) : Semantics.Ownership.Valid (view state) := by

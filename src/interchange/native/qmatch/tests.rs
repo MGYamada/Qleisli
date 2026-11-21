@@ -232,7 +232,18 @@ fn fresh_native_mode_checks_independent_views_and_all_original_substitutions() {
             }),
         );
         assert_eq!(native.is_ok(), accepted, "{name}: {native:?}");
-        if let Ok(native) = native {
+        if matches!(
+            name,
+            "unrelated-original-program"
+                | "wrong-original-arm-evidence"
+                | "wrong-original-arm-controlled"
+        ) {
+            let error = native.unwrap_err();
+            assert!(
+                matches!(error.code, "invalid_ir" | "contract"),
+                "{name}: {error}"
+            );
+        } else if let Ok(native) = native {
             prepare(subject, &request).unwrap().bind(native).unwrap();
         }
     }
