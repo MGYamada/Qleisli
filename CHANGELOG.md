@@ -35,6 +35,8 @@ development milestones from the scope of their evidence.
 - Keep nested Git checkouts out of the edition scan (#654).
 - Name the missing adjoint capability for zero-input isometries and explain
   conditional expressions in the finite classical grammar (#662, #664).
+- Publish the checked mdBook from `main` to GitHub Pages and mirror its
+  generated HTML to the `gh-pages` branch.
 - Name the three Fundamental Theorems in the Book introduction and place the
   constitutional chapters after the Language Reference and design material.
 - Retire the imaginary-v1 requirements chapter and explain the six v1 algorithm

@@ -12,6 +12,11 @@ Qleisli is [pronounced exactly like Kleisli](docs/src/reference/project-identity
 
 **Development version: 0.3.0-beta** (unpublished prerelease).
 
+## Reporting issues
+
+We closed GitHub Issues to new reports solely to prevent AI tools from automatically filing issues in bulk.
+Please report problems in [GitHub Discussions](https://github.com/MGYamada/Qleisli/discussions).
+
 ## Edition
 
 **Qleisli language edition: `"2026"`.** An edition identifies the constitutional
