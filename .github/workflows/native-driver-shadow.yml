@@ -31,7 +31,7 @@ jobs:
       - uses: ./.github/actions/native-runtime
       - name: Compare all eleven original drivers on the same runner
         env:
-          FIRST: ${{ inputs.first || 'standalone' }}
+          FIRST: ${{ inputs.first || 'shared' }}
         run: python3 scripts/shadow_native_drivers.py --first "$FIRST" --output "$RUNNER_TEMP/driver-shadow"
       - name: Retain timings, original reports and any disagreements
         if: always()

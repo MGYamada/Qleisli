@@ -51,6 +51,36 @@ class NativeCI(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'independent'):
                 observe(('bundle', 'shared'))
 
+    def test_shadow_observation_verifies_each_binary_and_compares_actual_outcomes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            selector = 'lean-observation'
+            for name in shadow.SIDECARS[selector]:
+                path = root / name
+                path.parent.mkdir(exist_ok=True)
+                path.write_text('[]')
+            driver = dict(driver_source_sha256='source', executable_sha256='standalone')
+            bindings = dict(lean_binary_sha256='standalone', lean_stdout_sha256='stdout')
+            observed = dict(bindings=bindings, lean=[1], rust={'case': True})
+            def read(identity=None):
+                (root / 'record.json').write_text(json.dumps(dict(commands=[driver],
+                    source_sha256={'input': 'hash'}, independent_operators=1, native_bindings=bindings)))
+                (root / 'native-observed.json').write_text(json.dumps(observed))
+                return shadow.observation(root, selector, identity)
+            standalone = read()
+            driver.update(native_driver=selector, record_sha256='record', executable_sha256='shared')
+            bindings['lean_binary_sha256'] = 'shared'
+            shared = ('record', 'shared')
+            self.assertEqual(standalone, read(shared))
+            observed['lean'] = [2]
+            self.assertNotEqual(standalone, read(shared))
+            observed['bindings'] = bindings | {'lean_stdout_sha256': 'other'}
+            with self.assertRaisesRegex(ValueError, 'inconsistent'):
+                read(shared)
+            bindings['lean_binary_sha256'] = 'other-executable'
+            with self.assertRaisesRegex(ValueError, 'different executable'):
+                read(shared)
+
     def test_host_prebuild_and_workers_share_the_bound_native_selection(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / 'run'

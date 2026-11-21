@@ -218,10 +218,14 @@ Both arms run the same eleven manifest commands serially, adding `--record`
 where needed. They share the pinned toolchain, prepared kernel library and
 host compiler. Each arm runs the original test inputs and independent oracles.
 The comparison checks generated driver source, reported decisions, oracle
-results and input/output sidecars. Full per-arm logs retain timings and binary
-identities. The shared arm's elapsed time includes bundle preparation. Common
+results and the original emitted QIRF files. Each observation report must name
+the binary selected in its own arm, and its companion must repeat the same
+bindings. The Lean and Rust observations are compared across arms. Full per-arm
+logs retain timings and binary identities. The shared arm's elapsed time includes
+bundle preparation. Common
 setup and GitHub runner queue time are separate from those arm timings.
-Reverse `--first` to measure the other execution order. The required native
+PR runs start with the shared arm. Manual runs can start with either arm
+to measure the effect of execution order. The required native
 suite continues to run its complete manifest independently.
 
 Named local `--task` reproduction retains explicit omitted-group reporting;

@@ -18,8 +18,10 @@ from run_native_ci import MANIFEST, ROOT, execute, load_tasks, source_binding, v
 
 
 SIDECARS = {
-    'lean-finite': {'native-inputs.json'}, 'lean-raw': {'native-inputs.json'},
-    'lean-observation': {'native-inputs.json', 'native-observed.json'},
+    'lean-finite': {'native-inputs.json'},
+    'lean-raw': {'native-inputs.json'} | {f'source-ir/{i}.qirf.json' for i in range(6)},
+    'lean-observation': {'native-inputs.json', 'native-observed.json'} |
+                        {f'source-ir/{i}.qirf.json' for i in range(5)},
     'lean-raw-completion': {'completion-inputs.json'},
     'lean-branch-function': {'branch-inputs.json', 'branch-observed.json'},
 }
@@ -64,12 +66,23 @@ def observation(directory, selector, shared_identity=None):
     # Each arm builds different executables. Retain their identities in the
     # original reports; compare the inputs, outcomes and oracle fields.
     bindings = report.get('native_bindings', {})
+    for field in ('lean_binary_sha256', 'native_binary_sha256'):
+        if field in bindings and bindings[field] != build['executable_sha256']:
+            raise ValueError(f'{selector}: native report names a different executable')
+    files = {p.relative_to(directory).as_posix(): p for p in directory.rglob('*.json')
+             if p != directory / 'record.json'}
+    if set(files) != SIDECARS.get(selector, set()):
+        raise ValueError(f'{selector}: missing or unexpected companion reports')
+    sidecars = {}
+    if selector == 'lean-observation':
+        observed = json.loads(files.pop('native-observed.json').read_bytes())
+        if (set(observed) != {'bindings', 'lean', 'rust'} or 'lean_binary_sha256' not in bindings
+                or observed.pop('bindings') != bindings or not observed['lean'] or not observed['rust']):
+            raise ValueError(f'{selector}: inconsistent companion observations or bindings')
+        sidecars['native-observed.json'] = observed
+    sidecars.update({name: native_harness.digest(path) for name, path in files.items()})
     for field in ('lean_binary_sha256', 'native_binary_sha256', 'rust_binary_sha256'):
         bindings.pop(field, None)
-    sidecars = {p.name: native_harness.digest(p) for p in directory.glob('*.json')
-                if p.name != 'record.json'}
-    if set(sidecars) != SIDECARS.get(selector, set()):
-        raise ValueError(f'{selector}: missing or unexpected companion reports')
     return dict(source=build['driver_source_sha256'], oracle=report, sidecars=sidecars)
 
 
