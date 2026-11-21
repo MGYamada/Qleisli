@@ -41,6 +41,17 @@ When updating mdBook, review its release notes, update the CI version and
 official binary checksum together, update the local commands here, then inspect
 the rendered book. This tool pin is separate from product-version maintenance.
 
+## Publishing the book
+
+Pull requests build the book and check its links. After a push to `main`,
+CI packages the checked `target/mdbook/` directory, mirrors its contents to
+the `gh-pages` branch and deploys the same archive to
+[the published book](https://mgyamada.github.io/Qleisli/).
+The repository uses **GitHub Actions** as its Pages publishing source.
+The `github-pages` environment allows deployments from `main`.
+The HTML renderer's `site-url` is `/Qleisli/` so the 404 page can load its
+styles and navigation even when a reader follows a broken nested URL.
+
 ## Source authority and tool responsibilities
 
 **mdBook renders the specification; it does not participate in the specification.**

@@ -77,7 +77,7 @@ def task_ids(tasks):
     return identifiers(result)
 
 
-def generate(name):
+def generate(name, *, shadow_small=False):
     identifiers([name])
     module = importlib.import_module('test_lean_' + MODULES[name])
     if name in {'lean-finite', 'lean-raw', 'lean-observation',
@@ -89,9 +89,9 @@ def generate(name):
         source = module.driver_source(module.driver_words())
     elif name in {'lean-qft', 'lean-qft-semantic'}:
         semantic = name == 'lean-qft-semantic'
-        source = module.driver_source(module.driver_cases(semantic, semantic)[0], semantic)
+        source = module.driver_source(module.driver_cases(semantic, semantic, shadow_small=shadow_small)[0], semantic)
     else:
-        source = module.driver_source(module.suite())
+        source = module.driver_source(module.suite(shadow_small=shadow_small))
     require(type(source) is str and len(source.encode()) <= LIMIT,
             'native driver source exceeds its limit')
     return source
@@ -127,7 +127,7 @@ def combine(sources):
     return source
 
 
-def prepare(output, selected, log, build_binding=None):
+def prepare(output, selected, log, build_binding=None, *, shadow_small=False):
     """Compilation is preparation only; no original main or oracle is run."""
     selected = identifiers(selected)
     output = output.resolve()
@@ -141,7 +141,7 @@ def prepare(output, selected, log, build_binding=None):
     build_binding = build_binding.resolve()
     native_harness.validate(build_binding)
     build_bytes = build_binding.read_bytes()
-    sources = {name: generate(name) for name in selected}
+    sources = {name: generate(name, shadow_small=shadow_small) for name in selected}
     source = combine(sources).encode()
     project = output / 'driver'
     project.mkdir()
@@ -168,7 +168,7 @@ def prepare(output, selected, log, build_binding=None):
     return path, digest(raw)
 
 
-def selected(project, log, driver, environment=None):
+def selected(project, log, driver, environment=None, *, shadow_small=False):
     environment = os.environ if environment is None else environment
     require(all(environment.get(key) for key in ENVIRONMENT), 'incomplete explicit native driver selection')
     require(environment[SELECTOR_ENV] == driver and driver in MODULES,
@@ -193,7 +193,7 @@ def selected(project, log, driver, environment=None):
     require(type(record['drivers']) is dict and driver in identifiers(list(record['drivers'])),
             'missing native driver')
     source = (project / 'Main.lean').read_bytes()
-    require(source == generate(driver).encode()
+    require(source == generate(driver, shadow_small=shadow_small).encode()
             and record['drivers'][driver] == dict(bytes=len(source), sha256=digest(source)),
             'generated source differs from its prepared native driver')
     for field, expected in [('source', 'driver/Main.lean'), ('binary', 'driver/native-test')]:

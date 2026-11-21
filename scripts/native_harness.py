@@ -86,11 +86,11 @@ def argv(binary):
     return [str(binary), binary.selector] if isinstance(binary, Driver) else [str(binary)]
 
 
-def build(project, log, timeout=240, *, driver=None):
+def build(project, log, timeout=240, *, driver=None, shadow_small=False):
     """Select an explicitly bound regression driver, or compile freshly."""
     import native_driver_bundle
     if native_driver_bundle.ENVIRONMENT & os.environ.keys():
-        return native_driver_bundle.selected(project, log, driver)
+        return native_driver_bundle.selected(project, log, driver, shadow_small=shadow_small)
     return compile_driver(project, log, timeout)
 
 

@@ -78,11 +78,12 @@ def main : IO Unit := do
     return source
 
 
-def native(cases, log, semantic=False):
+def native(cases, log, semantic=False, *, shadow_small=False):
     with tempfile.TemporaryDirectory(prefix="qleisli-qft-native-") as directory:
         project = Path(directory)
         (project / "Main.lean").write_text(driver_source(cases, semantic))
-        binary = native_harness.build(project, log, driver=('lean-qft-semantic' if semantic else 'lean-qft'))
+        binary = native_harness.build(project, log, driver=('lean-qft-semantic' if semantic else 'lean-qft'),
+                                      shadow_small=shadow_small)
         run = subprocess.run(native_harness.argv(binary), capture_output=True, text=True, timeout=15)
         log.append(dict(command=["qft-test"], exit=run.returncode, stderr=run.stderr,
                         executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))
@@ -133,8 +134,10 @@ def source_check(binary, log):
     assert expected[1] < 0.1
 
 
-def driver_cases(small=False, semantic=False):
+def driver_cases(small=False, semantic=False, *, shadow_small=False):
     upper = 4 if small else 8
+    if shadow_small:
+        upper = 3
     cases = [(m, template(m), list(reversed(range(m)))) for m in range(1, upper + 1)]
     expected = [True] * len(cases)
     # Template mutations, all still well-formed primitive circuits except explicit bounds below.
@@ -161,8 +164,12 @@ def driver_cases(small=False, semantic=False):
     for width, word, axes in [(1, [h(1)], [0]), (1, [p([(256, [0])])], [0]),
                              (1, [p([(16, [1])])], [0])]:
         cases.append((width, word, axes)); expected.append(False)
-    cases += [(0, [], []), (9, [], list(range(9))), (1, [], [0])]
-    expected += [False] * 3
+    bounds = [(0, [], [])]
+    if not shadow_small:
+        bounds.append((9, [], list(range(9))))
+    bounds.append((1, [], [0]))
+    cases.extend(bounds)
+    expected.extend([False] * len(bounds))
     rng = random.Random(2909202602)
     for _ in range(60):
         width = rng.randrange(1, 4)
@@ -184,6 +191,7 @@ def main():
     parser.add_argument("--record", type=Path)
     parser.add_argument("--small", action="store_true", help="generate only widths 1–4")
     parser.add_argument("--semantic", action="store_true", help="test the additive symbolic-path matcher")
+    parser.add_argument("--shadow-small", action="store_true", help="limit the paired experiment to three qubits")
     args = parser.parse_args()
     log, report = [], {}
     if args.source_only:
@@ -191,8 +199,8 @@ def main():
         report["source_round_trip"] = True
         report["wrong_reversal_outcomes"] = 8
     else:
-        cases, expected, invalid_start, rng, upper = driver_cases(args.small, args.semantic)
-        outputs = native(cases, log, semantic=args.semantic)
+        cases, expected, invalid_start, rng, upper = driver_cases(args.small, args.semantic, shadow_small=args.shadow_small)
+        outputs = native(cases, log, semantic=args.semantic, shadow_small=args.shadow_small)
         path_checks = phase_checks = 0
         for index, ((width, word, _), (matched, result)) in enumerate(zip(cases, outputs)):
             assert matched == expected[index], index

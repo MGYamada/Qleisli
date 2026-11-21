@@ -1,8 +1,8 @@
 //! Source documentation is descriptive metadata, never quantum evidence.
 
-use super::ast::{Module, Span};
+use super::ast::{Decl, FnBody, Module, Span};
 use super::lexer::{Token, TokenKind};
-use super::parser::{ParseError, parse_documented_module};
+use super::parser::{ParseError, parse_documented};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum DocStyle {
@@ -33,6 +33,20 @@ pub struct DocumentedModule {
 
 const MAX_IMPORT_DOC_COPIES: usize = 65_536;
 const MAX_IMPORT_DOC_BYTES: usize = 1_048_576;
+
+fn body_opening(decl: &Decl, tokens: &[Token]) -> Option<usize> {
+    match decl.body {
+        FnBody::Natural(_) | FnBody::Basis(_) | FnBody::Quantum(_) => {
+            let first =
+                tokens.partition_point(|token| token.span.start < decl.return_type.span.end);
+            tokens[first..]
+                .iter()
+                .position(|token| token.kind == TokenKind::LBrace)
+                .map(|offset| first + offset)
+        }
+        _ => None,
+    }
+}
 
 pub(crate) fn attach(
     syntax: Module,
@@ -66,33 +80,7 @@ pub(crate) fn attach(
         .decls
         .iter()
         .enumerate()
-        .filter_map(|(index, decl)| {
-            let start = match &decl.body {
-                super::ast::FnBody::Natural(body) => {
-                    let opening = tokens
-                        .partition_point(|token| token.span.start < body.span.start)
-                        .saturating_sub(1);
-                    debug_assert!(matches!(tokens[opening].kind, TokenKind::LBrace));
-                    return Some((opening, index));
-                }
-                super::ast::FnBody::Meaning { .. }
-                | super::ast::FnBody::MeaningReference { .. }
-                | super::ast::FnBody::MeaningCompose { .. }
-                | super::ast::FnBody::MeaningTensor { .. } => return None,
-                super::ast::FnBody::Quantum(body) => body.span.start,
-                super::ast::FnBody::Basis(_) => {
-                    let first = tokens
-                        .partition_point(|token| token.span.start < decl.return_type.span.end);
-                    let body = tokens[first..]
-                        .iter()
-                        .position(|token| token.kind == TokenKind::LBrace)?;
-                    return Some((first + body, index));
-                }
-            };
-            let opening = tokens.partition_point(|token| token.span.start < start);
-            debug_assert!(matches!(tokens[opening].kind, TokenKind::LBrace));
-            Some((opening, index))
-        })
+        .filter_map(|(index, decl)| body_opening(decl, tokens).map(|opening| (opening, index)))
         .collect();
     let mut result = DocumentedModule {
         declaration_docs: vec![vec![]; syntax.decls.len()],
@@ -207,7 +195,7 @@ fn render(
     checked: bool,
     effect: impl Fn(&str) -> Option<super::effects::FunctionEffect>,
 ) -> Result<String, ParseError> {
-    let documented = parse_documented_module(source)?;
+    let (documented, tokens) = parse_documented(source, None)?;
     let mut output = String::from(if checked {
         "# Module documentation\n\nChecked source interface; external callers use only the checked public effect. Bodies are checked independently. This metadata does not establish exact Meaning, access evidence, source preservation or constitutional discharge.\n\n"
     } else {
@@ -249,13 +237,10 @@ fn render(
             decl.name.text,
             if decl.public { "public" } else { "private" }
         ));
-        let end = match &decl.body {
-            super::ast::FnBody::Meaning { .. }
-            | super::ast::FnBody::MeaningReference { .. }
-            | super::ast::FnBody::MeaningCompose { .. }
-            | super::ast::FnBody::MeaningTensor { .. } => decl.span.end,
-            super::ast::FnBody::Quantum(body) if !decl.requires.is_empty() => body.span.start,
-            _ => decl.return_type.span.end,
+        let end = match body_opening(decl, &tokens) {
+            Some(opening) if !decl.requires.is_empty() => tokens[opening].span.start,
+            Some(_) => decl.return_type.span.end,
+            None => decl.span.end,
         };
         render_source(&mut output, source[decl.span.start..end].trim_end());
         if let Some(fact) = effect(&decl.name.text) {

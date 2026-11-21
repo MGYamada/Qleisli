@@ -631,6 +631,55 @@ fn selected_open_signature_checks_and_proposals_do_not_claim_closed_execution() 
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn refined_proposals_accept_explicit_and_environment_checker_selection() {
+    let source = "#![no_implicit_prelude]
+        classical fn same(b:Bit)->Bit{b}
+        meaning Id:Bit=permutation_by(same);
+        unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
+        unitary fn apply[const U:Op<Bit,Id>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+        pub unitary fn entry(q:Q<Bit>)->Q<Bit>{apply[checked_op(identity,Id)](q)}";
+    let files = SourceRoot::new(source);
+    let mut proposals = Vec::new();
+    for (index, flag) in [None, Some("--kernel"), Some("--lean-kernel")]
+        .iter()
+        .enumerate()
+    {
+        let path = files.0.join(format!("proposal-{index}.json"));
+        let mut command = selected("emit-proposal", &files.0.join("main.qli"), "main::entry");
+        command.arg(format!("--output={}", path.display()));
+        if let Some(flag) = flag {
+            command
+                .env_remove("QLEISLI_KERNEL")
+                .env_remove("QLEISLI_HIERARCHY_KERNEL")
+                .arg(format!("{flag}={}", kernel().display()));
+        } else {
+            command.env("QLEISLI_KERNEL", kernel());
+        }
+        let text = result(command.output().unwrap(), "emit-proposal", true);
+        assert!(text.contains("untrusted-proposal"));
+        proposals.push(std::fs::read(path).unwrap());
+    }
+    assert!(proposals.windows(2).all(|pair| pair[0] == pair[1]));
+    files.write(
+        "main.qli",
+        &source.replace("Q<Bit>{q}", "Q<Bit>{phase[1,1](q)}"),
+    );
+    let path = files.0.join("rejected.json");
+    let output = selected("emit-proposal", &files.0.join("main.qli"), "main::entry")
+        .arg(format!("--kernel={}", kernel().display()))
+        .arg(format!("--output={}", path.display()))
+        .output()
+        .unwrap();
+    let report = result(output, "emit-proposal", false);
+    assert!(report.contains("\"code\":\"contract\""), "{report}");
+    assert!(!path.exists());
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 #[cfg(unix)]
 fn selected_caller_h_request_rejects_x_once_without_a_raw_retry() {
     // Exact phase-fixed Euler words with the same primitive action sequence:

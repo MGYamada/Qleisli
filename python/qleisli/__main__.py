@@ -26,23 +26,11 @@ def main():
     status = 0
     try:
         client = Client(args.executable, edition=args.edition, lean_kernel=args.lean_kernel)
-        if args.format == "qli":
-            program = client.compile_project(args.input)
+        if args.format == "qli" and args.action in ("check", "run", "sample"):
+            result = client._call(args.action, "qli", edition=args.edition,
+                                  path=Path(args.input).resolve(), shots=args.shots, seed=args.seed)
         else:
-            limit = 16 << 20 if args.format == "qirf" else 1 << 20
-            with Path(args.input).open("rb") as stream:
-                data = stream.read(limit + 1)
-            if len(data) > limit:
-                raise _error("limit", "input byte limit exceeded")
-            program = {"qasm": client.from_openqasm, "qir": client.from_qir, "qirf": client.from_ir}[args.format](data)
-        if args.action == "sample":
-            result = program.sample(shots=args.shots, seed=args.seed)
-        elif args.action.startswith("emit-"):
-            text = {"emit-ir": lambda: program.artifact.decode("utf-8"),
-                    "emit-qasm": program.to_openqasm, "emit-qir": program.to_qir}[args.action]()
-            result = {"text": text}
-        else:
-            result = getattr(program, args.action)()
+            result = _artifact_action(client, args)
         diagnostics = []
     except (QleisliError, OSError, ValueError) as e:
         diagnostics = e.diagnostics if isinstance(e, QleisliError) else _error("project" if isinstance(e, OSError) else "format", str(e)).diagnostics
@@ -54,6 +42,25 @@ def main():
     print(json.dumps({"format": "qleisli.result", "version": 1, "command": f"interop {args.action}",
                       "outcome": "error" if status else "ok", "diagnostics": diagnostics, "result": result}))
     return status
+
+
+def _artifact_action(client, args):
+    if args.format == "qli":
+        program = client.compile_project(args.input)
+    else:
+        limit = 16 << 20 if args.format == "qirf" else 1 << 20
+        with Path(args.input).open("rb") as stream:
+            data = stream.read(limit + 1)
+        if len(data) > limit:
+            raise _error("limit", "input byte limit exceeded")
+        program = {"qasm": client.from_openqasm, "qir": client.from_qir, "qirf": client.from_ir}[args.format](data)
+    if args.action == "sample":
+        return program.sample(shots=args.shots, seed=args.seed)
+    if args.action.startswith("emit-"):
+        text = {"emit-ir": lambda: program.artifact.decode("utf-8"),
+                "emit-qasm": program.to_openqasm, "emit-qir": program.to_qir}[args.action]()
+        return {"text": text}
+    return getattr(program, args.action)()
 
 
 if __name__ == "__main__":

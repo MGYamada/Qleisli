@@ -10,6 +10,7 @@ build-dir = "../target/mdbook"
 create-missing = false
 
 [output.html]
+site-url = "/Qleisli/"
 git-repository-url = "https://github.com/MGYamada/Qleisli"
 input-404 = "404.md"
 mathjax-support = true

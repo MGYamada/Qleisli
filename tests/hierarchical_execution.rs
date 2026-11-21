@@ -499,6 +499,26 @@ fn sampling_faults(
     assert!(deterministic.shots.iter().all(|shot| shot.outcome == 0));
     assert_eq!(deterministic.input_norm_squared, 4.0);
 
+    // Four real components have a representable total squared norm even
+    // though each individual square rounds to zero.
+    if input.len() >= 2 {
+        let mut joint = vec![[0.0, 0.0]; input.len()];
+        joint[..2].fill([1.0, 1.0]);
+        let normal = checked
+            .sample_normalized_shots(&joint, reference, 3, &mut SplitMix64::new(42), limits)
+            .unwrap();
+        joint[..2].fill([2.0_f64.powi(-538); 2]);
+        let tiny = checked
+            .sample_normalized_shots(&joint, reference, 3, &mut SplitMix64::new(42), limits)
+            .unwrap();
+        assert_eq!(tiny.input_norm_squared, f64::from_bits(1));
+        for (small, unit) in tiny.shots.iter().zip(&normal.shots) {
+            assert_eq!(small.outcome, unit.outcome);
+            assert_eq!(small.probability, unit.probability);
+            assert_eq!(small.amplitudes, unit.amplitudes);
+        }
+    }
+
     let result = checked
         .sample_normalized_shots(input, reference, 3, &mut SplitMix64::new(42), limits)
         .unwrap();

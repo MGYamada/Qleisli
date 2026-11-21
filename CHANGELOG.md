@@ -9,6 +9,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Run Python CLI source actions directly and accept explicit checker paths
+  for source obligations during proposal emission (#681, #683).
+- Preserve representable subnormal input norms in hierarchy sampling (#682).
+- Use the frontend's Unicode and CRLF coordinates for interop diagnostics (#213).
+- Reject OpenQASM register names reserved by the grammar, cover all native
+  reply modes in protocol tests, and render static and classical function
+  constraints in generated documentation (#684, #685, #686).
 - Check hierarchy control interfaces against the retained requests and compare each
   executable finite function circuit with its accepted exact matrix. Bound tuple
   decoding, speed up issued-identity checks and charge for traversing their
@@ -25,9 +32,14 @@ development milestones from the scope of their evidence.
 - Check each QDV1 record's declared field count in debug builds (#649).
 - Audit QPTL declarations in both CI workflows and exercise rejection of a
   private project axiom (#653).
+- Compare all eleven native regression drivers in standalone and shared modes
+  on the same runner at a selected worker count, retaining oracle reports
+  and timings (#223).
 - Keep nested Git checkouts out of the edition scan (#654).
 - Name the missing adjoint capability for zero-input isometries and explain
   conditional expressions in the finite classical grammar (#662, #664).
+- Publish the checked mdBook from `main` to GitHub Pages and mirror its
+  generated HTML to the `gh-pages` branch.
 - Name the three Fundamental Theorems in the Book introduction and place the
   constitutional chapters after the Language Reference and design material.
 - Retire the imaginary-v1 requirements chapter and explain the six v1 algorithm

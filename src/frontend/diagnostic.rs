@@ -3,7 +3,7 @@
 //! Locations refer to the original source bytes. This module reports checks;
 //! its records do not carry semantic evidence or authorize execution.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use super::ast::Span;
 use super::compile::CompileError;
@@ -75,6 +75,21 @@ pub struct SourceLocation {
     /// One-based Unicode scalar coordinates, with CRLF counted as one newline.
     pub line: usize,
     pub column: usize,
+}
+
+impl SourceLocation {
+    /// Locate a UTF-8 byte span in the original source, counting CRLF as one newline.
+    /// Returns `None` for inverted, out-of-bounds or non-character-boundary spans.
+    pub fn from_span(path: &Path, source: &str, span: Span) -> Option<Self> {
+        source.get(span.start..span.end)?;
+        let (line, column) = coordinates(source, span);
+        Some(Self {
+            path: path.into(),
+            span,
+            line,
+            column,
+        })
+    }
 }
 
 /// Why a diagnostic teaches the boundary between affine and linear ownership.
@@ -203,6 +218,17 @@ pub(crate) fn coordinates(source: &str, span: Span) -> (usize, usize) {
 mod tests {
     use super::*;
     use crate::frontend::compile::ErrorCode;
+
+    #[test]
+    fn source_location_validates_byte_spans_and_counts_unicode_columns() {
+        let text = "a\r\nβx";
+        let path = Path::new("program.qasm");
+        let location = SourceLocation::from_span(path, text, Span { start: 5, end: 6 }).unwrap();
+        assert_eq!((location.line, location.column), (2, 2));
+        for (start, end) in [(4, 5), (3, 4), (6, 5), (5, 7)] {
+            assert!(SourceLocation::from_span(path, text, Span { start, end }).is_none());
+        }
+    }
 
     #[test]
     fn native_diagnostic_conversion_preserves_pointers_and_distinct_causes() {

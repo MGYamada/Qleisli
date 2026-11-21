@@ -1831,8 +1831,8 @@ Rules for explicit module-map source selection:
 - Explicit module-map source selection parses, instantiates, elaborates and
   lowers untrusted proposals. Ordinary commands with explicit entry and
   module bindings use the shared source execution plan.
-- `emit-proposal` writes transport without constructing a kernel and reports
-  `untrusted-proposal`.
+- `emit-proposal` checks source contracts and operation Meaning requests with
+  the selected kernel before writing the transport. It reports `untrusted-proposal`.
 - The preselected Raw route uses ordinary native acceptance. It then
   separately compares the accepted instructions with the retained source
   steps.

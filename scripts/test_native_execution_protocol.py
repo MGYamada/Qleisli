@@ -13,6 +13,7 @@ import subprocess
 import tomllib
 
 from native_packet import envelope, parse_reply, MODES
+from check_production_coverage import check_native_dispatch
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'tests/fixtures/verification_v030/execution-view-binding'
@@ -45,7 +46,7 @@ def inner(artifact, request=None):
 
 def check_response_contexts():
     """Synthetic framing negatives supplement, never replace, native decisions."""
-    assert len(MODES) == 18
+    assert set(MODES) == check_native_dispatch(ROOT)
     for mode, (claim, scopes) in MODES.items():
         for scope in scopes:
             frame = f'qleisli.native-result 3\n{claim}\n2026\n{VERSION}\n{mode}\n{scope}\n42\n'.encode()
