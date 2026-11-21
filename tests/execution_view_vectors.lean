@@ -430,7 +430,8 @@ def main (args : List String) : IO Unit := do
     let name ← IO.ofExcept ((row.getObjVal? "name") >>= Json.getStr?)
     let input ← IO.ofExcept (functionInput row)
     let receipt ← checked (QleisliKernel.Raw.BranchFunction.checkEntry before input input)
-    let actual ← IO.ofExcept (encode (← checked (FiniteView.functionEvidence receipt)))
+    let dependencies := before.map (·.dependency)
+    let actual ← IO.ofExcept (encode (← checked (FiniteView.functionEvidence dependencies receipt)))
     let expected ← IO.ofExcept ((row.getObjVal? "view") >>= value 129 >>= encode)
     unless actual == expected do
       throw (IO.userError ("retained function cache mismatch: " ++ name))
