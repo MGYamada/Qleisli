@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "cef6131aca1374aa775d01f8f4e5ae7a7d9f998dc286f9b077535f1481a60e04",
+    "sha256": "572824668f5c1ae38051cf16777fd6e709e048454fc98cdfd9ee4917b4e96e61",
     "files": {
       "lean/Audit.lean": "769d64e8aa64d7e00217c3ca69857c07e86955cabc606b95621c8d068b7de87a",
       "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -729,11 +729,11 @@
       "lean-kernel/QleisliKernel/Raw/Function.lean": "7880102cab760cfbc1800178bc314a2c742be13e2ebbf5e68034187255c3ed80",
       "lean-kernel/QleisliKernel/Raw/Instrument.lean": "b026dab1962c5c5f969bf17606d4d2d8f94a231c9bcd9cdbb4d7ede7147b841b",
       "lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean": "6ac362c61ac7a20c7b865e7268006a8722cf611b56eff841f19edbd28a4b9bc0",
-      "lean-kernel/QleisliKernel/Raw/Observation.lean": "62f7c5c791c9c737dcc252dc35a0d0ca10411bb1e8e8ef9dad95e9fd18041370",
+      "lean-kernel/QleisliKernel/Raw/Observation.lean": "5b17d1844c20ef99988a31d382f2929d374507f6881d4369ff70d644c8c864dc",
       "lean-kernel/QleisliKernel/Raw/ObservationAgreement.lean": "c244a963a896ba10d542611daed1b808d23b7db2bef02eededd3fbee0b61c164",
       "lean-kernel/QleisliKernel/Raw/ObservationExecution.lean": "d0b0a6829a1e638228a298c93ad222a8a1961dbe8b7820fa3d669543897810ec",
       "lean-kernel/QleisliKernel/Raw/ObservationLayer.lean": "ce773c953cb07c550c726b515c974756bd7faf028a98ff454ae48654970ace6e",
-      "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean": "e470d25a2bbd6fa7b0eeb48ae149680d3e3c103c3c1e9132bbcb622f2f084f1b",
+      "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean": "a41de134aa45f300f8f9a44f847a7a1d9e40a352162349583adfc4fe79177a1c",
       "lean-kernel/QleisliKernel/Raw/ObservationReader.lean": "f8d22285b1faaa44bf677def343909e5a8751b173322e4067d3f75ae76f5cafb",
       "lean-kernel/QleisliKernel/Raw/ObservationReferences.lean": "535472b31c785fb9c141d3697d0115c2f194bf036f76a1769ded94b4d5db698e",
       "lean-kernel/QleisliKernel/Raw/ObservationScope.lean": "5f201bb93891008146244ff8c990a3f9916bccd293f1a5d1adcc5c773ec61a95",

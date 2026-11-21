@@ -114,7 +114,7 @@
       "verifier_profile": "qlv1-structural-identity-v1",
       "evidence": {
         "path": "governance/guarantees/current-evidence.json",
-        "sha256": "77635a4829a962b2274db67c718bb9f0cbf1fae655de4a1e30f56df8d1eb085d"
+        "sha256": "5285b18246f875e02dc380e2c4bb03bcfb63827d284ccc8978d055a31457545f"
       }
     }
   ],
