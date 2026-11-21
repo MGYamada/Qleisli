@@ -203,6 +203,9 @@ impl Component {
     ) -> Result<Vec<Self>, SimulationError> {
         if self.axes.as_slice() == [wire] {
             let weight = self.weight();
+            if weight == 0.0 {
+                return Ok(Vec::new());
+            }
             let mut residual = self;
             residual.axes.clear();
             residual.amplitudes.truncate(1);

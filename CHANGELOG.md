@@ -11,7 +11,8 @@ development milestones from the scope of their evidence.
 
 - Check hierarchy control interfaces against the retained requests and compare each
   executable finite function circuit with its accepted exact matrix. Bound tuple
-  decoding, speed up issued-identity checks, extend the Lean audit, and preserve
+  decoding, speed up issued-identity checks and charge for traversing their
+  histories. Extend the Lean audit and preserve
   invalid-input diagnostics. Sampling uses both Born weights. Reset and discard
   combine hidden outcomes when no quantum axis remains (#679).
 

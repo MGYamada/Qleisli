@@ -97,6 +97,28 @@ fn check(bits: u8, implementation: RawProgram, specification: RawProgram) -> Fun
     .unwrap()
 }
 
+#[test]
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+fn noncanonical_signature_reports_its_type_error() {
+    let result = FunctionEvidence::check(
+        qleisli::edition::Edition::E2026,
+        BasisType::Tuple(vec![BasisType::Bit; 2]),
+        flat(2, vec![]),
+        flat(2, vec![]),
+        identity(),
+        &mut work(),
+    );
+    assert!(matches!(
+        result,
+        Err(ContractError::Type(
+            "tuple type requires at least three fields"
+        ))
+    ));
+}
+
 fn matrix(dim: usize, entry: impl Fn(usize, usize) -> Exact) -> Matrix {
     let mut entries = vec![];
     for row in 0..dim {

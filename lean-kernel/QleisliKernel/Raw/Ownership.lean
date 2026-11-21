@@ -1,4 +1,4 @@
-import Init.Data.List.Sort.Lemmas
+import Std.Data.TreeSet.Lemmas
 import QleisliKernel.Raw.Trace
 import QleisliKernel.Semantics.Ownership
 
@@ -50,19 +50,19 @@ theorem increasing_iff (ids : List Nat) : increasing ids = true ↔ ids.Pairwise
       | nil => simp [increasing]
       | cons y tail => exact (short x y tail rfl).elim
 
+theorem unseenIds_iff (seen : Std.TreeSet Nat) (ids : List Nat) :
+    unseenIds seen ids = true ↔ ids.Nodup ∧ ∀ id ∈ ids, id ∉ seen := by
+  induction ids generalizing seen with
+  | nil => simp [unseenIds]
+  | cons id rest ih =>
+    simp only [unseenIds, Bool.and_eq_true, Bool.not_eq_true', ih, List.nodup_cons,
+      List.mem_cons, Std.TreeSet.mem_insert]
+    simp only [← Bool.not_eq_true, Std.TreeSet.contains_iff_mem] <;> grind
+
 theorem freshHistory_iff (ids : List Nat) : freshHistory ids = true ↔ ids.Nodup := by
-  have perm := List.mergeSort_perm ids (fun (a b : Nat) => decide (a ≤ b))
-  simp only [freshHistory, Bool.or_eq_true, increasing_iff]
-  constructor
-  · rintro (h | h)
-    · exact h.imp Nat.ne_of_lt
-    · exact perm.nodup_iff.mp (h.imp Nat.ne_of_lt)
-  · intro h
-    right
-    have sorted := List.pairwise_mergeSort (le := fun (a b : Nat) => decide (a ≤ b))
-      (by simp; omega) (by simp; omega) ids
-    simp only [decide_eq_true_eq] at sorted
-    exact (sorted.and (perm.nodup_iff.mpr h)).imp (fun a => Nat.lt_of_le_of_ne a.1 a.2)
+  simp only [freshHistory, Bool.or_eq_true, increasing_iff, unseenIds_iff]
+  simp only [Std.TreeSet.not_mem_emptyc, not_false_eq_true, implies_true, and_true]
+  exact or_iff_right_of_imp (fun h => h.imp Nat.ne_of_lt)
 
 theorem valid (state : Raw.State) (ok : Raw.stateValid state = true) : Semantics.Ownership.Valid (view state) := by
   simp only [Raw.stateValid,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem,beq_iff_eq] at ok

@@ -198,13 +198,14 @@ theorem verify_ownershipSafe (dependencies : List Dependency) (program : Semanti
     returned_ownership _ _ (guard_success _ _ _ _ hout).1⟩
   simpa only [initialQuantum] using inputs
 
-/-- Refactoring preserves the former literal action at every fuel, input and
-work budget, including failures and their remaining work. -/
+/-- Expand the executable instruction checks and history charges at every fuel
+and work budget, including failures and their remaining work. -/
 theorem checkOps_projection (dependencies : List Dependency) (fuel : Nat) :
     checkOps dependencies fuel =
   Nat.rec (fun _ _ => throw .limit) (fun _ recurse initial operations => do
     let result ← operations.foldlM (fun state op => do
-      exactWork (Exact.charge 1)
+      exactWork (Exact.charge (1 + state.quantum.seenTokens.length + state.quantum.seenWires.length +
+        state.classical.length))
       guard (Raw.stateValid state.quantum)
       let next ← match op with
       | .pure operation => do

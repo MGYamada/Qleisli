@@ -1,3 +1,4 @@
+import Std.Data.TreeSet.Basic
 import QleisliKernel.Semantics.Raw
 import QleisliKernel.Semantics.RawTrace
 import QleisliKernel.Finite
@@ -17,14 +18,18 @@ def require (condition : Bool) : Check Unit :=
 def unique {α : Type} [BEq α] (values : List α) : Bool :=
   values.eraseDups.length == values.length
 
-/-- Issued identities normally increase. Unordered histories use a sorted copy
+/-- Issued identities normally increase. Unordered histories use a balanced set
 so each uniqueness scan costs at most O(n log n). -/
 def increasing : List Nat → Bool
   | x :: y :: tail => x < y && increasing (y :: tail)
   | _ => true
 
+def unseenIds (seen : Std.TreeSet Nat) : List Nat → Bool
+  | [] => true
+  | id :: rest => !seen.contains id && unseenIds (seen.insert id) rest
+
 def freshHistory (ids : List Nat) : Bool :=
-  increasing ids || increasing (ids.mergeSort (· ≤ ·))
+  increasing ids || unseenIds {} ids
 
 structure State where
   live : List Port := []
