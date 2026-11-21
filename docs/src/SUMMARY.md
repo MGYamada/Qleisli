@@ -8,8 +8,18 @@
 - [Following a quantum owner](learn/ownership.md)
 - [Building a Bell pair](learn/bell-pair.md)
 - [Writing functions and modules](learn/functions-and-modules.md)
+- [Choosing an effect](learn/effects.md)
 - [Teleporting a qubit](learn/teleportation.md)
 - [Searching four inputs](learn/search.md)
+- [Stating what an operation means](learn/contracts.md)
+- [Working with the tools](learn/tools.md)
+
+# How Qleisli works
+
+- [System architecture](architecture/system.md)
+- [Compiler architecture](architecture/compiler.md)
+- [Verifier architecture](architecture/verifier.md)
+- [Rust core crate map](architecture/rust-crates.md)
 
 # Language Reference
 
@@ -26,13 +36,6 @@
 - [Checked operations](reference/checked-operations.md)
 - [Standard-library semantic namespaces](reference/stdlib.md)
 - [Realization, specialization and resources](reference/realization.md)
-
-# Architecture
-
-- [System architecture](architecture/system.md)
-- [Compiler architecture](architecture/compiler.md)
-- [Verifier architecture](architecture/verifier.md)
-- [Rust core crate map](architecture/rust-crates.md)
 
 # Design history
 

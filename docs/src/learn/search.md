@@ -130,3 +130,6 @@ as a reusable function in `$QLEISLI_REPO/examples/grover/search.qli`.
 The [standard library reference](../reference/stdlib.md) describes the
 operations used here. The [v1 algorithm goals](../imaginary-v1/index.md#marked-search)
 describe the larger search problem.
+
+Next, [state what an operation means](contracts.md) and let the checker
+compare an implementation with it.

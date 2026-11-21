@@ -197,8 +197,9 @@ for name in system compiler verifier rust-crates; do
 done
 ```
 
-The [introductory lessons](learn/first-qubit.md) teach with executable
-programs. The roadmap identifies planned features explicitly. Repository root documents
+The [lessons](learn/first-qubit.md) teach with executable programs. The
+architecture chapters follow the lessons in `SUMMARY.md` and refer to the
+projects and reports that the lessons produce, so keep the two parts in step. The roadmap identifies planned features explicitly. Repository root documents
 are linked where needed, not embedded. Links between chapters are relative;
 links to code, fixtures and build configuration use their repository URLs.
 No external plugin is required.

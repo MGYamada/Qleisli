@@ -27,7 +27,8 @@ export QLEISLI_KERNEL="$QLEISLI_REPO/lean-kernel/.lake/build/bin/qleisli-kernel"
 ```
 
 The first command builds the CLI. The second builds and audits the native
-verifier. `QLEISLI_KERNEL` tells the CLI which executable to use for checking.
+verifier, a separate program that decides whether each of your programs is
+accepted. `QLEISLI_KERNEL` tells the CLI which executable to use for checking.
 
 ## Prepare and measure
 
@@ -61,7 +62,8 @@ observe fn main() -> Bit {
 Read the first line as a promise to the caller. The function is named
 `main`, the empty parentheses mean it takes no arguments, and `-> Bit`
 says it returns one ordinary bit. The word `observe` allows this
-function to measure a qubit.
+function to measure a qubit. [Choosing an effect](effects.md) covers the
+other words that can stand there.
 
 Execution starts inside the braces. `init0()` prepares a qubit in the
 zero state. The `let` binding names its owner `q`. The final expression,

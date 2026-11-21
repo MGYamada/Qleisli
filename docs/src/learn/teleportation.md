@@ -8,8 +8,9 @@ its input, then try two inputs to find out why Bob needs both bits.
 ## Use the shared Bell pair
 
 From the [practice directory](first-qubit.md#prepare-and-measure), copy the
-manifest and the public `entangle` function from the
+manifest and the `pair` module from the
 [functions and modules project](functions-and-modules.md#move-the-function-into-a-module).
+This lesson uses its public `entangle` function.
 
 ```sh
 mkdir -p teleport-lab
@@ -35,7 +36,8 @@ pub observe fn teleport(input: Q<Bit>) -> ((Bit, Bit), Q<Bit>) {
 }
 ```
 
-Follow the three owners. The caller supplies `input`. The first line of
+Follow the three owners, as you did in [Following a quantum owner](ownership.md).
+The caller supplies `input`. The first line of
 the function supplies `alice` and `bob`, one for each half of the Bell
 pair. Alice applies a CNOT to her two qubits and a Hadamard to the first,
 then measures both. Together those operations make a Bell-basis

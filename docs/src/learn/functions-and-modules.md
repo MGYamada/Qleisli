@@ -31,6 +31,7 @@ Why does the last line of `entangle` have no semicolon? The call to
 of the function. The caller can pass those qubits on to another gate or,
 as `main` does here, measure them. The `unitary` function applies gates
 to its inputs. The measurements belong to the `observe` function.
+[Choosing an effect](effects.md) explains those two words.
 
 From the practice directory, check the project and run it.
 
@@ -76,7 +77,8 @@ Run `qleisli run bell-lab`. The two outcomes are `01` and `10`, each
 with probability one half. The target starts at one. On the component
 where the control is one, `cnot` flips the target back to zero.
 
-Keep your `pair.qli` file. In [Teleporting a qubit](teleportation.md),
-you'll use `entangle` to supply Alice and Bob with a shared Bell pair.
+Keep your `pair.qli` file. Next, [choose an effect](effects.md) for two
+more functions in it. In [Teleporting a qubit](teleportation.md), you'll
+use `entangle` to supply Alice and Bob with a shared Bell pair.
 For the rules that apply to imports, see
 [Prelude, imports and qualified names](../reference/prelude.md).

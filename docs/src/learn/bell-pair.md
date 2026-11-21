@@ -49,5 +49,4 @@ of being zero or one. This time all four pairs, including `01` and
 distinguish independence from perfect correlation.
 
 Next, [give the Bell circuit its own function and module](functions-and-modules.md)
-so you can try different inputs. To follow what the compiler and verifier do
-with the Bell program, read [System architecture](../architecture/system.md).
+so you can try different inputs.
