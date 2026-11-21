@@ -840,6 +840,7 @@ impl Kernel {
     pub(crate) fn function_evidence(
         &self,
         signature: &crate::contract::BasisType,
+        bits: usize,
         implementation: &RawProgram,
         specification: &RawProgram,
         identity: crate::contract::function::RetainedIdentity,
@@ -847,7 +848,6 @@ impl Kernel {
     ) -> Result<crate::contract::FunctionEvidence> {
         use super::{codec::Codec, json::Value};
         use crate::ir::*;
-        let bits = signature.bits().map_err(super::contract_error)?;
         let mut encoder = Encoder::new(Version::V2);
         encoder.entries.push(Value::Null);
         encoder.evidence_fields(

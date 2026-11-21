@@ -174,7 +174,7 @@ QPE restores the original circuit root rather than executing its provider. -/
 def Core.plan (core : Core) (matrices : HierarchyView.Matrices) : Finite.WorkM Value :=
   match core with
   | .inspect artifact _ _ => HierarchyView.purePlan artifact matrices
-  | .request p _ => HierarchyView.purePlan p.artifact matrices
+  | .request p _ => HierarchyView.purePlan p.artifact matrices p.controls
   | .fourier p _ => HierarchyView.purePlan p.artifact matrices
   | .instrument p _ => HierarchyView.instrumentPlan p.packet matrices
   | .qpeInstrument p _ => HierarchyView.instrumentPlan

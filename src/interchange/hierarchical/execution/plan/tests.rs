@@ -57,7 +57,7 @@ fn capture_native_hierarchy_mode_plans() {
         std::fs::write(directory.join(format!("{index}.bridge")), bridge).unwrap();
         if row.field("accept").unwrap().boolean().unwrap() {
             let report = report.unwrap();
-            let view = report.execution().unwrap().view().unwrap();
+            let view = report.execution().unwrap().view(&[]).unwrap();
             std::fs::write(directory.join(format!("{index}.qdv")), view).unwrap();
         } else {
             assert!(
@@ -103,7 +103,7 @@ fn retained_plan_matches_independent_shared_hierarchy_descriptions() {
         let plan = Plan::compile(actual, instrument, |_| Ok(matrices)).unwrap();
         let expected = encode(&vector_value(row.field("value").unwrap())).unwrap();
         assert_eq!(
-            plan.view().unwrap(),
+            plan.view(&[]).unwrap(),
             expected,
             "{}",
             row.field("name").unwrap().text().unwrap()
@@ -139,7 +139,7 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
     let mut native = kernel.check_against_native(artifact, request).unwrap();
     let first = native.execute_pure(&input, 2, limits).unwrap();
     let address = native.execution().unwrap() as *const Plan;
-    let description = native.execution().unwrap().view().unwrap();
+    let description = native.execution().unwrap().view(&[]).unwrap();
     let vectors = json::parse(include_bytes!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/",
@@ -154,7 +154,7 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
     .unwrap();
     assert_eq!(description, expected);
     assert_eq!(address, native.execution().unwrap() as *const Plan);
-    assert_eq!(description, native.execution().unwrap().view().unwrap());
+    assert_eq!(description, native.execution().unwrap().view(&[]).unwrap());
     // Private fault injection: public reports expose only immutable slices.
     // Poisoning old transport storage catches any subsequent reparse, while
     // the actual execution plan must retain its original exact matrix/nodes.
@@ -163,7 +163,7 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
     assert_eq!(first.amplitudes, second.amplitudes);
     assert_eq!(first.steps, second.steps);
     assert_eq!(address, native.execution().unwrap() as *const Plan);
-    assert_eq!(description, native.execution().unwrap().view().unwrap());
+    assert_eq!(description, native.execution().unwrap().view(&[]).unwrap());
 
     let mut compatibility = kernel.check_against(artifact, request).unwrap();
     let first = compatibility.execute(&input, 2, limits).unwrap();
@@ -173,7 +173,7 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
             .reconstruction
             .execution()
             .unwrap()
-            .view()
+            .view(&[])
             .unwrap(),
         description
     );
@@ -188,7 +188,7 @@ fn native_and_compatibility_execution_keep_the_same_owned_plan() {
             .reconstruction
             .execution()
             .unwrap()
-            .view()
+            .view(&[])
             .unwrap()
     );
     assert_eq!(
@@ -216,7 +216,7 @@ fn predecision_plan_allocation_moves_unchanged_into_a_native_report() {
     let prepared = Prepared::new(crate::edition::Edition::E2026, payload, None, None, false);
     let candidate = prepared.execution.as_ref().unwrap();
     let address = candidate.as_ref() as *const Plan;
-    let description = candidate.view().unwrap();
+    let description = candidate.view(&[]).unwrap();
     let response = runtime::check(
         kernel.executable(),
         kernel.edition(),
@@ -228,7 +228,7 @@ fn predecision_plan_allocation_moves_unchanged_into_a_native_report() {
     validate_leaves(&decoded.value, &response.indices).unwrap();
     let report = NativeChecked::new(prepared, &response, false, &[]).unwrap();
     assert_eq!(address, report.execution().unwrap() as *const Plan);
-    assert_eq!(description, report.execution().unwrap().view().unwrap());
+    assert_eq!(description, report.execution().unwrap().view(&[]).unwrap());
     assert_eq!(report.payload(), payload);
 }
 

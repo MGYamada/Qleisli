@@ -379,6 +379,7 @@ def parseQpeInstrument (input : ByteArray) : Except Protocol.Error QpeInstrument
     let entry : Entry := ⟨← word,← word⟩
     let circuit : QleisliKernel.Hierarchical.QpeSchedule.Request :=
       ⟨← interface,← array word,← array word,← array word,← word⟩
+    if provider.artifact.entry.implementation != circuit.provider then throw .syntax
     let atom : DecodeM QleisliKernel.Hierarchical.CircuitTrace.Atom := do
       return ⟨← word,← interface⟩
     let candidate : QleisliKernel.Hierarchical.QpeSchedule.Candidate :=

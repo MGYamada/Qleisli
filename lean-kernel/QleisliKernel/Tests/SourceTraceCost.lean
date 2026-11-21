@@ -38,7 +38,7 @@ def outcome {α : Type} (work : Nat) (action : Finite.WorkM α) : Except Finite.
   (.error (.arithmetic .workLimit),9998938)
 #guard measure 2000000000 (SourceTrace.read sources "main" "route") = (true,14743150)
 #guard outcome 10000000 composed matches (.error (.arithmetic .workLimit),9998938)
-#guard measure exactWorkLimit composed = (true,15879813)
-#guard measure 2000000000 composed = (true,15879813)
+#guard measure exactWorkLimit composed = (true,16262857)
+#guard measure 2000000000 composed = (true,16262857)
 
 end QleisliKernel.Tests.SourceTraceCost
