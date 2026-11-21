@@ -151,10 +151,10 @@ first records the schema and scoped-guarantee source identity checks. Matching
 records finish this bootstrap workflow at that point. Stale records and manual
 dispatches run the complete fresh verification and proposal generation below.
 Required ordinary CI retains its own executable checks and proof-lane policy.
-When regeneration is required, the runner compiles the
-native package from that checkout in a separate 25-minute preparation step and
-retains the build log with its commit. The registry then checks the native
-build, compiles the mathematical package, audits both packages and runs its
+When regeneration is required, the runner first builds the native package and
+then the mathematical package from the same checkout. Each cold build has a
+25-minute preparation step. The runner retains the native build log with its
+commit. The registry rechecks both builds, audits both packages and runs its
 fresh kernel replay and schema export within its existing deadline.
 The producer runs the full reductions and fixed protected-output comparisons before
 proposing changes to the schema registry, three current-evidence records and the

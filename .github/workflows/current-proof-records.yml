@@ -85,14 +85,6 @@ jobs:
         uses: ./.github/actions/native-runtime
         with:
           prepare: 'false'
-      - name: Prepare the pinned mathematical package and its existing cache
-        if: steps.records.outputs.refresh == 'true'
-        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
-        with:
-          lake-package-directory: lean
-          auto-config: 'false'
-          use-github-cache: 'false'
-          build: 'false'
       - name: Compile the native package in the fresh checkout
         if: steps.records.outputs.refresh == 'true'
         # The complete cold build can exceed 15 minutes on ubuntu-latest.
@@ -104,6 +96,15 @@ jobs:
           python3 scripts/check_lean_kernel.py
           echo "$SOURCE_COMMIT" > "$RUNNER_TEMP/proof-native-build.log"
           (cd lean-kernel && lake build) 2>&1 | tee -a "$RUNNER_TEMP/proof-native-build.log"
+      - name: Compile the pinned mathematical package in the same checkout
+        if: steps.records.outputs.refresh == 'true'
+        timeout-minutes: 25
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
       - name: Execute the fixed fresh proof and review-output plan
         if: steps.records.outputs.refresh == 'true'
         run: python3 -B scripts/refresh_current_proof_records.py --source-commit "$SOURCE_COMMIT" --output "$RUNNER_TEMP/current-proof-records"
