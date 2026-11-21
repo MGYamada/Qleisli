@@ -222,20 +222,30 @@ fn fresh_native_mode_checks_independent_views_and_all_original_substitutions() {
         let request = Request::decode(&request_bytes).unwrap();
         let accepted = row.field("accepted").unwrap().boolean().unwrap();
         let subject = kernel.subject(&artifact, Some(&request_bytes)).unwrap();
-        let result = (|| -> Result<Checked> {
-            let prepared = prepare(Arc::clone(&subject), &request)?;
-            let supplied = expected(row);
-            let native = Kernel::submit_subject(
-                subject,
-                "--qmatch-source-check",
-                Some(View {
-                    graph: &supplied,
-                    caller: None,
-                }),
-            )?;
-            prepared.bind(native)
-        })();
-        assert_eq!(result.is_ok(), accepted, "{name}: {result:?}");
+        let supplied = expected(row);
+        let native = Kernel::submit_subject(
+            Arc::clone(&subject),
+            "--qmatch-source-check",
+            Some(View {
+                graph: &supplied,
+                caller: None,
+            }),
+        );
+        assert_eq!(native.is_ok(), accepted, "{name}: {native:?}");
+        if matches!(
+            name,
+            "unrelated-original-program"
+                | "wrong-original-arm-evidence"
+                | "wrong-original-arm-controlled"
+        ) {
+            let error = native.unwrap_err();
+            assert!(
+                matches!(error.code, "invalid_ir" | "contract"),
+                "{name}: {error}"
+            );
+        } else if let Ok(native) = native {
+            prepare(subject, &request).unwrap().bind(native).unwrap();
+        }
     }
 }
 

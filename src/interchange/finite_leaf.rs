@@ -253,9 +253,10 @@ pub(crate) fn check_with_kernel(
     let bits = boundary.signature.bits().map_err(contract_error)?;
     let dimension = 1usize << bits;
     if meaning.rows() != dimension || meaning.cols() != dimension {
-        return Err(contract_error(ContractError::Type(
+        return Err(Error::new(
+            "contract",
             "finite leaf meaning dimensions differ from the required type",
-        )));
+        ));
     }
     let program = kernel.check_leaf(payload, boundary, meaning)?;
     budget

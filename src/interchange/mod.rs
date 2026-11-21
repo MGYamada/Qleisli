@@ -94,7 +94,11 @@ impl std::error::Error for Error {}
 type Result<T> = std::result::Result<T, Error>;
 
 fn contract_error(e: ContractError) -> Error {
-    let code = if e.is_capacity() { "limit" } else { "contract" };
+    let code = match &e {
+        error if error.is_capacity() => "limit",
+        ContractError::EquationMismatch => "contract",
+        _ => "invalid_ir",
+    };
     Error::new(code, e.to_string())
 }
 

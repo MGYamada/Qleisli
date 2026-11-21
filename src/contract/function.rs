@@ -299,11 +299,13 @@ impl FunctionEvidence {
         budget: &mut Budget,
     ) -> Result<Self, ContractDiagnostic> {
         validate_identity(&identity, budget)?;
+        let bits = signature.bits()?;
         // Keep the untrusted trees borrowed until transport has checked their
         // capacity. Cloning here would recurse before its depth checks run.
         kernel
             .function_evidence(
                 &signature,
+                bits,
                 &implementation,
                 &specification,
                 identity,
@@ -313,7 +315,6 @@ impl FunctionEvidence {
                 let error = native_error(failure);
                 let counterexample = if error == ContractError::EquationMismatch {
                     (|| {
-                        let bits = signature.bits()?;
                         preflight(&implementation, bits, budget)?;
                         preflight(&specification, bits, budget)?;
                         let a = extract(&implementation, &signature, budget)?.matrix(budget)?;

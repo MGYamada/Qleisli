@@ -59,12 +59,12 @@ impl Prepared {
             execution,
         }
     }
-    fn view(&mut self) -> Option<Vec<u8>> {
+    fn view(&mut self, controls: &[ControlRequest]) -> Option<Vec<u8>> {
         let result = self
             .execution
             .as_ref()
             .map_err(Clone::clone)
-            .and_then(|plan| plan.view());
+            .and_then(|plan| plan.view(controls));
         match result {
             Ok(bytes) => Some(bytes),
             Err(error) => {
@@ -181,7 +181,7 @@ impl Kernel {
             self.edition,
             decoded.bridge,
             Mode::Inspect,
-            prepared.view().as_deref(),
+            prepared.view(&[]).as_deref(),
         )?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
@@ -303,7 +303,7 @@ impl Kernel {
             self.edition,
             decoded.bridge,
             Mode::Inspect,
-            prepared.view().as_deref(),
+            prepared.view(&[]).as_deref(),
         )?;
         validate_leaves(&decoded.value, &response.indices)?;
         NativeChecked::new(prepared, &response, false, &[])
@@ -329,7 +329,7 @@ impl Kernel {
         } else {
             Mode::ControlRequest
         };
-        let view = prepared.view();
+        let view = prepared.view(controls);
         if !controls.is_empty() && view.is_none() {
             return Err(Error::format(
                 "hierarchy source control requires a comparable execution view",
@@ -365,7 +365,7 @@ impl Kernel {
             self.edition,
             decoded.bridge,
             Mode::Instrument,
-            prepared.view().as_deref(),
+            prepared.view(&[]).as_deref(),
         )?;
         validate_leaves(&decoded.pure.actual, &response.indices)?;
         validate_pairs(
@@ -393,7 +393,7 @@ impl Kernel {
             self.edition,
             decoded.bridge,
             Mode::QpeInstrument,
-            prepared.view().as_deref(),
+            prepared.view(&[]).as_deref(),
         )?;
         validate_leaves(&decoded.provider.actual, &response.indices)?;
         validate_pairs(
@@ -523,7 +523,7 @@ impl Kernel {
             self.edition,
             decoded.bridge,
             mode,
-            prepared.view().as_deref(),
+            prepared.view(&[]).as_deref(),
         )?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
@@ -630,7 +630,7 @@ impl Kernel {
             self.edition,
             decoded.bridge,
             Mode::Instrument,
-            prepared.view().as_deref(),
+            prepared.view(&[]).as_deref(),
         )?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(
@@ -679,7 +679,7 @@ impl Kernel {
             self.edition,
             decoded.bridge,
             Mode::QpeInstrument,
-            prepared.view().as_deref(),
+            prepared.view(&[]).as_deref(),
         )?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(

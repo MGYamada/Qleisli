@@ -190,9 +190,10 @@ pub(crate) fn check_with_kernel(
     let rows = 1usize << boundary.codomain.bits().map_err(contract_error)?;
     let cols = 1usize << boundary.domain.bits().map_err(contract_error)?;
     if meaning.rows() != rows || meaning.cols() != cols {
-        return Err(contract_error(ContractError::Type(
+        return Err(Error::new(
+            "contract",
             "pure leaf meaning dimensions differ from the required types",
-        )));
+        ));
     }
     let program = kernel.check_pure_leaf(payload, boundary, meaning)?;
     budget

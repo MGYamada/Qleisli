@@ -9,8 +9,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
-- Publish the checked mdBook from `main` to GitHub Pages and mirror its
-  generated HTML to the `gh-pages` branch.
+- Check hierarchy control interfaces against the retained requests and compare each
+  executable finite function circuit with its accepted exact matrix. Bound tuple
+  decoding, speed up issued-identity checks and charge for traversing their
+  histories. Extend the Lean audit and preserve
+  invalid-input diagnostics. Sampling uses both Born weights. Reset and discard
+  combine hidden outcomes when no quantum axis remains (#679).
+
 - Move the beta entries listed above the 0.3.0-beta heading into that section,
   date it like its tag and open it with its scope statement (#645, #646).
 - Pin the crate documentation's Language Reference link to the release tag, so
@@ -23,6 +28,8 @@ development milestones from the scope of their evidence.
 - Keep nested Git checkouts out of the edition scan (#654).
 - Name the missing adjoint capability for zero-input isometries and explain
   conditional expressions in the finite classical grammar (#662, #664).
+- Publish the checked mdBook from `main` to GitHub Pages and mirror its
+  generated HTML to the `gh-pages` branch.
 - Name the three Fundamental Theorems in the Book introduction and place the
   constitutional chapters after the Language Reference and design material.
 - Retire the imaginary-v1 requirements chapter and explain the six v1 algorithm

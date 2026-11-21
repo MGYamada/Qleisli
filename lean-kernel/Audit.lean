@@ -158,6 +158,7 @@ import QleisliKernel.Tests.OrdinaryInputs
 import Main
 import Lean.Util.CollectAxioms
 import Lean.Compiler.ImplementedByAttr
+import Lean.Compiler.InitAttr
 import Lean.Compiler.ExternAttr
 import Lean.Compiler.NoncomputableAttr
 import Lean.Elab.Command
@@ -200,8 +201,11 @@ partial def checkImports (env : Environment) (name : Name) (transport : Bool)
 
 def check : CoreM Unit := do
   let env ← getEnv
-  let pureModules ← ofExcept (checkImports env `QleisliKernel false)
+  let mut pureModules ← ofExcept (checkImports env `QleisliKernel false)
   let runtimeModules ← ofExcept (checkImports env `Main true)
+  for name in env.header.moduleNames do
+    if (`QleisliKernel).isPrefixOf name then
+      pureModules ← ofExcept (checkImports env name false pureModules)
   let allowedAxioms := #[``propext, ``Classical.choice, ``Quot.sound]
   let mut checked := 0
   let mut kernelChecked := 0
@@ -217,6 +221,8 @@ def check : CoreM Unit := do
         present := present.insert env.header.moduleNames[idx]!
         if (`QleisliKernel).isPrefixOf env.header.moduleNames[idx]! then
           kernelChecked := kernelChecked + 1
+      if hasInitAttr env name || isIOUnitInitFn env name then
+        throwError "{name}: project initializer"
       if info.isUnsafe then throwError "{name}: unsafe project declaration"
       if info.isPartial then throwError "{name}: partial project declaration"
       if isNoncomputable env name then
