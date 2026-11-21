@@ -28,7 +28,7 @@ def measure (work : Nat) : Option (Nat × Nat) :=
     | .error _ => none
     | .ok _ => some (2000000000-left,work-remaining)
 
-#guard measure 10000000 = some (14743150,1136663)
-#guard measure 2000000000 = some (14743150,1136663)
+#guard measure 10000000 = some (14743150,1519707)
+#guard measure 2000000000 = some (14743150,1519707)
 
 end QleisliKernel.Tests.RawTraceCost

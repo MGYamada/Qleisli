@@ -34,30 +34,35 @@ theorem unique_nodup {α : Type} [BEq α] [LawfulBEq α] (xs : List α)
   exact (facts.2.eq_of_length length) ▸ facts.1
 
 theorem increasing_iff (ids : List Nat) : increasing ids = true ↔ ids.Pairwise (· < ·) := by
-  induction ids using increasing.induct with
-  | case1 x y rest ih =>
-    simp only [increasing, Bool.and_eq_true, decide_eq_true_eq, ih, List.pairwise_cons]
-    constructor
-    · rintro ⟨xy, h, tail⟩
-      exact ⟨fun a m => (List.mem_cons.mp m).elim (fun e => e ▸ xy) (fun m => Nat.lt_trans xy (h _ m)), h, tail⟩
-    · rintro ⟨first, h, tail⟩
-      exact ⟨first _ List.mem_cons_self, h, tail⟩
-  | case2 ids short =>
-    cases ids with
+  induction ids with
+  | nil => simp [increasing]
+  | cons x rest ih =>
+    cases rest with
     | nil => simp [increasing]
-    | cons x rest =>
-      cases rest with
-      | nil => simp [increasing]
-      | cons y tail => exact (short x y tail rfl).elim
+    | cons y rest =>
+      have step : increasing (x :: y :: rest) = (decide (x < y) && increasing (y :: rest)) := rfl
+      rw [step, Bool.and_eq_true, decide_eq_true_eq, ih]
+      simp only [List.pairwise_cons]
+      constructor
+      · rintro ⟨xy, h, tail⟩
+        exact ⟨fun a m => (List.mem_cons.mp m).elim (fun e => e ▸ xy) (fun m => Nat.lt_trans xy (h _ m)), h, tail⟩
+      · rintro ⟨first, h, tail⟩
+        exact ⟨first _ List.mem_cons_self, h, tail⟩
 
 theorem unseenIds_iff (seen : Std.TreeSet Nat) (ids : List Nat) :
     unseenIds seen ids = true ↔ ids.Nodup ∧ ∀ id ∈ ids, id ∉ seen := by
   induction ids generalizing seen with
   | nil => simp [unseenIds]
   | cons id rest ih =>
-    simp only [unseenIds, Bool.and_eq_true, Bool.not_eq_true', ih, List.nodup_cons,
-      List.mem_cons, Std.TreeSet.mem_insert]
-    simp only [← Bool.not_eq_true, Std.TreeSet.contains_iff_mem] <;> grind
+    by_cases h : seen.contains id = true
+    · have member := Std.TreeSet.contains_iff_mem.mp h
+      simp [unseenIds, List.foldlM_cons, markFresh, h, member]
+    · have next : unseenIds seen (id :: rest) = unseenIds (seen.insert id) rest := by
+        simp [unseenIds, List.foldlM_cons, markFresh, h]
+      rw [next, ih]
+      simp only [List.nodup_cons,List.mem_cons,Std.TreeSet.mem_insert]
+      have absent : id ∉ seen := fun m => h (Std.TreeSet.mem_iff_contains.mp m)
+      grind
 
 theorem freshHistory_iff (ids : List Nat) : freshHistory ids = true ↔ ids.Nodup := by
   simp only [freshHistory, Bool.or_eq_true, increasing_iff, unseenIds_iff]

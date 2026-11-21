@@ -20,13 +20,14 @@ def unique {α : Type} [BEq α] (values : List α) : Bool :=
 
 /-- Issued identities normally increase. Unordered histories use a balanced set
 so each uniqueness scan costs at most O(n log n). -/
-def increasing : List Nat → Bool
-  | x :: y :: tail => x < y && increasing (y :: tail)
-  | _ => true
+def increasing (ids : List Nat) : Bool :=
+  (ids.zipWith (fun a b => decide (a < b)) ids.tail).all id
 
-def unseenIds (seen : Std.TreeSet Nat) : List Nat → Bool
-  | [] => true
-  | id :: rest => !seen.contains id && unseenIds (seen.insert id) rest
+def markFresh (seen : Std.TreeSet Nat) (id : Nat) : Option (Std.TreeSet Nat) :=
+  if seen.contains id then none else some (seen.insert id)
+
+def unseenIds (seen : Std.TreeSet Nat) (ids : List Nat) : Bool :=
+  (ids.foldlM markFresh seen).isSome
 
 def freshHistory (ids : List Nat) : Bool :=
   increasing ids || unseenIds {} ids
