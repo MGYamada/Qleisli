@@ -9,8 +9,6 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
-- Compare all eleven native regression drivers in standalone and shared modes
-  on the same CI runner, retaining their original oracle reports and timings (#223).
 - Move the beta entries listed above the 0.3.0-beta heading into that section,
   date it like its tag and open it with its scope statement (#645, #646).
 - Pin the crate documentation's Language Reference link to the release tag, so
@@ -20,6 +18,9 @@ development milestones from the scope of their evidence.
 - Check each QDV1 record's declared field count in debug builds (#649).
 - Audit QPTL declarations in both CI workflows and exercise rejection of a
   private project axiom (#653).
+- Compare all eleven native regression drivers in standalone and shared modes
+  on the same runner at a selected worker count, retaining oracle reports
+  and timings (#223).
 - Keep nested Git checkouts out of the edition scan (#654).
 - Name the missing adjoint capability for zero-input isometries and explain
   conditional expressions in the finite classical grammar (#662, #664).

@@ -211,10 +211,10 @@ on pull requests that change the harness and on manual dispatch. Run it locally
 after building the pinned native checker and fetching Cargo dependencies:
 
 ```sh
-python3 scripts/shadow_native_drivers.py --first standalone --output "$qleisli_validation_dir/shadow"
+python3 scripts/shadow_native_drivers.py --first standalone --workers 4 --output "$qleisli_validation_dir/shadow"
 ```
 
-Both arms run the same eleven manifest commands serially, adding `--record`
+Both arms run the same eleven manifest commands, adding `--record`
 where needed. They share the pinned toolchain, prepared kernel library and
 host compiler. Each arm runs the original test inputs and independent oracles.
 The comparison checks generated driver source, reported decisions, oracle
@@ -222,10 +222,11 @@ results and the original emitted QIRF files. Each observation report must name
 the binary selected in its own arm, and its companion must repeat the same
 bindings. The Lean and Rust observations are compared across arms. Full per-arm
 logs retain timings and binary identities. The shared arm's elapsed time includes
-bundle preparation. Common
-setup and GitHub runner queue time are separate from those arm timings.
-PR runs start with the shared arm. Manual runs can start with either arm
-to measure the effect of execution order. The required native
+bundle preparation. The report records common preparation separately, and
+GitHub run and job timestamps give the initial queue time.
+PR runs start with the shared arm and use the routine runner's four workers.
+Manual runs can start with either arm and select one, two or four workers.
+Both arms use the same worker count. The required native
 suite continues to run its complete manifest independently.
 
 Named local `--task` reproduction retains explicit omitted-group reporting;

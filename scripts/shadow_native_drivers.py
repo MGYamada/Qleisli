@@ -86,7 +86,7 @@ def observation(directory, selector, shared_identity=None):
     return dict(source=build['driver_source_sha256'], oracle=report, sidecars=sidecars)
 
 
-def compare(output, first, report):
+def compare(output, first, workers, report):
     environment = execution_environment() | {
         'QLEISLI_KERNEL': str((ROOT / 'lean-kernel/.lake/build/bin/qleisli-kernel').resolve())}
     expected_head = os.environ.get('GITHUB_SHA')
@@ -117,7 +117,7 @@ def compare(output, first, report):
             binary_hash = json.loads(drivers[0].read_bytes())['binary']['sha256']
             shared_identity = (drivers[1], binary_hash)
             arm['preparation_seconds'] = time.monotonic() - started
-        arm['tasks'] = execute(tasks, ROOT, directory, 1, 900, bound_environment, drivers)
+        arm['tasks'] = execute(tasks, ROOT, directory, workers, 900, bound_environment, drivers)
         arm['elapsed_seconds'] = time.monotonic() - started
         verify_coverage(dict(binding=binding, manifest_sha256=manifest, tasks=arm['tasks']),
                         tasks, binding, manifest)
@@ -138,14 +138,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--first', choices=('standalone', 'shared'), default='standalone')
+    parser.add_argument('--workers', type=int, choices=(1, 2, 4), default=1,
+                        help='identical worker count for both arms of the comparison')
     args = parser.parse_args()
     output = args.output.resolve()
     if output.is_relative_to(ROOT) or output.exists():
         parser.error('select a fresh output directory outside the checkout')
     output.mkdir(parents=True)
-    report = dict(status='failed', first=args.first, arms={}, run_id=os.environ.get('GITHUB_RUN_ID'))
+    report = dict(status='failed', first=args.first, workers=args.workers, arms={},
+                  run_id=os.environ.get('GITHUB_RUN_ID'))
     try:
-        compare(output, args.first, report)
+        compare(output, args.first, args.workers, report)
         report['status'] = 'matched'
     except (KeyError, OSError, ValueError, TypeError, RuntimeError, subprocess.SubprocessError) as exc:
         report['error'] = str(exc)
