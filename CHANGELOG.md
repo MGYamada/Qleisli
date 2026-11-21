@@ -9,6 +9,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Check hierarchy control interfaces against the retained requests and compare each
+  executable finite function circuit with its accepted exact matrix. Bound tuple
+  decoding, speed up issued-identity checks and charge for traversing their
+  histories. Extend the Lean audit and preserve
+  invalid-input diagnostics. Sampling uses both Born weights. Reset and discard
+  combine hidden outcomes when no quantum axis remains (#679).
+
 - Move the beta entries listed above the 0.3.0-beta heading into that section,
   date it like its tag and open it with its scope statement (#645, #646).
 - Pin the crate documentation's Language Reference link to the release tag, so

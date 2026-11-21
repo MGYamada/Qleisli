@@ -42,9 +42,24 @@ impl Program {
 }
 
 impl Plan {
-    pub(in crate::interchange::hierarchical) fn view(&self) -> Result<Vec<u8>> {
+    pub(in crate::interchange::hierarchical) fn view(
+        &self,
+        controls: &[crate::interchange::hierarchical::ControlRequest],
+    ) -> Result<Vec<u8>> {
         without_dependencies(|w| {
             w.record("hierarchy-plan", 1, |w| match &self.inner {
+                Executable::Pure(program) if !controls.is_empty() => {
+                    w.record("controlled-request", 2, |w| {
+                        program.write_view(w)?;
+                        w.list(controls, |w, request| {
+                            w.record("control-request", 3, |w| {
+                                w.n(request.root)?;
+                                w.list(&request.ports, |w, basis| w.basis(basis))?;
+                                w.list(&request.controls, |w, role| w.boolean(*role))
+                            })
+                        })
+                    })
+                }
                 Executable::Pure(program) => w.record("pure", 1, |w| program.write_view(w)),
                 Executable::Instrument(plan) => w.record("instrument", 9, |w| {
                     plan.program.write_view(w)?;

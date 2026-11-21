@@ -105,6 +105,10 @@ def source_errors(text: str) -> list[str]:
     for match in re.finditer(r"#\s*eval\b!?", code):
         line = code.count("\n", 0, match.start()) + 1
         errors.append(f"line {line}: forbidden executable-source command {match[0]}")
+    # Match attributes in lists without rejecting ordinary named arguments such as init :=.
+    for attributes in re.finditer(r"@\[([^\]]*)\]|\battribute\s*\[([^\]]*)\]", code):
+        if re.search(r"\b(?:builtin_)?init\b", attributes[0]):
+            errors.append(f"line {code.count(chr(10), 0, attributes.start()) + 1}: forbidden initializer attribute")
     for match in TOKEN.finditer(code):
         token = match[0]
         if token in FORBIDDEN or token.startswith("debug."):
@@ -182,7 +186,7 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
                     dependency == "Std" or dependency.startswith("Std.") or
                     dependency.startswith("QleisliKernel.Semantics.")):
                 errors.append(f"reference semantics imports checker/transport: {name} -> {dependency}")
-            visit(dependency, transport, stack | {name}, visited, testing)
+            visit(dependency, transport and transport_module(name), stack | {name}, visited, testing)
 
     visited = set()
     for name in ["QleisliKernel", "Main"]:

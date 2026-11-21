@@ -130,14 +130,36 @@ def functionCircuit (signature : Finite.Basis) (implementation : Observation.Pro
   Finite.guard (body.length + final.length ≤ 1024) .limit
   return ⟨signature,body ++ final⟩
 
+/-- Bind the execution circuit to the receipt using the same graph dependencies. -/
+def checkedFunctionCircuit (dependencies : List Finite.Dependency) (receipt : ObservingFunction.Receipt) :
+    Finite.WorkM Finite.Circuit := do
+  let actual ← functionCircuit receipt.input.signature receipt.input.implementation
+  let meaning ← Finite.circuitMatrix dependencies actual
+  Finite.guard (meaning == receipt.meaning) .equation
+  return actual
+
+theorem checkedFunctionCircuit_meaning (dependencies : List Finite.Dependency)
+    (receipt : ObservingFunction.Receipt) (circuit : Finite.Circuit) (work left : Nat)
+    (ok : (checkedFunctionCircuit dependencies receipt).run work = (.ok circuit,left)) :
+    ∃ middle, (functionCircuit receipt.input.signature receipt.input.implementation).run work =
+      (.ok circuit,middle) ∧ (Finite.circuitMatrix dependencies circuit).run middle =
+      (.ok receipt.meaning,left) := by
+  unfold checkedFunctionCircuit at ok
+  obtain ⟨actual,middle,derived,rest⟩ := Finite.bind_success _ _ _ _ _ ok
+  obtain ⟨meaning,after,computed,rest⟩ := Finite.bind_success _ _ _ _ _ rest
+  obtain ⟨_,last,checked,rest⟩ := Finite.bind_success _ _ _ _ _ rest
+  obtain ⟨rfl,rfl⟩ := Finite.pure_success _ _ _ _ rest
+  obtain ⟨same,rfl⟩ := Finite.guard_success _ _ _ _ checked
+  exact ⟨middle,derived,beq_iff_eq.mp same ▸ computed⟩
+
 /-- A fresh native receipt supplies the independently checked matrix and
 accounting. Its circuit is separately derived from its original implementation.
 The eventual gate must retain and compare all graph entries, not accept a
 host-supplied receipt through this data walker. -/
-def functionEvidence (receipt : ObservingFunction.Receipt) : Finite.WorkM Value := do
+def functionEvidence (dependencies : List Finite.Dependency) (receipt : ObservingFunction.Receipt) : Finite.WorkM Value := do
   let implementation ← Finite.lift ((program receipt.input.implementation).mapError (fun _ => .invalid))
   let specification ← Finite.lift ((program receipt.input.specification).mapError (fun _ => .invalid))
-  let actual ← functionCircuit receipt.input.signature receipt.input.implementation
+  let actual ← checkedFunctionCircuit dependencies receipt
   let identity := receipt.input.identity
   return record "function-evidence" [basis receipt.input.signature,implementation,specification,
     record "identity" [.text identity.implementation,.text identity.specification,

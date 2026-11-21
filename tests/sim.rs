@@ -324,6 +324,41 @@ fn quantum_phi_copies_charge_empty_owners_and_wire_relabeling() {
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn hidden_last_axis_resets_retain_one_component_with_the_full_weight() {
+    let mut operations = vec![RawOp::Init0 {
+        output: t(0),
+        wire: w(0),
+    }];
+    for i in 0..4 {
+        operations.push(RawOp::Gate {
+            gate: SingleGate::H,
+            input: t(2 * i),
+            output: t(2 * i + 1),
+        });
+        operations.push(RawOp::Reset {
+            input: t(2 * i + 1),
+            output: t(2 * i + 2),
+            fresh_wire: w(i + 1),
+        });
+    }
+    operations.push(RawOp::Discard { input: t(8) });
+    let program = closed(operations, vec![]);
+    let result = run_closed(
+        &program,
+        SimulationLimits {
+            max_components: 1,
+            ..SimulationLimits::default()
+        },
+    )
+    .unwrap();
+    close(result[&vec![]], 1.0);
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn repeated_t_phase_can_leave_a_tiny_floating_point_outcome() {
     let mut operations = vec![
         RawOp::Init0 {
