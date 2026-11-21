@@ -85,6 +85,23 @@ class CIActions(unittest.TestCase):
         self.assertIn('--report "$RUNNER_TEMP/pr-size.json"', job('changes'))
         self.assertIn('--hosted --report "$RUNNER_TEMP/fixture-budget.json"', job('changes'))
 
+    def test_pages_permissions_and_artifact_are_limited_to_main_pushes(self):
+        workflow = (ROOT / '.github/workflows/ci.yml').read_text()
+        build, deploy = job('check-docs'), job('deploy-pages')
+        trusted = ("if: github.event_name == 'push' && github.ref == 'refs/heads/main' "
+                   "&& github.repository == 'MGYamada/Qleisli'")
+        package = build.split('- name: Package the checked HTML for Pages')[1].split('- name:')[0]
+        self.assertIn(trusted, package)
+        self.assertIn('path: target/mdbook/', package)
+        self.assertIn(trusted, deploy)
+        self.assertIn('needs: check-docs', deploy)
+        self.assertIn('name: github-pages\n', deploy)
+        for permission in ('pages: write', 'id-token: write', 'contents: write'):
+            self.assertIn(permission, deploy)
+            self.assertNotIn(permission, workflow.replace(deploy, ''))
+        self.assertIn('name: ${{ needs.check-docs.outputs.pages_artifact }}', deploy)
+        self.assertIn('artifact_name: ${{ needs.check-docs.outputs.pages_artifact }}', deploy)
+
     def shell(self, name, environment, code=0, step=None):
         # Execute the literal run block; GitHub inputs reach it only as env data.
         source = action(name)
