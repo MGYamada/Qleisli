@@ -204,8 +204,7 @@ theorem checkOps_projection (dependencies : List Dependency) (fuel : Nat) :
     checkOps dependencies fuel =
   Nat.rec (fun _ _ => throw .limit) (fun _ recurse initial operations => do
     let result ← operations.foldlM (fun state op => do
-      exactWork (Exact.charge (1 + state.quantum.seenTokens.length + state.quantum.seenWires.length +
-        state.classical.length))
+      exactWork (Exact.charge (1 + state.quantum.seenTokens.length + state.quantum.seenWires.length))
       guard (Raw.stateValid state.quantum)
       let next ← match op with
       | .pure operation => do
