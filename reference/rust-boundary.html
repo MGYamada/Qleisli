@@ -1,0 +1,1399 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Rust familiarity and quantum meaning - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="rust-familiarity-and-quantum-meaning"><a class="header" href="#rust-familiarity-and-quantum-meaning">Rust familiarity and quantum meaning</a></h1>
+<p>Qleisli source looks like Rust, and a Rust programmer reads it with Rust
+habits. A <strong>false friend</strong> is a Rust spelling or habit whose Rust reading
+would misdescribe a quantum operation in Qleisli. For each false friend, this
+chapter states three things: the Rust reading, the Qleisli rule, and the
+diagnostic or the correction.</p>
+<p>Where a piece of syntax means what Rust means by it, Qleisli keeps the
+familiar spelling. Where the familiar intuition would misdescribe a quantum
+operation, Qleisli uses a distinct spelling. A familiar spelling is not
+evidence of a physical operation, an ownership transition or a checked
+mathematical law. The
+<a href="architecture.html#inference-and-explicit-discovery">inference and discovery boundary</a>
+connects predictable classical mistakes to diagnostics and explicit quantum
+contracts.</p>
+<p>The chapter specifies this boundary for edition 2026 under the
+<a href="authority.html">authority hierarchy</a>. It uses the <a href="type-model.html">type model</a>
+and the <a href="functional-boundary.html">functional boundary</a>. It distinguishes
+implemented rules from grammar that is absent.</p>
+<p>The chapter uses these terms:</p>
+<ul>
+<li>A <strong>quantum owner</strong> is a value of type <code>Q&lt;A&gt;</code>. A value is
+<strong>quantum-containing</strong> when its type contains a quantum owner at any depth.</li>
+<li>A quantum owner is <strong>live</strong> from its creation until an operation consumes
+it.</li>
+<li>A construct is <strong>absent</strong> when neither the source grammar nor the builtin
+catalog contains it. The parser or the name lookup refuses an absent
+construct. That refusal does not implement the future ownership law of the
+construct, and it does not adopt a pending design. It does not forbid a
+valid user-defined identifier with the same spelling.</li>
+<li>The <strong>source checker</strong> is the common checker of both
+<a href="diagnostics.html#routes">routes</a>. The <strong>native checker</strong> is the independent
+Lean checker.</li>
+<li>A <strong>profile</strong> is a bounded implementation of checking or lowering, with its
+own limits. The finite project profile lowers source on the project route.
+The selected Raw profile and the selected hierarchy profile lower source on
+the selected-entry route.</li>
+</ul>
+<p>A rule names the diagnostic code of a program that breaks it. The two routes
+report some failures with different codes. For such a failure, a rule gives
+the project-route code first, as in <code>unknown_name</code> or <code>name</code>.
+<a href="diagnostics.html#codes">Codes</a> lists both vocabularies.</p>
+<h2 id="ordinary-data-may-be-ignored"><a class="header" href="#ordinary-data-may-be-ignored">Ordinary data may be ignored</a></h2>
+<p>This section covers the values that hold no quantum owner. Rust’s ordinary
+owned values are affine: a program uses each at most once and may leave it
+unused. Qleisli’s ordinary data is unrestricted: a program uses a value any
+number of times, or not at all. Ordinary data is <code>Bit</code>, <code>Unit</code> and products
+that contain only ordinary data. An unused ordinary value needs no physical
+operation.</p>
+<p>Rules:</p>
+<ul>
+<li>A program may reuse ordinary data, leave it unused, or match it with <code>_</code>.</li>
+<li>A program need not insert a physical <code>discard</code> for an unused classical
+<code>Bit</code>.</li>
+<li>A program that ignores an ordinary measurement result does not destroy
+another live quantum owner. The measurement itself happened earlier, and it
+contributes Observe to the principal effect of the body.</li>
+<li>This rule introduces none of Rust’s <code>Drop</code>, <code>Clone</code>, <code>Copy</code> or trait
+machinery.</li>
+<li>The source has no built-in <code>drop</code>, <code>forget</code>, <code>clone</code>, <code>copy</code> or <code>default</code>
+function. These identifiers are ordinary names. The checker resolves them
+by the same declaration, import and lexical rules as other identifiers.</li>
+<li>A call of an unresolved <code>drop</code>, as in <code>drop(0)</code>, is a name error about an
+absent builtin (<code>unknown_name</code> or <code>name</code>). It is not a quantum ownership
+error.</li>
+<li>A user definition named <code>drop</code> is valid. Its name grants no special
+permission.</li>
+</ul>
+<p>The checker accepts these two functions. They use ordinary binding, tuple
+construction and wildcard matching:</p>
+<pre><code class="language-qli">fn duplicate(b: Bit) -&gt; (Bit, Bit) { (b, b) }
+
+fn ignore(b: Bit) -&gt; Unit {
+    let _ = b;
+    ()
+}
+</code></pre>
+<p>The checker accepts this observing function. Its body explicitly means
+measurement:</p>
+<pre><code class="language-qli">observe fn drop(q: Q&lt;Bit&gt;) -&gt; Bit {
+    measure_z(q)
+}
+</code></pre>
+<p>The function consumes its quantum input through its checked body. It is not a
+quantum destructor or an escape from effect inference.</p>
+<h2 id="explicit-construction-instead-of-default"><a class="header" href="#explicit-construction-instead-of-default">Explicit construction instead of Default</a></h2>
+<p>In Rust, <code>T::default()</code> returns the default value of a type that implements
+<code>Default</code>. Qleisli has no such abstraction for a quantum-containing type. A
+program that needs a quantum owner prepares it with an explicit operation,
+and each preparation has its own contract.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Preparation</th><th>Result and action</th></tr>
+</thead>
+<tbody>
+<tr><td><code>init0()</code></td><td>A fresh zero qubit, with Isometry action</td></tr>
+<tr><td><code>unit(())</code></td><td>One fresh zero-axis <code>Q&lt;Unit&gt;</code> owner with exact coefficient <code>+1</code> and Unitary action. It allocates no physical wire.</td></tr>
+<tr><td><code>empty()</code></td><td>The separately typed <code>Q&lt;Bits&lt;0&gt;&gt;</code> owner</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>A Rust-like <code>Default</code> abstraction is unavailable for every runtime type that
+contains a live quantum owner. This includes <code>Q&lt;T&gt;</code>, <code>Q&lt;Unit&gt;</code>,
+<code>Q&lt;Bits&lt;0&gt;&gt;</code> and ordinary products that contain any such field.</li>
+<li>Ordinary and static basis data are not quantum resources. <code>0</code>, <code>()</code> and
+explicit ordinary constructors are ordinary data. They prepare nothing and
+create no quantum owner.</li>
+<li>The checker inserts no default conversion between these types.</li>
+<li>The language has no general trait or impl, no associated <code>Default</code> call and
+no generic <code>Default</code> bound.</li>
+<li>The checker applies the same complete source checks to a generic Basis body
+as to any other body. This includes a declaration that the selected entry
+does not call.</li>
+<li>Neither zero physical width nor an ordinary <code>Unit</code> argument makes the
+returned owner unrestricted.</li>
+<li>Explicit <code>finish</code> preserves the preceding scalar phase. Checked scoped
+cleanup keeps its contract, which requires the fixed state for every input.</li>
+<li>Default construction provides no hidden clean workspace and no cleanup. The
+source provides checked workspace only through the scoped forms <code>clean</code>,
+<code>dirty</code> and <code>with_computed</code>.</li>
+<li>A source effect is not a resource bound. The certification of quantitative
+resources is a separate obligation.</li>
+<li>A program may name an ordinary function <code>default</code>. Its caller keeps the
+effect of its body, and the checker rejects a false Unitary assertion
+(<code>effect</code>).</li>
+<li>A function named <code>default</code> that returns ordinary data gains no quantum
+action from its spelling.</li>
+<li>A name, a return-type annotation or a generic parameter cannot grant
+allocation, duplicate a quantum result, or excuse an abandoned owner.</li>
+<li>A call of an unresolved <code>default</code> is a name error (<code>unknown_name</code> or
+<code>name</code>).</li>
+</ul>
+<p>The checker accepts this function. It has explicit preparation, and its
+principal effect is Isometry:</p>
+<pre><code class="language-qli">use std::state::init0;
+
+fn default() -&gt; Q&lt;Bit&gt; { init0() }
+</code></pre>
+<h2 id="ordinary-relations-and-live-quantum-owners"><a class="header" href="#ordinary-relations-and-live-quantum-owners">Ordinary relations and live quantum owners</a></h2>
+<p>In Rust, <code>==</code>, <code>&lt;</code> and hashing act on values through the <code>PartialEq</code>, <code>Eq</code>,
+<code>PartialOrd</code>, <code>Ord</code> and <code>Hash</code> traits. A live <code>Q&lt;T&gt;</code> has no such relation. A
+program compares ordinary values, or it writes the comparison of quantum data
+as an explicit operation with its own contract.</p>
+<p>Rules:</p>
+<ul>
+<li>A live <code>Q&lt;T&gt;</code> inherits no ordinary value equality, ordering or hashing from
+<code>T</code>. This includes <code>Q&lt;Unit&gt;</code>, <code>Q&lt;Bits&lt;0&gt;&gt;</code> and products that contain a
+quantum owner.</li>
+<li>Owner and provenance IDs that the compiler uses internally, physical wire
+IDs and logical wire IDs are distinct bookkeeping data. A comparison of them
+does not compare quantum states, and it implements no source operation on
+<code>Q&lt;T&gt;</code>.</li>
+<li>Runtime expression syntax has no <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code> or <code>&gt;=</code>
+operator, even on ordinary values (<code>parse</code>). These tokens are available in
+their specified static Nat predicates.</li>
+<li>A program may compare ordinary <code>Bit</code> values with the Boolean operations.
+Such a comparison acts on ordinary values, including explicit measurement
+results. It does not read a quantum owner without observation.</li>
+<li>A coherent comparison of basis values must be an explicit reversible
+operation. It has its own ordered input and output, its own effect and its
+own phase contract.</li>
+<li>State comparison, tomography and testing have separate procedures and
+statistical or operational contracts. No comparison operator selects one.</li>
+<li>The language has no built-in <code>hash</code> and no general trait mechanism. Live
+owners have no <code>Eq</code>, <code>Ord</code> or <code>Hash</code> instance. A call of an unresolved
+<code>hash</code> is a name error (<code>unknown_name</code> or <code>name</code>).</li>
+<li>A user-defined or imported function named <code>hash</code> is an ordinary checked
+function. Its name grants no special semantics.</li>
+<li>Static descriptions, evidence IDs and ordinary values keep the comparisons
+that their types and APIs support. This section invents no missing ordinary
+operator. It does not turn a comparison of internal IDs into quantum-state
+equality.</li>
+<li>Parsing does not establish the types of the operands. A comparison
+diagnostic therefore explains the distinction conditionally. The
+explanation for an unresolved <code>hash</code> does not infer the type of the
+argument, and it does not intercept a resolved ordinary declaration.</li>
+<li>Neither diagnostic inserts a measurement, copies an owner or exposes an ID.</li>
+</ul>
+<p>The checker accepts this comparison of ordinary values:</p>
+<pre><code class="language-qli">classical fn equal(a: Bit, b: Bit) -&gt; Bit { not(a xor b) }
+</code></pre>
+<p>The basis language can express the coherent comparison
+<code>|a,b,t&gt; -&gt; |a,b,t xor [a=b]&gt;</code>. That operation keeps both input values and
+accepts either initial target value. It is not a test that two arbitrary
+quantum states are equal.</p>
+<h2 id="quantum-owners-require-an-explicit-transition"><a class="header" href="#quantum-owners-require-an-explicit-transition">Quantum owners require an explicit transition</a></h2>
+<p>Rust drops a value that is live at the end of its scope. Qleisli has no such
+implicit end for a quantum-containing value. <code>Q&lt;A&gt;</code> is linear: a program must
+consume each quantum owner once, through the result or through an explicit
+transition.</p>
+<p>The first table lists the Rust habits that lose or duplicate a value.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rust habit</th><th>Rust reading</th><th>Qleisli rule</th><th>Diagnostic</th></tr>
+</thead>
+<tbody>
+<tr><td>Leaving a value unused</td><td>Rust drops the value at scope exit.</td><td>A quantum-containing value must not be live at function exit or at local scope exit.</td><td><code>ownership</code></td></tr>
+<tr><td><code>let _ = q;</code></td><td><code>_</code> binds nothing, and the value stays in <code>q</code>.</td><td><code>_</code> must not match a quantum-containing value.</td><td><code>ownership</code></td></tr>
+<tr><td><code>q;</code></td><td>The statement moves the value and drops it.</td><td>An expression statement must not abandon a quantum-containing value.</td><td><code>ownership</code></td></tr>
+<tr><td><code>let q = e;</code> over a live <code>q</code></td><td>The earlier binding stays alive until scope exit.</td><td>A binding must not shadow a live quantum-containing binding.</td><td><code>ownership</code></td></tr>
+<tr><td>A second use of a value</td><td>Rust rejects a use after a move unless the type is <code>Copy</code>.</td><td>A program must not copy a quantum-containing value.</td><td><code>ownership</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>The second table lists the explicit operations that end or replace an owner.
+Its signatures are interface descriptions, not first-class arrow syntax.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Explicit operation</th><th>Interface and effect</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>measure_z(q)</code></td><td><code>Q&lt;Bit&gt; -&gt; Bit</code>; Observe</td><td>It consumes the original logical owner and returns the Z outcome. It does not return a quantum owner or silently select one outcome.</td></tr>
+<tr><td><code>discard(q)</code></td><td>One <code>Q&lt;A&gt; -&gt; Unit</code>; Observe</td><td>It explicitly loses the quantum information of that subsystem by the specified partial trace. It is not proof of clean return.</td></tr>
+<tr><td><code>std::state::reset(q)</code></td><td><code>Q&lt;Bit&gt; -&gt; Q&lt;Bit&gt;</code>; Observe</td><td>It ends the original logical owner and returns a fresh owner prepared in zero. The result is linear, and the program must return it or consume it explicitly.</td></tr>
+<tr><td><code>with_computed(...) { ... }</code></td><td>A checked scoped construction with its own exact cleanup premises</td><td>It returns the data owner. It discharges its private auxiliary only through the admitted compute/use/uncompute rule.</td></tr>
+<tr><td><code>adjoint(U)(q)</code></td><td>It consumes its input and returns an owner</td><td>It reverses the specified operation only with the required checked access (<code>capability</code> or <code>access</code>). Uncomputation alone does not discharge the returned owner or prove it clean.</td></tr>
+<tr><td>Scope exit</td><td>A lexical boundary</td><td>It requires complete owner accounting. It performs none of the physical operations above.</td></tr>
+</tbody>
+</table>
+</div>
+<p>That the source checker recognizes an operation does not mean that a
+requested profile supports it. Recognition and support are distinct. The
+<a href="primitive-boundary.html">primitive inventory</a> and
+<a href="#status-and-limits">Status and limits</a> state the support of each profile.</p>
+<p>Rules:</p>
+<ul>
+<li><code>Q&lt;A&gt;</code> is linear, including <code>Q&lt;Unit&gt;</code> and <code>Q&lt;Bits&lt;0&gt;&gt;</code>. A product that
+contains any quantum owner is also linear, even when that owner is nested
+among ordinary fields.</li>
+<li>Zero physical width removes neither the ownership obligation nor the
+scalar-phase obligation.</li>
+<li>The <a href="#conditional-teaching-diagnostics">disposal diagnostics</a> explain the
+obligation at the original binder or use that triggered the rejection.</li>
+<li>Ordinary <code>let</code> means binding. <code>let q = h(q);</code> is valid: the right-hand side
+consumes the preceding owner and returns the replacement before <code>let</code>
+introduces the binder. <code>let q = init0();</code> must not shadow a preceding live
+<code>q</code>.</li>
+<li>This distinction introduces no assignment to places, no temporary reference
+and no automatic quantum destruction.</li>
+<li>Separate owner names do not imply separate physical states. Observation or
+disposal of one subsystem must keep its specified action on an arbitrary
+joint state. That state includes correlations with every retained owner and
+external reference.</li>
+<li>A name, a lifetime, a sampled result or an assertion of unitarity cannot
+establish cleanliness.</li>
+<li>The language supports no standalone <code>release(q)</code>, and the IR has no
+free-standing <code>Release0</code> constructor. A diagnostic must not recommend that
+invented call.</li>
+<li>Explicit <code>finish</code> for <code>Q&lt;Unit&gt;</code> and <code>consume_empty</code> for <code>Q&lt;Bits&lt;0&gt;&gt;</code> keep
+their exact structural contracts. Neither is a general API for clean
+release or for discard. Preceding scalar work stays in the composed
+meaning.</li>
+<li>A change of spelling to <code>drop(q)</code> cannot justify any of these different
+operations.</li>
+</ul>
+<p>The checker accepts this finite observing body. It chooses reset and then
+explicitly consumes the fresh result:</p>
+<pre><code class="language-qli">use std::state::reset;
+
+observe fn reset_then_measure(q: Q&lt;Bit&gt;) -&gt; Bit {
+    let fresh = reset(q);
+    measure_z(fresh)
+}
+</code></pre>
+<p>The checker rejects the statement <code>reset(q);</code> (<code>ownership</code>). The statement
+abandons the fresh quantum result.</p>
+<h2 id="signal-registers-remain-in-the-interface"><a class="header" href="#signal-registers-remain-in-the-interface">Signal registers remain in the interface</a></h2>
+<p>Some operations, such as a block encoding, act on an extra register beside
+the system. A <strong>signal register</strong> is such a register: an ordinary linear
+quantum owner in the semantic interface of an operation. The caller passes it
+in and receives it back. Scratch workspace differs: it has a declared
+restoration contract. The word <em>ancilla</em> does not determine a cleanup
+obligation.</p>
+<p>For ordered signal and system spaces <code>S</code> and <code>D</code>, an exact block-encoding
+contract can state</p>
+<pre><code class="language-text">(&lt;0|_S tensor I_D) U (|0&gt;_S tensor I_D) = A / alpha.
+</code></pre>
+<p>The projection in this mathematical equation performs no measurement. It
+postselects no successful branch, and it does not release <code>S</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>Clean workspace must return exactly to its specified fixed state.</li>
+<li>Dirty workspace must restore its arbitrary input state and its reference
+correlations.</li>
+<li>A signal register need not return to zero unless the interface separately
+requires it.</li>
+<li>The caller owns the full output of <code>U</code>, including the signal register. A
+program that drops the signal register changes the channel on the other
+owners, and the drop requires explicit Observe semantics.</li>
+<li>Resource accounting counts a signal register throughout its live interval.
+The count includes its width, gates, depth, measurement, and the target and
+layout costs under the stated resource model.</li>
+<li>Renaming a signal register to <em>ancilla</em>, or excluding it from a cleanup
+contract, cannot remove those costs.</li>
+<li>A quantitative resource bound is checked separately. The block equation and
+the ordinary ownership rules alone do not prove it.</li>
+<li>This section defines no <code>signal</code> primitive, no further ownership kind, no
+general <code>BlockEncoding</code> API and no automatic checker of block encodings. A
+later block-encoding, LCU or QSVT contract can specify signal subspaces and
+normalization with these ordinary owners.</li>
+<li>Three roles are separate, each with its own obligations: source workspace,
+the extra workspace of backend synthesis, and a signal interface that a
+library exposes.</li>
+<li>EXACT-2026-01 applies. A certificate of approximation error cannot replace
+an applicable exact equation or an exact clean-return obligation.</li>
+</ul>
+<p>For example, apply H to a one-bit signal and then CNOT from signal to system.
+The signal-zero block is exactly <code>I / sqrt(2)</code>, but the input <code>|0,0&gt;</code> produces
+<code>(|0,0&gt; + |1,1&gt;) / sqrt(2)</code>. The signal is not clean scratch. Returning both
+owners is a valid Unitary interface.</p>
+<h2 id="explicit-clean-and-dirty-scopes"><a class="header" href="#explicit-clean-and-dirty-scopes">Explicit clean and dirty scopes</a></h2>
+<pre><code class="language-text">WorkspaceScope ::= "clean" "(" Expr "," Name ")" ScopeBody
+                 | "dirty" "(" Expr "," Expr "," Name ")" ScopeBody
+ScopeBody      ::= "{" "|" Ident "," Ident "|" BlockContents "}"
+</code></pre>
+<p>A <strong>workspace scope</strong> gives its body one scratch <code>Q&lt;Bit&gt;</code> beside one data
+owner. A program uses it when an operation on the data needs one temporary
+qubit, and the checker verifies how the body hands that qubit back. The scope
+has two forms:</p>
+<ul>
+<li><code>clean(data, logical) { |data, scratch| body }</code> supplies a fresh <code>Q&lt;Bit&gt;</code> in
+<code>|0⟩</code> and returns the data owner.</li>
+<li><code>dirty(data, scratch, logical) { |data, scratch| body }</code> takes an existing
+<code>Q&lt;Bit&gt;</code> and returns the ordered pair of owners.</li>
+</ul>
+<p><code>logical</code> names the closed Unitary action on <code>Q&lt;A&gt;</code>.</p>
+<p><code>clean</code> and <code>dirty</code> are contextual words. Each begins a workspace scope only
+before a parenthesized argument list that a <code>{</code> follows. Elsewhere each is an
+ordinary identifier.</p>
+<p>Rules:</p>
+<ul>
+<li>The data argument must be one <code>Q&lt;A&gt;</code> owner, and the scratch argument of
+<code>dirty</code> must be a <code>Q&lt;Bit&gt;</code> owner (<code>type_mismatch</code> or <code>type</code>).</li>
+<li><code>logical</code> must name a Unitary operation on <code>Q&lt;A&gt;</code> (<code>effect</code>).</li>
+<li>The two binders must be distinct (<code>parse</code>).</li>
+<li>The body must return <code>(Q&lt;A&gt;, Q&lt;Bit&gt;)</code> in data/scratch order and must have
+Unitary effect (<code>effect</code>).</li>
+<li>The body must return the data owner and the scratch owner that the scope
+binds. The checker rejects a body that leaves either owner live
+(<code>ownership</code>). The <a href="#conditional-teaching-diagnostics">disposal diagnostics</a>
+identify that owner and explain the return contract of the scope.</li>
+<li>Clean release requires the exact logical action on the subspace where the
+scratch starts in zero, with the same zero scratch at exit.</li>
+<li>Dirty return requires identity on the entire scratch interface, including
+phase and correlations with an external reference.</li>
+<li>The native checker checks the original body and the logical action against
+the Raw interval of the scope. When it rejects the equation (<code>contract</code>),
+the diagnostic of either route reports which restoration contract failed.</li>
+<li>Access authority, restoration and resource accounting are separate
+obligations.</li>
+<li>Inside a workspace body, <code>unit(())</code> creates a logical <code>Q&lt;Unit&gt;</code> owner and
+<code>finish</code> consumes the exact owner. Both actions have coefficient +1 and use
+zero physical axes. The source checker records their owner history and
+checks the ordered returned owners.</li>
+<li>A resource certificate for a target also needs the routing schedule and the
+costs under the gate set of that target.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The finite checker records the whole live Raw frame
+at scope entry and the peak that includes fresh scratch. It records
+preparation, clean release, the two predicate passes in the clean packet,
+and the literal body steps. Dirty scratch is already live at entry. The
+checker counts circuit references through their checked physical
+implementations, including nested predicate passes. For a circuit-backed
+<code>with_computed</code>, the expanded body counts include the literal forward
+circuit, the protected uses and the inverse circuit.</p>
+</blockquote>
+<p>The checker accepts this program. Two controlled flips restore the scratch to
+zero and act as the identity on the data:</p>
+<pre><code class="language-qli">use std::gate::cnot;
+unitary fn logical(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { q }
+pub unitary fn main(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; {
+    clean(q, logical) { |data, scratch|
+        let (data, scratch) = cnot(data, scratch);
+        cnot(data, scratch)
+    }
+}
+</code></pre>
+<p>The checker rejects this program (<code>ownership</code>). The body returns a fresh owner
+of the required type and leaves the original <code>scratch</code> live:</p>
+<pre><code class="language-qli">use std::state::init0;
+pub unitary fn client(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; {
+    clean(q, h) { |a, scratch| (h(a), init0()) }
+}
+</code></pre>
+<h2 id="checked-cleanup-is-a-separate-contract"><a class="header" href="#checked-cleanup-is-a-separate-contract">Checked cleanup is a separate contract</a></h2>
+<pre><code class="language-text">ComputedScope ::= "with_computed" "(" Expr "," Name StaticArgs? ")"
+                    "{" "|" Ident "|" BlockContents "}"
+                | "with_computed" "(" Expr "," Name StaticArgs? "," Name ")"
+                    "{" "|" Ident "," Ident "|" BlockContents "}"
+</code></pre>
+<p>A <strong>computed scope</strong> computes a predicate of its source data into one private
+auxiliary <code>Q&lt;Bit&gt;</code>, runs its body, and uncomputes the auxiliary. A program
+uses it when a step needs the value of a predicate in a qubit for the length
+of that step. The scope has two forms:</p>
+<ul>
+<li>The two-argument <code>with_computed(source, predicate)</code> exposes the auxiliary
+to the body and protects the source data.</li>
+<li>The three-argument form also supplies a logical operation, and it exposes a
+data binder and an auxiliary binder.</li>
+</ul>
+<p>Rules:</p>
+<ul>
+<li>The source must be one <code>Q&lt;A&gt;</code> owner (<code>type_mismatch</code> or <code>type</code>).</li>
+<li>The predicate must be a total <code>classical fn</code>. It must take one ordinary
+argument, whose type is the exact basis tree of the data, and it must
+return <code>Bit</code>. Another parameter count is <code>arity</code>. Another type is
+<code>type_mismatch</code> or <code>type</code>.</li>
+<li>The scope returns the data owner.</li>
+<li>The three-argument form checks the bounded exact <strong>computed-relation
+contract</strong>. Let <code>E_f</code> embed each data basis value as <code>|x,f(x)&gt;</code>. The use
+circuit <code>W</code> must satisfy <code>W E_f = E_f V</code> for the specified logical action
+<code>V</code>, with exact coefficients, phase and ordered axes.</li>
+<li>The surrounding compute/uncompute construction then justifies the return of
+the auxiliary to zero.</li>
+<li>Neither a Unitary annotation nor the names of the binders supply this
+equation.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> A body that is already a canonical empty, Z or T
+body keeps its complete original token chain and the protected native
+check. For another supported auxiliary body, a fresh native unitary leaf
+check reconstructs the complete original one-Bit fragment and its
+dependencies against the exact eighth-root diagonal matrix. A second native
+leaf checks a canonical witness that is built from the exact scalar, Z and T
+actions emitted in the protected scope. Both checks keep both diagonal
+entries and the full phase.</p>
+<p>Chunking only constructs an untrusted matrix proposal. The native equation
+never substitutes checked chunks for the original body.</p>
+<p>The retained <code>SourceUnitaryEquation</code> associates the two native leaves, the
+names and the source snapshot for local inspection only. It is not execution
+input and not an authority flag. It is not a proof that the whole source is
+preserved, and it is not a target or resource certificate. Retained
+provenance contains the complete original module bytes for the relevant
+declaration, the bound-provider dependencies and the evidence dependencies.
+Closures share module records. This sharing selects receipt metadata.
+Project loading and checking cover all loaded modules, as
+<a href="production-boundary.html#root-loading-and-compatibility-during-generic-migration">the production boundary</a>
+specifies.</p>
+</blockquote>
+<h3 id="finite-automatic-uncomputation-rule"><a class="header" href="#finite-automatic-uncomputation-rule">Finite automatic-uncomputation rule</a></h3>
+<p>A computed scope uncomputes its auxiliary for the program: the source does
+not write the inverse of the compute step. The two <code>with_computed</code> forms
+admit that generated uncomputation under the bounded rule of this table. The
+rule adds no way to declare a parameter, a type or a binding as clean or
+dirty workspace. It synthesizes no inverse for an arbitrary Unitary body.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Premise</th><th>Required evidence or refusal</th></tr>
+</thead>
+<tbody>
+<tr><td>Computed value</td><td>One owned <code>Q&lt;A&gt;</code> and a total predicate <code>A -&gt; Bit</code>, with the complete ordered basis tree retained.</td></tr>
+<tr><td>Scoped dependencies</td><td>The two-argument body receives only its private <code>Q&lt;Bit&gt;</code> quantum owner. The checker rejects a capture of an outer quantum owner (<code>ownership</code>). Available classical locals are subject to the closed-fragment and effect checks. Callable dependencies keep their original source and ordinary checking.</td></tr>
+<tr><td>Body effects and owners</td><td>The body must be Unitary (<code>effect</code>). The two-argument body must return the auxiliary owner. The three-argument body must return the data owner and the auxiliary owner in that order. A body that leaves one of them live is <code>ownership</code>. Measurement, reset, discard, lost owners and an incorrectly ordered returned frame cannot supply cleanup evidence.</td></tr>
+<tr><td>Two-argument action</td><td>The complete auxiliary action must be exactly <code>diag(zeta_8^a, zeta_8^b)</code> in the supported profile, where <code>zeta_8</code> is the eighth root of unity <code>exp(i*pi/4)</code>. Non-diagonal factors are permitted when their complete composition satisfies this equation. The check covers both entries, including their common phase. Another action is <code>unsupported</code>.</td></tr>
+<tr><td>General supported use</td><td>The three-argument form supplies an independent logical operation and checks the computed-relation contract for the use circuit. Merely adding a logical argument cannot make a failed cleanup equation valid.</td></tr>
+<tr><td>Generated cleanup</td><td>The ordinary structured Raw representation must retain compute, use and inverse. The independent checker validates the rule and the dependencies. The producer cannot assert successful restoration.</td></tr>
+<tr><td>Capacity</td><td>The checker rejects a program whose evidence is missing, or that exhausts a source, dependency or exact-work limit. No reset, discard, heuristic equality or alternate acceptance path repairs the failure.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The diagnostic for an unsupported two-argument action reports the missing
+diagonal contract. It points to the three-argument form, and it names the
+owners that form must return and its cleanup equation.</li>
+<li>A capture diagnostic identifies the captured binding and explains how to
+pass the data through the three-argument form.</li>
+<li>These conditions concern restoration and provenance. They do not claim that
+<code>ctrl</code> means an unchanged state: coherent controls keep their basis sectors,
+while phase kickback may change their correlations.</li>
+<li>Dirty restoration requires identity on arbitrary input, which can be
+entangled with a reference. This clean rule does not infer it.</li>
+<li>The clean obligation is that the auxiliary returns exactly to the declared
+fixed pure state for every permitted data input. Under the adopted
+all-input channel premises, this is equivalent to factorization with that
+same fixed pure state for every retained external reference.</li>
+<li>Separation alone is insufficient. An auxiliary in a different pure state is
+separable, but it has not returned to its declared state.</li>
+<li>A test on one known input is insufficient. So is an approximate zero
+probability, and so is an unchanged unknown marginal.</li>
+<li>Dirty workspace instead needs restoration of its arbitrary state and its
+reference correlations. The explicit
+<a href="#explicit-clean-and-dirty-scopes">clean and dirty scopes</a> state that
+contract.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The checked Raw interval accounts for the full
+caller frame and one private auxiliary wire, including its preparation and
+its release. The resource model counts a forward predicate pass and its
+inverse, plus the emitted body steps. The certified checker uses this same
+compute/body/inverse word for the cleanup equation, and it checks the
+logical witness separately. Physical target decompositions and routing have
+their own costs.</p>
+</blockquote>
+<p>The checker accepts both of these auxiliary bodies when the predicate is the
+identity on <code>Bit</code>. They have different exact live actions:</p>
+<pre><code class="language-qli">h(x(h(a)))  // H X H = Z: diag(1, -1).
+x(z(x(a)))  // X Z X = -Z: diag(-1, 1).
+</code></pre>
+<p>Their standalone readout probabilities can agree. Their common sign matters
+under coherent control: a program that replaces either specified operator by
+the other fails its exact request (<code>contract</code>).</p>
+<p>The checker rejects the auxiliary body <code>x(a)</code> (<code>unsupported</code>). It leaves the
+computed auxiliary dirty after the inverse. Unitarity of <code>x</code> is not evidence
+of clean return.</p>
+<h2 id="clean-discharge-live-action-and-resource-safety"><a class="header" href="#clean-discharge-live-action-and-resource-safety">Clean discharge, live action and Resource Safety</a></h2>
+<p>A workspace that comes back clean answers one question. It does not say which
+operation acted on the data, and it does not say what the computation cost.
+This section states the three obligations separately.</p>
+<p><strong>Clean discharge</strong> is an obligation of local semantic Soundness: a workspace
+returns to its declared clean state. It does not identify which operation
+acts on the live system. <strong>Quantitative Resource Safety</strong> is the separate
+obligation to produce finite, statically computed bounds and to preserve them
+through compilation.</p>
+<p>Rules:</p>
+<ul>
+<li>For a specified coherent operation <code>V</code>, the implementation <code>W</code> must
+separately satisfy the exact clean-subspace identity
+<code>W (|0&gt;_A tensor |psi&gt;_R) = |0&gt;_A tensor V|psi&gt;_R</code>, with the specified phase
+and arbitrary external references.</li>
+<li>Ordinary controlled lifting also requires the same distinguished clean state
+as the inactive branch.</li>
+<li>A different fixed pure workspace state does not establish that controlled
+contract. Neither does a standalone channel equality that loses global
+phase.</li>
+<li>The equality alone grants no inverse access and no control access.</li>
+<li>Reset is Observe. A reset helper that claims Unitary effect is false, and
+an observing caller cannot make it valid.</li>
+<li>Resource accounting counts a scratch qubit while it is live, across
+preparation, use and cleanup.</li>
+<li>Generated inverse operations and physical routing count in the bound for the
+accepted artifact.</li>
+<li>Ending <code>excl</code> restores operation rights to the updated live owner. It does
+not restore the input state of that owner. It does not prove clean or dirty
+discharge, and it does not end the lifetime of the owner.</li>
+<li>A surface <code>Unit</code> result must not erase a live owner from resource
+accounting.</li>
+</ul>
+<p>For example, compute <code>CNOT(q,a)</code> from <code>|+&gt;_q |0&gt;_a</code>. A second CNOT restores
+<code>|+&gt;_q |0&gt;_a</code>. An explicit reset of the correlated auxiliary instead produces
+<code>(I_q / 2) tensor |0&gt;&lt;0|_a</code>. Both auxiliary marginals are exactly <code>|0&gt;&lt;0|</code>,
+but an X readout of q distinguishes the live actions. This agrees with the
+equivalence that the <a href="#finite-automatic-uncomputation-rule">finite rule</a>
+states for a fixed pure state over all inputs. That equivalence does not
+require the channel on the other owners to equal an independently requested
+unitary.</p>
+<h2 id="conditional-teaching-diagnostics"><a class="header" href="#conditional-teaching-diagnostics">Conditional teaching diagnostics</a></h2>
+<p>A Rust programmer expects the language to drop a value that the program
+leaves unused. The source checker uses this familiar ownership intuition to
+explain a rejection, and it says where the Qleisli discipline differs. The
+three disciplines differ:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Value</th><th>Discipline</th><th>May be left unused</th></tr>
+</thead>
+<tbody>
+<tr><td>A Rust ordinary owned value</td><td>Affine</td><td>Yes. Rust drops it.</td></tr>
+<tr><td>A Qleisli ordinary value, such as <code>Bit</code> or <code>Unit</code></td><td>Unrestricted</td><td>Yes</td></tr>
+<tr><td>A Qleisli value that contains a live <code>Q&lt;T&gt;</code></td><td>Linear, under its resource contract</td><td>No, including at scope exit</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The source checker adds an explanation only after it has rejected an
+unresolved name or an implicit loss of an owner. The explanation preserves
+the original diagnostic code, source span, checking order and limits.</li>
+<li>The checker does not inspect or evaluate call arguments to decide whether an
+unresolved Rust-shaped name deserves a hint. <code>drop(q)</code> keeps the
+unresolved-name priority (<code>unknown_name</code> or <code>name</code>).</li>
+<li>A diagnostic must not describe <code>drop(0)</code> as destroying a quantum argument.</li>
+<li>A resolved user function receives ordinary call checks.</li>
+<li>A local runtime value named <code>drop</code> keeps the not-callable category
+(<code>type_mismatch</code> or <code>type</code>). The checker does not reclassify it as an absent
+builtin.</li>
+<li>An ownership explanation states that scope exit is not physical destruction.
+It distinguishes measurement, discard, reset and checked cleanup.</li>
+<li>An ownership explanation does not choose a repair on the programmer’s
+behalf. Those operations have different types, effects and meanings, and a
+requested profile may not support all of them.</li>
+<li>Use-after-move, arity, type, effect, access and capacity failures keep their
+own categories.</li>
+<li>Text and JSON diagnostics describe rejections. Neither carries semantic
+evidence or grants acceptance.</li>
+<li>Qleisli diagnostics are part of the source interface.</li>
+<li>For a clean or dirty scope that leaves a live owner behind, the diagnostic
+describes the distinct scratch-return contract of that scope. For a
+<code>with_computed</code> scope, it explains which owners the body must return for
+checked cleanup.</li>
+<li>The resource checks establish the restoration equation against the scope
+body. The explanation does not replace them.</li>
+</ul>
+<p>The version-1 CLI reports the optional <code>ownership_boundary</code> object for these
+diagnostics on both routes. <a href="diagnostics.html#refinements">Refinements</a> gives
+the record form.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>boundary</code></td><td><code>affine_to_linear</code></td></tr>
+<tr><td><code>reason</code></td><td><code>unresolved_disposal</code>, <code>implicit_quantum_disposal</code>, <code>clean_workspace_return</code>, <code>dirty_workspace_return</code> or <code>computed_workspace_return</code></td></tr>
+<tr><td><code>applies_to</code></td><td><code>if_live_quantum_owner</code> for unresolved disposal. <code>live_quantum_owner</code> for an ownership or workspace rejection where the checker has identified a live owner.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The checker rejects this function (<code>unknown_name</code> or <code>name</code>), with the reason
+<code>unresolved_disposal</code>:</p>
+<pre><code class="language-qli">pub unitary fn client(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { drop(q); q }
+</code></pre>
+<p>The checker rejects this function (<code>ownership</code>), with the reason
+<code>implicit_quantum_disposal</code>:</p>
+<pre><code class="language-qli">pub unitary fn client(owner: Q&lt;Unit&gt;) -&gt; Unit { () }
+</code></pre>
+<h2 id="explicit-calls-and-receiver-access"><a class="header" href="#explicit-calls-and-receiver-access">Explicit calls and receiver access</a></h2>
+<p>In Rust, a method call <code>x.f()</code> references or dereferences its receiver
+automatically. Qleisli has no method call. A program writes quantum access at
+an ordinary call site, for example <code>h(excl q)</code> or <code>cnot(ctrl c, excl t)</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>The receiver spellings <code>q.h()</code> and <code>target.controlled_u(control)</code> are
+unsupported (<code>parse</code>). The compiler does not guess which access contract
+their author intended.</li>
+<li>The controlled application <code>controlled(U)(c, q)</code> takes its control and its
+target as owned arguments and returns both owners. Its argument list accepts
+no access marker: the parser rejects <code>controlled(U)(ctrl c, excl q)</code>
+(<code>parse</code>).</li>
+<li>An ordinary wrapper function must expose its interface and pass the same
+ownership, effect and access checks. A wrapper name grants no hidden
+projection and no forwarding.</li>
+<li>The language has no user-defined <code>Deref</code> or <code>DerefMut</code> hooks and no
+receiver adjustments.</li>
+<li>Method receiver syntax is absent for ordinary classical and static values as
+well. Ordinary first-order calls on those values are unaffected.</li>
+<li>Common source preparation admits the projection of a field from an ordinary
+nominal record, under the
+<a href="type-model.html#opaque-basis-specialization-in-the-selected-profile">type-model rules</a>.</li>
+<li>A diagnostic for method syntax reports the unsupported form without
+guessing the type of the receiver. Its <code>excl</code>/<code>ctrl</code> advice is conditional:
+it applies to quantum access. The diagnostic does not mechanically rewrite
+a receiver into either access mode.</li>
+<li>The lowering of an explicit call follows the
+<a href="elaboration.html">access and evaluation rules</a> and the native obligations of
+<a href="#whole-owner-exclusive-calls">whole-owner exclusive calls</a>. Receiver sugar
+supplies no alternative acceptance route and no evidence.</li>
+</ul>
+<p>The checker accepts this program:</p>
+<pre><code class="language-qli">use std::state::init0;
+
+pub observe fn main() -&gt; Bit {
+    let q = init0();
+    h(excl q);
+    h(excl q);
+    measure_z(q)
+}
+</code></pre>
+<p>The checker rejects this function (<code>parse</code>):</p>
+<pre><code class="language-qli">pub unitary fn client(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { q.h(); q }
+</code></pre>
+<h2 id="access-vocabulary-and-workspace-contracts"><a class="header" href="#access-vocabulary-and-workspace-contracts">Access vocabulary and workspace contracts</a></h2>
+<p>This section separates two vocabularies that Rust’s word “borrow” can
+suggest: access to an owner, and the contract of a workspace.</p>
+<p><strong>Access</strong> is public authority to operate on a quantum owner. It has two
+modes. <code>excl</code> grants temporary exclusive access over its exact footprint, for
+arbitrary coherent operations. <code>ctrl</code> grants a distinct coherent access, one
+that preserves basis sectors. Rust’s <code>&amp;</code> and <code>&amp;mut</code> borrow a value through a
+reference. Neither is an access spelling.</p>
+<p>Rules:</p>
+<ul>
+<li>Neither access mode means state restoration, separability or cleanliness.</li>
+<li>An <code>excl</code> argument does not require a <code>mut</code> binding.</li>
+<li>Rust <code>&amp;mut</code> is not a Qleisli access spelling. The checker does not convert
+it to either mode.</li>
+<li><code>borrow</code> is not reserved and has no builtin quantum-resource semantics. The
+parser rejects <code>borrow q</code> (<code>parse</code>).</li>
+<li>Clean and dirty describe independent workspace contracts. Clean discharge
+requires the specified exact known state. Dirty discharge requires exact
+restoration for every initial state and external reference.</li>
+<li>The end of an access discharges neither obligation.</li>
+<li>The workspace forms are the
+<a href="#explicit-clean-and-dirty-scopes"><code>clean</code> and <code>dirty</code> scopes</a> and the two
+<a href="#checked-cleanup-is-a-separate-contract"><code>with_computed</code> forms</a>. Each gives
+its body one scratch or auxiliary <code>Q&lt;Bit&gt;</code>, and each has its own bounded
+contract.</li>
+<li>A program cannot declare a parameter, a type or a binding as clean or
+dirty, and <code>borrow q</code> is not a workspace form.</li>
+<li>The diagnostic for <code>borrow q</code> is a located syntax diagnostic. It does not
+infer whether the author intended Rust access or dirty workspace.</li>
+<li>Ordinary declarations, calls and bindings named <code>borrow</code> keep normal
+checking. Their name grants no access, restoration or ownership permission.</li>
+<li>A program expresses a transfer of ownership through consuming calls and
+bindings. This vocabulary adds no standalone <code>move q</code> form.</li>
+<li>Internal Rust documentation may discuss normal borrowing of compiler data
+structures.</li>
+</ul>
+<p>For example, an implementation on ordered owners <code>(D,R)</code> can change <code>D</code>
+temporarily and satisfy the exact contract <code>I_D ⊗ X_R</code>. The sequence
+<code>CNOT(R→D); X(R); CNOT(R→D); X(D)</code> does so. In contrast, <code>Z(D); X(R)</code> leaves
+the marginal of a Bell-entangled <code>D</code> unchanged but changes its correlation
+phase with the reference. It therefore fails that identity-restoration
+contract.</p>
+<h2 id="whole-owner-exclusive-calls"><a class="header" href="#whole-owner-exclusive-calls">Whole-owner exclusive calls</a></h2>
+<pre><code class="language-text">AccessCall  ::= Name StaticArgs? "(" AccessArg ("," AccessArg)* ")"
+AccessArg   ::= MarkedPlace | Expr
+MarkedPlace ::= ("excl" | "ctrl") Ident Selection?
+Selection   ::= "[" Nat "]" | "[" Nat ".." Nat "]"
+</code></pre>
+<p>An <strong>access call</strong> is a call with at least one marked place. A program uses
+it to apply an operation to an owner in place, without a <code>let</code> that rebinds
+the result. <code>h(excl q)</code> temporarily supplies the live lexical owner <code>q</code> to
+the consuming call and keeps the returned quantum value on the same binder.
+The access call itself has ordinary type <code>Unit</code>. A joint call such as
+<code>cnot(excl c, excl t)</code> requires distinct owners and returns them internally
+in argument order.</p>
+<p><code>excl</code> and <code>ctrl</code> are contextual. Each is a marker only before an identifier
+in an argument position. Elsewhere each is an ordinary identifier.</p>
+<p>Rules:</p>
+<ul>
+<li>An access marker always denotes a quantum place. Each marked argument must
+name one live lexical owner (<code>ownership</code>). The place is a whole <code>Q&lt;A&gt;</code>
+owner, or an index <code>q[i]</code> or a slice <code>q[a..b]</code> of a <code>Q&lt;Bits&lt;N&gt;&gt;</code> owner
+(<code>type_mismatch</code> or <code>type</code>).</li>
+<li>Ordinary data and tuples that contain several owners are not access places.</li>
+<li>Marked places must not overlap. The checker rejects duplicate owners, and
+it rejects selections that have no compile-time proof of disjointness
+(<code>ownership</code>).</li>
+<li>An index or a slice must satisfy the static bounds of the
+<a href="elaboration.html#static-ordered-axis-places">static places</a>
+(<code>type_mismatch</code> or <code>size</code>). Indexed selections have a common AST, and one
+judgment decides their static bounds and their disjointness.</li>
+<li>The callee must have a checked <code>Unitary</code> effect that its caller can see,
+under the
+<a href="source-text.html#ordinary-function-effects-and-assertions">public-effect rule</a>
+(<code>effect</code>). Outside the original module of the callee, that effect is the
+public contract. Inside that module, it is the internal inference, which is
+checked independently.</li>
+<li>An annotation does not override body checking. Inlining or cache reuse
+cannot sharpen an external contract.</li>
+<li>The result of the callee must have exactly the original owner type for one
+argument, or the ordered tuple of those owner types for several arguments
+(<code>type_mismatch</code> or <code>type</code>). Exact basis trees and the owner partition
+matter, including <code>Q&lt;Unit&gt;</code>. Equal bit width is insufficient.</li>
+<li>The callee executes once. The end of the access inserts no inverse, reset,
+discard, release or fresh preparation.</li>
+<li>Returned values keep their changed state and phase, even across a nested
+lexical boundary.</li>
+<li>An access lasts for the written call. No mutable-binding marker is required.</li>
+<li>Consuming <code>q</code> after the access makes it unavailable as usual. Access cannot
+revive a spent or hidden owner (<code>ownership</code>).</li>
+<li>The checker rejects measurement through <code>excl</code> (<code>effect</code>).</li>
+<li>A checked mixed call may also pass <code>()</code> or a lexical <code>Unit</code> value. The
+compiler keeps the source position of every argument and restores the owners
+of the marked places in order. See
+<a href="elaboration.html#ordinary-unit-arguments-in-access-calls">mixed access calls</a>.</li>
+<li>A mixed call whose markers are all <code>excl</code> may also pass a lexical ordinary
+<code>Bit</code> value, when the selected callee lowers to a single checked ordinary
+branch. Another ordinary argument expression is <code>unsupported</code>.</li>
+<li>A closed finite function may declare
+<a href="elaboration.html#declared-access-parameters">access parameters</a>. They use the
+same checks of the original call and of the returned owners.</li>
+<li>An access call must not have more than 64 arguments (<code>parse</code>).</li>
+<li>Unsupported Rust reference notation receives a syntax explanation
+(<code>parse</code>). The explanation says that, for quantum access, <code>excl</code> grants
+arbitrary coherent access, and <code>ctrl</code> requires the computational-basis
+sector condition. The lexer does not infer that the expression is quantum,
+and it does not rewrite <code>&amp;</code> into <code>ctrl</code>.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The finite project compiler and selected Raw
+lowering partition the parent of an indexed selection and reassemble its
+updated owners. The selected hierarchy lowering replays the structural
+interval against the original places. Selected-source preparation keeps
+<code>ctrl</code> roles as obligations with their original source identities and
+spans. <code>ElaboratedProgram::lower_raw_with_kernel</code> and selected CLI Raw
+checking require a fresh native decision for every retained concrete
+control-bearing definition and for the selected root. These decisions share
+one exact-work budget. Each control call is bound to the decoded instruction
+interval and to the original ordered owners.</p>
+<p>The checker also elaborates unused closed functions whose original resolved
+dependencies reach a control obligation. They share the call, fold, depth
+and storage bounds of the selected graph. The checker adds no public entry
+and no invented static argument, and it leaves the execution root unchanged.
+The additional bodies keep their Meaning and refinement obligations. Final
+Raw consumption checks the artifact afresh and replays its source calls.
+Diagnostics keep the module and the location of the original call.</p>
+</blockquote>
+<p>The checker accepts this program:</p>
+<pre><code class="language-qli">use std::state::init0;
+use std::gate::x;
+
+observe fn main() -&gt; Bit {
+    let q = init0();
+    x(excl q);
+    measure_z(q)
+}
+</code></pre>
+<h3 id="whole-owner-coherent-control"><a class="header" href="#whole-owner-coherent-control">Whole-owner coherent control</a></h3>
+<p>A program marks a place with <code>ctrl</code> when the call uses that owner as a
+coherent control. <code>cnot(ctrl c, excl t)</code> marks <code>c</code> as a control place. A
+<code>ctrl</code> place follows three rules of an <code>excl</code> place: the rule of distinct
+live owners, the rule of Unitary effect and the rule of the exact returned
+interface. It adds the sector rule below.</p>
+<p>Rules:</p>
+<ul>
+<li><code>ctrl</code> requires that the call preserve the computational-basis sectors of
+the place. It does not require an unchanged quantum state, and it is not
+read-only access. Phase kickback and entanglement are allowed.</li>
+<li>The checker rejects H and X on a control owner (<code>contract</code>), although both
+are Unitary. CNOT preserves the sectors of its control but not those of its
+target.</li>
+<li>Exact scalar phase on <code>Q&lt;Unit&gt;</code> is retained.</li>
+<li>Control axes follow the original argument order and owner wire order. They
+do not follow sorted wire identifiers.</li>
+<li>The checker checks each occurrence of a call, including nested calls and
+unused concrete declarations.</li>
+<li>The end of an access neither restores the old state nor releases workspace.</li>
+<li>The checker rejects overlapping arguments (<code>ownership</code>).</li>
+<li>A fresh native decision must succeed before the updated owners are retained.
+The complete generated program must also pass ordinary native acceptance. No
+annotation and no cached decision replaces either check.</li>
+<li>A missing, incompatible or failed checker refuses the program. A missing
+checker executable is <code>project</code>, or <code>io</code> on the selected-entry route.</li>
+<li>When the native checker refuses a control, the diagnostic explains three
+things: control is not read-only, phase kickback is permitted, and
+arbitrary coherent access requires <code>excl</code>. This guidance does not bypass
+the effect, alias or interface checks.</li>
+<li>The supported call-formed exit points follow the
+<a href="elaboration.html#evaluation-and-owner-lifetime-boundaries">evaluation and owner lifetime rules</a>.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The finite project checker and compiler submit the
+emitted call interval, the original ordered owner ports, the complete basis
+forest and the requested control axes to the native <code>control-owners</code>
+checker. For indexed and sliced arguments, the checked call interval
+starts after extraction and ends before reassembly. Its ports follow the
+exact selected owner types and their order.</p>
+<p>The selected hierarchy profile ties each original control role to the
+replayed node in the executable graph. The native composition check
+reconstructs the action of that node from the hierarchy body and the
+original finite leaf bytes. It compares the exact ordered input and output
+basis trees, including zero-width ports, before it checks computational
+sectors. The decision uses the exact eighth-root scalar ring and shares work
+with the native composition and execution-view checks. The
+<code>source_control_checked</code> field reports that scoped success.</p>
+</blockquote>
+<p>The checker accepts this program. <code>t</code> is a control place, and the call flips
+<code>c</code>:</p>
+<pre><code class="language-qli">use std::state::init0;
+use std::gate::x;
+use std::gate::cnot;
+
+pub observe fn main() -&gt; (Bit, Bit) {
+    let c = init0();
+    let t = init0();
+    x(excl t);
+    cnot(ctrl t, excl c);
+    (measure_z(c), measure_z(t))
+}
+</code></pre>
+<p>The checker rejects a program that calls <code>h(ctrl c)</code> (<code>contract</code>). H does not
+preserve the computational-basis sectors of <code>c</code>.</p>
+<h2 id="false-friend-audit"><a class="header" href="#false-friend-audit">False-friend audit</a></h2>
+<p>Use these tables to look up a Rust habit. They give one row for each Rust
+habit of the audit checklist and of its addendum on implicit operations. A
+cell that names a construct as absent follows the definition at the head of
+this chapter.</p>
+<h3 id="disposal-and-duplication"><a class="header" href="#disposal-and-duplication">Disposal and duplication</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rust habit</th><th>Rust reading</th><th>Qleisli rule</th><th>Diagnostic or correction</th></tr>
+</thead>
+<tbody>
+<tr><td><code>drop</code></td><td><code>drop(x)</code> takes ownership of <code>x</code>, and the destructor of the value runs.</td><td>No builtin and no generic quantum destruction exist. A program may ignore ordinary classical data. A resolved user consumer, including one named <code>drop</code>, must pass the normal checks.</td><td>An unresolved <code>drop</code> is <code>unknown_name</code> or <code>name</code>. Use an <a href="#quantum-owners-require-an-explicit-transition">explicit transition</a>.</td></tr>
+<tr><td>Implicit scope destruction</td><td>Rust drops a value that is live at the end of its scope.</td><td>A live quantum owner must leave through the result or an admitted explicit transition. Scope closure emits no hidden physical disposal.</td><td><code>ownership</code></td></tr>
+<tr><td><code>Clone</code></td><td><code>x.clone()</code> returns an explicit duplicate of <code>x</code>.</td><td>No trait and no builtin exist. A reusable static description does not contain a live owner.</td><td>A duplicate use of a live owner is <code>ownership</code>.</td></tr>
+<tr><td><code>Copy</code></td><td>A use of a value of a <code>Copy</code> type duplicates it, and the original stays usable.</td><td>A program may reuse ordinary data. A quantum-containing product is linear. No Rust marker trait is imported.</td><td>A second use of a consumed owner is <code>ownership</code>.</td></tr>
+<tr><td><code>forget</code> / <code>mem::forget</code></td><td><code>mem::forget(x)</code> takes ownership of <code>x</code> and does not run its destructor.</td><td>No privileged forget operation exists. An ordinary resolved function cannot hide a live owner from the checks of its body.</td><td>An unresolved <code>forget</code> is <code>unknown_name</code> or <code>name</code>.</td></tr>
+<tr><td><code>ManuallyDrop</code></td><td><code>ManuallyDrop&lt;T&gt;</code> wraps a value so that Rust does not run its destructor automatically.</td><td>No wrapper type, no destructor suspension and no owner-accounting exception exist.</td><td>Account for the owner through the result or an explicit transition.</td></tr>
+<tr><td>Destructor-like trait hooks</td><td>The <code>Drop::drop</code> implementation of a type runs implicitly when Rust drops a value.</td><td>No trait or impl dispatch and no implicit cleanup hook exist.</td><td>Checked scoped cleanup has its <a href="#checked-cleanup-is-a-separate-contract">separate rule</a>.</td></tr>
+<tr><td>Conflating measure, discard, release, reset or uncompute</td><td>Scope exit and <code>drop</code> end a value by one mechanism, its destructor.</td><td>The <a href="#quantum-owners-require-an-explicit-transition">explicit transitions</a> are distinct. No generic spelling and no scope exit selects among them.</td><td>Choose the transition by its type, effect and meaning.</td></tr>
+<tr><td><code>Default</code></td><td><code>T::default()</code> returns the default value of a type that implements <code>Default</code>.</td><td><code>Default</code> is unavailable for live quantum-containing types, including <code>Q&lt;Unit&gt;</code> and nested owners. The construction of ordinary and static data and the explicit preparation of quantum owners keep their distinct contracts. A user function named <code>default</code> is a checked call.</td><td>An unresolved <code>default</code> is <code>unknown_name</code> or <code>name</code>. See <a href="#explicit-construction-instead-of-default">explicit construction</a>.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="types-patterns-and-relations"><a class="header" href="#types-patterns-and-relations">Types, patterns and relations</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rust habit</th><th>Rust reading</th><th>Qleisli rule</th><th>Diagnostic or correction</th></tr>
+</thead>
+<tbody>
+<tr><td>Unchecked casts / <code>transmute</code></td><td><code>mem::transmute</code> reinterprets the bits of a value as another type of the same size. It is <code>unsafe</code>.</td><td>No unchecked cast and no verification bypass exist. The checker checks exact type trees, basis tags and ordered axes.</td><td>Convert through an explicit checked operation.</td></tr>
+<tr><td><code>as</code></td><td><code>e as T</code> casts a value to another type, for example between numeric types.</td><td>The contextual <code>as</code> in <code>basis q as p { e }</code> names an ordinary basis pattern for a checked <a href="coherent-basis.html">coherent map</a>. It is not a Rust value cast and not an implicit physical layout conversion. General casts are absent.</td><td>Convert through an explicit checked operation.</td></tr>
+<tr><td><code>Eq</code> / <code>Ord</code> / <code>Hash</code></td><td><code>==</code> uses <code>PartialEq</code>, <code>&lt;</code> uses <code>PartialOrd</code>, and hashing uses <code>Hash</code>. <code>Eq</code> and <code>Ord</code> add total equality and total order.</td><td>No ordinary relation exists on live quantum owners, including nested and zero-width owners. Internal IDs, ordinary values, explicit coherent comparison and state-testing procedures keep distinct meanings.</td><td>A runtime comparison operator is <code>parse</code>. See <a href="#ordinary-relations-and-live-quantum-owners">ordinary relations</a>.</td></tr>
+<tr><td>Wildcard and rest patterns</td><td><code>_</code> matches a value without binding it. <code>..</code> skips the other fields of a pattern.</td><td><code>_</code> may ignore only unrestricted data. Every quantum-containing matched field is linear. An ordinary tuple pattern keeps its exact immediate shape. Rest patterns are absent, and a later rest pattern must not hide owners.</td><td><code>_</code> on a quantum-containing value is <code>ownership</code>.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="control-flow-and-failure"><a class="header" href="#control-flow-and-failure">Control flow and failure</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rust habit</th><th>Rust reading</th><th>Qleisli rule</th><th>Diagnostic or correction</th></tr>
+</thead>
+<tbody>
+<tr><td>Early <code>return</code></td><td><code>return e</code> leaves the function at once, and Rust drops the values that are live there.</td><td>No early-return construct exists. The tail expression supplies the block result.</td><td>A statement such as <code>return q</code> is <code>parse</code>. Use a final expression and explicit branches that preserve every quantum owner.</td></tr>
+<tr><td>Panic and unwinding</td><td>A panic unwinds the stack and drops live values, or it aborts the process.</td><td>No source exception and no unwinding construct exist. A host or tool failure is not an admitted path that disposes of owners.</td><td>See the <a href="source-text.html#checking-failures-and-quantum-execution">verified-core failure model</a>.</td></tr>
+<tr><td><code>?</code>, assertions and early failure</td><td><code>e?</code> returns early with the error or the <code>None</code> of <code>e</code>. <code>assert!</code> panics when its condition is false.</td><td>No propagation operator, no assertion builtin and no language unwind path exist. The name of a user function does not supply such behavior.</td><td>See the <a href="source-text.html#checking-failures-and-quantum-execution">checking and execution boundary</a>.</td></tr>
+<tr><td>Ordinary <code>for</code> / <code>IntoIterator</code> over quantum data</td><td><code>for x in e</code> calls <code>IntoIterator::into_iter(e)</code> and runs its body until the iterator ends.</td><td>No ordinary iterator and no trait machinery exist. Bounded <code>qfor static ... carry ... yield ...</code> threads a quantum-containing carry explicitly, and the checker checks its body even for an empty range. <code>for static</code> permits only an ordinary carry. Neither has hidden quantum capture or runtime iteration.</td><td>See <a href="static-language.html">Static language</a>.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="places-references-and-access"><a class="header" href="#places-references-and-access">Places, references and access</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rust habit</th><th>Rust reading</th><th>Qleisli rule</th><th>Diagnostic or correction</th></tr>
+</thead>
+<tbody>
+<tr><td>Assignment to initialized places</td><td><code>x = e</code> drops the old value of <code>x</code> and moves the value of <code>e</code> in.</td><td>A program must not assign to a quantum-containing place, including a nested product and a zero-width owner. <code>q = h(q)</code> is forbidden replacement. <code>let q = h(q)</code> consumes the old owner before it rebinds. A program must not refill a consumed binding by assignment. Ordinary and static assignment are also unsupported. Field and index assignment are unsupported syntax.</td><td>A quantum-containing destination of a bare lexical assignment is <code>ownership</code>. The checker refuses it before it checks the right-hand side. An ordinary or static destination is <code>unsupported</code>.</td></tr>
+<tr><td>Indexing / <code>Index</code> / <code>IndexMut</code></td><td><code>a[i]</code> calls <code>Index::index</code> or <code>IndexMut::index_mut</code> and dereferences the result. A slice index out of bounds panics at run time.</td><td>Explicit <code>excl q[i]</code> and <code>ctrl q[a..b]</code> select statically bounded, ordered places under the <a href="elaboration.html#static-ordered-axis-places">selector rules</a>. They form no ordinary value and no reference. They do not move owners by bare indexing, and they use no indexing trait and no runtime bounds check. Explicit <code>take_bit[n,k]</code> and <code>put_bit[n,k]</code> consume and return owners with checked static bounds and ordered axes.</td><td>An unproved bound is <code>type_mismatch</code> or <code>size</code>.</td></tr>
+<tr><td>Method-call autoref and autoderef</td><td><code>x.f()</code> references or dereferences the receiver automatically to match the method.</td><td>No method-call syntax and no hidden receiver conversion exist. Quantum autoref, autoderef, <code>Deref</code>/<code>DerefMut</code> dispatch, receiver coercion and access-contract overload selection never insert or forward <code>excl</code>/<code>ctrl</code>. An explicit first-order call keeps its declared argument types and access modes.</td><td><code>parse</code>. See <a href="#explicit-calls-and-receiver-access">receiver access</a>.</td></tr>
+<tr><td><code>mem::swap</code> / exchange / physical SWAP</td><td><code>mem::swap(&amp;mut a, &amp;mut b)</code> exchanges two values in place.</td><td>Ordinary <code>std::gate::swap</code> applies a physical Bit SWAP in fixed wire frames. <code>std::structure::permute_axes</code> and <code>transpose_axes</code> reorder axes explicitly. Live binding exchange is unavailable. Matrix equality grants no unchecked routing replacement and no unchecked cost replacement.</td><td>Use the operation whose contract matches: a physical SWAP or an explicit axis map.</td></tr>
+<tr><td><code>mut</code></td><td><code>let mut x</code> permits reassignment of <code>x</code> and mutable borrows of it.</td><td>A mutable-binding marker grants no quantum access. Gates change states through consuming calls and explicit returned owners. <code>excl</code> and <code>ctrl</code> need no marker. The ordinary identifier <code>mut</code>, as in <code>let mut = 0</code>, keeps the normal name rules.</td><td><code>let mut q = ...</code> is <code>ownership</code> for a quantum-containing value and <code>unsupported</code> for an ordinary value.</td></tr>
+<tr><td>Shared <code>&amp;</code> / exclusive <code>&amp;mut</code> / <code>ctrl</code></td><td><code>&amp;x</code> is a shared borrow. <code>&amp;mut x</code> is an exclusive borrow that permits mutation.</td><td>Reference notation is absent. A call marks access with <code>excl</code> or <code>ctrl</code> on a whole owner or on a static index or slice. <code>ctrl</code> is not read-only: control may accumulate phase or entanglement.</td><td><code>&amp;</code> is <code>parse</code>. See <a href="#whole-owner-exclusive-calls">whole-owner exclusive calls</a>.</td></tr>
+<tr><td><code>borrow</code> versus clean and dirty workspace</td><td>A borrow gives temporary use of a value through a reference.</td><td><code>borrow</code> has no builtin quantum-resource semantics. <code>excl</code> and <code>ctrl</code> express access. Clean and dirty express independent workspace restoration obligations.</td><td><code>borrow q</code> is <code>parse</code>. See the <a href="#access-vocabulary-and-workspace-contracts">access vocabulary</a>.</td></tr>
+</tbody>
+</table>
+</div>
+<p><a id="acceptance-and-evidence"></a></p>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<p>The source checker verifies complete declarations and bodies before concrete
+eligibility. A diagnostic does not alter that judgment. It does not issue an
+accepted handle, and it does not replace the independent native Lean gate.
+The <a href="production-boundary.html">production boundary</a> and the
+<a href="functional-boundary.html">functional boundary</a> state the limits that apply to
+this chapter: the limits of source, of concrete profiles and of preservation.</p>
+<h3 id="code"><a class="header" href="#code">Code</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Profile</th><th>Access that the profile supports</th></tr>
+</thead>
+<tbody>
+<tr><td>Finite project</td><td><code>excl</code> and <code>ctrl</code> on whole owners and on static index and slice arguments, with a fresh native sector check for each <code>ctrl</code> call</td></tr>
+<tr><td>Selected Raw</td><td>The same places, with a fresh native sector check for each <code>ctrl</code> call. <code>lower_raw</code> and checker-free <code>emit-proposal</code> refuse a control obligation (<code>unsupported</code>).</td></tr>
+<tr><td>Selected hierarchy</td><td>Bounded <code>excl</code> selections, on at most eight axes of each selected owner. Bounded <code>ctrl</code> calls of a pure entry, replayed with a fresh native sector check.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Limits of the profiles:</p>
+<ul>
+<li>The finite project profile lowers <code>discard(q)</code> and <code>std::state::reset(q)</code>.
+The selected catalog supports neither.</li>
+<li>The finite check of a <code>clean</code> or <code>dirty</code> scope covers full carriers of at
+most five data bits and one scratch bit, within the shared exact-work limit.
+The project compiler reports a wider data owner, or a scope body of more
+than 1024 circuit steps, as <code>limit</code>.</li>
+<li>A control decision uses the bounded exact native profile. It covers at most
+six physical input bits, and the cumulative exact work is charged to the
+compiler budget.</li>
+<li>A closed finite declared access uses the original-body profile.</li>
+<li>A program writes access in two ways: as call-site markers on whole owners
+and static selections, and as declared access parameters. The language has
+no other access footprint and no access that outlives its call.</li>
+<li>In the selected Raw profile, every original control obligation must have a
+concrete call in each retained specialization of its declaration. A
+different specialization cannot supply its evidence.</li>
+<li>The selected Raw profile does not support an unclosed generic declaration
+with a control obligation. It does not support a control call that is
+missing in an unselected static branch or in an empty loop (<code>unsupported</code>).</li>
+<li>A zero-count provider with a retained body is checked independently of its
+execution count.</li>
+<li>A symbolic inverse or controlled transform that contains an access
+obligation is <code>unsupported</code>.</li>
+<li>The v5 source profile checks supported <code>excl</code> and <code>ctrl</code> calls in coherent
+block arms and static continuations. It checks them against their original
+ordered places and literal Raw intervals, including extraction and
+reassembly. The
+<a href="production-boundary.html#version-5-source-body-requests">production boundary</a>
+describes the bounded v5 request.</li>
+<li>Some supported selected roots reach <code>with_computed</code> through their original
+lexical dependency closure. Such a root uses the common source emitter and
+fresh typed native checks. The computed boundary and the local
+normalization receipts are intact. This route supplies no
+source-preservation theorem, no operation-formal closure and no acceptance
+rule.</li>
+<li>The two-argument <code>with_computed</code> check is subject to the native graph,
+dependency, source and shared-work limits. These include the separate
+FunctionEvidence limits on the dependencies of the body.</li>
+<li>Retained module records fit within 128 modules and 1 MiB, including names
+(<code>limit</code>).</li>
+<li>Ordinary source expansion keeps its own work limit. The normalization of a
+<code>with_computed</code> body does not make every long source fit that limit, and it
+synthesizes no inverse for arbitrary source code.</li>
+<li>Concrete nominal execution is gated, as the
+<a href="type-model.html#opaque-basis-specialization-in-the-selected-profile">type model</a>
+states.</li>
+<li>The language has no trait grammar. That absence supplies no proof and no
+implementation of later trait resolution. A facility admitted later must
+preserve the rules of
+<a href="#explicit-construction-instead-of-default">explicit construction</a>.</li>
+<li>Integration with the external qlippy tool is outside this chapter.</li>
+</ul>
+<h3 id="tests"><a class="header" href="#tests">Tests</a></h3>
+<ul>
+<li><code>tests/rust_boundary_diagnostics.rs</code>, <code>tests/default_construction_boundary.rs</code>
+and <code>tests/repair_diagnostics.rs</code> check the refusals and the permitted
+ordinary forms of this chapter on both routes.</li>
+<li><code>tests/exclusive_access.rs</code> checks access calls, and
+<code>tests/computed_derived_source.rs</code> checks the two-argument <code>with_computed</code>
+bodies.</li>
+<li><code>tests/selected_function_contracts.rs</code> checks the complete exact operator of
+the <code>(D,R)</code> example through the function-contract boundary. Its separate
+Bell experiment does not replace the all-input equation, and it implements
+no workspace syntax.</li>
+<li>The
+<a href="https://github.com/MGYamada/Qleisli/blob/38d3f670a5e6c6de29a60742936a03ddcc0974ae/tests/fixtures/authoring_sessions/clean-marginal-v030/README.md">first source study</a>
+of the reset example retains its diagnostics and numerical observations
+separately from proofs.</li>
+<li>The
+<a href="https://github.com/MGYamada/Qleisli/blob/fd0a5e27a634ce490a6e42593b2d08f340545da4/tests/fixtures/authoring_sessions/access-algorithms-v030/context.md">small cross-algorithm study</a>
+retains complete access-call and explicit-owner pairs for fixed arithmetic,
+coherent equality, a Grover iterate, a QPE controlled-power prefix and a
+walk step. These examples use the same access rule. Their local helper names
+are not standard-library APIs. The QPE example has no inverse QFT.</li>
+<li>That study checks finite project execution and selected Raw support
+separately. It retains the first selected Grover profile refusals.</li>
+</ul>
+<h3 id="proof"><a class="header" href="#proof">Proof</a></h3>
+<ul>
+<li>The local
+<a href="https://github.com/MGYamada/Qleisli/blob/38d3f670a5e6c6de29a60742936a03ddcc0974ae/qptl/QPTL/Clean.lean">QPTL square laws</a>
+transport the exact computed-image equation through an explicit inverse.</li>
+<li>Their
+<a href="https://github.com/MGYamada/Qleisli/blob/38d3f670a5e6c6de29a60742936a03ddcc0974ae/lean/qptl-application/ProtectedClean.lean">Raw application</a>
+obtains the original predicate, the protected uses and the event from the
+dispatch check. It derives the image equation before it evaluates the
+resulting square on arbitrary correlated amplitudes. It does not assume the
+final clean equation.</li>
+<li>The
+<a href="https://github.com/MGYamada/Qleisli/blob/38d3f670a5e6c6de29a60742936a03ddcc0974ae/lean/qptl-application/ProtectedProgram.lean">pure Raw program theorem</a>
+also covers every physical row of certified cleanup, including zero
+amplitude on dirty auxiliary rows. It replaces both kinds of clean scope
+with their original logical actions in the checked event order, and it
+connects the result to fresh graph inspection.</li>
+<li>In an accepted observing Raw program,
+<code>Qleisli.Raw.ProtectedObserving.original_interval</code> identifies a checked pure
+instruction and its events in the independently read root. Each inherited
+operator column can use the checked logical action, with its recorded and
+hidden outcomes. The literal suffix and the return permutation then act on
+the updated histories. The theorem covers an original top-level interval and
+uses the exact cleanup checks.</li>
+<li><code>Qleisli.Raw.ProtectedObserving.original_program</code> composes the checked
+logical replacements throughout the original observing root, including both
+arms of a nested classical branch. It follows the branch checks of the
+native checker and the independent reader. It preserves each selected
+history, the quantum owner permutation at each branch join, the classical
+phi outputs and the return order of the program. Each pure event uses the
+exact check of that event.</li>
+<li>For explicit <code>clean</code> and <code>dirty</code> scopes,
+<code>RuntimeWorkspaceRestoration.literal_action</code> uses the original checked Raw
+interval and the independently read logical body. It proves clean return on
+every physical row. It proves dirty identity on the scratch axis for any
+joint amplitudes, including reference correlations. The clean equation
+preserves the exact phase, and <code>clean_sequence</code> composes it across two
+accepted scopes with the same interface.</li>
+<li>For the checked coherent-control case, the original Raw tape must match an
+empty tape on selector zero and the exact checked clean body on selector
+one. With the scratch Bit initialized to zero, the zero branch preserves the
+incoming data and reference amplitudes. The one branch applies the requested
+live operator with its full scalar phase. Both branches have zero amplitude
+in every nonzero scratch coordinate.</li>
+<li>The Lean application theorem
+<code>Qleisli.RuntimeWorkspaceRestoration.controlled_clean_action</code> proves these
+equations on the same output for arbitrary joint control, data and reference
+amplitudes. Its premises require both literal sector matches and the
+successful clean-body check.</li>
+</ul>
+<h3 id="preservation"><a class="header" href="#preservation">Preservation</a></h3>
+<ul>
+<li>The Raw results above do not establish general source composition, the CPTP
+marginal equivalence or quantitative resource bounds.</li>
+<li>General source preservation and quantitative resource correspondence are
+open proof obligations.</li>
+<li>The control check establishes no general source-preservation theorem, no
+quantitative resource correspondence and no scheduling permission.</li>
+<li>The rules of this chapter establish no general routing correspondence.</li>
+<li>The Resource Safety rules are requirements. They do not assert the
+corresponding general source, realization and resource proofs. See
+<a href="elaboration.html">the elaboration obligations</a>.</li>
+<li>The absence of implicit owner loss is not a proof of a quantitative resource
+bound or of source preservation.</li>
+</ul>
+<h3 id="specification-review"><a class="header" href="#specification-review">Specification review</a></h3>
+<ul>
+<li>The rules of this chapter preserve the adopted QS, PR, quantitative RS and
+EXACT obligations: QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01.
+These obligations are binding and pending.</li>
+<li>The rules preserve the two scoped ordinary QLV1 guarantees,
+<code>QS-QLV1-OWNERSHIP-2026-01</code> for ownership and <code>QS-QLV1-SCOPE-2026-01</code> for
+classical scope. The
+<a href="authority.html#current-adoption-and-proof-status">authority chapter</a> records
+their admission.</li>
+<li>The rules establish no broader discharge, no primitive admission, no
+resource theorem and no release approval.</li>
+<li>This chapter does not decide the exit and path obligations of an early
+<code>return</code>, or the wider surface classification of ordinary Rust features.</li>
+</ul>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>The chapter named its release as <code>0.3.0-beta</code> in its introduction and as
+0.3.0 in its section on <code>Default</code>.</li>
+<li>The chapter applies the ordinary
+<a href="https://github.com/MGYamada/Qleisli/issues/68#issuecomment-6009785277">#68 diagnostics decision</a>.
+The audit covers the original checklist of #68 and its implicit-operation
+addendum.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/67">#67</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/68">#68</a> hold the wider
+decisions and acceptance criteria. The chapter recorded them as open.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/251">#251</a> holds the broad
+import of ordinary Rust surface features, including broad ordinary trait
+ergonomics.</li>
+<li>The
+<a href="https://github.com/MGYamada/Qleisli/issues/79#issuecomment-6009973288">#79 decision</a>
+made <code>Default</code> unavailable for quantum-containing types. It kept ordinary
+and static basis data ordinary.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/70">#70</a> covers source
+workspace, and <a href="https://github.com/MGYamada/Qleisli/issues/120">#120</a> covers
+extra backend synthesis workspace.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/72">#72</a> tracked the structured
+uncomputation obligations. It is closed.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/157">#157</a> tracks the general
+source, realization and resource proofs that the Resource Safety rules need.</li>
+<li>The <a href="https://github.com/MGYamada/Qleisli/issues/225">diagnostic design rule</a>
+uses familiar ownership intuition to explain the
+<a href="https://github.com/MGYamada/Qleisli/issues/226">#226 distinction</a> between
+affine and linear ownership.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/196">#196</a> holds the exit and
+path obligations of early <code>return</code> and the wider surface classification.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/73">#73</a> records the assignment
+rule, and <a href="https://github.com/MGYamada/Qleisli/issues/77">#77</a> records the
+<code>mut</code> rule.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/76">#76</a> tracked general routing
+correspondence for exchange and physical SWAP. It is closed.</li>
+<li>The <a href="https://github.com/MGYamada/Qleisli/issues/71">#71 decision</a> uses
+the word access for public quantum operation authority.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/29">#29</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/69">#69</a> tracked general access.
+Both are closed.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../reference/functional-boundary.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/coherent-basis.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../reference/functional-boundary.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/coherent-basis.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

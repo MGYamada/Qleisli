@@ -1,0 +1,1211 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Primitive boundary and admission - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="primitive-boundary-and-admission"><a class="header" href="#primitive-boundary-and-admission">Primitive boundary and admission</a></h1>
+<p>A <strong>language primitive</strong> is an operation that the language itself supplies. A
+program calls it by a bare spelling, such as <code>h</code> or <code>measure_z</code>. Edition 2026
+has 13 language primitives. Each one has a typed identity that fixes its
+typing rule and its effect. A language primitive grants no native acceptance
+and no general inverse or control capability.</p>
+<p>This chapter specifies the source primitive boundary of edition 2026. It
+covers how the checker looks up a bare spelling, the contract of each
+primitive and the migration of the 27 retired qualified names. It also covers
+the ordinary library and the roles of each production path. Its last subject
+is <strong>primitive admission</strong>: the reviewed decision to add semantic authority.</p>
+<p>Three documents rank above this chapter: the
+<a href="authority.html">authority hierarchy</a>, <code>TRUSTBOUNDARY.md</code> and <code>STDLIB.md</code>. The
+inventory of this chapter is a technical classification. It is neither a
+human adoption of a minimal generating set nor a constitutional
+interpretation or guarantee. A program reaches an operation through a bare
+spelling or through an ordinary definition. This form of source access
+changes neither the meaning of the
+<a href="#core-forms-and-independent-meaning">Raw constructors</a> nor the native
+acceptance authority.</p>
+<p>The <a href="diagnostics.html#routes">project route and the selected-entry route</a> both
+use the common checker. When a program breaks a rule, the common checker gives
+the diagnostic a class, such as <code>name</code>. A rule in this chapter names that
+class. <a href="diagnostics.html#codes">Codes</a> gives the code that each route reports
+for a class.</p>
+<p>The <a href="architecture.html#inference-and-explicit-discovery">inference and discovery boundary</a>
+shows where to find a primitive’s contract or inspect a derived definition.</p>
+<p>A <strong>concrete adapter</strong> lowers a checked program to a concrete proposal under
+fixed capacities. This chapter names two of them. The <strong>finite adapter</strong>
+lowers a program to finite Raw IR. The <strong>selected adapter</strong> prepares a
+selected entry concretely for the ordinary Raw gate or a dedicated hierarchy
+gate. The capacities and the supported forms of an adapter are its
+<strong>concrete profile</strong>. <a href="#status-and-limits">Status and limits</a> gives both
+profiles.</p>
+<h2 id="meaning-spelling-and-implementation"><a class="header" href="#meaning-spelling-and-implementation">Meaning, spelling and implementation</a></h2>
+<p>An operation has a meaning, a spelling in source and an implementation. This
+section keeps them apart. The project separates four categories of meaning.
+Each category has its own authority and its own obligation.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Category</th><th>Authority and obligation</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Semantic primitive</strong>, or irreducible semantic rule</td><td>A rule at the independent semantic and checking boundary: an existing operation, instrument, ownership transition or effect rule. Three things about it require review: its intended meaning, its premises and the acceptance that the checker implements. Moving the rule into a backend or a package does not remove these duties.</td></tr>
+<tr><td>Language primitive</td><td>One typed <code>PrimitiveId</code>. A program can use its bare spelling only where lexical resolution leaves that spelling unbound and the resolution of ordinary declarations and imports does too. The identity fixes the typing rule and the effect. It grants no native acceptance and no general inverse or control capability.</td></tr>
+<tr><td><strong>Derived library definition</strong></td><td>Ordinary <code>.qli</code> source that you can inspect. The checker checks it like user source, and its contract is reviewed separately. Its home under <code>std::</code> grants no privilege.</td></tr>
+<tr><td><strong>Backend implementation intrinsic</strong></td><td>An implementation of an existing meaning. The target output, the phase, the axes, the workspace and the resources keep their separate preservation and realization obligations. An internal operation tag is not an additional source primitive.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Only native Lean checking issues a production accepted handle. Parsing, Rust
+catalogs, lowering, simulation and exporter output issue none.</li>
+<li>An intended mathematical specification must stay independent of
+acceptance. It requires specification review.</li>
+<li>None of these is primitive admission, proof of irreducibility or source
+preservation: a technical inventory, a refreshed source hash, a successful
+test.</li>
+</ul>
+<h2 id="bare-lookup-and-ordinary-shadowing"><a class="header" href="#bare-lookup-and-ordinary-shadowing">Bare lookup and ordinary shadowing</a></h2>
+<p>A program calls a primitive by writing its name alone. A local binding or a
+declaration of the program can have the same name, and it then takes the
+place of the primitive. This section gives the order in which the checker
+decides what a name refers to.</p>
+<p>A <strong>bare spelling</strong> is an unqualified callable name. An <strong>ordinary
+declaration</strong> is a declaration in <code>.qli</code> source, which receives the same checks
+as user source. The checker looks in four places, in this order, and resolves
+a bare spelling to the first one that applies:</p>
+<ol>
+<li>A lexical binding, whether runtime or static. The checker finds a binding
+here even when the binding is moved or has the wrong callable category.</li>
+<li>An ordinary declaration of the same module, or an ordinary public
+declaration that the module imports explicitly. The ordinary visibility
+and collision rules apply.</li>
+<li>One of the six original public declarations that the
+<a href="prelude.html">derived prelude</a> supplies, unless the module opts out.</li>
+<li>The language primitive with that spelling.</li>
+</ol>
+<p>Rules:</p>
+<ul>
+<li>Resolution is lexical. The checker does not select among overloads by the
+types of the arguments.</li>
+<li>A lexical binding determines the use. When that binding has an ownership or
+category error, the error is final. Lookup never retries a declaration or a
+primitive of the same name.</li>
+<li>An ordinary declaration determines the use even when its spelling matches a
+primitive. Its signature, public effect, access requirements and body
+obligations apply.</li>
+<li>A spelling resolves to a primitive only when steps 1 to 3 leave it unbound.
+A name that no step binds is an error (<code>name</code>).</li>
+<li>Once lookup has selected a callee, a failed check never selects another
+callee or another authority. This holds for a failed type, arity, effect,
+capability, concrete-profile or native check.</li>
+<li>Parameters, <code>let</code> bindings, fold binders, static providers and restricted
+classical or basis expressions keep their category and scope rules.</li>
+<li>A primitive is not an import, a prelude declaration, a reserved identifier
+or a hidden alias. A program calls <code>h(q)</code> or <code>global_phase_eighth(q)</code>
+without a <code>use</code>.</li>
+<li>An ordinary function may have the name <code>h</code>. It receives ordinary source
+checking, and its name grants no Hadamard meaning. A moved local <code>h</code> shadows
+both that function and the primitive.</li>
+<li>The prelude must not reexport a bare primitive spelling (<code>name</code>).</li>
+<li>A program reaches the ordinary gates and the state and structure
+definitions through ordinary declarations, imports or qualified references.
+Six common derived definitions are also in the prelude.</li>
+<li>The bare name <code>phase_eighth</code> is not an alias of <code>global_phase_eighth</code>. It is
+an unresolved name (<code>name</code>).</li>
+<li>A retired qualified path is never a lookup path.
+<a href="#retired-qualified-names">Retired qualified names</a> gives its rules.</li>
+</ul>
+<p>The checker accepts this program. The ordinary declaration <code>empty_bits</code>
+determines the use, so the basis body yields the label 1 and not the empty
+label:</p>
+<pre><code class="language-qli">classical fn empty_bits() -&gt; Bit { 1 }
+pub isometry fn f(q: Q&lt;Unit&gt;) -&gt; Q&lt;Bit&gt; { basis q as () { empty_bits() } }
+</code></pre>
+<p>The checker rejects this program (<code>type</code>). The local <code>x</code> determines the use,
+and the checker does not retry the <code>x</code> of the prelude:</p>
+<pre><code class="language-qli">observe fn main() -&gt; Bit { let x = 0; measure_z(x(init0())) }
+</code></pre>
+<p>The checker accepts this program. A module that opts out of the prelude keeps
+the bare primitives <code>measure_z</code>, <code>h</code> and <code>unit</code>:</p>
+<pre><code class="language-qli">#![no_implicit_prelude]
+observe fn main() -&gt; Bit { measure_z(h(basis unit(()) as _ { 0 })) }
+</code></pre>
+<p>The checker rejects this program (<code>name</code>). After the opt-out, no step binds
+<code>init0</code>:</p>
+<pre><code class="language-qli">#![no_implicit_prelude]
+observe fn main() -&gt; Bit { measure_z(init0()) }
+</code></pre>
+<p><code>tests/frontend_types.rs</code>, <code>tests/selected_coherent_basis.rs</code> and
+<code>tests/shared_resolution/prelude.rs</code> check these sources.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/resolve/locals.rs</code> resolves a lexical
+binding before any global name. <code>Resolution::lookup</code> in
+<code>src/frontend/resolve.rs</code> applies steps 2 to 4, and
+<code>PrimitiveId::lookup_unbound</code> supplies step 4.</p>
+</blockquote>
+<h2 id="primitive-inventory"><a class="header" href="#primitive-inventory">Primitive inventory</a></h2>
+<p>The table lists the 13 language primitives. Use it to see what a primitive
+takes and what it returns; each spelling links to the section with its rules.
+Static arguments stand in square brackets after the spelling, as in
+<code>phase[1,2]</code>. <code>A</code> and <code>B</code> stand for complete supported Basis trees, not for
+bit counts. The effect is the principal effect of a call.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Spelling</th><th>Identity</th><th>Static arguments</th><th>Runtime arguments</th><th>Signature</th><th>Effect</th><th>Typing</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="#h"><code>h</code></a></td><td><code>H</code></td><td>None</td><td>1</td><td><code>Q&lt;Bit&gt; -&gt; Q&lt;Bit&gt;</code></td><td>Unitary</td><td>Fixed</td></tr>
+<tr><td><a href="#phase"><code>phase</code></a></td><td><code>Phase</code></td><td><code>[j,k]</code></td><td>1</td><td><code>Q&lt;Bit&gt; -&gt; Q&lt;Bit&gt;</code></td><td>Unitary</td><td>Fixed</td></tr>
+<tr><td><a href="#global_phase_eighth"><code>global_phase_eighth</code></a></td><td><code>GlobalPhaseEighth</code></td><td>None</td><td>1</td><td><code>Q&lt;A&gt; -&gt; Q&lt;A&gt;</code></td><td>Unitary</td><td>Inferred from the argument</td></tr>
+<tr><td><a href="#unit-and-finish"><code>unit</code></a></td><td><code>Unit</code></td><td>None</td><td>1</td><td><code>Unit -&gt; Q&lt;Unit&gt;</code></td><td>Unitary</td><td>Fixed</td></tr>
+<tr><td><a href="#unit-and-finish"><code>finish</code></a></td><td><code>Finish</code></td><td>None</td><td>1</td><td><code>Q&lt;Unit&gt; -&gt; Unit</code></td><td>Unitary</td><td>Fixed</td></tr>
+<tr><td><a href="#split-and-join"><code>split</code></a></td><td><code>Split</code></td><td>None</td><td>1</td><td><code>Q&lt;(A,B)&gt; -&gt; (Q&lt;A&gt;,Q&lt;B&gt;)</code></td><td>Unitary</td><td>Inferred from the argument</td></tr>
+<tr><td><a href="#split-and-join"><code>join</code></a></td><td><code>Join</code></td><td>None</td><td>2</td><td><code>(Q&lt;A&gt;,Q&lt;B&gt;) -&gt; Q&lt;(A,B)&gt;</code></td><td>Unitary</td><td>Inferred from the arguments</td></tr>
+<tr><td><a href="#measure_z"><code>measure_z</code></a></td><td><code>MeasureZ</code></td><td>None</td><td>1</td><td><code>Q&lt;Bit&gt; -&gt; Bit</code></td><td>Observe</td><td>Fixed</td></tr>
+<tr><td><a href="#discard"><code>discard</code></a></td><td><code>Discard</code></td><td>None</td><td>1</td><td><code>Q&lt;A&gt; -&gt; Unit</code></td><td>Observe</td><td>Inferred from the argument</td></tr>
+<tr><td><a href="#take_bit-and-put_bit"><code>take_bit</code></a></td><td><code>TakeBit</code></td><td><code>[n,k]</code></td><td>1</td><td><code>Q&lt;Bits&lt;n&gt;&gt; -&gt; (Q&lt;Bit&gt;,Q&lt;Bits&lt;n-1&gt;&gt;)</code></td><td>Unitary</td><td>Fixed, with <code>k&lt;n</code></td></tr>
+<tr><td><a href="#take_bit-and-put_bit"><code>put_bit</code></a></td><td><code>PutBit</code></td><td><code>[n,k]</code></td><td>2</td><td><code>(Q&lt;Bit&gt;,Q&lt;Bits&lt;n-1&gt;&gt;) -&gt; Q&lt;Bits&lt;n&gt;&gt;</code></td><td>Unitary</td><td>Fixed, with <code>k&lt;n</code></td></tr>
+<tr><td><a href="#empty_bits-and-prepend_bit"><code>empty_bits</code></a></td><td><code>EmptyBits</code></td><td>None</td><td>0</td><td><code>() -&gt; Bits&lt;0&gt;</code></td><td>Unitary</td><td>Fixed</td></tr>
+<tr><td><a href="#empty_bits-and-prepend_bit"><code>prepend_bit</code></a></td><td><code>PrependBit</code></td><td><code>[n]</code></td><td>2</td><td><code>(Bit,Bits&lt;n&gt;) -&gt; Bits&lt;n+1&gt;</code></td><td>Unitary</td><td>Fixed</td></tr>
+</tbody>
+</table>
+</div>
+<p>The last column says how the checker types a call. A primitive with fixed
+typing has the signature that the table gives for its static arguments. A
+primitive with inferred typing takes its result type from the type of its
+arguments.</p>
+<p>Rules:</p>
+<ul>
+<li>A call must supply the static arguments that the table lists
+(<code>static-arity</code>) and the number of runtime arguments that it lists
+(<code>arity</code>).</li>
+<li>The runtime argument list and the tuple shape of the result are separate.
+<code>join(a,b)</code> takes two arguments, and <code>unit(())</code> takes one.</li>
+<li>Each quantum argument evaluates once, in source order. The call consumes its
+owner. The primitive returns or eliminates that owner explicitly.</li>
+<li>Every quantum equation of this section extends to an arbitrary retained
+reference, on which it acts as the identity.</li>
+<li>Distinct owners may be entangled. A zero-axis owner is linear.</li>
+<li>A concrete adapter may refuse an identity that it does not support
+(<code>unsupported</code>). The refusal does not restore qualified lookup, and it does
+not replace the source judgment.</li>
+</ul>
+<p><code>tests/review_v021.rs</code> checks each of these declarations as an accepted
+project of its own:</p>
+<pre><code class="language-qli">unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{h(q)}
+unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{phase[1,2](q)}
+unitary fn f(q:Q&lt;(Bit,Unit)&gt;)-&gt;Q&lt;(Bit,Unit)&gt;{global_phase_eighth(q)}
+unitary fn f(v:Unit)-&gt;Q&lt;Unit&gt;{unit(v)}
+unitary fn f(q:Q&lt;Unit&gt;)-&gt;Unit{finish(q)}
+unitary fn f(q:Q&lt;(Bit,Unit)&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Unit&gt;){split(q)}
+unitary fn f(a:Q&lt;Bit&gt;,b:Q&lt;Unit&gt;)-&gt;Q&lt;(Bit,Unit)&gt;{join(a,b)}
+observe fn f(q:Q&lt;Bit&gt;)-&gt;Bit{measure_z(q)}
+observe fn f(q:Q&lt;(Bit,Unit)&gt;)-&gt;Unit{discard(q)}
+unitary fn f(q:Q&lt;Bits&lt;1&gt;&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Bits&lt;0&gt;&gt;){take_bit[1,0](q)}
+unitary fn f(a:Q&lt;Bit&gt;,z:Q&lt;Bits&lt;0&gt;&gt;)-&gt;Q&lt;Bits&lt;1&gt;&gt;{put_bit[1,0](a,z)}
+unitary fn f()-&gt;Bits&lt;0&gt;{empty_bits()}
+unitary fn f(b:Bit,z:Bits&lt;0&gt;)-&gt;Bits&lt;1&gt;{prepend_bit[0](b,z)}
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/primitive.rs::PrimitiveId</code> and its
+<code>ALL</code> list hold the 13 identities. <code>src/frontend/check/primitive.rs</code> types
+them for the common checker. The finite and selected adapters consume the
+same identity. They do not classify a name by its string. Internal tags of
+the adapters, such as X, Cnot, Init0 and Empty, are transport and emitter
+vocabulary and have no language identity.</p>
+</blockquote>
+<h3 id="h"><a class="header" href="#h"><code>h</code></a></h3>
+<p><code>h</code> applies the Hadamard gate to one Bit owner:
+<code>H|b&gt;=(|0&gt;+(-1)^b|1&gt;)/sqrt(2)</code>. The result is on the same axis.</p>
+<p>Rules:</p>
+<ul>
+<li>The argument must have type <code>Q&lt;Bit&gt;</code> (<code>type</code>).</li>
+<li><code>h</code> keeps, as a primitive rule, the action that mixes amplitudes. A
+deterministic basis map alone cannot express that superposition.</li>
+</ul>
+<h3 id="phase"><a class="header" href="#phase"><code>phase</code></a></h3>
+<p><code>phase[j,k]</code> applies <code>diag(1,exp(2*pi*i*j/2^k))</code> to one Bit owner. The static
+arguments <code>j</code> and <code>k</code> are exact dyadic arguments.</p>
+<p>Rules:</p>
+<ul>
+<li>The argument must have type <code>Q&lt;Bit&gt;</code> (<code>type</code>).</li>
+<li>The static arguments must pass the coefficient and profile checks of the
+concrete adapter. <a href="#status-and-limits">Status and limits</a> gives them.</li>
+<li><code>phase</code> is a relative phase on a Bit. It is distinct from a scalar.</li>
+</ul>
+<h3 id="global_phase_eighth"><a class="header" href="#global_phase_eighth"><code>global_phase_eighth</code></a></h3>
+<p>Let <code>ζ = exp(i*pi/4)</code>. <code>global_phase_eighth</code> multiplies the state of one owner
+by the scalar ζ. Its action is <code>ζ I_A</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>The argument must be one quantum owner of type <code>Q&lt;A&gt;</code> (<code>type</code>). The basis
+<code>A</code> may be <code>Unit</code>, <code>Bits&lt;0&gt;</code> or a complete packaged tree.</li>
+<li><code>global_phase_eighth</code> keeps an explicit scalar phase that has no physical
+wire.</li>
+</ul>
+<p>The checker rejects each of these declarations (<code>type</code>). An ordinary <code>Bit</code> is
+not a quantum owner, and a tuple of two owners is not one owner:</p>
+<pre><code class="language-qli">pub unitary fn f(b: Bit) -&gt; Bit { global_phase_eighth(b) }
+pub unitary fn f(q: Q&lt;Unit&gt;,r: Q&lt;Bit&gt;) -&gt; (Q&lt;Unit&gt;,Q&lt;Bit&gt;) { global_phase_eighth((q,r)) }
+</code></pre>
+<p><code>tests/quantum_unit_source.rs</code> checks these sources.</p>
+<h3 id="unit-and-finish"><a class="header" href="#unit-and-finish"><code>unit</code> and <code>finish</code></a></h3>
+<p>These two primitives begin and end an owner of type <code>Q&lt;Unit&gt;</code>, which has no
+axis. <code>unit</code> introduces a fresh zero-axis owner with coefficient +1. <code>finish</code>
+consumes a zero-axis owner with coefficient +1.</p>
+<p>Rules:</p>
+<ul>
+<li>The argument of <code>unit</code> must have the ordinary type <code>Unit</code> (<code>type</code>). The call
+<code>unit(())</code> is unary: its one argument is the value <code>()</code>.</li>
+<li>The introduction of an owner is an explicit semantic transition. It is not
+the classical value <code>()</code>, and it is not an implicit preparation.</li>
+<li>The argument of <code>finish</code> must have type <code>Q&lt;Unit&gt;</code> (<code>type</code>). <code>finish</code>
+consumes exactly that owner and keeps all preceding scalar work.</li>
+<li><code>finish</code> performs no observation. It infers no clean state for another
+basis.</li>
+</ul>
+<h3 id="split-and-join"><a class="header" href="#split-and-join"><code>split</code> and <code>join</code></a></h3>
+<p>These two primitives take a product owner apart and put one together. <code>split</code>
+partitions one product owner into two owners. <code>join</code> combines two owners into
+one ordered product owner. Both have coefficient +1.</p>
+<p>Rules:</p>
+<ul>
+<li>The argument of <code>split</code> must have type <code>Q&lt;(A,B)&gt;</code>, a product of two fields
+(<code>type</code>).</li>
+<li><code>split</code> keeps the complete child trees and the left and right axes. It does
+not flatten implicitly, and it does not promise that the two owners are
+separable.</li>
+<li>Each argument of <code>join</code> must be a quantum owner (<code>type</code>). The two owners
+must be distinct: a second use of one owner is an error (<code>ownership</code>).</li>
+<li><code>join(a,b)</code> is a call with two arguments. It is not a call with one tuple
+argument, and it is not a physical SWAP.</li>
+</ul>
+<p>The checker rejects this declaration (<code>ownership</code>). <code>join</code> receives the owner
+<code>q</code> twice:</p>
+<pre><code class="language-qli">pub unitary fn f(q:Q&lt;Unit&gt;)-&gt;Q&lt;(Unit,Unit)&gt;{join(q,q)}
+</code></pre>
+<p><code>tests/quantum_tuple_unitors.rs</code> checks this source.</p>
+<h3 id="measure_z"><a class="header" href="#measure_z"><code>measure_z</code></a></h3>
+<p><code>measure_z</code> measures one Bit owner and returns the result as an ordinary
+<code>Bit</code>. It is the complete destructive Z instrument with the Kraus operators
+<code>K_b=&lt;b|</code>. It includes every unnormalized reference branch.</p>
+<p>Rules:</p>
+<ul>
+<li>The argument must have type <code>Q&lt;Bit&gt;</code> (<code>type</code>).</li>
+<li><code>measure_z</code> consumes the logical owner.</li>
+<li>A pure label cannot represent the observation. A function that calls
+<code>measure_z</code> under a <code>unitary</code> or <code>isometry</code> label is an error (<code>effect</code>).</li>
+</ul>
+<p>The checker rejects this declaration (<code>effect</code>):</p>
+<pre><code class="language-qli">unitary fn f(q:Q&lt;Bit&gt;)-&gt;Bit{measure_z(q)}
+</code></pre>
+<p><code>tests/body_effects.rs</code> checks this source.</p>
+<h3 id="discard"><a class="header" href="#discard"><code>discard</code></a></h3>
+<p>A program calls <code>discard</code> to give up an owner explicitly. <code>discard</code> takes the
+explicit partial trace of one complete subsystem. It keeps the marginal of the
+reference and every erasure history.</p>
+<p>Rules:</p>
+<ul>
+<li>The argument must be one quantum owner of type <code>Q&lt;A&gt;</code> (<code>type</code>).</li>
+<li><code>discard</code> is not a clean release, not a proof of a zero state and not an
+implicit destruction at scope exit.</li>
+</ul>
+<h3 id="take_bit-and-put_bit"><a class="header" href="#take_bit-and-put_bit"><code>take_bit</code> and <code>put_bit</code></a></h3>
+<p>A program uses these two primitives to take one Bit owner out of a register
+and to put one in. <code>take_bit[n,k]</code> extracts coordinate <code>k</code> of a <code>Bits&lt;n&gt;</code>
+register and keeps the order of the other coordinates. <code>put_bit[n,k]</code> inserts
+its first argument at coordinate <code>k</code> and keeps the other coordinates. Both
+have phase +1. They are the explicit routing and typing rules of an atomic
+register.</p>
+<p>Rules:</p>
+<ul>
+<li>The static arguments must satisfy <code>k&lt;n</code> (<code>size</code>).</li>
+<li>The argument of <code>take_bit</code> must have type <code>Q&lt;Bits&lt;n&gt;&gt;</code> (<code>type</code>). A
+zero-width remainder, as for <code>take_bit[1,0]</code>, is an owner.</li>
+<li>The arguments of <code>put_bit</code> must be two distinct owners of types <code>Q&lt;Bit&gt;</code> and
+<code>Q&lt;Bits&lt;n-1&gt;&gt;</code> (<code>type</code>).</li>
+<li><code>put_bit</code> is not a physical SWAP and not a coercion by width alone.</li>
+</ul>
+<h3 id="empty_bits-and-prepend_bit"><a class="header" href="#empty_bits-and-prepend_bit"><code>empty_bits</code> and <code>prepend_bit</code></a></h3>
+<p>These two primitives build ordinary labels. Neither one touches a quantum
+owner. <code>empty_bits()</code> returns the exact ordinary empty label of type
+<code>Bits&lt;0&gt;</code>. The label is copyable and has no owner. <code>prepend_bit[n]</code> builds an
+ordinary label with the head before the tail. It has no quantum action.</p>
+<p>Rules:</p>
+<ul>
+<li><code>empty_bits</code> takes no runtime argument. The call <code>empty_bits(())</code> is an
+error (<code>arity</code>).</li>
+<li>In a restricted basis or classical expression, only the resolved identity
+<code>EmptyBits</code> receives the constructor rule. An ordinary function of the same
+name does not gain it.</li>
+<li>The arguments of <code>prepend_bit[n]</code> must have the ordinary types <code>Bit</code> and
+<code>Bits&lt;n&gt;</code> (<code>type</code>).</li>
+<li><code>prepend_bit</code> keeps the type rule of a sized label. It is not a preparation
+and not a measurement.</li>
+</ul>
+<h3 id="effects-and-types"><a class="header" href="#effects-and-types">Effects and types</a></h3>
+<p>The effect and the types of a primitive call follow these rules.</p>
+<p>Rules:</p>
+<ul>
+<li><code>Unitary</code> classifies the quantum action at fixed ordinary inputs. It does
+not make ordinary copying or dropping a reversible classical computation.</li>
+<li><code>Bit</code>, <code>Bits&lt;1&gt;</code>, <code>Unit</code>, <code>Bits&lt;0&gt;</code>, nested and flat tuple trees, and
+products of separate owners are distinct types.</li>
+<li>Effect inference checks a body independently of its public annotation.
+External callers, specialization and provider selection use the public
+effect.</li>
+<li>A <code>Unitary</code> or <code>Isometry</code> label must not conceal observation, reset or
+discard (<code>effect</code>).</li>
+<li>Unitarity alone grants neither inverse nor control access.</li>
+</ul>
+<h3 id="derivation-and-removal"><a class="header" href="#derivation-and-removal">Derivation and removal</a></h3>
+<p>A later change can derive a primitive rule in ordinary source, or remove it.
+These rules constrain such a change.</p>
+<p>Rules:</p>
+<ul>
+<li>A further derivation or a removal of a primitive rule must first express the
+whole recorded interface in ordinary checked source.</li>
+<li>It must also provide the applicable independent correspondence. The
+correspondence covers phase, type, reference, owner and effect, cleanup and
+resources.</li>
+<li>A gate identity that holds only up to phase, or a match of widths, is
+insufficient.</li>
+<li>The <a href="#admission-and-replacement-process">admission process</a> applies to an
+addition of authority.</li>
+</ul>
+<h2 id="retired-qualified-names"><a class="header" href="#retired-qualified-names">Retired qualified names</a></h2>
+<p>A <strong>retired name</strong> is one of the 27 qualified entries of the four retired
+compiler namespaces <code>std::quantum</code>, <code>std::observe</code>, <code>std::registers</code> and
+<code>std::classical</code>. The table accounts for every one of them. For each retired
+name it gives the source access to write instead, and the derivation or the
+semantic rule that the language retains.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Retired name</th><th>Source access</th><th>Derivation or retained semantic rule</th></tr>
+</thead>
+<tbody>
+<tr><td><code>std::quantum::h</code></td><td>bare <code>h</code></td><td>The Hadamard action and its exact amplitude rule.</td></tr>
+<tr><td><code>std::quantum::phase</code></td><td>bare <code>phase</code></td><td>The exact dyadic relative-phase rule.</td></tr>
+<tr><td><code>std::quantum::phase_eighth</code></td><td>bare <code>global_phase_eighth</code></td><td>The full scalar <code>ζ I</code>, named explicitly to distinguish it from T.</td></tr>
+<tr><td><code>std::quantum::unit</code></td><td>bare <code>unit</code></td><td>Explicit introduction of a zero-axis Unit owner.</td></tr>
+<tr><td><code>std::quantum::finish</code></td><td>bare <code>finish</code></td><td>Explicit elimination of a Unit owner, with the phase retained.</td></tr>
+<tr><td><code>std::quantum::split</code></td><td>bare <code>split</code></td><td>Explicit ordered binary partition of an owner.</td></tr>
+<tr><td><code>std::quantum::join</code></td><td>bare <code>join</code></td><td>Explicit ordered combination of owners.</td></tr>
+<tr><td><code>std::quantum::init0</code></td><td>ordinary <code>std::state::init0</code></td><td><code>basis unit(()) as _ { 0 }</code>: the injective singleton-to-Bit rule with table <code>[0]</code> and coefficient +1. It is an isometry with one fresh physical wire.</td></tr>
+<tr><td><code>std::quantum::x</code></td><td>ordinary <code>std::gate::x</code></td><td><code>h(z(h(q)))</code>, the exact X including coefficient +1.</td></tr>
+<tr><td><code>std::quantum::z</code></td><td>ordinary <code>std::gate::z</code></td><td><code>phase[1,1]</code>, the exact <code>diag(1,-1)</code>.</td></tr>
+<tr><td><code>std::quantum::t</code></td><td>ordinary <code>std::gate::t</code></td><td>Coherent control of <code>global_phase_eighth</code> on an explicit Unit owner, then <code>finish</code>. The result is the exact <code>diag(1,ζ)</code>, with no auxiliary physical wire.</td></tr>
+<tr><td><code>std::quantum::s</code></td><td>ordinary <code>std::gate::s</code></td><td><code>phase[1,2]</code>, the exact <code>diag(1,i)</code>. Readability does not require a power of T.</td></tr>
+<tr><td><code>std::quantum::sdg</code></td><td>ordinary <code>std::gate::sdg</code></td><td><code>adjoint(s)</code>, the exact <code>diag(1,-i)</code>.</td></tr>
+<tr><td><code>std::quantum::tdg</code></td><td>ordinary <code>std::gate::tdg</code></td><td><code>adjoint(t)</code>, the exact <code>diag(1,ζ^-1)</code>.</td></tr>
+<tr><td><code>std::quantum::id</code></td><td>ordinary <code>std::gate::id[type(A)]</code></td><td>It returns the same owner with coefficient +1. The explicit Basis argument preserves the complete tree.</td></tr>
+<tr><td><code>std::quantum::cnot</code></td><td>ordinary <code>std::gate::cnot</code></td><td>Ordinary coherent control of X, with the control first and the target second. Both owners return in order.</td></tr>
+<tr><td><code>std::quantum::toffoli</code></td><td>ordinary <code>std::gate::toffoli</code></td><td>Ordinary control of the packed CNOT. Three distinct owners and the original nested result tree.</td></tr>
+<tr><td><code>std::quantum::controlled_phase</code></td><td>ordinary <code>std::gate::controlled_phase[j,k]</code></td><td>Ordinary control of the phase provider, in the exact order of control and target, under the same coefficient and profile premises.</td></tr>
+<tr><td><code>std::observe::measure_z</code></td><td>bare <code>measure_z</code></td><td>The complete destructive measurement rule.</td></tr>
+<tr><td><code>std::observe::discard</code></td><td>bare <code>discard</code></td><td>The explicit subsystem erasure rule.</td></tr>
+<tr><td><code>std::observe::reset</code></td><td>ordinary <code>std::state::reset</code></td><td><code>discard(q); init0()</code>, with the effect Observe. It returns a fresh zero owner. The erased input is not cleanly uncomputed.</td></tr>
+<tr><td><code>std::registers::take_bit</code></td><td>bare <code>take_bit</code></td><td>The typed extraction rule of an atomic register.</td></tr>
+<tr><td><code>std::registers::put_bit</code></td><td>bare <code>put_bit</code></td><td>The typed insertion rule of an atomic register.</td></tr>
+<tr><td><code>std::registers::empty</code></td><td>ordinary <code>std::structure::empty</code></td><td><code>basis unit(()) as _ { empty_bits() }</code>: the explicit singleton representation from Unit to Bits&lt;0&gt;, with phase +1 and one zero-axis owner.</td></tr>
+<tr><td><code>std::registers::consume_empty</code></td><td>ordinary <code>std::structure::consume_empty</code></td><td><code>finish(basis q as _ { () })</code>: the exact singleton representation from Bits&lt;0&gt; to Unit, followed by explicit elimination of the owner.</td></tr>
+<tr><td><code>std::classical::empty_bits</code></td><td>bare <code>empty_bits</code></td><td>The ordinary constructor of the empty label.</td></tr>
+<tr><td><code>std::classical::prepend_bit</code></td><td>bare <code>prepend_bit</code></td><td>The ordinary sized constructor of head and tail.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>A retired name is not a callable alias. The four retired namespaces have no
+callable entry and no compatibility alias. The table preserves the migration
+and nothing else.</li>
+<li>An import of a retired name is an error, and its diagnostic carries
+migration guidance. The project route reports the code <code>project</code>, and the
+selected-entry route reports <code>name</code>.</li>
+<li>A qualified call of a retired name is an error with the same guidance. The
+project route reports <code>unknown_name</code>, and the selected-entry route reports
+<code>name</code>.</li>
+<li>Migration guidance is never a lookup path.</li>
+<li>A derived replacement has its ordinary public interface and the static
+arguments that it declares. Replacing an import is not a fallback to the
+same name.</li>
+<li>The channel of <code>std::state::reset</code> is
+<code>rho_AR -&gt; |0&gt;&lt;0|_A tensor Tr_A(rho_AR)</code>, with a fresh output owner. This
+formula includes arbitrary reference correlations.</li>
+<li>The conversions between Unit and Bits&lt;0&gt; in the table are explicit source
+maps. They are never a definitional type equality or an inserted coercion.</li>
+<li>A scalar phase accumulated before such a conversion stays in the
+composition.</li>
+<li>A pure structural elimination does not invoke <code>discard</code>.</li>
+</ul>
+<p>The checker rejects this declaration (<code>name</code>). The guidance names the bare
+primitive <code>empty_bits</code>:</p>
+<pre><code class="language-qli">pub unitary fn f(q:Q&lt;Unit&gt;)-&gt;Q&lt;Bits&lt;0&gt;&gt;{basis q as () {std::classical::empty_bits()}}
+</code></pre>
+<p>The checker rejects this program. The derived <code>id</code> requires its static
+argument, as in <code>id[type(Bit)]</code>, and the selected-entry route reports
+<code>static</code>:</p>
+<pre><code class="language-qli">observe fn main() -&gt; Bit { measure_z(id(init0())) }
+</code></pre>
+<p><code>tests/frontend_types.rs</code> and <code>tests/shared_resolution/prelude.rs</code> check
+these sources. <code>tests/common_authoring_diagnostics.rs</code> checks the codes of
+both routes for a retired name.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>retired_name_hint</code> in <code>src/frontend/primitive.rs</code>
+holds the guidance for the 27 names. The resolver in
+<code>src/frontend/resolve.rs</code> rejects such an import or qualified call before it
+looks up the module.</p>
+</blockquote>
+<h2 id="source-retention-and-resources"><a class="header" href="#source-retention-and-resources">Source retention and resources</a></h2>
+<p>These rules state what a call retains from its source and what a resource
+claim requires.</p>
+<p>Rules:</p>
+<ul>
+<li>An ordinary call retains five things: its original definition, its caller
+instance, its static arguments, its public effect and its complete source
+and dependency identity.</li>
+<li>A checked Meaning override retains the exact original Raw witness, the
+checked leaf, the matrix, both ports and the reference receipts. An endpoint
+of the same width or a digest alone is not source correspondence.</li>
+<li>An original zero-repeat child keeps its checking obligations. A dormant
+repeat-zero witness is not an equation between an arbitrary hierarchy and a
+finite implementation.</li>
+<li>The ordinary preparation <code>std::state::init0</code> uses the Raw <code>LiftBasis</code>
+0-to-1 table <code>[0]</code>. A finite target export must inspect that table and the
+mapping of the fresh wire and owner. It must not replace an arbitrary
+rectangular map by an initialization.</li>
+<li>A structural singleton map retains its complete Unit or Bits&lt;0&gt; tree and
+its original root. It retains them under composition, repeat, control and
+adjoint, wherever the concrete profile supports them. Explicit cleanup and
+the rejected observation, phase and width cases are part of that profile.</li>
+<li>Source recognition alone enables none of these emitters.</li>
+<li>Semantic ownership, clean and dirty scratch, and target workspace are
+separate.</li>
+<li>The Unit owner in the definition of <code>std::gate::t</code> has zero physical wires.
+It does not promise that the target T cost is zero.</li>
+<li>The three ordinary CNOT calls of <code>std::gate::swap</code> differ from the
+structural output routing of <code>permute_axes</code>, even when a fixed-coordinate
+matrix agrees.</li>
+<li>None of these is quantitative Resource Safety: a count of representation
+sharing, a count of logical instructions, a budget of checker work.</li>
+<li>Every target or resource claim needs its own artifact, model, units and
+evidence.</li>
+<li>Exact cleanup must hold for every permitted input and reference.
+Approximation never excuses dirty scratch.</li>
+</ul>
+<h2 id="core-forms-and-independent-meaning"><a class="header" href="#core-forms-and-independent-meaning">Core forms and independent meaning</a></h2>
+<p>This section lists the Raw constructors and says where the meaning of the
+core forms comes from. A <strong>Raw constructor</strong> is one variant of the public Rust
+type <code>RawOp</code> in <code>src/ir.rs</code>. <code>RawOp</code> has 22 constructors.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Family</th><th>Constructors</th></tr>
+</thead>
+<tbody>
+<tr><td>Preparation and fixed gates</td><td><code>Init0</code>, <code>Gate</code>, <code>Cnot</code>, <code>Toffoli</code></td></tr>
+<tr><td>Explicit ownership packaging</td><td><code>PackUnit</code>, <code>UnpackUnit</code>, <code>Split</code>, <code>Join</code></td></tr>
+<tr><td>Finite action and basis isometry</td><td><code>ApplyUnitary</code>, <code>LiftBasis</code></td></tr>
+<tr><td>Coherent selection</td><td><code>QuantumIf</code></td></tr>
+<tr><td>Checked computed/cleanup scopes</td><td><code>CertifiedCompute</code>, <code>ComputeUseUncompute</code>, <code>StructuralCompute</code></td></tr>
+<tr><td>Observation</td><td><code>MeasureZ</code>, <code>Reset</code>, <code>Discard</code></td></tr>
+<tr><td>Classical values and branching</td><td><code>ClassicalConst</code>, <code>ClassicalNot</code>, <code>ClassicalXor</code>, <code>ClassicalAnd</code>, <code>ClassicalBranch</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>A Raw constructor is untrusted data. It is not an accepted handle, and the
+22 constructors are not 22 library functions.</li>
+<li>The table is not the entire semantic vocabulary. <code>SingleGate</code>,
+<code>CircuitAction</code>, protected operations and hierarchy constructors have their
+own explicit inventories and obligations.</li>
+<li>An added Raw constructor must pass admission. Calling it an implementation
+detail does not bypass admission.</li>
+<li>A source alias does not imply a Raw constructor.</li>
+<li><code>RawOp</code> has no free-standing <code>Release0</code>. Clean removal is part of the
+explicitly checked scope.</li>
+<li>A reference definition requires human specification review.</li>
+<li>Lean proves stated relationships to the reference definitions. It does not
+decide that a chosen formula is the intended gate, instrument or resource
+model.</li>
+</ul>
+<p>The meaning of the core forms comes from these layers:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Layer</th><th>Source and scope</th></tr>
+</thead>
+<tbody>
+<tr><td>Data and interfaces</td><td><code>src/ir.rs</code>; <code>lean-kernel/QleisliKernel/Semantics/{Raw,Observation,Finite}.lean</code>. These expose the original operations, ports, finite actions and effects. Data construction is untrusted.</td></tr>
+<tr><td>Pure reference meaning</td><td><code>lean/Qleisli/Semantics/Finite.lean</code> supplies literal gate amplitudes, controlled and monomial actions, and encoded equations. <code>Semantics/Raw.lean</code> retains the original events, the ordered axes, the full complex composition and the meanings of clean scopes. These references do not define meaning as successful checking.</td></tr>
+<tr><td>Instrument reference meaning</td><td><code>lean/Qleisli/Semantics/RawInstrument.lean</code> retains all erasure outcomes, classical values, hidden histories and unnormalized operators. Reset is erasure followed by fresh-zero preparation. The reference does not select only a successful sampled branch.</td></tr>
+<tr><td>Hierarchy operator specification</td><td><code>lean/Qleisli/HierarchicalOperators.lean</code> specifies positive dyadic phase, ordered wiring, control and composition. A complete theorem that leads from production hierarchy acceptance to an operator is separate from this specification.</td></tr>
+<tr><td>Executable acceptance</td><td><code>lean-kernel/QleisliKernel/Raw/{Structure,Pure,Observation}.lean</code>, the finite and QIRF checks and the dedicated hierarchy checks validate the IR fields, the owners and effects, and the enabled evidence. The source catalog is not their authority.</td></tr>
+<tr><td>Production composition and proof limits</td><td><code>Protocol.Validity</code>, <code>Protocol.NativeContract</code> and their bridges <code>Qleisli.NativeValidity</code> and <code>Qleisli.NativeContract</code> keep their precise artifact and request scopes. Dedicated hierarchy components have separate bridges. The <a href="production-boundary.html">production boundary</a> records their exact coverage.</td></tr>
+</tbody>
+</table>
+</div>
+<h2 id="ordinary-library-and-module-resolution"><a class="header" href="#ordinary-library-and-module-resolution">Ordinary library and module resolution</a></h2>
+<p>The library that comes with the compiler is ordinary source. This section
+lists its modules and gives the rules by which the imports of a program
+resolve.</p>
+<p>The <strong>bundled library</strong> is the set of eight ordinary source modules that the
+compiler embeds under <code>std::</code>. It has 26 public definitions, six transparent
+prelude reexports and five private helpers. The helpers serve reflection,
+scalar phase, parameterized phase, packed CNOT and fixed Bit identity.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Module and source</th><th>Public definitions</th><th>Contract provenance</th></tr>
+</thead>
+<tbody>
+<tr><td><code>std::basis</code>, <code>stdlib/src/basis.qli</code></td><td><code>xor2</code>, <code>and2</code></td><td>Total finite ordinary maps of basis labels. Neither is injective over its two-input domain. A coherent enclosing construction must meet its own obligations.</td></tr>
+<tr><td><code>std::transform</code>, <code>stdlib/src/transform.qli</code></td><td><code>hadamard2</code>, <code>qft2</code>, <code>qft3</code></td><td>Ordered H tensor H. Positive finite Fourier phase, with the first leaf least significant and the output reversal included. No auxiliary and no promise about the input state. The Fourier interfaces have fixed width.</td></tr>
+<tr><td><code>std::reflection</code>, <code>stdlib/src/reflection.qli</code></td><td><code>reflect_uniform2</code></td><td>Phase-fixed reflection about the uniform state, with exact cleanup of the computed auxiliary. The private <code>nonzero2</code> is a normal basis helper. Hadamard comes from ordinary transform source.</td></tr>
+<tr><td><code>std::gate</code>, <code>stdlib/src/gate.qli</code></td><td><code>id</code>, <code>t</code>, <code>s</code>, <code>sdg</code>, <code>tdg</code>, <code>z</code>, <code>x</code>, <code>controlled_phase</code>, <code>cnot</code>, <code>toffoli</code>, <code>swap</code></td><td>Ordinary phase-fixed gates. T controls a scalar phase on a zero-width Unit owner. The phase, Pauli and controlled gates derive through ordinary providers. The Bit SWAP uses three CNOTs. No library definition grants primitive authority or a target-cost guarantee.</td></tr>
+<tr><td><code>std::state</code>, <code>stdlib/src/state.qli</code></td><td><code>init0</code>, <code>reset</code></td><td><code>init0</code> is the ordinary explicit singleton-to-Bit preparation. <code>reset</code> is an observing discard followed by a preparation. The original owner, the phase and the complete reference instrument are retained.</td></tr>
+<tr><td><code>std::structure</code>, <code>stdlib/src/structure.qli</code></td><td><code>permute_axes</code>, <code>transpose_axes</code>, <code>empty</code>, <code>consume_empty</code></td><td>The structural two-axis map <code>[1,0]</code> and statically indexed register transpositions, with exact phase +1 and no physical gate instructions. The explicit introduction and the explicit elimination of a zero-width Bits owner use singleton basis maps.</td></tr>
+<tr><td><code>std::measurement</code>, <code>stdlib/src/measurement.qli</code></td><td><code>measure_x</code>, <code>measure_z2</code>, <code>parity_zz</code></td><td>Complete destructive X and Z instruments and a nondestructive data-parity measurement, with their original owner and result trees and their reference behavior.</td></tr>
+<tr><td><code>std::prelude</code>, <code>stdlib/src/prelude.qli</code></td><td>Reexports <code>id</code>, <code>x</code>, <code>z</code>, <code>t</code>, <code>cnot</code>, <code>init0</code></td><td>The original ordinary declarations. The reexports add no body, primitive, effect or evidence authority.</td></tr>
+</tbody>
+</table>
+</div>
+<p><code>reflect_uniform2</code> is the reflection <code>2|s&gt;&lt;s| - I</code>, where <code>|s&gt;</code> is the uniform
+state of two Bits. The <a href="stdlib.html">semantic namespace Reference</a> gives the
+admission rule, the exact public interfaces and the migration mapping of every
+mathematical module.</p>
+<p>A <strong>loader</strong> collects the source modules of a program. The <strong>finite loader</strong>
+loads a project from its source root. The <strong>selected loader</strong> loads modules
+that are supplied to it explicitly.</p>
+<p>Rules:</p>
+<ul>
+<li>A bundled module receives the common checks: the declaration, type, owner,
+access, dependency and effect checks. It has no compiler-import exception.</li>
+<li>Concrete materialization and native checking occur under the scope of the
+consumer. Selected source checking alone does not natively certify every
+bundled specialization.</li>
+<li>A local module must not have the name <code>std</code> or a name that begins with
+<code>std::</code>. Both loaders reserve those names for the bundled library.</li>
+<li><code>ModuleOrigin::Bundled</code> gives no ambient source replacement and no checking
+exemption.</li>
+<li>An unknown path is an error.</li>
+<li>The resolver registers complete interfaces. It resolves an explicit import
+with the ordinary visibility and collision rules.</li>
+<li>A cycle that consists of imports alone is allowed.</li>
+<li>A self-import is an error. It collides with the declaration of the same
+module (<code>name</code>).</li>
+<li>A mutual dependency through a body, a provider, a Basis or a Meaning is an
+error (<code>cycle</code>). Only a checked decreasing runtime self-call is permitted.</li>
+<li>Lookup finds a private declaration in its own module. An import from
+another module and a host entry require a public declaration.</li>
+<li>An import spelling supplies no runtime initialization and no evidence.</li>
+<li>The <a href="prelude.html">prelude contract</a> admits transparent public reexports. It
+admits no <code>as</code>, glob or relative import.</li>
+<li>Resolution, original source identity, concrete materialization and
+independent acceptance are separate duties.</li>
+<li><code>std::routines</code> and <code>std::transforms</code> are retired without aliases.</li>
+<li>The three fixed arithmetic definitions A001–A003 are ordinary local source
+in <code>examples/order_finding/arithmetic.qli</code>. They preserve amplitude +1,
+modular overflow, the addend and the full-space value-15 extension. They
+have no canonical std export.</li>
+<li><code>std::arithmetic</code> is reserved for parameterized arithmetic and number
+theory. A reserved family name promises no callable API.</li>
+<li>The English source contracts and <code>STDLIB.md</code> state intended meanings and
+conventions. Their presence alone does not prove that the implementation
+conforms.</li>
+<li>Until version 0.5.0, an algorithm addition ordinarily belongs in the
+approved corpus, not in an expansion of stdlib. This chapter adopts no
+library algorithm.</li>
+</ul>
+<p>The project route reports every import that fails to resolve with the code
+<code>project</code>. The selected-entry route reports the class that the rule names.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/source.rs::BundledRegistry</code> embeds
+the eight sources and their fixed manifest. Both loaders retain the complete
+original sources, their provenance and their original ASTs. Each loader
+checks the bundled bytes under its own byte policy before it parses or
+copies them.</p>
+</blockquote>
+<h2 id="generic-acceptance-and-library-owned-algorithms"><a class="header" href="#generic-acceptance-and-library-owned-algorithms">Generic acceptance and library-owned algorithms</a></h2>
+<p>This section gives the responsibilities of each production path. It then
+lists the data that a generic rule binds, whatever the name of the algorithm.</p>
+<p>A <strong>role</strong> is a responsibility of a production path. Each path below has five
+roles: producer, independent acceptance, specification and proof, execution or
+emission, and compatibility. A role is not a claim that every required proof
+exists. The
+<a href="production-boundary.html#entrypoints-and-actual-checked-representations">production boundary</a>
+records the predicates, the native modes and the theorem limits of each path.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Path and source</th><th>Producer</th><th>Independent acceptance</th><th>Specification and proof</th><th>Execution or emission</th><th>Compatibility responsibility</th></tr>
+</thead>
+<tbody>
+<tr><td>Project and qrate source: <code>frontend::project</code>, <code>frontend::check</code>, <code>frontend::compile</code></td><td>Loads original sources and produces typed and lowered proposals.</td><td>A fresh ordinary native check of every concrete ordinary function root that is materialized, and of the obligations that it retains.</td><td>Reviewed source rules and library meanings. Source preservation is a separate obligation.</td><td>Simulates or exports the privately retained accepted artifact.</td><td>Preserve source selection, diagnostics, unused declarations and complete interfaces through explicit versioned changes.</td></tr>
+<tr><td>Explicit module-map source: <code>frontend::compile::ParsedProgram</code>, internal <code>frontend::specialize</code></td><td>Closes explicit bindings, retains original source identities and selects a concrete profile before checking. The Fourier and QPE recognizers discover candidates only.</td><td>Ordinary Raw checking, or the required dedicated hierarchy or request gate. A failed check cannot select another route.</td><td>Source-step comparisons and finite contract lemmas, each within its bounded scope.</td><td>Runs the checked selected root. <code>emit-proposal</code> emits untrusted data.</td><td>Retain the module, entry and binding identity and the supported finite and hierarchical contracts. The retired public sized namespace is not restored.</td></tr>
+<tr><td>Flat Raw IR and QIRF: <code>ir::RawProgram</code>, <code>interchange::{native,codec}</code></td><td>Constructs original operations, evidence DAGs and versioned bytes.</td><td><code>Kernel</code> checks the submitted root and dependencies and, for execution, the complete retained QLV3/QDV1 view.</td><td>Independent Raw and Observation meanings and the ordinary native bridge theorems.</td><td>Consumes the exact checked graph. Output validity alone is not translation preservation.</td><td>Retain the published flat IR and the QIRF profiles <code>finite-v0</code> and <code>finite-meaning-v1</code>, or publish an explicit versioned mapping before changing them.</td></tr>
+<tr><td>Finite contracts and leaves: <code>contract</code>, <code>finite_leaf</code>, <code>pure_leaf</code></td><td>Constructs independent requested equations and untrusted implementation candidates.</td><td>The native contract gate binds the original bodies, complete interfaces, encodings and exact equations.</td><td>Library and operator equations and arbitrary-reference lemmas, under their stated premises.</td><td>A private checked contract is usable only for its retained artifacts and capabilities.</td><td>Preserve the distinctions between a square leaf, a rectangular pure leaf, and an encoded or control contract. No substitution by equal width or by effect.</td></tr>
+<tr><td>Hierarchy inspection: <code>interchange::hierarchical::Kernel::inspect_native</code></td><td>Produces the hierarchy and the finite obligations.</td><td><code>--hierarchy-pending</code> checks the conditional structure and the required finite leaves.</td><td>Structural and finite bridges. The complete analytic operator composition is a separate obligation.</td><td>Inspection alone grants no execution. Running requires a fresh comparison of the execution-scope view.</td><td>Preserve this distinct request-free scope and its original root and dependency identity.</td></tr>
+<tr><td>Hierarchy composition request: <code>check_against_native</code></td><td>Proposes a graph and a separately supplied composition request.</td><td><code>--hierarchy-request-pending</code> checks the root, the leaves and the requested pairs.</td><td>Generic composition equations under stated premises. Producer consistency is not source preservation.</td><td>Retains and executes the same pair of graph and request.</td><td>Preserve the request grammar, the ordered ports and the finite obligations.</td></tr>
+<tr><td>Hierarchy control request: internal <code>check_against_native_with_controls</code>, for selected pure source with <code>ctrl</code> calls</td><td>Replays the original <code>ctrl</code> calls. Proposes the graph, the composition request and, for each call, its node index, ordered basis forest and control roles.</td><td><code>--hierarchy-control-pending</code> checks the root, the leaves, the requested pairs and the control obligations in one invocation. It requires an execution view.</td><td><code>ControlAccess.check_bound</code> binds the native sector predicate to the executable action of the selected node. Source occurrence replay and the general source and resource correspondence have separate scopes.</td><td>Retains and executes the same graph and request with the same control obligations.</td><td>No decision records a compatibility responsibility for this path.</td></tr>
+<tr><td>Hierarchy Fourier request: the Fourier branch of <code>check_against_native</code></td><td>Rust and Python factoring proposes the original trace and the Fourier request.</td><td><code>--hierarchy-fourier-pending</code> checks the root, the leaves and the Hadamard obligations.</td><td>Fourier mathematics belongs to the library and proof role. The specialized bridges stay in the build.</td><td>Uses the retained checked graph. It grants no QFT primitive.</td><td>Preserve the exact phase, the axes and the profile limits until a reviewed generic replacement exists.</td></tr>
+<tr><td>Hierarchy instrument: <code>check_instrument_native</code></td><td>Proposes preparation, evolution, readout and the request.</td><td><code>--instrument-pending</code> checks all stages, leaves and pairs.</td><td>Complete instrument and reference specifications and the stated component results.</td><td>Retains all permitted branches and the ordered public results.</td><td>Preserve observation, initialization, zero-width owners and boundary identity.</td></tr>
+<tr><td>Named-QPE instrument: <code>check_qpe_instrument_native</code></td><td>Discovers the provider, routing and power components and a candidate binding.</td><td><code>--qpe-instrument-pending</code> checks the original request, the candidate, all stages and the finite and Hadamard obligations.</td><td>The provider, Fourier and QPE semantic theorems are separate from recognition.</td><td>Executes the same checked instrument, not a replacement selected by name.</td><td>Preserve all original provider, root, dependency, phase and readout bindings.</td></tr>
+<tr><td>Component protocols: readout, preparation, phase and layout, and their DAGs</td><td>Propose bounded component descriptions.</td><td>Their dedicated independent component checks.</td><td>A component lemma does not certify an enclosing program automatically.</td><td>No component success alone constructs a complete program handle.</td><td>Retain the version, scope, capacities and caller obligations of each component.</td></tr>
+<tr><td>Python client and foreign adapters: <code>python/qleisli</code>, <code>interop</code></td><td>Translate host and foreign inputs and propose IR or target text.</td><td>Production imports reach the same native gate. No Python or foreign receipt confers acceptance.</td><td>Translation preservation and runtime preservation are distinct proof duties.</td><td>Export consumes an accepted input. Target correctness requires its own correspondence.</td><td>Preserve public host contracts, supported foreign subsets and explicit refusals of unsupported formats.</td></tr>
+<tr><td>Python sized producers and oracles: <code>scripts/compile_sized_corpus.py</code>, <code>compile_sized_instrument.py</code></td><td>Construct proposals and small-system comparison results independently.</td><td>No producer or numerical oracle issues production acceptance.</td><td>Differential results are tests, not generic checker soundness.</td><td>A proposal is usable only after the applicable production gate.</td><td>Retain the historical inputs and the comparison role. Do not revive their grammar as a production frontend.</td></tr>
+<tr><td>Research: <code>research/semantic-kernel</code></td><td>Explores symbolic contracts and proof candidates.</td><td>Its research DAG result has no production authority. Raw input requires native checking.</td><td>Research rules and bounded comparison evidence are explicitly experimental.</td><td>No research receipt grants execution, cleanup or device authority.</td><td>Keep the independent comparison and its notices and tests. Production migration requires separate review.</td></tr>
+<tr><td>Executable package: <code>lean-kernel/</code></td><td>Decodes untrusted bytes and computes the enabled checks.</td><td>Mathlib-free total executable definitions implement production acceptance.</td><td>Soundness of the executable definitions themselves is proved separately. The implementation language is not a proof of the pipeline.</td><td>Native IO, compilation and runtime assumptions are explicit.</td><td>Retain dispatch and profile compatibility, the source policy, the compiled audit and the fixed capacities.</td></tr>
+<tr><td>Specification and proof package: <code>lean/</code></td><td>Formalizes independent meanings and constructs checked proofs.</td><td>Does not replace the native executable and issues no host accepted handle.</td><td>Mathlib-backed specifications, bridge theorems, semantic transport and proof audits.</td><td>No theorem name alone authorizes execution or a target artifact.</td><td>Keep the applicable VM-22–VM-29 proofs and the protected guarantee bindings up to date during migration.</td></tr>
+<tr><td>Engineering comparisons: <code>engineering_{pure,instrument,pure_tensor,openqasm,openqasm_gate}</code></td><td>Propose actual and ideal artifacts, closed budgets and, where supported, target bytes.</td><td>Separate fresh native inequality checks bind the complete submitted request and the retained view.</td><td>Engineering bounds keep their exact metric, domain and reference premises.</td><td>A private report confers only its stated engineering claim.</td><td>Preserve distinct claim kinds. Epsilon zero cannot grant exact Meaning, control, cleanup, PR or quantitative RS.</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="required-generic-contract-bindings"><a class="header" href="#required-generic-contract-bindings">Required generic-contract bindings</a></h3>
+<p>A generic rule must bind all of the following data. It binds them
+independently of QFT, QPE or any other algorithm name. The list is a contract
+for the planned migration to generic rules. It enables no serialized schema
+and claims no generic completeness.</p>
+<ol>
+<li><strong>Original implementation.</strong> Retain the original artifact bytes, the
+complete operation bodies, the selected root, and the checked dependency
+graph and its order. Bind the called providers, the shared nodes, and the
+zero-count or otherwise unused obligations that the profile requires. A
+stale index, an equal name, a matching digest without correspondence, or a
+native-valid replacement is insufficient.</li>
+<li><strong>Complete interfaces.</strong> Retain separate domain and codomain type trees,
+classical result trees, ordered quantum ports, owner identities, wire
+coordinates, and explicit input and output encodings. Unit, Bit, atomic
+Bits and product trees are distinct even at equal width. State and check
+the encoding dimensions, the isometry premises and the entry and exit
+compatibility. Composition matches the complete intermediate contract, not
+only its bit count.</li>
+<li><strong>Actual semantic action.</strong> Check the actual gates, the exact coefficients
+and phase, the axis order, the controls, the ownership and effect
+transitions, and the permitted branches. For an instrument, retain every
+unnormalized hidden history and the ordered public projection. State the
+premises on arbitrary inputs and references. Distinct owners are not
+evidence of separability.</li>
+<li><strong>Independent expected meaning.</strong> Fix the requested meaning before the
+search for candidates, whether it is a library, operator or instrument
+meaning. Retain its original
+definition, its request bytes, its source and specification identity, and
+its dependencies. The match of a recognizer cannot define it, and neither
+can a probability table derived from the implementation. Review the
+intended mathematical meaning separately from the proof of conformance.</li>
+<li><strong>Capabilities and workspace.</strong> Bind forward, adjoint and control access
+separately from semantic unitarity. Bind them together with the owners,
+the effects, the clean and dirty workspace, and the exact restoration
+premises. A body that observes, resets or discards cannot obtain a pure
+label by hiding those operations. A resource claim must additionally bind
+its target, cost model, workspace and artifact.</li>
+<li><strong>Actual checking execution.</strong> Identify the protocol, schema, profile and
+checker compatibility separately from the edition and the product version.
+Retain the original byte decoding, the requested root, the derived
+obligations and continuous checking states. Where the execution
+representation that the host retains crosses the Lean boundary, compare
+the complete representation independently. A serialized success flag or an
+old receipt cannot replace a fresh decision.</li>
+<li><strong>Consumed or emitted artifact.</strong> Bind a checked conclusion to the
+immutable object that execution or emission consumes. A claim about
+source, runtime or targets requires its own preservation link. Accepting
+both endpoints independently does not prove a correspondence between them.</li>
+<li><strong>Declared domain and failure.</strong> State every finite, coefficient and phase
+limit, every depth and work limit, and every interface limit. A
+generalization of the phase domain requires its own specification, proof
+and profile migration. Reject unsupported forms, changed contracts and
+exhausted budgets without an authority fallback.</li>
+</ol>
+<p>Rules:</p>
+<ul>
+<li>The generic checker may establish a reusable composition or contract rule.</li>
+<li>A mathematical result that is specific to an algorithm belongs to the
+library, specification and proof modules that instantiate those rules. The
+Fourier sum and the QPE distribution are such results.</li>
+<li>Adding an algorithm must not require granting its name a trusted semantic
+rule.</li>
+<li>An intended definition must stay independent of acceptance.</li>
+<li><code>QleisliKernel.Qft</code>, <code>Qpe</code>, the hierarchy Fourier and QPE checks, and their
+<code>lean/Qleisli</code> bridge proofs are implemented, specialized components. The
+role assignment does not move or delete them.</li>
+<li>The supported checks, the exact finite contracts, the VM-22–VM-29 authority
+gates and the existing proof coverage must stay until reviewed replacements
+cover them.</li>
+</ul>
+<h2 id="admission-and-replacement-process"><a class="header" href="#admission-and-replacement-process">Admission and replacement process</a></h2>
+<p>This section gives the steps of primitive admission. The adopted
+interpretations require an explicit review before any addition of semantic
+authority. The decision is recorded in an Issue, and this chapter keeps no
+second backlog. The account of a proposal must contain all of the following:</p>
+<ol>
+<li><strong>Identify the addition.</strong> Specify whether it changes semantic rules,
+exposes an existing rule under a source name, derives checked source, or
+implements an existing meaning as an intrinsic. List the affected source
+and Core forms, checker predicates, reference definitions and production
+paths.</li>
+<li><strong>Justify irreducibility.</strong> Explain why each of these is insufficient:
+ordinary checked source, bounded elaboration, a verified transformation, a
+capability or evidence object, a qrate definition, and target lowering.
+Performance, popularity, backend availability and implementation
+difficulty alone do not qualify.</li>
+<li><strong>State the independent contract.</strong> Give the exact whole-input map or the
+complete instrument. Give the type and tuple tree, the encodings, the
+finite domain, the phase, the ordered axes, the owners, the effects, the
+capabilities and the failure behavior. Include arbitrary permitted inputs
+and references. A gate name or a probability table is not the contract.
+State the premises, and do not assume separability.</li>
+<li><strong>State workspace and realization obligations.</strong> Distinguish semantic
+data, clean and dirty scratch, and backend workspace. Require exact
+permitted cleanup and reference restoration. State the target and gate
+assumptions and the realization correspondence that PR requires. The
+contract implies no unspecified target schema, no projective quotient and
+no approximate cleanup.</li>
+<li><strong>Analyze QS, PR and RS.</strong> Identify the existing binding interpretations
+and ledger scopes, the changed dependencies and assumptions, and the
+acceptance and artifact bindings as implemented. State the quantitative
+measures and the preservation obligations under RS. Ownership checks and
+checker work budgets do not substitute for them.</li>
+<li><strong>Provide production evidence.</strong> Check the actual executable definitions,
+the transport and decoding, and the interface and request binding. Add
+bounded independent positive and negative cases, as applicable, for phase,
+axis order, references, wrong effects, duplicate or dropped owners,
+workspace and stale identities. Build and audit the changed proofs, and
+retain the explicit source, runtime and target gaps.</li>
+<li><strong>Record the decision and migration.</strong> Follow the authority hierarchy for
+specification review, for any constitutional interpretation beyond the
+adopted ones, and for guarantee admission. An ordinary alias or an
+implementation choice that the existing interpretations cover does not
+require a separate Guardian ruling for each edit. Update the reviewed
+inventories, the compatibility mapping and the applicable proofs before
+enabling the changed boundary. A manifest edit does not grant approval.</li>
+</ol>
+<p>Rules:</p>
+<ul>
+<li>Project axioms, unsafe or partial executable definitions, and runtime
+overrides are forbidden.</li>
+<li>A reviewed physical or semantic assumption must be explicit in the
+contract. It is not permission to declare a Lean project axiom, and it is
+not permission to accept an unchecked assertion of a producer.</li>
+<li>A replacement of an implementation, or the exposure of an equivalent
+derived definition, must retain the old intended meaning and the applicable
+guarantees through explicit correspondence.</li>
+<li>A semantic change must not hide under an unchanged name.</li>
+<li>Release compatibility and migration are recorded separately from the
+constitutional edition. Not every primitive edit changes the constitutional
+regime.</li>
+<li>A needed constitutional amendment follows the edition procedure of the
+Constitution.</li>
+<li>Historical artifacts and records are retained. They must not be rewritten
+to match the replacement.</li>
+</ul>
+<p>Example: a proposal seals <code>qft2</code> solely because a backend executes it faster.
+The proposal fails the irreducibility justification, because the ordinary
+checked <code>std::transform::qft2</code> expresses its phase-fixed finite contract. An
+optimization or a target intrinsic can instead propose a realization of that
+same meaning and supply the required independent checks.</p>
+<p>This example assesses the stated rationale. It does not claim that a
+historical proposal was formally rejected, and it does not claim that the
+optimization is verified.</p>
+<h3 id="edition-aware-deprecation-and-replacement"><a class="header" href="#edition-aware-deprecation-and-replacement">Edition-aware deprecation and replacement</a></h3>
+<p>These rules govern the deprecation and the replacement of a primitive within
+an edition and across editions.</p>
+<p>Rules:</p>
+<ul>
+<li>A proposal must distinguish two things: retiring a spelling or an
+implementation, and changing the meaning of the primitive.</li>
+<li>It must record the exact source and Core forms before and after the change,
+the semantic contracts, the profile and API mapping, the release
+compatibility, and the proof and guarantee dependencies.</li>
+<li>An equivalent derived replacement needs checked correspondence for the full
+recorded domain, including phase, references, owners and effects, and
+workspace. A few matching examples are insufficient.</li>
+<li>Each historical primitive set must stay recoverable from its exact Git
+revision and its reviewed inventories, with its original edition, its
+profile and its applicable meaning.</li>
+<li>Old manifests and adoption records must not be rewritten to describe a
+replacement.</li>
+<li>A later edition may deprecate source access under its explicit migration
+policy. It must not erase or weaken an accumulated guarantee for its
+historical scope.</li>
+<li>Within edition 2026, the evolution of an implementation preserves the old
+intended meaning. An incompatible source removal requires the ordinary
+breaking-release process, even when it preserves the safety implication.</li>
+<li>A changed constitutional regime follows the amendment procedure of the
+Constitution.</li>
+<li>Neither an edition increment nor another primitive name waives
+non-weakening.</li>
+</ul>
+<h2 id="guardrails"><a class="header" href="#guardrails">Guardrails</a></h2>
+<p>These checks detect when the source and the inventories of this chapter drift
+apart.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Check</th><th>What it fixes or rejects</th></tr>
+</thead>
+<tbody>
+<tr><td><code>scripts/check_verification_inventory.py</code></td><td>Freezes the source identities, including the common and concrete catalogs, and the public constructor families of the Raw, finite and hierarchy forms with their fields. Pins the typed source identity and the concrete adapter sources. Discovers unlisted production checking sources and added checking files.</td></tr>
+<tr><td>The typed inventory guard of that script</td><td>Fixes the <code>PrimitiveId</code> members, their <code>ALL</code> order, the canonical bare spellings and the unbound-only lookup body.</td></tr>
+<tr><td>The mutation suite of that script</td><td>Rejects an added Raw constructor even when its source digest is refreshed. Its calibration separately exercises typed source growth and an unhandled selected adapter.</td></tr>
+<tr><td><code>scripts/check_production_coverage.py</code></td><td>Checks the classified public routes and the native dispatch, and binds them independently.</td></tr>
+<tr><td>The Lean source and dependency policy and <code>lean-kernel/Audit.lean</code></td><td>Reject unauthorized project axioms, unsafe executable declarations and forbidden runtime replacement paths.</td></tr>
+<tr><td><code>lean/Audit.lean</code></td><td>Checks the axiom closure of the proof package.</td></tr>
+<tr><td>The import policy of the reference modules</td><td>Keeps mathematical semantics separate from acceptance and transport.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Refreshing the metadata of these checks is not primitive admission and not
+proof.</li>
+<li>An added source identity cannot pass by a refreshed file digest or by an
+inserted row of an internal selected emitter.</li>
+<li>The mutation calibration is a drift and coverage check. It is not a
+judgment of irreducibility or admission.</li>
+<li>A change must be reviewed together with the source, the catalog and
+constructor inventory, and the affected acceptance and proof contracts.
+Updated hashes cannot supply human specification review or a constitutional
+judgment.</li>
+<li>These checks and the guarantee-continuity machinery keep their stated
+scopes. They do not mechanically judge specification intent or
+irreducibility, they do not authenticate a human ruling, and they do not
+complete every gate of the admission review.</li>
+</ul>
+<p>The regression sources include:</p>
+<ul>
+<li>the source-signature checks of <code>tests/review_v021.rs</code>;</li>
+<li><code>tests/sized_source.rs::primitive_signatures_agree_through_symbolic_and_concrete_preparation</code>
+and <code>concrete_phase_and_repeat_limits_check_zero_and_unused_providers</code>;</li>
+<li><code>tests/project.rs::std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules</code>,
+the refusal checks of the retired foundation paths,
+<code>semantic_stdlib_modules_are_bundled_source_with_private_helpers</code> and
+<code>import_only_cycles_load_but_call_cycles_and_name_collisions_reject</code>;</li>
+<li><code>tests/semantic_contracts.rs::primitive_evidence_preserves_exact_phase</code>,
+<code>unit_has_scalar_phase_and_a_distinct_owned_type</code> and
+<code>tensor_proofs_keep_low_order_axes_and_allow_a_correlated_reference</code>.</li>
+</ul>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<p>The common checker types all 13 identities. Each concrete profile has its own
+capacities, and the table gives them. A code in the table is the code that
+the adapter reports.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Form</th><th>Finite adapter</th><th>Selected adapter</th></tr>
+</thead>
+<tbody>
+<tr><td><code>phase[j,k]</code></td><td><code>k&lt;=8</code> (<code>unsupported</code>) and <code>j&lt;2^k</code> (<code>contract</code>). The Raw R8 phase lowering also requires an integral eighth-root exponent (<code>unsupported</code>).</td><td><code>k&lt;=8</code> and <code>j&lt;2^k</code> (<code>limit</code>), with the symbolic-word profile of dyadic hierarchy preparation.</td></tr>
+<tr><td><code>take_bit[n,k]</code>, <code>put_bit[n,k]</code></td><td><code>k&lt;n&lt;=12</code> (<code>limit</code>)</td><td><code>k&lt;n&lt;=8</code> (<code>size</code>)</td></tr>
+<tr><td><code>prepend_bit[n]</code></td><td><code>n&lt;12</code> (<code>limit</code>). The bound is <code>n&lt;8</code> where the finite adapter lowers a selected typed root.</td><td><code>n&lt;8</code> (<code>limit</code>)</td></tr>
+<tr><td><code>join</code></td><td>A joined register of at most 12 bits (<code>limit</code>)</td><td>A joined owner of at most 8 bits (<code>limit</code>)</td></tr>
+<tr><td><code>discard</code></td><td>Supported</td><td>Unsupported (<code>unsupported</code>)</td></tr>
+<tr><td><code>std::state::reset</code></td><td>Supported</td><td>Unsupported, because its body calls <code>discard</code>. A move into std gives a definition no selected support.</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>The finite adapter rejects an unsupported phase coefficient. It never
+rounds.</li>
+<li>The selected adapter refuses instrument initialization after observation
+(<code>unsupported</code>).</li>
+<li>The sufficient checks of the selected phase profile are not a complete
+semantic normal form.</li>
+<li>The symbolic phase-word model has modulus 256. Its exact sufficient checks
+are not a complete semantic normal form or a general phase-domain theorem.</li>
+<li>The common checker rejects a <code>join</code> whose product basis has more than 4096
+type nodes or more than 64 levels (<code>limit</code>).</li>
+<li>Aggregate type, width, depth, work and native limits also apply.</li>
+<li>A refusal of an adapter never retries through a retired route.</li>
+<li>The selected loader reserves all eight bundled module slots and counts
+their bytes toward its aggregate limit. The finite loader has separate
+bounded and explicit legacy byte policies and local limits on filesystem
+discovery.</li>
+<li>Generic QFT completion and the correspondence between fixed and generic
+forms are outside all of v0.3.0 and the current goal. The role assignment
+adds no generic QFT to the 0.3.0 scope and claims no completed independent
+library decomposition.</li>
+<li>The consolidation of the specialized Fourier and QPE components, a generic
+prototype and the migration of the compatibility paths are planned work.
+The common frontend of 0.3.0 and its specified namespace migration are
+separate from that work.</li>
+</ul>
+<p>The project separates code, tests, proof, preservation and specification
+review:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Kind</th><th>Status</th></tr>
+</thead>
+<tbody>
+<tr><td>Code</td><td>The common checker types the 13 identities. The finite adapter lowers all 13, and the selected adapter lowers every one except <code>discard</code>. Acceptance is solely by the native Lean checker in <code>lean-kernel/</code>.</td></tr>
+<tr><td>Tests</td><td>The regression sources of <a href="#guardrails">Guardrails</a> exercise the inventory. Listing a regression in this chapter does not report a test run. A successful test is not admission.</td></tr>
+<tr><td>Proof</td><td>An ordinary accepted root has the two admitted scoped guarantees <code>QS-QLV1-OWNERSHIP-2026-01</code> and <code>QS-QLV1-SCOPE-2026-01</code>, for ownership and classical scope. They are protected. The general QS, PR, quantitative RS and EXACT duties are binding and pending. An optional finite request or leaf contract establishes an additional result only within its premises. <code>PathSum.compile_sound</code> proves the correspondence of individual path states. Alone it proves none of these: the complete complex sum, a Fourier or QPE specification, source preservation, completeness, control or observation integration. No theorem establishes the complete analytic operator composition of a hierarchy. The inventory is not a mathematical proof of global minimality: retaining a rule records the semantic interface that the implementation needs. The audit does not prove that no alternative algebraic derivation of <code>global_phase_eighth</code> exists.</td></tr>
+<tr><td>Preservation</td><td>The contracts of the inventory are intended contracts. They do not claim completed general preservation proofs. The bounded engineering source checks of <a href="#source-retention-and-resources">Source retention and resources</a> claim no general source-preservation theorem. This chapter asserts no general source or runtime, CPTP, clean-release, target-realization or quantitative resource theorem.</td></tr>
+<tr><td>Specification review</td><td>A reference definition and any added sealed semantics require human specification review. No hash, guardrail or test supplies that review. No human has adopted the inventory as a minimal generating set.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <a href="authority.html">authority hierarchy</a> records the adoption and the proof
+status of the constitutional obligations.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/compile/lower/</code> enforces the bounds
+of the finite adapter, and <code>src/frontend/specialize/elaborate.rs</code> enforces
+the bounds of the selected adapter.</p>
+</blockquote>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>Release <code>0.3.0-beta</code> is the release that this chapter describes.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/369">#369</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/167">#167</a> made the cutover from
+the qualified compiler namespaces to bare primitives and ordinary library
+definitions. The cutover changed source access and ordinary definitions. It
+did not change the meaning of the Raw constructors or the native acceptance
+authority.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/131">#131</a> is the 0.3.0
+architectural contract that assigns the five roles to each path.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/273">#273</a> tracks the migration
+to generic rules: the consolidation of the specialized components, a generic
+prototype and the later migration of the compatibility paths. The required
+generic-contract bindings are the contract for that migration.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/154">#154</a> defines the gates of
+the primitive admission review. The guardrails do not complete every gate
+of that Issue.</li>
+</ul>
+<p>Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../reference/execution-view.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../design/initial-guarantees.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../reference/execution-view.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../design/initial-guarantees.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

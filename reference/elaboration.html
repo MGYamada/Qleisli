@@ -1,0 +1,1524 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Surface-to-core elaboration - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="surface-to-core-elaboration"><a class="header" href="#surface-to-core-elaboration">Surface-to-core elaboration</a></h1>
+<p>An <strong>elaboration</strong> is the expansion of one surface form of a <code>.qli</code> program
+into operations of an existing core representation. A surface form is a
+construct as the program writes it, such as a call, a pattern or a fold.</p>
+<p>This chapter specifies the convenience elaborations that edition 2026
+permits. It gives a contract for each one. A contract names the surface form
+and the target of the expansion. It states the evaluation order, the owners,
+the exact phase and the source spans. It lists the refusals, and it lists the
+obligations that the expansion leaves open. The chapter is subordinate to the
+<a href="authority.html">authority hierarchy</a>.</p>
+<p>The chapter introduces no syntax, no primitive, no implicit conversion, no
+evidence authority and no supported emitter.</p>
+<p>Rules:</p>
+<ul>
+<li>An elaboration may insert only the uniquely determined operations that its
+section describes.</li>
+<li>An elaboration must preserve five things: the evaluation order, the
+complete type trees, the logical owners, the exact phase and the original
+source attribution.</li>
+<li>An elaboration must not infer an arbitrary isomorphism, a permutation,
+cleanup, operator equality or an unavailable capability.</li>
+</ul>
+<h2 id="source-and-acceptance-boundary"><a class="header" href="#source-and-acceptance-boundary">Source and acceptance boundary</a></h2>
+<p>This section names the check that comes before elaboration and the check
+that decides acceptance after it.</p>
+<p>The <strong>common checker</strong> applies the <a href="source-text.html">common source judgment</a>
+to the complete original AST of a program. Elaboration comes after this
+judgment.</p>
+<p>A <strong>target</strong> is an existing representation that an expansion produces. Three
+targets exist, and they are distinct:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Target</th><th>Proposals that it produces</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Finite project</strong></td><td>Finite Raw and QIRF proposals</td></tr>
+<tr><td><strong>Selected Raw</strong></td><td>Selected-source Raw proposals</td></tr>
+<tr><td><strong>Selected hierarchy</strong></td><td>Selected hierarchy and finite-leaf proposals</td></tr>
+</tbody>
+</table>
+</div>
+<p>The Target field of a contract identifies an existing representation on one
+or more of these targets. It does not claim that one canonical typed Core or
+one converged emitter has replaced them. Each target supports a bounded
+<strong>profile</strong> of programs.</p>
+<p>The <strong>native checker</strong> is the checker executable that <code>lean-kernel/</code> builds.
+It decides whether a proposal is accepted. It decides this independently of
+the component that produced the proposal.</p>
+<p>Rules:</p>
+<ul>
+<li>The common checker checks every declaration, both arms of every branch and
+the body of a fold with zero iterations.</li>
+<li>Static bindings and immutable facts are inputs to concrete elaboration. They
+are not accepted handles of the native checker.</li>
+<li>A supported surface form may have an unsupported projection or target. A
+failure must not select a weaker checker.</li>
+<li>Every resulting artifact, dependency and independent request must pass the
+<a href="production-boundary.html">production gate</a> that applies to it.</li>
+<li>Handwritten IR and generated IR have the same requirements for independent
+acceptance.</li>
+<li>Four activities confer no acceptance: Rust normalization, source checking,
+source-step comparison and proposal generation.</li>
+<li>Valid output alone does not prove source preservation.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The common checker is <code>src/frontend/check.rs</code> with
+the modules under <code>src/frontend/check/</code>. The Rust frontend parses, reports
+diagnostics and generates proposals. It issues no acceptance.</p>
+</blockquote>
+<h2 id="whitelist"><a class="header" href="#whitelist">Whitelist</a></h2>
+<p>The whitelist names every surface form that has an elaboration contract in
+this chapter. Literal values, sealed operations and explicit structural maps
+keep their separate <a href="type-model.html">type</a> and
+<a href="primitive-boundary.html">primitive</a> contracts. An implementation detail or an
+Issue candidate does not enlarge the whitelist.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Surface form</th><th>Permitted expansion</th><th>Section</th></tr>
+</thead>
+<tbody>
+<tr><td>Runtime products, patterns and ordinary calls</td><td>Binding of the exact value tree, and expansion of the checked body of the callee</td><td><a href="#runtime-products-patterns-and-calls">Runtime products, patterns and calls</a></td></tr>
+<tr><td>Whole-owner <code>excl</code> calls</td><td>One checked consuming call. The same lexical binders retain the returned values.</td><td><a href="#whole-owner-exclusive-calls">Whole-owner exclusive calls</a></td></tr>
+<tr><td>Static indexed access and slice access</td><td>An ordered partition, one checked call, and reconstruction from the updated selected owners</td><td><a href="#static-ordered-axis-places">Static ordered-axis places</a></td></tr>
+<tr><td>Ordinary Boolean expressions and <code>classical fn</code> calls</td><td>Eager operations on ordinary values</td><td><a href="#ordinary-expressions-and-classical-functions">Ordinary expressions and classical functions</a></td></tr>
+<tr><td>Enum values, record values and <code>value.field</code></td><td>Ordinary values that keep their nominal type</td><td><a href="#nominal-values">Nominal values</a></td></tr>
+<tr><td>Runtime classical <code>if</code></td><td>Classical branches, with complete joins of the result and the frame</td><td><a href="#runtime-classical-branches">Runtime classical branches</a></td></tr>
+<tr><td>Ordinary <code>match</code></td><td>Classical branches on the enum tag, with complete joins of the result and the frame</td><td><a href="#ordinary-match">Ordinary match</a></td></tr>
+<tr><td>Static naturals, aliases and bounded helpers</td><td>Exact checked substitution, with no runtime instruction</td><td><a href="#static-natural-computation">Static natural computation</a></td></tr>
+<tr><td>Bracket specialization and <code>if static</code></td><td>Closed checked instances and the selected arm</td><td><a href="#specialization-and-static-selection">Specialization and static selection</a></td></tr>
+<tr><td><code>for static</code> and <code>qfor static</code></td><td>Explicit threading of the carry over a closed finite range</td><td><a href="#finite-folds">Finite folds</a></td></tr>
+<tr><td>Static operation descriptions and application</td><td>Operations bound to their providers, and checked transformation proposals</td><td><a href="#operation-descriptions-and-application">Operation descriptions and application</a></td></tr>
+<tr><td><code>controlled(U)(c,q)</code> and two-arm <code>qif</code></td><td>The exact controlled action, which retains the inactive identity action</td><td><a href="#coherent-control">Coherent control</a></td></tr>
+<tr><td><code>qmatch(s,q) { label =&gt; arm, ... }</code></td><td>The exact selected action on the target, with one arm for each selector label</td><td><a href="#exact-label-coherent-selection">Exact-label coherent selection</a></td></tr>
+<tr><td><code>basis q as p { e }</code></td><td>The specified coherent lift with the coefficient <code>+1</code></td><td><a href="#coherent-basis-maps">Coherent basis maps</a></td></tr>
+<tr><td>Existing <code>with_computed</code> forms</td><td>The checked construction of compute, use and uncompute</td><td><a href="#computed-workspace">Computed workspace</a></td></tr>
+<tr><td><code>apply_contract(F, S, q)</code></td><td>One application of the implementation <code>F</code>, with a checked obligation of function equality against <code>S</code></td><td><a href="#function-contracts">Function contracts</a></td></tr>
+</tbody>
+</table>
+</div>
+<p>The whitelist is not a list of every accepted surface form.
+<a href="#status-and-limits">Status and limits</a> names the accepted forms that this
+chapter does not specify.</p>
+<p>Each entry has one section. The section gives a description, a contract table
+and examples. Every contract table has the same eight fields:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Content</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td>The surface form that the entry covers</td></tr>
+<tr><td>Target</td><td>The representation that the expansion produces</td></tr>
+<tr><td>Evaluation order</td><td>When each part of the form evaluates</td></tr>
+<tr><td>Owners</td><td>The quantum owners that the form consumes and returns</td></tr>
+<tr><td>Exact phase</td><td>The action, with its phase, that the expansion must keep</td></tr>
+<tr><td>Source spans</td><td>The original locations that the expansion retains</td></tr>
+<tr><td>Refusal</td><td>The programs that the form rejects</td></tr>
+<tr><td>Open obligations</td><td>The requirements that the expansion leaves to independent checks</td></tr>
+</tbody>
+</table>
+</div>
+<p>The last field states requirements. It discharges no guarantee and adds no
+ledger entry. The linked Reference sections specify the detailed grammar, the
+capabilities and the profile limits.</p>
+<p>Each example says which check accepts or rejects the program.
+<a href="diagnostics.html#routes">Diagnostics and recovery</a> defines the project route,
+the selected-entry route and the <a href="diagnostics.html#codes">codes</a> of each. An
+example that names the common checker gives the class of the failure in that
+checker.</p>
+<h2 id="runtime-products-patterns-and-calls"><a class="header" href="#runtime-products-patterns-and-calls">Runtime products, patterns and calls</a></h2>
+<p>A runtime product is an ordered tuple of runtime values. A <code>let</code> pattern or a
+parameter pattern binds the leaves of such a value. An ordinary call binds its
+arguments to the parameters of a resolved function and expands the checked
+body of that function.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td>Ordered runtime products, <code>let</code> patterns and parameter patterns, and resolved calls of ordinary functions</td></tr>
+<tr><td>Target</td><td>Bindings of the exact value tree and the checked body of the callee, as Raw operations or as supported selected source steps</td></tr>
+<tr><td>Evaluation order</td><td>Each right-hand side and each argument evaluates completely, once, from left to right, before binding. An argument list is not one automatically packed tuple.</td></tr>
+<tr><td>Owners</td><td>Each quantum leaf moves once. Destructuring <code>(Q&lt;A&gt;,Q&lt;B&gt;)</code> never splits <code>Q&lt;(A,B)&gt;</code>. The expansion preserves pending arguments and the suspended owners of the caller. Ordinary leaves may be copied or ignored.</td></tr>
+<tr><td>Exact phase</td><td>Binding, grouping and call expansion insert no gate and no phase. The expansion preserves the action of the callee and its ordered interface.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the original spans of the parameter, the right-hand side and the call. A failure of an argument identifies the argument or the call. Emitted operations of the callee retain their origins in its original body.</td></tr>
+<tr><td>Refusal</td><td>A mismatch of the exact arity or tree; duplicate names within one pattern or parameter list; a wildcard, an implicit drop or a reuse of a live quantum owner; an unresolved callee; an invalid body; an unsupported projection. Ordinary runtime shadowing keeps its lexical rules.</td></tr>
+<tr><td>Open obligations</td><td>The emitted ownership, scope and effect rules and the dependencies need an independent check. Call expansion needs correspondence with the original body. The validity of fresh IR alone does not supply it.</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="type-model.html#structural-equality-coherence-and-physical-maps">exact trees</a>
+and <a href="functional-boundary.html">functional abstraction</a>.</p>
+<p>The project route rejects this function. <code>split(q)</code> returns
+<code>(Q&lt;(Bit,Bit)&gt;,Q&lt;Bit&gt;)</code>, and the pattern <code>(a,b)</code> does not split the owner
+<code>Q&lt;(Bit,Bit)&gt;</code>:</p>
+<pre><code class="language-qli">unitary fn run(q:Q&lt;((Bit,Bit),Bit)&gt;)-&gt;Q&lt;((Bit,Bit),Bit)&gt;{ let ((a,b),c)=split(q); join(join(a,b),c) }
+</code></pre>
+<p>The project route accepts the function with a second explicit <code>split</code>:</p>
+<pre><code class="language-qli">unitary fn run(q:Q&lt;((Bit,Bit),Bit)&gt;)-&gt;Q&lt;((Bit,Bit),Bit)&gt;{ let (ab,c)=split(q); let (a,b)=split(ab); join(join(a,b),c) }
+</code></pre>
+<h2 id="evaluation-and-owner-lifetime-boundaries"><a class="header" href="#evaluation-and-owner-lifetime-boundaries">Evaluation and owner lifetime boundaries</a></h2>
+<p>This section states when the parts of an expression evaluate and where the
+lifetime of a quantum owner may end.</p>
+<p>An <strong>access call</strong> is a call that marks at least one argument with <code>excl</code> or
+<code>ctrl</code>. A <strong>place</strong> is such a marked argument. It is a whole lexical owner,
+or a static selection of the axes of one.</p>
+<h3 id="evaluation-order"><a class="header" href="#evaluation-order">Evaluation order</a></h3>
+<p>Statements, arguments and tuple fields evaluate in the order in which the
+source writes them.</p>
+<p>Rules:</p>
+<ul>
+<li>For every supported expression form, statements execute in source order.</li>
+<li>A call evaluates its arguments completely, once, from left to right, before
+it enters the callee.</li>
+<li>Tuple fields follow the same rule. A nested expression evaluates before the
+operation that encloses it.</li>
+<li>An ordinary Unit result does not suppress the effects of an argument.
+<code>(h(excl q), z(excl q));</code> finishes H before it starts Z, just as
+<code>h(excl q); z(excl q);</code> does.</li>
+<li>Ignoring a product of ordinary Unit values inserts no quantum destruction.</li>
+</ul>
+<h3 id="owner-lifetime"><a class="header" href="#owner-lifetime">Owner lifetime</a></h3>
+<p>The rules below say when a temporary owns a quantum value, and what the end
+of a scope does to a live owner.</p>
+<p>Rules:</p>
+<ul>
+<li>A temporary may own a quantum value while that value flows to an explicit
+consumer, a binding or a result. <code>measure_z(h(init0()))</code> is such a chain.</li>
+<li>The end of an expression statement, a wildcard binding, a shadowed binding
+or a local block must not silently destroy a live quantum owner. The
+checker rejects an unreturned local owner at its binding. It rejects a
+discarded quantum expression at that expression. Both routes report the
+code <code>ownership</code>.</li>
+<li>Ordinary Bit, Unit and product values may be ignored.</li>
+<li>The language has no observable classical destructor and no quantum drop
+glue.</li>
+<li>The exit from a scope cannot choose measurement, discard, reset or clean
+discharge for the programmer.</li>
+</ul>
+<h3 id="places-and-access-calls"><a class="header" href="#places-and-access-calls">Places and access calls</a></h3>
+<p>The rules below say what a place is and when the caller can use its owners
+again after an access call.</p>
+<p>Rules:</p>
+<ul>
+<li>A place is formed by its call. It is not a reference value with an inferred
+lifetime.</li>
+<li>An access call supplies its owners in argument order and executes the callee
+once.</li>
+<li>The call restores the lexical operation rights only after it retains the
+returned values and completes any reassembly of a selected parent. This
+happens before the next argument, tuple field or statement starts.</li>
+<li>A call inside the body of the callee completes before the enclosing call
+returns.</li>
+<li>The end of a surrounding block preserves the updated outer owner. It does
+not restore an earlier state.</li>
+<li>Four forms are unsupported: stored or escaping views, nested place
+projections, implicit method autoref and arbitrary reference lifetimes.</li>
+<li>A static axis selector uses the original resolved static context and has no
+runtime effect.</li>
+<li>A shorter lifetime grants no control capability, restores no dirty
+workspace and proves no clean release. The distinct obligations for
+effect, sector and exact workspace apply. These rules supply no workspace
+syntax and no evidence.</li>
+</ul>
+<h3 id="order-of-operations"><a class="header" href="#order-of-operations">Order of operations</a></h3>
+<p>The rules below say what elaboration retains of the written order, and what
+a reordering needs.</p>
+<p>Rules:</p>
+<ul>
+<li>Elaboration retains the ordered source steps, the call boundaries, the
+original owners and the source locations. Raw instructions retain the
+ordered edges of their owner tokens.</li>
+<li>Scheduling convenience does not permit a reorder of operations that do not
+commute. Neither do names that appear to be separate.</li>
+<li>A proposed reordering needs a separately justified transformation that
+preserves exact phase, reference behavior and all applicable contracts.</li>
+<li>Source evaluation follows the written order. A transformation of executable
+code requires its own evidence for the changed owner flow and for the other
+contracts.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> Independent source replay rejects an altered gate
+chain even when the type, effect and ownership interface of that chain is
+native-valid.</p>
+</blockquote>
+<h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
+<p>The Finite project target and the Selected Raw target accept this program.
+Each target emits the same Raw program as it emits with <code>h(excl q); z(excl q);</code>
+in place of the tuple statement. <code>main</code> returns 1 with probability one:</p>
+<pre><code class="language-qli">use std::state::init0;
+use std::gate::x; use std::gate::cnot; use std::gate::z;
+fn done(a:Unit,b:Unit)-&gt;Unit{()}
+unitary fn pair(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{h(excl q);z(excl q);q}
+pub observe fn main()-&gt;Bit{let q=init0();(h(excl q), z(excl q));h(excl q);measure_z(q)}
+</code></pre>
+<p>The project route rejects the next program with the code <code>ownership</code>. The
+binder <code>q</code> holds a live owner at the end of the block:</p>
+<pre><code class="language-qli">use std::state::init0;  use std::gate::x; use std::gate::z;
+observe fn main() -&gt; Unit { let q = init0(); () }
+</code></pre>
+<h2 id="whole-owner-exclusive-calls"><a class="header" href="#whole-owner-exclusive-calls">Whole-owner exclusive calls</a></h2>
+<p>A whole-owner exclusive call lets a program transform an owner and keep its
+name. A call such as <code>h(excl q)</code> supplies the live lexical owner <code>q</code> to one
+consuming call. The same binder then retains the returned quantum value.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>U(excl q)</code>, or a call whose arguments all mark distinct whole lexical <code>Q&lt;A&gt;</code> owners. A retained concrete <code>ctrl</code> call is admitted after a fresh native sector check, on the targets that <a href="#status-and-limits">Status and limits</a> names.</td></tr>
+<tr><td>Target</td><td>The consuming call. After it, the value of each argument binder is replaced by its exact ordered returned owner. The access expression returns ordinary Unit.</td></tr>
+<tr><td>Evaluation order</td><td>The expansion resolves the original source occurrences. It supplies the owners once, in argument order, and the callee executes once. A copied AST occurrence acquires no second lexical identity.</td></tr>
+<tr><td>Owners</td><td>The same lexical owner identities hold the returned values. The form requires three things: a checked Unitary effect that the caller can see, an independent check of the body, and the exact original owner interface. A later consuming call makes its binder spent. A shadow cannot restore it.</td></tr>
+<tr><td>Exact phase</td><td>The expansion preserves the complete action of the callee, including entanglement, ordered axes and zero-width phase. It inserts no inverse and no cleanup.</td></tr>
+<tr><td>Source spans</td><td>The expansion retains the original identifiers of the callee and of the arguments, their byte spans and the origins in the body of the callee. The span of a contextual marker does not replace the span of an owner identifier.</td></tr>
+<tr><td>Refusal</td><td>Overlap; a spent, hidden or nonquantum argument; a changed owner partition or tree; a nonunitary body; mixed arguments outside the <a href="#ordinary-unit-arguments-in-access-calls">checked profile</a>; an escaping access; a failed native check of the control sectors; an unavailable concrete projection. Static selections follow <a href="#static-ordered-axis-places">their own rule</a>. Checker-free <code>ctrl</code>, which is <code>ctrl</code> in a lowering that runs without the native checker, is unsupported. An original control obligation without a concrete interval in each retained specialization rejects.</td></tr>
+<tr><td>Open obligations</td><td>Emitted artifacts and requests need independent checks. The lookup-level scope-update model has premises on finite maps, type embedding and update provenance. It is not a proof of source preservation and not a quantitative resource certificate. General footprints, lifetimes and access declarations are pending.</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="rust-boundary.html#whole-owner-exclusive-calls">whole-owner exclusive calls</a>.</p>
+<p>The effect of the callee follows the
+<a href="source-text.html#ordinary-function-effects-and-assertions">public-effect rule</a>.
+The effect that counts depends on the module that contains the call.</p>
+<p>Rules:</p>
+<ul>
+<li>Outside the original module of the callee, the checked public contract
+counts. Inside that module, internal inference counts.</li>
+<li>A body can have a sharper effect than its public contract. Specialization,
+inlining and cache reuse cannot turn that sharper effect into eligibility
+for external source.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> Native-checked Selected Raw lowering also checks
+unused closed functions that lead to control obligations. It invents no
+static bindings.</p>
+</blockquote>
+<p>The project route rejects this program with the code <code>contract</code>. <code>h</code> does
+not preserve the computational-basis sectors of <code>q</code>, and the check covers
+<code>bad</code> although no function calls it:</p>
+<pre><code class="language-qli">use std::state::init0;
+use std::gate::x; use std::gate::cnot;
+unitary fn bad(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{h(ctrl q);q} pub observe fn main()-&gt;Bit{0}
+</code></pre>
+<h3 id="ordinary-unit-arguments-in-access-calls"><a class="header" href="#ordinary-unit-arguments-in-access-calls">Ordinary Unit arguments in access calls</a></h3>
+<p>An access call can take ordinary arguments beside its marked places. A
+checked mixed call passes <code>()</code> or a lexical <code>Unit</code> value beside its marked
+places.</p>
+<p>Rules:</p>
+<ul>
+<li>The call evaluates the original arguments once, in their written order. It
+reserves a marked owner when it reaches that argument.</li>
+<li>A later argument must not use a reserved owner as an ordinary value.</li>
+<li>A quantum owner such as <code>Q&lt;Unit&gt;</code> needs an access marker and an ownership
+check, like every other owner.</li>
+<li>The named callee receives the complete ordered value list, including each
+<code>Unit</code> at its source position.</li>
+<li>The independently checked Raw interface carries only the marked quantum
+ports.</li>
+<li>The callee returns those owner types in their original relative order. The
+call restores them to their original places and returns ordinary <code>Unit</code>.</li>
+<li>The checked operation retains its exact phase and the same interface to
+untouched owners.</li>
+<li>An exclusive named call may also take ordinary <code>Bit</code> arguments when the
+selected callee lowers to a single checked ordinary branch.</li>
+</ul>
+<p>The selected-entry route with the native checker accepts <code>update</code>:</p>
+<pre><code class="language-qli">unitary fn turn(tag: Unit, data: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { h(data) }
+
+pub unitary fn update(data: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; {
+    turn((), excl data);
+    data
+}
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> The native source-body check validates the named
+call, the returned owners, the Raw interval and any extraction and
+reinsertion. For an access body without selection, basis or Meaning
+evidence, it requires an original access receipt and complete coverage of
+the selected invocation; see
+<a href="production-boundary.html#version-5-source-body-requests">the native scope</a>. For
+ordinary <code>Bit</code> arguments, it uses the original condition and both Raw arms.
+It verifies each parked owner in both arms and at the checked branch
+return, and it preserves port order and zero-width owners. The dormant
+checker admits a mixed <code>ctrl</code> call from a closed nongeneric body after the
+native source check covers that exact original occurrence. It checks the
+marked quantum sectors of the callee again.</p>
+</blockquote>
+<h3 id="declared-access-parameters"><a class="header" href="#declared-access-parameters">Declared access parameters</a></h3>
+<p>A function can write the access marker in its own signature. A finite
+function with a closed selected specialization may declare a marked owner
+slot, as in <code>target: excl Q&lt;Bit&gt;</code>, and write a <code>Unit</code> result.</p>
+<p>Rules:</p>
+<ul>
+<li>The call must supply the exact marker at that argument position.</li>
+<li>The body must check as Unitary and must leave each marked owner live on its
+original binder.</li>
+<li>The ordinary result is <code>Unit</code> at the written call. The body may return <code>()</code>
+or a value of type <code>Unit</code>, including a parameter.</li>
+<li>The returned quantum owners carry the updated state, including its exact
+phase.</li>
+<li>A declared access requires the finite check of the original body. For
+every <code>ctrl</code> slot it also requires the applicable exact sector check.</li>
+</ul>
+<p>The selected-entry route with the native checker accepts <code>update</code>:</p>
+<pre><code class="language-qli">pub unitary fn flip(target: excl Q&lt;Bit&gt;) -&gt; Unit {
+    h(excl target);
+    ()
+}
+
+pub unitary fn update(target: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; {
+    flip(excl target);
+    target
+}
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> The native call boundary reads the marked owners in
+parameter order and verifies the returned Raw ports. The production source
+check retains the declaration and the marked call as original occurrences.
+When it checks a specialization, it also retains explicit static arguments
+such as <code>type(Bit)</code>.</p>
+</blockquote>
+<h2 id="static-ordered-axis-places"><a class="header" href="#static-ordered-axis-places">Static ordered-axis places</a></h2>
+<p>A static ordered-axis place lets an access call act on selected axes of a
+register. It selects axes of a live <code>Q&lt;Bits&lt;N&gt;&gt;</code> owner as an argument of the
+call. That owner is the <strong>parent</strong>. <code>excl q[i]</code> and <code>ctrl q[i]</code> select one
+axis. <code>excl q[a..b]</code> and <code>ctrl q[a..b]</code> select the explicit half-open range
+<code>q[a..b]</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>excl q[i]</code>, <code>ctrl q[i]</code>, <code>excl q[a..b]</code> and <code>ctrl q[a..b]</code> as arguments of an access call, where <code>q</code> is a live lexical <code>Q&lt;Bits&lt;N&gt;&gt;</code> parent. An index selects <code>Q&lt;Bit&gt;</code>. A range selects <code>Q&lt;Bits&lt;b-a&gt;&gt;</code>. The two interfaces are distinct even at width one.</td></tr>
+<tr><td>Target</td><td>Three steps. The expansion partitions the parent, in order, into selected owners and remainder owners. It calls the callee once with all selected arguments. It reconstructs the parent from the updated returned values, in the reverse of the extraction order. Existing Split/Join instructions perform the partition on the Finite project and Selected Raw targets. The Selected hierarchy target uses its operations for bit extraction, reinsertion and empty owners.</td></tr>
+<tr><td>Evaluation order</td><td>A selector uses the original resolved static context and has no runtime effect. The callee executes once. The parent is reassembled before the next argument, tuple field or statement starts.</td></tr>
+<tr><td>Owners</td><td>The parent is live after the call, and the access expression has ordinary Unit type. The callee has a Unitary effect and returns the exact ordered selected interface. Empty selected owners and empty remainder owners retain their logical identities. An empty range selects no axes. A whole-owner access overlaps every other access on that parent, including an empty range.</td></tr>
+<tr><td>Exact phase</td><td>The partition inserts no physical SWAP, preparation, measurement or cleanup. Empty owners retain their scalar phase. The expansion preserves the action of the callee on the ordered selected interface.</td></tr>
+<tr><td>Source spans</td><td>Each selection retains its parent-owner occurrence, its static selector, its access role and the original byte spans.</td></tr>
+<tr><td>Refusal</td><td>A parent that is not a live lexical <code>Q&lt;Bits&lt;N&gt;&gt;</code>; a bound that the common checker cannot prove, <code>0 &lt;= a &lt;= b &lt;= N</code> for a range or <code>0 &lt;= i &lt; N</code> for an index, under the original static context; two selections on the same parent that are not provably disjoint; a runtime index; arithmetic overflow; budget exhaustion; a callee without a Unitary effect; a callee that does not return the exact ordered selected interface; bare indexing as a value or as an ownership-extraction operation; a <code>ctrl</code> selection without its sector check; checker-free control emission. Each failure occurs at compile time. No runtime bounds panic exists.</td></tr>
+<tr><td>Open obligations</td><td>The emitted program needs native Raw checking. A <code>ctrl</code> selection needs a fresh native sector check of the concrete callee on its ordered selected ports. General source preservation and quantitative resource correspondence are proof obligations.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Different parent names alone are not evidence of different axes. The checks
+use resolved binding identities.</li>
+<li><code>ctrl</code> keeps its separate original sector obligation. The annotation grants
+no permission.</li>
+<li>The common checker checks every original declaration, both branch bodies
+and the body of every fold.</li>
+<li>The premises of static branches and of loops take part in the arithmetic
+proof. This includes impossible contexts, as for other static obligations.</li>
+<li>The checks of names, types, effects and ownership cover unexecuted code as
+well.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The common AST represents each selection as a
+parent-owner occurrence and a static selector. The project compiler submits
+its emitted program to native Raw checking. The selected path also replays
+source steps against the partitions and the reassembly. A dormant action
+with closed ports can be checked without evaluating the register extraction
+of an inactive branch. On the Selected hierarchy target, source replay
+checks the original ordered ports of each partition and the phase-free graph
+interval. For supported pure <code>ctrl</code> calls, replay binds the original ordered
+call interval in that same graph. Lean checks the sectors of the exact
+action during the invocation that checks the executable hierarchy.</p>
+</blockquote>
+<p>The <a href="realization.html#exclusive-access-and-generated-work">bounded resource correspondence</a>
+counts the live wires of the indexed Raw access and its reassembly. The
+selected operation and any emitted physical implementation have their own
+resource checks.</p>
+<p>The common checker accepts this function:</p>
+<pre><code class="language-qli">use std::gate::cnot;pub unitary fn f(q:Q&lt;Bits&lt;2&gt;&gt;)-&gt;Q&lt;Bits&lt;2&gt;&gt;{cnot(ctrl q[0],excl q[1]);q}
+</code></pre>
+<p>The selected-entry route rejects the next program with the code <code>size</code>. Index
+2 is outside <code>Q&lt;Bits&lt;2&gt;&gt;</code>, and the check covers <code>unused</code> although no function
+calls it:</p>
+<pre><code class="language-qli">unitary fn unused(q:Q&lt;Bits&lt;2&gt;&gt;)-&gt;Q&lt;Bits&lt;2&gt;&gt;{h(excl q[2]);q}pub unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q}
+</code></pre>
+<h2 id="ordinary-expressions-and-classical-functions"><a class="header" href="#ordinary-expressions-and-classical-functions">Ordinary expressions and classical functions</a></h2>
+<p>This section covers the classical computation of a program. An ordinary
+expression computes a Unit, Bit or product value. A <code>classical fn</code> is a total
+function on ordinary values.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td>Ordinary expressions of Unit, Bit or product type, the eager operators <code>not</code>, <code>and</code> and <code>xor</code>, and supported calls of a <code>classical fn</code></td></tr>
+<tr><td>Target</td><td>Ordinary evaluation and Raw classical operations, including selected Raw register transport where the target supports it. No truth table is substituted at runtime.</td></tr>
+<tr><td>Evaluation order</td><td>Operands and complete arguments evaluate once, in source order. <code>and</code> is eager, including its right operand.</td></tr>
+<tr><td>Owners</td><td>An ordinary result has no quantum owner. Input expressions keep their effects and their quantum consumption. Ignoring a result cannot omit its measurement.</td></tr>
+<tr><td>Exact phase</td><td>Ordinary Boolean evaluation inserts no quantum action. Input expressions keep their complete action or instrument.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the original byte spans of the operand, the call, the parameter and the definition.</td></tr>
+<tr><td>Refusal</td><td>Wrong exact types or arity; a forbidden capture; an invalid classical body or dependency; unavailable transport. A live <code>Q&lt;A&gt;</code> is not an ordinary <code>A</code> argument.</td></tr>
+<tr><td>Open obligations</td><td>Lexical use, complete phi inputs and value operations need a check. The original computation and the surrounding instrument must be preserved. Coherent use needs the separate lift obligation in addition.</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="source-text.html#total-classical-declarations">classical declarations</a>
+and <a href="type-model.html">ordinary Bits transport</a>.</p>
+<p>The Finite project target and the Selected Raw target accept this program.
+Both measurements run in source order, although <code>left</code> ignores <code>b</code>:</p>
+<pre><code class="language-qli">use std::state::init0; use std::gate::x;
+classical fn left(a: Bit, b: Bit) -&gt; Bit { a }
+pub observe fn main() -&gt; Bit { left(measure_z(x(init0())),measure_z(init0())) }
+</code></pre>
+<h2 id="nominal-values"><a class="header" href="#nominal-values">Nominal values</a></h2>
+<p>A nominal value is an ordinary value of a declared <code>enum</code> or <code>struct</code> type.
+<code>Type::Variant</code> names a fieldless enum variant.
+<code>Type { field: expression, ... }</code> constructs a record. <code>value.field</code> projects
+one field of an ordinary record.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td>Fieldless <code>Type::Variant</code>, explicit <code>Type { field: expression, ... }</code> and ordinary <code>value.field</code>, in runtime blocks and in classical bodies</td></tr>
+<tr><td>Target</td><td>Ordinary values that keep their nominal type. A variant becomes one Raw classical constant for each tag coordinate. A record keeps its field values in declaration order. A projection selects the stored field.</td></tr>
+<tr><td>Evaluation order</td><td>Record initializers evaluate in written order. The record type keeps declaration order. A projection evaluates its receiver once.</td></tr>
+<tr><td>Owners</td><td>Every field has an ordinary finite type. <code>Q&lt;Record&gt;</code> is one owner, with no implicit decomposition or observation. Initializer calls keep their ownership transitions.</td></tr>
+<tr><td>Exact phase</td><td>Construction and projection are ordinary computation and insert no quantum action. Initializer calls keep their effects and dependencies, so observation cannot hide behind a Unitary or Isometry annotation.</td></tr>
+<tr><td>Source spans</td><td>Type references use the original occurrence table, including public reexports and local shadowing. Member names and diagnostics retain their original source spans.</td></tr>
+<tr><td>Refusal</td><td>A missing or repeated field; a field value of another type; a private field outside its declaring module; a projection from a value that is not an ordinary record; a local Basis name or runtime name in place of a global type with the same spelling; a payload variant; an imported bare variant; shorthand, record update and method forms.</td></tr>
+<tr><td>Open obligations</td><td>Common preparation supplies no accepted handle. Execution requires a typed native route. That gate does not prove original AST lowering, the decoder and native compiler, or numerical runtime preservation.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <a href="type-model.html#opaque-basis-specialization-in-the-selected-profile">type model</a>
+specifies these forms and their routes.</p>
+<p>The project route accepts this program. The initializers of <code>Result</code> are
+written in an order other than the declaration order:</p>
+<pre><code class="language-qli">enum Tri { Zero, One, Other }
+struct Empty {}
+struct Result { choice: Tri, flag: Bit, empty: Empty }
+
+pub observe fn main() -&gt; Result {
+    let q = basis unit(()) as _ { 0 };
+    let bit = measure_z(h(q));
+    let tag = if bit { Tri::One } else { Tri::Zero };
+    let flag = match tag { Tri::Zero =&gt; 0, Tri::One =&gt; 1, Tri::Other =&gt; 0 };
+    Result { empty: Empty {}, flag: flag, choice: tag }
+}
+</code></pre>
+<p>With <code>pub unitary fn main</code> in place of <code>pub observe fn main</code>, the project
+route rejects that program with the code <code>effect</code>.</p>
+<h2 id="runtime-classical-branches"><a class="header" href="#runtime-classical-branches">Runtime classical branches</a></h2>
+<p>A runtime classical branch selects one of two arms by an ordinary Bit, such
+as a measurement result. Runtime selection is distinct from coherent control
+and from static selection.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>if condition { ... } else { ... }</code> with an ordinary Bit condition</td></tr>
+<tr><td>Target</td><td>Raw <code>ClassicalBranch</code> with both operation lists and simultaneous classical and quantum phis, or the supported selected branch representation</td></tr>
+<tr><td>Evaluation order</td><td>The condition evaluates once. Runtime executes the selected arm. Source checking visits both arms.</td></tr>
+<tr><td>Owners</td><td>Both arms agree on the exact returned trees and on outer consumption. The join merges the returned leaves and the complete surviving frame of the caller and of pending arguments. IDs are globally fresh across arms. Phi renaming prepares no state and loses no reference correlation.</td></tr>
+<tr><td>Exact phase</td><td>The expansion preserves the action and the unnormalized outcome weight of each arm. It inserts no coherent superposition and no branch normalization.</td></tr>
+<tr><td>Source spans</td><td>The operations of an arm retain their original spans and their nested branch-index paths. An inserted join uses the span of the branch.</td></tr>
+<tr><td>Refusal</td><td>A quantum condition; different types or owner frames; lost branch-local owners; invalid phis or an invalid body; an unsupported target.</td></tr>
+<tr><td>Open obligations</td><td>Both arms, the scope, the ownership and the simultaneous phis need a native check. The complete source instrument must be preserved, with external references and the correlations of the caller frame.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The Finite project target accepts this program, and <code>main</code> returns 1. The
+selected-entry route rejects it with the code <code>unsupported</code>: the form is
+valid, and its selected projection is outside the profile.</p>
+<pre><code class="language-qli">use std::state::init0;
+use std::gate::x; use std::gate::cnot;
+pub observe fn main()-&gt;Bit{
+let q=init0();let u=if 1{x(excl q);()}else{()};measure_z(q)}
+</code></pre>
+<p>The project route rejects the next program with the code <code>type_mismatch</code>. The
+condition is a quantum owner:</p>
+<pre><code class="language-qli">use std::state::init0;  use std::gate::x; use std::gate::z;
+observe fn main() -&gt; Unit { let q = init0(); if q { () } else { () } }
+</code></pre>
+<h2 id="ordinary-match"><a class="header" href="#ordinary-match">Ordinary match</a></h2>
+<p>An ordinary <code>match</code> selects one arm by the variant of an ordinary enum value.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>match value { Type::A =&gt; expression, ... }</code> on an ordinary enum value. Every declared variant occurs exactly once, as an exact qualified label. A runtime arm is an expression or a block. A classical arm is an ordinary expression.</td></tr>
+<tr><td>Target</td><td>Ordinary comparisons of the tag coordinates, and nested Raw <code>ClassicalBranch</code> operations with their joins</td></tr>
+<tr><td>Evaluation order</td><td>The scrutinee evaluates once. Runtime executes the arm of its variant. The common checker checks every arm, including the arms of a constant constructor in an unused function.</td></tr>
+<tr><td>Owners</td><td>The scrutinee is an ordinary enum value. All arms return the same complete type tree and preserve the same outer owner frame, including zero-width owners.</td></tr>
+<tr><td>Exact phase</td><td>The tag comparison is ordinary computation and inserts no quantum action. Each arm keeps its dependencies and effects. A constant scrutinee cannot hide an observing arm behind a pure public label.</td></tr>
+<tr><td>Source spans</td><td>Labels resolve through their original type declarations and visibility. Member names and diagnostics retain their original source spans.</td></tr>
+<tr><td>Refusal</td><td>A scrutinee that is not an ordinary enum, including a live <code>Q&lt;T&gt;</code>; a missing or repeated variant; a label of a foreign enum, even with equal spelling, width or cardinality; a wildcard, payload or complement pattern; more than 64 arms; arms with different type trees or owner frames; an unsupported target.</td></tr>
+<tr><td>Open obligations</td><td>The source judgment provides no accepted handle. Execution requires a typed native route. Neither route provides implicit measurement or a source-preservation theorem.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <a href="type-model.html#opaque-basis-specialization-in-the-selected-profile">type model</a>
+specifies the form. Parenthesize a record literal in a scrutinee, so that its
+braces differ from the arm list.</p>
+<p>The project route accepts this program, and <code>main</code> returns 1:</p>
+<pre><code class="language-qli">enum Tri { A, B, C }
+classical fn flag() -&gt; Bit {
+    match Tri::C { Tri::A =&gt; 0, Tri::B =&gt; 0, Tri::C =&gt; 1 }
+}
+fn main() -&gt; Bit { flag() }
+</code></pre>
+<p>The project route rejects the next program with the code <code>type_mismatch</code>. The
+<code>match</code> omits two variants, and the check covers <code>unused</code> although no
+function calls it:</p>
+<pre><code class="language-qli">enum Tri { A, B, C } classical fn unused() -&gt; Bit { match Tri::A { Tri::A =&gt; 0 } } fn main() -&gt; Bit { 0 }
+</code></pre>
+<h2 id="static-natural-computation"><a class="header" href="#static-natural-computation">Static natural computation</a></h2>
+<p>Static natural computation evaluates natural expressions during checking. A
+program uses it for values such as a width or a repetition count. A static
+binding is not a runtime value.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td>Supported natural expressions, <code>static let</code>, and Nat helpers that are provisional, bounded and acyclic</td></tr>
+<tr><td>Target</td><td>Exact affine templates, substitution and closed checked naturals. A checked unused alias inserts no runtime instruction.</td></tr>
+<tr><td>Evaluation order</td><td>Ordered static binders and helper arguments resolve in their static context. Substitution is simultaneous. The names of a callee cannot rewrite the binders of its caller.</td></tr>
+<tr><td>Owners</td><td>None. The static environment contains no live quantum owner and no runtime input.</td></tr>
+<tr><td>Exact phase</td><td>Normalization inserts no phase. A result that an explicit phase operation uses is the exact specified parameter of that operation.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the original spans of the arithmetic, the argument, the premise and the binder. It never keeps spans of generated replacement text.</td></tr>
+<tr><td>Refusal</td><td>A value that depends on a runtime value; a forward kind dependency; a duplicate or shadowing binding; nonlinear arithmetic; an unproved subtraction or premise; a cycle; overflow; work exhaustion. Acyclic forward references to helpers keep normal declaration resolution.</td></tr>
+<tr><td>Open obligations</td><td>Closed values and their uses need a check under exact constraints. The work counters of the compiler do not certify the resources of a program.</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="static-language.html">static arithmetic and helpers</a>.</p>
+<p>The Finite project target accepts this program. The alias <code>width</code> is checked
+and erased, and <code>main</code> returns 0:</p>
+<pre><code class="language-qli">pub observe fn main()-&gt;Bit{static let width=2+1;0}
+</code></pre>
+<p>Both routes reject the next program. The static alias <code>n</code> depends on the
+runtime value <code>a</code>:</p>
+<pre><code class="language-qli">pub observe fn main()-&gt;Bit{let a=1;static let n=a+1;0}
+</code></pre>
+<h2 id="specialization-and-static-selection"><a class="header" href="#specialization-and-static-selection">Specialization and static selection</a></h2>
+<p>Bracket specialization closes a declaration by supplying its complete static
+arguments, as in <code>run[2]</code>. <code>if static</code> selects one arm by a static
+comparison.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td>Ordered <code>const</code> parameters, complete bracket arguments and <code>if static comparison</code></td></tr>
+<tr><td>Target</td><td>A supported closed instance and the selected static arm, after the complete check of the original source</td></tr>
+<tr><td>Evaluation order</td><td>Explicit static bindings and provider identities resolve before runtime application. Static selection evaluates no runtime condition.</td></tr>
+<tr><td>Owners</td><td>The expansion preserves the exact interface and the owners of the runtime instance. A dead source arm is checked.</td></tr>
+<tr><td>Exact phase</td><td>The substitution of parameters does not quotient phase and does not change axis order. The expansion retains the selected action.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the spans of the definition, the argument, the comparison and the arm.</td></tr>
+<tr><td>Refusal</td><td>Incomplete or wrong bindings; unproved constraints or access; an invalid dead arm; non-decreasing dependencies; an unsupported instance. No inference from width and no fallback exists.</td></tr>
+<tr><td>Open obligations</td><td>The closed artifact and the provider evidence need a native check. General preservation under specialization and resource bounds for a family are separate obligations.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <a href="static-language.html">static rules</a> specify termination and capacities.
+Helper spellings are provisional where those rules say so.</p>
+<p>The project route accepts this program. <code>run[0]</code> selects the <code>else</code> arm and
+<code>run[2]</code> selects the first arm, so <code>main</code> returns <code>(0,1)</code>:</p>
+<pre><code class="language-qli">use std::state::init0; use std::gate::x;
+unitary fn flip[const n:Nat](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{qfor static i in 0..n carry q=q{yield x(q);}}
+unitary fn apply[const V:Op&lt;Bit&gt;](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt; requires Applicable(V){V(q)}
+unitary fn run[const n:Nat](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{
+  if static n&gt;=1 {apply[flip[n-1]](q)} else {q}
+}
+pub observe fn main()-&gt;(Bit,Bit){(measure_z(run[0](init0())),measure_z(run[2](init0())))}
+</code></pre>
+<p>The selected-entry route rejects the next function with the code <code>name</code>. The
+dead arm calls an unknown function:</p>
+<pre><code class="language-qli">pub unitary fn f(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { if static 0 == 0 { q } else { missing(q) } }
+</code></pre>
+<h2 id="finite-folds"><a class="header" href="#finite-folds">Finite folds</a></h2>
+<p>A finite fold repeats its body over a closed static range and threads a
+carry from each iteration to the next. <code>for static</code> carries ordinary values.
+<code>qfor static</code> carries quantum owners.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>for static</code> for ordinary values or <code>qfor static</code> for quantum owners, with an explicit range, carry pattern, initializer and <code>yield</code></td></tr>
+<tr><td>Target</td><td>Closed finite iteration of existing fold and source steps, then a supported Raw or hierarchy proposal</td></tr>
+<tr><td>Evaluation order</td><td>The initializer evaluates once. The carry threads in increasing index order over <code>[start,end)</code>. Zero iterations return the evaluated initial value.</td></tr>
+<tr><td>Owners</td><td>The expansion preserves the exact carry tree. <code>qfor</code> carries a quantum owner, including empty-width owners. An owner outside the carry cannot be a hidden capture. The expansion inserts no discard at exit and no reassembly.</td></tr>
+<tr><td>Exact phase</td><td>Serial composition retains the phase of every iteration. An empty iteration sequence is the identity on the retained carry.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the spans of the bound, the carry, the body and the yield in every instance.</td></tr>
+<tr><td>Refusal</td><td>An invalid range or a runtime bound; the wrong fold category; a carry-tree mismatch; a missing <code>yield</code>; a hidden capture; an invalid zero-count body. A limit failure keeps its category.</td></tr>
+<tr><td>Open obligations</td><td>The complete composition, the owners and the dependencies need a check. Finite unrolling proves neither a general family theorem nor a quantitative bound.</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="static-language.html#static-branches-folds-and-termination">fold rules</a>.</p>
+<p>The selected-entry route accepts this function for <code>n</code> from 0 to 3. At
+<code>n = 0</code> the function acts as the identity:</p>
+<pre><code class="language-qli">use std::gate::x; pub unitary fn f[const n:Nat](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{qfor static i in 0..n carry a=q{yield x(a);}}
+</code></pre>
+<p>The selected-entry route rejects the next function with the code <code>type</code>. An
+ordinary fold cannot carry a quantum owner:</p>
+<pre><code class="language-qli">pub unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{for static i in 0..0 carry a=q{yield a;}}
+</code></pre>
+<h2 id="operation-descriptions-and-application"><a class="header" href="#operation-descriptions-and-application">Operation descriptions and application</a></h2>
+<p>A static operation description names an operation that is bound to its
+provider. A constructor builds a description from other descriptions, such
+as the adjoint of an operation or a power of it. An application applies a
+description to runtime owners.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>adjoint</code>, <code>power</code>, <code>then_op</code>, <code>tensor_op</code>, <code>conjugate_op</code>, <code>controlled</code> and <code>checked_op</code>, in the specified positions of a static description and of an application</td></tr>
+<tr><td>Target</td><td>Descriptions bound to their providers, and existing untrusted transformation proposals for a circuit, a finite contract or a hierarchy. No runtime closure exists.</td></tr>
+<tr><td>Evaluation order</td><td>The complete description is checked before application. Runtime arguments evaluate once in source order, including at power zero. Adjoint reverses the operation order and conjugates the action.</td></tr>
+<tr><td>Owners</td><td>The exact basis tree and the runtime group are retained. A tensor description uses its packed basis. It does not implicitly join separate owners.</td></tr>
+<tr><td>Exact phase</td><td>Adjoint conjugates phase. Power repeats the complete action. Serial, tensor and conjugate descriptions retain the ordered action. Meaning is a separate obligation, never an access grant.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the original spans of the constructor, the operand, the count, the Meaning and the input through nested descriptions.</td></tr>
+<tr><td>Refusal</td><td>Missing access; a wrong basis, interface or Meaning; an unsupported provider, transform or count; an unresolved obligation; a capacity failure. These reject in unused and zero-count contexts as well. Constructing <code>adjoint(U)</code> itself requires <code>Adjointable(U)</code>.</td></tr>
+<tr><td>Open obligations</td><td>Providers, retained bodies, exact transformations and requested Meanings need an independent binding to the emitted artifacts. A valid unbound circuit is insufficient.</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="functional-boundary.html">access derivations</a>,
+<a href="static-language.html#operation-repetition-and-access">repetition</a> and
+<a href="checked-operations.html">checked operations</a>.</p>
+<p>The same eight fields apply to each constructor below. The constructors are
+the existing endomorphic description actions. They do not admit the adjoint
+of an isometry in general. An arrow gives the order of execution at runtime.
+A matrix product acts right to left.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Description</th><th>Exact expansion/action</th></tr>
+</thead>
+<tbody>
+<tr><td>Resolved provider/specialization</td><td>Retain the closed body, the bindings and the dependency evidence. No operation-name substitution occurs.</td></tr>
+<tr><td><code>adjoint(U)</code></td><td>The justified adjoint action of U. On the supported circuit path, reverse and conjugate the retained steps.</td></tr>
+<tr><td><code>power(U,n)</code></td><td>n serial copies of U, with the identity at zero. All original provider and access obligations are retained.</td></tr>
+<tr><td><code>then_op(U,V)</code></td><td>Execute U, then V, on the same exact basis. The matrix action is <code>V U</code>.</td></tr>
+<tr><td><code>tensor_op(U,V)</code></td><td>Apply U to the first basis block and V to the second ordered block. Retain one shared outer control when controlled.</td></tr>
+<tr><td><code>controlled(U)</code></td><td>Retain the control, the identity on zero and the exact U on one, including the scalar phase of U.</td></tr>
+<tr><td><code>conjugate_op(C,U)</code></td><td>The ordering <code>C† → U → C</code>, with matrix action <code>C U C†</code>. Do not silently substitute <code>C† U C</code>.</td></tr>
+<tr><td><code>checked_op(U,M)</code></td><td>Retain the implementation of U and attach the independent exact M obligation. This inserts no runtime gate and no capability.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Composing descriptions does not automatically transport an attached
+<code>Op&lt;A,M&gt;</code> refinement.
+<a href="functional-boundary.html#admitted-operation-construction">Functional abstraction</a>
+specifies the refinement rules and the obligation rules of the common
+judgment, and the concrete independent checks.</p>
+<p>The project route accepts this program. <code>power(eighth_phase,4)</code> is four
+serial copies of T, and both <code>checked_op</code> descriptions carry the same exact
+Meaning:</p>
+<pre><code class="language-qli">//! Two implementations of one phase-fixed meaning share an unchanged client.
+use std::state::init0;
+
+use std::gate::z;
+use std::gate::t;
+
+classical fn z_phase(b: Bit) -&gt; (Bit,(Bit,Bit)) { (0,(0,b)) }
+meaning ZMeaning: Bit = phase_by(z_phase);
+
+unitary fn direct(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { z(q) }
+unitary fn eighth_phase(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { t(q) }
+unitary fn decomposed(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { power(eighth_phase,4)(q) }
+
+/// The caller supplies evidence for the same exact Z operator.
+unitary fn client[const U: Op&lt;Bit,ZMeaning&gt;](q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt;
+requires Applicable(U) { U(q) }
+
+observe fn main() -&gt; (Bit,Bit) {
+    let a = client[checked_op(direct,ZMeaning)](h(init0()));
+    let b = client[checked_op(decomposed,ZMeaning)](h(init0()));
+    (measure_z(h(a)),measure_z(h(b)))
+}
+</code></pre>
+<p>The selected-entry route rejects the next function with the code <code>access</code>.
+<code>f</code> applies <code>controlled(power(U,0))</code> and declares no <code>Controllable(U)</code>. The
+check covers the body although the fold has zero iterations:</p>
+<pre><code class="language-qli">pub unitary fn f[const n: Nat, const U: Op&lt;Bits&lt;n&gt;&gt;](c: Q&lt;Bit&gt;, q: Q&lt;Bits&lt;n&gt;&gt;) -&gt; (Q&lt;Bit&gt;,Q&lt;Bits&lt;n&gt;&gt;) { qfor static k in 0..0 carry pair = (c,q) { let (c,q) = pair; yield controlled(power(U,0))(c,q); } }
+</code></pre>
+<h2 id="coherent-control"><a class="header" href="#coherent-control">Coherent control</a></h2>
+<p>Coherent control applies an operation to a target owner under a <code>Q&lt;Bit&gt;</code>
+control, without measuring the control. <code>controlled(U)(c,q)</code> applies <code>U</code> when
+the control is one. <code>qif(c,q) { 0 =&gt; F, 1 =&gt; G }</code> applies <code>F</code> when the
+control is zero and <code>G</code> when it is one.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>controlled(U)(c,q)</code>, or <code>qif(c,q) { 0 =&gt; F, 1 =&gt; G }</code> with both arms in that order. A <code>qif</code> arm is a named operation or an inline block <code>{ ... }</code>.</td></tr>
+<tr><td>Target</td><td>Finite <code>Join → ApplyUnitary → Split</code> over the ordered <code>(Bit,A)</code>, with the bound controlled circuit and its evidence; otherwise the supported hierarchy construction. Controlled U retains the inactive identity. <code>qif</code> retains its specified zero and one actions.</td></tr>
+<tr><td>Evaluation order</td><td>The control evaluates, then the target, each completely and once. The control is not measured and is not used as a classical condition.</td></tr>
+<tr><td>Owners</td><td>The form consumes two inputs, packages them temporarily for the finite controlled action and returns <code>(Q&lt;Bit&gt;,Q&lt;A&gt;)</code> in order, even for zero-width A. The complete target tree and the reference frame are retained. Packaging prepares no state. A block arm binds the written target name and returns one owner of the exact target type. Other runtime owners of the enclosing scope are unavailable in the block.</td></tr>
+<tr><td>Exact phase</td><td>The control is the first low axis. The inactive identity has coefficient +1. The active phase is retained, including scalar Unit phase and kickback.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the control argument, the target argument and the names of the provider or of the arms. Generated control structure retains the origin of the expression.</td></tr>
+<tr><td>Refusal</td><td>A missing Controllable capability; wrong owners or arity; aliases; an invalid arm; an omitted or reordered arm; a block arm whose target is not a name, whose body is not Unitary, or that does not return the target owner; an unsupported interface. Unitarity grants no control access.</td></tr>
+<tr><td>Open obligations</td><td>The provider or body identity, the exact action, the axes and the owners need an independent check. Probabilities, or tests on known inputs, do not discharge coherent correspondence or reference correspondence.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The inactive identity belongs to the specified controlled meaning. No
+rewrite of a <code>qif</code> with an omitted arm is admitted.
+<a href="source-text.html#exact-label-coherent-selection">Exact-label coherent selection</a>
+specifies the block arms that <code>qif</code> shares with <code>qmatch</code>.</p>
+<p>The selected-entry route with the native checker accepts this function. Its
+second arm is an inline block:</p>
+<pre><code class="language-qli">#![no_implicit_prelude]
+pub unitary fn route(s:Q&lt;Bit&gt;,q:Q&lt;Bit&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Bit&gt;){
+    qif(s,q){0=&gt;h,1=&gt;{let r=h(q);phase[1,1](r)}}
+}
+</code></pre>
+<p>The common checker rejects the next program with the class <code>ownership</code>. The
+block arm uses the control <code>s</code>, which is unavailable in the block:</p>
+<pre><code class="language-qli">unitary fn keep(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q} pub observe fn f(s:Q&lt;Bit&gt;,q:Q&lt;Bit&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Bit&gt;){qif(s,q){0=&gt;keep,1=&gt;{ h(s) }}}
+</code></pre>
+<h2 id="exact-label-coherent-selection"><a class="header" href="#exact-label-coherent-selection">Exact-label coherent selection</a></h2>
+<p><code>qmatch(selector, target) { label =&gt; arm, ... }</code> selects among its arms
+coherently. It applies one arm to the target for each basis label of the
+selector. It does not measure the selector. On a <code>Bit</code> selector it agrees
+exactly with <code>qif</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>qmatch(selector, target) { label =&gt; arm, ... }</code>. An arm is a resolved static operation or an inline block. The labels cover the logical basis of the selector exactly once, in any order. A label is a canonical decimal ordinal for <code>Unit</code>, <code>Bit</code> and closed <code>Bits&lt;n&gt;</code> with <code>0 &lt;= n &lt;= 6</code>, and a qualified variant name for a fieldless enum.</td></tr>
+<tr><td>Target</td><td>A proposed circuit on the selector axes followed by the target axes, emitted in a Raw root. On the route that checks the original source, each selection binds one literal, contiguous Raw interval and its owner frame.</td></tr>
+<tr><td>Evaluation order</td><td>The selector evaluates, then the target, each once. The selector is not measured. The written arm order does not change the action.</td></tr>
+<tr><td>Owners</td><td>The form consumes one <code>Q&lt;A&gt;</code> selector and one distinct <code>Q&lt;B&gt;</code> target and returns <code>(Q&lt;A&gt;, Q&lt;B&gt;)</code> with both complete type trees unchanged. Zero physical width removes neither owner. A block arm binds the written target name and returns one owner of the exact target type. Other runtime owners of the enclosing scope are unavailable in the block.</td></tr>
+<tr><td>Exact phase</td><td>With arm <code>s</code> denoting the exact operator <code>U_s</code>, the action maps <code>|s,y&gt;</code> to <code>sum_z U_s[z,y] |s,z&gt;</code> and extends linearly, including to inputs entangled with an external reference. All arm phases are exact. Selector axes precede target axes, so <code>(s,y)</code> has the coordinate <code>s + 2^selector_bits * y</code>.</td></tr>
+<tr><td>Source spans</td><td>Each selection retains its own source position and its ordered arms. On the route that checks the original source, it also retains its literal Raw interval.</td></tr>
+<tr><td>Refusal</td><td>A wildcard, range, payload or guard label; a dynamic arm call; a missing, repeated or out-of-range label; more than 64 arms; a selector that is not one <code>Q&lt;A&gt;</code> owner of a supported basis; a target that is not one distinct <code>Q&lt;B&gt;</code> owner; an arm with another target interface, without a Unitary effect or without the Controllable capability; an unsupported target. Unitarity alone grants neither control nor inverse access.</td></tr>
+<tr><td>Open obligations</td><td>The proposed circuit needs a fresh native encoded equation against the independently obtained exact block meaning. The emitted Raw root needs ordinary native checking. Three things do not prove preservation of the original source: common enum checks, native acceptance of a proposed circuit, and conformance tests.</td></tr>
+</tbody>
+</table>
+</div>
+<p><a href="source-text.html#exact-label-coherent-selection">Source text</a> specifies the
+form, its block arms and its routes.</p>
+<p>The common checker accepts this program. The labels are written in an order
+other than the ordinal order:</p>
+<pre><code class="language-qli">unitary fn keep(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q} unitary fn f(s:Q&lt;Bits&lt;2&gt;&gt;,q:Q&lt;Bit&gt;)-&gt;(Q&lt;Bits&lt;2&gt;&gt;,Q&lt;Bit&gt;){qmatch(s,q){3=&gt;keep,0=&gt;keep,2=&gt;keep,1=&gt;keep}}
+</code></pre>
+<p>The common checker rejects the next program with the class <code>type</code>. The label
+<code>1</code> is missing:</p>
+<pre><code class="language-qli">enum E{A,B,C} unitary fn keep(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q} fn f(s:Q&lt;Bit&gt;,q:Q&lt;Bit&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Bit&gt;){qmatch(s,q){0=&gt;keep}}
+</code></pre>
+<h2 id="coherent-basis-maps"><a class="header" href="#coherent-basis-maps">Coherent basis maps</a></h2>
+<p>A coherent basis map applies an injective function on basis labels to one
+quantum owner. The program writes the function as an expression on a label
+pattern.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>basis q as pattern { expression }</code></td></tr>
+<tr><td>Target</td><td>Finite or selected Raw <code>LiftBasis</code> with a complete supported label map</td></tr>
+<tr><td>Evaluation order</td><td><code>q</code> evaluates once, before the labels are bound. The restricted total expression evaluates in a separate basis scope.</td></tr>
+<tr><td>Owners</td><td>The form consumes one <code>Q&lt;A&gt;</code> and returns one <code>Q&lt;B&gt;</code>. Label patterns do not split runtime owners. Separate inputs are not implicitly joined.</td></tr>
+<tr><td>Exact phase</td><td>Each transition has coefficient +1, linearly, with the identity on an arbitrary external reference. Amplitudes and ordered output labels are retained.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the original spans of the input, the label pattern and the body.</td></tr>
+<tr><td>Refusal</td><td>A wrong owner or tree; an outer capture; an unsupported body or callee; a noninjective complete map; reuse; an unavailable profile.</td></tr>
+<tr><td>Open obligations</td><td>The complete lift, its injectivity and its effects need an independent check. The correspondence of the source to the table is separate from the validity of the table.</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="coherent-basis.html">coherent basis maps</a>, including Unit and the
+difference between label copying and state copying.</p>
+<p>The project route accepts this program. <code>main</code> returns <code>(1,0)</code>:</p>
+<pre><code class="language-qli">use std::state::init0;
+classical fn flip(x: Bit) -&gt; Bit { not x }
+unitary fn lifted(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { basis q as b { flip(b) } }
+pub observe fn main() -&gt; (Bit,Bit) {
+    let q = init0(); let reference = init0(); let q = lifted(q);
+    (measure_z(q),measure_z(reference))
+}
+</code></pre>
+<p>Selected elaboration rejects the next function with the code <code>ownership</code>. The
+constant map is not injective:</p>
+<pre><code class="language-qli">pub unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{basis q as a {0}}
+</code></pre>
+<h2 id="computed-workspace"><a class="header" href="#computed-workspace">Computed workspace</a></h2>
+<p><code>with_computed</code> gives a scoped body one temporary ancilla. It computes the
+ancilla from a source register by a classical predicate, runs the body, and
+uncomputes the ancilla.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td>The two-argument form <code>with_computed(source,predicate)</code>, or the three-argument form with a logical contract</td></tr>
+<tr><td>Target</td><td>Raw <code>ComputeUseUncompute</code>, or the certified retained-body construction with finite evidence, within each supported profile</td></tr>
+<tr><td>Evaluation order</td><td>The source evaluates once. The form computes the specified ancilla, executes the checked scoped body and then uncomputes.</td></tr>
+<tr><td>Owners</td><td>The predicate takes one ordinary parameter of the exact tree of the source. The two-argument body returns the ancilla. The three-argument body returns the data and the ancilla. Capture and protection rules are explicit. No standalone Release0 is inserted.</td></tr>
+<tr><td>Exact phase</td><td>The expansion preserves the specified use or logical action. An exact all-input clean return is required. A cleanliness check alone cannot certify the live action or its phase. Approximate cleanup cannot discharge this obligation.</td></tr>
+<tr><td>Source spans</td><td>The expansion keeps the origins of the source, the predicate, the body, the returned owner and the logical contract.</td></tr>
+<tr><td>Refusal</td><td>A wrong predicate arity or tree; an unsupported body; an Observe effect; lost, aliased or protected owners; a failed equality or cleanup; capacity exhaustion. A one-Bit ancilla body outside the canonical empty/Z/T token chain must act as an exact eighth-root diagonal. Non-diagonal or unrepresentable actions reject. No exception that is based on a name supplies evidence.</td></tr>
+<tr><td>Open obligations</td><td>The retained compute, use and uncompute steps and the exact logical and cleanup contract, with references, need an independent check. Syntax and Unitary annotations supply no clean evidence.</td></tr>
+</tbody>
+</table>
+</div>
+<p>See <a href="functional-boundary.html#scoped-bodies-finite-elaboration-and-effects">scoped bodies</a>
+and <a href="type-model.html#structural-equality-coherence-and-physical-maps">predicate trees</a>.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> The two-argument path retains an already canonical
+empty/Z/T token chain through the protected gate. For the other supported
+one-Bit ancilla bodies, the native checker checks a whole-original equation
+and a canonical-witness equation for the same exact eighth-root diagonal,
+before scalar/Z/T normalization. Chunking supplies only an untrusted matrix
+proposal. The graph, dependency, source and shared-work capacities apply.</p>
+</blockquote>
+<p>The project route accepts this program, which uses the two-argument form.
+<code>main</code> returns <code>(1,1)</code> with probability one:</p>
+<pre><code class="language-qli">use std::basis::and2;
+use std::basis::xor2;
+use std::state::init0;
+
+use std::gate::x;
+use std::gate::z;
+
+classical fn predicate((a,b): (Bit,Bit)) -&gt; Bit { xor2(and2(a, b), 0) }
+observe fn main() -&gt; (Bit, Bit) {
+    let q = join(h(init0()), x(init0()));
+    let q = with_computed(q, predicate) { |a| z(a) };
+    let (a, b) = split(q);
+    (measure_z(h(a)), measure_z(b))
+}
+</code></pre>
+<p>The project route rejects the next program with the code <code>unsupported</code>. The
+body <code>h(a)</code> is not diagonal:</p>
+<pre><code class="language-qli">use std::state::init0;  use std::gate::x; use std::gate::z;
+classical fn p(x: Bit) -&gt; Bit { x } observe fn main() -&gt; Bit { measure_z(with_computed(init0(), p) { |a| h(a) }) }
+</code></pre>
+<h2 id="function-contracts"><a class="header" href="#function-contracts">Function contracts</a></h2>
+<p>A function contract pairs an implementation with a specification.
+<code>apply_contract(implementation, specification, input)</code> applies
+<code>implementation</code> to one quantum owner. It records the obligation that
+<code>implementation</code> equals <code>specification</code>. The form has two overloads, a pure
+one and an observing one.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Contract</th></tr>
+</thead>
+<tbody>
+<tr><td>Source</td><td><code>apply_contract(implementation, specification, input)</code>. In the pure overload, both names denote closed functions with the interface <code>Q&lt;A&gt; -&gt; Q&lt;A&gt;</code> and a Unitary effect that the caller can see. A declared finite Meaning may supply the specification instead. In the observing overload, both names denote closed ordinary functions with an Observe effect that the caller can see, one <code>Q&lt;A&gt;</code> argument and the same complete finite result type.</td></tr>
+<tr><td>Target</td><td>Pure overload on Raw: a circuit <code>Contract</code> step that carries the checked receipt. Pure overload on the hierarchy: a checked finite leaf that embeds the complete receipt-bearing wrapper bytes. Observing overload: the emitted call interval of the implementation, with a private native instrument equation.</td></tr>
+<tr><td>Evaluation order</td><td>The input evaluates first, once. A declared Meaning supplies the request and is never projected as a runtime function. The observing overload executes only the implementation.</td></tr>
+<tr><td>Owners</td><td>The form consumes one exact quantum owner and returns the result of the implementation. In the observing overload, the complete result nesting, the ordered quantum and classical projections, zero-width owners, hidden histories and residual states are significant.</td></tr>
+<tr><td>Exact phase</td><td>The function-equality check is an exact equation between the implementation and the specification. A replacement with an equal matrix and different implementation or specification bytes cannot substitute for the original receipt, which is bound to the source.</td></tr>
+<tr><td>Source spans</td><td>The obligation binds both original definitions, the interface, the category, the effect and the source span. Raw emission keeps the original pair, owner, direction and ordered axes for source replay.</td></tr>
+<tr><td>Refusal</td><td>A local value in place of a function name; a <code>classical fn</code> or a Meaning as the implementation; a function with static parameters; a function without exactly one <code>Q&lt;A&gt;</code> parameter of the input basis; different result types; a failed equation; an observing Meaning; lowering without the native checker.</td></tr>
+<tr><td>Open obligations</td><td>The function-equality obligation is pending until the independent native evidence gate discharges it. Binding the identity of a Meaning or a provider is not matrix equality, injectivity, all-input clean return, provider correspondence or source preservation. Both emitted artifacts need fresh native acceptance.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <a href="type-model.html#direct-runtime-transforms-and-opaque-operations">type model</a>
+specifies both overloads.</p>
+<p>The project route accepts this program, which uses the observing overload.
+<code>measure_z(h(h(q)))</code> and <code>measure_z(q)</code> are the same instrument:</p>
+<pre><code class="language-qli">use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+
+classical fn predicate(value: Bit) -&gt; Bit { value }
+unitary fn identity(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { q }
+unitary fn specified_phase(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { z(q) }
+
+fn reference(q: Q&lt;Bit&gt;) -&gt; Bit { measure_z(q) }
+fn implementation(q: Q&lt;Bit&gt;) -&gt; Bit { measure_z(h(h(q))) }
+observe fn main() -&gt; Bit { apply_contract(implementation,reference,x(init0())) }
+</code></pre>
+<p>The project route rejects the next program with the code <code>contract</code>. The
+implementation relabels the public outcome of the reference:</p>
+<pre><code class="language-qli">use std::state::init0;  use std::gate::x;
+use std::gate::z; use std::gate::t; use std::gate::cnot;
+
+classical fn predicate(value: Bit) -&gt; Bit { value }
+unitary fn identity(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { q }
+unitary fn specified_phase(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { z(q) }
+
+fn reference(q: Q&lt;Bit&gt;) -&gt; Bit { measure_z(q) }
+fn implementation(q: Q&lt;Bit&gt;) -&gt; Bit { not(measure_z(q)) }
+observe fn main() -&gt; Bit { apply_contract(implementation,reference,init0()) }
+</code></pre>
+<h2 id="explicit-maps-and-unsupported-candidates"><a class="header" href="#explicit-maps-and-unsupported-candidates">Explicit maps and unsupported candidates</a></h2>
+<p>Some maps are explicit operations of the source program. The program writes
+them, and no elaboration inserts them. This section also names conveniences
+that the language does not admit.</p>
+<p>Rules:</p>
+<ul>
+<li><code>split</code>/<code>join</code>, Unit insertion and removal, and the register primitives are
+explicit <a href="primitive-boundary.html">specified maps</a>. They keep their original
+ordered interfaces and the coefficient +1.</li>
+<li>An elaboration must not insert such a map to repair an argument tree.</li>
+<li><code>Bit</code>, <code>Bits&lt;1&gt;</code>, <code>Unit</code> and <code>Bits&lt;0&gt;</code> are distinct. Tuples of different
+arity or nesting are distinct. Packed owners are distinct from separate
+owners.</li>
+<li>Canonical reassociation is not definitional equality. It is not an admitted
+implicit elaboration.</li>
+<li>An ordinary literal does not prepare a quantum state.</li>
+<li><code>init0</code> is not a primitive. It is the ordinary
+<a href="stdlib.html">standard-library</a> function <code>std::state::init0</code>, declared
+<code>pub isometry fn init0() -&gt; Q&lt;Bit&gt;</code> and defined by
+<code>basis unit(()) as _ { 0 }</code>. It keeps its explicit Isometry contract.</li>
+<li><code>basis</code> is a coherent map. It is not sugar for arbitrary state
+preparation.</li>
+<li>Beyond explicit selected-place access, no implicit view partition and no
+implicit reassembly is admitted.</li>
+<li>No insertion of <code>excl</code> or <code>ctrl</code>, no arbitrary wire permutation and no
+cleanup is admitted.</li>
+<li>A convenience may be added only after its complete contract and its checking
+evidence exist. The candidate list of an Issue is insufficient.</li>
+</ul>
+<h3 id="register-primitives-on-the-selected-raw-target"><a class="header" href="#register-primitives-on-the-selected-raw-target">Register primitives on the Selected Raw target</a></h3>
+<p>On the Selected Raw target, the register primitives <code>take_bit[N,K]</code> and
+<code>put_bit[N,K]</code> expand into structural instructions.</p>
+<p>Rules:</p>
+<ul>
+<li>Each requires its statically established premise <code>K &lt; N</code>.</li>
+<li>Each expands to three existing Split/Join instructions.</li>
+<li><code>take_bit</code> preserves the ordered remainder. <code>put_bit</code> inserts the bit at its
+declared axis.</li>
+<li>Empty prefixes, empty suffixes and the <code>Bits&lt;0&gt;</code> remainder are logical
+owners through the structural operations.</li>
+<li>The expansion emits no physical SWAP, preparation, measurement or implicit
+discard.</li>
+</ul>
+<p>These primitives and the lowering of selected places use the same structural
+instructions. Explicit indexed access and slice access connect common
+checking to ordered partition and reconstruction under the
+<a href="#static-ordered-axis-places">static-place rules</a>. Such access does not
+insert a source <code>take_bit</code>/<code>put_bit</code> call, and it does not infer an access
+mode.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> Independent source-step replay checks the original
+partition, the intermediate fresh owners and the returned wire order of each
+<code>take_bit</code> and <code>put_bit</code>. Native validity is a separate fresh decision.</p>
+</blockquote>
+<p>Selected Raw lowering with the native checker accepts this function:</p>
+<pre><code class="language-qli">use std::gate::x; use std::gate::z;
+pub unitary fn main(input:Q&lt;(Bits&lt;2&gt;,Bit)&gt;)-&gt;Q&lt;(Bits&lt;2&gt;,Bit)&gt;{
+    let(q,r)=split(input);
+    let(b,rest)=take_bit[2,1](q);
+    join(put_bit[2,1](b,rest),r)
+}
+</code></pre>
+<h2 id="original-locations-and-failure"><a class="header" href="#original-locations-and-failure">Original locations and failure</a></h2>
+<p>This section states the original location that each emitted operation
+retains, and how kinds of failure stay distinct.</p>
+<p>Rules:</p>
+<ul>
+<li>A span is a half-open UTF-8 byte interval in the unnormalized original
+source.</li>
+<li>Emitted operations retain their origins in the original expression and
+body. Finite nested branches retain operation and arm-index paths.</li>
+<li>An enclosing expression must not overwrite the origin of a child or of a
+callee.</li>
+<li>An inserted operation without a more specific origin uses the span of its
+expression.</li>
+<li>Unsupported profiles and work limits keep distinct diagnostics. Exhaustion
+is not mathematical invalidity.</li>
+<li>A migration error names the original tokens.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> After a finite native rejection, diagnostic mapping
+selects the longest retained operation-path prefix, and otherwise the
+original caller or declaration. This mapping is post-rejection metadata
+only. It cannot change acceptance, manufacture evidence or hide a failure.</p>
+</blockquote>
+<h2 id="migration-correspondence"><a class="header" href="#migration-correspondence">Migration correspondence</a></h2>
+<p>Some earlier spellings of these forms are retired. The table below maps each
+retired form to its explicit form. A <strong>migration derivative</strong> is a separate
+source that uses the explicit form.</p>
+<p>Rules:</p>
+<ul>
+<li>Production rejects retired forms. It does not retry a legacy grammar, and it
+applies no compatibility rewrite that accepts them.</li>
+<li>A migration derivative has its own bytes and provenance.</li>
+<li>A migration must preserve the original source, its diagnostics and its
+artifacts, and must validate the complete derivative.</li>
+<li>A migration must not weaken owners, access, effects or Meaning to make a
+rewrite succeed.</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Preserved old form</th><th>Explicit form</th><th>Preserved contract</th></tr>
+</thead>
+<tbody>
+<tr><td><code>[static n: Nat, ...]</code></td><td><code>[const n: Nat, ...]</code></td><td>Ordered explicit kinds and arguments; no inferred specialization</td></tr>
+<tr><td><code>adjoint(U,q)</code> / earlier <code>inverse(U)(q)</code></td><td><code>adjoint(U)(q)</code></td><td>Adjoint action and its access premise</td></tr>
+<tr><td><code>repeat_op(k,U)</code> / <code>repeat_static(k,U,q)</code></td><td><code>power(U,k)</code> / <code>power(U,k)(q)</code></td><td>The count, the exact provider and group, and evaluation of the input exactly once</td></tr>
+<tr><td><code>inverse_op(U)</code> / <code>controlled_op(U)</code></td><td><code>adjoint(U)</code> / <code>controlled(U)</code></td><td>The identity and the access of the bound description</td></tr>
+<tr><td><code>Apply</code> / <code>Adjoint</code> / <code>Controlled</code> predicates</td><td><code>Applicable</code> / <code>Adjointable</code> / <code>Controllable</code></td><td>Provider access; an annotation grants nothing</td></tr>
+<tr><td><code>do p &lt;- q; pure e</code></td><td><code>basis q as p { e }</code></td><td>The same CoherentLift, coefficient +1 and injectivity</td></tr>
+<tr><td><code>bind_op(U,M)</code></td><td><code>checked_op(U,M)</code></td><td>The exact interface and Meaning, and the original provider evidence</td></tr>
+</tbody>
+</table>
+</div>
+<p>The table is not a general automatic rewriter. An unimplemented draft
+acquires no claim of historical equivalence. <a href="type-model.html">Types</a> and
+<a href="stdlib.html">stdlib</a> keep their separate migration contracts.</p>
+<p>An artifact that carries source can change its bytes after a source edit.
+This can happen even when the operator and the interface meaning are equal.
+A migration must never erase identity to force byte equality.</p>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<p>This section gives the limits of each target, and it keeps apart what tests,
+proofs and admitted guarantees establish for the forms of this chapter.</p>
+<h3 id="accepted-forms-without-a-contract-in-this-chapter"><a class="header" href="#accepted-forms-without-a-contract-in-this-chapter">Accepted forms without a contract in this chapter</a></h3>
+<p>The common checker accepts these surface forms. This chapter gives them no
+contract table.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Form</th><th>Specified in</th></tr>
+</thead>
+<tbody>
+<tr><td><code>clean(data, logical) { |data, scratch| body }</code> and <code>dirty(data, scratch, logical) { |data, scratch| body }</code> workspace scopes</td><td><a href="rust-boundary.html">Rust boundary</a>, section “Explicit clean and dirty scopes”</td></tr>
+<tr><td>The body of a <code>classical fn</code>, including the coordinate read <code>word[k]</code> and <code>empty_bits()</code></td><td><a href="source-text.html#total-classical-declarations">Total classical declarations</a></td></tr>
+<tr><td>Literal values, sealed operations and explicit structural maps</td><td><a href="type-model.html">Type model</a> and <a href="primitive-boundary.html">primitive boundary</a></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="profiles"><a class="header" href="#profiles">Profiles</a></h3>
+<p>The table gives the limits that this chapter states for each target. A dash
+means that the chapter states no limit for that target.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Form</th><th>Finite project</th><th>Selected Raw</th><th>Selected hierarchy</th></tr>
+</thead>
+<tbody>
+<tr><td><code>ctrl</code> places</td><td>Admits a retained concrete <code>ctrl</code> call after a fresh native sector check</td><td>Admits the same call when lowering runs with the native checker. Checker-free lowering rejects every control obligation.</td><td>Supported pure <code>ctrl</code> calls only. Each control decision covers at most six physical input bits and uses the exact scalar ring. Three things are outside the profile: control occurrences that are not retained, observing entries and entries bound to a Meaning.</td></tr>
+<tr><td>Static ordered-axis places</td><td>Concrete places within the bounded profile</td><td>Concrete places within the bounded profile</td><td><code>excl</code> indices and slices on owners of up to eight axes</td></tr>
+<tr><td>Runtime classical <code>if</code></td><td>Raw <code>ClassicalBranch</code></td><td>The supported selected branch representation. The selected projection can reject a runtime <code>if</code> as unsupported.</td><td>—</td></tr>
+<tr><td><code>take_bit[N,K]</code>, <code>put_bit[N,K]</code></td><td>—</td><td>Supported within the bounded concrete profile</td><td>—</td></tr>
+<tr><td><code>basis q as p { e }</code></td><td>Finite <code>LiftBasis</code></td><td><code>LiftBasis</code> with a complete supported label map</td><td>The general bridge is unsupported</td></tr>
+</tbody>
+</table>
+</div>
+<p>Further limits:</p>
+<ul>
+<li>A mixed access call with a <code>ctrl</code> marker is admitted from a closed
+nongeneric body only.</li>
+<li>An exclusive named call takes ordinary <code>Bit</code> arguments only when the
+selected callee lowers to a single checked ordinary branch.</li>
+<li>A declared access parameter requires a finite function with a closed
+selected specialization.</li>
+<li><a href="coherent-basis.html">Coherent basis maps</a> gives the limits of each profile
+for <code>basis</code>.</li>
+<li>Nominal values and ordinary <code>match</code> execute through a typed native route.
+They execute in eligible closed ordinary project roots and in nongeneric
+public selected roots. The legacy selected projection rejects them as
+unsupported. General selected integration is unfinished.</li>
+<li>An ordinary <code>match</code> and a <code>qmatch</code> each have at most 64 arms.</li>
+<li>A built-in <code>qmatch</code> selector is <code>Unit</code>, <code>Bit</code> or a closed <code>Bits&lt;n&gt;</code> with
+<code>0 &lt;= n &lt;= 6</code>. The legacy hierarchy projection refuses <code>qmatch</code>.
+<a href="source-text.html#exact-label-coherent-selection">Source text</a> gives the
+limits of each <code>qmatch</code> route.</li>
+<li>The observing overload of <code>apply_contract</code> uses the finite Raw profile in
+selected compilation. Hierarchy lowering and checker-free emission reject
+that overload.</li>
+<li>Raw lowering and hierarchy lowering without the native checker reject a
+program with outstanding function contracts.</li>
+</ul>
+<h3 id="tests"><a class="header" href="#tests">Tests</a></h3>
+<p>The examples of this chapter come from sources that these tests check. A test
+that needs the native checker runs only where one is configured.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Sections</th><th>Tests</th></tr>
+</thead>
+<tbody>
+<tr><td>Runtime products, patterns and calls</td><td><code>tests/review_v024.rs</code></td></tr>
+<tr><td>Evaluation and owner lifetime</td><td><code>tests/exclusive_access.rs</code>, <code>tests/compile.rs</code></td></tr>
+<tr><td>Whole-owner exclusive calls; static ordered-axis places; explicit maps</td><td><code>tests/exclusive_access.rs</code></td></tr>
+<tr><td>Ordinary Unit arguments; declared access parameters</td><td><code>tests/selected_runtime_execution.rs</code></td></tr>
+<tr><td>Ordinary expressions and classical functions; coherent basis maps</td><td><code>tests/classical_functions.rs</code>, <code>tests/selected_coherent_basis.rs</code></td></tr>
+<tr><td>Nominal values; ordinary match</td><td><code>tests/ordinary_nominal_execution.rs</code></td></tr>
+<tr><td>Runtime classical branches</td><td><code>tests/exclusive_access.rs</code>, <code>tests/compile.rs</code></td></tr>
+<tr><td>Static natural computation; specialization; finite folds</td><td><code>tests/static_naturals.rs</code>, <code>tests/general_static_runtime.rs</code>, <code>tests/sized_source.rs</code>, <code>tests/qfor.rs</code></td></tr>
+<tr><td>Operation descriptions</td><td><code>tests/operation_parameters.rs</code> on <code>examples/operation_contracts</code>, and <code>tests/sized_source.rs</code></td></tr>
+<tr><td>Coherent control</td><td><code>tests/selected_runtime_execution.rs</code>, <code>src/frontend/check/body/quantum_matching/tests.rs</code></td></tr>
+<tr><td>Exact-label coherent selection</td><td><code>src/frontend/check/body/quantum_matching/tests.rs</code></td></tr>
+<tr><td>Computed workspace</td><td><code>tests/compile.rs</code></td></tr>
+<tr><td>Function contracts</td><td><code>tests/function_contracts.rs</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Two preserved comparisons check the migration table:</p>
+<ul>
+<li>The <a href="https://github.com/MGYamada/Qleisli/blob/0a86fe5456bf92553459ffd5ad45d20180b23494/tests/fixtures/frontend_v030/retired-operation-spellings/migration-comparison.json">operation-application comparison</a>
+checks a complete two-qubit source in its old spelling and in its explicit
+spelling, on separately identified binaries. Both sources receive fresh
+source checks. The proposed bytes agree, with SHA-256
+<code>32adb61c4a2b24c77dd89f83d0761b427d7509b85b0c4a3b4f93b313d50b9bd4</code>.
+Emission is not acceptance, so those separate checks are necessary.</li>
+<li>The <a href="https://github.com/MGYamada/Qleisli/blob/0a86fe5456bf92553459ffd5ad45d20180b23494/tests/fixtures/frontend_v030/capability-naming/precommit-validation.json">capability-name comparison</a>
+retains 34 equal checked artifacts and one measurement-adjoint refusal. Its
+selector verifies exact predecessors and derivatives without rewriting
+first sources or independent oracles.</li>
+</ul>
+<p>The <a href="coherent-basis.html">coherent-basis</a> and
+<a href="checked-operations.html">checked-operation</a> regressions do not compare bytes.
+They retain exact interfaces and independent small complex tests of action
+or instrument, phase, axis, provider and reference.</p>
+<h3 id="proofs"><a class="header" href="#proofs">Proofs</a></h3>
+<p>The items below describe the theorems that concern the forms of this
+chapter, and what those theorems do not establish.</p>
+<ul>
+<li>The compatible access theorem uses the ordered physical wires of each
+checked call as its footprint. Any wire that both calls use must be <code>ctrl</code>
+in both. The exact local reconstruction preserves every shared control bit,
+and the other modified coordinates are disjoint.</li>
+<li>For a checked pair of adjacent calls with a structural return, the theorem
+states an equality of complex amplitudes. The original Raw root and the
+exchanged operator composition agree after the same output permutation, for
+every input and every external reference column. The equality retains
+conditional phase and entanglement.</li>
+<li>A protected-phase theorem exchanges adjacent literal phases in their
+original physical action.</li>
+<li><code>Qleisli.SharedControlCommutation</code> proves exact matrix equality for common
+control sectors that act on disjoint ordered target factors. Its
+single-control bridge concerns the hierarchy definitions of tensor,
+control and sequence. The bridge includes unchanged surrounding operations
+and arbitrary amplitudes of an external reference. Zero-width factors
+retain their scalar phases.</li>
+<li><code>Qleisli.RoutedControlCommutation</code> extends that connection to two original
+hierarchy entry bodies with distinct intermediate routes. Its explicit
+premises bind the original definition records, same-artifact node typing,
+fresh wiring summaries, computed two-sided inverse permutations and provider
+evaluations. Literal coordinate decompositions identify a common control,
+disjoint ordered targets and untouched factors. The resulting exact matrix
+equality preserves arbitrary amplitudes of an external reference.</li>
+<li>Typing alone establishes neither those coordinate decompositions nor
+matching provider meanings. The two commutation results derive no source
+footprint from <code>ctrl</code> or <code>&amp;mut</code>. They prove no arbitrary routing of owners
+or axes, and they authorize no source reordering. Width premises do not
+discharge <code>Q&lt;Unit&gt;</code> ownership. Four obligations are open: source
+footprint, general lowering, acceptance and work preservation.</li>
+<li>Neither commutation proof is a constitutional guarantee or a guarantee
+admission. Their bounded examples and proof records are in
+<code>tests/fixtures/constitution_v030/shared-control-commutation/</code> and
+<code>tests/fixtures/constitution_v030/routed-control-commutation/</code>. The
+emitted-source examples of the second distinguish the conditional Lean
+theorem from runtime checks and bounded matrix observations. Their zero-axis
+sources use <code>Q&lt;Bits&lt;0&gt;&gt;</code>, not an identification with <code>Q&lt;Unit&gt;</code>.</li>
+<li>The QPTL theorem <code>QPTL.FiniteMatrix.scratchMarginal_eq_iff</code> proves a
+partial-trace equivalence for finite Kraus families on positive
+semidefinite unit-trace inputs. It concerns a finite trace-preserving
+channel whose workspace starts in a fixed pure state.</li>
+<li>The equivalence has two sides. One side is the exact return of the
+workspace marginal on every live input. The other side is factorization
+with the same workspace state for every joint input with an external
+reference.</li>
+<li>In a scratch basis that contains the clean state, the unwanted diagonal
+populations are sums of squared Kraus coefficients. Their vanishing on all
+live basis inputs forces every unwanted coefficient to vanish.</li>
+<li>The live output includes any declared classical outcome register with its
+original probabilities. The live factor is the joint output with scratch
+traced out, and it retains the reference coordinates.</li>
+<li>The exact requested live action, the coherent phase, the dirty-workspace
+identity and the quantitative costs have their own contracts.</li>
+</ul>
+<h3 id="preservation"><a class="header" href="#preservation">Preservation</a></h3>
+<ul>
+<li>Independent source replay is not a general source-preservation theorem and
+not a proof of an optimizer.</li>
+<li>General source preservation and quantitative resource correspondence are
+proof obligations.</li>
+<li>The bounded migration comparisons are migration evidence. They are not
+universal source preservation, complete QS/PR/RS, a generic QFT
+implementation or release approval.</li>
+</ul>
+<h3 id="guarantees-and-specification-review"><a class="header" href="#guarantees-and-specification-review">Guarantees and specification review</a></h3>
+<ul>
+<li>Two scoped guarantees are admitted: <code>QS-QLV1-OWNERSHIP-2026-01</code> for
+ownership and <code>QS-QLV1-SCOPE-2026-01</code> for classical scope. Both keep their
+original decoded-root premises.</li>
+<li>Four obligations are pending: the broader source and semantic QS
+obligation, the forward PR obligation, the quantitative RS obligation and
+the EXACT obligation. Their interpretations are QS-2026-01, PR-2026-01,
+RS-2026-01 and EXACT-2026-01.</li>
+<li>The contracts of this chapter are adopted source contracts. A contract
+table discharges no guarantee and adds no ledger entry.</li>
+</ul>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>The chapter consolidates the adopted source contracts that
+<a href="https://github.com/MGYamada/Qleisli/issues/34">Issue #34</a> tracks.</li>
+<li>The chapter describes release <code>0.3.0-beta</code>.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/303">Issue #303</a> records the
+compatible access theorem.</li>
+<li>The capability-name comparison was made after the operation-application
+comparison.</li>
+</ul>
+<p>Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../reference/packages-and-artifacts.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/type-model.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../reference/packages-and-artifacts.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/type-model.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

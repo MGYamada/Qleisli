@@ -1,0 +1,2070 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Source text and lexical boundary - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="source-text-and-lexical-boundary"><a class="header" href="#source-text-and-lexical-boundary">Source text and lexical boundary</a></h1>
+<p>The <strong>source text</strong> of a Qleisli program is the UTF-8 bytes of its modules.
+This chapter specifies how the scanner and the parser read source text in
+constitutional edition 2026. It also specifies the source forms and the source
+obligations that the frontend checks on every program.</p>
+<p>Every program goes through one mandatory check, the <strong>common judgment</strong>. It
+checks each complete original AST. It runs before any concrete profile
+decides eligibility.</p>
+<p>Two loaders read source text, one for each route of the CLI. The <strong>project
+loader</strong> reads a source root for the project route. The <strong>selected loader</strong>
+reads explicitly supplied modules for the selected-entry route. The chapter
+also uses these terms:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Term</th><th>Meaning</th><th>Defined in</th></tr>
+</thead>
+<tbody>
+<tr><td>Project route, selected-entry route</td><td>The two routes of the <code>qleisli</code> CLI</td><td><a href="diagnostics.html#routes">Diagnostics and recovery</a></td></tr>
+<tr><td>Finite project, Selected Raw, Selected hierarchy</td><td>The three lowering profiles</td><td><a href="elaboration.html#source-and-acceptance-boundary">Elaboration</a></td></tr>
+<tr><td>Native checker</td><td>The checker executable that <code>lean-kernel/</code> builds</td><td><a href="elaboration.html#source-and-acceptance-boundary">Elaboration</a></td></tr>
+</tbody>
+</table>
+</div>
+<p>Each rule names the class of diagnostic that the common judgment reports for
+a program that breaks the rule. <a href="diagnostics.html#codes">Codes</a> maps each class
+to the code of each route. A syntax error has the code <code>parse</code> on both
+routes, except for the limit refusals that
+<a href="#status-and-limits">Status and limits</a> lists.</p>
+<p>Two other chapters cover neighboring subjects. The
+<a href="packages-and-artifacts.html">qrate and artifact Reference</a> keeps two things
+apart. One is the canonical identity of a module or a declaration. The other
+is the storage of source files and the resolved configuration. The gaps that
+it records in edition binding are separate from the scanner and parser
+checks.</p>
+<p>The <a href="elaboration.html">elaboration whitelist</a> specifies the permitted expansion
+from surface forms to core forms. It also specifies evaluation order, owners,
+phase, original locations and the independent checking obligations that stay
+open. It grants no unsupported projection.</p>
+<h2 id="source-loading-and-the-common-judgment"><a class="header" href="#source-loading-and-the-common-judgment">Source loading and the common judgment</a></h2>
+<p>Loading turns the bytes of the modules into a form that the checker can
+read. Whichever loader reads a program, the result is one source
+representation, and the common judgment checks it.</p>
+<p>Rules:</p>
+<ul>
+<li>Both loaders must use one scanner, one token stream, one parser and one
+source <code>Module</code>/<code>Span</code> representation.</li>
+<li>The common judgment must check each complete original AST first. Finite or
+selected concrete eligibility is decided after it.</li>
+<li>The common judgment supplies these facts about a program: declaration and
+lexical identities, types, static premises, owner and access rules, body
+dependencies and principal effects.</li>
+<li>The common judgment checks every declaration. This includes private and
+unused siblings, both arms of a branch and the body of a fold with zero
+iterations.</li>
+<li>A program that only parses has no source approval and no native
+verification evidence. Neither parsing nor source checking adds emitter
+support or an <code>Op&lt;A,B&gt;</code> form.</li>
+<li>A source-semantic error takes precedence over an unsupported concrete
+form. This holds even when the error is in an unused declaration.</li>
+<li>When a profile does not support the projection of a declaration and that
+definition is requested, the result is an eligibility failure with a
+location. The original body is not skipped, and the failure is not a
+fallback source approval.</li>
+<li>Both loaders add the eight ordinary source modules of the fixed registry and
+validate its edition-2026 manifest. The bundled modules undergo the same
+common judgment as caller source.</li>
+<li>Each loader applies its byte policy to bundled bytes before copying or
+parsing. A module placed under <code>std::</code> is exempt from no check.</li>
+<li>The selected loader reserves all eight bundled module slots. It accepts 1
+through 56 supplied modules. <a href="#status-and-limits">Status and limits</a> gives
+its byte limits.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/check.rs</code> and the modules under
+<code>src/frontend/check/</code> implement the common judgment. One private source
+collection retains the complete original bytes, the common AST and the
+provenance. A filesystem entry retains its selected path. An in-memory entry
+carries no invented file or manifest.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> The project loader moves the collection into the
+mutable <code>Project</code> compatibility view. Three kinds of operation rebuild
+their facts from the original ASTs that the view holds at the time they
+run: finite checking, compilation and checked-effect operations. After a
+caller mutates the view, nothing reuses a stale parallel collection or a
+stale approval. Documentation and rendering that read source only gain no
+semantic checking from this. The selected loader retains its immutable
+originals. It records a concrete projection result for each declaration
+only after the common judgment is complete.</p>
+</blockquote>
+<h3 id="native-check-modes"><a class="header" href="#native-check-modes">Native check modes</a></h3>
+<p>The implementation notes and the status section of this chapter refer to
+four modes of the native checker. Each mode has a short name:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Short name</th><th>Mode of the native checker</th><th>Request</th><th>Specified in</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>ordinary-v2 check</strong></td><td><code>--ordinary-root-check</code></td><td><code>qleisli.ordinary-root-request</code> version 2, profile <code>finite-ordinary-root-v2</code></td><td><a href="production-boundary.html#ordinary-inputresult-requests">Ordinary input/result requests</a></td></tr>
+<tr><td><strong>runtime-v2 check</strong></td><td><code>--runtime-root-check</code></td><td><code>qleisli.runtime-root-request</code> version 2, profile <code>finite-runtime-root-v2</code></td><td><a href="production-boundary.html#mixed-runtime-root-requests">Mixed runtime root requests</a></td></tr>
+<tr><td><strong>v5 source check</strong></td><td><code>--qmatch-source-v5-check</code></td><td><code>qleisli.qmatch-request</code> version 5</td><td><a href="production-boundary.html#version-5-source-body-requests">Version 5: source-body requests</a></td></tr>
+<tr><td><strong>encoded-contract check</strong></td><td><code>--qirf-contract</code></td><td>A <code>qleisli.native-contract</code> encoded equation</td><td><a href="production-boundary.html#entrypoints-and-actual-checked-representations">Entrypoints</a></td></tr>
+</tbody>
+</table>
+</div>
+<p><strong>QDV1</strong> is the canonical encoding of an execution view. The
+<a href="execution-view.html">execution-view chapter</a> specifies the encoding and the
+comparison that the native checker makes with it. This chapter writes “QDV”
+for a record in that encoding.</p>
+<h2 id="bytes-characters-and-positions"><a class="header" href="#bytes-characters-and-positions">Bytes, characters and positions</a></h2>
+<p>This section says which bytes and characters the scanner accepts, and how a
+diagnostic points into the source. Source is a sequence of UTF-8 bytes. A
+<strong>span</strong> is a half-open byte interval in the original input: it includes its
+first offset and excludes its last.</p>
+<p>Rules:</p>
+<ul>
+<li>Source must be UTF-8. Source loading, scanning and diagnostics must not
+normalize its bytes.</li>
+<li>LF and CRLF are the accepted line endings. Ordinary whitespace is ASCII
+space or tab.</li>
+<li>Bare CR, vertical tab, form feed and non-ASCII whitespace are rejected
+(<code>parse</code>).</li>
+<li>Bidi controls and other control characters are rejected, including in
+comments (<code>parse</code>).</li>
+<li>The scanner rejects every Unicode scalar value that has either of two
+properties in Unicode 17.0.0 (<code>parse</code>). The properties are
+<code>Default_Ignorable_Code_Point</code> and <code>General_Category=Format (Cf)</code>. They
+cover Unicode tags, variation selectors, U+200B ZERO WIDTH SPACE and
+U+FEFF, including a leading U+FEFF.</li>
+<li>The diagnostic of a rejected scalar prints the offending <code>U+XXXX</code> code point
+and its original byte span. The span covers the complete UTF-8 encoding of
+the scalar.</li>
+<li>The scalar rule applies everywhere: inside all comments, to documentation
+input such as <code>qleisli doc</code>, and to bundled and project sources. The
+scanner does not repair the text. It preserves the original bytes and
+rejects the scalar, and the author removes the scalar from the source.</li>
+<li>An identifier begins with an ASCII letter or an underscore. ASCII letters,
+digits and underscores follow.</li>
+<li>A comment may contain ordinary Unicode prose that satisfies the same scalar
+rules.</li>
+</ul>
+<p>The pinned properties come from the Unicode 17.0.0
+<a href="https://www.unicode.org/Public/17.0.0/ucd/DerivedCoreProperties.txt">derived core properties</a>
+and <a href="https://www.unicode.org/Public/17.0.0/ucd/extracted/DerivedGeneralCategory.txt">general categories</a>.</p>
+<h2 id="comments-and-documentation"><a class="header" href="#comments-and-documentation">Comments and documentation</a></h2>
+<p>A comment holds prose for readers of the source. A documentation comment
+also belongs to an item. An <strong>outer</strong> documentation comment stands before
+its item, and an <strong>inner</strong> one stands at the start of the module or the body
+that it documents.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Spelling</th><th>Kind</th></tr>
+</thead>
+<tbody>
+<tr><td><code>//</code></td><td>A line comment</td></tr>
+<tr><td><code>/* ... */</code></td><td>A nested block comment</td></tr>
+<tr><td><code>//!</code> and <code>/*! ... */</code></td><td>Inner documentation comments</td></tr>
+<tr><td><code>///</code> and <code>/** ... */</code></td><td>Outer documentation comments</td></tr>
+<tr><td><code>////</code>, <code>/***</code> and <code>/**/</code></td><td>The start of an ordinary comment</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>An unclosed block comment is rejected (<code>parse</code>) with the common
+<code>unterminated block comment</code> diagnostic.</li>
+<li>Character validation applies equally to code, ordinary comments and
+documentation comments. A comment cannot hide a forbidden control.</li>
+<li>Documentation text may normalize CRLF to LF in its extracted metadata.
+Source offsets refer to the original bytes.</li>
+<li>Outer documentation must precede a function, a type, a type member or a
+<code>use</code> item (<code>parse</code>).</li>
+<li>Inner documentation must start a module, a type body or a function body
+(<code>parse</code>).</li>
+<li>Both loaders classify comments and place documentation by the same rules.
+One common check attaches documentation to declarations. It rejects
+misplaced documentation before either profile checks source. No profile
+may silently ignore invalid placement.</li>
+<li>Type and member documentation attaches to the original occurrences of the
+type and the member.</li>
+<li>Documentation metadata only describes. Rendering from source alone makes
+no verification claim.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>parse_documented_module</code> returns the documentation
+metadata. Ordinary module loading may retain only the syntax and the
+original source.</p>
+</blockquote>
+<h2 id="punctuation-and-tokens"><a class="header" href="#punctuation-and-tokens">Punctuation and tokens</a></h2>
+<p>The grammar reads tokens, and tokens are built in two steps. The physical
+scanner recognizes individual punctuation marks. The common lexer then forms
+the tokens of the grammar from them.</p>
+<p>Rules:</p>
+<ul>
+<li>The lexer forms a composite token only from immediately adjacent marks.
+Whitespace and comments never join marks. For example, <code>::</code> is distinct from
+<code>: /* comment */ :</code>.</li>
+<li>The token stream includes the arithmetic and comparison marks. <code>==&gt;</code> is <code>==</code>
+followed by <code>&gt;</code>. It is not an alternative arrow.</li>
+<li>The scanner and the parser never retry another grammar. They never choose a
+backend from the input.</li>
+<li>The lexer scans the complete file before parsing. The diagnostic for a
+retired token later in the file can therefore come before a grammar error
+earlier in the file.</li>
+<li>A file can exceed the token capacity at a token that also has a migration
+diagnostic. The capacity rejection keeps precedence over that migration
+diagnostic.</li>
+<li>Empty parentheses in a type position are rejected (<code>parse</code>) with a
+diagnostic that directs the author to <code>Unit</code>. The value and the pattern are
+<code>()</code>.</li>
+<li>The shared syntax can represent these forms: the empty pattern and block,
+the empty <code>yield</code>, empty specialization brackets and a trailing comma after
+a parameter.</li>
+<li>The recursion budget of the parser counts the quantum wrapper and its basis
+parse together. <a href="#status-and-limits">Status and limits</a> gives the scanner
+and parser limits.</li>
+</ul>
+<h2 id="reserved-words-and-contextual-words"><a class="header" href="#reserved-words-and-contextual-words">Reserved words and contextual words</a></h2>
+<p>A <strong>reserved word</strong> has a fixed role in the grammar, so a program cannot use
+it as a name.</p>
+<p>The common grammar reserves these words in every identifier position:
+<code>use</code>, <code>meaning</code>, <code>static</code>, <code>Op</code>, <code>requires</code>, <code>Apply</code>, <code>Adjoint</code>, <code>Controlled</code>,
+<code>permutation_by</code>, <code>phase_by</code>, <code>checked_op</code>, <code>bind_op</code>, <code>inverse_op</code>, <code>then_op</code>,
+<code>tensor_op</code>, <code>controlled_op</code>, <code>repeat_op</code>, <code>conjugate_op</code>, <code>pub</code>, <code>classical</code>,
+<code>basis</code>, <code>isometry</code>, <code>iso</code>, <code>unitary</code>, <code>observe</code>, <code>fn</code>, <code>let</code>, <code>if</code>, <code>else</code>,
+<code>qfor</code>, <code>do</code>, <code>pure</code>, <code>with_computed</code>, <code>apply_contract</code>, <code>adjoint</code>,
+<code>repeat_static</code>, <code>qif</code>, <code>qmatch</code>, <code>enum</code>, <code>struct</code>, <code>match</code>, <code>true</code>, <code>false</code>,
+<code>not</code>, <code>xor</code>, <code>and</code>, <code>Unit</code>, <code>Bit</code>, <code>CBit</code> and <code>Q</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>A function, a binding or a module path must not use a reserved word as its
+name. For example, a declaration or a finite filesystem module name that
+uses <code>checked_op</code>, <code>enum</code>, <code>struct</code>, <code>match</code> or <code>qmatch</code> as an ordinary
+identifier must be renamed.</li>
+<li>The rule does not reach a comment or a longer identifier that contains a
+reserved word. <code>isotope</code> and <code>iso_value</code> are ordinary identifiers.</li>
+<li>One exception serves imports. It admits <code>basis</code>, <code>observe</code> and <code>classical</code>
+as module names immediately after <code>std::</code>.</li>
+<li>A second exception serves static Nat positions. The static-Nat grammar
+permits <code>Q</code>, <code>Op</code>, <code>Unit</code>, <code>Bit</code> and <code>CBit</code> in three positions: as a
+<code>const</code> Nat formal, as a static fold index, or as the first name atom of a
+Nat expression. The exception is confined to those Nat positions. The
+reserved-word rules apply unchanged to ordinary runtime identifiers, to
+Basis and Op formal names and to the tails of qualified paths.</li>
+<li><code>qfor</code> starts an explicitly static quantum-owner fold. <code>for static</code> starts
+an ordinary-only fold.</li>
+<li><code>checked_op</code> is the exact-meaning constructor that
+<a href="checked-operations.html">Checked operations</a> specifies. <code>classical fn</code>
+declares a total ordinary computation. The <code>basis</code> expression is a
+distinct form, and <a href="coherent-basis.html">Coherent basis maps</a> specifies it.</li>
+<li>The selected route names its modules by explicit keys. Those keys keep
+their separate validation rules. They are not unified with finite
+filesystem module names.</li>
+</ul>
+<p>Some words are reserved only so that the parser can reject a retired form with
+a located migration error. Such a word is never an accepted alias, and it is
+not an ordinary identifier.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Reserved word</th><th>Retired form</th><th>Replacement</th></tr>
+</thead>
+<tbody>
+<tr><td><code>iso</code></td><td>The effect prefix <code>iso fn</code></td><td><code>isometry fn</code></td></tr>
+<tr><td><code>do</code>, <code>pure</code></td><td>The coherent notation <code>do p &lt;- q; pure e</code></td><td><code>basis q as p { e }</code></td></tr>
+<tr><td><code>bind_op</code></td><td>The exact-meaning constructor</td><td><code>checked_op</code></td></tr>
+<tr><td><code>Apply</code>, <code>Adjoint</code>, <code>Controlled</code></td><td>Capability requirements</td><td><code>Applicable</code>, <code>Adjointable</code>, <code>Controllable</code></td></tr>
+<tr><td><code>inverse_op</code>, <code>controlled_op</code></td><td>Static operation descriptions</td><td><code>adjoint(U)</code>, <code>controlled(U)</code></td></tr>
+<tr><td><code>repeat_op</code>, <code>repeat_static</code></td><td>Static repetition</td><td><code>power(U, k)</code>, and <code>power(U, k)(q)</code> for an application</td></tr>
+<tr><td><code>CBit</code>, <code>true</code>, <code>false</code></td><td>The old type and literal uses</td><td><code>Bit</code>, and <code>0</code>/<code>1</code></td></tr>
+</tbody>
+</table>
+</div>
+<p><code>do</code> and <code>pure</code> introduce no accepted expression, alias, monadic operation or
+state preparation. The lexer retains the tokens for <code>CBit</code>, <code>true</code> and
+<code>false</code> so that the parser can reject their old uses with a targeted
+diagnostic. Retaining the tokens does not keep those uses accepted.
+<code>adjoint(U)</code> is the static description and <code>adjoint(U)(q)</code> is its application.
+The two-argument form is retired.</p>
+<p>A <strong>contextual word</strong> has a role in one position and is an ordinary identifier
+elsewhere:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Word</th><th>Role</th><th>Elsewhere</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Applicable</code>, <code>Adjointable</code>, <code>Controllable</code></td><td>A capability requirement in a <code>requires</code> clause, followed by an operation parameter in parentheses</td><td>An ordinary identifier</td></tr>
+<tr><td><code>Bits</code>, <code>CBits</code>, <code>Nat</code></td><td>A type name or a kind name. Type-position <code>CBits&lt;n&gt;</code> is rejected; the replacement is <code>Bits&lt;n&gt;</code>.</td><td>A valid name in identifier positions</td></tr>
+<tr><td><code>as</code></td><td>Separates the quantum input expression and the pattern in <code>basis input as pattern { expression }</code></td><td>An ordinary identifier</td></tr>
+<tr><td><code>mut</code></td><td>The marker of <code>let mut name = ...</code>, which the common judgment rejects</td><td>An ordinary identifier: <code>let mut = 0; mut</code> is an ordinary immutable binding and its use</td></tr>
+<tr><td><code>for</code>, <code>in</code>, <code>carry</code>, <code>yield</code></td><td><code>for</code> in <code>for static</code>, the <code>in</code> and <code>carry</code> parts of either fold header, and <code>yield</code> at the start of a fold tail</td><td>An identifier</td></tr>
+<tr><td><code>controlled</code></td><td><code>controlled(op)(args)</code> is the controlled-application construct</td><td>Ordinary single-stage name resolution: <code>controlled(q)</code> is an ordinary call to an identifier</td></tr>
+<tr><td><code>inverse</code></td><td>The two-stage form <code>inverse(U)(q)</code> is rejected (<code>parse</code>), and the diagnostic suggests <code>adjoint(U)(q)</code>. <a href="static-language.html#adjoint-application">Adjoint application</a> gives the rules.</td><td>Normal name resolution: <code>inverse(q)</code> is an ordinary call, and a function or a local named <code>inverse</code> is an ordinary name</td></tr>
+<tr><td><code>qlet</code></td><td>None</td><td>An ordinary identifier</td></tr>
+</tbody>
+</table>
+</div>
+<p>Neither spelling of <code>controlled</code> guesses the category of a resolved
+provider, and neither grants control access.</p>
+<h2 id="numerals-and-natural-expressions"><a class="header" href="#numerals-and-natural-expressions">Numerals and natural expressions</a></h2>
+<p>A numeral is a run of decimal digits. A program writes numerals as Bit
+literals, as static Nat literals and inside natural expressions such as a
+repetition count.</p>
+<p>Rules:</p>
+<ul>
+<li>A numeral token retains its decimal spelling. The scanner does not convert
+it to a machine integer, infer a Bit or Nat category, or grant a static
+value.</li>
+<li>The common parser for natural expressions rejects a numeral with leading
+zeroes, except <code>0</code> itself. It also rejects a literal that exceeds <code>i128</code>.</li>
+<li>The parser retains addition, subtraction, multiplication and parentheses
+with their source spans. Multiplication binds more tightly than addition or
+subtraction.</li>
+<li>Static checks require an expression to be nonnegative, bounded and
+supported.</li>
+<li>A power repetition count has the <code>2^e</code> form, with a compound exponent in
+parentheses. This is not general exponentiation in the natural-expression
+language.</li>
+<li>Finite lowering evaluates each original <code>power</code> count under its complete
+static bindings. It computes with checked ordinary-u32 intermediates, and
+it bounds every nested count to 0 through 4096. An outer count of zero
+does not excuse an invalid inner count or the closed contract of a child.</li>
+<li>Ordinary Bit expressions and basis Bit expressions recognize the literals
+<code>0</code>/<code>1</code> with one shared recognizer. Other numerals are not Bit values.
+This rule does not change static-Nat literals, and it infers no quantum
+owner from a numeral.</li>
+</ul>
+<h2 id="bindings-patterns-and-evaluation-order"><a class="header" href="#bindings-patterns-and-evaluation-order">Bindings, patterns and evaluation order</a></h2>
+<p>A pattern names the parts of a value where a program binds it: in a
+parameter, a <code>let</code> or a fold carry. This section gives the rules for
+patterns, for the names they bind and for the order in which expressions
+evaluate before binding. One common traversal of patterns applies the
+runtime rules for wildcards, for duplicate names and for exact tuple and
+Unit shapes.</p>
+<p>Rules:</p>
+<ul>
+<li>Ordered static kinds and runtime parameter names retain the ordinals of
+their original declaration and their binder identities.</li>
+<li>A static kind may refer only to static parameters that precede it.
+Registering the complete declaration does not make a forward static kind
+available.</li>
+<li>Each quantum value has a fresh dynamic owner identity. These identities
+are distinct from the lexical keys.</li>
+<li>Arguments and right-hand-side expressions evaluate completely, once and
+from left to right, before binding.</li>
+<li>A parameter of an ordinary or a classical function uses the name, wildcard
+and tuple pattern syntax. The colon annotates the entire parameter
+pattern, and the source argument list keeps that parameter as one
+argument. For example,
+<code>unitary fn first((a, _): (Bit, Bit)) -&gt; Bit { a }</code> takes one ordinary pair.</li>
+<li>Pattern checking preserves exact arity and nesting. It rejects duplicate
+parameter names (class <code>binding</code>), and it checks quantum ownership even in
+unused declarations.</li>
+<li>A tuple pattern does not implicitly split a quantum register.</li>
+<li>Argument expressions keep their evaluation order and their effects, and
+they run before the callee binds its parameters. A wildcard or Unit
+pattern does not erase the computation that produced its argument.</li>
+<li>A runtime parameter, a <code>let</code> binding or a fold-carry binding must not shadow
+an active static Nat, Basis, Op or fold-index binder (class <code>shadow</code>).
+Static formals may shadow global declarations.</li>
+<li>Once a right-hand side is completely evaluated, a consumed quantum owner
+may be rebound. Hiding a live owner is rejected. This includes a zero-axis
+owner and an owner nested in a product.</li>
+<li>A static name used as a runtime value is a located type error. Reuse of a
+consumed runtime owner is an ownership error.</li>
+<li>A resolved local value used as a callee is a wrong-category error. The
+checker never retries through a global declaration of the same name.</li>
+</ul>
+<h3 id="assignment-and-let-mut"><a class="header" href="#assignment-and-let-mut">Assignment and <code>let mut</code></a></h3>
+<p>A checked program contains no assignment and no mutable binding. The raw AST
+retains bare lexical assignment and a <code>let mut name = ...</code> marker solely so
+that the checker can refuse them with a typed diagnostic. See the
+<a href="rust-boundary.html">assignment and mutability boundary</a>.</p>
+<p>Rules:</p>
+<ul>
+<li>Neither form can occur in a successfully checked program, and neither is
+lowered to replacement.</li>
+<li>For an assignment, the checker inspects the type of the resolved
+destination before it checks the right-hand side. Even a consuming
+right-hand side does not authorize replacing a place that contains a
+quantum value.</li>
+<li>For a mutable binding, the checker checks the type of the initializer. The
+type tells quantum ownership (class <code>ownership</code>) apart from unsupported
+ordinary mutability (class <code>unsupported</code>).</li>
+<li>Both refusals retain the original byte locations.</li>
+<li>General field and index assignment syntax and ordinary reassignment are
+unsupported. These diagnostic forms grant neither.</li>
+</ul>
+<h2 id="declaration-resolution"><a class="header" href="#declaration-resolution">Declaration resolution</a></h2>
+<p>Resolution finds the declaration that a name refers to. An unqualified call
+resolves its name in this order:</p>
+<ol>
+<li>Lexical runtime and static bindings.</li>
+<li>Ordinary declarations of the same module, and explicit imports.</li>
+<li>The six derived names of the <a href="prelude.html">ordinary prelude</a>.</li>
+<li>A language primitive, only when the spelling is otherwise unbound.</li>
+</ol>
+<p>Rules:</p>
+<ul>
+<li>The first place that binds the name selects the use. A fault in that use
+is the error that the checker reports, and no fallback exists. This holds
+for a moved binding, for a wrong callable category and for a failed
+ordinary type, effect or access check.</li>
+<li>A local binding that has been moved shadows a declaration with the same
+name. When the local lookup fails, the checker does not fall back to that
+declaration.</li>
+<li>Primitives require no import and no prelude, and their names are not
+reserved. Qualified foundation paths and hidden aliases are unavailable.</li>
+<li>An ordinary standard-library import keeps its visibility, its public
+effects and its source and body obligations.</li>
+<li>An imported declaration keeps its canonical module and declaration name.
+Imports add no runtime action and no verification privilege.</li>
+<li>Visibility is checked before use. A private declaration cannot be imported
+from another module or selected as a host entry. Cross-module imports and
+host-selected entries require public visibility.</li>
+<li>On the selected-entry route, the host can supply a provider. The checker
+checks such a provider from the context of the entry module, even when the
+provider is unused.</li>
+<li>Both loaders resolve imports against the complete tables of registered
+declarations. A valid reference to a sibling resolves against the same
+tables, whether the sibling is declared before or after the reference. A
+call to a sibling in the same module may use a private declaration.</li>
+<li>A cycle that consists only of unused imports is permitted, because imports
+have no runtime action.</li>
+<li>Every self-import is a declaration-name collision. This includes a private
+or public declaration imported into its own module. Duplicate imports and
+clashes with local declarations are rejected.</li>
+<li>The diagnostic for a missing member, a private member, a collision or a
+retired foundation entry points to the final path token. The diagnostic
+for a missing module points to the complete <code>use</code> span.</li>
+<li>The checker builds one graph from every original body. Runtime calls,
+static providers, classical dependencies and Meaning dependencies all
+enter this checked graph. Mutual cycles are rejected.</li>
+<li>Only one kind of recursion is permitted: a runtime self-call to the identical
+DefId with the checked Nat decrease. The directly transformed runtime form
+of such a call is permitted too. A recursive opaque provider, a classical
+or Meaning cycle or a failed decrease does not qualify.</li>
+<li>Names, effect fixed points and zero-count repetition cannot stand for the
+required decrease proof.</li>
+<li>Transparent <code>pub use</code>, root-qualified references and the explicit prelude
+opt-out follow the <a href="prelude.html">prelude and import contract</a>.</li>
+<li>The checker discovers no standard library from its surroundings, and a
+reserved <code>std</code> module cannot be replaced. <code>as</code>, glob and relative imports
+are unsupported.</li>
+<li>Evidence retains the original source, dependencies, canonical names and
+static bindings.</li>
+</ul>
+<p>The <a href="primitive-boundary.html#bare-lookup-and-ordinary-shadowing">primitive boundary</a>
+gives the canonical primitive identities and the complete migration of the 27
+retired qualified entries.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/resolve.rs</code> and <code>resolve/locals.rs</code>
+retain the associations among canonical declarations, lexical uses and
+original spans. The common typed primitive catalog has 13 bare typed
+identities. The finite and selected concrete emitters keep their
+profile-specific adapters. Private Rust debug representations are not
+canonical names or evidence formats. Their printed fields change with the
+internal resolver.</p>
+</blockquote>
+<h2 id="parsed-finite-type-declarations"><a class="header" href="#parsed-finite-type-declarations">Parsed finite type declarations</a></h2>
+<pre><code class="language-text">enum Name { A, B, ... }
+struct Name { field: Type, ... }
+</code></pre>
+<p>A program declares its own finite ordinary types with these two forms. An
+<code>enum</code> declaration has fieldless variants. A <code>struct</code> declaration is a
+record with named fields. Either may follow <code>pub</code>, and each record field has
+its own <code>pub</code> marker.</p>
+<p>The common judgment elaborates a declaration into an ordinary nominal type
+tree. The tree keeps the original module, declaration and source identity,
+the variant order and the complete ordered field types.</p>
+<p>Four expression forms use these types:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Form</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Type::Variant</code></td><td>An explicit fieldless variant</td></tr>
+<tr><td><code>Type { field: expression, ... }</code></td><td>A record literal</td></tr>
+<tr><td><code>value.field</code></td><td>An ordinary field of a record</td></tr>
+<tr><td><code>match value { Type::A =&gt; arm, ... }</code></td><td>Ordinary selection on an enum value</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <a href="type-model.html#opaque-basis-specialization-in-the-selected-profile">type model</a>
+specifies these forms and their capacities.</p>
+<p>Rules:</p>
+<ul>
+<li>A declaration has at most 64 members, which is the source product limit.</li>
+<li>Payload variants, discriminant assignments, tuple structs and generic type
+declarations are not parsed.</li>
+<li>An empty record is a distinct declaration. The parser does not replace it
+with Unit.</li>
+<li>Parsing does not make an empty enum, or invalid or duplicate type members,
+semantically valid. Three faults are rejected at the original offending
+name: a collision between a function and a type, an empty enum, and a
+duplicate variant or field name. These name checks come before finite
+field elaboration.</li>
+<li>A field must have an ordinary finite type. Unknown, recursive, non-type and
+quantum-owned fields are rejected.</li>
+<li>A closed field size reuses the arithmetic and the premise checks of the Nat
+helpers. It adds no general <code>const&lt;T&gt;</code>.</li>
+<li>A signature keeps both <code>T</code> and <code>Q&lt;T&gt;</code>. Nominal identity is not reduced to
+physical width.</li>
+<li>The common resolver for modules, imports and reexports also resolves
+nominal names. They form a distinct type category that is local to the
+collection. A transparent reexport keeps the original declaration and its
+visibility. Source-path traversal keeps each alias module.</li>
+<li>Each module or import spelling must have an unambiguous binding.</li>
+<li>A local ordered Basis binder cannot fall back to a global enum. A consumer
+that expects a callable or an operation rejects a type target.</li>
+<li>The common judgment checks the variant, record and field forms. It checks
+them with their original type and member identity, their visibility and
+the written initializer order.</li>
+<li>An ordinary <code>match</code> must use exact qualified enum labels, and its arms must
+be exhaustive and disjoint. It has at most 64 arms. A runtime block allows
+an expression or a block for each arm. A classical body allows an ordinary
+expression for each arm.</li>
+<li>Each declaration keeps its whole original span, its body span and its
+ordered variants or fields. A named type path keeps all its qualified
+segments and their byte span.</li>
+</ul>
+<p>The project route accepts this program, and <code>main</code> returns 1. The record
+literal writes its fields in an order other than the declared order:</p>
+<pre><code class="language-qli">struct Empty {}
+struct Packet { bit: Bit, empty: Empty }
+classical fn bit() -&gt; Bit { Packet { empty: Empty {}, bit: 1 }.bit }
+fn main() -&gt; Bit { bit() }
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> For nominal elaboration, the complete retained
+module sources must parse to the supplied ASTs. The check also inspects the
+original <code>enum</code> and <code>struct</code> tokens, so deleting AST declarations cannot
+hide them. Comments and identifier substrings are not declarations.
+Non-nominal constructed-AST consumers keep their own boundary.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> Prepared nominal facts keep the original references
+in field types and in closed Nat-helper calls. Ordinary provenance
+collection follows these type dependencies, their transparent reexport
+chains and the original lexical dependencies of the helpers. It checks the
+retained declaration, source and occurrence identity before it collects
+bytes. This is untrusted provenance preparation. Read-only retained nominal
+maps preserve the <code>Send + Sync</code> contract of source handles.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> The Rust <code>Project</code> view labels
+<code>ResolvedImport.kind</code> as <code>ImportKind::Function(FnKind)</code> or
+<code>ImportKind::Type</code>. Its <code>declaration_span</code> points to the original
+declaration in the canonical <code>module</code>, and <code>span</code> is the importing
+occurrence. A Rust caller matches the import category explicitly. Project
+loading and this descriptive metadata grant no source acceptance and no
+native handle.</p>
+</blockquote>
+<h2 id="total-classical-declarations"><a class="header" href="#total-classical-declarations">Total classical declarations</a></h2>
+<pre><code class="language-text">classical fn f(pattern: T, ...) -&gt; U { expression }
+</code></pre>
+<p>A <code>classical fn</code> declares a total, pure finite function on ordinary values.
+A program writes one for a computation on ordinary data that it wants to use
+in several settings: at run time, in a Meaning or a predicate, and inside a
+coherent <code>basis</code> expression.</p>
+<p>A <code>classical fn</code> is distinct from a provisional <code>static fn</code> declaration. A
+<code>static fn</code> returns a static Nat value through the
+<a href="static-language.html#provisional-bounded-nat-helpers">bounded helper rules</a>.
+It has no runtime interface, no effect and no accepted-handle authority.</p>
+<p>The retired declaration spelling <code>basis fn</code> is rejected (<code>parse</code>) with a
+located migration diagnostic that directs the author to <code>classical fn</code>. No
+compatibility alias exists. The coherent expression
+<code>basis q as pattern { expression }</code> and static <code>A: Basis</code> parameters keep
+their meanings.</p>
+<h3 id="the-body-of-a-classical-function"><a class="header" href="#the-body-of-a-classical-function">The body of a classical function</a></h3>
+<p>The body is a single expression that computes the result from the
+parameters.</p>
+<p>Rules:</p>
+<ul>
+<li>The body must be one restricted label expression. Its forms are names,
+<code>()</code>, <code>0</code>/<code>1</code>, ordered products, eager <code>not</code>/<code>and</code>/<code>xor</code>, and acyclic calls
+to other classical functions.</li>
+<li>The body may also use the nominal forms <code>Type::Variant</code>, a record literal
+and <code>.field</code>, and an ordinary <code>match</code> on exact qualified enum labels.
+<a href="coherent-basis.html#the-body">The body of a coherent basis map</a> tabulates
+every form.</li>
+<li><code>empty_bits()</code> is the ordinary language primitive constructor that takes no
+arguments. It requires no import, and it has the exact <code>Bits&lt;0&gt;</code> signature.
+Other quantum primitive calls are excluded.</li>
+<li><code>word[k]</code> reads one ordinary <code>Bits&lt;n&gt;</code> coordinate and returns a <code>Bit</code>. The
+nonnegative integer literal <code>k</code> must satisfy <code>k &lt; n</code> under the declared
+static premises. <code>Bits&lt;0&gt;</code> has no valid coordinate.</li>
+<li>Coordinate zero is the first bit, with the lowest weight in the basis
+ordinal. The read copies the coordinate and does not consume the ordinary
+register.</li>
+<li>The body has no runtime statements, no observation and no quantum capture.</li>
+<li>Parameter trees, result trees and argument-list arity are exact.
+Noninjective functions are permitted.</li>
+</ul>
+<p>A <code>Bits&lt;n&gt;</code> word has an unsigned ordinal in <code>0 .. 2^n - 1</code>, and its first
+coordinate carries weight one. Each Boolean operation returns an exact Bit.
+A program can write word arithmetic explicitly with bit operations. Such
+arithmetic keeps the result width that its return type states. For example,
+the two-bit increment flips the low bit and XORs the original low bit into
+the high bit. It returns <code>(x + 1) mod 4</code>, and the carry beyond the high bit
+has no output coordinate.</p>
+<p>Static <code>Nat</code> expressions follow the separate
+<a href="static-language.html">bounded natural rules</a>. No implicit conversion exists
+from a static natural or an arbitrary integer to a <code>Bits&lt;n&gt;</code> word.</p>
+<p>The project route accepts this program, and <code>main</code> returns 1. The classical
+body is an ordinary <code>match</code> on a nominal label:</p>
+<pre><code class="language-qli">enum Tri { A, B, C }
+classical fn flag() -&gt; Bit {
+    match Tri::C { Tri::A =&gt; 0, Tri::B =&gt; 0, Tri::C =&gt; 1 }
+}
+fn main() -&gt; Bit { flag() }
+</code></pre>
+<h3 id="static-parameters-of-a-classical-function"><a class="header" href="#static-parameters-of-a-classical-function">Static parameters of a classical function</a></h3>
+<p>A static parameter lets one classical declaration work at more than one
+size, as <code>width</code> does in the example below.</p>
+<p>Rules:</p>
+<ul>
+<li>A classical declaration may take compile-time parameters of kind Nat and
+declare natural premises with <code>requires</code>. The premises must establish every
+coordinate bound in the original body.</li>
+<li>A classical declaration without static parameters must not have a
+<code>requires</code> clause (<code>parse</code>).</li>
+<li>An ordinary runtime call supplies the exact actuals in brackets.</li>
+<li>A <code>with_computed</code> predicate reference uses the same syntax. It must match
+the complete input basis and the Bit result at that specialization.</li>
+</ul>
+<p>The following declarations use a static parameter, a premise and a
+<code>with_computed</code> predicate reference:</p>
+<pre><code class="language-qli">classical fn marked[const width: Nat](word: Bits&lt;width&gt;) -&gt; Bit requires width&gt;=3 {
+    word[0] and not word[1] and word[2]
+}
+
+pub unitary fn oracle[const n: Nat](q: Q&lt;Bits&lt;n&gt;&gt;) -&gt; Q&lt;Bits&lt;n&gt;&gt; requires n&gt;=3 {
+    with_computed(q, marked[n]) { |flag| phase[1,1](flag) }
+}
+</code></pre>
+<p>After a program collects three measurement results in <code>word: Bits&lt;3&gt;</code>, an
+ordinary call can instantiate the same declaration with width 3 and pass
+<code>word</code> as its argument.</p>
+<h3 id="calls-of-a-classical-function"><a class="header" href="#calls-of-a-classical-function">Calls of a classical function</a></h3>
+<p>A classical function has one checked body, and every kind of call uses that
+body.</p>
+<p>Rules:</p>
+<ul>
+<li>A program may call the same checked body in ordinary runtime expressions,
+in Meaning and predicate construction and in coherent <code>basis</code> expressions.</li>
+<li>Runtime arguments evaluate once, left to right, before parameter binding.
+Their effects and their owner consumption stay in the caller. This holds
+even when the caller ignores an ordinary result.</li>
+<li>A measured Bit is ordinary data. A live <code>Q&lt;T&gt;</code> cannot be passed as <code>T</code>
+without explicit observation.</li>
+<li>Coherent lifting has a requirement of its own: the complete map is
+injective. Computed predicates keep their separate exact cleanup
+contracts.</li>
+<li>A classical declaration or its name grants no inverse access, no controlled
+access, no Meaning evidence and no native acceptance. A Meaning declaration
+is a description, not a runtime callee.</li>
+<li>Totality describes the classical declaration on its entire type. Coherent
+compilation also requires a supported reversible embedding and a successful
+check within the <a href="production-boundary.html">capacity of the finite profile</a>.</li>
+</ul>
+<p>The following declarations call one classical function in a coherent <code>basis</code>
+expression and on a measured Bit:</p>
+<pre><code class="language-qli">classical fn flip(b: Bit) -&gt; Bit { not b }
+fn invert(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { basis q as b { flip(b) } }
+fn read_flipped(q: Q&lt;Bit&gt;) -&gt; Bit { flip(measure_z(q)) }
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> The Selected Raw route checks the original
+declaration and its Nat arguments before use. The supported structural
+predicate path synthesizes its literal control clauses directly. Structural
+synthesis charges work for processing the original expression and for the
+intermediate and emitted control clauses. Conjunction can increase the
+number of clauses, so a total predicate can exceed the work limit. A finite
+consumer that needs a table must satisfy its own checked domain and work
+limits. Failed preparation yields a diagnostic before an execution handle is
+issued.</p>
+</blockquote>
+<h2 id="exact-label-coherent-selection"><a class="header" href="#exact-label-coherent-selection">Exact-label coherent selection</a></h2>
+<pre><code class="language-text">qmatch(selector, target) { label =&gt; arm, ... }
+</code></pre>
+<p><code>qmatch</code> selects a coherent operation without measuring its selector. Each
+label names a basis value of the selector, and the arm of that label acts on
+the target. An <strong>arm</strong> is a resolved static operation or an inline block.</p>
+<p>Let arm <code>s</code> denote the exact operator <code>U_s</code>. The operation maps each basis
+vector <code>|s,y&gt;</code> to <code>sum_z U_s[z,y] |s,z&gt;</code>. It extends linearly to every input,
+including an input entangled with an external reference. It therefore
+preserves coherence between selector sectors, and it agrees exactly with <code>qif</code>
+for <code>Bit</code>.</p>
+<p>Selector axes precede target axes. The pair <code>(s,y)</code> therefore has the integer
+coordinate <code>s + 2^selector_bits * y</code>, whatever the written order of the arms.</p>
+<h3 id="selector-target-and-labels"><a class="header" href="#selector-target-and-labels">Selector, target and labels</a></h3>
+<p>The selector and the target are two separate quantum owners. The labels name
+the basis values of the selector.</p>
+<p>Rules:</p>
+<ul>
+<li>The selector must be one <code>Q&lt;A&gt;</code> owner, and the target must be one distinct
+<code>Q&lt;B&gt;</code> owner (class <code>type</code>). The expression returns <code>(Q&lt;A&gt;, Q&lt;B&gt;)</code> with both
+complete type trees unchanged.</li>
+<li>An owner of zero physical width is a linear owner like any other. Zero
+width removes neither the selector owner nor the target owner.</li>
+<li>For <code>Unit</code>, <code>Bit</code> and closed <code>Bits&lt;n&gt;</code> with <code>0 &lt;= n &lt;= 6</code>, a label is a
+canonical decimal ordinal from <code>0</code> to <code>cardinality(A)-1</code>.</li>
+<li>For a fieldless nominal enum, a label is a qualified variant name of that
+exact original declaration. It respects imports, reexports and visibility.
+Unused physical tags are not enum labels.</li>
+<li>Labels may be written in any order. They must cover the logical basis of
+the selector exactly once (class <code>type</code>).</li>
+<li>A <code>qmatch</code> has at most 64 arms.</li>
+<li>Wildcards, ranges, payloads, guards and dynamic arm calls are outside this
+form.</li>
+</ul>
+<h3 id="arms"><a class="header" href="#arms">Arms</a></h3>
+<p>Every arm acts on the same target, and the checker holds every arm to the
+same requirements.</p>
+<p>Rules:</p>
+<ul>
+<li>An arm must have the exact target interface and a valid Unitary effect. It
+must permit controlled access under the operation rules (class <code>access</code>).</li>
+<li>Each arm meets its own type, effect, access and dependency obligations. A
+generic earlier arm, a constant selector or an unused declaration cannot
+skip those obligations for a later arm.</li>
+<li>Unitarity alone grants neither control nor inverse access.</li>
+<li>The phase of every arm is exact.</li>
+<li><code>qif</code> keeps its fixed syntax, with the <code>0</code> arm first and the <code>1</code> arm
+second, and its access contract. It uses the same labelled sectors as
+<code>qmatch</code>.</li>
+</ul>
+<h3 id="block-arms"><a class="header" href="#block-arms">Block arms</a></h3>
+<p>A block arm is an inline block in place of a static operation. It lets an
+arm spell out its steps on the target where the arm is written.</p>
+<p>Rules:</p>
+<ul>
+<li>Inside a block arm, the written target name is bound to the target owner.
+The block must return one owner of the exact quantum type of the target
+(class <code>ownership</code>).</li>
+<li>Other quantum owners and ordinary runtime owners of the enclosing scope are
+unavailable in the block.</li>
+<li>A block arm that ends in a semicolon returns its original target binding.
+That binding must be live at the end of the block. An explicit final
+expression can return a target reassembled from local owners.</li>
+<li>A block arm may contain an <code>if static</code>. This includes a <code>basis</code> lift that
+preserves the exact target owner, and an indexed <code>excl</code> call whose selected
+and other owners are issued and retired within the checked access.</li>
+<li>Within the finite profile, an inline arm can use <code>basis</code>, <code>with_computed</code>,
+<code>clean</code> and <code>dirty</code>. The checker reads the original basis table or the
+computed predicate, and it applies the same scratch restoration checks as
+for a named body. A <code>dirty</code> scratch owner must come from the local target of
+the branch.</li>
+<li>An <code>excl</code> call in a block arm can update a whole local owner or disjoint,
+<a href="elaboration.html#static-ordered-axis-places">statically selected places</a> in
+a local register. The callee must return the same ordered selected types.
+An empty selection has an owner.</li>
+<li>In a call with <code>ctrl</code> places, the operation of the callee must preserve the
+computational-basis sectors of those places. Relative phases within a
+coherent state may change.</li>
+</ul>
+<h3 id="examples-of-coherent-selection"><a class="header" href="#examples-of-coherent-selection">Examples of coherent selection</a></h3>
+<p>The following functions show block arms of <code>qif</code>:</p>
+<pre><code class="language-qli">pub unitary fn select_bit(s: Q&lt;Bit&gt;, q: Q&lt;Bit&gt;) -&gt; (Q&lt;Bit&gt;, Q&lt;Bit&gt;) {
+    qif(s, q) { 0 =&gt; h, 1 =&gt; { let r = h(q); phase[1,1](r) } }
+}
+
+pub unitary fn select_exclusive(s: Q&lt;Bit&gt;, q: Q&lt;Bit&gt;) -&gt; (Q&lt;Bit&gt;, Q&lt;Bit&gt;) {
+    qif(s, q) { 0 =&gt; { h(excl q); h(excl q); }, 1 =&gt; { h(excl q); } }
+}
+</code></pre>
+<p>The following functions show <code>qmatch</code> with labels in a written order other
+than the ordinal order, and with block arms:</p>
+<pre><code class="language-qli">pub unitary fn select(s: Q&lt;Bit&gt;, q: Q&lt;Bit&gt;) -&gt; (Q&lt;Bit&gt;, Q&lt;Bit&gt;) {
+    qmatch(s, q) { 1 =&gt; global_phase_eighth, 0 =&gt; h }
+}
+
+pub unitary fn select_word(s: Q&lt;Bits&lt;2&gt;&gt;, q: Q&lt;Bit&gt;) -&gt; (Q&lt;Bits&lt;2&gt;&gt;, Q&lt;Bit&gt;) {
+    qmatch(s, q) {
+        0 =&gt; { q },
+        1 =&gt; { h(excl q); },
+        2 =&gt; { phase[1,1](q) },
+        3 =&gt; h,
+    }
+}
+</code></pre>
+<p>The selected-entry route with the native checker accepts <code>main::route</code> of this
+module. Its second arm is a constructed static operation:</p>
+<pre><code class="language-qli">#![no_implicit_prelude]
+unitary fn keep(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q}
+unitary fn sign(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{phase[1,1](q)}
+meaning Sign:Bit=reference(sign);
+pub unitary fn route(s:Q&lt;Bit&gt;,q:Q&lt;Bit&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Bit&gt;){
+    qmatch(s,q){0=&gt;keep,1=&gt;checked_op(sign,Sign)}
+}
+</code></pre>
+<p>With <code>reference(keep)</code> in place of <code>reference(sign)</code>, the same route rejects
+the module with the code <code>contract</code>.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> For a block arm, the producer submits the literal
+arm Raw and the positions of the events within the original block. The v5
+source check follows those events in the arm Raw, checks the control
+evidence of their operations, and checks the resulting sector against the
+enclosing Raw interval. For an <code>if static</code>, the check covers the original
+Raw interval of the selected branch and its local owner frame. For an <code>excl</code>
+call, the checker binds the written selectors to the Raw extraction, checks
+the original callee, and reinserts the returned owners in their written
+places.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> On the encoded-contract route, the complete
+proposed circuit and the independently obtained exact block meaning go
+through a fresh native encoded equation before emission. A Rust sector
+projection cannot issue acceptance. The emitted Raw root undergoes ordinary
+native checking. When the containing function needs the v5 source check,
+each <code>qif</code> and each <code>qmatch</code> keeps its own source position, its ordered arms
+and its literal Raw interval. <a href="#coherent-selection">Status and limits</a> gives
+the route of each selection and the components of the check.</p>
+</blockquote>
+<h2 id="one-structured-quantum-result-boundary"><a class="header" href="#one-structured-quantum-result-boundary">One structured quantum result boundary</a></h2>
+<p>Verified quantum-core functions are expression-oriented: a body produces its
+result as the value of its final block expression. That expression is the one
+<strong>structured result boundary</strong> of the body. A function leaves through it and
+through no other exit.</p>
+<p>Rules:</p>
+<ul>
+<li>Every runtime branch must retain and merge the complete required owner
+frame and the exact result tree. Both arms are checked even when one is
+statically unreachable.</li>
+<li>No early exit can discard, release, reset or uncompute a live owner
+implicitly.</li>
+<li>These exits are not admitted: early <code>return q</code>, residual propagation <code>q?</code>,
+the runtime macro edges <code>panic!</code>, <code>assert!</code> and <code>unreachable!</code>, unwinding,
+hidden abort and partial quantum functions. The parser rejects the written
+exits (<code>parse</code>).</li>
+<li>The rule applies to Unitary, Isometry and Observe bodies. An observing
+effect does not authorize a hidden exit.</li>
+<li>The diagnostic of a syntax refusal explains the alternative, a final
+expression. It keeps the byte span of the original token.</li>
+<li>For control flow, a program uses explicit ordinary branches, admitted
+coherent control and finite folds, each under its own owner and effect
+rules. <code>qmatch</code> keeps its separate limits.</li>
+<li>This chapter grants no <code>qreturn</code> or <code>qtry</code> form.</li>
+<li>Ordinary identifier names keep normal resolution. A variable or a checked
+ordinary function named <code>return</code>, or a function named <code>panic</code>, is not a
+return or abort primitive. An ordinary <code>return(q)</code> call keeps the normal
+call rules.</li>
+<li>A comment that contains these spellings creates no executable edge.</li>
+</ul>
+<p>For example, <code>unitary fn keep(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q}</code> has the structured result.
+Replacing its body with <code>{return q}</code> is invalid. A final <code>if</code> whose one arm
+returns Unit while the other returns <code>Q&lt;Bit&gt;</code> is also invalid, and the refusal
+inserts no cleanup.</p>
+<p>Both routes reject this program with the code <code>parse</code>, at the token <code>return</code>:</p>
+<pre><code class="language-qli">unitary fn bad(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{return q}
+observe fn main()-&gt;Bit{1}
+</code></pre>
+<p>Both loaders accept the next program. Its names and comments spell exits, and
+none of them is an exit:</p>
+<pre><code class="language-qli">unitary fn panic(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q}
+unitary fn return(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{let return=panic(q);return}
+unitary fn forward(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{return(q)}
+// return q? panic!(); unreachable!()
+/* assert!(1); q? */
+observe fn main()-&gt;Bit{1}
+</code></pre>
+<p>A future host orchestration language may specify <code>Result</code>, residual exits,
+assertions or process failure separately. The present core imports no such
+host failure semantics. If ordinary error values were separately admitted as
+data, they would not by themselves imply propagation or unwinding. The
+runtime checker and its transport refuse fail-closed. Such a refusal is
+likewise not a source-level exit.</p>
+<h2 id="checking-failures-and-quantum-execution"><a class="header" href="#checking-failures-and-quantum-execution">Checking failures and quantum execution</a></h2>
+<p>This section says where a failure can occur and where it cannot. Within the
+declared finite model, a supported verified quantum-core operation has no
+implicit exceptional execution edge. This applies to Unitary, Isometry and
+Observe. Measurement supplies its specified ordinary outcome and instrument.
+It gives no permission to panic, unwind, abort, partially return or abandon
+an owner. This totality requirement is the adopted failure contract.</p>
+<h3 id="rejection-before-execution"><a class="header" href="#rejection-before-execution">Rejection before execution</a></h3>
+<p>The checker rejects an invalid program during checking or specialization. It
+does not turn the fault into a trap at run time.</p>
+<p>Rules:</p>
+<ul>
+<li>Invalid sizes, type trees, static indices, access or capability
+requirements and required constraints are rejected during checking or
+specialization. See <a href="static-language.html">static checking</a>.</li>
+<li><code>take_bit[n,k]</code> requires an established <code>k &lt; n</code> (class <code>size</code>). It does not
+compile an unknown index into a quantum runtime bounds trap.</li>
+<li>Checked Nat arithmetic cannot wrap, and it cannot defer overflow to a
+quantum exception.</li>
+<li>Bounded elaboration, unsupported profiles and unproved obligations are
+rejected before an executable handle is issued for that proposal.</li>
+</ul>
+<h3 id="ordinary-alternatives"><a class="header" href="#ordinary-alternatives">Ordinary alternatives</a></h3>
+<p>A program expresses an alternative outcome with ordinary data and an
+ordinary <code>if</code>. Each alternative returns through the normal structured
+boundary.</p>
+<p>Rules:</p>
+<ul>
+<li>An explicit ordinary result such as a Bit may select an ordinary <code>if</code>. Both
+arms must satisfy the complete required owner frame, the exact type tree
+and the effect rules.</li>
+<li>A recoverable alternative returns its declared data and owners through the
+normal structured boundary. It must not implement a hidden exit, implicit
+cleanup or a success-only path.</li>
+<li>For example, an operation may return <code>(flag, q)</code> or <code>(flag, x(q))</code> in its
+two arms when their declared interfaces agree. Omitting <code>q</code> in one arm is
+invalid.</li>
+<li>The unchanged caller frame takes part in the branch merge. This includes
+correlated owners and zero-width quantum owners. An ordinary condition does
+not establish separability.</li>
+<li>Failure handling in source cannot do any of these: reset or discard
+workspace, discharge a clean or dirty restoration obligation, erase exact
+phase or owner ordering, or shorten an access lifetime to omit required
+work.</li>
+<li>The absence of an unwind construct does not prove pending access,
+restoration, target or quantitative resource contracts. Their
+implementations must obey this rule when they are admitted.</li>
+</ul>
+<p>The Finite project profile accepts this program. The function <code>choose</code>
+returns its data and its owner in both arms:</p>
+<pre><code class="language-qli">use std::state::init0;
+use std::gate::x;use std::gate::cnot;
+fn choose(b:Bit,q:Q&lt;Bit&gt;)-&gt;(Bit,Q&lt;Bit&gt;){if b {(0,q)}else{(1,x(q))}}
+pub observe fn main()-&gt;(Bit,Bit,Bit,Bit){
+    let (a,r)=cnot(h(init0()),init0());
+    let b=measure_z(h(init0()));
+    let (tag,a)=choose(b,a);
+    (b,tag,measure_z(a),measure_z(r))
+}
+</code></pre>
+<h3 id="external-faults"><a class="header" href="#external-faults">External faults</a></h3>
+<p>Some failures happen outside the quantum core. The rules below say what such
+a failure does not give a program.</p>
+<p>Rules:</p>
+<ul>
+<li>Operating-system failure, verifier or transport failure, backend crash and
+device loss are external faults. They are outside the quantum-core
+operational theorem unless an explicit future target contract models them.
+They provide no source escape hatch and no owner-disposal semantics.</li>
+<li>Native checking that is missing, incompatible, timed out or malformed
+is rejected. No accepted handle is issued, and no fallback runs. Such a
+refusal is a failed attempt to check an artifact. It is not an executed
+quantum branch.</li>
+<li>Reference simulation can separately refuse its host execution, component or
+space budgets, or report a numerical or internal-consistency error. Such a
+refusal or error certifies no result distribution as the successful
+program result.</li>
+<li>These host limits are not static quantum resource certificates. Reporting
+an error is not proof of physical state recovery, or of clean or dirty
+restoration after an external fault.</li>
+</ul>
+<h2 id="ordinary-function-effects-and-assertions"><a class="header" href="#ordinary-function-effects-and-assertions">Ordinary function effects and assertions</a></h2>
+<p>An effect prefix states how much quantum behavior a function permits itself.
+An ordinary function that has a body may use <code>fn</code>, <code>unitary fn</code>,
+<code>isometry fn</code> or <code>observe fn</code>. The prefix is an <strong>effect assertion</strong>: a
+declared upper bound on the effect of the body. The effect order is
+<code>Unitary &lt;= Isometry &lt;= Observe</code>. The effect of a composition is the least
+upper bound of the effects of its parts.</p>
+<p>An <strong>isometry</strong> satisfies <code>V†V = I_input</code>. The word claims no surjectivity and
+no executable inverse or control access. Zero-state preparation is an
+isometry. It is not a unitary, because its input and output dimensions
+differ. A unitary additionally satisfies <code>VV† = I_output</code>. In categorical
+terminology these are a dagger-monomorphism and a dagger-isomorphism,
+respectively.</p>
+<h3 id="effect-assertions-on-declarations"><a class="header" href="#effect-assertions-on-declarations">Effect assertions on declarations</a></h3>
+<p>A public function that processes quantum values or operations states its
+effect explicitly. Other functions can leave their effect to inference.</p>
+<p>Rules:</p>
+<ul>
+<li>A public function that processes quantum values or operations must
+explicitly use <code>unitary</code>, <code>isometry</code> or <code>observe</code>. This includes closed
+functions, zero-width owners, quantum intermediates and operation formals.</li>
+<li>Ordinary classical public functions may keep inference. Private functions
+keep inference.</li>
+<li>Copying an ordinary Bit does not copy a quantum owner, and it adds no
+quantum effect.</li>
+<li>An explicit effect prefix permits quantum processing even behind an
+entirely classical signature. Checking of quantum use from outside the
+module conservatively keeps that public permission. It does not inspect
+the use flag of the implementation.</li>
+<li>A public classical API without an annotation cannot acquire hidden quantum
+work. Such work requires a change of its public declaration and a pass of
+the complete checks.</li>
+<li>Changing the public effect is an API change. An edit to the body alone
+cannot silently regenerate the public effect.</li>
+</ul>
+<h3 id="effect-checking-of-a-body"><a class="header" href="#effect-checking-of-a-body">Effect checking of a body</a></h3>
+<p>The checker infers the effect of a body without using the declared prefix.
+It then compares the result with that prefix.</p>
+<p>Rules:</p>
+<ul>
+<li>The complete body is checked independently. Its inferred effect must fit
+the declared upper bound (class <code>effect</code>). A prefix is never a starting
+point for inference.</li>
+<li>An Observe body cannot assert Unitary or Isometry, and an Isometry body
+cannot assert Unitary.</li>
+<li>An implementation inferred as Unitary may expose Isometry or Observe.
+External callers use only that checked public effect. This holds even when
+the source is available, and under inlining, specialization or a cached
+provider.</li>
+<li>Both arms of a branch and the body of a static fold with zero iterations
+take part in effect inference.</li>
+<li>A decreasing runtime self-call uses the least effect solution only after
+the decrease check. Mutual dependencies are rejected.</li>
+<li>An invalid or unresolved source body yields no checked effect fact.</li>
+<li>Type, ownership, access and termination checks apply independently. An
+annotation cannot supply a missing check or an arbitrary mathematical
+Meaning.</li>
+</ul>
+<h3 id="effects-that-callers-use"><a class="header" href="#effects-that-callers-use">Effects that callers use</a></h3>
+<p>The effect that a caller sees depends on whether the caller and the callee
+share a module.</p>
+<p>Rules:</p>
+<ul>
+<li>A call within one module uses the checked internal inference of the
+original callee.</li>
+<li>A call between modules with different original identities uses the checked
+public effect of the callee. An import alias does not change that identity.</li>
+<li>Internal inference keeps any further external boundary. An internal wrapper
+cannot wash an external Observe call into Unitary.</li>
+</ul>
+<h3 id="effects-of-providers"><a class="header" href="#effects-of-providers">Effects of providers</a></h3>
+<p>The effect that a provider contributes depends on who selects the provider:
+the source or the host.</p>
+<p>Rules:</p>
+<ul>
+<li>A provider that the source selects uses the checked effect that is visible
+in the original module of the caller.</li>
+<li>A public provider that the host selects always uses the public contract,
+even for an unused binding. The host cannot claim same-module status.</li>
+<li>Where the own module of the selected entry supports an explicit binding to
+a private provider, that binding keeps its internal visibility.</li>
+<li>A generic body uses its formal bounds. It cannot sharpen them from a
+fortunate later provider.</li>
+<li>Adjoint, control and pure contracts require their separate evidence and a
+visible Unitary effect. Other general arrows obey their declared effect
+ceiling.</li>
+<li>A mismatch of the input or output shape of a provider is a type error. It
+is not an external effect justification.</li>
+</ul>
+<h3 id="the-isometry-spelling"><a class="header" href="#the-isometry-spelling">The <code>isometry</code> spelling</a></h3>
+<p>Source spells the Isometry effect <code>isometry</code>. The shorter <code>iso</code> is a retired
+effect prefix. The parser rejects it with a lexical migration error at its
+original token, before native checking. Replace <code>iso fn</code> with <code>isometry fn</code>.</p>
+<p>The canonical names are:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Surface</th><th>Canonical spelling</th></tr>
+</thead>
+<tbody>
+<tr><td>Source effect assertion</td><td><code>isometry fn</code></td></tr>
+<tr><td>Rust effect</td><td><code>qleisli::ir::Effect::Isometry</code></td></tr>
+<tr><td>Rust function and token kinds</td><td><code>frontend::ast::FnKind::Isometry</code>, <code>frontend::lexer::TokenKind::Isometry</code></td></tr>
+<tr><td>Lean Raw effect</td><td><code>QleisliKernel.Semantics.Raw.Effect.isometry</code></td></tr>
+<tr><td>Lean hierarchy effect</td><td><code>QleisliKernel.Hierarchical.Artifact.Effect.isometry</code></td></tr>
+<tr><td>Lean retained bounded QFT graph effect</td><td><code>QleisliKernel.QftGraph.Effect.isometry</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Rust callers use the <code>Isometry</code> variants in place of <code>Effect::Iso</code>,
+<code>FnKind::Iso</code> and <code>TokenKind::Iso</code>. No Rust compatibility alias exists.
+Body-effect diagnostics also use <code>Isometry</code>.</li>
+<li>Some transports keep the tag <code>"iso"</code>. They are the versioned JSON and QIRF
+effect tags, the effect tag of the checked source graph and the native
+hierarchy adapters. The binary hierarchy effect tag is <code>1</code>.</li>
+<li>These explicit transport exceptions introduce no second source effect, and
+they grant no inverse or control access.</li>
+<li>Naming alone establishes no semantic property and no constitutional
+guarantee.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The three Lean names are reducible aliases for
+their <code>Effect.iso</code> constructors. They provide the canonical spelling for
+Lean expressions without a change of constructor identity, generated
+recursors, <code>.iso</code> case names or derived <code>Repr</code> output. Historical formal
+statements and callers that use the constructor keep that compatibility.
+The QFT graph alias changes only the vocabulary of a public type; it adds no
+QFT implementation.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>QleisliKernel.Raw.State.iso</code> is an internal
+allocation-tracking Boolean. It is not an effect assertion or evidence of
+the isometry law. Local proof witnesses named <code>iso</code> likewise are not public
+effect vocabulary. These implementation names and the compatibility
+constructors are unchanged.</p>
+</blockquote>
+<h3 id="external-effect-justification"><a class="header" href="#external-effect-justification">External effect justification</a></h3>
+<p>A body can observe, reset or discard internally while a separate argument
+claims that the channel its callers see is unitary. An annotation cannot
+rest on such an argument: the justification <code>"externally unitary"</code> is not
+supported. The compositional rules keep internal observation, reset and
+discard as Observe.</p>
+<p>Rules:</p>
+<ul>
+<li>An ordinary annotation cannot replace the compositional rules with an
+external certificate, even if a separate argument claims that the induced
+public channel is unitary.</li>
+<li>A contradictory annotation is an effect and semantic error (class
+<code>effect</code>). Its diagnostic states the inferred effect and the asserted
+effect, and it explains this unsupported semantic boundary without a GitHub
+Issue reference.</li>
+<li>The refusal does not prove that the public channel is mathematically
+non-unitary. It means that the proposed external justification is
+unavailable.</li>
+<li>Externally isometric justification is likewise unsupported.</li>
+</ul>
+<h3 id="source-effects-and-artifact-effects"><a class="header" href="#source-effects-and-artifact-effects">Source effects and artifact effects</a></h3>
+<p>A function has an effect in its source contract, and the artifact lowered
+from it has an effect of its own. Source contract effects and artifact
+effects are distinct.</p>
+<p>Rules:</p>
+<ul>
+<li>A conservative Observe contract does not rewrite a genuinely pure Raw body
+as observing.</li>
+<li>The sharper classification of that Raw body grants no external source
+capability.</li>
+<li>The operations and histories of the artifact go through fresh native
+checking.</li>
+<li>A valid source body may keep its principal effect while its requested
+concrete projection or lowering is unsupported.</li>
+<li>Source effect facts are not accepted IR handles and not a
+source-preservation proof. Finite lowering, selected concrete lowering and
+the native checks are distinct.</li>
+</ul>
+<h3 id="rust-interface"><a class="header" href="#rust-interface">Rust interface</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Interface</th><th>What it exposes</th></tr>
+</thead>
+<tbody>
+<tr><td><code>project_effects_with_kernel</code></td><td>Immutable <code>ProjectEffects</code> for finite projects</td></tr>
+<tr><td><code>ParsedProgram</code></td><td>The effect facts for selected source</td></tr>
+<tr><td><code>function_effect</code></td><td>The internal inferred effect, the checked assertion, the typed quantum-use flag and the distinct <code>public_effect()</code>, for inspection</td></tr>
+<tr><td><code>public_effect()</code>, also <code>public_function_effect(path)</code></td><td>The exported effect contract</td></tr>
+<tr><td>The <code>documentation</code> methods</td><td>The public contract of a public function, and the inferred and asserted diagnostic facts of a private function, rendered from retained source bytes</td></tr>
+<tr><td>The source-only <code>doc</code> command and <code>render_markdown</code></td><td>A rendering that states explicitly that it has no semantic checking. It manufactures no inferred facts.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Only <code>public_effect()</code> is an exported effect contract. Inspecting internal
+inference grants no eligibility.</li>
+<li>Changing a source file after a <code>documentation</code> report cannot rebind the
+report.</li>
+<li>Concrete finite declarations undergo native verification. Generic facts are
+conditional on their checked source premises.</li>
+</ul>
+<h2 id="instruments-and-ordinary-feed-forward"><a class="header" href="#instruments-and-ordinary-feed-forward">Instruments and ordinary feed-forward</a></h2>
+<p>An Observe expression can measure, so it can end with more than one ordinary
+result. This section gives the meaning of such an expression: an instrument,
+which has one map for each public result.</p>
+<p>The judgment <code>Γ ; Δ ⊢ e : T ! Observe</code> gives an upper bound on the quantum
+behavior of the complete expression. Fix the ordinary inputs <code>x</code>. Let <code>A</code> and
+<code>B</code> be its complete input and output quantum interfaces, including the live
+caller frame that the ownership judgment retains. Let <code>c</code> range over the
+ordinary projection of its declared result. The intended meaning is a finite
+quantum <strong>instrument</strong>: completely positive, trace-nonincreasing maps
+<code>Φ[x,c] : L(A) -&gt; L(B)</code> whose complete sum is trace preserving.</p>
+<p>For the complete hidden histories <code>h</code> and their public-result projection,
+write:</p>
+<pre><code class="language-text">Φ[x,c](ρ) = Σ_{h : public(x,h) = c} K[x,h] ρ K[x,h]†
+Σ_h K[x,h]† K[x,h] = I_A
+</code></pre>
+<p>The rules of this section are normative source obligations. The
+<a href="realization.html#observing-instruments-on-a-target">target realization judgment</a>
+adds profile-specific capability and artifact evidence. The
+<a href="primitive-boundary.html">primitive boundary</a> and the
+<a href="stdlib.html">standard-library contracts</a> give the admitted measurement actions.</p>
+<h3 id="the-instrument-contract"><a class="header" href="#the-instrument-contract">The instrument contract</a></h3>
+<p>The contract counts every history, including the histories whose outcomes a
+function does not return.</p>
+<p>Rules:</p>
+<ul>
+<li>Every history contributes its unnormalized weight. Hidden measurement,
+reset and discard outcomes stay in the sum even when they are not returned
+as ordinary data.</li>
+<li>If the ordinary result is Unit, its public outcome set is the singleton
+<code>{()}</code>.</li>
+<li>For every finite external reference <code>E</code>, the same instrument acts on an
+arbitrary joint input through <code>Φ[x,c] ⊗ id_E</code>. Separate owners do not imply
+a product state.</li>
+<li>Normalizing a selected branch, or comparing only outcome probabilities,
+does not establish this contract.</li>
+</ul>
+<h3 id="pure-implementations-and-the-effect-order"><a class="header" href="#pure-implementations-and-the-effect-order">Pure implementations and the effect order</a></h3>
+<p>A pure implementation fits the same contract. Its density map is an
+instrument with a single public result.</p>
+<p>Rules:</p>
+<ul>
+<li>The effect order <code>Unitary &lt;= Isometry &lt;= Observe</code> is an order of permitted
+quantum behavior.</li>
+<li>For fixed ordinary inputs, a pure implementation has one public result. It
+acts by its exact <code>U[x]</code> or <code>V[x]</code>, with <code>U†U = UU† = I</code> or <code>V†V = I</code>
+respectively. Their density maps are singleton instruments.</li>
+<li>The underlying pure meanings keep their exact phase and their separate
+inverse-access and controlled-access obligations. Instrument equality
+cannot erase those contracts, and it cannot turn a public Observe interface
+into a pure capability.</li>
+<li>An Observe bound permits a pure implementation. It does not require every
+call to create a public Bit.</li>
+<li>Body inference is independent, and callers across an original module
+boundary use the checked public bound.</li>
+<li>Observation, reset and discard infer Observe under the compositional rules,
+even when a separately described public channel happens to be pure.</li>
+</ul>
+<h3 id="measurement"><a class="header" href="#measurement">Measurement</a></h3>
+<p>A measurement produces an ordinary Bit from a quantum state. The rules give
+the maps of the destructive measurement, of a measurement that retains its
+owners, and of reset.</p>
+<p>Rules:</p>
+<ul>
+<li>Destructive <code>measure_z : Q&lt;Bit&gt; -&gt; Bit</code> consumes its input owner. For the
+result <code>b</code>, its map uses <code>K[b] = &lt;b|</code>. It keeps the conditional state and
+the weight of all other owners and references.</li>
+<li>The state-retaining example is <code>std::measurement::parity_zz</code>. It returns
+both data owners and a Bit, consumes its internal meter, and acts by
+<code>P[s] = (I + (-1)^s Z tensor Z)/2</code>. Coherence within each parity sector is
+retained.</li>
+<li>Retaining an owner does not promise an unchanged state.</li>
+<li>The implementation of reset that explicitly discards and then prepares
+consumes the original owner and returns a fresh zero owner.</li>
+</ul>
+<h3 id="ordinary-feed-forward"><a class="header" href="#ordinary-feed-forward">Ordinary feed-forward</a></h3>
+<p><strong>Feed-forward</strong> uses a measured Bit to choose what a program does next.</p>
+<p>Rules:</p>
+<ul>
+<li>Ordinary <code>if</code> uses an ordinary Bit. After an observation it selects the
+next operation separately in each complete history.</li>
+<li>Both arms must pass checking and return the same complete result and
+live-owner shape, including zero-width owners.</li>
+<li>Sequential composition keeps every intermediate history and its weight.
+Only histories with the same final public result are summed.</li>
+<li>A coherent <code>qif</code> uses its separately checked coherent operation and
+preserves coherence between selector sectors.</li>
+<li>An ordinary branch cannot inspect a live <code>Q&lt;Bit&gt;</code> or insert an implicit
+measurement.</li>
+</ul>
+<h2 id="observation-and-postselection"><a class="header" href="#observation-and-postselection">Observation and postselection</a></h2>
+<p>Postselection keeps only chosen outcomes and continues on their renormalized
+state. Qleisli provides no source postselection effect and no postselection
+construct. Ordinary Observe has the complete-instrument contract above: the
+sum of all outcome maps is trace preserving.</p>
+<p>Rules:</p>
+<ul>
+<li>An individual outcome map may decrease trace. Its trace is the probability
+of that outcome. The decrease is not permission to discard the other
+outcomes and advertise the selected map as the whole operation.</li>
+<li>None of these authorizes keeping only chosen outcomes and continuing on
+their renormalized state: Observe, an ordinary <code>if</code>, a successful check or
+a clean-release operation.</li>
+<li>Returning a success Bit together with the declared owners is an ordinary
+instrument only when both the success and the failure outcomes stay in its
+semantics.</li>
+<li>Classical feed-forward executes the selected arm for each history. It does
+not remove histories whose measured Bit selects the other arm.</li>
+<li>Hidden outcomes of explicit discard also stay in the complete sum.</li>
+<li>A zero-probability event supplies no conditional state.</li>
+</ul>
+<p>A future postselection proposal would need a distinct semantic category. For a
+chosen outcome set <code>S</code>, it would have to specify three things: the
+trace-nonincreasing map <code>Φ_S = Σ_{c in S} Φ[c]</code>, its success probability
+<code>p_S(ρ) = Tr(Φ_S(ρ))</code>, and any conditional state <code>Φ_S(ρ) / p_S(ρ)</code> only where
+<code>p_S(ρ) &gt; 0</code>. It must expose four things: success and failure outcomes,
+ownership on both outcomes, composition with surrounding operations and
+reference systems, and resource accounting for any requested retries. This
+paragraph describes requirements for a future proposal. It is not an
+admitted API, and it does not extend the effect order.</p>
+<p>Postselection is distinct from the
+<a href="#checking-failures-and-quantum-execution">checking and external failures</a>.</p>
+<p>Rules:</p>
+<ul>
+<li>A failed check, a panic, a target fault or an exhausted host budget
+supplies no accepted successful quantum branch.</li>
+<li>The bounded host trial driver separately reports retries, exhaustion and
+execution errors. It retains no quantum state, and it grants no
+source-level postselection and no clean-release capability.</li>
+<li>Exact clean release requires its independently checked obligation: a zero
+return that holds for all inputs and is safe for references. The
+obligation does not condition on a favorable observation.</li>
+<li>Numerical trajectory sampling may normalize a branch after it draws the
+outcome from the supplied random source. That representation does not
+permit the source to choose a favorable outcome, erase its probability or
+omit alternative outcomes from the instrument contract.</li>
+<li>Simulation keeps its stated numerical and runtime assumptions.</li>
+<li>The observing Physical Realizability target concerns the complete
+instrument and the admitted realization without hidden conditioning, as in
+<a href="realization.html">the realization contract</a>.</li>
+</ul>
+<h2 id="parser-guidance-for-surface-syntax"><a class="header" href="#parser-guidance-for-surface-syntax">Parser guidance for surface syntax</a></h2>
+<p>Some syntax errors sit at a place where the parser recognizes a Qleisli
+surface rule. There the parser may explain the canonical local form.</p>
+<p>Rules:</p>
+<ul>
+<li><code>qlet owner = value;</code> is an invalid binding statement (<code>parse</code>). Use
+<code>let owner = value;</code> for an ordinary binding, including a binding to a
+<code>Q&lt;A&gt;</code> owner.</li>
+<li>When a <code>qif</code> or <code>qmatch</code> header lacks its opening parenthesis, or a <code>qfor</code>
+header lacks <code>static</code>, the diagnostic can show the corresponding construct
+as the grammar writes it.</li>
+<li>Text diagnostics and structured diagnostics carry the same guidance and the
+same original source location.</li>
+<li>A grammar example supplies a syntactic form. Name resolution, typing,
+effects and ownership determine whether a program that uses the form is
+valid. See <a href="type-model.html#surface-roles">the roles of quantum syntax and types</a>.</li>
+</ul>
+<h2 id="diagnostics-at-control-boundaries"><a class="header" href="#diagnostics-at-control-boundaries">Diagnostics at control boundaries</a></h2>
+<p>Ordinary control branches on ordinary data, and coherent control acts on
+quantum owners. This section covers a rejection at the boundary between the
+two. At such a source rejection, a diagnostic names the language rule and
+the nearby valid construct, so that authors and coding agents can revise the
+program from the diagnostic.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Construct</th><th>Role</th></tr>
+</thead>
+<tbody>
+<tr><td>Ordinary <code>if</code></td><td>Evaluates a <code>Bit</code></td></tr>
+<tr><td>Ordinary <code>match</code></td><td>Discriminates among ordinary enum alternatives</td></tr>
+<tr><td>Coherent <code>qif</code> and <code>qmatch</code></td><td>Apply checked controlled arms to a separate target, and return the selector and the target</td></tr>
+</tbody>
+</table>
+</div>
+<p>For example, <code>qif(control, target) { 0 =&gt; h, 1 =&gt; h }</code> is a coherent selection
+when both arguments are <code>Q&lt;Bit&gt;</code> and the arm operation supports control. For a
+nominal selector, the <code>qmatch</code> arms use its exact checked labels.</p>
+<p>An explicit <code>measure_z</code> consumes a <code>Q&lt;Bit&gt;</code> and returns an ordinary <code>Bit</code> in
+an <code>observe</code> context. That bit can direct ordinary branching. Coherent
+selection keeps the relative phase of the selector sectors. See
+<a href="#instruments-and-ordinary-feed-forward">ordinary feed-forward</a> and
+<a href="static-language.html#static-branches-folds-and-termination">static folds and carry</a>.</p>
+<p>Rules:</p>
+<ul>
+<li>The common judgment adds the control explanation where it rejects a
+selector or a carry directly. A name, ownership, type or limit error that
+is nested inside keeps its original diagnostic.</li>
+<li>Text output and <code>--format=json</code> output preserve the category and the
+location.</li>
+<li>The optional <code>control_flow_boundary</code> object is available on both routes.
+Its <code>boundary</code> is <code>classical_quantum_control</code>. Its <code>reason</code> is
+<code>if_condition</code>, <code>qif_control</code>, <code>match_selector</code>, <code>qmatch_selector</code>,
+<code>for_carry</code> or <code>qfor_carry</code>. <a href="diagnostics.html#refinements">Refinements</a>
+specifies the object.</li>
+<li>An ordinary binding of a quantum owner uses <code>let</code> and follows the
+<a href="type-model.html">linear ownership rules</a>.</li>
+</ul>
+<h2 id="migration"><a class="header" href="#migration">Migration</a></h2>
+<p>This section tells an author how to bring older source to the forms of this
+chapter.</p>
+<h3 id="finite-and-sized-programs"><a class="header" href="#finite-and-sized-programs">Finite and sized programs</a></h3>
+<p>Edition 2026 uses one source grammar for literal and parameterized programs.
+The project loader and the selected-entry loader both check the original
+declarations. A checked program must also satisfy the entry and IR profile
+requirements of the command that consumes it.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Source in a finite or sized program</th><th>Disposition and migration</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Unit</code>, <code>Bit</code>, ordered tuples, <code>Bits&lt;n&gt;</code> and <code>Q&lt;A&gt;</code></td><td>Kept. Preserve the type tree. <code>Bits&lt;1&gt;</code> and <code>Bit</code> are distinct, as are <code>Bits&lt;0&gt;</code> and <code>Unit</code>. See the <a href="type-model.html">type model</a>.</td></tr>
+<tr><td><code>CBit</code>, <code>CBits&lt;n&gt;</code> and <code>()</code> in a result type</td><td>Use <code>Bit</code>, <code>Bits&lt;n&gt;</code> and <code>Unit</code>, respectively. The Unit value is <code>()</code>. See <a href="type-model.html#retired-spellings">retired type spellings</a>.</td></tr>
+<tr><td>Ordinary bit literals <code>false</code> and <code>true</code></td><td>Use <code>0</code> and <code>1</code>, respectively.</td></tr>
+<tr><td>Functions, module paths, imports and explicit static specialization</td><td>Kept. Declare the edition in the owning manifest. Both loaders use the same <a href="#declaration-resolution">declaration resolution</a>.</td></tr>
+<tr><td><code>[static n: Nat]</code>, <code>Op</code> parameters and <code>requires</code></td><td>The parameter marker is <code>const</code>. Numeric predicates and capability requirements share one clause. See <a href="static-language.html#retired-spellings">retired spellings</a> for each capability name.</td></tr>
+<tr><td><code>if static</code> and static folds with <code>carry</code> and <code>yield</code></td><td>Static selection is kept. Use <code>for static</code> for an ordinary carry and <code>qfor static</code> for a carry containing a quantum owner. Both folds thread the written carry in order. See <a href="static-language.html#static-branches-folds-and-termination">static branches and folds</a>.</td></tr>
+<tr><td>Runtime <code>if</code> and coherent <code>qif</code></td><td>Kept. The former branches on an ordinary bit. The latter elaborates coherent control and preserves relative phase. See <a href="static-language.html#finite-runtime-control-and-resources">runtime control</a>.</td></tr>
+<tr><td><code>split</code>, <code>join</code>, <code>take_bit</code>, <code>put_bit</code> and access to a register place</td><td>The structural primitives are kept. An indexed or sliced <code>excl</code> call elaborates to ordered partition, application and reassembly. See <a href="elaboration.html#static-ordered-axis-places">static ordered-axis places</a>.</td></tr>
+<tr><td><code>adjoint</code>, controlled application and static repetition</td><td>Use the operation description followed by application. For example, <code>repeat_static(n,U,q)</code> becomes <code>power(U,n)(q)</code>. The <a href="static-language.html#retired-spellings">operation spelling table</a> maps each retired constructor.</td></tr>
+<tr><td><code>basis fn</code> and <code>do p &lt;- q; pure e</code></td><td>Renamed to <code>classical fn</code> and replaced by <code>basis q as p { e }</code>, respectively. The latter elaborates a checked coherent basis map. See <a href="#the-coherent-notation">coherent notation</a>.</td></tr>
+<tr><td><code>meaning</code>, <code>bind_op(F,M)</code> and <code>apply_contract(F,S,q)</code></td><td>Meaning declarations and function contracts are kept. Use <code>checked_op(F,M)</code> for the retired binding constructor. See <a href="checked-operations.html">checked operations</a> and <a href="elaboration.html#function-contracts">function contracts</a>.</td></tr>
+<tr><td><code>with_computed</code></td><td>Kept. Its checked expansion computes, uses and uncomputes the workspace. Migrate argument-list predicates to an explicit <a href="#predicate-domains">predicate domain</a>.</td></tr>
+<tr><td>Qualified gate, preparation, measurement, reset and discard names</td><td>Use the <a href="primitive-boundary.html#retired-qualified-names">primitive and library name mapping</a>. Reset in <code>std::state</code> consumes the old owner and returns a fresh zero owner.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The <a href="elaboration.html#whitelist">elaboration whitelist</a> gives the targets of
+individual expansions. The <a href="type-model.html#selected-entry-commands">selected-entry commands</a>
+give the CLI migration for programs that select a module, entry and static arguments.</p>
+<h3 id="rejected-source"><a class="header" href="#rejected-source">Rejected source</a></h3>
+<p>The table gives the replacement for each source form that the common scanner,
+parser and judgment reject.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Rejected source</th><th>Replacement</th></tr>
+</thead>
+<tbody>
+<tr><td>Bare CR, form feed, or a forbidden character inside a comment</td><td>Ordinary space or tab, LF or CRLF. Remove forbidden controls.</td></tr>
+<tr><td>A self-import</td><td>Use the declaration of the module directly. An ordinary import-only cycle needs no source repair.</td></tr>
+<tr><td>A runtime binder that shadows an active static name</td><td>Rename the binder</td></tr>
+<tr><td>A reserved word as an identifier</td><td>Rename the identifier</td></tr>
+<tr><td>Misplaced documentation</td><td>Move it to its module or declaration attachment boundary</td></tr>
+<tr><td>A legacy <code>with_computed</code> predicate <code>p(a: A, b: B)</code></td><td><code>p((a,b): (A,B))</code> for a <code>Q&lt;(A,B)&gt;</code> register</td></tr>
+<tr><td><code>do p &lt;- q; pure e</code></td><td><code>basis q as p { e }</code></td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="predicate-domains"><a class="header" href="#predicate-domains">Predicate domains</a></h3>
+<p>A legacy <code>with_computed</code> predicate listed the parts of its register as
+separate parameters. A migrated predicate takes the register as one
+parameter with an explicit pattern.</p>
+<p>Rules:</p>
+<ul>
+<li>Both finite <code>with_computed</code> forms require the
+<a href="type-model.html#predicate-domains-and-argument-lists">explicit predicate domain</a>.</li>
+<li>For three or more parameters, write the exact tree of the register. The
+legacy fold was left-associated.</li>
+<li>A <code>Q&lt;Unit&gt;</code> predicate takes an explicit Unit parameter.</li>
+<li>Ordinary calls keep their argument-list arity. Update any ordinary caller,
+or provide a separate unary wrapper.</li>
+</ul>
+<h3 id="the-coherent-notation"><a class="header" href="#the-coherent-notation">The coherent notation</a></h3>
+<p>The retired notation <code>do p &lt;- q; pure e</code> becomes <code>basis q as p { e }</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>The migration to <code>basis q as p { e }</code> preserves the input expression, the
+complete pattern and the single basis expression.</li>
+<li>The braces delimit the restricted basis-expression grammar. They do not
+delimit an ordinary statement block.</li>
+<li>The migration does not join separate owners, allow outer runtime captures,
+remove injectivity checking or prepare a state.</li>
+<li>Both loaders use this one parser. A profile cannot retain the retired
+notation as an alias. <a href="coherent-basis.html">Coherent basis maps</a> specifies the
+semantics, the diagnostics and the concrete-profile limits.</li>
+</ul>
+<h3 id="identities-and-edition"><a class="header" href="#identities-and-edition">Identities and edition</a></h3>
+<p>Rules:</p>
+<ul>
+<li>Supported ordinary siblings share one module. Mutual recursion is rejected.</li>
+<li>Source-bearing artifact identities change when embedded source changes.</li>
+<li>These migrations do not change edition 2026. The edition names the
+constitutional regime, and release compatibility records these source
+changes.</li>
+</ul>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<p>This section gives the limits of the implementation, the state of the
+concrete profiles and the proof status.</p>
+<h3 id="limits"><a class="header" href="#limits">Limits</a></h3>
+<p>The loaders, the parser and the common judgment each stop at fixed limits:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Limit</th><th>Value</th><th>Applies to</th></tr>
+</thead>
+<tbody>
+<tr><td>Supplied modules</td><td>1 through 56. The eight bundled modules count toward the 64-module ceiling.</td><td>Selected loader</td></tr>
+<tr><td>Source bytes</td><td>64 KiB for each module and 1 MiB in aggregate. The bundled modules count toward the aggregate.</td><td>Selected loader</td></tr>
+<tr><td>Tokens</td><td>10,000 non-EOF tokens</td><td>Selected loader</td></tr>
+<tr><td>Block-comment depth</td><td>64</td><td>Selected loader</td></tr>
+<tr><td>Recursive syntax, runtime tree and type tree</td><td>64 levels</td><td>Common parser</td></tr>
+<tr><td>Tuple fields</td><td>64</td><td>Common parser</td></tr>
+<tr><td>Natural-expression depth</td><td>128</td><td>Common parser</td></tr>
+<tr><td>Work of the common judgment</td><td>1,000,000</td><td>Common judgment</td></tr>
+<tr><td>Type size of one value</td><td>4096 cells and depth 64</td><td>Common judgment</td></tr>
+<tr><td>Retained-scope cells</td><td>16,384</td><td>Common judgment on the selected-entry route</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Comments and EOF do not consume the token allowance. The first token beyond
+the allowance is rejected before its owned text is allocated.</li>
+<li>The project loader processes comments iteratively, without a depth limit.</li>
+<li>Source-byte limits and aggregate project limits are separate entry-point
+policies. The finite bounded byte-loading policy and the explicit legacy
+byte-loading policy are separate. The common source collection does not
+make an unbounded byte loader bounded.</li>
+<li>The common judgment charges work before it performs the corresponding
+operation. It charges for visits, for the type and lexical cells that it
+allocates and copies, for normalized arithmetic and for solver work.</li>
+<li>The project route keeps its aggregate, type and snapshot capacities. The
+retained-scope limit does not apply to it.</li>
+<li>Both loaders charge all original bodies and bundled sources. A symbolic
+input can therefore reach the common work capacity before an inner solver
+limit.</li>
+<li>Concrete elaboration, evidence, native work and the loader and parser
+limits are separate.</li>
+<li>A program that exhausts a limit is rejected. The rejection is not a
+discharged quantitative Resource Safety certificate, and it is not evidence
+that the mathematical obligation of the program is false.</li>
+<li>These are engineering limits. They are not the constitutional quantitative
+Resource Safety theorem.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The selected loader reports a scanner or parser
+refusal with the code <code>limit</code> when its message starts with <code>source exceeds</code>
+or contains the word “limit”. This covers the token limit and the nesting
+limits. It reports every other scanner or parser refusal with the code
+<code>parse</code>.</p>
+</blockquote>
+<h3 id="loading-resolution-and-projection"><a class="header" href="#loading-resolution-and-projection">Loading, resolution and projection</a></h3>
+<p>The common judgment establishes facts about source. Whether a concrete
+profile can lower a program, and whether the native checker accepts the
+result, are separate questions.</p>
+<ul>
+<li>Source facts, concrete capability and independent native acceptance are
+separate responsibilities.</li>
+<li>Lowering integration is unfinished. Three further pieces of work are
+separate and also unfinished: retirement of the selected lowering
+projection, canonical generic <code>std</code> APIs and source-preservation proofs.</li>
+<li>The Finite project profile may refuse to materialize a source definition
+with a decreasing self-call under its concrete profile.</li>
+</ul>
+<h3 id="nominal-types-and-ordinary-match"><a class="header" href="#nominal-types-and-ordinary-match">Nominal types and ordinary match</a></h3>
+<p>This subsection says which native check each kind of program with nominal
+types goes through, and what is unfinished.</p>
+<ul>
+<li>The Finite project adapter executes eligible closed ordinary callers through
+the strict ordinary-v2 check. This includes ordinary parameter functions
+that the common emitter inlines.</li>
+<li>A nongeneric public selected root that is an ordinary runtime root or a
+classical root uses that same emitter and native check. It does so after a
+fresh, complete judgment of the original source.</li>
+<li>Small quantum temporaries use the same Raw emitter and complete
+hidden-history checks.</li>
+<li>Mixed interfaces use the separate runtime-v2 check with full original type
+and storage trees. This includes nominal quantum ports and selected Basis
+and Nat arguments.</li>
+<li>Ordinary generic dependencies use the same source emitter.</li>
+<li>Operation-formal transport, full qmatch and nominal finite-table consumers
+are unfinished.</li>
+<li>The ordinary-v2 check separately binds the actual signature and
+recursive-field type paths, the nominal origins and the complete input and
+result storage.
+Validating an unused helper grants no source-row coverage.</li>
+<li>The ordinary-v2 and runtime-v2 checks reuse the original runtime body
+reader for additional type provenance. The reader keeps resolved original
+type paths and checks nominal declarations and member visibility. The v5
+source check also checks the original body.</li>
+<li>An explicit Rust carrier adapter checks without executing. It uses the same
+complete judgment and source lowering to check an exact logical matrix
+that is requested independently. Its sealed typed result grants no
+ordinary execution. The linked type model describes its precise scope and
+its open AST-preservation duty.</li>
+<li>Common frontend facts alone provide no execution evidence and no accepted
+handle. A host Basis description alone grants no execution authority.</li>
+<li>Nominal elaboration checks the original bytes. That check is not a general
+source-preservation theorem. It is not the pending binding of source to
+native evidence and cache.</li>
+<li>The parsed declarations do not complete finite algebraic data types.</li>
+</ul>
+<p>The <a href="type-model.html#opaque-basis-specialization-in-the-selected-profile">type model</a>
+and the <a href="production-boundary.html#mixed-runtime-root-requests">production boundary</a>
+specify the distinct capacities and the checked scope.</p>
+<h3 id="classical-declarations"><a class="header" href="#classical-declarations">Classical declarations</a></h3>
+<p>This subsection says how a runtime call of a classical function executes in
+the concrete profiles.</p>
+<ul>
+<li>Supported Unit, Bit and product runtime calls, and exact closed
+empty-register runtime calls, lower their original expression nodes through
+ordinary operations in both concrete consumers. Ordinary execution does not
+evaluate a precomputed truth table.</li>
+<li>Nonzero finite register indexing executes through the Raw profile.</li>
+<li>Selected Raw supports bounded complete label maps. General Selected
+hierarchy coherent-lift conversion keeps its separate profile refusals.</li>
+</ul>
+<h3 id="runtime-branches-and-effects"><a class="header" href="#runtime-branches-and-effects">Runtime branches and effects</a></h3>
+<p>A concrete profile can refuse a program that is valid as source. Such a
+refusal is a limit of the profile. It is not an error in the source.</p>
+<ul>
+<li>The Finite project profile supports runtime ordinary branches.</li>
+<li>Selected elaboration can reject such a runtime expression as unsupported
+during preparation (<code>unsupported</code>). It must not turn the expression into an
+unchecked body or a runtime failure path.</li>
+<li>This profile restriction is separate from the language contract. It is
+also separate from the shared judgment of ownership and effects on the
+original body.</li>
+<li>Nongeneric public selected roots that use the common emitter execute an
+ordinary <code>if</code> on a measured Bit.</li>
+<li>A concrete profile may refuse a contract that is valid as source. The
+observing FunctionEquality profile requires genuinely observing original
+artifacts. A conservative Observe annotation on a pure body therefore
+cannot select a pure-contract fallback.</li>
+<li>Such a refusal discloses a concrete-profile limit. It is not a false pure
+label, a source effect error or a general preservation theorem.</li>
+</ul>
+<h3 id="coherent-selection"><a class="header" href="#coherent-selection">Coherent selection</a></h3>
+<p>The common judgment accepts every arm form on every route. The checks behind
+it differ:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Check</th><th>Selections</th><th>Limits</th></tr>
+</thead>
+<tbody>
+<tr><td>Encoded-contract check of the whole circuit</td><td>Selections with built-in selector and target interfaces</td><td>Six joined selector and target bits, and 1024 circuit steps</td></tr>
+<tr><td>v5 source check on the selected-entry route</td><td>Supported coherent selections, including built-in ordinal selectors</td><td>Six physical bits for each owner, 1024 circuit steps and the shared exact-work budget</td></tr>
+<tr><td>Selected hierarchy projection</td><td>None. It refuses <code>qmatch</code> (<code>unsupported</code>).</td><td>—</td></tr>
+</tbody>
+</table>
+</div>
+<p>Arm forms:</p>
+<ul>
+<li>The Finite project profile lowers two arm forms: the name of a function,
+and an operation formal that the specialization binds.</li>
+<li>The Selected Raw profile lowers those forms and two more: a constructed
+static operation such as <code>checked_op(sign, Sign)</code>, and an inline block.
+The tests of constructed arms and of block arms run on the selected-entry
+route.</li>
+<li>For a nominal target, an arm must name a declared function without static
+parameters. A function with static parameters is refused (<code>unsupported</code>):
+instantiate it in an ordinary wrapper. A constructed static operation is
+refused (<code>unsupported</code>).</li>
+<li>On the v5 source route, a constructed arm for a built-in target must resolve
+to an original function-evidence entry (<code>unsupported</code>).</li>
+</ul>
+<p>Route selection:</p>
+<ul>
+<li>Selected Basis and Nat roots and their ordinary callers use the common
+emitter for the built-in slice. Before lowering, named arms obtain their
+original checked provider bodies through the native evidence checks. This
+includes arms in inactive static branches.</li>
+<li>The next rule applies when <code>--ir-profile</code> has the value <code>raw</code> or <code>auto</code> and
+no independent hierarchy request exists. The CLI then selects this route
+from the original <code>qmatch</code> occurrences in the lexical dependency closure
+of the entry. An unrelated <code>qmatch</code> declaration or a comment does not
+redirect a built-in entry.</li>
+<li>The selected CLI and the Rust API prefer the v5 source check for supported
+coherent selections, including built-in ordinal selectors.</li>
+<li>When the v5 source check is optional, these forms keep the typed
+runtime-root check: register primitives, access calls, function contracts,
+ordinary matches, static folds and computed bodies. Optional v5 checks
+cover selected static blocks with Hadamard, phase, global phase and
+coherent selection events.</li>
+<li>The compiler chooses the route from the original lowered body before it
+submits a request. A selection that requires the v5 source check goes
+through it.</li>
+<li>A failed check never triggers a different acceptance path.</li>
+</ul>
+<p>Small nominal enum selectors:</p>
+<ul>
+<li>They use the shared emitter for one shape of function. The function is
+nongeneric and named. It has quantum parameters, a flat result of quantum
+owners and a structural body that contains one or more selections with
+named arms.</li>
+<li>A target may be a built-in basis, a fieldless enum or a finite record,
+including an empty record. A built-in ordinal selector may also select a
+nominal target.</li>
+<li>Original names, tuple bindings and the complete structural return may
+surround the selections. Additional quantum arguments stay in the complete
+original frame.</li>
+<li>Parameter order and result order may differ. The original source return
+determines the result order, including distinct zero-width owners.</li>
+<li>Public Isometry and Observe annotations are the outer contract even when the
+selected operation is pure.</li>
+<li>An ordinary caller may retain other owners. Only the actual callee fragment
+is submitted for its original function, and the complete runtime root passes
+its independent typed check.</li>
+<li>General expressions and nonstructural prefixes and suffixes are unsupported
+on this route. No source text or owner frame is synthesized to avoid a
+refusal.</li>
+</ul>
+<p>Each actual call fragment passes the v5 source check with its original input
+and output owners and every emitted operation:</p>
+<ul>
+<li>Each original selection binds a literal, contiguous Raw interval and its
+actual owner frame. All intervals cover the complete emitted call in source
+order.</li>
+<li>Each interval passes its own exact equations even when successive
+operations cancel. Whole-body cancellation cannot replace the exact action
+or the owner-frame obligation of any interval.</li>
+<li>A built-in target arm provides its function evidence.</li>
+<li>A nominal target arm submits its original physical body and a proposed
+controlled implementation through the same QIRF encoder. The native check
+binds the full original target type and checks its actual code, body and
+controlled equations. The physical entry alone grants no operation capability.</li>
+<li>A wider literal interval goes through the original source and arm checks
+and a separate sector reconstruction. Acceptance uses the shared exact-work
+budget.</li>
+</ul>
+<p>The v5 source check has these components:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Component or case</th><th>What it checks</th></tr>
+</thead>
+<tbody>
+<tr><td>Finite restriction component</td><td>It proves correspondence through actual contributions, accumulation, steps and complete circuit execution, and it checks every ordered local sector.</td></tr>
+<tr><td>Forward arms</td><td>For a forward arm with a checked full-width circuit tape, the checker reconstructs its exact columns from the original events and checks the physical Gram condition. Arms with other original event forms use the instrument evaluator.</td></tr>
+<tr><td>Internal Raw component</td><td>It checks the original pure program and an independently reconstructed trace. It retains every circuit event and proves that omitted identity reorders are literal identities. It checks the physical port and wire frame separately from logical source owner transport. Empty wire lists alone cannot identify or order zero-width owners. Physical widths do not establish original nominal or source type identity.</td></tr>
+<tr><td>Enclosing QIRF component</td><td>It reuses fresh graph and root checks and proves exact original-program embedding into that pure Raw subject. It rejects observing, classical and branch instructions in this straight-line component.</td></tr>
+<tr><td>Internal nominal component</td><td>It independently checks original type declarations and the code of each ordered owner. It then compares each active physical sector on that code with the exact requested logical map. Product labels keep their actual physical coordinates. Padding sectors are checked separately and do not increase logical cardinality. The requested-sector checks and the computed-sector path share one reconstruction.</td></tr>
+<tr><td>Internal arm component</td><td>It reconstructs the logical map of each original QIRF implementation and checks a separate controlled implementation against exact identity and arm sectors. One fresh graph checks the main subject plus all actual arm and control subjects that the request names. Root membership comes from those subjects. Unrelated nodes are refused, and root membership supplies no source usage. Ordinary requests keep their main-only root and reachability rules. Every canonical logical ordinal binds its actual original arm, independently of written order.</td></tr>
+<tr><td>Source component</td><td>It binds original named functions to actual function-evidence entries and their fresh complete inputs and dependency snapshots. It preserves the original function bytes, the full target types and the public effects.</td></tr>
+<tr><td>Source metadata component</td><td>It retains the actual <code>qmatch</code> token occurrence in its original function, the complete named-arm parameter and result owner forests, the canonical enum labels and the original import and reexport paths. It rejects public observing or isometric arms and keeps an absent private annotation unknown. Body checking must independently establish the inferred effect.</td></tr>
+<tr><td>Source frame</td><td>Original quantum parameter patterns and structural let and tuple moves identify operands in the complete live source frame. Quantum product owners are atomic, and ordinary tuples can group separate owners. A two-port subject keeps the exact original parameter and result order and distinct logical identities at zero width. It cannot sharpen a public observing or isometric function to Unitary. Unknown prefix expressions are refused instead of contributing unproved type facts.</td></tr>
+<tr><td>Context reader</td><td>It checks direct <code>h</code>, <code>global_phase_eighth</code> and finite <code>phase[j,k]</code> events around named-arm selections. It traverses runtime call arguments first, keeps the original callee token and the <code>qmatch</code> keyword through grouping and comments, and compares every event with its literal Raw interval. Original lexical, module and prelude lookup establishes primitive identity.</td></tr>
+<tr><td>Structural suffix and result</td><td>They keep the actual returned roles. An independent run over original Raw joins, splits and owner-moving operations compares those roles with the actual output-token order, including at zero width. A matching zero-width permutation of source and Raw is allowed, and a mismatched one is refused.</td></tr>
+<tr><td>Native and QDV component</td><td>It retains its actual graph and request, and it grants no ordinary source execution handle on its own. The bounded compiler adapter checks that component before the separate runtime-root acceptance.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The context reader applies these rules to the source around a selection:</p>
+<ul>
+<li>Closed phase parameters and body-local <code>static let</code> initializers use
+original Nat syntax and lexical lookup.</li>
+<li>Every ordinary caller intermediate and helper argument must fit u32,
+including unused initializers and ignored arguments. Original static helper
+bodies keep their checked signed-affine rules.</li>
+<li>An alias keeps the helper resolution and the lexical environment of its
+initializer. A runtime pattern cannot shadow an earlier static alias,
+including an unused alias.</li>
+<li>The finite phase rule requires <code>k &lt;= 8</code>, <code>j &lt; 2^k</code> and an exact multiple of
+one eighth, without rounding and without a replacement modulo-one
+normalization.</li>
+<li>These context checks themselves add no transport of generic caller
+arguments and no constructed-arm support. The arm forms above state what
+each profile lowers.</li>
+</ul>
+<p>Open work:</p>
+<ul>
+<li>Validation of the full twelve-joined-bit and 64-label boundary is open.</li>
+<li>Opaque-owner refinements, allocation and release, and general calls and
+control flow need their checked source and representation rules.</li>
+<li>General source binding and nominal integration are unfinished. Ordinary
+nominal execution uses the separate ordinary-v2 check.</li>
+</ul>
+<h3 id="proof-status"><a class="header" href="#proof-status">Proof status</a></h3>
+<p>The statements below separate what a check establishes from what is proved.</p>
+<ul>
+<li>The failure contract is a totality requirement. It is not a claim that
+every source form or target has a completed production Soundness proof.</li>
+<li>The Rust simulator and native IO keep their disclosed correspondence
+assumptions. The core failure contract does not prove host panic freedom.</li>
+<li>Ordinary native validity checks its stated structural ownership and
+classical-scope properties. General EffectSound/CPTP and source preservation
+are unfinished.</li>
+<li>The dedicated
+<a href="production-boundary.html#original-artifact-observing-instrument-requests">original-artifact instrument request</a>
+checks both original bodies, the complete Kraus sums, the requested complete
+signature trees and their ordered root-port projections. It checks every
+unnormalized public map on arbitrary finite references within its bounded
+profile. Recovering the original source type trees is a separate
+obligation.</li>
+<li>That profile requires genuinely observing original artifacts. A
+conservative public Observe bound on a pure implementation can therefore be
+well typed while this request refuses it. The refusal supplies no
+pure-contract fallback.</li>
+<li>The postselection boundary does not discharge ordinary-root
+EffectSound/CPTP, source and runtime preservation or the broader QS, PR,
+quantitative RS and EXACT obligations.</li>
+<li>For coherent selection, three things do not prove original-source
+preservation or complete nominal integration: common enum checks, native
+acceptance of a proposed circuit and conformance tests.</li>
+<li>Source effect facts and the source facts of the common judgment are not
+accepted IR handles and not a source-preservation proof.</li>
+</ul>
+<h3 id="tests"><a class="header" href="#tests">Tests</a></h3>
+<p>The <a href="https://github.com/MGYamada/Qleisli">repository</a> keeps these packets of
+bounded migration evidence:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Packet</th><th>Content</th></tr>
+</thead>
+<tbody>
+<tr><td><code>tests/fixtures/frontend_v030/shared-scanner/</code></td><td>The original byte fixtures and the CLI diagnostics before and after the common scanner. The two successful small source pairs emitted identical untrusted proposal hashes.</td></tr>
+<tr><td><code>tests/fixtures/frontend_v030/common-parser/</code></td><td>Ten initial source observations, independent review counterexamples, exact commands and results, and four small before and after proposals with identical bytes. It also records the shared-depth edge of the recursion budget.</td></tr>
+<tr><td><code>tests/fixtures/frontend_v030/shared-resolution/</code></td><td>The ten original profile observations of the resolver, 25 matching command results and five identical small proposals, including distinct same-named providers and decreasing self-recursion</td></tr>
+<tr><td><code>tests/fixtures/frontend_v030/lexical-resolution/</code></td><td>The subsequent shared local and static binding comparisons</td></tr>
+<tr><td><code>multi-declaration/</code> and <code>sized-declarations-independent/</code></td><td>Original rejected siblings, their declared acceptance and diagnostic changes, and independent small phase and axis comparisons of split-module and same-module programs</td></tr>
+<tr><td><code>tests/fixtures/frontend_v030/predicate-domain/</code> and <code>predicate-domain-independent/</code></td><td>The earlier diagnostics, explicit translations, small proposal comparisons and independent phase and reference checks</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>The sibling extension leaves the single-declaration observations and six
+small proposal byte sequences unchanged. Source that the extension accepts
+undergoes its native check.</li>
+<li>Earlier failed sources and results are historical evidence.</li>
+<li>These packets are bounded migration evidence. They are not a general
+source-preservation proof, a formal guarantee or a native acceptance claim.</li>
+</ul>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>This chapter describes the scanner and the parser of <code>0.3.0-beta</code>.</li>
+<li>The common frontend is the decision of
+<a href="https://github.com/MGYamada/Qleisli/issues/32">Issue #32</a>: one scanner,
+token stream, parser and source representation for finite project loading
+and sized explicit module loading. That Issue also tracks the unfinished
+lowering integration.</li>
+<li>Retirement of the selected lowering projection, canonical generic <code>std</code>
+APIs and source-preservation proofs are separate work in
+<a href="https://github.com/MGYamada/Qleisli/issues/32">#32</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/317">#317</a>.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/58">#58</a> tracks the prelude and
+import integration and its conformance evidence.</li>
+<li><code>enum</code>, <code>struct</code>, <code>match</code> and <code>qmatch</code> became reserved keywords in the
+unpublished beta language. The parser changes do not complete
+<a href="https://github.com/MGYamada/Qleisli/issues/64">finite ADTs</a>.</li>
+<li>The effect vocabulary “isometry” was selected in
+<a href="https://github.com/MGYamada/Qleisli/issues/57">#57</a>. The source prefix
+<code>iso</code> was retired in 0.3.0, and the Rust variants <code>Effect::Iso</code>,
+<code>FnKind::Iso</code> and <code>TokenKind::Iso</code> were renamed with it.</li>
+<li><code>basis fn</code> was replaced by <code>classical fn</code>, and the <code>do p &lt;- q; pure e</code>
+expression was removed. Historical first sources and validation records
+keep their original spelling. Replay selects explicitly recorded
+derivatives.</li>
+<li>The statement that Qleisli provides no source postselection effect was
+written for Qleisli 0.3.0.</li>
+<li>The common grammar reserves words in identifier positions that the sized
+parser had treated contextually.</li>
+<li>The sized scanner before the common scanner skipped bare CR, form feed and
+forbidden characters inside comments. It already rejected vertical tab; the
+shared character rule supplies that diagnostic.</li>
+<li>The common parser reaches its nesting limit one level earlier than the
+removed sized parser for certain deep sized natural types. The project
+loader received no comment depth limit.</li>
+<li>The one-function restriction of sized source was removed. Legacy sources
+could contain self-imports, and an import-only cycle needed a source repair
+before the common resolver.</li>
+<li>After the common judgment, a source type, owner, access or dependency error
+can precede a profile refusal that an earlier release reported first.
+Earlier sources and diagnostics are historical records.</li>
+<li><code>ResolvedImport.kind</code> replaced a bare <code>FnKind</code> in the Rust <code>Project</code> view.</li>
+<li>In the v5 source check, the computed-sector path was added by a refactor
+that preserved all earlier results, errors and open work. The source
+metadata component and the source-frame identification of operands are
+additions to the earlier form of that check.</li>
+<li>The explicit predicate domain of <code>with_computed</code> replaced the legacy
+argument-list predicate form.</li>
+</ul>
+<p>Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../architecture/rust-crates.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/diagnostics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../architecture/rust-crates.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/diagnostics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

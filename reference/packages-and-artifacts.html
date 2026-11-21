@@ -1,0 +1,994 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Qrates, source identity and external artifacts - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="qrates-source-identity-and-external-artifacts"><a class="header" href="#qrates-source-identity-and-external-artifacts">Qrates, source identity and external artifacts</a></h1>
+<p>A <strong>qrate</strong> is the smallest unit of Qleisli programs that has a version of
+its own and that can be distributed by itself. A qrate or a source tree
+declares itself in a <strong>manifest</strong>, a file named <code>Qargo.toml</code>.</p>
+<p>This chapter specifies how much authority packages and artifacts have in
+edition 2026, under the <a href="authority.html">authority hierarchy</a>. It states what a
+qrate, a source file or an external artifact may establish, and what it
+cannot authorize by itself. It also gives the format of the manifest and
+says how the <code>qleisli</code> CLI selects source. <a href="#status-and-limits">Status and limits</a>
+states the limits of that CLI adapter.</p>
+<h2 id="source-and-the-five-artifact-roles"><a class="header" href="#source-and-the-five-artifact-roles">Source and the five artifact roles</a></h2>
+<p>Source files are not the only files around a program. Proofs, test reports,
+target profiles and manifests accompany it. This section sorts all of them
+into five <strong>roles</strong>, so that you can tell what a given file is able to
+decide.</p>
+<p>The language, its kernel and accepted ordinary <code>.qli</code> define the executable
+meaning of Qleisli. An artifact has one or more of the five roles. A role
+states what the artifact may establish or select. The
+<a href="primitive-boundary.html">primitive boundary</a> answers which meanings require
+language rules. This chapter answers which artifacts may claim each role.</p>
+<p>The table names three analysis tools. QLT is the Qleisli Testsuite, QDB is the
+Qleisli Debugger, and QCP is the Qleisli Circuit Profiler.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Role</th><th>What it may establish or select</th><th>What it cannot authorize by itself</th></tr>
+</thead>
+<tbody>
+<tr><td>Semantic</td><td>The normative language, its kernel and accepted <code>.qli</code> define the requested computation, types, owners, effects and specified contracts.</td><td>A source name or an annotation cannot manufacture the required evidence or waive a failed check.</td></tr>
+<tr><td>Evidence</td><td>Checked Lean proofs, certificates and verifier decisions establish the claims that they state. Each claim is about an exact subject and holds under recorded premises.</td><td>They cannot redefine what the source denotes or silently strengthen a contract. They cannot stand in for a missing correspondence between source and target.</td></tr>
+<tr><td>Observation</td><td>QLT, QDB, QCP, diagnostics, simulations and analyses report bounded denotation, behavior or cost under explicit profiles.</td><td>A test pass, a resource estimate or a diagnosis cannot issue production acceptance or trusted Meaning evidence.</td></tr>
+<tr><td>Realization</td><td>Target profiles, decompositions, routing and associated evidence describe or justify an implementation on a selected target.</td><td>A native gate set, a recognizer or a successful synthesis cannot change the logical meaning of the source. It cannot supply a resource bound that is absent.</td></tr>
+<tr><td>Organization</td><td>Qrate manifests, dependency and build records, package provenance and documentation organize and identify inputs and artifacts.</td><td>Packaging, a hash, version equality or prose cannot install a semantic rule or certify a program.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Every definition receives the same applicable source checks and the same
+independent native checks. This holds whether the definition is bundled,
+written by a user or generated. The origin of a definition supplies no
+primitive, ownership, effect, inverse, control or Meaning privilege.</li>
+<li>A file may contain several roles. The claim that a file makes decides its
+classification. Its extension does not, and neither does the origin of its
+distribution.</li>
+<li>Documentation tooling must distinguish prose, machine-readable
+declarations, requested contracts, test observations and checked evidence.</li>
+<li>Removing an external proof may remove evidence that acceptance requires. It
+cannot change what the declared program denotes.</li>
+</ul>
+<p>For example, a doc comment that says “exact Fourier transform” is not a
+Fourier equation and not a proof.</p>
+<h3 id="observation-tools"><a class="header" href="#observation-tools">Observation tools</a></h3>
+<p>QLT is a surface for observing and testing a program. It is external to the
+program.</p>
+<p>Rules:</p>
+<ul>
+<li>QLT permits a bounded inspection of amplitudes or of cost. That inspection
+does not become a <code>.qli</code> primitive that inspects live coherent state or a
+program’s own denotation.</li>
+<li>QDB, QCP and other analyses cannot upgrade acceptance.</li>
+</ul>
+<h3 id="generated-source"><a class="header" href="#generated-source">Generated source</a></h3>
+<p>Some source is written by a program and not by a person. A generator may
+produce <code>.qli</code> source or typed program structure.</p>
+<p>Rules:</p>
+<ul>
+<li>Generated <code>.qli</code> and generated typed program structure must undergo
+ordinary checking.</li>
+<li>A meta expansion must not inspect live quantum state, inject trusted IR or
+escape the source, effect and evidence obligations of the original.</li>
+</ul>
+<h3 id="derived-artifacts"><a class="header" href="#derived-artifacts">Derived artifacts</a></h3>
+<p>Serialized Core or IR, caches and generated artifacts are derivative: a tool
+produces each of them from source or from another artifact.</p>
+<p>Rules:</p>
+<ul>
+<li>A supported artifact path must bind its source and its context where it
+makes a claim about source. It must obtain the applicable fresh independent
+check.</li>
+<li>Valid output IR alone does not prove that the source was preserved.</li>
+<li>An optimizer or a backend intrinsic implements a meaning that the source
+has already requested. Recognizing a pattern cannot decide what the source
+means.</li>
+<li>Output, phase, axis order, workspace, references and resources keep the
+obligations of <a href="realization.html">realization</a> and of the
+<a href="production-boundary.html">production boundary</a>.</li>
+</ul>
+<h2 id="qrate-module-and-file"><a class="header" href="#qrate-module-and-file">Qrate, module and file</a></h2>
+<p>This section separates three units that are easy to confuse: the qrate, the
+module and the file. A <strong>module</strong> is a namespace with a canonical name, and
+it is the unit of visibility. A <strong>file</strong> stores source. A qrate may contain
+ordinary source, documentation, tests or QLT, proofs, resource metadata and
+explicitly permitted build artifacts.</p>
+<p>Rules:</p>
+<ul>
+<li>Bundling an item in a qrate gives the item no extra authority.</li>
+<li>A qrate may depend on other qrates. It must not extend, weaken or bypass
+the language semantics or the required verifier gates.</li>
+<li>A qrate owns its package, its version and the boundary of its public API.
+The module rules and the declared visibility rules of the language
+determine access.</li>
+<li>A filesystem directory never grants an additional public, private,
+qrate-local or semantic permission.</li>
+<li>These definitions fix concepts. They add no visibility modifier.</li>
+<li>Work on module and import ergonomics must preserve this qrate contract and
+the identity distinctions below.</li>
+<li>A tool that manages, obtains, resolves, checks or records qrates must
+follow this contract. This requirement applies to qargo, a separate tool
+that this repository does not contain.</li>
+<li>The behavior of such a tool does not define what a qrate means.</li>
+<li>Six parts of a package system each require a supported package
+specification of their own. They are a registry, an installer, a solver, a
+lockfile syntax, a policy for duplicate versions and a policy for
+dependency cycles.</li>
+</ul>
+<h3 id="identities"><a class="header" href="#identities">Identities</a></h3>
+<p>Two things can share a name and differ in content. This section therefore
+keeps four identities apart: a package, a declaration, a program instance and
+a distribution have distinct identities. The table states what each identity
+has to distinguish.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Identity</th><th>Required distinction</th></tr>
+</thead>
+<tbody>
+<tr><td>Logical package</td><td>The qrate name and the package version, with the declared edition and toolchain compatibility. Equal names and versions alone do not identify the selected content.</td></tr>
+<tr><td>Canonical declaration</td><td>The qrate identity, the canonical module path and the declaration identity. A resolved context selects the package instance. Absolute paths, line numbers and temporary generation names are coordinates for diagnostics and storage.</td></tr>
+<tr><td>Resolved program instance</td><td>The selected source and dependency closure, the relevant configuration and static actuals, the requested edition, the pair of toolchain and <a href="#canonical-std-and-the-selected-toolchain">canonical std</a>, and the declared generation inputs. Required profiles and evidence additionally bind the artifact and the checker.</td></tr>
+<tr><td>Distribution artifact</td><td>The exact bytes of the package or archive, and their provenance. Archive layout and content hashes identify a distribution. They do not define the mathematical meaning of a declaration.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>These identities are normative identity inputs. They are not source types,
+not a stabilized hash algorithm, and not a claim that an artifact schema
+carries all of them.</li>
+<li>Dependency selection must be explicit, or deterministically implied by the
+selected toolchain.</li>
+<li>A supported locked graph must record the immutable selected instances. It
+must reconstruct the same source and program selection.</li>
+<li>An ambiguous or unsupported dependency or version policy must not be
+inferred from Cargo conventions.</li>
+</ul>
+<h3 id="relocation"><a class="header" href="#relocation">Relocation</a></h3>
+<p>Source moves: a directory is renamed, a package is repacked, a generator
+writes into a temporary directory. This section says which moves change a
+name and which do not. A canonical identity and a storage location are
+separate.</p>
+<p>Rules:</p>
+<ul>
+<li>Suppose that unchanged source moves and that the move preserves its
+canonical qrate, module and declaration identity. The move does not rename
+the declaration. It does not change what the declaration denotes.</li>
+<li>A move of the packaging layout may change archive bytes and provenance
+without changing that canonical name.</li>
+<li>Moving a declaration from canonical <code>algebra::operation</code> to
+<code>transforms::operation</code> changes the namespace.</li>
+<li>The distinction also applies to generated files. A temporary directory is
+not a semantic identity of its own.</li>
+<li>Evidence and caches must distinguish canonical program identity from
+storage locations. They must bind the bytes of the source, of the
+dependencies and of the artifacts, and the exact interfaces.</li>
+<li>Stable names or equal widths do not authorize substituting one piece of
+evidence for another.</li>
+<li>A storage move alone supplies neither a proof nor permission to rebind an
+accepted handle.</li>
+<li>When a checked subject or a representation changes, the change requires
+its applicable fresh checks and its preservation or transport support.</li>
+</ul>
+<h3 id="module-names-and-storage-paths"><a class="header" href="#module-names-and-storage-paths">Module names and storage paths</a></h3>
+<pre><code class="language-text">--module=NAME=PATH --entry=MODULE::FUNCTION
+</code></pre>
+<p>A module has a name, and its source has a place on disk. The filesystem
+convention derives the name from the place. It maps <code>src/algebra.qli</code> to the
+module <code>algebra</code> when <code>src</code> is the selected root. Nested relative components
+form nested module names. This mapping is a convention of the frontend. The
+explicit binding form above names a module and its storage path separately.</p>
+<p>Rules:</p>
+<ul>
+<li>The module name participates in identity. The absolute source path is
+provenance.</li>
+<li>Each bound file belongs to a source tree. That tree must separately satisfy
+the explicit edition check of its manifest.</li>
+</ul>
+<p>Both of these option forms are supported:</p>
+<pre><code class="language-text">--module=algebra=/first/storage.qli --entry=algebra::operation
+--module=algebra=/second/location.qli --entry=algebra::operation
+</code></pre>
+<p>With the same checked source and context, both forms request the same module
+name and the same declaration name. The paths locate different storage. The
+forms are supported CLI options. They are not full commands, and they are no
+evidence that the two compilations have been compared.</p>
+<p><a id="current-adapter-and-remaining-binding-gaps"></a></p>
+<h2 id="source-tree-manifest"><a class="header" href="#source-tree-manifest">Source-tree manifest</a></h2>
+<pre><code class="language-toml">schema-version = 2
+
+[qrate]
+name = "example"
+version = "0.1.0"
+edition = "2026"
+
+[source]
+root = "src"
+</code></pre>
+<p>A source tree states its edition in a manifest. The block shows the supported
+spelling of a source-tree manifest. A source file uses the nearest
+<code>Qargo.toml</code> in its directory or in an ancestor directory. The <code>qleisli</code> CLI
+knows these keys:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Key</th><th>Value</th><th>Use by the <code>qleisli</code> CLI</th></tr>
+</thead>
+<tbody>
+<tr><td><code>schema-version</code></td><td>The integer <code>2</code></td><td>Required</td></tr>
+<tr><td><code>[qrate].edition</code></td><td>The string <code>"2026"</code></td><td>Required. It selects the constitutional edition.</td></tr>
+<tr><td><code>[qrate].name</code>, <code>[qrate].version</code></td><td>The name and the version of the qrate</td><td>Not validated in a user manifest</td></tr>
+<tr><td><code>[source].root</code></td><td>A relative directory path</td><td>Read only with <code>--qrate</code></td></tr>
+<tr><td><code>[tests].root</code>, <code>[docs].root</code></td><td>Directory paths</td><td>Not read</td></tr>
+<tr><td>Any other key</td><td>Any value</td><td>Ignored, with a warning</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Every ordinary <code>.qli</code> and <code>.qlt</code> source tree must explicitly select a
+concrete constitutional edition in schema-2 <code>[qrate].edition</code>. There is no
+fallback to a default, to “current” or to “latest”. The loader rejects a
+tree without a manifest with the code <code>project</code>.</li>
+<li>The edition selects the constitutional regime. The selection does not
+depend on the toolchain release or on the source grammar. Changing the
+selection requires an explicit edit to the manifest. Updating the toolchain
+preserves the declared edition.</li>
+<li><code>schema-version</code> must be the integer <code>2</code>. <code>[qrate].edition</code> must be a
+string that names a supported edition, and <code>"2026"</code> is the only one. The
+loader rejects a manifest that breaks either requirement with the code
+<code>project</code>.</li>
+<li>A manifest that declares only the schema version and the edition is valid
+for an ordinary source tree. That tree is not thereby a full qrate.</li>
+<li>The check of the schema version and the edition does not validate every
+name, version or package contract of a qrate.</li>
+<li>The CLI ignores an unknown key and reports a warning for it. A known key
+implements no feature, no dependency selection and no build action.</li>
+<li>Dependency tables are unsupported. The CLI treats <code>[dependencies]</code> as an
+unknown key: it warns and ignores the table.</li>
+<li>A raw or foreign caller must select the edition explicitly. It must not
+derive the edition from the product version or from std.</li>
+</ul>
+<p>The <a href="execution-view.html#native-envelope-cutover">QLV3 boundary</a> carries the
+selected edition through native acceptance.</p>
+<p>The loader accepts the manifest above. It also accepts this manifest, which
+declares only the edition:</p>
+<pre><code class="language-toml">schema-version = 2
+
+[qrate]
+edition = "2026"
+</code></pre>
+<p>The loader rejects each of these manifests with the code <code>project</code>:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Manifest</th><th>The message contains</th></tr>
+</thead>
+<tbody>
+<tr><td><code>schema-version = 1</code>, or no <code>schema-version</code></td><td><code>Qargo.toml requires schema-version = 2</code></td></tr>
+<tr><td><code>edition = 2026</code>, an integer</td><td><code>explicit string [qrate].edition</code></td></tr>
+<tr><td><code>edition = "2027"</code></td><td><code>unsupported Qleisli edition</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>A manifest with the additional top-level key <code>unused = true</code> is accepted. On
+<code>check</code>, <code>run</code>, <code>sample</code> and <code>emit-ir</code>, the CLI reports a warning with this
+message:</p>
+<pre><code class="language-text">unused manifest key `unused`; this Qleisli command ignores it; check the schema-2 spelling (qargo may reject unsupported metadata)
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>parse_manifest</code> in
+<code>src/frontend/project/edition.rs</code> checks the schema version and the edition.
+<code>manifest_warnings</code> in <code>src/frontend/project/manifest.rs</code> reports the
+unknown keys. The CLI prints a warning to standard error. With
+<code>--format=json</code> it reports the warning as a diagnostic record with the code
+<code>project</code> and the severity <code>"warning"</code>.</p>
+</blockquote>
+<h2 id="qrate-source-selection"><a class="header" href="#qrate-source-selection">Qrate source selection</a></h2>
+<pre><code class="language-text">qleisli check &lt;qrate-directory&gt; --qrate
+</code></pre>
+<p>Pass <code>--qrate</code> when the directory that you name is a qrate and its manifest
+says where the sources are. <code>--qrate</code> opts into the explicit source root
+beneath the selected qrate directory. The manifest of that directory names
+the root in <code>[source].root</code>. <code>check</code>, <code>run</code>, <code>sample</code> and <code>emit-ir</code> accept
+the option. <code>verify-ir</code> and <code>doc</code> do not. Root selection checks ordinary
+sources. It does not orchestrate packages, dependencies, tests or
+documentation.</p>
+<p>Rules:</p>
+<ul>
+<li>The selected directory must itself contain <code>Qargo.toml</code>.</li>
+<li>That manifest must give <code>[source].root</code> as an explicit string.</li>
+<li><code>[source].root</code> must be a nonempty relative path. It must not contain a
+parent traversal, and no component may be named <code>target</code>, in any ASCII
+case.</li>
+<li>Every component of the path must be a directory that is not a symbolic
+link.</li>
+<li>The loader rejects a selection that breaks one of these rules with the code
+<code>project</code>.</li>
+</ul>
+<p>The loader accepts the roots <code>src</code>, <code>./src</code> and <code>src/./</code>. It rejects <code>../x</code>,
+<code>/abs</code>, the empty string, <code>.</code>, <code>target</code> and <code>src/TaRgEt</code>.</p>
+<h2 id="captured-manifests"><a class="header" href="#captured-manifests">Captured manifests</a></h2>
+<p>A <strong>captured manifest</strong> is the validated manifest text that selected the
+edition of a source. A loader retains it with the project that it loads.
+Later work on that project uses the retained text and does not read the
+manifest file again.</p>
+<p>Rules:</p>
+<ul>
+<li>A qrate selection retains the exact validated manifest bytes that selected
+its source root. Later loading from that selection inherits the captured
+request. It does not reread the selecting manifest.</li>
+<li>A fresh selection sees an explicit edit of the manifest.</li>
+<li>Discovery captures each nested manifest. It associates the manifest with
+the original paths of its <code>.qli</code> and <code>.qlt</code> files.</li>
+<li>Project preparation rejects a changed root or a changed module inventory
+that has no matching captured context.</li>
+<li>The in-memory constructor <code>Project::from_modules</code> requires an explicit
+<code>edition::Edition</code>. It claims no file manifest provenance, and it has no
+default selector.</li>
+<li>The checked methods of <code>Project</code> use the retained bytes without reloading
+configuration.</li>
+<li><code>ParsedProgram::load</code> captures the manifest of each selected module.</li>
+<li>The manifest-free <code>ParsedProgram::parse(edition, modules)</code> requires an
+explicit <code>edition::Edition</code>.</li>
+<li>Every native kernel is bound to an explicit edition. It validates that
+edition against the fresh QLV3 response before it issues a handle.</li>
+<li>A capture is a requested context. It is not acceptance evidence.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> On Unix, <code>QrateSource</code> in
+<code>src/frontend/project/manifest.rs</code> retains the identity of the selected
+directory while it loads. Other targets rely on their documented filesystem
+trust assumption.</p>
+</blockquote>
+<h2 id="input-limits"><a class="header" href="#input-limits">Input limits</a></h2>
+<p>The bounded loader limits the bytes that it reads. It applies one limit to
+each manifest, one to each source file and one to the project as a whole.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Limit</th><th>Value</th><th>Scope</th></tr>
+</thead>
+<tbody>
+<tr><td>Manifest</td><td>65,536 bytes</td><td>Each <code>Qargo.toml</code></td></tr>
+<tr><td>Source file</td><td>1,048,576 bytes, or the value of <code>--source-bytes=N</code></td><td>Each source file</td></tr>
+<tr><td>Project aggregate</td><td>16,777,216 bytes, or the value of <code>--project-bytes=N</code></td><td>The source text and the retained manifest text of one project</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Retained manifest text and source text share one budget, the aggregate
+input budget of the project.</li>
+<li>Each manifest that the loader reads counts once. The sources that inherit
+that manifest share its bytes.</li>
+<li>The limit for a source file and the limit for a manifest are separate.</li>
+<li>A tree whose source text alone is near the aggregate limit may need less
+input data, because its manifests count too.</li>
+<li>The explicit Legacy loader, which <code>--legacy-source-limits</code> selects, is
+outside the aggregate byte limit.</li>
+<li>The loader rejects a manifest over its limit with the code <code>project</code>. It
+rejects a source file over its limit, or a project over the aggregate
+limit, with the code <code>limit</code>.</li>
+</ul>
+<h2 id="configuration-selects-inputs-not-language-rules"><a class="header" href="#configuration-selects-inputs-not-language-rules">Configuration selects inputs, not language rules</a></h2>
+<p>A manifest configures the inputs of a program. It does not configure the
+language. This section lists what a manifest can select and what it cannot
+change.</p>
+<p>Rules:</p>
+<ul>
+<li>A manifest may select supported source inputs and environment inputs.</li>
+<li>A manifest must not redefine typing, ownership, effects, primitive meaning,
+verifier rules or theorem statements.</li>
+<li>A field can purport to ignore phase, to allow dirty clean-release, to
+insert measurement or to trust external operations. Such a field grants no
+such permission.</li>
+<li>Unknown metadata does not become an executable feature by being present or
+hashed.</li>
+<li>Cargo-style additive features are not adopted implicitly.</li>
+<li>Supported configuration that changes the executable selection belongs in
+the resolved program identity. The selected dependencies and source
+components, the closed static actuals and the declared generation inputs
+must be reproducible.</li>
+<li>A choice of target, approximation or synthesis can affect implementation or
+evidence. Such a choice must be recorded in the corresponding realization,
+profile or evidence identity.</li>
+<li>Such a choice must not silently alter the logical denotation of the source
+or weaken an exact obligation. The
+<a href="authority.html#exact-constitutional-obligations">exactness rules</a> apply.</li>
+<li>A mere diagnostic path, a documentation choice or an archive layout is not
+a semantic switch. Storage and provenance must be recorded separately from
+configuration that changes the program.</li>
+<li>A reproducibility record must expose the relevant closure. It must not rely
+on undeclared network, time, randomness, filesystem state or ambient
+environment.</li>
+<li>An unsupported ambient input must not silently participate in a
+reproducibility claim.</li>
+<li>Hashing a recorded configuration identifies inputs. It supplies no language
+semantics, no proof and no acceptance authority.</li>
+</ul>
+<p>For example, the same logical <code>foo@1.2.0</code> can be selected with two different
+operation providers or with two different static sizes. The two selections
+are not interchangeable evidence for one resolved program. <code>foo@1.2.0</code> is
+conceptual package notation here. It is not a dependency syntax.</p>
+<h2 id="there-is-no-trusted-build-script"><a class="header" href="#there-is-no-trusted-build-script">There is no trusted build script</a></h2>
+<p>A build can run code of its own, such as a generator or a script. This
+section says what such code can produce and what it cannot. Build-time
+execution may produce ordinary inputs or artifacts.</p>
+<p>Rules:</p>
+<ul>
+<li>Build-time execution must not create a primitive, a verifier rule, a
+Meaning receipt, accepted IR, a clean ancilla claim, a hidden observation
+or a package-local semantic extension.</li>
+<li>An external Rust, Python or shell generator is untrusted. Its outputs
+receive the same applicable ordinary source checks and independent native
+checks.</li>
+<li>A compromised generator may change source. Its provenance cannot make
+invalid output accepted.</li>
+<li>Obtaining or resolving a qrate does not grant permission to execute
+arbitrary code on the host.</li>
+<li>An external build action must be explicit, inspectable and scoped to its
+declared inputs and capabilities.</li>
+<li>The preferred generation defaults exclude undeclared ambient inputs.</li>
+<li>Build success is organizational evidence. It is not Soundness, exact
+equivalence, cleanup, Physical Realizability or quantitative Resource
+Safety.</li>
+<li>A build generator and a runtime foreign provider are different boundaries.
+Native code, callbacks, plugins and opaque operation implementations need
+an explicit contract, evidence, capabilities and resource obligations, or
+genuine primitive admission.</li>
+<li>Packaging such code or running a build step grants no runtime semantic
+entry.</li>
+</ul>
+<p>The forbidden escalations include these:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>An artifact or event</th><th>Does not establish</th></tr>
+</thead>
+<tbody>
+<tr><td>A QLT pass</td><td>Meaning evidence</td></tr>
+<tr><td>A docstring</td><td>A verified contract</td></tr>
+<tr><td>Generated IR</td><td>Acceptance, merely because a compiler emitted it</td></tr>
+<tr><td>Build success</td><td>A clean workspace</td></tr>
+<tr><td>A package install</td><td>A trusted primitive</td></tr>
+<tr><td>Backend recognition</td><td>A source equation</td></tr>
+</tbody>
+</table>
+</div>
+<p>Each claimed artifact needs its own applicable checking and correspondence.</p>
+<h2 id="canonical-std-and-the-selected-toolchain"><a class="header" href="#canonical-std-and-the-selected-toolchain">Canonical std and the selected toolchain</a></h2>
+<p>The <strong>canonical std</strong> is the standard-library qrate that an official Qleisli
+product selects and bundles. Std comes with the toolchain: a user does not
+select it separately.</p>
+<p>Rules:</p>
+<ul>
+<li>The official Qleisli product <code>X.Y.Z</code> selects and bundles the canonical std
+qrate <code>X.Y.Z</code>.</li>
+<li>The complete canonical prerelease identifier is equal as well:
+<code>Qleisli 0.3.0-beta</code> pairs with <code>std 0.3.0-beta</code>.</li>
+<li>An official mixed pair is not supported.</li>
+<li>To select an older or a newer canonical std, a user must select the
+matching Qleisli toolchain. Std is not a standard-library dependency that a
+user upgrades independently.</li>
+<li>A normal user manifest does not independently choose std.</li>
+<li>A user qrate keeps an independent version.</li>
+<li>The pairing is a privilege of distribution and compatibility only. The
+ordinary <code>.qli</code> of std follows the same checking as user source and
+third-party source: source, public-effect, evidence and native checking.</li>
+<li>The std namespace cannot hide an observation or introduce a primitive.</li>
+<li>Resolution records, reproducibility records and official release records
+must make the effective pairing of toolchain and std unambiguous. They must
+reject a stale or mismatched supported pair.</li>
+<li>Source version synchronization and release assertions are necessary. They
+do not implement qargo resolution, and they do not turn matching version
+strings into a semantic proof.</li>
+</ul>
+<p>The <a href="stdlib.html">stdlib contracts</a> and the
+<a href="primitive-boundary.html">primitive boundary</a> govern the meanings of std.</p>
+<h3 id="the-embedded-std-manifest"><a class="header" href="#the-embedded-std-manifest">The embedded std manifest</a></h3>
+<p>The compiler embeds one fixed ordinary std source set and the manifest of
+that set. The <strong>embedded-manifest gate</strong> is the check that the loader applies
+to that manifest before it loads the set.</p>
+<p>Rules:</p>
+<ul>
+<li>The embedded manifest must declare the string <code>[qrate].name = "std"</code>.</li>
+<li>The embedded manifest must declare a string <code>[qrate].version</code> exactly equal
+to the compile-time product version of the compiler. The equality includes
+prerelease and build identifiers.</li>
+<li>The gate rejects an embedded manifest that breaks either rule with the
+code <code>project</code>.</li>
+<li>A user manifest keeps its normal schema and edition checks and its
+independent package version.</li>
+<li>Release synchronization includes <code>stdlib/Qargo.toml</code>.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The private function <code>check_bundled</code> in
+<code>src/frontend/project/edition.rs</code> is the gate. It parses the immutable
+embedded bytes once. Its cached result applies only to the embedded
+manifest. The gate caches no source judgment and no native acceptance
+judgment.</p>
+</blockquote>
+<h3 id="the-bundled-std-descriptor"><a class="header" href="#the-bundled-std-descriptor">The bundled std descriptor</a></h3>
+<p>A Rust caller can ask which std the linked library carries. The read-only
+Rust API <code>frontend::project::bundled_std()</code> answers after the
+embedded-manifest gate. It returns a privately constructed descriptor.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Accessor</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>product_version()</code></td><td>The complete product version of the linked library</td></tr>
+<tr><td><code>name()</code>, <code>version()</code>, <code>edition()</code></td><td>The name, the version and the edition of std</td></tr>
+<tr><td><code>manifest()</code></td><td>The exact embedded manifest</td></tr>
+<tr><td><code>modules()</code></td><td>The complete inventory: the canonical name and the source of every embedded module</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The descriptor describes the embedded bytes of the linked library.</li>
+<li>The call performs no toolchain selection, no source check, no native
+check, no serialization and no digest computation.</li>
+<li>The descriptor issues no accepted handle, no semantic evidence, no
+authenticated release identity and no native binary attestation.</li>
+</ul>
+<h3 id="records-of-the-qargo-tool"><a class="header" href="#records-of-the-qargo-tool">Records of the qargo tool</a></h3>
+<p>qargo is a separate tool. Its
+<a href="https://github.com/MGYamada/qargo/blob/bbce16aed2830eb52cc78ac4b8873e1817663736/docs/linked-qleisli-030.md">linked-Qleisli contract</a>
+specifies how qargo records the linked pair. This repository does not
+produce these records.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Record or field</th><th>Content that the qargo contract specifies</th></tr>
+</thead>
+<tbody>
+<tr><td><code>qargo.result</code> and <code>qargo.build-record</code>, version 2</td><td>The linked pair of Qleisli and std</td></tr>
+<tr><td><code>effective_std</code></td><td>The complete Qleisli and std versions, the std edition, the exact manifest digest, the canonical module and source digests, and a content identity</td></tr>
+<tr><td><code>source_configuration_id</code></td><td>A separate binding of the captured source configuration</td></tr>
+</tbody>
+</table>
+</div>
+<p>The qargo contract also specifies these points:</p>
+<ul>
+<li>Nonempty checking retains one <code>Project</code> and its explicit edition. Build
+metadata uses that same retained <code>Project</code>.</li>
+<li>Empty inputs retain no native acceptance claim.</li>
+<li>Reusing an artifact with changed versions, std contents, module inventory
+or configuration fails without overwriting the artifact.</li>
+<li>The diagnostic for a dependency table belongs to qargo. It explains that
+canonical std comes with the linked Qleisli toolchain, and that another std
+version requires its matching toolchain. The <code>qleisli</code> CLI does not produce
+this diagnostic.</li>
+</ul>
+<p>Rules:</p>
+<ul>
+<li>These records describe observed inputs and checking. A hash is not
+publisher authentication and not mathematical evidence.</li>
+</ul>
+<h2 id="release-identity-and-compatibility"><a class="header" href="#release-identity-and-compatibility">Release identity and compatibility</a></h2>
+<p>The ecosystem has three products, and each has a version of its own. This
+section says how an installation identifies a release of each and checks
+that the releases fit together. Select one complete release of each product.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Product</th><th>Components with the product’s exact release version</th><th>Version authority</th></tr>
+</thead>
+<tbody>
+<tr><td>Qleisli</td><td>Compiler, native checker and canonical std. QLT, QDB and QCP join the same release when shipped.</td><td>Qleisli root Cargo <code>[package].version</code></td></tr>
+<tr><td>qlirgo</td><td><code>qargo</code>, the bundled linter, <code>qlifmt</code> and <code>qlidoc</code></td><td>qlirgo root Cargo <code>[package].version</code></td></tr>
+<tr><td>qleisliup</td><td>The installer and selector use their own release</td><td>qleisliup root Cargo <code>[package].version</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>The adopted name of the linter is <code>qlinties</code>. Existing companion bundles use
+the binary name <code>qlippy</code> until the companion rename ships. The current
+release inventory of Qleisli comprises the compiler, the checker and std.
+QLT, QDB and QCP have planned implementation scope.</p>
+<p>A supported official install, update or rollback selects a complete snapshot
+of a product. Verify the inventory of that snapshot before switching the
+active selection to it. Each bundled component inherits the full version of
+the product, including the prerelease identifier. Reject a snapshot that is
+incomplete or that mixes versions. The exact
+<a href="#canonical-std-and-the-selected-toolchain">canonical std pairing</a> is one
+application of this rule.</p>
+<h3 id="declared-pairing-and-exact-identity"><a class="header" href="#declared-pairing-and-exact-identity">Declared pairing and exact identity</a></h3>
+<p>One release may support a separately versioned release of the other product.
+Resolve that pairing from the machine-readable metadata that the
+distributions supply. Require an explicit declaration for the requested pair
+of Qleisli and qlirgo. Reject an unknown pairing. When a capability is
+declared unavailable, treat it as unavailable and keep the selected
+toolchain.</p>
+<p>The minimum contract uses the following fields. A format may store them
+in a signed index, a distribution manifest or its referenced receipts.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Identity</th><th>Contents</th></tr>
+</thead>
+<tbody>
+<tr><td>Product and release</td><td>The product name, the complete version, and the component inventory with the exact version of each component</td></tr>
+<tr><td>Exact build</td><td>The source revision, the host or target, the SHA-256 and the size of each artifact, and the identities of the emitted compiler/checker build and of the bundled std</td></tr>
+<tr><td>Interfaces</td><td>The supported constitutional edition, the analysis protocol, the artifact schemas and the target/cost-model identities, recorded separately</td></tr>
+<tr><td>Compatibility</td><td>The other product and release that are explicitly supported, the applicable protocol/schema versions or supported ranges, and the availability of capabilities</td></tr>
+<tr><td>Required environment</td><td>The checker, proof/kernel environment and evidence identities for the validation the release claims</td></tr>
+</tbody>
+</table>
+</div>
+<p>Use the artifact identities to check the selected bytes before use. Where a
+result promises reproducibility, retain the exact identities of the source,
+the checker and the artifacts that produced it. A human-facing version
+identifies the release. The manifest and its associated receipts identify
+the exact build.</p>
+<p>qleisliup consumes the declared metadata to select an immutable snapshot.
+The bound std descriptor and native-result identities provide current
+Qleisli coordinates. A linked qlirgo build binds an exact Qleisli package
+version and verifies its actual std and checker. A distribution with both
+standalone and linked checking records the two Qleisli identities separately.
+The registry artifact and host checks control which linked pair may be
+described as an official distribution.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> The qleisliup toolchain manifest records
+<code>qleisli</code>, <code>std</code>, <code>qargo</code> and <code>qargo_checker_qleisli</code> separately. Its
+release manifest binds a host archive by SHA-256 and size. The Qleisli
+distribution report binds the checked commit and tree to the crate digest,
+complete source archive and installation checks. A qleisliup development
+link selects a local directory under its own inspection contract.</p>
+</blockquote>
+<h3 id="version-drift-checks"><a class="header" href="#version-drift-checks">Version-drift checks</a></h3>
+<p>A product repeats its version in several files, and the copies can drift
+apart. Derive or check repeated manifests and runtime version fields from
+the root version of their product. The shared documentation and edition
+checks of Qleisli reject drift in the native, Python and Lean version fields
+and in the bundled std. The packaged source and installed binaries run
+separate distribution checks. The source verifier and the package verifier
+of qlirgo check the component manifests and all four executables against the
+root version of qlirgo. The complete supported-host distribution retains the
+exact build and installation evidence.</p>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<p>Scope:</p>
+<ul>
+<li>This chapter introduces no registry, no dependency solver, no feature
+system, no build hook, no API for foreign execution and no format for
+accepted handles.</li>
+<li>These rules admit no constitutional interpretation.</li>
+</ul>
+<p>Limits of the implementation:</p>
+<ul>
+<li>QLT, QDB and QCP have their own implementation scope. Listing their roles
+does not make them available.</li>
+<li>The preferred in-language generator is a typed static and meta layer. The
+<a href="static-language.html">bounded static fragment</a> does not implement that
+general system.</li>
+<li>The module-import rules are not a completed qrate dependency model.
+Frontend work on module and import ergonomics does not implement qrate
+dependency resolution.</li>
+<li>Two tasks are separate work: general resolution across qrates, and reuse
+of evidence that does not depend on storage.</li>
+<li>This chapter implements no external build action.</li>
+<li>A qrate selection holds the identity of its directory on Unix only. Other
+targets rely on their documented filesystem trust assumption.</li>
+<li>A capture of a manifest is not a snapshot of filesystem contents. The
+contents of a source file may change concurrently during loading.</li>
+<li>A capture is not a complete resolved dependency or configuration identity.
+Immutable retained program snapshots and evidence snapshots are separate
+from the directory selection.</li>
+<li>The embedded-manifest gate does not resolve external qrates.</li>
+<li>A source-root path, a module-import graph, a private source snapshot or a
+successful check does not establish a complete resolved qrate graph.</li>
+<li>The embedded-manifest gate and the qargo records bind the linked pair of
+toolchain and std. A prerelease candidate can exercise this pairing with
+the exact checked Qleisli crate and the four locally built companion tools.
+The official linked distribution requires the registry package and
+supported-host installation evidence.</li>
+<li>The finite source and QLV3 paths bind the declared edition. The
+companion qargo manifest gate uses the same explicit edition rule.
+The final release verification binds these checks to one candidate.</li>
+<li>Product-version checks, source hashes and this chapter do not replace
+native checking. They do not implement QLT.</li>
+</ul>
+<p>Tests:</p>
+<ul>
+<li><code>tests/editions.rs</code> checks edition selection, captured manifests, the
+manifest limit, the aggregate budget and the bundled std descriptor.</li>
+<li><code>tests/review_v027.rs</code> checks the warning for an unknown manifest key.
+<code>tests/review_v026.rs</code> and <code>tests/review_v024.rs</code> check the rules for
+<code>[source].root</code>.</li>
+<li>The unit tests of <code>src/frontend/project/edition.rs</code> check the embedded std
+manifest.</li>
+</ul>
+<p>Proof status:</p>
+<ul>
+<li>The source checks and the native checks implement parts of this boundary.
+They are not a proof of every pipeline.</li>
+<li>This chapter proves no general relocation theorem and no general
+source-preservation theorem.</li>
+<li>The two admitted scoped QLV1 guarantees are protected.</li>
+<li>These rules discharge none of the broader QS, PR, RS and EXACT
+obligations. Those obligations are pending under their recorded premises.
+So are the resource theorems and the general theorems of source, target
+and runtime preservation.</li>
+<li>The six boundary Issues have their individual acceptance duties and
+regression duties. This chapter does not close their umbrella, and it does
+not complete a qrate ecosystem.</li>
+</ul>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>This chapter applies the decisions of six boundary Issues:
+<a href="https://github.com/MGYamada/Qleisli/issues/169">#169</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/170">#170</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/172">#172</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/173">#173</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/174">#174</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/171">#171</a>. It was written for
+the product version 0.3.0-beta.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/170">#170</a> holds the qrate
+contract, and <a href="https://github.com/MGYamada/Qleisli/issues/172">#172</a> holds
+the canonical-identity distinctions. Module and import ergonomics are the
+subject of <a href="https://github.com/MGYamada/Qleisli/issues/65">#65</a>.</li>
+<li>The typed static and meta layer is the subject of
+<a href="https://github.com/MGYamada/Qleisli/issues/60">#60</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/61">#61</a>.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/164">#164</a> holds the explicit
+contract, evidence, capabilities and resource obligations of a runtime
+foreign provider.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/171">#171</a> tracks the official
+registry, package and native installation checks and the supported-host
+extraction checks.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/255">#255</a> tracks the edition
+binding of native acceptance, alongside
+<a href="https://github.com/MGYamada/Qleisli/issues/137">#137</a>. The QLV3 and helper
+migration and the authorized qargo minimum landed under it.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/230">#230</a> defines the three
+release domains. <a href="https://github.com/MGYamada/Qleisli/issues/231">#231</a>
+defines the release and compatibility metadata. The analysis protocol work
+in <a href="https://github.com/MGYamada/Qleisli/issues/106">#106</a> and tool integration
+in <a href="https://github.com/MGYamada/Qleisli/issues/107">#107</a> have their own
+interface versions. <a href="https://github.com/MGYamada/Qleisli/issues/615">#615</a>
+records the linter naming decision.</li>
+<li>The qargo contract that this chapter links is the beta development contract
+of that tool, pinned to one commit.</li>
+</ul>
+<p>Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../reference/prelude.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/elaboration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../reference/prelude.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/elaboration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

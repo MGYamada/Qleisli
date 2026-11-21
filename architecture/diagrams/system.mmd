@@ -1,0 +1,24 @@
+---
+config:
+  theme: neutral
+  htmlLabels: false
+  flowchart:
+    useMaxWidth: false
+    nodeSpacing: 24
+    rankSpacing: 32
+    minNodeWidth: 70
+    wrappingWidth: 155
+---
+flowchart TB
+    accTitle: Qleisli system architecture
+    accDescr: Source and external formats reach the native verifier through the Rust host. Successful execution checks authorize simulation or supported export.
+    Source["Qleisli project"] --> Compiler["Rust compiler"]
+    Input["Raw IR or foreign input"] --> Adapter["Rust input adapters"]
+    Compiler --> Proposal["Artifact and evidence"]
+    Adapter --> Proposal
+    Proposal --> Verifier["Native Lean verifier"]
+    Verifier -->|Execution authorized| Accepted["Accepted execution view"]
+    Accepted --> Sim["Reference simulation"]
+    Accepted --> Export["Supported export"]
+    classDef acceptance fill:#e5f3ed,stroke:#35694f,color:#173f2b,stroke-width:2px
+    class Verifier,Accepted acceptance

@@ -1,0 +1,1658 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Static values, constraints and bounded specialization - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="static-values-constraints-and-bounded-specialization"><a class="header" href="#static-values-constraints-and-bounded-specialization">Static values, constraints and bounded specialization</a></h1>
+<p>A <strong>static computation</strong> is a computation that elaboration performs before
+any runtime step. It is deterministic and it terminates. Its result is one of
+four things: an admitted size, an exact constant, a closed description of an
+operation, or an input to the check of a constraint or of a capability.</p>
+<p>A program uses static computations to write one declaration for many sizes
+or operations. A function over <code>Q&lt;Bits&lt;n&gt;&gt;</code> is such a declaration: its caller
+fixes <code>n</code> before the program runs.</p>
+<p>This chapter specifies the static computations of edition 2026. It covers
+static parameters, natural expressions, <code>requires</code> clauses, static bindings,
+Nat helpers, static branches and folds, operation descriptions, and the
+specialization of a generic declaration. The
+<a href="type-model.html">type boundary</a> and the <a href="authority.html">authority hierarchy</a>
+take precedence over this chapter. The chapter does not define a general
+compile-time programming language.</p>
+<p>Two terms recur in every section:</p>
+<ul>
+<li>The <strong>common judgment</strong> is the check that the checker runs on the original
+source of every declaration. It runs before every concrete elaboration.</li>
+<li>A <strong>closed instance</strong> is a declaration with a concrete value bound to each
+of its static parameters.</li>
+</ul>
+<p>The CLI checks source through two <a href="diagnostics.html#routes">routes</a>, the project
+route and the selected-entry route. Both run the common judgment. Each
+elaborates closed instances within its own limits.</p>
+<p>When a program breaks a rule, the common checker reports a class. The rule
+names that class in parentheses, as in (<code>size</code>). The code <code>parse</code> marks a
+syntax error. <a href="diagnostics.html#codes">Codes</a> maps each class to the <code>code</code>
+that a route reports.</p>
+<p><a id="static-categories-and-binding"></a></p>
+<h2 id="static-categories"><a class="header" href="#static-categories">Static categories</a></h2>
+<p>The category of a static value says what the value describes: a size, a
+type tree or an operation. A static computation reads the explicit static
+environment and the admitted ordinary finite labels. Static values have three
+categories.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Category</th><th>Values</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Nat</code></td><td>A nonnegative static integer. It is not a runtime integer and not an ordinary <code>Bit</code>.</td></tr>
+<tr><td><code>Basis</code></td><td>An exact finite type tree.</td></tr>
+<tr><td><code>Op&lt;A&gt;</code></td><td>An <strong>operation description</strong>: a static description of an operation over the tree <code>A</code>.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The explicit <a href="type-model.html#general-pure-operation-arrows"><code>Op&lt;A -&gt; B&gt;</code> form</a>
+names an exact input tree and an exact output tree separately. The slot after
+its comma holds a Meaning refinement. A <strong>provider</strong> is the operation that a
+static argument supplies for an <code>Op</code> parameter.</p>
+<p>Rules:</p>
+<ul>
+<li>A static computation must not read a live quantum owner, a runtime input or
+the host environment. It has no execution authority.</li>
+<li>Elaboration normalizes or resolves each static result before canonical Core.</li>
+<li>No value of a static category is a live <code>Q&lt;A&gt;</code> owner.</li>
+<li>A runtime value, a measurement result or a quantum owner must not determine
+a static size, a provider, a static condition or a loop bound.</li>
+<li>An operation description must satisfy its independent evidence obligations
+and its native acceptance obligations.</li>
+<li>An abstract <code>Basis</code> parameter is opaque. Finiteness alone permits no type
+reflection, preparation, tuple decomposition, control or inverse.
+<a href="type-model.html#inference-and-generic-responsibilities">Generic responsibilities</a>
+give the independent access and specialization rules.</li>
+<li>Belonging to the class of static computations grants a form no syntax and
+no result type. Each form that this chapter specifies keeps its own
+contract.</li>
+</ul>
+<h2 id="static-parameters"><a class="header" href="#static-parameters">Static parameters</a></h2>
+<pre><code class="language-text">StaticParameters ::= "[" StaticParameter ( "," StaticParameter )* "]"
+StaticParameter  ::= "const" Identifier ":" StaticKind
+StaticKind       ::= "Nat" | "Basis"
+                   | "Op" "&lt;" BasisType ( "-&gt;" BasisType )? ( "," MeaningName )? "&gt;"
+</code></pre>
+<p>A <strong>static parameter</strong> is a compile-time parameter of a declaration. A
+declaration takes one for each size, type tree or operation that a caller or
+the host chooses before the program runs. The contextual marker <code>const</code>
+introduces a static parameter, as in <code>const n: Nat</code> followed by
+<code>const U: Op&lt;Bits&lt;n&gt;&gt;</code> in a function header. The <strong>kind</strong> of a static
+parameter is the annotation after its colon. At a call, brackets supply the
+static arguments and parentheses supply the runtime arguments.</p>
+<p>Rules:</p>
+<ul>
+<li>In a parameter header, <code>const</code> is not a runtime value, a storage
+declaration or a general compile-time function API. An ordinary function
+or a local named <code>const</code> keeps ordinary name resolution.</li>
+<li>Static parameters are explicit, positional and ordered. The kind of a
+parameter may refer only to earlier parameters. For example, <code>n: Nat</code> must
+precede <code>U: Op&lt;Bits&lt;n&gt;&gt;</code>. A kind that refers to a later parameter is a
+forward kind dependency, and the checker rejects it.</li>
+<li>Two static parameters of one declaration must not share a name (<code>binding</code>).</li>
+<li>A source call must supply the complete ordered list of static arguments
+(<code>static-arity</code>).</li>
+<li>When the host selects an entry, it must supply the complete set of named
+bindings (<code>static</code>).</li>
+<li>The checker infers no missing binding from a matching width or from a
+provider name.</li>
+<li>The checker rejects the marker <code>static</code> in a parameter header, and it
+reports the error at that marker (<code>parse</code>). This also holds in a header
+that mixes <code>static</code> with <code>const</code>. The diagnostic tells the author to write
+<code>const</code> instead; see <a href="#retired-spellings">Retired spellings</a>. The forms
+<code>if static</code>, <code>qfor static</code>, <code>for static</code> and <code>static let</code> keep the word
+<code>static</code>.</li>
+</ul>
+<p>The checker accepts this declaration, which declares <code>n</code> before the kind that
+uses it:</p>
+<pre><code class="language-qli">pub unitary fn use_op[const n: Nat, const U: Op&lt;Bits&lt;n&gt;&gt;](q: Q&lt;Bits&lt;n&gt;&gt;) -&gt; Q&lt;Bits&lt;n&gt;&gt; requires Applicable(U) { U(q) }
+</code></pre>
+<p>The checker rejects a forward kind dependency:</p>
+<pre><code class="language-qli">pub unitary fn f[const U:Op&lt;Bits&lt;n&gt;&gt;,const n:Nat](q:Q&lt;Bits&lt;n&gt;&gt;)-&gt;Q&lt;Bits&lt;n&gt;&gt; requires Applicable(U){U(q)}
+</code></pre>
+<p>The checker rejects the marker <code>static</code> in a header (<code>parse</code>):</p>
+<pre><code class="language-qli">pub fn f[static n:Nat](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q}
+</code></pre>
+<h2 id="natural-expressions-and-constraints"><a class="header" href="#natural-expressions-and-constraints">Natural expressions and constraints</a></h2>
+<pre><code class="language-text">Natural       ::= NaturalFactor ( ( "+" | "-" ) NaturalFactor )*
+NaturalFactor ::= NaturalAtom ( "*" NaturalAtom )*
+NaturalAtom   ::= DecimalLiteral | Name | HelperCall | "(" Natural ")"
+Comparison    ::= Natural ( "==" | "!=" | "&lt;" | "&lt;=" | "&gt;" | "&gt;=" ) Natural
+</code></pre>
+<p>A <strong>natural expression</strong> denotes a static <code>Nat</code>. A program writes one where
+it states a size, a fold bound or a repetition count, and on each side of a
+comparison. A natural expression consists of nonnegative decimal literals,
+static Nat names, parentheses, <code>+</code>, <code>-</code>, <code>*</code> and calls of checked acyclic
+<a href="#provisional-bounded-nat-helpers">Nat helpers</a>. Multiplication binds more
+tightly than addition and subtraction. Operators of one level associate to
+the left. A natural expression is not runtime arithmetic.</p>
+<p>A <strong>premise</strong> is a comparison that the checker may assume. The
+<strong>constraint context</strong> of a program point is the set of premises in force
+there.</p>
+<h3 id="arithmetic"><a class="header" href="#arithmetic">Arithmetic</a></h3>
+<p>The arithmetic of natural expressions is exact. The common judgment checks
+an expression in its symbolic form, before a closed instance supplies
+concrete values.</p>
+<p>Rules:</p>
+<ul>
+<li>A natural expression must not use division, remainder or arbitrary
+exponentiation. The grammar admits none of them.</li>
+<li>Symbolic normalization turns a natural expression into an exact affine
+expression over the original static binder identities: a constant plus a
+constant multiple of each binder. It folds constants. It accepts
+multiplication by an expression that normalizes to a constant.</li>
+<li>The checker rejects a product of two expressions that each have nonzero
+symbolic terms. Such a product is nonlinear arithmetic (<code>unsupported</code>).
+The checker rejects <code>n*n</code> even if a caller later supplies a small concrete
+<code>n</code>.</li>
+<li>Subtraction is exact. It never wraps and never saturates. Before
+normalization proceeds, the constraint context must establish that the
+right operand is no greater than the left operand (<code>size</code>). For example,
+<code>n-1</code> requires a guard such as <code>n &gt;= 1</code>.</li>
+<li>The checker rejects an expression that leaves a nonnegativity obligation
+unresolved. Substituting a convenient value later does not repair an
+invalid generic definition.</li>
+<li>Nat arithmetic has no modular overflow. A value that exceeds the capacity
+of its representation is a capacity failure (<code>limit</code>). The failure gives
+no permission to wrap, truncate or approximate. <a href="#capacities">Capacities</a>
+states each representation.</li>
+<li>The checker rejects a concrete subtraction with a negative result.</li>
+</ul>
+<p>The checker accepts this declaration, because <code>2*n+1</code> and <code>n+n+1</code> denote the
+same size:</p>
+<pre><code class="language-qli">pub unitary fn f[const n: Nat](q: Q&lt;Bits&lt;2*n+1&gt;&gt;) -&gt; Q&lt;Bits&lt;n+n+1&gt;&gt; { q }
+</code></pre>
+<p>The checker rejects the nonlinear size (<code>unsupported</code>):</p>
+<pre><code class="language-qli">pub unitary fn f[const n: Nat](q: Q&lt;Bits&lt;n*n&gt;&gt;) -&gt; Q&lt;Bits&lt;n*n&gt;&gt; { q }
+</code></pre>
+<p>The checker rejects the unguarded subtraction (<code>size</code>):</p>
+<pre><code class="language-qli">pub unitary fn f[const n: Nat](q: Q&lt;Bits&lt;n-1&gt;&gt;) -&gt; Q&lt;Bits&lt;n-1&gt;&gt; { q }
+</code></pre>
+<h3 id="comparisons-and-the-constraint-context"><a class="header" href="#comparisons-and-the-constraint-context">Comparisons and the constraint context</a></h3>
+<p>A comparison relates two natural expressions. The comparisons are <code>==</code>,
+<code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code> and <code>&gt;=</code>. A program states a comparison as a premise of
+a declaration or as the guard of a static branch. The checker then uses the
+constraint context to decide whether a required fact follows.</p>
+<p>Rules:</p>
+<ul>
+<li>Declared premises and static branch guards extend the constraint context.</li>
+<li>The premises of a callee must follow from the constraint context of the
+call (<code>size</code>).</li>
+<li>Two symbolic sizes are equal only when the checker establishes the
+implications in both directions. Equal physical width does not establish
+type equality. A failed search for a counterexample does not establish it
+either.</li>
+<li>The checker rejects a program when it does not establish a required
+implication.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/linear.rs</code> holds the implication
+procedure. The procedure is bounded, exact and linear, and it relaxes the
+integer constraints to rational ones. A successful inconsistency check
+establishes an obligation. An incomplete search supplies no evidence.
+Ordered binder identities and deterministic collections fix its traversal
+and its tie-breaking. <code>src/frontend/check/normalize.rs</code> normalizes natural
+expressions for the common judgment.</p>
+</blockquote>
+<h2 id="unified-requires-obligations"><a class="header" href="#unified-requires-obligations">Unified <code>requires</code> obligations</a></h2>
+<pre><code class="language-text">RequiresClause      ::= "requires" Requirement ( "," Requirement )*
+Requirement         ::= Comparison | CapabilityPredicate
+CapabilityPredicate ::= ( "Applicable" | "Adjointable" | "Controllable" ) "(" Identifier ")"
+</code></pre>
+<p>A <code>requires</code> clause states what a declaration needs from its static
+arguments. The checker checks the body under the entries of the clause, and
+it checks that each caller establishes them. One comma-separated clause
+holds two kinds of entries: numeric entries and capability requirements. A
+<strong>numeric entry</strong> is one of the six comparisons. Both kinds use the common
+judgment, and both use the substitution checks of a closed instance.</p>
+<p>A <strong>capability</strong> is one of the three ways to use the provider of an operation
+description: Applicable, Adjointable and Controllable. A
+<strong>capability requirement</strong> is one of <code>Applicable(U)</code>, <code>Adjointable(U)</code> and
+<code>Controllable(U)</code> in a <code>requires</code> clause.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Capability predicate</th><th>Capability</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Applicable(U)</code></td><td>Applicable: forward application</td></tr>
+<tr><td><code>Adjointable(U)</code></td><td>Adjointable: adjoint application</td></tr>
+<tr><td><code>Controllable(U)</code></td><td>Controllable: controlled application</td></tr>
+</tbody>
+</table>
+</div>
+<p>A capability requirement describes justified access to the actual provider.
+It does not describe the Meaning of the provider or its semantic unitarity.
+Those are separate.</p>
+<p>Rules:</p>
+<ul>
+<li>A capability requirement must name an operation parameter of its
+declaration. The checker rejects an unknown name (<code>name</code>). It rejects a
+parameter of another kind (<code>access</code>).</li>
+<li>A clause must not repeat a capability requirement (<code>access</code>).</li>
+<li>Each capability is independent. Another capability requirement, an effect
+annotation or a Meaning refinement supplies none.</li>
+<li>The three adjective names are contextual in this clause. They construct no
+operator, and an annotation alone grants no access.</li>
+<li>The checker rejects the spellings <code>Apply(U)</code>, <code>Adjoint(U)</code> and
+<code>Controlled(U)</code> (<code>parse</code>). Each diagnostic is located and says how to
+migrate; see <a href="#retired-spellings">Retired spellings</a>.</li>
+<li>A clause must not hold an arbitrary Boolean formula or a user-defined
+constraint predicate. The clause admits no broader const language.</li>
+</ul>
+<p>The order of the entries matters, because a numeric entry can guard the
+arithmetic of a later entry.</p>
+<p>Rules:</p>
+<ul>
+<li>The checker normalizes numeric entries in source order. While it checks the
+arithmetic of an entry, only the preceding numeric entries extend the
+initial Nat context.</li>
+<li>A later guard does not repair an earlier unguarded subtraction. Thus
+<code>requires n &gt;= 1, n-1 &lt;= 3</code> is well formed, and the checker rejects
+<code>requires n-1 &lt;= 3, n &gt;= 1</code> at <code>n-1</code> (<code>size</code>).</li>
+<li>A capability requirement between two numeric entries adds no numeric fact
+and removes none.</li>
+<li>After this ordered check, the normalized numeric facts form a conjunction.
+The capability requirements form the explicit capability assumptions of the
+declaration.</li>
+<li>The checker checks the original body under those facts, including both
+static arms and empty fold bodies.</li>
+</ul>
+<p>A generic call and a closed instance each discharge the clause of the
+declaration that they use.</p>
+<p>Rules:</p>
+<ul>
+<li>A generic call substitutes exact static arguments simultaneously. The
+caller context must establish every numeric premise of the callee (<code>size</code>)
+and every capability that the callee requires (<code>access</code>).</li>
+<li>The checker rejects an unresolved premise or a missing capability at its
+source obligation.</li>
+<li>A closed instance separately evaluates the checked numeric facts. It checks
+the actual providers before the elaboration of the concrete body.</li>
+<li>The checker rejects a false numeric premise (<code>size</code>). The diagnostic
+identifies three things: the selected entry or the resolved provider, the
+failed predicate, and the original location of its clause.</li>
+<li>A convenient closed instance does not validate an ill-formed generic
+declaration.</li>
+<li>These obligations compose with opaque <code>Basis</code> parameters, exact <code>Bits&lt;n&gt;</code>
+sizes and the
+<a href="type-model.html#inference-and-generic-responsibilities">provider rules</a>.
+They introduce no runtime condition, owner conversion, semantic evidence or
+native acceptance rule.</li>
+</ul>
+<p>The checker accepts this declaration. The guard <code>n &gt;= 1</code> precedes the
+subtraction, and <code>Applicable(U)</code> permits the application:</p>
+<pre><code class="language-qli">fn step[const n: Nat, const U: Op&lt;Bits&lt;n&gt;&gt;](q: Q&lt;Bits&lt;n&gt;&gt;) -&gt; Q&lt;Bits&lt;n&gt;&gt;
+requires n &gt;= 1, Applicable(U), n-1 &lt;= 3 {
+    U(q)
+}
+</code></pre>
+<p>The checker rejects a repeated capability requirement (<code>access</code>):</p>
+<pre><code class="language-qli">pub unitary fn f[const U: Op&lt;Bit&gt;](q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; requires Applicable(U), Applicable(U) { q }
+</code></pre>
+<p>The checker rejects a Boolean connective in a clause (<code>parse</code>):</p>
+<pre><code class="language-qli">pub unitary fn f[const n:Nat](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt; requires n &gt;= 1 &amp;&amp; n &lt;= 2 {q}
+</code></pre>
+<p>The checker accepts this declaration. It rejects a closed instance with <code>n</code>
+equal to 0 at <code>n &gt;= 1</code>, and it rejects one with <code>n</code> equal to 9 at <code>n &lt;= 2</code>
+(<code>size</code>):</p>
+<pre><code class="language-qli">pub unitary fn bounded[const n:Nat](q:Q&lt;Bits&lt;n&gt;&gt;)-&gt;Q&lt;Bits&lt;n&gt;&gt;
+        requires n &gt;= 1, n &lt;= 2 {q}
+</code></pre>
+<h2 id="sizes-and-zero-width"><a class="header" href="#sizes-and-zero-width">Sizes and zero width</a></h2>
+<p>This section states the rules for the size <code>n</code> of a type <code>Bits&lt;n&gt;</code> and for
+types of zero width. A type of zero width holds no qubit. Its quantum owner
+is linear all the same.</p>
+<p>Rules:</p>
+<ul>
+<li>The size of <code>Bits&lt;n&gt;</code> must be an admitted natural expression.</li>
+<li>A closed instance keeps its exact evaluated size and its constructor tag.</li>
+<li><code>Bits&lt;0&gt;</code> is a valid type. It is distinct from <code>Unit</code>. <code>Bits&lt;1&gt;</code> is distinct
+from <code>Bit</code>.</li>
+<li>An ordinary zero-width value has no quantum owner. <code>Q&lt;Bits&lt;0&gt;&gt;</code> and
+<code>Q&lt;Unit&gt;</code> have linear owner identities.</li>
+<li>Zero width authorizes no copying, no implicit dropping and no phase erasure.</li>
+<li>Explicit zero-width consumption and structural Unit maps keep their
+specified effects and their exact action.</li>
+</ul>
+<h2 id="static-bindings"><a class="header" href="#static-bindings">Static bindings</a></h2>
+<pre><code class="language-text">StaticLet ::= "static" "let" Identifier "=" Natural ";"
+</code></pre>
+<p>A <strong>static binding</strong> names a natural expression inside an ordinary function
+block, as in <code>static let name = expression;</code>. Use one to compute a size or a
+bound once and refer to it by name. The initializer uses the static context
+and the same exact natural arithmetic as sizes and fold bounds.</p>
+<p>Rules:</p>
+<ul>
+<li>The initializer sees the preceding bindings, including an enclosing static
+parameter and an enclosing fold index.</li>
+<li>The initializer must not read a runtime classical value or a quantum owner.</li>
+<li>A static binding must not shadow another visible lexical binding
+(<code>shadow</code>).</li>
+<li>The name of a static binding ends at its containing block. A program
+cannot use the name as a runtime value (<code>type</code>).</li>
+<li>Definition checking visits a static binding wherever it stands, also in
+dead arms and in empty fold bodies.</li>
+<li>A closed instance evaluates a static binding with the checked Nat evaluator
+that it uses for generic sizes and fold bounds.</li>
+<li>A static binding produces no runtime instruction, owner, operation access
+or trusted evidence.</li>
+</ul>
+<p>For example, <code>static let rounds = n+1;</code> may supply a fold bound. Within a
+fold, <code>static let next = i+1;</code> is evaluated for the current index. In the
+body below, <code>static let width = n+n;</code> supplies a normalized size to a checked
+generic definition:</p>
+<pre><code class="language-qli">static let width = n+n;
+identity[width](q)
+</code></pre>
+<p>The checker accepts this source, which holds that body with one more static
+binding:</p>
+<pre><code class="language-qli">pub unitary fn identity[const n:Nat](q:Q&lt;Bits&lt;n&gt;&gt;)-&gt;Q&lt;Bits&lt;n&gt;&gt;{q}
+pub unitary fn twice[const n:Nat](q:Q&lt;Bits&lt;2*n&gt;&gt;)-&gt;Q&lt;Bits&lt;2*n&gt;&gt;{
+    static let width=n+n; static let normalized=width+0; identity[normalized](q)
+}
+</code></pre>
+<p>The checker rejects a static name that is used as a runtime value:</p>
+<pre><code class="language-qli">pub observe fn main()-&gt;Bit{static let n=1;n}
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> The storage of a static binding is charged to the
+work and storage budgets of the route. On the project route, finite
+lowering erases a checked static binding that the body does not use.</p>
+</blockquote>
+<h2 id="provisional-bounded-nat-helpers"><a class="header" href="#provisional-bounded-nat-helpers">Provisional bounded Nat helpers</a></h2>
+<pre><code class="language-text">NatHelper  ::= "static" "fn" Identifier StaticParameters? "(" ")" "-&gt;" "Nat"
+               RequiresClause? "{" Natural "}"
+HelperCall ::= Name ( "[" ( Natural ( "," Natural )* )? "]" )? "(" ")"
+</code></pre>
+<p>A <strong>Nat helper</strong> is a first-order static function from <code>Nat</code> arguments to a
+<code>Nat</code> result. A program declares one to name a natural expression that
+several sizes, bounds or conditions share.</p>
+<p>Rules:</p>
+<ul>
+<li>A helper must have only explicit static <code>Nat</code> parameters and no runtime
+parameters (<code>static</code>).</li>
+<li>A helper must have the literal result category <code>Nat</code> and one
+natural-expression body (<code>parse</code>). <code>Nat</code> in this position does not become
+an ordinary finite type.</li>
+<li>A helper may call other helpers. The checker accepts a forward reference
+that forms no cycle. Ordinary public and private module visibility applies.</li>
+<li>Two formals of a helper must not share a name (<code>binding</code>).</li>
+<li>A helper must not call itself, directly or through other helpers
+(<code>cycle</code>).</li>
+<li>The checker checks unused and private helper bodies too.</li>
+<li>A Nat helper is not a runtime entry, an ordinary function or a provider
+(<code>static</code>).</li>
+</ul>
+<p>A natural expression calls a helper with a complete positional list of
+static arguments and an empty list of runtime arguments, as in <code>twice[n]()</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>A call must supply one argument for each parameter (<code>static-arity</code>).</li>
+<li>The common judgment normalizes each helper to an exact affine template over
+its original binder identities. Substitution is simultaneous. A caller
+expression is never rewritten again as a callee parameter.</li>
+<li>The caller must establish every premise of the callee before it uses the
+result (<code>size</code>). This holds within a size, another helper, a static
+condition and a fold.</li>
+<li>The refusals of natural arithmetic apply unchanged in a helper and at a
+helper call. They are unproved nonnegativity (<code>size</code>), nonlinear arithmetic
+(<code>unsupported</code>) and symbolic overflow (<code>limit</code>).</li>
+<li>A runtime value, a quantum owner, an operation or a Meaning declaration
+must not supply a helper input. A natural expression must not call one
+(<code>static</code>).</li>
+<li>A computed helper result uses the exact size normalization and the
+specialization rules of every other natural expression.</li>
+</ul>
+<p>The checker accepts both helpers:</p>
+<pre><code class="language-qli">static fn twice[const n: Nat]() -&gt; Nat { n+n }
+static fn previous[const n: Nat]() -&gt; Nat requires n &gt;= 1 { n-1 }
+</code></pre>
+<p>The checker rejects a call that does not establish the premise <code>n &gt;= 1</code>
+(<code>size</code>):</p>
+<pre><code class="language-qli">static fn previous[const n:Nat]()-&gt;Nat requires n&gt;=1 {n-1} pub observe fn main()-&gt;Bit{static let n=previous[0]();0}
+</code></pre>
+<p>The checker rejects a dependency cycle (<code>cycle</code>):</p>
+<pre><code class="language-qli">static fn first()-&gt;Nat{second()} static fn second()-&gt;Nat{first()} pub observe fn main()-&gt;Bit{0}
+</code></pre>
+<p>A helper can index an exact phase schedule. The helper
+<code>static fn exponent[const stage: Nat]() -&gt; Nat { stage+1 }</code> supplies
+<code>phase[1, exponent[i]()]</code> inside a bounded fold. Its result is an exact
+denominator exponent. It is not a floating-point angle and not a runtime
+table.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> The selected-entry route keeps the checked
+templates. They are shared and immutable. The route does not expand a call
+graph into duplicate runtime code. One concrete Nat evaluator serves sizes,
+static bindings and fold bounds. It also evaluates the arguments of a
+helper call and the normalized affine result of the call.
+<code>natural</code> in <code>src/frontend/specialize/elaborate.rs</code> is that evaluator on the
+selected-entry route, and <code>src/frontend/compile/naturals.rs</code> holds the one
+of the project route. Template preparation consumes the budget of the
+common judgment. <a href="#capacities">Capacities</a> states the arithmetic widths and
+the allowances.</p>
+</blockquote>
+<h2 id="static-branches-folds-and-termination"><a class="header" href="#static-branches-folds-and-termination">Static branches, folds and termination</a></h2>
+<h3 id="static-branches"><a class="header" href="#static-branches">Static branches</a></h3>
+<pre><code class="language-text">StaticIf ::= "if" "static" Comparison Block "else" Block
+</code></pre>
+<p>A <strong>static branch</strong> <code>if static comparison { ... } else { ... }</code> selects one
+of two arms by a comparison of natural expressions. Use one when the body of
+a generic declaration depends on a size, as in a separate arm for
+<code>n == 0</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>The checker checks both original source arms, each under its own premise.</li>
+<li>After a closed instance supplies all bindings, the concrete elaborator
+evaluates the comparison and elaborates the selected arm.</li>
+<li>A constant condition hides nothing in the other arm. The checker rejects
+an unresolved name (<code>name</code>), an invalid owner use (<code>ownership</code>) and a
+missing capability (<code>access</code>) in an arm that the condition never selects.</li>
+</ul>
+<p>Each line below is a separate source. The checker rejects both, although the
+condition selects the first arm. The first has an unknown name (<code>name</code>), and
+the second uses an owner twice (<code>ownership</code>):</p>
+<pre><code class="language-qli">pub unitary fn f(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { if static 0 == 0 { q } else { missing(q) } }
+pub unitary fn f(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { if static 0 == 0 { q } else { (q,q) } }
+</code></pre>
+<h3 id="static-folds"><a class="header" href="#static-folds">Static folds</a></h3>
+<pre><code class="language-text">StaticFold ::= ( "for" | "qfor" ) "static" Identifier "in" Natural ".." Natural
+               "carry" Pattern "=" Expr "{" Statement* "yield" ( Expr ";"? )? "}"
+</code></pre>
+<p>A <strong>static fold</strong> threads a value through a finite range of indices. Use one
+to repeat a body a static number of times, where each iteration hands its
+result to the next. The <strong>carry</strong> is the value that the fold threads. The
+fold over quantum owners is spelled
+<code>qfor static k in start..end carry pattern = initial { ... yield result; }</code>.
+The fold over ordinary values is spelled <code>for static</code>, with the same header
+and tail. <code>yield</code> supplies the next carry. A <code>yield</code> without an expression
+supplies <code>()</code>.</p>
+<p>The carry decides the spelling of a fold.</p>
+<p>Rules:</p>
+<ul>
+<li>The carry of <code>qfor static</code> must contain at least one quantum owner
+(<code>type</code>). A zero-width <code>Q&lt;Unit&gt;</code> owner counts. A product of ordinary and
+quantum values is permitted.</li>
+<li>The carry of <code>for static</code> must be ordinary. The checker rejects a quantum
+carry there (<code>type</code>). The diagnostic is located and suggests
+<code>qfor static</code>.</li>
+<li>The
+<a href="source-text.html#diagnostics-at-control-boundaries">control boundary diagnostic</a>
+identifies both carry mismatches and names the corresponding fold syntax.</li>
+<li>The checker rejects <code>qfor</code> without the marker <code>static</code> (<code>parse</code>).</li>
+<li>A fold body must end with <code>yield</code>, also for an empty range (<code>parse</code>).</li>
+</ul>
+<p>The range of a fold is static.</p>
+<p>Rules:</p>
+<ul>
+<li>The range is half-open and must be nonnegative. The constraint context
+must establish <code>end &gt;= start</code> (<code>size</code>).</li>
+<li>A bound must not depend on runtime classical data or on a measurement
+outcome. A fold has no runtime bound.</li>
+<li>A closed instance evaluates the bounds of each fold with the common checked
+evaluator of natural expressions. The specialization capacity and the work
+capacity of its route apply.</li>
+</ul>
+<p>A fold threads its carry explicitly.</p>
+<p>Rules:</p>
+<ul>
+<li>The initializer is evaluated once.</li>
+<li>The carried value has the same exact type tree in every iteration
+(<code>type</code>). A fold converts no carry shape.</li>
+<li>Each iteration receives its declared carry owners. The body must not
+capture an unrelated live owner as hidden carry (<code>ownership</code>).</li>
+<li>A quantum owner outside the carry stays in the caller frame. The body must
+not access it.</li>
+<li>Both arms of a branch in the body must preserve the required owner
+interface and the carry tree.</li>
+<li>The fold returns the threaded value. A range of zero iterations returns the
+evaluated initial value.</li>
+<li>The checker checks the original body for names, types, ownership and
+capabilities, also for a range of zero iterations.</li>
+<li>A fold exit discards nothing implicitly. A fold captures and discards no
+quantum owner implicitly.</li>
+<li>The operations of the body keep the ordinary effect rules and capability
+rules. The fold syntax grants no inverse access and no control access.</li>
+</ul>
+<p>Each line below is a separate source. The checker accepts both. The second
+returns <code>1</code>:</p>
+<pre><code class="language-qli">use std::gate::x; pub unitary fn f[const n:Nat](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{qfor static i in 0..n carry a=q{yield x(a);}}
+pub observe fn main()-&gt;Bit{for static i in 0..3 carry a=0{yield not a;}}
+</code></pre>
+<p>Each line below is a separate source, and the checker rejects each. In order,
+they have a quantum carry in <code>for static</code> (<code>type</code>), an ordinary carry in
+<code>qfor static</code> (<code>type</code>), no marker <code>static</code> (<code>parse</code>), no <code>yield</code> (<code>parse</code>)
+and a hidden capture of <code>r</code> (<code>ownership</code>):</p>
+<pre><code class="language-qli">pub unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{for static i in 0..0 carry a=q{yield a;}}
+pub observe fn main()-&gt;Bit{qfor static i in 0..0 carry a=0{yield a;}}
+pub unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{qfor i in 0..1 carry a=q{yield a;}}
+pub unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{qfor static i in 0..0 carry a=q{a}}
+pub unitary fn f(q:Q&lt;Bit&gt;,r:Q&lt;Bit&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Bit&gt;){let q=qfor static i in 0..0 carry a=q{yield r;};(q,r)}
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> Both spellings lower through one fold
+representation to proposed raw or hierarchical IR. Independent native
+checking then applies. On the project route,
+<code>src/frontend/compile/lower/statics.rs</code> selects the arms and unrolls the
+folds.</p>
+</blockquote>
+<h3 id="termination-of-calls"><a class="header" href="#termination-of-calls">Termination of calls</a></h3>
+<p>This section states the rules for a function that calls itself, directly or
+through other functions. A runtime function may call itself only under a
+checked decrease of its static <code>Nat</code> arguments.</p>
+<p>Rules:</p>
+<ul>
+<li>In a self-call, no checked static <code>Nat</code> argument may increase, and at least
+one must strictly decrease under the guards in force (<code>cycle</code>). The checker
+rejects a self-call in three cases: the call has the same size, no <code>Nat</code>
+argument decreases, or the checker cannot prove the decrease.</li>
+<li>The checker rejects a cycle of mutual dependencies (<code>cycle</code>).</li>
+<li>Concrete specialization rejects a specialization identity that is already
+active (<code>cycle</code>). It applies the aggregate call, depth and work limits
+(<code>limit</code>).</li>
+<li>A total classical declaration has acyclic calls and its separate
+<a href="source-text.html#total-classical-declarations">finite expression grammar</a>.</li>
+<li>The language has no general recursion and no unbounded runtime loop.</li>
+</ul>
+<p>The checker accepts this declaration. The arm that holds the self-call has
+the premise <code>n != 0</code>, which guards <code>n-1</code> and proves the decrease:</p>
+<pre><code class="language-qli">pub unitary fn f[const n: Nat](q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { if static n == 0 { q } else { f[n-1](q) } }
+</code></pre>
+<p>The checker rejects a self-call of the same size (<code>cycle</code>):</p>
+<pre><code class="language-qli">pub unitary fn f[const n: Nat](q: Q&lt;Bits&lt;n&gt;&gt;) -&gt; Q&lt;Bits&lt;n&gt;&gt; { f[n](q) }
+</code></pre>
+<h2 id="finite-runtime-control-and-resources"><a class="header" href="#finite-runtime-control-and-resources">Finite runtime control and resources</a></h2>
+<p>This section describes how each control form bounds the execution of a
+program. For each closed instance, the admitted control forms describe a
+finite execution structure. The rules of this section apply together with
+the type, effect, owner, provider and concrete-profile checks. They enable
+no form that a route refuses.</p>
+<h3 id="control-forms"><a class="header" href="#control-forms">Control forms</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Form</th><th>Termination and resource structure</th></tr>
+</thead>
+<tbody>
+<tr><td>Ordinary <code>if</code></td><td>The program evaluates an ordinary <code>Bit</code> condition and executes one finite arm per history. Both original arms must check, and both must return the same complete result and the same live-owner interface. A choice that depends on a measurement retains every complete history and its weight.</td></tr>
+<tr><td><code>if static</code></td><td>The checker checks both original arms, each under its own premise. Elaboration then selects the arm that the closed static comparison determines. The unselected arm cannot hide a source obligation.</td></tr>
+<tr><td><code>for static</code> and <code>qfor static</code></td><td>The fold evaluates its initializer once, then threads the exact carry through the finite half-open range. A zero range returns that initializer, and the checker checks the original body all the same. A bound cannot depend on runtime classical data or on measurement outcomes.</td></tr>
+<tr><td><code>power(U, count)</code></td><td>The application applies the checked provider a finite, static number of times. The count capacity and the materialization capacity apply. The runtime input is evaluated once. A zero count checks the original provider, its Meaning and the requested capability.</td></tr>
+<tr><td>Ordinary calls</td><td>A call follows the checked dependency rules and the static-specialization rules above. A direct self-call requires that no static <code>Nat</code> argument increases and that at least one has a proved strict decrease. The checker rejects mutual cycles and general recursion. Concrete expansion also enforces its call, depth and work capacities.</td></tr>
+<tr><td>Coherent <code>qif</code> and controlled operation descriptions</td><td>These forms use finite provider bodies. Each body has its independently checked controlled access and its ordered interfaces. The sectors of a coherent selector are not ordinary alternative execution histories. Execution preserves their relative phase and the controlled action.</td></tr>
+<tr><td>Ordinary <code>match</code></td><td>The program selects one arm among the exhaustive, disjoint arms of an ordinary enum value. A <code>match</code> has at most 64 arms. <a href="source-text.html#parsed-finite-type-declarations">Parsed finite type declarations</a> specifies the form.</td></tr>
+<tr><td>Coherent <code>qmatch</code></td><td>The form applies one checked arm for each exact label of a quantum selector. It does not measure the selector. A <code>qmatch</code> has at most 64 arms. <a href="source-text.html#exact-label-coherent-selection">Exact-label coherent selection</a> specifies the form.</td></tr>
+</tbody>
+</table>
+</div>
+<p>This chapter specifies neither <code>match</code> nor <code>qmatch</code>. Each form executes in
+the bounded profiles that its own section states, within the native-transport
+boundaries of that section. The rules of this section neither widen nor
+narrow those profiles.</p>
+<h3 id="owners-in-branches-and-iterations"><a class="header" href="#owners-in-branches-and-iterations">Owners in branches and iterations</a></h3>
+<p>The rules below say how a branch and an iteration treat quantum owners.</p>
+<p>Rules:</p>
+<ul>
+<li>Each branch and each iteration must respect its complete declared owner
+interface and the surrounding caller frame. This includes zero-width owners
+and correlations with an external reference.</li>
+<li>Declared consumption and fresh returned owners keep their operation
+contracts.</li>
+<li>Internal workspace must satisfy its declared consumption contract or its
+declared return contract.</li>
+<li>An empty fold, an unselected arm or a successful measurement result grants
+no implicit discard, reset or clean release.</li>
+<li>Exact clean release keeps its all-input, reference-safe zero-return
+obligation.</li>
+<li>These rules also apply when a finite body contains further branches, folds
+or calls.</li>
+</ul>
+<h3 id="work-and-storage-bounds"><a class="header" href="#work-and-storage-bounds">Work and storage bounds</a></h3>
+<p>The rules below say how a bound on work or on storage composes across the
+control forms. A <strong>per-history work measure</strong> is an additive measure of the
+work of one execution along one history.</p>
+<p>Rules:</p>
+<ul>
+<li>For a per-history work measure, the bound of a sequence is the sum of the
+bounds of its parts.</li>
+<li>The bound of a finite fold is the finite sum of the bounds of its
+iterations.</li>
+<li>The bound of an ordinary conditional is the overhead of its condition and
+its merge, plus the maximum of the bounds of its arms.</li>
+<li>These are composition rules for a declared measure. They are not target
+costs inferred from source spelling.</li>
+<li>Whole-ensemble evaluation and checking may process both arms and all
+histories. They require their own bounds.</li>
+<li>The resource cost of coherent control must account for the controlled
+implementation that realizes it. Neither the cheaper sector nor the
+ordinary conditional rule on the two source arms gives that cost.</li>
+<li>Peak live storage follows the lifetimes of owners and workspace, including
+the caller frame. A sum of separate peaks gives only a conservative upper
+bound.</li>
+<li>Resource Safety can quantify over this finite structure for the specified
+closed instance.</li>
+<li>A quantitative claim must bind the artifact, the target, the measures, the
+schedule and the checked bounds that the
+<a href="realization.html#quantitative-resource-claims">realization contract</a>
+requires.</li>
+<li>Three things are distinct: source-level summaries, the capacities of the
+compiler and the checker, and target resource certificates.</li>
+<li>Finiteness alone proves neither a particular target budget nor the
+correspondence of source and target resources.</li>
+</ul>
+<h3 id="loops-recursion-and-retry"><a class="header" href="#loops-recursion-and-retry">Loops, recursion and retry</a></h3>
+<p>This section names the forms of repetition that the core language does not
+have. A <strong>repeat-until-success (RUS)</strong> construct would repeat a quantum trial
+until a measured success. The core has none.</p>
+<p>Rules:</p>
+<ul>
+<li>The core has no runtime-counted loop, no unbounded <code>while</code>, no general or
+mutual recursion, and no source-level retry or RUS construct.</li>
+<li>A measurement outcome must not supply a fold bound. It must not replace the
+checked static decrease of a self-call.</li>
+<li>A specialization whose static <code>Nat</code> argument decreases is not recursion on
+a measured runtime value.</li>
+<li>A bounded unrolling may return a success <code>Bit</code> together with its declared
+owners only while it retains both the success outcome and the failure
+outcome in the complete instrument.</li>
+<li>A bounded unrolling must not keep only favorable outcomes, and it must not
+normalize them into a successful operation. The
+<a href="source-text.html#observation-and-postselection">postselection boundary</a>
+applies.</li>
+<li>The bounded host trial driver is separate. It retains no quantum state,
+requires fresh quantum trials, and reports retries, exhaustion and
+execution errors.</li>
+<li>The driver bounds the number of its callbacks. That bound does not bound
+the running time of an arbitrary callback. It gives no permission for a
+source-level quantum retry loop.</li>
+</ul>
+<p>An RUS extension would require a separate contract for termination and
+resources. That contract must state the success and failure semantics, and
+the owners and the workspace on every exit. It must state the composition
+with arbitrary references, and the meaning of exhaustion or of a resource
+failure. It must distinguish a hard finite bound from an expected cost and
+from a probabilistic tail claim. It must supply the evidence that the
+requested guarantee needs. Almost-sure termination alone grants neither a
+core construct nor a worst-case resource bound. This chapter introduces no
+RUS API and no acceptance path.</p>
+<h2 id="operation-repetition-and-access"><a class="header" href="#operation-repetition-and-access">Operation repetition and access</a></h2>
+<pre><code class="language-text">OperationDescription ::= Name ( "[" StaticArguments? "]" )?
+                       | "adjoint" "(" OperationDescription ")"
+                       | "controlled" "(" OperationDescription ")"
+                       | "power" "(" OperationDescription "," Count ")"
+                       | ( "then_op" | "tensor_op" | "conjugate_op" )
+                         "(" OperationDescription "," OperationDescription ")"
+                       | "checked_op" "(" Name "," Name ")"
+StaticArguments      ::= StaticArgument ( "," StaticArgument )*
+StaticArgument       ::= OperationDescription | Natural | "type" "(" BasisType ")"
+Count                ::= Natural | "2" "^" NaturalAtom
+</code></pre>
+<p>A program builds an operation description from a name and from constructors
+such as <code>adjoint(U)</code> and <code>power(U,n)</code>. It then passes the description as a
+static argument or applies it to runtime arguments. This section specifies
+the capabilities of each operation description and the three forms that
+apply a description to runtime arguments. The
+<a href="#unified-requires-obligations"><code>requires</code> clause</a> defines a capability and
+the capability requirements <code>Applicable(U)</code>, <code>Adjointable(U)</code> and
+<code>Controllable(U)</code>.</p>
+<h3 id="capability-derivation-for-enabled-descriptions"><a class="header" href="#capability-derivation-for-enabled-descriptions">Capability derivation for enabled descriptions</a></h3>
+<p>A constructed description has the capabilities that its operands give it.
+The table below states them for each constructor.</p>
+<p>Write the available capabilities of a well-kinded operation description <code>U</code>
+as <code>caps(U) = (A_U, J_U, C_U)</code>: Applicable, Adjointable and Controllable, in
+that order. Each of the three is true or false. The sign <code>∧</code> means “and”.</p>
+<p>Write <code>U: A -&gt; B</code> and <code>V: C -&gt; D</code>, where each letter is an exact basis tree.
+The <strong>ports</strong> of a description are its input tree and its output tree. The
+constructor rules below also apply to the <code>Op&lt;A&gt;</code> abbreviation, where both
+ports are <code>A</code>.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Description</th><th>Input → output and required equalities</th><th>Derived capabilities <code>(Applicable, Adjointable, Controllable)</code></th></tr>
+</thead>
+<tbody>
+<tr><td><code>adjoint(U)</code></td><td><code>B -&gt; A</code></td><td><code>(J_U, A_U, C_U)</code>; constructing it additionally requires <code>J_U</code>, even if unused</td></tr>
+<tr><td><code>controlled(U)</code></td><td><code>(Bit,A) -&gt; (Bit,A)</code>, requiring <code>A = B</code></td><td><code>(C_U, C_U, C_U)</code></td></tr>
+<tr><td><code>power(U,n)</code></td><td><code>A -&gt; A</code>, requiring <code>A = B</code></td><td><code>(A_U, J_U, C_U)</code>, including <code>n = 0</code></td></tr>
+<tr><td><code>then_op(U,V)</code></td><td><code>A -&gt; D</code>, requiring <code>B = C</code></td><td><code>(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)</code></td></tr>
+<tr><td><code>tensor_op(U,V)</code></td><td><code>(A,C) -&gt; (B,D)</code> in that axis order</td><td><code>(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)</code></td></tr>
+<tr><td><code>conjugate_op(U,V)</code></td><td><code>B -&gt; B</code>, requiring <code>C = D = A</code></td><td><code>(A_U ∧ J_U ∧ A_V, A_U ∧ J_U ∧ J_V, A_U ∧ J_U ∧ C_V)</code></td></tr>
+<tr><td><code>checked_op(U,M)</code></td><td><code>A -&gt; B</code>, matching both M ports</td><td>The capabilities of U, unchanged. The description keeps its separate obligation of exact Meaning equality.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>A capability is a fact that source checking establishes about an
+implementation path. It is untrusted. It is not a proof of mathematical
+unitarity or of native acceptance.</li>
+<li>An opaque operation parameter has exactly the capabilities that its
+<code>requires</code> clause declares. Neither its <code>Op&lt;A&gt;</code> kind nor a Meaning
+refinement adds a capability.</li>
+<li>The checker checks every operand and every count before it uses the table.</li>
+<li>A short circuit erases none of these errors: a missing provider, an invalid
+count, a false Meaning or a missing requested capability. A zero power and
+an unused declaration are no exceptions.</li>
+<li>A description may have no capability. The checker rejects a program that
+forwards such a description to a parameter that requires a capability
+(<code>access</code>).</li>
+<li>Forming <code>controlled(U)</code> gives no direct application access and no adjoint
+access to the original opaque <code>U</code>.</li>
+</ul>
+<p>The <code>controlled</code> row reflects the supported construction of a transparent
+controlled circuit. The retained circuit can itself be applied, reversed or
+controlled. This is a capability of the constructed object. It is not a rule
+that every mathematically unitary black box supplies those implementations.</p>
+<p><code>conjugate_op(U,V)</code> denotes <code>U V U†</code> in column-vector order. Its Controllable
+capability needs the Applicable and Adjointable capabilities of <code>U</code> and the
+Controllable capability of <code>V</code>. The controlled realization places the forward
+and adjoint circuit paths of <code>U</code> around the controlled circuit path of <code>V</code>.
+It requires no controlled <code>U</code>. The exact phase and the identity on the
+inactive branch are retained. They are not inferred from channel equality.</p>
+<h3 id="source-providers-and-language-primitives"><a class="header" href="#source-providers-and-language-primitives">Source providers and language primitives</a></h3>
+<p>An operation can be an ordinary function, a language primitive or an
+external artifact. This section states which of them serve as providers and
+which capabilities a source provider has.</p>
+<p>A <strong>source provider</strong> is an ordinary function that serves as a provider. It
+is transparent: the checker has its body. A <strong>language primitive</strong> is an
+operation that the language supplies under a bare spelling, such as <code>h</code>. The
+<a href="primitive-boundary.html">primitive boundary</a> lists the language primitives.</p>
+<p>Rules:</p>
+<ul>
+<li>A source provider must have the exact quantum interface. The checker checks
+all its instantiated premises.</li>
+<li>General pure application permits a provider whose effect, as its callers
+see it, is at most Isometry.</li>
+<li>Reverse access also requires that the effect callers see is Unitary, and
+it requires usable inverse evidence.</li>
+<li>Control also requires equal exact ports.</li>
+<li>Under the
+<a href="source-text.html#ordinary-function-effects-and-assertions">public-effect rule</a>,
+the checked public effect governs external callers and the public
+providers that the host selects. Calls within one module keep the internal
+inference, which is checked independently.</li>
+<li>The checker checks eligibility before specialization, inlining or cache
+reuse. The body and the artifact undergo their separate checks.</li>
+<li>Take a source provider whose callers see a Unitary effect, with operation
+actuals <code>U_i</code>. The conservative common rule gives it the capabilities
+<code>(true, ∧_i(A_i ∧ J_i), ∧_i(A_i ∧ J_i ∧ C_i))</code>. The rule includes unused
+operation actuals. It makes no claim of maximal inference.</li>
+<li>With no operation actuals, the rule gives the Applicable and Adjointable
+capabilities, plus the Controllable capability for equal ports.</li>
+<li>The declared premises of the provider apply before this rule. The value
+<code>true</code> cannot bypass a missing required capability.</li>
+</ul>
+<p>A language primitive and an external artifact are not source providers.</p>
+<p>Rules:</p>
+<ul>
+<li>A language primitive uses its exact interface and its materializable
+circuit paths where the direct application grammar permits it.</li>
+<li>A name in a static operation argument must be an ordinary function or an
+operation parameter. The checker rejects a language primitive in that
+position (<code>type</code>). It does not wrap a primitive name into a source
+provider.</li>
+<li>An external artifact cannot declare its own trusted capability set.</li>
+<li>Closed materialization needs three things: the supported retained
+implementation, the exact source and dependency identity, and fresh native
+evidence. The checker rejects an unsupported external provider.</li>
+</ul>
+<p>A capability is a source-checking fact.</p>
+<p>Rules:</p>
+<ul>
+<li>An inferred capability, a successful common judgment or a named Meaning is
+never an executable receipt.</li>
+<li>The admitted
+<a href="type-model.html#general-pure-operation-arrows">general arrow rules</a> admit no
+other form of the retired
+<a href="../design/operations.html">operations design packet</a>.</li>
+</ul>
+<p><a id="application-and-repetition-profiles"></a></p>
+<h3 id="controlled-application"><a class="header" href="#controlled-application">Controlled application</a></h3>
+<pre><code class="language-text">ControlledApplication ::= "controlled" "(" OperationDescription ")" "(" Expr "," Expr ")"
+</code></pre>
+<p>The canonical controlled application is <code>controlled(U)(c, q)</code>. It applies
+the description <code>U</code> to the target <code>q</code> under the control <code>c</code>. The control is
+a quantum owner, and the application returns it together with the target.</p>
+<p>Rules:</p>
+<ul>
+<li>The runtime arguments are evaluated once, the control first and the target
+second.</li>
+<li>The control must have the exact type <code>Q&lt;Bit&gt;</code>. The target must have the
+exact <code>Q&lt;A&gt;</code> type of the operation.</li>
+<li>The result is <code>(Q&lt;Bit&gt;, Q&lt;A&gt;)</code>. It keeps both logical owners, also when <code>A</code>
+has zero width.</li>
+<li>The application requires the Controllable capability (<code>access</code>), also in
+an unused body and for a zero power.</li>
+<li>The checker rejects an ordinary classical <code>Bit</code> as control. It rejects one
+owner in both argument positions. It rejects a number of arguments other
+than two (<code>arity</code>).</li>
+<li>The control is the first, low axis. The exact phase is retained.</li>
+<li>A single-stage ordinary call <code>controlled(q)</code> keeps normal name resolution.</li>
+</ul>
+<p>Each line below is a separate source. The checker accepts the first, where
+<code>z</code> is <code>std::gate::z</code>. It rejects the second, which declares only
+<code>Applicable(U)</code> (<code>access</code>):</p>
+<pre><code class="language-qli">unitary fn f(c:Q&lt;Bit&gt;,q:Q&lt;Bit&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Bit&gt;){controlled(power(z,0))(c,q)}
+unitary fn unused[const U:Op&lt;Bit&gt;](c:Q&lt;Bit&gt;,q:Q&lt;Bit&gt;)-&gt;(Q&lt;Bit&gt;,Q&lt;Bit&gt;) requires Applicable(U){controlled(power(U,0))(c,q)}
+</code></pre>
+<h3 id="adjoint-application"><a class="header" href="#adjoint-application">Adjoint application</a></h3>
+<pre><code class="language-text">AdjointApplication ::= "adjoint" "(" OperationDescription ")" "(" Expr ")"
+</code></pre>
+<p>The canonical unary adjoint application is <code>adjoint(U)(q)</code>. A program uses
+it to apply an operation in reverse, as the example below undoes <code>h</code>. The
+application has two stages. The first stage holds a static operation
+description. The second stage evaluates one runtime input. The adjoint of a
+unitary equals its inverse. The adjoint of an isometry need not be a
+two-sided inverse.</p>
+<p>Rules:</p>
+<ul>
+<li>The application requires the Adjointable capability of the actual
+operation (<code>access</code>) and an exact quantum-owner interface.</li>
+<li>Unitarity alone grants no access. A Meaning annotation alone grants none.</li>
+<li>The same checks apply in an unused body and to a zero-count description.</li>
+<li>The two stages construct no runtime callable and infer no Adjointable
+capability.</li>
+<li>A zero power checks the original provider, its Meaning and the requested
+capability. It evaluates its runtime input once.</li>
+<li>The independent native evidence gates apply.</li>
+<li><code>inverse</code> is not a keyword. An ordinary call <code>inverse(q)</code>, a function named
+<code>inverse</code> and a local named <code>inverse</code> keep normal name resolution.</li>
+<li>The checker rejects the two-stage form <code>inverse(U)(q)</code> (<code>parse</code>). The
+diagnostic suggests <code>adjoint(U)(q)</code>. The language has no inverse API. Such
+an API would require the two-sided inverse law.</li>
+</ul>
+<p>The checker accepts this program. <code>inverse</code> is an ordinary function, and
+<code>adjoint(oracle)(q)</code> undoes <code>h</code>:</p>
+<pre><code class="language-qli">use std::state::init0;
+unitary fn inverse(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q}
+unitary fn oracle(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{h(q)}
+unitary fn undo(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{adjoint(oracle)(q)}
+pub observe fn main()-&gt;Bit{measure_z(h(undo(inverse(init0()))))}
+</code></pre>
+<p>The checker rejects this declaration, which declares only <code>Applicable(U)</code>
+(<code>access</code>):</p>
+<pre><code class="language-qli">pub unitary fn bad[const U:Op&lt;Bit&gt;](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt; requires Applicable(U){adjoint(U)(q)}
+</code></pre>
+<h3 id="descriptions-as-static-arguments"><a class="header" href="#descriptions-as-static-arguments">Descriptions as static arguments</a></h3>
+<p>The constructors also build descriptions inside the brackets of a call.
+There a constructor applies nothing: it describes an operation that the
+callee receives as a static argument.</p>
+<p>Rules:</p>
+<ul>
+<li>In a static operation argument, <code>adjoint(U)</code> and <code>controlled(U)</code> construct
+the corresponding descriptions, also when nested.</li>
+<li>A constructed description keeps the capability derivations that are bound
+to its provider. It also keeps the restrictions of the concrete profile.</li>
+</ul>
+<h3 id="repetition"><a class="header" href="#repetition">Repetition</a></h3>
+<pre><code class="language-text">PowerApplication ::= "power" "(" OperationDescription "," Count ")" "(" Expr ")"
+</code></pre>
+<p>The canonical repetition description is <code>power(U, count)</code>. It describes the
+operation <code>U</code> applied <code>count</code> times. The operation comes first and the count
+second. Its forward runtime application is <code>power(U, count)(q)</code>. Repetition
+is not the execution of a host loop.</p>
+<p>Rules:</p>
+<ul>
+<li>The original-source syntax tree keeps the complete description, the count
+and the byte spans. No generated function name and no anonymous source loop
+replaces the application.</li>
+<li>The runtime argument is evaluated once, also for a zero count.</li>
+<li>The application requires the Applicable capability (<code>access</code>), also for a
+zero count and in an unused body.</li>
+<li>A zero count resolves and checks its provider and the required capability.</li>
+<li>Repetition grants no <code>Adjointable</code> capability and no <code>Controllable</code>
+capability. This also holds when another generic call forwards a repeated
+description.</li>
+<li><code>controlled(power(U, count))(c, q)</code> and <code>adjoint(power(U, count))(q)</code> keep
+the complete repeated provider. Each requires the capability of its outer
+constructor.</li>
+</ul>
+<p>The count of a repetition is static.</p>
+<p>Rules:</p>
+<ul>
+<li>An ordinary count is a natural expression.</li>
+<li>The count form <code>2^e</code> takes a natural atom as exponent. A compound exponent
+needs parentheses, as in <code>2^(n+1)</code>.</li>
+<li><code>2^e</code> is not a general power operator of natural expressions. This rule
+does not admit it in <code>Bits&lt;2^n&gt;</code>.</li>
+<li>Counts and products of counts use checked arithmetic.
+<a href="#limits-of-the-routes">Limits of the routes</a> states the largest counts.</li>
+</ul>
+<p>The direct form <code>power(name, literal)(q)</code> names its operand and gives its
+count as a literal.</p>
+<p>Rules:</p>
+<ul>
+<li>The literal must be in <code>0..=4096</code>, also in an unused body (<code>limit</code>).</li>
+<li>For an ordinary function, the direct form uses the runtime group judgment
+over the complete group of quantum inputs.</li>
+<li>For an operation parameter, the direct form uses the opaque basis rule and
+requires the Applicable capability.</li>
+<li>For a language primitive, the direct form checks the exact single-owner
+basis and the Unitary effect.</li>
+<li>A symbolic count or a compound count uses the general operation-provider
+rules and the closed-binding rules.</li>
+</ul>
+<p>The word <code>power</code> is contextual.</p>
+<p>Rules:</p>
+<ul>
+<li>Only an unqualified two-stage <code>power(...)(...)</code> denotes the runtime
+application.</li>
+<li>An ordinary single-stage call <code>power(a, b)</code>, a declaration named <code>power</code>
+and a module import keep normal resolution.</li>
+<li>A root-qualified ordinary reference or call follows the common
+<a href="prelude.html">module lookup</a>. Qualification does not select the runtime
+constructor.</li>
+<li>A static operation argument interprets <code>power</code> as the constructor.</li>
+</ul>
+<p>The checker accepts this program. It returns <code>1</code>, because the argument
+<code>x(init0())</code> is evaluated once and the zero power applies <code>oracle</code> no times:</p>
+<pre><code class="language-qli">use std::gate::x; use std::state::init0;  unitary fn oracle(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{x(q)} pub observe fn main()-&gt;Bit{measure_z(power(oracle,0)(x(init0())))}
+</code></pre>
+<p>The checker rejects a literal count above 4096 (<code>limit</code>):</p>
+<pre><code class="language-qli">use std::gate::x; unitary fn oracle(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{x(q)} pub unitary fn f(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{power(oracle,4097)(q)}
+</code></pre>
+<p>The project route rejects the same count inside an outer zero power
+(<code>limit</code>):</p>
+<pre><code class="language-qli">unitary fn target[const n:Nat](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{q}
+unitary fn unused[const n:Nat](q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{power(power(target[1],4097),0)(q)}
+</code></pre>
+<p>The checker accepts the count <code>2^(n+1)</code> in this declaration. It rejects the
+counts <code>2^n+1</code> and <code>3^n</code> in its place (<code>parse</code>), and the count <code>n*n</code>
+(<code>unsupported</code>):</p>
+<pre><code class="language-qli">pub unitary fn f[const n: Nat, const U: Op&lt;Bits&lt;n&gt;&gt;](c: Q&lt;Bit&gt;,q: Q&lt;Bits&lt;n&gt;&gt;) -&gt; (Q&lt;Bit&gt;,Q&lt;Bits&lt;n&gt;&gt;) requires Controllable(U) { controlled(power(U,2^(n+1)))(c,q) }
+</code></pre>
+<p>The direct form accepts a language primitive, as in <code>power(h,0)(q)</code>. The
+three descriptions below require a provider under the ordinary checked
+provider contract. Each line is the body of a separate function, where <code>c</code>
+and <code>q</code> are <code>Q&lt;Bit&gt;</code> owners and <code>use_op</code> has the static parameter
+<code>U: Op&lt;Bit&gt;</code>. The checker rejects each body, because the language primitive
+<code>h</code> is not a provider (<code>type</code>):</p>
+<pre><code class="language-qli">use_op[power(h,0)](q)
+controlled(power(h,0))(c,q)
+adjoint(power(h,0))(q)
+</code></pre>
+<p>An ordinary function is a provider in the same positions. The checker accepts
+each body below. <code>had</code> is the ordinary function
+<code>unitary fn had(q:Q&lt;Bit&gt;)-&gt;Q&lt;Bit&gt;{h(q)}</code>, which wraps <code>h</code>, and <code>z</code> is the
+ordinary standard-library function <code>std::gate::z</code>:</p>
+<pre><code class="language-qli">use_op[power(had,0)](q)
+controlled(power(z,0))(c,q)
+adjoint(power(z,0))(q)
+</code></pre>
+<p><a id="definition-checking-and-concrete-capacities"></a></p>
+<h2 id="definition-checking-and-closed-instances"><a class="header" href="#definition-checking-and-closed-instances">Definition checking and closed instances</a></h2>
+<p>Checking has two stages. The common judgment checks every declaration in its
+generic form. A route then checks each closed instance that it elaborates.</p>
+<p>Rules:</p>
+<ul>
+<li>The common judgment checks every declaration, including private and unused
+bodies, before either route elaborates a closed instance.</li>
+<li>The common judgment checks static categories, exact type trees, owner and
+effect rules, generic premises and capabilities.</li>
+<li>A closed instance separately checks four things: its complete closed
+bindings, the identities of its actual providers, its substitutions and
+its supported interfaces.</li>
+<li>Neither stage issues a native accepted handle.</li>
+<li>The checker reports a capacity failure as a limit (<code>limit</code>). It does not
+report these failures as limits: an invalid type, an unsupported syntax or
+arithmetic form, a missing capability and a non-decreasing cycle. Each
+keeps its own class.</li>
+</ul>
+<h3 id="retained-source-plans"><a class="header" href="#retained-source-plans">Retained source plans</a></h3>
+<p>A <strong>plan</strong> is the record that the common judgment keeps of one static call or
+of one evidence obligation.</p>
+<p>Rules:</p>
+<ul>
+<li>A plan is source metadata. It is not independently checked evidence.</li>
+<li>Keeping a plan discharges no generic obligation that is not yet
+materialized, and it widens no concrete profile.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/check/plans.rs</code> holds the plans. The
+common judgment keeps each plan under the identity of its original
+structural occurrence. A plan keeps the resolved callee and formal
+identities, the ordered Basis, Nat and Op actuals, and both operation
+ports. It also keeps the Meaning requests, the lexical static bindings, and
+the predicate and fold regions. The plans consume the preparation budget.</p>
+<p>The plan of an ordinary natural expression keeps the original arithmetic
+beside the normalized facts, so the concrete checks of intermediate
+overflow and of work apply to it. The plan of a helper call keeps the
+original arguments and the shared checked affine template, under the
+template and result widths that <a href="#capacities">Capacities</a> states. A zero
+power keeps its child operation and its requests.</p>
+</blockquote>
+<h3 id="uninstantiated-bodies"><a class="header" href="#uninstantiated-bodies">Uninstantiated bodies</a></h3>
+<p>A body is <strong>dormant</strong> when no closed instance instantiates its declaration.
+Such a body can hold parts whose static values are all closed. On the
+project route, a dormant pass checks the closed parts of dormant bodies. A
+check that the pass defers stays conditional.</p>
+<p>Rules:</p>
+<ul>
+<li>The pass checks each available closed Meaning request and each closed
+static actual in a dormant body. It keeps the original Basis, Nat and Op
+scope.</li>
+<li>The pass visits both siblings of a description, also when one depends on
+an unbound formal. It keeps zero-count children.</li>
+<li>Each concrete actual passes the ordinary exact-port gate, the phase-fixed
+Meaning gate and the requested-access gate.</li>
+<li>When every actual is closed, the concrete body reaches ordinary lowering
+and native checking under its complete instance identity. A
+declaration-only ordinary-root cache does not stand in for that check.</li>
+<li>A Meaning comparison does not itself request every capability in the
+available-access summary of the source.</li>
+<li>An unbound original Op formal stays conditional, also inside
+<code>checked_op(U,M)</code>. That deferral does not establish the requested Meaning.</li>
+<li>An unbound actual stays conditional. Its closed siblings undergo their own
+contract checks.</li>
+<li>An obligation of a runtime expression requires its corresponding concrete
+gate.</li>
+<li>In a provably inactive region, a premise that depends on a <code>Nat</code> may stay
+conditional. An independently closed sibling cannot be deferred. A fixed
+owner, Meaning or access mismatch cannot be deferred.</li>
+<li>Caller-frame obligations and clean-workspace obligations keep their
+separate scopes.</li>
+</ul>
+<p>When part of a description is deferred, a requested capability also reaches
+each maximal closed fragment of that description. The table states the
+requests that reach the operands of each constructor:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Description</th><th>Requests that reach its operands</th></tr>
+</thead>
+<tbody>
+<tr><td><code>then_op(U,V)</code>, <code>tensor_op(U,V)</code></td><td>The requested capability, on both operands</td></tr>
+<tr><td><code>adjoint(U)</code></td><td>A request for Applicable becomes a request for Adjointable, and a request for Adjointable becomes one for Applicable. The construction keeps its required Adjointable capability.</td></tr>
+<tr><td><code>controlled(U)</code></td><td>The Controllable capability of the child, for each requested capability</td></tr>
+<tr><td><code>conjugate_op(U,V)</code></td><td>The Applicable and Adjointable capabilities of the outer operand <code>U</code>, and the requested capability of the inner operand <code>V</code></td></tr>
+<tr><td><code>power(U,n)</code></td><td>The requested capability, also at a zero count</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The concrete access gates and their circuit and step limits apply to a
+fragment.</li>
+<li>A check of a fragment does not establish the contract of the whole
+deferred description. It does not replace the aggregate checks that apply
+when all actuals close.</li>
+</ul>
+<p>The project route also checks a dormant whole-owner <code>ctrl</code> call to a
+declaration with closed static actuals.</p>
+<p>Rules:</p>
+<ul>
+<li>The project route binds the original expression and its operands to the
+checked plan of the call. It requires that the original effect that
+callers see is Unitary. It preserves the complete ordered interface of
+Q owners.</li>
+<li>The project route independently checks the concrete callee body. It
+submits the Raw ports and the body to the native sector gate.</li>
+<li>Unitarity alone does not establish the sector condition.</li>
+<li>A zero-width Ctrl owner keeps its exact type. It causes a native request,
+although its set of physical axes is empty.</li>
+<li>The control-request capacity applies to this explicit request. Ordinary
+calls keep their separate finite profile.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>src/frontend/compile/dormant.rs</code> holds the
+dormant pass, and <code>src/frontend/compile/dormant/controls.rs</code> checks dormant
+<code>ctrl</code> sites. The pass borrows the original operation occurrences. The
+finite adapter of the project route binds complete Basis,
+Nat and Op instances. It checks closed bodies and dormant operation roots,
+and it submits concrete Ctrl calls through the native sector gate.</p>
+</blockquote>
+<h3 id="specialization-identity-and-reuse"><a class="header" href="#specialization-identity-and-reuse">Specialization identity and reuse</a></h3>
+<p>Two uses of an operation description can share one specialized body. The
+<strong>specialization identity</strong> of an operation description decides whether two
+uses are the same specialization. It consists of these parts:</p>
+<ul>
+<li>both exact ports, the phase and the source effect;</li>
+<li>the capabilities, the constructors and the ordered children;</li>
+<li>the repetition counts and the issued native dependency identities.</li>
+</ul>
+<p>On the project route, a specialization may reuse a retained body.</p>
+<p>Rules:</p>
+<ul>
+<li>An ordinary runtime call binds its borrowed plan to the exact original
+expression, the callee and the ordered slices of static and runtime
+operands. A cloned syntax tree of the same shape is not an original
+occurrence.</li>
+<li>Two operation descriptions are one specialization only when their
+specialization identities agree. A zero power keeps the identity of its
+child. Matching matrices alone do not identify two descriptions.</li>
+<li>Every reuse repeats the original checks of actuals, interface and access.
+It also runs a fresh native check of the retained immutable body before it
+copies the action of that body.</li>
+<li>A refused comparison is not a cache miss.</li>
+<li>Entry into a body and failure of a body restore the original instance, the
+static environment and the caller context. Issued identities and charged
+work do not rewind.</li>
+</ul>
+<p>Prepared bodies are separate for each consumer and for each representation.</p>
+<p>Rules:</p>
+<ul>
+<li>Evidence preparation and selected typed lowering keep separate prepared
+bodies and providers for one original specialization.</li>
+<li>Reuse of a nongeneric provider also keeps the Raw, ordinary or runtime root
+representation. Identical Raw instructions do not identify different
+native request data or view data.</li>
+<li>Each representation undergoes its original checks. Reuse within one
+representation requires the complete accepted artifact to match.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The distinct-specialization counter of the project
+route compares specialization identities within its shared work budget. The
+same identity keys the private registry of bodies and providers in
+<code>src/frontend/compile/instances.rs</code>.</p>
+</blockquote>
+<h2 id="retired-spellings"><a class="header" href="#retired-spellings">Retired spellings</a></h2>
+<p>The table lists the spellings that the language has retired, each with the
+form to write instead. The parser rejects each retired spelling at its
+marker, predicate or constructor token (<code>parse</code>). The diagnostic names the
+replacement.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Retired spelling</th><th>Replacement</th></tr>
+</thead>
+<tbody>
+<tr><td><code>[static name: Kind]</code> in a parameter header</td><td><code>[const name: Kind]</code></td></tr>
+<tr><td><code>Apply(U)</code>, <code>Adjoint(U)</code>, <code>Controlled(U)</code></td><td><code>Applicable(U)</code>, <code>Adjointable(U)</code>, <code>Controllable(U)</code></td></tr>
+<tr><td><code>adjoint(U,q)</code></td><td><code>adjoint(U)(q)</code></td></tr>
+<tr><td><code>inverse(U)(q)</code></td><td><code>adjoint(U)(q)</code></td></tr>
+<tr><td><code>inverse_op(U)</code></td><td><code>adjoint(U)</code></td></tr>
+<tr><td><code>controlled_op(U)</code></td><td><code>controlled(U)</code></td></tr>
+<tr><td><code>repeat_op(count, U)</code></td><td><code>power(U, count)</code></td></tr>
+<tr><td><code>repeat_static(count, U, q)</code></td><td><code>power(U, count)(q)</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The parser has no legacy header mode.</li>
+<li>To migrate a parameter header, replace each marker and preserve the order
+of the parameters, their kinds and the explicit arguments.</li>
+</ul>
+<p><a id="evidence-and-remaining-work"></a></p>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<h3 id="capacities"><a class="header" href="#capacities">Capacities</a></h3>
+<p>The checker and the routes work within fixed capacities. The table states
+each capacity, its limit and where it applies. Accounting units measure
+implementation work and retained structures. They are not byte counts and
+not quantum resource bounds.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Capacity</th><th>Limit</th><th>Scope</th></tr>
+</thead>
+<tbody>
+<tr><td>Work of the common judgment</td><td>1,000,000 units</td><td>Both routes</td></tr>
+<tr><td>Retained scope storage</td><td>16,384 cells</td><td>Selected-entry route</td></tr>
+<tr><td>Depth of a natural expression</td><td>128</td><td>Both routes</td></tr>
+<tr><td>Type tree</td><td>4,096 cells, depth 64, 64 immediate fields</td><td>Both routes</td></tr>
+<tr><td>Symbolic affine coefficients and constants</td><td>Signed 128-bit integers, checked</td><td>Common judgment</td></tr>
+<tr><td>Concrete natural arithmetic</td><td>Unsigned 32-bit naturals, checked</td><td>Closed instances</td></tr>
+<tr><td>Helper template arithmetic</td><td>Signed 128-bit intermediate values, then a nonnegative unsigned 32-bit result</td><td>Closed instances</td></tr>
+<tr><td>Alternatives of the constraint procedure</td><td>64 per elimination problem</td><td>Common judgment</td></tr>
+<tr><td>Symbolic variables of the constraint procedure</td><td>32 per elimination problem</td><td>Common judgment</td></tr>
+<tr><td>Elimination pairs of the constraint procedure</td><td>50,000</td><td>Common judgment</td></tr>
+<tr><td>Retained constraints of the constraint procedure</td><td>4,096</td><td>Common judgment</td></tr>
+<tr><td>Aggregate function calls, with Nat helper calls</td><td>1,024</td><td>Selected-entry route</td></tr>
+<tr><td>Call depth</td><td>16</td><td>Selected-entry route</td></tr>
+<tr><td>Aggregate fold iterations</td><td>1,024</td><td>Selected-entry route</td></tr>
+<tr><td>Emitted source-order steps</td><td>10,000</td><td>Selected-entry route</td></tr>
+<tr><td>Charged storage</td><td>100,000 cells</td><td>Selected-entry route</td></tr>
+<tr><td>Work of finite lowering</td><td>1,000,000 units</td><td>Project route</td></tr>
+</tbody>
+</table>
+</div>
+<p>Limits that apply to these capacities:</p>
+<ul>
+<li>The constraint procedure checks its limits before it generates an
+elimination pair. It rejects if the pair count would exceed its limit or
+the retained set is at its limit. All its storage also consumes the
+preparation budget.</li>
+<li>The constraint procedure is not a complete solver for integer arithmetic.
+When a problem exceeds one of its capacities, the procedure rejects. It
+does not convert an unresolved premise into a successful assumption.</li>
+<li>The selected-entry route charges each concrete natural visit to the
+100,000-cell allowance. It charges each allocation of a helper argument or
+term to the same allowance. Each evaluated helper call counts toward the
+1,024-call allowance, which it shares with the specialization of runtime
+functions.</li>
+<li>On the project route, finite lowering charges its original natural visits
+and its helper work to the project-wide 1,000,000-unit allowance. It does
+not import the counters of the selected-entry route.</li>
+<li>Cache reuse does not remove call accounting.</li>
+<li>A capacity failure introduces no modular arithmetic.</li>
+<li>The parser, the constraint procedure, lowering, native checking and
+simulation have separate capacities. Each can reject an otherwise
+meaningful instance.</li>
+<li>Exhausting a budget is neither acceptance nor proof that a program has no
+meaning.</li>
+<li>Five obligations are distinct: compiler capacities, termination, ownership
+safety, computed quantum resources and checked target budgets.</li>
+</ul>
+<h3 id="limits-of-the-routes"><a class="header" href="#limits-of-the-routes">Limits of the routes</a></h3>
+<p>The two routes apply different limits to repetition counts and to the
+operation descriptions that they materialize. The table states them.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Limit</th><th>Project route</th><th>Selected-entry route</th></tr>
+</thead>
+<tbody>
+<tr><td>A repetition count, at every nesting level</td><td><code>0..=4096</code>, also inside an outer zero count</td><td>At most 256</td></tr>
+<tr><td>The exponent <code>e</code> of a count <code>2^e</code></td><td>The count <code>2^e</code> must fit <code>0..=4096</code></td><td>At most 8</td></tr>
+<tr><td>The product of nested repetition counts</td><td>At most 4096 in a direct runtime transform</td><td>At most 256</td></tr>
+<tr><td>An operation description that the route materializes</td><td>Six bits and 1024 steps, within the shared work limit</td><td>The aggregate limits of <a href="#capacities">Capacities</a></td></tr>
+</tbody>
+</table>
+</div>
+<p>Limits of the project route:</p>
+<ul>
+<li>The route evaluates symbolic counts and <code>2^e</code> with the complete original
+natural bindings and checked unsigned 32-bit intermediates.</li>
+<li>The product guard is specific to direct runtime transforms. An opaque
+operation description keeps its own materialization step and work limits.</li>
+<li>A controlled application uses the checked construction of a controlled
+circuit, and native evidence. The operation limit of six bits and 1024
+steps applies, and so does the shared work limit.</li>
+<li>A constructed adjoint such as <code>adjoint(power(U, k))(q)</code> uses the closed
+operation-provider profile, the exact basis and Adjointable evidence. Four
+limits apply: the literal-count limit, the six-bit operation limit, the
+step limit and the shared work limit. An adjoint of a bare name,
+<code>adjoint(name)(q)</code>, uses the finite transform path of the direct power of
+a name.</li>
+<li>For the direct form <code>power(name, literal)(q)</code>, the finite adapter checks the
+original body and the serial copies through the native gates. An actual
+operation parameter has a 1024-step limit and shared work accounting.</li>
+<li>A use of a sized operation requires a supported output profile.</li>
+</ul>
+<p>Limits of the selected-entry route:</p>
+<ul>
+<li>The route applies its own count, exponent and aggregate-work limits. It
+rejects a count or a product above 256, and it rejects an exponent above 8
+(<code>limit</code>).</li>
+<li>When the route validates a selected entry, it does not check a false
+Meaning request in a generic body that the entry does not select.</li>
+</ul>
+<p>Limits of both routes:</p>
+<ul>
+<li>The executable adjoint profile is Unitary. General isometry adjoints are
+unsupported.</li>
+<li>Concrete emitters have separate restrictions on the interfaces that they
+support for <code>Bits&lt;n&gt;</code> sizes.</li>
+<li>The capability rules enlarge the support of no concrete projection. Finite
+lowering and selected lowering keep their separate capacities and their
+explicit unsupported results.</li>
+</ul>
+<h3 id="provisional-spellings-and-absent-constructs"><a class="header" href="#provisional-spellings-and-absent-constructs">Provisional spellings and absent constructs</a></h3>
+<p>This section lists the provisional spellings and the constructs that the
+language does not have.</p>
+<ul>
+<li>The spellings <code>static let</code> and <code>static fn</code> are provisional in 0.3.0. Their
+static category, their exactness and their authority laws are fixed. The
+typed-builder surface of 0.4.0 may select other spellings without
+introducing a second execution semantics.</li>
+<li>No general public <code>static fn</code>, <code>const fn</code> or builder API is stable. Those
+spellings, static lambdas, and quotation and splicing are open choices for
+0.4.0. A helper spelling that 0.3.0 adds later is provisional unless a
+separate decision stabilizes it.</li>
+<li>The scalar fragment and the provisional helpers of this chapter are
+supported. The bounded-const criteria and the collection criteria that
+<a href="#history">History</a> names are not implemented.</li>
+<li>The language has no general static builder evaluation, no finite static
+collections and no general phase-table facility.</li>
+<li>Small Z, S and T phase schedules and computed generic sizes have
+independent checks. Those checks do not complete a general static
+collection API, the whole of the phase-table work, a source-preservation
+theorem or a generic QFT implementation.</li>
+<li>A generic QFT implementation is outside the human-selected development
+goal.</li>
+<li>This chapter supplies no arbitrary code execution, I/O, randomness, raw IR
+injection, trusted evidence constructor or floating-point substitute for
+an exact obligation.</li>
+<li>The bounded static contract does not discharge quantitative Resource
+Safety.</li>
+</ul>
+<h3 id="code-tests-proof-preservation-and-specification-review"><a class="header" href="#code-tests-proof-preservation-and-specification-review">Code, tests, proof, preservation and specification review</a></h3>
+<p>Code:</p>
+<ul>
+<li>The Rust frontend implements the rules of this chapter and produces
+untrusted proposals. Each resulting artifact and each independent request
+passes its native gate, as the
+<a href="production-boundary.html">production boundary</a> describes.</li>
+</ul>
+<p>Tests:</p>
+<ul>
+<li>Bounded regressions on small systems check the rules. They are
+implementation checks. They are not a theorem of general specialization
+preservation.</li>
+<li>The sized-source regressions cover guarded subtraction and affine
+equality, nonlinear refusal, original obligation spans, static dead arms
+and empty folds. They also cover forwarded premises and access, mutual
+cycles, complete bindings, repeat limits, and aggregate call, fold and
+storage accounting.</li>
+<li>Static evaluation need not enumerate the computational basis of a
+register. A generic identity fold keeps one definition and no source
+instructions as its width changes. Its fold counter counts the requested
+iterations, independently of the basis dimension <code>2^n</code>. The interface
+keeps the width, including the logical owner at <code>n = 0</code>.</li>
+<li>The bounded conformance test
+<code>static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold</code>
+checks widths 0–3 and iteration counts 0, 1 and 3. It then independently
+accepts and executes each proposed identity with an external reference.
+Its simulation oracle enumerates small amplitudes after elaboration. The
+oracle is not the static evaluator.</li>
+<li>That test establishes no general complexity bound and no quantitative
+resource certificate. Other representations may need explicit finite data.</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Subject</th><th>Regression tests</th></tr>
+</thead>
+<tbody>
+<tr><td>Sizes, guarded subtraction, static dead arms, recursion and capacities</td><td><code>tests/sized_source.rs</code></td></tr>
+<tr><td>Static bindings and the identity-fold accounting</td><td><code>tests/static_naturals.rs</code></td></tr>
+<tr><td>Nat helpers</td><td><code>tests/static_helpers.rs</code></td></tr>
+<tr><td><code>requires</code> clauses</td><td><code>tests/unified_requires.rs</code></td></tr>
+<tr><td>Static folds</td><td><code>tests/qfor.rs</code></td></tr>
+<tr><td>Operation descriptions, applications and retired spellings</td><td><code>tests/operation_parameters.rs</code>, <code>tests/checked_operations.rs</code>, <code>tests/parser.rs</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Proof:</p>
+<ul>
+<li>This chapter claims no theorem of general specialization preservation. The
+checks on small systems establish no general source-preservation theorem.</li>
+<li>The two admitted guarantees <code>QS-QLV1-OWNERSHIP-2026-01</code> and
+<code>QS-QLV1-SCOPE-2026-01</code> keep their original-root scope.</li>
+<li><code>QS-2026-01</code>, <code>PR-2026-01</code>, <code>RS-2026-01</code> for quantitative Resource Safety,
+and <code>EXACT-2026-01</code> are binding and pending at their broader scopes.</li>
+<li>General preservation of source and resources and the quantitative RS
+theorem are separate obligations.</li>
+</ul>
+<p>Preservation:</p>
+<ul>
+<li>Native validity of an output does not prove that specialization preserves
+the meaning of the original source.</li>
+<li>The bounded materialization of specializations supplies no
+source-preservation theorem and no general caller-frame or cleanup
+guarantee.</li>
+</ul>
+<p>Specification review:</p>
+<ul>
+<li>Reference meanings require human specification review, independently of
+acceptance, as the <a href="authority.html">authority hierarchy</a> states. This chapter
+records no review of its rules.</li>
+</ul>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>This chapter describes the static fragment as <code>0.3.0-beta</code> implements it.
+It records the rules that
+<a href="https://github.com/MGYamada/Qleisli/issues/28">#28</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/47">#47</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/44">#44</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/63">#63</a> tracked.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/40">#40</a> fixed the class of
+static computations as the 0.3.0 decision. It deferred the public builder
+syntax to the typed meta-layer of 0.4.0, which
+<a href="https://github.com/MGYamada/Qleisli/issues/60">#60</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/61">#61</a> track. General static
+builder evaluation belongs to those two Issues. The helper spelling is
+provisional under the #40 decision.</li>
+<li>The maintainer excludes the unimplemented bounded-const and collection
+criteria of #63 from all of v0.3.0, including beta. The exclusion
+supersedes the earlier alpha-only deferral. It is not implementation
+completion. #63, which also held finite static collections and other
+phase-table work, is closed as not planned.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/33">#33</a> replaced the marker
+<code>[static name: Kind]</code> by <code>const</code>. Historical source bytes are historical
+inputs.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/194">#194</a> tracked the explicit
+threading boundary that the static folds implement.</li>
+<li><code>power(U, count)(q)</code> preserves the contract of the retired <code>repeat_static</code>
+form. For a language primitive, it keeps the profile of the retired
+named-function repetition.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../reference/type-model.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/functional-boundary.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../reference/type-model.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/functional-boundary.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

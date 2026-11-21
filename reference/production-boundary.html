@@ -1,0 +1,2301 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Current production boundary - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="current-production-verification-boundary"><a class="header" href="#current-production-verification-boundary">Current production verification boundary</a></h1>
+<p>The <strong>production verification boundary</strong> is the set of entry paths that reach
+the native checker, together with what each check establishes. The <strong>native
+checker</strong> is the Lean executable that <code>lean-kernel/</code> builds. A <strong>mode</strong> is one
+dispatch argument of the native checker, such as <code>--runtime-root-check</code>. An
+<strong>entry path</strong> is a Rust API or a CLI command that submits bytes to a mode.</p>
+<p>Read this chapter to find out what a successful check proves and what it
+leaves open. For each mode, the chapter states four things: the request that
+the mode reads, the rules that the native checker applies, the Lean theorems
+that bind the check, and the obligations that no theorem discharges. The
+section on a mode lists the theorems under the label “Proof scope” and the
+open obligations under the label “Not established”.</p>
+<p>The chapter is subordinate to three documents: the
+<a href="authority.html">authority hierarchy</a>, the adopted single-verifier decision that
+<a href="#history">History</a> cites, and repository <code>TRUSTBOUNDARY.md</code>. It does not
+discharge a constitutional obligation or widen an existing theorem. Source
+paths identify files in the
+<a href="https://github.com/MGYamada/Qleisli">Qleisli repository</a>.</p>
+<p>Production acceptance has one implementation, the native checker. Rust does
+the work around the check and never accepts a program itself.</p>
+<p>Rules:</p>
+<ul>
+<li>Rust generates proposals, and it selects and invokes the compatible
+checker. It retains the checked bytes, which are immutable. It also decodes
+views, reports diagnostics and executes simulations.</li>
+<li>A missing, incompatible or failing native checker rejects. No other
+verifier takes its place: the retired Rust verifier and the dual-acceptance
+fallback are absent.</li>
+<li>Invoking Lean and granting a semantic accepted handle are different
+things. Not every public function does either.
+<a href="#public-operations-that-confer-no-acceptance">Public operations that confer no acceptance</a>
+lists the operations that produce no acceptance. One of them invokes Lean
+all the same: QIRF export has the native checker inspect its output. That
+check establishes portable validity. It is neither a fresh execution
+acceptance nor a translation theorem.</li>
+</ul>
+<h2 id="constitutional-theorem-boundary"><a class="header" href="#constitutional-theorem-boundary">Constitutional theorem boundary</a></h2>
+<p>The diagram below places the native check between the proposal of an artifact
+and the three constitutional obligations QS, PR and RS. It applies to the
+implementation that this chapter describes, under
+<a href="../design/initial-interpretations.html">the adopted interpretations</a> and the
+single-verifier decision.</p>
+<pre><code class="language-text">Source or external artifact, with its requested contract when present
+    |
+    v
+Elaboration or adaptation proposes artifact and evidence bytes
+    |
+    v
+------------ independent production acceptance boundary ------------
+Native Lean gate checks the actual bytes, profile and applicable evidence
+    |
+    v
+Accepted judgment binds the decoded artifact, contract and evidence
+    |
+    +--&gt; QS  Independent semantics of the accepted artifact
+    +--&gt; PR  Checked correspondence of an admitted target artifact
+    +--&gt; RS  Checked bounds on accepted behavior and admitted realization
+</code></pre>
+<p>The <strong>accepted judgment</strong> of a mode is the success of its Lean check on the
+submitted bytes.
+<a href="#entrypoints-and-actual-checked-representations">Entrypoints and actual checked representations</a>
+identifies the judgment and the checked representation of each mode. Two
+<a href="../design/initial-guarantees.html">scoped guarantees</a> are admitted. They
+concern ownership and classical scope of the original decoded ordinary root.</p>
+<p>Under the adopted interpretations, the three obligations concern these
+subjects:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Obligation</th><th>Subject</th></tr>
+</thead>
+<tbody>
+<tr><td>QS</td><td>The declared typing, ownership, effect and exact semantic contracts of the actual accepted object</td></tr>
+<tr><td>PR</td><td>Forward correspondence from that meaning to the actual admitted target artifact, under its target and workspace premises</td></tr>
+<tr><td>RS</td><td>Finite, checked bounds for the accepted behavior and the applicable realization, under the stated resource model</td></tr>
+</tbody>
+</table>
+</div>
+<p>Their broader proof obligations and the strict exactness obligations are
+pending.</p>
+<p>Rules:</p>
+<ul>
+<li>Elaboration must preserve the specified source meaning for every claimed
+source scope. Its evidence links the original source and dependency
+contracts to the checked artifact, including its owners, ordered axes,
+effects and exact phase.</li>
+<li>A successful check of an artifact establishes the properties of that
+artifact that the check covers. It does not establish that the artifact
+corresponds to its source. A preservation theorem or independent validation
+must establish the source correspondence separately.</li>
+<li>The same rule applies to an adapter that claims to preserve a foreign
+input, and to a backend that claims preservation in the output it emits.</li>
+<li>Source syntax that a later change adds may elaborate under the same edition
+whenever it preserves the adopted contracts.</li>
+<li>A checked representation that replaces another must carry the applicable
+current guarantees with it, through justified semantic transport.</li>
+<li>Every frontend and backend that claims constitutional acceptance must use
+the applicable native gate and its current evidence.</li>
+<li>Missing evidence or a failed check rejects the claimed scope.</li>
+</ul>
+<h2 id="entrypoints-and-actual-checked-representations"><a class="header" href="#entrypoints-and-actual-checked-representations">Entrypoints and actual checked representations</a></h2>
+<p>Use this section to find the mode that a Rust API or a CLI command reaches.
+The table below maps each entry path to the bytes that its mode checks. It
+uses these names:</p>
+<ul>
+<li><code>native::Kernel</code> means <code>interchange::native::Kernel</code>.</li>
+<li>The ordinary <code>NativeChecked</code> of that kernel retains the artifact, the
+optional request, the checker identity and the reported work.</li>
+<li>An <strong>accepted handle</strong> is an <code>AcceptedProgram</code>. The handle retains its
+predecoded execution view only after the native checker has freshly
+compared that exact graph and its caches under QLV3. Inspection alone does
+not authorize execution. <a href="execution-view.html">QDV1 and the envelope</a> specify
+the compared data and scope.</li>
+<li>The hierarchy module has a different <code>NativeChecked</code>. That type has its own
+payload, request and candidate, and its scope is its own finite
+obligations. The reports of the module’s dedicated protocols are not
+ordinary <code>AcceptedProgram</code> handles.</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Entry path</th><th>Artifact or request that the mode checks</th><th>Mode and checker</th><th>Proof scope and open obligations</th></tr>
+</thead>
+<tbody>
+<tr><td>Checks and compilation of a source, a project or a qrate; raw IR; function and meaning evidence; QIRF import, export, conversion and <code>verify-ir</code>; foreign and Python imports</td><td>A QLV3 envelope. It contains the original QLV1 packet of QIRF and request. When the caller requests execution, it also contains the actual retained execution view. Source, evidence and foreign adapters produce these bytes.</td><td><code>native::Kernel</code> → <code>--qirf-native</code> → <code>Protocol.NativeContext.run</code> → <code>ExecutionView.Native.ordinary</code> → the original QIRF check and requested view comparison</td><td><a href="#ordinary-qirf-root-requests">Ordinary QIRF root requests</a></td></tr>
+<tr><td><code>CheckedContract::check</code>, its checked compositions, and <code>check_computed</code></td><td>The QIRF root and an encoded equation in a <code>qleisli.native-contract</code> request</td><td><code>Kernel::check_encoded</code> → <code>--qirf-contract</code> → <code>ExecutionView.Native.contract</code> → <code>Protocol.NativeContract.checkRetained</code> → <code>Qirf.checkContract</code></td><td><a href="#encoded-and-square-leaf-requests">Encoded and square-leaf requests</a></td></tr>
+<tr><td><code>finite_leaf::{check_unitary,check_serialized_unitary}</code></td><td>The QIRF root and a request with the signature, the ordered input and output ports and an exact matrix</td><td><code>Kernel::check_leaf</code> → <code>--qirf-contract</code> → <code>ExecutionView.Native.contract</code> → <code>Protocol.NativeContract.checkRetained</code> → <code>Validity.checkRoot</code> and <code>Qirf.check</code></td><td><a href="#encoded-and-square-leaf-requests">Encoded and square-leaf requests</a></td></tr>
+<tr><td><code>pure_leaf::check_pure</code></td><td>The QIRF root, separate type trees for the domain and the codomain, the ordered owner ports and an exact rectangular matrix</td><td><code>Kernel::check_pure_leaf</code> → <code>--qirf-contract</code> → <code>ExecutionView.Native.contract</code> → <code>Protocol.NativeContract.checkRetained</code> → <code>Qirf.PureLeaf.check</code></td><td><a href="#rectangular-pure-leaf-requests">Rectangular pure-leaf requests</a></td></tr>
+<tr><td><code>Kernel::check_carrier</code>; explicit <code>Instantiation::check_carrier</code> source adapter</td><td>The original QIRF and dependencies, both ordered forests of nominal owners, the original declaration sources and an independent exact logical matrix</td><td><code>--carrier-pure-check</code> → <code>ExecutionView.CheckedCarrier.run</code> → <code>Protocol.Carrier.check</code> → original source checks and <code>Qirf.Carrier.check</code></td><td><a href="#finite-nominal-carrier-requests">Finite nominal carrier requests</a></td></tr>
+<tr><td><code>Kernel::check_ordinary_root</code></td><td>Original QIRF/dependencies and the <code>qleisli.ordinary-root-request</code> version-2 request, profile <code>finite-ordinary-root-v2</code></td><td><code>--ordinary-root-check</code> → <code>CheckedOrdinaryRoot.run</code></td><td><a href="#ordinary-inputresult-requests">Ordinary input/result requests</a></td></tr>
+<tr><td><code>Kernel::check_runtime_root</code></td><td>Original QIRF/dependencies and the <code>qleisli.runtime-root-request</code> version-2 request, profile <code>finite-runtime-root-v2</code></td><td><code>--runtime-root-check</code> → <code>CheckedRuntimeRoot.run</code></td><td><a href="#mixed-runtime-root-requests">Mixed runtime root requests</a></td></tr>
+<tr><td><code>Kernel::check_qmatch_source</code></td><td>Original QIRF/dependencies and the <code>qleisli.qmatch-request</code> version-4 request</td><td><code>--qmatch-source-check</code> → <code>CheckedQmatch.run</code></td><td><a href="#version-4-named-arm-component-requests">Version 4: named-arm component requests</a></td></tr>
+<tr><td><code>Kernel::check_qmatch_source_v5</code></td><td>Original QIRF/dependencies and the <code>qleisli.qmatch-request</code> version-5 request</td><td><code>--qmatch-source-v5-check</code> → <code>CheckedQmatchV5.run</code></td><td><a href="#version-5-source-body-requests">Version 5: source-body requests</a></td></tr>
+<tr><td><code>engineering_pure::{check_with_kernel,check_serialized_with_kernel}</code> and <code>engineering compare-pure</code></td><td>Original actual and ideal QIRF artifacts and the closed pure comparison request</td><td><code>--engineering-pure-check</code> → <code>CheckedEngineeringPure.run</code></td><td><a href="realization.html#native-pure-engineering-comparison">Native pure engineering comparison</a> states the checked bound. The reply is <code>engineering-checked</code>, not an accepted handle.</td></tr>
+<tr><td><code>engineering_pure_tensor::{check_with_kernel,check_serialized_with_kernel}</code> and <code>engineering compare-pure-tensor</code></td><td>Original actual and ideal QIRF artifacts and the closed ordered tensor comparison request</td><td><code>--engineering-pure-tensor-check</code> → <code>CheckedEngineeringPureTensor.run</code></td><td><a href="realization.html#native-ordered-pure-tensor-comparison">Native ordered pure tensor comparison</a> states the checked bound. The reply is <code>engineering-checked</code>, not an accepted handle.</td></tr>
+<tr><td><code>engineering_instrument::{check_with_kernel,check_serialized_with_kernel}</code> and <code>engineering compare-instrument</code></td><td>Original actual and ideal QIRF artifacts and the closed instrument comparison request</td><td><code>--qirf-engineering-instrument-native</code> → <code>Native.engineeringInstrument</code></td><td><a href="realization.html#instrument-engineering-comparison">Instrument engineering comparison</a> states the checked bound. The reply is <code>engineering-checked</code>, not an accepted handle.</td></tr>
+<tr><td><code>engineering_openqasm::{check_with_kernel,check_serialized_with_kernel}</code> and <code>engineering compare-openqasm3</code></td><td>The literal canonical target bytes, the original ideal and dependencies, exact Unit and Bit signatures, the closed epsilon and majorants, and the complete retained QDV1 view</td><td><code>--engineering-openqasm-check</code> → <code>CheckedEngineeringOpenQasm.run</code> → an independent decode of the bytes and the unchanged complete instrument checks</td><td><code>NativeEngineeringOpenQasmProtocol.run_meaning</code> binds the literal target and the original ideal to the actual checking execution. <code>run_complete_adjoint_bound</code> covers every finite reference. The private report is for engineering only. It carries no actual <code>AcceptedProgram</code>. It makes no claim of source or export preservation, and no pure, control, cleanup, hardware, resources or constitutional PR or RS claim.</td></tr>
+<tr><td><code>engineering_openqasm_gate::compare_serialized_with_kernel</code> and <code>engineering compare-openqasm3-gate</code></td><td>Literal OpenQASM gate definition, exact ideal slices and the requested sequential or controlled approximation with resource accounting</td><td><code>--engineering-openqasm-gate-check</code> → <code>CheckedEngineeringOpenQasmGate.run</code> → <code>Protocol.EngineeringOpenQasmGate.checkRetained</code> and retained QDV1 comparison</td><td><code>NativeEngineeringOpenQasmGate.sequential_reference_bound</code> and <code>controlled_reference_bound</code> bound the difference of the literal operators on arbitrary finite references. The authority of the report is limited to the checked engineering request.</td></tr>
+<tr><td><code>AcceptedProgram::check_openqasm_placement</code>, internal to OpenQASM export</td><td>The accepted program’s retained version-5 qmatch request and execution view, the emitted OpenQASM target bytes and their alignment</td><td><code>--openqasm-placement-check</code> → <code>CheckedQmatchV5.PlacementPacket.check</code></td><td>The reply is <code>placement-checked</code> with target resource counts, not an accepted handle. This chapter states no proof for this mode.</td></tr>
+<tr><td><code>hierarchical::Kernel::{inspect,inspect_native}</code></td><td>Dedicated hierarchy payload and all required finite leaves</td><td><code>--hierarchy-pending</code> → <code>Conditional.checkAll</code> and <code>HierarchicalFinite.checkLeaves</code></td><td><code>NativeHierarchy.conditional_derives</code> and <code>checkLeaves_semantics</code> bind structural derivation and finite meaning. The full analytic composition from meaning to Operator is open.</td></tr>
+<tr><td><code>hierarchical::Kernel::{check_against,check_against_native}</code>, ordinary request branch</td><td>Hierarchy payload and composition request</td><td><code>--hierarchy-request-pending</code> → <code>Root.checkAll</code>, <code>checkLeaves</code> and <code>checkPairs</code></td><td><code>NativeHierarchy.requested_pairs</code> and the finite-leaf results retain their stated premises. A comparison request from a producer proves consistency, not source preservation.</td></tr>
+<tr><td>Selected pure hierarchy source with <code>ctrl</code></td><td>One hierarchy composition and the compared plan. For each original call: its replayed node index, its ordered basis forest and its control roles.</td><td><code>--hierarchy-control-pending</code> → <code>Root.checkAll</code>, finite leaves and pairs, and <code>HierarchicalFinite.checkControls</code></td><td><code>ControlAccess.check_bound</code> binds the native sector predicate to the executable action of the selected node. The replay of source occurrences has a separate scope, and so does the general correspondence of source and resources.</td></tr>
+<tr><td>The same methods’ Fourier branch</td><td>Hierarchy payload and Fourier request, including Hadamard obligations</td><td><code>--hierarchy-fourier-pending</code> → <code>FourierRoot.checkAll</code>, <code>checkLeaves</code> and <code>checkHadamards</code></td><td><code>NativeHierarchy.hadamard_semantics</code> and <code>checkHadamards_semantics</code> establish finite obligations. The complete analytic, source and runtime composition is open.</td></tr>
+<tr><td><code>check_instrument</code> / <code>check_instrument_native</code></td><td>Instrument payload and preparation/evolution/readout request</td><td><code>--instrument-pending</code> → <code>Instrument.checkAll</code>, <code>checkLeaves</code> and <code>checkPairs</code></td><td><code>Instrument.checkAll_stages</code> / <code>checkAll_boundary</code> and the native finite results cover components. They do not establish that the complete source or the host execution is preserved.</td></tr>
+<tr><td><code>check_qpe_instrument</code> / <code>check_qpe_instrument_native</code></td><td>Instrument payload, named provider request and candidate binding</td><td><code>--qpe-instrument-pending</code> → <code>QpeInstrument.checkAll</code>, <code>checkLeaves</code>, <code>checkPairs</code> and <code>checkHadamards</code></td><td>The mode checks the named structural and finite obligations. The complete native bridge to the analytic Operator and the general meaning of source QPE are open.</td></tr>
+<tr><td>Private readout and preparation protocols</td><td>QLM1 readout and QLZ1 preparation packets</td><td><code>--readout-check</code> → <code>Readout.check</code>; <code>--preparation-check</code> → <code>Preparation.check</code></td><td>The component results <code>check_reference</code> / <code>check_boundary</code> retain explicit premises. These reports are not handles of complete programs and not runtime guarantees.</td></tr>
+<tr><td>Phase-word, phase DAG, layout, layout DAG and phase-layout file protocols</td><td>Separate component artifacts and requirements</td><td><code>Cli.Finite</code> → <code>verify</code>, <code>Hierarchy.check</code>, <code>Layout.check</code>, <code>LayoutDag.check</code>, <code>PhaseLayout.check</code></td><td>The existing component results for phase and layout do not extend automatically to ordinary production programs.</td></tr>
+<tr><td><code>Finite.check</code> / <code>checkAll</code>, <code>circuitMatrix</code>, <code>FiniteCodec.readMatrix</code></td><td>Finite circuits, contracts or serialized matrices</td><td>Finite checking, evaluation or decoding, respectively</td><td>The finite component theorems have explicit inputs. Evaluation and decoding alone are not acceptance. Composition with each actual production root is required.</td></tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>lean-kernel/Main.lean</code> dispatches the native
+modes, each of which has an explicit version. The engineering comparisons
+are among them and are mechanically separate.
+<code>lean-kernel/Cli/NativeContext.lean</code> invokes the pure dispatcher
+<code>Protocol.NativeContext.run</code> and its single reply projection. It checks the
+original QLV3 edition and the compiled product, and then applies the
+existing gate of the mode. The strict version-3 reply binds that same
+context. The older IO adapters are unused and await retirement after
+replacement conformance coverage. They are not fallback entry points.</p>
+</blockquote>
+<p>These files contain the bridge theorems that the table and the sections below
+cite by name:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>File</th><th>Cited theorems</th></tr>
+</thead>
+<tbody>
+<tr><td><code>lean/Qleisli/NativeValidity.lean</code></td><td><code>check_sound</code>, <code>check_scopeSafe</code></td></tr>
+<tr><td><code>lean/Qleisli/NativeContract.lean</code></td><td><code>check_sound</code>, <code>check_encoded_sound</code>, <code>encoded_meaning</code>, <code>encoded_reference</code>, <code>leaf_meaning</code>, <code>leaf_reference_laws</code>, <code>control_meaning</code>, <code>control_reference</code>, <code>control_owners_meaning</code>, <code>control_owners_reference</code>, <code>instrument_meaning</code></td></tr>
+<tr><td><code>lean/Qleisli/NativeContractWrapper.lean</code></td><td><code>Wrapper.circuitMatrix_entries</code></td></tr>
+<tr><td><code>lean/Qleisli/NativePureLeaf.lean</code></td><td><code>pure_leaf_meaning</code>, <code>pure_leaf_reference</code></td></tr>
+<tr><td><code>lean/Qleisli/ControlAccess.lean</code></td><td><code>checked_owners_meaning</code>, <code>checked_owners_action_project</code></td></tr>
+<tr><td><code>lean/Qleisli/NativeHierarchy.lean</code></td><td><code>conditional_derives</code>, <code>checkLeaves_semantics</code>, <code>requested_pairs</code>, <code>hadamard_semantics</code>, <code>checkHadamards_semantics</code></td></tr>
+<tr><td><code>lean/Qleisli/NativeEngineeringOpenQasmProtocol.lean</code></td><td><code>run_meaning</code>, <code>run_complete_adjoint_bound</code></td></tr>
+<tr><td><code>lean/Qleisli/NativeEngineeringOpenQasmGate.lean</code></td><td><code>sequential_reference_bound</code>, <code>controlled_reference_bound</code></td></tr>
+<tr><td><code>lean-kernel/Protocol/ExecutionView/Native.lean</code></td><td><code>ordinary_original</code></td></tr>
+<tr><td><code>lean-kernel/Protocol/NativeContract.lean</code></td><td><code>check_acceptance</code></td></tr>
+<tr><td><code>lean-kernel/QleisliKernel/Hierarchical/ControlAccess.lean</code></td><td><code>ControlAccess.check_bound</code></td></tr>
+<tr><td><code>lean-kernel/QleisliKernel/Hierarchical/Instrument.lean</code></td><td><code>Instrument.checkAll_stages</code>, <code>checkAll_boundary</code></td></tr>
+<tr><td><code>lean-kernel/QleisliKernel/Hierarchical/Readout.lean</code>, <code>lean-kernel/QleisliKernel/Hierarchical/Preparation.lean</code></td><td><code>check_reference</code>, <code>check_boundary</code></td></tr>
+</tbody>
+</table>
+</div>
+<p><code>lean/Qleisli/Qirf.lean</code> defines the graph denotation that these bridge files
+use. It contains none of the theorems that this chapter cites by name.</p>
+<h2 id="ordinary-qirf-root-requests"><a class="header" href="#ordinary-qirf-root-requests">Ordinary QIRF root requests</a></h2>
+<p>The mode <code>--qirf-native</code> checks an ordinary QIRF root. Checking or compiling
+a source, a project or a qrate reaches this mode. The first row of the
+entry-path table lists its entry paths and its bytes. The bytes are a
+<a href="execution-view.html#native-envelope-cutover">QLV3 envelope</a>. The envelope holds
+the original QLV1 packet, with its optional independent request. When the
+caller requests execution, it also holds the retained execution view.</p>
+<p>Rules:</p>
+<ul>
+<li>The accepted judgment is the success of
+<code>QleisliKernel.Protocol.ExecutionView.Native.ordinary</code> on the QLV3 payload at
+its requested scope. The checker reaches that function through
+<code>Protocol.NativeContext.run</code>.</li>
+<li>Execution requires one more check: a comparison of the retained view
+against the view that Lean decodes.</li>
+</ul>
+<p>Proof scope:</p>
+<ul>
+<li><code>ordinary_original</code> binds the accepted judgment to
+<code>Protocol.Validity.Acceptance</code> for the original QLV1 packet. That witness
+identifies the decoded <code>Qirf.Artifact</code>, the order and the optional
+independent request. It also identifies the success of
+<code>Qirf.Validity.inspect</code> on those exact values.</li>
+<li><code>Qleisli.NativeValidity.check_sound</code> binds success to <code>VerifiedMeaning</code>.</li>
+<li><code>check_scopeSafe</code> covers classical scope.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>Full ordinary EffectSound/CPTP is a separate obligation.</li>
+<li>Preservation by source translation and preservation by foreign translation
+are separate obligations.</li>
+<li>Preservation in emitted output and preservation at runtime are separate
+obligations.</li>
+</ul>
+<h2 id="native-contract-requests"><a class="header" href="#native-contract-requests">Native contract requests</a></h2>
+<p>A caller uses the mode <code>--qirf-contract</code> when it needs a fact about a QIRF
+root beyond ordinary validity: an encoded equation, an exact matrix, a
+control sector or an observing instrument. The mode reads the original QIRF
+root and, beside it, a <code>qleisli.native-contract</code> request of version 1. It
+decodes the request strictly. The field <code>kind</code> selects one of six request
+kinds:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th><code>kind</code></th><th>Fields</th><th>Section</th></tr>
+</thead>
+<tbody>
+<tr><td><code>encoded</code></td><td><code>format</code>, <code>version</code>, <code>kind</code>, <code>contract</code></td><td><a href="#encoded-and-square-leaf-requests">Encoded and square leaf</a></td></tr>
+<tr><td><code>leaf</code></td><td><code>format</code>, <code>version</code>, <code>kind</code>, <code>signature</code>, <code>input</code>, <code>output</code>, <code>matrix</code></td><td><a href="#encoded-and-square-leaf-requests">Encoded and square leaf</a></td></tr>
+<tr><td><code>pure-leaf</code></td><td><code>format</code>, <code>version</code>, <code>kind</code>, <code>domain</code>, <code>codomain</code>, <code>input</code>, <code>output</code>, <code>matrix</code></td><td><a href="#rectangular-pure-leaf-requests">Rectangular pure leaf</a></td></tr>
+<tr><td><code>control</code></td><td><code>format</code>, <code>version</code>, <code>kind</code>, <code>signature</code>, <code>axes</code></td><td><a href="#original-artifact-control-sector-requests">Control sector</a></td></tr>
+<tr><td><code>control-owners</code></td><td><code>format</code>, <code>version</code>, <code>kind</code>, <code>signatures</code>, <code>axes</code></td><td><a href="#original-artifact-control-sector-requests">Control sector</a></td></tr>
+<tr><td><code>instrument</code></td><td><code>format</code>, <code>version</code>, <code>kind</code>, <code>actual_signature</code>, <code>expected_signature</code>, <code>identity</code>, <code>expected_artifact</code></td><td><a href="#original-artifact-observing-instrument-requests">Observing instrument</a></td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The inner QLV1 format is the same for every kind. An external call requires
+the QLV3 envelope and its scope.</li>
+<li>The <code>control</code> kind changes neither the inner QLV1 format nor the contracts
+of the encoded and leaf requests.</li>
+</ul>
+<p>Proof scope:</p>
+<ul>
+<li>The native-contract bridge is specific to <code>Protocol.NativeContract.check</code>.
+It does not inherit the theorem for the ordinary <code>Protocol.Validity.check</code>
+root.</li>
+<li>Its <code>Acceptance</code> witness retains what the check read and decoded: the
+original QLV1 body and request bytes, the UTF-8/JSON decoding, the artifact
+and order, the requested signature, the ordered ports and the exact matrix
+or encoded contract. It retains them with continuous work states. These
+facts are necessary for success. They are not a converse characterization
+of every parser constraint.</li>
+<li><code>Protocol.NativeContract.check_acceptance</code> binds the original bytes, the
+decoded request and the actual checking states.</li>
+<li><code>tests/fixtures/constitution_v030/native-contract-bridge/</code> preserves the
+unchanged executable prefix, the printed theorem and predicate types, the
+axiom sets and a validation record.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>The identity and proof checks of that fixture admit no guarantee and do not
+close S05.</li>
+<li>They establish no claim about the source or the compiler, a deployed
+binary, Rust rematerialization, the target or the runtime, or quantitative
+Resource Safety.</li>
+</ul>
+<h3 id="encoded-and-square-leaf-requests"><a class="header" href="#encoded-and-square-leaf-requests">Encoded and square-leaf requests</a></h3>
+<p>A request of kind <code>encoded</code> states an encoded equation for the root. A
+request of kind <code>leaf</code> states a signature, ordered ports and an exact square
+matrix for it. The entry-path table gives the entry paths and the checked
+bytes of the kinds <code>encoded</code> and <code>leaf</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>The square <code>kind: "leaf"</code> protocol keeps its two-sided unitary conditions.
+It is available beside the rectangular kind.</li>
+</ul>
+<p>Proof scope:</p>
+<ul>
+<li><code>Qleisli.NativeContract.check_encoded_sound</code> and <code>encoded_meaning</code> connect
+success to three things: the <code>BodyMeaning</code> of the original root, the exact
+Basis interface and the requested encoded equation. Through
+<code>EncodedMeaning</code>, the encoded branch retains that <code>BodyMeaning</code>, the
+complete Basis interface and the checked encoded equation.</li>
+<li><code>Wrapper.circuitMatrix_entries</code> proves that the coefficients of the actual
+wrapper equal those of the original matrix.</li>
+<li><code>encoded_reference</code> extends the equation to any reference amplitude
+function.</li>
+<li><code>Qleisli.NativeContract.check_sound</code> and <code>leaf_meaning</code> compose the native
+acceptance of the bytes to the instrument meaning of the original body.
+They cover the bounded closed unitary fragment, the exact requested matrix,
+the signature and the ordered ports. The output port is tied to an actual
+verification.</li>
+<li><code>leaf_reference_laws</code> extends both whole-space inverse laws to every finite
+reference. The leaf conclusion retains complex phase. Its laws for an
+arbitrary finite reference require no premise of separability or
+normalization.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>For the kind <code>encoded</code>, these claims are separate: source and compiler,
+compiled I/O, runtime and export, clean release and quantitative resources.
+The theorems are not ledger admissions.</li>
+<li>For the kind <code>leaf</code>, source and runtime claims are separate. Broader claims
+about effects and clean release are separate too.</li>
+<li>Both kinds give bounded results about the original root. These results do
+not establish correspondence with the source, with a deployed binary or
+with host execution.</li>
+</ul>
+<h3 id="rectangular-pure-leaf-requests"><a class="header" href="#rectangular-pure-leaf-requests">Rectangular pure-leaf requests</a></h3>
+<p>A request of kind <code>pure-leaf</code> states that a unary pure function equals an
+exact matrix. The input type and the output type are independent, so the
+matrix can be rectangular. The mode <code>--qirf-contract</code> accepts
+<code>qleisli.native-contract</code> version 1 with <code>kind: "pure-leaf"</code>. Its complete
+fields are <code>format</code>, <code>version</code>, <code>kind</code>, <code>domain</code>, <code>codomain</code>, <code>input</code>,
+<code>output</code> and <code>matrix</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>Both types use exact QIRF basis trees. The ports retain token, ordered wires
+and bit shape.</li>
+<li>The native checker rejects an unknown field, an unknown version and a
+producer acceptance flag.</li>
+<li>The interface of the original QIRF root describes a unary pure function
+with independent input and output types. The structural check of that
+interface requires four things: a Unitary or Isometry effect, no classical
+ports, one input and one actual live output owner, and the corresponding
+input and output widths.</li>
+<li>The reader of the literal original body finds the output owner. The input
+width does not stand for the output width.</li>
+<li>Ordinary validity alone does not establish an external matrix equation.</li>
+<li><code>PureLeaf.check</code> freshly checks the original dependency graph and body. It
+binds both exact type trees and both ordered ports. It reconstructs every
+input column, and it checks exact equality to the requested matrix and
+<code>V†V = I</code>.</li>
+<li>Reconstruction retains the original effect checks, complete classical
+branches and hidden observation histories. Measurement, reset and discard
+cannot be relabeled pure or erased from the equation.</li>
+<li>Zero-width owners, exact phase and axis order are part of the obligation.</li>
+<li>Both endpoint dimensions keep the six-bit dense bound and the shared
+exact-work accounting. The kind adds no unbounded matrix API.</li>
+<li>Every receipt requires fresh native acceptance, including a receipt that
+uses previously checked dependency data.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>CheckedPureLeaf</code> is a receipt that only private
+code can construct. It covers the immutable bytes of the original artifact
+and of the request. On the Rust side, boundary construction and matrix
+serialization validate only the shape of untrusted data.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> The ordinary frontend retains <code>SourcePureEquation</code>
+sidecars on its accepted entry. A sidecar holds an implementation leaf and
+a reference leaf, each independently checked. It also holds their exact
+matching domain, codomain and matrix, the resolved names and the original
+source text. Constructor lowering rechecks actual renamed Raw fragments
+against the derived matrix. Selected Raw lowering retains its original
+Meaning requests and checks actual instruction intervals. The refined
+finite-leaf path of the hierarchy is square and refuses rectangular Meaning
+obligations.</p>
+</blockquote>
+<p>Proof scope:</p>
+<ul>
+<li><code>pure_leaf_meaning</code> binds the fresh check of the graph and the root to the
+original body and the exact Gram identity.</li>
+<li><code>pure_leaf_reference</code> preserves inner products for arbitrary joint reference
+amplitudes.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>The check grants neither inverse nor control access. It supplies no source
+or runtime correspondence, no target realization and no quantitative
+resource evidence.</li>
+<li>Source snapshots provide provenance. Neither sidecar is a general proof of
+source preservation, a functional specification of an arbitrary whole entry
+or a constitutional guarantee.</li>
+</ul>
+<h3 id="original-artifact-control-sector-requests"><a class="header" href="#original-artifact-control-sector-requests">Original-artifact control-sector requests</a></h3>
+<p>A control-sector check asks whether an action keeps the computational-basis
+sectors of the requested axes apart. The rules below state the exact
+condition. Each source <code>ctrl</code> call carries such a check as an obligation. The
+mode <code>--qirf-contract</code> accepts two kinds that request a control-sector check
+of an original artifact:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Request</th><th>Complete field set</th><th>Content</th></tr>
+</thead>
+<tbody>
+<tr><td><code>kind: "control"</code></td><td><code>format</code>, <code>version</code>, <code>kind</code>, <code>signature</code> and <code>axes</code></td><td><code>signature</code> is the exact QIRF basis tree. <code>axes</code> is an ordered list of distinct physical bit positions in that interface.</td></tr>
+<tr><td><code>kind = "control-owners"</code></td><td><code>format</code>, <code>version</code>, <code>kind</code>, <code>signatures</code> and <code>axes</code></td><td><code>signatures</code> is the requested basis forest of an original call with several ordered quantum ports.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The native checker rejects a <code>control</code> request with an extra field. A
+proposed matrix is such a field, and so is a producer success flag.</li>
+<li>A <code>control-owners</code> request carries exactly its five fields. It accepts
+neither a proposed matrix nor a success receipt.</li>
+<li>Lean checks the original graph, the root and the dependency evidence, and
+it checks that the input and output interfaces are identical. It
+reconstructs the actual action and checks that the action is unitary on the
+whole space. It then requires every matrix entry between different
+requested computational-basis sectors to be exactly zero.</li>
+<li>The six-bit finite reconstruction limit and continuous work accounting
+apply.</li>
+<li>An empty axis list is meaningful for a zero-width logical owner. It does not
+erase ownership or nontrivial phase.</li>
+<li>The internal <code>Qirf.ControlAccess.checkOwners</code> component checks an original
+call with several ordered quantum ports. It constructs no wrapper that
+packs them into a single port. The requested basis forest must match the
+widths and positions of the original input owners and of the live returned
+owners, including zero-width owners.</li>
+<li>Raw bit widths do not establish source type trees. The requested forest
+requires binding to the original checked source.</li>
+</ul>
+<p>Rules for source <code>ctrl</code> calls:</p>
+<ul>
+<li>The Finite project path binds the <code>control-owners</code> request before it
+updates source bindings. It binds the request to each interval of an actual
+emitted control call, to the original ordered owner ports and basis forest,
+and to the returned tokens. It checks nested calls and unused concrete
+declarations. The complete final artifact also requires ordinary native
+acceptance.</li>
+<li>Selected source projection retains the original ordered access roles,
+together with the source identities and positions of the call. This
+includes public <code>ctrl</code> occurrences. Elaboration checks the exact owner
+shape and actual effect. It neither grants sector authority nor rewrites
+the role to <code>excl</code>.</li>
+<li>Checker-free Raw lowering and hierarchical lowering reject retained control
+roles.</li>
+<li>Native-checked Selected Raw lowering independently checks the selected root
+and every retained concrete body that bears a control. It then replays its
+actual decoded calls with fresh sector requests. Final consumption repeats
+native acceptance and source replay. Retaining a role or an earlier success
+is not acceptance authority.</li>
+<li>The common judgment records each original control call as a pending sector
+obligation. Native-checked Selected Raw lowering requires every original
+obligation to have a concrete interval in each retained specialization of
+its declaration. A program with an absent interval is unsupported. One
+specialization cannot cover the missing call of another.</li>
+<li>Unused original declarations, unselected branches, empty loops and
+zero-count providers cannot erase the obligation or its location. Retained
+zero-count provider bodies are checked before root emission.</li>
+<li>Control replay refuses when it has no native checker.</li>
+<li>Symbolic inverse or controlled replay refuses retained control roles. Its
+transformed trace does not supply the original call intervals that the
+native bridge requires.</li>
+<li>Zero-count and unused-provider obligations must be covered before selected
+transport can be admitted. Empty output does not waive them.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The internal Raw replay bridge can discharge a
+retained control obligation with the checker of the accepted original
+artifact. It selects the actual instruction interval that replay consumes,
+its input and returned tokens and its ordered source basis forest. It then
+submits a fresh <code>control-owners</code> request. It takes no call body, matrix or
+success receipt from a producer.</p>
+<p>Work is shared across these decisions within the exact-work ceiling. The
+checked Raw entry shares this budget across all body and root decisions. It
+refuses an increased ceiling, exhaustion or an unavailable checker.
+Regression tests use original public control source graphs as well as
+private graph mutations.</p>
+</blockquote>
+<p>Proof scope:</p>
+<ul>
+<li><code>Protocol.NativeContract.ControlAcceptance</code> and <code>check_acceptance</code> retain
+the original body and request bytes, the exact decoded signature and axes,
+and the actual checker execution.</li>
+<li><code>Qleisli.NativeContract.control_meaning</code> connects the same action to four
+things: the <code>BodyMeaning</code> of the original root, its exact interface, the
+sector condition and the inverse laws.</li>
+<li><code>control_reference</code> proves projector commutation on arbitrary joint complex
+amplitudes with any external reference. Phase kickback and entanglement are
+permitted. The result does not assert that the reduced control state is
+unchanged, and it does not assert separability.</li>
+<li><code>checked_owners_meaning</code> and <code>checked_owners_action_project</code> bind the actual
+root, its dependencies and the full complex action to the sector law.</li>
+<li><code>ControlOwnersAcceptance</code> retains the decoded ordered forest and
+coordinates, the original packet bytes and the actual checking execution.</li>
+<li><code>control_owners_meaning</code> and <code>control_owners_reference</code> extend the
+original-body result and the arbitrary-reference result to the
+<code>control-owners</code> request.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>The <code>control</code> request alone does not enable source <code>ctrl</code> calls.</li>
+<li>These are separate obligations: original source places, the artifact
+identity that is specific to a call, aliasing, access lifetimes, lowering
+and execution correspondence, and quantitative resource and scheduling
+claims.</li>
+<li>The two kinds introduce no native mode, external schema admission or
+constitutional guarantee.</li>
+<li>Neither an annotation nor native unitarity alone supplies control-sector
+evidence.</li>
+<li>Host source lowering and interval extraction are not a Lean
+source-preservation theorem.</li>
+<li>AST-to-step preservation, Rust decoding and interval extraction are
+separate obligations. The Raw replay bridge is a host bridge, not a Lean
+source-preservation theorem.</li>
+</ul>
+<h3 id="original-artifact-observing-instrument-requests"><a class="header" href="#original-artifact-observing-instrument-requests">Original-artifact observing instrument requests</a></h3>
+<p>A request of kind <code>instrument</code> compares two observing artifacts, the actual
+one and an expected one. The check succeeds only when the two are equal as
+instruments. The mode <code>--qirf-contract</code> accepts <code>kind = "instrument"</code> in
+<code>qleisli.native-contract</code> version 1. Its exact fields are <code>format</code>, <code>version</code>,
+<code>kind</code> and the four below:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Content</th></tr>
+</thead>
+<tbody>
+<tr><td><code>actual_signature</code>, <code>expected_signature</code></td><td>Each signature has exactly <code>input</code> and <code>result</code>. <code>input</code> is the QIRF basis tree. <code>result</code> is a complete result tree.</td></tr>
+<tr><td><code>identity</code></td><td>Exactly <code>implementation</code>, <code>specification</code> and <code>sources</code>. Each source has exactly <code>path</code> and <code>text</code>.</td></tr>
+<tr><td><code>expected_artifact</code></td><td>The original expected QIRF JSON as a UTF-8 string</td></tr>
+</tbody>
+</table>
+</div>
+<p>The complete result tree uses these exact objects:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Result</th><th>Fields</th></tr>
+</thead>
+<tbody>
+<tr><td>Ordinary Unit or Bit</td><td><code>{"tag":"unit"}</code> or <code>{"tag":"bit"}</code></td></tr>
+<tr><td>Ordinary Bits</td><td><code>{"tag":"bits","width":N}</code>, with a u32 natural width, including zero</td></tr>
+<tr><td>Quantum owner</td><td><code>{"tag":"quantum","basis":B}</code>, with the complete QIRF basis tree</td></tr>
+<tr><td>Pair</td><td><code>{"tag":"pair","left":L,"right":R}</code></td></tr>
+<tr><td>Tuple of at least three values</td><td><code>{"tag":"tuple","fields":[...]}</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The native checker rejects a request that supplies a matrix, a receipt or
+a success flag. It also rejects a request with a missing field or an extra
+field.</li>
+<li>The actual QIRF is the original QLV1 body. The checker freshly checks both
+complete graphs, both selected roots and the dependency evidence.</li>
+<li>The kind changes neither the QLV1 framing, the QIRF representation nor the
+other request kinds.</li>
+<li>The signatures must agree as entire trees, including Unit, Bits&lt;0&gt;,
+zero-width quantum owners and product nodes.</li>
+<li>The ordered quantum owners and the classical projection must match the
+original roots.</li>
+<li>Source consumers select this contract by the Observe effects that callers
+see.</li>
+<li>The native profile requires original artifacts that genuinely observe. A
+pure body can carry a conservative Observe bound. That bound neither
+rewrites the Raw classification of the body nor authorizes a fallback to a
+pure contract.</li>
+<li>Unsupported concrete pairs refuse, including unused ones.</li>
+<li>The native profile has one quantum input and no runtime classical inputs.</li>
+<li>Signatures are requested type data. Native widths alone do not reconstruct
+the full types of the source or prove their preservation.</li>
+<li>The equality has no tolerance.</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Limit</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Sources in <code>identity</code></td><td>128, with the name and path bounds</td></tr>
+<tr><td>Aggregate identity bytes</td><td>1 MiB</td></tr>
+<tr><td>Depth of a result tree</td><td>64</td></tr>
+<tr><td>Nodes of a result tree</td><td>4,096</td></tr>
+<tr><td>Dense reconstruction</td><td>Six bits, with the shared work and JSON limits</td></tr>
+<tr><td>Transport</td><td>16 MiB</td></tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p><strong>Implementation note.</strong> The private Rust instrument handle retains both
+original accepted artifacts, the complete signature, the source identity and
+the fresh paired native decision. Both concrete <code>apply_contract</code> adapters
+execute only the implementation. They check its actual emitted interval
+again against the immutable reference. Each private call sidecar retains the
+original ports, instructions, result IDs and source span. The enclosing root
+has its separate ordinary acceptance. Unused original closed obligations
+are also checked.</p>
+<p>Selected Raw preparation independently replays the original implementation.
+It then checks the consumed instruction interval, the actual input owner and
+the ordered result through a fresh native equation. The retained proposal
+keeps the original pairs and private call sidecars. Later source validation
+checks again with the checker of the accepted artifact. Dependencies, unused
+declarations and zero-count children keep their original obligations.
+Hierarchy lowering and checker-free emission reject this overload.</p>
+</blockquote>
+<p>Proof scope:</p>
+<ul>
+<li><code>Protocol.NativeContract.InstrumentAcceptance</code> retains the original decoded
+request, the original expected text, the fresh expected graph and continuous
+checking states.</li>
+<li><code>Qleisli.NativeContract.instrument_meaning</code>, <code>check_sound</code> and
+<code>check_encoded_sound</code> connect success to the instrument meanings of both
+original bodies, to complete Kraus sums and to untruncated dimensions. They
+also connect it to identical unnormalized public outcome maps on any joint
+matrix with a finite external reference.</li>
+<li>The independent reference in <code>Qleisli.Semantics.InstrumentEquality</code> sums all
+hidden histories. Neither their count nor their labels are public outcomes.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>The check grants no observing Meaning, coherent control or adjoint access.
+Pure Meaning retains its exact phase rule.</li>
+<li>The sidecars do not change QIRF. They do not set <code>request_checked</code> or
+<code>source_meaning_verified</code> of a request-free root to true. Inspection of a
+whole root without a request reports no independent requested meaning.</li>
+<li>Source preservation, decoder preservation, preservation by native
+compilation and runtime, and emitted-artifact preservation are separate
+obligations.</li>
+<li>The lemmas admit no constitutional guarantee.</li>
+</ul>
+<h2 id="finite-nominal-carrier-requests"><a class="header" href="#finite-nominal-carrier-requests">Finite nominal carrier requests</a></h2>
+<p>The internal mode <code>--carrier-pure-check</code> checks a pure body that maps one
+forest of nominal owners to another. It checks the body against an
+independent exact logical matrix.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Item</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Format</td><td><code>qleisli.carrier-request</code></td></tr>
+<tr><td>Version</td><td>1, strict</td></tr>
+<tr><td>Profile</td><td><code>finite-carrier-pure-v1</code></td></tr>
+<tr><td>Fields</td><td><code>format</code>, <code>version</code>, <code>profile</code>, <code>attached</code>, <code>required</code> and <code>logical</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Both interfaces retain complete ordered owner forests and public effects.</li>
+<li>A nominal atom retains the identities of its original module, declaration
+and source, and it retains its member order. Its logical cardinality and
+its physical width do not affect this.</li>
+<li>Singleton enums and empty records are distinct from Unit and Bits&lt;0&gt;.</li>
+<li><code>Protocol.Carrier.check</code> reconstructs the original declarations, import
+paths and existing field Nat helpers before it checks the actual graph and
+root.</li>
+<li>The core freshly checks three things: the Gram equations of both canonical
+codes, the Gram equation of the logical map and
+<code>physical * E_in = E_out * logical</code>.</li>
+<li>Logical dimensions govern the Unitary label. A larger physical unitary does
+not justify a logical Unitary claim.</li>
+<li>Observation, reset and discard cannot be hidden as pure.</li>
+<li>Extra source rows require exact nominal origins after source checking.
+Ordinary checking keeps its own source-use rule. Uncovered helper rows and
+import-only rows refuse.</li>
+<li>The source, matrix and work limits apply.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The explicit source adapter uses the
+<a href="source-text.html">common judgment</a>, the selected Builder and the Raw emitter.
+It requires an independent logical request and replays retained source steps
+against the checked body. Its sealed <code>CheckedSourceCarrier</code> retains that
+source graph and always reports <code>source_meaning_verified() == false</code>.
+Descriptors and source preparation grant no acceptance.</p>
+</blockquote>
+<p>Proof scope:</p>
+<ul>
+<li><code>CheckedCarrier.run_binding</code> binds the execution-only QLV3 packet and the
+actual QDV1 comparison of the graph, both interfaces and the logical matrix.
+The binding retains the original packet and the exact QDV1 comparison.</li>
+<li>Its <code>Binding.root_safe</code> follows the actual checked root to the independent
+ownership and classical-scope properties.</li>
+<li>The core postcondition binds the actual body/code equations and the Gram
+equations.</li>
+<li>The source adapter adds a replay of the retained steps. It adds no ordinary
+runtime, no inverse or control access and no AST-preservation theorem.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>Neither this result nor the private native carrier holder converts to an
+ordinary execution handle or grants inverse or control access.</li>
+<li>The runtime route for closed ordinary results is the separate mode of
+<a href="#ordinary-inputresult-requests">Ordinary input/result requests</a>.</li>
+<li>This component does not supply general nominal functions, quantum owners,
+full qmatch or original AST-to-step preservation.</li>
+<li>These component results admit no guarantee and do not widen the two
+existing ledger scopes.</li>
+</ul>
+<h2 id="ordinary-inputresult-requests"><a class="header" href="#ordinary-inputresult-requests">Ordinary input/result requests</a></h2>
+<p>The internal mode <code>--ordinary-root-check</code> checks one original declaration
+whose parameters and result are ordinary values. It checks the declared
+parameters and the result over the complete input domain of the declaration,
+that is, for every value of the parameters.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Item</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Format</td><td><code>qleisli.ordinary-root-request</code></td></tr>
+<tr><td>Version</td><td>2</td></tr>
+<tr><td>Profile</td><td><code>finite-ordinary-root-v2</code></td></tr>
+<tr><td>Fields</td><td><code>format</code>, <code>version</code>, <code>profile</code>, <code>selection</code>, <code>module</code>, <code>declaration</code>, <code>parameters</code>, <code>input_storage</code>, <code>input_rows</code>, <code>basis</code>, <code>storage</code> and <code>public_effect</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>The field <code>selection</code> names one of three selections:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Selection</th><th>Declaration that it denotes</th></tr>
+</thead>
+<tbody>
+<tr><td>Project</td><td>Exactly closed <code>main::main</code>, including a private ordinary main</td></tr>
+<tr><td>Exported</td><td>An original public declaration</td></tr>
+<tr><td>Internal</td><td>An original private non-entry declaration. Checking does not export its name.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The fields are strict. The native checker rejects a Version1 request, an
+unknown field and an unknown profile, and it tries no fallback.</li>
+<li>Original parameter and result types must be ordinary finite types. This
+mode does not support quantum ports.</li>
+<li>A selection that names a public <code>main</code> explicitly uses the exported rule.
+The restrictions on a project main are separate.</li>
+<li>The basis retains the complete nominal prefix representation. Storage
+separately retains Unit, Bit, Bits, pair, tuple, enum origin and SSA
+coordinates, and record origin and ordered named children. Zero-width nodes
+cannot be discarded.</li>
+<li>The checker freshly reads the original ordered parameter forest and the
+declared result, and compares them with the request. Argument count and
+zero-width arguments stay explicit.</li>
+<li>Five original checks run first: the Raw root, dependency, ownership, effect
+and scope checks. The complete exact reconstruction of the instrument
+follows them.</li>
+<li>Lean independently enumerates the entire canonical parameter domain, with
+the first argument on the low coordinates. It requires exact equality with
+the proposed <code>input_rows</code>.</li>
+<li>Lean checks typed input storage for every row. It then interprets every
+actual hidden history, including zero-probability histories, with the
+independent ordinary-value relation.</li>
+<li>Flattened input and output SSA maps must equal the original Raw lists.</li>
+<li>An invalid enum code, a changed nominal identity, a reordered field or axis,
+or a hidden Observe under a pure label refuses.</li>
+<li>A declared public Observe bound is retained even for a pure implementation.</li>
+<li>The six-bit instrument limit and the carrier and work limits apply.</li>
+</ul>
+<p>Rules for source rows:</p>
+<ul>
+<li>Source rows require the actual selected original, exact checked nominal
+origins, or actual original type-resolution paths from the selected
+parameter and result types and recursive record fields.</li>
+<li>The ordinary and mixed runtime gates use the original body reader when
+signature and graph evidence leave source rows uncovered. This binds
+body-only type paths, including paths through called helpers, before the
+shared Raw root check.</li>
+<li>The shared independent resolver retains its exact query, original lookup
+bytes, visibility and import and reexport edges.</li>
+<li>An arbitrary row or a validated unused Nat helper cannot supply type-path
+coverage.</li>
+<li>Projection and both coverage scans are precharged within the work limit.</li>
+<li>Coverage binds source relevance to the checked artifact.</li>
+</ul>
+<p>Rules for execution and transport:</p>
+<ul>
+<li>Closed simulation and sampling inspect the retained parameter forest. They
+reject a nonempty forest even when every parameter has zero width. Unit,
+Bits&lt;0&gt; and empty records require an actual invocation even when the Raw
+input lists are empty. A nullary typed result is closed.</li>
+<li>The <code>run_closed</code>/<code>sample_closed</code> APIs reject any nonclosed root. Checking
+parameters adds no unchecked arbitrary-input execution API.</li>
+<li>Untyped rechecking and portable export refuse until the complete typed
+artifact transport exists.</li>
+<li>Untrusted portable nominal emission refuses until its complete typed request
+is transported.</li>
+<li>This mode checks the declared result and the histories. Text and JSON
+reports distinguish that check from an independent external specification
+of an algorithm.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> Nongeneric public selected functions use this gate
+through the common original-source compiler. The gate covers small quantum
+temporaries, which it checks over every hidden history. Interfaces are
+ordinary in this mode. Mixed quantum interfaces use
+<a href="#mixed-runtime-root-requests">Mixed runtime root requests</a>. Selection
+retains the exact original instantiation, the complete checked host bindings
+and the accepted request. Ordinary source callers use the common
+original-body lowering.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> The source wrapper discharges dormant function
+pairs through the same contract gate as project checking. It prepares the
+original Meaning and body dependencies that global obligations visit.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> The private ordinary proposal decoder of Rust
+accounts for the path and text of every proposed source under the aggregate
+identity limit. It then defers relevance to this native gate and returns no
+accepted handle. Other decoding routes keep their unused-row refusal. The
+ordinary execution view compares every retained original source byte before
+a fresh accepted handle is bound. The private accepted program retains the
+same typed request, the complete checked input rows and the graph.</p>
+</blockquote>
+<p>Proof scope:</p>
+<ul>
+<li><code>Protocol.OrdinaryRoot.check_binding</code> retains the original packet, the fresh
+artifact and request reads and the actual root check.</li>
+<li>The execution-only QDV comparison and the native dispatcher retain this
+binding through <code>CheckedOrdinaryRoot</code> and <code>run_typed_ordinary_binding</code>.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>This mode does not check a declaration with static parameters. A selected
+root with Basis/Nat actuals uses the mode of
+<a href="#mixed-runtime-root-requests">Mixed runtime root requests</a>, whose emitter
+also closes ordinary Basis/Nat dependencies.</li>
+<li>Full qmatch and nominal finite-table consumers are separate work.</li>
+<li>Source-to-Raw correspondence is a separate obligation.</li>
+<li>No preservation theorem follows for the source body, the decoder, the
+native compiler, the simulator or the target. No external schema, inverse
+or control capability or guarantee follows.</li>
+</ul>
+<h2 id="mixed-runtime-root-requests"><a class="header" href="#mixed-runtime-root-requests">Mixed runtime root requests</a></h2>
+<p>The internal mode <code>--runtime-root-check</code> checks a root whose interface mixes
+ordinary values and quantum owners.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Item</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Format</td><td><code>qleisli.runtime-root-request</code></td></tr>
+<tr><td>Version</td><td>2, strict</td></tr>
+<tr><td>Profile</td><td><code>finite-runtime-root-v2</code></td></tr>
+<tr><td>Fields</td><td><code>format</code>, <code>version</code>, <code>profile</code>, <code>selection</code>, <code>module</code>, <code>declaration</code>, <code>parameters</code>, <code>input_storage</code>, <code>input_rows</code>, <code>result</code>, <code>storage</code>, <code>public_effect</code>, <code>static_bases</code> and <code>static_naturals</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The native checker rejects a Version1 request.</li>
+<li>The full prefixes of the parameters and of the result preserve each <code>Q</code>
+boundary, nominal declaration, ordinary tuple and zero-width owner.</li>
+<li>Storage binds actual ordinary SSA values and ordered quantum ports.</li>
+<li>A producer writes these descriptions. The original runtime signature check
+and the shared Raw root checks are independent of them.</li>
+<li>The request must name complete Basis and Nat actuals, including those of
+unused formals. The checker rechecks the original premises and nominal
+declarations before it instantiates the actual header tokens.</li>
+<li>QLV3/QDV retains these actuals even when they do not change the runtime
+graph.</li>
+<li>For every independently enumerated ordinary input, <code>RuntimeFamily</code>
+reconstructs all hidden maps. It checks ordinary results even on
+zero-probability histories. It checks the exact code-space equations of the
+input and of the output, and their complete logical Gram sum.</li>
+<li>Physical padding may not leak into a logical result.</li>
+<li>Observation stays Observe, and a Unitary label requires equal logical
+dimensions.</li>
+<li>The six-bit dense component limit and the work limits apply.</li>
+<li>QLV3/QDV compares the complete request and the actual retained graph.</li>
+<li>The native decision is execution-only. Inspection and caller scopes refuse.</li>
+<li>Original parameters prevent closed execution even at zero physical width.</li>
+<li>Portable export cannot erase the metadata of
+<code>AcceptedProgram::runtime_result</code>.</li>
+</ul>
+<p>Rules for the choice of request:</p>
+<ul>
+<li>The compiler selects the request before native root checking. It never
+retries a failed native decision.</li>
+<li>The selected entry uses this mode when every selection has its own
+whole-circuit check and the original operation closure does not require
+version 5.</li>
+<li>Three things use the bounded request of
+<a href="#version-5-source-body-requests">Version 5: source-body requests</a> instead:
+nominal source gates, wider selection sectors and the transport of the
+original operation closure. That section also specifies the checks of
+coherent basis lifts, <code>with_computed</code>, access receipts, <code>qfor</code> and Meaning
+applications.</li>
+<li>A small nominal named-arm qmatch function also submits its complete actual
+callee fragment to the version-4 mode of
+<a href="#named-arm-qmatch-component-requests">Qmatch source requests</a>, before
+whole-root runtime acceptance.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>Kernel::check_runtime_root</code> and fresh
+<code>check_program</code> rechecking bind the same objects to the native decision.
+<code>AcceptedProgram::runtime_result</code> exposes read-only metadata. The common
+project and selected emitter uses this gate for mixed runtime interfaces. It
+retains actual input storage before call expansion, and complete output
+types and owners afterward.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> Selected roots with Basis/Nat actuals use the same
+emitter and gate, including unused nominal actuals and closed observing
+bodies. Their complete original source judgment is repeated, and actual
+trees are rebound to its original interface. Ordinary Basis/Nat dependencies
+use the same original call plans and bounded closure. Concrete nominal
+arguments use the <code>type(T)</code> form. Forwarded formals retain their original
+binder identities. Nominal fields keep their declaration scope. Complete
+closed siblings are checked even when a different actual is unresolved.
+Unused nominal actuals also require typed checking when the global dormant
+pass materializes a closed dependency.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> Selected built-in qmatch and its ordinary callers
+also use this emitter. Named operation arms require their original provider
+bodies to pass the finite evidence gates. The actual emitted circuit also
+passes the separate six-bit encoded equation.</p>
+</blockquote>
+<p>Proof scope:</p>
+<ul>
+<li><code>RuntimeRoot.check_binding</code>, <code>CheckedRuntimeRoot.run_binding</code> and
+<code>NativeContext.run_typed_runtime_binding</code> connect actual reads and
+comparisons.</li>
+<li>The root safety theorem reuses the original Raw gate. It enlarges neither
+of the two guarantees that humans admitted.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>This mode does not enable operation-formal closure. The version-5 request
+transports the original operation closure.</li>
+<li>This mode checks a coherent selection only through its whole-circuit check.
+The version-5 request checks wider selection sectors within its bounds.</li>
+<li>Exact computation witnesses are separate from complex denotation,
+source-body preservation and numerical runtime correspondence.</li>
+<li>Independent host-expression visibility and source/body preservation are
+separate obligations.</li>
+<li>No external schema, inverse or control capability, guarantee admission or
+broader QS/PR/RS/EXACT discharge follows from this mode.</li>
+</ul>
+<p><a id="named-arm-qmatch-component-requests"></a></p>
+<h2 id="qmatch-source-requests"><a class="header" href="#qmatch-source-requests">Qmatch source requests</a></h2>
+<p>A <code>qleisli.qmatch-request</code> asks the checker to compare the parts of a source
+function with their literal Raw intervals. Two modes read such a request.
+Each accepts one version of the request:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Version</th><th>Mode</th><th>Profile</th><th>Subject</th></tr>
+</thead>
+<tbody>
+<tr><td>4</td><td><code>--qmatch-source-check</code></td><td><code>finite-source-qmatch-context-v4</code></td><td>The named-arm component: <a href="#version-4-named-arm-component-requests">Version 4</a></td></tr>
+<tr><td>5</td><td><code>--qmatch-source-v5-check</code></td><td>One of four profiles</td><td>The original source body: <a href="#version-5-source-body-requests">Version 5</a></td></tr>
+</tbody>
+</table>
+</div>
+<p>The <strong>full qmatch profile</strong> is the source contract of <code>qmatch</code> at its full
+size, with twelve joined bits and 64 labels. Neither version validates the
+full qmatch profile.</p>
+<p>The production compile path dispatches both versions, and a successful reply
+of either mode has the claim <code>accepted</code>. A version-4 success binds the private
+component <code>QmatchChecked</code>. A version-5 success binds an accepted program.</p>
+<h3 id="version-4-named-arm-component-requests"><a class="header" href="#version-4-named-arm-component-requests">Version 4: named-arm component requests</a></h3>
+<p>The internal mode <code>--qmatch-source-check</code> checks the <strong>named-arm component</strong>:
+the <code>qmatch</code> selections with named arms in one complete structural quantum
+function, together with every literal Raw interval of that function.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Item</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Format</td><td><code>qleisli.qmatch-request</code></td></tr>
+<tr><td>Version</td><td>4</td></tr>
+<tr><td>Profile</td><td><code>finite-source-qmatch-context-v4</code></td></tr>
+<tr><td>Scope</td><td>Execution only</td></tr>
+<tr><td>Fields and QDV record</td><td><a href="execution-view.html#internal-named-arm-qmatch-component">The request and QDV schema</a> specifies them.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The request and the QDV record bind every site to one fresh graph. For each
+site they bind its complete typed interfaces, its original source byte
+occurrence, its literal Raw interval and its actual evidence and control
+indices.</li>
+<li>Every original selection appears in order. The intervals exhaust the
+complete call without gaps or overlaps. Each interval retains its actual
+owner frame and passes its own exact equations.</li>
+<li>Original source reads determine the canonical labels, types, owners, public
+effects and source rows. Actual receipt inputs and dependency snapshots bind
+the named arm bodies.</li>
+<li>The pure finite, Raw, QIRF and nominal gates check the exact sector
+equations of main, U and CU.</li>
+<li>The request binds the selected pair separately, with the selector before
+the target. It retains additional arguments, zero-width owners and the
+outer public effect.</li>
+<li>Nominal enum and record targets, including empty records, retain their full
+original types with enum or built-in ordinal selectors. Their physical arm
+entries and controls are untrusted proposals. The mode binds the full target
+type, the actual body and the code equations. It issues no provider
+capability.</li>
+<li>The ordinary source-root wrapper keeps its original main-only roots and its
+empty extra source-query extension.</li>
+<li>The check spends from the
+<a href="#shared-exact-work-ceiling">shared exact-work ceiling</a>.</li>
+</ul>
+<p>Rules for the ordered Raw frame:</p>
+<ul>
+<li>The frame requires a complete structural source return. Checked renaming,
+ordinary tuple moves and the final expression retain the original logical
+owner identities, basis trees and returned order.</li>
+<li>Unknown suffix expressions, hidden observation or discard, and missing or
+duplicated owners refuse.</li>
+<li>A legal source return that changes owner order requires a matching Raw
+output mapping. Equal types or empty wire lists do not justify reusing the
+unswapped Raw subject.</li>
+<li>The original Raw operations transport an independently derived logical
+owner tree. Explicit joins retain ordered children. Splits recover those
+children. Owner-moving operations retain their complete source roles.</li>
+<li>The actual output-token order must match the original source return.
+Reversing two empty Raw ports cannot pass for a canonical source return. A
+zero-width permutation that matches between source and Raw is accepted.</li>
+<li>Physical widths constrain a split without identifying a logical owner. A
+producer supplies no role table and no cached tree.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> <code>Kernel::check_qmatch_source</code> invokes the mode. The
+Rust walker describes the actual retained graph and the circuit and matrix
+caches. The same allocations enter <code>QmatchChecked</code> only after two matches
+succeed: the exact QDV match, and the native match of product, edition,
+mode, scope and request.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> A small nominal named-arm qmatch function submits
+its complete actual callee fragment to this mode before whole-root runtime
+acceptance. The fragment retains its original complete quantum argument and
+result order, its structural body and its named-arm evidence. Suspended
+caller owners stay in the complete outer Raw state. The bounded source
+adapter retains the actual complete call and restores the frame of the
+suspended caller. It does not synthesize a replacement source function or
+expose a raw conversion of <code>QmatchChecked</code>. The component uses an internal
+canonical owner frame. That frame is not a language restriction.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> Shared conformance cases cover three- and
+four-label nominal selectors on two physical bits with a distinct zero-width
+Unit target, reordered written arms and exact relative phases. The
+three-state code leaves its padding label outside the logical interface.
+Literal retained-view expectations include the four dyadic coordinates of an
+eighth-root phase. Phase, control-polarity and evidence faults must reach
+the equation gate. Original nominal, arm and owner substitutions reach the
+request gate, and stale compared output reaches QDV refusal.</p>
+</blockquote>
+<p>Proof scope:</p>
+<ul>
+<li>The structural execution proof recovers the historical snapshot of each
+entry from the same successful graph run. It preserves every dependency that
+the entry references in the final root. It transports the original IR
+execution with identical exact operators, hidden histories, failures and
+unspent work. It covers references in both branches even when the condition
+is constant. Unrelated slots may differ. The common context result retains
+this execution property in its ordered original arm-binding relation. The
+proof does not prove the meaning or the lowering of the original source
+body.</li>
+<li>The original-arm continuation is not wired into source or transport
+admission. It reuses the actual checked signature and body through the
+common source traversal. It then checks the IR of the realized entry under
+those same final dependencies. Supported bodies inherit the explicit scope
+of the common reader. Selections require their recursive arm equations. The
+continuation enables no native request, handle or broader source
+preservation claim.</li>
+<li>Generic success bindings retain the original Raw ownership and
+classical-scope properties without enlarging either human-admitted
+guarantee.</li>
+</ul>
+<p>Not established:</p>
+<ul>
+<li>No public conversion yields an ordinary <code>AcceptedProgram</code>, an inverse
+capability or a controlled capability.</li>
+<li>Data constructors, request encoding and source headers alone supply no
+source-function theorem.</li>
+<li>The component checks alone supply neither ordinary source execution nor the
+full qmatch profile. The bounded compiler adapter also requires separate
+whole-root runtime acceptance.</li>
+<li>These are pending: general source expressions and call frames, other valid
+mappings, constructed, static and generic arms, and the full qmatch
+profile.</li>
+<li>The structural-return check does not establish general source or arm
+lowering, and it does not expose ordinary source execution.</li>
+<li>Splitting an opaque source owner, allocation and release, and a changed
+representation each need their own checked source rule or refinement. The
+structural component does not establish every valid Raw mapping or complete
+source preservation.</li>
+<li>Fresh native conformance, canonical proof maintenance and full CI are
+required. Original source-body lowering, decoder, walker and native
+compilation, runtime and target preservation, and broader QS/PR/RS/EXACT
+duties are separate.</li>
+</ul>
+<h3 id="version-5-source-body-requests"><a class="header" href="#version-5-source-body-requests">Version 5: source-body requests</a></h3>
+<p>The mode <code>--qmatch-source-v5-check</code> checks the <strong>source body</strong> of one original
+invocation. The source body consists of the coherent selections, basis lifts,
+computed intervals, access calls and Meaning applications of the invocation.
+The mode checks each of them against its literal Raw interval. The request
+also carries the runtime-root request of the same root.</p>
+<p><code>Kernel::check_qmatch_source_v5</code> submits the request that the compiler
+selects. The accepted program records the checked profile, which
+<a href="#cli-success-reports">CLI success reports</a> names.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Item</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Format</td><td><code>qleisli.qmatch-request</code></td></tr>
+<tr><td>Version</td><td>5</td></tr>
+<tr><td>Profile</td><td>One of the four profiles below</td></tr>
+<tr><td>Scope</td><td>Execution only</td></tr>
+</tbody>
+</table>
+</div>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Profile</th><th>Body that earns it</th></tr>
+</thead>
+<tbody>
+<tr><td><code>finite-source-qmatch-context-v5</code></td><td>A body with checked selections</td></tr>
+<tr><td><code>finite-source-meaning-context-v5</code></td><td>A standalone Meaning application. The native traversal binds an actual application interval and discharges the original Meaning duties of the selected invocation. Other roots retain their pending positions for separate checks.</td></tr>
+<tr><td><code>finite-source-basis-context-v5</code></td><td>A body with no selection or Meaning context and with an actual checked basis lift or computed interval. The check discharges the original duties of the selected invocation and retains pending positions that belong to other invocations.</td></tr>
+<tr><td><code>finite-source-access-context-v5</code></td><td>A standalone original access body. The native replay finds an access receipt in the actual checked steps of the selected invocation, its named calls or its branches.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The checker checks the original nominal declarations and import paths that
+constructors and field projections use in the body, even when the types do
+not occur in the selected interface.</li>
+<li>The check spends from the
+<a href="#shared-exact-work-ceiling">shared exact-work ceiling</a>.</li>
+</ul>
+<p>Rules for coherent basis lifts:</p>
+<ul>
+<li>Selected bodies and project bodies may include coherent basis lifts with
+nominal values.</li>
+<li>The native checker independently derives the logical table from the original
+finite expression and the pure helper bodies. It checks the dependencies of
+every ordinary match arm, and binds the canonical rows to the actual Raw
+lift interval.</li>
+</ul>
+<p>Rules for <code>with_computed</code>:</p>
+<ul>
+<li>This mode also checks a protected two-argument <code>with_computed</code> with an
+original nominal predicate. Lean evaluates the total classical predicate on the
+exact logical codes and requires zero in the padding rows. It checks the
+original one-Bit use body against both exact diagonal entries of the literal
+Raw use. The same interval retains the original data owner and its
+spectators.</li>
+<li>Selected runtime functions and projects that use this mode support circuit
+synthesis for first-order Boolean predicates on built-in basis inputs. Lean
+checks the ordered controls and both compute passes against the original
+predicate. It then checks the protected use on both auxiliary values. This
+path checks the predicate and both circuits in their structural
+representation.</li>
+<li>The synthesis path charges work for the source expression, intermediate
+clause products, literal circuit fields and owner-frame checks. The charge
+includes intermediate conjunction products, even when the final circuit is
+smaller. The path uses one private scratch bit and the work and interface
+limits.</li>
+<li>For example, a two-bit increment modulo four can use the checked carry
+predicate <code>word[0] and word[1]</code> as a controlled phase between Hadamards on
+the high bit, followed by a low-bit flip.</li>
+<li>The literal <code>take_bit</code> and <code>put_bit</code> intervals retain the original register
+coordinates and arbitrary reference amplitudes.</li>
+<li>A finite transform such as a specialized adjoint, control or power selects
+the checked finite representation when it prepares its original body.</li>
+<li>The three-argument certified form binds the original use body and the
+logical supplier independently to their literal circuits, on the exact data
+and auxiliary codes.</li>
+<li>Explicit pair splits and joins retain their written owner order and the
+exact logical axes, including padding in the product code.</li>
+<li>The native cleanup equation covers the complete physical domain.</li>
+</ul>
+<p>Rules for access receipts:</p>
+<ul>
+<li>An access receipt binds the written arguments and their roles to the actual
+callee, the ordered quantum ports, the returns and the Raw interval.</li>
+<li>Ordinary <code>Unit</code> arguments keep their original positions in the call.</li>
+<li>A routed exclusive named call also checks its original <code>Bit</code> arguments, its
+ordinary branch, its parked owners and the complete extraction and
+reinsertion.</li>
+<li>The checker verifies complete coverage of the selected invocation. It
+retains the pending positions of the other invocations.</li>
+<li>The separate provider proof of a transform does not supply this receipt.</li>
+<li>The access profile is part of the compared QDV1 execution view.</li>
+</ul>
+<p>Rules for inline arms and <code>qfor</code>:</p>
+<ul>
+<li>For <code>qif</code> and <code>qmatch</code>, a written inline arm submits its original arm index,
+its source positions and its literal Raw body. Lean replays the original
+block in the isolated target frame. It compares the resulting exact action
+with the controlled implementation and with the Raw sector of the caller.
+Mixed named and inline arms use that same sector check.</li>
+<li>For a supported original <code>qfor</code> with closed bounds, Lean follows the written
+iteration order. It checks that the literal Raw intervals cover the loop
+body contiguously. It checks the carried register and the surviving owner
+frames at the boundaries, including zero-width owners.</li>
+</ul>
+<p>Rules for Meaning applications:</p>
+<ul>
+<li>A selected coherent arm can use an original classical Meaning helper with
+nominal intermediate values when the ports of the Meaning are supported
+built-in types. Lean checks the helper against the original canonical inputs
+and compares the exact Meaning with the applied arm. Standalone applications
+can use the same equation check.</li>
+<li>Standalone applications also check endomorphic <code>permutation_by</code> and
+<code>phase_by</code> Meanings with finite nominal ports through the same native path.
+Lean checks the original provider body, the exact logical action on its
+canonical codes and the literal application.</li>
+<li>A composed Meaning can pass through a nominal intermediate type. Tensor
+Meanings retain the ordered logical axes of their nominal and built-in
+components.</li>
+<li>A reused Meaning evaluation requires the same original declarations,
+reference occurrences, exact ports, ordered graph edges and dependency rows
+in both source queries.</li>
+<li>A rectangular application through a named call retains the written
+<code>checked_op</code> at its supplying argument, even when the callee leaves the
+argument unused. A rectangular application checks the distinct input and
+output codes against the actual Raw interval and preserves the spectator
+frame.</li>
+<li>A Meaning declared on an operation formal checks the exact supplied
+argument, including unused actuals. The original header duty and any
+<code>checked_op</code> written at the call site each retain their own source
+occurrence.</li>
+</ul>
+<p>Rules for operation arguments and Meaning duties:</p>
+<ul>
+<li>The internal common-body duty continuation authenticates every original
+operation argument in scalar-free Op calls against the complete ordered
+header keys. This includes unused siblings. A forwarded formal retains its
+original mixed-header ordinal.</li>
+<li>The supplying assertion and the enclosing arm retain separate original
+queue positions, source tokens, provider occurrences and exact Meaning
+equations under the same final native root.</li>
+<li>An authenticated interior formal path may locate a supplying assertion
+inside a constructed argument. The continuation requires exactly one
+original requested node with fully bound children. It checks every other
+local provider and ordered descendant.</li>
+<li>Unknown providers, further missing requests and ambiguous supplying
+occurrences are residual.</li>
+<li>The complete original call and the mixed-header keys of the supplying root
+are checked again. An enclosing equation cannot replace the inner equation.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> For a basis lift, the producer evaluates only the
+original logical rows and completes unused physical inputs injectively. For
+predicate synthesis, the compiler emits controlled XOR steps from constants,
+input bits, literal <code>Bits&lt;n&gt;</code> coordinates, Boolean operations, tuple
+bindings and supported helper calls.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> One retained development regression, for two-qubit
+general composition, has an explicit exception for preparation work.
+<a href="#history">History</a> cites it. The regression runs two steps separately:
+source preparation, which accepts nothing, and the unchanged whole-body
+action under the normal budget. It reports aggregate work and independently
+checks all sixteen exact I4 entries. It issues no handle and is not one
+bounded production acceptance.
+The public 20,000,000 ceiling and its entry guard are unchanged.</p>
+</blockquote>
+<h4 id="proof-scope-of-version-5"><a class="header" href="#proof-scope-of-version-5">Proof scope of version 5</a></h4>
+<p>The theorems below concern a successful version-5 check and the original body
+that it reads. Their namespaces begin with <code>Runtime</code>, or are <code>RawFiniteRows</code>,
+and are defined in <code>lean/Qleisli/</code>.</p>
+<p>Several theorems concern three adjacent original named calls: the <strong>pre</strong>
+call, the <strong>middle</strong> call, which holds the selection, and the <strong>post</strong> call.
+The proofs name the middle call “choose”. A <strong>three-call root</strong> is an original
+root whose Raw events are the slices of these three calls and one final
+reorder.</p>
+<p>Coherent selection:</p>
+<ul>
+<li><code>RuntimeSelectionAction.caller_action</code> covers a Bit selector and a Bit
+target. It relates the literal Raw events to both indexed logical arm
+matrices on the complete returned owner code. It covers a single <code>quantumIf</code>
+and the compiler’s <code>join</code>, <code>apply_unitary</code>, <code>split</code> sequence. The original
+logical selector and target determine which matrix and row act. This holds
+also when the selected wires are reversed or separated by spectators.</li>
+<li><code>RuntimeSelectionGram.logical_gram</code> proves that inner products are
+preserved for arbitrary joint caller and reference amplitudes, under the
+same two arm receipts.</li>
+<li><code>RuntimeSelectionGram.checked_selection</code> obtains both receipts and the
+canonical order <code>[0, 1]</code> from the source layout reads and from the logical
+matrix comparison that the native selection node retains.</li>
+<li><code>RuntimeMultiwayAction.checked_selection</code> covers any checked finite selector
+with a Bit target, under the same literal interval and owner-code premises.
+Each encoded selector label determines one original arm. On valid encoded
+inputs, the physical output agrees with that arm at every output row,
+including zero amplitude on padding labels. The same arm receipts preserve
+the logical inner product with an arbitrary external reference.</li>
+</ul>
+<p>Predicate synthesis:</p>
+<ul>
+<li>Lean proves the exact work that the predicate compiler debits and that both
+circuit comparisons debit.</li>
+</ul>
+<p>The three-call root and the source flow:</p>
+<ul>
+<li><code>RuntimeNamedThreeRoot.Whole.instrument_decomposition</code> factors the
+independent instrument meaning of the original root into the three actual
+event slices and its final output permutation. It retains complete
+intermediate history families, including hidden and zero-weight outcomes,
+without normalization or reassociation of the bounded evaluator.</li>
+<li><code>RuntimeNamedCodeTransport</code> concerns the checked original return map from a
+child to its caller. It proves that the map preserves complete basis trees,
+ports, the independent sparse-code interpretation and ordered axes in the
+same caller frame.</li>
+<li>These two results are laws about return transport and about the Raw
+instrument. They do not compose the different source-level encodings and
+logical actions.</li>
+<li><code>RuntimeNamedSourceFlow.original_body</code> derives the named-boundary state
+chain from the actual common body loop and its retained successful
+traversal. It retains the real initial owner reorder and the final
+source-return read. The proof follows both fresh and planned event
+traversal, including selected static continuations, with the original
+continuous work counter. It factors the recursive iteration without
+changing its guards, reads or charges.</li>
+<li><code>original_three</code> connects the actual pre, middle and post calls through
+their complete source states. Those states include ordered bindings, full
+bases, ports and issuance history. Equal physical widths and assumed code
+equations are not premises.</li>
+<li>The state-flow invariant is administrative. Other step kinds receive no
+named-boundary assertion from it. It establishes no composition of
+whole-source code, of logical action or of observing history.</li>
+<li><code>RuntimeNamedChildRuns.original_body</code> strengthens the same loop proof with
+the actual recursive run of every named child on its original callee and
+native block. The retained input read binds the original parameter owners of
+the callee to the selected ports and original input owners of the caller.
+The recursive call uses the same checked visible ordinary SSA. It starts
+with the work that the input read leaves. Its exact result determines the
+stored child steps, the returned history and the ordinary state.</li>
+<li>The same stored step list carries an <code>OrdinaryRun</code> from the actual initial
+SSA state to the actual returned SSA state. It retains the tables and
+measurement keys across gaps, observations, named calls and conditionals.
+Pure steps preserve both. Its literal partition covers the complete
+original Raw operation list in order.</li>
+<li><code>RuntimeLiteralBody.original_body_trace</code> reads each exact interval through
+the independent observing reader. Adjacent steps share the full Raw boundary
+state, and their events concatenate to the trace of the original body.</li>
+<li><code>RuntimeLiteralBody.original_body_execution</code> splits a successful independent
+run at those exact boundaries. Each step runs on every incoming history and
+keeps the result order of the interpreter. The execution induction follows
+the same source-owner and SSA chains. A proved local invariant therefore
+applies to every returned history of the original body.</li>
+<li>The weaker state-flow law is derived from this single strengthened proof.
+<code>original_child_runs</code> supplies those computations for the actual pre, middle
+and post view. Other step constructors receive no child-provenance assertion
+here. The proof establishes no whole-source code or action composition and
+no observing-history composition.</li>
+</ul>
+<p>The pre and post calls:</p>
+<ul>
+<li>The state-flow proof aligns actual primitive nodes with both their complete
+source input history and their checked output history. Its primitive
+handler, operation and selection case proofs share the existing loop. Other
+step constructors acquire no state or code assertion.</li>
+<li><code>RuntimeNamedPrimitiveInputs.original_pre_post_inputs</code> derives the original
+pre and post primitive input carriers from the actual callee recursion and
+argument construction. The real parameter reorder preserves the same
+assigned map. Complete basis trees and ordered ports, not equal widths,
+determine the retained input-code read of the primitive.</li>
+<li><code>RuntimeNamedInputAction.original_input_action</code> substitutes the complete
+authentic caller encoding into the same original parent Raw-event
+source-action law. The original child input proof and the checked selected
+ports derive its carrier and axis equalities. The independent sparse forest
+coefficients construct an arbitrary correlated spectator and reference
+fibre. No factorization of the joint state, supplied encoding equation or
+dense caller reconstruction is assumed. Native singleton code equality
+follows from the actual primitive reader. The equation retains the real
+final local reorder and the output code.</li>
+<li><code>original_pre_post_input_actions</code> applies these input laws to the pre and
+post event lists of the same original root, under the literal coverage and
+slice start and length premises. It does not infer those premises from
+matching widths.</li>
+<li>The input-action laws do not transport the output fibre to the complete
+caller output encoding or source order. They do not compose the logical
+action or the observing history of the whole function. They are
+mathematical laws. They are not an additional native acceptance gate, a
+bounded availability claim or a guarantee admission. They change no
+executable kernel or Rust rule, effect label, work limit or public
+capability.</li>
+<li><code>RuntimeNamedPrimitiveOutputs.original_pre_post_outputs</code> derives the native
+output carriers through each real callee run, its original return reorder
+and the actual caller owner mapping. It retains complete basis trees and
+ports.</li>
+<li><code>actual_occurrence_output_code</code> attaches that same native code computation
+to the returned caller binding in its complete checked frame.</li>
+<li>The interval-state identity lemmas compare successful reads of the same
+original block, start and count. Their derived empty checkpoints are erased
+proofs. They are not fabricated runtime receipts or extra work for the
+nonempty interval.</li>
+<li><code>RuntimeNamedOutputEncoding.complete_output_encoding</code> factors the complete
+caller output encoding through that native code. It retains arbitrary
+correlated spectator and reference coefficients.</li>
+<li>Its <code>original_pre_post_output_encodings</code> consumer derives the target, the
+retained owner code and the native code read from each actual original call
+and its complete output frame. None is an assumed encoding equation.</li>
+<li><code>RuntimeNamedOutputOrder</code> transports dense logical coefficients by the exact
+cardinalities of the original owners, including padding and dimension-one
+owners. Its separate code identity requires equality of full ordered
+source-owner and wire pairs and the actual Raw frame. Code equality does not
+establish those source premises.</li>
+<li><code>RuntimeNamedHeadCoefficients</code> identifies the actual source input fibre and
+updates its exact logical coefficients with the true input and output
+cardinalities.</li>
+<li><code>RuntimeNamedCallerGeometry</code> derives the returned basis, the wires, the full
+Raw frame and the unchanged spectator bindings from the actual callee and
+caller boundary.</li>
+<li><code>RuntimeNamedCallerAction.actual_whole_caller_action</code> combines those facts
+with the same native output-code read. It proves the exact action on the
+complete returned caller encoding, for arbitrary correlated logical and
+reference states. It removes the final self-reorder only on actual finite
+physical rows. No unbounded identity of that event is assumed.</li>
+<li><code>original_pre_post_actions</code> instantiates both laws with the real child
+executions and exactly the event lists that the original root decomposition
+retains. The supplied complete checked frames are explicit premises. The
+theorem does not prove their construction for every source body.</li>
+</ul>
+<p>The middle call:</p>
+<ul>
+<li><code>RuntimeNamedSelectionInputs.original_middle_source</code> derives the complete
+original input carriers of the middle selection from the real argument
+construction and child run. The strengthened common-loop invariant retains
+its exact before binding map and full returned source state. The actual
+final written return, including its reorder, starts at that selection
+after-map. All nominal trees, ports, spectators and separate zero-width
+owners stay in those maps. The theorem supplies source-state provenance. It
+supplies no caller coefficient or action equation and no proof of arbitrary
+intermediate frame availability.</li>
+<li><code>RuntimeNamedSelectionFrames.original_middle_frames</code> derives both
+mathematical child Frames from the complete caller input Frame. It selects
+the actual ordered argument owners and transports their existing receipts by
+full port and basis equality. It uses the original owner flow of the same
+selection for its after Frame. No final child Frame, successful <code>readFrame</code>
+invocation or bound on unspent work is supplied or fabricated.</li>
+<li><code>RuntimeNamedBlockEncoding</code> partitions the actual complete caller code into
+its original selected owners and retained spectators. It derives
+selected-token uniqueness from the real call input gate, including
+empty-wire owners, and does not infer it from physical axes. Exact owner
+cardinalities reindex the arbitrary joint and reference coefficients. No
+separability premise is introduced.</li>
+<li><code>RuntimeNamedCarrierEncoding</code> connects the actual input code of the retained
+child to those selected coefficients, by full ordered port and basis
+equality and the real Raw frame.</li>
+<li><code>RuntimeNamedBlockSpectators</code> derives disjoint axes from the complete valid
+caller. It proves that scattering selected axes leaves every spectator
+coefficient unchanged.</li>
+<li><code>RuntimeNamedSelectionInputEncoding.actual_occurrence_source_action</code>
+combines those facts with the same original child run, indexed Literal,
+coverage and parent-event source law. The source carrier equality is derived
+from that run, not supplied by a caller.</li>
+<li>Its <code>original_three_input_actions</code> consumer retains all three complete-input
+action laws on the same original root event lists.</li>
+<li>The selection output proof uses the actual return permutation of the child
+and the original mapping to caller owners. It transports the corresponding
+sparse coefficients through the exact output axes and applies each source
+arm on every spectator coordinate of the joint input. This yields the
+complete caller output in its original owner order, with all reference
+correlations.</li>
+</ul>
+<p>Composition of the three calls and observation:</p>
+<ul>
+<li><code>RuntimeNamedThreeFrameChain.original_three_composed</code> takes its first frame
+from the original input storage and entry read. At both joins the same
+native state and source owner map carry the preceding output into the next
+call.</li>
+<li><code>RuntimeNamedThreePackedOutput.original_three_packed</code> also identifies the
+actual final Raw reorder and the owner reindex of the original return. Its
+finite-row equation includes the complete packed output for every joint
+logical input and reference coordinate.</li>
+<li><code>RuntimeNamedThreePackedInstrument.original_three_observing</code> connects that
+equation to the same independently read observing event list.</li>
+<li><code>RuntimeObservingPrefix.checkOps_reference</code> derives the same quantum
+interface in the independent reader after each successfully checked prefix.
+This includes erasure, reset and both sides of classical branches.</li>
+<li><code>root_interval_histories</code> uses that agreement to locate an adjacent pure
+interval in the original observing root. The interpreter preserves every
+inherited history. It applies the pure action to each operator before it
+continues with the original suffix and final reorder.</li>
+<li><code>original_adjacent_observing</code> locates the three original calls in a longer
+source traversal and retains the selection at its actual global rank. The
+same Raw events drive both the source-action equation and every inherited
+operator column that the checked input frame represents. The law requires
+that input representation, the supported call shapes and exact adjacency of
+their Raw slices. The packed root law uses explicit whole-slice coverage.
+The original-body theorem below uses the complete checked traversal. The
+law changes neither native acceptance nor the work limits.</li>
+<li><code>RuntimeOriginalObservation.original_observation_histories</code> covers a checked
+original <code>measure_z</code> or <code>discard</code>. It identifies the actual Raw erasure
+event and every emitted outcome. Each unnormalized operator on the surviving
+owner code is the basis effect of the original consumed owner on that
+outcome, with the same arbitrary reference coordinates. The theorem retains
+all hidden outcomes and the original visible measurement identifier. It
+requires the input code representation on finite Raw rows.</li>
+<li><code>RuntimeNamedObservationEntry.original_supplies_histories</code> transports every
+outcome into the entry frame of an original named call that follows
+immediately. It does so through the exact joins of the source state and of
+the Raw interval.</li>
+<li><code>RawFiniteRows.checked_slice</code> retains the finite input and output widths of
+the original checked event slices. Their action on each inherited history
+depends only on its finite input coefficients.</li>
+<li><code>RuntimeNamedObservationEntry.original_erasure_then_adjacent</code> ties the exact
+prefix, erasure, three-call interval and continuation to one original
+observing IR program. For each erasure outcome, the same three-call source
+equation acts on the unnormalized projected state in the checked post-call
+frame. It keeps the visible measurement and hidden outcome through all three
+calls. The equation applies to every finite post-call row and reference
+column of a represented incoming history.</li>
+<li>When the post call ends both the original source traversal and the Raw
+operations, the actual suffix is the final permutation. The same theorem
+gives the packed source result in the original return order for every
+outcome. It identifies the list of histories that the original interpreter
+returns.</li>
+</ul>
+<p>Branches and ordinary values:</p>
+<ul>
+<li><code>RuntimeNamedChildRuns.original_body</code> retains the actual input and output
+owner states for classical gaps and conditionals. For each conditional it
+keeps both original recursive arm reads and the successful join on their
+returned owner states and ordinary SSA tables, with the original work
+counters.</li>
+<li><code>RuntimeOriginalBranch.original_branch_events</code> identifies the exact Raw
+branch event, both arm traces and their final permutations. On a history
+whose ordinary values agree with the checked source expressions,
+<code>original_branch_step</code> selects the arm by the source condition.</li>
+<li><code>RuntimeOriginalClassicalJoin.original_branch_classical_join</code> uses the
+original Raw freshness check for every classical phi destination. Suppose
+that the selected arm returns histories with their checked SSA agreement and
+issued identities. The literal merge then produces one corresponding history
+per arm result, in order. Its visible values agree with the checked
+post-branch source expressions. Its quantum operator and hidden outcomes are
+those of that arm result.</li>
+<li><code>RuntimeOriginalQuantumPhi.original_quantum_phi_action</code> ties the actual
+arm-final Raw permutation to the complete original owner pairing. It retains
+the exact carrier layout of each owner, including separate zero-width
+owners, and derives the source output frame in its checked owner order. The
+equation holds for every finite output row and reference column. A
+represented arm history keeps its ordinary values and hidden outcomes
+through that exact permutation.</li>
+<li><code>RuntimeOriginalBranchJoin.original_branch_join</code> composes the source
+condition, the original arm run, its quantum return permutation and the
+literal classical merge. The original parent step returns one checked
+quantum and ordinary history for each actual arm-body result, in order.</li>
+<li><code>RuntimeObservingValueRetention.run_values</code> proves that each successful
+literal history retains all incoming values and only adds IDs from its
+trace.</li>
+<li><code>RuntimeObservingPrefix.checkOps_reference_with_writes</code> relates those
+writes, including recursive arm writes and phi destinations, to the issued
+IDs of the original check. The branch theorem derives this correspondence
+for every arm result from the support of the incoming history at the checked
+boundary.</li>
+<li><code>checked_program_values</code> obtains the same support for a complete original
+run from its own input bindings and native verification.</li>
+<li><code>RuntimeOriginalOrdinaryGap.original_gap</code> interprets the exact original
+classical interval with its checked SSA table. Each output is fresh in the
+actual Raw state. The independent run returns one history whose values agree
+with the resulting table. The history retains its operator and hidden
+outcomes.</li>
+<li><code>RuntimeOriginalObservationValues.observation_agreement</code> binds each actual
+measurement bit to the source measurement key that its checked call path
+transports. The valuation preserves every earlier successful expression,
+including the selected arm of a <code>choose</code> expression. Discard preserves the
+ordinary table. Both instructions preserve issued-ID support for the resulting
+history.</li>
+<li><code>original_gap_values</code> derives agreement in the valuation of the returned
+history itself. <code>observation_step_values</code> gives the same agreement for every
+history of the actual erasure event.</li>
+</ul>
+<p>The complete original body:</p>
+<ul>
+<li><code>RuntimeLiteralBody.original_body_recursive_refinement</code> composes these laws
+for the complete staged original-body traversal. At each step the source
+operator follows the original primitive meaning, graph receipt, written
+transform or selection table. A written transform uses the exact logical
+matrix read from its checked forward body and the source-specified power,
+adjoint or control. Its ordered return replaces the selected owners and
+preserves the spectator bindings, including zero-width owners.</li>
+<li>The same recursion follows actual named child reads and the arm that the
+checked ordinary condition selects. It applies the written return order to
+every result and relates the complete history lists in order. The statement
+starts with a successful checked body and a finite representation of the
+input operator. It retains the visible SSA agreement and hidden outcomes for
+each returned history. Validation of the full qmatch profile and release
+validation are separate from this theorem.</li>
+<li><code>original_body_graph_refinement</code> derives coherent selection coefficients
+from the original named arm graphs and checked inline bodies. For a mixed
+selection, each nominal selector ordinal is paired with its written arm in
+the actual checked table. An inline arm uses its own original source
+evaluation at a smaller runner depth, including its input encoding and
+literal Raw return order. The resulting coefficients give the same action as
+the corresponding sectors of the Raw program of the caller. The full result
+follows the source prefix and selected path, including named calls and
+ordinary branches.</li>
+<li><code>native_qmatch_body_graph_refinement</code> connects this theorem to successful
+<code>Protocol.NativeContext.run .qmatchSourceV5</code> on the original packet. The
+same decision supplies the body and the compared execution view. The result
+preserves the complete ordered history family with <code>List.Forall₂</code>, the
+literal return order, visible SSA values and hidden outcomes.</li>
+<li><code>native_qmatch_input_rows</code> supplies the original row for every canonical
+ordinary input assignment.</li>
+<li>These theorems have two explicit premises: the initial encoding relation
+between source and Raw, and a successful independent mathematical
+execution.</li>
+</ul>
+<h4 id="not-established-by-version-5"><a class="header" href="#not-established-by-version-5">Not established by version 5</a></h4>
+<ul>
+<li>Validation of the full qmatch profile is open.</li>
+<li>Release validation is separate.</li>
+<li>Nonstructural <code>qfor</code> bodies are pending.</li>
+<li>The duty checks do not close all general nested duties or establish
+source-action composition.</li>
+<li>For arbitrary source bodies, the construction of caller frames and their
+availability are separate obligations.</li>
+<li>The theorems do not prove native compilation, IO, Rust simulation or target
+preservation. They admit no guarantee.</li>
+<li>Independent host-expression visibility and source/body preservation are
+separate obligations.</li>
+<li>No external schema, inverse or control capability, guarantee admission or
+broader QS/PR/RS/EXACT discharge follows from this mode.</li>
+</ul>
+<h2 id="root-loading-and-compatibility-during-generic-migration"><a class="header" href="#root-loading-and-compatibility-during-generic-migration">Root loading and compatibility during generic migration</a></h2>
+<p>This section states which sources a load checks, what provenance a receipt
+retains, and which compatibility duties a migration to generic rules keeps.</p>
+<p>Rules for loading:</p>
+<ul>
+<li><code>frontend::project::Project</code> loads every <code>.qli</code> module beneath its selected
+source root and all bundled ordinary sources.</li>
+<li>Ordinary project compilation checks the root of every materialized concrete
+ordinary function, including unused functions.</li>
+<li>Classical bodies and Meaning declarations have their own obligations of
+preparation and checking, which are separate.</li>
+<li>Common source checking covers every declaration, including unused
+declarations and both branch bodies.</li>
+<li><code>QrateSource</code> in <code>src/frontend/project/manifest.rs</code> provides opt-in
+selection of an explicitly declared <code>[source].root</code>. That selection chooses
+the source tree. It does not introduce reachable-only loading or exempt
+unused siblings inside the tree.</li>
+<li>With an explicit module map, <code>ParsedProgram::parse</code> checks every supplied
+module and the bundled registry before it selects a concrete entry.</li>
+</ul>
+<p>Rules for the provenance of receipts:</p>
+<ul>
+<li>The function receipts and instrument receipts of the ordinary finite
+frontend retain source provenance separately from the loading policy. So do
+local equation sidecars.</li>
+<li>Each retained declaration contributes its original resolved lexical
+dependencies, including type and Nat expressions, Meaning references,
+inactive branches and zero-count operations.</li>
+<li>Actual bound Op descriptors and checked Raw receipt dependencies contribute
+their original source records as well.</li>
+<li>Pure providers retain their original declaration and equation association.
+Instrument calls also retain the original caller and its concrete Op
+bindings for source-span binding.</li>
+<li>The resulting closure retains complete original module text, including
+comments, and shares immutable module records across receipts. Unrelated
+loaded modules need not appear in each receipt.</li>
+<li>The metadata limits and the aggregate native transport limits apply.</li>
+<li>This selection changes neither loading nor eager checking of every loaded
+declaration. It does not implement a reachable-module policy.</li>
+<li>These records provide provenance. They are not a source-preservation proof
+or acceptance authority.</li>
+</ul>
+<p>Rules for a reachable-module policy, which this chapter does not enable:</p>
+<ul>
+<li>Such a policy must specify entry roots, transitive imports, providers and
+Meaning dependencies, independent checking of the selected graph,
+bundled-library validation and the treatment of unused sources.</li>
+<li>It must retain original module, root and dependency identities and reject
+stale, missing or replaced references.</li>
+<li>It must preserve the permitted import-only cycles. Imports have no runtime
+action.</li>
+<li>Forbidden dependency cycles through calls, Meanings and providers retain
+the rules of their actual profiles, including any explicitly admitted
+decreasing recursion.</li>
+<li>Diagnostics and source-selection migration need review before a change of
+the all-source behavior.</li>
+</ul>
+<p>Rules for compatibility:</p>
+<ul>
+<li>The
+<a href="primitive-boundary.html#generic-acceptance-and-library-owned-algorithms">five-role architecture</a>
+assigns compatibility duties for these: flat Raw IR, both QIRF profiles,
+finite contracts, five hierarchy modes, component protocols, the source,
+qrate and module-map entrypoints, the Rust and Python clients, foreign
+adapters and research comparisons.</li>
+<li>The five hierarchy modes are <code>--hierarchy-pending</code>,
+<code>--hierarchy-request-pending</code>, <code>--hierarchy-fourier-pending</code>,
+<code>--instrument-pending</code> and <code>--qpe-instrument-pending</code>. The architecture
+records no compatibility duty for the sixth, <code>--hierarchy-control-pending</code>.</li>
+<li>A later migration must preserve each supported contract, or state its
+explicit versioned replacement, its unsupported cases and its migration
+tests.</li>
+<li>Replaced wrappers and their proofs must stay built and audited until their
+supported callers and obligations migrate.</li>
+<li>Missing or incompatible native checking must reject through every route.</li>
+<li>Compatibility does not promise to resurrect a retired API.
+<code>frontend::sized</code> moved to <code>frontend::compile</code>. The <code>qleisli sized</code> command
+prefix was removed, with explicit migration diagnostics.</li>
+<li>The separate research and Python comparison readers do not restore that
+production namespace or supply alternative source acceptance.</li>
+<li>Edition 2026 identifies the constitutional regime. Source, API and protocol
+compatibility is versioned separately.</li>
+</ul>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<h3 id="publication-and-proof-are-separate"><a class="header" href="#publication-and-proof-are-separate">Publication and proof are separate</a></h3>
+<ul>
+<li>Five things are distinct evidence: the unification of the implementation,
+publication, the compilation of proofs, tests and audits.</li>
+<li>All of S05-C1–C5 are open. Full Soundness of the supported profile is
+targeted at version 0.5.0.</li>
+<li>Neither this inventory nor an existing helper theorem automatically
+discharges a guarantee in the constitutional ledger.</li>
+<li>Two scoped guarantees are admitted: <code>QS-QLV1-OWNERSHIP-2026-01</code> for
+ownership and <code>QS-QLV1-SCOPE-2026-01</code> for classical scope. Both concern the
+original decoded ordinary root. The broader obligations of the
+interpretations QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01 are
+pending. No theorem that this chapter cites admits another guarantee.</li>
+<li>Edition 2026 identifies the constitutional regime, independently of release
+and syntax compatibility.</li>
+<li>The native executable, its transport, its decoder and the execution
+correspondence are explicit assumptions. Having Lean source does not prove
+compilation or the entire pipeline correct.</li>
+</ul>
+<h3 id="shared-exact-work-ceiling"><a class="header" href="#shared-exact-work-ceiling">Shared exact-work ceiling</a></h3>
+<ul>
+<li>Ordinary and source-<code>qmatch</code> checks share a public ceiling of 20,000,000
+exact-work units per request. The limit is inclusive.</li>
+<li>Decoding, source and graph checks, and execution-view comparison spend from
+the same counter.</li>
+<li>Rust also charges native receipts against the unspent exact work of the
+compilation, across all sites and calls.</li>
+</ul>
+<h3 id="cli-success-reports"><a class="header" href="#cli-success-reports">CLI success reports</a></h3>
+<p>A successful check prints a report. This section states what the fields of
+that report claim and what they do not claim.</p>
+<p>Without an explicit <code>--entry</code>, <code>qleisli check &lt;source-root&gt;</code> and
+<code>qleisli check &lt;directory&gt; --qrate</code> use the
+<a href="diagnostics.html#routes">project route</a>. They check the source project and its
+concrete lowered roots.</p>
+<ul>
+<li>A successful native decision without a request establishes the applicable
+checks of IR structure, ownership, interface and classical scope. It does
+not establish an independently requested algorithm, the full meaning of the
+source, or preservation from source to IR.</li>
+<li>The text success report names this scope and the actual canonical checker
+paths. It states whether independent requests were checked, and it states
+that source preservation is not proved.</li>
+<li>The JSON report is the version-1
+<a href="diagnostics.html#the-result-envelope">result envelope</a> with <code>outcome: "ok"</code>.
+Its <code>diagnostics</code> array holds only warnings and may be empty.</li>
+</ul>
+<p>The <code>result</code> of a whole-project source check has these fields:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>checker_paths</code></td><td>The distinct canonical paths of the executables. The report captures them from the actual successful native invocations and does not resolve them again after checking. Several paths can occur if a selected symlink changes between invocations.</td></tr>
+<tr><td><code>checker_identity</code></td><td><code>"unpinned"</code>: the executable was selected and invoked, but its bytes were not checked against a trusted binary identity. A canonical path is not attestation.</td></tr>
+<tr><td><code>native_decisions.count</code></td><td>Number of successful native acceptance decisions observed during this source check, including repeated decisions and decisions for partial source contracts.</td></tr>
+<tr><td><code>native_decisions.requests_checked</code></td><td>Number of those decisions with a separate native request payload checked by Lean. This counts decisions, not distinct source declarations or whole-source meanings.</td></tr>
+<tr><td><code>native_decisions.complete</code></td><td>Whether the metadata covers every successful decision and its checker path. If false, the bounded report is incomplete and its path list or counts must not be treated as exhaustive.</td></tr>
+<tr><td><code>entry.present</code></td><td>Whether the ordinary project has a supported <code>main::main</code> entry. A library without that entry can check successfully.</td></tr>
+<tr><td><code>entry.request_checked</code></td><td>Whether that entry’s own accepted artifact has a separately checked native request payload; <code>null</code> when there is no entry. Producer-generated typed requests count here without establishing an independent algorithm specification. Requests on other roots or partial contracts do not change this value.</td></tr>
+<tr><td><code>entry.ordinary_result_checked</code></td><td>Whether this entry retains the native ordinary-v2 check of input and result over all hidden histories. False for absent entries and other modes.</td></tr>
+<tr><td><code>entry.runtime_result_checked</code></td><td>Whether this entry retains the native <code>finite-runtime-root-v2</code> check of complete type and storage, quantum code space and all hidden histories. True also for a version-5 decision, whose request carries the runtime-root request. False for absent entries and other modes.</td></tr>
+<tr><td><code>entry.source_body_scope</code></td><td>Optional. Present only when the entry retains a version-5 decision. Its value is the checked profile name, such as <code>finite-source-qmatch-context-v5</code>. The text report prints it on the line <code>entry source body checked:</code>.</td></tr>
+<tr><td><code>concrete_ir_roots.local</code>, <code>concrete_ir_roots.bundled</code></td><td>Counts of the checked roots of concrete ordinary functions. The two fields separate loaded project and dependency modules from bundled library modules.</td></tr>
+<tr><td><code>source_preservation_verified</code></td><td><code>false</code>: this command does not prove source-to-IR preservation.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules for reading the counts:</p>
+<ul>
+<li>All loaded bundled concrete functions are checked, including unused ones.
+Their decisions and roots therefore contribute to the report.</li>
+<li>Generic operation expansions occur within enclosing concrete roots. A
+registered specialization is not an additional root.</li>
+<li>Constructing or declaring an unused Meaning does not imply that Lean checked
+a corresponding equation.</li>
+<li>Pure, function and instrument contract requests have their individual
+native scopes. When they are separate external requests, their successful
+decisions contribute to <code>requests_checked</code>. They assert no whole-entry
+Meaning or general source preservation. A positive aggregate request count
+can accompany <code>entry.request_checked: false</code>.</li>
+<li>The request fields describe the separate external request payload, not
+Meaning entries embedded in an ordinary QIRF artifact. A zero request count
+does not claim that no embedded Meaning was checked.</li>
+<li>A reachable <code>FunctionEvidence</code> dependency is checked with its ordinary QIRF
+root. That invocation contributes to the decision count and has no separate
+request payload. Reading the counters does not identify or prove its exact
+dependency equation.</li>
+<li>Request data can itself be producer generated. Checking it does not
+establish an independent specification of the original source.</li>
+</ul>
+<p>Reports of the other commands:</p>
+<ul>
+<li>On the <a href="diagnostics.html#routes">selected-entry route</a>, <code>check --entry ...</code>
+reports four fields beside its <code>verification</code> scope and <code>request_origin</code>:
+the singular actual <code>checker_path</code> of the selected root,
+<code>checker_identity: "unpinned"</code>, <code>request_checked</code> and
+<code>source_preservation_verified: false</code>. These fields describe the receipt of
+the selected root.
+They are not an aggregate of every native decision made while preparing and
+checking the source.</li>
+<li>The native-validity scope of the Raw route is distinct from the hierarchy
+composition, Fourier, instrument and named-QPE request scopes.</li>
+<li>Finite artifact reports also expose <code>ordinary_result_checked</code> and
+<code>runtime_result_checked</code>, with the meanings of the project-entry fields.
+They expose the optional <code>source_body_scope</code> in the same way, and the text
+report prints it on the line <code>source body checked:</code>.</li>
+<li><code>request_checked: true</code> also applies to a checked producer-consistency
+request. It does not assert an independent specification of the Meaning of
+the source. <code>source_meaning_verified: false</code> stays explicit.</li>
+<li><code>verify-ir</code> reports the singular actual <code>checker_path</code> of the checked
+artifact, <code>checker_identity: "unpinned"</code> and <code>request_checked</code>. With
+<code>--against</code>, the request result applies to that exact supplied pair of
+artifact and request.</li>
+<li><code>emit-ir</code> reports its output <code>path</code> with the checker and request metadata of
+the emitted root.</li>
+<li>The text successes of <code>verify-ir</code> and <code>emit-ir</code> state the IR and request
+scope. Success of neither command establishes preservation from a source, a
+trusted binary identity, or correctness of downstream execution or export.</li>
+<li><code>interop check</code> uses the same singular actual-root metadata in its JSON
+success. Importing foreign source and accepting its lowered artifact do not
+prove translation preservation.</li>
+<li>Request-free success is a successful structural check. No independent
+Meaning is inferred from it.</li>
+<li>The report fields alter no acceptance rule, proof scope or admitted
+constitutional guarantee.</li>
+</ul>
+<h3 id="public-operations-that-confer-no-acceptance"><a class="header" href="#public-operations-that-confer-no-acceptance">Public operations that confer no acceptance</a></h3>
+<p>The public operations in this table confer no acceptance. The second column
+states what each operation does instead.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Operation</th><th>Scope</th></tr>
+</thead>
+<tbody>
+<tr><td><code>RawProgram</code>, <code>RawOp</code>, <code>native::Proposal::{new,from_raw}</code></td><td>Untrusted IR or serialized proposals. Structural validity does not imply native acceptance. The 22 coverage entries of the RawOp constructors describe checking coverage. They do not describe constructor authority.</td></tr>
+<tr><td><code>Circuit::new</code>, <code>Encoding::{new,identity}</code>, <code>Contract::new</code>, <code>FiniteMeaning::{permutation,phase,matrix,target_ir}</code>, <code>UnitaryBoundary::new</code>, matrix codecs</td><td>Descriptions, exact arithmetic and bounded host construction. A proposed meaning is not evidence that an implementation has that meaning.</td></tr>
+<tr><td><code>qleisli doc</code> → <code>render_markdown</code></td><td>Reads and parses documentation, and returns before source compilation. It confers no type or semantic acceptance.</td></tr>
+<tr><td>Source loading, edition configuration and <code>Kernel::new</code></td><td>Configure files or a checker path. Later checking can fail.</td></tr>
+<tr><td>Checked-object accessors and <code>check_binding</code> / <code>check_entry</code></td><td>Retain or compare the original checked identity and scope. They do not make a fresh decision of semantic acceptance.</td></tr>
+<tr><td>Foreign export</td><td>Consumes <code>AcceptedProgram</code> and emits target text. The terminal OpenQASM adapter can project a closed typed source result to its ordered measured bits, or emit no bits for Unit. Input acceptance does not prove preservation of the emitted OpenQASM/QIR or target execution. QIRF export separately performs a fresh native validity check on its output. Output validity alone is not a translation theorem.</td></tr>
+<tr><td><code>sim</code>, <code>host</code>, hierarchy execution and sampling</td><td>Execute already checked descriptions numerically. Acceptance and bounded reference tests do not establish runtime or floating-point preservation.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules for the <code>H; Z; H</code> replacement in OpenQASM/QIR export:</p>
+<ul>
+<li>Export may replace three adjacent actual expanded function steps,
+<code>H; Z; H</code>, with the existing X/CX/CCX word. The target axis and the ordered
+zero, one or two controls, including polarity, must match in all three
+steps. Z must have identity permutation and exact eighth-turn phases
+<code>[0,4]</code>.</li>
+<li>No source name or inferred label authorizes this replacement, and no step
+commutes across another. Nonmatching words keep the emitter policy. The
+original accepted graph, source types, owners and dependencies stay intact.</li>
+<li>A final target-word pass also recognizes exactly adjacent uncontrolled
+<code>H; Z; H</code> on one identical physical operand, including words separated by
+pure Raw operation boundaries. It reads the actual emitted gate definitions
+and operand maps. It uses the same native equation gate, receipt cache and
+export-wide work counter.</li>
+<li>Allocation, singleton preparation, measurement and discard boundaries
+prevent a window from crossing them. No phase folding, commuting or
+source-name lookup creates a window.</li>
+<li>The final pass starts only after the gate stream from cursor normalization
+and lowering has satisfied the 4,096-gate cap. Final shortening cannot admit
+an otherwise over-limit emitted stream. Other target limits and original
+checked obligations are unchanged.</li>
+<li>Each distinct compact pair of original and replacement Raw requires the
+native function-equation check under the checker of the input
+<code>AcceptedProgram</code>. The local comparison retains full scalar phase and
+ordered control polarities.</li>
+<li>An export retains at most seven complete-body local receipts. It shares the
+20,000,000 exact-work budget across all Raw operations.</li>
+<li>Unavailable checking, rejection or exhausted capacity produces no artifact
+and no alternate acceptance path.</li>
+<li>This bounded local comparison is not a general preservation theorem for
+source, target emission, physical resources or external QIS. The local
+equations do not establish general source/export, resource or external QIS
+preservation. The two adopted guarantees and the pending QS/PR/RS/EXACT
+obligations keep their scopes.</li>
+</ul>
+<p>Rules for explicit module-map source selection:</p>
+<ul>
+<li>Explicit module-map source selection parses, instantiates, elaborates and
+lowers untrusted proposals. Ordinary commands with explicit entry and
+module bindings use the shared source execution plan.</li>
+<li><code>emit-proposal</code> checks source contracts and operation Meaning requests with
+the selected kernel before writing the transport. It reports <code>untrusted-proposal</code>.</li>
+<li>The preselected Raw route uses ordinary native acceptance. It then
+separately compares the accepted instructions with the retained source
+steps.</li>
+<li>The hierarchy route retains dedicated request, Fourier, instrument or
+named-QPE checking and the required initialization-move binding.</li>
+<li>A native failure cannot switch routes or discard the request of the caller.</li>
+<li>Selected checking and execution results retain
+<code>source_meaning_verified: false</code>. Native validity, producer consistency,
+caller composition and named-QPE requests have distinct scopes.</li>
+<li>Neither source-step comparison nor general lowering preservation follows
+merely from an accepted proposal.
+<a href="type-model.html#selected-source-execution">Selected-source execution</a> states
+the other invocation and checking-profile boundaries.</li>
+</ul>
+<p>Rules for the Isometry profile of the hierarchy route:</p>
+<ul>
+<li>A source root with a checked public Isometry contract and an actual Unitary
+or Isometry body uses the supported Isometry profile through the
+<code>check_instrument_native</code> boundary. The profile has fresh-zero preparation,
+checked unitary evolution and a readout with zero measurements. A unitary
+body needs no preparation step.</li>
+<li>This transport selection preserves the public bound. It does not rewrite the
+actual source-step or Raw effect to Isometry.</li>
+<li>The quantum entry and result trees, zero-width owners and the complete live
+frame are part of the proposal and its initialization-move comparison.</li>
+<li>At most one ordinary <code>Bits&lt;0&gt;</code> result may accompany the quantum results. The
+empty outcome of the transport does not create a source Observe effect.</li>
+<li>Isometry execution returns its single unnormalized branch with scalar phase
+retained.</li>
+<li>Sampling requires a checked public Observe contract and an actually
+observing supported artifact.</li>
+<li>Conservative public bounds cannot recover sharper source eligibility or
+fabricate actual operations. The Raw profile keeps its actual classification
+and explicit support limits. A public Observe contract over a pure body is
+outside this hierarchy profile.</li>
+<li>This adapter reuses component checks. It introduces no native primitive,
+accepted-handle authority, formal theorem or constitutional guarantee. The
+ordinary QLV1 ownership and scope admissions do not extend to this hierarchy
+path.</li>
+<li>An independent hierarchy request must fit the supported composition
+language. A whole-root finite-matrix request cannot replace the required
+child structure of a composite root.</li>
+<li>Producer consistency, the bounded initialization and source-step comparison
+and numerical execution observations keep their separate scopes. General
+source preservation and the complete native analytic/operator and runtime
+correspondence duties are pending.</li>
+</ul>
+<h3 id="numerical-result-presentation"><a class="header" href="#numerical-result-presentation">Numerical result presentation</a></h3>
+<p>This section covers how <code>run</code> presents numerical results, and the optional
+annotation of exact zeros.</p>
+<ul>
+<li>Closed-project <code>run</code> reports a numerical reference distribution. Text uses
+scientific notation with twelve digits after the decimal point. JSON retains
+numeric probabilities under the output range policy.</li>
+<li>Reset and discard trace out the last quantum axis by summing both hidden
+outcome weights. Visible measurements retain every numerically positive
+outcome, including rare events and floating-point residues. These rows
+count toward the ensemble limits.</li>
+<li>Sampling uses the numerical execution model. A small floating-point residue
+can appear at a mathematically zero outcome.</li>
+<li>For project-mode text <code>run</code>, <code>--show-exact-zeros</code> appends <code>[exact zero]</code> to
+a displayed row when a bounded calculation finds its exact amplitude equal
+to zero. Each numerical value and output word stays in the original order.
+The formatter uses no probability threshold and leaves unlisted rows absent.
+The option is exclusive to project-mode text <code>run</code>.</li>
+<li>The calculation uses the retained Raw of a closed, already accepted program.
+The profile permits vacuum preparation, structural register and Unit
+operations, injective <code>LiftBasis</code>, exact Hadamard and monomial steps, and
+sealed coherent selection with its full phase.</li>
+<li>Each <code>LiftBasis</code> appends fresh zero axes and uses the actual table in
+declared axis order. Terminal Z measurement reads each axis once, and the
+result contains each measured bit once.</li>
+<li>A program outside this profile, or an exhausted resource or arithmetic
+limit, prints the numeric distribution and reports why the exact annotation
+is unavailable. Default text, JSON and seeded sampling keep their numerical
+behavior.</li>
+<li>The annotation is presentation evidence within this bounded Raw profile.
+The native checker is the authority for exact contracts and accepted
+handles.</li>
+</ul>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Limit of the exact annotation</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Allocated axes</td><td>Six</td></tr>
+<tr><td>Raw operations</td><td>2,048</td></tr>
+<tr><td>Expanded steps</td><td>1,024</td></tr>
+<tr><td>Exact evaluation budget</td><td>One million units, separate, with the finite dyadic complex arithmetic used for circuit proposals</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="coverage-checks"><a class="header" href="#coverage-checks">Coverage checks</a></h3>
+<p>A coverage record holds the inventory of this boundary, and a script checks
+the repository against it.</p>
+<ul>
+<li><code>tests/fixtures/verification_v029/coverage.json.xz</code> separates four things:
+current implementation, published 0.2.9 validation, unpublished development
+and open proof obligations. It records the current coverage groups,
+boundary entry lists, constructor variants and classified paths.</li>
+<li>Engineering comparisons and the check-only nominal carrier component have
+distinct classifications. Mixed boundary rows refer to individually
+classified paths. A public surface that contains a constructor or <code>doc</code> is
+not counted wholesale as native acceptance.</li>
+<li><code>scripts/check_production_coverage.py</code> checks five things: the reviewed
+public surface, complete path classifications, all native modes and
+dispatch targets, named source and declaration bindings and existing
+regression functions.</li>
+<li>The script fails on an omitted route, an exposed boundary that the inventory
+lacks, changed dispatch, a missing binding or a proposal misclassified as
+acceptance. The native-contract proof scope also retains the explicit
+encoded-equation and guarantee-admission limits.</li>
+<li>These checks detect inventory drift. Source markers and test existence are
+not formal proof or evidence that a test has just run. The underlying
+inventories, actual tests, proof builds and audits are necessary.</li>
+<li>Existing regression bindings include <code>tests/native_paths.rs</code>,
+<code>tests/function_evidence.rs</code>, <code>tests/semantic_contracts.rs</code>,
+<code>tests/finite_leaf.rs</code>, <code>scripts/test_source_kernel.py</code>,
+<code>scripts/test_interop_native.py</code>, <code>tests/hierarchical_host.rs</code>,
+<code>tests/hierarchical_qpe_host.rs</code>, <code>tests/sized_source.rs</code>, and the explicit
+no-kernel proposal test in <code>tests/sized_cli.rs</code>. The separate <code>doc</code>
+regression is in <code>tests/cli.rs</code>.</li>
+<li>Their bounded observations do not replace S05 proofs or human review of the
+intended semantics.</li>
+</ul>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>Production acceptance completed the adopted migration to one native Lean
+implementation under the
+<a href="https://github.com/MGYamada/Qleisli/issues/276">single-verifier decision #276</a>.</li>
+<li>Version 0.2.9 was published and verified. Its immutable record is
+<code>tests/fixtures/releases/v0.2.9/publication.json</code>. The record binds source
+commit <code>a77e68f4d3942cd75cb4c4710350aab9a99f8c8b</code>, the full CI run, the
+registry and GitHub distribution checks, the native bundles and fresh
+installation evidence.</li>
+<li>The selected development version 0.3.0-beta is unpublished. The historical
+release record does not certify the changed beta tree or its future
+packages.</li>
+<li>The earlier VM29 first-slice, comparison and cutover records are historical
+evidence with their original scopes and results.</li>
+<li>The shared exact-work ceiling was 10,000,000 and then 13,000,000 units. A
+client that uses either earlier ceiling must update the Rust frontend and
+the Lean checker together.</li>
+<li>The changelog calls dispatch of the version-5 request from the public
+compile path “public v5”, and the full qmatch profile “full12/64”. The
+production compile path dispatches the version-5 request.</li>
+<li>The preparation-work exception of the two-qubit general-composition
+development regression is tracked by
+<a href="https://github.com/MGYamada/Qleisli/issues/472">#472</a>.</li>
+<li>The whole-project <code>result</code> fields replaced the former <code>{"verified":true}</code>.
+A client that used the former source-check <code>verified</code> boolean must inspect
+the explicit scope fields. The former unqualified <code>verified: true</code> of
+<code>verify-ir</code> and <code>interop check</code> is also retired.</li>
+<li>Binary identity pinning is tracked by
+<a href="https://github.com/MGYamada/Qleisli/issues/302">#302</a>.</li>
+<li>The reachable-module policy is the subject of
+<a href="https://github.com/MGYamada/Qleisli/issues/273">#273</a>.</li>
+</ul>
+<p>Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../design/initial-interpretations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/execution-view.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../design/initial-interpretations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/execution-view.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

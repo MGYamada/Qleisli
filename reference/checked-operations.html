@@ -1,0 +1,618 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Checked operations - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="checked-operations"><a class="header" href="#checked-operations">Checked operations</a></h1>
+<p>A <strong>checked operation</strong> is the static constructor
+<code>checked_op(implementation, Meaning)</code>. Use <code>checked_op</code> to request exact
+Meaning evidence for a static operation description, even when the receiving
+parameter does not name a Meaning. The constructor itself makes the request:
+it asks for a check that a source operation has a declared exact meaning.</p>
+<p>A <strong>Meaning</strong> is a declaration <code>meaning M: A -&gt; B = ...;</code>. It specifies the
+exact action of an operation from basis tree <code>A</code> to basis tree <code>B</code>.</p>
+<p>A program writes <code>checked_op</code> inside the existing explicit operation
+arguments. It is not a monadic bind, a runtime function value or a
+constitutional certification.</p>
+<h2 id="the-checked_op-constructor"><a class="header" href="#the-checked_op-constructor">The <code>checked_op</code> constructor</a></h2>
+<pre><code class="language-text">CheckedOperation ::= checked_op ( Identifier , Identifier )
+</code></pre>
+<p>The constructor takes two names. The first identifier names an existing
+operation. The second resolves to an existing finite Meaning declaration.</p>
+<p>Rules:</p>
+<ul>
+<li>Visibility, lexical shadowing, static premises and the checks of the basis
+trees apply to both identifiers.</li>
+<li>Neither argument may be a runtime value, a constructed operation expression
+or an explicitly specialized provider expression.</li>
+<li>An outer static constructor may contain a checked operation. Its own rules
+do not change.</li>
+<li>For a general formal <code>Op&lt;A -&gt; B, M&gt;</code>, the checker checks both ports against
+the declared domain and codomain of <code>M</code>. An endomorphic Meaning has one
+basis tree for its input and its output. It requires both ports to equal
+that single basis tree. The
+<a href="type-model.html#general-pure-operation-arrows">type model</a> specifies how
+general pure arrows are typed and the limits on materializing them.</li>
+<li>Attaching a Meaning name does not discharge the equality. Equal
+probabilities, equal bit width or equality up to global phase must not
+replace the check.</li>
+<li>Capability requirements are separate. An abstract parameter acquires no
+inverse access and no controlled access from a Meaning name.</li>
+</ul>
+<p>The checker accepts this fragment. It uses an endomorphic Meaning and the
+grammar of operation parameters:</p>
+<pre><code class="language-qli">use std::gate::z;
+
+classical fn z_phase(b: Bit) -&gt; (Bit, (Bit, Bit)) { (0, (0, b)) }
+meaning ZMeaning: Bit = phase_by(z_phase);
+unitary fn direct(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { z(q) }
+
+unitary fn apply_z[const U: Op&lt;Bit, ZMeaning&gt;](q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt;
+requires Applicable(U) { U(q) }
+
+unitary fn client(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; {
+    apply_z[checked_op(direct, ZMeaning)](q)
+}
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> The common original-source judgment resolves the
+operation and the Meaning, checks their interface bases and records a pending
+Meaning-equality obligation. It can resolve an in-scope abstract operation
+formal and record the obligation for it. Finite materialization requires
+closed pure source declarations, so it rejects an abstract formal as the
+provider of this constructor. Attaching a Meaning in the common judgment
+creates no evidence that bypasses that refusal. Finite materialization
+retains the implementation and its source dependencies. It checks their
+phase-fixed meaning through the selected native checker before it produces
+executable evidence.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> The parser reads each argument of <code>checked_op</code>, and
+each operand of a Meaning body, as a reference name. A reference name may be
+a qualified path. No conformance test covers a qualified name in these
+positions.</p>
+</blockquote>
+<h2 id="owners-and-capabilities"><a class="header" href="#owners-and-capabilities">Owners and capabilities</a></h2>
+<p>A static description contains no live quantum owner.</p>
+<p>Rules:</p>
+<ul>
+<li>Applying an operation consumes and returns the specified owners.</li>
+<li>A runtime local, a spent value or a captured owner must not be the provider
+of an operation.</li>
+<li>Separate owners do not imply separable states.</li>
+<li>A zero-width owner retains its phase and its ownership rules.</li>
+</ul>
+<p><a id="bounded-exact-meaning-composition"></a></p>
+<h2 id="meaning-declarations"><a class="header" href="#meaning-declarations">Meaning declarations</a></h2>
+<p>A Meaning declaration names a specification: the exact action of an operation
+from one basis tree to another. A finite Meaning declares
+<code>meaning M: A -&gt; B = ...;</code>. The form <code>meaning M: A = ...;</code> is short for a
+Meaning whose input and output trees are equal. A Meaning has one of these
+bodies:</p>
+<pre><code class="language-text">MeaningBody ::= permutation_by ( Identifier )
+              | phase_by ( Identifier )
+              | reference ( Identifier )
+              | compose ( Identifier , Identifier )
+              | tensor ( Identifier , Identifier )
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li><code>reference</code>, <code>compose</code> and <code>tensor</code> are contextual identifiers in this
+position. They are not reserved words.</li>
+<li>The operands of <code>compose</code> and <code>tensor</code> resolve to declared Meanings through
+the ordinary visibility rules. <code>reference</code> resolves its function as
+<a href="#reference-programs">Reference programs</a> describes.</li>
+<li>A runtime value or the name of a classical function is not a Meaning
+operand.</li>
+<li>A Meaning may refer to a Meaning that the module declares later. A
+dependency cycle is an error.</li>
+<li>The checker checks every declared Meaning, including an unused one.</li>
+</ul>
+<h3 id="composition"><a class="header" href="#composition">Composition</a></h3>
+<p>A <code>compose</code> body specifies one Meaning followed by another. For
+<code>First: A -&gt; B</code> and <code>Second: B -&gt; C</code>, <code>compose(First, Second)</code> has type
+<code>A -&gt; C</code>. It applies <code>First</code> and then <code>Second</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>The codomain of <code>First</code> and the domain of <code>Second</code> must be the same tree
+<code>B</code>. The checker makes no implicit conversion between trees of equal
+physical dimension.</li>
+<li>In the endomorphic monomial case, where <code>First</code> and <code>Second</code> both have the
+basis tree <code>A</code>, <code>meaning M: A = compose(First, Second);</code> applies <code>First</code> and
+then <code>Second</code>. Write the actions as <code>First|x&gt; = zeta_8^a[x] |p[x]&gt;</code> and
+<code>Second|y&gt; = zeta_8^b[y] |q[y]&gt;</code>. The result sends <code>x</code> to <code>q[p[x]]</code> with
+phase <code>(a[x] + b[p[x]]) mod 8</code>.</li>
+</ul>
+<h3 id="tensor"><a class="header" href="#tensor">Tensor</a></h3>
+<p>A <code>tensor</code> body specifies two Meanings side by side, one on each field of a
+pair. For <code>Left: A -&gt; B</code> and <code>Right: C -&gt; D</code>, <code>tensor(Left, Right)</code> has type
+<code>(A,C) -&gt; (B,D)</code>. It assigns the left operand to the low-order axes.</p>
+<p>Rules:</p>
+<ul>
+<li>In the endomorphic monomial case, <code>Left</code> has basis <code>A</code> and <code>Right</code> has
+basis <code>C</code>. The declaration <code>meaning T: (A, C) = tensor(Left, Right);</code> then
+requires that ordered pair.</li>
+<li>The first field occupies the low-order axes. For dimensions <code>dA</code> and <code>dC</code>,
+column <code>x + dA*y</code> goes to <code>p[x] + dA*q[y]</code> with phase <code>(a[x] + b[y]) mod 8</code>.</li>
+<li>Nested products and zero-width fields retain their type identity. In
+particular, a scalar phase on <code>Unit</code> is not discarded.</li>
+</ul>
+<h3 id="equality-of-meanings"><a class="header" href="#equality-of-meanings">Equality of Meanings</a></h3>
+<p>A check against a Meaning is a check of exact equality. The rules below say
+what that equality observes. The checker accepts these declarations:</p>
+<pre><code class="language-qli">classical fn flip(b: Bit) -&gt; Bit { not b }
+classical fn z_phase(b: Bit) -&gt; (Bit, (Bit, Bit)) { (0, (0, b)) }
+meaning X: Bit = permutation_by(flip);
+meaning Z: Bit = phase_by(z_phase);
+meaning ZX: Bit = compose(Z, X);
+meaning Ordered: (Bit, Bit) = tensor(Z, X);
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Equality retains every column, the exact phase and the axis order. It is not
+probability equality, and it is not equality up to global phase. For
+example, <code>compose(X, Z)</code> differs from <code>ZX</code> by a minus sign.</li>
+<li>Either operand of <code>compose</code> or <code>tensor</code> may contain references or monomial
+targets. Equality observes the exact complex phase and the ordered basis
+trees. It also observes the scalar action on <code>Q&lt;Unit&gt;</code>, which has zero
+axes.</li>
+<li>Forming a target does not prove a provider correct. <code>checked_op</code> and refined
+parameters require a fresh native comparison against the independently
+formed request. That comparison retains the original identities of the
+source, of the dependencies and of the provider.</li>
+<li>Forming a Meaning creates no live owner and no inverse or control
+capability. The capability checks and the source-control checks govern
+those uses.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> For monomial operands, <code>compose</code> and <code>tensor</code>
+normalize their targets within the six-bit finite bound and the work limits.
+A reference graph is retained even when its denotation is monomial, such as
+a reference to the identity or <code>compose(H, H)</code>. The public monomial-only
+<code>FiniteMeaning</code> accessor rejects every graph that contains a reference.</p>
+</blockquote>
+<h3 id="reference-programs"><a class="header" href="#reference-programs">Reference programs</a></h3>
+<p>A <code>reference</code> body uses a program as the specification. A program writes one
+when an ordinary function already states the action that it wants. For
+example, <code>meaning H: Bit = reference(reference_h);</code> names one closed ordinary
+function as the specification.</p>
+<p>Rules:</p>
+<ul>
+<li>For the equal-tree form <code>meaning M: A = reference(f);</code>, <code>f</code> must have the
+interface <code>Q&lt;A&gt; -&gt; Q&lt;A&gt;</code>. The checked effect that callers of <code>f</code> see must be
+Unitary. In the example, the interface is <code>Q&lt;Bit&gt; -&gt; Q&lt;Bit&gt;</code>.</li>
+<li>For the rectangular form <code>meaning M: A -&gt; B = reference(f);</code>, <code>f</code> must have
+the interface <code>Q&lt;A&gt; -&gt; Q&lt;B&gt;</code>. The checked effect that callers of <code>f</code> see
+must be at most Isometry.</li>
+<li>The argument must be a single resolved function identifier. Static
+arguments, constructed operations, classical or static functions and other
+Meaning names are not accepted.</li>
+<li>Visibility checks apply. The dependency-cycle check covers all declarations,
+including cycles through <code>apply_contract</code> and <code>checked_op</code>.</li>
+<li>A declared effect assertion must not replace independent checking of the
+complete body and its dependencies.</li>
+<li>The <a href="source-text.html#ordinary-function-effects-and-assertions">public-effect rule</a>
+applies. Outside the original module of the provider, it uses the checked
+public effect. Inside that module, it uses internal inference. Reference
+selection, specialization and cached evidence must not recover a sharper
+external eligibility from the body.</li>
+</ul>
+<p>The checker accepts these declarations:</p>
+<pre><code class="language-qli">fn reference_h(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { h(q) }
+meaning H: Bit = reference(reference_h);
+meaning HH: Bit = compose(H, H);
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> A reference contributes its independently checked
+original Raw artifact and its dependencies. A fresh native equation compares
+the implementation with that request. For endomorphic functions, the emitted
+contract receipts retain both artifacts, their dependencies and the original
+source snapshot. Rectangular provider bodies and reference bodies receive
+separate native equations, and the Raw call intervals are rechecked against
+the requested matrix. A matching matrix, function name or source annotation
+cannot substitute another receipt. Unused targets, unused generic equality
+obligations and zero-repeat child requests are checked before emission.</p>
+</blockquote>
+<h3 id="fixed-fourier-specifications"><a class="header" href="#fixed-fourier-specifications">Fixed Fourier specifications</a></h3>
+<p>The following closed reference functions specify the positive Fourier matrices
+on two and three qubits in the existing exact carrier. They are fixed
+examples. They are not a generic QFT implementation, and they add no <code>Fourier</code>
+constructor.</p>
+<pre><code class="language-qli">use std::gate::s;
+use std::gate::t;
+
+fn quarter(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { s(q) }
+fn eighth(q: Q&lt;Bit&gt;) -&gt; Q&lt;Bit&gt; { t(q) }
+fn fourier2(q: Q&lt;(Bit,Bit)&gt;) -&gt; Q&lt;(Bit,Bit)&gt; {
+    let (a,b)=split(q);
+    let b=h(b);
+    let (a,b)=controlled(quarter)(a,b);
+    let a=h(a);
+    join(b,a)
+}
+fn fourier3(q: Q&lt;((Bit,Bit),Bit)&gt;) -&gt; Q&lt;((Bit,Bit),Bit)&gt; {
+    let (ab,c)=split(q);
+    let (a,b)=split(ab);
+    let c=h(c);
+    let (b,c)=controlled(quarter)(b,c);
+    let (a,c)=controlled(eighth)(a,c);
+    let b=h(b);
+    let (a,b)=controlled(quarter)(a,b);
+    let a=h(a);
+    join(join(c,b),a)
+}
+meaning F4: (Bit,Bit) = reference(fourier2);
+meaning F8: ((Bit,Bit),Bit) = reference(fourier3);
+</code></pre>
+<p>With low-order axes first, the independent equation for the fixed dimensions
+<code>N = 4</code> and <code>N = 8</code> is</p>
+<p>\[
+F_N[y,x] = \frac{\exp(2\pi ixy/N)}{\sqrt{N}}.
+\]</p>
+<p>The fixed reference regressions check every coefficient on both concrete
+adapters, including the output reversal and the exact phase. A consumer can
+use these targets in <code>apply_contract</code> or <code>Op&lt;A,M&gt;</code> under the same evidence rules.</p>
+<h2 id="migration-from-bind_op"><a class="header" href="#migration-from-bind_op">Migration from <code>bind_op</code></a></h2>
+<p><code>bind_op</code> is the retired spelling of the constructor. To migrate a source,
+replace <code>bind_op(implementation, Meaning)</code> with the identical arguments to
+<code>checked_op(implementation, Meaning)</code>.</p>
+<p>Rules:</p>
+<ul>
+<li><code>bind_op</code> is reserved only for a located retirement error. It is never
+accepted as an alias, including in nested constructors.</li>
+<li>The <a href="source-text.html">lexical boundary</a> specifies reserved identifier
+collisions, comments, byte spans and the order of diagnostics.</li>
+<li>Retained evidence includes exact source snapshots. A change of this spelling
+may therefore change a receipt or a QIRF source identity, even when the
+requested mathematical meaning and the ordered interface are unchanged.</li>
+<li>Reconstruct the evidence for the migrated source and check it
+independently. Do not reuse stale receipts, and do not remove source
+bindings to force byte equality.</li>
+</ul>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<p>Limits:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Limit</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Finite Meaning equations</td><td>The six-bit bound of the exact carrier, with its arithmetic and work limits</td></tr>
+<tr><td>Cells of a reference expression graph</td><td>4,096</td></tr>
+<tr><td>Depth of a reference expression graph</td><td>64</td></tr>
+<tr><td>Aggregate materialized artifact bytes of a reference expression graph</td><td>100,000</td></tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>The selected adapter also applies limits of its own: on call depth and
+dependency depth, on operations, on source snapshots and on aggregate
+providers. An expression within the limits above is not a promise that
+every concrete profile can materialize it.</li>
+<li>Exhaustion or an unsupported equality is rejected without approximation.</li>
+<li>The native acceptance profiles are unchanged.</li>
+</ul>
+<p>Profiles:</p>
+<ul>
+<li>The finite source route supports its closed observing entry.</li>
+<li>The selected hierarchy route supports its pure input/output entry for these
+refined operations. A readout entry outside that profile is rejected.
+Meaning composition broadens no readout or instrument rule.</li>
+<li>For general arrows and rectangular Meanings, the ordinary project adapter
+and the selected Raw adapter validate original pure bodies and their
+dependencies against two-port <code>pure-leaf</code> requests. Native checking
+reconstructs the matrix, checks <code>V†V = I</code>, and retains the exact phase and
+the ordered ports. Raw alpha-renaming and composition produce untrusted
+candidates that need fresh checking.</li>
+<li>The hierarchy finite-leaf profile is square.</li>
+<li>Observing contracts use the separately adopted
+<a href="type-model.html#direct-runtime-transforms-and-opaque-operations">function instrument overload</a>,
+not a pure Meaning constructor.</li>
+<li>Two things are outside this bounded profile: general symbolic equality, and
+arbitrary hierarchy requests that compare a matrix with a composite. An
+unsupported comparison is rejected.</li>
+<li>A provider outside its concrete profile is rejected. It does not lose its
+Meaning request. Other static constructors retain their explicit projection
+restrictions.</li>
+</ul>
+<p>The selected concrete projection retains the <code>checked_op</code> constructor and its
+original Meaning request. Within the profile of supported closed providers,
+it checks Meanings as follows:</p>
+<ul>
+<li><code>ElaboratedProgram::check_operation_meanings</code> checks the original binding
+requests and the annotated constructor descendants through the native finite
+gate, on their materialized Raw bodies. Only then can the checked collection
+produce a hierarchy proposal. That proposal needs fresh hierarchy
+acceptance.</li>
+<li>Direct unchecked hierarchy lowering or Raw lowering is rejected while
+original Meaning obligations are open.</li>
+<li>The checked collection can emit Raw for direct application, sequential
+composition, tensor composition, adjoints and controlled access. An
+independent source replay checks the instruction interval, the owner
+boundary and the ordered axes against each original finite request through
+a fresh native decision.</li>
+<li>Unexecuted child requests and zero-repeat child requests are checked before
+emission.</li>
+<li>For inverse access and controlled access, the independent source traversal
+retains the substep range and the axis boundary of each original subtree,
+including requests hidden inside called definitions. Inversion reverses that
+range and its boundary. Coherent control retains the inactive identity
+sector and the exact active-sector matrix.</li>
+<li>Coordinate reconstruction follows the same surrounding controls. It
+preserves metadata-only axis changes and the Unit phase.</li>
+<li>These finite equations use the six-bit bound, the shared work budget and the
+final whole-artifact acceptance. All finite equations and the sector replay
+consume the same caller budget.</li>
+<li>Refined Raw source <code>ctrl</code> uses the exact sector gate as well as the Meaning
+gate.</li>
+<li>Closed audit roots are re-elaborated, and all their original Meaning
+requests are checked in that expanded graph. Earlier leaf keys are not
+transplanted.</li>
+<li>Every original control obligation requires a retained concrete call
+interval, including unused bodies and specializations. Unclosed generic
+intervals and erased intervals are rejected.</li>
+<li>A body can contain source <code>ctrl</code>. Symbolic inverse transformation or
+symbolic control transformation of such a body is unsupported. The failure
+selects no other profile.</li>
+<li>The complete emitted artifact requires fresh native validity and source
+replay before execution.</li>
+</ul>
+<p>Proof status:</p>
+<ul>
+<li>These checks are bounded implementation checks and artifact-attachment
+checks. They are not a proof that source elaboration preserves its intended
+meaning, or that a reference program is an adequate specification.</li>
+<li>These checks do not establish general source-to-request preservation.</li>
+<li>The adopted QS, PR, RS and EXACT interpretations, both scoped QLV1
+guarantees and their open proof duties retain their recorded status. This
+chapter reports no guarantee and no source-preservation theorem.</li>
+</ul>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>The name <code>checked_op</code> is the ordinary naming decision recorded in
+<a href="https://github.com/MGYamada/Qleisli/issues/82">#82</a>. The rename changed no
+syntax-tree meaning, primitive, protocol, schema, checker or constitutional
+edition. The later bounded implementation retains the independent evidence
+gates.</li>
+<li>General arrows and rectangular Meanings were resumed for 0.3.0-beta under
+<a href="https://github.com/MGYamada/Qleisli/issues/83">#83</a>.</li>
+<li>The retired <a href="../design/operations.html">operations design packet</a> proposed
+broader arrow and Meaning forms and constructed provider inputs. The naming
+decision does not adopt them.</li>
+<li>Historical first sources and diagnostics are unchanged. They sit beside
+explicit derivatives for the renamed spelling.</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../reference/coherent-basis.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/stdlib.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../reference/coherent-basis.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/stdlib.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

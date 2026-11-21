@@ -1,0 +1,517 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Initial QS, PR and RS interpretations - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="initial-qs-pr-and-rs-interpretations"><a class="header" href="#initial-qs-pr-and-rs-interpretations">Initial QS, PR and RS interpretations</a></h1>
+<p><strong>Status: adopted on 2026-10-04 (Asia/Tokyo); binding pending discharge.</strong>
+The human Guardian, Masahiko G. Yamada, explicitly adopted all three
+interpretations below. None is a discharged ledger guarantee. The separate
+human adoption record is <code>governance/interpretations/initial-2026-adoption.json</code>;
+constitutional ratification, the appointment, tests, proofs, audits and document
+checks did not substitute for that act.</p>
+<p>The authoritative adopted text is the exact reviewed packet preserved in
+<code>governance/interpretations/initial-2026-reviewed.txt</code>, with SHA-256
+<code>7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3</code>.
+This chapter updates only status wording, headings and adoption tenses for the
+book. Its mathematical scopes, properties and premises are unchanged. Changing
+that adopted meaning requires a new human Guardian judgment; editing this
+chapter cannot amend it.</p>
+<p>Implementation note: the reviewed packet’s ownership-only <code>ResourceSafe</code>
+predicate and theorem names are now spelled <code>OwnershipSafe</code> and
+<code>ownershipSafe</code> under <a href="https://github.com/MGYamada/Qleisli/issues/287">Issue #287</a>.
+This identifier-only change preserves their mathematical content; references
+below retain the reviewed names. It does not discharge quantitative RS.</p>
+<p>Subsequent admission: the human Guardian has approved
+<a href="initial-guarantees.html">two scoped QLV1 guarantees</a> for ownership and classical
+scope, with their checked proof evidence. They discharge only those recorded
+components; the three broader obligations in this interpretation remain pending.</p>
+<p>Subsequent interpretation: the Guardian adopted <strong>EXACT-2026-01</strong> on
+2026-10-05 (Asia/Tokyo). Its <a href="../reference/authority.html#exact-constitutional-obligations">separate exactness supplement</a>
+rules out epsilon relaxation of constitutional truth conditions while
+preserving checked numerical assistance to exact propositions. It applies to
+these three jurisdictions, changes none of their historical records and
+discharges no guarantee. This chapter retains the initial packet below.</p>
+<p>This packet records initial applications of the three existing obligations in
+<code>CONSTITUTION.md</code>, under Articles V–VIII. It adds no
+Fundamental Theorem and changes no constitutional text. Its mathematical scope
+belongs to interpretation records, outside the entrenched Constitution. The
+<a href="ratification.html">ratification record and process</a>, <code>GOVERNANCE.md</code> and the
+<a href="../reference/authority.html">authority hierarchy</a> identify the human authority;
+they do not substitute for that authority’s recorded decision on this packet.</p>
+<h2 id="shared-production-boundary-and-premises"><a class="header" href="#shared-production-boundary-and-premises">Shared production boundary and premises</a></h2>
+<p>The initial scope is the currently admitted finite/raw and sized/hierarchical
+production paths of edition 2026, including their source, Rust, CLI, Python and
+foreign-format callers. A future feature remains subject to all applicable
+obligations; omission from today’s examples or proofs creates no exemption.
+The scope and evidence must be updated when the admitted language grows.</p>
+<p><a href="https://github.com/MGYamada/Qleisli/issues/276">Decision #276</a> places production
+acceptance in the Mathlib-free native Lean checker. For ordinary QIRF, the
+concrete chain includes the original artifact and optional independent request
+bytes in the QLV1 packet, <code>QleisliKernel.Protocol.Validity.check</code>, and
+<code>QleisliKernel.Qirf.Validity.inspect</code>. On the Rust side,
+<code>interchange::native::Kernel</code> obtains the fresh decision and authorizes private
+accepted handles associated with those bytes. The hierarchy has its own native
+structural/request checks and freshly checked finite obligations. The ordinary
+QIRF theorem alone does not cover that entire hierarchy.</p>
+<p>For each claimed guarantee, its release record must identify the real entry
+points, admitted profile, original inputs, requested contract when present,
+checked representation and current artifact consumed by execution or export.
+It must account for the selected checker and its compatibility/provenance
+assumptions. A theorem about an unused predicate, a subset chosen only to make
+the theorem easier, or a producer’s success receipt cannot stand for production
+acceptance. A structural hierarchy derivation cannot silently stand for the
+missing analytic meaning of its complete accepted operator.</p>
+<p>The policy in <code>TRUSTBOUNDARY.md</code> remains in force, as described in the
+<a href="../reference/authority.html#production-acceptance-and-the-trust-boundary">production authority chapter</a>:
+reference meanings require human specification review; frontend output, synthesis search
+and other proposals require independent validation. Native compilation/runtime,
+decoding, source lowering, Rust re-materialization, execution and emitted-output
+correspondence must retain their actual assumptions and proof gaps. Moving code
+into Lean or obtaining an accepted handle does not discharge all those links.
+Source acceptance must be connected to the source’s specified meaning before
+source preservation is claimed.</p>
+<p>New sealed semantics require the admission review proposed in
+<a href="https://github.com/MGYamada/Qleisli/issues/154">Issue #154</a>: exact meaning,
+reference behavior, owners/effects, phase/coordinates, target/workspace and
+resource obligations, and why ordinary checked source or a verified
+transformation is insufficient. Popularity or performance alone is insufficient.
+An implementation intrinsic must implement an existing meaning or undergo that
+review. No interpretation here authorizes project axioms, unsafe/partial executable
+definitions or runtime replacements. A reviewed semantic assumption is not a
+permission to add a Lean project axiom.</p>
+<p>Adoption identifies obligations and their current gaps. It does not confer
+full pre-v1 certification on existing accepted paths, change the acceptance
+implementation or enable external schemas. Article VIII requires truthful
+scope-specific claims throughout this work. The full supported-profile
+Soundness/specification/review milestone remains v0.5.0; the complete three-
+obligation conformance requirement remains the separate v1 milestone.</p>
+<h2 id="1-interpretation-qs-2026-01--meaning-of-accepted-programs"><a class="header" href="#1-interpretation-qs-2026-01--meaning-of-accepted-programs">1. Interpretation QS-2026-01 — Meaning of accepted programs</a></h2>
+<p><strong>Scope:</strong> the current production program/evidence acceptance boundary
+above, with the particular guarantee stated separately for an ordinary root,
+an independently requested finite contract, a hierarchy, or a source-level
+claim. These are coverage distinctions within QS, not alternative acceptance
+authorities.</p>
+<p><strong>Obligation:</strong> the actual accepted program must satisfy its declared
+typing, ownership, effect and semantic contracts, interpreted independently of
+the checker and evidence producer. An independently supplied requested meaning
+must bind the accepted implementation, its dependency evidence and its full
+interface. An ordinary acceptance without such a request must not be advertised
+as proof of an arbitrary external functional specification.</p>
+<p>The required properties and premises are:</p>
+<ul>
+<li>Preserve logical owners, including zero-width owners, complete tuple/basis
+shape, finite sizes and the ordered mapping from interface axes to the
+interpreted operator. Equal width alone does not identify an interface.</li>
+<li>Preserve linear use, global identity freshness, lexical classical scope,
+simultaneous branch-phi inputs and the complete live caller frame. Separate
+owners do not imply separable quantum states. Measurement consumes its
+logical owner; discard is explicit and has its declared semantics.</li>
+<li>Interpret pure operations as the specified exact maps, including exact phase
+before taking a density-operator interpretation. Matching probabilities or
+equality up to global phase cannot replace an exact operation contract,
+especially when coherent control can expose relative phase. Unitarity alone
+supplies neither an inverse API nor controlled access.</li>
+<li>Interpret observing programs by their unnormalized, outcome-indexed
+completely positive maps, acting correctly with arbitrary external
+references. Account for hidden measurement, reset and discard histories and
+the declared classical output/coarse-graining map. Trace preservation is a
+property of the complete admitted instrument; checking individual sampled
+results or renormalized branches does not establish it.</li>
+<li>Require exact semantic discharge of clean workspace, and the distinct
+restoration obligation for dirty workspace, as described below.</li>
+<li>Preserve these properties through the actual admitted composition and
+transformations. Any source or runtime claim needs its corresponding
+preservation link, beyond acceptance of a proposed IR object.</li>
+</ul>
+<p>For clean workspace <code>A</code>, suppose the program denotes a finite-dimensional CPTP
+map <code>E_p</code> from <code>A ⊗ R_in</code> to <code>A ⊗ R_out</code>, with <code>A</code> initially in <code>|0&gt;&lt;0|</code>.
+For an observing program, <code>R_out</code> includes its declared classical outcome
+register: the premise concerns the complete instrument, not a normalized
+selected branch. Define the reduced live-system channel by
+<code>Phi(rho) = Tr_A(E_p(|0&gt;&lt;0|_A ⊗ rho))</code>. Exact return of the workspace marginal
+to <code>|0&gt;&lt;0|</code> for <strong>every density operator on <code>R_in</code></strong> is equivalent to the
+following separation condition for every finite external reference <code>E</code> and
+every joint density operator <code>rho</code> on <code>R_in ⊗ E</code>:</p>
+<pre><code class="language-text">(E_p ⊗ id_E)(|0&gt;&lt;0|_A ⊗ rho)
+  = |0&gt;&lt;0|_A ⊗ (Phi ⊗ id_E)(rho)
+</code></pre>
+<p>The equivalence requires the all-input, exact, fixed-pure-state premises; the
+two formulations are not independent extra obligations. Observing branches
+must retain their unnormalized probabilities in the corresponding instrument
+formulation. Dirty workspace instead requires restoration of its unknown state
+and reference correlations according to its declared identity contract. A
+known-input test or workspace marginal alone is insufficient for dirty return.
+This follows the proposed distinction in
+<a href="https://github.com/MGYamada/Qleisli/issues/157">Issue #157</a>. Approximate marginal
+cleanliness does not imply separation with the same error parameter; this
+packet admits no approximate cleanup or epsilon contract.</p>
+<p><strong>Candidate evidence and gaps:</strong> <code>Qleisli.NativeValidity.check_sound</code> binds
+success of the actual Lean QLV1 checker definition to
+<code>Qleisli.Qirf.Validity.VerifiedMeaning</code>. Its ordinary root carries structural
+postconditions, independent linear <code>ResourceSafe</code> and classical <code>ScopeSafe</code>;
+an optional finite request additionally carries the stated original-instrument
+finite contract. <code>Qleisli.Qirf.Validity.requested_reference_laws</code> supplies the
+stated finite-reference inverse laws for that requested contract. These are useful candidate evidence,
+not a complete ordinary-root EffectSound/CPTP or source/runtime theorem.
+<code>Qleisli.NativeHierarchy.checkLeaves_semantics</code> and
+<code>Qleisli.NativeHierarchy.conditional_derives</code> connect
+fresh native finite leaves to their structural derivations; general analytic
+LeafMeaning-to-Operator closure remains a separate duty. Their existing scope,
+reference definitions, assumptions and relation to each public acceptance path
+still need review before any ledger discharge is recorded.</p>
+<h2 id="2-interpretation-pr-2026-01--accepted-target-realizations"><a class="header" href="#2-interpretation-pr-2026-01--accepted-target-realizations">2. Interpretation PR-2026-01 — Accepted target realizations</a></h2>
+<p><strong>Scope:</strong> each target realization for which Qleisli claims executable
+or exported implementation of an accepted semantic program, including its
+actual emitted circuit/artifact, target/profile and checked evidence. A
+semantic accepted handle alone is not target-realization certification.</p>
+<p><strong>Obligation:</strong> every realization admitted by the production
+realization gate must implement the already accepted meaning under its stated
+target and workspace contract. The record must bind the current accepted
+program/request, target, emitted artifact and evidence to that gate. Checking a
+different internal circuit or retaining a producer’s claim is insufficient.</p>
+<p>Required premises include the declared primitive gate actions and device
+assumptions, input/output encoding and coordinate order, effects and classical
+outcomes, admitted synthesis workspace, initialization/restoration, and the
+exact equality contract. Workspace may exceed the semantic program’s original
+wires; semantic unitarity does not prove same-wire synthesis. Clean and dirty
+workspace obey the QS distinctions above and remain counted while live under RS.</p>
+<p>Exact operation contracts retain their phase. A projective equality claim
+would require an explicit permitted contract and a proof that its intended
+contexts respect that quotient; it cannot discharge an existing exact or
+coherently controlled contract by silently discarding phase. No target gate
+set, coefficient ring, projective relaxation or approximate synthesis facility
+is admitted merely by adopting this interpretation.</p>
+<p>This is the <strong>forward correspondence</strong> duty proposed in
+<a href="https://github.com/MGYamada/Qleisli/issues/281">Issue #281</a>. It does not require
+that every matrix in an independently specified mathematical domain have a
+realization, or that Qleisli implement a complete synthesis algorithm for it.
+Target/profile existence and synthesis-completeness theorems may be proved
+separately and used to produce evidence. Independently supplied realizations
+are admissible only through the same checked correspondence gate. Missing
+synthesis is an unsupported target realization; it is not permission for a
+fallback that certifies unchecked output. Inverse and controlled capabilities
+remain separate obligations.</p>
+<p><strong>Candidate evidence and gaps:</strong> finite circuit/contract, hierarchy and exact
+algebra theorems may supply components of correspondence. They do not by
+themselves connect every current exporter, target lowering or synthesized
+artifact to the requested meaning. This packet identifies no discharged
+production-wide PR theorem and does not treat successful QIR emission,
+simulation, native acceptance or physical-device assumptions as that theorem.
+Each concrete target claim must expose the missing links or provide their
+checked proof before that scope is certified.</p>
+<h2 id="3-interpretation-rs-2026-01--quantitative-resource-accountability"><a class="header" href="#3-interpretation-rs-2026-01--quantitative-resource-accountability">3. Interpretation RS-2026-01 — Quantitative resource accountability</a></h2>
+<p><strong>Scope:</strong> finite, statically computable bounds for the resource
+semantics applicable to the current accepted program, its admitted
+specialization/family and, where claimed, its current target realization. The
+resource contract must state input/size premises, counted quantities, target
+capacity and scheduling assumptions, and all permitted branches.</p>
+<p><strong>Obligation:</strong> actual accepted behavior and actual admitted
+transformations must respect independently checked finite resource bounds.
+Composition, lowering, optimization, synthesis and emission must preserve the
+bound contract or produce and validate a justified replacement bound for the
+resulting artifact. An estimate about a different circuit cannot certify the
+emitted artifact.</p>
+<p>The current resource model must explicitly select its measures: for example,
+peak live width, clean/dirty/backend workspace, gate or non-Clifford counts,
+measurement and feed-forward counts, and depth under a specified schedule.
+Alternative classical outcomes require the declared safe bound over permitted
+execution paths; a mean from sampled runs does not establish that bound.
+Workspace returned clean still counts for its live interval. Correct semantics
+or a valid realization alone does not prove compliance with a target capacity.</p>
+<p>A closed finite specialization may admit concrete checked accounting. An
+admitted family needs a justified bound function over its stated parameters,
+without treating finitely many tested instances as its proof. New runtime
+control, opaque providers or target-dependent synthesis must activate the
+corresponding bound obligations before claims of certified resource coverage.
+Untrusted external annotations require checking and composition; they cannot
+grant their own resource authority.</p>
+<p>This applies the proposed quantitative jurisdiction in
+<a href="https://github.com/MGYamada/Qleisli/issues/280">Issue #280</a>. Linear ownership,
+no implicit discard and clean/dirty restoration belong primarily to QS.
+<code>ResourceSafe</code> in the current ownership proofs does not establish this RS
+claim. Checker work counters, input limits and host timeouts constrain the
+verification implementation; they do not constitute a program/target resource
+bound unless a separately specified correspondence establishes such a claim.</p>
+<p><strong>Candidate evidence and gaps:</strong> finite accounting structures and ownership
+proofs can support later constructions, but this packet identifies no completed
+production-wide quantitative RS discharge. Required resource semantics,
+certificate rules and preservation links must be specified and checked against
+current production artifacts. The existing Resource Safety target remains
+distinct from clean discharge. Later compatible features may strengthen its
+proof burden without creating a fourth obligation or escaping edition 2026.
+This interpretation grants no permission for approximation or other future syntax.</p>
+<h2 id="evidence-continuity-and-the-recorded-human-decision"><a class="header" href="#evidence-continuity-and-the-recorded-human-decision">Evidence, continuity and the recorded human decision</a></h2>
+<p>The working directions in
+<a href="https://github.com/MGYamada/Qleisli/issues/135">Issues #135</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/136">#136</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/139">#139</a> inform this packet. Their
+text and the cited Lean declarations are not binding interpretations merely
+because they exist. This packet’s binding force comes from the recorded human
+adoption. Current theorem statements may evolve; mathematical
+meaning requires reviewed reference definitions independent of the checker or
+proof decomposition. The statement-isolation work in
+<a href="https://github.com/MGYamada/Qleisli/issues/306">Issue #306</a> remains a v0.5.0
+obligation and must preserve the link to actual production acceptance.</p>
+<p>Each adopted interpretation is recorded first as a <strong>binding pending
+obligation</strong>, with its exact reviewed text, human decision, scope and premises.
+Existing proof coverage must then be matched to the interpreted requirement
+and independently verified before a separate discharge record can enter the
+ledger. A successful audit, an ordinary helper lemma or approval of this packet
+alone does not create a discharged guarantee.</p>
+<p>For every later discharge, bind the protected property, fragment, premises,
+semantic definitions, proof/evidence and current acceptance/artifacts. Later
+releases must preserve applicable ledger guarantees against their own real
+acceptance machinery, with justified embeddings and semantic transport where
+representations differ. An implication between two old closed theorems is
+insufficient. New capabilities outside old fragments remain subject to the
+current obligations. Acceptance continuity and source support also retain
+their separate published compatibility duties.</p>
+<p><strong>Recorded decision:</strong> on 2026-10-04 (Asia/Tokyo), the human Guardian adopted
+<strong>QS-2026-01</strong>, <strong>PR-2026-01</strong> and <strong>RS-2026-01</strong> as one exact packet, each with
+its separate scope, properties and premises. The question identified the
+reviewed packet’s SHA-256 above and all three identifiers. The answer was:</p>
+<blockquote>
+<p>3件とも提示された本文どおり採択する</p>
+</blockquote>
+<p>The adoption event preserves that question and answer. Its SHA-256 is
+<code>bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e</code>.
+This was affirmative adoption of all three; none remains proposed. No response,
+general implementation permission, a CI result or machine-generated approval
+could have substituted for this human decision. Adoption establishes the stated
+obligations; it does not declare them proved or alter the Constitution’s fixed
+three obligations.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../reference/architecture.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/production-boundary.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../reference/architecture.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/production-boundary.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>

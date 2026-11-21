@@ -1,0 +1,1950 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Realization, specialization and resources - Qleisli Programming Language</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="A guide to structured quantum programming in Qleisli.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-e96d0476.css">
+        <link rel="stylesheet" href="../css/chrome-d279d366.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-43209a69.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Qleisli Programming Language</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/MGYamada/Qleisli" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="realization-specialization-and-resources"><a class="header" href="#realization-specialization-and-resources">Realization, specialization and resources</a></h1>
+<p>Checking an artifact and showing that a target implements its accepted
+meaning are separate tasks. A check does not settle how a target implements
+that meaning, how close an implementation comes, or what it costs. This
+chapter covers the claims that answer those three questions.</p>
+<p>A <strong>realization</strong> is a claim that one emitted target artifact implements the
+accepted meaning of a program under a named target profile. A realization
+names a <strong>closed specialization</strong>. That is an instance of a definition in
+which every choice that determines its meaning and interface is fixed.</p>
+<p>An <strong>engineering claim</strong> is an approximation claim. It states a finite bound,
+in a named metric, on the distance between an actual artifact and an exact
+ideal. It is neither acceptance nor a guarantee. A <strong>resource certificate</strong> is
+a checked quantitative bound on the resources of one emitted artifact.</p>
+<p>This chapter specifies the boundary between the meaning of a program and a
+claimed target implementation. It applies the adopted PR-2026-01 and
+RS-2026-01 <a href="../design/initial-interpretations.html">interpretations</a> under the
+<a href="authority.html">authority hierarchy</a>.</p>
+<p>The chapter fixes the request formats and the named profiles of the
+<a href="#separate-engineering-approximation-claims">native engineering comparisons</a>.
+Each of those profiles is closed and bounded, and it serves one comparison.
+None is the target capability schema. The chapter defines no such schema, no
+universal gate set and no synthesis algorithm, and it adds no source syntax.
+The target capability schema is future work that consumes the abstract
+obligations stated here.</p>
+<p><a href="#status-and-limits">Status and limits</a> states the limits of the
+implementation and of the proofs. This chapter does not discharge the
+implementation and evidence obligations of the decisions that govern it.</p>
+<h2 id="semantic-validity-and-a-target-realization"><a class="header" href="#semantic-validity-and-a-target-realization">Semantic validity and a target realization</a></h2>
+<p>Two questions are separate. One asks whether a program denotes a unitary
+operator. The other asks whether a particular target artifact implements that
+operator. This section keeps an answer to one from standing in for the other.</p>
+<p>Semantic unitarity is a property of the exact denotation of a program.
+Physical Realizability is a <strong>forward correspondence obligation</strong>. Take an
+accepted closed instance <code>p</code>, the actual output artifact <code>C</code> and a profile
+<code>T</code>. A checked realization of <code>C</code> under <code>T</code> must implement the accepted
+meaning of <code>p</code>. It does so subject to its explicit premises about the
+interface, the encoding and the workspace.</p>
+<p>Rules:</p>
+<ul>
+<li>Semantic unitarity makes no promise about a target. It does not promise
+that the selected target can implement the operator, that synthesis can
+find an implementation, or that the logical wires of the source suffice.</li>
+<li>When target synthesis fails, that failure must not reclassify a
+semantically unitary program as non-unitary.</li>
+<li>Inverse access and controlled access have their own contracts. Neither
+follows from finding one realization.</li>
+<li>A claim about a circuit that a search considered does not cover a different
+circuit that is emitted or executed afterwards.</li>
+<li>Synthesis and search produce candidates, and they do so outside acceptance.
+An independently supplied candidate may qualify through the same checks. A
+complete synthesis algorithm for the entire semantic domain is not required.</li>
+<li>A failure to find a candidate is not evidence of impossibility. An
+impossibility claim requires an obstruction whose hypotheses match the
+target.</li>
+<li>A result on existence or on synthesis completeness for a whole domain is
+optional mathematics of a profile.</li>
+</ul>
+<p>For example, Theorem 1 of Giles and Selinger establishes exact Clifford+T
+synthesis with at most one clean ancilla for <code>2^n × 2^n</code> unitary matrices over
+<code>Z[1/√2, i]</code>, under their specified gate and phase conventions. That result
+grants no arbitrary dirty workspace, and it does not verify the output of a
+particular compiler. See the
+<a href="https://arxiv.org/html/1212.0506v3#S2">original theorem</a>.</p>
+<h2 id="observing-instruments-on-a-target"><a class="header" href="#observing-instruments-on-a-target">Observing instruments on a target</a></h2>
+<p>This section states what a target artifact owes to a program that measures.
+The <a href="source-text.html#instruments-and-ordinary-feed-forward">source instrument judgment</a>
+defines the complete outcome maps of an <code>Observe</code> expression. Realization
+requires a separate judgment. That judgment is about the closed instance, the
+selected target profile and the actual emitted artifact.</p>
+<p>For each ordinary input <code>x</code> and declared outcome <code>c</code>, let <code>Φ[x,c]</code> be the
+source map. Let <code>Ψ[x,c]</code> be the map of the emitted instrument after the
+declared projection of its records. The declared encoding channels are <code>E_in</code>
+for the input and <code>E_out</code> for the output. The exact obligation is</p>
+<pre><code class="language-text">(Ψ[x,c] ⊗ id_R)((E_in ⊗ id_R)(ρ)) =
+(E_out ⊗ id_R)((Φ[x,c] ⊗ id_R)(ρ)).
+</code></pre>
+<p>The equation holds for every finite external reference <code>R</code> and every joint
+input <code>ρ</code> at the complete source interface.</p>
+<p>Rules:</p>
+<ul>
+<li>The judgment fixes three things: the ordered quantum and classical
+interfaces, the logical encodings, and the projection of target records to
+source outcomes. It accounts for how every additional physical owner is
+initialized and how it is disposed of.</li>
+<li>The projection assigns every target history to exactly one source outcome.
+This includes a history with records hidden from the source.</li>
+<li>The unnormalized maps fix both the outcome probabilities and the residual
+quantum state on the declared retained owners.</li>
+<li>The correspondence includes the consumed owners, the order of every owner
+that stays live and the action of every branch that contributes to a public
+outcome.</li>
+<li>The evidence states how the profile realizes each required measurement
+basis, where measurements can occur, which owners stay live, and how reset
+or repreparation obtains its stated output.</li>
+<li>For feed-forward, the evidence identifies the available classical outcome
+and the conditional operations. It also identifies any assumption about
+dynamic control, scheduling or latency that the branch needs in order to
+execute with the specified live owners.</li>
+<li>Classical feed-forward selects a branch by a classical outcome. Coherent
+control acts on a live quantum selector and must preserve coherence between
+its sectors. Each needs its own realization evidence.</li>
+<li>Destructive readout accounts for the consumed owner. A retaining instrument
+requires the declared output owners and their conditional quantum state.</li>
+<li>An implementation that reads out and then prepares qualifies only if the
+full correspondence equation holds.</li>
+<li>A profile that supports only terminal readout may refuse a target claim
+that requires mid-circuit measurement and conditional quantum action.</li>
+<li>Target lowering fails for a profile that lacks a required target feature or
+the evidence for it. The source retains its instrument, type and effect.</li>
+<li>An engineering approximation requires the
+<a href="#separate-engineering-approximation-claims">explicit separate claim</a>.</li>
+</ul>
+<p>For example, a program can measure both data qubits in Z and report their
+parity. On an even Bell state, that has the same classical distribution as
+<a href="stdlib.html"><code>std::measurement::parity_zz</code></a>. The two readouts lose the
+coherence between <code>00</code> and <code>11</code>, whereas the retaining parity projector
+preserves it. Preparing replacements in the computational basis leaves that
+difference in the even outcome map.</p>
+<p>This abstract obligation is an input to the future target capability schema.
+QCP or another backend may express the premises in its own profile
+vocabulary. Source semantics are defined independently of that vocabulary.</p>
+<h2 id="closed-specialization"><a class="header" href="#closed-specialization">Closed specialization</a></h2>
+<p>A generic definition describes a family. A realization is a claim about one
+member of that family. A closed specialization identifies the member. It
+fixes every choice that determines the meaning and interface of the member:</p>
+<ul>
+<li>the resolved definition, with the complete identities of its dependencies
+and of its sources;</li>
+<li>the ordered static arguments, including natural sizes and basis types;</li>
+<li>the selected providers, their types, their capability requirements and
+their Meaning bindings;</li>
+<li>all relevant static constraints and finite evaluation results;</li>
+<li>the declared constitutional edition and the applicable semantic profile.</li>
+</ul>
+<p>For a target claim, the realization fixes four more things: the target and
+profile, the ordered layout and encoding, the workspace contract and any
+choices that depend on the target.</p>
+<p>Rules:</p>
+<ul>
+<li>An unresolved item must not be treated as a successful concrete
+certificate. This holds for an unresolved parameter, capability
+requirement, constraint or budget expression.</li>
+<li>A spelling, a bit width or a function name is not a specialization
+identity. The
+<a href="type-model.html#structural-equality-coherence-and-physical-maps">exact type tree</a>
+is part of that identity, including Unit factors and zero-width owners.</li>
+<li>Generic checking must cover the admitted cases of the generic body under
+its declared premises. A favorable specialization must not excuse an invalid
+generic body or erase an obligation in an unselected branch.</li>
+<li>A well-typed family need not fit one fixed target at every parameter value.</li>
+<li>A family theorem may quantify over all admissible substitutions. Its
+statement must retain those premises. It must not describe one fixed finite
+circuit as implementing an unbounded family.</li>
+<li>Three properties are separate: static totality, the computation of the
+resource bounds of an instance, and the feasibility of those bounds on a
+target.</li>
+</ul>
+<p>The <a href="static-language.html#definition-checking-and-closed-instances">static language</a>
+specifies static evaluation and the forming of closed instances.
+<a href="#diagnostics">Diagnostics</a> states when a failed export names the closed
+specialization.</p>
+<h2 id="logical-axes-and-physical-placement"><a class="header" href="#logical-axes-and-physical-placement">Logical axes and physical placement</a></h2>
+<p>A program orders the axes of its owners through its types. A target holds
+those axes at physical locations. This section states how a realization
+relates the two orders.</p>
+<p>The logical interface records the ordered axes of each owner by the exact
+<a href="type-model.html#structural-equality-coherence-and-physical-maps">source type trees</a>.
+A physical layout assigns the live axes to target locations. For example, the
+ordered pair of logical axes can occupy the physical locations <code>(17,4)</code>. The
+first axis stays the first logical axis.</p>
+<p>Take a pure instance with semantic action <code>U</code> and actual target action <code>C</code>. A
+correspondence with encodings <code>E_in</code> and <code>E_out</code> has the form
+<code>C ∘ E_in = E_out ∘ U</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>Nested products and <code>Bits&lt;n&gt;</code> retain their declared axis order and owner
+order. A zero-width owner retains its interface identity and contributes no
+physical location.</li>
+<li>A target realization records the initial and the final placement, or their
+equivalent ordered encodings.</li>
+<li>The encodings include the specified workspace and its boundary state where
+required. The equation extends to arbitrary joint inputs with an untouched
+reference.</li>
+<li>An observing realization uses the
+<a href="#observing-instruments-on-a-target">outcome maps</a>. It records the placement
+and the disposition of the owners that are live at each interface, including
+any retired locations where the profile supports them.</li>
+<li>Routing may change the placement from <code>(17,4)</code> to <code>(4,17)</code> by an emitted
+physical SWAP, provided the evidence tracks each logical axis into its
+location after the SWAP. The SWAP contributes to the target cost.</li>
+<li>A metadata relabeling changes the description of the layout and leaves the
+physical state in place. The encoding evidence must justify that relabeling.</li>
+<li>A source-level axis permutation changes the logical action. It must be
+included in <code>U</code> with its specified order and phase.</li>
+<li>An emitted implementation of a logical SWAP must realize that action under
+its declared encodings.</li>
+<li>The placement evidence identifies each routing step. It accounts for the
+live locations that routing and synthesis workspace use.</li>
+</ul>
+<p>The target model may expose this relation to QCP routing analysis. The future
+target capability schema consumes this abstract correspondence. The
+<a href="#quantitative-resource-claims">bounded routing check</a> covers literal physical
+SWAP intervals and their stated placement premises.</p>
+<h2 id="workspace-and-exact-correspondence"><a class="header" href="#workspace-and-exact-correspondence">Workspace and exact correspondence</a></h2>
+<p>Workspace appears at two levels. The author writes source <code>clean</code> and <code>dirty</code>
+workspace, and it is part of the program’s contract and of its owner
+accounting. Backend workspace is additional storage that an implementation
+uses to realize that meaning.</p>
+<p>For a unitary instance with clean workspace, a representative equation is</p>
+<pre><code class="language-text">(C ⊗ I_E)(encode_in ⊗ I_E)(|0&gt;_W ⊗ ψ)
+  = (encode_out ⊗ I_E)(|0&gt;_W ⊗ (U ⊗ I_E)ψ)
+</code></pre>
+<p>Here <code>ψ</code> belongs to <code>L_in ⊗ E</code>, and <code>U</code> maps <code>L_in</code> to <code>L_out</code>. The isometric
+encodings map <code>W ⊗ L_in</code> and <code>W ⊗ L_out</code> to the respective physical
+interfaces. The reference <code>E</code> stays last and is untouched. Each side therefore
+uses the same explicit order of workspace, data and reference.</p>
+<p>Rules:</p>
+<ul>
+<li>Backend storage must not become an implicit source owner or a permission to
+discard a source value. The realization claim must state how that storage
+is initialized, how long it lives, how it is restored and what it costs
+physically.</li>
+<li>The equality is exact, including scalar phase. <code>W</code> starts and finishes in
+the specified pure zero state.</li>
+<li>A type width, an owner name or an example input does not prove this
+equation.</li>
+<li>For other encodings, or for differing input and output interfaces, the
+realization must state its corresponding typed equation explicitly.</li>
+<li>Dirty workspace requires the declared identity action on its unknown state
+and on all reference correlations. Returning its marginal state on a few
+inputs is insufficient.</li>
+<li>An observing implementation requires the complete instrument
+correspondence. That correspondence is unnormalized and indexed by outcome,
+and it includes the declared assembly of the classical result. A normalized
+selected branch or matching measurement probabilities must not replace it.</li>
+<li>Projective equality differs from exact operator equality. Dropping a global
+phase can change a coherently controlled operation. The exact contract does
+not quotient by that phase.</li>
+<li>A different equality relation must identify its boundary and its
+compositional obligations explicitly. The exact contract of this chapter has
+no approximate acceptance and no error budget.</li>
+</ul>
+<p>The exact clean and dirty requirements come from the adopted QS
+interpretation. <a href="#exact-target-domain-membership">Exact target-domain membership</a>
+and <a href="#separate-engineering-approximation-claims">Separate engineering approximation claims</a>
+state the rules of the exact and the approximate profiles.</p>
+<h2 id="controlled-target-realizations"><a class="header" href="#controlled-target-realizations">Controlled target realizations</a></h2>
+<p>A controlled operation raises three separate questions: what it means,
+whether source code has access to it, and whether a target implements it.
+This section covers the third.</p>
+<p>The coherent Meaning of <code>controlled(U)</code> is the ordered direct sum <code>I ⊕ U</code>,
+with inactive sector zero and active sector one. Semantic unitarity
+establishes the operator property of <code>U</code>. The static <code>Controllable(U)</code>
+judgment separately governs source use under the
+<a href="type-model.html#general-pure-operation-arrows">operation type rules</a>.</p>
+<p>Rules:</p>
+<ul>
+<li>Target lowering requires one thing more: a checked realization of the exact
+direct sum on the selected target.</li>
+<li>For a transparent implementation, a structural derivation must check each
+original gate or named implementation with its control, dependencies, axis
+order and exact phase.</li>
+<li>The implementation must act as the identity in the inactive sector and
+must implement the requested operation in the active sector.</li>
+<li>Composition and powers may compose those exact sector equations when the
+interfaces and the control match. Provider calls and the controlled powers
+that QPE uses carry the same obligations.</li>
+<li>A realization certificate binds four things: the original operation and
+Meaning, the actual emitted implementation, the target profile, and the
+ordered encodings of the control, the data and the workspace. It identifies
+where the implementation uses native controlled gates and where it needs
+additional synthesis steps.</li>
+<li>Physical counts include workspace preparation, live width, restoration,
+generated inverse steps and routing when the implementation requires them.</li>
+<li>An opaque provider requires explicit controlled evidence. That evidence is
+bound to the requested operator and the emitted artifact.</li>
+<li>A scalar phase that multiplies only the active block changes its phase
+relative to the inactive block. Projective agreement or channel equality
+for the uncontrolled operation therefore must not supply the controlled
+equation.</li>
+<li>An engineering approximation to a controlled operator must bound its error
+against the intended controlled Meaning itself. It retains the exactness
+distinction of
+<a href="#separate-engineering-approximation-claims">Separate engineering approximation claims</a>.</li>
+</ul>
+<h2 id="isometries-and-initialized-target-interfaces"><a class="header" href="#isometries-and-initialized-target-interfaces">Isometries and initialized target interfaces</a></h2>
+<p>A semantic isometry <code>V: A -&gt; B</code> satisfies <code>V† V = I_A</code>. The basis trees of <code>A</code>
+and <code>B</code> can differ, including in width. This section covers the target
+realization of an isometry, including the wires that the target initializes.</p>
+<p>Suppose a target implements the isometry with a unitary dilation. Let
+<code>E_in: A -&gt; P_in</code> and <code>E_out: B -&gt; P_out</code> be the exact isometric encodings of
+the input and of the output. Let <code>C: P_in -&gt; P_out</code> be the action of the
+actual target circuit. On every joint input <code>ψ</code> with external reference <code>R</code>,
+the realization must establish</p>
+<pre><code class="language-text">(C ⊗ I_R)(E_in ⊗ I_R) ψ = (E_out ⊗ I_R)(V ⊗ I_R) ψ.
+</code></pre>
+<p>The mathematical adjoint reverses <code>V</code> on its image. On the full output space,
+<code>V V†</code> is the projector onto that image. For an exact unitary dilation,
+<code>C† E_out V = E_in</code>, including under an arbitrary external reference. An
+available checked reverse circuit therefore recovers the encoded input on that
+image.</p>
+<p>Rules:</p>
+<ul>
+<li>A realization of <code>Op&lt;A -&gt; B&gt;</code>, or of its refinement <code>Op&lt;A -&gt; B, M&gt;</code>,
+retains both exact ports and the requested Meaning.</li>
+<li>Sequential composition matches the middle tree exactly. Tensor composition
+preserves the declared order of both ports.</li>
+<li>The input encoding specifies any initialized backend wires and their
+ordered placement.</li>
+<li>The output encoding identifies the retained logical output. It fixes the
+state of every backend wire that the claim returns clean. Other physical
+degrees of freedom require an explicit output contract.</li>
+<li>Isometry typing introduces no implicit discard and no partial trace.</li>
+<li>Source <code>clean</code> and <code>dirty</code> contracts bind source owners separately.</li>
+<li>A target claim accounts for every physical wire that the dilation uses,
+including initialized backend workspace. It also accounts for the
+preparation, realization, cleanup and routing that the selected target model
+requires.</li>
+<li>A theorem that a dilation exists supplies a candidate. The accepted
+artifact requires the displayed correspondence.</li>
+<li>An application outside the established image needs its own contract.</li>
+<li>The static <code>Adjointable</code> capability and the physical realization of a
+reverse operation require independent evidence under the
+<a href="type-model.html#general-pure-operation-arrows">operation type rules</a>.</li>
+</ul>
+<h2 id="exact-target-domain-membership"><a class="header" href="#exact-target-domain-membership">Exact target-domain membership</a></h2>
+<p>A target profile does not realize every exact Meaning. Membership in the
+exact domain of a profile is the premise that an exact realization on that
+profile needs. <code>M ∈ ExactDomain(P)</code> is an abstract judgment about the
+requested exact Meaning <code>M</code> and a specified target profile <code>P</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>The evidence identifies the profile and its version, the literal gate
+vocabulary, the coefficient and parameter domain, the ordered interface and
+the phase convention. It also states which assumptions the profile admits
+about initialization, encoding, workspace and restoration. A same-wire
+profile and a clean-workspace profile can therefore have different exact
+domains.</li>
+<li>Physical Realizability requires evidence of this premise for an accepted
+exact target realization.</li>
+<li>A checked exact witness for the profile may establish membership and bind
+the actual emitted artifact to the same Meaning.</li>
+<li>An existence theorem or a coefficient test may support this judgment within
+its own hypotheses. A necessary condition alone does not authorize a
+candidate.</li>
+<li>A search failure or a capacity refusal leaves the claim unproved.</li>
+<li>A target-domain refusal concerns the requested realization. The source
+retains its exact meaning and typing.</li>
+<li>A failed exact request does not select the engineering path implicitly. An
+engineering approximation requires an
+<a href="#separate-engineering-approximation-claims">explicit separate claim</a> with
+the applicable metric, a closed budget and the correspondence to the actual
+artifact.</li>
+<li>This judgment is independent of any eventual QCP implementation. The future
+target capability schema may use it.</li>
+</ul>
+<p>For example, take a profile whose gates and computational-basis coordinates
+have coefficients in <code>Q(ζ8)</code>. Every entry of the gate product lies in that
+field. Appending clean zero workspace and taking the corresponding returned
+coordinate selects entries of the same product. A controlled phase of one
+sixteenth of a turn has coefficient <code>ζ16</code> at its active diagonal entry, which
+is outside <code>Q(ζ8)</code>. The obstruction applies for any number of such clean axes.</p>
+<p>A target with a declared native sixteenth-turn gate requires its own
+exact-domain evidence. The eighth-root execution profile reports an
+unsupported exact phase for such a request.</p>
+<h2 id="separate-engineering-approximation-claims"><a class="header" href="#separate-engineering-approximation-claims">Separate engineering approximation claims</a></h2>
+<p>An artifact that only approximates the meaning of a program is not an exact
+realization. A tool can state how close the artifact comes, as an engineering
+claim. This section keeps that claim apart from every exact one.</p>
+<p>The adopted EXACT-2026-01 interpretation governs this boundary. An
+approximation with an epsilon bound is an engineering claim about synthesis
+or export. It lies outside the constitutional semantic truth conditions of
+edition 2026.</p>
+<p>Rules:</p>
+<ul>
+<li>An engineering claim must not replace the exact source Meaning, semantic
+equality, or the obligations of phase and control, of owner and effect, and
+of clean and dirty restoration.</li>
+<li>An approximation bound grants no purity, no inverse access, no controlled
+access and no exact release.</li>
+<li>A checked engineering claim must identify all of the following: the exact
+ideal, the actual artifact, the interface, the target and profile, the
+metric, the finite bound, the input and reference domain, and the
+composition assumptions.</li>
+<li>An instrument claim must retain the complete public outcomes and the
+residual outputs with arbitrary external references.</li>
+<li>Four kinds of information are distinct: information about sampling, about
+algorithmic resolution, about synthesis and about the numerical runtime. An
+absent claim does not mean zero error.</li>
+<li>Engineering receipts, and their API and CLI claim kinds, must stay
+mechanically distinct from exact correspondence evidence and from resource
+evidence.</li>
+<li>Neither a small bound nor a reported <code>epsilon = 0</code> bypasses the independent
+exact gates or automatically discharges constitutional PR or target RS.</li>
+<li>An actual circuit may independently obtain ordinary acceptance for its own
+exact meaning. That acceptance does not identify its meaning with the source
+ideal.</li>
+<li>Reusing engineering evidence through a Meaning or an operation interface
+must not weaken the exact promise of that interface.</li>
+<li>Numerical, interval and approximate search methods may construct an exact
+artifact or proof. That result is eligible for the separate exact
+correspondence and resource checks. The spelling of a search parameter does
+not decide its claim kind.</li>
+<li>Accounting exactly for the cost of an approximate artifact does not supply
+its missing exact correspondence to the source.</li>
+<li>Neither engineering validation nor this section creates an interpretation,
+a guarantee admission or a broader discharge of QS, PR or RS.</li>
+</ul>
+<p>The bounded engineering profiles below implement these contracts within their
+stated domains. They define no universal approximation metric. Each bounded
+literal OpenQASM resource profile uses its own closed engineering budget.</p>
+<h3 id="common-rules-of-the-native-comparisons"><a class="header" href="#common-rules-of-the-native-comparisons">Common rules of the native comparisons</a></h3>
+<p>Five <code>qleisli engineering</code> commands check an engineering claim through the
+<strong>native checker</strong>, the Lean checker executable. This section gives the rules
+that the five commands share. Each command takes one positional file and
+these options:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Option</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--edition=2026</code></td><td>Required. It selects the constitutional edition.</td></tr>
+<tr><td><code>--against=REQUEST</code></td><td>Required. It names the UTF-8 JSON request.</td></tr>
+<tr><td><code>--lean-kernel=PATH</code></td><td>Optional. It selects the native checker. Without it, the command uses the checker that <code>QLEISLI_KERNEL</code> names.</td></tr>
+<tr><td><code>--format=json</code></td><td>Optional. The command writes the <a href="diagnostics.html#the-result-envelope">result envelope</a> in place of text.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Every <code>engineering</code> comparison requires <code>--edition=2026</code>. A command without
+it fails with the code <code>edition</code>.</li>
+<li>A command with neither <code>--lean-kernel</code> nor <code>QLEISLI_KERNEL</code> fails with the
+code <code>kernel</code>. A missing, incompatible or failed checker fails the
+comparison. No comparison falls back to another checker.</li>
+<li>A command line with a repeated option, an unlisted option or an extra
+positional argument fails with the code <code>usage</code> and exit status 2. Every
+other failure has exit status 1.</li>
+<li>Each request and each QIRF artifact must hold at least 1 byte and at most
+16 MiB (<code>limit</code>). The QLV3 envelope retains its 64 MiB limit.</li>
+<li>A request must hold exactly the fields of its format, with the fixed values
+of its profile. An unknown or missing field, an unknown version or another
+profile value is refused (<code>format</code>).</li>
+<li>Each comparison accepts execution scope only. It refuses inspection scope
+and caller scope.</li>
+<li>A report names the selected checker path. The checker identity is unpinned
+under the provenance limitation. A hash identifies the reported bytes. It
+establishes neither the correctness of the native binary nor human
+authority.</li>
+<li>Serialized CLI output is an inert report. It is never reusable native
+acceptance.</li>
+</ul>
+<h3 id="native-pure-engineering-comparison"><a class="header" href="#native-pure-engineering-comparison">Native pure engineering comparison</a></h3>
+<pre><code class="language-text">qleisli engineering compare-pure ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+</code></pre>
+<p>This command checks that one pure artifact lies within a stated distance of
+an ideal pure artifact.</p>
+<p><code>ACTUAL</code> is an original finite QIRF artifact. <code>REQUEST</code> holds the rest of the
+claim. It holds the original ideal artifact, as a separate text. It holds the
+matrix and the ordered ports of each artifact, specified independently. It
+holds the complete type trees of the common domain and codomain. And it holds
+a budget, which is a closed canonical nonnegative dyadic number.</p>
+<p>The request has exactly these fields:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>format</code>, <code>version</code></td><td><code>qleisli.engineering-pure-request</code>, <code>1</code></td></tr>
+<tr><td><code>claim_kind</code></td><td><code>engineering</code></td></tr>
+<tr><td><code>metric</code></td><td><code>pure-euclidean-operator-norm-v1</code></td></tr>
+<tr><td><code>checker_profile</code></td><td><code>frobenius-r8-pure-leaf-v1</code></td></tr>
+<tr><td><code>target_profile</code></td><td><code>qirf-r8-pure-v1</code>, an IR profile rather than a hardware claim</td></tr>
+<tr><td><code>composition</code></td><td><code>single-component-v1</code></td></tr>
+<tr><td><code>error_category</code></td><td><code>implementation-distance</code></td></tr>
+<tr><td><code>domain</code>, <code>codomain</code></td><td>Full QIRF Basis objects, for example <code>{"tag":"bit"}</code></td></tr>
+<tr><td><code>actual</code>, <code>ideal</code></td><td>Objects with exactly <code>input</code>, <code>output</code> and <code>matrix</code></td></tr>
+<tr><td><code>epsilon</code></td><td><code>{"numerator":"7","denominator_bits":3}</code> means 7/8; use reduced signed decimal data, with zero encoded as <code>"0"</code> and exponent 0</td></tr>
+<tr><td><code>expected_artifact</code></td><td>Original UTF-8 ideal QIRF text, including its original byte spelling</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Ports and matrices use the native pure-leaf request encodings.</li>
+<li>The exact finite-matrix carrier is R8. The profile adds no arbitrary-angle
+syntax and no coefficient extension.</li>
+<li>The comparison refuses a malformed or open budget, a false body matrix, and
+insufficient arithmetic or work capacity.</li>
+<li>Hidden observation, reset or discard must not acquire a pure label through
+this path, even when the requested budget is large.</li>
+</ul>
+<p>The checker establishes:</p>
+<ul>
+<li>Each original artifact passes its ordinary check and then a fresh exact
+PureLeaf check against its own independent matrix request. The checker
+checks both complete type trees and the ordered ports. It compares the
+matrices only after these checks.</li>
+<li>A squared Frobenius witness, over canonical rectangular R8 matrices, meets
+the closed nonnegative dyadic budget. The witness is sufficient for the
+explicitly selected Euclidean operator norm.</li>
+</ul>
+<p>The checker does not establish:</p>
+<ul>
+<li>A successful conservative witness is an inequality, not a completeness
+claim. When a witness fails, the failure does not establish that no
+approximation or synthesis exists.</li>
+<li>Neither check changes the exact equality gate.</li>
+<li>The result does not establish source preservation, exact source
+correspondence, an instrument bound or a target-resource bound. The report
+states each of them as unestablished.</li>
+<li>The report cannot be converted to <code>AcceptedProgram</code>, a Meaning, inverse or
+controlled access, cleanup evidence or resource evidence. This holds at
+epsilon 0 too.</li>
+</ul>
+<p>The text report and the JSON report identify the engineering metric, the
+bound, the profiles and the composition. They also identify the digests of
+the original artifacts and of the request, and the selected checker path.
+They report three kinds of
+error separately as <code>not-claimed</code>: sampling, algorithmic resolution and
+numerical runtime. Those errors are not silently zero.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> The Rust <code>interchange::engineering_pure</code> API
+constructs data-only requests. It returns a private, allocation-bound
+<code>EngineeringPureReport</code> after a fresh native check. Its serialized
+convenience entry independently decodes the same typed request. The native
+checker compares the typed context and both fresh graphs with the actual
+retained Rust execution description. A separate native engineering protocol
+binds both checks to the actual invocation and to both retained host graphs.
+The engineering response uses a distinct header and cannot enter an exact
+accepted-handle constructor.</p>
+</blockquote>
+<h3 id="native-ordered-pure-tensor-comparison"><a class="header" href="#native-ordered-pure-tensor-comparison">Native ordered pure tensor comparison</a></h3>
+<pre><code class="language-text">qleisli engineering compare-pure-tensor ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+</code></pre>
+<p>This command checks a bound for an artifact that is the ordered tensor of two
+components, where each component has its own budget.</p>
+<p>This comparison combines exactly two ordered pure comparisons. It checks six
+original QIRF artifacts afresh: the actual and ideal parents, the actual and
+ideal left components, and the actual and ideal right components.</p>
+<p>The request has exactly fourteen top-level fields:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>format</code>, <code>version</code></td><td><code>qleisli.engineering-pure-tensor-request</code>, <code>1</code></td></tr>
+<tr><td><code>claim_kind</code></td><td><code>engineering-pure-tensor-bound</code></td></tr>
+<tr><td><code>metric</code></td><td><code>pure-euclidean-operator-norm-v1</code></td></tr>
+<tr><td><code>checker_profile</code></td><td><code>tensor-additive-r8-pure-leaf-v1</code></td></tr>
+<tr><td><code>target_profile</code></td><td><code>qirf-r8-pure-v1</code></td></tr>
+<tr><td><code>composition</code></td><td><code>ordered-tensor-two-v1</code></td></tr>
+<tr><td><code>error_category</code></td><td><code>implementation-distance</code></td></tr>
+<tr><td><code>actual</code>, <code>ideal</code></td><td>Parent leaf objects with exactly <code>input</code>, <code>output</code>, <code>matrix</code></td></tr>
+<tr><td><code>left</code>, <code>right</code></td><td>Component objects described below, in that order</td></tr>
+<tr><td><code>epsilon</code></td><td>Canonical nonnegative dyadic, exactly the sum of the two component budgets</td></tr>
+<tr><td><code>expected_artifact</code></td><td>Original UTF-8 ideal parent QIRF text</td></tr>
+</tbody>
+</table>
+</div>
+<p>Each component object has exactly <code>domain</code>, <code>codomain</code>, <code>actual</code>, <code>ideal</code>,
+<code>epsilon</code>, <code>actual_artifact</code> and <code>expected_artifact</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>Types, leaf requests and budgets use the encodings of the pure comparison.
+Both artifact fields of a component hold the original UTF-8 QIRF text.</li>
+<li>Each body retains its own dependency order, exact matrix request, ordered
+ports and full type trees.</li>
+<li>Both parent interfaces must be the complete products of the component
+interfaces. <code>Unit</code> nodes are retained even when they occupy no physical
+wires. The checker derives the parent type trees from the ordered
+components. A width-only claim does not supply them.</li>
+<li>The exact parent equations use the low-first coordinates
+<code>left + left_dimension * right</code>. Both parent matrices must equal the ordered
+tensors of their respective component matrices.</li>
+<li>The comparison refuses missing or extra components, altered profiles,
+noncanonical or open budgets, a stale total budget, false body matrices,
+and arithmetic or work exhaustion. It refuses a false parent tensor
+equation (<code>contract</code>).</li>
+<li>The limits of the pure comparison apply: the limit on each file, on the
+envelope, on a matrix and on work.</li>
+</ul>
+<p>The checker establishes:</p>
+<ul>
+<li>The checker adds the two closed component bounds exactly. It requires the
+sum to equal the explicitly requested total bound.</li>
+<li>It does not repeat the sufficient Frobenius inequality on the whole parent.
+An additive component certificate may succeed when that whole-matrix
+witness is too loose.</li>
+<li>All six body checks, the component inequalities, the parent equations and
+the bounded addition share one work counter.</li>
+<li>The checked additive operator bound extends to every finite external
+reference, including entangled inputs. It does so under the freshly checked
+exact isometry premises.</li>
+</ul>
+<p>The checker does not establish:</p>
+<ul>
+<li>The result supplies no exact equality between the parents, no source
+preservation, no inverse or controlled access, no cleanup, no
+correspondence to an emitted target and no resource certificate. This holds
+at total epsilon zero too.</li>
+<li>This comparison supplies only its stated additive bound for two components
+in one ordered tensor. It checks no recursive, sequential, controlled or
+instrument composition.
+<a href="#support-of-the-native-comparisons">Support of the native comparisons</a>
+lists the composition that each comparison checks.</li>
+</ul>
+<p>The text report and the JSON report state this engineering bound and its
+composition profile. They carry the same separate categories of unclaimed
+error as the pure comparison, and the same disclosures about preservation and
+resources.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> In the dedicated QLV3 invocation, the native
+checker compares its freshly decoded typed request and all six graphs with
+the retained Rust QDV1 view. The order is parent-actual, parent-ideal,
+left-actual, left-ideal, right-actual, right-ideal. The private Rust report
+binds the immutable artifacts, the original request and the selected checker
+path. A changed component, matrix, budget or parent cannot reuse it.</p>
+</blockquote>
+<h3 id="instrument-engineering-comparison"><a class="header" href="#instrument-engineering-comparison">Instrument engineering comparison</a></h3>
+<pre><code class="language-text">qleisli engineering compare-instrument ACTUAL --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+</code></pre>
+<p>This command checks that an actual instrument lies within a stated distance
+of an ideal instrument.</p>
+<p>The instrument comparison uses a <strong>complete adjoint Euclidean operator
+bound</strong>. Take the Kraus families of the actual and of the ideal instrument.
+The bound limits the difference between their adjoint actions on every joint
+observable family <code>B</code>, for every finite external reference <code>R</code> and classical
+input <code>x</code>:</p>
+<pre><code class="language-text">norm(sum_y,h (K_actual[x,y,h] tensor I_R)^dagger B[y]
+             (K_actual[x,y,h] tensor I_R)
+   - sum_y,k (K_ideal[x,y,k] tensor I_R)^dagger B[y]
+             (K_ideal[x,y,k] tensor I_R)) &lt;= epsilon * norm(B)_infinity
+</code></pre>
+<p>The norms on operators are explicitly Euclidean operator norms. The family
+norm is the supremum over public outcomes. The two families may have
+different sets of hidden histories. The bound quantifies over joint
+observables, including correlations with the reference. It has no factor for
+the dimension of the reference, and it does not renormalize branches. The
+metric is not advertised as a diamond norm without a separate proof of norm
+duality.</p>
+<p>The request has exactly fourteen fields:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>format</code>, <code>version</code></td><td><code>qleisli.engineering-instrument-request</code>, <code>1</code></td></tr>
+<tr><td><code>claim_kind</code></td><td><code>engineering-instrument-bound</code></td></tr>
+<tr><td><code>metric</code></td><td><code>complete-adjoint-euclidean-operator-norm-v1</code></td></tr>
+<tr><td><code>checker_profile</code></td><td><code>choi-l1-r8-instrument-v1</code></td></tr>
+<tr><td><code>target_profile</code></td><td><code>qirf-r8-instrument-v1</code>, an IR profile, not hardware</td></tr>
+<tr><td><code>composition</code></td><td><code>single-component-v1</code></td></tr>
+<tr><td><code>error_category</code></td><td><code>implementation-distance</code></td></tr>
+<tr><td><code>actual_signature</code>, <code>expected_signature</code></td><td>The complete requested signatures</td></tr>
+<tr><td><code>identity</code></td><td>The original identity data</td></tr>
+<tr><td><code>epsilon</code></td><td>Closed dyadic data, for example <code>{"numerator":"1","denominator_bits":2}</code> for <code>1/4</code></td></tr>
+<tr><td><code>majorants</code></td><td>The witness described below</td></tr>
+<tr><td><code>expected_artifact</code></td><td>The original ideal QIRF text</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>The witness assigns a canonical nonnegative closed dyadic <code>q</code> to every
+complex CP-coefficient difference. The order is fixed: public outcome,
+output row, input column, other output row, other input column.</li>
+<li>All actual and ideal public labels contribute. An absent label denotes
+zero. The witness length must be exact.</li>
+<li>The comparison refuses malformed dimensions or coefficients, noncanonical
+or negative budgets, insufficient witnesses, and arithmetic or work
+exhaustion. It refuses an <code>epsilon</code> that the majorants exceed (<code>contract</code>).</li>
+<li>Nothing that a producer supplies replaces reconstruction. This holds for
+outcome labels, matrices, probabilities and success flags.</li>
+<li>The comparison refuses old outer frames and cross-kind replies.</li>
+</ul>
+<p>The checker establishes:</p>
+<ul>
+<li>On both bodies, the checker reuses the ordinary steps: the root and
+dependency checks, the equality with the requested complete signature, the
+ordered result projection, the principal Observe checks, and the complete
+Kraus and Gram reconstruction.</li>
+<li>The checker reconstructs each coefficient afresh from all matching hidden
+histories. Exact R8 arithmetic checks its squared magnitude against <code>q*q</code>.
+Exact summation checks <code>sum(q) &lt;= epsilon</code>. Both <code>q</code> and <code>epsilon</code> have
+unsquared norm units.</li>
+<li>The profile has one quantum input owner, empty classical inputs and the
+bounded dense reconstruction. The independent metric also defines general
+finite classical input families, for later composition work.</li>
+</ul>
+<p>The checker does not establish:</p>
+<ul>
+<li>The result leaves these unestablished: pure phase agreement, source
+preservation, inverse or controlled access, cleanup, resources and
+constitutional PR or RS. This holds at epsilon zero too. No instrument
+bound grants exact release.</li>
+<li>Requested source and type trees are distinct from source-to-IR
+preservation.</li>
+<li>The profile is single-component. It issues no composed certificate, and it
+checks no resource limit. A comparison of emitted target bytes requires the
+<a href="#literal-openqasm-target-comparison">literal OpenQASM profile</a>.</li>
+<li>Sampling, algorithmic resolution and numerical runtime error are separate
+unclaimed categories. The pure comparison reports instrument bounds as
+unestablished.</li>
+</ul>
+<p>Text and <code>--format=json</code> disclose the complete instrument bound, the digests
+of the actual inputs and the unpinned checker identity. For example:</p>
+<pre><code class="language-sh">qleisli engineering compare-instrument actual.qirf --edition=2026 --against=comparison.json --lean-kernel=PATH
+</code></pre>
+<blockquote>
+<p><strong>Implementation note.</strong> The Rust request uses validated
+<code>InstrumentSignature</code> and <code>InstrumentResult</code> data. Its private
+<code>EngineeringInstrumentReport</code> retains both immutable artifacts, the original
+request and the selected checker path. The native QLV3 invocation compares
+both fresh graphs, the signatures, the identity and the complete budget and
+witness data with the Rust execution view. A preflight on the work that is
+left precedes the allocation of the Cartesian witness. The work counter
+bounds verification. It is separate from program resources and target
+resources.</p>
+</blockquote>
+<h3 id="literal-openqasm-target-comparison"><a class="header" href="#literal-openqasm-target-comparison">Literal OpenQASM target comparison</a></h3>
+<pre><code class="language-text">qleisli engineering compare-openqasm3 TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+</code></pre>
+<p>This command compares the bytes of an emitted OpenQASM program with an ideal
+instrument.</p>
+<p><code>TARGET</code> holds the actual emitted bytes. The closed profile accepts this
+literal ASCII structure, with zero to eight ordered gate lines between the
+reset and the measurement, and a final newline:</p>
+<pre><code class="language-text">OPENQASM 3.0;
+include "stdgates.inc";
+qubit[1] q;
+bit[1] c;
+reset q;
+h q[0];
+c[0] = measure q[0];
+</code></pre>
+<p>The ordered gate word constructs the actual instrument. The instrument
+consumes an explicit zero-width <code>Q&lt;Unit&gt;</code> owner, initializes one qubit, applies
+the word, and then consumes that qubit with a terminal Z measurement.</p>
+<p><code>REQUEST</code> has the fourteen field names of the
+<a href="#instrument-engineering-comparison">instrument request</a>. It encodes
+signatures, the identity and dyadic numbers in the same way. These fields
+have distinct fixed values:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>format</code>, <code>version</code></td><td><code>qleisli.engineering-openqasm-request</code>, <code>1</code></td></tr>
+<tr><td><code>claim_kind</code></td><td><code>engineering-target-instrument-bound</code></td></tr>
+<tr><td><code>metric</code></td><td><code>complete-adjoint-euclidean-operator-norm-v1</code></td></tr>
+<tr><td><code>checker_profile</code></td><td><code>canonical-target-choi-l1-r8-v1</code></td></tr>
+<tr><td><code>target_profile</code></td><td><code>openqasm3-canonical-one-qubit-terminal-r8-v1</code></td></tr>
+<tr><td><code>composition</code></td><td><code>single-component-v1</code></td></tr>
+<tr><td><code>error_category</code></td><td><code>implementation-distance</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>Each gate line must be exactly <code>h</code>, <code>x</code>, <code>y</code>, <code>z</code>, <code>s</code>, <code>sdg</code>, <code>t</code> or <code>tdg</code>,
+followed by <code> q[0];</code>.</li>
+<li>The target must hold at most 1,024 bytes and eight gates (<code>limit</code>).</li>
+<li>The comparison refuses changed whitespace, headers, includes or operands,
+additional results, gates after the measurement and unsupported syntax.</li>
+<li>The include line is a fixed token. Checking loads no external include file.</li>
+<li>The full interface is exactly <code>Unit -&gt; Bit</code>, with a classical result and the
+principal Observe effect. Both complete signatures of the request must equal
+this interface. Equal widths do not admit <code>Bits&lt;0&gt;</code>, products of Unit or
+other result trees.</li>
+<li><code>expected_artifact</code> retains the independently supplied original ideal QIRF,
+including all original dependencies. Neither a fixed H ideal nor an actual
+matrix that a producer supplies substitutes for it.</li>
+<li>The standard gate interpretation is an explicit specification assumption.
+The adapter reuses the exact Raw and std meanings. It introduces no semantic
+primitive and no constitutional interpretation.</li>
+<li>The comparison refuses an <code>epsilon</code> that the majorants exceed (<code>contract</code>).</li>
+<li>A cross-kind checker is refused without fallback.</li>
+</ul>
+<p>The checker establishes:</p>
+<ul>
+<li>The unchanged exact instrument gates reconstruct both complete Kraus
+families and Gram equations. The checker then checks the closed epsilon and
+every Choi coefficient majorant.</li>
+<li>The complete-adjoint bound covers every finite external reference and joint
+observable, without branch normalization.</li>
+<li>Kernel-checked matrices and the original-body bridge preserve the sign of H,
+the literal Y phase, the S/SDG direction and the T/TDG direction before the
+terminal observation.</li>
+</ul>
+<p>The checker does not establish:</p>
+<ul>
+<li>This deliberately bounded profile is not a general OpenQASM parser, and it
+makes no claim of hardware conformance. It adopts no external reference
+specification and proves no general OpenQASM execution semantics.</li>
+<li>This closed terminal experiment grants no open pure or controllable map.</li>
+<li>The result leaves these unestablished, even at epsilon zero: source or
+export preservation, exact source correspondence, pure phase agreement,
+inverse or controlled access, exact cleanup and constitutional PR or RS.</li>
+<li>Sampling, algorithmic resolution and numerical runtime errors are
+separately unclaimed.</li>
+<li>Version 1 checks the instrument bound alone.</li>
+</ul>
+<p>Text and JSON report the target-bound instrument inequality and the digests
+of the actual inputs.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> The independent byte reader imports the Raw meaning
+data without acceptance definitions. The native mode is
+<code>--engineering-openqasm-check</code>. Its QLV3 body holds the literal target bytes.
+Its QDV1 comparison binds the typed request, the original byte array, the
+ordered word, the generated actual graph and the original ideal graph.
+Decoding is charged before traversal. It shares one work counter with the
+ideal reader, the exact instrument reconstruction and the metric check.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> The private <code>EngineeringOpenQasmReport</code> retains the
+immutable target, ideal and request bytes, the full contract and the checker
+path. Its actual graph is data, without a Rust accepted-program constructor.</p>
+</blockquote>
+<h3 id="literal-openqasm-engineering-resource-limits"><a class="header" href="#literal-openqasm-engineering-resource-limits">Literal OpenQASM engineering resource limits</a></h3>
+<p>Version 2 of the same request also puts limits on the gate counts of the
+target. It uses the claim kind <code>engineering-target-instrument-resource-bound</code>
+and adds one required field:</p>
+<pre><code class="language-json">"resource_limits": {"model":"openqasm3-one-qubit-literal-gates-v1","gates":2,"t_gates":2}
+</code></pre>
+<p><code>gates</code> bounds the emitted gate lines. <code>t_gates</code> bounds the subset <code>t</code> and
+<code>tdg</code>.</p>
+<p>Rules:</p>
+<ul>
+<li>Both limits must be closed integers from 0 through 8.</li>
+<li>The required literal header, reset and terminal readout fix one reserved
+qubit, one reset and one measurement.</li>
+<li>The model charges the literal one-qubit vocabulary. It excludes compiler
+work, synthesis search, hardware timing and composition across components.</li>
+<li>The metric, the epsilon and the single-component contract stay required.</li>
+<li>Changing the actual artifact, the original ideal or the request requires a
+fresh comparison.</li>
+<li>A timed-out or rejected check emits no certificate.</li>
+</ul>
+<p>The checker establishes:</p>
+<ul>
+<li>The native checker checks the limits against the word that it decodes
+independently. The engineering instrument inequality uses that same word.</li>
+<li>Text and JSON reports include the checked counts and limits, with the
+identities of the actual artifact, the original ideal and the request.</li>
+</ul>
+<p>The checker does not establish:</p>
+<ul>
+<li>The engineering receipt supplies no exact cleanup, no phase-sensitive
+coherent control and no constitutional PR or RS.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The typed execution view includes the model and the
+limits.</p>
+</blockquote>
+<h3 id="literal-openqasm-gate-comparison-with-resource-limits"><a class="header" href="#literal-openqasm-gate-comparison-with-resource-limits">Literal OpenQASM gate comparison with resource limits</a></h3>
+<pre><code class="language-text">qleisli engineering compare-openqasm3-gate TARGET --edition=2026 --against=REQUEST [--lean-kernel=PATH] [--format=json]
+</code></pre>
+<p>This command compares an emitted gate definition with ideal pure artifacts
+and checks its literal gate counts against limits.</p>
+<p><code>TARGET</code> is a complete canonical OpenQASM 3.0 gate definition:</p>
+<pre><code class="language-text">OPENQASM 3.0;
+include "stdgates.inc";
+gate implementation a, b {
+cx a, b;
+}
+</code></pre>
+<p>For the general definition syntax, see the
+<a href="https://openqasm.com/versions/3.0/language/gates.html#hierarchical-gates-definitions">OpenQASM 3.0 specification</a>.</p>
+<p>Rules:</p>
+<ul>
+<li>The header and the include line must have the literal spellings shown. The
+fixed include selects the standard gate meanings of the profile.</li>
+<li>The declaration must be either <code>gate implementation a {</code> or
+<code>gate implementation a, b {</code>.</li>
+<li>A body instruction starts at the first column, uses one space after the
+mnemonic and after a comma, and ends with a semicolon and LF. The closing
+brace occupies its own line with an LF. The body may be empty.</li>
+<li>The admitted mnemonics are <code>h</code>, <code>x</code>, <code>y</code>, <code>z</code>, <code>s</code>, <code>sdg</code>, <code>t</code>, <code>tdg</code>, <code>cx</code>,
+<code>cz</code> and <code>swap</code>, with their exact ordered formal operands.</li>
+<li>The checker reads at most 1,024 bytes and eight gate lines (<code>limit</code>).</li>
+<li>The ports are <code>Bit</code> or the ordered pair <code>(Bit, Bit)</code>. Formal <code>a</code> is the low
+coordinate and formal <code>b</code> is the high coordinate.</li>
+</ul>
+<p>The request fields common to both compositions are:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Field</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td><code>format</code>, <code>version</code></td><td><code>qleisli.engineering-openqasm-gate-request</code>, <code>1</code></td></tr>
+<tr><td><code>claim_kind</code></td><td><code>engineering-target-operator-resource-bound</code></td></tr>
+<tr><td><code>metric</code></td><td><code>pure-euclidean-operator-norm-v1</code></td></tr>
+<tr><td><code>checker_profile</code></td><td><code>canonical-gate-frobenius-r8-v1</code></td></tr>
+<tr><td><code>target_profile</code></td><td><code>openqasm3-canonical-ordered-gate-r8-v1</code></td></tr>
+<tr><td><code>composition</code></td><td><code>ordered-sequential-two-v1</code> or <code>controlled-low-selector-v1</code></td></tr>
+<tr><td><code>error_category</code></td><td><code>implementation-distance</code></td></tr>
+<tr><td><code>epsilon</code></td><td>Closed canonical nonnegative dyadic with <code>numerator</code> and <code>denominator_bits</code></td></tr>
+<tr><td><code>resource_limits</code></td><td>Object with model <code>openqasm3-ordered-gate-literal-gates-v1</code> and integer <code>gates</code> and <code>t_gates</code> ceilings from 0 through 8</td></tr>
+</tbody>
+</table>
+</div>
+<p>An ideal description has exactly <code>expected_artifact</code> and <code>leaf</code>. The former
+is the original UTF-8 QIRF text. The latter holds exactly <code>input</code>, <code>output</code>
+and <code>matrix</code> in the finite pure-leaf format. The encodings of canonical
+dyadic numbers and of finite coefficients match <code>compare-pure</code>.</p>
+<p>Each composition adds its own fields:</p>
+<ul>
+<li><code>ordered-sequential-two-v1</code> additionally requires <code>split</code>, <code>first</code> and
+<code>second</code>. <code>split</code> is the number of literal instructions in the first slice.
+<code>first</code> and <code>second</code> each have exactly <code>ideal</code> and <code>epsilon</code>. The two
+comparisons use the same full port tree. The checked dyadic sum of the
+component budgets must equal the requested total. The same decoded slices
+make up the whole word: the first slice, then the second.</li>
+<li><code>controlled-low-selector-v1</code> additionally requires <code>ideal</code> over one <code>Bit</code>.
+The desired action on <code>a, b</code> is the identity on selector zero and exactly
+the ideal operator on selector one. The checker compares the entire literal
+two-wire matrix with that controlled operator. Scalar phase in the active
+sector enters the metric as a relative phase.</li>
+</ul>
+<p>The checker establishes:</p>
+<ul>
+<li>The checker verifies each original ideal independently against its exact
+port and matrix request.</li>
+<li>The native checker reconstructs the literal actions over the exact R8
+carrier. It uses the sufficient Frobenius comparison for the selected
+operator metric.</li>
+<li>For the sequential composition, the additive bound applies to the
+composition for every finite external reference. For the controlled
+composition, the norm bound extends to arbitrary finite external references.</li>
+<li>The checker checks the reported literal counts under the same request and
+the same work counter. The resource report counts formal wires, literal gate
+lines and the <code>t</code>/<code>tdg</code> subset.</li>
+</ul>
+<p>The checker does not establish:</p>
+<ul>
+<li>The engineering result covers only the named approximation and the literal
+resource bounds. Hardware scheduling and compiler or search work use
+separate measures.</li>
+<li>Exact target correspondence, source capabilities and constitutional PR or
+RS require their own checks. This holds when a numerical search selected the
+circuit, and when the engineering epsilon is zero.</li>
+</ul>
+<p>A change to the artifact, the profile, the metric, the budget, the split or
+the ideal requires a fresh check. A timeout or a refusal returns an error.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> The execution view holds the original bytes, the
+decoded ordered instructions, the closed budgets and the fresh ideal graphs.</p>
+</blockquote>
+<h2 id="quantitative-resource-claims"><a class="header" href="#quantitative-resource-claims">Quantitative resource claims</a></h2>
+<p>A realization says that an artifact implements a program. A resource claim
+says how much the artifact uses, for example its live width or its gate
+count. This section gives the rules for such claims.</p>
+<p>Resource Safety is the third permanent obligation of edition 2026. The
+<a href="../design/initial-interpretations.html#3-interpretation-rs-2026-01--quantitative-resource-accountability">adopted resource interpretation</a>
+applies to finite quantitative bounds on the actual accepted program and its
+claimed realization. A resource certificate states a checked bound for one
+emitted artifact. The subsections below describe the bounded checks of the
+canonical terminal OpenQASM profile.</p>
+<p>Rules:</p>
+<ul>
+<li>A resource certificate must identify all of the following: the actual closed
+instance, the emitted artifact, the target and profile, the resource
+measures, the input and scheduling premises, and the checked bounds over
+all admitted execution paths.</li>
+<li>A change to the providers, the layout, the target, the workspace or the
+output bytes invalidates reuse, unless a checked correspondence establishes
+the changed claim.</li>
+<li>A content hash establishes identity, not the bound.</li>
+<li>The
+<a href="functional-boundary.html#provider-selection-and-quantitative-resource-evidence">provider resource contract</a>
+applies to each selected body and composition. An external, opaque or
+device-native implementation must meet the same admission requirements.</li>
+<li>Gate count, depth and non-Clifford cost require declared target
+conventions. Literal IR T-word counts are not automatically physical or
+optimal T counts.</li>
+<li>Five things are different claims: compiler memory, checker work limits,
+static termination, ownership safety and target resource bounds. In
+particular, the ownership-only predicate does not discharge quantitative
+RS.</li>
+<li>A closed finite specialization can meet its stated obligations by checked
+accounting on its actual artifact. A family can use a symbolic bound such
+as <code>Resource(P&lt;n&gt;) &lt;= f(n)</code> within edition 2026. Its proof must cover the
+claimed parameters and the actual compilation and resource binding.</li>
+<li>Resource behavior outside current coverage can occur in a sized family,
+bounded runtime control, specialization, target synthesis or provider
+composition. The Guardian interprets the applicable obligation under the
+existing edition. The required proofs of the bound and of preservation must
+pass before the scope can claim constitutional conformance. Previously
+admitted guarantees continue to bind the current acceptance path.</li>
+<li>A failure to meet a target budget rejects that target claim. It does not
+change the mathematical denotation of the program.</li>
+<li>A quantitative claim about a behavior-preserving realization requires a
+separate resource certificate.</li>
+</ul>
+<p>The QCP implementation and concrete target schemas have a separately
+scheduled scope. This chapter is not their implementation.</p>
+<h3 id="physical-live-width"><a class="header" href="#physical-live-width">Physical live width</a></h3>
+<p>This measure counts the physical locations that an implementation keeps live.</p>
+<p>Rules:</p>
+<ul>
+<li>Physical live width includes logical data, explicit source workspace,
+backend synthesis workspace, and routing and target storage.</li>
+<li>A count takes each actual physical location once. It accounts for the
+lifetime of the location and its permitted reuse.</li>
+<li>Peak width is the maximum simultaneous live count. A sum of separate peaks
+is a conservative upper bound, not necessarily the realized peak.</li>
+<li>Logical width alone does not bound the physical implementation width.</li>
+</ul>
+<h3 id="exclusive-access-and-generated-work"><a class="header" href="#exclusive-access-and-generated-work">Exclusive access and generated work</a></h3>
+<p>This section says how a bound counts the wires of an exclusive access and the
+work that an implementation generates.</p>
+<p>An <a href="elaboration.html#static-ordered-axis-places">indexed exclusive call</a>
+partitions its parent for a time into the selected owners and the remainder
+owners. The caller resumes with the reassembled parent. The exit from this
+access keeps its wires live. Logical owner identity and exact clean return
+belong to Soundness. Count every active physical location for its whole live
+interval.</p>
+<p>Include any generated preparation, inverse calls, uncomputation and physical
+routing in the bound for the implementation that uses them. A replacement
+bound must be checked on the actual replacement artifact against the
+applicable target budget and capacity. Structural splitting and joining
+rearrange the logical owner map. Physical SWAPs contribute to the target count.</p>
+<blockquote>
+<p><strong>Implementation note.</strong> The bounded indexed Raw proof
+<code>RuntimeExclusiveResources.indexed_access_live_wires</code> relates the actual
+access boundaries to the original owner map and counts each live wire once.
+<code>routed_prefix_live_wires</code> checks that accounting throughout each structural
+split/join route. The inner operation has its own resource obligations.
+The terminal placement check replays the emitted gate word and checks its
+actual width and costs, including caller spectators and checked scratch.</p>
+</blockquote>
+<h3 id="routing-segments"><a class="header" href="#routing-segments">Routing segments</a></h3>
+<p>A routing check covers an interval of literal physical SWAPs. A
+<strong>fixed-occupancy SWAP segment</strong> records the ordered placement of all
+occupied locations. The record includes any scratch that is live during the
+segment, whether it belongs to the source, to synthesis or to routing.</p>
+<p>Rules:</p>
+<ul>
+<li>Each literal SWAP must name two distinct occupied locations that are
+connected in the declared profile.</li>
+<li>A SWAP moves both locations in the placement and leaves every other location
+alone. It counts as one operation even when a later SWAP cancels it.</li>
+<li>The final placement preserves the logical axis order and the exact joint
+coefficients with any reference.</li>
+<li>The check of a segment does not establish that the interval is used for
+routing, or that its entry placement is correct. A complete certificate
+establishes both. It also checks the other target operations, allocation,
+release and reuse.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The native checker independently decodes the
+declared register width and the literal SWAP instructions from a designated
+byte interval of canonical OpenQASM output. It also checks the target
+capacity.</p>
+</blockquote>
+<h3 id="the-canonical-terminal-profile"><a class="header" href="#the-canonical-terminal-profile">The canonical terminal profile</a></h3>
+<p>The canonical terminal profile reserves all declared physical locations and
+resets them before its first gate. It keeps the reservation through terminal
+measurement.</p>
+<p>Rules:</p>
+<ul>
+<li>The independent reader of the complete artifact counts from the output
+bytes. It counts reserved and reset wires, gates, literal SWAPs, T/TDG and
+measurements.</li>
+<li>An exact finite workspace check may compare a designated gate interval with
+the independently checked original clean or dirty body. The comparison uses
+the declared ordered placement of data and scratch. The physical register
+must cover the checked Raw peak.</li>
+<li>The checker can derive the ordered locations of the workspace from the
+checked original Raw frame and its complete injective physical placement.</li>
+<li>A fresh scratch must occupy a location absent from that frame. For a fresh
+scratch wire, the checker can verify that nothing touches it between the
+initial reset and workspace entry, or after exact restoration.</li>
+</ul>
+<h3 id="placement-replay"><a class="header" href="#placement-replay">Placement replay</a></h3>
+<p>Take a closed straight-line Raw prefix with zero preparations, structural
+owner operations and finite gates. For such a prefix, the checker
+derives the original frame by replay. It replays the original prefix and the
+decoded target gate word.</p>
+<p>Rules:</p>
+<ul>
+<li>Marked routing operations must match connected physical SWAPs in the
+emitted word. The checker matches an ordinary Raw SWAP as a gate, and that
+SWAP does not move the encoding.</li>
+<li>The derived original frame must equal the checked workspace entry,
+including zero-width ports.</li>
+<li>With one checked workspace interval and literal gates, the checker can
+carry the original exit owners through the target suffix. It uses the
+resulting placement to verify the emitted terminal measurements in classical
+output order.</li>
+<li>All original quantum owners must be consumed by the end. Discarded owners
+and measurements outside the classical outputs do not add to the emitted
+readout.</li>
+<li>The single-interval check requires an exclusive lifetime for fresh scratch.</li>
+<li>Outside a workspace interval, the checker can compare a single original
+circuit event against a decomposed target word. It derives the ordered
+support from the original operands and controls. It compares the complete
+exact operators on that support, up to six axes.</li>
+<li>The checker rejects gates on other wires and phase changes. Matrix checking
+spends the same cumulative work as the surrounding replay.</li>
+<li>The replay can align a target word with several consecutive Raw circuit
+events and structural owner operations. It reads the actual owner
+transitions and checks the combined operator on the ordered support.
+Preparation, observation and source workspace boundaries require their own
+alignment.</li>
+<li>A structural basis lift updates the physical placement only when its
+complete table is an axis permutation. It contributes zero gates. A routing
+SWAP must occupy a literal gate position.</li>
+<li>For a <code>Q&lt;Bits&lt;n&gt;&gt;</code> data register, each original <code>take_bit</code> or <code>put_bit</code>
+index determines the ordered wire selection or insertion. The Raw
+repartition retains the other owners, including a distinct <code>Q&lt;Bits&lt;0&gt;&gt;</code>
+remainder. Repartition inside a workspace body is part of its independently
+evaluated exact operator.</li>
+</ul>
+<h3 id="synthesis-scratch"><a class="header" href="#synthesis-scratch">Synthesis scratch</a></h3>
+<p>A gate decomposition may use allocated synthesis scratch. These rules say
+where that scratch sits and how the checker confirms that it returns to zero.</p>
+<p>Rules:</p>
+<ul>
+<li>The physical locations of the scratch must be declared and separate from
+all live owners.</li>
+<li>The checker compares the full target word on the data and the scratch with
+the original operator, under the canonical zero embedding at both ends. The
+executable check keeps the same zero encoding at entry and exit.</li>
+<li>The six-axis bound includes scratch.</li>
+<li>A slice of several aligned events that uses synthesis scratch has the same
+zero-return check.</li>
+<li>A complete trace may reserve locations for several disjoint synthesis
+slices. Original allocation, routing, source workspace and readout must not
+touch these locations. Every slice that uses them checks its own zero
+return.</li>
+<li>An individual slice may instead use exclusive scratch. The checker verifies
+that the scratch is untouched everywhere else.</li>
+</ul>
+<h3 id="reuse-of-clean-scratch"><a class="header" href="#reuse-of-clean-scratch">Reuse of clean scratch</a></h3>
+<p>A physical scratch location may be reused across ordered, disjoint, clean
+intervals.</p>
+<p>Rules:</p>
+<ul>
+<li>The checker requires an exact zero-return equation for each interval. An
+interval with zero gates also checks that equation, and no gate touches the
+location in it.</li>
+<li>Every gate that touches the location must lie in one of those intervals.
+The location must be absent from terminal readout.</li>
+<li>The literal multi-interval check derives every entry placement from the
+preceding original owners and target word. It reserves each designated
+scratch location across the complete trace. It keeps the location out of
+ordinary preparations, routing and terminal readout.</li>
+<li>Each reuse interval must be bound to its own checked original workspace.</li>
+<li>The written logical operation and the workspace body use the same admitted
+workspace source fragment. An independently checked controlled phase may
+therefore appear in the declared logical operation and in the body. Their
+exact restoration equation checks the complete action on the data and the
+scratch.</li>
+</ul>
+<p>A successful native placement check has these properties:</p>
+<ul>
+<li>Each reusable clean wire is in the counted reset register.</li>
+<li>Every gate that touches that wire belongs to a checked restoration
+interval, with one operator step per decoded gate in the interval.</li>
+<li>A routing action before a workspace or in the terminal suffix points to a
+literal SWAP on an allowed edge at a counted gate index.</li>
+<li>The reported SWAP total includes the literal routing gates and any ordinary
+SWAP instructions in the target word.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The typed-source adapter reads workspace intervals
+from the original checked root and named calls. It binds each local interval
+to the identical Raw operations at its position in the root. It checks the
+selected and returned ports against the full caller frame and retains all
+untouched spectator ports. The exporter preserves the interval boundaries
+across exact rewrites. It proposes the corresponding gate positions and
+scratch locations. The native checker checks the proposal against the
+original source, including the clean and dirty intervals and the terminal
+result order.</p>
+</blockquote>
+<h3 id="the-checked-resource-report"><a class="header" href="#the-checked-resource-report">The checked resource report</a></h3>
+<pre><code class="language-sh">qleisli interop emit-qasm &lt;source&gt; --input=qli --resources
+</code></pre>
+<p>Use this command to see what an emitted program costs. The command gives the
+checked resource report for a closed typed program. The program has workspace
+scopes in its root or in a statically named call, or it has a protected
+computed scope.</p>
+<p>Rules:</p>
+<ul>
+<li>The JSON result contains the emitted text and the exact work spent in the
+placement check. It contains these counts: the reserved qubits, the reset
+wires, the gates, the literal SWAPs, the T/TDG operations and the
+measurements.</li>
+<li>The native checker decodes the returned text, and the counts come from that
+decoding.</li>
+<li>The placement check has one exact-work budget of 20,000,000. A check that
+exhausts it returns a limit rejection (<code>limit</code>) with no resource payload.</li>
+<li>The report covers the supported canonical terminal profile and its declared
+physical register.</li>
+<li>For <code>--resources</code>, the terminal emitter supplies the emitted register width
+as the capacity of the packet.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The internal packet binds the complete original
+QLV3 request and the literal target bytes. The native checker rechecks the
+original source, decodes the target and replays placement under the one
+budget.</p>
+</blockquote>
+<h3 id="computed-scopes"><a class="header" href="#computed-scopes">Computed scopes</a></h3>
+<p>A <code>with_computed</code> interval holds forward steps, protected uses and inverse
+steps. A resource count covers all three.</p>
+<p>Take a structural <code>with_computed</code> interval that the source check has
+accepted. The Raw resource read counts the full live frame plus one private
+scratch wire at peak. It counts one preparation, one clean release and both
+predicate passes. The literal circuit count includes every forward step,
+inverse step and protected use.</p>
+<p>The terminal OpenQASM placement check can read this event in a closed original
+source root. This includes a pure interval before or after an explicit
+workspace.</p>
+<p>Rules:</p>
+<ul>
+<li>The check places the ordered source wires, followed by a private predicate
+wire. It reconstructs the whole forward, protected-use and inverse word from
+the Raw operation.</li>
+<li>The decoded target word must agree on the complete support, including the
+predicate wire, with exact phase.</li>
+<li>If the target decomposition uses additional scratch, the same synthesis
+check requires the scratch to start at zero and return to zero.</li>
+<li>The predicate wire and the synthesis wires are reserved. Source allocation,
+routing and terminal readout do not use them.</li>
+<li>Counts include the resets of those wires, the physical compute and inverse
+gates, and any additional synthesis gates.</li>
+<li>This check uses the bounded terminal operator profile and its shared work
+budget.</li>
+</ul>
+<p>For an admitted computed scope that uses a finite table, the exporter works
+from the retained table rows. It uses them to emit controlled XOR flips of
+the private auxiliary bits. It emits the protected operations on the ordered
+source, target and auxiliary coordinates. It then repeats the XOR flips to
+restore the auxiliary bits.</p>
+<p>Rules:</p>
+<ul>
+<li>For resource reporting, the source program must retain its original checked
+typed request.</li>
+<li>The native checker builds the original table permutation and the protected
+word from the checked Raw event of that request. It compares them to the
+complete decoded target interval.</li>
+<li>The same bounded operator profile covers these comparisons.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> The Raw interval reader charges owner checks and
+issuance-history checks separately from literal circuit validation. Its
+circuit charge covers the full forward and inverse fields and the operand
+checks in each forward step and protected use. Both charges consume the same
+shared work budget. The source-bound compute and inverse comparisons consume
+exactly <code>16 * (1 + sum(2 * control_count + 7))</code>, summing over the predicate
+clauses. This charge depends on the literal circuit fields.</p>
+</blockquote>
+<blockquote>
+<p><strong>Implementation note.</strong> The original runtime plan retains the predicate and
+the auxiliary action that the native checker computes for the exact source
+occurrence. Both the structural path and the finite-table path use those
+source results and check the actual literal action independently.</p>
+</blockquote>
+<h2 id="phase-words-and-target-dependent-costs"><a class="header" href="#phase-words-and-target-dependent-costs">Phase words and target-dependent costs</a></h2>
+<p>One phase can cost a different number of gates on different targets. This
+section fixes the phase words of the eighth-root profile and states what
+their counts show.</p>
+<p>In the eighth-root finite profile, let <code>ω = exp(2πi/8)</code>. The one-axis phase
+with residue <code>r</code> is exactly <code>diag(1,ω^r)</code> on the declared axis. This includes
+an action on an input that is entangled with a reference.</p>
+<p>Rules:</p>
+<ul>
+<li>A supported source <code>phase[j,d]</code> has <code>r = 8j / 2^d</code> when this quotient is an
+integer. The <a href="primitive-boundary.html">primitive contract</a> specifies the
+source and profile limits.</li>
+<li>Adjoint changes the exponent to <code>-r</code> modulo eight. Repetition adds the
+residue on each action.</li>
+<li>A scalar <code>ω^r I</code> differs from a one-axis phase. It can become a relative
+phase under coherent control.</li>
+<li>The finite format represents the one-axis phase by a monomial with the
+chosen axis, the identity permutation <code>[0,1]</code> and the phase exponents
+<code>[0,r]</code>. The action of the historical word of <code>r</code> T gates is the same
+diagonal.</li>
+<li>A decoder must keep decoding the gate and circuit constructors in their
+versioned profiles. The equivalent monomial representation requires no
+dedicated Phase constructor and no change to the established encoding of a
+T word.</li>
+</ul>
+<p>For the canonical terminal OpenQASM vocabulary, the selected one-axis words
+and their literal <code>t</code> or <code>tdg</code> counts are</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Residue</th><th>Emitted word</th><th style="text-align: right">Literal T/TDG</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>empty</td><td style="text-align: right">0</td></tr>
+<tr><td>1</td><td>T</td><td style="text-align: right">1</td></tr>
+<tr><td>2</td><td>S</td><td style="text-align: right">0</td></tr>
+<tr><td>3</td><td>S, T</td><td style="text-align: right">1</td></tr>
+<tr><td>4</td><td>Z</td><td style="text-align: right">0</td></tr>
+<tr><td>5</td><td>S†, T†</td><td style="text-align: right">1</td></tr>
+<tr><td>6</td><td>S†</td><td style="text-align: right">0</td></tr>
+<tr><td>7</td><td>T†</td><td style="text-align: right">1</td></tr>
+</tbody>
+</table>
+</div>
+<p>Rules:</p>
+<ul>
+<li>These counts apply to the specified one-axis words. A coherent branch or
+control requires the complete ordered action on each sector with its
+original phase. For example, the terminal export uses two T instructions,
+one T† and two CX instructions for controlled S.</li>
+<li>A negative control can introduce additional X gates.</li>
+<li>A conjunction-based lowering includes its live scratch, preparation,
+computation and full reverse chain.</li>
+<li>A model that decomposes CCX must include that decomposition. In the
+canonical terminal profile, CCX is a single literal gate. It is outside the
+<code>t_gates</code> counter, which counts exactly the emitted T and T† instructions.</li>
+<li>Three things are separate claims: literal word counts of the source IR,
+optimized instruction counts of a target, and resource bounds.</li>
+<li>A certificate binds the actual emitted word and the checked decomposition
+to its profile. It includes the required workspace and routing.</li>
+<li>An exponent, an operation name or a normalized phase word supplies no bound
+for a different target and no optimal cost claim.</li>
+</ul>
+<h2 id="small-obstruction-examples"><a class="header" href="#small-obstruction-examples">Small obstruction examples</a></h2>
+<p>A program can be semantically unitary and yet have no implementation on the
+same wires in a stated gate vocabulary. This section shows two small cases
+and the determinant argument behind them.</p>
+<p>Embedding a <code>k</code>-qubit gate <code>G</code> into <code>n</code> wires, under a fixed ordered basis,
+gives determinant <code>det(G)^(2^(n-k))</code>. Determinants multiply under composition.
+Consequently the generator set of a target restricts the determinants that
+it reaches on the same wires.</p>
+<p>Rules:</p>
+<ul>
+<li>This restriction is a necessary condition. Sufficiency requires a separate
+theorem for that precise generator, phase and workspace profile.</li>
+<li>For a basis-permutation vocabulary, signs multiply under composition. An
+even-only vocabulary therefore excludes odd permutations on the same wires.</li>
+<li>The precomputed determinant classes of the generators, or the parity of an
+available permutation table, may reject a candidate before synthesis.</li>
+<li>The obstructions use the stated generator vocabulary, controls and
+workspace premises.</li>
+</ul>
+<p>The repository retains two exact small examples:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Operator</th><th>Semantic property</th><th>Same-wire obstruction for the stated profile</th></tr>
+</thead>
+<tbody>
+<tr><td>Positive-exponent three-qubit Fourier operator <code>F8</code></td><td>Unitary, with <code>det(F8) = i</code></td><td>The embedded H/T/X and NCT generators considered by the regression have determinants only <code>±1</code> on three wires.</td></tr>
+<tr><td>Four-bit <code>c3x</code> basis permutation</td><td>A bijection with one transposition, hence determinant <code>−1</code></td><td>Those embedded generators have determinant <code>+1</code> on four wires.</td></tr>
+</tbody>
+</table>
+</div>
+<p>Both programs are semantically accepted. The regression
+<code>tests/static_semantics.rs::review_same_wire_obstructions_do_not_reject_semantic_unitaries</code>
+checks the original four-bit table, the complete exact F8 operator and the
+determinant calculation for the embedded generators. The original source is
+retained at
+<code>tests/fixtures/review_v023/c3x.qli</code>. The regression reads the corresponding
+current fixture at
+<code>tests/fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/review_v023/c3x.qli</code>.</p>
+<p><a id="current-production-status-and-diagnostics"></a></p>
+<h2 id="diagnostics"><a class="header" href="#diagnostics">Diagnostics</a></h2>
+<p>A diagnostic for a failed realization claim or resource claim reports a
+restriction on the realization. <a href="diagnostics.html">Diagnostics and recovery</a>
+gives the codes and the fields.</p>
+<p>Rules:</p>
+<ul>
+<li>The diagnostic must identify the closed instance, the requested profile and
+the failed premise.</li>
+<li>It must distinguish a proved obstruction from unsupported synthesis and from
+exhausted checking capacity.</li>
+<li>An unsupported target operation or a target-width error must not be
+presented as a failure of semantic unitarity.</li>
+<li>The terminal exporter reports an unsupported operation (<code>unsupported</code>) and
+the capacity limit of the synthesis workspace (<code>limit</code>). It reports its own
+target refusal after source checking has completed.</li>
+<li>In the export of a source project, a Raw operation that is emitted inside a
+closed generic body can fail. That failure identifies the specialization
+and points to the original expression.</li>
+<li>Terminal export can identify the closed specialization and the original
+source expression when a rejected operation has a single retained origin.
+This includes steps from an explicit clean or dirty workspace body.</li>
+<li>When a rewrite combines several expressions, the enclosing Raw operation can
+provide its own origin.</li>
+<li>For a failed native workspace equation, the checker supplies the original
+Raw interval, and the host checks it against the retained workspace. The
+diagnostic can name the enclosing specialization, or a single specialization
+shared by all steps in the checked body.</li>
+<li>Packet-wide errors and ambiguous bodies leave the specialization
+unspecified.</li>
+<li>Imported artifacts have no original project diagnostics.</li>
+<li>A location supplies no realization and no resource certificate.</li>
+</ul>
+<h2 id="status-and-limits"><a class="header" href="#status-and-limits">Status and limits</a></h2>
+<p>The <a href="production-boundary.html">production inventory</a> identifies the actual
+routes for native acceptance, proposal, execution and export. Ordinary native
+acceptance does not itself issue a target realization or a resource
+certificate. An engineering result is not acceptance and not a guarantee.</p>
+<h3 id="limits"><a class="header" href="#limits">Limits</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Limit</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>A request or a QIRF artifact of a native comparison</td><td>16 MiB</td></tr>
+<tr><td>The QLV3 envelope</td><td>64 MiB</td></tr>
+<tr><td>The literal target of either OpenQASM comparison</td><td>1,024 bytes and 8 gate lines</td></tr>
+<tr><td><code>gates</code> and <code>t_gates</code> of a <code>resource_limits</code> object</td><td>0 through 8</td></tr>
+<tr><td>Exact operator comparison of the placement replay</td><td>6 axes, including synthesis scratch</td></tr>
+<tr><td>Exact-work budget of the placement check behind <code>--resources</code></td><td>20,000,000</td></tr>
+<tr><td>Contract expansion of the terminal exporter</td><td>1,000,000 steps</td></tr>
+<tr><td>Allocated qubits of the terminal exporter</td><td>12</td></tr>
+</tbody>
+</table>
+</div>
+<p>Contract expansion shares the 1,000,000-step function limit across the whole
+export. That limit bounds the work of a producer. It is not a
+target-resource bound. Flat
+steps keep the flat input limit and the emitted-gate limit of the exporter.</p>
+<h3 id="support-of-the-native-comparisons"><a class="header" href="#support-of-the-native-comparisons">Support of the native comparisons</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Command</th><th>Compared</th><th><code>composition</code></th><th>Resource limits</th></tr>
+</thead>
+<tbody>
+<tr><td><code>compare-pure</code></td><td>Two original pure QIRF artifacts</td><td><code>single-component-v1</code></td><td>None</td></tr>
+<tr><td><code>compare-pure-tensor</code></td><td>Two parents and their two ordered components</td><td><code>ordered-tensor-two-v1</code></td><td>None</td></tr>
+<tr><td><code>compare-instrument</code></td><td>Two original instrument QIRF artifacts</td><td><code>single-component-v1</code></td><td>None</td></tr>
+<tr><td><code>compare-openqasm3</code></td><td>Literal one-qubit terminal OpenQASM bytes and an original ideal instrument</td><td><code>single-component-v1</code></td><td>Version 2 only: model <code>openqasm3-one-qubit-literal-gates-v1</code></td></tr>
+<tr><td><code>compare-openqasm3-gate</code></td><td>A literal OpenQASM gate definition and original ideal pure artifacts</td><td><code>ordered-sequential-two-v1</code> or <code>controlled-low-selector-v1</code></td><td>Required: model <code>openqasm3-ordered-gate-literal-gates-v1</code></td></tr>
+</tbody>
+</table>
+</div>
+<p>Unsupported:</p>
+<ul>
+<li>No native comparison checks a recursive composition.</li>
+<li>No native comparison checks a composed instrument. Both instrument profiles
+are single-component.</li>
+<li>A native comparison checks sequential and controlled composition only for
+a literal OpenQASM gate definition of at most two formal wires and eight
+gate lines.</li>
+<li>The two resource models above are the only target-resource checks of an
+engineering claim. Each bounds the literal gate lines and the <code>t</code>/<code>tdg</code>
+subset of one bounded target. Neither discharges the constitutional
+quantitative RS obligation, which is pending.</li>
+<li>The source compiler consumes no engineering claim. The language has no
+source epsilon annotation.</li>
+<li>A request for another composition or another profile value is refused
+(<code>format</code>).</li>
+</ul>
+<h3 id="the-terminal-exporter"><a class="header" href="#the-terminal-exporter">The terminal exporter</a></h3>
+<ul>
+<li>The terminal exporter in <code>src/interop/export.rs</code> performs bounded untrusted
+rewrites after program verification.</li>
+<li>The exporter explicitly allocates and uncomputes conjunction scratch. It
+rejects output that exceeds its physical qubit capacity (<code>limit</code>).</li>
+<li>For an accepted single-bit certified compute with an all-zero predicate,
+the exporter emits the physical body with the data axes followed by a
+separately reserved clean scratch wire. It reuses that wire after a complete
+verified zero return.</li>
+<li>The terminal OpenQASM exporter can consume the original accepted handle of
+a closed typed source program. It emits a wire-level projection of a Unit
+result, or of a positive-width product of measured bits, in the verified SSA
+output order.</li>
+<li>Nominal results, zero-width components of products and source parameters
+are outside this projection (<code>unsupported</code>). Typed QIRF transport is a
+separate obligation.</li>
+<li>A nontrivial uncontrolled scalar has no realization in this gate vocabulary
+(<code>unsupported</code>).</li>
+<li>External schema entries stay disabled until their binding gates are
+completed.</li>
+<li>The OpenQASM 3 and QIR adapters are experimental test features. They are
+not suitable for real quantum hardware.</li>
+</ul>
+<blockquote>
+<p><strong>Implementation note.</strong> A borrowed cursor expands the actual retained
+function circuits, including nested controls, adjoints and ordered axis
+maps. The exporter then merges adjacent diagonal actions.</p>
+</blockquote>
+<h3 id="code-tests-proof-preservation-and-specification-review"><a class="header" href="#code-tests-proof-preservation-and-specification-review">Code, tests, proof, preservation and specification review</a></h3>
+<p>Code:</p>
+<ul>
+<li>The native comparisons, the placement replay and the resource report are
+bounded implementation checks. Each covers the profile that its section
+states.</li>
+<li>General specialization certificates and general diagnostic coverage are
+open work.</li>
+</ul>
+<p>Tests:</p>
+<ul>
+<li>The regression named in
+<a href="#small-obstruction-examples">Small obstruction examples</a> covers the two
+obstruction examples.</li>
+<li>A Rust and Lean regression binds the same emitted OpenQASM bytes to two
+original clean intervals. It checks their placement, exact restoration and
+readout.</li>
+<li>The independent <code>scripts/test_review_v024.py</code> oracle checks emitted small
+QFT and control circuits, including complex phase, output axes and
+zero-return scratch. Such bounded numerical validation is distinct from a
+general transformation proof and from a resource certificate.</li>
+</ul>
+<p>Proof, for the QPTL library:</p>
+<ul>
+<li><code>controlled_mul</code> proves the operator identity that composes the exact
+sector equations of a controlled composition.</li>
+<li><code>controlled_pow</code> proves the corresponding operator identity for powers.</li>
+<li><code>controlled_phase_ne</code> proves that a scalar phase on the active block alone
+changes the controlled operator. It holds for any nontrivial scalar on a
+nonzero operator.</li>
+<li><code>dilation_recover_reference</code> derives the recovery equation of an isometry,
+restricted to its image. It derives the equation from the exact forward
+square and the unitary implementation law.</li>
+<li><code>extracted_sixteenth_ne</code> proves the coefficient obstruction of
+<a href="#exact-target-domain-membership">Exact target-domain membership</a>.</li>
+<li><code>QPTL.FiniteMatrix.det_embedded</code> proves the determinant formula of an
+embedded gate, for finite matrix bases and simultaneous reindexing of both
+interfaces.</li>
+<li><code>QPTL.FiniteMatrix.exact_same_wire_obstruction</code> covers a product of
+generators whose determinants lie in a set that is closed under
+multiplication and contains one. Such a product cannot equal a requested
+matrix with
+determinant outside that set. The premises retain the chosen target
+vocabulary, layout and exact phase.</li>
+</ul>
+<p>Proof, for source workspace on the finite one-scratch checker:</p>
+<ul>
+<li><code>WorkspaceTargetAction.clean_checked_separates</code> uses the exact checked
+insertion and output coefficients with the fixed-scratch law of QPTL. The
+joint output density has support only in the zero-scratch block, for every
+input density on data and a reference.</li>
+<li><code>WorkspaceTargetAction.dirty_checked_promotion</code> binds every coefficient of
+the actual body to the logical operator promoted on the ordered data axes.</li>
+<li><code>WorkspaceTargetAction.dirty_checked_reference</code> applies that action to each
+joint reference column. It proves that every selected input coordinate
+retains the scratch bit of the output.</li>
+<li><code>Qleisli.WorkspaceTargetAction.decoded_action</code> connects the exact action of
+a decoded workspace slice to the literal Raw body on its full ordered data
+and scratch interface. The equality preserves the original phase for
+arbitrary reference columns.</li>
+<li><code>native_clean_access_counted_once</code> covers each reserved clean wire. It
+links native placement success to the literal reset of the wire and to one
+unique restoration interval for every emitted gate that touches it. It also
+places the interval inside the counted target gates and excludes the scratch
+wire from terminal readout.</li>
+</ul>
+<p>Proof, for synthesis scratch:</p>
+<ul>
+<li><code>WorkspaceTargetAction.synthesis_action</code> connects the actual decoded gate
+word to the original local operator under the canonical zero encoding. It
+proves equality with full phase on every external reference column. The
+amplitude is zero whenever any synthesis scratch bit is nonzero. The checked
+placement replay recovers this evidence at the original Raw position and
+physical gate offset, for a single circuit event or an optimized span.</li>
+<li><code>WorkspaceTargetAction.bound_synthesis_action</code> connects the replay before a
+source workspace to that exact action.</li>
+<li><code>WorkspaceTargetAction.native_suffix_synthesis_action</code> connects the
+terminal suffix of the native decision to that exact action.</li>
+<li>In both theorems, the equation uses the original circuit steps on the
+recovered support with their dependencies. Reindexing the checked local
+steps by the ordered layout of data and synthesis scratch recovers the same
+emitted instruction slice. The decoder establishes the arity and the
+distinct, in-range operands of each instruction.</li>
+<li>The full physical register action on a fixed spectator slice therefore
+agrees with the checked local word, for arbitrary input amplitudes and
+external references. The literal gate interval and its synthesis scratch
+locations are within the reported gate and register counts.</li>
+</ul>
+<p>Proof, for the resource report:</p>
+<ul>
+<li>A Lean theorem proves that the decoded register width bounds the maximum
+Raw live width over the workspace occurrences that the replay visits. The
+bound includes caller spectators and temporary clean wires.</li>
+<li>The native reply theorem binds the reported counts to the exact target
+bytes. It proves that the reserved width is within the requested target
+capacity.</li>
+<li><code>Qleisli.TerminalPlacement.native_terminal_correspondence</code> relates the same
+successful native decision to the selected original Raw root. Take the
+moment immediately before terminal measurement, after all decoded gates
+have run from reset. At that moment the entire physical complex column
+agrees with the corresponding pure Raw prefix under its ordered placement.
+The agreement includes phase and restored scratch.</li>
+<li>By the same theorem, the final measurement distribution agrees for every
+public result word after summing the original hidden outcomes. The theorem
+also binds the resource counts of the reply and its workspace peak bound to
+that same checked packet.</li>
+</ul>
+<p>Proof, for computed scopes:</p>
+<ul>
+<li><code>Qleisli.RuntimeComputedResources.structural_counts</code> binds the counts of a
+structural <code>with_computed</code> interval to the same original source-checked Raw
+occurrence. It retains caller spectators in the peak width.</li>
+<li><code>QleisliKernel.Qirf.StructuralComputedRaw.read_work</code> proves the debit of
+the executable Raw interval reader.</li>
+<li><code>QleisliKernel.Qirf.StructuralComputedUse.read_circuit_work</code> identifies the
+work state after the source-bound compute and inverse comparisons and before
+the check of the emitted auxiliary action.</li>
+<li>The same literal XOR factorization proves the logical action for the
+independently checked Raw event, even for an arbitrary caller amplitude
+function. The source-bound theorem additionally identifies the predicate and
+the phase from the original body. The complete pure Raw event fold uses the
+local logical action without constructing a global matrix.</li>
+<li><code>BoundSegment.structural_paid</code> and <code>FinishedTrace.suffix_structural_paid</code>
+each recover the checked placement and the gate interval from the executable
+replay.</li>
+<li><code>StructuralPlacement.literal_costs</code> binds that interval, and the distinct
+data and scratch locations, to the decoded gate and reset counts.</li>
+<li><code>ProtectedTablePlacement.literal_costs</code> ties the decoded interval of a
+finite-table computed scope, and its distinct physical locations, to the
+reported gate and reset counts.</li>
+</ul>
+<p>Proof, for engineering claims:</p>
+<ul>
+<li>The proof of the pure comparison bounds the explicitly selected Euclidean
+operator norm, including arbitrary finite external references and literal
+scalar phase.</li>
+<li>Proofs of pure composition establish additive error rules for sequential
+composition and for ordered tensor composition. The rules use the same
+Euclidean metric and the stated exact isometry premises, and they include
+arbitrary references.</li>
+<li>The coherent-control corollary additionally requires equal domain and
+codomain and the independent access meanings.</li>
+<li>These mathematical rules do not change the single-component profile, and
+they supply no compiler or lowering preservation.</li>
+<li>Independent mathematical composition of instruments uses the actual Kraus
+families. Full Gram completeness implies adjoint contraction at every finite
+reference.</li>
+<li>A literal pure operator gap <code>delta</code> and both pure Gram equations imply the
+one-way instrument bound <code>2*delta</code>. No phase information is recovered.</li>
+<li>Feed-forward composition retains the public <code>(y,z)</code> outcomes and the hidden
+<code>(h,k)</code> histories. Ordered tensor composition retains the declared left and
+right input, output, public and hidden products through explicit proved
+reference regrouping.</li>
+<li>Both constructions have additive <code>epsilon_1 + epsilon_2</code> bounds under their
+stated component bounds and Gram premises.</li>
+<li>Separate completeness theorems require both original Gram equations. A
+bound alone does not establish them.</li>
+<li>No compiler consumes these results. They give no proof that composition is
+preserved for original source or QIRF.</li>
+</ul>
+<p>Preservation:</p>
+<ul>
+<li>An engineering result does not establish source preservation or target
+preservation. A location in a diagnostic supplies no certificate.</li>
+<li>The two admitted QLV1 guarantees cover original-root ownership and
+classical scope. They do not certify source lowering, target emission or
+quantitative bounds.</li>
+<li>QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01 are pending, as the
+<a href="../design/initial-guarantees.html">initial guarantees</a> record. No statement
+of this chapter discharges one of them, and this chapter admits no
+guarantee.</li>
+</ul>
+<p>Specification review:</p>
+<ul>
+<li>The standard gate interpretation of the literal OpenQASM profiles is an
+explicit specification assumption. This chapter records no specification
+review of its rules.</li>
+</ul>
+<h2 id="history"><a class="header" href="#history">History</a></h2>
+<ul>
+<li>This chapter was written as the 0.3.0 boundary between the meaning of a
+program and a claimed target implementation. Its governing decisions are
+<a href="https://github.com/MGYamada/Qleisli/issues/120">#120</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/121">#121</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/127">#127</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/280">#280</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/281">#281</a>.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/124">#124</a> separated instrument
+semantics from target measurement and feed-forward realizability.
+<a href="https://github.com/MGYamada/Qleisli/issues/126">#126</a> defined the
+correspondence between logical axes and the physical layout.</li>
+<li>The future
+<a href="https://github.com/MGYamada/Qleisli/issues/179">target capability schema</a>
+is open work of 0.4.0. QCP and concrete target schemas are scheduled in
+<a href="https://github.com/MGYamada/Qleisli/issues/103">#103</a>, which is also open.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/28">#28</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/44">#44</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/47">#47</a> tracked the static
+language and the specialization implementation. All three are closed.</li>
+<li>The exact clean and dirty requirements come from
+<a href="https://github.com/MGYamada/Qleisli/issues/70">#70</a>,
+<a href="https://github.com/MGYamada/Qleisli/issues/156">#156</a> and
+<a href="https://github.com/MGYamada/Qleisli/issues/157">#157</a>.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/31">#31</a> fixed the boundary
+between exact and approximate semantics.
+<a href="https://github.com/MGYamada/Qleisli/issues/123">#123</a> defined exact
+target-domain membership. Both are closed.</li>
+<li>The human-adopted EXACT-2026-01 interpretation is recorded in
+<a href="https://github.com/MGYamada/Qleisli/issues/311">#311</a>.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/163">#163</a> required closed
+approximation budgets before target resource certification. It is closed.
+The changelog records the native comparisons and the resource limits of the
+literal OpenQASM comparison under 0.3.0-beta. It records the literal
+OpenQASM gate comparison after that release, under #163.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/165">#165</a> defined the exact
+phase words and the target-dependent non-Clifford costs. It is closed.</li>
+<li><a href="https://github.com/MGYamada/Qleisli/issues/48">#48</a> integrated the
+Language Reference, including the closed-specialization contract and its
+diagnostic coverage.</li>
+</ul>
+<p>Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../reference/stdlib.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../design/type-foundation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../reference/stdlib.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../design/type-foundation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-09f2665d.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-609e4cb8.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+
+    </div>
+    </body>
+</html>
