@@ -91,7 +91,7 @@ impl View<'_> {
         })
     }
 
-    fn basis(&mut self, basis: &BasisType) -> Result<()> {
+    pub(in crate::interchange) fn basis(&mut self, basis: &BasisType) -> Result<()> {
         let mut pending = vec![basis];
         let mut prefix = vec![];
         while let Some(basis) = pending.pop() {

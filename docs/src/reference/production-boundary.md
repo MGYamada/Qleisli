@@ -1888,6 +1888,10 @@ annotation of exact zeros.
 - Closed-project `run` reports a numerical reference distribution. Text uses
   scientific notation with twelve digits after the decimal point. JSON retains
   numeric probabilities under the output range policy.
+- Reset and discard trace out the last quantum axis by summing both hidden
+  outcome weights. Visible measurements retain every numerically positive
+  outcome, including rare events and floating-point residues. These rows
+  count toward the ensemble limits.
 - Sampling uses the numerical execution model. A small floating-point residue
   can appear at a mathematically zero outcome.
 - For project-mode text `run`, `--show-exact-zeros` appends `[exact zero]` to

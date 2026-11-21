@@ -144,7 +144,8 @@ def checkAction (dependencies : List Dependency)
 def checkStep (dependencies : List Dependency)
     (recurse : State → List Semantics.Observation.Op → WorkM State)
     (state : State) (op : Semantics.Observation.Op) : WorkM State := do
-  exactWork (Exact.charge 1)
+  -- Charge for the issued token and wire histories scanned by Raw.stateValid.
+  exactWork (Exact.charge (1 + state.quantum.seenTokens.length + state.quantum.seenWires.length))
   guard (Raw.stateValid state.quantum)
   let next ← checkAction dependencies recurse state op
   guard (Raw.stateValid next.quantum && history state next)

@@ -137,6 +137,8 @@ class RuntimeSourcePolicy(unittest.TestCase):
                          "private partial def f (n : Nat) : Nat := f n\n",
                          "example : False := by sorry\n", "#eval 1979563\n",
                          "example : True := by decide +native\n",
+                         "@[init] def start : IO Unit := pure ()\n",
+                         "attribute [builtin_init] start\n",
                          '@[extern "native_f"] def f : Nat := 0\n']:
                 with self.subTest(module=module, body=body):
                     self.write(module, original + body)
@@ -280,6 +282,13 @@ def eval := 1
             with self.subTest(module=module):
                 self.write("QleisliKernel/Check.lean", f"import {module}\n")
                 self.assertTrue(self.errors())
+
+    def test_main_only_pure_helper_keeps_its_import_boundary(self):
+        self.write("Main.lean", "import Protocol\nimport QleisliKernel.Extra\n")
+        self.write("QleisliKernel/Extra.lean", "import Init\n")
+        self.assertEqual(self.errors(), [])
+        self.write("QleisliKernel/Extra.lean", "import Lean.Data.Json\n")
+        self.assertTrue(any("forbidden kernel import" in error for error in self.errors()))
 
     def test_hidden_generated_build_files_do_not_count_as_source(self):
         self.write(".lake/Bad.lean", "axiom bad : False")
@@ -494,9 +503,17 @@ def width : List Atom → Nat
         self.assertTrue("forbidden axiom" in output or "project axiom" in output, output)
 
     def test_compiled_pure_import_closure_cannot_add_lean_metaprogramming(self):
-        code, output = self.audit("import Lean\ndef value : Nat := 1\n")
+        for module, main_only in [("QleisliKernel", False), ("QleisliKernel.MainHelper", True)]:
+            with self.subTest(module=module):
+                code, output = self.audit("import Lean\ndef value : Nat := 1\n",
+                                          module=module, transport=main_only)
+                self.assertNotEqual(code, 0, output)
+                self.assertIn("forbidden runtime import Lean", output)
+
+    def test_compiled_audit_rejects_a_project_initializer(self):
+        code, output = self.audit("@[init] def noopOnImport : IO Unit := pure ()\n")
         self.assertNotEqual(code, 0, output)
-        self.assertIn("forbidden runtime import Lean", output)
+        self.assertIn("noopOnImport: project initializer", output)
 
 
 if __name__ == "__main__":

@@ -194,6 +194,34 @@ impl Component {
         })
     }
 
+    /// Tracing out the final quantum axis leaves a scalar density matrix.
+    /// Both hidden outcomes contribute to its weight, including tiny positives.
+    pub(super) fn trace_wire(
+        self,
+        wire: WireId,
+        budget: &mut ExecutionBudget,
+    ) -> Result<Vec<Self>, SimulationError> {
+        if self.axes.as_slice() == [wire] {
+            let weight = self.weight();
+            if weight == 0.0 {
+                return Ok(Vec::new());
+            }
+            let mut residual = self;
+            residual.axes.clear();
+            residual.amplitudes.truncate(1);
+            residual.amplitudes[0] = Complex::ONE.scaled(weight.sqrt());
+            return Ok(vec![residual]);
+        }
+        let mut residuals = Vec::with_capacity(2);
+        for outcome in [false, true] {
+            let branch = self.project_remove(wire, outcome, budget)?;
+            if branch.weight() > 0.0 {
+                residuals.push(branch);
+            }
+        }
+        Ok(residuals)
+    }
+
     pub(super) fn weight(&self) -> f64 {
         self.amplitudes.iter().map(|z| z.norm_squared()).sum()
     }

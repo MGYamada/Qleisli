@@ -190,8 +190,9 @@ def basis (value : Json) : Except String Basis := do
       if width > 4294967295 || text != "bits:" ++ toString width then
         throw "invalid bits atom"
       return .bits width
+    if !text.startsWith "tuple:" || text.length > 16 then throw "invalid basis atom"
     let some arity := (text.drop 6).toString.toNat? | throw "invalid basis atom"
-    if text != "tuple:" ++ toString arity then throw "invalid basis atom"
+    if arity > 4294967295 || text != "tuple:" ++ toString arity then throw "invalid basis atom"
     return .tuple arity
 
 private def nats (value : Json) : Except String (List Nat) := do (← array value).mapM nat
