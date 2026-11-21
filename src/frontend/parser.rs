@@ -49,11 +49,11 @@ pub fn parse_module(source: &str) -> Result<Module, ParseError> {
 /// Parse the same source grammar, retaining descriptive comments separately
 /// from the existing AST. Documentation never establishes quantum validity.
 pub fn parse_documented_module(source: &str) -> Result<DocumentedModule, ParseError> {
-    parse_documented(source, None)
+    parse_documented(source, None).map(|(documented, _)| documented)
 }
 
 pub(crate) fn parse_bounded_module(source: &str) -> Result<Module, ParseError> {
-    parse_documented(source, Some((10_000, 64))).map(|documented| documented.syntax)
+    parse_documented(source, Some((10_000, 64))).map(|(documented, _)| documented.syntax)
 }
 
 /// Parse a complete host-supplied ordinary type description with the source
@@ -79,10 +79,10 @@ pub(crate) fn parse_closed_basis(source: &str) -> Result<Type, ParseError> {
     Ok(ty)
 }
 
-fn parse_documented(
+pub(super) fn parse_documented(
     source: &str,
     limits: Option<(usize, usize)>,
-) -> Result<DocumentedModule, ParseError> {
+) -> Result<(DocumentedModule, Vec<Token>), ParseError> {
     let (tokens, comments) = if let Some((tokens, comments)) = limits {
         super::lexer::lex_documented_bounded(source, tokens, comments)?
     } else {
@@ -97,7 +97,8 @@ fn parse_documented(
         remaining_import_prefix_bytes: MAX_IMPORT_PREFIX_BYTES,
     };
     let syntax = parser.module(source.len())?;
-    attach(syntax, &parser.tokens, comments)
+    let documented = attach(syntax, &parser.tokens, comments)?;
+    Ok((documented, parser.tokens))
 }
 
 /// An implementation limit on recursive syntax and left-associated expression ASTs.

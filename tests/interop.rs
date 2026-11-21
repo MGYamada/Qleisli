@@ -9,6 +9,31 @@ use qleisli::sim::{SimulationLimits, run_closed};
 
 const BELL: &str = include_str!("fixtures/interop/bell.qasm");
 const GATES: &str = include_str!("fixtures/interop/gates.qasm");
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
+fn openqasm_register_names_exclude_keywords() {
+    let edition = qleisli::edition::Edition::E2026;
+    for kind in ["qubit", "bit"] {
+        for name in ["in", "pragma"] {
+            let text = source(&format!("{kind} {name};"));
+            let error = import_openqasm3(edition, &text).unwrap_err();
+            let span = error.span.unwrap();
+            assert_eq!(&text[span.start..span.end], name);
+        }
+    }
+    assert!(
+        import_openqasm3(
+            edition,
+            &source("qubit input_wire; bit in_bit; reset input_wire; in_bit = measure input_wire;")
+        )
+        .is_ok()
+    );
+}
+
 fn source(body: &str) -> String {
     format!("OPENQASM 3.0; include \"stdgates.inc\"; {body}")
 }

@@ -17,7 +17,7 @@ pub(super) const USAGE: &str =
   --basis is hierarchy run/sample-only (default 0); it is never ordinary input.
   --type binds an exact closed ordinary Basis; it does not select runtime input.
   Selected-source sample requires shots in 1..1024 and a seed.
-  emit-proposal requires output and no kernel/request/provider; it is untrusted.
+  emit-proposal requires output. Source contracts and Meaning checks use the selected kernel.
   Module-map checking covers every declaration, native checking the selected instance.
 discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
   QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
@@ -204,7 +204,6 @@ pub(super) fn parse(args: &[OsString]) -> Option<Options> {
     match result.command.as_str() {
         "emit-proposal"
             if result.output.is_some()
-                && result.kernel.is_none()
                 && result.request.is_none()
                 && result.provider.is_none()
                 && result.shots.is_none()

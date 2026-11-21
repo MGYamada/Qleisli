@@ -252,6 +252,26 @@ class Connections(unittest.TestCase):
             self.assertEqual(result.returncode, 2)
             self.assertIsNone(json.loads(result.stdout)["result"])
 
+    def test_source_cli_preserves_typed_results_and_portable_export_requirements(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "Qargo.toml").write_text('schema-version = 2\n[qrate]\nedition = "2026"\n')
+            (root / "main.qli").write_text("struct Empty {}\npub observe fn main() -> Empty { Empty {} }\n")
+            for action in ("check", "run", "sample", "emit-ir"):
+                with self.subTest(action=action):
+                    extra = ["--shots=2", "--seed=7"] if action == "sample" else []
+                    rust = subprocess.run([EXE, "interop", action, directory, "--input=qli",
+                                           "--expect-edition=2026", *extra], capture_output=True)
+                    py = subprocess.run([sys.executable, "-m", "qleisli", directory, "--input=qli",
+                                         "--edition=2026", "--executable=" + EXE,
+                                         "--action=" + action, *extra], capture_output=True)
+                    expected = int(action == "emit-ir")
+                    self.assertEqual(rust.returncode, expected, rust.stdout)
+                    self.assertEqual(py.returncode, expected, py.stdout)
+                    self.assertEqual(json.loads(py.stdout), json.loads(rust.stdout))
+                    if action == "emit-ir":
+                        self.assertIn(b"typed result export", py.stdout)
+
     def test_python_limits_and_cli(self):
         p = self.client.from_qir(self.qir)
         for shots, seed in [(0, 0), (True, 0), (1, -1), (1, 2**64)]:

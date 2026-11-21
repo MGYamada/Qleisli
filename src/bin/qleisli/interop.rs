@@ -40,34 +40,8 @@ fn failure(code: &'static str, message: impl Into<String>) -> Failure {
 }
 
 fn adapter(error: interop::InteropError, source: Option<(&Path, &str)>) -> Failure {
-    let primary = source.and_then(|(path, text)| {
-        let span = error.span?;
-        let prefix = text.get(..span.start)?;
-        text.get(span.start..span.end)?;
-        let (mut line, mut column, mut previous_cr) = (1, 1, false);
-        for ch in prefix.chars() {
-            match ch {
-                '\r' => {
-                    line += 1;
-                    column = 1;
-                }
-                '\n' => {
-                    if !previous_cr {
-                        line += 1;
-                    }
-                    column = 1;
-                }
-                _ => column += 1,
-            }
-            previous_cr = ch == '\r';
-        }
-        Some(SourceLocation {
-            path: path.into(),
-            span,
-            line,
-            column,
-        })
-    });
+    let primary =
+        source.and_then(|(path, text)| SourceLocation::from_span(path, text, error.span?));
     Failure::Diagnostic(Diagnostic {
         counterexample: None,
         boundary: None,

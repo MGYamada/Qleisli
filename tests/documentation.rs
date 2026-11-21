@@ -221,6 +221,22 @@ fn documentation_neither_changes_ir_nor_authorizes_invalid_ownership() {
 }
 
 #[test]
+fn static_and_classical_signatures_keep_requires_before_the_body() {
+    let signatures = [
+        "pub static fn previous[const n:Nat]()->Nat requires n >= 1",
+        "pub classical fn take[const n:Nat](b:Bit)->Bit requires n >= 1, /* { */ n <= (4)",
+    ];
+    let source = format!("{} {{ n-1 }}\n{} {{ b }}", signatures[0], signatures[1]);
+    let rendered = render_markdown(&source).unwrap();
+    for signature in signatures {
+        assert!(
+            rendered.contains(&format!("{signature}\n```")),
+            "{rendered}"
+        );
+    }
+}
+
+#[test]
 fn markdown_includes_private_docs_and_uses_safe_signature_fences() {
     let source = "//! Module text.\n/// Function text.\npub /* ``` */ classical fn f(x: Bit) -> Bit { x }\n/// Private text.\nclassical fn hidden() -> Bit { 0 }";
     let rendered = render_markdown(source).unwrap();

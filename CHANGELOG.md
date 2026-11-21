@@ -9,6 +9,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Run Python CLI source actions directly and accept explicit checker paths
+  for source obligations during proposal emission (#681, #683).
+- Preserve representable subnormal input norms in hierarchy sampling (#682).
+- Use the frontend's Unicode and CRLF coordinates for interop diagnostics (#213).
+- Reject OpenQASM register names reserved by the grammar, cover all native
+  reply modes in protocol tests, and render static and classical function
+  constraints in generated documentation (#684, #685, #686).
 - Check hierarchy control interfaces against the retained requests and compare each
   executable finite function circuit with its accepted exact matrix. Bound tuple
   decoding, speed up issued-identity checks and charge for traversing their

@@ -714,12 +714,29 @@ fn sample_instrument<R: RandomSource>(
             .ok_or_else(|| Error::limit("sampling retained output size overflow"))?,
     )?;
     work.charge(product(input.len(), 2)?)?;
-    let input_norm = norm_squared(input).map_err(SamplingError::Numerical)?;
+    let mut input_norm = norm_squared(input).map_err(SamplingError::Numerical)?;
+    let scale = if input_norm < f64::MIN_POSITIVE {
+        // Squaring each component can round it to zero even when the sum
+        // is representable. Rescale by an exact power of two before summing.
+        work.charge(input.len())?;
+        let up = 2.0_f64.powi(512);
+        let scaled: f64 = input
+            .iter()
+            .map(|[re, im]| {
+                let re = re * up;
+                let im = im * up;
+                re * re + im * im
+            })
+            .sum();
+        input_norm = (scaled / up) / up;
+        scaled.sqrt() / up
+    } else {
+        input_norm.sqrt()
+    };
     if input_norm <= 0.0 {
         return Err(SamplingError::Numerical("input norm must be positive"));
     }
     let mut normalized = zeroes(input.len())?;
-    let scale = input_norm.sqrt();
     for (to, from) in normalized.iter_mut().zip(input) {
         *to = [from[0] / scale, from[1] / scale];
     }
