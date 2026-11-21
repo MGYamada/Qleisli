@@ -92,7 +92,7 @@ class URLBase:
     fragment: str = ""
 
 
-def resolve_local(root: Path, base: URLBase, target: str):
+def resolve_local(root: Path, base: URLBase, target: str, site_path: str):
     """Return (URL base, fragment), or None for a nonlocal URL.
 
     Keep a base URL's trailing slash independently of whether its path exists:
@@ -110,7 +110,10 @@ def resolve_local(root: Path, base: URLBase, target: str):
         destination = base.path
         directory = base.directory
     elif path.startswith("/"):
-        destination = root / path.lstrip("/")
+        prefix = site_path.rstrip("/")
+        if path != prefix and not path.startswith(site_path):
+            raise ValueError(f"target is outside the published path {site_path}")
+        destination = root / path.removeprefix(prefix).lstrip("/")
         directory = path.endswith("/")
     else:
         destination = (base.path if base.directory else base.path.parent) / path
@@ -121,7 +124,7 @@ def resolve_local(root: Path, base: URLBase, target: str):
     return URLBase(destination, directory, fragment=fragment), fragment
 
 
-def check_book(root: Path) -> tuple[list[str], dict[str, int]]:
+def check_book(root: Path, site_path: str = "/") -> tuple[list[str], dict[str, int]]:
     root = root.resolve()
     errors = []
     counts = {"html_files": 0, "local_links": 0, "anchors": 0}
@@ -154,12 +157,17 @@ def check_book(root: Path) -> tuple[list[str], dict[str, int]]:
         except (OSError, ValueError, RuntimeError) as failure:
             errors.append(f"{path.relative_to(root)}: cannot read HTML: {failure}")
 
+    if site_path != "/":
+        not_found = pages.get(root / "404.html")
+        if not not_found or not not_found.base or not_found.base.target != site_path:
+            errors.append(f"404.html must set its base href to {site_path!r}")
+
     for source, page in sorted(pages.items()):
         document_base = URLBase(source)
         effective_base = document_base
         if page.base is not None:
             try:
-                resolved = resolve_local(root, document_base, page.base.target)
+                resolved = resolve_local(root, document_base, page.base.target, site_path)
                 effective_base = (resolved[0] if resolved is not None
                                   else URLBase(source, external=True))
             except (OSError, ValueError, RuntimeError) as failure:
@@ -174,7 +182,7 @@ def check_book(root: Path) -> tuple[list[str], dict[str, int]]:
                 continue
             location = f"{source.relative_to(root)}:{reference.line}"
             try:
-                resolved = resolve_local(root, effective_base, reference.target)
+                resolved = resolve_local(root, effective_base, reference.target, site_path)
                 if resolved is None:
                     continue
                 counts["local_links"] += 1
@@ -358,9 +366,9 @@ def main(argv=None) -> int:
     parser.add_argument("--source", type=Path, default=DEFAULT_SOURCE,
                         help="book source directory (default: repository docs/src)")
     args = parser.parse_args(argv)
-    errors, counts = check_book(args.root)
     # The two lists name chapters of this repository's book. Another book has none.
     own = args.source.resolve() == DEFAULT_SOURCE.resolve()
+    errors, counts = check_book(args.root, "/Qleisli/" if own else "/")
     source_errors, chapters = check_sources(
         args.source, EXEMPT if own else frozenset(), PENDING if own else frozenset())
     errors += source_errors

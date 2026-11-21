@@ -9,6 +9,8 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Publish the checked mdBook from `main` to GitHub Pages and mirror its
+  generated HTML to the `gh-pages` branch.
 - Move the beta entries listed above the 0.3.0-beta heading into that section,
   date it like its tag and open it with its scope statement (#645, #646).
 - Pin the crate documentation's Language Reference link to the release tag, so

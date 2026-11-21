@@ -100,6 +100,17 @@ class RenderedBookLinks(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("missing anchor 'not-found' in index.html", errors[0])
 
+    def test_project_pages_404_resolves_links_under_the_published_path(self):
+        self.write("style.css", "Style")
+        self.write("404.html", '<base href="/Qleisli/"><link href="style.css">'
+                   '<a href="/Qleisli/index.html#home">Home</a>')
+        self.assertEqual(check_book(self.root, "/Qleisli/")[0], [])
+        self.write("404.html", '<base href="/"><link href="style.css">')
+        self.assertIn("404.html must set its base href to '/Qleisli/'",
+                      check_book(self.root, "/Qleisli/")[0])
+        self.write("404.html", '<base href="/Qleisli/"><link href="/style.css">')
+        self.assertIn("outside the published path", check_book(self.root, "/Qleisli/")[0][0])
+
     def test_first_relative_base_controls_paths_and_fragments(self):
         self.write("assets/index.html", '<h1 id="assets">Assets</h1>')
         self.write("assets/image.svg", "Image")

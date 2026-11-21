@@ -616,6 +616,7 @@ jobs:
     needs: changes
     outputs:
       release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      pages_artifact: github-pages-${{ github.run_attempt }}
     runs-on: ubuntu-latest
     # External presentation toolchain; independent of Qleisli/Cargo/Qargo versions.
     env:
@@ -666,12 +667,77 @@ jobs:
             base_args=(--base-ref "$CONSTITUTION_BASE")
           fi
           python3 scripts/check_constitution.py "${base_args[@]}"
+      - name: Package the checked HTML for Pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'MGYamada/Qleisli'
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        with:
+          name: github-pages-${{ github.run_attempt }}
+          path: target/mdbook/
       - name: Bind and retain successful producer evidence
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
         id: release-receipt
         uses: ./.github/actions/release-receipt
         with:
           readiness: ${{ inputs.release_readiness && 'true' || 'false' }}
+
+  deploy-pages:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && github.repository == 'MGYamada/Qleisli'
+    needs: check-docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Mirror the generated site to gh-pages.
+      pages: write
+      id-token: write
+    concurrency:
+      group: github-pages
+      queue: max
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check that this run still builds the tip of main
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          if [[ "$head" == "$GITHUB_SHA" ]]; then echo 'current=true' >> "$GITHUB_OUTPUT"; fi
+      - name: Download the Pages archive from this build
+        if: steps.source.outputs.current == 'true'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ${{ needs.check-docs.outputs.pages_artifact }}
+          path: ${{ runner.temp }}/pages-archive
+      - name: Mirror the archive to gh-pages
+        if: steps.source.outputs.current == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir "$RUNNER_TEMP/site"
+          cd "$RUNNER_TEMP/site"
+          tar -xf "$RUNNER_TEMP/pages-archive/artifact.tar"
+          test -s index.html
+          test -s 404.html
+          gh auth setup-git
+          git init --initial-branch=gh-pages
+          git remote add origin "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          previous=$(git ls-remote origin refs/heads/gh-pages)
+          if [[ -n "$previous" ]]; then
+            git fetch --depth=1 origin refs/heads/gh-pages
+            git reset --mixed FETCH_HEAD
+          fi
+          git add --force --all
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' \
+              commit -m "Build book from $GITHUB_SHA"
+            git push origin HEAD:refs/heads/gh-pages
+          fi
+      - name: Deploy the same archive to GitHub Pages
+        if: steps.source.outputs.current == 'true'
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+        with:
+          artifact_name: ${{ needs.check-docs.outputs.pages_artifact }}
 
   required:
     # Stable public check names preserve the existing branch-protection contexts.
