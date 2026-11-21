@@ -43,6 +43,8 @@ def shadow_tasks(tasks):
     for task in tasks:
         if task['id'] in names:
             command, = task['commands']
+            if task['id'] in {'lean-qft', 'lean-qft-semantic', 'lean-qft-graph', 'lean-qpe'}:
+                command = [*command, '--shadow-small']
             if '{record}' not in command:
                 command = [*command, '--record', '{record}']
             selected.append(task | {'commands': [command]})
@@ -93,7 +95,7 @@ def compare(output, first, workers, report):
     binding = source_binding(ROOT, expected_head, environment)
     tasks = shadow_tasks(load_tasks(MANIFEST))
     manifest = native_harness.digest(MANIFEST)
-    report.update(binding=binding, manifest_sha256=manifest, expected_ids=[t['id'] for t in tasks])
+    report.update(case_profile='small-qubit', binding=binding, manifest_sha256=manifest, expected_ids=[t['id'] for t in tasks])
     build_path = output / 'native-build.json'
     report['library_commands'] = []
     native_harness.prepare(build_path, report['library_commands'])
@@ -113,7 +115,7 @@ def compare(output, first, workers, report):
         if mode == 'shared':
             arm['preparation_commands'] = []
             drivers = bundle.prepare(directory / 'drivers', report['expected_ids'],
-                                     arm['preparation_commands'], build_path)
+                                     arm['preparation_commands'], build_path, shadow_small=True)
             binary_hash = json.loads(drivers[0].read_bytes())['binary']['sha256']
             shared_identity = (drivers[1], binary_hash)
             arm['preparation_seconds'] = time.monotonic() - started
