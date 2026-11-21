@@ -1,10 +1,10 @@
 # Checked operations
 
 A **checked operation** is the static constructor
-`checked_op(implementation, Meaning)`. A program writes one where it passes an
-operation to a function that asks for an operation with a stated meaning. The
-constructor requests a check that a source operation has a declared exact
-meaning.
+`checked_op(implementation, Meaning)`. Use `checked_op` to request exact
+Meaning evidence for a static operation description, even when the receiving
+parameter does not name a Meaning. The constructor itself makes the request:
+it asks for a check that a source operation has a declared exact meaning.
 
 A **Meaning** is a declaration `meaning M: A -> B = ...;`. It specifies the
 exact action of an operation from basis tree `A` to basis tree `B`.

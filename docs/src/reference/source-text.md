@@ -287,7 +287,8 @@ elsewhere:
 | `as` | Separates the quantum input expression and the pattern in `basis input as pattern { expression }` | An ordinary identifier |
 | `mut` | The marker of `let mut name = ...`, which the common judgment rejects | An ordinary identifier: `let mut = 0; mut` is an ordinary immutable binding and its use |
 | `for`, `in`, `carry`, `yield` | `for` in `for static`, the `in` and `carry` parts of either fold header, and `yield` at the start of a fold tail | An identifier |
-| `controlled`, `inverse` | `controlled(op)(args)` is the controlled-application construct | Ordinary single-stage name resolution: `controlled(q)` is an ordinary call to an identifier |
+| `controlled` | `controlled(op)(args)` is the controlled-application construct | Ordinary single-stage name resolution: `controlled(q)` is an ordinary call to an identifier |
+| `inverse` | The two-stage form `inverse(U)(q)` is rejected (`parse`), and the diagnostic suggests `adjoint(U)(q)`. [Adjoint application](static-language.md#adjoint-application) gives the rules. | Normal name resolution: `inverse(q)` is an ordinary call, and a function or a local named `inverse` is an ordinary name |
 | `qlet` | None | An ordinary identifier |
 
 Neither spelling of `controlled` guesses the category of a resolved

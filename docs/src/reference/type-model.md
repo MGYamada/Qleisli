@@ -869,8 +869,9 @@ Rules:
   effects. Constant selection cannot hide an observing body behind a pure
   public label.
 - These source judgments provide no accepted handle independently of the
-  concrete route. No route provides implicit measurement, coherent `qmatch`,
-  general `const<T>` or a source-preservation theorem.
+  concrete route. Ordinary `match` neither measures a quantum owner implicitly
+  nor performs coherent selection, which is the separate `qmatch` form below.
+  No route provides general `const<T>` or a source-preservation theorem.
 
 ### Coherent selection
 
@@ -1198,8 +1199,11 @@ Rules for `--ir-profile`:
 
 ### Raw execution
 
-Raw execution runs a selected entry that takes no runtime input. Raw checking
-retains the original source signature.
+This subsection covers the untyped selected Raw route. A source that needs
+the typed route takes that route under `--ir-profile=raw` too, and
+[Typed routes](#typed-routes) gives its checks. Raw execution runs a selected
+entry that takes no runtime input. Raw checking retains the original source
+signature.
 
 Rules:
 
@@ -1209,8 +1213,8 @@ Rules:
 - Any explicit `--basis` is rejected on Raw, even one of zero.
 - Native acceptance comes before the independent source-step comparison and
   the Raw execution.
-- The result reports native validity, no caller request, the step comparison
-  and `source_meaning_verified: false`.
+- On this route, the result reports native validity, no caller request, the
+  step comparison and `source_meaning_verified: false`.
 - Acceptance of the Unit maps does not make Raw execution with a quantum
   result available.
 
@@ -1451,8 +1455,13 @@ Selection:
   nominal declarations. It does not silently omit their unused functions or
   quantum effects.
 - For a source with nominal declarations, `--ir-profile=auto` and `raw`
-  execute a public runtime function through the common finite emitter and the
+  select the typed checking route for an eligible public runtime function.
+  The route checks the function through the common finite emitter and the
   `finite-ordinary-root-v2` or `finite-runtime-root-v2` gate.
+- Checking a root that has runtime parameters does not make it executable.
+  On a typed route, `run` and `sample` require
+  [zero original runtime parameters](#selected-entry-commands), and a `Unit`
+  parameter of zero width counts as a parameter.
 - A selected root with Basis or Nat parameters retains its original generic
   header, closed actuals and numeric premises through the
   `finite-runtime-root-v2` gate. A nominal actual such as

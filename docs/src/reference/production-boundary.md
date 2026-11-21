@@ -31,9 +31,13 @@ Rules:
 - A missing, incompatible or failing native checker rejects. No other
   verifier takes its place: the retired Rust verifier and the dual-acceptance
   fallback are absent.
-- Not every public function invokes Lean or grants acceptance.
+- Invoking Lean and granting a semantic accepted handle are different
+  things. Not every public function does either.
   [Public operations that confer no acceptance](#public-operations-that-confer-no-acceptance)
-  lists the operations that do neither.
+  lists the operations that produce no acceptance. One of them invokes Lean
+  all the same: QIRF export has the native checker inspect its output. That
+  check establishes portable validity. It is neither a fresh execution
+  acceptance nor a translation theorem.
 
 ## Constitutional theorem boundary
 

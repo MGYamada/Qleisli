@@ -1,8 +1,9 @@
 # Realization, specialization and resources
 
-Checking a program settles what the program means. It does not settle how a
-target implements that meaning, how close an implementation comes, or what it
-costs. This chapter covers the claims that answer those three questions.
+Checking an artifact and showing that a target implements its accepted
+meaning are separate tasks. A check does not settle how a target implements
+that meaning, how close an implementation comes, or what it costs. This
+chapter covers the claims that answer those three questions.
 
 A **realization** is a claim that one emitted target artifact implements the
 accepted meaning of a program under a named target profile. A realization

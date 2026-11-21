@@ -173,8 +173,8 @@ The claim and the payload depend on the mode:
 The five claims are distinct. `Mode.status` and `payload` in
 `lean-kernel/Protocol/NativeContext.lean` define this table.
 
-An error reply has three lines: the header, `error` and one of these
-rejection codes:
+An ordinary error reply has three lines: the header, `error` and one of
+these rejection codes:
 
 | Code | Rejection |
 | --- | --- |
@@ -192,12 +192,14 @@ the located form. When this mode rejects a workspace restoration, its reply
 can also carry the original Raw workspace interval. After `error` and
 `clean_workspace` or `dirty_workspace`, the located form contains the checked
 edition, the product, the mode, the execution scope, the zero-based Raw start
-and the positive operation count.
+and the positive operation count. The located form is a rejection all the
+same. Its extra fields serve diagnostics only.
 
 Rules:
 
-- An error reply contains only the header, `error`, the rejection code and the
-  final newline. It asserts no context that was checked successfully.
+- An ordinary error reply contains only the header, `error`, the rejection
+  code and the final newline. It asserts no context that was checked
+  successfully.
 - Before a consumer interprets its own bounded payload, it must match the
   edition, the product, the actual mode and the requested scope. It must
   consume that payload fully.
