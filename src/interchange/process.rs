@@ -123,13 +123,14 @@ pub(super) fn invoke<T>(
     request.extend_from_slice(version);
     request.extend_from_slice(selector);
     request.extend_from_slice(&packet);
-    drop(packet);
     let identity = crate::digest::sha256(&request);
+    let trace = super::verification_trace::pending(&identity, obligation, &packet);
+    drop(packet);
     let frame = format!("qleisli.native-result 4\n{identity}\n");
     // Profile consumers interpret the same typed payload after the common
     // exact-request check. Only the response header changed their wire shape.
     let inner = b"qleisli.native-result 3\n";
-    invoke_raw(
+    let result = invoke_raw(
         executable,
         &["--verify-request"],
         request,
@@ -144,7 +145,11 @@ pub(super) fn invoke<T>(
             projected.extend_from_slice(body);
             decode(&projected)
         },
-    )
+    );
+    if let Some(trace) = trace {
+        super::verification_trace::finish(trace, result.as_ref().err());
+    }
+    result
 }
 
 fn invoke_raw<T>(

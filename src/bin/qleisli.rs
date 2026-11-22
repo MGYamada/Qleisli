@@ -31,6 +31,8 @@ mod samples;
 mod source_commands;
 #[path = "qleisli/source_plan.rs"]
 mod source_plan;
+#[path = "qleisli/verification_trace.rs"]
+mod verification_trace;
 
 fn write_stdout(bytes: &[u8], description: &str) -> ExitCode {
     match std::io::stdout().lock().write_all(bytes) {
@@ -59,12 +61,25 @@ fn report(root: &std::path::Path, error: Diagnostic) {
 
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
+    let mut trace = verification_trace::Command::default();
+    if std::env::var_os("QLEISLI_VERIFICATION_TRACE").is_some_and(|flag| flag == "1") {
+        let (status, native) =
+            qleisli::interchange::verification_trace::capture(|| run(&args, &mut trace));
+        trace.write(status, native);
+        return status;
+    }
+    run(&args, &mut trace)
+}
+
+fn run(args: &[std::ffi::OsString], trace: &mut verification_trace::Command) -> ExitCode {
     // Discovery is documentation only and precedes every source/native route.
     // Exact standalone requests cannot swallow execution or format flags.
     if args.len() == 1 && (args[0] == "--help" || args[0] == "help") {
+        trace.route = "help";
         return write_stdout(format!("{}\n", options::USAGE).as_bytes(), "help");
     }
     if args.len() == 2 && args[0] == "help" && args[1] == "ecosystem" {
+        trace.route = "help";
         return write_stdout(options::ECOSYSTEM_HELP.as_bytes(), "ecosystem introduction");
     }
     if args
@@ -97,16 +112,20 @@ fn main() -> ExitCode {
         return ExitCode::from(2);
     }
     if args.first().is_some_and(|arg| arg == "interop") {
+        trace.route = "interop";
         return interop::run(&args[1..]);
     }
     if args.first().is_some_and(|arg| arg == "engineering") {
+        trace.route = "engineering";
         return engineering::run(&args[1..]);
     }
-    if source_plan::selected(&args) {
-        return source_plan::run(&args);
+    if source_plan::selected(args) {
+        trace.route = "selected-source";
+        return source_plan::run(args);
     }
     let json = args.iter().any(|arg| arg == "--format=json");
-    let outcome = source_commands::dispatch(&args, json);
+    let outcome = source_commands::dispatch(args, json);
+    trace.source(&outcome);
     if json {
         return json::render(outcome);
     }

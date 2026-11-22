@@ -1992,8 +1992,7 @@ cannot replace an obligation that failed.
 | `--preparation-check` | Preparation | Checked inspection of the preparation request and packet. |
 
 The migration keeps the ordinary project, selected Raw, and sized/hierarchy
-source emitters. It records the selected lowering and source-byte policy
-before checking. The explicit `--legacy-source-limits` compatibility policy
+source emitters. The explicit `--legacy-source-limits` compatibility policy
 never supplies an implicit fallback for a bounded request. In v5, only a
 source subject with an implemented producer and consumer can reach production.
 The retained but unconstructed arm, operation and context subject types expand
@@ -2011,6 +2010,17 @@ structured command outcome for text and JSON. Explicit source diagnostics
 and checker failures keep their locations and codes. Only a current
 execution-admitting decision at the required scope can bind an execution
 view.
+
+Set `QLEISLI_VERIFICATION_TRACE=1` to append a
+`qleisli.verification-trace` version-1 JSON line to stderr. The record
+includes the command route, the source-byte policy when selected by the
+ordinary command engine, and the product and protocol identities. For each
+native invocation it records the subject and request hashes, obligation,
+edition, scope, and outcome or diagnostic ID. The trace reports at most 128
+native invocations and counts any further invocations in `omitted`. Source
+text, file names and diagnostic messages are excluded from this record.
+Stdout and the command exit status keep their regular meaning. The trace
+is an observation for debugging and does not authorize execution.
 
 ## History
 

@@ -8,6 +8,57 @@ use std::process::Command;
     ignore = "native-kernel gate: requires QLEISLI_KERNEL"
 )]
 #[test]
+fn verification_trace_observes_the_same_requests_and_the_explicit_source_policy() {
+    let root = SourceRoot::new("observe fn main()->Bit{measure_z(init0())}");
+    let invoke = |options: &[&str], traced: bool| {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+        command.arg("run").arg(&root.0).args(options);
+        if traced {
+            command.env("QLEISLI_VERIFICATION_TRACE", "1");
+        } else {
+            command.env_remove("QLEISLI_VERIFICATION_TRACE");
+        }
+        command.output().unwrap()
+    };
+    let trace = |output: &std::process::Output| {
+        String::from_utf8_lossy(&output.stderr)
+            .lines()
+            .find(|line| line.starts_with("{\"format\":\"qleisli.verification-trace\""))
+            .expect("verification trace")
+            .to_owned()
+    };
+    let ordinary = invoke(&[], false);
+    let text = invoke(&[], true);
+    let json = invoke(&["--format=json"], true);
+    assert!(ordinary.status.success() && text.status.success() && json.status.success());
+    assert!(ordinary.stderr.is_empty());
+    assert_eq!(ordinary.stdout, text.stdout);
+    let observed = trace(&text);
+    assert_eq!(observed, trace(&json));
+    assert!(observed.contains("\"policy\":\"bounded\""));
+    assert!(observed.contains("\"scope\":\"execution\""));
+    assert!(observed.contains("\"decision\":\"accepted\""));
+    assert!(observed.contains("\"request_sha256\":\""));
+    assert!(observed.contains("\"subject_sha256\":\""));
+    assert!(!observed.contains("measure_z"));
+    assert!(!observed.contains(root.0.to_str().unwrap()));
+
+    let limited = invoke(&["--source-bytes=1", "--format=json"], true);
+    assert!(!limited.status.success());
+    let observed = trace(&limited);
+    assert!(observed.contains("\"source_bytes\":1"));
+    assert!(observed.contains("\"requests\":[]"));
+    assert!(observed.contains("\"success\":false"));
+    let legacy = invoke(&["--legacy-source-limits"], true);
+    assert!(legacy.status.success());
+    assert!(trace(&legacy).contains("\"policy\":\"legacy\""));
+}
+
+#[cfg_attr(
+    not(qleisli_native_tests),
+    ignore = "native-kernel gate: requires QLEISLI_KERNEL"
+)]
+#[test]
 fn explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations() {
     let root = SourceRoot::new("pub unitary fn id(q:Q<Bit>)->Q<Bit>{q}");
     let kernel = std::env::var("QLEISLI_KERNEL").expect("explicit native checker");

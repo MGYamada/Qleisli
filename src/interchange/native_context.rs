@@ -83,7 +83,7 @@ impl Mode {
         }
     }
 
-    fn status(self) -> &'static str {
+    pub(super) fn status(self) -> &'static str {
         match self {
             Self::Ordinary
             | Self::Contract

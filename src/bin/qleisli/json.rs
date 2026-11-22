@@ -240,6 +240,7 @@ pub(super) fn render(outcome: Outcome) -> ExitCode {
         command,
         warnings,
         result,
+        ..
     } = outcome;
     let mut artifact_pointer = None;
     let result = match result {

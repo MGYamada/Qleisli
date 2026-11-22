@@ -132,6 +132,7 @@ fn execute(options: &Options, input: &Input) -> Result<Success, Failure> {
 pub(super) struct Outcome {
     pub(super) root: PathBuf,
     pub(super) command: String,
+    pub(super) policy: Option<SourcePolicy>,
     pub(super) warnings: Vec<Diagnostic>,
     pub(super) result: Result<Success, Failure>,
 }
@@ -147,6 +148,7 @@ pub(super) fn dispatch(args: &[OsString], json: bool) -> Outcome {
         return Outcome {
             root: PathBuf::new(),
             command,
+            policy: None,
             warnings: Vec::new(),
             result: Err(Failure::Source(failure("usage", super::options::USAGE))),
         };
@@ -190,6 +192,7 @@ pub(super) fn dispatch(args: &[OsString], json: bool) -> Outcome {
     Outcome {
         root,
         command: options.command,
+        policy: Some(options.policy),
         warnings,
         result,
     }

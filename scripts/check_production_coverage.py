@@ -863,7 +863,7 @@ PATHS = {
         ('src/frontend/specialize/raw/preservation.rs', 'observing_replay_rejects_native_valid_rewrites_and_rechecks_actual_calls'),
         ('tests/reference_meanings.rs', 'fixed_fourier_reference_meanings_match_independent_exact_coefficients')]),
     'source-documentation': path_rule('documentation', 'source', '', [
-        ('src/bin/qleisli.rs', ['source_commands::dispatch(&args, json)']),
+        ('src/bin/qleisli.rs', ['source_commands::dispatch(args, json)']),
         ('src/bin/qleisli/source_commands.rs', ['"doc" => {', 'render_markdown(&source)']),
         ('src/frontend/documentation.rs', ['pub fn render_markdown(']),
     ], [('tests/cli.rs', 'doc_reads_one_file_and_does_not_claim_type_checking')]),
@@ -933,7 +933,7 @@ PATHS = {
          'Operation::TakeBit(', 'Operation::PutBit(']),
         ('src/frontend/compile/lower/places.rs', ['fn prepare_places(', 'fn restore_places(',
          'self.static_natural_value(module, index)?', 'places.accesses.into_iter().zip(returned).rev()']),
-        ('src/bin/qleisli.rs', ['source_plan::run(&args)']),
+        ('src/bin/qleisli.rs', ['source_plan::run(args)']),
         ('src/frontend/compile/mod.rs', ['pub use super::specialize::{']),
         ('src/bin/qleisli/source_plan.rs', ['fn prepare(', 'fn execute(', 'prepared.payload()', 'untrusted-proposal', 'source_meaning_verified']),
         ('src/frontend/specialize.rs', ['pub fn parse(', 'pub fn instantiate(',

@@ -187,8 +187,8 @@ The claim and the payload depend on the mode:
 The five claims are distinct. `Mode.status` and `payload` in
 `lean-kernel/Protocol/NativeContext.lean` define this table.
 
-An ordinary error reply has three lines: the header, `error` and one of
-these rejection codes:
+An ordinary error reply contains the header, request identity, `error` and
+one of these rejection codes:
 
 | Code | Rejection |
 | --- | --- |
@@ -211,8 +211,8 @@ same. Its extra fields serve diagnostics only.
 
 Rules:
 
-- An ordinary error reply contains only the header, `error`, the rejection
-  code and the final newline. It asserts no context that was checked
+- An ordinary error reply contains only the header, request identity,
+  `error`, the rejection code and the final newline. It asserts no context that was checked
   successfully.
 - Before a consumer interprets its own bounded payload, it must match the
   edition, the product, the actual mode and the requested scope. It must
