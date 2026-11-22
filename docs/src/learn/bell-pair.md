@@ -11,7 +11,7 @@ another project using the same edition.
 
 ```sh
 mkdir -p bell-lab
-cp bit-lab/Qargo.toml bell-lab/Qargo.toml
+cp bit-lab/Qlirgo.toml bell-lab/Qlirgo.toml
 ```
 
 Save the following function as `bell-lab/main.qli`.

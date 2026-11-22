@@ -1,17 +1,20 @@
 //! Version-1 CLI result transport, outside the IR/evidence acceptance boundary.
 
-use std::ffi::OsString;
 use std::fmt::Write as _;
 use std::io::Write as _;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(test)]
+use std::path::PathBuf;
 use std::process::ExitCode;
 
 use qleisli::frontend::diagnostic::{
     Diagnostic, DiagnosticBoundary, QuantumOwnershipBoundary, SourceLocation,
 };
-use qleisli::sim::{Sample, SimulationError};
+use qleisli::sim::Sample;
 
-use super::source_commands::{Failure, Success};
+use super::source_commands::failure;
+pub(super) use super::source_commands::simulation_failure;
+use super::source_commands::{Failure, Outcome, Success};
 
 pub(super) fn quoted(text: &str) -> String {
     let mut output = String::from("\"");
@@ -51,10 +54,11 @@ fn path_label(root: &Path, path: &Path) -> Option<String> {
     }
     // A selected source root may be below its owning qrate manifest. Only
     // that ancestor filename can escape the source root, without host labels.
-    if path.file_name()? == "Qargo.toml" {
+    let manifest = path.file_name()?.to_str()?;
+    if matches!(manifest, "Qlirgo.toml" | "Qargo.toml") {
         let relative = root.strip_prefix(path.parent()?).ok()?;
         return Some(format!(
-            "{}Qargo.toml",
+            "{}{manifest}",
             "../".repeat(relative.components().count())
         ));
     }
@@ -174,27 +178,6 @@ pub(super) fn artifact_error_json(error: &qleisli::interchange::Error) -> String
     )
 }
 
-fn failure(code: &'static str, message: impl Into<String>) -> Diagnostic {
-    Diagnostic {
-        counterexample: None,
-        boundary: None,
-        code,
-        message: message.into(),
-        primary: None,
-    }
-}
-
-pub(super) fn simulation_failure(error: SimulationError) -> Diagnostic {
-    let code = match error {
-        SimulationError::DimensionLimit { .. }
-        | SimulationError::ComponentLimit { .. }
-        | SimulationError::AmplitudeLimit { .. }
-        | SimulationError::ExecutionLimit { .. } => "limit",
-        SimulationError::NotClosed(_) | SimulationError::InconsistentVerifiedIr(_) => "simulation",
-    };
-    failure(code, error.to_string())
-}
-
 pub(super) fn distribution_json(
     distribution: std::collections::BTreeMap<Vec<bool>, f64>,
 ) -> Result<String, Diagnostic> {
@@ -251,81 +234,34 @@ pub(super) fn samples_json(
     result
 }
 
-fn execute(
-    options: &super::options::Options,
-    input: &super::source_commands::Input,
-) -> Result<String, Diagnostic> {
-    match super::source_commands::execute(options, input).map_err(|error| match error {
-        Failure::Source(error) => error,
-        Failure::Simulation(error) => simulation_failure(error),
-    })? {
-        Success::Checked(report) => super::check_report::project_json(&report),
-        Success::Distribution { probabilities, .. } => distribution_json(probabilities),
-        Success::Samples {
+pub(super) fn render(outcome: Outcome) -> ExitCode {
+    let Outcome {
+        root,
+        command,
+        warnings,
+        result,
+    } = outcome;
+    let mut artifact_pointer = None;
+    let result = match result {
+        Ok(Success::Checked(report)) => super::check_report::project_json(&report),
+        Ok(Success::Distribution { probabilities, .. }) => distribution_json(probabilities),
+        Ok(Success::Samples {
             shots,
             seed,
             execution_steps,
-        } => Ok(samples_json(&shots, seed, execution_steps, ",")),
-    }
-}
-
-pub(super) fn run(args: &[OsString]) -> ExitCode {
-    let options = super::options::Options::parse(args, true);
-    let command = options.as_ref().map_or_else(
-        || {
-            args.iter()
-                .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
-                .and_then(|arg| arg.to_str())
-                .unwrap_or("")
-                .to_owned()
-        },
-        |options| options.command.clone(),
-    );
-    let mut root = PathBuf::new();
-    let mut artifact_pointer = None;
-    let mut warnings = vec![];
-    let result = if let Some(options) = options {
-        root = options.path.clone();
-        let selected = super::source_commands::Input::select(&options);
-        if let Err(error) = selected {
-            root = std::fs::canonicalize(&root).unwrap_or(root);
-            Err(error)
-        } else if root.to_str().is_none() {
-            Err(failure("project", "source root is not valid UTF-8"))
-        } else {
-            let input = selected.expect("checked root selection").canonicalize();
-            root = input.path().to_owned();
-            if root.to_str().is_none() {
-                Err(failure("project", "source root is not valid UTF-8"))
-            } else {
-                if options.command != "verify-ir" {
-                    warnings =
-                        qleisli::frontend::project::manifest_warnings(&root).unwrap_or_default();
-                }
-                if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
-                    // Keep source spans from emission separate from artifact pointers.
-                    match super::artifacts::execute(&options, &input, true) {
-                        Ok(super::artifacts::Success::Emitted(path, report)) => {
-                            report.json(Some(&path))
-                        }
-                        Ok(super::artifacts::Success::Checked(report)) => report.json(None),
-                        Err(super::artifacts::Failure::Source(error)) => Err(error),
-                        Err(super::artifacts::Failure::Artifact(error)) => {
-                            artifact_pointer = Some(error.json_pointer);
-                            let mut diagnostic = failure(error.code, error.message);
-                            diagnostic.counterexample = error.counterexample;
-                            Err(diagnostic)
-                        }
-                    }
-                } else {
-                    // The final canonical root also supplies relative identities.
-                    // Failed canonicalization remains a handled project-load error.
-                    execute(&options, &input)
-                }
-            }
+        }) => Ok(samples_json(&shots, seed, execution_steps, ",")),
+        Ok(Success::Artifact(super::artifacts::Success::Emitted(path, report))) => {
+            report.json(Some(&path))
         }
-    } else {
-        Err(failure("usage", super::options::USAGE))
+        Ok(Success::Artifact(super::artifacts::Success::Checked(report))) => report.json(None),
+        Ok(Success::Documentation(_)) => Err(failure("usage", super::options::USAGE)),
+        Err(Failure::Source(error) | Failure::Simulation(error)) => Err(error),
+        Err(Failure::Artifact(error)) => {
+            artifact_pointer = Some(error.json_pointer);
+            let mut diagnostic = failure(error.code, error.message);
+            diagnostic.counterexample = error.counterexample;
+            Err(diagnostic)
+        }
     };
     let (document, status) = match result {
         Ok(result) => {

@@ -39,10 +39,10 @@ impl BundledSource {
 pub(super) struct BundledRegistry;
 impl BundledRegistry {
     pub fn manifest() -> &'static str {
-        include_str!("../../stdlib/Qargo.toml")
+        include_str!("../../stdlib/Qlirgo.toml")
     }
     pub fn manifest_path() -> &'static str {
-        "<bundled>/std/Qargo.toml"
+        "<bundled>/std/Qlirgo.toml"
     }
     pub fn sources() -> &'static [BundledSource] {
         static SOURCES: &[BundledSource] = &[

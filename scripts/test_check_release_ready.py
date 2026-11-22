@@ -50,6 +50,13 @@ def archive(files, prefix=''):
 
 
 class SyntheticRelease(unittest.TestCase):
+    def test_stable_does_not_accept_a_beta_only_requirements_base(self):
+        self.write('Cargo.toml', b'[package]\nname="qleisli"\nversion="0.3.0"\n')
+        self.head = self.commit()
+        self.env['GITHUB_SHA'] = self.head
+        with self.assertRaisesRegex(checker.PacketError, 'stable release requires a supplement'):
+            checker.check(self.root, base_ref=self.base, env=self.env, evidence=self.evidence)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='qleisli-release-test-')
         self.addCleanup(self.temp.cleanup)
@@ -534,8 +541,9 @@ class SyntheticRelease(unittest.TestCase):
     def test_changed_record_during_check_rejects(self):
         original=checker.artifacts
         def changing(*args):
-            original(*args)
+            result=original(*args)
             path=self.directory('check-lean')/'constitution.json'; path.write_bytes(path.read_bytes()+b' ')
+            return result
         with patch.object(checker,'artifacts',side_effect=changing): self.reject('changed during checking')
 
     def test_dirty_candidate_and_trusted_sha_mismatch_reject(self):
@@ -771,6 +779,69 @@ class SyntheticRelease(unittest.TestCase):
         retained=text.split('    - name: Retain actual corpus mode')[1].split('    - name: Run strict')[0]
         self.assertIn('if: always()',retained)
         self.assertIn('corpus-${{ github.sha }}-${{ github.run_attempt }}',retained)
+
+
+class StablePreTagRecord(unittest.TestCase):
+    def test_prior_attempt_and_artifact_must_match_even_for_a_successful_tag(self):
+        import zipfile
+        import stable_readiness as stable
+
+        commit = "a" * 40
+        repo = "MGYamada/Qleisli"
+        ctx = dict(repository=repo, commit=commit, tree="b" * 40, run_id="17",
+                   attempt="1", event="push")
+        tag = dict(format="qleisli.stable-pre-tag", version=1, context=ctx,
+                   product_version="0.3.0", requirements_base="c" * 40, baseline_sha256="d" * 64,
+                   supplement_sha256="e" * 64, companion_commit="f" * 40)
+        prior = dict(ctx, event="workflow_dispatch", run_id="16", attempt="2")
+        name = stable.artifact_name(prior)
+        start, done = "2026-11-22T10:00:00Z", "2026-11-22T09:59:00Z"
+        env = dict(RELEASE_PRETAG_RUN_ID="16", RELEASE_PRETAG_ATTEMPT="2")
+        base = f"repos/{repo}/actions"
+        previous = f"{base}/runs/16"
+        endpoints = {
+            f"{base}/runs/17": dict(id=17, event="push", repository=dict(full_name=repo),
+                                    head_sha=commit, path=stable.WORKFLOW_PATH, workflow_id=777,
+                                    created_at=start),
+            f"{previous}/attempts/2": dict(id=16, run_attempt=2, event="workflow_dispatch",
+                                           head_branch="main", path=stable.WORKFLOW_PATH, workflow_id=777,
+                                           head_repository=dict(full_name=repo), head_sha=commit,
+                                           conclusion="success", status="completed", updated_at=done),
+            f"{previous}/attempts/2/jobs?per_page=100": dict(jobs=[
+                dict(name="release-readiness", conclusion="success", completed_at=done)]),
+        }
+        for product, wanted, configure in (
+            ("0.3.0", None, {}),
+            ("0.3.0-beta", "pre-tag record does not match", {}),
+            ("0.3.0", "separate reviewed pre-tag", {"RELEASE_PRETAG_RUN_ID": ""}),
+            ("0.3.0", "pre-tag record does not match", {"supplement_sha256": "0" * 64}),
+            ("0.3.0", "pre-tag record does not match", {"companion_commit": "0" * 40}),
+            ("0.3.0", "missing or expired pre-tag", {"expired": True}),
+        ):
+            with self.subTest(product=product, change=configure):
+                record = dict(tag, context=prior, product_version=product)
+                record.update({k: v for k, v in configure.items() if k in record})
+                buffer = io.BytesIO()
+                with zipfile.ZipFile(buffer, "w") as out:
+                    out.writestr("stable-pre-tag.json", encoded(record))
+                blob = buffer.getvalue()
+                rows = dict(artifacts=[dict(id=50, name=name, expired=configure.get("expired", False),
+                                            size_in_bytes=len(blob), digest=f"sha256:{checker.digest(blob)}",
+                                            workflow_run=dict(id=16, head_sha=commit))])
+                entries = dict(endpoints)
+                entries[f"{previous}/artifacts?name={name}&per_page=100"] = rows
+                entries[f"{base}/artifacts/50/zip"] = blob
+
+                def api(path):
+                    value = entries[path]
+                    return encoded(value) if isinstance(value, dict) else value
+
+                current_env = dict(env, **{k: v for k, v in configure.items() if k in env})
+                if wanted:
+                    with self.assertRaisesRegex(checker.PacketError, wanted):
+                        stable.previous_record(current_env, ctx, tag, api)
+                else:
+                    stable.previous_record(current_env, ctx, tag, api)
 
 
 if __name__=='__main__':

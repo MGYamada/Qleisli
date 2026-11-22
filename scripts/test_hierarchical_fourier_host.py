@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 import sys
 import tempfile
 import time
@@ -224,7 +224,7 @@ def main():
         cases.append((name,replace_word(good,fields[field]+delta,value),expected))
     results=[];start=time.monotonic()
     for name,data,expected in cases:
-        p=subprocess.run([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
+        p=run_verification([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
         reply=parse_reply(p.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-fourier-pending", scope="inspection");lines=reply.payload
         actual='pending' if reply.claim=='pending' else reply.error
         assert actual==expected,(name,actual,expected)

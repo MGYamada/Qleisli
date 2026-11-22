@@ -11,7 +11,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 import struct
 import tempfile
 import tomllib
@@ -88,7 +88,7 @@ def test_binary_transport(frame_path):
     assert edition==2026
     assert scope==1 and original and graph and caller==aliases==0
     assert len(captured)==28+original+graph
-    run=subprocess.run([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],
+    run=run_verification([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],
                        input=captured,capture_output=True,timeout=30)
     reply=parse_reply(run.stdout, edition='2026', product=PRODUCT_VERSION, mode='--qpe-instrument-pending', scope='execution')
     assert run.returncode==0 and reply.claim=='pending',run
@@ -106,7 +106,7 @@ def test_binary_transport(frame_path):
     assert len(root)//4<1000000 and len(atoms)<1000000
     cases.append(('shared-word-budget',b'QLQ1'+words([len(root)])+root+words(header+atoms),'limit'))
     for name,data,expected in cases:
-        run=subprocess.run([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
+        run=run_verification([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
         reply=parse_reply(run.stdout, edition="2026", product=PRODUCT_VERSION, mode="--qpe-instrument-pending", scope="inspection");lines=reply.payload
         if expected=='pending':assert run.returncode==0 and reply.claim=='pending',(name,lines)
         else:assert run.returncode==1 and reply.error==expected,(name,lines)

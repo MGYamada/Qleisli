@@ -1,6 +1,7 @@
 //! Shared source execution for the text and JSON CLI transports.
 
 use std::collections::{BTreeMap, BTreeSet};
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 use qleisli::frontend::compile::ProjectCheckReport;
@@ -11,7 +12,7 @@ use qleisli::sim::{
     terminal_exact_zeros,
 };
 
-use super::options::Options;
+use super::{artifacts, options::Options};
 
 enum Root {
     Path(PathBuf),
@@ -67,6 +68,8 @@ impl Input {
 
 pub(super) enum Success {
     Checked(ProjectCheckReport),
+    Artifact(artifacts::Success),
+    Documentation(String),
     Distribution {
         probabilities: BTreeMap<Vec<bool>, f64>,
         exact_zeros: Option<Result<BTreeSet<Vec<bool>>, ExactZeroUnavailable>>,
@@ -80,7 +83,8 @@ pub(super) enum Success {
 
 pub(super) enum Failure {
     Source(Diagnostic),
-    Simulation(SimulationError),
+    Artifact(qleisli::interchange::Error),
+    Simulation(Diagnostic),
 }
 
 impl From<Diagnostic> for Failure {
@@ -89,7 +93,7 @@ impl From<Diagnostic> for Failure {
     }
 }
 
-pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failure> {
+fn execute(options: &Options, input: &Input) -> Result<Success, Failure> {
     let project = input.load_project()?;
     let kernel = options
         .kernel(project.edition())
@@ -114,8 +118,8 @@ pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failu
             execution_steps,
         });
     }
-    let distribution =
-        run_closed(&program, SimulationLimits::default()).map_err(Failure::Simulation)?;
+    let distribution = run_closed(&program, SimulationLimits::default())
+        .map_err(|error| Failure::Simulation(simulation_failure(error)))?;
     let exact_zeros = options
         .show_exact_zeros
         .then(|| terminal_exact_zeros(&program));
@@ -123,4 +127,91 @@ pub(super) fn execute(options: &Options, input: &Input) -> Result<Success, Failu
         probabilities: distribution,
         exact_zeros,
     })
+}
+
+pub(super) struct Outcome {
+    pub(super) root: PathBuf,
+    pub(super) command: String,
+    pub(super) warnings: Vec<Diagnostic>,
+    pub(super) result: Result<Success, Failure>,
+}
+
+pub(super) fn dispatch(args: &[OsString], json: bool) -> Outcome {
+    let Some(options) = Options::parse(args, json) else {
+        let command = args
+            .iter()
+            .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
+            .and_then(|arg| arg.to_str())
+            .unwrap_or_default()
+            .to_owned();
+        return Outcome {
+            root: PathBuf::new(),
+            command,
+            warnings: Vec::new(),
+            result: Err(Failure::Source(failure("usage", super::options::USAGE))),
+        };
+    };
+    let mut root = options.path.clone();
+    let mut warnings = Vec::new();
+    let result = (|| {
+        let input = Input::select(&options).map_err(|error| {
+            if json {
+                root = std::fs::canonicalize(&root).unwrap_or_else(|_| root.clone());
+            }
+            error
+        })?;
+        if json && root.to_str().is_none() {
+            return Err(failure("project", "source root is not valid UTF-8").into());
+        }
+        let input = if json { input.canonicalize() } else { input };
+        root = input.path().to_owned();
+        if json && root.to_str().is_none() {
+            return Err(failure("project", "source root is not valid UTF-8").into());
+        }
+        if !matches!(options.command.as_str(), "verify-ir" | "doc") {
+            warnings = qleisli::frontend::project::manifest_warnings(&root).unwrap_or_default();
+        }
+        match options.command.as_str() {
+            "emit-ir" | "verify-ir" => artifacts::execute(&options, &input, json)
+                .map(Success::Artifact)
+                .map_err(|error| match error {
+                    artifacts::Failure::Source(error) => Failure::Source(error),
+                    artifacts::Failure::Artifact(error) => Failure::Artifact(error),
+                }),
+            "doc" => {
+                let source = qleisli::frontend::project::read_source_file(&root, options.policy)?;
+                qleisli::frontend::documentation::render_markdown(&source)
+                    .map(Success::Documentation)
+                    .map_err(|error| failure("doc", error.to_string()).into())
+            }
+            _ => execute(&options, &input),
+        }
+    })();
+    Outcome {
+        root,
+        command: options.command,
+        warnings,
+        result,
+    }
+}
+
+pub(super) fn simulation_failure(error: SimulationError) -> Diagnostic {
+    let code = match error {
+        SimulationError::DimensionLimit { .. }
+        | SimulationError::ComponentLimit { .. }
+        | SimulationError::AmplitudeLimit { .. }
+        | SimulationError::ExecutionLimit { .. } => "limit",
+        SimulationError::NotClosed(_) | SimulationError::InconsistentVerifiedIr(_) => "simulation",
+    };
+    failure(code, error.to_string())
+}
+
+pub(super) fn failure(code: &'static str, message: impl Into<String>) -> Diagnostic {
+    Diagnostic {
+        counterexample: None,
+        boundary: None,
+        code,
+        message: message.into(),
+        primary: None,
+    }
 }

@@ -90,7 +90,7 @@ PATCH for compatible changes, MINOR for breaks. #276 is the exception.
 Cargo.toml is authoritative. Sync Cargo.lock, lakefiles, Python metadata/runtime,
 std Qargo and research Cargo with `scripts/maintain_release.py`. Inspect its plan
 and source-review requirements. Keep dependency versions unchanged. Require
-schema-2 `[qrate].edition = "2026"` per source tree. No root Qargo.toml.
+schema-2 `[qrate].edition = "2026"` per source tree. No root manifest.
 Update [CHANGELOG](CHANGELOG.md) without per-task bumps. Record checks run/skipped.
 For releases, check source, packages, installation and full CI. Tag the checked
 commit. Tagging, pushing and publication are distinct. Published artifacts

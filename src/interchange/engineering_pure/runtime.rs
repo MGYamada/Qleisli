@@ -116,7 +116,7 @@ execution
         }
         let _cleanup = Cleanup(directory.clone());
         let fixture = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/verification_v030/native-edition-context/process-failure.sh");
+            .join("tests/fixtures/verification_v030/native-edition-context/request-failure.py");
         for (case, expected) in [
             ("failed-acceptance", "format"),
             ("contract", "contract"),

@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 import time
 import tomllib
 
@@ -52,7 +52,7 @@ def main():
     cases.append(('schedule-reversed', good[:-20] + struct.pack('<5I', 4, 3, 2, 1, 0), 'invalid_ir'))
     start = time.monotonic()
     for name, data, expected in cases:
-        result = subprocess.run([str(binary), '--hierarchy-pending', PRODUCT_VERSION], input=envelope('2026', data) if data else b"",
+        result = run_verification([str(binary), '--hierarchy-pending', PRODUCT_VERSION], input=envelope('2026', data) if data else b"",
                                 capture_output=True, timeout=30)
         reply = parse_reply(result.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-pending", scope="inspection")
         lines = reply.payload

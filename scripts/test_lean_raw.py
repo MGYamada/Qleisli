@@ -361,7 +361,7 @@ def source_cases(log, record=None, compiler=None):
             project=current_corpus_project({'project':path})
             output=Path(directory)/f'{i}.qirf.json'
             source_paths=sorted(project.rglob('*.qli'))+sorted((ROOT/'stdlib/src').rglob('*.qli'))
-            source_paths += [ROOT/'corpus/Qargo.toml',ROOT/'stdlib/Qargo.toml']
+            source_paths += [ROOT/'corpus/Qargo.toml',ROOT/'stdlib/Qlirgo.toml']
             if (project/'Qargo.toml').is_file():source_paths.append(project/'Qargo.toml')
             source_hashes={str(s.relative_to(ROOT)):hashlib.sha256(s.read_bytes()).hexdigest() for s in source_paths}
             exact.command([str(compiler),'emit-ir',str(project),'--output='+str(output),'--format=json'],ROOT,log)

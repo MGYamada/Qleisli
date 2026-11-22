@@ -14,7 +14,7 @@ import sys
 import tempfile
 import time
 import tomllib
-from native_packet import envelope, parse_reply
+from native_packet import MODES, envelope, parse_reply, verification_projection, verification_request
 
 from check_input_corpus import check_manifest, current_project
 from current_source_fixtures import current_source_project
@@ -378,14 +378,20 @@ def main():
     environment = dict(os.environ, QLEISLI_KERNEL=str(kernel))
 
     def run(command, expected=0, data=None, *, sink=None):
-        result = subprocess.run(list(map(str, command)), input=data, capture_output=True, timeout=70, cwd=ROOT, env=environment)
+        command = list(map(str, command))
+        wire = None
+        if len(command) == 3 and command[0] == str(kernel) and command[1] in MODES:
+            wire = verification_request(command[2], command[1], data)
+            command = [str(kernel), "--verify-request"]
+        result = subprocess.run(command, input=data if wire is None else wire, capture_output=True,
+                                timeout=70, cwd=ROOT, env=environment)
         row = dict(command=list(map(str, command)), exit_code=result.returncode,
                    stdout=result.stdout.decode(errors="replace"), stderr=result.stderr.decode(errors="replace"))
         if data is not None:
-            row["input_sha256"] = hashlib.sha256(data).hexdigest()
+            row["input_sha256"] = hashlib.sha256(data if wire is None else wire).hexdigest()
         (observations if sink is None else sink).append(row)
         assert (result.returncode == 0) == (expected == 0), row
-        return result.stdout
+        return result.stdout if wire is None else verification_projection(result.stdout, wire)
 
     def progress(label):
         # Flush phase/case progress outside child output and the observation data,
@@ -414,19 +420,17 @@ def main():
                                      cwd=directory, env=absent, capture_output=True, timeout=60)
             assert missing.returncode == 1 and json.loads(missing.stdout)["diagnostics"][0]["code"] == "project"
             progress("native mode versions")
-            for mode in ["--qirf-native", "--qirf-contract", "--hierarchy-pending",
-                         "--hierarchy-request-pending", "--hierarchy-fourier-pending",
-                         "--readout-check", "--preparation-check", "--instrument-pending",
-                         "--qpe-instrument-pending", "--engineering-pure-check",
-                         "--engineering-pure-tensor-check", "--qirf-engineering-instrument-native",
-                         "--engineering-openqasm-check", "--engineering-openqasm-gate-check"]:
-                wrong_version = run([kernel, mode, "0.0.0"], 1, b"")
+            for mode in MODES:
+                wrong_version = run([kernel, mode, "0.0.0"], 1, b"bad inner packet")
                 assert wrong_version == b"qleisli.native-result 3\nerror\nversion\n"
-                # A missing version is not an implicit match for any native mode.
-                missing_version = run([kernel, mode], 1, b"")
-                assert missing_version == b"qleisli.native-result 3\nerror\nversion\n"
-                matching_version = run([kernel, mode, VERSION], 1, b"")
-                assert matching_version != b"qleisli.native-result 3\nerror\nversion\n"
+                # A retired command form cannot bypass the request envelope.
+                for retired in ([kernel, mode], [kernel, mode, VERSION, "retired"]):
+                    assert b"native-result" not in run(retired, 1, b"")
+                direct = subprocess.run([str(kernel), mode, VERSION], input=b"bad inner packet",
+                                        capture_output=True, timeout=60)
+                assert direct.returncode != 0 and b"native-result" not in direct.stdout
+                matching_version = run([kernel, mode, VERSION], 1, b"bad inner packet")
+                assert matching_version == b"qleisli.native-result 3\nerror\nformat\n"
 
             progress("control requests")
             test_control_requests(kernel, run)

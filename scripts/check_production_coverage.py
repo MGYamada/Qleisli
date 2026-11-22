@@ -863,7 +863,8 @@ PATHS = {
         ('src/frontend/specialize/raw/preservation.rs', 'observing_replay_rejects_native_valid_rewrites_and_rechecks_actual_calls'),
         ('tests/reference_meanings.rs', 'fixed_fourier_reference_meanings_match_independent_exact_coefficients')]),
     'source-documentation': path_rule('documentation', 'source', '', [
-        ('src/bin/qleisli.rs', ['if options.command == "doc"', 'render_markdown(&source)']),
+        ('src/bin/qleisli.rs', ['source_commands::dispatch(&args, json)']),
+        ('src/bin/qleisli/source_commands.rs', ['"doc" => {', 'render_markdown(&source)']),
         ('src/frontend/documentation.rs', ['pub fn render_markdown(']),
     ], [('tests/cli.rs', 'doc_reads_one_file_and_does_not_claim_type_checking')]),
     'foreign-export': path_rule('host-transformation', 'foreign', '', [
@@ -1560,14 +1561,11 @@ def check_native_dispatch(root):
                      if not line.lstrip().startswith('--'))
     expected = '''
       match args with
-      | [mode, version] =>
-        match QleisliKernel.Protocol.NativeContext.Mode.parse mode with
-        | some selected => QleisliKernel.Cli.runNativeContext selected version
-        | none => QleisliKernel.Cli.run mode version
-      | [mode] =>
-        match QleisliKernel.Protocol.NativeContext.Mode.parse mode with
-        | some selected => QleisliKernel.Cli.runNativeContext selected ""
-        | none => QleisliKernel.Cli.usage
+      | ["--verify-request"] => QleisliKernel.Cli.runVerificationRequest
+      | [artifact, requirement] =>
+        if (QleisliKernel.Protocol.NativeContext.Mode.parse artifact).isSome then
+          QleisliKernel.Cli.usage
+        else QleisliKernel.Cli.run artifact requirement
       | ["--phase-layout", artifact, requirement] => QleisliKernel.Cli.runPhaseLayout artifact requirement
       | ["--layout-dag", artifact, requirement] => QleisliKernel.Cli.runLayoutDag artifact requirement
       | ["--layout", artifact, requirement] => QleisliKernel.Cli.runLayout artifact requirement

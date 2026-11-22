@@ -266,7 +266,7 @@ impl SourceFileSelection {
             );
         }
         budget
-            .charge_manifest(self.manifest.path(), self.manifest.source().len() as u64)
+            .charge_manifest(self.manifest.path(), self.manifest.bytes_read())
             .map_err(LoadFailure::into_diagnostic)?;
         budget
             .read(&self.path)
@@ -839,14 +839,14 @@ fn collect_qli_files(
     ) -> Result<Directory, LoadFailure> {
         let manifest = match edition::read_anchored(&path, &anchor)? {
             Some(manifest) => {
-                budget.charge_manifest(manifest.path(), manifest.source().len() as u64)?;
+                budget.charge_manifest(manifest.path(), manifest.bytes_read())?;
                 Arc::new(manifest)
             }
             None => match &inherited {
                 Some(manifest) => Arc::clone(manifest),
                 None if root => {
                     let manifest = edition::read_directory(path.parent().unwrap_or(&path))?;
-                    budget.charge_manifest(manifest.path(), manifest.source().len() as u64)?;
+                    budget.charge_manifest(manifest.path(), manifest.bytes_read())?;
                     Arc::new(manifest)
                 }
                 None => {
@@ -893,7 +893,7 @@ fn collect_qli_files(
     }
     let mut entries_used = 0;
     if let Some(manifest) = &selected {
-        budget.charge_manifest(manifest.path(), manifest.source().len() as u64)?;
+        budget.charge_manifest(manifest.path(), manifest.bytes_read())?;
     }
     let directory = enter(
         root.to_owned(),

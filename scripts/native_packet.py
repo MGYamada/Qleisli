@@ -3,7 +3,33 @@ This adapter supplies data only, never acceptance or an execution handle.
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 """
 from dataclasses import dataclass
+import hashlib
 import struct
+import subprocess
+
+
+def verification_request(product, mode, body, *, budget=20_000_000):
+    version, selector = product.encode('ascii'), mode.encode('ascii')
+    if not 0 < len(version) <= 64 or not 0 < len(selector) <= 64 or len(body) > 64 << 20:
+        raise ValueError('verification request limit')
+    return b'QLR1' + struct.pack('<3I', budget, len(version), len(selector)) + version + selector + body
+
+
+def verification_projection(output, request):
+    identity = hashlib.sha256(request).hexdigest().encode('ascii')
+    prefix = b'qleisli.native-result 4\n' + identity + b'\n'
+    if not output.startswith(prefix):
+        raise ValueError('native response protocol or request identity differs')
+    return b'qleisli.native-result 3\n' + output[len(prefix):]
+
+
+def run_verification(arguments, *, input, **options):
+    """Invoke the stable dispatcher and project its identity-bound profile reply."""
+    kernel, mode, product = arguments
+    packet = verification_request(product, mode, input)
+    result = subprocess.run([kernel, '--verify-request'], input=packet, **options)
+    result.stdout = verification_projection(result.stdout, packet)
+    return result
 
 
 def envelope(edition, original, graph=b'', caller=b'', indices=()):

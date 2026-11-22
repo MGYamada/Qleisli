@@ -55,7 +55,7 @@ def selected_cases(manifest):
 
 def source_hashes(cases, manifest):
     paths = {ROOT / name for name in [
-        "Cargo.toml", "Cargo.lock", "stdlib/Qargo.toml", "corpus/Qargo.toml",
+        "Cargo.toml", "Cargo.lock", "stdlib/Qlirgo.toml", "corpus/Qargo.toml",
         "corpus/manifest.json", "lean-kernel/lakefile.toml",
         "lean-kernel/lean-toolchain", "lean-kernel/lake-manifest.json",
         "scripts/benchmark_verification.py", "scripts/check_input_corpus.py",

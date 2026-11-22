@@ -55,7 +55,7 @@ of everything in the corpus. Adoption requires explicit source contracts and ind
 ## Shared decisions before individual implementations
 
 **The standard library is a qrate now, named `std`**, declared by
-[stdlib/Qargo.toml](stdlib/Qargo.toml) using qargo schema 2, Qleisli edition
+[stdlib/Qlirgo.toml](stdlib/Qlirgo.toml) using qlirgo schema 2, Qleisli edition
 `"2026"` and the compiler's release version. Its `src`, `tests` and `docs` roots
 exist; see the [qrate guide](stdlib/docs/README.md). `stdlib/` is the directory
 name; `std` is the qrate name and public `std::` namespace. Other source trees

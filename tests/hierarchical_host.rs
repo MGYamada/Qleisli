@@ -1104,9 +1104,19 @@ fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations()
         ("pending", "01\n0\n0\n0\n"),             // noncanonical counter
         ("checked", "0\n0\n0\n0\n"),              // a claimed final result is not the protocol
     ] {
-        let script = format!(
-            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.native-result 3\n{claim}\n2026\n{}\n--instrument-pending\nexecution\n{body}'\n",
+        let payload = format!(
+            "{claim}\n2026\n{}\n--instrument-pending\nexecution\n{body}",
             env!("CARGO_PKG_VERSION")
+        );
+        let script = format!(
+            r#"#!/usr/bin/env python3
+import hashlib
+import sys
+data = sys.stdin.buffer.read()
+print("qleisli.native-result 4")
+print(hashlib.sha256(data).hexdigest())
+print({payload:?}, end="")
+"#
         );
         std::fs::write(&executable, script).unwrap();
         std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();

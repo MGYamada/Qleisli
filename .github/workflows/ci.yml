@@ -59,6 +59,7 @@ jobs:
       proof_lane: ${{ steps.select.outputs.proof_lane }}
       head: ${{ steps.select.outputs.head }}
       base: ${{ steps.select.outputs.base }}
+      product: ${{ steps.product.outputs.version }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -75,6 +76,10 @@ jobs:
       - name: Select validation from the exact commit and both sides of its diff
         id: select
         run: python3 scripts/ci_profiles.py --report "$RUNNER_TEMP/ci-selection.json"
+      - name: Read the product version from the selected checkout
+        id: product
+        run: |
+          python3 -c 'import tomllib; print("version=" + tomllib.load(open("Cargo.toml","rb"))["package"]["version"])' >> "$GITHUB_OUTPUT"
       - name: Validate source identities before scheduling builds
         if: steps.select.outputs.profile == 'full'
         run: python3 scripts/ci_profiles.py --checks source-integrity --output "$RUNNER_TEMP/source-integrity"
@@ -764,11 +769,119 @@ jobs:
           path: ${{ runner.temp }}/required-results.json
           if-no-files-found: error
 
+  stable-companion-host:
+    needs: [changes, check-distribution, check-macos-source, check-lean-kernel]
+    if: needs.changes.outputs.product == '0.3.0' && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness))
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-musl
+            upstream: x86_64-unknown-linux-gnu
+            native-job: check-lean-kernel
+          - os: macos-15
+            target: aarch64-apple-darwin
+            upstream: aarch64-apple-darwin
+            native-job: check-macos-source
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Install the tested Rust toolchain
+        uses: ./.github/actions/rust-toolchain
+        with:
+          toolchain: '1.85.0'
+          set-default: 'true'
+      - name: Prepare the companion target
+        env:
+          HOST_TARGET: ${{ matrix.target }}
+        run: |
+          rustup target add --toolchain 1.85.0 "$HOST_TARGET"
+          if [[ "$HOST_TARGET" == *-linux-musl ]]; then
+            sudo apt-get update
+            sudo apt-get install -y musl-tools
+          fi
+      - name: Install Lean for the Intel Mac source replay
+        if: matrix.target == 'x86_64-apple-darwin'
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          build: 'false'
+          test: 'false'
+          lint: 'false'
+          use-github-cache: 'false'
+          use-mathlib-cache: 'false'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-receipt-check-distribution-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stable-crate
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        if: matrix.native-job != ''
+        with:
+          name: release-receipt-${{ matrix.native-job }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stable-native
+      - name: Test the pinned companion against the exact candidate package
+        shell: bash
+        env:
+          RELEASE_TRUSTED_BASE: ${{ inputs.release_base || vars.QLEISLI_RELEASE_BASE }}
+          HOST_TARGET: ${{ matrix.target }}
+          UPSTREAM_TARGET: ${{ matrix.upstream }}
+        run: |
+          commit=$(python3 scripts/qualify_stable_companion.py --pin --base "$RELEASE_TRUSTED_BASE")
+          companion="$RUNNER_TEMP/qlirgo"
+          git init "$companion"
+          git -C "$companion" fetch --depth=1 https://github.com/MGYamada/qlirgo.git "$commit"
+          git -C "$companion" checkout --detach FETCH_HEAD
+          native=()
+          if [[ -n "$UPSTREAM_TARGET" ]]; then
+            native=(--native "$RUNNER_TEMP/stable-native/qleisli-kernel-0.3.0-$UPSTREAM_TARGET.tar.gz")
+          fi
+          python3 scripts/qualify_stable_companion.py --base "$RELEASE_TRUSTED_BASE" --companion "$companion" \
+            --target "$HOST_TARGET" --crate "$RUNNER_TEMP/stable-crate/package.crate" "${native[@]}" \
+            --output "$RUNNER_TEMP/companion.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stable-companion-host-${{ matrix.target }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/companion.json
+          if-no-files-found: error
+
+  check-stable-companion:
+    needs: [changes, stable-companion-host]
+    if: needs.changes.outputs.product == '0.3.0' && needs.stable-companion-host.result == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      receipt_sha256: ${{ steps.combine.outputs.receipt_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: stable-companion-host-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stable-hosts
+      - name: Bind all companion hosts to this run and attempt
+        id: combine
+        run: |
+          python3 scripts/qualify_stable_companion.py --collect "$RUNNER_TEMP/stable-hosts" --output "$RUNNER_TEMP/companion.json"
+          digest=$(sha256sum "$RUNNER_TEMP/companion.json" | cut -d' ' -f1)
+          echo "receipt_sha256=$digest" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stable-companion-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/companion.json
+          if-no-files-found: error
+
   release-readiness:
     # A later gate: never make a producer depend on its own aggregate result.
     if: always() && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness))
-    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-julia, check-qptl, check-lean, check-lean-kernel, check-distribution, check-docs]
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-julia, check-qptl, check-lean, check-lean-kernel, check-distribution, check-docs, check-stable-companion]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -778,10 +891,32 @@ jobs:
         with:
           pattern: release-receipt-*-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/release-evidence
+      - name: Download the same-run stable companion receipt
+        if: needs.changes.outputs.product == '0.3.0'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: stable-companion-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-evidence
       - name: Require exact-commit scoped readiness
         env:
           RELEASE_NEEDS_JSON: ${{ toJSON(needs) }}
           RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
           RELEASE_TRUSTED_BASE: ${{ inputs.release_base || vars.QLEISLI_RELEASE_BASE }}
           RELEASE_EVIDENCE: ${{ runner.temp }}/release-evidence
-        run: python3 scripts/check_constitution.py --require-release-ready
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_PRETAG_RUN_ID: ${{ vars.QLEISLI_STABLE_PRETAG_RUN_ID }}
+          RELEASE_PRETAG_ATTEMPT: ${{ vars.QLEISLI_STABLE_PRETAG_ATTEMPT }}
+          RELEASE_PRODUCT_VERSION: ${{ needs.changes.outputs.product }}
+        run: |
+          python3 scripts/check_constitution.py --require-release-ready > "$RUNNER_TEMP/readiness.json"
+          cat "$RUNNER_TEMP/readiness.json"
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch && "$RELEASE_PRODUCT_VERSION" == 0.3.0 ]]; then
+            jq -e .stable_pre_tag "$RUNNER_TEMP/readiness.json" > "$RUNNER_TEMP/stable-pre-tag.json"
+          fi
+      - name: Retain the verified stable pre-tag record
+        if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.product == '0.3.0'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: stable-pre-tag-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/stable-pre-tag.json
+          if-no-files-found: error

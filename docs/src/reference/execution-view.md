@@ -144,19 +144,33 @@ The native checker answers each request with one reply. A successful reply
 names the claim of the checker and the context in which it checked: the
 edition, the product version, the mode and the scope.
 
-Each of the twenty-one native modes replies with `qleisli.native-result 3`.
-A reply is text with one field on each line. A final newline is required. A
-successful reply has these lines:
+The compiler sends a version-1 verification request to `--verify-request`.
+The binary request starts with `QLR1`, followed by three little-endian 32-bit
+fields for the exact-work budget, product-version byte length and obligation
+selector byte length. The product version and selector are followed by the
+complete inner packet. It carries the edition, scope and original evidence.
+The native checker rechecks that packet under the chosen obligation and
+rejects a budget above 20,000,000. Readout and preparation also retain their
+component-specific visit budgets.
+
+The reply is text with one field on each line and a required final newline.
+Rust checks the header and SHA-256 against the full request before interpreting
+the payload. A successful reply has these fields.
 
 | Line | Content |
 | --- | --- |
-| 1 | The header `qleisli.native-result 3` |
-| 2 | The claim |
-| 3 | The checked edition |
-| 4 | The compiled complete product version |
-| 5 | The canonical mode argument |
-| 6 | The checked scope, by name |
-| 7 and later | The payload fields of the mode |
+| 1 | The header `qleisli.native-result 4` |
+| 2 | The lowercase hexadecimal SHA-256 of the complete request |
+| 3 | The claim |
+| 4 | The checked edition |
+| 5 | The complete product version compiled into the checker |
+| 6 | The canonical obligation selector |
+| 7 | The checked scope, by name |
+| 8 and later | The payload fields of the obligation |
+
+The separate development executable `qleisli-kernel-legacy-replay` supplies the
+version-3 baseline for differential tests. The packaged checker uses the
+version-4 reply and refuses the former native mode command arguments.
 
 The claim and the payload depend on the mode:
 

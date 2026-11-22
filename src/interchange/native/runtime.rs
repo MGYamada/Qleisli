@@ -213,7 +213,7 @@ mod tests {
         }
         let _cleanup = Cleanup(directory.clone());
         let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/verification_v030/native-edition-context/process-failure.sh");
+            .join("tests/fixtures/verification_v030/native-edition-context/request-failure.py");
         // Immutable code avoids ETXTBSY from concurrent forked children that
         // temporarily inherit a fixture writer. Each link selects one case.
         for (case, code) in [

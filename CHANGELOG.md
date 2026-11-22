@@ -9,6 +9,16 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+**Qleisli — Writable as Rust, Curious as Julia, Rigorous as Haskell, Verifiable in Lean.**
+
+- Use `Qlirgo.toml` in new projects and for bundled std. Accept `Qargo.toml`
+  for existing projects and reject any dual manifests with different bytes (#349).
+- Bind native replies to one versioned request, and share source and artifact
+  CLI decisions between text and JSON (#622).
+- Require exact candidate companion checks and a successful earlier pre-tag
+  record for formal release readiness (#698).
+
+
 - Export typed workspace programs to OpenQASM from the Python CLI and report
   malformed Rust interop results as structured host errors (#692, #694).
 - Keep representable subnormal branch probabilities and normalize the

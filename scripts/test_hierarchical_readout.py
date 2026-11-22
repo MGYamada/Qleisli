@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 import tomllib
 
 from test_hierarchical_artifact import ROOT, build_and_run
@@ -254,7 +254,7 @@ def bridge(request, packet, budget=2000000):
 
 
 def inspect(kernel, payload, *, edition):
-    run = subprocess.run([str(kernel), '--readout-check', PRODUCT_VERSION], input=envelope(edition, payload) if payload else b"",
+    run = run_verification([str(kernel), '--readout-check', PRODUCT_VERSION], input=envelope(edition, payload) if payload else b"",
                          capture_output=True, timeout=60)
     reply = parse_reply(run.stdout, edition=edition, product=PRODUCT_VERSION,
                         mode='--readout-check', scope='inspection')

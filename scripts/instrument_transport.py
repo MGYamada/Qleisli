@@ -6,7 +6,7 @@ import struct
 import subprocess
 from pathlib import Path
 import tomllib
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,7 +83,7 @@ def inspect_envelope(kernel, kind, packet, *, edition):
     """Send explicit outer bytes, including deliberately malformed test inputs."""
     if kind not in ('preparation', 'readout'):
         raise ValueError('unknown component')
-    run = subprocess.run([str(kernel), f'--{kind}-check', PRODUCT_VERSION], input=packet,
+    run = run_verification([str(kernel), f'--{kind}-check', PRODUCT_VERSION], input=packet,
                          capture_output=True, timeout=60)
     reply = parse_reply(run.stdout, edition=edition, product=PRODUCT_VERSION,
                         mode=f'--{kind}-check', scope='inspection')

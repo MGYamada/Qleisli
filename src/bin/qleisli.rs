@@ -2,8 +2,6 @@ use std::io::Write;
 use std::process::ExitCode;
 
 use qleisli::frontend::diagnostic::Diagnostic;
-use qleisli::frontend::documentation::render_markdown;
-use qleisli::frontend::project::read_source_file;
 
 #[path = "qleisli/artifacts.rs"]
 mod artifacts;
@@ -107,69 +105,47 @@ fn main() -> ExitCode {
     if source_plan::selected(&args) {
         return source_plan::run(&args);
     }
-    if args.iter().any(|arg| arg == "--format=json") {
-        return json::run(&args);
+    let json = args.iter().any(|arg| arg == "--format=json");
+    let outcome = source_commands::dispatch(&args, json);
+    if json {
+        return json::render(outcome);
     }
-    let Some(options) = options::Options::parse(&args, false) else {
-        eprintln!("{}", options::USAGE);
-        return ExitCode::from(2);
-    };
-    let input = match source_commands::Input::select(&options) {
-        Ok(input) => input,
-        Err(error) => {
-            report(&options.path, error);
-            return ExitCode::FAILURE;
+    render_text(outcome)
+}
+
+fn render_text(outcome: source_commands::Outcome) -> ExitCode {
+    let source_root = &outcome.root;
+    for warning in outcome.warnings {
+        eprintln!("warning: {}", warning.message);
+    }
+    match outcome.result {
+        Ok(source_commands::Success::Artifact(artifacts::Success::Emitted(path, report))) => {
+            write_stdout(report.text(Some(&path)).as_bytes(), "emission result")
         }
-    };
-    let source_root = input.path();
-    if options.command != "verify-ir" && options.command != "doc" {
-        for warning in
-            qleisli::frontend::project::manifest_warnings(source_root).unwrap_or_default()
-        {
-            eprintln!("warning: {}", warning.message);
+        Ok(source_commands::Success::Artifact(artifacts::Success::Checked(report))) => {
+            write_stdout(report.text(None).as_bytes(), "verification result")
         }
-    }
-    if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
-        return match artifacts::execute(&options, &input, false) {
-            Ok(artifacts::Success::Emitted(path, report)) => {
-                write_stdout(report.text(Some(&path)).as_bytes(), "emission result")
-            }
-            Ok(artifacts::Success::Checked(report)) => {
-                write_stdout(report.text(None).as_bytes(), "verification result")
-            }
-            Err(artifacts::Failure::Source(error)) => {
-                report(source_root, error);
-                ExitCode::FAILURE
-            }
-            Err(artifacts::Failure::Artifact(error)) => {
-                eprintln!("{error}");
-                ExitCode::FAILURE
-            }
-        };
-    }
-    if options.command == "doc" {
-        let source = match read_source_file(source_root, options.policy) {
-            Ok(source) => source,
-            Err(error) => {
-                report(source_root, error);
-                return ExitCode::FAILURE;
-            }
-        };
-        return match render_markdown(&source) {
-            Ok(markdown) => write_stdout(markdown.as_bytes(), "documentation"),
-            Err(error) => {
-                eprintln!("{}: {error}", source_root.display());
-                ExitCode::FAILURE
-            }
-        };
-    }
-    match source_commands::execute(&options, &input) {
+        Ok(source_commands::Success::Documentation(markdown)) => {
+            write_stdout(markdown.as_bytes(), "documentation")
+        }
+        Err(source_commands::Failure::Artifact(error)) => {
+            eprintln!("{error}");
+            ExitCode::FAILURE
+        }
         Ok(source_commands::Success::Checked(checks)) => write_stdout(
             check_report::project_text(source_root, &checks).as_bytes(),
             "check result",
         ),
         Err(source_commands::Failure::Source(error)) => {
-            report(source_root, error);
+            if error.code == "usage" {
+                eprintln!("{}", error.message);
+                return ExitCode::from(2);
+            }
+            if error.code == "doc" {
+                eprintln!("{}: {}", source_root.display(), error.message);
+            } else {
+                report(source_root, error);
+            }
             ExitCode::FAILURE
         }
         Ok(source_commands::Success::Samples { shots, .. }) => {
@@ -225,7 +201,7 @@ fn main() -> ExitCode {
             write_stdout(text.as_bytes(), "distribution")
         }
         Err(source_commands::Failure::Simulation(error)) => {
-            eprintln!("{error}");
+            eprintln!("{}", error.message);
             ExitCode::FAILURE
         }
     }

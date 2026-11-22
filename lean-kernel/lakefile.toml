@@ -1,5 +1,5 @@
 name = "qleisli_kernel"
-version = "0.3.0-beta"
+version = "0.3.0"
 defaultTargets = ["QleisliKernel", "qleisli-kernel"]
 
 [leanOptions]
@@ -14,3 +14,7 @@ globs = ["QleisliKernel.*", "Protocol.*", "Cli.+"]
 [[lean_exe]]
 name = "qleisli-kernel"
 root = "Main"
+
+[[lean_exe]]
+name = "qleisli-kernel-legacy-replay"
+root = "Cli.Replay"

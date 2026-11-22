@@ -197,7 +197,7 @@ class SourceProjectionTests(unittest.TestCase):
             root = Path(directory)
             for name in ['corpus', 'stdlib/src']:
                 (root/name).mkdir(parents=True)
-            for name in ['corpus/Qargo.toml', 'stdlib/Qargo.toml']:
+            for name in ['corpus/Qargo.toml', 'stdlib/Qlirgo.toml']:
                 (root/name).write_text('schema-version = 2\n[qrate]\nedition = "2026"\n')
             compiler = root/'compiler'; compiler.write_bytes(b'fake compiler identity')
             original = json.dumps(observing_artifact()).encode('utf-8')

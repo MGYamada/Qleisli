@@ -235,9 +235,22 @@ fn selected_native_rejections_keep_one_category_and_fail_closed_in_text_and_json
     let root = SourceRoot::new("observe fn main()->Bit{1}");
     let checker = root.0.join("rejecting-checker");
     for code in ["invalid_ir", "limit"] {
-        std::fs::write(&checker, format!(
-            "#!/bin/sh\ncat >/dev/null\nprintf 'qleisli.native-result 3\\nerror\\n{code}\\n'\nexit 1\n"
-        )).unwrap();
+        std::fs::write(
+            &checker,
+            format!(
+                r#"#!/usr/bin/env python3
+import hashlib
+import sys
+data = sys.stdin.buffer.read()
+print("qleisli.native-result 4")
+print(hashlib.sha256(data).hexdigest())
+print("error")
+print("{code}")
+sys.exit(1)
+"#
+            ),
+        )
+        .unwrap();
         std::fs::set_permissions(&checker, std::fs::Permissions::from_mode(0o700)).unwrap();
         for json in [false, true] {
             let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));

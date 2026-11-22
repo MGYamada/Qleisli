@@ -80,11 +80,28 @@ fn rejecting_process(root: &SourceRoot, code: &str) -> std::path::PathBuf {
         "limit" | "contract" | "invalid_ir" | "format"
     ));
     let mode_file = root.0.join("invoked-mode");
-    let mode_file = mode_file.to_str().unwrap().replace('\'', "'\\''");
+    let mode_file = mode_file.to_str().unwrap();
     root.write(
         "rejecting-kernel",
         &format!(
-            "#!/bin/sh\nprintf '%s\\n' \"$1\" > '{mode_file}'\n/bin/cat > /dev/null\ncase \"$1\" in\n  --hierarchy-request-pending|--instrument-pending|--qpe-instrument-pending) ;;\n  *) exit 99 ;;\nesac\nprintf '%s\\n' 'qleisli.native-result 3' error {code}\nexit 1\n"
+            r#"#!/usr/bin/env python3
+import hashlib
+from pathlib import Path
+import struct
+import sys
+data = sys.stdin.buffer.read()
+_, version_size, mode_size = struct.unpack_from("<3I", data, 4)
+start = 16 + version_size
+mode = data[start:start + mode_size].decode("ascii")
+Path({mode_file:?}).write_text(mode + "\n")
+if mode not in ("--hierarchy-request-pending", "--instrument-pending", "--qpe-instrument-pending"):
+    sys.exit(99)
+print("qleisli.native-result 4")
+print(hashlib.sha256(data).hexdigest())
+print("error")
+print("{code}")
+sys.exit(1)
+"#
         ),
     );
     let path = root.0.join("rejecting-kernel");

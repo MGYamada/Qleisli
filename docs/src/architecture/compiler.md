@@ -17,7 +17,7 @@ the resulting artifacts.
 ## Loading and parsing
 
 Project loading fixes the source modules, imports and edition. This stage
-read your `Qargo.toml` and every `.qli` file of the project. It reads and
+read your `Qlirgo.toml` and every `.qli` file of the project. It reads and
 checks a module whether or not another module imports it. The `project`
 diagnostic about a function that
 [is not public](../learn/functions-and-modules.md#move-the-function-into-a-module)

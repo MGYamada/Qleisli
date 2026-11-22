@@ -63,7 +63,7 @@ class EditionTests(unittest.TestCase):
         self.root = Path(self.directory.name)
         self.write("Cargo.toml", '[package]\nversion = "0.2.3"\n')
         self.write("corpus/Qargo.toml", MANIFEST)
-        self.write("stdlib/Qargo.toml", MANIFEST + 'name = "std"\nversion = "0.2.3"\n'
+        self.write("stdlib/Qlirgo.toml", MANIFEST + 'name = "std"\nversion = "0.2.3"\n'
                    '[source]\nroot = "src"\n[tests]\nroot = "tests"\n[docs]\nroot = "docs"\n')
         self.write("stdlib/tests/README.md", "test root")
         self.write("stdlib/docs/README.md", "documentation root")
@@ -316,13 +316,13 @@ class EditionTests(unittest.TestCase):
         self.assertEqual(check_editions(self.root)[0], [])
 
     def test_std_qrate_requires_full_identity_roots_and_synchronized_version(self):
-        original = (self.root / "stdlib/Qargo.toml").read_text()
+        original = (self.root / "stdlib/Qlirgo.toml").read_text()
         for changed in (MANIFEST, original.replace('name = "std"', 'name = "stdlib"'),
                         original.replace('version = "0.2.3"', 'version = "0.2.2"'),
                         original.replace('root = "tests"', 'root = "absent"')):
             with self.subTest(changed=changed):
-                self.write("stdlib/Qargo.toml", changed)
-                self.assertTrue(any("stdlib/Qargo.toml:" in e
+                self.write("stdlib/Qlirgo.toml", changed)
+                self.assertTrue(any("stdlib/Qlirgo.toml:" in e
                                     for e in check_editions(self.root)[0]))
 
 
