@@ -3,6 +3,7 @@
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
 import copy
+from fnmatch import fnmatchcase
 import base64
 import gzip
 import io
@@ -32,6 +33,15 @@ ORIGINAL = {
 
 
 class OriginalDrivers(unittest.TestCase):
+    def test_pr_paths_cover_each_registered_driver_and_the_manifest(self):
+        workflow = (bundle.ROOT / '.github/workflows/native-driver-shadow.yml').read_text()
+        paths = workflow.split('  pull_request:\n    paths:\n', 1)[1].split('  workflow_dispatch:', 1)[0]
+        patterns = [line.strip().removeprefix('- ').strip("'") for line in paths.splitlines()]
+        files = {f'scripts/test_lean_{name}.py' for name in bundle.MODULES.values()}
+        for path in files | {'.github/ci/native-comparisons.json'}:
+            with self.subTest(path=path):
+                self.assertTrue(any(fnmatchcase(path, pattern) for pattern in patterns))
+
     def test_session_disclosures_link_inert_records_without_adoption_or_proof_claims(self):
         text = (bundle.ROOT / 'tests/fixtures/authoring_sessions/ci-native-drivers-v030/README.md').read_text()
         for name in ('first.json.gz', 'first-compilation.json.gz', 'first-comparison.json.gz', 'first-policy.json.gz'):

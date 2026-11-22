@@ -1,0 +1,7 @@
+#![no_implicit_prelude]
+isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}
+observe fn main()->(Bit,Bit){
+    let q=clean(zero(),h){|data,scratch|(h(data),scratch)};
+    let (q,d)=dirty(q,h(phase[1,1](h(zero()))),h){|data,scratch|(h(data),scratch)};
+    let a=measure_z(q); let b=measure_z(d); (b,a)
+}

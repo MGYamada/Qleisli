@@ -1358,6 +1358,15 @@ private def checkOrderedOriginalCalls : WorkM Unit := do
   guard (middle == ("choose",553,0,
     [.nextOrdinal 1,.atOrdinal 1,.named 1 "main" "route" 553 "main" "choose",.atOrdinal 0,.pureStep 0],1,1)) .invalid
   guard (body.selections.count == 1) .invalid
+  -- Replay the selection traversal on two occurrences of the same checked
+  -- step. Only their global ranks and outer paths distinguish the calls.
+  let steps := [view.pre,view.center,view.center,view.post]
+  let twice ← RuntimeSelectionSteps.readResult {body.checked.result with steps := steps}
+  let second := RuntimeNamedThreeOccurrence.actual_steps_selection twice.witness
+    [view.pre,view.center] [view.post] view.centerSelection rfl
+  guard (twice.count == 2 && retainedMiddleData view.centerSelection second ==
+    ("choose",553,1,[.nextOrdinal 1,.nextOrdinal 2,.atOrdinal 2,
+      .named 2 "main" "route" 553 "main" "choose",.atOrdinal 0,.pureStep 0],1,1)) .invalid
   -- This is the complete list, not a filtered list of named calls. These
   -- malformed shapes are inspected without changing the original body.
   guard ((QleisliKernel.Qirf.RuntimeNamedThreeOccurrence.inspect? (body.checked.result.steps.take 2)).isNone &&

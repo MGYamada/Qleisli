@@ -2,6 +2,7 @@
 
 Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 """
+import io
 import json
 import os
 from pathlib import Path
@@ -15,6 +16,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
 from qleisli import Client, Program, QleisliError
+from qleisli.__main__ import main as cli
 
 
 class HostBoundary(unittest.TestCase):
@@ -126,6 +128,7 @@ class HostBoundary(unittest.TestCase):
         # Fabricated transport data tests envelope parsing only. It supplies
         # neither a native acceptance decision nor checker identity authority.
         scope = dict(checker_path='/test/selected-checker', checker_identity='unpinned',
+                     ordinary_result_checked=False, runtime_result_checked=False,
                      request_checked=False, source_preservation_verified=False)
         valid = dict(format='qleisli.result', version=1, command='interop check',
                      outcome='ok', diagnostics=[], result=scope)
@@ -148,6 +151,33 @@ class HostBoundary(unittest.TestCase):
             with response(data), self.assertRaises(QleisliError) as failure:
                 client.from_qir(b'not LLVM')
             self.assertEqual(failure.exception.diagnostics[0]['code'], 'qir')
+
+    def test_malformed_action_results_fail_in_the_library_and_json_cli(self):
+        client = Client('unused', edition='2026')
+        program = Program(client, b'{}', '2026')
+        cases = [
+            ('check', {}, lambda: client.from_ir(b'{}')),
+            ('emit-ir', {}, lambda: client.from_openqasm('OPENQASM 3.0;')),
+            ('emit-ir', {'text': 2}, lambda: client.compile_project(ROOT)),
+            ('run', {'distribution': [{'bits': [1], 'probability': 1}]}, program.run),
+            ('sample', {'shots': []}, lambda: program.sample(shots=1, seed=0)),
+        ]
+        for action, payload, call in cases:
+            document = dict(format='qleisli.result', version=1, command=f'interop {action}',
+                            outcome='ok', diagnostics=[], result=payload)
+            response = subprocess.CompletedProcess([], 0, json.dumps(document).encode(), b'')
+            args = ['qleisli', '.', '--input=qli', '--edition=2026', '--action=' + action]
+            if action == 'sample':
+                args += ['--shots=1', '--seed=0']
+            with self.subTest(action=action, payload=payload), patch.object(Client, '_process', return_value=response):
+                with self.assertRaises(QleisliError) as failure:
+                    call()
+                self.assertEqual(failure.exception.diagnostics[0]['code'], 'connection')
+                with patch.object(sys, 'argv', args), patch('sys.stdout', new_callable=io.StringIO) as output:
+                    self.assertEqual(cli(), 1)
+                    error = json.loads(output.getvalue())
+                self.assertEqual((error['outcome'], error['result'], error['diagnostics'][0]['code']),
+                                 ('error', None, 'project'))
 
     def test_reader_is_bound_to_imported_installation(self):
         client = Client(str(ROOT / "target/debug/qleisli"), edition="2026")
