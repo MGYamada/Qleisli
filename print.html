@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-8b9b3cfe.js";
+            window.path_to_searchindex_js = "searchindex-ab039662.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43209a69.js"></script>
@@ -287,7 +287,7 @@ from <code>qleisli-lessons</code>, the parent of your projects.</p>
 <pre><code class="language-sh">mkdir -p "$HOME/qleisli-lessons/bit-lab"
 cd "$HOME/qleisli-lessons"
 </code></pre>
-<p>Save this manifest as <code>bit-lab/Qargo.toml</code>. It tells Qleisli which edition
+<p>Save this manifest as <code>bit-lab/Qlirgo.toml</code>. It tells Qleisli which edition
 to use when reading this directory.</p>
 <pre><code class="language-toml">schema-version = 2
 
@@ -468,7 +468,7 @@ their results can disagree.</p>
 <p>From the <a href="#prepare-and-measure">practice directory</a>, make
 another project using the same edition.</p>
 <pre><code class="language-sh">mkdir -p bell-lab
-cp bit-lab/Qargo.toml bell-lab/Qargo.toml
+cp bit-lab/Qlirgo.toml bell-lab/Qlirgo.toml
 </code></pre>
 <p>Save the following function as <code>bell-lab/main.qli</code>.</p>
 <pre><code class="language-qli">observe fn main() -&gt; (Bit, Bit) {
@@ -671,7 +671,7 @@ manifest and the <code>pair</code> module from the
 <a href="#move-the-function-into-a-module">functions and modules project</a>.
 This lesson uses its public <code>entangle</code> function.</p>
 <pre><code class="language-sh">mkdir -p teleport-lab
-cp bell-lab/Qargo.toml bell-lab/pair.qli teleport-lab/
+cp bell-lab/Qlirgo.toml bell-lab/pair.qli teleport-lab/
 </code></pre>
 <p>Save the protocol in <code>teleport-lab/transfer.qli</code>. Its argument is a qubit
 chosen by the caller. Its result keeps Alice’s message alongside Bob’s
@@ -766,7 +766,7 @@ three points and see exactly when the marked input becomes more likely.</p>
 <p>From the <a href="#prepare-and-measure">practice directory</a>, create
 a project with the same edition manifest you used in <code>bit-lab</code>.</p>
 <pre><code class="language-sh">mkdir -p search-lab
-cp bit-lab/Qargo.toml search-lab/Qargo.toml
+cp bit-lab/Qlirgo.toml search-lab/Qlirgo.toml
 </code></pre>
 <p>Write the following program in <code>search-lab/main.qli</code>.</p>
 <pre><code class="language-qli">use std::measurement::measure_z2;
@@ -874,7 +874,7 @@ then compares each implementation you supply with that statement.</p>
 <p>From the <a href="#prepare-and-measure">practice directory</a>, create a
 project with the same edition manifest.</p>
 <pre><code class="language-sh">mkdir -p meaning-lab
-cp bit-lab/Qargo.toml meaning-lab/Qargo.toml
+cp bit-lab/Qlirgo.toml meaning-lab/Qlirgo.toml
 </code></pre>
 <p>Save this program as <code>meaning-lab/main.qli</code>.</p>
 <pre><code class="language-qli">classical fn flipped(b: Bit) -&gt; Bit { not b }
@@ -1125,7 +1125,7 @@ decides acceptance.</p>
 <tr><th>Component</th><th>Responsibility</th></tr>
 </thead>
 <tbody>
-<tr><td>Source project</td><td>Groups <code>.qli</code> modules and selects the language edition in <code>Qargo.toml</code>. The bundled standard library supplies reusable operations.</td></tr>
+<tr><td>Source project</td><td>Groups <code>.qli</code> modules and selects the language edition in <code>Qlirgo.toml</code>. The bundled standard library supplies reusable operations.</td></tr>
 <tr><td>Rust host</td><td>Provides the <code>qleisli</code> CLI and Rust library. The Python client calls the CLI. The <a href="#compiler-architecture">compiler</a> lowers source, and input adapters prepare proposals for supported external formats.</td></tr>
 <tr><td>Native verifier</td><td>Independently checks proposals in a separate process. The <a href="#verifier-architecture">verifier chapter</a> explains what an execution decision binds.</td></tr>
 <tr><td>Simulation and export</td><td>The Rust host uses the accepted representation to simulate or sample supported programs. Export additionally requires the checks for the selected format and target profile.</td></tr>
@@ -1190,7 +1190,7 @@ the resulting artifacts.</p>
 <p><a href="architecture/diagrams/compiler.mmd">Mermaid source</a></p>
 <h2 id="loading-and-parsing"><a class="header" href="#loading-and-parsing">Loading and parsing</a></h2>
 <p>Project loading fixes the source modules, imports and edition. This stage
-read your <code>Qargo.toml</code> and every <code>.qli</code> file of the project. It reads and
+read your <code>Qlirgo.toml</code> and every <code>.qli</code> file of the project. It reads and
 checks a module whether or not another module imports it. The <code>project</code>
 diagnostic about a function that
 <a href="#move-the-function-into-a-module">is not public</a>
@@ -1390,7 +1390,7 @@ It decides whether each submitted artifact and its evidence satisfy the
 requested checks. The Rust client binds the decision to the exact retained
 data before the runtime or exporter uses it. Qleisli source projects select
 their own <a href="#qrates-source-identity-and-external-artifacts">qrate and edition</a> through
-<code>Qargo.toml</code>. Cargo packages organize the Rust implementation.</p>
+<code>Qlirgo.toml</code>. Cargo packages organize the Rust implementation.</p>
 <h2 id="status-and-limits-3"><a class="header" href="#status-and-limits-3">Status and limits</a></h2>
 <p>The map is a packaging proposal informed by the planned Core and Circuit IR
 boundary. Workspace membership, public package names, and re-exports need
@@ -3698,7 +3698,11 @@ QS, PR, RS or EXACT obligation.</li>
 <h1 id="qrates-source-identity-and-external-artifacts"><a class="header" href="#qrates-source-identity-and-external-artifacts">Qrates, source identity and external artifacts</a></h1>
 <p>A <strong>qrate</strong> is the smallest unit of Qleisli programs that has a version of
 its own and that can be distributed by itself. A qrate or a source tree
-declares itself in a <strong>manifest</strong>, a file named <code>Qargo.toml</code>.</p>
+declares itself in a <strong>manifest</strong>, a file named <code>Qlirgo.toml</code>.
+A directory with only <code>Qargo.toml</code> may use that legacy name. If a directory
+contains both names, the files must be byte-for-byte identical. The checker
+selects <code>Qlirgo.toml</code> in that case. Both names require the same explicit
+schema and edition. A conflicting or invalid pair fails in its directory.</p>
 <p>This chapter specifies how much authority packages and artifacts have in
 edition 2026, under the <a href="#authority-and-constitutional-obligations">authority hierarchy</a>. It states what a
 qrate, a source file or an external artifact may establish, and what it
@@ -3904,7 +3908,7 @@ root = "src"
 </code></pre>
 <p>A source tree states its edition in a manifest. The block shows the supported
 spelling of a source-tree manifest. A source file uses the nearest
-<code>Qargo.toml</code> in its directory or in an ancestor directory. The <code>qleisli</code> CLI
+<code>Qlirgo.toml</code> in its directory or in an ancestor directory. The <code>qleisli</code> CLI
 knows these keys:</p>
 <div class="table-wrapper">
 <table>
@@ -3962,7 +3966,7 @@ edition = "2026"
 <tr><th>Manifest</th><th>The message contains</th></tr>
 </thead>
 <tbody>
-<tr><td><code>schema-version = 1</code>, or no <code>schema-version</code></td><td><code>Qargo.toml requires schema-version = 2</code></td></tr>
+<tr><td><code>schema-version = 1</code>, or no <code>schema-version</code></td><td><code>Qlirgo.toml requires schema-version = 2</code></td></tr>
 <tr><td><code>edition = 2026</code>, an integer</td><td><code>explicit string [qrate].edition</code></td></tr>
 <tr><td><code>edition = "2027"</code></td><td><code>unsupported Qleisli edition</code></td></tr>
 </tbody>
@@ -3993,7 +3997,7 @@ sources. It does not orchestrate packages, dependencies, tests or
 documentation.</p>
 <p>Rules:</p>
 <ul>
-<li>The selected directory must itself contain <code>Qargo.toml</code>.</li>
+<li>The selected directory must itself contain <code>Qlirgo.toml</code> or <code>Qargo.toml</code>.</li>
 <li>That manifest must give <code>[source].root</code> as an explicit string.</li>
 <li><code>[source].root</code> must be a nonempty relative path. It must not contain a
 parent traversal, and no component may be named <code>target</code>, in any ASCII
@@ -4047,7 +4051,7 @@ each manifest, one to each source file and one to the project as a whole.</p>
 <tr><th>Limit</th><th>Value</th><th>Scope</th></tr>
 </thead>
 <tbody>
-<tr><td>Manifest</td><td>65,536 bytes</td><td>Each <code>Qargo.toml</code></td></tr>
+<tr><td>Manifest</td><td>65,536 bytes</td><td>Each manifest under either supported name</td></tr>
 <tr><td>Source file</td><td>1,048,576 bytes, or the value of <code>--source-bytes=N</code></td><td>Each source file</td></tr>
 <tr><td>Project aggregate</td><td>16,777,216 bytes, or the value of <code>--project-bytes=N</code></td><td>The source text and the retained manifest text of one project</td></tr>
 </tbody>
@@ -4197,7 +4201,7 @@ prerelease and build identifiers.</li>
 code <code>project</code>.</li>
 <li>A user manifest keeps its normal schema and edition checks and its
 independent package version.</li>
-<li>Release synchronization includes <code>stdlib/Qargo.toml</code>.</li>
+<li>Release synchronization includes <code>stdlib/Qlirgo.toml</code>.</li>
 </ul>
 <blockquote>
 <p><strong>Implementation note.</strong> The private function <code>check_bundled</code> in
@@ -12391,7 +12395,7 @@ the checked IR, source preservation and specification review each have
 separate evidence and premises.</li>
 <li>Tests: <code>tests/project.rs</code> checks the canonical paths and the rejection of
 every retired path. <code>tests/editions.rs</code> compares the bundled descriptor with
-<code>stdlib/Qargo.toml</code> and with every file of <code>stdlib/src</code>. The unit tests of
+<code>stdlib/Qlirgo.toml</code> and with every file of <code>stdlib/src</code>. The unit tests of
 <code>src/frontend/project/edition.rs</code> check the embedded-manifest gate.
 <code>tests/axis_routing_boundary.rs</code> checks the transposition example.</li>
 <li>The source definitions and their exact requested checks are separate from
@@ -14790,7 +14794,7 @@ that regime. Syntax, type-system and CLI changes belong to release versioning
 and its published compatibility and migration policy. The unified 0.3.0
 language therefore remains in constitutional edition 2026.</p>
 <p>Source trees explicitly declare the constitutional edition through schema-2
-<code>Qargo.toml</code>, in <code>[qrate].edition</code>. Updating the compiler does not implicitly
+<code>Qlirgo.toml</code>, in <code>[qrate].edition</code>. Updating the compiler does not implicitly
 change that selection. Edition identity alone does not identify an executable
 checker version, a grammar, a complete acceptance predicate or a proof of all
 three obligations.</p>
@@ -17327,8 +17331,77 @@ regression is in <code>tests/cli.rs</code>.</li>
 <li>Their bounded observations do not replace S05 proofs or human review of the
 intended semantics.</li>
 </ul>
+<h2 id="stable-verification-request-migration"><a class="header" href="#stable-verification-request-migration">Stable verification request migration</a></h2>
+<p>The compiler sends one native verification request with an explicit obligation
+selector. The selector chooses a bounded checker and its required
+input and evidence shape. Existing QLV3 source packets carry QLV1 artifacts,
+graph and caller execution views, and alias indices. The placement packet
+carries a source packet, emitted target and alignment evidence. Each
+inner reader checks its original bytes and its own
+obligations. A request for a different scope or a weaker source profile
+cannot replace an obligation that failed.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Existing native flag</th><th>Obligation selector</th><th>Checked result and obligations</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--qirf-native</code></td><td>Ordinary</td><td>Ordinary Raw, ownership, classical scope, and graph/caller views when selected.</td></tr>
+<tr><td><code>--qirf-contract</code></td><td>Contract</td><td>Ordinary Raw with the retained exact contract and required graph/caller views.</td></tr>
+<tr><td><code>--carrier-pure-check</code></td><td>Carrier pure</td><td>Actual carrier interface and pure body, bound to the retained origin and view.</td></tr>
+<tr><td><code>--ordinary-root-check</code></td><td>Ordinary root</td><td>Original bytes and ordinary root selection with v2 source typing and exact effect obligations.</td></tr>
+<tr><td><code>--runtime-root-check</code></td><td>Runtime root</td><td>Runtime root v2 context and materialized source execution obligations.</td></tr>
+<tr><td><code>--qmatch-source-check</code></td><td>Source qmatch v4</td><td>Original source, ordered sectors, phases, owner routing, and checked execution view.</td></tr>
+<tr><td><code>--qmatch-source-v5-check</code></td><td>Source qmatch v5</td><td>Separate v5 original-source, context, provider and operation binding duties as applicable to the reachable v5 subject.</td></tr>
+<tr><td><code>--openqasm-placement-check</code></td><td>OpenQASM placement</td><td>Placement-checked, binding checked v5 source, alignment and actual target operations.</td></tr>
+<tr><td><code>--hierarchy-pending</code></td><td>Hierarchy inspection</td><td>Pending, validating hierarchy topology and inspection evidence.</td></tr>
+<tr><td><code>--hierarchy-request-pending</code></td><td>Hierarchy request</td><td>Pending, with the retained request and selected dependency indices.</td></tr>
+<tr><td><code>--hierarchy-control-pending</code></td><td>Hierarchy control</td><td>Pending, with checked caller-independent control evidence and execution-view binding.</td></tr>
+<tr><td><code>--hierarchy-fourier-pending</code></td><td>Hierarchy Fourier</td><td>Pending, with the retained Fourier request and selected Hadamard indices.</td></tr>
+<tr><td><code>--instrument-pending</code></td><td>Instrument</td><td>Pending, with the hierarchical instrument evidence.</td></tr>
+<tr><td><code>--qpe-instrument-pending</code></td><td>QPE instrument</td><td>Pending, with the retained QPE instrument and Fourier evidence.</td></tr>
+<tr><td><code>--engineering-pure-check</code></td><td>Engineering pure</td><td>Engineering-checked, exact ideal/actual pure comparison.</td></tr>
+<tr><td><code>--engineering-pure-tensor-check</code></td><td>Engineering pure tensor</td><td>Engineering-checked, exact ordered tensor comparison.</td></tr>
+<tr><td><code>--qirf-engineering-instrument-native</code></td><td>Engineering instrument</td><td>Engineering-checked, instrument interface and exact outcome evidence.</td></tr>
+<tr><td><code>--engineering-openqasm-check</code></td><td>Engineering OpenQASM</td><td>Engineering-checked, exact target relation to the declared project.</td></tr>
+<tr><td><code>--engineering-openqasm-gate-check</code></td><td>Engineering OpenQASM gate</td><td>Engineering-checked, gate block interface, target correspondence and literal counts.</td></tr>
+<tr><td><code>--readout-check</code></td><td>Readout</td><td>Checked inspection of the readout request and packet.</td></tr>
+<tr><td><code>--preparation-check</code></td><td>Preparation</td><td>Checked inspection of the preparation request and packet.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The migration keeps the ordinary project, selected Raw, and sized/hierarchy
+source emitters. The explicit <code>--legacy-source-limits</code> compatibility policy
+never supplies an implicit fallback for a bounded request. In v5, only a
+source subject with an implemented producer and consumer can reach production.
+The retained but unconstructed arm, operation and context subject types expand
+neither the supported profile nor the meaning of a successful v5 result.
+The test-only Lean legacy comparison modules retain the independent
+differential checks.</p>
+<p>Migration validation compares the native responses over the saved execution
+view, source qmatch, hierarchy, and engineering regressions. The comparison
+checks the decision class, associated claim, work result, and the decoded
+artifact or rejection as appropriate. The CLI migration uses a single
+structured command outcome for text and JSON. Explicit source diagnostics
+and checker failures keep their locations and codes. Only a current
+execution-admitting decision at the required scope can bind an execution
+view.</p>
+<p>Set <code>QLEISLI_VERIFICATION_TRACE=1</code> to append a
+<code>qleisli.verification-trace</code> version-1 JSON line to stderr. The record
+includes the command route, the source-byte policy when selected by the
+ordinary command engine, and the product and protocol identities. For each
+native invocation it records the subject and request hashes, obligation,
+edition, scope, and outcome or diagnostic ID. The trace reports at most 128
+native invocations and counts any further invocations in <code>omitted</code>. Source
+text, file names and diagnostic messages are excluded from this record.
+Stdout and the command exit status keep their regular meaning. The trace
+is an observation for debugging and does not authorize execution.</p>
 <h2 id="history-15"><a class="header" href="#history-15">History</a></h2>
 <ul>
+<li>The <a href="https://github.com/MGYamada/Qleisli/issues/622">0.3.0 stable cutover</a>
+converged native dispatch. <a href="https://github.com/MGYamada/Qleisli/issues/625">Raw emitter convergence</a>
+and the <a href="https://github.com/MGYamada/Qleisli/issues/382">canonical Core and Circuit IR</a>
+have their own release targets.</li>
 <li>Production acceptance completed the adopted migration to one native Lean
 implementation under the
 <a href="https://github.com/MGYamada/Qleisli/issues/276">single-verifier decision #276</a>.</li>
@@ -17512,25 +17585,37 @@ substitute.</li>
 <p>The native checker answers each request with one reply. A successful reply
 names the claim of the checker and the context in which it checked: the
 edition, the product version, the mode and the scope.</p>
-<p>Each of the twenty-one native modes replies with <code>qleisli.native-result 3</code>.
-A reply is text with one field on each line. A final newline is required. A
-successful reply has these lines:</p>
+<p>The compiler sends a version-1 verification request to <code>--verify-request</code>.
+The binary request starts with <code>QLR1</code>, followed by three little-endian 32-bit
+fields for the exact-work budget, product-version byte length and obligation
+selector byte length. The product version and selector are followed by the
+complete inner packet. It carries the edition, scope and original evidence.
+The native checker rechecks that packet under the chosen obligation and
+rejects a budget above 20,000,000. Readout and preparation also retain their
+component-specific visit budgets.</p>
+<p>The reply is text with one field on each line and a required final newline.
+Rust checks the header and SHA-256 against the full request before interpreting
+the payload. A successful reply has these fields.</p>
 <div class="table-wrapper">
 <table>
 <thead>
 <tr><th>Line</th><th>Content</th></tr>
 </thead>
 <tbody>
-<tr><td>1</td><td>The header <code>qleisli.native-result 3</code></td></tr>
-<tr><td>2</td><td>The claim</td></tr>
-<tr><td>3</td><td>The checked edition</td></tr>
-<tr><td>4</td><td>The compiled complete product version</td></tr>
-<tr><td>5</td><td>The canonical mode argument</td></tr>
-<tr><td>6</td><td>The checked scope, by name</td></tr>
-<tr><td>7 and later</td><td>The payload fields of the mode</td></tr>
+<tr><td>1</td><td>The header <code>qleisli.native-result 4</code></td></tr>
+<tr><td>2</td><td>The lowercase hexadecimal SHA-256 of the complete request</td></tr>
+<tr><td>3</td><td>The claim</td></tr>
+<tr><td>4</td><td>The checked edition</td></tr>
+<tr><td>5</td><td>The complete product version compiled into the checker</td></tr>
+<tr><td>6</td><td>The canonical obligation selector</td></tr>
+<tr><td>7</td><td>The checked scope, by name</td></tr>
+<tr><td>8 and later</td><td>The payload fields of the obligation</td></tr>
 </tbody>
 </table>
 </div>
+<p>The differential driver can compare these decisions against a separate
+version-3 checker supplied for offline replay. The packaged checker uses the
+version-4 reply and refuses the former native mode command arguments.</p>
 <p>The claim and the payload depend on the mode:</p>
 <div class="table-wrapper">
 <table>
@@ -17550,8 +17635,8 @@ successful reply has these lines:</p>
 </div>
 <p>The five claims are distinct. <code>Mode.status</code> and <code>payload</code> in
 <code>lean-kernel/Protocol/NativeContext.lean</code> define this table.</p>
-<p>An ordinary error reply has three lines: the header, <code>error</code> and one of
-these rejection codes:</p>
+<p>An ordinary error reply contains the header, request identity, <code>error</code> and
+one of these rejection codes:</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -17578,8 +17663,8 @@ and the positive operation count. The located form is a rejection all the
 same. Its extra fields serve diagnostics only.</p>
 <p>Rules:</p>
 <ul>
-<li>An ordinary error reply contains only the header, <code>error</code>, the rejection
-code and the final newline. It asserts no context that was checked
+<li>An ordinary error reply contains only the header, request identity,
+<code>error</code>, the rejection code and the final newline. It asserts no context that was checked
 successfully.</li>
 <li>Before a consumer interprets its own bounded payload, it must match the
 edition, the product, the actual mode and the requested scope. It must

@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8b9b3cfe.js";
+            window.path_to_searchindex_js = "../searchindex-ab039662.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-43209a69.js"></script>
@@ -330,25 +330,37 @@ substitute.</li>
 <p>The native checker answers each request with one reply. A successful reply
 names the claim of the checker and the context in which it checked: the
 edition, the product version, the mode and the scope.</p>
-<p>Each of the twenty-one native modes replies with <code>qleisli.native-result 3</code>.
-A reply is text with one field on each line. A final newline is required. A
-successful reply has these lines:</p>
+<p>The compiler sends a version-1 verification request to <code>--verify-request</code>.
+The binary request starts with <code>QLR1</code>, followed by three little-endian 32-bit
+fields for the exact-work budget, product-version byte length and obligation
+selector byte length. The product version and selector are followed by the
+complete inner packet. It carries the edition, scope and original evidence.
+The native checker rechecks that packet under the chosen obligation and
+rejects a budget above 20,000,000. Readout and preparation also retain their
+component-specific visit budgets.</p>
+<p>The reply is text with one field on each line and a required final newline.
+Rust checks the header and SHA-256 against the full request before interpreting
+the payload. A successful reply has these fields.</p>
 <div class="table-wrapper">
 <table>
 <thead>
 <tr><th>Line</th><th>Content</th></tr>
 </thead>
 <tbody>
-<tr><td>1</td><td>The header <code>qleisli.native-result 3</code></td></tr>
-<tr><td>2</td><td>The claim</td></tr>
-<tr><td>3</td><td>The checked edition</td></tr>
-<tr><td>4</td><td>The compiled complete product version</td></tr>
-<tr><td>5</td><td>The canonical mode argument</td></tr>
-<tr><td>6</td><td>The checked scope, by name</td></tr>
-<tr><td>7 and later</td><td>The payload fields of the mode</td></tr>
+<tr><td>1</td><td>The header <code>qleisli.native-result 4</code></td></tr>
+<tr><td>2</td><td>The lowercase hexadecimal SHA-256 of the complete request</td></tr>
+<tr><td>3</td><td>The claim</td></tr>
+<tr><td>4</td><td>The checked edition</td></tr>
+<tr><td>5</td><td>The complete product version compiled into the checker</td></tr>
+<tr><td>6</td><td>The canonical obligation selector</td></tr>
+<tr><td>7</td><td>The checked scope, by name</td></tr>
+<tr><td>8 and later</td><td>The payload fields of the obligation</td></tr>
 </tbody>
 </table>
 </div>
+<p>The differential driver can compare these decisions against a separate
+version-3 checker supplied for offline replay. The packaged checker uses the
+version-4 reply and refuses the former native mode command arguments.</p>
 <p>The claim and the payload depend on the mode:</p>
 <div class="table-wrapper">
 <table>
@@ -368,8 +380,8 @@ successful reply has these lines:</p>
 </div>
 <p>The five claims are distinct. <code>Mode.status</code> and <code>payload</code> in
 <code>lean-kernel/Protocol/NativeContext.lean</code> define this table.</p>
-<p>An ordinary error reply has three lines: the header, <code>error</code> and one of
-these rejection codes:</p>
+<p>An ordinary error reply contains the header, request identity, <code>error</code> and
+one of these rejection codes:</p>
 <div class="table-wrapper">
 <table>
 <thead>
@@ -396,8 +408,8 @@ and the positive operation count. The located form is a rejection all the
 same. Its extra fields serve diagnostics only.</p>
 <p>Rules:</p>
 <ul>
-<li>An ordinary error reply contains only the header, <code>error</code>, the rejection
-code and the final newline. It asserts no context that was checked
+<li>An ordinary error reply contains only the header, request identity,
+<code>error</code>, the rejection code and the final newline. It asserts no context that was checked
 successfully.</li>
 <li>Before a consumer interprets its own bounded payload, it must match the
 edition, the product, the actual mode and the requested scope. It must

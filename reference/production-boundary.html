@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8b9b3cfe.js";
+            window.path_to_searchindex_js = "../searchindex-ab039662.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-43209a69.js"></script>
@@ -2207,8 +2207,77 @@ regression is in <code>tests/cli.rs</code>.</li>
 <li>Their bounded observations do not replace S05 proofs or human review of the
 intended semantics.</li>
 </ul>
+<h2 id="stable-verification-request-migration"><a class="header" href="#stable-verification-request-migration">Stable verification request migration</a></h2>
+<p>The compiler sends one native verification request with an explicit obligation
+selector. The selector chooses a bounded checker and its required
+input and evidence shape. Existing QLV3 source packets carry QLV1 artifacts,
+graph and caller execution views, and alias indices. The placement packet
+carries a source packet, emitted target and alignment evidence. Each
+inner reader checks its original bytes and its own
+obligations. A request for a different scope or a weaker source profile
+cannot replace an obligation that failed.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Existing native flag</th><th>Obligation selector</th><th>Checked result and obligations</th></tr>
+</thead>
+<tbody>
+<tr><td><code>--qirf-native</code></td><td>Ordinary</td><td>Ordinary Raw, ownership, classical scope, and graph/caller views when selected.</td></tr>
+<tr><td><code>--qirf-contract</code></td><td>Contract</td><td>Ordinary Raw with the retained exact contract and required graph/caller views.</td></tr>
+<tr><td><code>--carrier-pure-check</code></td><td>Carrier pure</td><td>Actual carrier interface and pure body, bound to the retained origin and view.</td></tr>
+<tr><td><code>--ordinary-root-check</code></td><td>Ordinary root</td><td>Original bytes and ordinary root selection with v2 source typing and exact effect obligations.</td></tr>
+<tr><td><code>--runtime-root-check</code></td><td>Runtime root</td><td>Runtime root v2 context and materialized source execution obligations.</td></tr>
+<tr><td><code>--qmatch-source-check</code></td><td>Source qmatch v4</td><td>Original source, ordered sectors, phases, owner routing, and checked execution view.</td></tr>
+<tr><td><code>--qmatch-source-v5-check</code></td><td>Source qmatch v5</td><td>Separate v5 original-source, context, provider and operation binding duties as applicable to the reachable v5 subject.</td></tr>
+<tr><td><code>--openqasm-placement-check</code></td><td>OpenQASM placement</td><td>Placement-checked, binding checked v5 source, alignment and actual target operations.</td></tr>
+<tr><td><code>--hierarchy-pending</code></td><td>Hierarchy inspection</td><td>Pending, validating hierarchy topology and inspection evidence.</td></tr>
+<tr><td><code>--hierarchy-request-pending</code></td><td>Hierarchy request</td><td>Pending, with the retained request and selected dependency indices.</td></tr>
+<tr><td><code>--hierarchy-control-pending</code></td><td>Hierarchy control</td><td>Pending, with checked caller-independent control evidence and execution-view binding.</td></tr>
+<tr><td><code>--hierarchy-fourier-pending</code></td><td>Hierarchy Fourier</td><td>Pending, with the retained Fourier request and selected Hadamard indices.</td></tr>
+<tr><td><code>--instrument-pending</code></td><td>Instrument</td><td>Pending, with the hierarchical instrument evidence.</td></tr>
+<tr><td><code>--qpe-instrument-pending</code></td><td>QPE instrument</td><td>Pending, with the retained QPE instrument and Fourier evidence.</td></tr>
+<tr><td><code>--engineering-pure-check</code></td><td>Engineering pure</td><td>Engineering-checked, exact ideal/actual pure comparison.</td></tr>
+<tr><td><code>--engineering-pure-tensor-check</code></td><td>Engineering pure tensor</td><td>Engineering-checked, exact ordered tensor comparison.</td></tr>
+<tr><td><code>--qirf-engineering-instrument-native</code></td><td>Engineering instrument</td><td>Engineering-checked, instrument interface and exact outcome evidence.</td></tr>
+<tr><td><code>--engineering-openqasm-check</code></td><td>Engineering OpenQASM</td><td>Engineering-checked, exact target relation to the declared project.</td></tr>
+<tr><td><code>--engineering-openqasm-gate-check</code></td><td>Engineering OpenQASM gate</td><td>Engineering-checked, gate block interface, target correspondence and literal counts.</td></tr>
+<tr><td><code>--readout-check</code></td><td>Readout</td><td>Checked inspection of the readout request and packet.</td></tr>
+<tr><td><code>--preparation-check</code></td><td>Preparation</td><td>Checked inspection of the preparation request and packet.</td></tr>
+</tbody>
+</table>
+</div>
+<p>The migration keeps the ordinary project, selected Raw, and sized/hierarchy
+source emitters. The explicit <code>--legacy-source-limits</code> compatibility policy
+never supplies an implicit fallback for a bounded request. In v5, only a
+source subject with an implemented producer and consumer can reach production.
+The retained but unconstructed arm, operation and context subject types expand
+neither the supported profile nor the meaning of a successful v5 result.
+The test-only Lean legacy comparison modules retain the independent
+differential checks.</p>
+<p>Migration validation compares the native responses over the saved execution
+view, source qmatch, hierarchy, and engineering regressions. The comparison
+checks the decision class, associated claim, work result, and the decoded
+artifact or rejection as appropriate. The CLI migration uses a single
+structured command outcome for text and JSON. Explicit source diagnostics
+and checker failures keep their locations and codes. Only a current
+execution-admitting decision at the required scope can bind an execution
+view.</p>
+<p>Set <code>QLEISLI_VERIFICATION_TRACE=1</code> to append a
+<code>qleisli.verification-trace</code> version-1 JSON line to stderr. The record
+includes the command route, the source-byte policy when selected by the
+ordinary command engine, and the product and protocol identities. For each
+native invocation it records the subject and request hashes, obligation,
+edition, scope, and outcome or diagnostic ID. The trace reports at most 128
+native invocations and counts any further invocations in <code>omitted</code>. Source
+text, file names and diagnostic messages are excluded from this record.
+Stdout and the command exit status keep their regular meaning. The trace
+is an observation for debugging and does not authorize execution.</p>
 <h2 id="history"><a class="header" href="#history">History</a></h2>
 <ul>
+<li>The <a href="https://github.com/MGYamada/Qleisli/issues/622">0.3.0 stable cutover</a>
+converged native dispatch. <a href="https://github.com/MGYamada/Qleisli/issues/625">Raw emitter convergence</a>
+and the <a href="https://github.com/MGYamada/Qleisli/issues/382">canonical Core and Circuit IR</a>
+have their own release targets.</li>
 <li>Production acceptance completed the adopted migration to one native Lean
 implementation under the
 <a href="https://github.com/MGYamada/Qleisli/issues/276">single-verifier decision #276</a>.</li>

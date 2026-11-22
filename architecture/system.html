@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8b9b3cfe.js";
+            window.path_to_searchindex_js = "../searchindex-ab039662.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-43209a69.js"></script>
@@ -210,7 +210,7 @@ decides acceptance.</p>
 <tr><th>Component</th><th>Responsibility</th></tr>
 </thead>
 <tbody>
-<tr><td>Source project</td><td>Groups <code>.qli</code> modules and selects the language edition in <code>Qargo.toml</code>. The bundled standard library supplies reusable operations.</td></tr>
+<tr><td>Source project</td><td>Groups <code>.qli</code> modules and selects the language edition in <code>Qlirgo.toml</code>. The bundled standard library supplies reusable operations.</td></tr>
 <tr><td>Rust host</td><td>Provides the <code>qleisli</code> CLI and Rust library. The Python client calls the CLI. The <a href="compiler.html">compiler</a> lowers source, and input adapters prepare proposals for supported external formats.</td></tr>
 <tr><td>Native verifier</td><td>Independently checks proposals in a separate process. The <a href="verifier.html">verifier chapter</a> explains what an execution decision binds.</td></tr>
 <tr><td>Simulation and export</td><td>The Rust host uses the accepted representation to simulate or sample supported programs. Export additionally requires the checks for the selected format and target profile.</td></tr>

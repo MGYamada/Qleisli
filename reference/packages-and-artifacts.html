@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-8b9b3cfe.js";
+            window.path_to_searchindex_js = "../searchindex-ab039662.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-43209a69.js"></script>
@@ -182,7 +182,11 @@
                         <h1 id="qrates-source-identity-and-external-artifacts"><a class="header" href="#qrates-source-identity-and-external-artifacts">Qrates, source identity and external artifacts</a></h1>
 <p>A <strong>qrate</strong> is the smallest unit of Qleisli programs that has a version of
 its own and that can be distributed by itself. A qrate or a source tree
-declares itself in a <strong>manifest</strong>, a file named <code>Qargo.toml</code>.</p>
+declares itself in a <strong>manifest</strong>, a file named <code>Qlirgo.toml</code>.
+A directory with only <code>Qargo.toml</code> may use that legacy name. If a directory
+contains both names, the files must be byte-for-byte identical. The checker
+selects <code>Qlirgo.toml</code> in that case. Both names require the same explicit
+schema and edition. A conflicting or invalid pair fails in its directory.</p>
 <p>This chapter specifies how much authority packages and artifacts have in
 edition 2026, under the <a href="authority.html">authority hierarchy</a>. It states what a
 qrate, a source file or an external artifact may establish, and what it
@@ -388,7 +392,7 @@ root = "src"
 </code></pre>
 <p>A source tree states its edition in a manifest. The block shows the supported
 spelling of a source-tree manifest. A source file uses the nearest
-<code>Qargo.toml</code> in its directory or in an ancestor directory. The <code>qleisli</code> CLI
+<code>Qlirgo.toml</code> in its directory or in an ancestor directory. The <code>qleisli</code> CLI
 knows these keys:</p>
 <div class="table-wrapper">
 <table>
@@ -446,7 +450,7 @@ edition = "2026"
 <tr><th>Manifest</th><th>The message contains</th></tr>
 </thead>
 <tbody>
-<tr><td><code>schema-version = 1</code>, or no <code>schema-version</code></td><td><code>Qargo.toml requires schema-version = 2</code></td></tr>
+<tr><td><code>schema-version = 1</code>, or no <code>schema-version</code></td><td><code>Qlirgo.toml requires schema-version = 2</code></td></tr>
 <tr><td><code>edition = 2026</code>, an integer</td><td><code>explicit string [qrate].edition</code></td></tr>
 <tr><td><code>edition = "2027"</code></td><td><code>unsupported Qleisli edition</code></td></tr>
 </tbody>
@@ -477,7 +481,7 @@ sources. It does not orchestrate packages, dependencies, tests or
 documentation.</p>
 <p>Rules:</p>
 <ul>
-<li>The selected directory must itself contain <code>Qargo.toml</code>.</li>
+<li>The selected directory must itself contain <code>Qlirgo.toml</code> or <code>Qargo.toml</code>.</li>
 <li>That manifest must give <code>[source].root</code> as an explicit string.</li>
 <li><code>[source].root</code> must be a nonempty relative path. It must not contain a
 parent traversal, and no component may be named <code>target</code>, in any ASCII
@@ -531,7 +535,7 @@ each manifest, one to each source file and one to the project as a whole.</p>
 <tr><th>Limit</th><th>Value</th><th>Scope</th></tr>
 </thead>
 <tbody>
-<tr><td>Manifest</td><td>65,536 bytes</td><td>Each <code>Qargo.toml</code></td></tr>
+<tr><td>Manifest</td><td>65,536 bytes</td><td>Each manifest under either supported name</td></tr>
 <tr><td>Source file</td><td>1,048,576 bytes, or the value of <code>--source-bytes=N</code></td><td>Each source file</td></tr>
 <tr><td>Project aggregate</td><td>16,777,216 bytes, or the value of <code>--project-bytes=N</code></td><td>The source text and the retained manifest text of one project</td></tr>
 </tbody>
@@ -681,7 +685,7 @@ prerelease and build identifiers.</li>
 code <code>project</code>.</li>
 <li>A user manifest keeps its normal schema and edition checks and its
 independent package version.</li>
-<li>Release synchronization includes <code>stdlib/Qargo.toml</code>.</li>
+<li>Release synchronization includes <code>stdlib/Qlirgo.toml</code>.</li>
 </ul>
 <blockquote>
 <p><strong>Implementation note.</strong> The private function <code>check_bundled</code> in
