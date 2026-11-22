@@ -273,7 +273,8 @@ class Connections(unittest.TestCase):
                         self.assertIn(b"typed result export", py.stdout)
 
     def test_python_and_rust_emit_the_same_typed_workspace_qasm(self):
-        project = str(FIXTURES / "typed-workspaces")
+        manifest = ROOT / "tests/fixtures/interop/typed-workspaces/Qargo.toml"
+        project = str(manifest.parent)
         commands = ([EXE, "interop", "emit-qasm", project, "--input=qli", "--expect-edition=2026"],
                     [sys.executable, "-m", "qleisli", project, "--input=qli", "--edition=2026",
                      "--action=emit-qasm", "--executable=" + EXE])
