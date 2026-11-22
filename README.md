@@ -1,6 +1,6 @@
 # Qleisli
 
-**Qleisli and its tools (qargo, qlippy, qlifmt, qlidoc, qleisliup, and qleisliup-init) are independent projects and are not affiliated with, endorsed by, or sponsored by the Rust Project or the Rust Foundation.**
+**Qleisli and its tools (qlirgo, qlinties, qlifmt, qlidoc, qleisliup, and qleisliup-init) are independent projects and are not affiliated with, endorsed by, or sponsored by the Rust Project or the Rust Foundation.**
 
 **Rust and Cargo are trademarks of the Rust Foundation.**
 

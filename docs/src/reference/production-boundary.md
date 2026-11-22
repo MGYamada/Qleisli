@@ -1926,10 +1926,10 @@ annotation of exact zeros.
 A coverage record holds the inventory of this boundary, and a script checks
 the repository against it.
 
-- `tests/fixtures/verification_v029/coverage.json.xz` separates four things:
-  current implementation, published 0.2.9 validation, unpublished development
-  and open proof obligations. It records the current coverage groups,
-  boundary entry lists, constructor variants and classified paths.
+- `tests/fixtures/verification_v029/coverage.json.xz` records the current
+  coverage groups, boundary entry lists, constructor variants and classified
+  paths. Its validation section uses the published 0.2.9 release as its
+  baseline and lists the pre-publication beta checks and open proof obligations.
 - Engineering comparisons and the check-only nominal carrier component have
   distinct classifications. Mixed boundary rows refer to individually
   classified paths. A public surface that contains a constructor or `doc` is
@@ -1965,9 +1965,8 @@ the repository against it.
   commit `a77e68f4d3942cd75cb4c4710350aab9a99f8c8b`, the full CI run, the
   registry and GitHub distribution checks, the native bundles and fresh
   installation evidence.
-- The selected development version 0.3.0-beta is unpublished. The historical
-  release record does not certify the changed beta tree or its future
-  packages.
+- The project published [v0.3.0-beta](https://github.com/MGYamada/Qleisli/releases/tag/v0.3.0-beta)
+  on 2026-11-20. That release includes its own validation record and checksums.
 - The earlier VM29 first-slice, comparison and cutover records are historical
   evidence with their original scopes and results.
 - The shared exact-work ceiling was 10,000,000 and then 13,000,000 units. A

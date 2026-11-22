@@ -1871,8 +1871,8 @@ bounded migration evidence:
   [#317](https://github.com/MGYamada/Qleisli/issues/317).
 - [#58](https://github.com/MGYamada/Qleisli/issues/58) tracks the prelude and
   import integration and its conformance evidence.
-- `enum`, `struct`, `match` and `qmatch` became reserved keywords in the
-  unpublished beta language. The parser changes do not complete
+- `enum`, `struct`, `match` and `qmatch` became reserved keywords during
+  development of 0.3.0-beta. The parser changes do not complete
   [finite ADTs](https://github.com/MGYamada/Qleisli/issues/64).
 - The effect vocabulary "isometry" was selected in
   [#57](https://github.com/MGYamada/Qleisli/issues/57). The source prefix

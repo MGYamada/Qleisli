@@ -9,6 +9,8 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Use the current tool names `qlirgo` and `qlinties` in the repository and
+  package README disclaimers.
 - Run Python CLI source actions directly and accept explicit checker paths
   for source obligations during proposal emission (#681, #683).
 - Preserve representable subnormal input norms in hierarchy sampling (#682).
@@ -50,6 +52,8 @@ development milestones from the scope of their evidence.
   ownership error, extracting a Bell circuit into a module, teleporting a
   qubit and detecting a missing phase correction, and building a
   four-input Grover search one operation at a time.
+- Link the published beta from both READMEs and update the release history
+  in the roadmap and language reference.
 
 ## 0.3.0-beta — 2026-11-20
 
