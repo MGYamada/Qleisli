@@ -315,6 +315,18 @@ mod response_diagnostics_tests {
                 assert_eq!(error.code, expected, "{}", error.message);
             }
         }
+        let legacy = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/verification_v030/native-edition-context/framing-rejection.sh");
+        let error = Mode::Inspect
+            .transport_limits()
+            .invoke(
+                &legacy,
+                b"complete\n".to_vec(),
+                Mode::Inspect.argument(),
+                |bytes| response_indices(bytes, Mode::Inspect),
+            )
+            .unwrap_err();
+        assert_eq!(error.code, "format");
     }
 
     #[test]

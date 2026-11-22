@@ -232,6 +232,16 @@ mod tests {
             assert_eq!(error.code, code, "{case}: {error}");
             assert!(start.elapsed() < Duration::from_secs(2));
         }
+        let legacy_directory = directory.join("legacy");
+        std::fs::create_dir(&legacy_directory).unwrap();
+        let legacy_checker = legacy_directory.join("contract");
+        let legacy_fixture = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/verification_v030/native-edition-context/process-failure.sh");
+        symlink(&legacy_fixture, &legacy_checker).unwrap();
+        let error =
+            invoke(&legacy_checker, vec![0; 64], false, Duration::from_secs(2)).unwrap_err();
+        assert_eq!(error.code, "format");
+        assert!(error.message.contains("request identity"));
         assert_eq!(
             invoke(
                 &directory.join("absent"),
