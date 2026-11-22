@@ -1,0 +1,111 @@
+{
+  "format": "qleisli.stable-acceptance",
+  "version": 1,
+  "requirements_sha256": "beb43240bf8f1d254e1feec956bce739d9500955f27ec9ea803144ebfc20c781",
+  "criteria": [
+    {
+      "id": "349-manifest-selection",
+      "status": "passed",
+      "evidence": {
+        "implementation": {
+          "path": "src/frontend/project/edition.rs",
+          "sha256": "2dfbfcb43b3410436495d14ef208f8b9980994642251737a032d020dd9ca12cb"
+        },
+        "negative": {
+          "path": "tests/editions.rs",
+          "sha256": "0b9c7b6a8c2587ddc621ec5008ddda4006962fa40e161818ad01ac472f5e3dfc"
+        },
+        "positive": {
+          "path": "tests/editions.rs",
+          "sha256": "0b9c7b6a8c2587ddc621ec5008ddda4006962fa40e161818ad01ac472f5e3dfc"
+        },
+        "reference": {
+          "path": "docs/src/reference/packages-and-artifacts.md",
+          "sha256": "483e3e58b6b958ba756748692eee2f5b04ae83ab5c57a2221ea2b853e16e258b"
+        }
+      }
+    },
+    {
+      "id": "349-version-sync-packaging",
+      "status": "passed",
+      "evidence": {
+        "implementation": {
+          "path": "scripts/maintain_release.py",
+          "sha256": "72ebe888a2ea3a6a93634dd5a3917d26a1ce5228e5d24e66534de32d1aa63fbe"
+        },
+        "positive": {
+          "path": "release/stable-acceptance-review.md",
+          "sha256": "d073df7db04cb49a5d583bd723ef9cb651d30c1b68d7ccd55490ef83aa705a9e"
+        },
+        "production": {
+          "path": "scripts/check_distribution.py",
+          "sha256": "6b5db63e54909c9ecca80c8d6446f08e06fd60abf07ca56dab7634db26f14662"
+        }
+      }
+    },
+    {
+      "id": "349-companion-candidate",
+      "status": "passed",
+      "evidence": {
+        "compatibility": {
+          "path": "release/stable-acceptance-review.md",
+          "sha256": "d073df7db04cb49a5d583bd723ef9cb651d30c1b68d7ccd55490ef83aa705a9e"
+        }
+      }
+    },
+    {
+      "id": "622-request-and-admission",
+      "status": "passed",
+      "evidence": {
+        "implementation": {
+          "path": "lean-kernel/Protocol/VerificationRequest.lean",
+          "sha256": "1dd9e3241c9c140351adeaf31754c5b98518bb6fca1c303006dee60d3ebabb05"
+        },
+        "production": {
+          "path": "lean-kernel/Main.lean",
+          "sha256": "009e8eeef0f1d5b40edcc4606379ac0641f61b4ab072e858bde570d93b0ffd9d"
+        },
+        "reference": {
+          "path": "docs/src/reference/execution-view.md",
+          "sha256": "d854937cd3ec5172bfb3cdfd717262643718c6b5f611409940aa435820a546c3"
+        }
+      }
+    },
+    {
+      "id": "622-compatibility-migration",
+      "status": "passed",
+      "evidence": {
+        "migration": {
+          "path": "docs/src/reference/production-boundary.md",
+          "sha256": "3abfa5b62ac19819213ca350e1ccabeb423f536332ad75f629e8e0e21c1a5c72"
+        },
+        "negative": {
+          "path": "scripts/test_native_execution_protocol.py",
+          "sha256": "062a636bc0bcb6ea55342295e057d4f782c0fefb0b612cc4480432e3211fee65"
+        },
+        "positive": {
+          "path": "release/stable-acceptance-review.md",
+          "sha256": "d073df7db04cb49a5d583bd723ef9cb651d30c1b68d7ccd55490ef83aa705a9e"
+        }
+      }
+    },
+    {
+      "id": "622-cli-outcomes",
+      "status": "passed",
+      "evidence": {
+        "implementation": {
+          "path": "src/bin/qleisli/source_commands.rs",
+          "sha256": "1cf10261713cdc860753aeb968b8db310ee2c6203323098a46c900a327a9c953"
+        },
+        "negative": {
+          "path": "tests/cli_json.rs",
+          "sha256": "4de847c60e4b26ec75ac6e3c2023e4f9fc48a464ed7f76e56ff144a2d4047be3"
+        },
+        "positive": {
+          "path": "tests/cli.rs",
+          "sha256": "0df26f4e2cf349393377f882f4b008c38428a14f7d2a03c76cac7ad9a1726571"
+        }
+      }
+    }
+  ]
+}
