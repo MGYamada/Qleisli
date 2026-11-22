@@ -6,17 +6,18 @@ Status: the design principles are fixed. Goal 1: a quantum language for the AI e
 
 This is the English development plan. Current targets and implementation boundaries do not adopt future syntax or imply completed proofs. The verification migration plan and fixture records distinguish bounded checks from pending guarantees; source validation, tagging and publication remain separate.
 
-The current development version is `0.3.0-beta`, selected on 2026-10-12.
-This unpublished version retains the unfinished feature and proof gates,
+The development version `0.3.0-beta` was selected on 2026-10-12 and
+[published as a prerelease](https://github.com/MGYamada/Qleisli/releases/tag/v0.3.0-beta)
+on 2026-11-20. The beta does not close the remaining feature and proof gates,
 including the public-effect boundary in [#355](https://github.com/MGYamada/Qleisli/issues/355).
-The alpha-only release approval does not authorize a beta publication.
+The earlier alpha-only approval did not itself authorize the beta publication.
 
 ## Selected v0.3.0-alpha: prerelease preparation and documentation cleanup
 
 Selected 2026-10-04: synchronize the product versions to `0.3.0-alpha` and
-complete the planned documentation cleanup. This is an unpublished prerelease
-development version; the latest published release is 0.2.9. Its implementation
-and validation records remain the baseline,
+complete the planned documentation cleanup. At the time of that selection,
+the alpha was unpublished and the latest published release was 0.2.9.
+Its implementation and validation records remain the baseline,
 including identical checked Codex/Claude rules, TRUSTBOUNDARY.md and nine small
 translations from frozen corpus sources (87 total).
 Local validation and publication remain separate. Selected source/raw/foreign/
