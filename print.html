@@ -38,7 +38,7 @@
             const path_to_root = "";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "searchindex-ca7fa680.js";
+            window.path_to_searchindex_js = "searchindex-cfec2b7e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="toc-43209a69.js"></script>
@@ -4276,13 +4276,12 @@ that the releases fit together. Select one complete release of each product.</p>
 </thead>
 <tbody>
 <tr><td>Qleisli</td><td>Compiler, native checker and canonical std. QLT, QDB and QCP join the same release when shipped.</td><td>Qleisli root Cargo <code>[package].version</code></td></tr>
-<tr><td>qlirgo</td><td><code>qargo</code>, the bundled linter, <code>qlifmt</code> and <code>qlidoc</code></td><td>qlirgo root Cargo <code>[package].version</code></td></tr>
+<tr><td>qlirgo</td><td><code>qlirgo</code>, <code>qlinties</code>, <code>qlifmt</code> and <code>qlidoc</code></td><td>qlirgo root Cargo <code>[package].version</code></td></tr>
 <tr><td>qleisliup</td><td>The installer and selector use their own release</td><td>qleisliup root Cargo <code>[package].version</code></td></tr>
 </tbody>
 </table>
 </div>
-<p>The adopted name of the linter is <code>qlinties</code>. Existing companion bundles use
-the binary name <code>qlippy</code> until the companion rename ships. The current
+<p>Earlier companion bundles used the names <code>qargo</code> and <code>qlippy</code>. The current
 release inventory of Qleisli comprises the compiler, the checker and std.
 QLT, QDB and QCP have planned implementation scope.</p>
 <p>A supported official install, update or rollback selects a complete snapshot
@@ -9818,7 +9817,7 @@ lattice by implication.</li>
 <tr><td>Currying and partial application</td><td>Every call has its full arity. Capturing an argument or an owner yields no reusable callable.</td></tr>
 <tr><td>Monad and effects</td><td>The language has no general quantum Monad and no <code>do</code>. The principal Unitary, Isometry and Observe boundaries stay explicit.</td></tr>
 <tr><td>Host I/O</td><td>Host I/O is outside the quantum effect lattice and the accepted source surface.</td></tr>
-<tr><td>False friends</td><td>Qleisli’s own diagnostics plus the explanations below. External qlippy integration is excluded.</td></tr>
+<tr><td>False friends</td><td>Qleisli’s own diagnostics plus the explanations below. External <code>qlinties</code> integration is excluded.</td></tr>
 <tr><td>Surface convenience</td><td>Finite explicit proposals, retained identity and independent checking; no fallback acceptance.</td></tr>
 </tbody>
 </table>
@@ -9970,7 +9969,7 @@ payload-carrying variants, are under the same separate work.</li>
 <ul>
 <li>The public Qleisli library and the CLI produce the diagnostics of this
 chapter.</li>
-<li>External qlippy implementation, compatibility and diagnostics are excluded.
+<li>External <code>qlinties</code> implementation, compatibility and diagnostics are excluded.
 The exclusion waives neither the Qleisli compiler diagnostics nor the Rust
 Cargo Clippy checks. It establishes no qargo support and no other consumer
 support.</li>
@@ -11007,7 +11006,7 @@ states.</li>
 implementation of later trait resolution. A facility admitted later must
 preserve the rules of
 <a href="#explicit-construction-instead-of-default">explicit construction</a>.</li>
-<li>Integration with the external qlippy tool is outside this chapter.</li>
+<li>Integration with the external <code>qlinties</code> tool is outside this chapter.</li>
 </ul>
 <h3 id="tests-2"><a class="header" href="#tests-2">Tests</a></h3>
 <ul>
@@ -11425,10 +11424,8 @@ are pending under the adopted interpretations and the exactness boundary.</li>
 <p>Tooling:</p>
 <ul>
 <li>The public Qleisli library and the CLI produce the diagnostics above.</li>
-<li>The external qargo project implements qlippy as a consumer of Qleisli
-checking and diagnostics. This repository supplies no qlippy command, and
-this chapter claims no qlippy integration.</li>
-<li>A later claim of qlippy support must validate the consumer version and its
+<li>The qlirgo project maintains the external linter <code>qlinties</code>.</li>
+<li>A later claim of <code>qlinties</code> support must validate the consumer version and its
 diagnostic forwarding against this grammar. A Reference contract or a
 Qleisli CLI test alone does not establish that integration.</li>
 </ul>
@@ -11445,7 +11442,8 @@ those of the earlier form.</li>
 <a href="https://github.com/MGYamada/Qleisli/issues/80">Haskell/Qleisli boundary in #80</a>.
 The migration does not complete that broader boundary audit.</li>
 <li>The maintainer excluded the qlippy consumer integration from the completion
-conditions of the migration by an explicit decision.</li>
+conditions of the migration by an explicit decision. The companion rename to
+<code>qlinties</code> is tracked in <a href="https://github.com/MGYamada/qlirgo/issues/45">qlirgo#45</a>.</li>
 <li>Historical first sources, diagnostics and artifacts are unchanged. They sit
 beside explicit migration derivatives.</li>
 </ul>

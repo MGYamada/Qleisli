@@ -37,7 +37,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-ca7fa680.js";
+            window.path_to_searchindex_js = "../searchindex-cfec2b7e.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-43209a69.js"></script>
@@ -447,10 +447,8 @@ are pending under the adopted interpretations and the exactness boundary.</li>
 <p>Tooling:</p>
 <ul>
 <li>The public Qleisli library and the CLI produce the diagnostics above.</li>
-<li>The external qargo project implements qlippy as a consumer of Qleisli
-checking and diagnostics. This repository supplies no qlippy command, and
-this chapter claims no qlippy integration.</li>
-<li>A later claim of qlippy support must validate the consumer version and its
+<li>The qlirgo project maintains the external linter <code>qlinties</code>.</li>
+<li>A later claim of <code>qlinties</code> support must validate the consumer version and its
 diagnostic forwarding against this grammar. A Reference contract or a
 Qleisli CLI test alone does not establish that integration.</li>
 </ul>
@@ -467,7 +465,8 @@ those of the earlier form.</li>
 <a href="https://github.com/MGYamada/Qleisli/issues/80">Haskell/Qleisli boundary in #80</a>.
 The migration does not complete that broader boundary audit.</li>
 <li>The maintainer excluded the qlippy consumer integration from the completion
-conditions of the migration by an explicit decision.</li>
+conditions of the migration by an explicit decision. The companion rename to
+<code>qlinties</code> is tracked in <a href="https://github.com/MGYamada/qlirgo/issues/45">qlirgo#45</a>.</li>
 <li>Historical first sources, diagnostics and artifacts are unchanged. They sit
 beside explicit migration derivatives.</li>
 </ul>
