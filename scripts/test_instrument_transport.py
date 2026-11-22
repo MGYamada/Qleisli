@@ -16,6 +16,7 @@ import unittest
 from unittest.mock import patch
 
 import instrument_transport as transport
+from native_packet import envelope, verification_projection, verification_request
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -60,6 +61,11 @@ def encode(case):
     return writer(case['request'], case['packet'])
 
 
+def framed(case, version):
+    return verification_request(version, f'--{case["kind"]}-check',
+                                envelope('2026', encode(case)))
+
+
 class InstrumentTransportTests(unittest.TestCase):
     def inspect(self, case, payload=None):
         with patch.object(transport.subprocess, 'run', side_effect=recorded_run):
@@ -71,8 +77,9 @@ class InstrumentTransportTests(unittest.TestCase):
                 result = self.inspect(case)
                 self.assertEqual(result['status'], 'checked')
                 self.assertGreater(result['work'], 0)
-                self.assertEqual(COMMANDS[-1]['argv'],
-                                 [str(KERNEL), f'--{case["kind"]}-check', VERSION])
+                self.assertEqual(COMMANDS[-1]['argv'], [str(KERNEL), '--verify-request'])
+                self.assertEqual(COMMANDS[-1]['input_sha256'],
+                                 hashlib.sha256(framed(case, VERSION)).hexdigest())
 
     def test_independent_request_mismatch_is_rejected(self):
         for case in cases():
@@ -91,12 +98,16 @@ class InstrumentTransportTests(unittest.TestCase):
 
     def test_missing_and_mismatched_versions_are_rejected(self):
         for case in cases():
-            for suffix in ([], ['0.0.0']):
-                with self.subTest(kind=case['kind'], version=suffix):
-                    result = recorded_run([str(KERNEL), f'--{case["kind"]}-check', *suffix],
-                                          input=encode(case), capture_output=True, timeout=60)
+            packet = framed(case, VERSION)
+            # Keep the selector and body intact while removing the version field.
+            empty_version = packet[:8] + bytes(4) + packet[12:16] + packet[16 + len(VERSION):]
+            for version, request in [('missing', empty_version), ('0.0.0', framed(case, '0.0.0'))]:
+                with self.subTest(kind=case['kind'], version=version):
+                    result = recorded_run([str(KERNEL), '--verify-request'], input=request,
+                                          capture_output=True, timeout=60)
                     self.assertEqual(result.returncode, 1)
-                    self.assertEqual(result.stdout, b'qleisli.native-result 3\nerror\nversion\n')
+                    self.assertEqual(verification_projection(result.stdout, request),
+                                     b'qleisli.native-result 3\nerror\nversion\n')
 
     def test_unknown_component_never_starts_the_kernel(self):
         with patch.object(transport.subprocess, 'run') as run:
