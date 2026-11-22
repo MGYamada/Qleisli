@@ -156,11 +156,10 @@ pub(super) fn dispatch(args: &[OsString], json: bool) -> Outcome {
     let mut root = options.path.clone();
     let mut warnings = Vec::new();
     let result = (|| {
-        let input = Input::select(&options).map_err(|error| {
+        let input = Input::select(&options).inspect_err(|_| {
             if json {
                 root = std::fs::canonicalize(&root).unwrap_or_else(|_| root.clone());
             }
-            error
         })?;
         if json && root.to_str().is_none() {
             return Err(failure("project", "source root is not valid UTF-8").into());
