@@ -19,6 +19,8 @@ development milestones from the scope of their evidence.
   transport regression (#494).
 - Use the current external tool names `qlirgo` and `qlinties` in CLI help
   and the ecosystem reference (#615).
+- Use the current tool names `qlirgo` and `qlinties` in the repository and
+  package README disclaimers.
 - Run Python CLI source actions directly and accept explicit checker paths
   for source obligations during proposal emission (#681, #683).
 - Preserve representable subnormal input norms in hierarchy sampling (#682).

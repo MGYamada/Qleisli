@@ -737,7 +737,10 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
     let analysis_notice =
         "  These analysis tools are planned, not executable commands in this alpha.\n";
     assert_eq!(historical.matches(analysis_notice).count(), 1);
+    let external_tools = "qargo/qlippy/qlifmt/qlidoc";
+    assert_eq!(historical.matches(external_tools).count(), 1);
     let usage = historical
+        .replace(external_tools, "qlirgo/qlinties/qlifmt/qlidoc")
         .replace(retired, "")
         .replace(
             run,
