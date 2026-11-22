@@ -272,6 +272,18 @@ class Connections(unittest.TestCase):
                     if action == "emit-ir":
                         self.assertIn(b"typed result export", py.stdout)
 
+    def test_python_and_rust_emit_the_same_typed_workspace_qasm(self):
+        project = str(FIXTURES / "typed-workspaces")
+        commands = ([EXE, "interop", "emit-qasm", project, "--input=qli", "--expect-edition=2026"],
+                    [sys.executable, "-m", "qleisli", project, "--input=qli", "--edition=2026",
+                     "--action=emit-qasm", "--executable=" + EXE])
+        expected = (FIXTURES / "typed-workspaces.qasm").read_text()
+        for command in commands:
+            with self.subTest(command=command):
+                result = subprocess.run(command, capture_output=True, timeout=60)
+                self.assertEqual(result.returncode, 0, result.stdout)
+                self.assertEqual(json.loads(result.stdout)["result"]["text"], expected)
+
     def test_python_limits_and_cli(self):
         p = self.client.from_qir(self.qir)
         for shots, seed in [(0, 0), (True, 0), (1, -1), (1, 2**64)]:

@@ -26,7 +26,7 @@ def main():
     status = 0
     try:
         client = Client(args.executable, edition=args.edition, lean_kernel=args.lean_kernel)
-        if args.format == "qli" and args.action in ("check", "run", "sample"):
+        if args.format == "qli":
             result = client._call(args.action, "qli", edition=args.edition,
                                   path=Path(args.input).resolve(), shots=args.shots, seed=args.seed)
         else:
@@ -45,15 +45,12 @@ def main():
 
 
 def _artifact_action(client, args):
-    if args.format == "qli":
-        program = client.compile_project(args.input)
-    else:
-        limit = 16 << 20 if args.format == "qirf" else 1 << 20
-        with Path(args.input).open("rb") as stream:
-            data = stream.read(limit + 1)
-        if len(data) > limit:
-            raise _error("limit", "input byte limit exceeded")
-        program = {"qasm": client.from_openqasm, "qir": client.from_qir, "qirf": client.from_ir}[args.format](data)
+    limit = 16 << 20 if args.format == "qirf" else 1 << 20
+    with Path(args.input).open("rb") as stream:
+        data = stream.read(limit + 1)
+    if len(data) > limit:
+        raise _error("limit", "input byte limit exceeded")
+    program = {"qasm": client.from_openqasm, "qir": client.from_qir, "qirf": client.from_ir}[args.format](data)
     if args.action == "sample":
         return program.sample(shots=args.shots, seed=args.seed)
     if args.action.startswith("emit-"):

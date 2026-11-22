@@ -7,8 +7,8 @@ pub(super) const ECOSYSTEM_HELP: &str = "Qleisli tools
 Qleisli and its tools are independent projects. They are not affiliated with,
 endorsed by, or sponsored by the Rust Project or the Rust Foundation.
 
-qargo: project and package orchestration.
-qlippy: Qleisli linting.
+qlirgo: project and package orchestration.
+qlinties: Qleisli linting.
 qlifmt: Qleisli source formatting.
 qlidoc: Qleisli API documentation.
 qleisliup and qleisliup-init: installation and toolchain selection.
@@ -65,7 +65,7 @@ selected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::
 discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
   QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
   These analysis commands are planned for future releases.
-  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.
+  qlirgo/qlinties/qlifmt/qlidoc are separate tooling; names grant no semantic authority.
   Documentation: https://github.com/MGYamada/Qleisli/blob/main/docs/src/introduction.md
   Help is text-only; invalid/extra flags, including --format=json, remain usage errors.";
 

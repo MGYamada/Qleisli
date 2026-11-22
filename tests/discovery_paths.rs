@@ -19,6 +19,7 @@ fn standalone_help_discovers_native_tools_without_project_or_checker() {
         assert!(output.stderr.is_empty());
         let text = String::from_utf8(output.stdout).unwrap();
         assert!(text.contains("qleisli help ecosystem"));
+        assert!(text.contains("qlirgo/qlinties/qlifmt/qlidoc"));
         for role in [
             "QLT: mathematical tests",
             "QDB: failure/obligation navigation",
@@ -37,8 +38,8 @@ fn ecosystem_help_explains_independent_tools_and_unavailable_analysis() {
     assert!(output.stderr.is_empty());
     let text = String::from_utf8(output.stdout).unwrap();
     for name in [
-        "qargo",
-        "qlippy",
+        "qlirgo",
+        "qlinties",
         "qlifmt",
         "qlidoc",
         "qleisliup",
@@ -62,6 +63,7 @@ fn unavailable_tools_and_invalid_help_keep_usage_failures_and_discovery() {
         vec!["qdb"],
         vec!["qcp"],
         vec!["qlippy"],
+        vec!["qlinties"],
         vec!["help", "unknown"],
         vec!["--help", "--format=json"],
         vec!["help", "ecosystem", "--format=json"],

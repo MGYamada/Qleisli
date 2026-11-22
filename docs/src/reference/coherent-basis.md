@@ -277,10 +277,8 @@ Proof status:
 Tooling:
 
 - The public Qleisli library and the CLI produce the diagnostics above.
-- The external qargo project implements qlippy as a consumer of Qleisli
-  checking and diagnostics. This repository supplies no qlippy command, and
-  this chapter claims no qlippy integration.
-- A later claim of qlippy support must validate the consumer version and its
+- The qlirgo project maintains the external linter `qlinties`.
+- A later claim of `qlinties` support must validate the consumer version and its
   diagnostic forwarding against this grammar. A Reference contract or a
   Qleisli CLI test alone does not establish that integration.
 
@@ -297,7 +295,8 @@ Tooling:
   [Haskell/Qleisli boundary in #80](https://github.com/MGYamada/Qleisli/issues/80).
   The migration does not complete that broader boundary audit.
 - The maintainer excluded the qlippy consumer integration from the completion
-  conditions of the migration by an explicit decision.
+  conditions of the migration by an explicit decision. The companion rename to
+  `qlinties` is tracked in [qlirgo#45](https://github.com/MGYamada/qlirgo/issues/45).
 - Historical first sources, diagnostics and artifacts are unchanged. They sit
   beside explicit migration derivatives.
 

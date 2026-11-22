@@ -165,12 +165,7 @@ fn exported_finite_predicate_uses_ordered_targets_and_two_scratch_bits() {
 )]
 #[test]
 fn terminal_export_realizes_source_clean_and_dirty_workspaces() {
-    let source = "#![no_implicit_prelude]\n\
-        isometry fn zero()->Q<Bit>{basis unit(()) as _ {0}}\n\
-        observe fn main()->(Bit,Bit){\n\
-            let q=clean(zero(),h){|data,scratch|(h(data),scratch)};\n\
-            let (q,d)=dirty(q,h(phase[1,1](h(zero()))),h){|data,scratch|(h(data),scratch)};\n\
-            let a=measure_z(q); let b=measure_z(d); (b,a)}";
+    let source = include_str!("fixtures/interop/typed-workspaces/main.qli");
     let root = common::SourceRoot::new(source);
     let source_program = qleisli::frontend::compile::compile_project(&root.0).unwrap();
     assert!(source_program.portable_artifact().is_err());
