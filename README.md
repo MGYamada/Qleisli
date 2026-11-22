@@ -10,7 +10,10 @@ contracts. Its Rust frontend produces IR checked independently by a native
 Lean verifier. Human-written and AI-generated programs use the same checks.
 Qleisli is [pronounced exactly like Kleisli](docs/src/reference/project-identity.md).
 
-**Development version: 0.3.0-beta** (unpublished prerelease).
+**Development version: 0.3.0-beta**.
+
+[v0.3.0-beta](https://github.com/MGYamada/Qleisli/releases/tag/v0.3.0-beta)
+was published as a public prerelease on 2026-11-20.
 
 ## Reporting issues
 
