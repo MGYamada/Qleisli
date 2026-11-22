@@ -297,6 +297,23 @@ fn small_source_clients_match_independent_complex_reference_branches() {
                 max_shots: 4,
                 execution: limits,
             };
+            if name == "retiming" {
+                // Four reference sectors contribute to the same rare outcome.
+                // Its eight output coefficients each square to zero in f64.
+                let mut joint = [[0.0, 0.0]; 16];
+                for index in [0, 4, 8, 12] {
+                    joint[index][0] = 2.0_f64.powi(-538);
+                }
+                joint[1][0] = 1.0;
+                let sample = checked
+                    .sample_normalized_shots(&joint, 4, 1, &mut || Ok::<u64, ()>(0), sampling)
+                    .unwrap();
+                let shot = &sample.shots[0];
+                assert_eq!(shot.outcome, 0);
+                assert_eq!(shot.probability, f64::from_bits(1));
+                let norm: f64 = shot.amplitudes.iter().flatten().map(|x| x * x).sum();
+                assert!((norm - 1.0).abs() < 1e-12);
+            }
             let old_shots = checked
                 .sample_normalized_shots(&input, reference, 4, &mut SplitMix64::new(71), sampling)
                 .unwrap();

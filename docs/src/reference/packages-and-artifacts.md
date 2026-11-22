@@ -592,11 +592,10 @@ that the releases fit together. Select one complete release of each product.
 | Product | Components with the product's exact release version | Version authority |
 | --- | --- | --- |
 | Qleisli | Compiler, native checker and canonical std. QLT, QDB and QCP join the same release when shipped. | Qleisli root Cargo `[package].version` |
-| qlirgo | `qargo`, the bundled linter, `qlifmt` and `qlidoc` | qlirgo root Cargo `[package].version` |
+| qlirgo | `qlirgo`, `qlinties`, `qlifmt` and `qlidoc` | qlirgo root Cargo `[package].version` |
 | qleisliup | The installer and selector use their own release | qleisliup root Cargo `[package].version` |
 
-The adopted name of the linter is `qlinties`. Existing companion bundles use
-the binary name `qlippy` until the companion rename ships. The current
+Earlier companion bundles used the names `qargo` and `qlippy`. The current
 release inventory of Qleisli comprises the compiler, the checker and std.
 QLT, QDB and QCP have planned implementation scope.
 

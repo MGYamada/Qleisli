@@ -9,6 +9,16 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Export typed workspace programs to OpenQASM from the Python CLI and report
+  malformed Rust interop results as structured host errors (#692, #694).
+- Keep representable subnormal branch probabilities and normalize the
+  selected conditional state in hierarchy sampling (#693).
+- Run the paired native comparison on changes to every participating driver
+  and its comparison manifest (#695).
+- Exercise both zero and nonzero selection ranks in the native qmatch
+  transport regression (#494).
+- Use the current external tool names `qlirgo` and `qlinties` in CLI help
+  and the ecosystem reference (#615).
 - Use the current tool names `qlirgo` and `qlinties` in the repository and
   package README disclaimers.
 - Run Python CLI source actions directly and accept explicit checker paths

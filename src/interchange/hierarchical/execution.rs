@@ -472,16 +472,35 @@ fn instrument_input_side(actual: &Value) -> Result<&Value> {
     }
 }
 
-fn norm_squared(values: &[[f64; 2]]) -> std::result::Result<f64, &'static str> {
+struct SamplingNorm {
+    squared: f64,
+    magnitude: f64,
+}
+
+fn sampling_norm(values: &[[f64; 2]]) -> std::result::Result<SamplingNorm, &'static str> {
+    // Keep the sum of squares relative to the largest component seen so far.
+    // Even when the squared norm is subnormal, the magnitude retains enough
+    // precision to normalize the conditional state. Both need only one scan.
+    let mut scale = 0.0;
     let mut sum = 0.0;
-    for [re, im] in values {
-        if !re.is_finite() || !im.is_finite() {
+    for component in values.iter().flatten() {
+        let value = component.abs();
+        if !value.is_finite() {
             return Err("nonfinite amplitude");
         }
-        sum += re * re + im * im;
+        if value > scale {
+            sum = 1.0 + sum * (scale / value).powi(2);
+            scale = value;
+        } else if value > 0.0 {
+            sum += (value / scale).powi(2);
+        }
     }
-    if sum.is_finite() {
-        Ok(sum)
+    let squared = (sum * scale) * scale;
+    if squared.is_finite() {
+        Ok(SamplingNorm {
+            squared,
+            magnitude: scale * sum.sqrt(),
+        })
     } else {
         Err("squared norm is not representable as finite f64")
     }
@@ -497,16 +516,16 @@ fn norm_tolerance(steps: usize) -> f64 {
 fn branch_weights<E>(
     branches: &[Vec<[f64; 2]>],
     steps: usize,
-) -> std::result::Result<(Vec<f64>, f64), SamplingError<E>> {
+) -> std::result::Result<(Vec<SamplingNorm>, f64), SamplingError<E>> {
     let mut weights = Vec::new();
     weights
         .try_reserve_exact(branches.len())
         .map_err(|_| Error::limit("cannot allocate bounded branch weights"))?;
     let mut total = 0.0;
     for branch in branches {
-        let weight = norm_squared(branch).map_err(SamplingError::Numerical)?;
-        weights.push(weight);
-        total += weight;
+        let norm = sampling_norm(branch).map_err(SamplingError::Numerical)?;
+        total += norm.squared;
+        weights.push(norm);
     }
     if !total.is_finite() || total <= 0.0 || (total - 1.0).abs() > norm_tolerance(steps) {
         return Err(SamplingError::Numerical(
@@ -516,14 +535,14 @@ fn branch_weights<E>(
     Ok((weights, total))
 }
 
-fn choose_branch(weights: &[f64], total: f64, word: u64) -> usize {
+fn choose_branch(weights: &[SamplingNorm], total: f64, word: u64) -> usize {
     let unit = (word >> 11) as f64 * (1.0 / (1_u64 << 53) as f64);
     // Rounding the product must not select an empty interval after the last
     // positive branch. `total` is positive/finite and weights are nonnegative.
     let target = (unit * total).min(f64::from_bits(total.to_bits() - 1));
     let mut cumulative = 0.0;
     for (index, weight) in weights.iter().enumerate() {
-        cumulative += weight;
+        cumulative += weight.squared;
         if target < cumulative {
             return index;
         }
@@ -714,31 +733,16 @@ fn sample_instrument<R: RandomSource>(
             .ok_or_else(|| Error::limit("sampling retained output size overflow"))?,
     )?;
     work.charge(product(input.len(), 2)?)?;
-    let mut input_norm = norm_squared(input).map_err(SamplingError::Numerical)?;
-    let scale = if input_norm < f64::MIN_POSITIVE {
-        // Squaring each component can round it to zero even when the sum
-        // is representable. Rescale by an exact power of two before summing.
-        work.charge(input.len())?;
-        let up = 2.0_f64.powi(512);
-        let scaled: f64 = input
-            .iter()
-            .map(|[re, im]| {
-                let re = re * up;
-                let im = im * up;
-                re * re + im * im
-            })
-            .sum();
-        input_norm = (scaled / up) / up;
-        scaled.sqrt() / up
-    } else {
-        input_norm.sqrt()
-    };
-    if input_norm <= 0.0 {
+    let input_norm = sampling_norm(input).map_err(SamplingError::Numerical)?;
+    if input_norm.squared <= 0.0 {
         return Err(SamplingError::Numerical("input norm must be positive"));
     }
     let mut normalized = zeroes(input.len())?;
     for (to, from) in normalized.iter_mut().zip(input) {
-        *to = [from[0] / scale, from[1] / scale];
+        *to = [
+            from[0] / input_norm.magnitude,
+            from[1] / input_norm.magnitude,
+        ];
     }
     let mut results = Vec::new();
     results
@@ -773,29 +777,27 @@ fn sample_instrument<R: RandomSource>(
         let (weights, total) = branch_weights(&result.branches, result.steps)?;
         let word = random.next_u64().map_err(SamplingError::RandomSource)?;
         let outcome = choose_branch(&weights, total, word);
-        let weight =
-            weights
-                .get(outcome)
-                .copied()
-                .filter(|w| *w > 0.0)
-                .ok_or(SamplingError::Numerical(
-                    "selected branch has zero or invalid norm",
-                ))?;
+        let selected = weights
+            .get(outcome)
+            .filter(|norm| norm.squared > 0.0)
+            .ok_or(SamplingError::Numerical(
+                "selected branch has zero or invalid norm",
+            ))?;
         let mut amplitudes = result.branches.swap_remove(outcome);
-        let scale = weight.sqrt();
+        let scale = selected.magnitude;
         for value in &mut amplitudes {
             value[0] /= scale;
             value[1] /= scale;
         }
-        let norm = norm_squared(&amplitudes).map_err(SamplingError::Numerical)?;
-        if (norm - 1.0).abs() > norm_tolerance(branch_cells) {
+        let norm = sampling_norm(&amplitudes).map_err(SamplingError::Numerical)?;
+        if (norm.squared - 1.0).abs() > norm_tolerance(branch_cells) {
             return Err(SamplingError::Numerical(
                 "conditional branch norm differs from one",
             ));
         }
         results.push(InstrumentSample {
             outcome,
-            probability: weight / total,
+            probability: selected.squared / total,
             amplitudes,
         });
     }
@@ -804,7 +806,7 @@ fn sample_instrument<R: RandomSource>(
         measured_bits,
         residual_quantum_bits: output_width,
         reference_dimension,
-        input_norm_squared: input_norm,
+        input_norm_squared: input_norm.squared,
         steps: work.spent,
     })
 }
@@ -931,10 +933,11 @@ mod tests {
         let (weights, total) = branch_weights::<()>(&branches, 0).unwrap();
         assert_eq!(choose_branch(&weights, total, 0), 1);
         assert_eq!(choose_branch(&weights, total, u64::MAX), 2);
-        assert_eq!(choose_branch(&[0.0, 1.0, 0.0], 1.0, u64::MAX), 1);
+        let deterministic = [0.0, 1.0, 0.0].map(|p| sampling_norm(&[[p, 0.0]]).unwrap());
+        assert_eq!(choose_branch(&deterministic, 1.0, u64::MAX), 1);
         // A single full-outcome draw keeps both real and imaginary mass; there
         // is no phase removal or norm computed from only a marginal system.
-        assert!((weights[1] - 0.36).abs() < 1e-15);
+        assert!((weights[1].squared - 0.36).abs() < 1e-15);
     }
 
     #[test]

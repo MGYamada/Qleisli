@@ -7,9 +7,11 @@ on:
       - 'scripts/shadow_native_drivers.py'
       - 'scripts/native_driver_bundle.py'
       - 'scripts/native_harness.py'
-      - 'scripts/test_lean_qft.py'
-      - 'scripts/test_lean_qft_graph.py'
-      - 'scripts/test_lean_qpe.py'
+      - 'scripts/test_lean_*.py'
+      - '.github/ci/native-comparisons.json'
+      - 'scripts/run_native_ci.py'
+      - 'scripts/ci_runtime.py'
+      - 'scripts/test_native_driver_bundle.py'
   workflow_dispatch:
     inputs:
       first:

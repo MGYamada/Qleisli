@@ -68,6 +68,38 @@ def _bytes(value, limit):
     return data
 
 
+def _validate_result(action, result, shots, seed):
+    if not isinstance(result, dict):
+        raise ValueError("missing result object")
+    if action.startswith("emit-"):
+        if not isinstance(result["text"], str):
+            raise ValueError("missing emission text")
+    elif action == "check":
+        flags = ("request_checked", "ordinary_result_checked", "runtime_result_checked")
+        if (not isinstance(result["checker_path"], str) or not result["checker_path"]
+                or result["checker_identity"] != "unpinned" or result["source_preservation_verified"] is not False
+                or any(type(result[key]) is not bool for key in flags)
+                or ("source_body_scope" in result and not isinstance(result["source_body_scope"], str))):
+            raise ValueError("invalid checker report")
+    else:
+        rows = result["shots" if action == "sample" else "distribution"]
+        if not isinstance(rows, list):
+            raise ValueError("missing result rows")
+        for row in rows:
+            if not isinstance(row["bits"], list) or any(type(bit) is not bool for bit in row["bits"]):
+                raise ValueError("invalid output bits")
+            if action == "run":
+                p = row["probability"]
+                if type(p) not in (int, float) or not 0 <= p <= 1:
+                    raise ValueError("invalid outcome probability")
+            elif type(row["execution_steps"]) is not int or row["execution_steps"] < 0:
+                raise ValueError("invalid shot execution steps")
+        if action == "sample" and (result["rng"] != "splitmix64-v1" or result["seed"] != str(seed)
+                or len(rows) != shots or type(result["execution_steps"]) is not int
+                or result["execution_steps"] != sum(row["execution_steps"] for row in rows)):
+            raise ValueError("invalid sample report")
+
+
 def _finish_process(process):
     """Stop the owned POSIX session, including the checker's separate group.
 
@@ -182,9 +214,13 @@ class Client:
             if result.returncode:
                 if not document["diagnostics"] or document["result"] is not None:
                     raise ValueError("inconsistent failure envelope")
+                if any(not isinstance(d["code"], str) or not isinstance(d["message"], str)
+                       for d in document["diagnostics"]):
+                    raise ValueError("invalid connection diagnostic")
                 raise QleisliError(document["diagnostics"], exit_code=result.returncode)
-            if document["diagnostics"] or not isinstance(document["result"], dict):
+            if document["diagnostics"]:
                 raise ValueError("inconsistent success envelope")
+            _validate_result(action, document["result"], shots, seed)
             return document["result"]
         except (ValueError, KeyError, TypeError, UnicodeError, RecursionError) as e:
             raise _error("connection", "invalid Rust connection response") from e

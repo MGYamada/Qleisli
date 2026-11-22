@@ -744,7 +744,7 @@ The table classifies the fourteen concerns of the functional boundary.
 | Currying and partial application | Every call has its full arity. Capturing an argument or an owner yields no reusable callable. |
 | Monad and effects | The language has no general quantum Monad and no `do`. The principal Unitary, Isometry and Observe boundaries stay explicit. |
 | Host I/O | Host I/O is outside the quantum effect lattice and the accepted source surface. |
-| False friends | Qleisli's own diagnostics plus the explanations below. External qlippy integration is excluded. |
+| False friends | Qleisli's own diagnostics plus the explanations below. External `qlinties` integration is excluded. |
 | Surface convenience | Finite explicit proposals, retained identity and independent checking; no fallback acceptance. |
 
 ## False friends and diagnostics
@@ -881,7 +881,7 @@ Tooling:
 
 - The public Qleisli library and the CLI produce the diagnostics of this
   chapter.
-- External qlippy implementation, compatibility and diagnostics are excluded.
+- External `qlinties` implementation, compatibility and diagnostics are excluded.
   The exclusion waives neither the Qleisli compiler diagnostics nor the Rust
   Cargo Clippy checks. It establishes no qargo support and no other consumer
   support.

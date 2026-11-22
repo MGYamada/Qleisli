@@ -1053,7 +1053,7 @@ Limits of the profiles:
   implementation of later trait resolution. A facility admitted later must
   preserve the rules of
   [explicit construction](#explicit-construction-instead-of-default).
-- Integration with the external qlippy tool is outside this chapter.
+- Integration with the external `qlinties` tool is outside this chapter.
 
 ### Tests
 
