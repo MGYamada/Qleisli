@@ -87,19 +87,32 @@ fn qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations() {
     let (payload, request, candidate) = files(&root, "finite-provider");
     let real_kernel =
         std::fs::canonicalize(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap()).unwrap();
-    assert!(!real_kernel.to_string_lossy().contains('\''));
+    let real_kernel = real_kernel.to_str().unwrap();
     let runtime = root.join("fake-runtime");
     for entry in std::fs::read_dir(root.join("bad-responses")).unwrap() {
         let entry = entry.unwrap();
         let response = std::fs::read_to_string(entry.path()).unwrap();
-        assert!(!response.contains('\''));
         let frame = root.join("captured-frame");
-        assert!(!frame.to_string_lossy().contains('\''));
+        let frame = frame.to_str().unwrap();
         std::fs::write(
             &runtime,
             format!(
-                "#!/bin/sh\nif [ \"$1\" != '--qpe-instrument-pending' ]; then exec '{}' \"$@\"; fi\ncat > '{}'\nprintf '%s' '{response}'\n",
-                real_kernel.display(), frame.display()
+                r#"#!/usr/bin/env python3
+import hashlib
+from pathlib import Path
+import struct
+import subprocess
+import sys
+request = sys.stdin.buffer.read()
+assert sys.argv[1:] == ["--verify-request"] and request[:4] == b"QLR1"
+version_size, mode_size = struct.unpack_from("<2I", request, 8)
+start = 16 + version_size
+if request[start:start + mode_size] != b"--qpe-instrument-pending":
+    sys.exit(subprocess.run([{real_kernel:?}, *sys.argv[1:]], input=request).returncode)
+Path({frame:?}).write_bytes(request)
+print("qleisli.native-result 4", hashlib.sha256(request).hexdigest(), sep="\n")
+sys.stdout.write({response:?})
+"#
             ),
         )
         .unwrap();
@@ -108,5 +121,6 @@ fn qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations() {
             .check_qpe_instrument(&payload, &request, &candidate)
             .unwrap_err();
         assert_eq!(error.code, "format", "{}: {error}", entry.path().display());
+        assert!(!error.message.contains("native response protocol"), "{error}");
     }
 }

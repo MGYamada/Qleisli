@@ -11,7 +11,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
-from native_packet import run_verification, envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply, verification_projection
 import struct
 import tempfile
 import tomllib
@@ -81,18 +81,22 @@ def expected_obligations(payload,request,candidate):
 
 def test_binary_transport(frame_path):
     kernel=ROOT/'lean-kernel/.lake/build/bin/qleisli-kernel';captured=frame_path.read_bytes()
-    # The host now emits the complete QLV3 execution request. Exercise that
-    # exact capture before mutating its inner QLQ1 parser input for inspection.
-    assert captured[:4]==b'QLV3' and len(captured)>=28
-    edition,scope,original,graph,caller,aliases=struct.unpack('<6I',captured[4:28])
+    # Replay the exact host request before mutating the inner QLQ1 input.
+    assert captured[:4] == b'QLR1'
+    _, version_size, selector_size = struct.unpack_from('<3I', captured, 4)
+    selector_end = 16 + version_size + selector_size
+    assert captured[16:16 + version_size] == PRODUCT_VERSION.encode('ascii')
+    assert captured[16 + version_size:selector_end] == b'--qpe-instrument-pending'
+    packet = captured[selector_end:]
+    assert packet[:4] == b'QLV3' and len(packet) >= 28
+    edition,scope,original,graph,caller,aliases=struct.unpack('<6I',packet[4:28])
     assert edition==2026
     assert scope==1 and original and graph and caller==aliases==0
-    assert len(captured)==28+original+graph
-    run=run_verification([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],
-                       input=captured,capture_output=True,timeout=30)
-    reply=parse_reply(run.stdout, edition='2026', product=PRODUCT_VERSION, mode='--qpe-instrument-pending', scope='execution')
+    assert len(packet)==28+original+graph
+    run = subprocess.run([str(kernel), '--verify-request'], input=captured, capture_output=True, timeout=30)
+    reply=parse_reply(verification_projection(run.stdout, captured), edition='2026', product=PRODUCT_VERSION, mode='--qpe-instrument-pending', scope='execution')
     assert run.returncode==0 and reply.claim=='pending',run
-    good=captured[28:28+original]
+    good=packet[28:28+original]
     assert good[:4]==b'QLQ1'
     words=lambda values:struct.pack('<'+'I'*len(values),*values)
     cuts=sorted(set([0,*range(1,33),*range(len(good)-32,len(good)),len(good)//4,len(good)//2]))
@@ -173,8 +177,24 @@ def test_named_host(record=None):
                 (directory/f'{name}.{suffix}.json').write_text(json.dumps(value))
         (directory/'cases.txt').write_text(''.join(f'{name}|{expected}\n' for name,(*_,expected) in rows.items()))
         a,b,h=expected_obligations(*rows['finite-provider'][:3]);assert b
-        def response(a=a,b=b,h=h):return '\n'.join(map(str,['qleisli.native-result 3','pending','2026',PRODUCT_VERSION,'--qpe-instrument-pending','execution',0,0,len(a),*a,len(b),*b,len(h),*h]))+'\n'
-        bad={'omit-proof':response(a=a[:-1]),'duplicate-proof':response(a=a+[a[0]]),'omit-provider':response(b=[]),'duplicate-provider':response(b=b+b),'omit-H':response(h=h[:-1]),'duplicate-H':response(h=h+[h[0]]),'substitute-H':response(h=[99999,*h[1:]]),'trailing':response()+'extra\n','noncanonical':response().replace('execution\n0\n','execution\n00\n'),'claimed-seal':response().replace('\npending\n','\nchecked\n'),'failure-trailing':'qleisli.native-result 3\nerror\ncontract\nextra\n'}
+        def response(a=a, b=b, h=h):
+            fields = ['pending', '2026', PRODUCT_VERSION, '--qpe-instrument-pending',
+                      'execution', 0, 0, len(a), *a, len(b), *b, len(h), *h]
+            return '\n'.join(map(str, fields)) + '\n'
+
+        bad = {
+            'omit-proof': response(a=a[:-1]),
+            'duplicate-proof': response(a=a + [a[0]]),
+            'omit-provider': response(b=[]),
+            'duplicate-provider': response(b=b + b),
+            'omit-H': response(h=h[:-1]),
+            'duplicate-H': response(h=h + [h[0]]),
+            'substitute-H': response(h=[99999, *h[1:]]),
+            'trailing': response() + 'extra\n',
+            'noncanonical': response().replace('execution\n0\n', 'execution\n00\n'),
+            'claimed-seal': response().replace('pending\n', 'checked\n', 1),
+            'failure-trailing': 'error\ncontract\nextra\n',
+        }
         (directory/'bad-responses').mkdir()
         for name,value in bad.items():(directory/'bad-responses'/name).write_text(value)
         command=['cargo','test','--test','hierarchical_qpe_host','--','--include-ignored','--nocapture']

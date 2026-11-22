@@ -1957,13 +1957,12 @@ the repository against it.
 
 ## Stable verification request migration
 
-The [0.3.0 stable cutover](https://github.com/MGYamada/Qleisli/issues/622)
-requires one native verification request with an explicit obligation
-selector. The selector chooses an existing bounded checker and its required
+The compiler sends one native verification request with an explicit obligation
+selector. The selector chooses a bounded checker and its required
 input and evidence shape. Existing QLV3 source packets carry QLV1 artifacts,
 graph and caller execution views, and alias indices. The placement packet
 carries a source packet, emitted target and alignment evidence. Each
-retained inner reader still checks its original bytes and its own
+inner reader checks its original bytes and its own
 obligations. A request for a different scope or a weaker source profile
 cannot replace an obligation that failed.
 
@@ -1998,9 +1997,7 @@ source subject with an implemented producer and consumer can reach production.
 The retained but unconstructed arm, operation and context subject types expand
 neither the supported profile nor the meaning of a successful v5 result.
 The test-only Lean legacy comparison modules retain the independent
-differential checks. [Raw emitter convergence](https://github.com/MGYamada/Qleisli/issues/625)
-and the [canonical Core and Circuit IR](https://github.com/MGYamada/Qleisli/issues/382)
-have their own release targets.
+differential checks.
 
 Migration validation compares the native responses over the saved execution
 view, source qmatch, hierarchy, and engineering regressions. The comparison
@@ -2024,6 +2021,10 @@ is an observation for debugging and does not authorize execution.
 
 ## History
 
+- The [0.3.0 stable cutover](https://github.com/MGYamada/Qleisli/issues/622)
+  converged native dispatch. [Raw emitter convergence](https://github.com/MGYamada/Qleisli/issues/625)
+  and the [canonical Core and Circuit IR](https://github.com/MGYamada/Qleisli/issues/382)
+  have their own release targets.
 - Production acceptance completed the adopted migration to one native Lean
   implementation under the
   [single-verifier decision #276](https://github.com/MGYamada/Qleisli/issues/276).

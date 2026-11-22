@@ -71,19 +71,23 @@ class SourceKernel(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='qleisli-source-gate-') as tmp:
             tmp = Path(tmp)
             shim = tmp/'kernel'
-            shim.write_text(f'#!{sys.executable}\n' + '''import json, subprocess, sys
+            shim.write_text(f'#!{sys.executable}\n' + '''import hashlib, json, struct, subprocess, sys
 data = sys.stdin.buffer.read()
-assert data[:4] == b'QLV3'
-assert int.from_bytes(data[4:8], 'little') == 2026
-inner_size = int.from_bytes(data[12:16], 'little')
-inner = data[28:28+inner_size]
+assert sys.argv[1:] == ['--verify-request']
+assert data[:4] == b'QLR1'
+version_size, selector_size = struct.unpack_from('<2I', data, 8)
+packet = data[16 + version_size + selector_size:]
+assert packet[:4] == b'QLV3'
+assert int.from_bytes(packet[4:8], 'little') == 2026
+inner_size = int.from_bytes(packet[12:16], 'little')
+inner = packet[28:28+inner_size]
 assert inner[:4] == b'QLV1'
 size = int.from_bytes(inner[4:8], 'little')
 artifact = json.loads(inner[12:12+size])
 ops = artifact['programs'][artifact['root']]['operations']
 if sum(op.get('gate') == 't' for op in ops) >= 2 or sum(
         any(s['action']['tag'] == 'contract' for s in op.get('steps', [])) for op in ops) >= 2:
-    print('qleisli.native-result 3\\nerror\\ncontract')
+    print('qleisli.native-result 4', hashlib.sha256(data).hexdigest(), 'error', 'contract', sep='\\n')
     sys.exit(1)
 result = subprocess.run(''' + repr([str(KERNEL)]) + ''' + sys.argv[1:], input=data, capture_output=True)
 sys.stdout.buffer.write(result.stdout)
@@ -102,7 +106,10 @@ sys.exit(result.returncode)
                         code, document = self.run_cli(action, project, shim, *selected_flags)
                         self.assertNotEqual(code, 0)
                         self.assertIsNone(document['result'])
-                        self.assertIn('unused_phase', document['diagnostics'][0]['message'])
+                        diagnostic = document['diagnostics'][0]
+                        self.assertEqual(diagnostic['code'], 'invalid_ir')
+                        self.assertIn('contract:', diagnostic['message'])
+                        self.assertIn('unused_phase', diagnostic['message'])
                 self.assertFalse((tmp/f'{source}-blocked.qirf').exists())
 
     def test_qrate_library_and_missing_kernel_never_fall_back(self):

@@ -1,6 +1,6 @@
 //! SHA-256 identities for display and request correlation. Acceptance is checked independently.
 //! FIPS 180-4, sections 5.1.1, 5.3.3 and 6.2:
-//! https://doi.org/10.6028/NIST.FIPS.180-4
+//! <https://doi.org/10.6028/NIST.FIPS.180-4>
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
 pub(super) fn sha256(bytes: &[u8]) -> String {

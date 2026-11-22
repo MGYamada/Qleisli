@@ -1104,7 +1104,7 @@ fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations()
         ("pending", "01\n0\n0\n0\n"),             // noncanonical counter
         ("checked", "0\n0\n0\n0\n"),              // a claimed final result is not the protocol
     ] {
-        let payload = format!(
+        let response = format!(
             "{claim}\n2026\n{}\n--instrument-pending\nexecution\n{body}",
             env!("CARGO_PKG_VERSION")
         );
@@ -1115,7 +1115,7 @@ import sys
 data = sys.stdin.buffer.read()
 print("qleisli.native-result 4")
 print(hashlib.sha256(data).hexdigest())
-print({payload:?}, end="")
+print({response:?}, end="")
 "#
         );
         std::fs::write(&executable, script).unwrap();
@@ -1128,7 +1128,7 @@ print({payload:?}, end="")
             .unwrap_err();
         assert_eq!(error.code, "format", "{body}: {error}");
         assert!(
-            !error.message.contains("unknown native response protocol")
+            !error.message.contains("native response protocol")
                 && (claim != "pending" || !error.message.contains("native reply context")),
             "payload mutations must reach the current protocol: {body:?}: {error}"
         );
