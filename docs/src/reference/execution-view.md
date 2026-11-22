@@ -168,8 +168,8 @@ the payload. A successful reply has these fields.
 | 7 | The checked scope, by name |
 | 8 and later | The payload fields of the obligation |
 
-The separate development executable `qleisli-kernel-legacy-replay` supplies the
-version-3 baseline for differential tests. The packaged checker uses the
+The differential driver can compare these decisions against a separate
+version-3 checker supplied for offline replay. The packaged checker uses the
 version-4 reply and refuses the former native mode command arguments.
 
 The claim and the payload depend on the mode:
