@@ -397,9 +397,21 @@ fn every_native_request_is_decoded_strictly_again() {
             outer.extend_from_slice(&field.to_le_bytes());
         }
         outer.extend_from_slice(&packet);
-        let packet = outer;
+        let product = env!("CARGO_PKG_VERSION").as_bytes();
+        let selector = b"--qirf-contract";
+        let mut packet = b"QLR1".to_vec();
+        for field in [
+            DEFAULT_EXACT_WORK as u32,
+            product.len() as u32,
+            selector.len() as u32,
+        ] {
+            packet.extend_from_slice(&field.to_le_bytes());
+        }
+        packet.extend_from_slice(product);
+        packet.extend_from_slice(selector);
+        packet.extend_from_slice(&outer);
         let mut child = Command::new(checked.program().checker())
-            .args(["--qirf-contract", env!("CARGO_PKG_VERSION")])
+            .arg("--verify-request")
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped())
