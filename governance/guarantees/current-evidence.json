@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "572824668f5c1ae38051cf16777fd6e709e048454fc98cdfd9ee4917b4e96e61",
+      "sha256": "cf60c27ca422b5a41f3ba32fb681bb54bb7e8e25c937456c9c9d59e9dac8c2e6",
       "files": {
         "lean/Audit.lean": "769d64e8aa64d7e00217c3ca69857c07e86955cabc606b95621c8d068b7de87a",
         "lean/Qleisli/CallLowering.lean": "8c32e9499e5f66f6a214bec53c091dcdaafb881e57dcaaeadfaf912b03b0f95f",
@@ -405,7 +405,7 @@
         "lean/Qleisli.lean": "156e16487aec1839902a6f2b8a790fc7a45945ce9a84cc876e279c49a5eddecb",
         "lean/SchemaExport.lean": "51e721b36c2befde9be6c384b96c1248a9a8d677ce592b9653e127e87cd13906",
         "lean/lake-manifest.json": "b20b277cfda76e3b62fbaac5ccffa00c331fa4d320c30c108f3fed3a80b73936",
-        "lean/lakefile.toml": "e3f63c578c1d58e14162cd8c23ea446ad60ff3bf9910272062f0a6589afdcc14",
+        "lean/lakefile.toml": "2160d052b861be280ba264bb8ca1d8fb7a6eb5e143be0c5656c1dc2c1a198d3b",
         "lean/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",
         "lean-kernel/Audit.lean": "9cef11ac7891a9032b28c300de8480cb58a115089cb8c331620256dcc3ed758e",
         "lean-kernel/Cli/Common.lean": "a06429168fedf0a5997fadeac786ad4d0ca9fc259d2a10fd460a701c51488c8c",
@@ -415,9 +415,9 @@
         "lean-kernel/Cli/EngineeringPureTensor.lean": "7b28fff3f10f0ee7300048330513c5f68bf1d2cf4a209832850c87e554d9c768",
         "lean-kernel/Cli/Finite.lean": "c513812b72f9752033159059fc145a246c30f59583ca24bee57481566b66b427",
         "lean-kernel/Cli/Hierarchical.lean": "0ee3c4be53c1dd841caf35ac58f29fe212ac8b502d33f097c841217e973a1306",
-        "lean-kernel/Cli/NativeContext.lean": "fa3f77bbfdb115b2ee3eb80c4ba905d4e51cb2cf4d6a4793e6062f5df05e5342",
+        "lean-kernel/Cli/NativeContext.lean": "a2c85d16e67c4d60e06fea6c14484f6e439af7c41adc43068f6090b41d3c2bb8",
         "lean-kernel/Cli/Validity.lean": "db1f68140b7c27def7e3f90462b2eba5b75dab928dc4ff632b300b856cd1007b",
-        "lean-kernel/Main.lean": "a64d95aceaa38d74e3657694241fb279c8c73a806d2fab5ed699c37f9f2fe341",
+        "lean-kernel/Main.lean": "009e8eeef0f1d5b40edcc4606379ac0641f61b4ab072e858bde570d93b0ffd9d",
         "lean-kernel/Protocol/BranchFunction.lean": "e99d1f12f30699af4e138caa6eeae409207c476486ca4b4507cc7116a412f89b",
         "lean-kernel/Protocol/Carrier.lean": "1f3a0b48a7f4222bd646138cc2f8ff16ef9cb1709d01054235bf5d79a5339296",
         "lean-kernel/Protocol/Core.lean": "c4f45c9729428cf1087db4b3a3b84dfeada8ee0947afd150dfedb9c5a22c09ce",
@@ -467,14 +467,16 @@
         "lean-kernel/Protocol/NativeContract.lean": "4be18feace681f3d94a5c6c3dd58238d90ff910fb2086feedb953ba81274e377",
         "lean-kernel/Protocol/Observation.lean": "2b443801de48698dffd94de3223a21f5b39d93d319d2694a1ef966ddcc384605",
         "lean-kernel/Protocol/OrdinaryRoot.lean": "477ee9ec590405e6f85474248f017a428dd140d7d84a59804f7112a305b892a7",
-        "lean-kernel/Protocol/Product.lean": "9e84a1fbc1ed5b13c961bb7134092146b660b86cd30d26a5d713e981da5ec5cf",
+        "lean-kernel/Protocol/Product.lean": "891f52811bd814bc10fe39eb2c4bcf28f19baa897ef39b6d8fa84b9a67988fa1",
         "lean-kernel/Protocol/Qirf.lean": "a9be02c9ce124afbcce006d1f95f67135c6d6963909a2c2df42ed1dce05425c7",
         "lean-kernel/Protocol/Qmatch.lean": "0162ef9a8783b118d07ce29ebaadf557c9d9fad527813acad3f12a7872e496ee",
         "lean-kernel/Protocol/QmatchV5.lean": "9890d848963f5fd5f31099d791e5efa98e7aabc07b172db9470fe5ca090c7c09",
         "lean-kernel/Protocol/Raw.lean": "d8284a3b1327c23fa93ab954519b3ea1d248cfa08cdd87cd6b39780ef83e2a03",
+        "lean-kernel/Protocol/RequestDigest.lean": "19785adfc7107f80463f5a5b96dc291096d27f435a4639aa91157e56311fc7c4",
         "lean-kernel/Protocol/RuntimeRoot.lean": "dcd9d09e33f5e6d165fb7c06584a1be32cf84922ffcb06ece23f7f18037f83df",
         "lean-kernel/Protocol/StreamedObservation.lean": "90745fbd89f92f68d344d82ffeae2d64780a4e76ff7c2544ac5ab1bbdd7ba9ca",
         "lean-kernel/Protocol/Validity.lean": "9cde3cb39ee7734154f599caa11ee371fe910c7d4a08f1948daafb889c493d47",
+        "lean-kernel/Protocol/VerificationRequest.lean": "1dd9e3241c9c140351adeaf31754c5b98518bb6fca1c303006dee60d3ebabb05",
         "lean-kernel/Protocol.lean": "ce7948a2325de56eebbea0bd2136410f09e59e8b570b15fea7c631ccaff1f308",
         "lean-kernel/QleisliKernel/CodeSpace.lean": "824bb6df2a29e0eb671d0258a6e02cd071b63ebd50053705f5dc6d8bb49c7329",
         "lean-kernel/QleisliKernel/Composition.lean": "29aebc9aab04a0cc621a4fde7705521446e9ac34e819117d095116370df78b46",
@@ -1124,7 +1126,7 @@
         "lean-kernel/QleisliKernel.lean": "efeb18d5d0b6f83788e3652f9dc7d899e580158f715d33ea8be6d416bd2822c5",
         "lean-kernel/Tests.lean": "8c465ac385322057c5a72192fe56bf7655cd3e389a48e6c5010c4e09267cc429",
         "lean-kernel/lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
-        "lean-kernel/lakefile.toml": "26f9918d7a1fb5655fd878deb3c9b0004d4677813d61e111d759bd5ed3d9271a",
+        "lean-kernel/lakefile.toml": "2b6e323eefba8aeb0b8f0ec107947a382fd80f4ab3f5530bf252cabecfce326a",
         "lean-kernel/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",
         "scripts/check_lean_kernel.py": "6f31a05e1d82bb496d4296a6817141ea1d45c71de3dc8ac9e014b0fcc247f649",
         "scripts/check_schema_registry.py": "505c758dc908d5f2b7494fed4ac4aacd2f3c21a589d622b40483252ebcfb83a4"
@@ -1132,12 +1134,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "de41a090d4d018949ae115c13dc12a28fd974b5903cf0934a092eba884dec058",
+      "lean/schema-registry.json": "54bc635b3f546e05d08e0c3370a3469734358327bd6057ec18e128f54a8a8961",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "179ae1dd7ad8a9171de1147f8201c2cf5b6e78f0122a8870e3a67e4e704e463d"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "0d900dfcf9fd1813338c25658fb1948f9d739058a83d948971434e84174e91bf"
     },
     "commands": [
       {
@@ -1150,7 +1152,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 2.1189553880001313,
+        "seconds": 2.2709356100001514,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -1164,7 +1166,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 125.6802076219999,
+        "seconds": 135.13893044399993,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -1207,7 +1209,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 2.06861554000011,
+      "seconds": 2.2698707210001885,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -1223,7 +1225,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean",
       "sha256": "451005a53ca4e5879d8c434fe037559d2d9791cb8f72e93d47e045eb32bde525"
     },
-    "source_revision_sha256": "572824668f5c1ae38051cf16777fd6e709e048454fc98cdfd9ee4917b4e96e61",
+    "source_revision_sha256": "cf60c27ca422b5a41f3ba32fb681bb54bb7e8e25c937456c9c9d59e9dac8c2e6",
     "command": {
       "argv": [
         "lake",
