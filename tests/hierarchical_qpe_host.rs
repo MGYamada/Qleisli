@@ -121,6 +121,9 @@ sys.stdout.write({response:?})
             .check_qpe_instrument(&payload, &request, &candidate)
             .unwrap_err();
         assert_eq!(error.code, "format", "{}: {error}", entry.path().display());
-        assert!(!error.message.contains("native response protocol"), "{error}");
+        assert!(
+            !error.message.contains("native response protocol"),
+            "{error}"
+        );
     }
 }
