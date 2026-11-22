@@ -325,7 +325,8 @@ mod response_diagnostics_tests {
                 Mode::Inspect.argument(),
                 |bytes| response_indices(bytes, Mode::Inspect),
             )
-            .unwrap_err();
+            .err()
+            .expect("a version-3 checker must not produce a version-4 decision");
         assert_eq!(error.code, "format");
     }
 
