@@ -1,6 +1,6 @@
 # The standard-library qrate
 
-`stdlib` is a qrate now. Its [Qargo.toml](../Qargo.toml) follows qargo manifest
+`stdlib` is a qrate now. Its [Qargo.toml](../Qlirgo.toml) follows qargo manifest
 schema 2: name `std`, product version `0.3.0-beta`, Qleisli edition `"2026"`,
 and separate `src`, `tests` and `docs` roots. All three directories are included
 in the qrate. The language import namespace remains `std::`.
@@ -59,11 +59,11 @@ The in-progress schema-2 qargo implementation accepts the manifest and captures
 the ordinary sources with:
 
 ```sh
-qargo check --manifest-path=stdlib/Qargo.toml
+qlirgo check --manifest-path=stdlib/Qlirgo.toml
 ```
 
 Qargo chooses its linked checker; record that tool identity separately from
-this qrate's version and edition. A successful qargo check is ordinary source/IR
+this qrate's version and edition. A successful qlirgo check is ordinary source/IR
 validation, not an algorithm proof or certification of all intended contracts.
 The recorded qargo 0.1.3 development experiment linked Qleisli 0.2.1 and
 failed after manifest capture: its local-module loader rejects `basis.qli` as a

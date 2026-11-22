@@ -21,7 +21,7 @@ import time
 import tomllib
 
 import native_harness
-from native_packet import envelope
+from native_packet import envelope, verification_projection, verification_request
 
 ROOT = Path(__file__).resolve().parents[1]
 DRIVER = ROOT / 'tests/json_prescan.lean'
@@ -161,7 +161,9 @@ def main():
                             row = measured([driver, path, 128])
                         else:
                             packet = envelope('2026', b'QLV1' + struct.pack('<II', size, 0) + payload)
-                            row = measured([kernel, '--qirf-native', version], packet)
+                            request = verification_request(version, '--qirf-native', packet)
+                            row = measured([kernel, '--verify-request'], request)
+                            row['stdout'] = verification_projection(row['stdout'].encode(), request).decode()
                         row.update(kind=kind, boundary=boundary, bytes=size,
                                    input_sha256=hashlib.sha256(payload).hexdigest(),
                                    rss_ceiling_bytes=RSS_BASE_BYTES + RSS_BYTES_PER_INPUT_BYTE * size)

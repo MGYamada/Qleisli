@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -81,7 +81,7 @@ def main():
         ("trailing-required", good, good + b"false", "format"),
     ]
     for name, actual, required, expected in cases:
-        result = subprocess.run([str(BINARY), "--hierarchy-request-pending", PRODUCT_VERSION],
+        result = run_verification([str(BINARY), "--hierarchy-request-pending", PRODUCT_VERSION],
                                 input=envelope('2026', packet(actual, required)), capture_output=True, timeout=30)
         reply = parse_reply(result.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-request-pending", scope="inspection")
         lines = reply.payload
@@ -169,7 +169,7 @@ def main():
                            for j in range(4)] for k in range(4)]
     native_cases.append(('meaning-permutation',encode(permutation),encode(x_matrix),'pending'))
     for name, program, description, expected in native_cases:
-        result = subprocess.run([str(BINARY), '--hierarchy-request-pending', PRODUCT_VERSION],
+        result = run_verification([str(BINARY), '--hierarchy-request-pending', PRODUCT_VERSION],
             input=envelope('2026', packet(description, description, program)), capture_output=True, timeout=30)
         reply = parse_reply(result.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-request-pending", scope="inspection")
         lines = reply.payload
@@ -188,7 +188,7 @@ def main():
         # The QLR enclosing block length changes with the exact nested bytes.
         old_size = struct.unpack_from('<I',original,4)[0]
         original = original[:4]+words(old_size+len(program)-len(old))+original[8:]
-        result = subprocess.run([str(BINARY),'--hierarchy-request-pending',PRODUCT_VERSION],input=envelope('2026', original),
+        result = run_verification([str(BINARY),'--hierarchy-request-pending',PRODUCT_VERSION],input=envelope('2026', original),
                                 capture_output=True,timeout=30)
         assert result.returncode == 1 and parse_reply(result.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-request-pending", scope="inspection").error == "format", (name,result)
     print(f'Passed {len(cases)+len(native_cases)+4} native QIRF/request cases; Rust checker not invoked.')

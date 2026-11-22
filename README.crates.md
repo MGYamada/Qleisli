@@ -4,11 +4,13 @@
 
 **Rust and Cargo are trademarks of the Rust Foundation.**
 
+**Qleisli — Writable as Rust, Curious as Julia, Rigorous as Haskell, Verifiable in Lean.**
+
 Qleisli is an experimental quantum programming language with linear quantum
 ownership, explicit measurement effects and exact semantic contracts. A Rust
 frontend and independent native Lean verifier support small reference simulations.
 
-Package version: **0.3.0-beta**.
+Package version: **0.3.0**.
 Package, executable and Rust library name: **`qleisli`**.
 
 The [beta crate](https://crates.io/crates/qleisli/0.3.0-beta) and its
@@ -19,7 +21,7 @@ are available.
 
 **Qleisli language edition: `"2026"`.** Edition identifies the constitutional
 regime, independently of syntax, compiler version and Rust's implementation
-edition. Every source tree requires an explicit schema-2 `Qargo.toml`.
+edition. Every source tree requires an explicit schema-2 `Qlirgo.toml`.
 
 ## Example
 
@@ -34,7 +36,7 @@ observe fn main() -> (Bit, Bit) {
 ```
 <!-- /quickstart:bell -->
 
-Declare the source tree's edition in `bell/Qargo.toml`:
+Declare the source tree's edition in `bell/Qlirgo.toml`:
 
 <!-- quickstart:manifest -->
 ```toml
@@ -79,8 +81,8 @@ General Soundness, Physical Realizability and quantitative Resource Safety
 remain proof goals. Successful checking is not proof of algorithm correctness
 or hardware behavior.
 
-- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/tests/fixtures/quick_reference/README.md)
-- [Trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/TRUSTBOUNDARY.md)
+- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0/tests/fixtures/quick_reference/README.md)
+- [Trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0/TRUSTBOUNDARY.md)
 - [API documentation](https://docs.rs/qleisli) and [source repository](https://github.com/MGYamada/Qleisli)
 
 ## License

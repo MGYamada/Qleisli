@@ -739,8 +739,10 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
     assert_eq!(historical.matches(analysis_notice).count(), 1);
     let external_tools = "qargo/qlippy/qlifmt/qlidoc";
     assert_eq!(historical.matches(external_tools).count(), 1);
+    assert_eq!(historical.matches("Qargo.toml").count(), 1);
     let usage = historical
         .replace(external_tools, "qlirgo/qlinties/qlifmt/qlidoc")
+        .replace("Qargo.toml", "Qlirgo.toml")
         .replace(retired, "")
         .replace(
             run,
@@ -766,7 +768,7 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
                 "  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <source> --input=qli [--expect-edition=2026] [--shots=N --seed=S] [--lean-kernel=PATH]\n",
                 "  qleisli interop emit-qasm <source> --input=qli --resources [--expect-edition=2026] [--lean-kernel=PATH]\n",
                 "  interop always returns JSON; qli input takes a project directory.\n",
-                "  Raw qirf/qasm interop requires --edition=2026; source projects select it in Qargo.toml.\n",
+                "  Raw qirf/qasm interop requires --edition=2026; source projects select it in Qlirgo.toml.\n",
                 "  Edition selects the constitutional regime, independently of the compiler release.\n"
             ),
         )

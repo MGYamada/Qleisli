@@ -896,6 +896,32 @@ that marks their criteria required or excludes every criterion of another
 Issue fails validation. The existing
 explicitly approved generic-QFT exclusion also remains separate.
 
+### Stable 0.3.0 supplement
+
+The approved requirements base must include `release/stable-requirements.json`.
+It binds the frozen #142 requirements digest, the stable interface identities,
+the exact qlirgo candidate commit, a reviewed file reference, and the criterion
+IDs and evidence roles for #349 and #622. The candidate supplies fresh tracked
+baseline and supplement evidence in `release/stable-baseline-acceptance.json`
+and `release/stable-acceptance.json`, respectively. Use the fixed criterion
+inventory in the checker. The stable packet retains the historical baseline's
+criterion IDs and covers the current request/reply protocol separately.
+
+The stable-only companion lane links an isolated qlirgo 0.2.0 candidate to the
+exact Qleisli 0.3.0 crate from the same run. It uses the same-run native bundles
+on Linux x86_64 and ARM64 macOS and runs full source replay on Intel macOS. The
+release gate binds the host results to that run, attempt, crate, std, native
+inputs and both commits. The registry qualification for qlirgo follows
+publication of Qleisli 0.3.0 and uses the published exact dependency.
+
+Dispatch full release readiness against the final candidate on `main` with
+the reviewed base. Once the gate and run complete, record their run ID and
+attempt in repository variables `QLEISLI_STABLE_PRETAG_RUN_ID` and
+`QLEISLI_STABLE_PRETAG_ATTEMPT`. Use `QLEISLI_RELEASE_BASE` for the same reviewed
+commit on the tag run. The tag gate checks GitHub's run, job and artifact
+metadata for the previously completed pre-tag record and also verifies all
+fresh tag-run producers. An expired or mismatched record fails the gate.
+
 The separately approved [alpha snapshot scope](../../release/alpha-scope-proposal.md)
 and [human approval](../../release/alpha-scope-approval.json), recorded in
 [Issue #351](https://github.com/MGYamada/Qleisli/issues/351), apply only to

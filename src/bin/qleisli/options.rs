@@ -43,12 +43,12 @@ pub(super) const USAGE: &str = "usage:
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <source> --input=qli [--expect-edition=2026] [--shots=N --seed=S] [--lean-kernel=PATH]
   qleisli interop emit-qasm <source> --input=qli --resources [--expect-edition=2026] [--lean-kernel=PATH]
   interop always returns JSON; qli input takes a project directory.
-  Raw qirf/qasm interop requires --edition=2026; source projects select it in Qargo.toml.
+  Raw qirf/qasm interop requires --edition=2026; source projects select it in Qlirgo.toml.
   Edition selects the constitutional regime, independently of the compiler release.
 source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate
   --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).
   Use an explicitly built/audited native kernel. No automatic download or fallback.
-  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.
+  --qrate selects the explicit [source].root in the selected directory's Qlirgo.toml.
   Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.
   Bounded projects allow max(64, project byte limit / 1024) directory entries.
   --legacy-source-limits cannot be combined with explicit byte limits.

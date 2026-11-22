@@ -14,7 +14,7 @@ This lesson uses its public `entangle` function.
 
 ```sh
 mkdir -p teleport-lab
-cp bell-lab/Qargo.toml bell-lab/pair.qli teleport-lab/
+cp bell-lab/Qlirgo.toml bell-lab/pair.qli teleport-lab/
 ```
 
 Save the protocol in `teleport-lab/transfer.qli`. Its argument is a qubit

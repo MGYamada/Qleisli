@@ -1,0 +1,65 @@
+{
+  "format": "qleisli.stable-requirements",
+  "version": 1,
+  "product_version": "0.3.0",
+  "baseline_sha256": "00f95429a72489e3bdd2b41f20dc7859d53d25ece050496eae16119db419c53b",
+  "identities": {
+    "edition": "2026",
+    "qrate_schema": 2,
+    "native_protocol": "qleisli.native-result 4"
+  },
+  "criteria": [
+    {
+      "id": "349-manifest-selection",
+      "roles": [
+        "implementation",
+        "negative",
+        "positive",
+        "reference"
+      ]
+    },
+    {
+      "id": "349-version-sync-packaging",
+      "roles": [
+        "implementation",
+        "positive",
+        "production"
+      ]
+    },
+    {
+      "id": "349-companion-candidate",
+      "roles": [
+        "compatibility"
+      ]
+    },
+    {
+      "id": "622-request-and-admission",
+      "roles": [
+        "implementation",
+        "production",
+        "reference"
+      ]
+    },
+    {
+      "id": "622-compatibility-migration",
+      "roles": [
+        "migration",
+        "negative",
+        "positive"
+      ]
+    },
+    {
+      "id": "622-cli-outcomes",
+      "roles": [
+        "implementation",
+        "negative",
+        "positive"
+      ]
+    }
+  ],
+  "companion_commit": "b4010e93d14c27b755b3c72e6f02ec78fae4436c",
+  "review": {
+    "path": "release/stable-requirements-review.md",
+    "sha256": "2dd377ac6b6aae0b142f85d5a33914c72fb26752390132ff4439ea79f0879827"
+  }
+}

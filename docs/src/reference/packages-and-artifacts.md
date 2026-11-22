@@ -2,7 +2,12 @@
 
 A **qrate** is the smallest unit of Qleisli programs that has a version of
 its own and that can be distributed by itself. A qrate or a source tree
-declares itself in a **manifest**, a file named `Qargo.toml`.
+declares itself in a **manifest**, a file named `Qlirgo.toml`.
+A directory with only `Qargo.toml` may use that legacy name. If a directory
+contains both names, the files must be byte-for-byte identical. The checker
+selects `Qlirgo.toml` in that case. Both names require the same explicit
+schema and edition. A conflicting or invalid pair fails in its directory.
+
 
 This chapter specifies how much authority packages and artifacts have in
 edition 2026, under the [authority hierarchy](authority.md). It states what a
@@ -227,7 +232,7 @@ root = "src"
 
 A source tree states its edition in a manifest. The block shows the supported
 spelling of a source-tree manifest. A source file uses the nearest
-`Qargo.toml` in its directory or in an ancestor directory. The `qleisli` CLI
+`Qlirgo.toml` in its directory or in an ancestor directory. The `qleisli` CLI
 knows these keys:
 
 | Key | Value | Use by the `qleisli` CLI |
@@ -281,7 +286,7 @@ The loader rejects each of these manifests with the code `project`:
 
 | Manifest | The message contains |
 | --- | --- |
-| `schema-version = 1`, or no `schema-version` | `Qargo.toml requires schema-version = 2` |
+| `schema-version = 1`, or no `schema-version` | `Qlirgo.toml requires schema-version = 2` |
 | `edition = 2026`, an integer | `explicit string [qrate].edition` |
 | `edition = "2027"` | `unsupported Qleisli edition` |
 
@@ -316,7 +321,7 @@ documentation.
 
 Rules:
 
-- The selected directory must itself contain `Qargo.toml`.
+- The selected directory must itself contain `Qlirgo.toml` or `Qargo.toml`.
 - That manifest must give `[source].root` as an explicit string.
 - `[source].root` must be a nonempty relative path. It must not contain a
   parent traversal, and no component may be named `target`, in any ASCII
@@ -370,7 +375,7 @@ each manifest, one to each source file and one to the project as a whole.
 
 | Limit | Value | Scope |
 | --- | --- | --- |
-| Manifest | 65,536 bytes | Each `Qargo.toml` |
+| Manifest | 65,536 bytes | Each manifest under either supported name |
 | Source file | 1,048,576 bytes, or the value of `--source-bytes=N` | Each source file |
 | Project aggregate | 16,777,216 bytes, or the value of `--project-bytes=N` | The source text and the retained manifest text of one project |
 
@@ -524,7 +529,7 @@ Rules:
   code `project`.
 - A user manifest keeps its normal schema and edition checks and its
   independent package version.
-- Release synchronization includes `stdlib/Qargo.toml`.
+- Release synchronization includes `stdlib/Qlirgo.toml`.
 
 > **Implementation note.** The private function `check_bundled` in
 > `src/frontend/project/edition.rs` is the gate. It parses the immutable

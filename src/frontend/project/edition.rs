@@ -1,5 +1,5 @@
 //! Edition selection is frontend configuration, not IR acceptance evidence.
-//! User manifests select schema and edition; qargo owns package management.
+//! User manifests select schema and edition. qlirgo owns package management.
 //! Only the embedded std also requires this distribution's exact product version.
 
 use std::fs;
@@ -17,6 +17,7 @@ use crate::frontend::ast::Span;
 pub struct EditionManifest {
     path: PathBuf,
     source: Arc<str>,
+    bytes_read: u64,
     edition: Edition,
 }
 
@@ -27,6 +28,9 @@ impl EditionManifest {
     pub fn source(&self) -> &str {
         &self.source
     }
+    pub(super) fn bytes_read(&self) -> u64 {
+        self.bytes_read
+    }
     pub fn edition(&self) -> Edition {
         self.edition
     }
@@ -36,6 +40,7 @@ fn capture(path: &Path, source: String) -> Result<EditionManifest, LoadFailure> 
     let (_, edition) = parse_manifest(path, &source)?;
     Ok(EditionManifest {
         path: path.into(),
+        bytes_read: source.len() as u64,
         source: source.into(),
         edition,
     })
@@ -62,41 +67,78 @@ pub(super) fn check_bundled() -> Result<(), LoadFailure> {
         .clone()
 }
 
+const CANONICAL: &str = "Qlirgo.toml";
+const LEGACY: &str = "Qargo.toml";
+
 // Called once per discovered directory. A nested directory inherits the already
 // checked parent edition; its own manifest, when present, must pass afresh.
 pub(super) fn read_anchored(
     directory: &Path,
     anchor: &fs::File,
 ) -> Result<Option<EditionManifest>, LoadFailure> {
-    let path = directory.join("Qargo.toml");
-    match source_file::kind(anchor, directory, "Qargo.toml".as_ref()) {
-        Ok(source_file::Kind::File) => {}
-        Ok(_) => {
-            return Err(error(
-                &path,
-                Span::default(),
-                "Qargo.toml must be a regular, non-symlink file",
-            ));
-        }
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-            return Ok(None);
-        }
-        Err(e) => return Err(io_error(&path, e)),
-    }
-    let file =
-        match source_file::child(anchor, directory, std::ffi::OsStr::new("Qargo.toml"), false) {
-            Ok(file) => file,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                return Ok(None);
+    select(directory, Some(anchor))
+}
+
+fn select(
+    directory: &Path,
+    anchor: Option<&fs::File>,
+) -> Result<Option<EditionManifest>, LoadFailure> {
+    let canonical = read_manifest(directory, anchor, CANONICAL)?;
+    let legacy = read_manifest(directory, anchor, LEGACY)?;
+    let (name, bytes, extra_bytes) = match (canonical, legacy) {
+        (Some(canonical), Some(legacy)) => {
+            if canonical != legacy {
+                return Err(error(
+                    &directory.join(CANONICAL),
+                    Span::default(),
+                    "Qlirgo.toml and Qargo.toml must have identical bytes",
+                ));
             }
-            Err(e) => return Err(io_error(&path, e)),
-        };
-    if !file.metadata().map_err(|e| io_error(&path, e))?.is_file() {
-        return Err(error(
+            (CANONICAL, canonical, legacy.len() as u64)
+        }
+        (Some(bytes), None) => (CANONICAL, bytes, 0),
+        (None, Some(bytes)) => (LEGACY, bytes, 0),
+        (None, None) => return Ok(None),
+    };
+    let path = directory.join(name);
+    let source = String::from_utf8(bytes)
+        .map_err(|_| error(&path, Span::default(), format!("{name} is not valid UTF-8")))?;
+    let mut manifest = capture(&path, source)?;
+    manifest.bytes_read += extra_bytes;
+    Ok(Some(manifest))
+}
+
+fn read_manifest(
+    directory: &Path,
+    anchor: Option<&fs::File>,
+    name: &str,
+) -> Result<Option<Vec<u8>>, LoadFailure> {
+    let path = directory.join(name);
+    let non_regular = || {
+        error(
             &path,
             Span::default(),
-            "Qargo.toml must be a regular, non-symlink file",
-        ));
+            format!("{name} must be a regular, non-symlink file"),
+        )
+    };
+    let regular = match anchor {
+        Some(anchor) => source_file::kind(anchor, directory, name.as_ref())
+            .map(|kind| matches!(kind, source_file::Kind::File)),
+        None => fs::symlink_metadata(&path).map(|meta| meta.is_file()),
+    };
+    match regular {
+        Ok(true) => {}
+        Ok(false) => return Err(non_regular()),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+        Err(e) => return Err(io_error(&path, e)),
+    }
+    let file = match anchor {
+        Some(anchor) => source_file::child(anchor, directory, name.as_ref(), false),
+        None => source_file::open(&path),
+    }
+    .map_err(|e| io_error(&path, e))?;
+    if !file.metadata().map_err(|e| io_error(&path, e))?.is_file() {
+        return Err(non_regular());
     }
     let mut bytes = Vec::new();
     file.take(MAX_MANIFEST_BYTES + 1)
@@ -106,51 +148,23 @@ pub(super) fn read_anchored(
         return Err(error(
             &path,
             Span::default(),
-            "Qargo.toml exceeds the 65536-byte manifest limit",
+            format!("{name} exceeds the 65536-byte manifest limit"),
         ));
     }
-    let source = String::from_utf8(bytes)
-        .map_err(|_| error(&path, Span::default(), "Qargo.toml is not valid UTF-8"))?;
-    capture(&path, source).map(Some)
+    Ok(Some(bytes))
 }
 
 pub(super) fn read_directory(directory: &Path) -> Result<EditionManifest, LoadFailure> {
     for ancestor in directory.ancestors() {
-        let path = ancestor.join("Qargo.toml");
-        match fs::symlink_metadata(&path) {
-            Err(failure) if failure.kind() == std::io::ErrorKind::NotFound => continue,
-            Err(failure) => return Err(io_error(&path, failure)),
-            Ok(metadata) if !metadata.file_type().is_file() => {
-                return Err(error(
-                    &path,
-                    Span::default(),
-                    "Qargo.toml must be a regular, non-symlink file",
-                ));
-            }
-            Ok(_) => {}
+        if let Some(manifest) = select(ancestor, None)? {
+            return Ok(manifest);
         }
-        // Do not skip a malformed, unreadable or symlinked nearer manifest.
-        let file = source_file::open(&path).map_err(|failure| io_error(&path, failure))?;
-        let mut bytes = Vec::new();
-        file.take(MAX_MANIFEST_BYTES + 1)
-            .read_to_end(&mut bytes)
-            .map_err(|failure| io_error(&path, failure))?;
-        if bytes.len() as u64 > MAX_MANIFEST_BYTES {
-            return Err(error(
-                &path,
-                Span::default(),
-                "Qargo.toml exceeds the 65536-byte manifest limit",
-            ));
-        }
-        let source = String::from_utf8(bytes)
-            .map_err(|_| error(&path, Span::default(), "Qargo.toml is not valid UTF-8"))?;
-        return capture(&path, source);
     }
     Err(error(
-        &directory.join("Qargo.toml"),
+        &directory.join(CANONICAL),
         Span::default(),
         format!(
-            "missing Qargo.toml: add schema-version = 2 and [qrate] edition = \"2026\" \
+            "missing {CANONICAL}: add schema-version = 2 and [qrate] edition = \"2026\" \
              to the source tree's top-level directory. {EDITION_SELECTION}"
         ),
     ))
@@ -218,6 +232,10 @@ fn parse_manifest(path: &Path, source: &str) -> Result<(toml::Table, Edition), L
             message,
         )
     };
+    let name = path
+        .file_name()
+        .and_then(|name| name.to_str())
+        .unwrap_or(CANONICAL);
     let manifest = source.parse::<toml::Table>().map_err(|failure| {
         let range = failure.span().unwrap_or(0..source.len());
         located_error(
@@ -228,7 +246,7 @@ fn parse_manifest(path: &Path, source: &str) -> Result<(toml::Table, Edition), L
                 end: range.end,
             },
             "project",
-            format!("invalid Qargo.toml: {failure}"),
+            format!("invalid {name}: {failure}"),
         )
     })?;
     if manifest
@@ -236,7 +254,7 @@ fn parse_manifest(path: &Path, source: &str) -> Result<(toml::Table, Edition), L
         .and_then(toml::Value::as_integer)
         != Some(2)
     {
-        return Err(invalid("Qargo.toml requires schema-version = 2".to_owned()));
+        return Err(invalid(format!("{name} requires schema-version = 2")));
     }
     let edition = manifest
         .get("qrate")
@@ -245,7 +263,7 @@ fn parse_manifest(path: &Path, source: &str) -> Result<(toml::Table, Edition), L
         .and_then(toml::Value::as_str)
         .ok_or_else(|| {
             invalid(format!(
-                "Qargo.toml requires an explicit string [qrate].edition. \
+                "{name} requires an explicit string [qrate].edition. \
                  Add edition = \"2026\" under [qrate]. {EDITION_SELECTION}"
             ))
         })?;

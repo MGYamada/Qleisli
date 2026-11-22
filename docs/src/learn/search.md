@@ -12,7 +12,7 @@ a project with the same edition manifest you used in `bit-lab`.
 
 ```sh
 mkdir -p search-lab
-cp bit-lab/Qargo.toml search-lab/Qargo.toml
+cp bit-lab/Qlirgo.toml search-lab/Qlirgo.toml
 ```
 
 Write the following program in `search-lab/main.qli`.

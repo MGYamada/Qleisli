@@ -1955,8 +1955,76 @@ the repository against it.
 - Their bounded observations do not replace S05 proofs or human review of the
   intended semantics.
 
+## Stable verification request migration
+
+The compiler sends one native verification request with an explicit obligation
+selector. The selector chooses a bounded checker and its required
+input and evidence shape. Existing QLV3 source packets carry QLV1 artifacts,
+graph and caller execution views, and alias indices. The placement packet
+carries a source packet, emitted target and alignment evidence. Each
+inner reader checks its original bytes and its own
+obligations. A request for a different scope or a weaker source profile
+cannot replace an obligation that failed.
+
+| Existing native flag | Obligation selector | Checked result and obligations |
+| --- | --- | --- |
+| `--qirf-native` | Ordinary | Ordinary Raw, ownership, classical scope, and graph/caller views when selected. |
+| `--qirf-contract` | Contract | Ordinary Raw with the retained exact contract and required graph/caller views. |
+| `--carrier-pure-check` | Carrier pure | Actual carrier interface and pure body, bound to the retained origin and view. |
+| `--ordinary-root-check` | Ordinary root | Original bytes and ordinary root selection with v2 source typing and exact effect obligations. |
+| `--runtime-root-check` | Runtime root | Runtime root v2 context and materialized source execution obligations. |
+| `--qmatch-source-check` | Source qmatch v4 | Original source, ordered sectors, phases, owner routing, and checked execution view. |
+| `--qmatch-source-v5-check` | Source qmatch v5 | Separate v5 original-source, context, provider and operation binding duties as applicable to the reachable v5 subject. |
+| `--openqasm-placement-check` | OpenQASM placement | Placement-checked, binding checked v5 source, alignment and actual target operations. |
+| `--hierarchy-pending` | Hierarchy inspection | Pending, validating hierarchy topology and inspection evidence. |
+| `--hierarchy-request-pending` | Hierarchy request | Pending, with the retained request and selected dependency indices. |
+| `--hierarchy-control-pending` | Hierarchy control | Pending, with checked caller-independent control evidence and execution-view binding. |
+| `--hierarchy-fourier-pending` | Hierarchy Fourier | Pending, with the retained Fourier request and selected Hadamard indices. |
+| `--instrument-pending` | Instrument | Pending, with the hierarchical instrument evidence. |
+| `--qpe-instrument-pending` | QPE instrument | Pending, with the retained QPE instrument and Fourier evidence. |
+| `--engineering-pure-check` | Engineering pure | Engineering-checked, exact ideal/actual pure comparison. |
+| `--engineering-pure-tensor-check` | Engineering pure tensor | Engineering-checked, exact ordered tensor comparison. |
+| `--qirf-engineering-instrument-native` | Engineering instrument | Engineering-checked, instrument interface and exact outcome evidence. |
+| `--engineering-openqasm-check` | Engineering OpenQASM | Engineering-checked, exact target relation to the declared project. |
+| `--engineering-openqasm-gate-check` | Engineering OpenQASM gate | Engineering-checked, gate block interface, target correspondence and literal counts. |
+| `--readout-check` | Readout | Checked inspection of the readout request and packet. |
+| `--preparation-check` | Preparation | Checked inspection of the preparation request and packet. |
+
+The migration keeps the ordinary project, selected Raw, and sized/hierarchy
+source emitters. The explicit `--legacy-source-limits` compatibility policy
+never supplies an implicit fallback for a bounded request. In v5, only a
+source subject with an implemented producer and consumer can reach production.
+The retained but unconstructed arm, operation and context subject types expand
+neither the supported profile nor the meaning of a successful v5 result.
+The test-only Lean legacy comparison modules retain the independent
+differential checks.
+
+Migration validation compares the native responses over the saved execution
+view, source qmatch, hierarchy, and engineering regressions. The comparison
+checks the decision class, associated claim, work result, and the decoded
+artifact or rejection as appropriate. The CLI migration uses a single
+structured command outcome for text and JSON. Explicit source diagnostics
+and checker failures keep their locations and codes. Only a current
+execution-admitting decision at the required scope can bind an execution
+view.
+
+Set `QLEISLI_VERIFICATION_TRACE=1` to append a
+`qleisli.verification-trace` version-1 JSON line to stderr. The record
+includes the command route, the source-byte policy when selected by the
+ordinary command engine, and the product and protocol identities. For each
+native invocation it records the subject and request hashes, obligation,
+edition, scope, and outcome or diagnostic ID. The trace reports at most 128
+native invocations and counts any further invocations in `omitted`. Source
+text, file names and diagnostic messages are excluded from this record.
+Stdout and the command exit status keep their regular meaning. The trace
+is an observation for debugging and does not authorize execution.
+
 ## History
 
+- The [0.3.0 stable cutover](https://github.com/MGYamada/Qleisli/issues/622)
+  converged native dispatch. [Raw emitter convergence](https://github.com/MGYamada/Qleisli/issues/625)
+  and the [canonical Core and Circuit IR](https://github.com/MGYamada/Qleisli/issues/382)
+  have their own release targets.
 - Production acceptance completed the adopted migration to one native Lean
   implementation under the
   [single-verifier decision #276](https://github.com/MGYamada/Qleisli/issues/276).

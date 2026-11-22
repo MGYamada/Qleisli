@@ -1,6 +1,6 @@
 # Standard-library test root
 
-This is the QLT test root declared by [Qargo.toml](../Qargo.toml). There are
+This is the QLT test root declared by [Qargo.toml](../Qlirgo.toml). There are
 currently no executable `.qlt` tests: QLT implementation remains deferred to
 v0.4.0 or later. Qargo must report its unavailable test backend explicitly.
 

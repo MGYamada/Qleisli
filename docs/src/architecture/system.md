@@ -34,7 +34,7 @@ decides acceptance.
 
 | Component | Responsibility |
 | --- | --- |
-| Source project | Groups `.qli` modules and selects the language edition in `Qargo.toml`. The bundled standard library supplies reusable operations. |
+| Source project | Groups `.qli` modules and selects the language edition in `Qlirgo.toml`. The bundled standard library supplies reusable operations. |
 | Rust host | Provides the `qleisli` CLI and Rust library. The Python client calls the CLI. The [compiler](compiler.md) lowers source, and input adapters prepare proposals for supported external formats. |
 | Native verifier | Independently checks proposals in a separate process. The [verifier chapter](verifier.md) explains what an execution decision binds. |
 | Simulation and export | The Rust host uses the accepted representation to simulate or sample supported programs. Export additionally requires the checks for the selected format and target profile. |

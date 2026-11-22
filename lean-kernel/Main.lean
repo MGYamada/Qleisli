@@ -22,16 +22,11 @@ Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0
 
 def main (args : List String) : IO UInt32 :=
   match args with
-  | [mode, version] =>
-    match QleisliKernel.Protocol.NativeContext.Mode.parse mode with
-    | some selected => QleisliKernel.Cli.runNativeContext selected version
-    | none => QleisliKernel.Cli.run mode version
-  -- Native modes always require the explicitly paired product version, so
-  -- version agreement is enforced here rather than by caller convention.
-  | [mode] =>
-    match QleisliKernel.Protocol.NativeContext.Mode.parse mode with
-    | some selected => QleisliKernel.Cli.runNativeContext selected ""
-    | none => QleisliKernel.Cli.usage
+  | ["--verify-request"] => QleisliKernel.Cli.runVerificationRequest
+  | [artifact, requirement] =>
+    if (QleisliKernel.Protocol.NativeContext.Mode.parse artifact).isSome then
+      QleisliKernel.Cli.usage
+    else QleisliKernel.Cli.run artifact requirement
   | ["--phase-layout", artifact, requirement] => QleisliKernel.Cli.runPhaseLayout artifact requirement
   | ["--layout-dag", artifact, requirement] => QleisliKernel.Cli.runLayoutDag artifact requirement
   | ["--layout", artifact, requirement] => QleisliKernel.Cli.runLayout artifact requirement

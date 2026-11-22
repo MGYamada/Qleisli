@@ -113,7 +113,7 @@ fn qrate_source_selection(
     };
     if path.parent() != Some(root.as_path()) {
         return Err(fail(
-            "--qrate requires Qargo.toml in the selected qrate directory",
+            "--qrate requires a Qlirgo.toml or Qargo.toml in the selected qrate directory",
         ));
     }
     let manifest: toml::Table = source.parse().expect("edition parser validated TOML");
@@ -159,7 +159,7 @@ fn qrate_source_selection(
 }
 
 /// Report unused manifest keys without rejecting previously accepted metadata.
-/// Known fields follow qargo's schema-2 local manifest; metadata validation
+/// Known fields follow qlirgo's schema-2 local manifest; metadata validation
 /// beyond edition and opt-in source selection remains qargo's responsibility.
 pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic> {
     let directory =
@@ -196,7 +196,7 @@ pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic
         if non_table {
             format!("manifest key `{key}` must be a table; this Qleisli command ignores it; check the schema-2 spelling")
         } else {
-            format!("unused manifest key `{key}`; this Qleisli command ignores it; check the schema-2 spelling (qargo may reject unsupported metadata)")
+            format!("unused manifest key `{key}`; this Qleisli command ignores it; check the schema-2 spelling (qlirgo may reject unsupported metadata)")
         })
         .into_diagnostic()).collect())
 }

@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 import tempfile
 import tomllib
 
@@ -73,7 +73,7 @@ def test_transport(kernel):
              ('oversized-nested-length', b'QLI1'+words([64*1024*1024+1]), 'limit')]
     cases.extend((f'truncated-{i}',good[:i],'format') for i in range(1,len(good)))
     for name, data, expected in cases:
-        run = subprocess.run([str(kernel),'--instrument-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
+        run = run_verification([str(kernel),'--instrument-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
         reply = parse_reply(run.stdout, edition="2026", product=PRODUCT_VERSION, mode="--instrument-pending", scope="inspection")
         lines = reply.payload
         if expected == 'pending':

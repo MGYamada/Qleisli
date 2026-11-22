@@ -16,6 +16,7 @@ import sys
 import tarfile
 import tempfile
 import tomllib
+import zipfile
 
 from check_ratification_packet import PacketError, ROOT, exact_keys, json_object, read_file
 from check_distribution import clean_candidate, read_archive, tracked_files
@@ -262,7 +263,8 @@ def requirements(root, base, snapshot, *, product_version=None):
     return data, raw
 
 
-def acceptance(root, expected, raw_requirements, snapshot, ledger):
+def acceptance(root, expected, raw_requirements, snapshot, ledger, *, path=ACCEPTANCE,
+               identities=IDENTITIES):
     if expected["format"] == "qleisli.alpha-release-approval":
         data = json_object(snapshot.read(root, ALPHA_ACCEPTANCE), ALPHA_ACCEPTANCE)
         envelope(data, "alpha-release-acceptance", {
@@ -275,10 +277,10 @@ def acceptance(root, expected, raw_requirements, snapshot, ledger):
         require(data["schema_registry"]["path"] == "lean/schema-registry.json", "wrong schema registry")
         accepted_proof_scope(root, data, snapshot, ledger)
         return data
-    data = json_object(snapshot.read(root, ACCEPTANCE), ACCEPTANCE)
+    data = json_object(snapshot.read(root, path), path)
     envelope(data, "release-acceptance", {"requirements_sha256", "identities", "issues", "proof_scope", "schema_registry"})
     require(data["requirements_sha256"] == digest(raw_requirements), "acceptance criterion snapshot changed")
-    require(data["identities"] == IDENTITIES and type(data["identities"]["qrate_schema"]) is int,
+    require(data["identities"] == identities and type(data["identities"]["qrate_schema"]) is int,
             "edition/release/schema coordinates differ")
     snapshot.ref(root, data["schema_registry"])
     require(data["schema_registry"]["path"] == "lean/schema-registry.json", "wrong schema registry")
@@ -435,7 +437,7 @@ def archive_bytes(data, *, prefix="", expected=None):
         return read_archive(path, prefix=prefix, expected=expected)
 
 
-def artifacts(root, files, context, version, snapshot):
+def artifacts(root, files, context, version, snapshot, identities=IDENTITIES):
     from ci_rust_artifacts import validate_aggregate, verify_archive_evidence
     for profile, job in [('latest', 'check-rust'), ('msrv', 'check-rust-msrv')]:
         require(set(files[job]) == {'rust-aggregate.json', 'rust-differential.json', 'rust-remaining.json'},
@@ -468,6 +470,7 @@ def artifacts(root, files, context, version, snapshot):
     require(vcs.get("git", {}).get("sha1") == context["commit"] and not vcs.get("git", {}).get("dirty", False), "crate source commit mismatch")
     manifest = tomllib.loads(crate["Cargo.toml"].data.decode())
     require(manifest["package"]["version"] == version, "crate version mismatch")
+    kernels = {}
     for job, target in NATIVE_JOBS.items():
         name = f"qleisli-kernel-{version}-{target}.tar.gz"
         require(files[job].keys() == {name, name + ".sha256"}, f"{job}: missing/unexpected native assets")
@@ -481,7 +484,7 @@ def artifacts(root, files, context, version, snapshot):
         bundle = json_object(payload["manifest.json"].data, "native manifest")
         require(bundle.get("format") == "qleisli.native-bundle" and type(bundle.get("version")) is int and bundle["version"] == 1,
                 "unknown native manifest")
-        require(bundle.get("package_version") == version and bundle.get("protocol") == IDENTITIES["native_protocol"], "native release/protocol mismatch")
+        require(bundle.get("package_version") == version and bundle.get("protocol") == identities["native_protocol"], "native release/protocol mismatch")
         require(bundle.get("validation", {}).get("lane") == "full" and bundle["validation"].get("fresh_replay") is True, "native fresh full replay missing")
         expected_sources = {path for path in tracked if path.startswith("lean-kernel/") and (path.endswith(".lean") or Path(path).name in {"lakefile.toml", "lake-manifest.json", "lean-toolchain"})}
         expected_sources.update(NATIVE_BUILD_SUPPORT)
@@ -490,6 +493,8 @@ def artifacts(root, files, context, version, snapshot):
             require(path in tracked and digest(tracked[path].data) == sha, "native source identity mismatch")
         hashes = {path: digest(value.data) for path, value in payload.items() if path not in {"manifest.json", "distribution.json", "INSTALL.txt"}}
         require(hashes == bundle.get("files") and {"bin/qleisli-kernel", "LICENSE", "NOTICE", "lean-runtime-licenses/LICENSE"} <= hashes.keys(), "native payload inventory mismatch")
+        kernels[target] = hashes["bin/qleisli-kernel"]
+    return dist["package.crate"], crate, kernels
 
 
 def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
@@ -501,6 +506,15 @@ def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
     version = tomllib.loads(snapshot.read(root, "Cargo.toml").decode())["package"]["version"]
     require(re.fullmatch(r"0\.3\.0(?:-(?:alpha|beta|rc)(?:\.[1-9][0-9]*)?)?", version), "gate supports only scoped 0.3.0 product releases")
     expected, raw = requirements(root, base_ref, snapshot, product_version=version)
+    stable = version == "0.3.0"
+    identities = IDENTITIES
+    acceptance_path = ACCEPTANCE
+    if stable:
+        import stable_readiness
+        supplement, raw_supplement = stable_readiness.requirements(root, base_ref, raw, snapshot)
+        companion_commit = stable_readiness.acceptance(root, supplement, raw_supplement, snapshot)
+        identities = supplement["identities"]
+        acceptance_path = stable_readiness.BASELINE_ACCEPTANCE
     if context["event"] == "push":
         require(env["GITHUB_REF"] == f"refs/tags/v{version}", "release tag and product version differ")
     require(not version_plan(root, version), "product versions are not synchronized")
@@ -510,11 +524,12 @@ def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
     require(type(result) is dict and result.get("ledger_sha256") == digest(ledger_bytes),
             "constitutional verifier validated different ledger bytes")
     ledger = json_object(ledger_bytes, LEDGER)
-    accepted = acceptance(root, expected, raw, snapshot, ledger)
+    accepted = acceptance(root, expected, raw, snapshot, ledger, path=acceptance_path, identities=identities)
     require(evidence is not None or env.get("RELEASE_EVIDENCE"), "missing downloaded producer evidence directory")
     directory = Path(evidence or env["RELEASE_EVIDENCE"]).resolve()
     require(not directory.is_relative_to(root), "verification receipts must be outside candidate commit")
     needs = json_object(env.get("RELEASE_NEEDS_JSON", "").encode(), "trusted workflow needs")
+    companion_job = needs.pop("check-stable-companion", {})
     files = receipts(directory, needs, context, snapshot)
     proof_files = files["check-lean"]
     require(proof_files.keys() == {"constitution.json"}, "missing live constitutional proof receipt")
@@ -524,14 +539,36 @@ def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
     require(proof["result"] == dict(result, mode="current-Lean-replay"), "source-only or mismatched guarantee replay")
     for job in set(SUITES) - {*NATIVE_JOBS, "check-lean", "check-distribution", "check-rust", "check-rust-msrv"}:
         require(not files[job], f"{job}: unexpected evidence files")
-    artifacts(root, files, context, version, snapshot)
+    crate_bytes, crate, kernels = artifacts(root, files, context, version, snapshot, identities)
+    pre_tag = None
+    if stable:
+        companion_path = directory / f"stable-companion-{context['commit']}-{context['attempt']}"
+        raw_companion = snapshot.read(companion_path, "companion.json")
+        require(companion_job.get("result") == "success"
+                and companion_job.get("outputs", {}).get("receipt_sha256") == digest(raw_companion),
+                "missing same-run companion qualification")
+        stable_readiness.companion(json_object(raw_companion, "stable companion evidence"), context,
+                                   companion_commit, digest(crate_bytes),
+                                   digest(crate["stdlib/Qlirgo.toml"].data), kernels)
+        pre_tag = dict(format="qleisli.stable-pre-tag", version=1, product_version=version,
+                       context=context, requirements_base=base_ref, baseline_sha256=digest(raw),
+                       supplement_sha256=digest(raw_supplement), companion_commit=companion_commit,
+                       identities=identities)
+        if context["event"] == "push":
+            stable_readiness.previous_record(env, context, pre_tag)
+            pre_tag = None
+        else:
+            require(env.get("GITHUB_REF") == "refs/heads/main", "pre-tag stable readiness requires main")
     snapshot.unchanged()
     require(hosted_context(root, env) == context, "candidate changed during readiness verification")
-    return dict(format="qleisli.release-readiness", version=1, context=context, product_version=version,
-                identities=IDENTITIES, status="ready-scoped-candidate", publication="not-authorized-or-performed",
+    report = dict(format="qleisli.release-readiness", version=1, context=context, product_version=version,
+                identities=identities, status="ready-scoped-candidate", publication="not-authorized-or-performed",
                 release_scope="alpha-development-snapshot" if expected["format"] == "qleisli.alpha-release-approval"
                 else "complete-reviewed-feature-requirements",
                 admitted=result["admitted_guarantees"], pending=len(accepted["proof_scope"]["pending"]))
+    if pre_tag is not None:
+        report["stable_pre_tag"] = pre_tag
+    return report
 
 
 def check(root=ROOT, *, base_ref=None, env=None, evidence=None):
@@ -539,7 +576,8 @@ def check(root=ROOT, *, base_ref=None, env=None, evidence=None):
         return _check(root, base_ref=base_ref, env=env, evidence=evidence)
     except PacketError:
         raise
-    except (OSError, ValueError, KeyError, TypeError, tarfile.TarError) as error:
+    except (OSError, ValueError, KeyError, TypeError, tarfile.TarError,
+            subprocess.TimeoutExpired, zipfile.BadZipFile) as error:
         # Keep malformed artifact failures in the same fail-closed API used by
         # the legacy constitutional CLI, without a traceback or success receipt.
         raise PacketError(f"invalid release evidence: {error}") from error

@@ -1,6 +1,6 @@
-//! Display-only SHA-256 identities; these never authorize a native decision.
+//! SHA-256 identities for display and request correlation. Acceptance is checked independently.
 //! FIPS 180-4, sections 5.1.1, 5.3.3 and 6.2:
-//! https://doi.org/10.6028/NIST.FIPS.180-4
+//! <https://doi.org/10.6028/NIST.FIPS.180-4>
 // Copyright 2026 Qleisli Project Contributors. SPDX-License-Identifier: Apache-2.0.
 
 pub(super) fn sha256(bytes: &[u8]) -> String {
@@ -69,7 +69,6 @@ pub(super) fn sha256(bytes: &[u8]) -> String {
     tail[..remainder.len()].copy_from_slice(remainder);
     tail[remainder.len()] = 0x80;
     let padded = if remainder.len() < 56 { 64 } else { 128 };
-    // CLI inputs have already passed the 16 MiB bound.
     tail[padded - 8..padded].copy_from_slice(&(bytes.len() as u64 * 8).to_be_bytes());
     for block in tail[..padded].chunks_exact(64) {
         compress(&mut state, block);

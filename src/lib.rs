@@ -63,8 +63,8 @@
 //! verifier and its handles. Version 0.3.0 uses ordinary `Unit`, `Bit`, `Bits<n>`
 //! and `0`/`1`; their retired classical spellings reject. General basis
 //! polymorphism and common-checker convergence remain unfinished.
-//! See the [Language Reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/docs/src/reference/source-text.md),
-//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-beta/TRUSTBOUNDARY.md)
+//! See the [Language Reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0/docs/src/reference/source-text.md),
+//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0/TRUSTBOUNDARY.md)
 //! and versioning policy.
 
 pub mod contract;
@@ -75,5 +75,8 @@ pub mod interchange;
 pub mod interop;
 pub mod ir;
 pub mod sim;
+
+#[path = "bin/qleisli/digest.rs"]
+mod digest;
 
 pub use interchange::native::AcceptedProgram;

@@ -11,6 +11,68 @@ use std::{collections::BTreeMap, fs, process::Command};
 const SOURCE: &str = "observe fn main() -> Bit { 1 }";
 
 #[test]
+fn canonical_and_legacy_manifest_selection_agree_across_entry_points() {
+    use qleisli::frontend::project::QrateSource;
+
+    let root = SourceRoot::new(SOURCE);
+    let legacy = root.0.join("Qargo.toml");
+    fs::create_dir(root.0.join("src")).unwrap();
+    let bytes = "schema-version=2\n[qrate]\nedition='2026'\n[source]\nroot='src'\n";
+    root.write("Qargo.toml", bytes);
+    let assert_selected = |name: &str| {
+        let project = Project::load_with_policy(&root.0, SourcePolicy::default()).unwrap();
+        let selected =
+            ParsedProgram::load(BTreeMap::from([("main".into(), root.0.join("main.qli"))]))
+                .unwrap();
+        let qrate = QrateSource::select(&root.0).unwrap();
+        for manifest in [
+            project.module_manifest("main").unwrap(),
+            selected.module_manifest("main").unwrap(),
+            qrate.manifest(),
+        ] {
+            assert!(manifest.path().ends_with(name));
+            assert_eq!(manifest.source(), bytes);
+        }
+    };
+    assert_selected("Qargo.toml");
+    root.write("Qlirgo.toml", bytes);
+    assert_selected("Qlirgo.toml");
+    let single_budget = SourcePolicy::Bounded {
+        source_bytes: 100,
+        project_bytes: (bytes.len() + SOURCE.len()) as u64,
+    };
+    assert!(read_source_file(&root.0.join("main.qli"), single_budget).is_err());
+    root.write("Qargo.toml", &format!("{bytes}# different bytes\n"));
+    let err = QrateSource::select(&root.0).err().unwrap();
+    assert!(err.message.contains("must have identical bytes"));
+    assert!(Project::load(&root.0).is_err());
+    assert!(read_source_file(&root.0.join("main.qli"), SourcePolicy::default()).is_err());
+    fs::remove_file(legacy).unwrap();
+    assert_selected("Qlirgo.toml");
+    read_source_file(&root.0.join("main.qli"), single_budget).unwrap();
+}
+
+#[test]
+fn nearer_canonical_manifest_without_edition_refuses_without_using_ancestors() {
+    let root = SourceRoot::new(SOURCE);
+    fs::create_dir(root.0.join("nested")).unwrap();
+    root.write("nested/leaf.qli", SOURCE);
+    root.write(
+        "nested/Qlirgo.toml",
+        "schema-version=2\n[qrate]\nname='leaf'\n",
+    );
+    let error =
+        read_source_file(&root.0.join("nested/leaf.qli"), SourcePolicy::default()).unwrap_err();
+    assert!(
+        error
+            .message
+            .contains("Qlirgo.toml requires an explicit string")
+    );
+    assert!(error.primary.unwrap().path.ends_with("nested/Qlirgo.toml"));
+    assert!(Project::load(&root.0).is_err());
+}
+
+#[test]
 fn selected_modules_keep_the_manifest_that_supplied_their_explicit_edition() {
     use qleisli::edition::Edition;
     let root = SourceRoot::new(SOURCE);
@@ -217,7 +279,7 @@ fn missing_manifest_has_no_default_and_all_filesystem_loaders_check_it() {
         check_project(&root.0)
             .unwrap_err()
             .message
-            .contains("missing Qargo.toml")
+            .contains("missing Qlirgo.toml")
     );
     assert!(read_source_file(&root.0.join("main.qli"), SourcePolicy::Legacy).is_err());
     assert!(
@@ -229,7 +291,7 @@ fn missing_manifest_has_no_default_and_all_filesystem_loaders_check_it() {
         .unwrap();
     assert_eq!(output.status.code(), Some(1));
     let response = String::from_utf8(output.stdout).unwrap();
-    assert!(response.contains("missing Qargo.toml"));
+    assert!(response.contains("missing Qlirgo.toml"));
     assert!(response.contains("selects the constitutional regime"));
 }
 
@@ -467,7 +529,7 @@ fn non_file_manifest_is_rejected_before_platform_open() {
 fn bundled_std_descriptor_binds_manifest_and_complete_loaded_source_inventory() {
     let bundle = bundled_std().unwrap();
     let repository = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
-    let manifest = fs::read_to_string(repository.join("stdlib/Qargo.toml")).unwrap();
+    let manifest = fs::read_to_string(repository.join("stdlib/Qlirgo.toml")).unwrap();
     assert_eq!(bundle.manifest().as_bytes(), manifest.as_bytes());
     let manifest: toml::Table = manifest.parse().unwrap();
     let qrate = manifest["qrate"].as_table().unwrap();

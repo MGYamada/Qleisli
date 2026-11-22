@@ -19,6 +19,8 @@ pub mod ordinary_root;
 pub mod pure_leaf;
 pub mod qmatch;
 pub mod runtime_root;
+#[doc(hidden)]
+pub mod verification_trace;
 
 use codec::Codec;
 use json::Value;

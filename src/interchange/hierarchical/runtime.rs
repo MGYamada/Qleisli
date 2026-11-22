@@ -288,7 +288,7 @@ mod response_diagnostics_tests {
         // inherited write descriptors can cause Linux ETXTBSY even after the
         // parent's write has closed. This immutable fixture varies via stdin.
         let executable = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/verification_v030/native-edition-context/framing-rejection.sh");
+            .join("tests/fixtures/verification_v030/native-edition-context/request-failure.py");
         for mode in [
             Mode::Inspect,
             Mode::Request,
@@ -315,6 +315,19 @@ mod response_diagnostics_tests {
                 assert_eq!(error.code, expected, "{}", error.message);
             }
         }
+        let legacy = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/verification_v030/native-edition-context/framing-rejection.sh");
+        let error = Mode::Inspect
+            .transport_limits()
+            .invoke(
+                &legacy,
+                b"complete\n".to_vec(),
+                Mode::Inspect.argument(),
+                |bytes| response_indices(bytes, Mode::Inspect),
+            )
+            .err()
+            .expect("a version-3 checker must not produce a version-4 decision");
+        assert_eq!(error.code, "format");
     }
 
     #[test]

@@ -533,7 +533,7 @@ Evidence:
   separate evidence and premises.
 - Tests: `tests/project.rs` checks the canonical paths and the rejection of
   every retired path. `tests/editions.rs` compares the bundled descriptor with
-  `stdlib/Qargo.toml` and with every file of `stdlib/src`. The unit tests of
+  `stdlib/Qlirgo.toml` and with every file of `stdlib/src`. The unit tests of
   `src/frontend/project/edition.rs` check the embedded-manifest gate.
   `tests/axis_routing_boundary.rs` checks the transposition example.
 - The source definitions and their exact requested checks are separate from

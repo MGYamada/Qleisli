@@ -138,7 +138,7 @@ def check(root, binary):
         def write_project(name, body):
             project = work / name
             project.mkdir()
-            (project / "Qargo.toml").write_text(manifest, encoding="utf-8")
+            (project / "Qlirgo.toml").write_text(manifest, encoding="utf-8")
             (project / "main.qli").write_text(body, encoding="utf-8")
 
         write_project("bell", source)

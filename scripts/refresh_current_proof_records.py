@@ -116,7 +116,8 @@ HOSTED_REFS = frozenset(("refs/heads/codex/beta-finite-adts",
     "refs/heads/codex/beta-30-72-integration",
     "refs/heads/codex/beta-215-inline-coherent-arms",
     "refs/heads/codex/beta-76-original-static-fold",
-    "refs/heads/codex/beta-29-original-access", "refs/heads/codex/review-679"))
+    "refs/heads/codex/beta-29-original-access", "refs/heads/codex/review-679",
+    "refs/heads/codex/qleisli-030-stable"))
 FIXED = (
     ("review", "lean", guarantees.REVIEW_ARGV, guarantees.REVIEW_STDOUT),
     ("binding", "lean", guarantees.BINDING_ARGV, guarantees.BINDING_STDOUT),

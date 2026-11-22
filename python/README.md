@@ -2,7 +2,7 @@
 
 Copyright 2026 Qleisli Project Contributors. Licensed under Apache-2.0.
 
-This development host package calls the separately installed Qleisli 0.3.0-beta Rust
+This development host package calls the separately installed Qleisli 0.3.0 Rust
 executable built from the same checkout. The version denotes this development
 checkout; Rust and Python registry publications are separate.
 For the beta prerelease, source metadata uses `0.3.0-beta`; Python packaging

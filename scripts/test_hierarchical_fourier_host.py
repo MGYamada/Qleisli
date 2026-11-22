@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 import struct
 import subprocess
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 import sys
 import tempfile
 import time
@@ -195,13 +195,18 @@ def host_cases(directory):
     # Malformed subprocess responses must never become checked request reports.
     finite=[i for i,p in enumerate(a['proofs']) if p['rule']['tag']=='finite']
     h=[p['implementation'] for p in a['proofs'] if p['rule']['tag']=='finite']
-    header=['qleisli.native-result 3','pending','2026',PRODUCT_VERSION,'--hierarchy-fourier-pending','execution','1','0',str(len(finite)),*map(str,finite)]
+    header=['pending','2026',PRODUCT_VERSION,'--hierarchy-fourier-pending','execution','1','0',str(len(finite)),*map(str,finite)]
     for name, tail in [('missing-h',['0']),('duplicate-h',['4',*map(str,[h[0]]*4)]),
                        ('outside-h',['4','99999',*map(str,h[1:])]),('nonleaf-h',['4',str(root),*map(str,h[1:])]),
                        ('too-many-h',['9']),('truncated-h',['4',str(h[0])])]:
         response='\n'.join(header+tail)+'\n'
         script=directory/f'mock-{name}'
-        script.write_text('#!'+sys.executable+'\nimport sys\nsys.stdin.buffer.read()\nsys.stdout.write('+repr(response)+')\n')
+        script.write_text(f'#!{sys.executable}\n' + f'''import hashlib
+import sys
+request = sys.stdin.buffer.read()
+print("qleisli.native-result 4", hashlib.sha256(request).hexdigest(), sep="\\n")
+sys.stdout.write({response!r})
+''')
         script.chmod(0o755)
         add(name,outcome='limit' if name=='too-many-h' else 'format',executable=script.name)
     (directory/'cases.txt').write_text('\n'.join(cases)+'\n')
@@ -224,7 +229,7 @@ def main():
         cases.append((name,replace_word(good,fields[field]+delta,value),expected))
     results=[];start=time.monotonic()
     for name,data,expected in cases:
-        p=subprocess.run([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
+        p=run_verification([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=envelope('2026', data) if data else b"",capture_output=True,timeout=30)
         reply=parse_reply(p.stdout, edition="2026", product=PRODUCT_VERSION, mode="--hierarchy-fourier-pending", scope="inspection");lines=reply.payload
         actual='pending' if reply.claim=='pending' else reply.error
         assert actual==expected,(name,actual,expected)

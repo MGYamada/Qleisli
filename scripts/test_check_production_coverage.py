@@ -467,15 +467,15 @@ class ProductionCoverage(unittest.TestCase):
                 self.check_changed_source('lean-kernel/Protocol/NativeContext.lean', old, new,
                                           coverage.check_native_dispatch)
 
-    def test_native_main_cannot_bypass_context_or_missing_version_check(self):
+    def test_native_main_accepts_only_the_current_verification_dispatch(self):
+        entry = '| ["--verify-request"] => QleisliKernel.Cli.runVerificationRequest'
         for old, new in (
-            ('QleisliKernel.Cli.runNativeContext selected version',
-             'QleisliKernel.Cli.runValidity version'),
-            ('QleisliKernel.Cli.runNativeContext selected ""',
-             'QleisliKernel.Cli.runNativeContext selected "0.3.0-beta"'),
-            ('| [mode, version] =>', '| [mode, version] =>\n    return 0\n  | [mode, version] =>'),
-            ('    | none => QleisliKernel.Cli.run mode version',
-             '  | none => QleisliKernel.Cli.run mode version'),
+            (entry, '| ["--verify-request"] => pure 0'),
+            (entry, '| ["--verify-request"] => QleisliKernel.Cli.usage'),
+            (entry, entry + '\n  | ["--qirf-native", version] => QleisliKernel.Cli.runValidity version'),
+            ('| [artifact, requirement] =>', '| [artifact, requirement] => pure 0\n  | [artifact, requirement] =>'),
+            ('(QleisliKernel.Protocol.NativeContext.Mode.parse artifact).isSome',
+             '(QleisliKernel.Protocol.NativeContext.Mode.parse artifact).isNone'),
             ('| _ => QleisliKernel.Cli.usage', '| _ => pure 0'),
         ):
             with self.subTest(new=new), self.assertRaisesRegex(ValueError, 'native dispatch'):

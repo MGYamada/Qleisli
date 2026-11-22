@@ -15,6 +15,8 @@ import subprocess
 import tomllib
 import unittest
 
+from native_packet import verification_projection, verification_request
+
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
@@ -70,7 +72,12 @@ def compare(before, after):
                      '--hierarchy-fourier-pending', '--readout-check',
                      '--preparation-check', '--instrument-pending', '--qpe-instrument-pending']:
             for payload in [b'', b'BAD1', b'\xff\x00\x00\x00']:
-                checked([str(after), mode, PRODUCT_VERSION], input=payload, capture_output=True, timeout=5)
+                retired = run([str(after), mode, PRODUCT_VERSION], input=payload, capture_output=True, timeout=5)
+                assert retired.returncode != 0 and b"native-result" not in retired.stdout
+                request = verification_request(PRODUCT_VERSION, mode, payload)
+                selected = run([str(after), '--verify-request'], input=request, capture_output=True, timeout=5)
+                assert selected.returncode == 1 and verification_projection(selected.stdout, request) == (
+                    b'qleisli.native-result 3\nerror\nformat\n')
     finally:
         subprocess.run = run
     return dict(format='qleisli.kernel-transport-compatibility', version=1, status='passed',

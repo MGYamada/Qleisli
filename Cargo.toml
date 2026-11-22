@@ -1,6 +1,6 @@
 [package]
 name = "qleisli"
-version = "0.3.0-beta"
+version = "0.3.0"
 authors = ["Qleisli Project Contributors"]
 license = "Apache-2.0"
 repository = "https://github.com/MGYamada/Qleisli"
@@ -24,6 +24,8 @@ exclude = [
     "/release/beta-requirements-review.json",
     "/release/beta-acceptance-review.md",
     "/release/beta-companion-evidence.md",
+    "/release/stable-*.json",
+    "/release/stable-requirements-review.md",
     "/tests/fixtures/**/*.gz",
     "/tests/fixtures/**/*.tar.xz",
     "/tests/fixtures/**/*.rs",

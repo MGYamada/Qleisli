@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 from test_engineering_openqasm_native import ONE, VERSION, ZERO, digest, dyadic, encoded, gate_matrix, gate_op, inner, port
 from test_engineering_pure_tensor_native import dyadic_view, graph_view, leaf_view
 from test_native_execution_protocol import qdv
@@ -76,7 +76,7 @@ def check_native_binding(kernel, target, request):
     original = inner(target, request)
 
     def invoke(mode, packet, *, scope="execution", error=None):
-        result = subprocess.run(
+        result = run_verification(
             [kernel, mode, VERSION], input=packet, capture_output=True, timeout=60, check=False,
         )
         assert not result.stderr, result

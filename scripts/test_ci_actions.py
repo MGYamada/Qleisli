@@ -215,6 +215,7 @@ class CIActions(unittest.TestCase):
             'check-interop': ('1.98.1', '', '', 'false'),
             'check-lean-kernel': ('1.98.1', '', '', 'false'),
             'check-distribution-package': ('1.98.1', '', '', 'true'),
+            'stable-companion-host': ('1.85.0', '', '', 'true'),
         }
         workflow = (ROOT / '.github/workflows/ci.yml').read_text()
         self.assertEqual(workflow.count('uses: ./.github/actions/rust-toolchain'), len(expected))
@@ -227,6 +228,13 @@ class CIActions(unittest.TestCase):
                     ('toolchain', ''), ('components', ''), ('target', ''), ('set-default', 'false')))
                 self.assertEqual(actual, configuration)
                 self.assertNotIn('        if:', step)
+                if name == 'stable-companion-host':
+                    self.assertIn("needs.changes.outputs.product == '0.3.0'", block)
+                    self.assertLess(block.index('uses: ./.github/actions/rust-toolchain'),
+                                    block.index('rustup target add --toolchain 1.85.0'))
+                    self.assertLess(block.index('rustup target add --toolchain 1.85.0'),
+                                    block.index('scripts/qualify_stable_companion.py'))
+                    continue
                 self.assertIn("if: needs.changes.outputs.profile == 'full'", block)
                 self.assertLess(block.index('uses: ./.github/actions/cargo-archives'),
                                 block.index('uses: ./.github/actions/rust-toolchain'))

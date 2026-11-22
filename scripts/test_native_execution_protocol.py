@@ -12,7 +12,7 @@ import struct
 import subprocess
 import tomllib
 
-from native_packet import envelope, parse_reply, MODES
+from native_packet import envelope, parse_reply, verification_projection, verification_request, MODES
 from check_production_coverage import check_native_dispatch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -97,16 +97,20 @@ def check_response_contexts():
 
 
 class Probe:
-    def __init__(self, kernel, *, edition):
+    def __init__(self, kernel, *, edition, legacy_kernel=None):
         self.kernel = kernel
         self.edition = edition
+        self.legacy_kernel = legacy_kernel
         self.count = 0
 
     def check(self, mode, data, scope=None, error=None):
-        result = subprocess.run([str(self.kernel), mode, VERSION], input=data,
-                                capture_output=True, timeout=60)
+        result, projected = self.request(mode, data)
+        if self.legacy_kernel is not None:
+            legacy = subprocess.run([str(self.legacy_kernel), mode, VERSION], input=data,
+                                    capture_output=True, timeout=60)
+            assert (result.returncode, projected) == (legacy.returncode, legacy.stdout), (mode, result, legacy)
         self.count += 1
-        reply = parse_reply(result.stdout, edition=self.edition, product=VERSION,
+        reply = parse_reply(projected, edition=self.edition, product=VERSION,
                             mode=mode, scope=scope or 'inspection')
         if error:
             expected = error if isinstance(error, tuple) else (error,)
@@ -122,6 +126,23 @@ class Probe:
             else:
                 check_pending_payload(mode, reply.payload)
         return reply
+
+    def request(self, mode, data, *, budget=EXACT_WORK_LIMIT):
+        packet = verification_request(VERSION, mode, data, budget=budget)
+        result = subprocess.run([str(self.kernel), '--verify-request'], input=packet,
+                                capture_output=True, timeout=60)
+        return result, verification_projection(result.stdout, packet)
+
+    def budget(self, mode, data, scope):
+        accepted, frame = self.request(mode, data)
+        assert accepted.returncode == 0
+        reply = parse_reply(frame, edition=self.edition, product=VERSION, mode=mode, scope=scope)
+        used = int(reply.payload[0])
+        assert 0 < used <= EXACT_WORK_LIMIT
+        for budget, code in ((used, None), (used - 1, 'limit'), (EXACT_WORK_LIMIT + 1, 'limit')):
+            result, frame = self.request(mode, data, budget=budget)
+            reply = parse_reply(frame, edition=self.edition, product=VERSION, mode=mode, scope=scope)
+            assert (result.returncode, reply.error) == (0 if code is None else 1, code), (mode, budget, result)
 
 
 def check_pending_payload(mode, payload):
@@ -154,6 +175,7 @@ def finite(probe):
         probe.check('--qirf-native', original, error='format')
     original = inner(rows[0]['artifact'])
     good = envelope('2026', original, qdv(rows[0]['view']))
+    probe.budget('--qirf-native', good, 'execution')
     for bad in [good + b'x', good[:-1], b'QLV1' + good[4:], b'QLV2' + good[4:],
                 good[:8] + struct.pack('<I', 99) + good[12:],
                 good[:8] + struct.pack('<I', 0) + good[12:],
@@ -247,6 +269,7 @@ def qmatch(probe):
                             'execution', error=error)
         if row['name'] == 'original-exact-i':
             qmatch_work_boundary(probe, row, int(reply.payload[0]))
+            probe.budget('--qmatch-source-check', envelope('2026', original, graph), 'execution')
         if row['accepted']:
             probe.check('--qmatch-source-check', envelope('2026', original), error='format')
             probe.check('--qmatch-source-check', envelope('2026', original, graph, qdv([])),
@@ -279,14 +302,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--kernel', type=Path, default=os.environ.get('QLEISLI_KERNEL',
                         ROOT / 'lean-kernel/.lake/build/bin/qleisli-kernel'))
+    parser.add_argument('--legacy-kernel', type=Path, help='separate offline differential replay executable')
     args = parser.parse_args()
     check_response_contexts()
-    probe = Probe(args.kernel.resolve(), edition='2026')
+    probe = Probe(args.kernel.resolve(), edition='2026', legacy_kernel=args.legacy_kernel)
     finite(probe)
     contracts(probe)
     callers(probe)
     qmatch(probe)
-    print(f'QLV3 native finite/contract/caller/qmatch checks: {probe.count} passed')
+    print(f'VerificationRequest v1 finite/contract/caller/qmatch checks: {probe.count} passed')
 
 
 if __name__ == '__main__':

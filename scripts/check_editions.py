@@ -13,6 +13,7 @@ import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP = {".git", ".lake", "target", "__pycache__", ".venv"}
+MANIFEST_NAMES = ("Qlirgo.toml", "Qargo.toml")
 HISTORY = "scripts/edition_history.json"
 HISTORY_SHA256 = "e81d1fbb1b148ffb0ebeeaf3f87a33d5ce7a430b9a2bab1e0eb569e120f7f542"
 HISTORICAL_ROOT = "tests/fixtures/constitution_v030/routed-control-commutation"
@@ -59,13 +60,13 @@ def historical_inputs(root):
             str(path.relative_to(root / base))
             for project in record["projects"]
             for path in (root / base / project).rglob("*")
-            if path.name == "Qargo.toml" or path.suffix in {".qli", ".qlt"}
+            if path.name in MANIFEST_NAMES or path.suffix in {".qli", ".qlt"}
         }
         if actual != record["files"].keys():
             raise ValueError(f"{base}: historical source inventory changed")
         for name in record["files"]:
             path = root / base / name
-            (manifests if path.name == "Qargo.toml" else sources).add(path)
+            (manifests if path.name in MANIFEST_NAMES else sources).add(path)
     return manifests, sources
 
 
@@ -79,7 +80,7 @@ def checkout_paths(root):
         children[:] = [name for name in children if name not in SKIP]
         for name in (*children, *files):
             path = current / name
-            if name == "Qargo.toml" or path.suffix in {".qli", ".qlt"}:
+            if name in MANIFEST_NAMES or path.suffix in {".qli", ".qlt"}:
                 yield path
 
 
@@ -90,14 +91,16 @@ def check_editions(root: Path):
         historical_manifests, historical_sources = historical_inputs(root)
     except (OSError, UnicodeError, ValueError) as failure:
         errors.append(str(failure))
-    if (root / "Qargo.toml").exists():
-        errors.append("Qargo.toml belongs in source trees, not the repository root")
-    for required in ("corpus/Qargo.toml", "stdlib/Qargo.toml"):
+    for name in MANIFEST_NAMES:
+        path = root / name
+        if path.exists() or path.is_symlink():
+            errors.append(f"{name} belongs in source trees, not the repository root")
+    for required in ("corpus/Qargo.toml", "stdlib/Qlirgo.toml"):
         if not (root / required).is_file():
             errors.append(f"missing {required}")
     for path in sorted(checkout_paths(root)):
         relative = path.relative_to(root)
-        if path.name == "Qargo.toml":
+        if path.name in MANIFEST_NAMES:
             if path in historical_manifests:
                 # Deliberately invalid for filesystem admission; only the exact
                 # recorded sources below receive historical classification.
@@ -117,28 +120,35 @@ def check_editions(root: Path):
                     raise ValueError('requires explicit string [qrate].edition = "2026"')
                 if qrate["edition"] != "2026":
                     raise ValueError(f'unsupported edition {qrate["edition"]!r}; expected "2026"')
-                manifests[path] = True
+                manifests[path] = raw
             except (OSError, UnicodeError, ValueError) as failure:
                 manifests[path] = False
                 errors.append(f"{relative}: {failure}")
         elif path.suffix in {".qli", ".qlt"} and path.is_file():
             sources.append(path)
+    for canonical, raw in list(manifests.items()):
+        if canonical.name != MANIFEST_NAMES[0] or not raw:
+            continue
+        legacy = canonical.with_name(MANIFEST_NAMES[1])
+        if legacy in manifests and manifests[legacy] != raw:
+            manifests[canonical] = False
+            errors.append(f"{canonical.relative_to(root)}: Qlirgo.toml and Qargo.toml must have identical bytes")
     for source in sources:
         if source in historical_sources:
             continue
         manifest = None
         for parent in source.parents:
-            candidate = parent / "Qargo.toml"
-            if candidate in manifests:
-                manifest = candidate
+            manifest = next((parent / name for name in MANIFEST_NAMES
+                             if parent / name in manifests), None)
+            if manifest is not None:
                 break
             if parent == root:
                 break
         if manifest is None:
-            errors.append(f"{source.relative_to(root)}: missing enclosing Qargo.toml")
+            errors.append(f"{source.relative_to(root)}: missing enclosing Qlirgo.toml")
         elif not manifests[manifest]:
             errors.append(f"{source.relative_to(root)}: invalid enclosing {manifest.relative_to(root)}")
-    std_manifest = root / "stdlib/Qargo.toml"
+    std_manifest = root / "stdlib/Qlirgo.toml"
     if manifests.get(std_manifest):
         try:
             data = tomllib.loads(std_manifest.read_text())
@@ -153,7 +163,7 @@ def check_editions(root: Path):
                 if data[key] != {"root": directory} or not (root / "stdlib" / directory).is_dir():
                     raise ValueError(f"std requires existing [{key}] root = {directory!r}")
         except (OSError, KeyError, ValueError) as failure:
-            errors.append(f"stdlib/Qargo.toml: {failure}")
+            errors.append(f"stdlib/Qlirgo.toml: {failure}")
     current = set(sources) - historical_sources
     return errors, {"manifests": len(manifests) - len(historical_manifests),
                     "qli": sum(p.suffix == ".qli" for p in current),

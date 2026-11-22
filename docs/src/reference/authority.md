@@ -265,7 +265,7 @@ and its published compatibility and migration policy. The unified 0.3.0
 language therefore remains in constitutional edition 2026.
 
 Source trees explicitly declare the constitutional edition through schema-2
-`Qargo.toml`, in `[qrate].edition`. Updating the compiler does not implicitly
+`Qlirgo.toml`, in `[qrate].edition`. Updating the compiler does not implicitly
 change that selection. Edition identity alone does not identify an executable
 checker version, a grammar, a complete acceptance predicate or a proof of all
 three obligations.

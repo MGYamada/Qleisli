@@ -96,6 +96,70 @@ pub(super) fn invoke<T>(
     maximum: usize,
     decode: impl FnOnce(&[u8]) -> Result<T>,
 ) -> Result<T> {
+    #[cfg(test)]
+    if mode == "--test" {
+        return invoke_raw(
+            executable,
+            &[mode, env!("CARGO_PKG_VERSION")],
+            packet,
+            timeout,
+            maximum,
+            decode,
+        );
+    }
+    let obligation = super::native_context::Mode::parse(mode)?;
+    let version = env!("CARGO_PKG_VERSION").as_bytes();
+    let selector = obligation.argument().as_bytes();
+    if packet.len() > 64 << 20 || version.len() > 64 || selector.len() > 64 {
+        return Err(Error::limit(
+            "verification request exceeds transport limits",
+        ));
+    }
+    let mut request = Vec::with_capacity(16 + version.len() + selector.len() + packet.len());
+    request.extend_from_slice(b"QLR1");
+    request.extend_from_slice(&(crate::contract::DEFAULT_EXACT_WORK as u32).to_le_bytes());
+    request.extend_from_slice(&(version.len() as u32).to_le_bytes());
+    request.extend_from_slice(&(selector.len() as u32).to_le_bytes());
+    request.extend_from_slice(version);
+    request.extend_from_slice(selector);
+    request.extend_from_slice(&packet);
+    let identity = crate::digest::sha256(&request);
+    let trace = super::verification_trace::pending(&identity, obligation, &packet);
+    drop(packet);
+    let frame = format!("qleisli.native-result 4\n{identity}\n");
+    // Profile consumers interpret the same typed payload after the common
+    // exact-request check. Only the response header changed their wire shape.
+    let inner = b"qleisli.native-result 3\n";
+    let result = invoke_raw(
+        executable,
+        &["--verify-request"],
+        request,
+        timeout,
+        maximum + frame.len() - inner.len(),
+        |bytes| {
+            let body = bytes.strip_prefix(frame.as_bytes()).ok_or_else(|| {
+                Error::format("native response protocol or request identity differs")
+            })?;
+            let mut projected = Vec::with_capacity(inner.len() + body.len());
+            projected.extend_from_slice(inner);
+            projected.extend_from_slice(body);
+            decode(&projected)
+        },
+    );
+    if let Some(trace) = trace {
+        super::verification_trace::finish(trace, result.as_ref().err());
+    }
+    result
+}
+
+fn invoke_raw<T>(
+    executable: &Path,
+    arguments: &[&str],
+    packet: Vec<u8>,
+    timeout: Duration,
+    maximum: usize,
+    decode: impl FnOnce(&[u8]) -> Result<T>,
+) -> Result<T> {
     // rustix cannot provide a non-reaping wait on these Unix targets. Reject
     // before spawning rather than signal an unreserved process-group number.
     if cfg!(all(unix, any(target_os = "openbsd", target_os = "redox"))) {
@@ -107,8 +171,7 @@ pub(super) fn invoke<T>(
 
     let mut command = Command::new(executable);
     command
-        .arg(mode)
-        .arg(env!("CARGO_PKG_VERSION"))
+        .args(arguments)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null());

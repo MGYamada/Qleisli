@@ -402,7 +402,24 @@ impl LoggedKernel {
     fn new() -> Self {
         use std::os::unix::fs::PermissionsExt;
         let files = SourceRoot::new("");
-        files.write("native", "#!/bin/sh\nprintf '%s\\n' \"$1\" >> \"$QLEISLI_SELECTED_CALL_LOG\"\nif [ -n \"$QLEISLI_SELECTED_REAL_KERNEL\" ]; then exec \"$QLEISLI_SELECTED_REAL_KERNEL\" \"$@\"; fi\nexit 97\n");
+        files.write(
+            "native",
+            r#"#!/usr/bin/env python3
+import os
+import struct
+import subprocess
+import sys
+request = sys.stdin.buffer.read()
+assert sys.argv[1:] == ["--verify-request"] and request[:4] == b"QLR1"
+version_size, mode_size = struct.unpack_from("<2I", request, 8)
+start = 16 + version_size
+mode = request[start:start + mode_size].decode("ascii")
+with open(os.environ["QLEISLI_SELECTED_CALL_LOG"], "a") as log:
+    print(mode, file=log)
+kernel = os.environ.get("QLEISLI_SELECTED_REAL_KERNEL")
+sys.exit(subprocess.run([kernel, *sys.argv[1:]], input=request).returncode if kernel else 97)
+"#,
+        );
         std::fs::set_permissions(
             files.0.join("native"),
             std::fs::Permissions::from_mode(0o700),

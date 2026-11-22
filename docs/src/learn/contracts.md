@@ -12,7 +12,7 @@ project with the same edition manifest.
 
 ```sh
 mkdir -p meaning-lab
-cp bit-lab/Qargo.toml meaning-lab/Qargo.toml
+cp bit-lab/Qlirgo.toml meaning-lab/Qlirgo.toml
 ```
 
 Save this program as `meaning-lab/main.qli`.

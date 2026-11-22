@@ -40,7 +40,7 @@ mkdir -p "$HOME/qleisli-lessons/bit-lab"
 cd "$HOME/qleisli-lessons"
 ```
 
-Save this manifest as `bit-lab/Qargo.toml`. It tells Qleisli which edition
+Save this manifest as `bit-lab/Qlirgo.toml`. It tells Qleisli which edition
 to use when reading this directory.
 
 ```toml

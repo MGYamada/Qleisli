@@ -15,7 +15,7 @@ import subprocess
 import tarfile
 import tomllib
 
-from native_packet import envelope, parse_reply
+from native_packet import run_verification, envelope, parse_reply
 from test_native_execution_protocol import qdv
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -426,7 +426,7 @@ def live(kernel, record=None):
     def invoke(name, actual, data, success=False, view=None, packet=None, mode=MODE, error=None):
         if packet is None:
             packet = envelope('2026', inner(actual, data), qdv(complete_view(actual, data) if view is None else view))
-        result = subprocess.run([str(kernel), mode, VERSION], input=packet,
+        result = run_verification([str(kernel), mode, VERSION], input=packet,
                                 capture_output=True, timeout=60, check=False)
         row = dict(name=name, exit_code=result.returncode, stdout=result.stdout.decode(), stderr=result.stderr.decode(),
                    packet_sha256=digest(packet), packet_bytes=len(packet))

@@ -4,13 +4,15 @@
 
 **Rust and Cargo are trademarks of the Rust Foundation.**
 
+**Qleisli — Writable as Rust, Curious as Julia, Rigorous as Haskell, Verifiable in Lean.**
+
 Qleisli is an experimental language for structured quantum algorithms, with
 linear quantum ownership, explicit measurement effects and exact semantic
 contracts. Its Rust frontend produces IR checked independently by a native
 Lean verifier. Human-written and AI-generated programs use the same checks.
 Qleisli is [pronounced exactly like Kleisli](docs/src/reference/project-identity.md).
 
-**Development version: 0.3.0-beta**.
+**Development version: 0.3.0**.
 
 [v0.3.0-beta](https://github.com/MGYamada/Qleisli/releases/tag/v0.3.0-beta)
 was published as a public prerelease on 2026-11-20.
@@ -24,7 +26,7 @@ Please report problems in [GitHub Discussions](https://github.com/MGYamada/Qleis
 
 **Qleisli language edition: `"2026"`.** An edition identifies the constitutional
 regime, independently of syntax and compiler version. Each source tree declares
-its edition explicitly in a schema-2 `Qargo.toml`; the repository root has none.
+its edition explicitly in a schema-2 `Qlirgo.toml`; the repository root has none.
 The [Constitution](CONSTITUTION.md) and [governance](GOVERNANCE.md) define that
 regime. General Soundness, Physical Realizability and quantitative Resource
 Safety remain proof goals; passing checks does not complete them.
@@ -42,7 +44,7 @@ observe fn main() -> (Bit, Bit) {
 ```
 <!-- /quickstart:bell -->
 
-Declare the source tree's edition in `bell/Qargo.toml`:
+Declare the source tree's edition in `bell/Qlirgo.toml`:
 
 <!-- quickstart:manifest -->
 ```toml

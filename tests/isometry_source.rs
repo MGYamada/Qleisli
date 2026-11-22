@@ -666,11 +666,32 @@ fn isometry_cli_incompatible_native_version_never_falls_back() {
     use std::os::unix::fs::PermissionsExt;
     let files = SourceRoot::new("");
     let wrapper = files.0.join("wrong-version-kernel");
-    // Invoke the actual selected checker with an incompatible product version;
-    // do not fabricate a successful receipt or reinterpret the source effect.
+    // Probe the real checker's product guard and return its observed rejection
+    // with the original request identity so it reaches the CLI version diagnostic.
     std::fs::write(
         &wrapper,
-        "#!/bin/sh\nexec \"$QLEISLI_TEST_KERNEL\" \"$1\" 0.0.0\n",
+        r#"#!/usr/bin/env python3
+import hashlib
+import os
+import struct
+import subprocess
+import sys
+request = sys.stdin.buffer.read()
+assert sys.argv[1:] == ["--verify-request"] and request[:4] == b"QLR1"
+version_size, = struct.unpack_from("<I", request, 8)
+other_version = b"0.0.0"
+incompatible = (request[:8] + struct.pack("<I", len(other_version))
+                + request[12:16] + other_version + request[16 + version_size:])
+result = subprocess.run([os.environ["QLEISLI_TEST_KERNEL"], *sys.argv[1:]],
+                        input=incompatible, capture_output=True)
+assert result.returncode == 1
+assert result.stdout.splitlines() == [
+    b"qleisli.native-result 4", hashlib.sha256(incompatible).hexdigest().encode("ascii"),
+    b"error", b"version",
+]
+print("qleisli.native-result 4", hashlib.sha256(request).hexdigest(), "error", "version", sep="\n")
+sys.exit(result.returncode)
+"#,
     )
     .unwrap();
     std::fs::set_permissions(&wrapper, std::fs::Permissions::from_mode(0o700)).unwrap();

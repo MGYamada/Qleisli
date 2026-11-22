@@ -37,7 +37,7 @@ It decides whether each submitted artifact and its evidence satisfy the
 requested checks. The Rust client binds the decision to the exact retained
 data before the runtime or exporter uses it. Qleisli source projects select
 their own [qrate and edition](../reference/packages-and-artifacts.md) through
-`Qargo.toml`. Cargo packages organize the Rust implementation.
+`Qlirgo.toml`. Cargo packages organize the Rust implementation.
 
 ## Status and limits
 
