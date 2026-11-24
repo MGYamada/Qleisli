@@ -65,9 +65,9 @@ Library work follows [STDLIB.md](STDLIB.md) and source contracts.
 
 Prioritize shared executable corpus source; do not wait for general proofs.
 Follow the adopted cutover and [sized evidence](corpus/sized/README.md).
-Validate small qubit systems only;
-do not newly generate/check maximum-size cases. A version or bounded component
-does not complete feature/R14/H1–H5 or theorem gates.
+Validate small qubit systems; build large N structurally, no dense/exhaustive
+checks. A version or bounded component does not complete feature/R14/H1–H5
+or theorem gates.
 
 ## Documentation after the v0.3.0 cleanup
 
