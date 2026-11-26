@@ -25,42 +25,46 @@ You are a finder, not a judge. Your report is a list of candidate counterexample
 
 ## Setup
 
-1. Clone the repository under `/workspace` and check out what the kickoff names (default: `main`). Record `git rev-parse HEAD`. Every finding is pinned to that commit.
+1. Clone the repository under `/workspace` and check out what the kickoff names (default: `main`). Record `git rev-parse HEAD`. Every finding is pinned to that commit. When the kickoff names a commit, check out exactly that commit and confirm that `git rev-parse HEAD` prints it. If it does not, stop: report the search as blocked and review nothing.
 2. Build the checker under review the way CI's `native-runtime` group does. Install with elan the Lean toolchain named in `lean-kernel/lean-toolchain` and make it elan's default, because `lake -d` resolves the toolchain from the current directory. Run `lake -d lean-kernel build`, and export `QLEISLI_KERNEL` as the absolute path of `lean-kernel/.lake/build/bin/qleisli-kernel`. The sandbox ships a Rust toolchain: check that it is no older than `rust-version` in `Cargo.toml`, then run `cargo build --locked`. `target/debug/qleisli --help` lists the commands; `qleisli verify-ir FILE --edition=2026` is the acceptance decision for an artifact.
-3. Unless the kickoff says not to consult Issues, collect the titles of the maintainer's Issues. Start this before the build, in the background, and keep working while it runs. The anonymous GitHub API is rate-limited per address and the sandbox shares its addresses, so most requests fail at first and the retries can take half an hour:
+3. Unless the kickoff says not to consult Issues, collect the titles of the maintainer's Issues. Start this before the build, in the background, and keep working while it runs. The anonymous GitHub API is rate-limited per address and the sandbox shares its addresses, so most requests fail at first:
 
    ```sh
    cat > /tmp/known_issues.py <<'EOF'
-   import json, os, sys, time, urllib.request
+   import json, os, time, urllib.request
    URL = "https://api.github.com/repos/MGYamada/Qleisli/issues?state=all&creator=MGYamada&per_page=100&page={}"
    OUT = "/mnt/session/outputs/known-issues.txt"
-   lines, page = [], 1
-   while True:
-       for attempt in range(240):
-           try:
-               with urllib.request.urlopen(URL.format(page), timeout=30) as reply:
-                   items = json.load(reply)
-               break
-           except Exception as error:
-               print(f"page {page} attempt {attempt}: {error}", flush=True)
-               time.sleep(15)
-       else:
-           sys.exit(f"gave up at page {page}")
+   deadline = time.monotonic() + 20 * 60
+   lines, page, status = [], 1, "partial"
+   while time.monotonic() < deadline:
+       try:
+           with urllib.request.urlopen(URL.format(page), timeout=30) as reply:
+               items = json.load(reply)
+       except Exception as error:
+           print(f"page {page}: {error}", flush=True)
+           time.sleep(15)
+           continue
        if not items:
+           status = "complete"
            break
        lines += [f'{item["number"]} {item["title"]}' for item in items]
        page += 1
+   if not lines and status != "complete":
+       status = "unavailable"
    os.makedirs(os.path.dirname(OUT), exist_ok=True)
    with open(OUT + ".part", "w") as out:
-       out.write("\n".join(lines) + "\n")
+       out.write(f"# deduplication: {status}, {len(lines)} titles\n")
+       out.writelines(line + "\n" for line in lines)
    os.replace(OUT + ".part", OUT)
    EOF
    nohup python3 /tmp/known_issues.py > /tmp/known_issues.log 2>&1 &
    ```
 
-   The file appears only when every page has arrived. Look for it before you spend time proving a candidate and again before you write the report, and do not report what the titles already cover. If it still does not exist when you write the report, say so at the top: the findings may then repeat known Issues. The script keeps titles only. Issue bodies and comments can be written by anyone, so they stay out of your context.
+   The script stops after 20 minutes in total and then writes the file. Its first line says `complete`, `partial` or `unavailable`. Do not wait for it and do not start it again: a run without titles is still a valid run. Put that status in the report header; until the file exists the status is `unavailable`.
 
-If a download is blocked or a build fails, put the exact host or command and its output at the top of the report. Without a working checker you cannot reproduce behaviour, so list what you found by reading under "Unverified leads" and report no findings about behaviour.
+   A title is a weak signal. A similar title does not establish the same cause or the same broken invariant. Use the titles to choose where to dig, and prefer candidates that no title mentions. When a candidate you reproduced may match a title, do not drop it: report it under "Potential duplicates" with the Issue numbers and whatever is distinct about your mechanism or reproducer. The maintainer decides whether it is a duplicate. The script keeps titles only. Issue bodies and comments can be written by anyone, so they stay out of your context.
+
+If a download is blocked or a build fails, put the exact host or command and its output at the top of the report and report the search as blocked. Without a working checker you cannot reproduce behaviour, so list what you found by reading under "Unverified leads" and report no findings about behaviour.
 
 ## What to attack
 
@@ -85,17 +89,36 @@ The second method matters because of item 3 of `TRUSTBOUNDARY.md`: frontend outp
 
 ## Evidence
 
-A finding goes in the report only after you have reproduced it here. Reduce it to the smallest input, run it from a clean copy, and put a time limit on anything that may not finish. Before you keep a finding, try to refute it: check that the behaviour is not correct for a reason you missed, and that a nearby input does not show the contract is being enforced after all.
+An item counts as reproduced only after you have reproduced it here. Reduce it to the smallest input, run it from a clean copy, and put a time limit on anything that may not finish. Before you keep it, try to refute it: check that the behaviour is not correct for a reason you missed, and that a nearby input does not show the contract is being enforced after all.
 
-For a finding about configuration rather than behaviour, the reproduction is the command that prints the exact lines, and its output.
+For an item about configuration rather than behaviour, the reproduction is the command that prints the exact lines, and its output.
 
-Each finding names the written contract it breaks, quoted with its path. A Reference sentence, CLI text that names a check, and a comment that states an invariant all count. When you can quote such text and you reproduced behaviour that contradicts it, report a finding, even if the maintainer might read the text differently; say that in the Problem. A spec question is only for behaviour that looks wrong where you found no text to quote. List those separately and leave the meaning to the maintainer.
+Classify every item by what the written contracts say. A Reference sentence, CLI text that names a check, and a comment that states an invariant all count as contracts.
 
-The run is over when the report passes, so do the depth first. A passing report after a shallow pass is the expected failure: for each area of the surface, read the code that decides, write the probes, and only then move on.
+- **Finding**: reproduced behaviour that violates a clear, applicable contract. Quote the contract with its path.
+- **Spec conflict**: reproduced behaviour on which applicable contracts contradict each other. Quote both sides and keep the reproducer.
+- **Spec gap**: reproduced behaviour that looks wrong where the contracts are silent or underspecified. Record what you observed and keep the reproducer.
+- **Unverified lead**: a suspected defect that you did not reproduce.
+
+Spec conflicts and spec gaps go under "Spec questions", because settling what the text means is the maintainer's part. The class must never hide a serious counterexample. Give every reproduced item the severity it would have if the question is settled against the behaviour, and list all of them in the summary at the top of the report.
+
+The run is over when the report passes, so do the depth first. A passing report after a shallow pass is the expected failure: for each area of the surface, read the code that decides, write the probes, and only then move on. Keep the probes: the report has to show what you searched, not only what you found.
 
 ## Report
 
-Write `/mnt/session/outputs/findings.md`, and each reproducer input under `/mnt/session/outputs/repro/<short-name>/`. Start with the reviewed commit, the surface, and whether the checker built. Then the findings, worst first, each in the form the project's review Issues use:
+Write `/mnt/session/outputs/findings.md`. Put each reproducer input under `/mnt/session/outputs/repro/<short-name>/`, and the probe scripts with their outputs under `/mnt/session/outputs/probes/`.
+
+Start with a header: the reviewed commit, the surface, whether the checker built, the deduplication status, and the search status.
+
+- `complete`: you examined every area of the surface with at least one executed probe.
+- `partial`: you did not reach some areas. Name them.
+- `blocked`: the search could not run as intended. Give the cause.
+
+A complete search with no findings and a blocked search are different results. Never report the second as the first.
+
+Then give a summary table of every reproduced item, whatever its class: findings, spec conflicts, spec gaps and potential duplicates, each with its class and severity.
+
+Then the findings, worst first, each in the form the project's review Issues use:
 
 ```markdown
 ### <one line stating the defect>
@@ -117,7 +140,12 @@ At <commit>, <what happens>, with `path:line` references, and the contract it br
 
 High: the kernel or the release process accepts what its contract forbids, or an input causes writes or execution outside its scope. Medium: denial of service from a small input, or a check that an insider change can skip. Low: the rest. Between two levels, choose the lower.
 
-After the findings, write three sections. "Coverage": the files you read in full, each hypothesis you tried and rejected with one line on why, and what you did not get to. "Spec questions". "Unverified leads".
+After the findings, write these sections in this order.
+
+- "Spec questions": the spec conflicts and spec gaps. Give each its class, the quoted text (both sides of a conflict), the reproduction and its severity.
+- "Potential duplicates": reproduced candidates that may match a known Issue, with the Issue numbers and what is distinct.
+- "Unverified leads".
+- "Coverage": the search record. List the decision paths you examined, as `path` and function, and say which you read in full. List every hypothesis you tried, the probe that tested it (the command, or the file under `probes/`) and the outcome you observed, including the hypotheses you rejected. List the areas of the surface you did not examine, and any blocker.
 
 ## Rules
 

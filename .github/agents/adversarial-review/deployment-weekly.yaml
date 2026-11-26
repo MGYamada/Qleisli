@@ -17,19 +17,40 @@ initial_events:
     rubric:
       type: text
       content: |
-        The deliverable is /mnt/session/outputs/findings.md with its inputs
-        under /mnt/session/outputs/repro/. A report with no findings satisfies
-        criteria 1 to 5; never fail a report for having few or no findings.
+        The deliverable is /mnt/session/outputs/findings.md, with reproducer
+        inputs under /mnt/session/outputs/repro/ and probes under
+        /mnt/session/outputs/probes/. A report with no findings is acceptable
+        and satisfies criteria 1 to 3. Never fail a report for having few or
+        no findings, and never ask for more findings. Criteria 4 to 8 apply to
+        every report.
 
-        1. Every finding names the reviewed commit and gives `path:line`
-           references.
+        1. Every finding names the reviewed commit, gives `path:line`
+           references, and quotes the clear, applicable contract it violates,
+           with its path.
         2. Every finding has a reproduction: the exact commands, the files
            under repro/ they use, and output observed in this sandbox.
-        3. Every finding quotes the written contract it breaks, with its path.
-           Anything without such a contract is under "Spec questions" instead.
-        4. No finding repeats a title in /mnt/session/outputs/known-issues.txt.
-        5. Every finding has checkable acceptance criteria and proposes no new
+        3. Every finding has checkable acceptance criteria and proposes no new
            guarantee, interpretation or trusted component.
-        6. The report states the commit, the surface and whether the checker
-           built, and ends with "Coverage", "Spec questions" and "Unverified
-           leads" sections.
+        4. Items are classified consistently. A reproduced violation of a
+           clear contract is a finding. Reproduced behaviour on which
+           contracts contradict each other is a spec conflict, with both
+           sides quoted. Reproduced behaviour where the contracts are silent
+           is a spec gap. Both are under "Spec questions" with their
+           reproducers and a severity. Anything not reproduced is under
+           "Unverified leads".
+        5. The header states the commit, the surface, whether the checker
+           built, the deduplication status (complete, partial or unavailable)
+           and the search status (complete, partial or blocked). When the
+           kickoff names a commit, the reviewed commit equals it.
+        6. A summary lists every reproduced item with its class and severity.
+           Reproduced candidates that may match a known Issue title are under
+           "Potential duplicates" with the Issue numbers, not left out.
+        7. "Coverage" is an auditable search record: the decision paths
+           examined (path and function), each hypothesis with the probe that
+           tested it (a command, or a file under probes/) and the observed
+           outcome, including rejected hypotheses, and the areas not examined
+           or blocked.
+        8. The search record supports the stated search status. A report that
+           says complete while an area of its surface has no executed probe
+           fails. A report that says partial or blocked and names what is
+           missing satisfies this criterion.
