@@ -21,3 +21,7 @@ __pycache__/
 
 # Local experimental Julia dependency resolution.
 /julia/Manifest.toml
+
+# Managed Agents resource IDs written by `ant apply`. The file names the
+# maintainer's organization and workspace, so it stays local.
+/.github/claude-lock.json
