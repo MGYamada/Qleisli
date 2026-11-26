@@ -1,0 +1,31 @@
+# Deny-by-default egress. The sandbox holds no credentials: the repository is
+# public and is cloned anonymously, so there is no token or vault.
+#
+# One run at v0.3.0 cloned, installed elan and Lean 4.30.0, and fetched the
+# locked Cargo dependencies with this list. The sandbox ships Rust, so no
+# rustup host is listed. api.github.com answers anonymous requests, but the
+# sandbox shares its egress addresses and most requests are rate-limited, so
+# the agent retries in the background. PyPI is not reachable. Add a host only
+# when a run reports it as blocked; do not switch to unrestricted.
+name: qleisli-adversarial-review
+config:
+  type: cloud
+  networking:
+    type: limited
+    allow_mcp_servers: false
+    allow_package_managers: false
+    allowed_hosts:
+      # Source, and Issue titles for deduplication
+      - github.com
+      - codeload.github.com
+      - api.github.com
+      # elan and the pinned Lean toolchain
+      - raw.githubusercontent.com
+      - objects.githubusercontent.com
+      - release-assets.githubusercontent.com
+      - release.lean-lang.org
+      - releases.lean-lang.org
+      # The locked Cargo dependencies
+      - crates.io
+      - index.crates.io
+      - static.crates.io

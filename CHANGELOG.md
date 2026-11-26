@@ -11,6 +11,9 @@ development milestones from the scope of their evidence.
 
 **Qleisli — Writable as Rust, Curious as Julia, Rigorous as Haskell, Verifiable in Lean.**
 
+- Define a weekly Claude Managed Agents adversarial review of `main` under
+  `.github/agents/adversarial-review`. It reports only reproduced
+  counterexamples, holds no credentials and gates nothing (#372).
 - Use `Qlirgo.toml` in new projects and for bundled std. Accept `Qargo.toml`
   for existing projects and reject any dual manifests with different bytes (#349).
 - Bind native replies to one versioned request, and share source and artifact

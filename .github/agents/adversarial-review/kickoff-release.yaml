@@ -1,0 +1,30 @@
+# Manual run before a release tag, while the candidate is the HEAD of main.
+# Not a resource: send it to a new session (see README.md). The rubric is
+# repeated from deployment-weekly.yaml; keep the two copies identical.
+events:
+  - type: user.define_outcome
+    description: |
+      Pre-tag review. Review the current `main` of
+      https://github.com/MGYamada/Qleisli on all five surfaces. Spend the most
+      effort on kernel acceptance and the Rust/Lean boundary, then write the
+      findings report.
+    max_iterations: 3
+    rubric:
+      type: text
+      content: |
+        The deliverable is /mnt/session/outputs/findings.md with its inputs
+        under /mnt/session/outputs/repro/. A report with no findings satisfies
+        criteria 1 to 5; never fail a report for having few or no findings.
+
+        1. Every finding names the reviewed commit and gives `path:line`
+           references.
+        2. Every finding has a reproduction: the exact commands, the files
+           under repro/ they use, and output observed in this sandbox.
+        3. Every finding quotes the written contract it breaks, with its path.
+           Anything without such a contract is under "Spec questions" instead.
+        4. No finding repeats a title in /mnt/session/outputs/known-issues.txt.
+        5. Every finding has checkable acceptance criteria and proposes no new
+           guarantee, interpretation or trusted component.
+        6. The report states the commit, the surface and whether the checker
+           built, and ends with "Coverage", "Spec questions" and "Unverified
+           leads" sections.

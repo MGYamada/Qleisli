@@ -1,0 +1,35 @@
+# Weekly adversarial review of main. A finder, not a gate: see README.md.
+# The cap is per run. The rubric is repeated in kickoff-release.yaml; keep the
+# two copies identical.
+name: qleisli-adversarial-review-weekly
+agent: ./agent.md
+environment_id: ./environment.yaml
+schedule: {type: cron, expression: "0 12 * * 1", timezone: Asia/Tokyo}
+budget:
+  type: limit
+  max_list_cost: {amount: "2500", currency: USD}
+initial_events:
+  - type: user.define_outcome
+    description: |
+      Review the current `main` of https://github.com/MGYamada/Qleisli on this
+      week's surface and write the findings report.
+    max_iterations: 3
+    rubric:
+      type: text
+      content: |
+        The deliverable is /mnt/session/outputs/findings.md with its inputs
+        under /mnt/session/outputs/repro/. A report with no findings satisfies
+        criteria 1 to 5; never fail a report for having few or no findings.
+
+        1. Every finding names the reviewed commit and gives `path:line`
+           references.
+        2. Every finding has a reproduction: the exact commands, the files
+           under repro/ they use, and output observed in this sandbox.
+        3. Every finding quotes the written contract it breaks, with its path.
+           Anything without such a contract is under "Spec questions" instead.
+        4. No finding repeats a title in /mnt/session/outputs/known-issues.txt.
+        5. Every finding has checkable acceptance criteria and proposes no new
+           guarantee, interpretation or trusted component.
+        6. The report states the commit, the surface and whether the checker
+           built, and ends with "Coverage", "Spec questions" and "Unverified
+           leads" sections.
